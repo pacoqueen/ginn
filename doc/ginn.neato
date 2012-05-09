@@ -1,0 +1,550 @@
+digraph g {
+node [ fontsize = "10", shape = record ];
+edge [];
+
+"abono" [shape = record, label = "{<col0> \N| id:  serial\lcliente_id:  integer\lfactura_de_abono_id:  integer\lnumabono:  text\lfecha:  date\lobservaciones:  text\lalmacen_id:  integer\lobra_id:  integer\l}" ];
+
+"alarma" [shape = record, label = "{<col0> \N| id:  serial\lfactura_venta_id:  integer\lestado_id:  integer\lfechahora:  timestamp without time zone\ltexto:  text\lfechahora_alarma:  timestamp without time zone\lobjeto_relacionado:  text\lobservaciones:  text\l}" ];
+
+"albaran_de_entrada_de_abono" [shape = record, label = "{<col0> \N| id:  serial\lnumalbaran:  text\lfecha:  date\lobservaciones:  text\l}" ];
+
+"albaran_entrada" [shape = record, label = "{<col0> \N| id:  serial\lproveedor_id:  integer\lfecha:  date\lnumalbaran:  text\lbloqueado:  boolean\lrepuestos:  boolean\lalmacen_id:  integer\ltransportista_id:  integer\l}" ];
+
+"albaran_salida" [shape = record, label = "{<col0> \N| id:  serial\lnumalbaran:  text\ltransportista_id:  integer\lcliente_id:  integer\lfecha:  date\lnombre:  text\ldireccion:  text\lcp:  text\lciudad:  text\ltelefono:  text\lpais:  text\lobservaciones:  text\lfacturable:  boolean\lmotivo:  text\lbloqueado:  boolean\ldestino_id:  integer\lalmacen_origen_id:  integer\lalmacen_destino_id:  integer\l}" ];
+
+"alerta" [shape = record, label = "{<col0> \N| id:  serial\lusuario_id:  integer\lmensaje:  text\lfechahora:  timestamp without time zone\lentregado:  boolean\l}" ];
+
+"almacen" [shape = record, label = "{<col0> \N| id:  serial\lnombre:  text\lobservaciones:  text\ldireccion:  text\lciudad:  text\lprovincia:  text\lcp:  text\ltelefono:  text\lfax:  text\lemail:  text\lpais:  text\lprincipal:  boolean\l}" ];
+
+"articulo" [shape = record, label = "{<col0> \N| id:  serial\lbala_id:  integer\lrollo_id:  integer\lparte_de_produccion_id:  integer\lproducto_venta_id:  integer\lalbaran_salida_id:  integer\lbigbag_id:  integer\lrollo_defectuoso_id:  integer\lbala_cable_id:  integer\lrollo_c_id:  integer\lalmacen_id:  integer\lcaja_id:  integer\l}" ];
+
+"ausencia" [shape = record, label = "{<col0> \N| id:  serial\lempleado_id:  integer\lmotivo_id:  integer\lfecha:  date\lobservaciones:  text\l}" ];
+
+"baja" [shape = record, label = "{<col0> \N| id:  serial\lempleado_id:  integer\lmotivo:  text\lfecha_inicio:  date\lfecha_fin:  date\lobservaciones:  text\l}" ];
+
+"bala" [shape = record, label = "{<col0> \N| id:  serial\llote_id:  integer\lnumbala:  bigint\lcodigo:  text\lpesobala:  double precision\lfechahora:  timestamp without time zone\lmuestra:  boolean\lclaseb:  boolean\lmotivo:  text\lpartida_carga_id:  integer\l}" ];
+
+"bala_cable" [shape = record, label = "{<col0> \N| id:  serial\lnumbala:  bigint\lcodigo:  text\lfechahora:  timestamp without time zone\lobservaciones:  text\lpeso:  double precision\lpeso_embalaje:  double precision\lcolor:  text\lclaseb:  boolean\l}" ];
+
+"bigbag" [shape = record, label = "{<col0> \N| id:  serial\llote_cem_id:  integer\lnumbigbag:  bigint\lcodigo:  text\lpesobigbag:  double precision\lfechahora:  timestamp without time zone\lmuestra:  boolean\lclaseb:  boolean\lmotivo:  text\lparte_de_produccion_id:  integer\l}" ];
+
+"caja" [shape = record, label = "{<col0> \N| id:  serial\lpale_id:  integer\lnumcaja:  bigint\lcodigo:  text\lfechahora:  timestamp without time zone\lobservaciones:  text\lnumbolsas:  integer\lpeso:  double precision\l}" ];
+
+"calendario_laboral" [shape = record, label = "{<col0> \N| id:  serial\llinea_de_produccion_id:  integer\lmes_anno:  date\lobservaciones:  text\l}" ];
+
+"campos_especificos" [shape = record, label = "{<col0> \N| id:  serial\lproducto_venta_id:  integer\lnombre:  text\lvalor:  text\l}" ];
+
+"campos_especificos_bala" [shape = record, label = "{<col0> \N| id:  serial\ldtex:  double precision\lcorte:  integer\lcolor:  text\lantiuv:  boolean\ltipo_material_bala_id:  integer\lconsumo_granza:  double precision\lreciclada:  boolean\lgramos_bolsa:  integer\lbolsas_caja:  integer\lcajas_pale:  integer\l}" ];
+
+"campos_especificos_especial" [shape = record, label = "{<col0> \N| id:  serial\lstock:  double precision\lexistencias:  integer\lunidad:  text\lobservaciones:  text\l}" ];
+
+"campos_especificos_rollo" [shape = record, label = "{<col0> \N| id:  serial\lgramos:  integer\lcodigo_composan:  text\lancho:  double precision\ldiametro:  integer\lrollos_por_camion:  integer\lmetros_lineales:  integer\lpeso_embalaje:  double precision\lestandar_prueba_gramaje:  double precision\ltolerancia_prueba_gramaje:  double precision\lestandar_prueba_longitudinal:  double precision\ltolerancia_prueba_longitudinal:  double precision\lestandar_prueba_alargamiento_longitudinal:  double precision\ltolerancia_prueba_alargamiento_longitudinal:  double precision\lestandar_prueba_transversal:  double precision\ltolerancia_prueba_transversal:  double precision\lestandar_prueba_alargamiento_transversal:  double precision\ltolerancia_prueba_alargamiento_transversal:  double precision\lestandar_prueba_compresion:  double precision\ltolerancia_prueba_compresion:  double precision\lestandar_prueba_perforacion:  double precision\ltolerancia_prueba_perforacion:  double precision\lestandar_prueba_espesor:  double precision\ltolerancia_prueba_espesor:  double precision\lestandar_prueba_permeabilidad:  double precision\ltolerancia_prueba_permeabilidad:  double precision\lestandar_prueba_poros:  double precision\ltolerancia_prueba_poros:  double precision\ltolerancia_prueba_gramaje_sup:  double precision\ltolerancia_prueba_longitudinal_sup:  double precision\ltolerancia_prueba_alargamiento_longitudinal_sup:  double precision\ltolerancia_prueba_transversal_sup:  double precision\ltolerancia_prueba_alargamiento_transversal_sup:  double precision\ltolerancia_prueba_compresion_sup:  double precision\ltolerancia_prueba_perforacion_sup:  double precision\ltolerancia_prueba_espesor_sup:  double precision\ltolerancia_prueba_permeabilidad_sup:  double precision\ltolerancia_prueba_poros_sup:  double precision\lficha_fabricacion:  text\lc:  boolean\l}" ];
+
+"carga_silo" [shape = record, label = "{<col0> \N| id:  serial\lproducto_compra_id:  integer\lsilo_id:  integer\lfecha_carga:  timestamp without time zone\lcantidad:  double precision\l}" ];
+
+"categoria" [shape = record, label = "{<col0> \N| id:  serial\ldescripcion:  text\lcolor_r:  integer\lcolor_g:  integer\lcolor_b:  integer\lprioridad:  integer\lobservaciones:  text\l}" ];
+
+"categoria_laboral" [shape = record, label = "{<col0> \N| id:  serial\lcodigo:  text\lpuesto:  text\llinea_de_produccion_id:  integer\lplanta:  boolean\lprecio_hora_extra:  double precision\lprecio_hora_nocturnidad:  double precision\lprecio_plus_nocturnidad:  double precision\lprecio_plus_turnicidad:  double precision\lprecio_plus_jefe_turno:  double precision\lprecio_plus_festivo:  double precision\lprecio_plus_mantenimiento_sabados:  double precision\ldias_vacaciones:  integer\ldias_convenio:  integer\ldias_asuntos_propios:  integer\lsalario_base:  double precision\lprecio_hora_regular:  double precision\l}" ];
+
+"centro_trabajo" [shape = record, label = "{<col0> \N| id:  serial\lnombre:  text\lalmacen_id:  integer\l}" ];
+
+"cliente" [shape = record, label = "{<col0> \N| id:  serial\ltarifa_id:  integer\lcontador_id:  integer\ltelefono:  text\lnombre:  text\lcif:  text\ldireccion:  text\lpais:  text\lciudad:  text\lprovincia:  text\lcp:  text\liva:  double precision\ldireccionfacturacion:  text\lpaisfacturacion:  text\lciudadfacturacion:  text\lprovinciafacturacion:  text\lcpfacturacion:  text\lnombref:  text\lemail:  text\lcontacto:  text\lobservaciones:  text\lvencimientos:  text\lformadepago:  text\ldocumentodepago:  text\ldiadepago:  text\linhabilitado:  boolean\lmotivo:  text\lcliente_id:  integer\lporcentaje:  double precision\lenviar_correo_albaran:  boolean\lenviar_correo_factura:  boolean\lenviar_correo_packing:  boolean\lfax:  text\lproveedor_id:  integer\lcuenta_origen_id:  integer\lriesgo_asegurado:  double precision\lriesgo_concedido:  double precision\lpacking_list_con_codigo:  boolean\lfacturar_con_albaran:  boolean\lcopias_factura:  integer\l}" ];
+
+"cobro" [shape = record, label = "{<col0> \N| id:  serial\lfactura_venta_id:  integer\lprefactura_id:  integer\lfecha:  date\limporte:  double precision\lobservaciones:  text\lpagare_cobro_id:  integer\lcliente_id:  integer\lfactura_de_abono_id:  integer\lconfirming_id:  integer\l}" ];
+
+"comercial" [shape = record, label = "{<col0> \N| id:  serial\lempleado_id:  integer\lcomision:  double precision\lobservaciones:  text\lcargo:  text\ltelefono:  text\lcorreoe:  text\l}" ];
+
+"comision" [shape = record, label = "{<col0> \N| id:  serial\lconcepto:  text\lprecio:  double precision\lobservaciones:  text\lfecha:  date\lcliente_id:  integer\lfactura_venta_id:  integer\lprefactura_id:  integer\lporcentaje:  double precision\lalbaran_salida_id:  integer\l}" ];
+
+"confirming" [shape = record, label = "{<col0> \N| id:  serial\lcodigo:  text\lfecha_recepcion:  date\lfecha_cobro:  date\lcantidad:  double precision\lcobrado:  double precision\lobservaciones:  text\lfecha_cobrado:  date\lprocesado:  boolean\l}" ];
+
+"consumo" [shape = record, label = "{<col0> \N| id:  serial\lproducto_compra_id:  integer\lparte_de_produccion_id:  integer\lactualizado:  boolean\lantes:  double precision\ldespues:  double precision\lcantidad:  double precision\lsilo_id:  integer\l}" ];
+
+"consumo_adicional" [shape = record, label = "{<col0> \N| id:  serial\lproducto_compra_id:  integer\lformulacion_id:  integer\lnombre:  text\lcantidad:  double precision\lunidad:  text\l}" ];
+
+"consumo_adicional__producto_venta" [shape = record, label = "{<col0> \N| producto_venta_id:  integer\lconsumo_adicional_id:  integer\l}" ];
+
+"contacto" [shape = record, label = "{<col0> \N| id:  serial\lnombre:  text\lapellidos:  text\lcargo:  text\ltelefono:  text\lfax:  text\lmovil:  text\lcorreoe:  text\lweb:  text\lobservaciones:  text\l}" ];
+
+"contador" [shape = record, label = "{<col0> \N| id:  serial\lprefijo:  text\lsufijo:  text\lcontador:  bigint\l}" ];
+
+"control_horas" [shape = record, label = "{<col0> \N| id:  serial\lgrupo_id:  integer\lempleado_id:  integer\lhoras_regulares:  double precision\lnocturnidad:  boolean\lhoras_extra_dia_produccion:  double precision\lhoras_extra_dia_mantenimiento:  double precision\lhoras_extra_dia_almacen:  double precision\lhoras_extra_dia_varios:  double precision\lhoras_extra_noche_produccion:  double precision\lhoras_extra_noche_mantenimiento:  double precision\lhoras_extra_noche_almacen:  double precision\lhoras_extra_noche_varios:  double precision\lhoras_almacen:  double precision\lhoras_varios:  double precision\lvarios:  text\lcomentarios:  text\lbaja_laboral:  boolean\lvacaciones_y_asuntos_propios:  boolean\lfecha:  date\lfestivo:  boolean\lbloqueado:  boolean\lplus_absentismo:  double precision\lconcepto_libre:  text\limporte_libre:  double precision\l}" ];
+
+"control_horas_mantenimiento" [shape = record, label = "{<col0> \N| id:  serial\lhoras_mantenimiento:  double precision\llinea_de_produccion_id:  integer\lcontrol_horas_id:  integer\l}" ];
+
+"control_horas_produccion" [shape = record, label = "{<col0> \N| id:  serial\lhoras_produccion:  double precision\llinea_de_produccion_id:  integer\lcontrol_horas_id:  integer\l}" ];
+
+"cuenta_bancaria_cliente" [shape = record, label = "{<col0> \N| id:  serial\lcliente_id:  integer\lobservaciones:  text\lbanco:  text\lswif:  text\liban:  text\lcuenta:  text\l}" ];
+
+"cuenta_destino" [shape = record, label = "{<col0> \N| id:  serial\lnombre:  text\lobservaciones:  text\lbanco:  text\lswif:  text\liban:  text\lcuenta:  text\lnombre_banco:  text\lproveedor_id:  integer\l}" ];
+
+"cuenta_origen" [shape = record, label = "{<col0> \N| id:  serial\lnombre:  text\lbanco:  text\lccc:  text\lobservaciones:  text\lcontacto:  text\lfax:  text\ltelefono:  text\l}" ];
+
+"datos_de_la_empresa" [shape = record, label = "{<col0> \N| id:  serial\lnombre:  text\lcif:  text\ldirfacturacion:  text\lcpfacturacion:  text\lciudadfacturacion:  text\lprovinciafacturacion:  text\ldireccion:  text\lcp:  text\lciudad:  text\lprovincia:  text\ltelefono:  text\lfax:  text\lemail:  text\lpaisfacturacion:  text\lpais:  text\ltelefonofacturacion:  text\lfaxfacturacion:  text\lnombre_responsable_compras:  text\ltelefono_responsable_compras:  text\lnombre_contacto:  text\lregistro_mercantil:  text\lemail_responsable_compras:  text\llogo:  text\llogo2:  text\lbvqi:  boolean\lnomalbaran2:  text\ldiralbaran2:  text\lcpalbaran2:  text\lciualbaran2:  text\lproalbaran2:  text\ltelalbaran2:  text\lfaxalbaran2:  text\lregalbaran2:  text\lirpf:  double precision\les_sociedad:  boolean\llogoiso1:  text\llogoiso2:  text\lrecargo_equivalencia:  boolean\liva:  double precision\lped_compra_texto_fijo:  text\lped_compra_texto_editable:  text\lped_compra_texto_editable_con_nivel1:  text\l}" ];
+
+"descuento_de_material" [shape = record, label = "{<col0> \N| id:  serial\lproducto_compra_id:  integer\lparte_de_produccion_id:  integer\lcantidad:  double precision\lfechahora:  timestamp without time zone\lobservaciones:  text\l}" ];
+
+"destino" [shape = record, label = "{<col0> \N| id:  serial\lnombre:  text\ldireccion:  text\lcp:  text\lciudad:  text\ltelefono:  text\lpais:  text\l}" ];
+
+"documento" [shape = record, label = "{<col0> \N| id:  serial\lnombre:  text\lnombre_fichero:  text\lobservaciones:  text\lpedido_venta_id:  integer\lalbaran_salida_id:  integer\lfactura_venta_id:  integer\lprefactura_id:  integer\lpagare_cobro_id:  integer\lpedido_compra_id:  integer\lalbaran_entrada_id:  integer\lfactura_compra_id:  integer\lpagare_pago_id:  integer\lempleado_id:  integer\lcliente_id:  integer\lproveedor_id:  integer\lconfirming_id:  integer\l}" ];
+
+"empleado" [shape = record, label = "{<col0> \N| id:  serial\lcategoria_laboral_id:  integer\lcentro_trabajo_id:  integer\lnombre:  text\lapellidos:  text\ldni:  text\lplanta:  boolean\lnomina:  numeric(9,2)\lpreciohora:  numeric(9,2)\lactivo:  boolean\lusuario_id:  integer\l}" ];
+
+"estadistica" [shape = record, label = "{<col0> \N| id:  serial\lusuario_id:  integer\lventana_id:  integer\lveces:  integer\lultima_vez:  timestamp without time zone\l}" ];
+
+"estado" [shape = record, label = "{<col0> \N| id:  serial\ldescripcion:  text\lpendiente:  boolean\lobservaciones:  text\l}" ];
+
+"estimacion_cobro" [shape = record, label = "{<col0> \N| id:  serial\lfactura_venta_id:  integer\lprefactura_id:  integer\lfecha:  date\limporte:  double precision\lobservaciones:  text\l}" ];
+
+"estimacion_pago" [shape = record, label = "{<col0> \N| id:  serial\lfactura_compra_id:  integer\lfecha:  date\limporte:  double precision\lobservaciones:  text\l}" ];
+
+"factura_compra" [shape = record, label = "{<col0> \N| id:  serial\lproveedor_id:  integer\lfecha:  date\lnumfactura:  text\ldescuento:  double precision\lcargo:  numeric(9,2)\liva:  double precision\lbloqueada:  boolean\lvisto_bueno_director:  boolean\lvisto_bueno_comercial:  boolean\lvisto_bueno_tecnico:  boolean\lfecha_entrada:  date\lfecha_visto_bueno_director:  date\lfecha_visto_bueno_comercial:  date\lfecha_visto_bueno_tecnico:  date\lvisto_bueno_usuario:  boolean\lfecha_visto_bueno_usuario:  date\lobservaciones:  text\lvencimientos_confirmados:  boolean\l}" ];
+
+"factura_de_abono" [shape = record, label = "{<col0> \N| id:  serial\lfecha:  date\l}" ];
+
+"factura_venta" [shape = record, label = "{<col0> \N| id:  serial\lcliente_id:  integer\lfecha:  date\lnumfactura:  text\ldescuento:  double precision\lcargo:  numeric(9,2)\lobservaciones:  text\liva:  double precision\lbloqueada:  boolean\lirpf:  double precision\lobra_id:  integer\l}" ];
+
+"festivo" [shape = record, label = "{<col0> \N| id:  serial\lcalendario_laboral_id:  integer\lfecha:  date\l}" ];
+
+"festivo_generico" [shape = record, label = "{<col0> \N| id:  serial\lfecha:  date\l}" ];
+
+"formulacion" [shape = record, label = "{<col0> \N| id:  serial\lnombre:  text\lobservaciones:  text\l}" ];
+
+"grupo" [shape = record, label = "{<col0> \N| id:  serial\lnombre:  text\ljefeturno_id:  integer\loperario1_id:  integer\loperario2_id:  integer\lobservaciones:  text\l}" ];
+
+"historial_existencias" [shape = record, label = "{<col0> \N| id:  serial\lproducto_venta_id:  integer\lfecha:  date\lcantidad:  double precision\lbultos:  integer\lalmacen_id:  integer\l}" ];
+
+"historial_existencias_a" [shape = record, label = "{<col0> \N| id:  serial\lproducto_venta_id:  integer\lfecha:  date\lcantidad:  double precision\lbultos:  integer\lalmacen_id:  integer\l}" ];
+
+"historial_existencias_b" [shape = record, label = "{<col0> \N| id:  serial\lproducto_venta_id:  integer\lfecha:  date\lcantidad:  double precision\lbultos:  integer\lalmacen_id:  integer\l}" ];
+
+"historial_existencias_c" [shape = record, label = "{<col0> \N| id:  serial\lproducto_venta_id:  integer\lfecha:  date\lcantidad:  double precision\lbultos:  integer\lalmacen_id:  integer\l}" ];
+
+"historial_existencias_compra" [shape = record, label = "{<col0> \N| id:  serial\lproducto_compra_id:  integer\lfecha:  date\lcantidad:  double precision\lobservaciones:  text\lalmacen_id:  integer\l}" ];
+
+"id_reciente" [shape = record, label = "{<col0> \N| id:  serial\llista_objetos_recientes_id:  integer\lobjeto_id:  integer\l}" ];
+
+"incidencia" [shape = record, label = "{<col0> \N| id:  serial\ltipo_de_incidencia_id:  integer\lparte_de_produccion_id:  integer\lhorainicio:  timestamp without time zone\lhorafin:  timestamp without time zone\lobservaciones:  text\l}" ];
+
+"laborable" [shape = record, label = "{<col0> \N| id:  serial\lfecha:  date\lturno_id:  integer\lcalendario_laboral_id:  integer\lgrupo_id:  integer\lobservaciones:  text\l}" ];
+
+"linea_de_abono" [shape = record, label = "{<col0> \N| id:  serial\llinea_de_venta_id:  integer\labono_id:  integer\ldiferencia:  double precision\lcantidad:  double precision\lobservaciones:  text\lservicio_id:  integer\l}" ];
+
+"linea_de_compra" [shape = record, label = "{<col0> \N| id:  serial\lpedido_compra_id:  integer\lalbaran_entrada_id:  integer\lfactura_compra_id:  integer\lproducto_compra_id:  integer\lcantidad:  double precision\lprecio:  double precision\ldescuento:  double precision\lentrega:  text\lsilo_id:  integer\lcarga_silo_id:  integer\liva:  double precision\l}" ];
+
+"linea_de_devolucion" [shape = record, label = "{<col0> \N| id:  serial\labono_id:  integer\larticulo_id:  integer\lalbaran_de_entrada_de_abono_id:  integer\lalbaran_salida_id:  integer\lprecio:  double precision\lobservaciones:  text\l}" ];
+
+"linea_de_movimiento" [shape = record, label = "{<col0> \N| id:  serial\lalbaran_salida_id:  integer\larticulo_id:  integer\l}" ];
+
+"linea_de_pedido" [shape = record, label = "{<col0> \N| id:  serial\lproducto_venta_id:  integer\lpedido_venta_id:  integer\lfechahora:  timestamp without time zone\lcantidad:  double precision\lprecio:  double precision\ldescuento:  double precision\lfecha_entrega:  date\ltexto_entrega:  text\lproducto_compra_id:  integer\lpresupuesto_id:  integer\lnotas:  text\l}" ];
+
+"linea_de_pedido_de_compra" [shape = record, label = "{<col0> \N| id:  serial\lproducto_compra_id:  integer\lpedido_compra_id:  integer\lfechahora:  timestamp without time zone\lcantidad:  double precision\lprecio:  double precision\ldescuento:  double precision\lfecha_entrega:  date\ltexto_entrega:  text\lnotas:  text\l}" ];
+
+"linea_de_pedido_de_compra__linea_de_compra" [shape = record, label = "{<col0> \N| linea_de_pedido_de_compra_id:  integer\llinea_de_compra_id:  integer\l}" ];
+
+"linea_de_produccion" [shape = record, label = "{<col0> \N| id:  serial\lformulacion_id:  integer\lnombre:  text\ldescripcion:  text\lobservaciones:  text\l}" ];
+
+"linea_de_venta" [shape = record, label = "{<col0> \N| id:  serial\lproducto_venta_id:  integer\lpedido_venta_id:  integer\lalbaran_salida_id:  integer\lfactura_venta_id:  integer\lprefactura_id:  integer\lfechahora:  timestamp without time zone\lcantidad:  double precision\lprecio:  double precision\ldescuento:  double precision\lproducto_compra_id:  integer\lticket_id:  integer\lnotas:  text\ldescripcion_complementaria:  text\l}" ];
+
+"lista_objetos_recientes" [shape = record, label = "{<col0> \N| id:  serial\lusuario_id:  integer\lventana_id:  integer\l}" ];
+
+"logic_movimientos" [shape = record, label = "{<col0> \N| id:  serial\lasiento:  bigint\lorden:  bigint\lfecha:  date\lcargo_abono:  character(1)\lcodigo_cuenta:  text\lcontrapartida_info:  text\lcomentario:  text\limporte:  double precision\lcuenta:  text\l}" ];
+
+"lote" [shape = record, label = "{<col0> \N| id:  serial\lnumlote:  bigint\lcodigo:  text\ltenacidad:  character(1)\lelongacion:  character(1)\lrizo:  text\lencogimiento:  text\lgrasa:  double precision\ltolerancia:  double precision\lmediatitulo:  double precision\lobservaciones:  text\l}" ];
+
+"lote_cem" [shape = record, label = "{<col0> \N| id:  serial\lnumlote:  bigint\lcodigo:  text\ltenacidad:  double precision\lelongacion:  double precision\lencogimiento:  double precision\lgrasa:  double precision\ltolerancia:  double precision\lhumedad:  double precision\lmediatitulo:  double precision\lobservaciones:  text\l}" ];
+
+"marcado_ce" [shape = record, label = "{<col0> \N| id:  serial\lcampos_especificos_rollo_id:  integer\lfecha_inicio:  date\lfecha_fin:  date\lestandar_prueba_gramaje:  double precision\ltolerancia_prueba_gramaje:  double precision\lestandar_prueba_longitudinal:  double precision\ltolerancia_prueba_longitudinal:  double precision\lestandar_prueba_alargamiento_longitudinal:  double precision\ltolerancia_prueba_alargamiento_longitudinal:  double precision\lestandar_prueba_transversal:  double precision\ltolerancia_prueba_transversal:  double precision\lestandar_prueba_alargamiento_transversal:  double precision\ltolerancia_prueba_alargamiento_transversal:  double precision\lestandar_prueba_compresion:  double precision\ltolerancia_prueba_compresion:  double precision\lestandar_prueba_perforacion:  double precision\ltolerancia_prueba_perforacion:  double precision\lestandar_prueba_espesor:  double precision\ltolerancia_prueba_espesor:  double precision\lestandar_prueba_permeabilidad:  double precision\ltolerancia_prueba_permeabilidad:  double precision\lestandar_prueba_poros:  double precision\ltolerancia_prueba_poros:  double precision\ltolerancia_prueba_gramaje_sup:  double precision\ltolerancia_prueba_longitudinal_sup:  double precision\ltolerancia_prueba_alargamiento_longitudinal_sup:  double precision\ltolerancia_prueba_transversal_sup:  double precision\ltolerancia_prueba_alargamiento_transversal_sup:  double precision\ltolerancia_prueba_compresion_sup:  double precision\ltolerancia_prueba_perforacion_sup:  double precision\ltolerancia_prueba_espesor_sup:  double precision\ltolerancia_prueba_permeabilidad_sup:  double precision\ltolerancia_prueba_poros_sup:  double precision\l}" ];
+
+"modulo" [shape = record, label = "{<col0> \N| id:  serial\lnombre:  text\licono:  text\ldescripcion:  text\l}" ];
+
+"motivo" [shape = record, label = "{<col0> \N| id:  serial\ldescripcion:  text\ldescripcion_dias:  text\lretribuido:  integer\lsin_retribuir:  integer\lexcedencia_maxima:  integer\lconvenio:  boolean\lpenaliza:  boolean\l}" ];
+
+"muestra" [shape = record, label = "{<col0> \N| id:  serial\llote_id:  integer\lpartida_id:  integer\lcodigo:  text\lobservaciones:  text\lpendiente:  boolean\lenvio:  timestamp without time zone\lrecepcion:  timestamp without time zone\llote_cem_id:  integer\l}" ];
+
+"nomina" [shape = record, label = "{<col0> \N| id:  serial\lempleado_id:  integer\lfecha:  date\lcantidad:  numeric(9,2)\lhoras_extra:  double precision\lhoras_nocturnidad:  double precision\lgratificacion:  double precision\lplus_jefe_turno:  double precision\lplus_no_absentismo:  double precision\lplus_festivo:  double precision\lplus_turnicidad:  double precision\lplus_mantenimiento_sabados:  double precision\ltotal_horas_extra:  double precision\ltotal_horas_nocturnidad:  double precision\lbase:  double precision\lotros:  double precision\lfechaini:  date\lfechafin:  date\l}" ];
+
+"nota" [shape = record, label = "{<col0> \N| id:  serial\lfactura_venta_id:  integer\lfechahora:  timestamp without time zone\ltexto:  text\lobservaciones:  text\l}" ];
+
+"obra" [shape = record, label = "{<col0> \N| id:  serial\lnombre:  text\ldireccion:  text\lcp:  text\lciudad:  text\lprovincia:  text\lfechainicio:  date\lfechafin:  date\lobservaciones:  text\lgenerica:  boolean\lpais:  text\l}" ];
+
+"obra__cliente" [shape = record, label = "{<col0> \N| obra_id:  integer\lcliente_id:  integer\l}" ];
+
+"obra__contacto" [shape = record, label = "{<col0> \N| obra_id:  integer\lcontacto_id:  integer\l}" ];
+
+"observaciones_nominas" [shape = record, label = "{<col0> \N| id:  serial\lfecha:  date\lobservaciones:  text\l}" ];
+
+"orden_empleados" [shape = record, label = "{<col0> \N| id:  serial\lorden:  integer\lempleado_id:  integer\lfecha:  date\l}" ];
+
+"pagare_cobro" [shape = record, label = "{<col0> \N| id:  serial\lcodigo:  text\lfecha_recepcion:  date\lfecha_cobro:  date\lcantidad:  double precision\lcobrado:  double precision\lobservaciones:  text\lfecha_cobrado:  date\lprocesado:  boolean\l}" ];
+
+"pagare_pago" [shape = record, label = "{<col0> \N| id:  serial\lcodigo:  text\lfecha_emision:  date\lfecha_pago:  date\lcantidad:  double precision\lpagado:  double precision\lobservaciones:  text\lprocesado:  boolean\lfecha_cobrado:  date\l}" ];
+
+"pago" [shape = record, label = "{<col0> \N| id:  serial\lfactura_compra_id:  integer\llogic_movimientos_id:  integer\lfecha:  date\limporte:  double precision\lobservaciones:  text\lpagare_pago_id:  integer\lproveedor_id:  integer\lcuenta_origen_id:  integer\lcuenta_destino_id:  integer\lconcepto_libre:  text\l}" ];
+
+"pago_de_abono" [shape = record, label = "{<col0> \N| id:  serial\lfactura_de_abono_id:  integer\lfactura_venta_id:  integer\lprefactura_id:  integer\limporte:  double precision\lpendiente:  boolean\l}" ];
+
+"pale" [shape = record, label = "{<col0> \N| id:  serial\lpartida_cem_id:  integer\lnumpale:  bigint\lcodigo:  text\lfechahora:  timestamp without time zone\lnumbolsas:  integer\lnumcajas:  integer\lobservaciones:  text\l}" ];
+
+"parte_de_produccion" [shape = record, label = "{<col0> \N| id:  serial\lfecha:  date\lhorainicio:  time without time zone\lhorafin:  time without time zone\lprodestandar:  double precision\lmerma:  double precision\lbloqueado:  boolean\lobservaciones:  text\lfechahorainicio:  timestamp without time zone\lfechahorafin:  timestamp without time zone\lfichaproduccion:  text\lpartida_cem_id:  integer\l}" ];
+
+"parte_de_produccion_empleado" [shape = record, label = "{<col0> \N| id:  serial\lempleadoid:  integer\lpartedeproduccionid:  integer\lhoras:  time without time zone\l}" ];
+
+"parte_de_trabajo" [shape = record, label = "{<col0> \N| id:  serial\lempleado_id:  integer\ltrabajo:  text\lhorainicio:  timestamp without time zone\lhorafin:  timestamp without time zone\lcentro_trabajo_id:  integer\l}" ];
+
+"partida" [shape = record, label = "{<col0> \N| id:  serial\lnumpartida:  bigint\lcodigo:  text\lgramaje:  double precision\llongitudinal:  double precision\lalongitudinal:  double precision\ltransversal:  double precision\latransversal:  double precision\lcompresion:  double precision\lperforacion:  double precision\lespesor:  double precision\lpermeabilidad:  double precision\lporos:  double precision\lpartida_carga_id:  integer\lobservaciones:  text\l}" ];
+
+"partida_carga" [shape = record, label = "{<col0> \N| id:  serial\lnumpartida:  bigint\lcodigo:  text\lfecha:  timestamp without time zone\l}" ];
+
+"partida_cem" [shape = record, label = "{<col0> \N| id:  serial\lnumpartida:  bigint\lcodigo:  text\lobservaciones:  text\l}" ];
+
+"pedido_compra" [shape = record, label = "{<col0> \N| id:  serial\lproveedor_id:  integer\lfecha:  date\lnumpedido:  text\liva:  double precision\ldescuento:  double precision\lentregas:  text\lforma_de_pago:  text\lobservaciones:  text\lbloqueado:  boolean\lcerrado:  boolean\ldireccion_entrega0:  text\ldireccion_entrega1:  text\ldireccion_entrega2:  text\lresponsable0:  text\lresponsable1:  text\lportes0:  text\lportes1:  text\lobservaciones0:  text\lobservaciones1:  text\lobservaciones2:  text\l}" ];
+
+"pedido_venta" [shape = record, label = "{<col0> \N| id:  serial\lcliente_id:  integer\ltarifa_id:  integer\ltransporte_a_cargo:  boolean\lfecha:  date\lnumpedido:  text\liva:  double precision\ldescuento:  double precision\lbloqueado:  boolean\lcerrado:  boolean\lenvio_direccion:  text\lenvio_ciudad:  text\lenvio_provincia:  text\lenvio_cp:  text\lenvio_pais:  text\lcomercial_id:  integer\lnombre_correspondencia:  text\ldireccion_correspondencia:  text\lcp_correspondencia:  text\lciudad_correspondencia:  text\lprovincia_correspondencia:  text\lpais_correspondencia:  text\ltexto_obra:  text\lobra_id:  integer\l}" ];
+
+"permiso" [shape = record, label = "{<col0> \N| id:  serial\lusuario_id:  integer\lventana_id:  integer\lpermiso:  boolean\llectura:  boolean\lescritura:  boolean\lnuevo:  boolean\l}" ];
+
+"precio" [shape = record, label = "{<col0> \N| id:  serial\lproducto_venta_id:  integer\ltarifa_id:  integer\lprecio:  double precision\lproducto_compra_id:  integer\l}" ];
+
+"prefactura" [shape = record, label = "{<col0> \N| id:  serial\lcliente_id:  integer\lfecha:  date\lnumfactura:  text\ldescuento:  double precision\lcargo:  numeric(9,2)\lobservaciones:  text\liva:  double precision\lbloqueada:  boolean\lirpf:  double precision\l}" ];
+
+"presupuesto" [shape = record, label = "{<col0> \N| id:  serial\lcliente_id:  integer\lfecha:  date\lpersona_contacto:  text\lnombrecliente:  text\ldireccion:  text\lciudad:  text\lprovincia:  text\lcp:  text\lpais:  text\ltelefono:  text\lfax:  text\ltexto:  text\ldespedida:  text\lvalidez:  integer\lnumpresupuesto:  integer\ldescuento:  double precision\lcomercial_id:  integer\lobra:  text\l}" ];
+
+"producto_compra" [shape = record, label = "{<col0> \N| id:  serial\ltipo_de_material_id:  integer\ldescripcion:  text\lcodigo:  text\lunidad:  text\lminimo:  double precision\lexistencias:  double precision\lprecio_defecto:  double precision\lcontrol_existencias:  boolean\lfvaloracion:  text\lobservaciones:  text\lobsoleto:  boolean\l}" ];
+
+"producto_venta" [shape = record, label = "{<col0> \N| id:  serial\llinea_de_produccion_id:  integer\lcampos_especificos_bala_id:  integer\lcampos_especificos_rollo_id:  integer\lnombre:  text\ldescripcion:  text\lcodigo:  text\lminimo:  double precision\lpreciopordefecto:  double precision\larancel:  text\lprodestandar:  double precision\lcampos_especificos_especial_id:  integer\l}" ];
+
+"proveedor" [shape = record, label = "{<col0> \N| id:  serial\lnombre:  text\lcif:  text\ldireccion:  text\lpais:  text\lciudad:  text\lprovincia:  text\lcp:  text\ltelefono:  text\lfax:  text\lcontacto:  text\lobservaciones:  text\ldireccionfacturacion:  text\lpaisfacturacion:  text\lciudadfacturacion:  text\lprovinciafacturacion:  text\lcpfacturacion:  text\lemail:  text\lformadepago:  text\ldocumentodepago:  text\lvencimiento:  text\ldiadepago:  text\lcorreoe:  text\lweb:  text\lbanco:  text\lswif:  text\liban:  text\lcuenta:  text\linhabilitado:  boolean\lmotivo:  text\liva:  double precision\lnombre_banco:  text\l}" ];
+
+"prueba_alargamiento_longitudinal" [shape = record, label = "{<col0> \N| id:  serial\lpartida_id:  integer\lfecha:  date\lresultado:  double precision\l}" ];
+
+"prueba_alargamiento_transversal" [shape = record, label = "{<col0> \N| id:  serial\lpartida_id:  integer\lfecha:  date\lresultado:  double precision\l}" ];
+
+"prueba_compresion" [shape = record, label = "{<col0> \N| id:  serial\lpartida_id:  integer\lfecha:  date\lresultado:  double precision\l}" ];
+
+"prueba_elongacion" [shape = record, label = "{<col0> \N| id:  serial\llote_id:  integer\lfecha:  date\lresultado:  double precision\llote_cem_id:  integer\l}" ];
+
+"prueba_encogimiento" [shape = record, label = "{<col0> \N| id:  serial\llote_id:  integer\lfecha:  date\lresultado:  double precision\llote_cem_id:  integer\l}" ];
+
+"prueba_espesor" [shape = record, label = "{<col0> \N| id:  serial\lpartida_id:  integer\lfecha:  date\lresultado:  double precision\l}" ];
+
+"prueba_gramaje" [shape = record, label = "{<col0> \N| id:  serial\lpartida_id:  integer\lfecha:  date\lresultado:  double precision\l}" ];
+
+"prueba_granza" [shape = record, label = "{<col0> \N| id:  serial\lproducto_compra_id:  integer\lfecha:  date\lresultado:  double precision\lsilo:  text\llote:  text\lfecha_entrada:  date\lmfi:  double precision\l}" ];
+
+"prueba_grasa" [shape = record, label = "{<col0> \N| id:  serial\llote_id:  integer\lfecha:  date\lresultado:  double precision\llote_cem_id:  integer\l}" ];
+
+"prueba_humedad" [shape = record, label = "{<col0> \N| id:  serial\llote_cem_id:  integer\lfecha:  date\lresultado:  double precision\l}" ];
+
+"prueba_longitudinal" [shape = record, label = "{<col0> \N| id:  serial\lpartida_id:  integer\lfecha:  date\lresultado:  double precision\l}" ];
+
+"prueba_perforacion" [shape = record, label = "{<col0> \N| id:  serial\lpartida_id:  integer\lfecha:  date\lresultado:  double precision\l}" ];
+
+"prueba_permeabilidad" [shape = record, label = "{<col0> \N| id:  serial\lpartida_id:  integer\lfecha:  date\lresultado:  double precision\l}" ];
+
+"prueba_poros" [shape = record, label = "{<col0> \N| id:  serial\lpartida_id:  integer\lfecha:  date\lresultado:  double precision\l}" ];
+
+"prueba_rizo" [shape = record, label = "{<col0> \N| id:  serial\llote_id:  integer\lfecha:  date\lresultado:  double precision\l}" ];
+
+"prueba_tenacidad" [shape = record, label = "{<col0> \N| id:  serial\llote_id:  integer\lfecha:  date\lresultado:  double precision\llote_cem_id:  integer\l}" ];
+
+"prueba_titulo" [shape = record, label = "{<col0> \N| id:  serial\llote_id:  integer\lfecha:  date\lresultado:  double precision\llote_cem_id:  integer\l}" ];
+
+"prueba_transversal" [shape = record, label = "{<col0> \N| id:  serial\lpartida_id:  integer\lfecha:  date\lresultado:  double precision\l}" ];
+
+"recibo" [shape = record, label = "{<col0> \N| id:  serial\lnumrecibo:  integer\lanno:  integer\llugar_libramiento:  text\lfecha_libramiento:  date\lfecha_vencimiento:  date\lpersona_pago:  text\ldomicilio_pago:  text\lcuenta_origen_id:  integer\lnombre_librado:  text\ldireccion_librado:  text\lobservaciones:  text\lcuenta_bancaria_cliente_id:  integer\l}" ];
+
+"rollo" [shape = record, label = "{<col0> \N| id:  serial\lpartida_id:  integer\lnumrollo:  bigint\lcodigo:  text\lfechahora:  timestamp without time zone\lobservaciones:  text\lmuestra:  boolean\lpeso:  double precision\ldensidad:  double precision\lrollob:  boolean\l}" ];
+
+"rollo_c" [shape = record, label = "{<col0> \N| id:  serial\lnumrollo:  bigint\lcodigo:  text\lfechahora:  timestamp without time zone\lobservaciones:  text\lpeso:  double precision\lpeso_embalaje:  double precision\l}" ];
+
+"rollo_defectuoso" [shape = record, label = "{<col0> \N| id:  serial\lpartida_id:  integer\lnumrollo:  bigint\lcodigo:  text\lfechahora:  timestamp without time zone\lobservaciones:  text\lpeso:  double precision\ldensidad:  double precision\lmetros_lineales:  double precision\lancho:  double precision\lpeso_embalaje:  double precision\l}" ];
+
+"servicio" [shape = record, label = "{<col0> \N| id:  serial\lfactura_venta_id:  integer\lprefactura_id:  integer\lalbaran_salida_id:  integer\lconcepto:  text\lcantidad:  double precision\lprecio:  double precision\ldescuento:  double precision\lpedido_venta_id:  integer\lpresupuesto_id:  integer\lnotas:  text\l}" ];
+
+"servicio_tomado" [shape = record, label = "{<col0> \N| id:  serial\lfactura_compra_id:  integer\lconcepto:  text\lcantidad:  double precision\lprecio:  double precision\ldescuento:  double precision\lcomision_id:  integer\ltransporte_a_cuenta_id:  integer\liva:  double precision\l}" ];
+
+"silo" [shape = record, label = "{<col0> \N| id:  serial\lnombre:  text\lcapacidad:  double precision\lobservaciones:  text\l}" ];
+
+"stock_almacen" [shape = record, label = "{<col0> \N| id:  serial\lalmacen_id:  integer\lproducto_compra_id:  integer\lexistencias:  double precision\l}" ];
+
+"stock_especial" [shape = record, label = "{<col0> \N| id:  serial\lalmacen_id:  integer\lcampos_especificos_especial_id:  integer\lexistencias:  double precision\l}" ];
+
+"tarea" [shape = record, label = "{<col0> \N| id:  serial\lfactura_venta_id:  integer\lcategoria_id:  integer\ltexto:  text\lpendiente:  boolean\lfecha:  date\lobservaciones:  text\lfechadone:  timestamp without time zone\l}" ];
+
+"tarifa" [shape = record, label = "{<col0> \N| id:  serial\lnombre:  text\lobservaciones:  text\lperiodo_validez_ini:  date\lperiodo_validez_fin:  date\l}" ];
+
+"ticket" [shape = record, label = "{<col0> \N| id:  serial\lfechahora:  timestamp without time zone\lnumticket:  bigint\l}" ];
+
+"tipo_de_incidencia" [shape = record, label = "{<col0> \N| id:  serial\ldescripcion:  text\l}" ];
+
+"tipo_de_material" [shape = record, label = "{<col0> \N| id:  serial\ldescripcion:  text\l}" ];
+
+"tipo_material_bala" [shape = record, label = "{<col0> \N| id:  serial\ldescripcion:  text\lcodigo:  text\l}" ];
+
+"transporte_a_cuenta" [shape = record, label = "{<col0> \N| id:  serial\lconcepto:  text\lprecio:  double precision\lobservaciones:  text\lfecha:  date\lalbaran_salida_id:  integer\lproveedor_id:  integer\l}" ];
+
+"transportista" [shape = record, label = "{<col0> \N| id:  serial\lagencia:  text\lnombre:  text\ldni:  text\ltelefono:  text\lmatricula:  text\l}" ];
+
+"turno" [shape = record, label = "{<col0> \N| id:  serial\lnombre:  text\lhorainicio:  timestamp without time zone\lhorafin:  timestamp without time zone\lnoche:  boolean\lobservaciones:  text\lrecuperacion:  boolean\l}" ];
+
+"usuario" [shape = record, label = "{<col0> \N| id:  serial\lusuario:  character varying(16)\lpasswd:  character(32)\lnombre:  text\lcuenta:  text\lcpass:  text\lnivel:  integer\lemail:  text\lsmtpserver:  text\lsmtpuser:  text\lsmtppassword:  text\lfirma_total:  boolean\lfirma_comercial:  boolean\lfirma_director:  boolean\lfirma_tecnico:  boolean\lfirma_usuario:  boolean\lobservaciones:  text\l}" ];
+
+"vacaciones" [shape = record, label = "{<col0> \N| id:  serial\lcalendario_laboral_id:  integer\lfecha:  date\l}" ];
+
+"vencimiento_cobro" [shape = record, label = "{<col0> \N| id:  serial\lfactura_venta_id:  integer\lprefactura_id:  integer\lfecha:  date\limporte:  double precision\lobservaciones:  text\lcuenta_origen_id:  integer\lrecibo_id:  integer\l}" ];
+
+"vencimiento_pago" [shape = record, label = "{<col0> \N| id:  serial\lfactura_compra_id:  integer\lfecha:  date\limporte:  double precision\lobservaciones:  text\lprocesado:  boolean\lfecha_pagado:  date\l}" ];
+
+"ventana" [shape = record, label = "{<col0> \N| id:  serial\lmodulo_id:  integer\ldescripcion:  text\lfichero:  text\lclase:  text\licono:  text\l}" ];
+
+
+"abono" -> "cliente" [label="abono_cliente_id_fkey"];
+"abono" -> "factura_de_abono" [label="abono_factura_de_abono_id_fkey"];
+"abono" -> "almacen" [label="abono_almacen_id_fkey"];
+"abono" -> "obra" [label="abono_obra_id_fkey"];
+"alarma" -> "factura_venta" [label="alarma_factura_venta_id_fkey"];
+"alarma" -> "estado" [label="alarma_estado_id_fkey"];
+"albaran_entrada" -> "proveedor" [label="albaran_entrada_proveedor_id_fkey"];
+"albaran_entrada" -> "almacen" [label="albaran_entrada_almacen_id_fkey"];
+"albaran_entrada" -> "transportista" [label="albaran_entrada_transportista_id_fkey"];
+"albaran_salida" -> "transportista" [label="albaran_salida_transportista_id_fkey"];
+"albaran_salida" -> "cliente" [label="albaran_salida_cliente_id_fkey"];
+"albaran_salida" -> "destino" [label="albaran_salida_destino_id_fkey"];
+"albaran_salida" -> "almacen" [label="albaran_salida_almacen_origen_id_fkey"];
+"albaran_salida" -> "almacen" [label="albaran_salida_almacen_destino_id_fkey"];
+"alerta" -> "usuario" [label="alerta_usuario_id_fkey"];
+"articulo" -> "bala" [label="articulo_bala_id_fkey"];
+"articulo" -> "rollo" [label="articulo_rollo_id_fkey"];
+"articulo" -> "parte_de_produccion" [label="articulo_parte_de_produccion_id_fkey"];
+"articulo" -> "producto_venta" [label="articulo_producto_venta_id_fkey"];
+"articulo" -> "albaran_salida" [label="articulo_albaran_salida_id_fkey"];
+"articulo" -> "bigbag" [label="articulo_bigbag_id_fkey"];
+"articulo" -> "rollo_defectuoso" [label="articulo_rollo_defectuoso_id_fkey"];
+"articulo" -> "bala_cable" [label="articulo_bala_cable_id_fkey"];
+"articulo" -> "rollo_c" [label="articulo_rollo_c_id_fkey"];
+"articulo" -> "almacen" [label="articulo_almacen_id_fkey"];
+"articulo" -> "caja" [label="articulo_caja_id_fkey"];
+"ausencia" -> "empleado" [label="ausencia_empleado_id_fkey"];
+"ausencia" -> "motivo" [label="ausencia_motivo_id_fkey"];
+"baja" -> "empleado" [label="baja_empleado_id_fkey"];
+"bala" -> "lote" [label="bala_lote_id_fkey"];
+"bala" -> "partida_carga" [label="bala_partida_carga_id_fkey"];
+"bigbag" -> "lote_cem" [label="bigbag_lote_cem_id_fkey"];
+"bigbag" -> "parte_de_produccion" [label="bigbag_parte_de_produccion_id_fkey"];
+"caja" -> "pale" [label="caja_pale_id_fkey"];
+"calendario_laboral" -> "linea_de_produccion" [label="calendario_laboral_linea_de_produccion_id_fkey"];
+"campos_especificos" -> "producto_venta" [label="campos_especificos_producto_venta_id_fkey"];
+"campos_especificos_bala" -> "tipo_material_bala" [label="campos_especificos_bala_tipo_material_bala_id_fkey"];
+"carga_silo" -> "producto_compra" [label="carga_silo_producto_compra_id_fkey"];
+"carga_silo" -> "silo" [label="carga_silo_silo_id_fkey"];
+"categoria_laboral" -> "linea_de_produccion" [label="categoria_laboral_linea_de_produccion_id_fkey"];
+"centro_trabajo" -> "almacen" [label="centro_trabajo_almacen_id_fkey"];
+"cliente" -> "tarifa" [label="cliente_tarifa_id_fkey"];
+"cliente" -> "contador" [label="cliente_contador_id_fkey"];
+"cliente" -> "cliente" [label="cliente_cliente_id_fkey"];
+"cliente" -> "proveedor" [label="cliente_proveedor_id_fkey"];
+"cliente" -> "cuenta_origen" [label="cliente_cuenta_origen_id_fkey"];
+"cobro" -> "factura_venta" [label="cobro_factura_venta_id_fkey"];
+"cobro" -> "prefactura" [label="cobro_prefactura_id_fkey"];
+"cobro" -> "pagare_cobro" [label="cobro_pagare_cobro_id_fkey"];
+"cobro" -> "cliente" [label="cobro_cliente_id_fkey"];
+"cobro" -> "factura_de_abono" [label="cobro_factura_de_abono_id_fkey"];
+"cobro" -> "confirming" [label="cobro_confirming_id_fkey"];
+"comercial" -> "empleado" [label="comercial_empleado_id_fkey"];
+"comision" -> "cliente" [label="comision_cliente_id_fkey"];
+"comision" -> "factura_venta" [label="comision_factura_venta_id_fkey"];
+"comision" -> "prefactura" [label="comision_prefactura_id_fkey"];
+"comision" -> "albaran_salida" [label="comision_albaran_salida_id_fkey"];
+"consumo" -> "producto_compra" [label="consumo_producto_compra_id_fkey"];
+"consumo" -> "parte_de_produccion" [label="consumo_parte_de_produccion_id_fkey"];
+"consumo" -> "silo" [label="consumo_silo_id_fkey"];
+"consumo_adicional" -> "producto_compra" [label="consumo_adicional_producto_compra_id_fkey"];
+"consumo_adicional" -> "formulacion" [label="consumo_adicional_formulacion_id_fkey"];
+"consumo_adicional__producto_venta" -> "producto_venta" [label="consumo_adicional__producto_venta_producto_venta_id_fkey"];
+"consumo_adicional__producto_venta" -> "consumo_adicional" [label="consumo_adicional__producto_venta_consumo_adicional_id_fkey"];
+"control_horas" -> "grupo" [label="control_horas_grupo_id_fkey"];
+"control_horas" -> "empleado" [label="control_horas_empleado_id_fkey"];
+"control_horas_mantenimiento" -> "linea_de_produccion" [label="control_horas_mantenimiento_linea_de_produccion_id_fkey"];
+"control_horas_mantenimiento" -> "control_horas" [label="control_horas_mantenimiento_control_horas_id_fkey"];
+"control_horas_produccion" -> "linea_de_produccion" [label="control_horas_produccion_linea_de_produccion_id_fkey"];
+"control_horas_produccion" -> "control_horas" [label="control_horas_produccion_control_horas_id_fkey"];
+"cuenta_bancaria_cliente" -> "cliente" [label="cuenta_bancaria_cliente_cliente_id_fkey"];
+"cuenta_destino" -> "proveedor" [label="cuenta_destino_proveedor_id_fkey"];
+"descuento_de_material" -> "producto_compra" [label="descuento_de_material_producto_compra_id_fkey"];
+"descuento_de_material" -> "parte_de_produccion" [label="descuento_de_material_parte_de_produccion_id_fkey"];
+"documento" -> "pedido_venta" [label="documento_pedido_venta_id_fkey"];
+"documento" -> "albaran_salida" [label="documento_albaran_salida_id_fkey"];
+"documento" -> "factura_venta" [label="documento_factura_venta_id_fkey"];
+"documento" -> "prefactura" [label="documento_prefactura_id_fkey"];
+"documento" -> "pagare_cobro" [label="documento_pagare_cobro_id_fkey"];
+"documento" -> "pedido_compra" [label="documento_pedido_compra_id_fkey"];
+"documento" -> "albaran_entrada" [label="documento_albaran_entrada_id_fkey"];
+"documento" -> "factura_compra" [label="documento_factura_compra_id_fkey"];
+"documento" -> "pagare_pago" [label="documento_pagare_pago_id_fkey"];
+"documento" -> "empleado" [label="documento_empleado_id_fkey"];
+"documento" -> "cliente" [label="documento_cliente_id_fkey"];
+"documento" -> "proveedor" [label="documento_proveedor_id_fkey"];
+"documento" -> "confirming" [label="documento_confirming_id_fkey"];
+"empleado" -> "categoria_laboral" [label="empleado_categoria_laboral_id_fkey"];
+"empleado" -> "centro_trabajo" [label="empleado_centro_trabajo_id_fkey"];
+"empleado" -> "usuario" [label="empleado_usuario_id_fkey"];
+"estadistica" -> "usuario" [label="estadistica_usuario_id_fkey"];
+"estadistica" -> "ventana" [label="estadistica_ventana_id_fkey"];
+"estimacion_cobro" -> "factura_venta" [label="estimacion_cobro_factura_venta_id_fkey"];
+"estimacion_cobro" -> "prefactura" [label="estimacion_cobro_prefactura_id_fkey"];
+"estimacion_pago" -> "factura_compra" [label="estimacion_pago_factura_compra_id_fkey"];
+"factura_compra" -> "proveedor" [label="factura_compra_proveedor_id_fkey"];
+"factura_venta" -> "cliente" [label="factura_venta_cliente_id_fkey"];
+"factura_venta" -> "obra" [label="factura_venta_obra_id_fkey"];
+"festivo" -> "calendario_laboral" [label="festivo_calendario_laboral_id_fkey"];
+"grupo" -> "empleado" [label="grupo_jefeturno_id_fkey"];
+"grupo" -> "empleado" [label="grupo_operario1_id_fkey"];
+"grupo" -> "empleado" [label="grupo_operario2_id_fkey"];
+"historial_existencias" -> "producto_venta" [label="historial_existencias_producto_venta_id_fkey"];
+"historial_existencias" -> "almacen" [label="historial_existencias_almacen_id_fkey"];
+"historial_existencias_a" -> "producto_venta" [label="historial_existencias_a_producto_venta_id_fkey"];
+"historial_existencias_a" -> "almacen" [label="historial_existencias_a_almacen_id_fkey"];
+"historial_existencias_b" -> "producto_venta" [label="historial_existencias_b_producto_venta_id_fkey"];
+"historial_existencias_b" -> "almacen" [label="historial_existencias_b_almacen_id_fkey"];
+"historial_existencias_c" -> "producto_venta" [label="historial_existencias_c_producto_venta_id_fkey"];
+"historial_existencias_c" -> "almacen" [label="historial_existencias_c_almacen_id_fkey"];
+"historial_existencias_compra" -> "producto_compra" [label="historial_existencias_compra_producto_compra_id_fkey"];
+"historial_existencias_compra" -> "almacen" [label="historial_existencias_compra_almacen_id_fkey"];
+"id_reciente" -> "lista_objetos_recientes" [label="id_reciente_lista_objetos_recientes_id_fkey"];
+"incidencia" -> "tipo_de_incidencia" [label="incidencia_tipo_de_incidencia_id_fkey"];
+"incidencia" -> "parte_de_produccion" [label="incidencia_parte_de_produccion_id_fkey"];
+"laborable" -> "turno" [label="laborable_turno_id_fkey"];
+"laborable" -> "calendario_laboral" [label="laborable_calendario_laboral_id_fkey"];
+"laborable" -> "grupo" [label="laborable_grupo_id_fkey"];
+"linea_de_abono" -> "linea_de_venta" [label="linea_de_abono_linea_de_venta_id_fkey"];
+"linea_de_abono" -> "abono" [label="linea_de_abono_abono_id_fkey"];
+"linea_de_abono" -> "servicio" [label="linea_de_abono_servicio_id_fkey"];
+"linea_de_compra" -> "pedido_compra" [label="linea_de_compra_pedido_compra_id_fkey"];
+"linea_de_compra" -> "albaran_entrada" [label="linea_de_compra_albaran_entrada_id_fkey"];
+"linea_de_compra" -> "factura_compra" [label="linea_de_compra_factura_compra_id_fkey"];
+"linea_de_compra" -> "producto_compra" [label="linea_de_compra_producto_compra_id_fkey"];
+"linea_de_compra" -> "silo" [label="linea_de_compra_silo_id_fkey"];
+"linea_de_compra" -> "carga_silo" [label="linea_de_compra_carga_silo_id_fkey"];
+"linea_de_devolucion" -> "abono" [label="linea_de_devolucion_abono_id_fkey"];
+"linea_de_devolucion" -> "articulo" [label="linea_de_devolucion_articulo_id_fkey"];
+"linea_de_devolucion" -> "albaran_de_entrada_de_abono" [label="linea_de_devolucion_albaran_de_entrada_de_abono_id_fkey"];
+"linea_de_devolucion" -> "albaran_salida" [label="linea_de_devolucion_albaran_salida_id_fkey"];
+"linea_de_movimiento" -> "albaran_salida" [label="linea_de_movimiento_albaran_salida_id_fkey"];
+"linea_de_movimiento" -> "articulo" [label="linea_de_movimiento_articulo_id_fkey"];
+"linea_de_pedido" -> "producto_venta" [label="linea_de_pedido_producto_venta_id_fkey"];
+"linea_de_pedido" -> "pedido_venta" [label="linea_de_pedido_pedido_venta_id_fkey"];
+"linea_de_pedido" -> "producto_compra" [label="linea_de_pedido_producto_compra_id_fkey"];
+"linea_de_pedido" -> "presupuesto" [label="linea_de_pedido_presupuesto_id_fkey"];
+"linea_de_pedido_de_compra" -> "producto_compra" [label="linea_de_pedido_de_compra_producto_compra_id_fkey"];
+"linea_de_pedido_de_compra" -> "pedido_compra" [label="linea_de_pedido_de_compra_pedido_compra_id_fkey"];
+"linea_de_pedido_de_compra__linea_de_compra" -> "linea_de_pedido_de_compra" [label="linea_de_pedido_de_compra__li_linea_de_pedido_de_compra_id_fkey"];
+"linea_de_pedido_de_compra__linea_de_compra" -> "linea_de_compra" [label="linea_de_pedido_de_compra__linea_de_com_linea_de_compra_id_fkey"];
+"linea_de_produccion" -> "formulacion" [label="linea_de_produccion_formulacion_id_fkey"];
+"linea_de_venta" -> "producto_venta" [label="linea_de_venta_producto_venta_id_fkey"];
+"linea_de_venta" -> "pedido_venta" [label="linea_de_venta_pedido_venta_id_fkey"];
+"linea_de_venta" -> "albaran_salida" [label="linea_de_venta_albaran_salida_id_fkey"];
+"linea_de_venta" -> "factura_venta" [label="linea_de_venta_factura_venta_id_fkey"];
+"linea_de_venta" -> "prefactura" [label="linea_de_venta_prefactura_id_fkey"];
+"linea_de_venta" -> "producto_compra" [label="linea_de_venta_producto_compra_id_fkey"];
+"linea_de_venta" -> "ticket" [label="linea_de_venta_ticket_id_fkey"];
+"lista_objetos_recientes" -> "usuario" [label="lista_objetos_recientes_usuario_id_fkey"];
+"lista_objetos_recientes" -> "ventana" [label="lista_objetos_recientes_ventana_id_fkey"];
+"marcado_ce" -> "campos_especificos_rollo" [label="marcado_ce_campos_especificos_rollo_id_fkey"];
+"muestra" -> "lote" [label="muestra_lote_id_fkey"];
+"muestra" -> "partida" [label="muestra_partida_id_fkey"];
+"muestra" -> "lote_cem" [label="muestra_lote_cem_id_fkey"];
+"nomina" -> "empleado" [label="nomina_empleado_id_fkey"];
+"nota" -> "factura_venta" [label="nota_factura_venta_id_fkey"];
+"obra__cliente" -> "obra" [label="obra__cliente_obra_id_fkey"];
+"obra__cliente" -> "cliente" [label="obra__cliente_cliente_id_fkey"];
+"obra__contacto" -> "obra" [label="obra__contacto_obra_id_fkey"];
+"obra__contacto" -> "contacto" [label="obra__contacto_contacto_id_fkey"];
+"orden_empleados" -> "empleado" [label="orden_empleados_empleado_id_fkey"];
+"pago" -> "factura_compra" [label="pago_factura_compra_id_fkey"];
+"pago" -> "logic_movimientos" [label="pago_logic_movimientos_id_fkey"];
+"pago" -> "pagare_pago" [label="pago_pagare_pago_id_fkey"];
+"pago" -> "proveedor" [label="pago_proveedor_id_fkey"];
+"pago" -> "cuenta_origen" [label="pago_cuenta_origen_id_fkey"];
+"pago" -> "cuenta_destino" [label="pago_cuenta_destino_id_fkey"];
+"pago_de_abono" -> "factura_de_abono" [label="pago_de_abono_factura_de_abono_id_fkey"];
+"pago_de_abono" -> "factura_venta" [label="pago_de_abono_factura_venta_id_fkey"];
+"pago_de_abono" -> "prefactura" [label="pago_de_abono_prefactura_id_fkey"];
+"pale" -> "partida_cem" [label="pale_partida_cem_id_fkey"];
+"parte_de_produccion" -> "partida_cem" [label="parte_de_produccion_partida_cem_id_fkey"];
+"parte_de_produccion_empleado" -> "empleado" [label="parte_de_produccion_empleado_empleadoid_fkey"];
+"parte_de_produccion_empleado" -> "parte_de_produccion" [label="parte_de_produccion_empleado_partedeproduccionid_fkey"];
+"parte_de_trabajo" -> "empleado" [label="parte_de_trabajo_empleado_id_fkey"];
+"parte_de_trabajo" -> "centro_trabajo" [label="parte_de_trabajo_centro_trabajo_id_fkey"];
+"partida" -> "partida_carga" [label="partida_partida_carga_id_fkey"];
+"pedido_compra" -> "proveedor" [label="pedido_compra_proveedor_id_fkey"];
+"pedido_venta" -> "cliente" [label="pedido_venta_cliente_id_fkey"];
+"pedido_venta" -> "tarifa" [label="pedido_venta_tarifa_id_fkey"];
+"pedido_venta" -> "comercial" [label="pedido_venta_comercial_id_fkey"];
+"pedido_venta" -> "obra" [label="pedido_venta_obra_id_fkey"];
+"permiso" -> "usuario" [label="permiso_usuario_id_fkey"];
+"permiso" -> "ventana" [label="permiso_ventana_id_fkey"];
+"precio" -> "producto_venta" [label="precio_producto_venta_id_fkey"];
+"precio" -> "tarifa" [label="precio_tarifa_id_fkey"];
+"precio" -> "producto_compra" [label="precio_producto_compra_id_fkey"];
+"prefactura" -> "cliente" [label="prefactura_cliente_id_fkey"];
+"presupuesto" -> "cliente" [label="presupuesto_cliente_id_fkey"];
+"presupuesto" -> "comercial" [label="presupuesto_comercial_id_fkey"];
+"producto_compra" -> "tipo_de_material" [label="producto_compra_tipo_de_material_id_fkey"];
+"producto_venta" -> "linea_de_produccion" [label="producto_venta_linea_de_produccion_id_fkey"];
+"producto_venta" -> "campos_especificos_bala" [label="producto_venta_campos_especificos_bala_id_fkey"];
+"producto_venta" -> "campos_especificos_rollo" [label="producto_venta_campos_especificos_rollo_id_fkey"];
+"producto_venta" -> "campos_especificos_especial" [label="producto_venta_campos_especificos_especial_id_fkey"];
+"prueba_alargamiento_longitudinal" -> "partida" [label="prueba_alargamiento_longitudinal_partida_id_fkey"];
+"prueba_alargamiento_transversal" -> "partida" [label="prueba_alargamiento_transversal_partida_id_fkey"];
+"prueba_compresion" -> "partida" [label="prueba_compresion_partida_id_fkey"];
+"prueba_elongacion" -> "lote" [label="prueba_elongacion_lote_id_fkey"];
+"prueba_elongacion" -> "lote_cem" [label="prueba_elongacion_lote_cem_id_fkey"];
+"prueba_encogimiento" -> "lote" [label="prueba_encogimiento_lote_id_fkey"];
+"prueba_encogimiento" -> "lote_cem" [label="prueba_encogimiento_lote_cem_id_fkey"];
+"prueba_espesor" -> "partida" [label="prueba_espesor_partida_id_fkey"];
+"prueba_gramaje" -> "partida" [label="prueba_gramaje_partida_id_fkey"];
+"prueba_granza" -> "producto_compra" [label="prueba_granza_producto_compra_id_fkey"];
+"prueba_grasa" -> "lote" [label="prueba_grasa_lote_id_fkey"];
+"prueba_grasa" -> "lote_cem" [label="prueba_grasa_lote_cem_id_fkey"];
+"prueba_humedad" -> "lote_cem" [label="prueba_humedad_lote_cem_id_fkey"];
+"prueba_longitudinal" -> "partida" [label="prueba_longitudinal_partida_id_fkey"];
+"prueba_perforacion" -> "partida" [label="prueba_perforacion_partida_id_fkey"];
+"prueba_permeabilidad" -> "partida" [label="prueba_permeabilidad_partida_id_fkey"];
+"prueba_poros" -> "partida" [label="prueba_poros_partida_id_fkey"];
+"prueba_rizo" -> "lote" [label="prueba_rizo_lote_id_fkey"];
+"prueba_tenacidad" -> "lote" [label="prueba_tenacidad_lote_id_fkey"];
+"prueba_tenacidad" -> "lote_cem" [label="prueba_tenacidad_lote_cem_id_fkey"];
+"prueba_titulo" -> "lote" [label="prueba_titulo_lote_id_fkey"];
+"prueba_titulo" -> "lote_cem" [label="prueba_titulo_lote_cem_id_fkey"];
+"prueba_transversal" -> "partida" [label="prueba_transversal_partida_id_fkey"];
+"recibo" -> "cuenta_origen" [label="recibo_cuenta_origen_id_fkey"];
+"recibo" -> "cuenta_bancaria_cliente" [label="recibo_cuenta_bancaria_cliente_id_fkey"];
+"rollo" -> "partida" [label="rollo_partida_id_fkey"];
+"rollo_defectuoso" -> "partida" [label="rollo_defectuoso_partida_id_fkey"];
+"servicio" -> "factura_venta" [label="servicio_factura_venta_id_fkey"];
+"servicio" -> "prefactura" [label="servicio_prefactura_id_fkey"];
+"servicio" -> "albaran_salida" [label="servicio_albaran_salida_id_fkey"];
+"servicio" -> "pedido_venta" [label="servicio_pedido_venta_id_fkey"];
+"servicio" -> "presupuesto" [label="servicio_presupuesto_id_fkey"];
+"servicio_tomado" -> "factura_compra" [label="servicio_tomado_factura_compra_id_fkey"];
+"servicio_tomado" -> "comision" [label="servicio_tomado_comision_id_fkey"];
+"servicio_tomado" -> "transporte_a_cuenta" [label="servicio_tomado_transporte_a_cuenta_id_fkey"];
+"stock_almacen" -> "almacen" [label="stock_almacen_almacen_id_fkey"];
+"stock_almacen" -> "producto_compra" [label="stock_almacen_producto_compra_id_fkey"];
+"stock_especial" -> "almacen" [label="stock_especial_almacen_id_fkey"];
+"stock_especial" -> "campos_especificos_especial" [label="stock_especial_campos_especificos_especial_id_fkey"];
+"tarea" -> "factura_venta" [label="tarea_factura_venta_id_fkey"];
+"tarea" -> "categoria" [label="tarea_categoria_id_fkey"];
+"transporte_a_cuenta" -> "albaran_salida" [label="transporte_a_cuenta_albaran_salida_id_fkey"];
+"transporte_a_cuenta" -> "proveedor" [label="transporte_a_cuenta_proveedor_id_fkey"];
+"vacaciones" -> "calendario_laboral" [label="vacaciones_calendario_laboral_id_fkey"];
+"vencimiento_cobro" -> "factura_venta" [label="vencimiento_cobro_factura_venta_id_fkey"];
+"vencimiento_cobro" -> "prefactura" [label="vencimiento_cobro_prefactura_id_fkey"];
+"vencimiento_cobro" -> "cuenta_origen" [label="vencimiento_cobro_cuenta_origen_id_fkey"];
+"vencimiento_cobro" -> "recibo" [label="vencimiento_cobro_recibo_id_fkey"];
+"vencimiento_pago" -> "factura_compra" [label="vencimiento_pago_factura_compra_id_fkey"];
+"ventana" -> "modulo" [label="ventana_modulo_id_fkey"];
+}
+
+

@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head><style type="text/css">
+pre {background-color: #e0e0e0}
+</style>
+
+<link rel="STYLESHEET" href="pychart.css" type='text/css' />
+<link rel="first" href="pychart.html" title='PyChart' />
+<link rel='index' href='genindex.html' title='Index' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="module-pie-plot.html" />
+<link rel="prev" href="module-line-plot.html" />
+<link rel="parent" href="pychart.html" />
+<link rel="next" href="module-pie-plot.html" />
+<meta name='aesop' content='information' />
+<title>10 Range plots</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="9.2 Error bars"
+  href="module-error-bar.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="PyChart"
+  href="pychart.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="11 Pie plots"
+  href="module-pie-plot.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="module-error-bar.html">9.2 Error bars</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="pychart.html">PyChart</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="module-pie-plot.html">11 Pie plots</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION0001000000000000000000">
+10 Range plots</A>
+</H1>
+<A NAME="module-range-plot"></A>
+<P>
+<dl><dt><b><span class="typelabel">class</span>&nbsp;<tt id='l2h-186' xml:id='l2h-186' class="class">range_plot.T</tt></b>
+<dd>
+A range plot is similar to line plots ( see Section&nbsp;<A href="module-line-plot.html#module-line-plot">9</A>), but
+it fills regions, instead of drawing line.
+
+<P>
+<IMG
+  WIDTH="391" HEIGHT="295" ALIGN="BOTTOM" BORDER="0"
+ SRC="./rangetest.png"
+ ALT="Image rangetest">
+
+<P>
+<b> Sample range plot </b>
+
+<P>
+Below is the source code that produces the above chart.
+../demos/rangetest.py
+
+<P>
+<div class="verbatim"><pre>
+from pychart import *
+
+data = [ (0, 10, 30, 40, 60), (10, 20, 40, 50, 55), (20, 10, 35, 38, 43),
+         (30, 8, 30, 35, 39), (40, 8, 20, 28, 39) ]
+
+ar = <a href="module-area.html">area.T</a>(x_axis = <a href="module-axis.html">axis.</a>X(label="X axis"),
+            y_grid_interval = 10, y_grid_style = <a href="module-line-style.html">line_style.</a>white,
+            y_axis = <a href="module-axis.html">axis.</a>Y(label="Y axis"),
+            y_grid_over_plot=1, legend = <a href="module-legend.html">legend.</a>T())
+
+if <a href="options.html">theme.</a>use_color:
+    colors = [ <a href="module-fill-style.html">fill_style.</a>darkseagreen, <a href="module-fill-style.html">fill_style.</a>white, <a href="module-fill-style.html">fill_style.</a>brown ]
+else:
+    colors = [ <a href="module-fill-style.html">fill_style.</a>gray90, <a href="module-fill-style.html">fill_style.</a>white, <a href="module-fill-style.html">fill_style.</a>gray50 ]
+ar.add_plot(<a href="module-range-plot.html">range_plot.T</a>(label="foo", data=data, fill_style = colors[0]))
+ar.add_plot(<a href="module-range-plot.html">range_plot.T</a>(label="bar", data=data, min_col=2, max_col=3,
+                         fill_style = colors[1]))
+ar.add_plot(<a href="module-range-plot.html">range_plot.T</a>(label="baz", data=data, min_col=3, max_col=4,
+                         fill_style = colors[2]))
+ar.draw()
+</pre></div>
+</dl>
+
+<P>
+This class supports the following attributes:
+
+<P>
+<dl><dt><b><tt id='l2h-187' xml:id='l2h-187' class="member">data</tt></b></dt>
+<dd>
+<b>Type:</b> any
+<b>Default:</b> None. 
+
+<P>
+Specifies the data points.  See Section&nbsp;<A href="module-chart-data.html#module-chart-data">5</A>
+</dl>
+<dl><dt><b><tt id='l2h-188' xml:id='l2h-188' class="member">fill_style</tt></b></dt>
+<dd>
+<b>Type:</b> fill_style.T
+(see Section&nbsp;<A href="module-fill-style.html#module-fill-style">16</A>)
+<b>Default:</b> fill_style.default. 
+
+<P>
+</dl>
+<dl><dt><b><tt id='l2h-189' xml:id='l2h-189' class="member">label</tt></b></dt>
+<dd>
+<b>Type:</b> str
+<b>Default:</b> "???". 
+
+<P>
+The label to be displayed in the legend.  See Section&nbsp;<A href="module-legend.html#module-legend">6.3</A>, See Section&nbsp;<A href="module-font.html#module-font">17</A>
+</dl>
+<dl><dt><b><tt id='l2h-190' xml:id='l2h-190' class="member">line_style</tt></b></dt>
+<dd>
+<b>Type:</b> line_style.T
+(see Section&nbsp;<A href="module-line-style.html#module-line-style">14</A>)
+<b>Default:</b> line_style.black. 
+
+<P>
+The style of the boundary line.
+</dl>
+<dl><dt><b><tt id='l2h-191' xml:id='l2h-191' class="member">max_col</tt></b></dt>
+<dd>
+<b>Type:</b> int
+<b>Default:</b> 2. 
+
+<P>
+The upper bound of the sweep is extracted from this column of data.
+</dl>
+<dl><dt><b><tt id='l2h-192' xml:id='l2h-192' class="member">min_col</tt></b></dt>
+<dd>
+<b>Type:</b> int
+<b>Default:</b> 1. 
+
+<P>
+The lower bound of the sweep is extracted from this column of data.
+</dl>
+<dl><dt><b><tt id='l2h-193' xml:id='l2h-193' class="member">xcol</tt></b></dt>
+<dd>
+<b>Type:</b> int
+<b>Default:</b> 0. 
+
+<P>
+The column, within attribute "data", from which the X values of sample points are extracted.  See Section&nbsp;<A href="module-chart-data.html#module-chart-data">5</A>
+</dl>
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="9.2 Error bars"
+  href="module-error-bar.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="PyChart"
+  href="pychart.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="11 Pie plots"
+  href="module-pie-plot.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="module-error-bar.html">9.2 Error bars</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="pychart.html">PyChart</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="module-pie-plot.html">11 Pie plots</A>
+</div>
+</div>
+<hr />
+<span class="release-info">Documentation released on July 2, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

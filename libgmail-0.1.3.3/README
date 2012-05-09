@@ -1,0 +1,45 @@
+libgmail is licensed under the GPL.
+See the file named COPYING for more information.
+
+Please refer to the libgmail website or project page at sourceforge if
+you encounter problems using libgmail.
+http://libgmail.sf.net/
+http://sourceforge.net/projects/libgmail/
+
+You can contact us by email:
+stas AT linux DOT isbeter DOT nl
+wdaher AT mit DOT edu
+follower AT myrealbox DOT com
+
+-----------------------------------------------
+Possible usage:
+
+Run this:
+
+  python libgmail.py
+
+When you have the demos package installed you could do this:
+
+  python demos/archive.py
+
+or even this:
+
+  python demos/sendmsg.py <account> <to address> <subject> <body>
+
+or perhaps this:
+
+  python demos/gmailsmtp.py # (Then connect to SMTP proxy on local port 8025)
+
+or how about this:
+
+  python demos/gmailftpd.py # (Then connect to FTP proxy on local port 8021,
+                            #  after creating a label named 'ftp' and
+                            #  applying it to some messages with attachments.)
+
+or maybe this:
+
+  python demos/gmailpopd.py # (Then connect to POP3 proxy on local port 8110)
+
+for hours of fun!(*)
+
+(*) Note: Fun may not last for hours. Use at your own risk, blah, blah, etc...

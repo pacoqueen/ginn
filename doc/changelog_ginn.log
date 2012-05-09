@@ -1,0 +1,826 @@
+This is e-TeX, Version 3.14159-2.1 (Web2C 7.4.5) (format=latex 2006.5.19)  28 AUG 2006 01:27
+entering extended mode
+**changelog_ginn.tex
+(./changelog_ginn.tex
+LaTeX2e <2001/06/01>
+Babel <v3.7h> and hyphenation patterns for american, french, german, ngerman, b
+ahasa, basque, catalan, croatian, czech, danish, dutch, finnish, greek, iceland
+ic, irish, italian, latin, magyar, norsk, norsk, portuges, romanian, russian, s
+lovak, slovene, spanish, swedish, turkish, ukrainian, nohyphenation, loaded.
+(/usr/share/texmf/tex/latex/base/latex209.def
+File: latex209.def 1998/05/13 v0.52 Standard LaTeX file
+
+
+          Entering LaTeX 2.09 COMPATIBILITY MODE
+ *************************************************************
+    !!WARNING!!    !!WARNING!!    !!WARNING!!    !!WARNING!!   
+ 
+ This mode attempts to provide an emulation of the LaTeX 2.09
+ author environment so that OLD documents can be successfully
+ processed. It should NOT be used for NEW documents!
+ 
+ New documents should use Standard LaTeX conventions and start
+ with the \documentclass command.
+ 
+ Compatibility mode is UNLIKELY TO WORK with LaTeX 2.09 style
+ files that change any internal macros, especially not with
+ those that change the FONT SELECTION or OUTPUT ROUTINES.
+ 
+ Therefore such style files MUST BE UPDATED to use
+          Current Standard LaTeX: LaTeX2e.
+ If you suspect that you may be using such a style file, which
+ is probably very, very old by now, then you should attempt to
+ get it updated by sending a copy of this error message to the
+ author of that file.
+ *************************************************************
+
+\footheight=\dimen102
+\@maxsep=\dimen103
+\@dblmaxsep=\dimen104
+\@cla=\count79
+\@clb=\count80
+\mscount=\count81
+(/usr/share/texmf/tex/latex/base/tracefnt.sty
+Package: tracefnt 1997/05/29 v3.0j Standard LaTeX package (font tracing)
+\tracingfonts=\count82
+LaTeX Info: Redefining \selectfont on input line 96.
+)
+\symbold=\mathgroup4
+\symsans=\mathgroup5
+\symtypewriter=\mathgroup6
+\symitalic=\mathgroup7
+\symsmallcaps=\mathgroup8
+\symslanted=\mathgroup9
+LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 288.
+LaTeX Font Info:    Redeclaring math alphabet \mathsf on input line 289.
+LaTeX Font Info:    Redeclaring math alphabet \mathtt on input line 290.
+LaTeX Font Info:    Redeclaring math alphabet \mathit on input line 296.
+LaTeX Info: Redefining \em on input line 306.
+
+(/usr/share/texmf/tex/latex/base/latexsym.sty
+Package: latexsym 1998/08/17 v2.2e Standard LaTeX package (lasy symbols)
+\symlasy=\mathgroup10
+LaTeX Font Info:    Overwriting symbol font `lasy' in version `bold'
+(Font)                  U/lasy/m/n --> U/lasy/b/n on input line 42.
+)
+LaTeX Font Info:    Redeclaring math delimiter \lgroup on input line 370.
+LaTeX Font Info:    Redeclaring math delimiter \rgroup on input line 372.
+LaTeX Font Info:    Redeclaring math delimiter \bracevert on input line 374.
+
+(/usr/share/texmf/tex/latex/config/latex209.cfg
+File: latex209.cfg 2001/06/05 v1.0 teTeX customized LaTeX 2.09 compatibility mo
+de setup
+)
+(/usr/share/texmf/tex/latex/tools/rawfonts.sty
+Package: rawfonts 1994/05/08 Low-level LaTeX 2.09 font compatibility
+
+(/usr/share/texmf/tex/latex/tools/somedefs.sty
+Package: somedefs 1994/06/01 Toolkit for optional definitions
+)
+LaTeX Font Info:    Try loading font information for U+lasy on input line 44.
+
+(/usr/share/texmf/tex/latex/base/ulasy.fd
+File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
+)))
+(/usr/share/texmf/tex/latex/base/article.cls
+Document Class: article 2001/04/21 v1.4e Standard LaTeX document class
+(/usr/share/texmf/tex/latex/base/size10.clo
+File: size10.clo 2001/04/21 v1.4e Standard LaTeX file (size option)
+)
+\c@part=\count83
+\c@section=\count84
+\c@subsection=\count85
+\c@subsubsection=\count86
+\c@paragraph=\count87
+\c@subparagraph=\count88
+\c@figure=\count89
+\c@table=\count90
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+Compatibility mode: definition of \rm ignored.
+Compatibility mode: definition of \sf ignored.
+Compatibility mode: definition of \tt ignored.
+Compatibility mode: definition of \bf ignored.
+Compatibility mode: definition of \it ignored.
+Compatibility mode: definition of \sl ignored.
+Compatibility mode: definition of \sc ignored.
+LaTeX Info: Redefining \cal on input line 501.
+LaTeX Info: Redefining \mit on input line 502.
+\bibindent=\dimen105
+)
+No file changelog_ginn.aux.
+\openout1 = `changelog_ginn.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+
+Underfull \hbox (badness 10000) in paragraph at lines 9--10
+
+ []
+
+
+Overfull \hbox (163.2388pt too wide) in paragraph at lines 14--18
+[]\OT1/cmr/m/n/10 Project mod-ule name\OT1/cmr/bx/n/10 geotexinn02 \OT1/cmr/m/n
+/10 CVS root used\OT1/cmr/bx/n/10 :ext:pacoqueen@ginn.cvs.sourceforge.net:/cvsr
+oot/ginn
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 19--21
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 19--21
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 25--37
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 25--37
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 43--44
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 45--46
+
+ []
+
+
+! LaTeX Error: There's no line here to end.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.49 ~
+      \\
+? 
+
+Underfull \hbox (badness 10000) in paragraph at lines 49--50
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 54--59
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 54--59
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 54--59
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 54--59
+
+ []
+
+[1
+
+]
+
+! LaTeX Error: There's no line here to end.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.63 \\\\
+         
+? 
+
+! LaTeX Error: There's no line here to end.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.64 ~
+      \\
+? 
+
+Underfull \hbox (badness 10000) in paragraph at lines 64--65
+
+ []
+
+
+! LaTeX Error: There's no line here to end.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.69 \\\\
+         
+? 
+
+! LaTeX Error: There's no line here to end.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.70 ~
+      \\
+? 
+
+Underfull \hbox (badness 10000) in paragraph at lines 70--71
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 75--78
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 75--78
+
+ []
+
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ad in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ba in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ad in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a9 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a9 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a9 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ba in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ad in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a9 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ad in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ad in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ad in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ba in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a9 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a9 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a9 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a9 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ad in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c2 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ad in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ad in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^81 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ad in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ad in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ad in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ba in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a9 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ba in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ad in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ad in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ad in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a9 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ad in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a9 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a9 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a9 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a9 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ad in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ad in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ad in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ba in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ad in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ad in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ad in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ad in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a9 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ba in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ba in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ba in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ad in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a9 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ba in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ad in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ba in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a9 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a9 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ba in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a9 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ba in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ba in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ba in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a9 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a9 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a9 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a9 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a9 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ad in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a9 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a9 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c4 in font cmbx10!
+Missing character: There is no ^^86 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c2 in font cmbx10!
+Missing character: There is no ^^bf in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a9 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^f3 in font cmbx10!
+Missing character: There is no ^^ed in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ba in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ba in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ba in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ba in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a9 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^ad in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^a1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b3 in font cmbx10!
+Missing character: There is no ^^c3 in font cmbx10!
+Missing character: There is no ^^b1 in font cmbx10!
+
+Overfull \hbox (2.00719pt too wide) in paragraph at lines 82--1434
+[]\OT1/cmr/m/n/10 TagsDateDeveloperLast 200 Com-mit Logs 2006-08-09pacoqueen\OT
+1/cmr/bx/n/10 Bugfix: pe-
+ []
+
+
+Overfull \hbox (43.61223pt too wide) in paragraph at lines 82--1434
+\OT1/cmr/m/n/10 2006-08-08pacoqueen\OT1/cmr/bx/n/10 Arreglado bug en float2str 
+(rela-cionado con re-dondear[]en...)
+ []
+
+
+Overfull \hbox (1.20981pt too wide) in paragraph at lines 82--1434
+\OT1/cmr/m/n/10 2006-08-02pacoqueen\OT1/cmr/bx/n/10 Adaptado para usar el host 
+de la con-fig-u-racin global
+ []
+
+
+Overfull \hbox (0.21127pt too wide) in paragraph at lines 82--1434
+\OT1/cmr/m/n/10 2006-07-26pacoqueen\OT1/cmr/bx/n/10 Aadidos em-plea-dos por de-
+fecto segn cal-en-dario lab-
+ []
+
+
+Overfull \hbox (3.50078pt too wide) in paragraph at lines 82--1434
+\OT1/cmr/m/n/10 gajim-0.9.1/data/iconsets/gota/16x16/icos/message.ico 1.2 (chan
+ged +8 -5, diff) 
+ []
+
+
+Overfull \hbox (5.29184pt too wide) in paragraph at lines 82--1434
+\OT1/cmr/m/n/10 2006-07-10pacoqueen\OT1/cmr/bx/n/10 Aadido script para cor-re-g
+ir pun-tual-mente fac-turacin
+ []
+
+
+Overfull \hbox (26.53682pt too wide) in paragraph at lines 82--1434
+\OT1/cmr/bx/n/10 to-das las LDV por si en al-guna hay algn pro-ducto sin aran-c
+el (aprovechando
+ []
+
+
+Overfull \hbox (3.52962pt too wide) in paragraph at lines 82--1434
+\OT1/cmr/bx/n/10 F5 PARA FORZAR UN SYNC COM-PLETO DE OB-JE-TOS Y RELA-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 82--1434
+
+ []
+
+[2] [3] [4] [5] [6] [7] [8] [9] [10] [11] [12] [13] [14] [15] [16] [17]
+[18]
+Overfull \vbox (1080.0pt too high) has occurred while \output is active []
+
+
+[19] [20]
+Overfull \vbox (144.0pt too high) has occurred while \output is active []
+
+ [21]
+[22] [23]
+Overfull \vbox (180.0pt too high) has occurred while \output is active []
+
+ [24]
+[25] [26] [27] [28] [29] [30] [31] [32] [33] [34] [35] [36]
+(./changelog_ginn.aux) ) 
+Here is how much of TeX's memory you used:
+ 478 strings out of 95370
+ 5281 string characters out of 1188185
+ 197563 words of memory out of 1000001
+ 3565 multiletter control sequences out of 10000+50000
+ 18987 words of font info for 72 fonts, out of 500000 for 1000
+ 198 hyphenation exceptions out of 1000
+ 25i,5n,22p,445b,105s stack positions out of 1500i,500n,5000p,200000b,5000s
+
+Output written on changelog_ginn.dvi (36 pages, 129348 bytes).

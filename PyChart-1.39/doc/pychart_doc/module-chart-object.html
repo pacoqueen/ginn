@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head><style type="text/css">
+pre {background-color: #e0e0e0}
+</style>
+
+<link rel="STYLESHEET" href="pychart.css" type='text/css' />
+<link rel="first" href="pychart.html" title='PyChart' />
+<link rel='index' href='genindex.html' title='Index' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="unit.html" />
+<link rel="prev" href="anatomy.html" />
+<link rel="parent" href="pychart.html" />
+<link rel="next" href="unit.html" />
+<meta name='aesop' content='information' />
+<title>3 Attributes</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="2 Anatomy of a"
+  href="anatomy.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="PyChart"
+  href="pychart.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="4 Unit of length"
+  href="unit.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="anatomy.html">2 Anatomy of a</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="pychart.html">PyChart</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="unit.html">4 Unit of length</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000300000000000000000"></A><A NAME="attribute"></A><a id='l2h-3' xml:id='l2h-3'></a>
+<BR>
+3 Attributes
+</H1>
+
+<P>
+The look of a component of a chart ( see Section&nbsp;<A href="anatomy.html#anatomy">2</A>) is defined by a
+collection of <i class="dfn">attributes</i>.  For example, an X or Y axis
+includes an integer <code>tic_len</code> attribute
+that defines
+the length of "tick" lines drawn perpendicular to the axis (see Section&nbsp;<A href="module-axis.html#module-axis">6.2</A>). It also has
+an integer <code>tic_interval</code> attribute that defines the separation
+between tick lines.  See Section&nbsp;<A href="module-axis.html#module-axis">6.2</A> for the full list of Axis's attributes.
+
+<P>
+Attributes are usually specified by named arguments during component creation:
+
+<P>
+<div class="verbatim"><pre>
+ax = <a href="module-axis.html">axis.</a>X(tic_len = 3, tic_interval = 50)
+</pre></div>
+
+<P>
+Attributes can also be changed after a component is created, but before
+<code>area.T.draw()</code>, the main drawing procedure ( see Section&nbsp;<A href="module-area.html#module-area">6</A>), is called.
+The below example has the same effect as the above.
+
+<P>
+<div class="verbatim"><pre>
+ax = <a href="module-axis.html">axis.</a>X()
+ax.tic_len = 3
+ax.tic_interval = 50
+</pre></div>
+
+<P>
+
+<P>
+Each attribute has a default value that supposedly gives you a standard
+look to the chart. You can change the default values through
+<code>chart_object</code> module. For example, the below example has the same
+effect as the above, except that all X axes created in the future will
+have the new default values.
+
+<P>
+<A NAME="module-chart-object"></A>
+
+<P>
+<div class="verbatim"><pre>
+chart_object.set_defaults(<a href="module-axis.html">axis.</a>X, tic_len=3, tic_interval=50)
+ax = <a href="module-axis.html">axis.</a>X()
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="2 Anatomy of a"
+  href="anatomy.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="PyChart"
+  href="pychart.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="4 Unit of length"
+  href="unit.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="anatomy.html">2 Anatomy of a</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="pychart.html">PyChart</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="unit.html">4 Unit of length</A>
+</div>
+</div>
+<hr />
+<span class="release-info">Documentation released on July 2, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

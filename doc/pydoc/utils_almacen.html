@@ -1,0 +1,51 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module utils_almacen</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>utils_almacen</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/queen/geotexan/geotexinn02/formularios/utils_almacen.py">/home/queen/geotexan/geotexinn02/formularios/utils_almacen.py</a></font></td></tr></table>
+    <p><tt>#&nbsp;-*-&nbsp;coding:&nbsp;utf-8&nbsp;-*-</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="pclases.html">pclases</a><br>
+</td><td width="25%" valign=top><a href="sqlobject.html">sqlobject</a><br>
+</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+</td><td width="25%" valign=top><a href="time.html">time</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-id_propia_empresa"><strong>id_propia_empresa</strong></a>()</dt><dd><tt>Devuelve&nbsp;el&nbsp;id&nbsp;de&nbsp;la&nbsp;propia&nbsp;empresa&nbsp;en&nbsp;la&nbsp;tabla&nbsp;clientes.</tt></dd></dl>
+ <dl><dt><a name="-id_propia_empresa_proveedor"><strong>id_propia_empresa_proveedor</strong></a>()</dt><dd><tt>Devuelve&nbsp;el&nbsp;id&nbsp;de&nbsp;la&nbsp;propia&nbsp;empresa&nbsp;en&nbsp;la&nbsp;tabla&nbsp;proveedores.</tt></dd></dl>
+ <dl><dt><a name="-productosConFicha"><strong>productosConFicha</strong></a>()</dt><dd><tt>Devuelve&nbsp;una&nbsp;lista&nbsp;de&nbsp;identificadores&nbsp;de&nbsp;productos&nbsp;que&nbsp;tienen&nbsp;ficha&nbsp;de<br>
+producción.</tt></dd></dl>
+ <dl><dt><a name="-ultimo_numalbaran"><strong>ultimo_numalbaran</strong></a>(venta, interno)</dt><dd><tt>Devuelve&nbsp;el&nbsp;último&nbsp;número&nbsp;de&nbsp;albarán&nbsp;que&nbsp;cumpla<br>
+las&nbsp;condiciones&nbsp;venta==True/False&nbsp;e&nbsp;interno==True/False<br>
+o&nbsp;0&nbsp;si&nbsp;no&nbsp;hay&nbsp;ninguno.</tt></dd></dl>
+ <dl><dt><a name="-ultimo_pedido_de_compra_mas_uno"><strong>ultimo_pedido_de_compra_mas_uno</strong></a>()</dt><dd><tt>Devuelve&nbsp;el&nbsp;último&nbsp;número&nbsp;de&nbsp;pedido&nbsp;de&nbsp;compra&nbsp;válido&nbsp;<br>
+0&nbsp;si&nbsp;no&nbsp;hay&nbsp;pedidos&nbsp;de&nbsp;compra.&nbsp;<br>
+Devuelve&nbsp;el&nbsp;número&nbsp;de&nbsp;pedido&nbsp;como&nbsp;numérico&nbsp;(aunque&nbsp;en<br>
+realidad&nbsp;sea&nbsp;un&nbsp;str&nbsp;en&nbsp;la&nbsp;BD).&nbsp;<br>
+No&nbsp;tiene&nbsp;en&nbsp;cuenta&nbsp;aquellos&nbsp;pedidos&nbsp;cuyo&nbsp;número&nbsp;de&nbsp;<br>
+pedido&nbsp;no&nbsp;se&nbsp;puede&nbsp;interpretar&nbsp;como&nbsp;número&nbsp;y&nbsp;solo&nbsp;<br>
+tiene&nbsp;en&nbsp;cuenta&nbsp;los&nbsp;pedidos&nbsp;del&nbsp;año&nbsp;corriente.&nbsp;<br>
+El&nbsp;criterio&nbsp;para&nbsp;averiguar&nbsp;el&nbsp;último&nbsp;número&nbsp;de&nbsp;<br>
+pedido&nbsp;es&nbsp;la&nbsp;fecha.<br>
+Si&nbsp;el&nbsp;número&nbsp;siguiente&nbsp;al&nbsp;del&nbsp;último&nbsp;pedido&nbsp;por&nbsp;fecha&nbsp;<br>
+está&nbsp;ocupado&nbsp;(no&nbsp;debería),&nbsp;sigue&nbsp;sumando&nbsp;1&nbsp;hasta&nbsp;que&nbsp;<br>
+llegue&nbsp;a&nbsp;un&nbsp;número&nbsp;de&nbsp;pedido&nbsp;libre.</tt></dd></dl>
+</td></tr></table>
+</body></html>

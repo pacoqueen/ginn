@@ -1,0 +1,357 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module consulta_global</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>consulta_global</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/bogado/Geotexan/geotexinn02/formularios/consulta_global.py">/home/bogado/Geotexan/geotexinn02/formularios/consulta_global.py</a></font></td></tr></table>
+    <p><tt>#&nbsp;-*-&nbsp;coding:&nbsp;utf-8&nbsp;-*-</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="geninformes.html">geninformes</a><br>
+<a href="gtk.html">gtk</a><br>
+</td><td width="25%" valign=top><a href="mx.html">mx</a><br>
+<a href="pclases.html">pclases</a><br>
+</td><td width="25%" valign=top><a href="pygtk.html">pygtk</a><br>
+<a href="sqlobject.html">sqlobject</a><br>
+</td><td width="25%" valign=top><a href="time.html">time</a><br>
+<a href="utils.html">utils</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="ventana.html#Ventana">ventana.Ventana</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="consulta_global.html#ConsultaGlobal">ConsultaGlobal</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ConsultaGlobal">class <strong>ConsultaGlobal</strong></a>(<a href="ventana.html#Ventana">ventana.Ventana</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="ConsultaGlobal-__init__"><strong>__init__</strong></a>(self, objeto<font color="#909090">=None</font>, usuario<font color="#909090">=None</font>)</dt></dl>
+
+<dl><dt><a name="ConsultaGlobal-activar_widgets"><strong>activar_widgets</strong></a>(*args, **kw)</dt></dl>
+
+<dl><dt><a name="ConsultaGlobal-append_meses"><strong>append_meses</strong></a>(self)</dt><dd><tt>Añade&nbsp;un&nbsp;hbox&nbsp;con&nbsp;los&nbsp;12&nbsp;meses&nbsp;del&nbsp;año&nbsp;para&nbsp;poder&nbsp;marcar&nbsp;<br>
+y&nbsp;desmarcar&nbsp;los&nbsp;meses&nbsp;que&nbsp;se&nbsp;incluirán&nbsp;en&nbsp;la&nbsp;consulta.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaGlobal-buscar"><strong>buscar</strong></a>(self, boton)</dt><dd><tt>Inicia&nbsp;la&nbsp;consulta&nbsp;para&nbsp;el&nbsp;año&nbsp;indicado&nbsp;en&nbsp;el&nbsp;widget&nbsp;y&nbsp;<br>
+rellena&nbsp;las&nbsp;tablas&nbsp;con&nbsp;la&nbsp;información&nbsp;obtenida.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaGlobal-chequear_cambios"><strong>chequear_cambios</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ConsultaGlobal-construir_treeview_ficticio"><strong>construir_treeview_ficticio</strong></a>(self)</dt><dd><tt>Construye&nbsp;un&nbsp;TreeView&nbsp;con&nbsp;un&nbsp;ListModel&nbsp;como&nbsp;modelo&nbsp;con&nbsp;<br>
+las&nbsp;mismas&nbsp;columnas&nbsp;que&nbsp;los&nbsp;TreeViews&nbsp;de&nbsp;la&nbsp;ventana.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaGlobal-exportar"><strong>exportar</strong></a>(self, boton)</dt><dd><tt>Vuelva&nbsp;el&nbsp;contenido&nbsp;de&nbsp;todos&nbsp;los&nbsp;TreeViews&nbsp;en&nbsp;un&nbsp;solo&nbsp;".csv".</tt></dd></dl>
+
+<dl><dt><a name="ConsultaGlobal-get_anno"><strong>get_anno</strong></a>(self)</dt><dd><tt>Devuelve&nbsp;el&nbsp;año&nbsp;del&nbsp;entry&nbsp;de&nbsp;la&nbsp;ventana.<br>
+Si&nbsp;no&nbsp;es&nbsp;un&nbsp;número,&nbsp;devuelve&nbsp;el&nbsp;año&nbsp;actual&nbsp;y&nbsp;<br>
+avisa&nbsp;con&nbsp;un&nbsp;mensaje&nbsp;de&nbsp;error.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaGlobal-imprimir"><strong>imprimir</strong></a>(self, boton)</dt><dd><tt>Imprime&nbsp;el&nbsp;contenido&nbsp;de&nbsp;todos&nbsp;los&nbsp;TreeViews&nbsp;en&nbsp;un&nbsp;solo&nbsp;PDF&nbsp;apaisado.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaGlobal-marcar_todos"><strong>marcar_todos</strong></a>(self, boton, estado)</dt></dl>
+
+<dl><dt><a name="ConsultaGlobal-rellenar_tabla_compras_geocompuestos"><strong>rellenar_tabla_compras_geocompuestos</strong></a>(self, compras_geocompuestos)</dt></dl>
+
+<dl><dt><a name="ConsultaGlobal-rellenar_tabla_consumos"><strong>rellenar_tabla_consumos</strong></a>(self, dic, tv)</dt></dl>
+
+<dl><dt><a name="ConsultaGlobal-rellenar_tabla_produccion_bolsas"><strong>rellenar_tabla_produccion_bolsas</strong></a>(self, produccion_bolsas)</dt><dd><tt>Recibe&nbsp;un&nbsp;diccionario&nbsp;con&nbsp;la&nbsp;producción&nbsp;en&nbsp;A&nbsp;y&nbsp;B&nbsp;de&nbsp;geocem&nbsp;por&nbsp;<br>
+meses&nbsp;e&nbsp;introduce&nbsp;esa&nbsp;información&nbsp;en&nbsp;el&nbsp;treeview.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaGlobal-rellenar_tabla_produccion_fibra"><strong>rellenar_tabla_produccion_fibra</strong></a>(self, p)</dt></dl>
+
+<dl><dt><a name="ConsultaGlobal-rellenar_tabla_produccion_gtx"><strong>rellenar_tabla_produccion_gtx</strong></a>(self, produccion_gtx)</dt><dd><tt>Recibe&nbsp;un&nbsp;diccionario&nbsp;con&nbsp;la&nbsp;producción&nbsp;en&nbsp;A&nbsp;y&nbsp;B&nbsp;de&nbsp;geotextiles&nbsp;por&nbsp;<br>
+meses&nbsp;e&nbsp;introduce&nbsp;esa&nbsp;información&nbsp;en&nbsp;el&nbsp;treeview.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaGlobal-rellenar_tabla_ventas_bolsas"><strong>rellenar_tabla_ventas_bolsas</strong></a>(self, ventas_bolsas)</dt></dl>
+
+<dl><dt><a name="ConsultaGlobal-rellenar_tabla_ventas_fibra"><strong>rellenar_tabla_ventas_fibra</strong></a>(self, ventas_fibra)</dt></dl>
+
+<dl><dt><a name="ConsultaGlobal-rellenar_tabla_ventas_fibra_por_color"><strong>rellenar_tabla_ventas_fibra_por_color</strong></a>(self, ventas_fibra_por_color)</dt></dl>
+
+<dl><dt><a name="ConsultaGlobal-rellenar_tabla_ventas_geocompuestos"><strong>rellenar_tabla_ventas_geocompuestos</strong></a>(self, ventas_geocompuestos)</dt></dl>
+
+<dl><dt><a name="ConsultaGlobal-rellenar_tabla_ventas_gtx"><strong>rellenar_tabla_ventas_gtx</strong></a>(self, ventas_gtx)</dt></dl>
+
+<dl><dt><a name="ConsultaGlobal-rellenar_tablas"><strong>rellenar_tablas</strong></a>(self, produccion_gtx, ventas_gtx, consumos_gtx, produccion_fibra, ventas_fibra, consumos_fibra, ventas_fibra_por_color, produccion_bolsas, ventas_bolsas, consumos_bolsas, compras_geocompuestos, ventas_geocompuestos)</dt><dd><tt>Introduce&nbsp;la&nbsp;información&nbsp;de&nbsp;producciones,&nbsp;ventas&nbsp;y&nbsp;consumos&nbsp;de&nbsp;<br>
+geotextiles&nbsp;y&nbsp;fibra&nbsp;en&nbsp;los&nbsp;TreeViews&nbsp;correspondientes.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaGlobal-unificar_tv"><strong>unificar_tv</strong></a>(self)</dt><dd><tt>Construye&nbsp;un&nbsp;único&nbsp;TreeView&nbsp;con&nbsp;la&nbsp;información&nbsp;de&nbsp;los&nbsp;6&nbsp;mostrados&nbsp;en&nbsp;<br>
+pantalla&nbsp;listo&nbsp;para&nbsp;pasarlo&nbsp;a&nbsp;treeview2*.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="ventana.html#Ventana">ventana.Ventana</a>:<br>
+<dl><dt><a name="ConsultaGlobal-abrir_gajim"><strong>abrir_gajim</strong></a>(self)</dt><dd><tt>Calcado&nbsp;de&nbsp;menu.py.&nbsp;Sólo&nbsp;lleva&nbsp;las&nbsp;modificaciones&nbsp;necesarias&nbsp;para&nbsp;hacerlo&nbsp;funcionar&nbsp;desde&nbsp;aquí.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaGlobal-acerca_de"><strong>acerca_de</strong></a>(self)</dt><dd><tt>Calcado&nbsp;de&nbsp;menu.py.&nbsp;Modificado&nbsp;ligeramente&nbsp;para&nbsp;hacerlo&nbsp;funcionar&nbsp;aquí.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaGlobal-actualizar_objeto_y_enlaces"><strong>actualizar_objeto_y_enlaces</strong></a>(self, actualizar_ventana_tambien<font color="#909090">=True</font>)</dt></dl>
+
+<dl><dt><a name="ConsultaGlobal-actualizar_ventana"><strong>actualizar_ventana</strong></a>(self, widget<font color="#909090">=None</font>, objeto_anterior<font color="#909090">=None</font>)</dt><dd><tt>Actualiza&nbsp;el&nbsp;contenido&nbsp;de&nbsp;los&nbsp;controles&nbsp;de&nbsp;la&nbsp;ventana<br>
+para&nbsp;que&nbsp;muestren&nbsp;todos&nbsp;los&nbsp;datos&nbsp;del&nbsp;objeto&nbsp;actual.<br>
+widget&nbsp;no&nbsp;se&nbsp;usa.&nbsp;Se&nbsp;recibe&nbsp;para&nbsp;el&nbsp;caso&nbsp;en&nbsp;que&nbsp;se&nbsp;llama&nbsp;a&nbsp;<br>
+la&nbsp;función&nbsp;desde&nbsp;un&nbsp;botón.<br>
+objeto_anterior&nbsp;es&nbsp;un&nbsp;objeo&nbsp;de&nbsp;pclases.&nbsp;Sería&nbsp;el&nbsp;que&nbsp;se&nbsp;<br>
+muestra&nbsp;en&nbsp;pantalla&nbsp;justo&nbsp;antes&nbsp;de&nbsp;llamar&nbsp;a&nbsp;actualizar_ventana<br>
+y&nbsp;recargar&nbsp;los&nbsp;datos.&nbsp;Si&nbsp;se&nbsp;recibe&nbsp;y&nbsp;hay&nbsp;cambios&nbsp;pendientes&nbsp;de<br>
+guardar,&nbsp;el&nbsp;contenido&nbsp;de&nbsp;la&nbsp;ventana&nbsp;se&nbsp;guarda&nbsp;en&nbsp;ese&nbsp;objeto<br>
+ANTES&nbsp;de&nbsp;mostrar&nbsp;el&nbsp;nuevo&nbsp;(o&nbsp;el&nbsp;mismo&nbsp;con&nbsp;nueva&nbsp;información)&nbsp;<br>
+en&nbsp;los&nbsp;widgets&nbsp;de&nbsp;pantalla.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaGlobal-add_connections"><strong>add_connections</strong></a>(self, dict)</dt><dd><tt>Recorre&nbsp;el&nbsp;diccionario&nbsp;y&nbsp;crea&nbsp;las&nbsp;conexiones&nbsp;con&nbsp;<br>
+los&nbsp;callbacks.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaGlobal-aviso_actualizacion"><strong>aviso_actualizacion</strong></a>(self)</dt><dd><tt>Muestra&nbsp;una&nbsp;ventana&nbsp;modal&nbsp;con&nbsp;el&nbsp;mensaje&nbsp;de&nbsp;objeto&nbsp;<br>
+actualizado.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaGlobal-build_menu_superior"><strong>build_menu_superior</strong></a>(self)</dt><dd><tt>Construye&nbsp;un&nbsp;menú&nbsp;con&nbsp;las&nbsp;mismas&nbsp;opciones&nbsp;que&nbsp;el&nbsp;menú&nbsp;principal.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaGlobal-check_permisos"><strong>check_permisos</strong></a>(self, nombre_fichero_ventana)</dt><dd><tt>Activa&nbsp;o&nbsp;desactiva&nbsp;los&nbsp;controles&nbsp;dependiendo&nbsp;de&nbsp;los&nbsp;<br>
+permisos&nbsp;del&nbsp;usuario.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaGlobal-chequear_hilo"><strong>chequear_hilo</strong></a>(self)</dt><dd><tt>Consulta&nbsp;el&nbsp;hilo&nbsp;notificador&nbsp;del&nbsp;objeto&nbsp;actual.<br>
+En&nbsp;realidad&nbsp;es&nbsp;una&nbsp;mera&nbsp;excusa&nbsp;para&nbsp;obligar&nbsp;a&nbsp;GTK&nbsp;a&nbsp;<br>
+atender&nbsp;al&nbsp;objeto&nbsp;lo&nbsp;antes&nbsp;posible&nbsp;en&nbsp;caso&nbsp;de&nbsp;<br>
+notificación.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaGlobal-intentar_guardar_objeto_anterior_antes_de_actualizar"><strong>intentar_guardar_objeto_anterior_antes_de_actualizar</strong></a>(self, objeto_anterior)</dt><dd><tt>Primero&nbsp;verifica&nbsp;si&nbsp;hay&nbsp;cambios&nbsp;pendientes&nbsp;de&nbsp;guardar&nbsp;en&nbsp;la&nbsp;ventana&nbsp;<br>
+actual&nbsp;antes&nbsp;de&nbsp;actualizar&nbsp;el&nbsp;objeto&nbsp;en&nbsp;pantalla.<br>
+La&nbsp;forma&nbsp;de&nbsp;hacerlo&nbsp;es&nbsp;mirar&nbsp;si&nbsp;b_guardar&nbsp;está&nbsp;habilitado.&nbsp;<br>
+En&nbsp;ese&nbsp;caso&nbsp;intenta&nbsp;guardar&nbsp;los&nbsp;cambios&nbsp;del&nbsp;objeto&nbsp;anterior&nbsp;antes&nbsp;<br>
+de&nbsp;sustituirlo&nbsp;en&nbsp;pantalla&nbsp;por&nbsp;el&nbsp;nuevo&nbsp;(que&nbsp;es&nbsp;lo&nbsp;que&nbsp;se&nbsp;está&nbsp;<br>
+intentando&nbsp;"actualizar"&nbsp;en&nbsp;realidad,&nbsp;el&nbsp;self.<strong>objeto</strong>&nbsp;que&nbsp;aún&nbsp;no&nbsp;está&nbsp;<br>
+en&nbsp;pantalla).<br>
+Devuelve&nbsp;True&nbsp;si&nbsp;se&nbsp;ha&nbsp;guardado&nbsp;y&nbsp;se&nbsp;puede&nbsp;continuar&nbsp;la&nbsp;actualización&nbsp;<br>
+del&nbsp;nuevo&nbsp;objeto&nbsp;para&nbsp;mostrarlo&nbsp;en&nbsp;pantalla&nbsp;o&nbsp;False&nbsp;si&nbsp;se&nbsp;debe&nbsp;<br>
+interrumpir&nbsp;y&nbsp;dejar&nbsp;que&nbsp;el&nbsp;usuario&nbsp;guarde&nbsp;o&nbsp;descarte&nbsp;antes&nbsp;de&nbsp;pasar&nbsp;<br>
+a&nbsp;otro&nbsp;objeto&nbsp;como&nbsp;self.<strong>objeto</strong>.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaGlobal-ir_a"><strong>ir_a</strong></a>(self, objeto)</dt></dl>
+
+<dl><dt><a name="ConsultaGlobal-make_connections"><strong>make_connections</strong></a>(self)</dt><dd><tt>Realiza&nbsp;las&nbsp;conexiones&nbsp;básicas&nbsp;entre&nbsp;widgets&nbsp;y&nbsp;callbacks.<br>
+Para&nbsp;el&nbsp;resto&nbsp;de&nbsp;conexiones,&nbsp;usar&nbsp;add_connections.<br>
+La&nbsp;ventana&nbsp;principal&nbsp;DEBE&nbsp;llamarse&nbsp;"ventana".</tt></dd></dl>
+
+<dl><dt><a name="ConsultaGlobal-make_funciones_ociosas"><strong>make_funciones_ociosas</strong></a>(self)</dt><dd><tt>Inicia&nbsp;las&nbsp;funciones&nbsp;ociosas&nbsp;de&nbsp;chequeo&nbsp;de&nbsp;cambios<br>
+remotos&nbsp;(actualizar)&nbsp;y&nbsp;locales&nbsp;(guardar).</tt></dd></dl>
+
+<dl><dt><a name="ConsultaGlobal-refocus_entry"><strong>refocus_entry</strong></a>(self, widget, *args)</dt><dd><tt>Si&nbsp;hay&nbsp;botón&nbsp;guardar,&nbsp;guarda.<br>
+Pasa&nbsp;el&nbsp;foco&nbsp;al&nbsp;siguiente&nbsp;widget.<br>
+Usar&nbsp;solo&nbsp;como&nbsp;callback&nbsp;de&nbsp;la&nbsp;señal&nbsp;"activate"&nbsp;de&nbsp;los&nbsp;Entry,&nbsp;que&nbsp;se&nbsp;<br>
+dispara&nbsp;al&nbsp;pulsar&nbsp;Enter&nbsp;o&nbsp;programáticamente&nbsp;con&nbsp;.activate().</tt></dd></dl>
+
+<dl><dt><a name="ConsultaGlobal-revivir"><strong>revivir</strong></a>(self, widget)</dt><dd><tt>Vuelve&nbsp;a&nbsp;habilitar&nbsp;los&nbsp;manejadores&nbsp;del&nbsp;widget.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaGlobal-salir"><strong>salir</strong></a>(self, boton, event<font color="#909090">=None</font>, mostrar_ventana<font color="#909090">=True</font>)</dt><dd><tt>Muestra&nbsp;una&nbsp;ventana&nbsp;de&nbsp;confirmación&nbsp;y&nbsp;<br>
+sale&nbsp;de&nbsp;la&nbsp;ventana&nbsp;cerrando&nbsp;el&nbsp;bucle<br>
+local&nbsp;de&nbsp;gtk_main.<br>
+Si&nbsp;mostrar_ventana&nbsp;es&nbsp;False,&nbsp;sale&nbsp;directamente<br>
+sin&nbsp;preguntar&nbsp;al&nbsp;usuario.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaGlobal-suspender"><strong>suspender</strong></a>(self, widget)</dt><dd><tt>Bloquea&nbsp;los&nbsp;manejadores&nbsp;de&nbsp;eventos&nbsp;del&nbsp;widget&nbsp;recibido&nbsp;hasta&nbsp;que&nbsp;se&nbsp;le&nbsp;<br>
+"trae&nbsp;a&nbsp;la&nbsp;vida"&nbsp;(TM)&nbsp;con&nbsp;.<a href="#ConsultaGlobal-revivir">revivir</a>(widget).</tt></dd></dl>
+
+<dl><dt><a name="ConsultaGlobal-volver_a_cursor_original"><strong>volver_a_cursor_original</strong></a>(self)</dt><dd><tt>Calcado&nbsp;de&nbsp;menu.py.&nbsp;Sólo&nbsp;lleva&nbsp;las&nbsp;modificaciones&nbsp;necesarias&nbsp;para&nbsp;hacerlo&nbsp;funcionar&nbsp;desde&nbsp;aquí.</tt></dd></dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-buscar_compras_geocompuestos"><strong>buscar_compras_geocompuestos</strong></a>(anno, vpro<font color="#909090">=None</font>, rango<font color="#909090">=None</font>, logger<font color="#909090">=None</font>, meses<font color="#909090">=[]</font>)</dt><dd><tt>Devuelve&nbsp;un&nbsp;diccionario&nbsp;por&nbsp;proveedor&nbsp;y&nbsp;mes&nbsp;de&nbsp;las&nbsp;compras&nbsp;de&nbsp;producto&nbsp;de&nbsp;<br>
+tipo&nbsp;geocompuestos,&nbsp;en&nbsp;euros&nbsp;y&nbsp;en&nbsp;metros&nbsp;cuadrados&nbsp;(o&nbsp;la&nbsp;unidad&nbsp;que&nbsp;tenga&nbsp;<br>
+la&nbsp;mayoría&nbsp;de&nbsp;productos&nbsp;de&nbsp;tipo&nbsp;geocompuesto).</tt></dd></dl>
+ <dl><dt><a name="-buscar_consumos"><strong>buscar_consumos</strong></a>(anno, vpro<font color="#909090">=None</font>, rango<font color="#909090">=None</font>, meses<font color="#909090">=[]</font>)</dt><dd><tt>"anno"&nbsp;es&nbsp;el&nbsp;año&nbsp;del&nbsp;que&nbsp;buscará&nbsp;los&nbsp;consumos.</tt></dd></dl>
+ <dl><dt><a name="-buscar_kilos_reales_gtx_producidos_sin_embalaje"><strong>buscar_kilos_reales_gtx_producidos_sin_embalaje</strong></a>(fechaini, fechafin)</dt><dd><tt>Devuelve&nbsp;los&nbsp;kilos&nbsp;reales&nbsp;con&nbsp;embalaje&nbsp;fabricados&nbsp;en&nbsp;los&nbsp;partes&nbsp;de&nbsp;<br>
+geotextiles&nbsp;entre&nbsp;las&nbsp;dos&nbsp;fechas&nbsp;recibidas.<br>
+Incluye&nbsp;rollos&nbsp;y&nbsp;rollos&nbsp;defectuosos.</tt></dd></dl>
+ <dl><dt><a name="-buscar_produccion_bolsas"><strong>buscar_produccion_bolsas</strong></a>(anno, vpro<font color="#909090">=None</font>, rango<font color="#909090">=None</font>, logger<font color="#909090">=None</font>, meses<font color="#909090">=[]</font>)</dt><dd><tt>"anno"&nbsp;es&nbsp;el&nbsp;año&nbsp;del&nbsp;que&nbsp;buscará&nbsp;las&nbsp;producciones.<br>
+"vpro"&nbsp;es&nbsp;la&nbsp;ventana&nbsp;de&nbsp;progreso&nbsp;de&nbsp;la&nbsp;ventana&nbsp;principal.<br>
+"rango"&nbsp;es&nbsp;un&nbsp;flotante&nbsp;que&nbsp;indica&nbsp;el&nbsp;porcentaje&nbsp;máximo&nbsp;a&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;recorrer&nbsp;por&nbsp;la&nbsp;ventana&nbsp;de&nbsp;progreso&nbsp;durante&nbsp;esta&nbsp;función.<br>
+Devuelve&nbsp;la&nbsp;producción&nbsp;en&nbsp;kg&nbsp;y&nbsp;m²&nbsp;de&nbsp;A&nbsp;y&nbsp;B&nbsp;en&nbsp;un&nbsp;diccionario&nbsp;<br>
+cuyas&nbsp;claves&nbsp;son&nbsp;números&nbsp;enteros&nbsp;del&nbsp;0&nbsp;al&nbsp;11&nbsp;que&nbsp;se&nbsp;corresponden&nbsp;<br>
+con&nbsp;los&nbsp;meses.&nbsp;Dentro&nbsp;de&nbsp;cada&nbsp;clave&nbsp;hay&nbsp;otro&nbsp;diccionario&nbsp;con&nbsp;<br>
+claves&nbsp;'A'&nbsp;y&nbsp;'B',&nbsp;y&nbsp;como&nbsp;valores&nbsp;otro&nbsp;diccionario&nbsp;<br>
+con&nbsp;claves&nbsp;'bolsas'&nbsp;y&nbsp;'kilos'.</tt></dd></dl>
+ <dl><dt><a name="-buscar_produccion_fibra"><strong>buscar_produccion_fibra</strong></a>(anno, vpro<font color="#909090">=None</font>, rango<font color="#909090">=None</font>, logger<font color="#909090">=None</font>, meses<font color="#909090">=[]</font>)</dt><dd><tt>"anno"&nbsp;es&nbsp;el&nbsp;año&nbsp;del&nbsp;que&nbsp;buscará&nbsp;las&nbsp;producciones.<br>
+Devuelve&nbsp;un&nbsp;diccionario&nbsp;_por&nbsp;meses_&nbsp;con&nbsp;los&nbsp;kilos&nbsp;fabricados&nbsp;y&nbsp;<br>
+granza&nbsp;consumida.</tt></dd></dl>
+ <dl><dt><a name="-buscar_produccion_gtx"><strong>buscar_produccion_gtx</strong></a>(anno, vpro<font color="#909090">=None</font>, rango<font color="#909090">=None</font>, logger<font color="#909090">=None</font>, meses<font color="#909090">=[]</font>)</dt><dd><tt>"anno"&nbsp;es&nbsp;el&nbsp;año&nbsp;del&nbsp;que&nbsp;buscará&nbsp;las&nbsp;producciones.<br>
+"vpro"&nbsp;es&nbsp;la&nbsp;ventana&nbsp;de&nbsp;progreso&nbsp;de&nbsp;la&nbsp;ventana&nbsp;principal.<br>
+"rango"&nbsp;es&nbsp;un&nbsp;flotante&nbsp;que&nbsp;indica&nbsp;el&nbsp;porcentaje&nbsp;máximo&nbsp;a&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;recorrer&nbsp;por&nbsp;la&nbsp;ventana&nbsp;de&nbsp;progreso&nbsp;durante&nbsp;esta&nbsp;función.<br>
+Devuelve&nbsp;la&nbsp;producción&nbsp;en&nbsp;kg&nbsp;y&nbsp;m²&nbsp;de&nbsp;A&nbsp;y&nbsp;B&nbsp;en&nbsp;un&nbsp;diccionario&nbsp;<br>
+cuyas&nbsp;claves&nbsp;son&nbsp;números&nbsp;enteros&nbsp;del&nbsp;0&nbsp;al&nbsp;11&nbsp;que&nbsp;se&nbsp;corresponden&nbsp;<br>
+con&nbsp;los&nbsp;meses.&nbsp;Dentro&nbsp;de&nbsp;cada&nbsp;clave&nbsp;hay&nbsp;otro&nbsp;diccionario&nbsp;con&nbsp;<br>
+claves&nbsp;'A'&nbsp;y&nbsp;'B',&nbsp;y&nbsp;como&nbsp;valores&nbsp;otro&nbsp;diccionario&nbsp;<br>
+con&nbsp;claves&nbsp;'metros'&nbsp;y&nbsp;'kilos'.</tt></dd></dl>
+ <dl><dt><a name="-buscar_ventas"><strong>buscar_ventas</strong></a>(anno, vpro<font color="#909090">=None</font>, rango<font color="#909090">=None</font>, meses<font color="#909090">=[]</font>)</dt><dd><tt>"anno"&nbsp;es&nbsp;el&nbsp;año&nbsp;del&nbsp;que&nbsp;buscará&nbsp;las&nbsp;ventas.</tt></dd></dl>
+ <dl><dt><a name="-buscar_ventas_bigbags"><strong>buscar_ventas_bigbags</strong></a>(anno, vpro<font color="#909090">=None</font>, rango<font color="#909090">=None</font>, meses<font color="#909090">=[]</font>)</dt><dd><tt>Devuelve&nbsp;un&nbsp;diccionario&nbsp;de&nbsp;meses&nbsp;cuyos&nbsp;valores&nbsp;son&nbsp;otro&nbsp;<br>
+diccionario&nbsp;con&nbsp;los&nbsp;euros&nbsp;y&nbsp;los&nbsp;kilos&nbsp;de&nbsp;bigbags&nbsp;vendidos&nbsp;<br>
+en&nbsp;el&nbsp;año&nbsp;recibido.</tt></dd></dl>
+ <dl><dt><a name="-buscar_ventas_cable"><strong>buscar_ventas_cable</strong></a>(anno, vpro<font color="#909090">=None</font>, rango<font color="#909090">=None</font>)</dt><dd><tt>Devuelve&nbsp;las&nbsp;salidas&nbsp;de&nbsp;albarán&nbsp;en&nbsp;kilos&nbsp;de&nbsp;la&nbsp;fibra&nbsp;reciclada.</tt></dd></dl>
+ <dl><dt><a name="-buscar_ventas_fibra_b"><strong>buscar_ventas_fibra_b</strong></a>(anno, vpro<font color="#909090">=None</font>, rango<font color="#909090">=None</font>, meses<font color="#909090">=[]</font>)</dt><dd><tt>Devuelve&nbsp;las&nbsp;ventas&nbsp;(en&nbsp;euros&nbsp;y&nbsp;kilos)&nbsp;de&nbsp;la&nbsp;fibra&nbsp;marcada&nbsp;<br>
+como&nbsp;baja&nbsp;calidad.</tt></dd></dl>
+ <dl><dt><a name="-buscar_ventas_fibra_color"><strong>buscar_ventas_fibra_color</strong></a>(anno, vpro<font color="#909090">=None</font>, rango<font color="#909090">=None</font>, meses<font color="#909090">=[]</font>)</dt><dd><tt>Busca&nbsp;las&nbsp;ventas&nbsp;de&nbsp;fibra&nbsp;por&nbsp;color,&nbsp;consumidas&nbsp;por&nbsp;la&nbsp;línea,&nbsp;<br>
+fibra&nbsp;B&nbsp;y&nbsp;bigbags.&nbsp;Devuelve&nbsp;una&nbsp;lista&nbsp;de&nbsp;listas.&nbsp;Cada&nbsp;lista&nbsp;<br>
+tiene&nbsp;en&nbsp;la&nbsp;primera&nbsp;posición&nbsp;un&nbsp;texto&nbsp;descriptivo,&nbsp;las&nbsp;siguientes<br>
+posiciones&nbsp;corresponden&nbsp;a&nbsp;las&nbsp;ventas&nbsp;en&nbsp;kilos&nbsp;o&nbsp;euros&nbsp;(dependiendo<br>
+del&nbsp;texto&nbsp;que&nbsp;la&nbsp;encabece)&nbsp;por&nbsp;cada&nbsp;mes&nbsp;y&nbsp;en&nbsp;orden.&nbsp;La&nbsp;última&nbsp;<br>
+posición&nbsp;se&nbsp;deja&nbsp;vacía&nbsp;ya&nbsp;que&nbsp;no&nbsp;se&nbsp;mostrará&nbsp;en&nbsp;el&nbsp;TreeView.<br>
+«meses»&nbsp;es&nbsp;una&nbsp;lista&nbsp;o&nbsp;una&nbsp;tupla&nbsp;con&nbsp;los&nbsp;meses&nbsp;del&nbsp;año&nbsp;sobre&nbsp;los&nbsp;<br>
+que&nbsp;consultar&nbsp;datos&nbsp;(comenzando&nbsp;en&nbsp;1).</tt></dd></dl>
+ <dl><dt><a name="-buscar_ventas_geocompuestos"><strong>buscar_ventas_geocompuestos</strong></a>(anno, vpro<font color="#909090">=None</font>, rango<font color="#909090">=None</font>, logger<font color="#909090">=None</font>, meses<font color="#909090">=[]</font>)</dt><dd><tt>Devuelve&nbsp;un&nbsp;diccionario&nbsp;por&nbsp;tarifa&nbsp;y&nbsp;mes&nbsp;de&nbsp;las&nbsp;ventas&nbsp;de&nbsp;producto&nbsp;de&nbsp;<br>
+tipo&nbsp;geocompuestos,&nbsp;en&nbsp;euros&nbsp;y&nbsp;en&nbsp;metros&nbsp;cuadrados.</tt></dd></dl>
+ <dl><dt><a name="-buscar_ventas_internas_fibra"><strong>buscar_ventas_internas_fibra</strong></a>(anno, vpro<font color="#909090">=None</font>, rango<font color="#909090">=None</font>, meses<font color="#909090">=[]</font>)</dt><dd><tt>Devuelve&nbsp;en&nbsp;kilos&nbsp;y&nbsp;euros&nbsp;la&nbsp;fibra&nbsp;consumida&nbsp;en&nbsp;la&nbsp;línea&nbsp;<br>
+de&nbsp;producción&nbsp;de&nbsp;geotextiles.<br>
+Se&nbsp;usa&nbsp;el&nbsp;precio&nbsp;por&nbsp;defecto&nbsp;para&nbsp;valorar&nbsp;los&nbsp;kilos.</tt></dd></dl>
+ <dl><dt><a name="-buscar_ventas_por_color"><strong>buscar_ventas_por_color</strong></a>(anno, vpro<font color="#909090">=None</font>, rango<font color="#909090">=None</font>, meses<font color="#909090">=[]</font>)</dt><dd><tt>Busca&nbsp;las&nbsp;ventas&nbsp;de&nbsp;fibra&nbsp;por&nbsp;color&nbsp;y&nbsp;país&nbsp;del&nbsp;cliente&nbsp;en&nbsp;<br>
+lugar&nbsp;de&nbsp;por&nbsp;tarifa.<br>
+Devuelve&nbsp;un&nbsp;diccionario&nbsp;de&nbsp;colores&nbsp;donde&nbsp;cada&nbsp;valor&nbsp;es&nbsp;<br>
+otro&nbsp;diccionario&nbsp;de&nbsp;meses&nbsp;con&nbsp;las&nbsp;claves&nbsp;"nacional"&nbsp;y&nbsp;"internacional"&nbsp;<br>
+y&nbsp;como&nbsp;valores&nbsp;otro&nbsp;diccionario&nbsp;con&nbsp;"euros"&nbsp;y&nbsp;"kilos"&nbsp;(incluye&nbsp;<br>
+fibra&nbsp;B&nbsp;y&nbsp;excluye&nbsp;bigbags).</tt></dd></dl>
+ <dl><dt><a name="-calcular_productividad_conjunta"><strong>calcular_productividad_conjunta</strong></a>(pdps)</dt><dd><tt>Devuelve&nbsp;la&nbsp;productividad&nbsp;de&nbsp;una&nbsp;lista&nbsp;de&nbsp;objetos&nbsp;parte.<br>
+Se&nbsp;calcula&nbsp;como:<br>
+sumatorio(tiempos&nbsp;reales&nbsp;trabajados)&nbsp;/&nbsp;sumatorio(duraciones&nbsp;totales)<br>
+donde&nbsp;el&nbsp;tiempo&nbsp;real&nbsp;trabajado&nbsp;de&nbsp;cada&nbsp;parte&nbsp;es&nbsp;la&nbsp;duración&nbsp;del&nbsp;parte&nbsp;<br>
+menos&nbsp;el&nbsp;sumatorio&nbsp;de&nbsp;las&nbsp;duraciones&nbsp;de&nbsp;las&nbsp;incidencias&nbsp;del&nbsp;mismo.</tt></dd></dl>
+ <dl><dt><a name="-consultar_bolsas_y_kilos"><strong>consultar_bolsas_y_kilos</strong></a>(fechaini, fechafin)</dt><dd><tt>Recibe&nbsp;2&nbsp;mx.DateTime&nbsp;con&nbsp;las&nbsp;fechas&nbsp;inicial&nbsp;y&nbsp;final&nbsp;de&nbsp;la&nbsp;<br>
+consulta&nbsp;de&nbsp;bolsas&nbsp;y&nbsp;kilos.<br>
+Devuelve&nbsp;los&nbsp;bolsas&nbsp;de&nbsp;A,&nbsp;kilos&nbsp;de&nbsp;A,&nbsp;bolsas&nbsp;de&nbsp;B&nbsp;y&nbsp;kilos&nbsp;de&nbsp;B;&nbsp;en&nbsp;este&nbsp;<br>
+orden.<br>
+OJO:&nbsp;Ataca&nbsp;directamente&nbsp;a&nbsp;la&nbsp;BD&nbsp;con&nbsp;SQL.&nbsp;No&nbsp;es&nbsp;portable&nbsp;(aunque&nbsp;<br>
+a&nbsp;estas&nbsp;alturas&nbsp;cualquiera&nbsp;se&nbsp;atreve&nbsp;a&nbsp;cambiar&nbsp;de&nbsp;SGBD).</tt></dd></dl>
+ <dl><dt><a name="-consultar_consumos"><strong>consultar_consumos</strong></a>(mes, anno, consumos_gtx, consumos_fibra, consumos_bolsas)</dt></dl>
+ <dl><dt><a name="-consultar_dias_bolsas"><strong>consultar_dias_bolsas</strong></a>(fechaini, fechafin)</dt><dd><tt>Devuelve&nbsp;el&nbsp;número&nbsp;de&nbsp;días&nbsp;(fechas&nbsp;distintas)&nbsp;en&nbsp;los&nbsp;que&nbsp;hay&nbsp;<br>
+al&nbsp;menos&nbsp;un&nbsp;parte&nbsp;de&nbsp;producción&nbsp;de&nbsp;geotextiles&nbsp;entre&nbsp;las&nbsp;fechas&nbsp;<br>
+recibidas.</tt></dd></dl>
+ <dl><dt><a name="-consultar_dias_fibra"><strong>consultar_dias_fibra</strong></a>(fechaini, fechafin)</dt><dd><tt>Devuelve&nbsp;el&nbsp;número&nbsp;de&nbsp;días&nbsp;(fechas&nbsp;distintas)&nbsp;en&nbsp;los&nbsp;que&nbsp;hay&nbsp;<br>
+al&nbsp;menos&nbsp;un&nbsp;parte&nbsp;de&nbsp;producción&nbsp;de&nbsp;geotextiles&nbsp;entre&nbsp;las&nbsp;fechas&nbsp;<br>
+recibidas.</tt></dd></dl>
+ <dl><dt><a name="-consultar_dias_gtx"><strong>consultar_dias_gtx</strong></a>(fechaini, fechafin)</dt><dd><tt>Devuelve&nbsp;el&nbsp;número&nbsp;de&nbsp;días&nbsp;(fechas&nbsp;distintas)&nbsp;en&nbsp;los&nbsp;que&nbsp;hay&nbsp;<br>
+al&nbsp;menos&nbsp;un&nbsp;parte&nbsp;de&nbsp;producción&nbsp;de&nbsp;geotextiles&nbsp;entre&nbsp;las&nbsp;fechas&nbsp;<br>
+recibidas.</tt></dd></dl>
+ <dl><dt><a name="-consultar_empleados_por_dia_bolsas"><strong>consultar_empleados_por_dia_bolsas</strong></a>(fechaini, fechafin)</dt><dd><tt>Devuelve&nbsp;el&nbsp;número&nbsp;de&nbsp;empleados&nbsp;por&nbsp;día&nbsp;a&nbsp;través&nbsp;de&nbsp;una&nbsp;tocho-consulta(TM)&nbsp;<br>
+a&nbsp;la&nbsp;base&nbsp;de&nbsp;datos.</tt></dd></dl>
+ <dl><dt><a name="-consultar_empleados_por_dia_fibra"><strong>consultar_empleados_por_dia_fibra</strong></a>(fechaini, fechafin)</dt><dd><tt>Devuelve&nbsp;el&nbsp;número&nbsp;de&nbsp;empleados&nbsp;por&nbsp;día&nbsp;a&nbsp;través&nbsp;de&nbsp;una&nbsp;tocho-consulta(TM)&nbsp;<br>
+a&nbsp;la&nbsp;base&nbsp;de&nbsp;datos.</tt></dd></dl>
+ <dl><dt><a name="-consultar_empleados_por_dia_gtx"><strong>consultar_empleados_por_dia_gtx</strong></a>(fechaini, fechafin)</dt><dd><tt>Devuelve&nbsp;el&nbsp;número&nbsp;de&nbsp;empleados&nbsp;por&nbsp;día&nbsp;a&nbsp;través&nbsp;de&nbsp;una&nbsp;tocho-consulta(TM)&nbsp;<br>
+a&nbsp;la&nbsp;base&nbsp;de&nbsp;datos.</tt></dd></dl>
+ <dl><dt><a name="-consultar_fibra_b"><strong>consultar_fibra_b</strong></a>(fechaini, fechafin)</dt><dd><tt>Devuelve&nbsp;la&nbsp;fibra&nbsp;de&nbsp;clase&nbsp;B&nbsp;separada&nbsp;en&nbsp;balas&nbsp;y&nbsp;bigbags,&nbsp;<br>
+kilos&nbsp;y&nbsp;bultos.</tt></dd></dl>
+ <dl><dt><a name="-consultar_fibra_producida"><strong>consultar_fibra_producida</strong></a>(fechaini, fechafin)</dt><dd><tt>Ataca&nbsp;a&nbsp;la&nbsp;BD&nbsp;mediante&nbsp;consultas&nbsp;SQL&nbsp;y&nbsp;devuelve&nbsp;los&nbsp;kilos&nbsp;y&nbsp;<br>
+bultos&nbsp;de&nbsp;fibra&nbsp;fabricados,&nbsp;separados&nbsp;entre&nbsp;bigbags&nbsp;(fibra&nbsp;cemento)&nbsp;<br>
+y&nbsp;balas;&nbsp;y&nbsp;dentro&nbsp;de&nbsp;éstas,&nbsp;por&nbsp;color.</tt></dd></dl>
+ <dl><dt><a name="-consultar_granza_consumida"><strong>consultar_granza_consumida</strong></a>(fechaini, fechafin)</dt><dd><tt>Devuelve&nbsp;la&nbsp;granza&nbsp;consumida&nbsp;por&nbsp;los&nbsp;partes&nbsp;de&nbsp;producción&nbsp;de&nbsp;fibra&nbsp;<br>
+entre&nbsp;las&nbsp;fechas&nbsp;fechaini&nbsp;y&nbsp;fechafin&nbsp;en&nbsp;forma&nbsp;de&nbsp;diccionario&nbsp;<br>
+cuyas&nbsp;claves&nbsp;son&nbsp;el&nbsp;tipo&nbsp;de&nbsp;granza.</tt></dd></dl>
+ <dl><dt><a name="-consultar_gtxc"><strong>consultar_gtxc</strong></a>(fechaini, fechafin)</dt><dd><tt>Devuelve&nbsp;los&nbsp;kg&nbsp;de&nbsp;geotextiles&nbsp;C&nbsp;producidos&nbsp;entre&nbsp;fechaini&nbsp;y&nbsp;<br>
+fechafin.<br>
+No&nbsp;devuelve&nbsp;m²&nbsp;porque&nbsp;de&nbsp;los&nbsp;geotextiles&nbsp;C&nbsp;solo&nbsp;se&nbsp;guarda&nbsp;el&nbsp;peso.</tt></dd></dl>
+ <dl><dt><a name="-consultar_horas_reales_bolsas"><strong>consultar_horas_reales_bolsas</strong></a>(fechaini, fechafin)</dt><dd><tt>Devuelve&nbsp;la&nbsp;suma&nbsp;de&nbsp;las&nbsp;duraciones&nbsp;de&nbsp;los&nbsp;partes&nbsp;entre&nbsp;las&nbsp;dos&nbsp;<br>
+fechas&nbsp;recibidas.</tt></dd></dl>
+ <dl><dt><a name="-consultar_horas_reales_fibra"><strong>consultar_horas_reales_fibra</strong></a>(fechaini, fechafin)</dt><dd><tt>Devuelve&nbsp;la&nbsp;suma&nbsp;de&nbsp;las&nbsp;duraciones&nbsp;de&nbsp;los&nbsp;partes&nbsp;entre&nbsp;las&nbsp;dos&nbsp;<br>
+fechas&nbsp;recibidas.</tt></dd></dl>
+ <dl><dt><a name="-consultar_horas_reales_gtx"><strong>consultar_horas_reales_gtx</strong></a>(fechaini, fechafin)</dt><dd><tt>Devuelve&nbsp;la&nbsp;suma&nbsp;de&nbsp;las&nbsp;duraciones&nbsp;de&nbsp;los&nbsp;partes&nbsp;entre&nbsp;las&nbsp;dos&nbsp;<br>
+fechas&nbsp;recibidas.</tt></dd></dl>
+ <dl><dt><a name="-consultar_horas_trabajo_bolsas"><strong>consultar_horas_trabajo_bolsas</strong></a>(fechaini, fechafin, logger<font color="#909090">=None</font>)</dt><dd><tt>Devuelve&nbsp;la&nbsp;suma&nbsp;de&nbsp;las&nbsp;duraciones&nbsp;de&nbsp;los&nbsp;partes&nbsp;entre&nbsp;las&nbsp;dos&nbsp;<br>
+fechas&nbsp;recibidas&nbsp;menos&nbsp;las&nbsp;horas&nbsp;de&nbsp;parada.</tt></dd></dl>
+ <dl><dt><a name="-consultar_horas_trabajo_fibra"><strong>consultar_horas_trabajo_fibra</strong></a>(fechaini, fechafin, logger)</dt><dd><tt>Devuelve&nbsp;la&nbsp;suma&nbsp;de&nbsp;las&nbsp;duraciones&nbsp;de&nbsp;los&nbsp;partes&nbsp;entre&nbsp;las&nbsp;dos&nbsp;<br>
+fechas&nbsp;recibidas&nbsp;menos&nbsp;las&nbsp;horas&nbsp;de&nbsp;parada.</tt></dd></dl>
+ <dl><dt><a name="-consultar_horas_trabajo_gtx"><strong>consultar_horas_trabajo_gtx</strong></a>(fechaini, fechafin, logger<font color="#909090">=None</font>)</dt><dd><tt>Devuelve&nbsp;la&nbsp;suma&nbsp;de&nbsp;las&nbsp;duraciones&nbsp;de&nbsp;los&nbsp;partes&nbsp;entre&nbsp;las&nbsp;dos&nbsp;<br>
+fechas&nbsp;recibidas&nbsp;menos&nbsp;las&nbsp;horas&nbsp;de&nbsp;parada.</tt></dd></dl>
+ <dl><dt><a name="-consultar_kilos_bigbags_consumidos"><strong>consultar_kilos_bigbags_consumidos</strong></a>(fechaini, fechafin)</dt><dd><tt>Devuelve&nbsp;los&nbsp;kilos&nbsp;de&nbsp;fibra&nbsp;consumidos&nbsp;en&nbsp;forma&nbsp;de&nbsp;bigbag&nbsp;por&nbsp;los&nbsp;partes&nbsp;<br>
+de&nbsp;producción&nbsp;de&nbsp;fibra&nbsp;de&nbsp;cemento.<br>
+OJO:&nbsp;Se&nbsp;considera&nbsp;que&nbsp;un&nbsp;parte&nbsp;de&nbsp;producción&nbsp;consume&nbsp;un&nbsp;bigbag&nbsp;completo&nbsp;<br>
+aunque&nbsp;realmente&nbsp;no&nbsp;se&nbsp;haya&nbsp;gastado&nbsp;completo&nbsp;y&nbsp;se&nbsp;termine&nbsp;en&nbsp;el&nbsp;parte&nbsp;<br>
+siguiente.</tt></dd></dl>
+ <dl><dt><a name="-consultar_kilos_fibra_consumidos"><strong>consultar_kilos_fibra_consumidos</strong></a>(fechaini, fechafin)</dt><dd><tt>Recibe&nbsp;2&nbsp;mx.DateTime&nbsp;con&nbsp;las&nbsp;fechas&nbsp;inicial&nbsp;y&nbsp;final&nbsp;de&nbsp;la&nbsp;<br>
+consulta&nbsp;de&nbsp;metros&nbsp;y&nbsp;kilos.<br>
+Devuelve&nbsp;los&nbsp;kilos&nbsp;de&nbsp;fibra&nbsp;consumidos&nbsp;según&nbsp;el&nbsp;criterio&nbsp;de&nbsp;<br>
+que&nbsp;una&nbsp;partida&nbsp;de&nbsp;carga&nbsp;no&nbsp;se&nbsp;considera&nbsp;consumida&nbsp;por&nbsp;completo&nbsp;<br>
+si&nbsp;todas&nbsp;sus&nbsp;partidas&nbsp;no&nbsp;se&nbsp;han&nbsp;fabricado&nbsp;antes&nbsp;de&nbsp;fechafin.<br>
+OJO:&nbsp;Ataca&nbsp;directamente&nbsp;a&nbsp;la&nbsp;BD&nbsp;con&nbsp;SQL.&nbsp;No&nbsp;es&nbsp;portable&nbsp;(aunque&nbsp;<br>
+a&nbsp;estas&nbsp;alturas&nbsp;cualquiera&nbsp;se&nbsp;atreve&nbsp;a&nbsp;cambiar&nbsp;de&nbsp;SGBD).<br>
+(Ver&nbsp;metros_y_kilos_gtx.sql)</tt></dd></dl>
+ <dl><dt><a name="-consultar_kilos_y_euros_fibra_consumidos"><strong>consultar_kilos_y_euros_fibra_consumidos</strong></a>(fechaini, fechafin)</dt><dd><tt>Recibe&nbsp;2&nbsp;mx.DateTime&nbsp;con&nbsp;las&nbsp;fechas&nbsp;inicial&nbsp;y&nbsp;final&nbsp;de&nbsp;la&nbsp;<br>
+consulta&nbsp;de&nbsp;metros&nbsp;y&nbsp;kilos.<br>
+Devuelve&nbsp;los&nbsp;kilos&nbsp;y&nbsp;euros&nbsp;a&nbsp;precio&nbsp;defecto&nbsp;de&nbsp;fibra&nbsp;consumidos&nbsp;<br>
+según&nbsp;el&nbsp;criterio&nbsp;de&nbsp;que&nbsp;una&nbsp;partida&nbsp;de&nbsp;carga&nbsp;no&nbsp;se&nbsp;considera&nbsp;<br>
+consumida&nbsp;por&nbsp;completo&nbsp;si&nbsp;todas&nbsp;sus&nbsp;partidas&nbsp;no&nbsp;se&nbsp;han&nbsp;fabricado&nbsp;<br>
+antes&nbsp;de&nbsp;fechafin.<br>
+OJO:&nbsp;Ataca&nbsp;directamente&nbsp;a&nbsp;la&nbsp;BD&nbsp;con&nbsp;SQL.&nbsp;No&nbsp;es&nbsp;portable&nbsp;(aunque&nbsp;<br>
+a&nbsp;estas&nbsp;alturas&nbsp;cualquiera&nbsp;se&nbsp;atreve&nbsp;a&nbsp;cambiar&nbsp;de&nbsp;SGBD).<br>
+(Ver&nbsp;metros_y_kilos_gtx.sql)</tt></dd></dl>
+ <dl><dt><a name="-consultar_kilos_y_euros_fibra_consumidos_segun_pcs"><strong>consultar_kilos_y_euros_fibra_consumidos_segun_pcs</strong></a>(fechaini, fechafin)</dt><dd><tt>Devuelve&nbsp;las&nbsp;"ventas"&nbsp;internas&nbsp;(consumo&nbsp;de&nbsp;fibra&nbsp;en&nbsp;línea&nbsp;de&nbsp;geotextiles)&nbsp;<br>
+según&nbsp;las&nbsp;fechas&nbsp;de&nbsp;las&nbsp;partidas&nbsp;de&nbsp;carga.&nbsp;Es&nbsp;decir,&nbsp;es&nbsp;más&nbsp;fiel&nbsp;a&nbsp;las&nbsp;<br>
+existencias,&nbsp;pero&nbsp;cuenta&nbsp;partidas&nbsp;que&nbsp;no&nbsp;han&nbsp;producido&nbsp;geotextiles&nbsp;o&nbsp;que&nbsp;<br>
+ha&nbsp;servido&nbsp;para&nbsp;fabricar&nbsp;geotextiles&nbsp;fuera&nbsp;del&nbsp;rango&nbsp;de&nbsp;fechas.&nbsp;También&nbsp;<br>
+hay&nbsp;que&nbsp;confiar&nbsp;en&nbsp;que&nbsp;las&nbsp;fechas&nbsp;de&nbsp;las&nbsp;partidas&nbsp;de&nbsp;carga&nbsp;son&nbsp;correctas.&nbsp;<br>
+En&nbsp;cualquier&nbsp;caso&nbsp;es&nbsp;coherente&nbsp;(sean&nbsp;o&nbsp;no&nbsp;sean&nbsp;precisas&nbsp;las&nbsp;fechas&nbsp;de&nbsp;las&nbsp;<br>
+partidas&nbsp;de&nbsp;carga)&nbsp;con&nbsp;las&nbsp;existencias&nbsp;en&nbsp;listado_balas,&nbsp;caché,&nbsp;etc.<br>
+OJO:&nbsp;La&nbsp;valoración&nbsp;en&nbsp;euros&nbsp;es&nbsp;estimativa&nbsp;y,&nbsp;aunque&nbsp;determinista,&nbsp;varía&nbsp;<br>
+con&nbsp;el&nbsp;tiempo&nbsp;en&nbsp;función&nbsp;del&nbsp;precioDefecto&nbsp;que&nbsp;tenga&nbsp;cada&nbsp;producto&nbsp;en&nbsp;el&nbsp;<br>
+momento&nbsp;en&nbsp;que&nbsp;se&nbsp;ejecuta&nbsp;la&nbsp;consulta.&nbsp;Mucho&nbsp;ojito&nbsp;con&nbsp;eso.</tt></dd></dl>
+ <dl><dt><a name="-consultar_metros_y_kilos_gtx"><strong>consultar_metros_y_kilos_gtx</strong></a>(fechaini, fechafin)</dt><dd><tt>Recibe&nbsp;2&nbsp;mx.DateTime&nbsp;con&nbsp;las&nbsp;fechas&nbsp;inicial&nbsp;y&nbsp;final&nbsp;de&nbsp;la&nbsp;<br>
+consulta&nbsp;de&nbsp;metros&nbsp;y&nbsp;kilos.<br>
+Devuelve&nbsp;los&nbsp;metros&nbsp;de&nbsp;A,&nbsp;kilos&nbsp;de&nbsp;A,&nbsp;metros&nbsp;de&nbsp;B&nbsp;y&nbsp;kilos&nbsp;de&nbsp;B;&nbsp;en&nbsp;este&nbsp;<br>
+orden.<br>
+Cuenta&nbsp;los&nbsp;productos&nbsp;fabricados&nbsp;en&nbsp;los&nbsp;partes&nbsp;sin&nbsp;tener&nbsp;en&nbsp;cuenta&nbsp;que&nbsp;la&nbsp;<br>
+partida&nbsp;de&nbsp;carga&nbsp;se&nbsp;haya&nbsp;consumido&nbsp;por&nbsp;completo&nbsp;o&nbsp;no.&nbsp;Puede&nbsp;tener&nbsp;<br>
+diferencias&nbsp;con&nbsp;la&nbsp;consulta&nbsp;de&nbsp;consumo&nbsp;de&nbsp;fibra&nbsp;por&nbsp;partida&nbsp;de&nbsp;geotextiles,<br>
+que&nbsp;discrimina&nbsp;las&nbsp;partidas&nbsp;según&nbsp;su&nbsp;partida&nbsp;de&nbsp;carga&nbsp;(si&nbsp;la&nbsp;partida&nbsp;de&nbsp;<br>
+carga&nbsp;no&nbsp;entra&nbsp;en&nbsp;las&nbsp;fechas&nbsp;consultadas,&nbsp;ninguna&nbsp;de&nbsp;sus&nbsp;partidas&nbsp;de&nbsp;<br>
+geotextiles&nbsp;entrará&nbsp;tampoco).&nbsp;&nbsp;<br>
+OJO:&nbsp;Ataca&nbsp;directamente&nbsp;a&nbsp;la&nbsp;BD&nbsp;con&nbsp;SQL.&nbsp;No&nbsp;es&nbsp;portable&nbsp;(aunque&nbsp;<br>
+a&nbsp;estas&nbsp;alturas&nbsp;cualquiera&nbsp;se&nbsp;atreve&nbsp;a&nbsp;cambiar&nbsp;de&nbsp;SGBD).<br>
+(Ver&nbsp;metros_y_kilos_gtx.sql)</tt></dd></dl>
+ <dl><dt><a name="-consultar_productividad_bolsas"><strong>consultar_productividad_bolsas</strong></a>(fechaini, fechafin)</dt><dd><tt>Devuelve&nbsp;la&nbsp;productividad&nbsp;de&nbsp;los&nbsp;partes&nbsp;de&nbsp;producción&nbsp;de&nbsp;<br>
+embolsado&nbsp;entre&nbsp;las&nbsp;fechas&nbsp;recibidas.</tt></dd></dl>
+ <dl><dt><a name="-consultar_productividad_fibra"><strong>consultar_productividad_fibra</strong></a>(fechaini, fechafin)</dt><dd><tt>Devuelve&nbsp;la&nbsp;productividad&nbsp;de&nbsp;los&nbsp;partes&nbsp;de&nbsp;producción&nbsp;de&nbsp;<br>
+geotextiles&nbsp;entre&nbsp;las&nbsp;fechas&nbsp;recibidas.</tt></dd></dl>
+ <dl><dt><a name="-consultar_productividad_gtx"><strong>consultar_productividad_gtx</strong></a>(fechaini, fechafin)</dt><dd><tt>Devuelve&nbsp;la&nbsp;productividad&nbsp;de&nbsp;los&nbsp;partes&nbsp;de&nbsp;producción&nbsp;de&nbsp;<br>
+geotextiles&nbsp;entre&nbsp;las&nbsp;fechas&nbsp;recibidas.</tt></dd></dl>
+ <dl><dt><a name="-ejecutar_consultas_fibra_b_por_fechas"><strong>ejecutar_consultas_fibra_b_por_fechas</strong></a>(fechaini, fechafin)</dt></dl>
+ <dl><dt><a name="-ejecutar_consultas_ventas_bigbags"><strong>ejecutar_consultas_ventas_bigbags</strong></a>(fechaini, fechafin)</dt><dd><tt>Ejecuta&nbsp;consultas&nbsp;SQL&nbsp;directamente&nbsp;contra&nbsp;la&nbsp;BD&nbsp;para&nbsp;<br>
+obtener&nbsp;las&nbsp;ventas&nbsp;de&nbsp;bigbags&nbsp;entre&nbsp;las&nbsp;fechas&nbsp;indicadas.</tt></dd></dl>
+ <dl><dt><a name="-ejecutar_consultas_ventas_fibra_por_color"><strong>ejecutar_consultas_ventas_fibra_por_color</strong></a>(fechaini, fechafin)</dt><dd><tt>Ejecuta&nbsp;las&nbsp;consultas&nbsp;de&nbsp;venta&nbsp;de&nbsp;fibra&nbsp;(balas)&nbsp;por&nbsp;color&nbsp;<br>
+entre&nbsp;las&nbsp;fechas&nbsp;fechaini&nbsp;y&nbsp;fechafin&nbsp;y&nbsp;devuelve&nbsp;los&nbsp;kilos&nbsp;y&nbsp;<br>
+euros&nbsp;de&nbsp;facturas&nbsp;y&nbsp;albaranes&nbsp;en&nbsp;un&nbsp;diccionario&nbsp;de&nbsp;colores&nbsp;<br>
+y&nbsp;"internacional"&nbsp;o&nbsp;"nacional".<br>
+Incluye&nbsp;fibra&nbsp;B&nbsp;(marcada&nbsp;como&nbsp;B&nbsp;en&nbsp;el&nbsp;parte&nbsp;de&nbsp;producción)&nbsp;pero&nbsp;<br>
+no&nbsp;la&nbsp;C&nbsp;(balas&nbsp;de&nbsp;cable&nbsp;-balaCable-&nbsp;que&nbsp;tiene&nbsp;True&nbsp;en&nbsp;el&nbsp;campo&nbsp;<br>
+reciclada&nbsp;del&nbsp;camposEspecificosBala&nbsp;del&nbsp;producto&nbsp;de&nbsp;venta).</tt></dd></dl>
+ <dl><dt><a name="-preparar_tv"><strong>preparar_tv</strong></a>(tv, listview<font color="#909090">=True</font>)</dt><dd><tt>Prepara&nbsp;las&nbsp;columnas&nbsp;del&nbsp;TreeView.<br>
+Si&nbsp;listview&nbsp;es&nbsp;True&nbsp;usa&nbsp;un&nbsp;ListStore&nbsp;como&nbsp;modelo&nbsp;de&nbsp;datos.&nbsp;En&nbsp;<br>
+otro&nbsp;caso&nbsp;usa&nbsp;un&nbsp;TreeStore.</tt></dd></dl>
+ <dl><dt><a name="-procesar_lda"><strong>procesar_lda</strong></a>(linea, ventas_gtx, ventas_fibra, ventas_bolsas)</dt></dl>
+ <dl><dt><a name="-procesar_ldd"><strong>procesar_ldd</strong></a>(linea, ventas_gtx, ventas_fibra, ventas_bolsas)</dt></dl>
+ <dl><dt><a name="-procesar_ldv"><strong>procesar_ldv</strong></a>(linea, ventas_gtx, ventas_fibra, ventas_bolsas)</dt></dl>
+</td></tr></table>
+</body></html>

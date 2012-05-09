@@ -1,0 +1,326 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module checklist_window</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>checklist_window</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/bogado/Geotexan/geotexinn02/formularios/checklist_window.py">/home/bogado/Geotexan/geotexinn02/formularios/checklist_window.py</a></font></td></tr></table>
+    <p><tt>#&nbsp;-*-&nbsp;coding:&nbsp;utf-8&nbsp;-*-</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="gtk.html">gtk</a><br>
+<a href="mx.html">mx</a><br>
+<a href="os.html">os</a><br>
+</td><td width="25%" valign=top><a href="pango.html">pango</a><br>
+<a href="pclases.html">pclases</a><br>
+<a href="pygtk.html">pygtk</a><br>
+</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+<a href="time.html">time</a><br>
+<a href="utils.html">utils</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="checklist_window.html#ChecklistWindow">ChecklistWindow</a>
+</font></dt><dt><font face="helvetica, arial"><a href="checklist_window.html#ThreadSample">ThreadSample</a>
+</font></dt><dt><font face="helvetica, arial"><a href="threading.html#Thread">threading.Thread</a>(<a href="threading.html#_Verbose">threading._Verbose</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="checklist_window.html#Tarea">Tarea</a>
+</font></dt><dt><font face="helvetica, arial"><a href="checklist_window.html#TareaSimple">TareaSimple</a>
+</font></dt><dt><font face="helvetica, arial"><a href="checklist_window.html#Test">Test</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ChecklistWindow">class <strong>ChecklistWindow</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Una&nbsp;Checklist&nbsp;Window&nbsp;según&nbsp;las&nbsp;HIG&nbsp;de&nbsp;Gnome:&nbsp;<br>
+<a href="http://developer.gnome.org/projects/gup/hig/2.0/windows-progress.html#progress-window-checklists">http://developer.gnome.org/projects/gup/hig/2.0/windows-progress.html#progress-window-checklists</a><br>
+Pero&nbsp;con&nbsp;hilos.&nbsp;Vivo&nbsp;al&nbsp;límite.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="ChecklistWindow-__init__"><strong>__init__</strong></a>(self, tareas, titulo<font color="#909090">='PROGRESO'</font>)</dt><dd><tt>tareas&nbsp;es&nbsp;un&nbsp;diccionario&nbsp;que&nbsp;contiene&nbsp;al&nbsp;menos&nbsp;el&nbsp;nombre&nbsp;de&nbsp;la&nbsp;tarea&nbsp;y&nbsp;la&nbsp;función&nbsp;a&nbsp;ejecutar.<br>
+Se&nbsp;ejecutan&nbsp;todas&nbsp;en&nbsp;paralelo&nbsp;en&nbsp;nuevos&nbsp;hilos.&nbsp;No&nbsp;estaría&nbsp;mal&nbsp;una&nbsp;estructura&nbsp;auxiliar&nbsp;que&nbsp;definiera&nbsp;<br>
+aquéllas&nbsp;que&nbsp;se&nbsp;deben&nbsp;ejecutar&nbsp;secuencialmente&nbsp;entre&nbsp;ellas.&nbsp;Claro&nbsp;que&nbsp;eso&nbsp;implicaría&nbsp;usar&nbsp;una&nbsp;<br>
+política&nbsp;de&nbsp;planificación,&nbsp;programar&nbsp;un&nbsp;despachador...</tt></dd></dl>
+
+<dl><dt><a name="ChecklistWindow-add_controls"><strong>add_controls</strong></a>(self)</dt><dd><tt>Añade&nbsp;los&nbsp;widgets&nbsp;de&nbsp;componen&nbsp;la&nbsp;ventana.<br>
+A&nbsp;saber:<br>
+1&nbsp;botón&nbsp;de&nbsp;cancelar.<br>
+1&nbsp;botón&nbsp;de&nbsp;iniciar/cerrar&nbsp;que&nbsp;se&nbsp;pondrá&nbsp;insensitivo&nbsp;una&nbsp;vez&nbsp;se&nbsp;pulse&nbsp;y&nbsp;<br>
+&nbsp;&nbsp;se&nbsp;activará&nbsp;con&nbsp;el&nbsp;texto&nbsp;"Cerrar"&nbsp;cuando&nbsp;acaben&nbsp;todas&nbsp;las&nbsp;tareas.<br>
+1&nbsp;barra&nbsp;de&nbsp;progreso&nbsp;global.<br>
+1&nbsp;VBox&nbsp;que&nbsp;contiene:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;HBox&nbsp;por&nbsp;cada&nbsp;tarea&nbsp;que&nbsp;contiene:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;Una&nbsp;flecha&nbsp;que&nbsp;se&nbsp;activa&nbsp;cuando&nbsp;la&nbsp;tarea&nbsp;se&nbsp;inicia&nbsp;y&nbsp;se&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;desactiva&nbsp;después&nbsp;de&nbsp;completarse.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;CheckBox&nbsp;que&nbsp;se&nbsp;pone&nbsp;a&nbsp;True&nbsp;cuando&nbsp;la&nbsp;tarea&nbsp;finaliza,&nbsp;a&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;False&nbsp;si&nbsp;no&nbsp;se&nbsp;completa&nbsp;y&nbsp;en&nbsp;Z&nbsp;si&nbsp;no&nbsp;se&nbsp;ha&nbsp;iniciado&nbsp;aún.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;Label&nbsp;con&nbsp;la&nbsp;descripción&nbsp;de&nbsp;la&nbsp;tarea.<br>
+...&nbsp;y&nbsp;sal&nbsp;al&nbsp;gusto.</tt></dd></dl>
+
+<dl><dt><a name="ChecklistWindow-cancelar"><strong>cancelar</strong></a>(self, boton)</dt><dd><tt>Cancela&nbsp;los&nbsp;hilos&nbsp;activos&nbsp;y&nbsp;evita&nbsp;iniciar&nbsp;los&nbsp;restantes.<br>
+Una&nbsp;vez&nbsp;se&nbsp;hayan&nbsp;terminado&nbsp;habilita&nbsp;el&nbsp;botón&nbsp;cerrar.</tt></dd></dl>
+
+<dl><dt><a name="ChecklistWindow-destroy"><strong>destroy</strong></a>(self, *args)</dt></dl>
+
+<dl><dt><a name="ChecklistWindow-get_tareas_completadas"><strong>get_tareas_completadas</strong></a>(self)</dt><dd><tt>Devuelve&nbsp;las&nbsp;tareas&nbsp;que&nbsp;están&nbsp;en&nbsp;tareas&nbsp;iniciadas&nbsp;pero&nbsp;no&nbsp;en&nbsp;<br>
+active_threads.&nbsp;Es&nbsp;decir,&nbsp;las&nbsp;que&nbsp;ya&nbsp;han&nbsp;terminado.</tt></dd></dl>
+
+<dl><dt><a name="ChecklistWindow-get_tareas_no_iniciadas"><strong>get_tareas_no_iniciadas</strong></a>(self)</dt><dd><tt>Devuelve&nbsp;las&nbsp;tareas&nbsp;de&nbsp;la&nbsp;lista&nbsp;de&nbsp;tareas&nbsp;que&nbsp;no&nbsp;están&nbsp;en&nbsp;la&nbsp;<br>
+lista&nbsp;de&nbsp;tareas&nbsp;iniciadas.&nbsp;Incluidas&nbsp;las&nbsp;que&nbsp;ni&nbsp;siquiera&nbsp;están&nbsp;<br>
+marcadas&nbsp;para&nbsp;iniciarse.</tt></dd></dl>
+
+<dl><dt><a name="ChecklistWindow-inicializar_ventana"><strong>inicializar_ventana</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ChecklistWindow-iniciar_o_cerrar"><strong>iniciar_o_cerrar</strong></a>(self, boton)</dt><dd><tt>Si&nbsp;todas&nbsp;las&nbsp;tareas&nbsp;se&nbsp;han&nbsp;completado&nbsp;o&nbsp;cancelado,&nbsp;cierra&nbsp;la&nbsp;ventana.<br>
+Si&nbsp;no,&nbsp;las&nbsp;inicia&nbsp;y&nbsp;cambia&nbsp;el&nbsp;texto&nbsp;del&nbsp;botón&nbsp;por&nbsp;"Cerrar"&nbsp;y&nbsp;lo&nbsp;deshabilita.</tt></dd></dl>
+
+<dl><dt><a name="ChecklistWindow-iniciar_tareas"><strong>iniciar_tareas</strong></a>(self)</dt><dd><tt>Inicia&nbsp;las&nbsp;tareas&nbsp;de&nbsp;la&nbsp;lista&nbsp;de&nbsp;tareas&nbsp;en&nbsp;un&nbsp;hilo&nbsp;aparte.</tt></dd></dl>
+
+<dl><dt><a name="ChecklistWindow-main"><strong>main</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ChecklistWindow-set_texto_estado"><strong>set_texto_estado</strong></a>(self, texto)</dt></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Tarea">class <strong>Tarea</strong></a>(<a href="threading.html#Thread">threading.Thread</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="checklist_window.html#Tarea">Tarea</a></dd>
+<dd><a href="threading.html#Thread">threading.Thread</a></dd>
+<dd><a href="threading.html#_Verbose">threading._Verbose</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="Tarea-__init__"><strong>__init__</strong></a>(self, count, active_threads, tarea, ventana_padre, *args, **kw)</dt><dd><tt>count&nbsp;-&gt;&nbsp;Número&nbsp;de&nbsp;procesos&nbsp;creados&nbsp;hasta&nbsp;la&nbsp;llamada&nbsp;a&nbsp;mi&nbsp;constructor.&nbsp;Corresponde&nbsp;con&nbsp;el&nbsp;número&nbsp;de&nbsp;esta&nbsp;tarea.<br>
+active_threads&nbsp;-&gt;&nbsp;Lista&nbsp;de&nbsp;objetos&nbsp;tarea&nbsp;en&nbsp;ejecución.<br>
+tarea&nbsp;-&gt;&nbsp;Diccionario&nbsp;con&nbsp;la&nbsp;info&nbsp;de&nbsp;la&nbsp;tarea.<br>
+ventana_padre&nbsp;-&gt;&nbsp;Instancia&nbsp;del&nbsp;objeto&nbsp;<a href="#ChecklistWindow">ChecklistWindow</a>&nbsp;para&nbsp;poder&nbsp;acceder&nbsp;a&nbsp;sus&nbsp;widgets.<br>
+*args,&nbsp;**kw&nbsp;-&gt;&nbsp;Lo&nbsp;pasaré&nbsp;tal&nbsp;cual&nbsp;a&nbsp;la&nbsp;función&nbsp;de&nbsp;la&nbsp;tarea.</tt></dd></dl>
+
+<dl><dt><a name="Tarea-run"><strong>run</strong></a>(self)</dt></dl>
+
+<hr>
+Methods inherited from <a href="threading.html#Thread">threading.Thread</a>:<br>
+<dl><dt><a name="Tarea-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Tarea-getName"><strong>getName</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Tarea-isAlive"><strong>isAlive</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Tarea-isDaemon"><strong>isDaemon</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Tarea-is_alive"><strong>is_alive</strong></a> = isAlive(self)</dt></dl>
+
+<dl><dt><a name="Tarea-join"><strong>join</strong></a>(self, timeout<font color="#909090">=None</font>)</dt></dl>
+
+<dl><dt><a name="Tarea-setDaemon"><strong>setDaemon</strong></a>(self, daemonic)</dt></dl>
+
+<dl><dt><a name="Tarea-setName"><strong>setName</strong></a>(self, name)</dt></dl>
+
+<dl><dt><a name="Tarea-start"><strong>start</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="threading.html#Thread">threading.Thread</a>:<br>
+<dl><dt><strong>daemon</strong></dt>
+</dl>
+<dl><dt><strong>ident</strong></dt>
+</dl>
+<dl><dt><strong>name</strong></dt>
+</dl>
+<hr>
+Data descriptors inherited from <a href="threading.html#_Verbose">threading._Verbose</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="TareaSimple">class <strong>TareaSimple</strong></a>(<a href="threading.html#Thread">threading.Thread</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>###############################################################################<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="checklist_window.html#TareaSimple">TareaSimple</a></dd>
+<dd><a href="threading.html#Thread">threading.Thread</a></dd>
+<dd><a href="threading.html#_Verbose">threading._Verbose</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="TareaSimple-__init__"><strong>__init__</strong></a>(self, count, active_threads, tarea, ventana_padre, *args, **kw)</dt><dd><tt>count&nbsp;-&gt;&nbsp;Número&nbsp;de&nbsp;procesos&nbsp;creados&nbsp;hasta&nbsp;la&nbsp;llamada&nbsp;a&nbsp;mi&nbsp;constructor.&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Se&nbsp;corresponde&nbsp;con&nbsp;el&nbsp;número&nbsp;de&nbsp;esta&nbsp;tarea.<br>
+active_threads&nbsp;-&gt;&nbsp;Lista&nbsp;de&nbsp;objetos&nbsp;tarea&nbsp;en&nbsp;ejecución.<br>
+tarea&nbsp;-&gt;&nbsp;Diccionario&nbsp;con&nbsp;la&nbsp;info&nbsp;de&nbsp;la&nbsp;tarea.<br>
+ventana_padre&nbsp;-&gt;&nbsp;Instancia&nbsp;del&nbsp;objeto&nbsp;<a href="#ChecklistWindow">ChecklistWindow</a>&nbsp;para&nbsp;poder&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;acceder&nbsp;a&nbsp;sus&nbsp;widgets.<br>
+*args,&nbsp;**kw&nbsp;-&gt;&nbsp;Lo&nbsp;pasaré&nbsp;tal&nbsp;cual&nbsp;a&nbsp;la&nbsp;función&nbsp;de&nbsp;la&nbsp;tarea.</tt></dd></dl>
+
+<dl><dt><a name="TareaSimple-run"><strong>run</strong></a>(self)</dt></dl>
+
+<hr>
+Methods inherited from <a href="threading.html#Thread">threading.Thread</a>:<br>
+<dl><dt><a name="TareaSimple-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="TareaSimple-getName"><strong>getName</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="TareaSimple-isAlive"><strong>isAlive</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="TareaSimple-isDaemon"><strong>isDaemon</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="TareaSimple-is_alive"><strong>is_alive</strong></a> = isAlive(self)</dt></dl>
+
+<dl><dt><a name="TareaSimple-join"><strong>join</strong></a>(self, timeout<font color="#909090">=None</font>)</dt></dl>
+
+<dl><dt><a name="TareaSimple-setDaemon"><strong>setDaemon</strong></a>(self, daemonic)</dt></dl>
+
+<dl><dt><a name="TareaSimple-setName"><strong>setName</strong></a>(self, name)</dt></dl>
+
+<dl><dt><a name="TareaSimple-start"><strong>start</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="threading.html#Thread">threading.Thread</a>:<br>
+<dl><dt><strong>daemon</strong></dt>
+</dl>
+<dl><dt><strong>ident</strong></dt>
+</dl>
+<dl><dt><strong>name</strong></dt>
+</dl>
+<hr>
+Data descriptors inherited from <a href="threading.html#_Verbose">threading._Verbose</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Test">class <strong>Test</strong></a>(<a href="threading.html#Thread">threading.Thread</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="checklist_window.html#Test">Test</a></dd>
+<dd><a href="threading.html#Thread">threading.Thread</a></dd>
+<dd><a href="threading.html#_Verbose">threading._Verbose</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="Test-__init__"><strong>__init__</strong></a>(self, button, count, active_threads)</dt></dl>
+
+<dl><dt><a name="Test-run"><strong>run</strong></a>(self)</dt></dl>
+
+<hr>
+Methods inherited from <a href="threading.html#Thread">threading.Thread</a>:<br>
+<dl><dt><a name="Test-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Test-getName"><strong>getName</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Test-isAlive"><strong>isAlive</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Test-isDaemon"><strong>isDaemon</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Test-is_alive"><strong>is_alive</strong></a> = isAlive(self)</dt></dl>
+
+<dl><dt><a name="Test-join"><strong>join</strong></a>(self, timeout<font color="#909090">=None</font>)</dt></dl>
+
+<dl><dt><a name="Test-setDaemon"><strong>setDaemon</strong></a>(self, daemonic)</dt></dl>
+
+<dl><dt><a name="Test-setName"><strong>setName</strong></a>(self, name)</dt></dl>
+
+<dl><dt><a name="Test-start"><strong>start</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="threading.html#Thread">threading.Thread</a>:<br>
+<dl><dt><strong>daemon</strong></dt>
+</dl>
+<dl><dt><strong>ident</strong></dt>
+</dl>
+<dl><dt><strong>name</strong></dt>
+</dl>
+<hr>
+Data descriptors inherited from <a href="threading.html#_Verbose">threading._Verbose</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ThreadSample">class <strong>ThreadSample</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Simple&nbsp;pyGTK&nbsp;multithreading&nbsp;example<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="ThreadSample-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>#&nbsp;Adapted&nbsp;from&nbsp;a&nbsp;post&nbsp;by&nbsp;Alif&nbsp;Wahid&nbsp;on&nbsp;the&nbsp;pyGTK&nbsp;mailinglist.<br>
+#&nbsp;Cedric&nbsp;Gustin,&nbsp;August&nbsp;2003</tt></dd></dl>
+
+<dl><dt><a name="ThreadSample-destroy"><strong>destroy</strong></a>(self, *args)</dt><dd><tt>Callback&nbsp;function&nbsp;that&nbsp;is&nbsp;activated&nbsp;when&nbsp;the&nbsp;program&nbsp;is&nbsp;destoyed</tt></dd></dl>
+
+<dl><dt><a name="ThreadSample-main"><strong>main</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ThreadSample-start_new_thread"><strong>start_new_thread</strong></a>(self, button, data<font color="#909090">=None</font>)</dt></dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-pruebas_periodicas"><strong>pruebas_periodicas</strong></a>()</dt></dl>
+ <dl><dt><a name="-tarea1"><strong>tarea1</strong></a>()</dt></dl>
+ <dl><dt><a name="-tarea2"><strong>tarea2</strong></a>()</dt></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>ALBARANES_A_IGNORAR</strong> = (&lt;AlbaranSalida 571 almacenDestinoID=None almacen...00025' facturable=True motivo='' bloqueado=False&gt;, &lt;AlbaranSalida 788 almacenDestinoID=None almacen...ones='' facturable=True motivo='' bloqueado=True&gt;, &lt;AlbaranSalida 666 almacenDestinoID=None almacen...ones='' facturable=True motivo='' bloqueado=True&gt;, &lt;AlbaranSalida 1554 almacenDestinoID=None almace...ones='' facturable=True motivo='' bloqueado=True&gt;, &lt;AlbaranSalida 1975 almacenDestinoID=None almace...7474.' facturable=False motivo='' bloqueado=True&gt;, &lt;AlbaranSalida 801 almacenDestinoID=None almacen...inster' facturable=True motivo='' bloqueado=True&gt;, &lt;AlbaranSalida 760 almacenDestinoID=None almacen...ones='' facturable=True motivo='' bloqueado=True&gt;, &lt;AlbaranSalida 802 almacenDestinoID=None almacen...inster' facturable=True motivo='' bloqueado=True&gt;, &lt;AlbaranSalida 803 almacenDestinoID=None almacen...nes='' facturable=True motivo='' bloqueado=False&gt;, &lt;AlbaranSalida 761 almacenDestinoID=None almacen...es='' facturable=False motivo='' bloqueado=False&gt;, &lt;AlbaranSalida 762 almacenDestinoID=None almacen...ones='' facturable=True motivo='' bloqueado=True&gt;, &lt;AlbaranSalida 804 almacenDestinoID=None almacen...ones='' facturable=True motivo='' bloqueado=True&gt;, &lt;AlbaranSalida 763 almacenDestinoID=None almacen...ones='' facturable=True motivo='' bloqueado=True&gt;, &lt;AlbaranSalida 764 almacenDestinoID=None almacen...ones='' facturable=True motivo='' bloqueado=True&gt;, &lt;AlbaranSalida 805 almacenDestinoID=None almacen...ones='' facturable=True motivo='' bloqueado=True&gt;, &lt;AlbaranSalida 765 almacenDestinoID=None almacen...ones='' facturable=True motivo='' bloqueado=True&gt;, &lt;AlbaranSalida 806 almacenDestinoID=None almacen...ones='' facturable=True motivo='' bloqueado=True&gt;, &lt;AlbaranSalida 766 almacenDestinoID=None almacen...ones='' facturable=True motivo='' bloqueado=True&gt;, &lt;AlbaranSalida 807 almacenDestinoID=None almacen...ones='' facturable=True motivo='' bloqueado=True&gt;, &lt;AlbaranSalida 767 almacenDestinoID=None almacen...108355' facturable=True motivo='' bloqueado=True&gt;, ...)<br>
+<strong>ARTICULOS_A_IGNORAR</strong> = (&lt;Articulo 1 parteDeProduccionID=None rolloDefect...ne almacenID=None rolloCID=None balaCableID=None&gt;, &lt;Articulo 2 parteDeProduccionID=None rolloDefect...ne almacenID=None rolloCID=None balaCableID=None&gt;, &lt;Articulo 3 parteDeProduccionID=None rolloDefect...ne almacenID=None rolloCID=None balaCableID=None&gt;, &lt;Articulo 4 parteDeProduccionID=None rolloDefect...ne almacenID=None rolloCID=None balaCableID=None&gt;, &lt;Articulo 5 parteDeProduccionID=None rolloDefect...ne almacenID=None rolloCID=None balaCableID=None&gt;, &lt;Articulo 6 parteDeProduccionID=None rolloDefect...ne almacenID=None rolloCID=None balaCableID=None&gt;, &lt;Articulo 7 parteDeProduccionID=None rolloDefect...ne almacenID=None rolloCID=None balaCableID=None&gt;, &lt;Articulo 8 parteDeProduccionID=None rolloDefect...ne almacenID=None rolloCID=None balaCableID=None&gt;, &lt;Articulo 9 parteDeProduccionID=None rolloDefect...ne almacenID=None rolloCID=None balaCableID=None&gt;, &lt;Articulo 10 parteDeProduccionID=None rolloDefec...ne almacenID=None rolloCID=None balaCableID=None&gt;, &lt;Articulo 11 parteDeProduccionID=None rolloDefec...ne almacenID=None rolloCID=None balaCableID=None&gt;, &lt;Articulo 12 parteDeProduccionID=None rolloDefec...ne almacenID=None rolloCID=None balaCableID=None&gt;, &lt;Articulo 13 parteDeProduccionID=None rolloDefec...ne almacenID=None rolloCID=None balaCableID=None&gt;, &lt;Articulo 14 parteDeProduccionID=None rolloDefec...ne almacenID=None rolloCID=None balaCableID=None&gt;, &lt;Articulo 15 parteDeProduccionID=None rolloDefec...ne almacenID=None rolloCID=None balaCableID=None&gt;, &lt;Articulo 16 parteDeProduccionID=None rolloDefec...ne almacenID=None rolloCID=None balaCableID=None&gt;, &lt;Articulo 17 parteDeProduccionID=None rolloDefec...ne almacenID=None rolloCID=None balaCableID=None&gt;, &lt;Articulo 18 parteDeProduccionID=None rolloDefec...ne almacenID=None rolloCID=None balaCableID=None&gt;, &lt;Articulo 19 parteDeProduccionID=None rolloDefec...ne almacenID=None rolloCID=None balaCableID=None&gt;, &lt;Articulo 20 parteDeProduccionID=None rolloDefec...ne almacenID=None rolloCID=None balaCableID=None&gt;, ...)<br>
+<strong>IGNORADOS_SIN_PROVEEDOR_O_CLIENTE</strong> = [&lt;PedidoVenta 129 comercialID=None obraID=1077 ta...pondencia='' paisCorrespondencia='' textoObra=''&gt;, &lt;PedidoVenta 135 comercialID=None obraID=1077 ta...pondencia='' paisCorrespondencia='' textoObra=''&gt;, &lt;PedidoVenta 44 comercialID=None obraID=1279 tar...paisCorrespondencia='ESPA\xc3\x91A' textoObra=''&gt;, &lt;PedidoVenta 108 comercialID=None obraID=1279 ta...paisCorrespondencia='ESPA\xc3\x91A' textoObra=''&gt;, &lt;PedidoVenta 230 comercialID=None obraID=1279 ta...paisCorrespondencia='ESPA\xc3\x91A' textoObra=''&gt;, &lt;PedidoVenta 325 comercialID=None obraID=1279 ta...paisCorrespondencia='ESPA\xc3\x91A' textoObra=''&gt;, &lt;PedidoVenta 672 comercialID=None obraID=1279 ta...paisCorrespondencia='ESPA\xc3\x91A' textoObra=''&gt;]<br>
+<strong>PARTES_A_IGNORAR</strong> = (&lt;ParteDeProduccion 3899 partidaCemID=None fecha=...me.datetime(2007, 8, 1, 1, 5) fichaproduccion=''&gt;, &lt;ParteDeProduccion 3900 partidaCemID=None fecha=...e.datetime(2007, 8, 1, 4, 25) fichaproduccion=''&gt;, &lt;ParteDeProduccion 3902 partidaCemID=None fecha=...me.datetime(2007, 8, 1, 6, 0) fichaproduccion=''&gt;, &lt;ParteDeProduccion 3904 partidaCemID=None fecha=...e.datetime(2007, 8, 1, 14, 0) fichaproduccion=''&gt;, &lt;ParteDeProduccion 3908 partidaCemID=None fecha=...e.datetime(2007, 8, 1, 22, 0) fichaproduccion=''&gt;, &lt;ParteDeProduccion 3882 partidaCemID=None fecha=....datetime(2007, 7, 30, 14, 0) fichaproduccion=''&gt;, &lt;ParteDeProduccion 3891 partidaCemID=None fecha=...e.datetime(2007, 7, 31, 8, 0) fichaproduccion=''&gt;, &lt;ParteDeProduccion 3890 partidaCemID=None fecha=...e.datetime(2007, 7, 31, 6, 0) fichaproduccion=''&gt;, &lt;ParteDeProduccion 3892 partidaCemID=None fecha=....datetime(2007, 7, 31, 6, 12) fichaproduccion=''&gt;, &lt;ParteDeProduccion 3893 partidaCemID=None fecha=....datetime(2007, 7, 31, 12, 0) fichaproduccion=''&gt;, &lt;ParteDeProduccion 3895 partidaCemID=None fecha=....datetime(2007, 7, 31, 14, 0) fichaproduccion=''&gt;, &lt;ParteDeProduccion 3913 partidaCemID=None fecha=....datetime(2007, 8, 1, 23, 20) fichaproduccion=''&gt;, &lt;ParteDeProduccion 3916 partidaCemID=None fecha=...me.datetime(2007, 8, 2, 6, 0) fichaproduccion=''&gt;, &lt;ParteDeProduccion 3901 partidaCemID=None fecha=...me.datetime(2007, 8, 1, 6, 0) fichaproduccion=''&gt;, &lt;ParteDeProduccion 2469 partidaCemID=None fecha=...(2007, 1, 23, 16, 55) fichaproduccion='PP-200-2'&gt;, &lt;ParteDeProduccion 3909 partidaCemID=None fecha=....datetime(2007, 8, 1, 14, 22) fichaproduccion=''&gt;, &lt;ParteDeProduccion 3910 partidaCemID=None fecha=....datetime(2007, 8, 1, 15, 49) fichaproduccion=''&gt;, &lt;ParteDeProduccion 3911 partidaCemID=None fecha=....datetime(2007, 8, 1, 19, 25) fichaproduccion=''&gt;, &lt;ParteDeProduccion 3912 partidaCemID=None fecha=...e.datetime(2007, 8, 1, 22, 0) fichaproduccion=''&gt;, &lt;ParteDeProduccion 3914 partidaCemID=None fecha=....datetime(2007, 8, 1, 22, 11) fichaproduccion=''&gt;, ...)<br>
+<strong>PEDIDOS_ALBARANES_Y_FACTURAS_A_IGNORAR_MISMO_C_O_P</strong> = [&lt;PedidoVenta 376 comercialID=None obraID=303 tar...paisCorrespondencia='ESPA\xc3\x91A' textoObra=''&gt;, &lt;PedidoVenta 369 comercialID=None obraID=303 tar...paisCorrespondencia='ESPA\xc3\x91A' textoObra=''&gt;, &lt;PedidoVenta 171 comercialID=None obraID=1050 ta...OLT' paisCorrespondencia='ALEMANIA' textoObra=''&gt;, &lt;AlbaranSalida 497 almacenDestinoID=None almacen... 55 64' facturable=True motivo='' bloqueado=True&gt;, &lt;AlbaranSalida 494 almacenDestinoID=None almacen... 72 05' facturable=True motivo='' bloqueado=True&gt;, &lt;AlbaranSalida 167 almacenDestinoID=None almacen...ente. Actualizado el 25/10/2006.' bloqueado=True&gt;, &lt;FacturaVenta 279 clienteID=10 obraID=None fecha...bservaciones='' iva=0.16 bloqueada=True irpf=0.0&gt;]<br>
+<strong>TICKETS_A_IGNORAR</strong> = []<br>
+<strong>dde</strong> = &lt;DatosDeLaEmpresa 1 nombre='Geotexan, S.A.' cif=...ivel1='PAGO A 120 D\xc3\x8dAS F.F. PAGO LOS 25.'&gt;<br>
+<strong>idpedido</strong> = 672<br>
+<strong>idspedido</strong> = (2, 129, 135, 44, 108, 230, 325, 672)<br>
+<strong>path_framework</strong> = '../framework'</td></tr></table>
+</body></html>

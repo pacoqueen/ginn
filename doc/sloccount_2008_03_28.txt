@@ -1,0 +1,78 @@
+Creating filelist for adjuntos
+Creating filelist for adjuntos_qinn
+Creating filelist for BD
+Have a non-directory at the top, so creating directory top_dir
+Adding /home/queen/Q-INN/geotexan/geotexinn02/./ChangeLog to top_dir
+Adding /home/queen/Q-INN/geotexan/geotexinn02/./ChangeLog.bak to top_dir
+Adding /home/queen/Q-INN/geotexan/geotexinn02/./changelog_ginn.html to top_dir
+Adding /home/queen/Q-INN/geotexan/geotexinn02/./ChangeLog.txt to top_dir
+Adding /home/queen/Q-INN/geotexan/geotexinn02/./COPYING to top_dir
+Creating filelist for CVS
+Adding /home/queen/Q-INN/geotexan/geotexinn02/./cvs2cl.pl to top_dir
+Adding /home/queen/Q-INN/geotexan/geotexinn02/./cvschangelogbuilder_geotexinn02.cache to top_dir
+Adding /home/queen/Q-INN/geotexan/geotexinn02/./cvschangelogbuilder_geotexinn02_codelines.png to top_dir
+Adding /home/queen/Q-INN/geotexan/geotexinn02/./cvschangelogbuilder_geotexinn02_commitshistorybyuser.png to top_dir
+Adding /home/queen/Q-INN/geotexan/geotexinn02/./cvschangelogbuilder_geotexinn02_daysofweek.png to top_dir
+Adding /home/queen/Q-INN/geotexan/geotexinn02/./cvschangelogbuilder_geotexinn02_developerscommit.png to top_dir
+Adding /home/queen/Q-INN/geotexan/geotexinn02/./cvschangelogbuilder_geotexinn02_developersfile.png to top_dir
+Adding /home/queen/Q-INN/geotexan/geotexinn02/./cvschangelogbuilder_geotexinn02_hours.png to top_dir
+Creating filelist for doc
+Creating filelist for formularios
+Creating filelist for framework
+Creating filelist for gajim-0.9.1
+Adding /home/queen/Q-INN/geotexan/geotexinn02/./GPL to top_dir
+Adding /home/queen/Q-INN/geotexan/geotexinn02/./gpl.txt to top_dir
+Creating filelist for imagenes
+Creating filelist for informes
+Creating filelist for libgmail-0.1.3.3
+Adding /home/queen/Q-INN/geotexan/geotexinn02/./post_outage.py to top_dir
+Creating filelist for PyChart-1.39
+Adding /home/queen/Q-INN/geotexan/geotexinn02/./README to top_dir
+Creating filelist for SQLObject
+Adding /home/queen/Q-INN/geotexan/geotexinn02/./upgrade.sh to top_dir
+Creating filelist for utils
+Categorizing files.
+Finding a working MD5 command....
+Found a working MD5 command.
+Computing results.
+
+
+SLOC	Directory	SLOC-by-Language (Sorted)
+64271   formularios     python=64271
+24513   gajim-0.9.1     python=22155,sh=1710,ansic=648
+10354   SQLObject       python=10354
+8392    framework       python=8332,sh=60
+8166    informes        python=8166
+7160    PyChart-1.39    python=7160
+2238    doc             sh=2050,python=188
+2151    BD              python=1957,sh=194
+970     libgmail-0.1.3.3 python=970
+592     utils           python=577,sh=15
+34      top_dir         sh=23,python=11
+0       adjuntos        (none)
+0       adjuntos_qinn   (none)
+0       CVS             (none)
+0       imagenes        (none)
+
+
+Totals grouped by language (dominant language first):
+python:      124141 (96.35%)
+sh:            4052 (3.14%)
+ansic:          648 (0.50%)
+
+
+
+
+Total Physical Source Lines of Code (SLOC)                = 128,841
+Development Effort Estimate, Person-Years (Person-Months) = 30.40 (364.78)
+ (Basic COCOMO model, Person-Months = 2.4 * (KSLOC**1.05))
+Schedule Estimate, Years (Months)                         = 1.53 (18.36)
+ (Basic COCOMO model, Months = 2.5 * (person-months**0.38))
+Total Estimated Cost to Develop                           = $ 1,575,829
+ (average salary = $21,600/year, overhead = 2.40).
+SLOCCount, Copyright (C) 2001-2004 David A. Wheeler
+SLOCCount is Open Source Software/Free Software, licensed under the GNU GPL.
+SLOCCount comes with ABSOLUTELY NO WARRANTY, and you are welcome to
+redistribute it under certain conditions as specified by the GNU GPL license;
+see the documentation for details.
+Please credit this data as "generated using David A. Wheeler's 'SLOCCount'."

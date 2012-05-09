@@ -1,0 +1,195 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module productos_de_venta_rollos_geocompuestos</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>productos_de_venta_rollos_geocompuestos</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/queen/geotexan/geotexinn02/formularios/productos_de_venta_rollos_geocompuestos.py">/home/queen/geotexan/geotexinn02/formularios/productos_de_venta_rollos_geocompuestos.py</a></font></td></tr></table>
+    <p><tt>#&nbsp;-*-&nbsp;coding:&nbsp;utf-8&nbsp;-*-</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="gtk.html">gtk</a><br>
+<a href="pclases.html">pclases</a><br>
+</td><td width="25%" valign=top><a href="pygtk.html">pygtk</a><br>
+<a href="sqlobject.html">sqlobject</a><br>
+</td><td width="25%" valign=top><a href="time.html">time</a><br>
+<a href="utils.html">utils</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="ventana.html#Ventana">ventana.Ventana</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="productos_de_venta_rollos_geocompuestos.html#ProductosDeVentaRollosGeocompuestos">ProductosDeVentaRollosGeocompuestos</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ProductosDeVentaRollosGeocompuestos">class <strong>ProductosDeVentaRollosGeocompuestos</strong></a>(<a href="ventana.html#Ventana">ventana.Ventana</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-__init__"><strong>__init__</strong></a>(self, objeto<font color="#909090">=None</font>, usuario<font color="#909090">=None</font>)</dt><dd><tt>Constructor.&nbsp;objeto&nbsp;puede&nbsp;ser&nbsp;un&nbsp;objeto&nbsp;de&nbsp;pclases&nbsp;con&nbsp;el&nbsp;que<br>
+comenzar&nbsp;la&nbsp;ventana&nbsp;(en&nbsp;lugar&nbsp;del&nbsp;primero&nbsp;de&nbsp;la&nbsp;tabla,&nbsp;que&nbsp;es<br>
+el&nbsp;que&nbsp;se&nbsp;muestra&nbsp;por&nbsp;defecto).</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-activar_widgets"><strong>activar_widgets</strong></a>(self, s, chequear_permisos<font color="#909090">=True</font>)</dt><dd><tt>Activa&nbsp;o&nbsp;desactiva&nbsp;(sensitive=True/False)&nbsp;todos&nbsp;<br>
+los&nbsp;widgets&nbsp;de&nbsp;la&nbsp;ventana&nbsp;que&nbsp;dependan&nbsp;del&nbsp;<br>
+objeto&nbsp;mostrado.<br>
+Entrada:&nbsp;s&nbsp;debe&nbsp;ser&nbsp;True&nbsp;o&nbsp;False.&nbsp;En&nbsp;todo&nbsp;caso<br>
+se&nbsp;evaluará&nbsp;como&nbsp;boolean.</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-add_campoesp"><strong>add_campoesp</strong></a>(self, w)</dt></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-aviso_actualizacion"><strong>aviso_actualizacion</strong></a>(self)</dt><dd><tt>Muestra&nbsp;una&nbsp;ventana&nbsp;modal&nbsp;con&nbsp;el&nbsp;mensaje&nbsp;de&nbsp;objeto&nbsp;<br>
+actualizado.</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-borrar_producto"><strong>borrar_producto</strong></a>(self, widget)</dt><dd><tt>Elimina&nbsp;el&nbsp;producto&nbsp;de&nbsp;la&nbsp;tabla&nbsp;pero&nbsp;NO<br>
+intenta&nbsp;eliminar&nbsp;ninguna&nbsp;de&nbsp;sus&nbsp;relaciones,<br>
+de&nbsp;forma&nbsp;que&nbsp;si&nbsp;se&nbsp;incumple&nbsp;alguna&nbsp;<br>
+restricción&nbsp;de&nbsp;la&nbsp;BD,&nbsp;cancelará&nbsp;la&nbsp;eliminación<br>
+y&nbsp;avisará&nbsp;al&nbsp;usuario.</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-buscar_cod_libre"><strong>buscar_cod_libre</strong></a>(self)</dt><dd><tt>Devuelve&nbsp;un&nbsp;código&nbsp;de&nbsp;tres&nbsp;cifras&nbsp;como&nbsp;<br>
+cadena&nbsp;que&nbsp;no&nbsp;esté&nbsp;ya&nbsp;en&nbsp;la&nbsp;tabla&nbsp;de&nbsp;<br>
+productos&nbsp;como&nbsp;producto&nbsp;terminado.<br>
+Siempre&nbsp;devolverá&nbsp;el&nbsp;primer&nbsp;código<br>
+libre&nbsp;más&nbsp;cercano&nbsp;a&nbsp;000.<br>
+Si&nbsp;no&nbsp;quedan&nbsp;más&nbsp;mostrará&nbsp;un&nbsp;mensaje<br>
+de&nbsp;error&nbsp;por&nbsp;pantalla&nbsp;y&nbsp;devolverá<br>
+999.</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-buscar_producto"><strong>buscar_producto</strong></a>(self, widget)</dt><dd><tt>Muestra&nbsp;una&nbsp;ventana&nbsp;de&nbsp;búsqueda&nbsp;y&nbsp;a&nbsp;continuación&nbsp;los<br>
+resultados.&nbsp;El&nbsp;objeto&nbsp;seleccionado&nbsp;se&nbsp;hará&nbsp;activo<br>
+en&nbsp;la&nbsp;ventana&nbsp;a&nbsp;no&nbsp;ser&nbsp;que&nbsp;se&nbsp;pulse&nbsp;en&nbsp;Cancelar&nbsp;en<br>
+la&nbsp;ventana&nbsp;de&nbsp;resultados.</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-calcular_digitoc"><strong>calcular_digitoc</strong></a>(self, cod)</dt></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-change_campoesp"><strong>change_campoesp</strong></a>(self, w)</dt></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-crear_nuevo_producto"><strong>crear_nuevo_producto</strong></a>(self, widget)</dt><dd><tt>Función&nbsp;callback&nbsp;del&nbsp;botón&nbsp;b_nuevo.<br>
+Pide&nbsp;los&nbsp;datos&nbsp;básicos&nbsp;para&nbsp;crear&nbsp;un&nbsp;nuevo&nbsp;objeto.<br>
+Una&nbsp;vez&nbsp;insertado&nbsp;en&nbsp;la&nbsp;BD&nbsp;hay&nbsp;que&nbsp;hacerlo&nbsp;activo<br>
+en&nbsp;la&nbsp;ventana&nbsp;para&nbsp;que&nbsp;puedan&nbsp;ser&nbsp;editados&nbsp;el&nbsp;resto<br>
+de&nbsp;campos&nbsp;que&nbsp;no&nbsp;se&nbsp;hayan&nbsp;pedido&nbsp;aquí.</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-drop_campoesp"><strong>drop_campoesp</strong></a>(self, w)</dt></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-es_diferente"><strong>es_diferente</strong></a>(self)</dt><dd><tt>Devuelve&nbsp;True&nbsp;si&nbsp;la&nbsp;información&nbsp;en&nbsp;pantalla&nbsp;es&nbsp;distinta&nbsp;a&nbsp;la<br>
+del&nbsp;objeto&nbsp;en&nbsp;memoria.</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-generar_codigo_ean"><strong>generar_codigo_ean</strong></a>(self)</dt><dd><tt>Genera&nbsp;un&nbsp;código&nbsp;EAN-13&nbsp;completo,&nbsp;dígito&nbsp;control<br>
+incluido,&nbsp;dentro&nbsp;del&nbsp;rango&nbsp;asignado&nbsp;a&nbsp;Geotexan.</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-guardar"><strong>guardar</strong></a>(self, widget)</dt><dd><tt>Guarda&nbsp;el&nbsp;contenido&nbsp;de&nbsp;los&nbsp;entry&nbsp;y&nbsp;demás&nbsp;widgets&nbsp;de&nbsp;entrada<br>
+de&nbsp;datos&nbsp;en&nbsp;el&nbsp;objeto&nbsp;y&nbsp;lo&nbsp;sincroniza&nbsp;con&nbsp;la&nbsp;BD.</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-inicializar_ventana"><strong>inicializar_ventana</strong></a>(self)</dt><dd><tt>Inicializa&nbsp;los&nbsp;controles&nbsp;de&nbsp;la&nbsp;ventana,&nbsp;estableciendo&nbsp;sus<br>
+valores&nbsp;por&nbsp;defecto,&nbsp;deshabilitando&nbsp;los&nbsp;innecesarios,<br>
+rellenando&nbsp;los&nbsp;combos,&nbsp;formateando&nbsp;el&nbsp;TreeView&nbsp;-si&nbsp;lo&nbsp;hay-...</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-ir_a_anterior"><strong>ir_a_anterior</strong></a>(self, widget)</dt><dd><tt>Hace&nbsp;que&nbsp;el&nbsp;registro&nbsp;anterior&nbsp;(ordenados&nbsp;por&nbsp;ID&nbsp;interno)<br>
+sea&nbsp;el&nbsp;objeto&nbsp;activo</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-ir_a_primero"><strong>ir_a_primero</strong></a>(self)</dt><dd><tt>Hace&nbsp;que&nbsp;el&nbsp;primer&nbsp;registro&nbsp;-si&nbsp;lo&nbsp;hay-&nbsp;de&nbsp;la&nbsp;tabla&nbsp;implicada<br>
+en&nbsp;el&nbsp;objeto&nbsp;del&nbsp;formulario&nbsp;sea&nbsp;el&nbsp;objeto&nbsp;activo.</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-ir_a_siguiente"><strong>ir_a_siguiente</strong></a>(self, widget)</dt><dd><tt>Hace&nbsp;que&nbsp;el&nbsp;siguiente&nbsp;registro&nbsp;(ordenados&nbsp;por&nbsp;ID&nbsp;interno)<br>
+sea&nbsp;el&nbsp;objeto&nbsp;activo</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-mostrar_especificos"><strong>mostrar_especificos</strong></a>(self)</dt><dd><tt>Muestra&nbsp;los&nbsp;datos&nbsp;específicos&nbsp;del&nbsp;producto.<br>
+Elimina&nbsp;los&nbsp;hijos&nbsp;que&nbsp;componen&nbsp;la&nbsp;tabla&nbsp;<br>
+antes&nbsp;de&nbsp;insertar&nbsp;los&nbsp;nuevos.</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-muestra_stock"><strong>muestra_stock</strong></a>(self, boton<font color="#909090">=None</font>)</dt><dd><tt>Escribe&nbsp;el&nbsp;stock&nbsp;del&nbsp;producto&nbsp;en&nbsp;el&nbsp;widget.</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-refinar_resultados_busqueda"><strong>refinar_resultados_busqueda</strong></a>(self, resultados)</dt><dd><tt>Muestra&nbsp;en&nbsp;una&nbsp;ventana&nbsp;de&nbsp;resultados&nbsp;todos&nbsp;los<br>
+registros&nbsp;de&nbsp;"resultados".<br>
+Devuelve&nbsp;el&nbsp;id&nbsp;(primera&nbsp;columna&nbsp;de&nbsp;la&nbsp;ventana<br>
+de&nbsp;resultados)&nbsp;de&nbsp;la&nbsp;fila&nbsp;seleccionada&nbsp;o&nbsp;None<br>
+si&nbsp;se&nbsp;canceló.</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-rellenar_widgets"><strong>rellenar_widgets</strong></a>(self)</dt><dd><tt>Introduce&nbsp;la&nbsp;información&nbsp;del&nbsp;producto&nbsp;actual<br>
+en&nbsp;los&nbsp;widgets.</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-seleccionar_campoesp"><strong>seleccionar_campoesp</strong></a>(self, campos)</dt></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-ver_articulos"><strong>ver_articulos</strong></a>(self, w)</dt><dd><tt>Muestra&nbsp;las&nbsp;existencias&nbsp;del&nbsp;artículo&nbsp;en&nbsp;el&nbsp;almacén</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-ver_ficha"><strong>ver_ficha</strong></a>(self, w)</dt></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-ver_tarifas"><strong>ver_tarifas</strong></a>(self, w)</dt></dl>
+
+<hr>
+Methods inherited from <a href="ventana.html#Ventana">ventana.Ventana</a>:<br>
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-abrir_gajim"><strong>abrir_gajim</strong></a>(self)</dt><dd><tt>Calcado&nbsp;de&nbsp;menu.py.&nbsp;Sólo&nbsp;lleva&nbsp;las&nbsp;modificaciones&nbsp;necesarias&nbsp;para&nbsp;hacerlo&nbsp;funcionar&nbsp;desde&nbsp;aquí.</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-acerca_de"><strong>acerca_de</strong></a>(self)</dt><dd><tt>Calcado&nbsp;de&nbsp;menu.py.&nbsp;Modificado&nbsp;ligeramente&nbsp;para&nbsp;hacerlo&nbsp;funcionar&nbsp;aquí.</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-actualizar_objeto_y_enlaces"><strong>actualizar_objeto_y_enlaces</strong></a>(self, actualizar_ventana_tambien<font color="#909090">=True</font>)</dt></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-actualizar_ventana"><strong>actualizar_ventana</strong></a>(self, widget<font color="#909090">=None</font>, objeto_anterior<font color="#909090">=None</font>)</dt><dd><tt>Actualiza&nbsp;el&nbsp;contenido&nbsp;de&nbsp;los&nbsp;controles&nbsp;de&nbsp;la&nbsp;ventana<br>
+para&nbsp;que&nbsp;muestren&nbsp;todos&nbsp;los&nbsp;datos&nbsp;del&nbsp;objeto&nbsp;actual.<br>
+widget&nbsp;no&nbsp;se&nbsp;usa.&nbsp;Se&nbsp;recibe&nbsp;para&nbsp;el&nbsp;caso&nbsp;en&nbsp;que&nbsp;se&nbsp;llama&nbsp;a&nbsp;<br>
+la&nbsp;función&nbsp;desde&nbsp;un&nbsp;botón.<br>
+objeto_anterior&nbsp;es&nbsp;un&nbsp;objeo&nbsp;de&nbsp;pclases.&nbsp;Sería&nbsp;el&nbsp;que&nbsp;se&nbsp;<br>
+muestra&nbsp;en&nbsp;pantalla&nbsp;justo&nbsp;antes&nbsp;de&nbsp;llamar&nbsp;a&nbsp;actualizar_ventana<br>
+y&nbsp;recargar&nbsp;los&nbsp;datos.&nbsp;Si&nbsp;se&nbsp;recibe&nbsp;y&nbsp;hay&nbsp;cambios&nbsp;pendientes&nbsp;de<br>
+guardar,&nbsp;el&nbsp;contenido&nbsp;de&nbsp;la&nbsp;ventana&nbsp;se&nbsp;guarda&nbsp;en&nbsp;ese&nbsp;objeto<br>
+ANTES&nbsp;de&nbsp;mostrar&nbsp;el&nbsp;nuevo&nbsp;(o&nbsp;el&nbsp;mismo&nbsp;con&nbsp;nueva&nbsp;información)&nbsp;<br>
+en&nbsp;los&nbsp;widgets&nbsp;de&nbsp;pantalla.</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-add_connections"><strong>add_connections</strong></a>(self, dict)</dt><dd><tt>Recorre&nbsp;el&nbsp;diccionario&nbsp;y&nbsp;crea&nbsp;las&nbsp;conexiones&nbsp;con&nbsp;<br>
+los&nbsp;callbacks.</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-build_menu_superior"><strong>build_menu_superior</strong></a>(self)</dt><dd><tt>Construye&nbsp;un&nbsp;menú&nbsp;con&nbsp;las&nbsp;mismas&nbsp;opciones&nbsp;que&nbsp;el&nbsp;menú&nbsp;principal.</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-check_permisos"><strong>check_permisos</strong></a>(self, nombre_fichero_ventana)</dt><dd><tt>Activa&nbsp;o&nbsp;desactiva&nbsp;los&nbsp;controles&nbsp;dependiendo&nbsp;de&nbsp;los&nbsp;<br>
+permisos&nbsp;del&nbsp;usuario.</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-chequear_cambios"><strong>chequear_cambios</strong></a>(self)</dt><dd><tt>Activa&nbsp;el&nbsp;botón&nbsp;«Guardar»&nbsp;si&nbsp;hay&nbsp;cambios&nbsp;los&nbsp;datos.<br>
+El&nbsp;botón&nbsp;se&nbsp;debe&nbsp;llamar&nbsp;"b_guardar"&nbsp;y&nbsp;el&nbsp;método&nbsp;para&nbsp;<br>
+verificar&nbsp;los&nbsp;cambios&nbsp;"es_diferente"&nbsp;o&nbsp;no&nbsp;funcionará.</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-chequear_hilo"><strong>chequear_hilo</strong></a>(self)</dt><dd><tt>Consulta&nbsp;el&nbsp;hilo&nbsp;notificador&nbsp;del&nbsp;objeto&nbsp;actual.<br>
+En&nbsp;realidad&nbsp;es&nbsp;una&nbsp;mera&nbsp;excusa&nbsp;para&nbsp;obligar&nbsp;a&nbsp;GTK&nbsp;a&nbsp;<br>
+atender&nbsp;al&nbsp;objeto&nbsp;lo&nbsp;antes&nbsp;posible&nbsp;en&nbsp;caso&nbsp;de&nbsp;<br>
+notificación.</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-ir_a"><strong>ir_a</strong></a>(self, objeto)</dt></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-make_connections"><strong>make_connections</strong></a>(self)</dt><dd><tt>Realiza&nbsp;las&nbsp;conexiones&nbsp;básicas&nbsp;entre&nbsp;widgets&nbsp;y&nbsp;callbacks.<br>
+Para&nbsp;el&nbsp;resto&nbsp;de&nbsp;conexiones,&nbsp;usar&nbsp;add_connections.<br>
+La&nbsp;ventana&nbsp;principal&nbsp;DEBE&nbsp;llamarse&nbsp;"ventana".</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-make_funciones_ociosas"><strong>make_funciones_ociosas</strong></a>(self)</dt><dd><tt>Inicia&nbsp;las&nbsp;funciones&nbsp;ociosas&nbsp;de&nbsp;chequeo&nbsp;de&nbsp;cambios<br>
+remotos&nbsp;(actualizar)&nbsp;y&nbsp;locales&nbsp;(guardar).</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-salir"><strong>salir</strong></a>(self, boton, event<font color="#909090">=None</font>, mostrar_ventana<font color="#909090">=True</font>)</dt><dd><tt>Muestra&nbsp;una&nbsp;ventana&nbsp;de&nbsp;confirmación&nbsp;y&nbsp;<br>
+sale&nbsp;de&nbsp;la&nbsp;ventana&nbsp;cerrando&nbsp;el&nbsp;bucle<br>
+local&nbsp;de&nbsp;gtk_main.<br>
+Si&nbsp;mostrar_ventana&nbsp;es&nbsp;False,&nbsp;sale&nbsp;directamente<br>
+sin&nbsp;preguntar&nbsp;al&nbsp;usuario.</tt></dd></dl>
+
+<dl><dt><a name="ProductosDeVentaRollosGeocompuestos-volver_a_cursor_original"><strong>volver_a_cursor_original</strong></a>(self)</dt><dd><tt>Calcado&nbsp;de&nbsp;menu.py.&nbsp;Sólo&nbsp;lleva&nbsp;las&nbsp;modificaciones&nbsp;necesarias&nbsp;para&nbsp;hacerlo&nbsp;funcionar&nbsp;desde&nbsp;aquí.</tt></dd></dl>
+
+</td></tr></table></td></tr></table>
+</body></html>

@@ -1,0 +1,417 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module prefacturas</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>prefacturas</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/queen/Q-INN/geotexan/geotexinn02/formularios/prefacturas.py">/home/queen/Q-INN/geotexan/geotexinn02/formularios/prefacturas.py</a></font></td></tr></table>
+    <p><tt>#&nbsp;-*-&nbsp;coding:&nbsp;utf-8&nbsp;-*-</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="geninformes.html">geninformes</a><br>
+<a href="gtk.html">gtk</a><br>
+<a href="mx.html">mx</a><br>
+</td><td width="25%" valign=top><a href="os.html">os</a><br>
+<a href="pclases.html">pclases</a><br>
+<a href="postomatic.html">postomatic</a><br>
+</td><td width="25%" valign=top><a href="pygtk.html">pygtk</a><br>
+<a href="sqlobject.html">sqlobject</a><br>
+<a href="sys.html">sys</a><br>
+</td><td width="25%" valign=top><a href="time.html">time</a><br>
+<a href="utils.html">utils</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="ventana.html#Ventana">ventana.Ventana</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="prefacturas.html#Prefacturas">Prefacturas</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Prefacturas">class <strong>Prefacturas</strong></a>(<a href="ventana.html#Ventana">ventana.Ventana</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Prefacturas-__init__"><strong>__init__</strong></a>(self, objeto<font color="#909090">=None</font>, usuario<font color="#909090">=None</font>)</dt><dd><tt>Constructor.&nbsp;objeto&nbsp;puede&nbsp;ser&nbsp;un&nbsp;objeto&nbsp;de&nbsp;pclases&nbsp;con&nbsp;el&nbsp;que<br>
+comenzar&nbsp;la&nbsp;ventana&nbsp;(en&nbsp;lugar&nbsp;del&nbsp;primero&nbsp;de&nbsp;la&nbsp;tabla,&nbsp;que&nbsp;es<br>
+el&nbsp;que&nbsp;se&nbsp;muestra&nbsp;por&nbsp;defecto).</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-abrir_factura_imprimida"><strong>abrir_factura_imprimida</strong></a>(self, nomarchivo)</dt><dd><tt>Muestra&nbsp;la&nbsp;factura&nbsp;generada&nbsp;en&nbsp;PDF.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-activar_contenido"><strong>activar_contenido</strong></a>(self, boton)</dt><dd><tt>Activa&nbsp;los&nbsp;widgets&nbsp;que&nbsp;dependen&nbsp;del&nbsp;cliente&nbsp;seleccionado&nbsp;<br>
+en&nbsp;función&nbsp;de&nbsp;si&nbsp;éste&nbsp;es&nbsp;válido&nbsp;o&nbsp;no.<br>
+DEPRECATED</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-activar_widgets"><strong>activar_widgets</strong></a>(self, s)</dt><dd><tt>Activa&nbsp;o&nbsp;desactiva&nbsp;(sensitive=True/False)&nbsp;todos&nbsp;<br>
+los&nbsp;widgets&nbsp;de&nbsp;la&nbsp;ventana&nbsp;que&nbsp;dependan&nbsp;del&nbsp;<br>
+objeto&nbsp;mostrado.<br>
+Entrada:&nbsp;s&nbsp;debe&nbsp;ser&nbsp;True&nbsp;o&nbsp;False.&nbsp;En&nbsp;todo&nbsp;caso<br>
+se&nbsp;evaluará&nbsp;como&nbsp;boolean.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-actualizar_vencimientos"><strong>actualizar_vencimientos</strong></a>(self)</dt><dd><tt>Actualiza&nbsp;los&nbsp;vencimientos&nbsp;NO&nbsp;estimados&nbsp;a&nbsp;la<br>
+cantidad&nbsp;adecuada&nbsp;para&nbsp;que&nbsp;la&nbsp;suma&nbsp;de&nbsp;todos<br>
+ellos&nbsp;sea&nbsp;igual&nbsp;que&nbsp;el&nbsp;total&nbsp;de&nbsp;factura.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-add_albaran"><strong>add_albaran</strong></a>(self, idalbaran)</dt><dd><tt>Añade&nbsp;todas&nbsp;las&nbsp;LDV&nbsp;del&nbsp;albarán&nbsp;sin&nbsp;facturar&nbsp;a<br>
+la&nbsp;factura&nbsp;actual.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-add_ldv"><strong>add_ldv</strong></a>(self, idldv)</dt><dd><tt>Añade&nbsp;la&nbsp;LDV&nbsp;correspondiente&nbsp;a&nbsp;"idldv"&nbsp;a&nbsp;la<br>
+factura&nbsp;actual.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-add_nueva_ldv"><strong>add_nueva_ldv</strong></a>(self, boton)</dt><dd><tt>Añade&nbsp;una&nbsp;nueva&nbsp;LDV&nbsp;creada&nbsp;a&nbsp;partir&nbsp;de&nbsp;la&nbsp;<br>
+información&nbsp;recogida&nbsp;mediante&nbsp;diálogos<br>
+modales.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-add_pedido"><strong>add_pedido</strong></a>(self, idpedido)</dt><dd><tt>Añade&nbsp;todas&nbsp;las&nbsp;LDV&nbsp;sin&nbsp;facturar&nbsp;del&nbsp;pedido&nbsp;a&nbsp;la&nbsp;<br>
+factura&nbsp;actual.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-add_servicio"><strong>add_servicio</strong></a>(self, idsrv)</dt><dd><tt>Añade&nbsp;el&nbsp;servicio&nbsp;correspondiente&nbsp;a&nbsp;"idsrv"&nbsp;a&nbsp;la<br>
+factura&nbsp;actual.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-add_src"><strong>add_src</strong></a>(self, boton)</dt><dd><tt>Añade&nbsp;la&nbsp;LDV&nbsp;seleccionada&nbsp;en&nbsp;la&nbsp;tabla&nbsp;"tv_srcs"&nbsp;a&nbsp;la&nbsp;factura<br>
+actual.&nbsp;Si&nbsp;lo&nbsp;que&nbsp;se&nbsp;ha&nbsp;seleccionado&nbsp;es&nbsp;un&nbsp;pedido,&nbsp;añade&nbsp;el&nbsp;<br>
+pedido&nbsp;completo.&nbsp;Al&nbsp;igual&nbsp;ocurre&nbsp;con&nbsp;los&nbsp;albaranes.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-add_srv"><strong>add_srv</strong></a>(self, boton)</dt></dl>
+
+<dl><dt><a name="Prefacturas-add_vto"><strong>add_vto</strong></a>(self, boton)</dt><dd><tt>Pide&nbsp;a&nbsp;través&nbsp;de&nbsp;diálogos&nbsp;información&nbsp;sobre&nbsp;un&nbsp;nuevo&nbsp;vencimiento<br>
+y&nbsp;lo&nbsp;inserta&nbsp;en&nbsp;la&nbsp;factura&nbsp;actual.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-aviso_actualizacion"><strong>aviso_actualizacion</strong></a>(self)</dt><dd><tt>Muestra&nbsp;una&nbsp;ventana&nbsp;modal&nbsp;con&nbsp;el&nbsp;mensaje&nbsp;de&nbsp;objeto&nbsp;<br>
+actualizado.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-borrar_factura"><strong>borrar_factura</strong></a>(self, boton)</dt><dd><tt>Elimina&nbsp;el&nbsp;factura&nbsp;de&nbsp;la&nbsp;BD&nbsp;y&nbsp;anula&nbsp;la&nbsp;relación&nbsp;entre<br>
+él&nbsp;y&nbsp;sus&nbsp;LDVs.<br>
+NO&nbsp;decrementa&nbsp;(ni&nbsp;debe)&nbsp;el&nbsp;contador&nbsp;de&nbsp;facturas.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-borrar_vencimientos_y_estimaciones"><strong>borrar_vencimientos_y_estimaciones</strong></a>(self, factura)</dt></dl>
+
+<dl><dt><a name="Prefacturas-buscar_abonos"><strong>buscar_abonos</strong></a>(self, w)</dt><dd><tt>Busca&nbsp;facturas&nbsp;de&nbsp;abono&nbsp;en&nbsp;la&nbsp;base&nbsp;de&nbsp;datos&nbsp;para&nbsp;que&nbsp;el&nbsp;usuario&nbsp;<br>
+pueda&nbsp;agregar&nbsp;una&nbsp;o&nbsp;varias&nbsp;a&nbsp;la&nbsp;factura&nbsp;de&nbsp;venta&nbsp;actual.<br>
+Crea&nbsp;los&nbsp;pagos&nbsp;de&nbsp;abono&nbsp;correspondientes&nbsp;que&nbsp;se&nbsp;muestran&nbsp;en&nbsp;<br>
+la&nbsp;ventana.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-buscar_articulos"><strong>buscar_articulos</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Prefacturas-buscar_factura"><strong>buscar_factura</strong></a>(self, widget)</dt><dd><tt>Muestra&nbsp;una&nbsp;ventana&nbsp;de&nbsp;búsqueda&nbsp;y&nbsp;a&nbsp;continuación&nbsp;los<br>
+resultados.&nbsp;El&nbsp;objeto&nbsp;seleccionado&nbsp;se&nbsp;hará&nbsp;activo<br>
+en&nbsp;la&nbsp;ventana&nbsp;a&nbsp;no&nbsp;ser&nbsp;que&nbsp;se&nbsp;pulse&nbsp;en&nbsp;Cancelar&nbsp;en<br>
+la&nbsp;ventana&nbsp;de&nbsp;resultados.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-buscar_fecha"><strong>buscar_fecha</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Prefacturas-cambiar_cantidad"><strong>cambiar_cantidad</strong></a>(self, cell, path, texto)</dt><dd><tt>Cambia&nbsp;la&nbsp;cantidad,&nbsp;etcétera&nbsp;etcétera.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-cambiar_cantidad_ldv"><strong>cambiar_cantidad_ldv</strong></a>(self, cell, path, texto)</dt><dd><tt>Cambia&nbsp;la&nbsp;cantidad,&nbsp;etcétera&nbsp;etcétera.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-cambiar_cantidad_srv"><strong>cambiar_cantidad_srv</strong></a>(self, cell, path, texto)</dt></dl>
+
+<dl><dt><a name="Prefacturas-cambiar_cobro"><strong>cambiar_cobro</strong></a>(self, cell, path, texto)</dt><dd><tt>Cambia&nbsp;la&nbsp;fecha&nbsp;del&nbsp;cobro&nbsp;<br>
+por&nbsp;la&nbsp;nueva&nbsp;introducida&nbsp;por&nbsp;teclado.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-cambiar_columna_busqueda"><strong>cambiar_columna_busqueda</strong></a>(self, treeviewcolumn)</dt></dl>
+
+<dl><dt><a name="Prefacturas-cambiar_concepto_srv"><strong>cambiar_concepto_srv</strong></a>(self, cell, path, texto)</dt></dl>
+
+<dl><dt><a name="Prefacturas-cambiar_cuenta_transferencia"><strong>cambiar_cuenta_transferencia</strong></a>(self, cell, path, texto)</dt><dd><tt>Busca&nbsp;una&nbsp;cuenta&nbsp;de&nbsp;la&nbsp;empresa&nbsp;a&nbsp;partir&nbsp;del&nbsp;texto&nbsp;introducido&nbsp;y&nbsp;la&nbsp;<br>
+relaciona&nbsp;con&nbsp;el&nbsp;vencimiento&nbsp;de&nbsp;la&nbsp;fila.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-cambiar_descripcion_complementaria"><strong>cambiar_descripcion_complementaria</strong></a>(self, cell, path, texto)</dt></dl>
+
+<dl><dt><a name="Prefacturas-cambiar_descuento"><strong>cambiar_descuento</strong></a>(self, cell, path, texto)</dt><dd><tt>Cambia&nbsp;el&nbsp;descuento&nbsp;y&nbsp;el&nbsp;total&nbsp;de&nbsp;la&nbsp;LDV&nbsp;seleccionada<br>
+en&nbsp;"tv_ldvs".</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-cambiar_descuento_srv"><strong>cambiar_descuento_srv</strong></a>(self, cell, path, texto)</dt></dl>
+
+<dl><dt><a name="Prefacturas-cambiar_estimado"><strong>cambiar_estimado</strong></a>(self, cell, path, texto)</dt><dd><tt>Cambia&nbsp;la&nbsp;fecha&nbsp;del&nbsp;vencimiento&nbsp;estimado<br>
+por&nbsp;la&nbsp;nueva&nbsp;introducida&nbsp;por&nbsp;teclado.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-cambiar_fecha"><strong>cambiar_fecha</strong></a>(self, w)</dt></dl>
+
+<dl><dt><a name="Prefacturas-cambiar_importe_cobro"><strong>cambiar_importe_cobro</strong></a>(self, cell, path, texto)</dt></dl>
+
+<dl><dt><a name="Prefacturas-cambiar_numfactura"><strong>cambiar_numfactura</strong></a>(self, w)</dt></dl>
+
+<dl><dt><a name="Prefacturas-cambiar_observaciones"><strong>cambiar_observaciones</strong></a>(self, cell, path, texto)</dt></dl>
+
+<dl><dt><a name="Prefacturas-cambiar_observaciones_vto"><strong>cambiar_observaciones_vto</strong></a>(self, cell, path, texto)</dt></dl>
+
+<dl><dt><a name="Prefacturas-cambiar_precio"><strong>cambiar_precio</strong></a>(self, cell, path, texto)</dt><dd><tt>Cambia&nbsp;el&nbsp;precio&nbsp;y&nbsp;el&nbsp;total&nbsp;de&nbsp;la&nbsp;LDV&nbsp;seleccionada<br>
+en&nbsp;"tv_ldvs".</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-cambiar_precio_srv"><strong>cambiar_precio_srv</strong></a>(self, cell, path, texto)</dt></dl>
+
+<dl><dt><a name="Prefacturas-cambiar_vto"><strong>cambiar_vto</strong></a>(self, cell, path, texto)</dt><dd><tt>Cambia&nbsp;la&nbsp;fecha&nbsp;del&nbsp;vencimiento&nbsp;por&nbsp;la&nbsp;<br>
+nueva&nbsp;introducida&nbsp;por&nbsp;teclado.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-chequear_cambio_fecha"><strong>chequear_cambio_fecha</strong></a>(self, factura, fecha)</dt><dd><tt>UNUSED&nbsp;-ByTheMoment(R)-</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-chequear_cambio_numero"><strong>chequear_cambio_numero</strong></a>(self, numfactura)</dt><dd><tt>numero&nbsp;debe&nbsp;ser&nbsp;el&nbsp;entero&nbsp;con&nbsp;el&nbsp;número,&nbsp;sin&nbsp;prefijos&nbsp;ni&nbsp;sufijos.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-clon_srv"><strong>clon_srv</strong></a>(self, boton)</dt><dd><tt>Busca&nbsp;un&nbsp;servicio&nbsp;existente&nbsp;en&nbsp;la&nbsp;BD&nbsp;(previamente&nbsp;facturado,&nbsp;<br>
+por&nbsp;tanto)&nbsp;y&nbsp;crea&nbsp;un&nbsp;nuevo&nbsp;servicio&nbsp;idéntico&nbsp;pero&nbsp;asociado&nbsp;a<br>
+la&nbsp;factura&nbsp;actual.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-crear_ldv"><strong>crear_ldv</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Prefacturas-crear_nuevo_factura"><strong>crear_nuevo_factura</strong></a>(self, widget)</dt><dd><tt>Función&nbsp;callback&nbsp;del&nbsp;botón&nbsp;b_nuevo.<br>
+Pide&nbsp;los&nbsp;datos&nbsp;básicos&nbsp;para&nbsp;crear&nbsp;un&nbsp;nuevo&nbsp;objeto.<br>
+Una&nbsp;vez&nbsp;insertado&nbsp;en&nbsp;la&nbsp;BD&nbsp;hay&nbsp;que&nbsp;hacerlo&nbsp;activo<br>
+en&nbsp;la&nbsp;ventana&nbsp;para&nbsp;que&nbsp;puedan&nbsp;ser&nbsp;editados&nbsp;el&nbsp;resto<br>
+de&nbsp;campos&nbsp;que&nbsp;no&nbsp;se&nbsp;hayan&nbsp;pedido&nbsp;aquí.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-crear_servicio"><strong>crear_servicio</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Prefacturas-crear_vencimientos_por_defecto"><strong>crear_vencimientos_por_defecto</strong></a>(self, w)</dt><dd><tt>Crea&nbsp;e&nbsp;inserta&nbsp;los&nbsp;vencimientos&nbsp;por&nbsp;defecto<br>
+definidos&nbsp;por&nbsp;el&nbsp;cliente&nbsp;en&nbsp;la&nbsp;factura<br>
+actual&nbsp;y&nbsp;en&nbsp;función&nbsp;de&nbsp;las&nbsp;LDV&nbsp;que&nbsp;tenga<br>
+en&nbsp;ese&nbsp;momento&nbsp;(concretamente&nbsp;del&nbsp;valor<br>
+del&nbsp;total&nbsp;de&nbsp;la&nbsp;ventana&nbsp;calculado&nbsp;a&nbsp;partir<br>
+de&nbsp;las&nbsp;LDV.)</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-desvincular_ldv_de_factura"><strong>desvincular_ldv_de_factura</strong></a>(self, ldv)</dt><dd><tt>Pone&nbsp;el&nbsp;factura&nbsp;de&nbsp;la&nbsp;ldv&nbsp;a&nbsp;None,&nbsp;con&nbsp;lo<br>
+que&nbsp;se&nbsp;desvincula&nbsp;de&nbsp;la&nbsp;factura.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-drop_abono"><strong>drop_abono</strong></a>(self, b)</dt></dl>
+
+<dl><dt><a name="Prefacturas-drop_ldv"><strong>drop_ldv</strong></a>(self, boton)</dt><dd><tt>Elimina&nbsp;de&nbsp;la&nbsp;factura&nbsp;la&nbsp;LDV&nbsp;seleccionada&nbsp;en<br>
+la&nbsp;tabla&nbsp;"tv_ldvs".</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-drop_srv"><strong>drop_srv</strong></a>(self, boton)</dt></dl>
+
+<dl><dt><a name="Prefacturas-drop_vto"><strong>drop_vto</strong></a>(self, boton)</dt><dd><tt>Me&nbsp;cargo&nbsp;los&nbsp;vencimientos&nbsp;(estimado&nbsp;y&nbsp;no)&nbsp;que&nbsp;estén<br>
+en&nbsp;la&nbsp;línea&nbsp;seleccionada.&nbsp;El&nbsp;pago&nbsp;no&nbsp;lo&nbsp;toco.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-es_diferente"><strong>es_diferente</strong></a>(self)</dt><dd><tt>Devuelve&nbsp;True&nbsp;si&nbsp;la&nbsp;información&nbsp;en&nbsp;pantalla&nbsp;es&nbsp;distinta&nbsp;a&nbsp;la<br>
+del&nbsp;objeto&nbsp;en&nbsp;memoria.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-get_numero_numfactura_from"><strong>get_numero_numfactura_from</strong></a>(self, numfactura, cliente)</dt><dd><tt>Devuelve&nbsp;el&nbsp;número&nbsp;de&nbsp;factura&nbsp;sin&nbsp;prefijo&nbsp;ni&nbsp;<br>
+sufijo&nbsp;y&nbsp;como&nbsp;entero.<br>
+Salta&nbsp;una&nbsp;excepción&nbsp;si&nbsp;no&nbsp;se&nbsp;pudo&nbsp;determinar<br>
+la&nbsp;parte&nbsp;numérica&nbsp;del&nbsp;número&nbsp;de&nbsp;factura.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-get_str_pedidos_albaranes"><strong>get_str_pedidos_albaranes</strong></a>(self)</dt><dd><tt>Devuelve&nbsp;una&nbsp;cadena&nbsp;con&nbsp;los&nbsp;pedidos&nbsp;y&nbsp;albaranes&nbsp;entre&nbsp;paréntesis&nbsp;de&nbsp;las&nbsp;<br>
+LDV&nbsp;de&nbsp;la&nbsp;factura.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-guardar"><strong>guardar</strong></a>(self, widget)</dt><dd><tt>Guarda&nbsp;el&nbsp;contenido&nbsp;de&nbsp;los&nbsp;entry&nbsp;y&nbsp;demás&nbsp;widgets&nbsp;de&nbsp;entrada<br>
+de&nbsp;datos&nbsp;en&nbsp;el&nbsp;objeto&nbsp;y&nbsp;lo&nbsp;sincroniza&nbsp;con&nbsp;la&nbsp;BD.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-imprimir"><strong>imprimir</strong></a>(self, boton)</dt><dd><tt>Prepara&nbsp;los&nbsp;datos&nbsp;para&nbsp;llamar&nbsp;al&nbsp;generador&nbsp;de&nbsp;informes</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-inicializar_ventana"><strong>inicializar_ventana</strong></a>(self)</dt><dd><tt>Inicializa&nbsp;los&nbsp;controles&nbsp;de&nbsp;la&nbsp;ventana,&nbsp;estableciendo&nbsp;sus<br>
+valores&nbsp;por&nbsp;defecto,&nbsp;deshabilitando&nbsp;los&nbsp;innecesarios,<br>
+rellenando&nbsp;los&nbsp;combos,&nbsp;formateando&nbsp;el&nbsp;TreeView&nbsp;-si&nbsp;lo&nbsp;hay-...</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-insertar_ldv_en_model"><strong>insertar_ldv_en_model</strong></a>(self, ldv, padre, model)</dt><dd><tt>Inserta&nbsp;la&nbsp;LDV&nbsp;correspondiente&nbsp;al&nbsp;id&nbsp;recibido&nbsp;en&nbsp;el<br>
+model&nbsp;de&nbsp;la&nbsp;tabla&nbsp;de&nbsp;orígenes&nbsp;(sources;&nbsp;tv_srcs).</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-insertar_servicio_en_model"><strong>insertar_servicio_en_model</strong></a>(self, srv, padre, model)</dt><dd><tt>Inserta&nbsp;la&nbsp;LDV&nbsp;correspondiente&nbsp;al&nbsp;id&nbsp;recibido&nbsp;en&nbsp;el<br>
+model&nbsp;de&nbsp;la&nbsp;tabla&nbsp;de&nbsp;orígenes&nbsp;(sources;&nbsp;tv_srcs).</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-ir_a_primero"><strong>ir_a_primero</strong></a>(self)</dt><dd><tt>Hace&nbsp;que&nbsp;el&nbsp;primer&nbsp;registro&nbsp;-si&nbsp;lo&nbsp;hay-&nbsp;de&nbsp;la&nbsp;tabla&nbsp;implicada<br>
+en&nbsp;el&nbsp;objeto&nbsp;del&nbsp;formulario&nbsp;sea&nbsp;el&nbsp;objeto&nbsp;activo.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-pedir_producto"><strong>pedir_producto</strong></a>(self)</dt><dd><tt>Solicita&nbsp;un&nbsp;código,&nbsp;nombre&nbsp;o&nbsp;descripcicón&nbsp;<br>
+de&nbsp;producto,&nbsp;muestra&nbsp;una&nbsp;ventana&nbsp;de&nbsp;resultados&nbsp;<br>
+coincidentes&nbsp;con&nbsp;la&nbsp;búsqueda&nbsp;y&nbsp;devuelve&nbsp;una&nbsp;<br>
+lista&nbsp;de&nbsp;ids&nbsp;de&nbsp;productos&nbsp;o&nbsp;[]&nbsp;si&nbsp;se&nbsp;cancela&nbsp;o&nbsp;<br>
+no&nbsp;se&nbsp;encuentra.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-preparar_vencimientos"><strong>preparar_vencimientos</strong></a>(self)</dt><dd><tt>A&nbsp;partir&nbsp;de&nbsp;los&nbsp;vencimientos&nbsp;y&nbsp;pagos&nbsp;asociados&nbsp;a&nbsp;la&nbsp;<br>
+factura&nbsp;construye&nbsp;una&nbsp;lista&nbsp;de&nbsp;listas&nbsp;de&nbsp;la&nbsp;forma:<br>
+[[vencimiento,&nbsp;vencimiento_estimado,&nbsp;pago],<br>
+&nbsp;[vencimiento,&nbsp;vencimiento_estimado,&nbsp;pago],<br>
+&nbsp;...]<br>
+Cualquiera&nbsp;de&nbsp;los&nbsp;tres&nbsp;objetos&nbsp;puede&nbsp;ser&nbsp;None&nbsp;en<br>
+alguna&nbsp;fila&nbsp;donde&nbsp;no&nbsp;haya,&nbsp;por&nbsp;ejemplo,&nbsp;una&nbsp;estimación<br>
+o&nbsp;un&nbsp;pago&nbsp;para&nbsp;un&nbsp;vencimiento.<br>
+La&nbsp;lista&nbsp;se&nbsp;construye&nbsp;emparejando&nbsp;por&nbsp;proximidad&nbsp;de<br>
+fechas&nbsp;entre&nbsp;los&nbsp;tres&nbsp;grupos&nbsp;(vto.,&nbsp;vto.&nbsp;estimado&nbsp;y<br>
+pago)&nbsp;y&nbsp;no&nbsp;se&nbsp;tiene&nbsp;en&nbsp;cuenta&nbsp;ningún&nbsp;otro&nbsp;criterio.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-refinar_busqueda"><strong>refinar_busqueda</strong></a>(self, resultados)</dt><dd><tt>resultados&nbsp;es&nbsp;una&nbsp;lista&nbsp;de&nbsp;id&nbsp;de&nbsp;productos.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-refinar_resultados_busqueda"><strong>refinar_resultados_busqueda</strong></a>(self, resultados)</dt><dd><tt>Muestra&nbsp;en&nbsp;una&nbsp;ventana&nbsp;de&nbsp;resultados&nbsp;todos&nbsp;los<br>
+registros&nbsp;de&nbsp;"resultados".<br>
+Devuelve&nbsp;el&nbsp;id&nbsp;(primera&nbsp;columna&nbsp;de&nbsp;la&nbsp;ventana<br>
+de&nbsp;resultados)&nbsp;de&nbsp;la&nbsp;fila&nbsp;seleccionada&nbsp;o&nbsp;None<br>
+si&nbsp;se&nbsp;canceló.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-rellenar_abonos"><strong>rellenar_abonos</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Prefacturas-rellenar_contenido"><strong>rellenar_contenido</strong></a>(self)</dt><dd><tt>Rellena&nbsp;el&nbsp;contenido&nbsp;de&nbsp;la&nbsp;factura.<br>
+Aquí&nbsp;no&nbsp;se&nbsp;chequea&nbsp;que&nbsp;en&nbsp;cbe_cliente&nbsp;haya<br>
+un&nbsp;cliente&nbsp;válido,&nbsp;por&nbsp;tanto&nbsp;hay&nbsp;que<br>
+hacerlo&nbsp;antes&nbsp;de&nbsp;llamar&nbsp;a&nbsp;esta&nbsp;función.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-rellenar_ldvs"><strong>rellenar_ldvs</strong></a>(self)</dt><dd><tt>Introduce&nbsp;las&nbsp;LDV&nbsp;de&nbsp;la&nbsp;factura&nbsp;en&nbsp;la&nbsp;tabla&nbsp;y&nbsp;devuelve&nbsp;la&nbsp;<br>
+suma&nbsp;de&nbsp;los&nbsp;totales&nbsp;de&nbsp;línea&nbsp;sin&nbsp;IVA.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-rellenar_servicios"><strong>rellenar_servicios</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Prefacturas-rellenar_sources"><strong>rellenar_sources</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Prefacturas-rellenar_totales"><strong>rellenar_totales</strong></a>(self)</dt><dd><tt>Calcula&nbsp;los&nbsp;totales&nbsp;de&nbsp;la&nbsp;factura&nbsp;a&nbsp;partir&nbsp;de&nbsp;<br>
+las&nbsp;LDVs,&nbsp;servicios,&nbsp;cargo,&nbsp;descuento&nbsp;y&nbsp;abonos.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-rellenar_vencimientos"><strong>rellenar_vencimientos</strong></a>(self)</dt><dd><tt>Mete&nbsp;la&nbsp;información&nbsp;de&nbsp;los&nbsp;vencimientos,&nbsp;pagos,&nbsp;etc.<br>
+del&nbsp;factura&nbsp;actual&nbsp;en&nbsp;la&nbsp;tabla&nbsp;tv_vencimientos.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-rellenar_widgets"><strong>rellenar_widgets</strong></a>(self)</dt><dd><tt>Introduce&nbsp;la&nbsp;información&nbsp;del&nbsp;factura&nbsp;actual<br>
+en&nbsp;los&nbsp;widgets.<br>
+No&nbsp;se&nbsp;chequea&nbsp;que&nbsp;sea&nbsp;!=&nbsp;None,&nbsp;así&nbsp;que<br>
+hay&nbsp;que&nbsp;tener&nbsp;cuidado&nbsp;de&nbsp;no&nbsp;llamar&nbsp;a&nbsp;<br>
+esta&nbsp;función&nbsp;en&nbsp;ese&nbsp;caso.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-seleccionar_cantidad"><strong>seleccionar_cantidad</strong></a>(self, producto)</dt><dd><tt>Muestra&nbsp;un&nbsp;diálogo&nbsp;para&nbsp;introducir&nbsp;la&nbsp;cantidad.<br>
+Si&nbsp;el&nbsp;producto&nbsp;es&nbsp;un&nbsp;rollo,&nbsp;se&nbsp;introducirá&nbsp;en&nbsp;<br>
+metros&nbsp;cuadrados.<br>
+Si&nbsp;es&nbsp;una&nbsp;bala,&nbsp;se&nbsp;introducirá&nbsp;en&nbsp;kilos.<br>
+En&nbsp;las&nbsp;LDV&nbsp;se&nbsp;mantendrán&nbsp;también&nbsp;estas&nbsp;unidades<br>
+ya&nbsp;que&nbsp;el&nbsp;precio&nbsp;por&nbsp;unidad&nbsp;va&nbsp;en&nbsp;función&nbsp;de&nbsp;<br>
+kilos&nbsp;y&nbsp;rollos&nbsp;en&nbsp;el&nbsp;producto.<br>
+Cuando&nbsp;se&nbsp;haga&nbsp;el&nbsp;albarán&nbsp;es&nbsp;cuando&nbsp;habrá&nbsp;que<br>
+calcular&nbsp;cuantos&nbsp;rollos&nbsp;(y&nbsp;cuáles&nbsp;en&nbsp;concreto)<br>
+y&nbsp;cuántas&nbsp;balas&nbsp;entran.&nbsp;Aunque&nbsp;en&nbsp;realidad&nbsp;es&nbsp;<br>
+el&nbsp;usuario&nbsp;el&nbsp;que&nbsp;las&nbsp;seleccionará&nbsp;y&nbsp;el&nbsp;programa<br>
+irá&nbsp;informando&nbsp;si&nbsp;se&nbsp;satisface&nbsp;la&nbsp;LDV&nbsp;o&nbsp;no.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-separar_ldvs"><strong>separar_ldvs</strong></a>(self, ldvs)</dt><dd><tt>Separa&nbsp;las&nbsp;líneas&nbsp;de&nbsp;venta&nbsp;en&nbsp;un&nbsp;diccionario&nbsp;con&nbsp;<br>
+tres&nbsp;listas.&nbsp;La&nbsp;primera&nbsp;de&nbsp;identificadores&nbsp;de<br>
+líneas&nbsp;de&nbsp;venta&nbsp;sin&nbsp;factura&nbsp;y&nbsp;pertenecientes&nbsp;a&nbsp;<br>
+pedidos.&nbsp;La&nbsp;segunda&nbsp;con&nbsp;albaranes&nbsp;y&nbsp;sus&nbsp;líneas&nbsp;<br>
+de&nbsp;venta&nbsp;sin&nbsp;facturar&nbsp;(aunque&nbsp;se&nbsp;repitan&nbsp;en&nbsp;la&nbsp;<br>
+lista&nbsp;de&nbsp;pedidos&nbsp;también).&nbsp;La&nbsp;tercera&nbsp;es&nbsp;una&nbsp;<br>
+lista&nbsp;de&nbsp;ventas&nbsp;sin&nbsp;pedido,&nbsp;albarán&nbsp;ni&nbsp;factura&nbsp;<br>
+asociada.<br>
+El&nbsp;diccionario,&nbsp;por&nbsp;tanto,&nbsp;quedará:<br>
+{'pedidos':&nbsp;{IDpedido:&nbsp;[IDldv,&nbsp;IDldv,&nbsp;IDldv...],&nbsp;IDpedido2:&nbsp;[...],&nbsp;...},<br>
+&nbsp;'albaranes':&nbsp;{IDalbarán:&nbsp;[IDldv,&nbsp;...],&nbsp;...},<br>
+&nbsp;'pendientes':&nbsp;[IDldv,&nbsp;IDldv,&nbsp;...]}</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-sin_facturar"><strong>sin_facturar</strong></a>(self, obj)</dt><dd><tt>Devuelve&nbsp;una&nbsp;lista&nbsp;con&nbsp;las&nbsp;LDV&nbsp;contenidas<br>
+en&nbsp;ldvs&nbsp;que&nbsp;no&nbsp;pertenezcan&nbsp;a&nbsp;ninguna&nbsp;factura.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-total"><strong>total</strong></a>(self, subtotal, cargo, dto, iva, abonos, irpf)</dt></dl>
+
+<dl><dt><a name="Prefacturas-total_irpf"><strong>total_irpf</strong></a>(self, base_imponible, irpf)</dt></dl>
+
+<dl><dt><a name="Prefacturas-total_iva"><strong>total_iva</strong></a>(self, iva, subtotal, tot_dto, cargo, abonos)</dt></dl>
+
+<dl><dt><a name="Prefacturas-total_ldvs"><strong>total_ldvs</strong></a>(self, factura)</dt><dd><tt>Total&nbsp;de&nbsp;las&nbsp;líneas&nbsp;de&nbsp;venta.&nbsp;Sin&nbsp;IVA.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-total_srvs"><strong>total_srvs</strong></a>(self, factura)</dt><dd><tt>Total&nbsp;de&nbsp;servicios.&nbsp;Sin&nbsp;IVA.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="ventana.html#Ventana">ventana.Ventana</a>:<br>
+<dl><dt><a name="Prefacturas-abrir_gajim"><strong>abrir_gajim</strong></a>(self)</dt><dd><tt>Calcado&nbsp;de&nbsp;menu.py.&nbsp;Sólo&nbsp;lleva&nbsp;las&nbsp;modificaciones&nbsp;necesarias&nbsp;para&nbsp;hacerlo&nbsp;funcionar&nbsp;desde&nbsp;aquí.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-acerca_de"><strong>acerca_de</strong></a>(self)</dt><dd><tt>Calcado&nbsp;de&nbsp;menu.py.&nbsp;Modificado&nbsp;ligeramente&nbsp;para&nbsp;hacerlo&nbsp;funcionar&nbsp;aquí.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-actualizar_objeto_y_enlaces"><strong>actualizar_objeto_y_enlaces</strong></a>(self, actualizar_ventana_tambien<font color="#909090">=True</font>)</dt></dl>
+
+<dl><dt><a name="Prefacturas-actualizar_ventana"><strong>actualizar_ventana</strong></a>(self, widget<font color="#909090">=None</font>, objeto_anterior<font color="#909090">=None</font>)</dt><dd><tt>Actualiza&nbsp;el&nbsp;contenido&nbsp;de&nbsp;los&nbsp;controles&nbsp;de&nbsp;la&nbsp;ventana<br>
+para&nbsp;que&nbsp;muestren&nbsp;todos&nbsp;los&nbsp;datos&nbsp;del&nbsp;objeto&nbsp;actual.<br>
+widget&nbsp;no&nbsp;se&nbsp;usa.&nbsp;Se&nbsp;recibe&nbsp;para&nbsp;el&nbsp;caso&nbsp;en&nbsp;que&nbsp;se&nbsp;llama&nbsp;a&nbsp;<br>
+la&nbsp;función&nbsp;desde&nbsp;un&nbsp;botón.<br>
+objeto_anterior&nbsp;es&nbsp;un&nbsp;objeo&nbsp;de&nbsp;pclases.&nbsp;Sería&nbsp;el&nbsp;que&nbsp;se&nbsp;<br>
+muestra&nbsp;en&nbsp;pantalla&nbsp;justo&nbsp;antes&nbsp;de&nbsp;llamar&nbsp;a&nbsp;actualizar_ventana<br>
+y&nbsp;recargar&nbsp;los&nbsp;datos.&nbsp;Si&nbsp;se&nbsp;recibe&nbsp;y&nbsp;hay&nbsp;cambios&nbsp;pendientes&nbsp;de<br>
+guardar,&nbsp;el&nbsp;contenido&nbsp;de&nbsp;la&nbsp;ventana&nbsp;se&nbsp;guarda&nbsp;en&nbsp;ese&nbsp;objeto<br>
+ANTES&nbsp;de&nbsp;mostrar&nbsp;el&nbsp;nuevo&nbsp;(o&nbsp;el&nbsp;mismo&nbsp;con&nbsp;nueva&nbsp;información)&nbsp;<br>
+en&nbsp;los&nbsp;widgets&nbsp;de&nbsp;pantalla.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-add_connections"><strong>add_connections</strong></a>(self, dict)</dt><dd><tt>Recorre&nbsp;el&nbsp;diccionario&nbsp;y&nbsp;crea&nbsp;las&nbsp;conexiones&nbsp;con&nbsp;<br>
+los&nbsp;callbacks.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-build_menu_superior"><strong>build_menu_superior</strong></a>(self)</dt><dd><tt>Construye&nbsp;un&nbsp;menú&nbsp;con&nbsp;las&nbsp;mismas&nbsp;opciones&nbsp;que&nbsp;el&nbsp;menú&nbsp;principal.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-check_permisos"><strong>check_permisos</strong></a>(self, nombre_fichero_ventana)</dt><dd><tt>Activa&nbsp;o&nbsp;desactiva&nbsp;los&nbsp;controles&nbsp;dependiendo&nbsp;de&nbsp;los&nbsp;<br>
+permisos&nbsp;del&nbsp;usuario.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-chequear_cambios"><strong>chequear_cambios</strong></a>(self)</dt><dd><tt>Activa&nbsp;el&nbsp;botón&nbsp;«Guardar»&nbsp;si&nbsp;hay&nbsp;cambios&nbsp;los&nbsp;datos.<br>
+El&nbsp;botón&nbsp;se&nbsp;debe&nbsp;llamar&nbsp;"b_guardar"&nbsp;y&nbsp;el&nbsp;método&nbsp;para&nbsp;<br>
+verificar&nbsp;los&nbsp;cambios&nbsp;"es_diferente"&nbsp;o&nbsp;no&nbsp;funcionará.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-chequear_hilo"><strong>chequear_hilo</strong></a>(self)</dt><dd><tt>Consulta&nbsp;el&nbsp;hilo&nbsp;notificador&nbsp;del&nbsp;objeto&nbsp;actual.<br>
+En&nbsp;realidad&nbsp;es&nbsp;una&nbsp;mera&nbsp;excusa&nbsp;para&nbsp;obligar&nbsp;a&nbsp;GTK&nbsp;a&nbsp;<br>
+atender&nbsp;al&nbsp;objeto&nbsp;lo&nbsp;antes&nbsp;posible&nbsp;en&nbsp;caso&nbsp;de&nbsp;<br>
+notificación.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-ir_a"><strong>ir_a</strong></a>(self, objeto)</dt></dl>
+
+<dl><dt><a name="Prefacturas-make_connections"><strong>make_connections</strong></a>(self)</dt><dd><tt>Realiza&nbsp;las&nbsp;conexiones&nbsp;básicas&nbsp;entre&nbsp;widgets&nbsp;y&nbsp;callbacks.<br>
+Para&nbsp;el&nbsp;resto&nbsp;de&nbsp;conexiones,&nbsp;usar&nbsp;add_connections.<br>
+La&nbsp;ventana&nbsp;principal&nbsp;DEBE&nbsp;llamarse&nbsp;"ventana".</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-make_funciones_ociosas"><strong>make_funciones_ociosas</strong></a>(self)</dt><dd><tt>Inicia&nbsp;las&nbsp;funciones&nbsp;ociosas&nbsp;de&nbsp;chequeo&nbsp;de&nbsp;cambios<br>
+remotos&nbsp;(actualizar)&nbsp;y&nbsp;locales&nbsp;(guardar).</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-salir"><strong>salir</strong></a>(self, boton, event<font color="#909090">=None</font>, mostrar_ventana<font color="#909090">=True</font>)</dt><dd><tt>Muestra&nbsp;una&nbsp;ventana&nbsp;de&nbsp;confirmación&nbsp;y&nbsp;<br>
+sale&nbsp;de&nbsp;la&nbsp;ventana&nbsp;cerrando&nbsp;el&nbsp;bucle<br>
+local&nbsp;de&nbsp;gtk_main.<br>
+Si&nbsp;mostrar_ventana&nbsp;es&nbsp;False,&nbsp;sale&nbsp;directamente<br>
+sin&nbsp;preguntar&nbsp;al&nbsp;usuario.</tt></dd></dl>
+
+<dl><dt><a name="Prefacturas-volver_a_cursor_original"><strong>volver_a_cursor_original</strong></a>(self)</dt><dd><tt>Calcado&nbsp;de&nbsp;menu.py.&nbsp;Sólo&nbsp;lleva&nbsp;las&nbsp;modificaciones&nbsp;necesarias&nbsp;para&nbsp;hacerlo&nbsp;funcionar&nbsp;desde&nbsp;aquí.</tt></dd></dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-bloquear_albaranes"><strong>bloquear_albaranes</strong></a>(f)</dt><dd><tt>Si&nbsp;la&nbsp;factura&nbsp;está&nbsp;bloqueada,&nbsp;bloquea&nbsp;todos&nbsp;los&nbsp;albaranes&nbsp;<br>
+de&nbsp;entrada&nbsp;relacionados&nbsp;si&nbsp;éstos&nbsp;no&nbsp;tienen&nbsp;líneas&nbsp;pendientes&nbsp;<br>
+de&nbsp;facturar.</tt></dd></dl>
+ <dl><dt><a name="-buscar_cuentaOrigen"><strong>buscar_cuentaOrigen</strong></a>(nombre, ventana_padre<font color="#909090">=None</font>)</dt><dd><tt>Busca&nbsp;un&nbsp;cuentaOrigen&nbsp;por&nbsp;su&nbsp;nombre.&nbsp;Si&nbsp;no&nbsp;lo&nbsp;encuentra&nbsp;solo&nbsp;con&nbsp;el&nbsp;<br>
+parámetro&nbsp;recibido&nbsp;o&nbsp;si&nbsp;encuentra&nbsp;más&nbsp;de&nbsp;uno,&nbsp;muestra&nbsp;una&nbsp;ventana&nbsp;<br>
+con&nbsp;los&nbsp;resultados&nbsp;para&nbsp;que&nbsp;el&nbsp;usuario&nbsp;elija&nbsp;uno&nbsp;de&nbsp;ellos.<br>
+Devuelve&nbsp;el&nbsp;cuentaOrigen&nbsp;seleccionado&nbsp;o&nbsp;None.</tt></dd></dl>
+ <dl><dt><a name="-descontar_existencias"><strong>descontar_existencias</strong></a>(ldv, nueva<font color="#909090">=False</font>)</dt><dd><tt>Usado&nbsp;al&nbsp;crear&nbsp;o&nbsp;actualizar&nbsp;una&nbsp;LDV&nbsp;manualmente.<br>
+Si&nbsp;el&nbsp;producto&nbsp;es&nbsp;un&nbsp;producto&nbsp;de&nbsp;venta&nbsp;no&nbsp;«especial»,&nbsp;o&nbsp;se&nbsp;<br>
+ha&nbsp;descontado&nbsp;en&nbsp;un&nbsp;albarán&nbsp;externo&nbsp;o&nbsp;interesa&nbsp;hacerlo&nbsp;manualmente&nbsp;<br>
+por&nbsp;un&nbsp;ajuste&nbsp;de&nbsp;existencias,&nbsp;una&nbsp;preventa,&nbsp;etc.&nbsp;Al&nbsp;ser&nbsp;control&nbsp;de&nbsp;<br>
+existencias&nbsp;de&nbsp;los&nbsp;PV&nbsp;basado&nbsp;en&nbsp;la&nbsp;contabilidad&nbsp;de&nbsp;productos&nbsp;<br>
+individuales,&nbsp;las&nbsp;existencias&nbsp;no&nbsp;se&nbsp;alteran&nbsp;(no&nbsp;se&nbsp;crean&nbsp;ni&nbsp;<br>
+destruyen&nbsp;objetos&nbsp;artículo).<br>
+Si&nbsp;el&nbsp;producto&nbsp;es&nbsp;un&nbsp;producto&nbsp;de&nbsp;compra&nbsp;con&nbsp;control&nbsp;de&nbsp;existencias&nbsp;<br>
+por&nbsp;software&nbsp;o&nbsp;un&nbsp;producto&nbsp;especial,&nbsp;se&nbsp;busca&nbsp;un&nbsp;albarán&nbsp;de&nbsp;salida&nbsp;<br>
+del&nbsp;cliente&nbsp;de&nbsp;la&nbsp;factura&nbsp;donde&nbsp;asignar&nbsp;la&nbsp;[nueva]&nbsp;ldv&nbsp;y&nbsp;se&nbsp;actualizan&nbsp;<br>
+las&nbsp;existencias.<br>
+El&nbsp;albarán&nbsp;de&nbsp;salida&nbsp;se&nbsp;determina&nbsp;según:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Si&nbsp;la&nbsp;factura&nbsp;no&nbsp;tiene&nbsp;albaranes&nbsp;asociados&nbsp;no&nbsp;bloqueados,&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;creo&nbsp;uno&nbsp;con&nbsp;la&nbsp;fecha&nbsp;de&nbsp;la&nbsp;factura.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Si&nbsp;tiene&nbsp;albaranes&nbsp;no&nbsp;bloqueados,&nbsp;elijo&nbsp;el&nbsp;de&nbsp;la&nbsp;fecha&nbsp;más&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cercana&nbsp;a&nbsp;la&nbsp;factura.<br>
+El&nbsp;albarán&nbsp;que&nbsp;se&nbsp;cree&nbsp;(y&nbsp;el&nbsp;resto&nbsp;de&nbsp;albaranes&nbsp;en&nbsp;general)&nbsp;se&nbsp;bloqueará&nbsp;<br>
+al&nbsp;bloquear&nbsp;la&nbsp;factura&nbsp;siempre&nbsp;y&nbsp;cuando&nbsp;no&nbsp;tenga&nbsp;líneas&nbsp;pendientes&nbsp;de&nbsp;<br>
+facturar&nbsp;(ver).</tt></dd></dl>
+ <dl><dt><a name="-desglosar_ldvs_por_albaran"><strong>desglosar_ldvs_por_albaran</strong></a>(ldvs)</dt><dd><tt>Devuelve&nbsp;un&nbsp;diccionario&nbsp;con&nbsp;las&nbsp;LDVs&nbsp;por&nbsp;albarán.&nbsp;Para&nbsp;las&nbsp;<br>
+LDV&nbsp;sin&nbsp;albarán&nbsp;el&nbsp;diccionario&nbsp;contiene&nbsp;una&nbsp;clave&nbsp;None&nbsp;con&nbsp;<br>
+las&nbsp;mismas.</tt></dd></dl>
+ <dl><dt><a name="-desglosar_ldvs_por_pedido"><strong>desglosar_ldvs_por_pedido</strong></a>(ldvs)</dt><dd><tt>Devuelve&nbsp;un&nbsp;diccionario&nbsp;con&nbsp;las&nbsp;LDVs&nbsp;por&nbsp;pedido.&nbsp;Para&nbsp;las&nbsp;<br>
+LDV&nbsp;sin&nbsp;pedido&nbsp;el&nbsp;diccionario&nbsp;contiene&nbsp;una&nbsp;clave&nbsp;None&nbsp;con&nbsp;<br>
+las&nbsp;mismas.</tt></dd></dl>
+</td></tr></table>
+</body></html>

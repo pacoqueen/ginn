@@ -1,0 +1,1302 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.3.6: http://docutils.sourceforge.net/" />
+<title>SQLObject 0.6.1</title>
+<link rel="stylesheet" href="default.css" type="text/css" />
+</head>
+<body>
+<h1 class="title">SQLObject 0.6.1</h1>
+<div class="document" id="sqlobject-0-6-1">
+<div class="contents topic" id="contents">
+<p class="topic-title first"><a name="contents">Contents:</a></p>
+<ul class="simple">
+<li><a class="reference" href="#author-site-and-license" id="id10" name="id10">Author, Site, and License</a></li>
+<li><a class="reference" href="#introduction" id="id11" name="id11">Introduction</a></li>
+<li><a class="reference" href="#requirements" id="id12" name="id12">Requirements</a></li>
+<li><a class="reference" href="#compared-to-other-database-wrappers" id="id13" name="id13">Compared To Other Database Wrappers</a></li>
+<li><a class="reference" href="#future" id="id14" name="id14">Future</a></li>
+<li><a class="reference" href="#using-sqlobject-an-introduction" id="id15" name="id15">Using SQLObject: An Introduction</a><ul>
+<li><a class="reference" href="#declaring-the-class" id="id16" name="id16">Declaring the Class</a></li>
+<li><a class="reference" href="#using-the-class" id="id17" name="id17">Using the Class</a></li>
+<li><a class="reference" href="#lazy-updates" id="id18" name="id18">Lazy Updates</a></li>
+<li><a class="reference" href="#one-to-many-relationships" id="id19" name="id19">One-to-Many Relationships</a></li>
+<li><a class="reference" href="#many-to-many-relationships" id="id20" name="id20">Many-to-Many Relationships</a></li>
+<li><a class="reference" href="#selecting-multiple-objects" id="id21" name="id21">Selecting Multiple Objects</a><ul>
+<li><a class="reference" href="#select-by-method" id="id22" name="id22">Select-By Method</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#customizing-the-objects" id="id23" name="id23">Customizing the Objects</a><ul>
+<li><a class="reference" href="#initializing-the-objects" id="id24" name="id24">Initializing the Objects</a></li>
+<li><a class="reference" href="#adding-magic-attributes-properties" id="id25" name="id25">Adding Magic Attributes (properties)</a></li>
+<li><a class="reference" href="#overriding-column-attributes" id="id26" name="id26">Overriding Column Attributes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference" href="#reference" id="id27" name="id27">Reference</a><ul>
+<li><a class="reference" href="#col-class-specifying-columns" id="id28" name="id28">Col Class: Specifying Columns</a><ul>
+<li><a class="reference" href="#subclasses-of-col" id="id29" name="id29">Subclasses of Col</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#sqlobject-class-specifying-your-class" id="id30" name="id30">SQLObject Class: Specifying Your Class</a></li>
+<li><a class="reference" href="#relationships-between-classes-tables" id="id31" name="id31">Relationships Between Classes/Tables</a><ul>
+<li><a class="reference" href="#multiplejoin-one-to-many" id="id32" name="id32">MultipleJoin: One-to-Many</a></li>
+<li><a class="reference" href="#relatedjoin-many-to-many" id="id33" name="id33">RelatedJoin: Many-to-Many</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#transactions" id="id34" name="id34">Transactions</a></li>
+<li><a class="reference" href="#automatic-schema-generation" id="id35" name="id35">Automatic Schema Generation</a><ul>
+<li><a class="reference" href="#columns-types" id="id36" name="id36">Columns Types</a></li>
+<li><a class="reference" href="#indexes" id="id37" name="id37">Indexes</a></li>
+<li><a class="reference" href="#creating-and-dropping-tables" id="id38" name="id38">Creating and Dropping Tables</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference" href="#dynamic-classes" id="id39" name="id39">Dynamic Classes</a><ul>
+<li><a class="reference" href="#automatic-class-generation" id="id40" name="id40">Automatic Class Generation</a></li>
+<li><a class="reference" href="#runtime-column-changes" id="id41" name="id41">Runtime Column Changes</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#legacy-database-schemas" id="id42" name="id42">Legacy Database Schemas</a><ul>
+<li><a class="reference" href="#sqlobject-requirements" id="id43" name="id43">SQLObject requirements</a></li>
+<li><a class="reference" href="#changing-the-naming-style" id="id44" name="id44">Changing the Naming Style</a></li>
+<li><a class="reference" href="#irregular-naming" id="id45" name="id45">Irregular Naming</a></li>
+<li><a class="reference" href="#non-integer-keys" id="id46" name="id46">Non-Integer Keys</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#dbconnection-database-connections" id="id47" name="id47">DBConnection: Database Connections</a><ul>
+<li><a class="reference" href="#mysql" id="id48" name="id48">MySQL</a></li>
+<li><a class="reference" href="#postgres" id="id49" name="id49">Postgres</a></li>
+<li><a class="reference" href="#id7" id="id50" name="id50">SQLite</a></li>
+<li><a class="reference" href="#id8" id="id51" name="id51">Firebird</a></li>
+<li><a class="reference" href="#sybaseconnection" id="id52" name="id52">SybaseConnection</a></li>
+<li><a class="reference" href="#max-db" id="id53" name="id53">MAX DB</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#exported-symbols" id="id54" name="id54">Exported Symbols</a></li>
+</ul>
+</div>
+<div class="section" id="author-site-and-license">
+<h1><a name="author-site-and-license">Author, Site, and License</a></h1>
+<p>SQLObject is by Ian Bicking (<a class="reference" href="mailto:ianb&#64;colorstudy.com">ianb&#64;colorstudy.com</a>).  The website
+is <a class="reference" href="http://sqlobject.org">sqlobject.org</a>.</p>
+<p>The code is licensed under the <a class="reference" href="http://www.gnu.org/copyleft/lesser.html">Lesser General Public License</a>
+(LGPL).</p>
+<p>This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.</p>
+</div>
+<div class="section" id="introduction">
+<h1><a name="introduction">Introduction</a></h1>
+<p>SQLObject is an <em>object-relational mapper</em>.  It allows you to
+translate RDBMS table rows into Python objects, and manipulate those
+objects to transparently manipulate the database.</p>
+<p>In using SQLObject, you will create a class definition that will
+describe how the object translates to the database table.  SQLObject
+will produce the code to access the database, and update the database
+with your changes.  The generated interface looks similar to any other
+interface, and callers need not be aware of the database backend.</p>
+<p>SQLObject also includes a novel feature to avoid generating,
+textually, your SQL queries.  This also allows non-SQL databases to be
+used with the same query syntax.</p>
+</div>
+<div class="section" id="requirements">
+<h1><a name="requirements">Requirements</a></h1>
+<p>Currently SQLObject supports <a class="reference" href="#mysql">MySQL</a>, <a class="reference" href="http://postgresql.org">PostgreSQL</a> (via <tt class="literal"><span class="pre">psycopg</span></tt>),
+<a class="reference" href="http://sqlite.org">SQLite</a>, <a class="reference" href="http://firebird.sourceforge.net">Firebird</a>, <a class="reference" href="http://www.object-craft.com.au/projects/sybase/">Sybase</a>, and <a class="reference" href="#max-db">MAX DB</a> (also known as SAP DB).</p>
+<p>Python 2.2 or higher is required.  SQLObject makes extensive use of
+new-style classes.</p>
+</div>
+<div class="section" id="compared-to-other-database-wrappers">
+<h1><a name="compared-to-other-database-wrappers">Compared To Other Database Wrappers</a></h1>
+<p>There are several object-relational mappers (ORM) for Python.  I
+honestly can't comment deeply on the quality of those packages, but
+I'll try to place SQLObject in perspective.</p>
+<p>SQLObject uses new-style classes extensively.  The resultant objects
+have a new-style feel as a result -- setting attributes has side
+effects (it changes the database), and defining classes has side
+effects (through the use of metaclasses).  Attributes are generally
+exposed, not marked private, knowing that they can be made dynamic
+or write-only later.</p>
+<p>SQLObject creates objects that feel similar to normal Python objects
+(with the semantics of new-style classes).  An attribute attached to a
+column doesn't look different than an attribute that's attached to a
+file, or an attribute that is calculated.  It is a specific goal that
+you be able to change the database without changing the interface,
+including changing the scope of the database, making it more or less
+prominent as a storage mechanism.</p>
+<p>This is in contrast to some ORMs that provide a dictionary-like
+interface to the database (for example, <a class="reference" href="http://skunkweb.sourceforge.net/pydo.html">PyDO</a>).  The dictionary
+interface distinguishes the row from a normal Python object.  I also
+don't care for the use of strings where an attribute seems more
+natural -- columns are limited in number and predefined, just like
+attributes.  (Note: newer version of PyDO apparently allow attribute
+access as well)</p>
+<p>SQLObject is, to my knowledge, unique in using metaclasses to
+facilitate this seemless integration.  Some other ORMs use code
+generation to create an interface, expressing the schema in a CSV or
+XML file (for example, MiddleKit, part of <a class="reference" href="http://webware.sourceforge.net">Webware</a>).  By using
+metaclasses you are able to comfortably define your schema in the
+Python source code.  No code generation, no weird tools, no
+compilation step.</p>
+<p>SQLObject provides a strong database abstraction, allowing
+cross-database compatibility (so long as you don't sidestep
+SQLObject).</p>
+<p>SQLObject has joins, one-to-many, and many-to-many, something which
+many ORMs do not have.  The join system is also intended to be
+extensible.</p>
+<p>You can map between database names and Python attribute and class
+names; often these two won't match, or the database style would be
+inappropriate for a Python attribute.  This way your database schema
+does not have to be designed with SQLObject in mind, and the resulting
+classes do not have to inherit the database's naming schemes.</p>
+</div>
+<div class="section" id="future">
+<h1><a name="future">Future</a></h1>
+<p>Here are some things I plan:</p>
+<ul class="simple">
+<li>More databases supported.  There has been interest and some work in
+the progress for Oracle, Sybase, and MS-SQL support.</li>
+<li>Better transaction support -- right now you can use transactions
+for the database, but the object isn't transaction-aware, so
+non-database persistence won't be able to be rolled back.</li>
+<li>Optimistic locking and other techniques to handle concurrency.</li>
+<li>Profile of SQLObject performance, so that I can identify bottlenecks.</li>
+<li>Increase hooks with FormEncode (unreleased) validation and form
+generation package, so SQLObject classes (read: schemas) can be
+published for editing more directly and easily.</li>
+<li>Automatic joins in select queries.</li>
+<li>More kinds of joins, and more powerful join results (closer to how
+<cite>select</cite> works).</li>
+</ul>
+<p>See also the <a class="reference" href="Plan06.html">Plan for 0.6</a>.</p>
+</div>
+<div class="section" id="using-sqlobject-an-introduction">
+<h1><a name="using-sqlobject-an-introduction">Using SQLObject: An Introduction</a></h1>
+<p>Let's start off quickly...</p>
+<div class="section" id="declaring-the-class">
+<h2><a name="declaring-the-class">Declaring the Class</a></h2>
+<p>To begin with, let's make a database connection.  Choose from one of
+<cite>MySQLConnection</cite>, <cite>PostgresConnection</cite>, <cite>SQLiteConnection</cite>, and
+<cite>FirebirdConnection</cite>, depending on what database you use.</p>
+
+<pre class="literal-block"><tt><span class="normal">conn</span> <span class="symbol">=</span> <span class="function">MySQLConnection</span><span class="symbol">(</span><span class="normal">user</span><span class="symbol">=</span><span class="string">'test'</span><span class="symbol">,</span> <span class="normal">db</span><span class="symbol">=</span><span class="string">'testdb'</span><span class="symbol">)</span>
+<span class="normal">conn</span> <span class="symbol">=</span> <span class="string">'mysql://test@localhost/testdb'</span>
+<span class="normal">conn</span> <span class="symbol">=</span> <span class="function">PostgresConnection</span><span class="symbol">(</span><span class="string">'user=test dbname=testdb'</span><span class="symbol">)</span>
+<span class="normal">conn</span> <span class="symbol">=</span> <span class="string">'postgres://test@localhost/testdb'</span>
+<span class="normal">conn</span> <span class="symbol">=</span> <span class="function">SQLiteConnection</span><span class="symbol">(</span><span class="string">'database.db'</span><span class="symbol">)</span>
+<span class="normal">conn</span> <span class="symbol">=</span> <span class="string">'sqlite://path/to/database.db'</span>
+</tt></pre>
+<p>The rest of this will be written more-or-less in a database-agnostic
+manner, using the connection you define.  Use <cite>SQLite</cite> if you don't
+have another database installed or ready -- it requires <a class="reference" href="http://pysqlite.sourceforge.net/">PySQLite</a>, but
+doesn't require a client/server setup.</p>
+<p>We'll develop a simple addressbook-like database.  We could create the
+tables ourselves, and just have SQLObject access those tables, but for
+now we'll let SQLObject do that work.  First, the class:</p>
+
+<pre class="literal-block"><tt><span class="keyword">class</span> <span class="function">Person</span><span class="symbol">(</span><span class="normal">SQLObject</span><span class="symbol">)</span><span class="symbol">:</span>
+
+    <span class="normal">_connection</span> <span class="symbol">=</span> <span class="normal">conn</span>
+
+    <span class="normal">firstName</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="symbol">)</span>
+    <span class="normal">middleInitial</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="normal">length</span><span class="symbol">=</span><span class="number">1</span><span class="symbol">,</span> <span class="normal">default</span><span class="symbol">=</span><span class="normal">None</span><span class="symbol">)</span>
+    <span class="normal">lastName</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="symbol">)</span>
+</tt></pre>
+<p>Many basic table schemas won't be any more complicated than that.
+The special attribute <cite>_connection</cite> defines the connection we should
+use (you can also set a module-level variable <cite>__connection__</cite> which
+would automatically be picked up if you don't specify <cite>_connection</cite>).</p>
+<div class="warning">
+<p class="admonition-title first">Warning</p>
+The <cite>__connection__</cite> magic variable can be a little fragile -- it
+has to be defined before the class is defined.  This means it
+<em>must</em> be assigned above the <tt class="literal"><span class="pre">class</span> <span class="pre">...:</span></tt> line.</div>
+<p><cite>firstName</cite>, <cite>middleInitial</cite>, and <cite>lastName</cite> are all columns in the
+database.  The general schema implied by this class definition is:</p>
+
+<pre class="literal-block"><tt><span class="normal">CREATE</span> <span class="normal">TABLE</span> <span class="function">person</span> <span class="symbol">(</span>
+    <span class="normal">id</span> <span class="normal">INT</span> <span class="normal">PRIMARY</span> <span class="normal">KEY</span> <span class="normal">AUTO_INCREMENT</span><span class="symbol">,</span>
+    <span class="normal">first_name</span> <span class="normal">TEXT</span><span class="symbol">,</span>
+    <span class="normal">middle_initial</span> <span class="function">CHAR</span><span class="symbol">(</span><span class="number">1</span><span class="symbol">)</span><span class="symbol">,</span>
+    <span class="normal">last_name</span> <span class="normal">TEXT</span>
+<span class="symbol">)</span><span class="symbol">;</span>
+</tt></pre>
+<p>This is for MySQL.  The schema for other databases looks slightly
+different (especially the <tt class="literal"><span class="pre">id</span></tt> column).  You'll notice the names
+were changed from mixedCase to underscore_separated -- this is done by
+the <a class="reference" href="#changing-the-naming-style">style object</a>.  There are a variety of ways to handle that names
+that don't fit conventions (see <a class="reference" href="#irregular-naming">Irregular Naming</a>).</p>
+<p>The tables don't yet exist.  We'll let SQLObject create them:</p>
+
+<pre class="literal-block"><tt><span class="normal">Person</span><span class="symbol">.</span><span class="function">createTable</span><span class="symbol">(</span><span class="symbol">)</span>
+</tt></pre>
+<p>We can change the type of the various columns by using something other
+than <cite>StringCol</cite>, or using different arguments.  More about this in
+<a class="reference" href="#subclasses-of-col">Subclasses of Col</a>.</p>
+<p>If you don't want to do table creation (you already have tables, or
+you want to create the tables yourself), you can just use the vague
+<cite>Col</cite> class.  SQLObject doesn't do much type checking, allowing the
+database and the adapter to handle most of the type conversion.
+Databases generally do their own type coercion on inputs.</p>
+<p>You'll note that the <tt class="literal"><span class="pre">id</span></tt> column is not given in the class
+definition, it is implied.  For MySQL databases it should be defined
+as <tt class="literal"><span class="pre">INT</span> <span class="pre">PRIMARY</span> <span class="pre">KEY</span> <span class="pre">AUTO_INCREMENT</span></tt>, in Postgres <tt class="literal"><span class="pre">SERIAL</span> <span class="pre">PRIMARY</span>
+<span class="pre">KEY</span></tt>, and in SQLite as <tt class="literal"><span class="pre">INTEGER</span> <span class="pre">PRIMARY</span> <span class="pre">KEY</span></tt>.  You can <a class="reference" href="#idname">override the
+name</a>, but some integer primary key must exist (though <a class="reference" href="#non-integer-keys">you can use
+non-integer keys</a> with some extra effort).</p>
+</div>
+<div class="section" id="using-the-class">
+<h2><a name="using-the-class">Using the Class</a></h2>
+<p>Now that you have a class, how will you use it?  We'll be considering
+the class defined above.</p>
+<p>You can use the class method <cite>.get()</cite> to fetch instances that
+already exist.  So if you wanted to fetch the Person by id 10, you'd
+call <tt class="literal"><span class="pre">Person.get(10)</span></tt>.</p>
+<div class="warning">
+<p class="admonition-title first">Warning</p>
+This is a change from SQLObject 0.5 -- before the standard
+constructor fetched rows from the database, and the <cite>.new()</cite>
+method created new rows.  Now SQLObject is more like Python, where
+the class constructor creates a new object/row, and the <cite>.get()</cite>
+method fetches a row.</div>
+<p>To create a new object (and row), use class instantiation.  In this
+case you might call <tt class="literal"><span class="pre">Person.new(firstName=&quot;John&quot;,</span> <span class="pre">lastName=&quot;Doe&quot;)</span></tt>.
+If you had left out <tt class="literal"><span class="pre">firstName</span></tt> or <tt class="literal"><span class="pre">lastName</span></tt> you would have
+gotten an error, as no default was given for these columns
+(<tt class="literal"><span class="pre">middleInitial</span></tt> has a default, so it will be set to <tt class="literal"><span class="pre">NULL</span></tt>, the
+SQL equivalent of <tt class="literal"><span class="pre">None</span></tt>).</p>
+<p>When you create an object, it is immediately inserted into the
+database.  SQLObject generally uses the database as immediate storage.</p>
+<p>Here's an example of using the class:</p>
+
+<pre class="literal-block"><tt><span class="normal">p</span> <span class="symbol">=</span> <span class="function">Person</span><span class="symbol">(</span><span class="normal">firstName</span><span class="symbol">=</span><span class="string">"John"</span><span class="symbol">,</span> <span class="normal">lastName</span><span class="symbol">=</span><span class="string">"Doe"</span><span class="symbol">)</span>
+<span class="keyword">print</span> <span class="normal">p</span>
+<span class="comment">#&gt;&gt; &lt;Person 1 firstName='John' middleInitial=None lastName='Doe'&gt;</span>
+<span class="keyword">print</span> <span class="normal">p</span><span class="symbol">.</span><span class="normal">firstName</span>
+<span class="comment">#&gt;&gt; 'John'</span>
+<span class="normal">p</span><span class="symbol">.</span><span class="normal">middleInitial</span> <span class="symbol">=</span> <span class="string">'Q'</span>
+<span class="keyword">print</span> <span class="normal">p</span><span class="symbol">.</span><span class="normal">middleInitial</span>
+<span class="comment">#&gt;&gt; 'Q'</span>
+<span class="normal">p2</span> <span class="symbol">=</span> <span class="normal">Person</span><span class="symbol">.</span><span class="function">get</span><span class="symbol">(</span><span class="number">1</span><span class="symbol">)</span>
+<span class="keyword">print</span> <span class="normal">p2</span>
+<span class="comment">#&gt;&gt; &lt;Person 1 firstName='John' middleInitial='Q' lastName='Doe'&gt;</span>
+<span class="keyword">print</span> <span class="normal">p</span> <span class="keyword">is</span> <span class="normal">p2</span>
+<span class="comment">#&gt;&gt; True</span>
+</tt></pre>
+<p>You'll note that columns are accessed like attributes.  (This uses the
+<tt class="literal"><span class="pre">property</span></tt> feature of Python 2.2, so that retrieving and setting
+these attributes executes code).  You'll also note that objects are
+unique -- there is generally only one <tt class="literal"><span class="pre">Person</span></tt> instance of a
+particular id in memory at any one time.  If you ask for more than one
+person by a particular ID, you'll get back the same instance.  This
+way you can be sure of a certain amount of consistency if you have
+multiple threads accessing the same data (though of course across
+processes there can be no sharing of an instance).  This isn't true if
+you're using <a class="reference" href="#transactions">transactions</a>.</p>
+<p>To get an idea of what's happening behind the surface, I'll give the
+same actions with the SQL that is sent, along with some commentary:</p>
+
+<pre class="literal-block"><tt><span class="normal">p</span> <span class="symbol">=</span> <span class="function">Person</span><span class="symbol">(</span><span class="normal">firstName</span><span class="symbol">=</span><span class="string">"John"</span><span class="symbol">,</span> <span class="normal">lastName</span><span class="symbol">=</span><span class="string">"Doe"</span><span class="symbol">)</span>
+<span class="comment">#&gt;&gt; QueryIns:</span>
+<span class="comment">#   INSERT INTO person (last_name, middle_initial, first_name)</span>
+<span class="comment">#   VALUES ('Doe', NULL, 'John')</span>
+<span class="comment">#</span>
+<span class="comment">#-- Not quite optimized, we don't remember the values we used to</span>
+<span class="comment">#-- create the object, so they get re-fetched from the database:</span>
+<span class="comment">#&gt;&gt; QueryOne:</span>
+<span class="comment">#   SELECT last_name, middle_initial, first_name</span>
+<span class="comment">#   FROM person</span>
+<span class="comment">#   WHERE id = 1</span>
+<span class="keyword">print</span> <span class="normal">p</span>
+<span class="comment">#&gt;&gt; &lt;Person 1 firstName='John' middleInitial=None lastName='Doe'&gt;</span>
+<span class="keyword">print</span> <span class="normal">p</span><span class="symbol">.</span><span class="normal">firstName</span>
+<span class="comment">#-- Now we've saved cached the column values, so we don't fetch</span>
+<span class="comment">#-- it again.</span>
+<span class="comment">#&gt;&gt; 'John'</span>
+<span class="normal">p</span><span class="symbol">.</span><span class="normal">middleInitial</span> <span class="symbol">=</span> <span class="string">'Q'</span>
+<span class="comment">#&gt;&gt; Query   :</span>
+<span class="comment">#   UPDATE person</span>
+<span class="comment">#   SET middle_initial = 'Q'</span>
+<span class="comment">#   WHERE id = 1</span>
+<span class="keyword">print</span> <span class="normal">p</span><span class="symbol">.</span><span class="normal">middleInitial</span>
+<span class="comment">#&gt;&gt; 'Q'</span>
+<span class="normal">p2</span> <span class="symbol">=</span> <span class="normal">Person</span><span class="symbol">.</span><span class="function">get</span><span class="symbol">(</span><span class="number">1</span><span class="symbol">)</span>
+<span class="comment">#-- Again, no database access, since we're just grabbing the same</span>
+<span class="comment">#-- instance we already had.</span>
+<span class="keyword">print</span> <span class="normal">p2</span>
+<span class="comment">#&gt;&gt; &lt;Person 1 firstName='John' middleInitial='Q' lastName='Doe'&gt;</span>
+<span class="keyword">print</span> <span class="normal">p</span> <span class="keyword">is</span> <span class="normal">p2</span>
+<span class="comment">#&gt;&gt; True</span>
+</tt></pre>
+<p>Hopefully you see that the SQL that gets sent is pretty clear and
+predictable.  To view the SQL being sent, pass the keyword argument
+<tt class="literal"><span class="pre">debug=1</span></tt> to your connection object -- all SQL will be printed to
+the console.  This can be reassuring, and I would encourage you to try
+it.</p>
+<p>As a small optimization, instead of assigning each attribute
+individually, you can assign a number of them using the <tt class="literal"><span class="pre">set</span></tt>
+method, like:</p>
+
+<pre class="literal-block"><tt><span class="normal">p</span><span class="symbol">.</span><span class="function">set</span><span class="symbol">(</span><span class="normal">firstName</span><span class="symbol">=</span><span class="string">'Bob'</span><span class="symbol">,</span> <span class="normal">lastName</span><span class="symbol">=</span><span class="string">'Dole'</span><span class="symbol">)</span>
+</tt></pre>
+<p>This will send only one <tt class="literal"><span class="pre">UPDATE</span></tt> statement.  You can also use <cite>set</cite>
+with non-database properties (there's no benefit, but it helps hide
+the difference between database and non-database attributes).</p>
+</div>
+<div class="section" id="lazy-updates">
+<h2><a name="lazy-updates">Lazy Updates</a></h2>
+<p>By default SQLObject sends an <tt class="literal"><span class="pre">UPDATE</span></tt> to the database for every
+attribute you set, or everytime you call <tt class="literal"><span class="pre">.set()</span></tt>.  If you want to
+avoid this many updates, add <tt class="literal"><span class="pre">_lazyUpdate</span> <span class="pre">=</span> <span class="pre">True</span></tt> to your class
+definition.  Then updates will only be written to the database when
+you call <tt class="literal"><span class="pre">inst.syncUpdate()</span></tt> or <tt class="literal"><span class="pre">obj.sync()</span></tt>: <tt class="literal"><span class="pre">.sync()</span></tt> also
+refetches the data from the database, which <tt class="literal"><span class="pre">.syncUpdate()</span></tt> does not
+do.</p>
+<p>When enabled instances will have a property <tt class="literal"><span class="pre">dirty</span></tt>, which indicates
+if there are pending updates.  Inserts are still done immediately.</p>
+</div>
+<div class="section" id="one-to-many-relationships">
+<h2><a name="one-to-many-relationships">One-to-Many Relationships</a></h2>
+<p>A real address book should have people, but also addresses.  These
+examples are in <tt class="literal"><span class="pre">personaddress.py</span></tt></p>
+<p>First, let's define the new address table.  People can have multiple
+addresses, of course:</p>
+
+<pre class="literal-block"><tt><span class="keyword">class</span> <span class="function">Address</span><span class="symbol">(</span><span class="normal">SQLObject</span><span class="symbol">)</span><span class="symbol">:</span>
+
+    <span class="normal">street</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="symbol">)</span>
+    <span class="normal">city</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="symbol">)</span>
+    <span class="normal">state</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="normal">length</span><span class="symbol">=</span><span class="number">2</span><span class="symbol">)</span>
+    <span class="normal">zip</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="normal">length</span><span class="symbol">=</span><span class="number">9</span><span class="symbol">)</span>
+    <span class="normal">person</span> <span class="symbol">=</span> <span class="function">ForeignKey</span><span class="symbol">(</span><span class="string">'Person'</span><span class="symbol">)</span>
+</tt></pre>
+<p>Note the column <tt class="literal"><span class="pre">person</span> <span class="pre">=</span> <span class="pre">ForeignKey(&quot;Person&quot;)</span></tt>.  This is a
+reference to a <cite>Person</cite> object.  We refer to other classes by name
+(with a string) to avoid circular dependencies.  In the database
+there will be a <tt class="literal"><span class="pre">person_id</span></tt> column, type <tt class="literal"><span class="pre">INT</span></tt>, which points to
+the <tt class="literal"><span class="pre">person</span></tt> column.</p>
+<p>Here's the <cite>Person</cite> class:</p>
+
+<pre class="literal-block"><tt><span class="keyword">class</span> <span class="function">Person</span><span class="symbol">(</span><span class="normal">SQLObject</span><span class="symbol">)</span><span class="symbol">:</span>
+
+    <span class="normal">firstName</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="symbol">)</span>
+    <span class="normal">middleInitial</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="normal">length</span><span class="symbol">=</span><span class="number">1</span><span class="symbol">,</span> <span class="normal">default</span><span class="symbol">=</span><span class="normal">None</span><span class="symbol">)</span>
+    <span class="normal">lastName</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="symbol">)</span>
+
+    <span class="normal">addresses</span> <span class="symbol">=</span> <span class="function">MultipleJoin</span><span class="symbol">(</span><span class="string">'Address'</span><span class="symbol">)</span>
+</tt></pre>
+<p>We get the backreference with <tt class="literal"><span class="pre">addresses</span> <span class="pre">=</span> <span class="pre">MultipleJoin('Address')</span></tt>.
+When we access a person's <cite>addresses</cite> attribute, we will get back a
+list of all the <cite>Address</cite> objects associated with that person.  An
+example:</p>
+
+<pre class="literal-block"><tt><span class="normal">p</span> <span class="symbol">=</span> <span class="function">Person</span><span class="symbol">(</span><span class="normal">firstName</span><span class="symbol">=</span><span class="string">'John'</span><span class="symbol">,</span> <span class="normal">lastName</span><span class="symbol">=</span><span class="string">'Doe'</span><span class="symbol">)</span>
+<span class="keyword">print</span> <span class="normal">p</span><span class="symbol">.</span><span class="normal">addresses</span>
+<span class="comment">#&gt;&gt; []</span>
+<span class="normal">a1</span> <span class="symbol">=</span> <span class="function">Address</span><span class="symbol">(</span><span class="normal">street</span><span class="symbol">=</span><span class="string">'123'</span><span class="symbol">,</span> <span class="normal">city</span><span class="symbol">=</span><span class="string">'Smallsville'</span><span class="symbol">,</span>
+                 <span class="normal">state</span><span class="symbol">=</span><span class="string">'IL'</span><span class="symbol">,</span> <span class="normal">zip</span><span class="symbol">=</span><span class="string">'50484'</span><span class="symbol">,</span> <span class="normal">person</span><span class="symbol">=</span><span class="normal">p</span><span class="symbol">)</span>
+<span class="keyword">print</span> <span class="symbol">[</span><span class="normal">a</span><span class="symbol">.</span><span class="normal">street</span> <span class="keyword">for</span> <span class="normal">a</span> <span class="keyword">in</span> <span class="normal">p</span><span class="symbol">.</span><span class="normal">addresses</span><span class="symbol">]</span>
+<span class="comment">#&gt;&gt; ['123']</span>
+</tt></pre>
+</div>
+<div class="section" id="many-to-many-relationships">
+<h2><a name="many-to-many-relationships">Many-to-Many Relationships</a></h2>
+<p>For this example we will have user and role objects.  The two have a
+many-to-many relationship, which is represented with the
+<cite>RelatedJoin</cite>.</p>
+
+<pre class="literal-block"><tt><span class="keyword">class</span> <span class="function">User</span><span class="symbol">(</span><span class="normal">SQLObject</span><span class="symbol">)</span><span class="symbol">:</span>
+
+    <span class="comment"># user is a reserved word in some databases, so we won't</span>
+    <span class="comment"># use that for the table name:</span>
+    <span class="normal">_table</span> <span class="symbol">=</span> <span class="string">"user_table"</span>
+
+    <span class="normal">username</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="normal">alternateID</span><span class="symbol">=</span><span class="normal">True</span><span class="symbol">,</span> <span class="normal">length</span><span class="symbol">=</span><span class="number">20</span><span class="symbol">)</span>
+    <span class="comment"># We'd probably define more attributes, but we'll leave</span>
+    <span class="comment"># that excersize to the reader...</span>
+
+    <span class="normal">roles</span> <span class="symbol">=</span> <span class="function">RelatedJoin</span><span class="symbol">(</span><span class="string">'Role'</span><span class="symbol">)</span>
+
+<span class="keyword">class</span> <span class="function">Role</span><span class="symbol">(</span><span class="normal">SQLObject</span><span class="symbol">)</span><span class="symbol">:</span>
+
+    <span class="normal">name</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="normal">alternateID</span><span class="symbol">=</span><span class="normal">True</span><span class="symbol">,</span> <span class="normal">length</span><span class="symbol">=</span><span class="number">20</span><span class="symbol">)</span>
+
+    <span class="normal">users</span> <span class="symbol">=</span> <span class="function">RelatedJoin</span><span class="symbol">(</span><span class="string">'User'</span><span class="symbol">)</span>
+</tt></pre>
+<p>And usage:</p>
+
+<pre class="literal-block"><tt><span class="normal">bob</span> <span class="symbol">=</span> <span class="function">User</span><span class="symbol">(</span><span class="normal">username</span><span class="symbol">=</span><span class="string">'bob'</span><span class="symbol">)</span>
+<span class="normal">tim</span> <span class="symbol">=</span> <span class="function">User</span><span class="symbol">(</span><span class="normal">username</span><span class="symbol">=</span><span class="string">'tim'</span><span class="symbol">)</span>
+<span class="normal">jay</span> <span class="symbol">=</span> <span class="function">User</span><span class="symbol">(</span><span class="normal">username</span><span class="symbol">=</span><span class="string">'jay'</span><span class="symbol">)</span>
+
+<span class="normal">admin</span> <span class="symbol">=</span> <span class="function">Role</span><span class="symbol">(</span><span class="normal">name</span><span class="symbol">=</span><span class="string">'admin'</span><span class="symbol">)</span>
+<span class="normal">editor</span> <span class="symbol">=</span> <span class="function">Role</span><span class="symbol">(</span><span class="normal">name</span><span class="symbol">=</span><span class="string">'editor'</span><span class="symbol">)</span>
+
+<span class="normal">bob</span><span class="symbol">.</span><span class="function">addRole</span><span class="symbol">(</span><span class="normal">admin</span><span class="symbol">)</span>
+<span class="normal">bob</span><span class="symbol">.</span><span class="function">addRole</span><span class="symbol">(</span><span class="normal">editor</span><span class="symbol">)</span>
+<span class="normal">tim</span><span class="symbol">.</span><span class="function">addRole</span><span class="symbol">(</span><span class="normal">editor</span><span class="symbol">)</span>
+
+<span class="keyword">print</span> <span class="normal">bob</span><span class="symbol">.</span><span class="normal">roles</span>
+<span class="comment">#&gt;&gt; [&lt;Role 1 name='admin'&gt;, &lt;Role 2 name='editor'&gt;]</span>
+<span class="keyword">print</span> <span class="normal">tim</span><span class="symbol">.</span><span class="normal">roles</span>
+<span class="comment">#&gt;&gt; [&lt;Role 2 name='editor'&gt;]</span>
+<span class="keyword">print</span> <span class="normal">jay</span><span class="symbol">.</span><span class="normal">roles</span>
+<span class="comment">#&gt;&gt; []</span>
+<span class="keyword">print</span> <span class="normal">admin</span><span class="symbol">.</span><span class="normal">users</span>
+<span class="comment">#&gt;&gt; [&lt;User 1 username='bob'&gt;]</span>
+<span class="keyword">print</span> <span class="normal">editor</span><span class="symbol">.</span><span class="normal">users</span>
+<span class="comment">#&gt;&gt; [&lt;User 1 username='bob'&gt;, &lt;User 2 username='tim'&gt;]</span>
+</tt></pre>
+<p>In the process an intermediate table is created, <tt class="literal"><span class="pre">role_user</span></tt>, which
+references both of the other classes.  This table is never exposed as
+a class, and its rows do not have equivalent Python objects -- this
+hides some of the nuisance of a many-to-many relationship.</p>
+<p>You may notice that the columns have the extra keyword argument
+<cite>alternateID</cite>.  If True, this means that the column uniquely
+identifies rows -- like a username uniquely identifies a user.  This
+identifier is in addition to the primary key (<tt class="literal"><span class="pre">id</span></tt>), which is always
+present.</p>
+<div class="note">
+<p class="admonition-title first">Note</p>
+SQLObject has a strong requirement that the primary key be unique
+and <em>immutable</em>.  You cannot change the primary key through
+SQLObject, and if you change it through another mechanism you can
+cause inconsistency in any running SQLObject program (and in your
+data).  For this reason meaningless integer IDs are encouraged --
+something like a username that could change in the future may
+uniquely identify a row, but it may be changed in the future.  So
+long as it is not used to reference the row internally, it is also
+<em>safe</em> to change it in the future.</div>
+<p>A alternateID column creates a class method, like <tt class="literal"><span class="pre">byUsername</span></tt> for a
+column named <tt class="literal"><span class="pre">username</span></tt> (or you can use the <cite>alternateMethodName</cite>
+keyword argument to override this).  Its use:</p>
+
+<pre class="literal-block"><tt><span class="keyword">print</span> <span class="normal">User</span><span class="symbol">.</span><span class="function">byUsername</span><span class="symbol">(</span><span class="string">'bob'</span><span class="symbol">)</span>
+<span class="comment">#&gt;&gt; &lt;User 1 username='bob'&gt;</span>
+<span class="keyword">print</span> <span class="normal">Role</span><span class="symbol">.</span><span class="function">byName</span><span class="symbol">(</span><span class="string">'admin'</span><span class="symbol">)</span>
+<span class="comment">#&gt;&gt; &lt;Role 1 name='admin'&gt;</span>
+</tt></pre>
+</div>
+<div class="section" id="selecting-multiple-objects">
+<h2><a name="selecting-multiple-objects">Selecting Multiple Objects</a></h2>
+<p>While the full power of all the kinds of joins you can do with a
+database are not revealed in SQLObject, a simple <tt class="literal"><span class="pre">SELECT</span></tt> is
+available.</p>
+<p><tt class="literal"><span class="pre">select</span></tt> is a class method, and you call it like (with the SQL
+that's generated):</p>
+
+<pre class="literal-block"><tt><span class="normal">peeps</span> <span class="symbol">=</span> <span class="normal">Person</span><span class="symbol">.</span><span class="function">select</span><span class="symbol">(</span><span class="normal">Person</span><span class="symbol">.</span><span class="normal">q</span><span class="symbol">.</span><span class="normal">firstName</span><span class="symbol">=</span><span class="symbol">=</span><span class="string">"John"</span><span class="symbol">)</span>
+<span class="keyword">print</span> <span class="function">list</span><span class="symbol">(</span><span class="normal">peeps</span><span class="symbol">)</span>
+<span class="comment">#&gt;&gt; [&lt;Person 1 lastName='Doe' middleInitial=None firstName='John'&gt;]</span>
+<span class="comment">#        SELECT person.id FROM person WHERE person.first_name = 'John';</span>
+</tt></pre>
+<p>This example returns everyone with the first name John.  An expression
+could be more complicated as well, like:</p>
+
+<pre class="literal-block"><tt><span class="normal">peeps</span> <span class="symbol">=</span> <span class="normal">Person</span><span class="symbol">.</span><span class="function">select</span><span class="symbol">(</span>
+            <span class="function">AND</span><span class="symbol">(</span><span class="normal">Address</span><span class="symbol">.</span><span class="normal">q</span><span class="symbol">.</span><span class="normal">personID</span> <span class="symbol">=</span><span class="symbol">=</span> <span class="normal">Person</span><span class="symbol">.</span><span class="normal">q</span><span class="symbol">.</span><span class="normal">id</span><span class="symbol">,</span>
+                <span class="normal">Address</span><span class="symbol">.</span><span class="normal">q</span><span class="symbol">.</span><span class="normal">zip</span><span class="symbol">.</span><span class="function">startswith</span><span class="symbol">(</span><span class="string">'504'</span><span class="symbol">)</span><span class="symbol">)</span><span class="symbol">)</span>
+<span class="keyword">print</span> <span class="function">list</span><span class="symbol">(</span><span class="normal">peeps</span><span class="symbol">)</span>
+<span class="comment">#        SELECT person.id FROM person, address</span>
+<span class="comment">#        WHERE (address.person_id = person.id AND</span>
+<span class="comment">#               address.zip LIKE '612%');</span>
+</tt></pre>
+<p>You'll note that classes have an attribute <tt class="literal"><span class="pre">q</span></tt>, which gives access
+to special objects for constructing query clauses.  All attributes
+under <tt class="literal"><span class="pre">q</span></tt> refer to column names and if you construct logical
+statements with these it'll give you the SQL for that statement.  You
+can also work like this:</p>
+
+<pre class="literal-block"><tt><span class="normal">peeps</span> <span class="symbol">=</span> <span class="normal">Person</span><span class="symbol">.</span><span class="function">select</span><span class="symbol">(</span><span class="string">""</span><span class="string">"address.id = person.id AND</span>
+<span class="string">                         address.zip LIKE '504%'"</span><span class="string">""</span><span class="symbol">,</span>
+                      <span class="normal">clauseTables</span><span class="symbol">=</span><span class="symbol">[</span><span class="string">'address'</span><span class="symbol">]</span><span class="symbol">)</span>
+</tt></pre>
+<p>You may wish to use <cite>MyClass.sqlrepr</cite> to quote any values you use if
+you create SQL manually (quoting is automatic if you use <tt class="literal"><span class="pre">q</span></tt>).
+Tables given in <cite>clauseTables</cite> will be added to the <tt class="literal"><span class="pre">FROM</span></tt> portion
+(again, they are automatically picked up when using <tt class="literal"><span class="pre">q</span></tt>).  The table
+you're selecting is always assumed to be included, of course.</p>
+<a class="target" id="orderby" name="orderby"></a><p>You can use the keyword arguments <cite>orderBy</cite> to create <tt class="literal"><span class="pre">ORDER</span> <span class="pre">BY</span></tt> in
+the select statements: <cite>orderBy</cite> takes a string, which should be the
+<em>database</em> name of the column, or a column in the form
+<tt class="literal"><span class="pre">Person.q.firstName</span></tt>.  You can use <tt class="literal"><span class="pre">&quot;-colname&quot;</span></tt> to specify
+descending order, or call <tt class="literal"><span class="pre">MyClass.select().reversed()</span></tt>.</p>
+<p>You can use the special class variable <cite>_defaultOrder</cite> to give a
+default ordering for all selects.  To get an unordered result when
+<cite>_defaultOrder</cite> is used, use <tt class="literal"><span class="pre">orderBy=None</span></tt>.</p>
+<p>Select results are generators, which are lazily evaluated.  So the SQL
+is only executed when you iterate over the select results, or if you
+use <tt class="literal"><span class="pre">list()</span></tt> to force the result to be executed.  When you iterate
+over the select results, rows are fetched one at a time.  This way you
+can iterate over large results without keeping the entire result set
+in memory.  You can also do things like <tt class="literal"><span class="pre">.reversed()</span></tt> without
+fetching and reversing the entire result -- instead, SQLObject can
+change the SQL that is sent so you get equivalent results.</p>
+<p>You can also slice select results.  The results are used in the SQL
+query, so <tt class="literal"><span class="pre">peeps[:10]</span></tt> will result in <tt class="literal"><span class="pre">LIMIT</span> <span class="pre">10</span></tt> being added to
+the end of the SQL query.  If the slice cannot be performed in the SQL
+(e.g., peeps[:-10]), then the select is executed, and the slice is
+performed on the list of results.  This will only happen when you use
+negative indexes.</p>
+<p>In certain cases, you may get a select result with an object in it
+more than once, e.g., in some joins.  If you don't want this, you can
+add the keyword argument <tt class="literal"><span class="pre">MyClass.select(...,</span> <span class="pre">distinct=True)</span></tt>.</p>
+<p>You can get the length of the result without fetching all the results
+by calling <tt class="literal"><span class="pre">count</span></tt> on the result object, like
+<tt class="literal"><span class="pre">MyClass.select().count()</span></tt>.  A <tt class="literal"><span class="pre">COUNT(*)</span></tt> query is used -- the
+actual objects are not fetched from the database.  Together with
+slicing, this makes batched queries easy to write:</p>
+
+<pre class="literal-block"><tt><span class="normal">start</span> <span class="symbol">=</span> <span class="number">20</span>
+<span class="normal">size</span> <span class="symbol">=</span> <span class="number">10</span>
+<span class="normal">query</span> <span class="symbol">=</span> <span class="normal">Table</span><span class="symbol">.</span><span class="function">select</span><span class="symbol">(</span><span class="symbol">)</span>
+<span class="normal">results</span> <span class="symbol">=</span> <span class="normal">query</span><span class="symbol">[</span><span class="normal">start</span><span class="symbol">:</span><span class="normal">start</span><span class="symbol">+</span><span class="normal">size</span><span class="symbol">]</span>
+<span class="normal">total</span> <span class="symbol">=</span> <span class="normal">query</span><span class="symbol">.</span><span class="function">count</span><span class="symbol">(</span><span class="symbol">)</span>
+<span class="keyword">print</span> <span class="string">"Showing page %i of %i"</span> <span class="symbol">%</span> <span class="symbol">(</span><span class="normal">start</span><span class="symbol">/</span><span class="normal">size</span> <span class="symbol">+</span> <span class="number">1</span><span class="symbol">,</span> <span class="normal">total</span><span class="symbol">/</span><span class="normal">size</span> <span class="symbol">+</span> <span class="number">1</span><span class="symbol">)</span>
+</tt></pre>
+<div class="note">
+<p class="admonition-title first">Note</p>
+<p>There are several factors when considering the efficiency of this
+kind of batching, and it depends very much how the batching is
+being used.  Consider a web application where you are showing an
+average of 100 results, 10 at a time, and the results are ordered
+by the date they were added to the database.  While slicing will
+keep the database from returning all the results (and so save some
+communication time), the database will still have to scan through
+the entire result set to sort the items (so it knows which the
+first ten are), and depending on your query may need to scan
+through the entire table (depending on your use of indexes).
+Indexes are probably the most important way to improve importance
+in a case like this, and you may find caching to be more effective
+than slicing.</p>
+<p>In this case, caching would mean retrieving the <em>complete</em> results.
+You can use <tt class="literal"><span class="pre">list(MyClass.select(...))</span></tt> to do this.  You can save
+these results for some limited period of time, as the user looks
+through the results page by page.  This means the first page in a
+search result will be slightly more expensive, but all later pages
+will be very cheap.</p>
+</div>
+<p>For more information on the where clause in the queries, see the
+<a class="reference" href="SQLBuilder.html">SQLBuilder documentation</a>.</p>
+<div class="section" id="select-by-method">
+<h3><a name="select-by-method">Select-By Method</a></h3>
+<p>An alternative to <tt class="literal"><span class="pre">.select</span></tt> is <tt class="literal"><span class="pre">.selectBy</span></tt>.  It works like:</p>
+
+<pre class="literal-block"><tt><span class="normal">peeps</span> <span class="symbol">=</span> <span class="normal">Person</span><span class="symbol">.</span><span class="function">selectBy</span><span class="symbol">(</span><span class="normal">firstName</span><span class="symbol">=</span><span class="string">"John"</span><span class="symbol">,</span> <span class="normal">lastName</span><span class="symbol">=</span><span class="string">"Doe"</span><span class="symbol">)</span>
+</tt></pre>
+<p>Each keyword argument is a column, and all the keyword arguments
+are ANDed together.  The return value is a <cite>SelectResult</cite>, so you
+can slice it, count it, order it, etc.</p>
+</div>
+</div>
+<div class="section" id="customizing-the-objects">
+<h2><a name="customizing-the-objects">Customizing the Objects</a></h2>
+<p>While we haven't done so in the examples, you can include your own
+methods in the class definition.  Writing you own methods should be
+obvious enough (just do so like in any other class), but there are
+some other details to be aware of.</p>
+<div class="section" id="initializing-the-objects">
+<h3><a name="initializing-the-objects">Initializing the Objects</a></h3>
+<p>There are two ways SQLObject instances can come into existance: they
+can be fetched from the database, or they can be inserted into the
+database.  In both cases a new Python object is created.  This makes
+the place of <cite>__init__</cite> a little confusing.</p>
+<p>In general, you should not touch <cite>__init__</cite>.  Instead use the <cite>_init</cite>
+method, which is called after an object is fetched or inserted.  This
+method has the signature <tt class="literal"><span class="pre">_init(self,</span> <span class="pre">id,</span> <span class="pre">connection=None,</span>
+<span class="pre">selectResults=None)</span></tt>, though you may just want to use <tt class="literal"><span class="pre">_init(self,</span>
+<span class="pre">*args,</span> <span class="pre">**kw)</span></tt>.  <strong>Note:</strong> don't forget to call
+<tt class="literal"><span class="pre">SQLObject._init(self,</span> <span class="pre">*args,</span> <span class="pre">**kw)</span></tt> if you override the method!</p>
+</div>
+<div class="section" id="adding-magic-attributes-properties">
+<h3><a name="adding-magic-attributes-properties">Adding Magic Attributes (properties)</a></h3>
+<p>You can use all the normal techniques for defining methods in this
+new-style class, including <cite>classmethod</cite>, <cite>staticmethod</cite>, and
+<cite>property</cite>, but you can also use a shortcut.  If you have a method
+that's name starts with <tt class="literal"><span class="pre">_set_</span></tt>, <tt class="literal"><span class="pre">_get_</span></tt>, <tt class="literal"><span class="pre">_del_</span></tt>, or <tt class="literal"><span class="pre">_doc_</span></tt>,
+it will be used to create a property.  So, for instance, say you have
+images stored under the ID of the person in the <tt class="literal"><span class="pre">/var/people/images</span></tt>
+directory:</p>
+
+<pre class="literal-block"><tt><span class="keyword">class</span> <span class="function">Person</span><span class="symbol">(</span><span class="normal">SQLObject</span><span class="symbol">)</span><span class="symbol">:</span>
+    <span class="comment"># ...</span>
+
+    <span class="keyword">def</span> <span class="function">imageFilename</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="keyword">return</span> <span class="string">'images/person-%s.jpg'</span> <span class="symbol">%</span> <span class="normal">self</span><span class="symbol">.</span><span class="normal">id</span>
+
+    <span class="keyword">def</span> <span class="function">_get_image</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="keyword">if</span> <span class="keyword">not</span> <span class="normal">os</span><span class="symbol">.</span><span class="normal">path</span><span class="symbol">.</span><span class="function">exists</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">.</span><span class="function">imageFilename</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">)</span><span class="symbol">:</span>
+            <span class="keyword">return</span> <span class="normal">None</span>
+        <span class="normal">f</span> <span class="symbol">=</span> <span class="function">open</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">.</span><span class="function">imageFilename</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">)</span>
+        <span class="normal">v</span> <span class="symbol">=</span> <span class="normal">f</span><span class="symbol">.</span><span class="function">read</span><span class="symbol">(</span><span class="symbol">)</span>
+        <span class="normal">f</span><span class="symbol">.</span><span class="function">close</span><span class="symbol">(</span><span class="symbol">)</span>
+        <span class="keyword">return</span> <span class="normal">v</span>
+
+    <span class="keyword">def</span> <span class="function">_set_image</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">,</span> <span class="normal">value</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="comment"># assume we get a string for the image</span>
+        <span class="normal">f</span> <span class="symbol">=</span> <span class="function">open</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">.</span><span class="function">imageFilename</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">,</span> <span class="string">'w'</span><span class="symbol">)</span>
+        <span class="normal">f</span><span class="symbol">.</span><span class="function">write</span><span class="symbol">(</span><span class="normal">value</span><span class="symbol">)</span>
+        <span class="normal">f</span><span class="symbol">.</span><span class="function">close</span><span class="symbol">(</span><span class="symbol">)</span>
+
+    <span class="keyword">def</span> <span class="function">_del_image</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">,</span> <span class="normal">value</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="comment"># I usually wouldn't include a method like this, but for</span>
+        <span class="comment"># instructional purposes...</span>
+        <span class="normal">os</span><span class="symbol">.</span><span class="function">unlink</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">.</span><span class="function">imageFilename</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">)</span>
+
+    <span class="normal">_doc_image</span> <span class="symbol">=</span> <span class="string">'The headshot for the person'</span>
+</tt></pre>
+<p>Later, you can use the <tt class="literal"><span class="pre">.image</span></tt> property just like an attribute, and
+the changes will be reflected in the filesystem by calling these
+methods.  This is a good technique for information that is better to
+keep in files as opposed to the database (such as large, opaque data
+like images).</p>
+<p>You can also pass an <tt class="literal"><span class="pre">image</span></tt> keyword argument to the <cite>new</cite> class
+method or the <cite>set</cite> method, like <tt class="literal"><span class="pre">Person.new(...,</span> <span class="pre">image=imageText)</span></tt>.</p>
+<p>All of the methods (<tt class="literal"><span class="pre">_get_</span></tt>, <tt class="literal"><span class="pre">_set_</span></tt>, etc) are optional -- you can
+use any one of them without using the others (except <tt class="literal"><span class="pre">_doc_</span></tt>, since
+having a doc string that doesn't document anything would be silly).
+So you could define just a <tt class="literal"><span class="pre">_get_attr</span></tt> method so that <tt class="literal"><span class="pre">attr</span></tt> was
+read-only.</p>
+</div>
+<div class="section" id="overriding-column-attributes">
+<h3><a name="overriding-column-attributes">Overriding Column Attributes</a></h3>
+<p>It's a little more complicated if you want to override the behavior of
+an database column attribute.  For instance, imagine there's special
+code you want to run whenever someone's name changes -- you could make
+a subclass, and then use <tt class="literal"><span class="pre">Person.__setattr__(self,</span> <span class="pre">'lastName',</span>
+<span class="pre">value)</span></tt> to actually do the deed, but that's obviously very awkward --
+you have to create subclasses without a real inheritance relationship,
+and the whole thing feels architecturally fragile.  SQLObject creates
+methods like <tt class="literal"><span class="pre">_set_lastName</span></tt> for each of your columns, but again you
+can't use this, since there's no superclass to reference (and you
+can't write <tt class="literal"><span class="pre">SQLObject._set_lastName(...)</span></tt>, because the SQLObject
+class doesn't know about your class's columns).  You want to override
+that <tt class="literal"><span class="pre">_set_lastName</span></tt> method yourself.</p>
+<p>To deal with this, SQLObject creates two methods for each getter and
+setter, for example: <tt class="literal"><span class="pre">_set_lastName</span></tt> and <tt class="literal"><span class="pre">_SO_set_lastName</span></tt>.  So
+to intercept all changes to <tt class="literal"><span class="pre">lastName</span></tt>:</p>
+
+<pre class="literal-block"><tt><span class="keyword">class</span> <span class="function">Person</span><span class="symbol">(</span><span class="normal">SQLObject</span><span class="symbol">)</span><span class="symbol">:</span>
+    <span class="normal">lastName</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="symbol">)</span>
+    <span class="normal">firstName</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="symbol">)</span>
+
+    <span class="keyword">def</span> <span class="function">_set_lastName</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">,</span> <span class="normal">value</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="normal">self</span><span class="symbol">.</span><span class="function">notifyLastNameChange</span><span class="symbol">(</span><span class="normal">value</span><span class="symbol">)</span>
+        <span class="normal">self</span><span class="symbol">.</span><span class="function">_SO_set_lastName</span><span class="symbol">(</span><span class="normal">value</span><span class="symbol">)</span>
+</tt></pre>
+<p>Or perhaps you want to constrain a phone numbers to be actual
+digits, and of proper length, and make the formatting nice:</p>
+
+<pre class="literal-block"><tt><span class="keyword">import</span> <span class="normal">re</span>
+
+<span class="keyword">class</span> <span class="function">PhoneNumber</span><span class="symbol">(</span><span class="normal">SQLObject</span><span class="symbol">)</span><span class="symbol">:</span>
+    <span class="normal">phoneNumber</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="normal">length</span><span class="symbol">=</span><span class="number">30</span><span class="symbol">)</span>
+
+    <span class="normal">_garbageCharactersRE</span> <span class="symbol">=</span> <span class="normal">re</span><span class="symbol">.</span><span class="function">compile</span><span class="symbol">(</span><span class="normal">r</span><span class="string">'[\-\.\(\) ]'</span><span class="symbol">)</span>
+    <span class="normal">_phoneNumberRE</span> <span class="symbol">=</span> <span class="normal">re</span><span class="symbol">.</span><span class="function">compile</span><span class="symbol">(</span><span class="normal">r</span><span class="string">'^[0-9]+$'</span><span class="symbol">)</span>
+    <span class="keyword">def</span> <span class="function">_set_phoneNumber</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">,</span> <span class="normal">value</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="normal">value</span> <span class="symbol">=</span> <span class="normal">self</span><span class="symbol">.</span><span class="normal">_garbageCharactersRE</span><span class="symbol">.</span><span class="function">sub</span><span class="symbol">(</span><span class="string">''</span><span class="symbol">,</span> <span class="normal">value</span><span class="symbol">)</span>
+        <span class="keyword">if</span> <span class="keyword">not</span> <span class="function">len</span><span class="symbol">(</span><span class="normal">value</span><span class="symbol">)</span> <span class="symbol">&gt;</span><span class="symbol">=</span> <span class="number">10</span><span class="symbol">:</span>
+            <span class="keyword">raise</span> <span class="normal">ValueError</span><span class="symbol">,</span> <span class="string">'Phone numbers must be at least 10 digits long'</span>
+        <span class="keyword">if</span> <span class="keyword">not</span> <span class="normal">self</span><span class="symbol">.</span><span class="normal">_phoneNumberRE</span><span class="symbol">.</span><span class="function">match</span><span class="symbol">(</span><span class="normal">value</span><span class="symbol">)</span><span class="symbol">:</span>
+            <span class="keyword">raise</span> <span class="normal">ValueError</span><span class="symbol">,</span> <span class="string">'Phone numbers can contain only digits'</span>
+        <span class="normal">self</span><span class="symbol">.</span><span class="function">_SO_set_phoneNumber</span><span class="symbol">(</span><span class="normal">value</span><span class="symbol">)</span>
+
+    <span class="keyword">def</span> <span class="function">_get_phoneNumber</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="normal">value</span> <span class="symbol">=</span> <span class="normal">self</span><span class="symbol">.</span><span class="function">_SO_get_phoneNumber</span><span class="symbol">(</span><span class="symbol">)</span>
+        <span class="normal">number</span> <span class="symbol">=</span> <span class="string">'(%s) %s-%s'</span> <span class="symbol">%</span> <span class="symbol">(</span><span class="normal">value</span><span class="symbol">[</span><span class="number">0</span><span class="symbol">:</span><span class="number">3</span><span class="symbol">]</span><span class="symbol">,</span> <span class="normal">value</span><span class="symbol">[</span><span class="number">3</span><span class="symbol">:</span><span class="number">6</span><span class="symbol">]</span><span class="symbol">,</span> <span class="normal">value</span><span class="symbol">[</span><span class="number">6</span><span class="symbol">:</span><span class="number">10</span><span class="symbol">]</span><span class="symbol">)</span>
+        <span class="keyword">if</span> <span class="function">len</span><span class="symbol">(</span><span class="normal">value</span><span class="symbol">)</span> <span class="symbol">&gt;</span> <span class="number">10</span><span class="symbol">:</span>
+            <span class="normal">number</span> <span class="symbol">+</span><span class="symbol">=</span> <span class="string">' ext.%s'</span> <span class="symbol">%</span> <span class="normal">value</span><span class="symbol">[</span><span class="number">10</span><span class="symbol">:</span><span class="symbol">]</span>
+        <span class="keyword">return</span> <span class="normal">number</span>
+</tt></pre>
+<div class="note">
+<p class="admonition-title first">Note</p>
+You should be a little cautious when modifying data that gets set
+in an attribute.  Generally someone using your class will expect
+that the value they set the attribute to will be the same value
+they get back.  In this example we removed some of the characters
+before putting it in the database, and reformatted it on the way
+out.  One advantage of methods (as opposed to attribute access) is
+that the programmer is more likely to expect this disconnect.</div>
+</div>
+</div>
+</div>
+<div class="section" id="reference">
+<h1><a name="reference">Reference</a></h1>
+<p>The instructions above should tell you enough to get you started, and
+be useful for many situations.  Now we'll show how to specify the
+class more completely.</p>
+<div class="section" id="col-class-specifying-columns">
+<h2><a name="col-class-specifying-columns">Col Class: Specifying Columns</a></h2>
+<p>The list of columns is a list of <cite>Col</cite> objects.  These objects don't
+have functionality in themselves, but give you a way to specify the
+column.</p>
+<dl>
+<dt><cite>dbName</cite>:</dt>
+<dd>This is the name of the column in the database.  If you don't
+give a name, your Pythonic name will be converted from 
+mixed-case to underscore-separated.</dd>
+<dt><cite>default</cite>:</dt>
+<dd>The default value for this column.  Used when creating a new row.
+If you give a callable object or function, the function will be
+called, and the return value will be used.  So you can give
+<tt class="literal"><span class="pre">DateTime.now</span></tt> to make the default value be the current time.
+Or you can use <tt class="literal"><span class="pre">SQLBuilder.func.NOW()</span></tt> to have the database use
+the <tt class="literal"><span class="pre">NOW()</span></tt> function internally.  If you don't give a default
+there will be an exception if this column isn't specified in the
+call to <cite>new</cite>.</dd>
+<dt><cite>alternateID</cite>:</dt>
+<dd><p class="first">This boolean (default False) indicates if the column can be used
+as an ID for the field (for instance, a username), though it is
+not a primary key.  If so a class method will be added, like
+<tt class="literal"><span class="pre">byUsername</span></tt> which will return that object.  Use
+<cite>alternateMethodName</cite> if you don't like the <tt class="literal"><span class="pre">by*</span></tt> name
+(e.g. <tt class="literal"><span class="pre">alternateMethodName=&quot;username&quot;</span></tt>).</p>
+<p class="last">The column should be declared <tt class="literal"><span class="pre">UNIQUE</span></tt> in your table schema.</p>
+</dd>
+<dt><cite>unique</cite>:</dt>
+<dd>If true, when SQLObject creates a table it will declare this
+column to be <tt class="literal"><span class="pre">UNIQUE</span></tt>.</dd>
+<dt><cite>notNone</cite>:</dt>
+<dd>If true, None/<tt class="literal"><span class="pre">NULL</span></tt> is not allowed for this column.  Useful if
+you are using SQLObject to create your tables.</dd>
+<dt><cite>sqlType</cite>:</dt>
+<dd>The SQL type for this column (like <tt class="literal"><span class="pre">INT</span></tt>, <tt class="literal"><span class="pre">BOOLEAN</span></tt>, etc).
+You can use classes (defined below) for this, but if those don't
+work it's sometimes easiest just to use <cite>sqlType</cite>.  Only necessary
+if SQLObject is creating your tables.</dd>
+</dl>
+<div class="section" id="subclasses-of-col">
+<h3><a name="subclasses-of-col">Subclasses of Col</a></h3>
+<p>The <cite>ForeignKey</cite> class should be used instead of <cite>Col</cite> when the column
+is a reference to another table/class.  It is generally used like
+<tt class="literal"><span class="pre">ForeignKey('Role')</span></tt>, in this instance to create a reference to a
+table <cite>Role</cite>.  This is largely equivalent to <tt class="literal"><span class="pre">Col(foreignKey='Role',</span>
+<span class="pre">sqlType='INT')</span></tt>.  Two attributes will generally be created, <tt class="literal"><span class="pre">role</span></tt>,
+which returns a <cite>Role</cite> instance, and <tt class="literal"><span class="pre">roleID</span></tt>, which returns an
+integer ID for the related role.</p>
+<p>There are some other subclasses of <cite>Col</cite>.  These are used to indicate
+different types of columns, when SQLObject creates your tables.</p>
+<dl>
+<dt><cite>BoolCol</cite>:</dt>
+<dd>Will create a <tt class="literal"><span class="pre">BOOLEAN</span></tt> column in Postgres, or <tt class="literal"><span class="pre">INT</span></tt> in other
+databses.  It will also convert values to <tt class="literal"><span class="pre">&quot;t&quot;/&quot;f&quot;</span></tt> or <tt class="literal"><span class="pre">0/1</span></tt>
+according to the database backend.</dd>
+<dt><cite>CurrencyCol</cite>:</dt>
+<dd>Equivalent to <tt class="literal"><span class="pre">DecimalCol(size=10,</span> <span class="pre">precision=2)</span></tt>.</dd>
+<dt><cite>DateTimeCol</cite>:</dt>
+<dd>A date and time (usually returned as an mxDateTime object).</dd>
+<dt><cite>DecimalCol</cite>:</dt>
+<dd>Base-10, precise number.  Uses the keyword arguments <cite>size</cite> for
+number of digits stored, and <cite>precision</cite> for the number of digits
+after the decimal point.</dd>
+<dt><cite>EnumCol</cite>:</dt>
+<dd>One of several string values -- give the possible strings as a
+list, with the <cite>enumValues</cite> keyword argument.  MySQL has a native
+<tt class="literal"><span class="pre">ENUM</span></tt> type, but will work with other databases too (storage
+just won't be as efficient).</dd>
+<dt><cite>FloatCol</cite>:</dt>
+<dd>Floats.</dd>
+<dt><cite>ForeignKey</cite>:</dt>
+<dd>A key to another table/class.  Use like <tt class="literal"><span class="pre">user</span> <span class="pre">=</span>
+<span class="pre">ForeignKey('User')</span></tt>.</dd>
+<dt><cite>IntCol</cite>:</dt>
+<dd>Integers.</dd>
+<dt><cite>StringCol</cite>:</dt>
+<dd><p class="first">A string (character) column.  Extra keywords:</p>
+<dl class="last">
+<dt><cite>length</cite>:</dt>
+<dd>If given, the type will be something like <tt class="literal"><span class="pre">VARCHAR(length)</span></tt>.
+If not given, then <tt class="literal"><span class="pre">TEXT</span></tt> is assumed (i.e., lengthless).</dd>
+<dt><cite>varchar</cite>:</dt>
+<dd>A boolean; if you have a length, differentiates between
+<tt class="literal"><span class="pre">CHAR</span></tt> and <tt class="literal"><span class="pre">VARCHAR</span></tt>, default True, i.e., use
+<tt class="literal"><span class="pre">VARCHAR</span></tt>.</dd>
+</dl>
+</dd>
+<dt><cite>UnicodeCol</cite>: </dt>
+<dd>A subclass of <cite>StringCol</cite>.  Also accepts a dbEncoding keyword
+argument, which defaults to <tt class="literal"><span class="pre">&quot;UTF-8&quot;</span></tt>.  Values coming in and
+out from the database will be encoded and decoded.  <strong>Note</strong>:
+parameters in queries will not be automatically encoded, so if
+you do a query matching a UnicodeCol column you must apply the
+encoding yourself.</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="sqlobject-class-specifying-your-class">
+<h2><a name="sqlobject-class-specifying-your-class">SQLObject Class: Specifying Your Class</a></h2>
+<p>In addition to the columns, there are a number of other special
+attributes you can set in your class.</p>
+<dl>
+<dt><cite>_connection</cite>:</dt>
+<dd>The connection object to use, from <cite>DBConnection</cite>.  You can also
+set the variable <cite>__connection__</cite> in the enclosing module and it
+will be picked up (be sure to define <cite>__connection__</cite> before you
+class).  You can also pass a connection object in at instance
+creation time, as described in <a class="reference" href="#transactions">transactions</a>.</dd>
+<dt><cite>_table</cite>:</dt>
+<dd>The database name of the table for this class.  If you don't give
+a name, then the standard <tt class="literal"><span class="pre">MixedCase</span></tt> to <tt class="literal"><span class="pre">mixed_case</span></tt>
+translation is performed.</dd>
+<dt><cite>_joins</cite>:</dt>
+<dd>A list of <cite>Join</cite> objects.  This is covered below.</dd>
+<dt><cite>_cacheValues</cite>:</dt>
+<dd>If set to <tt class="literal"><span class="pre">False</span></tt> then values for attributes from the database
+won't be cached.  So everytime you access an attribute in the
+object the database will be queried for a value.  If you want to
+handle concurrent access to the database from multiple processes
+then this is probably the way to do so.  You should also use
+it with <a class="reference" href="#transactions">transactions</a> (it is not implied).</dd>
+</dl>
+<a class="target" id="idname" name="idname"></a><dl>
+<dt><cite>_idName</cite>:</dt>
+<dd>The name of the primary key column (default <tt class="literal"><span class="pre">id</span></tt>).</dd>
+<dt><cite>_style</cite>:</dt>
+<dd>A style object -- this object allows you to use other algorithms
+for translating between Python attribute and class names, and the
+database's column and table names.  See <a class="reference" href="#changing-the-naming-style">Changing the Naming
+Style</a> for more.</dd>
+</dl>
+<!-- Relationships_: -->
+</div>
+<div class="section" id="relationships-between-classes-tables">
+<h2><a name="relationships-between-classes-tables">Relationships Between Classes/Tables</a></h2>
+<p>You can use the <cite>ForeignKey</cite> to handle foreign references in a table,
+but for back references and many-to-many relationships you'll use
+joins.</p>
+<div class="section" id="multiplejoin-one-to-many">
+<h3><a name="multiplejoin-one-to-many">MultipleJoin: One-to-Many</a></h3>
+<p>See <a class="reference" href="#one-to-many-relationships">One-to-Many Relationships</a> for an example of one-to-many
+relationships.</p>
+<p>Several keyword arguments are allowed to the <cite>MultipleJoin</cite> constructor:</p>
+<a class="target" id="multiple-join-keywords" name="multiple-join-keywords"></a><dl>
+<dt><cite>joinColumn</cite>:</dt>
+<dd>The column name of the key that points to this table.  So, if you have
+a table <tt class="literal"><span class="pre">Product</span></tt>, and another table has a column <tt class="literal"><span class="pre">ProductNo</span></tt> that
+points to this table, then you'd use <tt class="literal"><span class="pre">joinColumn=&quot;ProductNo&quot;</span></tt>.</dd>
+<dt><cite>orderBy</cite>:</dt>
+<dd>Like the <a class="reference" href="#orderby">orderBy</a> argument to <cite>select()</cite>, you can specify
+the order that the joined objects should be returned in.  <cite>_defaultOrder</cite>
+will be used if not specified; <tt class="literal"><span class="pre">None</span></tt> forces unordered results.</dd>
+<dt><cite>joinMethodName</cite>:</dt>
+<dd>When adding joins dynamically (using the class method <a class="reference" href="#addjoin">addJoin</a>),
+you can give the name of the accessor for the join.  It can also be
+created automatically, and is normally implied (i.e., <tt class="literal"><span class="pre">addresses</span> <span class="pre">=</span> 
+<span class="pre">MultipleJoin(...)</span></tt> implies <tt class="literal"><span class="pre">joinMethodName=&quot;addresses&quot;</span></tt>).</dd>
+</dl>
+</div>
+<div class="section" id="relatedjoin-many-to-many">
+<h3><a name="relatedjoin-many-to-many">RelatedJoin: Many-to-Many</a></h3>
+<p>See <a class="reference" href="#many-to-many-relationships">Many-to-Many Relationships</a> for examples of using many-to-many joins.</p>
+<p><cite>RelatedJoin</cite> has all the keyword arguments of <a class="reference" href="#multiple-join-keywords">MultipleJoin</a>, plus:</p>
+<dl>
+<dt><cite>otherColumn</cite>:</dt>
+<dd>Similar to <cite>joinColumn</cite>, but referring to the joined class.</dd>
+<dt><cite>intermediateTable</cite>:</dt>
+<dd>The name of the intermediate table which references both classes.</dd>
+<dt><cite>addRemoveName</cite>:</dt>
+<dd>In the <a class="reference" href="#many-to-many-relationships">user/role example</a>, the methods <cite>addRole(role)</cite> and 
+<cite>removeRole(role)</cite> are created.  The <tt class="literal"><span class="pre">Role</span></tt> portion of these
+method names can be changed by giving a string value here.</dd>
+</dl>
+<p>An example schema that requires the use of <cite>joinColumn</cite>, <cite>otherColumn</cite>,
+and <cite>intermediateTable</cite>:</p>
+<pre class="literal-block">
+CREATE TABLE person (
+    id SERIAL,
+    username VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE role (
+    id SERIAL,
+    name VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE assigned_roles (
+    person INT NOT NULL,
+    role INT NOT NULL
+);
+</pre>
+<p>Then the usage in a class:</p>
+<pre class="literal-block">
+class Person(SQLObject):
+    username = StringCol(length=100, alternateID=True)
+    roles = RelatedJoin('Role', joinColumn='person', otherColumn='role', 
+                        intermediateTable='assigned_roles')
+class Role(SQLObject):
+    name = StringCol(length=50, alternateID=True)
+    roles = RelatedJoin('Person', joinColumn='role', otherColumn='person', 
+                        intermediateTable='assigned_roles')
+</pre>
+</div>
+</div>
+<div class="section" id="transactions">
+<h2><a name="transactions">Transactions</a></h2>
+<p>Transaction support in SQLObject is left to the database.
+Transactions can be used like:</p>
+
+<pre class="literal-block"><tt><span class="normal">conn</span> <span class="symbol">=</span> <span class="normal">DBConnection</span><span class="symbol">.</span><span class="function">PostgresConnection</span><span class="symbol">(</span><span class="string">'yada'</span><span class="symbol">)</span>
+<span class="normal">trans</span> <span class="symbol">=</span> <span class="normal">conn</span><span class="symbol">.</span><span class="function">transaction</span><span class="symbol">(</span><span class="symbol">)</span>
+<span class="normal">p</span> <span class="symbol">=</span> <span class="normal">Person</span><span class="symbol">.</span><span class="function">get</span><span class="symbol">(</span><span class="number">1</span><span class="symbol">,</span> <span class="normal">trans</span><span class="symbol">)</span>
+<span class="normal">p</span><span class="symbol">.</span><span class="normal">firstName</span> <span class="symbol">=</span> <span class="string">'Bob'</span>
+<span class="normal">trans</span><span class="symbol">.</span><span class="function">commit</span><span class="symbol">(</span><span class="symbol">)</span>
+<span class="normal">p</span><span class="symbol">.</span><span class="normal">firstName</span> <span class="symbol">=</span> <span class="string">'Billy'</span>
+<span class="normal">trans</span><span class="symbol">.</span><span class="function">rollback</span><span class="symbol">(</span><span class="symbol">)</span>
+</tt></pre>
+<p>The <tt class="literal"><span class="pre">trans</span></tt> object here is essentially a wrapper around a single
+database connection, and <cite>commit</cite> and <cite>rollback</cite> just pass that
+message to the <cite>psycopg</cite> connection.</p>
+<p>If you want to use transactions you should also turn <cite>_cacheValues</cite>
+off, like:</p>
+
+<pre class="literal-block"><tt><span class="keyword">class</span> <span class="function">Person</span><span class="symbol">(</span><span class="normal">SQLObject</span><span class="symbol">)</span><span class="symbol">:</span>
+    <span class="normal">_cacheValue</span> <span class="symbol">=</span> <span class="normal">False</span>
+    <span class="comment"># ...</span>
+</tt></pre>
+</div>
+<div class="section" id="automatic-schema-generation">
+<h2><a name="automatic-schema-generation">Automatic Schema Generation</a></h2>
+<p>All the connections support creating and droping tables based on the
+class definition.  First you have to prepare your class definition,
+which means including type information in your columns.</p>
+<div class="section" id="columns-types">
+<h3><a name="columns-types">Columns Types</a></h3>
+<p>A column type is indicated by using a subclass of <cite>Col</cite>:</p>
+<dl>
+<dt><cite>StringCol</cite>:</dt>
+<dd>StringCol represents <tt class="literal"><span class="pre">CHAR</span></tt>, <tt class="literal"><span class="pre">VARCHAR</span></tt>, and <tt class="literal"><span class="pre">TEXT</span></tt>.  The
+<cite>length</cite> keyword argument indicates the <tt class="literal"><span class="pre">CHAR</span></tt> or <tt class="literal"><span class="pre">VARCHAR</span></tt>
+length -- if not given, then <tt class="literal"><span class="pre">TEXT</span></tt> is assumed.  If you use
+<tt class="literal"><span class="pre">varchar=False</span></tt> then <tt class="literal"><span class="pre">CHAR</span></tt> will be used, otherwise 
+<tt class="literal"><span class="pre">VARCHAR</span></tt> is the default.</dd>
+<dt><cite>IntCol</cite>:</dt>
+<dd>The <tt class="literal"><span class="pre">INT</span></tt> type.</dd>
+<dt><cite>FloatCol</cite>:</dt>
+<dd>The <tt class="literal"><span class="pre">FLOAT</span></tt> type.</dd>
+<dt><cite>DecimalCol</cite>:</dt>
+<dd>The <tt class="literal"><span class="pre">DECIMAL</span></tt> SQL type, i.e., base 10 number.  The keyword 
+arguments <cite>size</cite> and <cite>precision</cite> indicate the scope.  So
+<tt class="literal"><span class="pre">DecimalCol(size=5,</span> <span class="pre">precision=2)</span></tt> is a number like ###.##,
+i.e., 5 digits, two of them past the decimal point.</dd>
+<dt><cite>CurrencyCol</cite>:</dt>
+<dd>Like <tt class="literal"><span class="pre">DecimalCol(size=10,</span> <span class="pre">precision=2)</span></tt>.</dd>
+<dt><cite>EnumCol</cite>:</dt>
+<dd>A MySQL <tt class="literal"><span class="pre">ENUM</span></tt>, i.e., one of a finite number of strings.
+For other databases this will be a <tt class="literal"><span class="pre">VARCHAR</span></tt>.</dd>
+<dt><cite>DateTimeCol</cite>:</dt>
+<dd>A moment in time.  <tt class="literal"><span class="pre">TIMESTAMP</span></tt> in Postgres, and <tt class="literal"><span class="pre">DATETIME</span></tt>
+in MySQL.  Note the names of these columns match the <em>Python</em>
+type names, not the SQL names.</dd>
+<dt><cite>ForeignKey</cite>:</dt>
+<dd>This is a reference to another table.  You typically need to
+only give the name of the foreign class that is referenced.
+<cite>ForeignKey</cite> implies an <tt class="literal"><span class="pre">INT</span></tt> column.</dd>
+</dl>
+</div>
+<div class="section" id="indexes">
+<h3><a name="indexes">Indexes</a></h3>
+<p>You can also define indexes for your tables, which is only meaningful
+when creating your tables through SQLObject (SQLObject relies on the
+database to implement the indexes).  You do this again with attribute
+assignment, like:</p>
+<pre class="literal-block">
+firstLastIndex = DatabaseIndex('firstName', 'lastName')
+</pre>
+<p>This creates an index on two columns, useful if you are selecting a
+particular name.  Of course, you can give a single column, and you can
+give the column object (<tt class="literal"><span class="pre">firstName</span></tt>) instead of the string name.
+Note that if you use <tt class="literal"><span class="pre">unique</span></tt> or <tt class="literal"><span class="pre">alternateID</span></tt> (which implies
+<tt class="literal"><span class="pre">unique</span></tt>) the database may make an index for you, and primary keys
+are always indexed.</p>
+<p>If you give the keyword argument <tt class="literal"><span class="pre">unique</span></tt> to <cite>DatabaseIndex</cite> you'll
+create a unique index -- the combination of columns must be unique.</p>
+<p>You can also use dictionaries in place of the column names, to add
+extra options.  E.g.:</p>
+<pre class="literal-block">
+lastNameIndex = DatabaseIndex({'expression': 'lower(last_name)'})
+</pre>
+<p>In that case, the index will be on the lower-case version of the
+column.  It seems that only PostgreSQL supports this.  You can also
+do:</p>
+<pre class="literal-block">
+lastNameIndex = DatabaseIndex({'column': lastName, 'length': 10})
+</pre>
+<p>Which asks the database to only pay attention to the first ten
+characters.  Only MySQL supports this, but it is ignored in other
+databases.</p>
+</div>
+<div class="section" id="creating-and-dropping-tables">
+<h3><a name="creating-and-dropping-tables">Creating and Dropping Tables</a></h3>
+<p>To create a table call <cite>createTable</cite>.  It takes two arguments:</p>
+<dl>
+<dt><cite>ifNotExists</cite>: </dt>
+<dd>If the table already exists, then don't try to create it.  Default
+False.</dd>
+<dt><cite>createJoinTables</cite>: </dt>
+<dd>If you used <a class="reference" href="#many-to-many-relationships">Many-to-Many relationships</a>, then the intermediate tables
+will be created (but only for one of the two involved classes).
+Default True.</dd>
+</dl>
+<p><cite>dropTable</cite> takes arguments <cite>ifExists</cite> and <cite>dropJoinTables</cite>,
+self-explanatory.</p>
+</div>
+</div>
+</div>
+<div class="section" id="dynamic-classes">
+<h1><a name="dynamic-classes">Dynamic Classes</a></h1>
+<p>SQLObject classes can be manipulated dynamically.  This leaves open
+the possibility of constructing SQLObject classes from an XML file,
+from database introspection, or from a graphical interface.</p>
+<div class="section" id="automatic-class-generation">
+<h2><a name="automatic-class-generation">Automatic Class Generation</a></h2>
+<p>SQLObject can read the table description from the database, and fill
+in the class columns (as would normally be described in the <cite>_columns</cite>
+attribute).  Do this like:</p>
+<pre class="literal-block">
+class Person(SQLObject):
+
+    _fromDatabase = True
+</pre>
+<p>You can still specify columns (in <cite>_columns</cite>), and only missing
+columns will be added.</p>
+<p><em>This is not supported in SQLite</em></p>
+</div>
+<div class="section" id="runtime-column-changes">
+<h2><a name="runtime-column-changes">Runtime Column Changes</a></h2>
+<p><em>SQLite does not support this feature</em></p>
+<p>You can add and remove columns to your class at runtime.  Such changes
+will effect all instances, since changes are made inplace to the
+class.  There are two methods, <cite>addColumn</cite> and <cite>delColumn</cite>, both of
+which take a <cite>Col</cite> object (or subclass) as an argument.  There's also
+an option argument <cite>changeSchema</cite> which, if True, will add or drop the
+column from the database (typically with an <tt class="literal"><span class="pre">ALTER</span></tt> command).</p>
+<p>When adding columns, you must pass the name as part of the column
+constructor, like <tt class="literal"><span class="pre">StringCol(&quot;username&quot;,</span> <span class="pre">length=20)</span></tt>.  When removing
+columns, you can either use the Col object (as found in <cite>_columns</cite>, or
+which you used in <cite>addColumn</cite>), or you can use the column name (like
+<tt class="literal"><span class="pre">MyClass.delColumn(&quot;username&quot;)</span></tt>).</p>
+<a class="target" id="addjoin" name="addjoin"></a><p>You can also add <a class="reference" href="Relationships_:">Joins</a>, like 
+<tt class="literal"><span class="pre">MyClass.addJoin(MultipleJoin(&quot;MyOtherClass&quot;))</span></tt>, and remove joins with
+<cite>delJoin</cite>.  <cite>delJoin</cite> does not take strings, you have to get the join
+object out of the <cite>_joins</cite> attribute.</p>
+</div>
+</div>
+<div class="section" id="legacy-database-schemas">
+<h1><a name="legacy-database-schemas">Legacy Database Schemas</a></h1>
+<p>Often you will have a database that already exists, and does not use
+the naming conventions that SQLObject expects, or does not use any
+naming convention at all.</p>
+<div class="section" id="sqlobject-requirements">
+<h2><a name="sqlobject-requirements">SQLObject requirements</a></h2>
+<p>While SQLObject tries not to make too many requirements on your
+schema, some assumptions are made.  Some of these may be relaxed in
+the future.</p>
+<p>All tables that you want to turn into a class need to have an integer
+primary key.  That key should be defined like:</p>
+<dl>
+<dt>MySQL:</dt>
+<dd><tt class="literal"><span class="pre">INT</span> <span class="pre">PRIMARY</span> <span class="pre">KEY</span> <span class="pre">AUTO_INCREMENT</span></tt></dd>
+<dt>Postgres:</dt>
+<dd><tt class="literal"><span class="pre">SERIAL</span> <span class="pre">PRIMARY</span> <span class="pre">KEY</span></tt></dd>
+<dt>SQLite:</dt>
+<dd><tt class="literal"><span class="pre">INTEGER</span> <span class="pre">PRIMARY</span> <span class="pre">KEY</span></tt></dd>
+</dl>
+<p>SQLObject does not support non-integer keys (that may change).  It
+does not support sequences in Postgres (that will change -- <tt class="literal"><span class="pre">SERIAL</span></tt>
+uses an implicit sequence).  It does not support primary keys made up
+of multiple columns (that probably won't change).  It does not
+generally support tables with primary keys with business meaning --
+i.e., primary keys are assumed to be immutable (that won't change).</p>
+<p>At the moment foreign key column names must end in <tt class="literal"><span class="pre">&quot;ID&quot;</span></tt>
+(case-insensitive).  This restriction will probably be removed in the
+next release.</p>
+</div>
+<div class="section" id="changing-the-naming-style">
+<h2><a name="changing-the-naming-style">Changing the Naming Style</a></h2>
+<p>By default names in SQLObject are expected to be mixed case in Python
+(like <tt class="literal"><span class="pre">mixedCase</span></tt>), and underscore-separated in SQL (like
+<tt class="literal"><span class="pre">mixed_case</span></tt>).  This applies to table and column names.  The primary
+key is assumed to be simply <tt class="literal"><span class="pre">id</span></tt>.</p>
+<p>Other styles exist.  A typical one is mixed case column names, and a
+primary key that includes the table name, like <tt class="literal"><span class="pre">ProductID</span></tt>.  You can
+use a different &quot;Style&quot; object to indicate a different naming
+convention.  For instance:</p>
+
+<pre class="literal-block"><tt><span class="keyword">class</span> <span class="function">Person</span><span class="symbol">(</span><span class="normal">SQLObject</span><span class="symbol">)</span><span class="symbol">:</span>
+    <span class="normal">_style</span> <span class="symbol">=</span> <span class="function">MixedCaseStyle</span><span class="symbol">(</span><span class="normal">longID</span><span class="symbol">=</span><span class="normal">True</span><span class="symbol">)</span>
+
+    <span class="normal">firstName</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="symbol">)</span>
+    <span class="normal">lastName</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="symbol">)</span>
+</tt></pre>
+<p>If you use <tt class="literal"><span class="pre">Person.createTable()</span></tt>, you'll get:</p>
+<pre class="literal-block">
+CREATE TABLE Person (
+    PersonID INT PRIMARY KEY,
+    FirstName Text,
+    LastName Text
+)
+</pre>
+<p>The <cite>MixedCaseStyle</cite> object handles the initial capitalization of
+words, but otherwise leaves them be.  By using <tt class="literal"><span class="pre">longID=True</span></tt>, we
+indicate that the primary key should look like a normal reference
+(<tt class="literal"><span class="pre">PersonID</span></tt> for <cite>MixedCaseStyle</cite>, or <tt class="literal"><span class="pre">person_id</span></tt> for the default
+style).</p>
+<p>If you wish to change the style globally, assign the style to the
+connection, like:</p>
+
+<pre class="literal-block"><tt><span class="normal">__connection__</span><span class="symbol">.</span><span class="normal">style</span> <span class="symbol">=</span> <span class="function">MixedCaseStyle</span><span class="symbol">(</span><span class="normal">longID</span><span class="symbol">=</span><span class="normal">True</span><span class="symbol">)</span>
+</tt></pre>
+</div>
+<div class="section" id="irregular-naming">
+<h2><a name="irregular-naming">Irregular Naming</a></h2>
+<p>While naming conventions are nice, they are not always present.  You
+can control most of the names that SQLObject uses, independent of the
+Python names (so at least you don't have to propagate the
+irregularity to your brand-spanking new Python code).</p>
+<p>Here's a simple example:</p>
+
+<pre class="literal-block"><tt><span class="keyword">class</span> <span class="function">User</span><span class="symbol">(</span><span class="normal">SQLObject</span><span class="symbol">)</span><span class="symbol">:</span>
+    <span class="normal">_table</span> <span class="symbol">=</span> <span class="string">"user_table"</span>
+    <span class="normal">_idName</span> <span class="symbol">=</span> <span class="string">"userid"</span>
+
+    <span class="normal">username</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="normal">length</span><span class="symbol">=</span><span class="number">20</span><span class="symbol">,</span> <span class="normal">dbName</span><span class="symbol">=</span><span class="string">'name'</span><span class="symbol">)</span>
+</tt></pre>
+<p>The attribute <cite>_table</cite> overrides the table name.  <cite>_idName</cite> provides
+an alternative to <tt class="literal"><span class="pre">id</span></tt>.  The <tt class="literal"><span class="pre">dbName</span></tt> keyword argument gives the
+column name.</p>
+</div>
+<div class="section" id="non-integer-keys">
+<h2><a name="non-integer-keys">Non-Integer Keys</a></h2>
+<p>While not strictly a legacy database issue, this fits into the
+category of &quot;irregularities&quot;.  If you use non-integer keys, all
+primary key management is up to you.  You must create the table
+yourself, and when you create instances you must pass a <tt class="literal"><span class="pre">id</span></tt> keyword
+argument into <tt class="literal"><span class="pre">new</span></tt> (like <tt class="literal"><span class="pre">Person.new(id='555-55-5555',</span> <span class="pre">...)</span></tt>).</p>
+</div>
+</div>
+<div class="section" id="dbconnection-database-connections">
+<h1><a name="dbconnection-database-connections">DBConnection: Database Connections</a></h1>
+<p>The <cite>DBConnection</cite> module currently has four external classes,
+<cite>MySQLConnection</cite>, <cite>PostgresConnection</cite>, <cite>SQLiteConnection</cite>, 
+<cite>SybaseConnection</cite>, and <cite>MaxdbConnection</cite>.</p>
+<p>You can pass the keyword argument <cite>debug</cite> to any connector.  If set to
+true, then any SQL sent to the database will also be printed to the
+console.</p>
+<div class="section" id="mysql">
+<h2><a name="mysql">MySQL</a></h2>
+<p><cite>MySQLConnection</cite> takes the keyword arguments <cite>host</cite>, <cite>db</cite>, <cite>user</cite>,
+and <cite>passwd</cite>, just like <cite>MySQLdb.connect</cite> does.</p>
+<p>MySQLConnection supports all the features, though MySQL only supports
+<a class="reference" href="#transactions">transactions</a> when using the InnoDB backend, and SQLObject currently
+does not have support for explicitly defining the backend when using
+<tt class="literal"><span class="pre">createTable</span></tt>.</p>
+</div>
+<div class="section" id="postgres">
+<h2><a name="postgres">Postgres</a></h2>
+<p><cite>PostgresConnection</cite> takes a single connection string, like
+<tt class="literal"><span class="pre">&quot;dbname=something</span> <span class="pre">user=some_user&quot;</span></tt>, just like <cite>psycopg.connect</cite>.
+You can also use the same keyword arguments as for <cite>MySQLConnection</cite>,
+and a dsn string will be constructed.</p>
+<p>PostgresConnection supports transactions and all other features.</p>
+</div>
+<div class="section" id="id7">
+<h2><a name="id7">SQLite</a></h2>
+<p><cite>SQLiteConnection</cite> takes the a single string, which is the path to the
+database file.</p>
+<p>SQLite puts all data into one file, with a journal file that is opened
+in the same directory during operation (the file is deleted when the
+program quits).  SQLite does not restrict the types you can put in a
+column -- strings can go in integer columns, dates in integers, etc.</p>
+<p>SQLiteConnection doesn't support <a class="reference" href="#automatic-class-generation">automatic class generation</a> and
+SQLite does not support <a class="reference" href="#runtime-column-changes">runtime column changes</a>.</p>
+<p>SQLite may have concurrency issues, depending on your usage in a
+multi-threaded environment.</p>
+</div>
+<div class="section" id="id8">
+<h2><a name="id8">Firebird</a></h2>
+<p><cite>FirebirdConnection</cite> takes the arguments <cite>host</cite>, <cite>db</cite>, <cite>user</cite> (default
+<tt class="literal"><span class="pre">&quot;sysdba&quot;</span></tt>), <cite>passwd</cite> (default <tt class="literal"><span class="pre">&quot;masterkey&quot;</span></tt>).</p>
+<p>Firebird supports all the features.  Support is still young, so there
+may be some issues, especially with concurrent access, and especially
+using lazy selects.  Try <tt class="literal"><span class="pre">list(MyClass.select())</span></tt> to avoid
+concurrent cursors if you have problems (using <tt class="literal"><span class="pre">list()</span></tt> will
+pre-fetch all the results of a select).</p>
+<p>Firebird support uses the <a class="reference" href="http://kinterbasdb.sourceforge.net/">kinterbasdb</a> Python library.</p>
+<p>If you are using indexes and get an error like <em>key size exceeds
+implementation restriction for index</em>, see <a class="reference" href="http://www.volny.cz/iprenosil/interbase/ip_ib_indexcalculator.htm">this page</a> to understand
+the restrictions on your indexing.</p>
+</div>
+<div class="section" id="sybaseconnection">
+<h2><a name="sybaseconnection">SybaseConnection</a></h2>
+<p><cite>SybaseConnection</cite> takes the arguments <cite>host</cite>, <cite>db</cite>, <cite>user</cite>, and
+<cite>passwd</cite>.  It also takes the extra boolean argument <cite>locking</cite> (default
+True), which is passed through when performing a connection.  You may
+use a False value for <cite>locking</cite> if you are not using multiple threads,
+for a slight performance boost.</p>
+<p>It uses the <a class="reference" href="http://www.object-craft.com.au/projects/sybase/">Sybase</a> module.</p>
+</div>
+<div class="section" id="max-db">
+<h2><a name="max-db">MAX DB</a></h2>
+<p>MAX DB, also known as SAP DB, is available from a partnership of SAP
+and MySQL.  It takes the typical arguments: <cite>host</cite>, <cite>database</cite>,
+<cite>user</cite>, <cite>password</cite>.  It also takes the arguments <cite>sqlmode</cite> (default
+<tt class="literal"><span class="pre">&quot;internal&quot;</span></tt>), <cite>isolation</cite>, and <cite>timeout</cite>, which are passed through
+when creating the connection to the database.</p>
+<p>It uses the <a class="reference" href="http://www.sapdb.org/sapdbPython.html">sapdb</a> module.</p>
+</div>
+</div>
+<div class="section" id="exported-symbols">
+<h1><a name="exported-symbols">Exported Symbols</a></h1>
+<p>You can use <tt class="literal"><span class="pre">from</span> <span class="pre">sqlobject</span> <span class="pre">import</span> <span class="pre">*</span></tt>, though you don't have to.  It
+exports a minimal number of symbols.  The symbols exported:</p>
+<p>From <cite>sqlobject.main</cite>:</p>
+<ul class="simple">
+<li><cite>NoDefault</cite></li>
+<li><cite>SQLObject</cite></li>
+<li><cite>getID</cite></li>
+<li><cite>getObject</cite></li>
+</ul>
+<p>From <cite>sqlobject.col</cite>:
+* <cite>Col</cite>
+* <cite>StringCol</cite>
+* <cite>IntCol</cite>
+* <cite>FloatCol</cite>
+* <cite>KeyCol</cite>
+* <cite>ForeignKey</cite>
+* <cite>EnumCol</cite>
+* <cite>DateTimeCol</cite>
+* <cite>DecimalCol</cite>
+* <cite>CurrencyCol</cite></p>
+<p>From <cite>sqlobject.joins</cite>:
+* <cite>MultipleJoin</cite>
+* <cite>RelatedJoin</cite></p>
+<p>From <cite>sqlobject.styles</cite>:
+* <cite>Style</cite>
+* <cite>MixedCaseUnderscoreStyle</cite>
+* <cite>DefaultStyle</cite>
+* <cite>MixedCaseStyle</cite></p>
+<p>From <cite>sqlobject.sqlbuilder</cite>:</p>
+<ul class="simple">
+<li><cite>AND</cite></li>
+<li><cite>OR</cite></li>
+<li><cite>NOT</cite></li>
+<li><cite>IN</cite></li>
+<li><cite>LIKE</cite></li>
+<li><cite>DESC</cite></li>
+<li><cite>CONTAINSSTRING</cite></li>
+<li><cite>const</cite></li>
+<li><cite>func</cite></li>
+</ul>
+<p>For more information on SQLBuilder, read the <a class="reference" href="SQLBuilder.html">SQLBuilder
+Documentation</a>.</p>
+</div>
+</div>
+</body>
+</html>

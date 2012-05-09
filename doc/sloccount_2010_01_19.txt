@@ -1,0 +1,75 @@
+Creating filelist for BD
+Have a non-directory at the top, so creating directory top_dir
+Adding /home/bogado/Geotexan/geotexinn02/./COPYING to top_dir
+Creating filelist for CVS
+Adding /home/bogado/Geotexan/geotexinn02/./ChangeLog to top_dir
+Adding /home/bogado/Geotexan/geotexinn02/./ChangeLog.bak to top_dir
+Adding /home/bogado/Geotexan/geotexinn02/./GPL to top_dir
+Creating filelist for PyChart-1.39
+Adding /home/bogado/Geotexan/geotexinn02/./README to top_dir
+Creating filelist for SQLObject
+Creating filelist for adjuntos
+Creating filelist for doc
+Creating filelist for formularios
+Creating filelist for framework
+Creating filelist for gajim-0.9.1
+Adding /home/bogado/Geotexan/geotexinn02/./gpl.txt to top_dir
+Adding /home/bogado/Geotexan/geotexinn02/./gtkrc to top_dir
+Creating filelist for imagenes
+Creating filelist for informes
+Creating filelist for l10n
+Creating filelist for libgmail-0.1.3.3
+Creating filelist for mo
+Creating filelist for msdnav
+Adding /home/bogado/Geotexan/geotexinn02/./post_outage.py to top_dir
+Creating filelist for utils
+Creating filelist for web
+Categorizing files.
+Finding a working MD5 command....
+Found a working MD5 command.
+Computing results.
+
+
+SLOC	Directory	SLOC-by-Language (Sorted)
+80539   formularios     python=80539
+24878   gajim-0.9.1     python=22155,sh=1710,ansic=648,xml=365
+13742   framework       python=13682,sh=60
+13561   informes        python=13561
+10361   SQLObject       python=10361
+7160    PyChart-1.39    python=7160
+4273    utils           python=4258,sh=15
+1467    BD              python=1283,sh=184
+972     doc             xml=662,python=188,sh=122
+970     libgmail-0.1.3.3 python=970
+419     web             python=419
+330     msdnav          python=330
+11      top_dir         python=11
+0       CVS             (none)
+0       adjuntos        (none)
+0       imagenes        (none)
+0       l10n            (none)
+0       mo              (none)
+
+
+Totals grouped by language (dominant language first):
+python:      154917 (97.63%)
+sh:            2091 (1.32%)
+xml:           1027 (0.65%)
+ansic:          648 (0.41%)
+
+
+
+
+Total Physical Source Lines of Code (SLOC)                = 158,683
+Development Effort Estimate, Person-Years (Person-Months) = 37.79 (453.43)
+ (Basic COCOMO model, Person-Months = 2.4 * (KSLOC**1.05))
+Schedule Estimate, Years (Months)                         = 1.67 (20.09)
+ (Basic COCOMO model, Months = 2.5 * (person-months**0.38))
+Total Estimated Cost to Develop                           = $ 1,958,819
+ (average salary = $21,600/year, overhead = 2.40).
+SLOCCount, Copyright (C) 2001-2004 David A. Wheeler
+SLOCCount is Open Source Software/Free Software, licensed under the GNU GPL.
+SLOCCount comes with ABSOLUTELY NO WARRANTY, and you are welcome to
+redistribute it under certain conditions as specified by the GNU GPL license;
+see the documentation for details.
+Please credit this data as "generated using David A. Wheeler's 'SLOCCount'."

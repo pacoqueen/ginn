@@ -1,0 +1,105 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module ventana_progreso</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>ventana_progreso</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/queen/geotexan/geotexinn02/formularios/ventana_progreso.py">/home/queen/geotexan/geotexinn02/formularios/ventana_progreso.py</a></font></td></tr></table>
+    <p><tt>#&nbsp;-*-&nbsp;coding:&nbsp;utf-8&nbsp;-*-</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="gobject.html">gobject</a><br>
+</td><td width="25%" valign=top><a href="gtk.html">gtk</a><br>
+</td><td width="25%" valign=top><a href="pygtk.html">pygtk</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="ventana_progreso.html#VentanaActividad">VentanaActividad</a>
+</font></dt><dt><font face="helvetica, arial"><a href="ventana_progreso.html#VentanaProgreso">VentanaProgreso</a>
+</font></dt></dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="VentanaActividad">class <strong>VentanaActividad</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Muestra&nbsp;una&nbsp;ventana&nbsp;de&nbsp;progreso&nbsp;actualizable&nbsp;con&nbsp;prioridad&nbsp;alta;&nbsp;<br>
+del&nbsp;tipo&nbsp;Activity&nbsp;(no&nbsp;se&nbsp;sabe&nbsp;exactamente&nbsp;el&nbsp;porcentaje&nbsp;completado<br>
+en&nbsp;cada&nbsp;actualización).<br>
+Ejemplo&nbsp;de&nbsp;uso:<br>
+from&nbsp;ventana_progreso&nbsp;import&nbsp;<a href="#VentanaActividad">VentanaActividad</a><br>
+vpro&nbsp;=&nbsp;<a href="#VentanaActividad">VentanaActividad</a>()<br>
+vpro.<a href="#VentanaActividad-mostrar">mostrar</a>()<br>
+for&nbsp;tal&nbsp;in&nbsp;pascual:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;Hacer&nbsp;lo&nbsp;que&nbsp;sea&nbsp;con&nbsp;tal.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vpro.<a href="#VentanaActividad-mover">mover</a>()<br>
+vpro.<a href="#VentanaActividad-ocultar">ocultar</a>()<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="VentanaActividad-__del__"><strong>__del__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="VentanaActividad-__init__"><strong>__init__</strong></a>(self, padre<font color="#909090">=None</font>, texto<font color="#909090">=''</font>)</dt></dl>
+
+<dl><dt><a name="VentanaActividad-actualizar"><strong>actualizar</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="VentanaActividad-mostrar"><strong>mostrar</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="VentanaActividad-mover"><strong>mover</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="VentanaActividad-ocultar"><strong>ocultar</strong></a>(self)</dt></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="VentanaProgreso">class <strong>VentanaProgreso</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Muestra&nbsp;una&nbsp;ventana&nbsp;de&nbsp;progreso&nbsp;actualizable&nbsp;con&nbsp;prioridad&nbsp;alta.<br>
+Ejemplo&nbsp;de&nbsp;uso:<br>
+i&nbsp;=&nbsp;0.0<br>
+tot&nbsp;=&nbsp;len(pascual)<br>
+from&nbsp;ventana_progreso&nbsp;import&nbsp;<a href="#VentanaProgreso">VentanaProgreso</a><br>
+vpro&nbsp;=&nbsp;<a href="#VentanaProgreso">VentanaProgreso</a>()<br>
+vpro.<a href="#VentanaProgreso-mostrar">mostrar</a>()<br>
+for&nbsp;tal&nbsp;in&nbsp;pascual:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;Hacer&nbsp;lo&nbsp;que&nbsp;sea&nbsp;con&nbsp;tal.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vpro.<a href="#VentanaProgreso-set_valor">set_valor</a>(i/tot,&nbsp;'Procesando&nbsp;%d...'&nbsp;%&nbsp;tal)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;i&nbsp;+=&nbsp;1<br>
+vpro.<a href="#VentanaProgreso-ocultar">ocultar</a>()<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="VentanaProgreso-__del__"><strong>__del__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="VentanaProgreso-__init__"><strong>__init__</strong></a>(self, padre<font color="#909090">=None</font>)</dt></dl>
+
+<dl><dt><a name="VentanaProgreso-actualizar"><strong>actualizar</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="VentanaProgreso-get_texto"><strong>get_texto</strong></a>(self)</dt><dd><tt>Devuelve&nbsp;el&nbsp;texto&nbsp;de&nbsp;la&nbsp;barra&nbsp;de&nbsp;progreso.</tt></dd></dl>
+
+<dl><dt><a name="VentanaProgreso-get_valor"><strong>get_valor</strong></a>(self)</dt><dd><tt>Devuelve&nbsp;el&nbsp;valor&nbsp;actual&nbsp;(porcentaje&nbsp;completado)&nbsp;de&nbsp;<br>
+la&nbsp;barra&nbsp;de&nbsp;progreso&nbsp;de&nbsp;la&nbsp;ventana.</tt></dd></dl>
+
+<dl><dt><a name="VentanaProgreso-mostrar"><strong>mostrar</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="VentanaProgreso-ocultar"><strong>ocultar</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="VentanaProgreso-set_valor"><strong>set_valor</strong></a>(self, valor, texto<font color="#909090">=''</font>)</dt></dl>
+
+</td></tr></table></td></tr></table>
+</body></html>

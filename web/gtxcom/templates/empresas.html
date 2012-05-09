@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block titulo %}Geotexan - Empresas{% endblock %}
+
+{% block encabezado %}Listado de empresas{% endblock %}
+{% block datos %}
+    {% for empresa in empresas %}
+        <p><a href="/empresa_edit/?eid={{empresa.id}}">{{empresa.nombre}}</a></p>
+    {% endfor %}
+{% endblock %}
+

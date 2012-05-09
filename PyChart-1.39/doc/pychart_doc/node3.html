@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head><style type="text/css">
+pre {background-color: #e0e0e0}
+</style>
+
+<link rel="STYLESHEET" href="pychart.css" type='text/css' />
+<link rel="first" href="pychart.html" title='PyChart' />
+<link rel='index' href='genindex.html' title='Index' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="prev" href="node2.html" />
+<link rel="parent" href="introduction.html" />
+<link rel="next" href="anatomy.html" />
+<meta name='aesop' content='information' />
+<title>1.2 Bar plot</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="1.1 Line plot"
+  href="node2.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="1 Introduction"
+  href="introduction.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="2 Anatomy of a"
+  href="anatomy.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="node2.html">1.1 Line plot</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="introduction.html">1 Introduction</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="anatomy.html">2 Anatomy of a</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION000120000000000000000">
+1.2 Bar plot</A>
+</H2>
+
+<P>
+<IMG
+  WIDTH="320" HEIGHT="290" ALIGN="BOTTOM" BORDER="0"
+ SRC="./bartestv.png"
+ ALT="Image bartestv">
+
+<P>
+The below program generates this chart.
+
+<P>
+../demos/bartestv.py
+
+<P>
+<div class="verbatim"><pre>
+from pychart import *
+<a href="options.html"><a href="options.html">theme.</a>get_options</a>()
+
+data = [(10, 20, 30, 5), (20, 65, 33, 5), (30, 55, 30, 5), (40, 45, 51, 7),
+        (50, 25, 27, 3), (60, 75, 30, 5), (70, 80, 42, 5), (80, 62, 32, 5),
+        (90, 42, 39, 5), (100, 32, 39, 4)]
+
+# The attribute y_coord=... tells that the Y axis values
+# should be taken from samples.
+# In this example, Y values will be [40,50,60,70,80].
+ar = <a href="module-area.html">area.T</a>(y_coord = <a href="module-coord.html">category_coord.T</a>(data[3:8], 0),
+            x_grid_style=<a href="module-line-style.html">line_style.</a>gray50_dash1,
+            x_grid_interval=20, x_range = (0,100),
+            x_axis=<a href="module-axis.html">axis.</a>X(label="X label"),
+            y_axis=<a href="module-axis.html">axis.</a>Y(label="Y label"),
+            bg_style = <a href="module-fill-style.html">fill_style.</a>gray90,
+            border_line_style = <a href="module-line-style.html">line_style.</a>default,
+            legend = <a href="module-legend.html">legend.</a>T(loc=(80,10)))
+
+# Below call sets the default attributes for all bar plots.
+chart_object.set_defaults(<a href="module-bar-plot.html">bar_plot.T</a>, direction="horizontal", data=data)
+
+# Attribute cluster=(0,3) tells that you are going to draw three bar
+# plots side by side.  The plot labeled "foo" will the leftmost (i.e.,
+# 0th out of 3).  Attribute hcol tells the column from which to
+# retrive sample values from.  It defaults to one.
+ar.add_plot(<a href="module-bar-plot.html">bar_plot.T</a>(label="foo", cluster=(0,3)))
+ar.add_plot(<a href="module-bar-plot.html">bar_plot.T</a>(label="bar", hcol=2, cluster=(1,3)))
+ar.add_plot(<a href="module-bar-plot.html">bar_plot.T</a>(label="baz", hcol=3, cluster=(2,3)))
+ar.draw()
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="1.1 Line plot"
+  href="node2.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="1 Introduction"
+  href="introduction.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="2 Anatomy of a"
+  href="anatomy.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="node2.html">1.1 Line plot</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="introduction.html">1 Introduction</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="anatomy.html">2 Anatomy of a</A>
+</div>
+</div>
+<hr />
+<span class="release-info">Documentation released on July 2, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

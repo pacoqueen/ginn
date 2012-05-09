@@ -1,0 +1,462 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module utils</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>utils</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/queen/geotexan/geotexinn02/formularios/utils.py">/home/queen/geotexan/geotexinn02/formularios/utils.py</a></font></td></tr></table>
+    <p><tt>#&nbsp;-*-&nbsp;coding:&nbsp;utf-8&nbsp;-*-</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="datetime.html">datetime</a><br>
+<a href="gobject.html">gobject</a><br>
+</td><td width="25%" valign=top><a href="gtk.html">gtk</a><br>
+<a href="mx.html">mx</a><br>
+</td><td width="25%" valign=top><a href="nftp.html">nftp</a><br>
+<a href="os.html">os</a><br>
+</td><td width="25%" valign=top><a href="pygtk.html">pygtk</a><br>
+<a href="time.html">time</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-DateTime2DateTimeDelta"><strong>DateTime2DateTimeDelta</strong></a>(dt)</dt><dd><tt>Devuelve&nbsp;un&nbsp;DateTimeDelta&nbsp;correspondiente&nbsp;a&nbsp;la&nbsp;hora<br>
+del&nbsp;DateTime&nbsp;«dt»&nbsp;(también&nbsp;admite&nbsp;DateTimeDelta,&nbsp;aunque<br>
+sea&nbsp;un&nbsp;poco&nbsp;inútil&nbsp;convertir&nbsp;de&nbsp;un&nbsp;tipo&nbsp;al&nbsp;mismo).</tt></dd></dl>
+ <dl><dt><a name="-abrir_factura_venta"><strong>abrir_factura_venta</strong></a>(id, num, usuario<font color="#909090">=None</font>)</dt><dd><tt>Intenta&nbsp;abrir&nbsp;la&nbsp;factura&nbsp;de&nbsp;venta&nbsp;con&nbsp;clave&nbsp;primaria&nbsp;"id"&nbsp;<br>
+y&nbsp;número&nbsp;de&nbsp;factura&nbsp;"num".&nbsp;Si&nbsp;no&nbsp;coincide&nbsp;el&nbsp;num&nbsp;con&nbsp;la&nbsp;<br>
+factura&nbsp;id&nbsp;es&nbsp;porque&nbsp;no&nbsp;es&nbsp;una&nbsp;factura&nbsp;de&nbsp;venta&nbsp;y&nbsp;<br>
+devuelve&nbsp;False.<br>
+En&nbsp;otro&nbsp;caso&nbsp;abre&nbsp;la&nbsp;ventana&nbsp;y&nbsp;devuelve&nbsp;True.</tt></dd></dl>
+ <dl><dt><a name="-abrir_prefactura"><strong>abrir_prefactura</strong></a>(id, num, usuario<font color="#909090">=None</font>)</dt><dd><tt>Intenta&nbsp;abrir&nbsp;la&nbsp;factura&nbsp;proforma&nbsp;con&nbsp;clave&nbsp;primaria&nbsp;"id"&nbsp;<br>
+y&nbsp;número&nbsp;de&nbsp;factura&nbsp;"num".&nbsp;Si&nbsp;no&nbsp;coincide&nbsp;el&nbsp;num&nbsp;con&nbsp;la&nbsp;<br>
+factura&nbsp;id&nbsp;es&nbsp;porque&nbsp;no&nbsp;es&nbsp;una&nbsp;prefactura&nbsp;y&nbsp;<br>
+devuelve&nbsp;False.<br>
+En&nbsp;otro&nbsp;caso&nbsp;abre&nbsp;la&nbsp;ventana&nbsp;y&nbsp;devuelve&nbsp;True.</tt></dd></dl>
+ <dl><dt><a name="-abs_mxfecha"><strong>abs_mxfecha</strong></a>(fecha)</dt><dd><tt>Devuelve&nbsp;la&nbsp;fecha&nbsp;"absoluta"&nbsp;(esto&nbsp;es,&nbsp;sin&nbsp;horas,&nbsp;minutos,&nbsp;segundos,&nbsp;etc.;&nbsp;<br>
+o,&nbsp;más&nbsp;bien,&nbsp;con&nbsp;la&nbsp;hora&nbsp;puesta&nbsp;a&nbsp;0)&nbsp;partiendo&nbsp;de&nbsp;la&nbsp;fecha&nbsp;recibida.<br>
+Útil&nbsp;para&nbsp;comparar&nbsp;dos&nbsp;fechas,&nbsp;una&nbsp;(o&nbsp;las&nbsp;dos)&nbsp;de&nbsp;ellas&nbsp;contiene&nbsp;además&nbsp;la&nbsp;hora&nbsp;<br>
+y&nbsp;sólo&nbsp;interesa&nbsp;saber&nbsp;si&nbsp;comparten&nbsp;fecha&nbsp;(día&nbsp;concreto,&nbsp;vamos).</tt></dd></dl>
+ <dl><dt><a name="-asegurar_fecha_positiva"><strong>asegurar_fecha_positiva</strong></a>(fecha)</dt><dd><tt>No&nbsp;estoy&nbsp;seguro&nbsp;de&nbsp;por&nbsp;qué,&nbsp;pero&nbsp;de&nbsp;repente&nbsp;la&nbsp;versión&nbsp;<br>
+de&nbsp;mx&nbsp;de&nbsp;Sid&nbsp;amd64&nbsp;ha&nbsp;empezado&nbsp;a&nbsp;devolver&nbsp;-1&nbsp;como&nbsp;día&nbsp;<br>
+al&nbsp;operar&nbsp;con&nbsp;la&nbsp;fecha,&nbsp;en&nbsp;lugar&nbsp;de&nbsp;convertir&nbsp;los&nbsp;valores&nbsp;<br>
+negativos&nbsp;en&nbsp;días&nbsp;desde&nbsp;el&nbsp;final&nbsp;de&nbsp;mes,&nbsp;como&nbsp;siempre.<br>
+Así&nbsp;que&nbsp;lo&nbsp;único&nbsp;que&nbsp;hace&nbsp;esta&nbsp;función&nbsp;es&nbsp;asegurarse&nbsp;de&nbsp;<br>
+que&nbsp;el&nbsp;día&nbsp;de&nbsp;la&nbsp;fecha&nbsp;es&nbsp;positivo&nbsp;en&nbsp;la&nbsp;fecha&nbsp;devuelta&nbsp;<br>
+equivalente&nbsp;a&nbsp;la&nbsp;recibida.<br>
+Esta&nbsp;función&nbsp;quedará&nbsp;obsoleta&nbsp;en&nbsp;cuanto&nbsp;se&nbsp;corrija&nbsp;el&nbsp;<br>
+bug&nbsp;de&nbsp;mx-extension.</tt></dd></dl>
+ <dl><dt><a name="-buscar_factura"><strong>buscar_factura</strong></a>(ventana_padre<font color="#909090">=None</font>, multi<font color="#909090">=False</font>, filtrar<font color="#909090">=False</font>, cliente<font color="#909090">=None</font>, conds_fras<font color="#909090">=[]</font>, conds_pres<font color="#909090">=[]</font>)</dt><dd><tt>Muestra&nbsp;un&nbsp;diálogo&nbsp;para&nbsp;buscar&nbsp;facturas&nbsp;o&nbsp;prefacturas&nbsp;<br>
+y&nbsp;devuelve&nbsp;la&nbsp;seleccionada,&nbsp;una&nbsp;lista&nbsp;de&nbsp;seleccionadas&nbsp;<br>
+o&nbsp;None&nbsp;si&nbsp;se&nbsp;cancela.<br>
+Si&nbsp;filtrar&nbsp;=&nbsp;True&nbsp;muestra&nbsp;antes&nbsp;un&nbsp;diálogo&nbsp;para&nbsp;buscar&nbsp;<br>
+por&nbsp;número&nbsp;de&nbsp;factura.<br>
+Si&nbsp;cliente&nbsp;!=&nbsp;None&nbsp;busca&nbsp;solamente&nbsp;entre&nbsp;las&nbsp;facturas&nbsp;<br>
+del&nbsp;cliente&nbsp;recibido.<br>
+conds_fras&nbsp;y&nbsp;conds_pres&nbsp;son&nbsp;listas&nbsp;de&nbsp;predicados&nbsp;WHERE&nbsp;<br>
+de&nbsp;SQLObject&nbsp;que&nbsp;se&nbsp;combinarán&nbsp;con&nbsp;AND&nbsp;al&nbsp;resto&nbsp;de&nbsp;<br>
+criterios&nbsp;para&nbsp;realizar&nbsp;la&nbsp;búsqueda.</tt></dd></dl>
+ <dl><dt><a name="-buscar_indice_texto"><strong>buscar_indice_texto</strong></a>(combo, texto)</dt><dd><tt>No&nbsp;tengo&nbsp;mucho&nbsp;tiempo&nbsp;que&nbsp;perder.&nbsp;Hasta&nbsp;que&nbsp;encuentre<br>
+el&nbsp;método&nbsp;que&nbsp;haga&nbsp;esto&nbsp;(¿por&nbsp;qué&nbsp;son&nbsp;tan&nbsp;retorcidos&nbsp;los<br>
+diseñadores&nbsp;de&nbsp;GTK?)&nbsp;moveré&nbsp;el&nbsp;índice&nbsp;del&nbsp;combobox&nbsp;hasta<br>
+encontrar&nbsp;el&nbsp;texto&nbsp;pasado.<br>
+Devuelve&nbsp;el&nbsp;índice&nbsp;del&nbsp;texto&nbsp;dentro&nbsp;del&nbsp;ListStore&nbsp;del&nbsp;combo.<br>
+Si&nbsp;el&nbsp;texto&nbsp;no&nbsp;se&nbsp;encuentra,&nbsp;devuelve&nbsp;-1.<br>
+Si&nbsp;hay&nbsp;dos&nbsp;textos&nbsp;idénticos,&nbsp;devuelve&nbsp;el&nbsp;índice&nbsp;del&nbsp;primero<br>
+de&nbsp;ellos.</tt></dd></dl>
+ <dl><dt><a name="-buscar_producto_general"><strong>buscar_producto_general</strong></a>(padre<font color="#909090">=None</font>, mostrar_precios<font color="#909090">=False</font>, texto_defecto<font color="#909090">=''</font>, incluir_sin_iva<font color="#909090">=True</font>)</dt><dd><tt>Recibe&nbsp;la&nbsp;ventana&nbsp;padre&nbsp;y&nbsp;devuelve&nbsp;una&nbsp;lista&nbsp;de&nbsp;<br>
+objetos&nbsp;producto&nbsp;de&nbsp;compra&nbsp;o&nbsp;de&nbsp;venta&nbsp;o&nbsp;una&nbsp;lista&nbsp;<br>
+vacía&nbsp;si&nbsp;no&nbsp;se&nbsp;encuentra.<br>
+Muestra&nbsp;una&nbsp;ventana&nbsp;donde&nbsp;introducir&nbsp;un&nbsp;código,&nbsp;código&nbsp;de&nbsp;<br>
+Composan,&nbsp;descripción&nbsp;completa&nbsp;o&nbsp;nombre&nbsp;y&nbsp;realiza&nbsp;la&nbsp;<br>
+búsqueda&nbsp;en&nbsp;las&nbsp;tablas&nbsp;de&nbsp;producto_compra&nbsp;y&nbsp;producto_venta.</tt></dd></dl>
+ <dl><dt><a name="-buscar_productos_compra"><strong>buscar_productos_compra</strong></a>(a_buscar)</dt><dd><tt>Devuelve&nbsp;un&nbsp;resultselect&nbsp;con&nbsp;los&nbsp;productos&nbsp;<br>
+de&nbsp;compra&nbsp;que&nbsp;contengan&nbsp;el&nbsp;texto&nbsp;"a_buscar"&nbsp;<br>
+en&nbsp;el&nbsp;código&nbsp;o&nbsp;la&nbsp;descripción</tt></dd></dl>
+ <dl><dt><a name="-buscar_productos_venta"><strong>buscar_productos_venta</strong></a>(a_buscar)</dt><dd><tt>Busca&nbsp;entre&nbsp;los&nbsp;productos&nbsp;de&nbsp;venta&nbsp;el&nbsp;texto&nbsp;"a_buscar"<br>
+en&nbsp;los&nbsp;campos&nbsp;de&nbsp;código,&nbsp;nombre&nbsp;o&nbsp;descripción.&nbsp;Al&nbsp;resultado<br>
+le&nbsp;añade&nbsp;los&nbsp;productos&nbsp;que&nbsp;contengan&nbsp;"a_buscar"&nbsp;en&nbsp;el&nbsp;campo<br>
+"codigoComposan"&nbsp;de&nbsp;la&nbsp;tabla&nbsp;campos_especificos_rollo.<br>
+Devuelve&nbsp;una&nbsp;lista&nbsp;de&nbsp;objetos&nbsp;productoVenta.</tt></dd></dl>
+ <dl><dt><a name="-buscar_puerto_serie"><strong>buscar_puerto_serie</strong></a>()</dt><dd><tt>Devuelve&nbsp;el&nbsp;primer&nbsp;puerto&nbsp;serie&nbsp;encontrado&nbsp;en&nbsp;<br>
+el&nbsp;sistema&nbsp;o&nbsp;None&nbsp;si&nbsp;no&nbsp;se&nbsp;contró.</tt></dd></dl>
+ <dl><dt><a name="-calcCC"><strong>calcCC</strong></a>(cBanco, cSucursal, cCuenta)</dt><dd><tt>Cálculo&nbsp;del&nbsp;Código&nbsp;de&nbsp;Control&nbsp;Bancario</tt></dd></dl>
+ <dl><dt><a name="-calcularNIF"><strong>calcularNIF</strong></a>(dni)</dt></dl>
+ <dl><dt><a name="-cambiar_columna_busqueda"><strong>cambiar_columna_busqueda</strong></a>(treeviewcolumn, tabla)</dt><dd><tt>Cambia&nbsp;la&nbsp;columna&nbsp;de&nbsp;búsqueda&nbsp;interactiva&nbsp;del&nbsp;TreeView&nbsp;"tabla"&nbsp;a&nbsp;<br>
+la&nbsp;columna&nbsp;TreeViewColumn&nbsp;recibida.</tt></dd></dl>
+ <dl><dt><a name="-cccCRC"><strong>cccCRC</strong></a>(cTexto)</dt><dd><tt>Cálculo&nbsp;del&nbsp;CRC&nbsp;de&nbsp;un&nbsp;número&nbsp;de&nbsp;10&nbsp;dígitos<br>
+ajustados&nbsp;con&nbsp;ceros&nbsp;por&nbsp;la&nbsp;izquierda</tt></dd></dl>
+ <dl><dt><a name="-check_num"><strong>check_num</strong></a>(num)</dt><dd><tt>Detecta&nbsp;si&nbsp;un&nbsp;número&nbsp;que&nbsp;viene&nbsp;como&nbsp;cadena&nbsp;respeta&nbsp;el&nbsp;formato&nbsp;1234.56<br>
+Si&nbsp;puede,&nbsp;lo&nbsp;formatea&nbsp;correctamente&nbsp;antes&nbsp;de&nbsp;devolverlo.&nbsp;En&nbsp;otro&nbsp;caso<br>
+devuelve&nbsp;la&nbsp;misma&nbsp;cadena&nbsp;recibida.<br>
+OBSOLETO.</tt></dd></dl>
+ <dl><dt><a name="-cmp_abs_mxfecha"><strong>cmp_abs_mxfecha</strong></a>(f1, f2)</dt><dd><tt>Función&nbsp;de&nbsp;comparación&nbsp;para&nbsp;ordenación&nbsp;de&nbsp;fechas&nbsp;ignorando&nbsp;hora&nbsp;del&nbsp;día.</tt></dd></dl>
+ <dl><dt><a name="-cmp_fecha_id"><strong>cmp_fecha_id</strong></a>(obj1, obj2)</dt><dd><tt>Función&nbsp;de&nbsp;comparación&nbsp;(para&nbsp;.sort)&nbsp;entre&nbsp;objetos.<br>
+Deben&nbsp;tener&nbsp;campo&nbsp;fecha.<br>
+Si&nbsp;fecha&nbsp;es&nbsp;None,&nbsp;compara&nbsp;por&nbsp;ID.</tt></dd></dl>
+ <dl><dt><a name="-cmp_mxDateTime"><strong>cmp_mxDateTime</strong></a>(f1, f2)</dt><dd><tt>Compara&nbsp;dos&nbsp;fechas&nbsp;mx.DateTime&nbsp;y&nbsp;devuelve&nbsp;-1,&nbsp;1&nbsp;ó&nbsp;0.<br>
+Útil&nbsp;para&nbsp;ordenaciones&nbsp;de&nbsp;fechas.<br>
+REMEMBER:&nbsp;¡DEBEN&nbsp;SER&nbsp;mx.DateTime!</tt></dd></dl>
+ <dl><dt><a name="-combo_fill_text"><strong>combo_fill_text</strong></a>(combo_widget, content_list)</dt><dd><tt>Crea&nbsp;y&nbsp;rellena&nbsp;el&nbsp;model&nbsp;del&nbsp;MVC&nbsp;del&nbsp;combo<br>
+según&nbsp;la&nbsp;lista&nbsp;content_list.<br>
+Usar&nbsp;esta&nbsp;función&nbsp;para&nbsp;combos&nbsp;sin&nbsp;.child-&gt;entry<br>
+y&nbsp;sólo&nbsp;una&nbsp;columna&nbsp;(tipo&nbsp;str).</tt></dd></dl>
+ <dl><dt><a name="-combo_get_value"><strong>combo_get_value</strong></a>(widget)</dt><dd><tt>Devuelve&nbsp;el&nbsp;valor&nbsp;actual&nbsp;de&nbsp;la&nbsp;primera&nbsp;columna<br>
+del&nbsp;elemento&nbsp;del&nbsp;model&nbsp;que&nbsp;se&nbsp;corresponde&nbsp;con&nbsp;<br>
+el&nbsp;activo&nbsp;en&nbsp;el&nbsp;widget.<br>
+Si&nbsp;el&nbsp;model&nbsp;está&nbsp;vacío&nbsp;o&nbsp;no&nbsp;hay&nbsp;elemento<br>
+activo,&nbsp;devuelve&nbsp;None.</tt></dd></dl>
+ <dl><dt><a name="-combo_set_from_db"><strong>combo_set_from_db</strong></a>(combo_widget, db_item)</dt><dd><tt>Establece&nbsp;como&nbsp;elemento&nbsp;activo&nbsp;de&nbsp;un&nbsp;widget<br>
+el&nbsp;elemento&nbsp;del&nbsp;model&nbsp;correspondiente&nbsp;con&nbsp;<br>
+el&nbsp;db_item.&nbsp;Para&nbsp;las&nbsp;comparaciones&nbsp;usa&nbsp;la<br>
+primera&nbsp;columna&nbsp;del&nbsp;model,&nbsp;el&nbsp;db_item&nbsp;por<br>
+tanto&nbsp;debe&nbsp;ser&nbsp;el&nbsp;valor&nbsp;en&nbsp;la&nbsp;BD&nbsp;del&nbsp;campo<br>
+que&nbsp;se&nbsp;corresponda&nbsp;con&nbsp;esa&nbsp;columna&nbsp;(por&nbsp;lo&nbsp;<br>
+general&nbsp;debería&nbsp;ser&nbsp;un&nbsp;id).<br>
+NO&nbsp;acepta&nbsp;tuplas&nbsp;completas.</tt></dd></dl>
+ <dl><dt><a name="-comparar_como_fechahora"><strong>comparar_como_fechahora</strong></a>(n, m)</dt><dd><tt>Compara&nbsp;n&nbsp;y&nbsp;m&nbsp;como&nbsp;fechas&nbsp;con&nbsp;hora&nbsp;(DateTime&nbsp;completo).</tt></dd></dl>
+ <dl><dt><a name="-comparar_como_fechas"><strong>comparar_como_fechas</strong></a>(n, m)</dt><dd><tt>Compara&nbsp;n&nbsp;y&nbsp;m&nbsp;como&nbsp;fechas.</tt></dd></dl>
+ <dl><dt><a name="-comparar_como_numeros"><strong>comparar_como_numeros</strong></a>(n, m)</dt><dd><tt>Compara&nbsp;n&nbsp;y&nbsp;m&nbsp;como&nbsp;números&nbsp;(entero&nbsp;o&nbsp;flotante)&nbsp;y&nbsp;<br>
+devuelve&nbsp;-1,&nbsp;0&nbsp;ó&nbsp;1&nbsp;tal&nbsp;y&nbsp;como&nbsp;espera&nbsp;la&nbsp;función&nbsp;.sort.</tt></dd></dl>
+ <dl><dt><a name="-comparar_enteros"><strong>comparar_enteros</strong></a>(n, m)</dt><dd><tt>Compara&nbsp;n&nbsp;y&nbsp;m&nbsp;como&nbsp;enteros&nbsp;y&nbsp;devuelve&nbsp;<br>
+-1&nbsp;si&nbsp;n&nbsp;es&nbsp;menor&nbsp;que&nbsp;m,&nbsp;1&nbsp;si&nbsp;es&nbsp;al&nbsp;contrario&nbsp;<br>
+o&nbsp;0&nbsp;si&nbsp;son&nbsp;iguales.<br>
+OJO:&nbsp;Si&nbsp;ALGUNO&nbsp;de&nbsp;los&nbsp;dos&nbsp;no&nbsp;es&nbsp;entero&nbsp;(harto&nbsp;improbable&nbsp;estando&nbsp;en&nbsp;la&nbsp;misma&nbsp;columna)<br>
+usará&nbsp;la&nbsp;comparación&nbsp;a&nbsp;nivel&nbsp;de&nbsp;registro&nbsp;de&nbsp;memoria,&nbsp;me&nbsp;parece,&nbsp;y&nbsp;a&nbsp;saber&nbsp;el&nbsp;orden<br>
+que&nbsp;saldrá.</tt></dd></dl>
+ <dl><dt><a name="-comparar_fechas"><strong>comparar_fechas</strong></a>(dato1, dato2)</dt><dd><tt>Intenta&nbsp;comparar&nbsp;dato1&nbsp;y&nbsp;dato2&nbsp;como&nbsp;fechas&nbsp;en&nbsp;formato&nbsp;dd/mm/aaaa.<br>
+NOTA:&nbsp;FUNCIÓN&nbsp;OBSOLETA.</tt></dd></dl>
+ <dl><dt><a name="-construir_modelo"><strong>construir_modelo</strong></a>(filas, cabeceras<font color="#909090">=None</font>)</dt><dd><tt>Devuelve&nbsp;un&nbsp;modelo&nbsp;listo&nbsp;para&nbsp;ser&nbsp;usado&nbsp;en&nbsp;un&nbsp;TreeView&nbsp;a<br>
+partir&nbsp;de&nbsp;las&nbsp;filas&nbsp;recibidas.</tt></dd></dl>
+ <dl><dt><a name="-construir_tabla"><strong>construir_tabla</strong></a>(titulo, padre, filas, cabeceras)</dt><dd><tt>A&nbsp;partir&nbsp;de&nbsp;los&nbsp;datos&nbsp;que&nbsp;recibe&nbsp;el&nbsp;dialogo_resultado<br>
+construye&nbsp;la&nbsp;tabla&nbsp;y&nbsp;el&nbsp;contenedor&nbsp;y&nbsp;los&nbsp;devuelve.<br>
+Si&nbsp;las&nbsp;filas&nbsp;son&nbsp;incorrectas,&nbsp;devuelve&nbsp;-2&nbsp;tal&nbsp;y&nbsp;como&nbsp;<br>
+se&nbsp;especifica&nbsp;en&nbsp;la&nbsp;función&nbsp;invocadora.</tt></dd></dl>
+ <dl><dt><a name="-convertir_a_fecha"><strong>convertir_a_fecha</strong></a>(f)</dt><dd><tt>Intenta&nbsp;convertir&nbsp;f&nbsp;a&nbsp;una&nbsp;fecha.<br>
+Devuelve&nbsp;None&nbsp;si&nbsp;no&nbsp;se&nbsp;puede.</tt></dd></dl>
+ <dl><dt><a name="-convertir_a_fechahora"><strong>convertir_a_fechahora</strong></a>(f)</dt><dd><tt>Intenta&nbsp;convertir&nbsp;f&nbsp;a&nbsp;una&nbsp;fechahora.<br>
+Devuelve&nbsp;None&nbsp;si&nbsp;no&nbsp;se&nbsp;puede.</tt></dd></dl>
+ <dl><dt><a name="-convertir_a_numero"><strong>convertir_a_numero</strong></a>(n)</dt><dd><tt>Convierte&nbsp;n&nbsp;a&nbsp;flotante.<br>
+Devuelve&nbsp;None&nbsp;si&nbsp;no&nbsp;se&nbsp;puede.</tt></dd></dl>
+ <dl><dt><a name="-corregir_mayusculas_despues_de_punto"><strong>corregir_mayusculas_despues_de_punto</strong></a>(cad)</dt><dd><tt>Devuelve&nbsp;la&nbsp;cadena&nbsp;"cad"&nbsp;con&nbsp;mayúscula&nbsp;siempre&nbsp;después&nbsp;de&nbsp;punto&nbsp;<br>
+(aunque&nbsp;sea&nbsp;una&nbsp;falta&nbsp;de&nbsp;ortografía&nbsp;si&nbsp;el&nbsp;punto&nbsp;corresponde&nbsp;a&nbsp;una&nbsp;<br>
+abreviatura).</tt></dd></dl>
+ <dl><dt><a name="-corregir_nombres_fecha"><strong>corregir_nombres_fecha</strong></a>(s)</dt><dd><tt>Porque&nbsp;todo&nbsp;hombre&nbsp;debe&nbsp;enfrentarse&nbsp;al&nbsp;menos&nbsp;una&nbsp;<br>
+vez&nbsp;en&nbsp;su&nbsp;vida&nbsp;a&nbsp;dos&nbsp;tipos&nbsp;de&nbsp;sistemas&nbsp;operativos:&nbsp;<br>
+los&nbsp;que&nbsp;se&nbsp;no&nbsp;se&nbsp;pasan&nbsp;por&nbsp;el&nbsp;forro&nbsp;las&nbsp;locales,&nbsp;<br>
+y&nbsp;MS-Windows.</tt></dd></dl>
+ <dl><dt><a name="-definir_columnas"><strong>definir_columnas</strong></a>(filas, cabeceras)</dt><dd><tt>A&nbsp;partir&nbsp;de&nbsp;las&nbsp;filas&nbsp;devuelve&nbsp;una&nbsp;lista<br>
+de&nbsp;columnas&nbsp;adecuadas&nbsp;para&nbsp;usar&nbsp;en&nbsp;un&nbsp;<br>
+TreeView.&nbsp;Cada&nbsp;columna&nbsp;llevará&nbsp;como&nbsp;<br>
+cabecera&nbsp;el&nbsp;ítem&nbsp;correspondiente&nbsp;de&nbsp;la<br>
+lista&nbsp;de&nbsp;cabeceras.</tt></dd></dl>
+ <dl><dt><a name="-descamelcase_o_matic"><strong>descamelcase_o_matic</strong></a>(s)</dt><dd><tt>Devuelve&nbsp;la&nbsp;cadena&nbsp;«s»&nbsp;(que&nbsp;se&nbsp;recibe&nbsp;en&nbsp;formato&nbsp;CamelCase)<br>
+sustituyendo&nbsp;las&nbsp;mayúsculas&nbsp;por&nbsp;"espacio-minúscula"&nbsp;y&nbsp;poniendo&nbsp;<br>
+la&nbsp;primera&nbsp;letra&nbsp;en&nbsp;mayúscula.</tt></dd></dl>
+ <dl><dt><a name="-descargar"><strong>descargar</strong></a>(archivo, glade<font color="#909090">=True</font>)</dt><dd><tt>Descarga&nbsp;el&nbsp;archivo&nbsp;remoto&nbsp;con&nbsp;el&nbsp;nombre&nbsp;"archivo"<br>
+y&nbsp;archivo&nbsp;glade&nbsp;que&nbsp;le&nbsp;corresponde&nbsp;al<br>
+directorio&nbsp;de&nbsp;trabajo&nbsp;y&nbsp;actualiza&nbsp;el&nbsp;md5&nbsp;en&nbsp;./md5.</tt></dd></dl>
+ <dl><dt><a name="-descargar_phaser"><strong>descargar_phaser</strong></a>(logger<font color="#909090">=None</font>, datos<font color="#909090">=None</font>)</dt><dd><tt>Abre&nbsp;el&nbsp;puerto&nbsp;serie,&nbsp;lee&nbsp;los&nbsp;códigos&nbsp;del&nbsp;terminal&nbsp;de&nbsp;códigos&nbsp;de&nbsp;barras,&nbsp;<br>
+"parsea"&nbsp;los&nbsp;códigos&nbsp;almacenados&nbsp;y&nbsp;devuelve&nbsp;una&nbsp;lista&nbsp;de&nbsp;objetos&nbsp;rollo,&nbsp;<br>
+bala&nbsp;o&nbsp;bigbag&nbsp;correspondientes&nbsp;a&nbsp;esos&nbsp;códigos.<br>
+Entre&nbsp;lista&nbsp;y&nbsp;lista&nbsp;de&nbsp;códigos&nbsp;(si&nbsp;hay&nbsp;más&nbsp;de&nbsp;una)&nbsp;debe&nbsp;haber&nbsp;un&nbsp;código&nbsp;<br>
+"especial"&nbsp;de&nbsp;la&nbsp;forma&nbsp;'Axxxx',&nbsp;que&nbsp;indican&nbsp;un&nbsp;número&nbsp;de&nbsp;albarán.<br>
+En&nbsp;ese&nbsp;caso,&nbsp;lo&nbsp;que&nbsp;devuelve&nbsp;es&nbsp;un&nbsp;diccionario&nbsp;con&nbsp;el&nbsp;objeto&nbsp;albarán&nbsp;como&nbsp;<br>
+clave&nbsp;y&nbsp;la&nbsp;lista&nbsp;de&nbsp;códigos&nbsp;de&nbsp;cada&nbsp;albarán&nbsp;como&nbsp;valores.<br>
+De&nbsp;la&nbsp;misma&nbsp;forma,&nbsp;si&nbsp;lo&nbsp;que&nbsp;se&nbsp;leen&nbsp;son&nbsp;códigos&nbsp;"PCxxxx"&nbsp;se&nbsp;devuelve&nbsp;un&nbsp;<br>
+diccionario&nbsp;similar&nbsp;pero&nbsp;con&nbsp;partidas&nbsp;de&nbsp;carga&nbsp;como&nbsp;claves&nbsp;(aunque&nbsp;en&nbsp;<br>
+realidad&nbsp;los&nbsp;códigos&nbsp;de&nbsp;partida&nbsp;de&nbsp;carga&nbsp;no&nbsp;llevan&nbsp;sufijo,&nbsp;algo&nbsp;que&nbsp;<br>
+tarde&nbsp;o&nbsp;temprano&nbsp;habrá&nbsp;que&nbsp;cambiar).<br>
+Si&nbsp;no&nbsp;consigue&nbsp;leer&nbsp;nada,&nbsp;devuelve&nbsp;None.<br>
+Si&nbsp;"logger"&nbsp;es&nbsp;!=&nbsp;None,&nbsp;se&nbsp;usará&nbsp;para&nbsp;volcar&nbsp;al&nbsp;log&nbsp;las&nbsp;incidencias.<br>
+NOTA:&nbsp;Si&nbsp;un&nbsp;código&nbsp;se&nbsp;encuentra&nbsp;repetido,&nbsp;se&nbsp;devuelve&nbsp;una&nbsp;sola&nbsp;vez.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Si&nbsp;un&nbsp;código&nbsp;tiene&nbsp;menos&nbsp;de&nbsp;13&nbsp;dígitos&nbsp;pero&nbsp;no&nbsp;comienza&nbsp;con&nbsp;ninguna&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;letra,&nbsp;se&nbsp;considerará&nbsp;un&nbsp;rollo&nbsp;(que&nbsp;son&nbsp;los&nbsp;más&nbsp;propensos&nbsp;a&nbsp;tener&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;etiquetas&nbsp;defectuosas&nbsp;por&nbsp;estar&nbsp;a&nbsp;la&nbsp;intemperie&nbsp;y&nbsp;equivocarse&nbsp;el&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;almacenista&nbsp;no&nbsp;tecleando&nbsp;la&nbsp;R&nbsp;manualmente).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Si&nbsp;un&nbsp;código&nbsp;no&nbsp;coincide&nbsp;con&nbsp;nada&nbsp;de&nbsp;lo&nbsp;contemplado&nbsp;(bala,&nbsp;rollo,&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bigbag&nbsp;o&nbsp;albarán)&nbsp;no&nbsp;se&nbsp;devuelve.&nbsp;Esto&nbsp;se&nbsp;hace&nbsp;así&nbsp;para&nbsp;filtrar,&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;por&nbsp;ejemplo,&nbsp;los&nbsp;EAN13&nbsp;leídos&nbsp;por&nbsp;error.<br>
+DEBUG:&nbsp;Si&nbsp;datos&nbsp;!=&nbsp;None&nbsp;procesa&nbsp;la&nbsp;cadena&nbsp;recibida&nbsp;como&nbsp;si&nbsp;la&nbsp;hubiese&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;descargado&nbsp;del&nbsp;terminal.</tt></dd></dl>
+ <dl><dt><a name="-dialogo"><strong>dialogo</strong></a>(texto<font color="#909090">=''</font>, titulo<font color="#909090">=''</font>, padre<font color="#909090">=None</font>, icono<font color="#909090">=None</font>, cancelar<font color="#909090">=False</font>, defecto<font color="#909090">=None</font>, tiempo<font color="#909090">=None</font>)</dt><dd><tt>Muestra&nbsp;un&nbsp;diálogo&nbsp;SI/NO.<br>
+Devuelve&nbsp;True&nbsp;si&nbsp;se&nbsp;pulsó&nbsp;SI&nbsp;y&nbsp;False&nbsp;si&nbsp;no.<br>
+OJO:&nbsp;Aquí&nbsp;va&nbsp;primero&nbsp;el&nbsp;texto&nbsp;y&nbsp;después&nbsp;el&nbsp;título&nbsp;para<br>
+guardar&nbsp;la&nbsp;compatibilidad&nbsp;con&nbsp;el&nbsp;código&nbsp;del&nbsp;resto&nbsp;de&nbsp;<br>
+módulos&nbsp;ya&nbsp;escritos.&nbsp;En&nbsp;el&nbsp;resto&nbsp;de&nbsp;utils&nbsp;el&nbsp;titulo&nbsp;<br>
+es&nbsp;el&nbsp;primer&nbsp;parámetro.<br>
+Si&nbsp;icon&nbsp;tiene&nbsp;algo&nbsp;!=&nbsp;None&nbsp;(debe&nbsp;ser&nbsp;un&nbsp;gtk.STOCK_algo)<br>
+se&nbsp;agrega&nbsp;un&nbsp;icono&nbsp;a&nbsp;la&nbsp;izquierda&nbsp;del&nbsp;texto.<br>
+Si&nbsp;cancelar&nbsp;!=&nbsp;False,&nbsp;se&nbsp;añade&nbsp;un&nbsp;botón&nbsp;cancelar&nbsp;que&nbsp;<br>
+devuelve&nbsp;gtk.RESPONSE_CANCEL&nbsp;cuando&nbsp;se&nbsp;pulsa.</tt></dd></dl>
+ <dl><dt><a name="-dialogo_abrir"><strong>dialogo_abrir</strong></a>(titulo<font color="#909090">='ABRIR FICHERO'</font>, filtro_imagenes<font color="#909090">=False</font>, padre<font color="#909090">=None</font>, dir<font color="#909090">=None</font>)</dt><dd><tt>Muestra&nbsp;un&nbsp;diálogo&nbsp;de&nbsp;abrir&nbsp;y&nbsp;devuelve&nbsp;el&nbsp;archivo&nbsp;seleccionado&nbsp;<br>
+o&nbsp;None.<br>
+Si&nbsp;filtro_imagenes&nbsp;es&nbsp;True,&nbsp;añade&nbsp;al&nbsp;diálogo&nbsp;un&nbsp;filtro&nbsp;de&nbsp;imágenes<br>
+a&nbsp;los&nbsp;archivos&nbsp;que&nbsp;se&nbsp;pueden&nbsp;elegir.</tt></dd></dl>
+ <dl><dt><a name="-dialogo_adjuntar"><strong>dialogo_adjuntar</strong></a>(titulo, objeto, padre<font color="#909090">=None</font>)</dt><dd><tt>Muestra&nbsp;un&nbsp;diálogo&nbsp;y&nbsp;adjunta&nbsp;un&nbsp;fichero&nbsp;a&nbsp;un&nbsp;objeto.</tt></dd></dl>
+ <dl><dt><a name="-dialogo_combo"><strong>dialogo_combo</strong></a>(titulo<font color="#909090">='Seleccione una opci<font color="#c040c0">\xc3\xb3</font>n'</font>, texto<font color="#909090">=''</font>, ops<font color="#909090">=[(0, 'Sin opciones')]</font>, padre<font color="#909090">=None</font>, valor_por_defecto<font color="#909090">=None</font>)</dt><dd><tt>Muestra&nbsp;un&nbsp;diálogo&nbsp;modal&nbsp;con&nbsp;un&nbsp;combobox&nbsp;con&nbsp;las&nbsp;opciones<br>
+pasadas.<br>
+Las&nbsp;opciones&nbsp;deben&nbsp;ser&nbsp;(int,&nbsp;str)<br>
+Devuelve&nbsp;el&nbsp;elemento&nbsp;seleccionado[0]&nbsp;-el&nbsp;entero&nbsp;de&nbsp;la&nbsp;<br>
+opción-&nbsp;o&nbsp;None&nbsp;si&nbsp;se&nbsp;cancela.<br>
+Si&nbsp;valor_por_defecto&nbsp;!=&nbsp;None,&nbsp;debe&nbsp;ser&nbsp;un&nbsp;entero&nbsp;de&nbsp;la&nbsp;lista.</tt></dd></dl>
+ <dl><dt><a name="-dialogo_entrada"><strong>dialogo_entrada</strong></a>(texto<font color="#909090">=''</font>, titulo<font color="#909090">='ENTRADA DE DATOS'</font>, valor_por_defecto<font color="#909090">=''</font>, padre<font color="#909090">=None</font>, pwd<font color="#909090">=False</font>, modal<font color="#909090">=True</font>, textview<font color="#909090">=False</font>)</dt><dd><tt>Muestra&nbsp;un&nbsp;diálogo&nbsp;modal&nbsp;con&nbsp;un&nbsp;textbox.<br>
+Devuelve&nbsp;el&nbsp;texto&nbsp;introducido&nbsp;o&nbsp;None&nbsp;si&nbsp;se<br>
+pulsó&nbsp;Cancelar.<br>
+valor_por_defecto&nbsp;debe&nbsp;ser&nbsp;un&nbsp;string.<br>
+Si&nbsp;pwd&nbsp;==&nbsp;True,&nbsp;es&nbsp;un&nbsp;diálogo&nbsp;para&nbsp;pedir&nbsp;contraseña<br>
+y&nbsp;ocultará&nbsp;lo&nbsp;que&nbsp;se&nbsp;introduzca.<br>
+Si&nbsp;textview&nbsp;es&nbsp;True&nbsp;usa&nbsp;un&nbsp;TextView&nbsp;en&nbsp;lugar&nbsp;de&nbsp;un&nbsp;TextEntry.</tt></dd></dl>
+ <dl><dt><a name="-dialogo_entrada_combo"><strong>dialogo_entrada_combo</strong></a>(titulo<font color="#909090">='Seleccione una opci<font color="#c040c0">\xc3\xb3</font>n'</font>, texto<font color="#909090">=''</font>, ops<font color="#909090">=[(0, 'Sin opciones')]</font>, padre<font color="#909090">=None</font>, valor_por_defecto<font color="#909090">=None</font>)</dt><dd><tt>Muestra&nbsp;un&nbsp;diálogo&nbsp;modal&nbsp;con&nbsp;un&nbsp;combobox&nbsp;con&nbsp;las&nbsp;opciones<br>
+pasadas.<br>
+Las&nbsp;opciones&nbsp;deben&nbsp;ser&nbsp;(int,&nbsp;str)<br>
+Devuelve&nbsp;el&nbsp;par&nbsp;seleccionado&nbsp;de&nbsp;las&nbsp;opciones,&nbsp;(None,&nbsp;None)&nbsp;si<br>
+se&nbsp;cancela&nbsp;o&nbsp;(None,&nbsp;"texto&nbsp;escrito")&nbsp;si&nbsp;se&nbsp;ha&nbsp;tecleado&nbsp;algo<br>
+que&nbsp;no&nbsp;está&nbsp;en&nbsp;las&nbsp;opciones&nbsp;y&nbsp;se&nbsp;ha&nbsp;pulsado&nbsp;Aceptar.<br>
+Si&nbsp;valor_por_defecto&nbsp;!=&nbsp;None,&nbsp;debe&nbsp;ser&nbsp;un&nbsp;entero&nbsp;de&nbsp;la&nbsp;lista.</tt></dd></dl>
+ <dl><dt><a name="-dialogo_info"><strong>dialogo_info</strong></a>(titulo<font color="#909090">=''</font>, texto<font color="#909090">=''</font>, padre<font color="#909090">=None</font>)</dt><dd><tt>Muestra&nbsp;un&nbsp;diálogo&nbsp;simple&nbsp;de&nbsp;información,&nbsp;con&nbsp;un&nbsp;único<br>
+botón&nbsp;de&nbsp;aceptación.<br>
+OJO:&nbsp;Al&nbsp;loro.&nbsp;Si&nbsp;el&nbsp;título&nbsp;de&nbsp;la&nbsp;ventana&nbsp;es&nbsp;"ACTUALIZAR"&nbsp;no&nbsp;<br>
+se&nbsp;muestra.&nbsp;En&nbsp;cambio&nbsp;se&nbsp;activa&nbsp;el&nbsp;hint&nbsp;que&nbsp;hace&nbsp;parpadear<br>
+la&nbsp;ventana&nbsp;padre.&nbsp;El&nbsp;urgency_hint&nbsp;se&nbsp;desactivará&nbsp;cuando<br>
+pulse&nbsp;en&nbsp;Actualizar&nbsp;o&nbsp;en&nbsp;Guardar&nbsp;(es&nbsp;decir,&nbsp;cuando&nbsp;se&nbsp;<br>
+invoque&nbsp;actualizar_ventana).&nbsp;NOTA:&nbsp;Esto&nbsp;se&nbsp;hace&nbsp;aquí&nbsp;para<br>
+evitar&nbsp;cambiar&nbsp;una&nbsp;por&nbsp;una&nbsp;las&nbsp;docenas&nbsp;de&nbsp;ventanas&nbsp;de&nbsp;diálogo&nbsp;<br>
+de&nbsp;actualización&nbsp;que&nbsp;hay&nbsp;repartidas&nbsp;por&nbsp;cada&nbsp;formulario.</tt></dd></dl>
+ <dl><dt><a name="-dialogo_pedir_codigos"><strong>dialogo_pedir_codigos</strong></a>(titulo<font color="#909090">='INTRODUZCA RANGO'</font>, texto<font color="#909090">='Introduzca un n<font color="#c040c0">\xc3\xba</font>mero, un c<font color="#c040c0">\xc3\xb3</font>digo, un rango de n...<font color="#c040c0">\xc3\xa1</font>lidos:<font color="#c040c0">\n</font>  100, 105<font color="#c040c0">\n</font>  C100-C110, 105 107<font color="#c040c0">\n</font>  etc...'</font>, padre<font color="#909090">=None</font>, valor_por_defecto<font color="#909090">=''</font>)</dt><dd><tt>Igual&nbsp;que&nbsp;el&nbsp;diálogo&nbsp;de&nbsp;pedir&nbsp;rangos&nbsp;pero&nbsp;además&nbsp;acepta&nbsp;una&nbsp;letra&nbsp;mayúscula&nbsp;o&nbsp;minúsucula&nbsp;(que&nbsp;acabará<br>
+convirtiendo&nbsp;a&nbsp;mayúscula).&nbsp;Devuelve&nbsp;una&nbsp;lista&nbsp;iterable&nbsp;de&nbsp;códigos&nbsp;o&nbsp;números,&nbsp;dependiendo&nbsp;de&nbsp;si&nbsp;<br>
+se&nbsp;detectó&nbsp;la&nbsp;letra&nbsp;inicial&nbsp;o&nbsp;no.</tt></dd></dl>
+ <dl><dt><a name="-dialogo_pedir_rango"><strong>dialogo_pedir_rango</strong></a>(titulo<font color="#909090">='INTRODUZCA RANGO'</font>, texto<font color="#909090">='Introduzca un n<font color="#c040c0">\xc3\xba</font>mero o un rango de n<font color="#c040c0">\xc3\xba</font>meros sep... v<font color="#c040c0">\xc3\xa1</font>lidos:<font color="#c040c0">\n</font>  100, 105<font color="#c040c0">\n</font>  100-110, 105 107<font color="#c040c0">\n</font>  etc...'</font>, padre<font color="#909090">=None</font>, valor_por_defecto<font color="#909090">=''</font>)</dt><dd><tt>Muestra&nbsp;un&nbsp;diálogo&nbsp;donde&nbsp;introducir&nbsp;un&nbsp;rango&nbsp;de&nbsp;números&nbsp;o&nbsp;lista&nbsp;separada<br>
+por&nbsp;comas&nbsp;o&nbsp;espacios,&nbsp;o&nbsp;todo&nbsp;a&nbsp;la&nbsp;vez.<br>
+Devuelve&nbsp;un&nbsp;iterable&nbsp;con&nbsp;los&nbsp;NÚMEROS&nbsp;que&nbsp;entran&nbsp;en&nbsp;el&nbsp;rango&nbsp;o&nbsp;None&nbsp;si&nbsp;se<br>
+cancela&nbsp;el&nbsp;diálogo.<br>
+OJO:&nbsp;No&nbsp;acepta&nbsp;números&nbsp;negativos.</tt></dd></dl>
+ <dl><dt><a name="-dialogo_resultado"><strong>dialogo_resultado</strong></a>(filas, titulo<font color="#909090">=''</font>, padre<font color="#909090">=None</font>, cabeceras<font color="#909090">=['Id', 'C<font color="#c040c0">\xc3\xb3</font>digo', 'Descripci<font color="#c040c0">\xc3\xb3</font>n']</font>, multi<font color="#909090">=False</font>, func_change<font color="#909090">=&lt;function &lt;lambda&gt; at 0x8470a74&gt;</font>, maximizar<font color="#909090">=False</font>)</dt><dd><tt>Muestra&nbsp;un&nbsp;cuadro&nbsp;de&nbsp;diálogo&nbsp;modal&nbsp;con&nbsp;una&nbsp;tabla.&nbsp;En<br>
+la&nbsp;tabla&nbsp;se&nbsp;mostrarán&nbsp;tantas&nbsp;filas&nbsp;como&nbsp;items&nbsp;pasados<br>
+en&nbsp;el&nbsp;parámetro&nbsp;filas.<br>
+Devuelve&nbsp;el&nbsp;índice&nbsp;de&nbsp;la&nbsp;fila&nbsp;a&nbsp;la&nbsp;que&nbsp;se&nbsp;haga&nbsp;clic<br>
+(en&nbsp;realidad,&nbsp;valor&nbsp;de&nbsp;la&nbsp;primera&nbsp;columna)<br>
+con&nbsp;el&nbsp;ratón&nbsp;o&nbsp;-1&nbsp;si&nbsp;se&nbsp;pulsó&nbsp;Cancelar.<br>
+Devuelve&nbsp;-2&nbsp;si&nbsp;filas&nbsp;no&nbsp;es&nbsp;una&nbsp;lista&nbsp;de&nbsp;resultados.<br>
+En&nbsp;las&nbsp;cabeceras&nbsp;de&nbsp;las&nbsp;columnas&nbsp;se&nbsp;mostrará&nbsp;el&nbsp;texto&nbsp;de&nbsp;<br>
+la&nbsp;lista&nbsp;que&nbsp;se&nbsp;pase&nbsp;en&nbsp;el&nbsp;parámetro&nbsp;"cabeceras"&nbsp;de&nbsp;forma<br>
+consecutiva.&nbsp;Si&nbsp;la&nbsp;longitud&nbsp;de&nbsp;"cabeceras"&nbsp;es&nbsp;menor&nbsp;que&nbsp;el<br>
+número&nbsp;de&nbsp;columnas&nbsp;de&nbsp;la&nbsp;lista&nbsp;de&nbsp;filas,&nbsp;las&nbsp;TreeViewColumns<br>
+restantes&nbsp;se&nbsp;quedarán&nbsp;con&nbsp;una&nbsp;descripción&nbsp;en&nbsp;blanco&nbsp;('').<br>
+La&nbsp;columna&nbsp;de&nbsp;búsqueda&nbsp;será&nbsp;siempre&nbsp;-de&nbsp;momento-&nbsp;la&nbsp;<br>
+segunda&nbsp;(elemento&nbsp;1&nbsp;de&nbsp;columns).<br>
+Si&nbsp;multi&nbsp;es&nbsp;True,&nbsp;el&nbsp;TreeView&nbsp;del&nbsp;diálogo&nbsp;será&nbsp;de&nbsp;selección<br>
+múltiple&nbsp;(gtk.SELECTION_MULTIPLE)&nbsp;y&nbsp;devolverá&nbsp;una&nbsp;lista&nbsp;de&nbsp;<br>
+índices&nbsp;seleccionados&nbsp;o&nbsp;una&nbsp;lista&nbsp;cuyo&nbsp;primer&nbsp;elemento&nbsp;es&nbsp;<br>
+-1&nbsp;si&nbsp;ha&nbsp;cancelado.<br>
+func_change&nbsp;es&nbsp;una&nbsp;función&nbsp;que&nbsp;se&nbsp;ejecutará&nbsp;cada&nbsp;vez&nbsp;que&nbsp;<br>
+el&nbsp;cursor&nbsp;cambie&nbsp;de&nbsp;fila&nbsp;activa&nbsp;en&nbsp;el&nbsp;treeview&nbsp;de&nbsp;resultados.</tt></dd></dl>
+ <dl><dt><a name="-ejecutar_interprete"><strong>ejecutar_interprete</strong></a>(source, *arguments, **keywords)</dt><dd><tt>Abre&nbsp;el&nbsp;intérprete&nbsp;python&nbsp;con&nbsp;el&nbsp;fuente&nbsp;recibido.<br>
+INPUT:<br>
+&nbsp;&nbsp;source:&nbsp;fuente&nbsp;que&nbsp;ejecuta&nbsp;(obligatorio).<br>
+&nbsp;&nbsp;arguments:&nbsp;lista&nbsp;de&nbsp;argumentos&nbsp;extra.<br>
+&nbsp;&nbsp;keywords:&nbsp;diccionario&nbsp;de&nbsp;argumentos&nbsp;con&nbsp;nombre.</tt></dd></dl>
+ <dl><dt><a name="-el_reparador_magico_de_representacion_de_flotantes_de_doraemon"><strong>el_reparador_magico_de_representacion_de_flotantes_de_doraemon</strong></a>(filas)</dt></dl>
+ <dl><dt><a name="-eliminar_dobles_espacios"><strong>eliminar_dobles_espacios</strong></a>(cad)</dt><dd><tt>Devuelve&nbsp;la&nbsp;cadena&nbsp;"cad"&nbsp;asegurando&nbsp;que&nbsp;no&nbsp;quedan&nbsp;dos&nbsp;espacios&nbsp;consecutivos&nbsp;<br>
+en&nbsp;ninguna&nbsp;posición.</tt></dd></dl>
+ <dl><dt><a name="-enviar_correoe"><strong>enviar_correoe</strong></a>(remitente, destinos, asunto, texto, adjuntos<font color="#909090">=[]</font>, servidor<font color="#909090">='localhost'</font>, usuario<font color="#909090">=None</font>, password<font color="#909090">=None</font>)</dt><dd><tt>Envía&nbsp;un&nbsp;correo&nbsp;electrónico&nbsp;a&nbsp;las&nbsp;direcciones&nbsp;contenidas&nbsp;en&nbsp;la&nbsp;lista&nbsp;"destinos"&nbsp;con&nbsp;<br>
+los&nbsp;adjuntos&nbsp;de&nbsp;la&nbsp;lista&nbsp;y&nbsp;a&nbsp;través&nbsp;del&nbsp;servidor&nbsp;"servidor".<br>
+Si&nbsp;usuario&nbsp;y&nbsp;contraseña&nbsp;!=&nbsp;None,&nbsp;se&nbsp;usarán&nbsp;para&nbsp;hacer&nbsp;login&nbsp;en&nbsp;el&nbsp;servidor&nbsp;SMTP.<br>
+Devuelve&nbsp;True&nbsp;si&nbsp;se&nbsp;envió&nbsp;el&nbsp;correo&nbsp;electrónico&nbsp;sin&nbsp;problemas.<br>
+AL&nbsp;LORO:&nbsp;El&nbsp;viruscan&nbsp;de&nbsp;los&nbsp;windows&nbsp;de&nbsp;los&nbsp;ordenadores&nbsp;de&nbsp;oficina&nbsp;BLOQUEA&nbsp;las&nbsp;conexiones&nbsp;salientes&nbsp;al&nbsp;puerto&nbsp;25.</tt></dd></dl>
+ <dl><dt><a name="-es_interpretable_como_fecha"><strong>es_interpretable_como_fecha</strong></a>(f)</dt><dd><tt>Devuelve&nbsp;True&nbsp;si&nbsp;f&nbsp;se&nbsp;puede&nbsp;convertir&nbsp;a&nbsp;fecha.</tt></dd></dl>
+ <dl><dt><a name="-es_interpretable_como_fechahora"><strong>es_interpretable_como_fechahora</strong></a>(f)</dt><dd><tt>Devuelve&nbsp;True&nbsp;si&nbsp;f&nbsp;se&nbsp;puede&nbsp;convertir&nbsp;a&nbsp;fecha.</tt></dd></dl>
+ <dl><dt><a name="-es_interpretable_como_numero"><strong>es_interpretable_como_numero</strong></a>(n)</dt><dd><tt>Devuelve&nbsp;True&nbsp;si&nbsp;"n"&nbsp;se&nbsp;puede&nbsp;interpretar&nbsp;como&nbsp;número.</tt></dd></dl>
+ <dl><dt><a name="-escribir_barra_estado"><strong>escribir_barra_estado</strong></a>(wid, texto, logger<font color="#909090">=None</font>, txt_log<font color="#909090">=''</font>)</dt><dd><tt>Escribe&nbsp;el&nbsp;texto&nbsp;"texto"&nbsp;en&nbsp;la&nbsp;barra&nbsp;de&nbsp;estado&nbsp;"wid".<br>
+Los&nbsp;parámetros&nbsp;adicionales&nbsp;"logger"&nbsp;y&nbsp;"txt_log"&nbsp;son&nbsp;un&nbsp;<br>
+objeto&nbsp;para&nbsp;volcar&nbsp;a&nbsp;log&nbsp;y&nbsp;un&nbsp;texto&nbsp;adicional.&nbsp;Típicamente&nbsp;el&nbsp;<br>
+texto&nbsp;adicional&nbsp;incluye&nbsp;información&nbsp;acerca&nbsp;del&nbsp;usuario&nbsp;<br>
+que&nbsp;ha&nbsp;hecho&nbsp;«login»&nbsp;en&nbsp;el&nbsp;sistema&nbsp;y&nbsp;"logger"&nbsp;vendrá&nbsp;heredado&nbsp;<br>
+e&nbsp;instanciado&nbsp;desde&nbsp;la&nbsp;clase&nbsp;Ventana&nbsp;y&nbsp;Autenticación&nbsp;<br>
+respectivamente.</tt></dd></dl>
+ <dl><dt><a name="-f_sort_id"><strong>f_sort_id</strong></a>(x, y)</dt><dd><tt>Función&nbsp;para&nbsp;usar&nbsp;como&nbsp;cmpfunc&nbsp;en&nbsp;la&nbsp;ordenación&nbsp;de&nbsp;listas&nbsp;de&nbsp;relaciones&nbsp;múltiples.<br>
+Ordena&nbsp;por&nbsp;id&nbsp;de&nbsp;registros.<br>
+P.&nbsp;ej.&nbsp;facturaVenta.lineasDeVenta.sort(utils.f_orden_por_id)</tt></dd></dl>
+ <dl><dt><a name="-ffloat"><strong>ffloat</strong></a>(n, precision<font color="#909090">=2</font>)</dt><dd><tt>Convierte&nbsp;un&nbsp;float&nbsp;a&nbsp;ffloat&nbsp;con&nbsp;el&nbsp;redondeo&nbsp;correcto.&nbsp;<br>
+Para&nbsp;ello&nbsp;convierte&nbsp;antes&nbsp;a&nbsp;string.</tt></dd></dl>
+ <dl><dt><a name="-filtrar_tildes"><strong>filtrar_tildes</strong></a>(s)</dt><dd><tt>Devuelve&nbsp;la&nbsp;cadena&nbsp;s&nbsp;con&nbsp;las&nbsp;vocales&nbsp;tildadas&nbsp;<br>
+sustituídas&nbsp;por&nbsp;las&nbsp;mismas&nbsp;sin&nbsp;tildar.</tt></dd></dl>
+ <dl><dt><a name="-float2str"><strong>float2str</strong></a>(n, precision<font color="#909090">=2</font>, autodec<font color="#909090">=False</font>)</dt><dd><tt>Devuelve&nbsp;una&nbsp;cadena&nbsp;con&nbsp;el&nbsp;flotante&nbsp;convertido&nbsp;a&nbsp;entero&nbsp;en&nbsp;<br>
+formato&nbsp;xxx.xxx.xxx[,{y}].&nbsp;La&nbsp;"precisión"&nbsp;(número&nbsp;de&nbsp;decimales<br>
+mostrados)&nbsp;por&nbsp;defecto&nbsp;es&nbsp;2.<br>
+Si&nbsp;autodec&nbsp;es&nbsp;True,&nbsp;autodecrementa&nbsp;el&nbsp;número&nbsp;de&nbsp;decimales&nbsp;para&nbsp;no<br>
+mostrar&nbsp;ceros&nbsp;a&nbsp;la&nbsp;derecha&nbsp;en&nbsp;la&nbsp;parte&nbsp;fraccionaria.</tt></dd></dl>
+ <dl><dt><a name="-funcion_orden"><strong>funcion_orden</strong></a>(model, iter1, iter2, columna)</dt><dd><tt>Función&nbsp;para&nbsp;ordenar&nbsp;la&nbsp;columna&nbsp;"columna"&nbsp;de&nbsp;un&nbsp;TreeView.<br>
+Si&nbsp;es&nbsp;fecha&nbsp;ordena&nbsp;por&nbsp;día/mes/año.&nbsp;<br>
+Si&nbsp;no&nbsp;es&nbsp;fecha&nbsp;(no&nbsp;contiene&nbsp;dos&nbsp;'/')&nbsp;usa&nbsp;el&nbsp;orden&nbsp;<br>
+predefinido&nbsp;por&nbsp;python&nbsp;para&nbsp;cadenas.</tt></dd></dl>
+ <dl><dt><a name="-get_configuracion_ftp"><strong>get_configuracion_ftp</strong></a>()</dt><dd><tt>Lee&nbsp;la&nbsp;configuración&nbsp;del&nbsp;FTP&nbsp;de&nbsp;un&nbsp;archivo&nbsp;<br>
+llamado&nbsp;nftp.conf&nbsp;en&nbsp;el&nbsp;directorio&nbsp;actual&nbsp;o<br>
+en&nbsp;el&nbsp;directorio&nbsp;../framework.<br>
+Devuelve&nbsp;un&nbsp;diccionario&nbsp;con&nbsp;los&nbsp;valores&nbsp;"host",<br>
+"user"&nbsp;y&nbsp;"passwd"&nbsp;o&nbsp;None&nbsp;si&nbsp;no&nbsp;encontró&nbsp;el&nbsp;<br>
+archivo.</tt></dd></dl>
+ <dl><dt><a name="-get_puerto_serie"><strong>get_puerto_serie</strong></a>(puerto<font color="#909090">=None</font>)</dt><dd><tt>Devuelve&nbsp;un&nbsp;objeto&nbsp;de&nbsp;pyserial&nbsp;con&nbsp;el&nbsp;<br>
+puerto&nbsp;correspondiente&nbsp;abierto.&nbsp;None&nbsp;<br>
+si&nbsp;no&nbsp;se&nbsp;pudo&nbsp;abrir.<br>
+"puerto"&nbsp;es&nbsp;una&nbsp;cadena&nbsp;con&nbsp;el&nbsp;valor&nbsp;del&nbsp;"dev"&nbsp;<br>
+correspondiente:&nbsp;COM1,&nbsp;COM2,&nbsp;/dev/ttyS0...&nbsp;o&nbsp;None&nbsp;<br>
+para&nbsp;buscar&nbsp;el&nbsp;primer&nbsp;puerto&nbsp;serie&nbsp;disponible.</tt></dd></dl>
+ <dl><dt><a name="-image2pixbuf"><strong>image2pixbuf</strong></a>(image)</dt><dd><tt><a href="http://www.daa.com.au/pipermail/pygtk/2003-June/005268.html">http://www.daa.com.au/pipermail/pygtk/2003-June/005268.html</a></tt></dd></dl>
+ <dl><dt><a name="-int2str"><strong>int2str</strong></a>(n)</dt><dd><tt>Devuelve&nbsp;el&nbsp;número&nbsp;entero&nbsp;recibido&nbsp;como&nbsp;<br>
+cadena&nbsp;con&nbsp;formato&nbsp;de&nbsp;punto&nbsp;de&nbsp;separación&nbsp;<br>
+cada&nbsp;3&nbsp;dígitos.<br>
+P.ej:&nbsp;<a href="#-int2str">int2str</a>(1234)&nbsp;=&nbsp;"1.234"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#-int2str">int2str</a>(0)&nbsp;=&nbsp;"0"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;etc...</tt></dd></dl>
+ <dl><dt><a name="-leer_raw_data"><strong>leer_raw_data</strong></a>(puerto<font color="#909090">='COM1'</font>, timeout<font color="#909090">=30</font>)</dt><dd><tt>Abre&nbsp;el&nbsp;puerto&nbsp;serie&nbsp;y&nbsp;recibe&nbsp;"en&nbsp;crudo"&nbsp;todos&nbsp;los&nbsp;datos&nbsp;<br>
+almacenados&nbsp;en&nbsp;el&nbsp;terminal.<br>
+Devuelve&nbsp;una&nbsp;lista&nbsp;con&nbsp;los&nbsp;códigos&nbsp;leídos.</tt></dd></dl>
+ <dl><dt><a name="-md5_iguales"><strong>md5_iguales</strong></a>(archivo)</dt><dd><tt>Obtiene&nbsp;el&nbsp;MD5&nbsp;del&nbsp;archivo&nbsp;remoto&nbsp;y&nbsp;el&nbsp;MD5&nbsp;del&nbsp;archivo<br>
+local&nbsp;y&nbsp;los&nbsp;compara.<br>
+Devuelve&nbsp;True&nbsp;si&nbsp;ambos&nbsp;son&nbsp;iguales.<br>
+False&nbsp;en&nbsp;caso&nbsp;contrario&nbsp;o&nbsp;si&nbsp;ocurrió&nbsp;algún&nbsp;error&nbsp;(por<br>
+ejemplo&nbsp;al&nbsp;obtener&nbsp;el&nbsp;MD5&nbsp;local).</tt></dd></dl>
+ <dl><dt><a name="-mostrar_calendario"><strong>mostrar_calendario</strong></a>(fecha_defecto<font color="#909090">=(17, 1, 2008)</font>, padre<font color="#909090">=None</font>)</dt><dd><tt>Muestra&nbsp;y&nbsp;devuelve&nbsp;la&nbsp;fecha&nbsp;seleccioada&nbsp;con&nbsp;un&nbsp;clic.<br>
+SIEMPRE&nbsp;devuelve&nbsp;una&nbsp;fecha&nbsp;como&nbsp;lista&nbsp;de&nbsp;[dd,&nbsp;mm,&nbsp;aaaa]<br>
+aunque&nbsp;cierre&nbsp;la&nbsp;ventana&nbsp;sin&nbsp;seleccionarla&nbsp;con&nbsp;clic.<br>
+La&nbsp;fecha&nbsp;por&nbsp;defecto&nbsp;debe&nbsp;venir&nbsp;en&nbsp;formato&nbsp;d/m/aaaa&nbsp;y<br>
+en&nbsp;forma&nbsp;de&nbsp;lista&nbsp;o&nbsp;tupla.</tt></dd></dl>
+ <dl><dt><a name="-mostrar_hora"><strong>mostrar_hora</strong></a>(horas<font color="#909090">=0</font>, minutos<font color="#909090">=0</font>, segundos<font color="#909090">=0</font>, titulo<font color="#909090">='HORA'</font>, ver_segundos<font color="#909090">=False</font>, padre<font color="#909090">=None</font>)</dt><dd><tt>Muestra&nbsp;una&nbsp;ventana&nbsp;con&nbsp;spinbuttos&nbsp;y&nbsp;la&nbsp;hora&nbsp;pasada<br>
+(por&nbsp;defecto&nbsp;00:00:00)&nbsp;y&nbsp;devuelve&nbsp;una&nbsp;cadena&nbsp;con<br>
+la&nbsp;hora&nbsp;seleccionada&nbsp;separada&nbsp;por&nbsp;':'&nbsp;o&nbsp;None&nbsp;si&nbsp;<br>
+se&nbsp;canceló.</tt></dd></dl>
+ <dl><dt><a name="-mover_a_tmp"><strong>mover_a_tmp</strong></a>(ruta)</dt><dd><tt>Mueve&nbsp;el&nbsp;fichero&nbsp;apuntado&nbsp;por&nbsp;"ruta"&nbsp;al&nbsp;directorio&nbsp;temporal&nbsp;del&nbsp;SO.</tt></dd></dl>
+ <dl><dt><a name="-obtener_md5_remoto"><strong>obtener_md5_remoto</strong></a>(archivo)</dt><dd><tt>Obtiene&nbsp;la&nbsp;cadena&nbsp;correspondiente&nbsp;al&nbsp;MD5&nbsp;del&nbsp;archivo<br>
+remoto.</tt></dd></dl>
+ <dl><dt><a name="-orden_por_campo_o_id"><strong>orden_por_campo_o_id</strong></a>(objeto1, objeto2, campo)</dt><dd><tt>Ordena&nbsp;por&nbsp;el&nbsp;campo&nbsp;recibido&nbsp;e&nbsp;ID.&nbsp;«campo»&nbsp;tiene&nbsp;preferencia.<br>
+objeto1&nbsp;&lt;&nbsp;objeto2&nbsp;si&nbsp;objeto1&nbsp;tiene&nbsp;valor&nbsp;de&nbsp;campo&nbsp;o&nbsp;su&nbsp;ID&nbsp;es&nbsp;menor.</tt></dd></dl>
+ <dl><dt><a name="-orden_por_fecha_entrega_o_id"><strong>orden_por_fecha_entrega_o_id</strong></a>(ldp1, ldp2)</dt><dd><tt>Ordena&nbsp;por&nbsp;fecha&nbsp;entrega&nbsp;e&nbsp;ID.&nbsp;Fecha&nbsp;entrega&nbsp;tiene&nbsp;preferencia.<br>
+LDP1&nbsp;&lt;&nbsp;LDP2&nbsp;si&nbsp;LDP1&nbsp;tiene&nbsp;fecha&nbsp;entrega&nbsp;o&nbsp;su&nbsp;ID&nbsp;es&nbsp;menor.</tt></dd></dl>
+ <dl><dt><a name="-parse_euro"><strong>parse_euro</strong></a>(strfloat)</dt><dd><tt>Recibe&nbsp;una&nbsp;cantidad&nbsp;monetaria&nbsp;como&nbsp;cadena.&nbsp;Puede&nbsp;incluir&nbsp;el&nbsp;un&nbsp;espacio,<br>
+el&nbsp;signo&nbsp;menos&nbsp;(-)&nbsp;y&nbsp;el&nbsp;euro&nbsp;(€).<br>
+La&nbsp;función&nbsp;procesa&nbsp;la&nbsp;cadena&nbsp;y&nbsp;devuelve&nbsp;un&nbsp;flotante&nbsp;que&nbsp;se&nbsp;<br>
+corresponde&nbsp;con&nbsp;el&nbsp;valor&nbsp;o&nbsp;lanza&nbsp;una&nbsp;excepción&nbsp;ValueError&nbsp;si&nbsp;<br>
+no&nbsp;se&nbsp;puede&nbsp;parsear.</tt></dd></dl>
+ <dl><dt><a name="-parse_fecha"><strong>parse_fecha</strong></a>(txt)</dt><dd><tt>Devuelve&nbsp;un&nbsp;mx.DateTime&nbsp;con&nbsp;la&nbsp;fecha&nbsp;de<br>
+txt.<br>
+Si&nbsp;no&nbsp;está&nbsp;en&nbsp;formato&nbsp;dd/mm/yy[yy]&nbsp;lanza&nbsp;una<br>
+excepción.</tt></dd></dl>
+ <dl><dt><a name="-parse_fechahora"><strong>parse_fechahora</strong></a>(txt)</dt><dd><tt>Devuelve&nbsp;un&nbsp;mx.DateTime&nbsp;con&nbsp;la&nbsp;fecha&nbsp;y&nbsp;hora&nbsp;de<br>
+txt.<br>
+Si&nbsp;no&nbsp;está&nbsp;en&nbsp;formato&nbsp;dd/mm/yy[yy]&nbsp;HH:MM[:SS]&nbsp;lanza&nbsp;una<br>
+excepción.</tt></dd></dl>
+ <dl><dt><a name="-parse_hora"><strong>parse_hora</strong></a>(txt)</dt><dd><tt>Devuelve&nbsp;un&nbsp;mx.DateTimeDelta&nbsp;a&nbsp;partir&nbsp;del&nbsp;<br>
+texto&nbsp;recibido.</tt></dd></dl>
+ <dl><dt><a name="-parse_numero"><strong>parse_numero</strong></a>(str, invertir<font color="#909090">=False</font>)</dt><dd><tt>Devuelve&nbsp;el&nbsp;primero&nbsp;de&nbsp;los&nbsp;números&nbsp;que&nbsp;se&nbsp;pueda&nbsp;extraer&nbsp;<br>
+de&nbsp;la&nbsp;cadena&nbsp;str&nbsp;o&nbsp;None&nbsp;si&nbsp;no&nbsp;contiene&nbsp;ninguna&nbsp;cifra.<br>
+Si&nbsp;invertir&nbsp;==&nbsp;True,&nbsp;devuelve&nbsp;el&nbsp;primer&nbsp;número&nbsp;encontrado&nbsp;por&nbsp;el&nbsp;final.</tt></dd></dl>
+ <dl><dt><a name="-parse_porcentaje"><strong>parse_porcentaje</strong></a>(strfloat, fraccion<font color="#909090">=False</font>)</dt><dd><tt>Recibe&nbsp;un&nbsp;porcentaje&nbsp;como&nbsp;cadena.&nbsp;Puede&nbsp;incluir&nbsp;el&nbsp;un&nbsp;espacio,<br>
+el&nbsp;signo&nbsp;menos&nbsp;(-)&nbsp;y&nbsp;el&nbsp;porciento&nbsp;(%).<br>
+La&nbsp;función&nbsp;procesa&nbsp;la&nbsp;cadena&nbsp;y&nbsp;devuelve&nbsp;un&nbsp;flotante&nbsp;que&nbsp;se&nbsp;<br>
+corresponde&nbsp;con&nbsp;el&nbsp;valor&nbsp;del&nbsp;porcentaje,&nbsp;es&nbsp;decir,&nbsp;<br>
+en&nbsp;la&nbsp;forma&nbsp;0.&nbsp;(10&nbsp;%&nbsp;=&nbsp;0.1).<br>
+Si&nbsp;fraccion&nbsp;es&nbsp;True&nbsp;devuelve&nbsp;el&nbsp;valor&nbsp;como&nbsp;fracción&nbsp;de&nbsp;1.</tt></dd></dl>
+ <dl><dt><a name="-pedir_producto_compra"><strong>pedir_producto_compra</strong></a>(padre<font color="#909090">=None</font>, proveedor<font color="#909090">=None</font>)</dt><dd><tt>Ofrece&nbsp;una&nbsp;búsqueda&nbsp;de&nbsp;producto&nbsp;de&nbsp;compra&nbsp;por&nbsp;código&nbsp;o&nbsp;descripción.<br>
+Devuelve&nbsp;un&nbsp;objeto&nbsp;producto&nbsp;o&nbsp;None&nbsp;si&nbsp;se&nbsp;canceló;&nbsp;y&nbsp;el&nbsp;texto&nbsp;buscado.<br>
+padre&nbsp;-&gt;&nbsp;Ventana&nbsp;padre&nbsp;para&nbsp;los&nbsp;diálogos.<br>
+proveedor&nbsp;-&gt;&nbsp;Si&nbsp;es&nbsp;!=&nbsp;None,&nbsp;sólo&nbsp;buscará&nbsp;entre&nbsp;los&nbsp;productos&nbsp;de&nbsp;ese&nbsp;proveedor.</tt></dd></dl>
+ <dl><dt><a name="-prepara_hora"><strong>prepara_hora</strong></a>(hora)</dt></dl>
+ <dl><dt><a name="-preparar_listview"><strong>preparar_listview</strong></a>(tv, cols, multi<font color="#909090">=False</font>)</dt><dd><tt>Prepara&nbsp;el&nbsp;model&nbsp;con&nbsp;las&nbsp;columnas&nbsp;recibidas&nbsp;y&nbsp;<br>
+lo&nbsp;asocia&nbsp;al&nbsp;treeview&nbsp;mediante&nbsp;una&nbsp;LISTSTORE.<br>
+Las&nbsp;columnas&nbsp;deben&nbsp;tener&nbsp;el&nbsp;formato:<br>
+(('Nombre',&nbsp;'gobject.tipo',&nbsp;editable,&nbsp;ordenable,&nbsp;buscable,&nbsp;funcion),&nbsp;...&nbsp;)<br>
+Sólo&nbsp;puede&nbsp;haber&nbsp;una&nbsp;columna&nbsp;buscable.<br>
+Si&nbsp;editable&nbsp;==&nbsp;True,&nbsp;función&nbsp;no&nbsp;debe&nbsp;ser&nbsp;None&nbsp;y&nbsp;será&nbsp;conectada.<br>
+Si&nbsp;«multi»&nbsp;es&nbsp;True&nbsp;hace&nbsp;el&nbsp;TreeView&nbsp;de&nbsp;selección&nbsp;multiple.</tt></dd></dl>
+ <dl><dt><a name="-preparar_treeview"><strong>preparar_treeview</strong></a>(tv, cols, multi<font color="#909090">=False</font>)</dt><dd><tt>Prepara&nbsp;el&nbsp;model&nbsp;con&nbsp;las&nbsp;columnas&nbsp;recibidas&nbsp;y&nbsp;<br>
+lo&nbsp;asocia&nbsp;al&nbsp;treeview&nbsp;mediante&nbsp;una&nbsp;TREESTORE.<br>
+Las&nbsp;columnas&nbsp;deben&nbsp;tener&nbsp;el&nbsp;formato:<br>
+(('Nombre',&nbsp;'gobject.tipo',&nbsp;editable,&nbsp;ordenable,&nbsp;buscable,&nbsp;funcion),&nbsp;...&nbsp;)<br>
+Sólo&nbsp;puede&nbsp;haber&nbsp;una&nbsp;columna&nbsp;buscable.<br>
+Si&nbsp;editable&nbsp;==&nbsp;True,&nbsp;función&nbsp;no&nbsp;debe&nbsp;ser&nbsp;None&nbsp;y&nbsp;será&nbsp;conectada.<br>
+Si&nbsp;multi&nbsp;es&nbsp;True&nbsp;(por&nbsp;defecto&nbsp;no&nbsp;lo&nbsp;es)&nbsp;el&nbsp;TreeView&nbsp;será&nbsp;de&nbsp;selección&nbsp;<br>
+múltiple.</tt></dd></dl>
+ <dl><dt><a name="-procesar_albaran"><strong>procesar_albaran</strong></a>(codigo, logger<font color="#909090">=None</font>)</dt><dd><tt>Busca&nbsp;un&nbsp;albarán&nbsp;con&nbsp;número&nbsp;`codigo.replace("A",&nbsp;"")`&nbsp;y&nbsp;devuelve&nbsp;<br>
+el&nbsp;objeto&nbsp;encontrado&nbsp;o&nbsp;None&nbsp;si&nbsp;no&nbsp;se&nbsp;encontró.</tt></dd></dl>
+ <dl><dt><a name="-procesar_bala"><strong>procesar_bala</strong></a>(codigo, logger<font color="#909090">=None</font>)</dt><dd><tt>Busca&nbsp;un&nbsp;bala&nbsp;con&nbsp;el&nbsp;código&nbsp;recibido&nbsp;y&nbsp;devuelve&nbsp;<br>
+el&nbsp;objeto&nbsp;encontrado&nbsp;o&nbsp;None&nbsp;si&nbsp;no&nbsp;se&nbsp;encontró.</tt></dd></dl>
+ <dl><dt><a name="-procesar_bigbag"><strong>procesar_bigbag</strong></a>(codigo, logger<font color="#909090">=None</font>)</dt><dd><tt>Busca&nbsp;un&nbsp;bigbag&nbsp;con&nbsp;el&nbsp;código&nbsp;recibido&nbsp;y&nbsp;devuelve&nbsp;<br>
+el&nbsp;objeto&nbsp;encontrado&nbsp;o&nbsp;None&nbsp;si&nbsp;no&nbsp;se&nbsp;encontró.</tt></dd></dl>
+ <dl><dt><a name="-procesar_codigo"><strong>procesar_codigo</strong></a>(codigo, logger<font color="#909090">=None</font>)</dt><dd><tt>Devuelve&nbsp;un&nbsp;objeto&nbsp;de&nbsp;la&nbsp;clase&nbsp;correspondiente&nbsp;al&nbsp;código&nbsp;<br>
+o&nbsp;None&nbsp;si&nbsp;no&nbsp;se&nbsp;pudo&nbsp;encontrar&nbsp;el&nbsp;código&nbsp;o&nbsp;determinar&nbsp;la&nbsp;clase.</tt></dd></dl>
+ <dl><dt><a name="-procesar_partida_carga"><strong>procesar_partida_carga</strong></a>(codigo, logger<font color="#909090">=None</font>)</dt><dd><tt>Busca&nbsp;una&nbsp;partida&nbsp;carga&nbsp;con&nbsp;número&nbsp;`codigo.replace("PC",&nbsp;"")`&nbsp;y&nbsp;devuelve&nbsp;<br>
+el&nbsp;objeto&nbsp;encontrado&nbsp;o&nbsp;None&nbsp;si&nbsp;no&nbsp;se&nbsp;encontró.</tt></dd></dl>
+ <dl><dt><a name="-procesar_rollo"><strong>procesar_rollo</strong></a>(codigo, logger<font color="#909090">=None</font>)</dt><dd><tt>Busca&nbsp;un&nbsp;rollo&nbsp;con&nbsp;el&nbsp;código&nbsp;recibido&nbsp;y&nbsp;devuelve&nbsp;<br>
+el&nbsp;objeto&nbsp;encontrado&nbsp;o&nbsp;None&nbsp;si&nbsp;no&nbsp;se&nbsp;encontró.</tt></dd></dl>
+ <dl><dt><a name="-recortar"><strong>recortar</strong></a>(txt, max<font color="#909090">=30</font>)</dt><dd><tt>Recorta&nbsp;una&nbsp;cadena&nbsp;al&nbsp;máximo&nbsp;de&nbsp;caracteres&nbsp;si&nbsp;es&nbsp;más&nbsp;<br>
+larga&nbsp;que&nbsp;éste.&nbsp;Añade&nbsp;puntos&nbsp;suspensivos&nbsp;en&nbsp;ese&nbsp;caso.</tt></dd></dl>
+ <dl><dt><a name="-redondear_flotante_en_cell_cuando_sea_posible"><strong>redondear_flotante_en_cell_cuando_sea_posible</strong></a>(column, cell, model, iter, data)</dt><dd><tt>#def&nbsp;<a href="#-redondear_flotante_en_cell_cuando_sea_posible">redondear_flotante_en_cell_cuando_sea_posible</a>(column,&nbsp;cell,&nbsp;model,&nbsp;iter,&nbsp;i,&nbsp;numdecimales&nbsp;=&nbsp;2):</tt></dd></dl>
+ <dl><dt><a name="-rellenar_lista"><strong>rellenar_lista</strong></a>(wid, textos)</dt><dd><tt>Crea,&nbsp;rellena&nbsp;y&nbsp;asocia&nbsp;al&nbsp;model&nbsp;de&nbsp;un&nbsp;combobox<br>
+el&nbsp;ListStore&nbsp;que&nbsp;se&nbsp;creará&nbsp;a&nbsp;partir&nbsp;de&nbsp;una&nbsp;lista&nbsp;o<br>
+tupla&nbsp;de&nbsp;(enteros,&nbsp;cadenas).&nbsp;La&nbsp;cadena&nbsp;que&nbsp;se&nbsp;mostrará<br>
+en&nbsp;el&nbsp;combo&nbsp;es&nbsp;la&nbsp;columna&nbsp;1.&nbsp;La&nbsp;columna&nbsp;0&nbsp;es&nbsp;un&nbsp;<br>
+entero&nbsp;y&nbsp;-generalmente-&nbsp;será&nbsp;el&nbsp;id&nbsp;del&nbsp;elemento&nbsp;en&nbsp;<br>
+la&nbsp;BD.<br>
+Versión&nbsp;castiza&nbsp;y&nbsp;con&nbsp;autocompletado&nbsp;-si&nbsp;el&nbsp;combo<br>
+lo&nbsp;permite&nbsp;y&nbsp;tiene&nbsp;un&nbsp;.child&nbsp;entry-&nbsp;de&nbsp;la<br>
+función&nbsp;anterior.</tt></dd></dl>
+ <dl><dt><a name="-respuesta_ok_cancel"><strong>respuesta_ok_cancel</strong></a>(dialog, response, res)</dt></dl>
+ <dl><dt><a name="-respuesta_si_no"><strong>respuesta_si_no</strong></a>(dialog, response, res)</dt></dl>
+ <dl><dt><a name="-respuesta_si_no_cancel"><strong>respuesta_si_no_cancel</strong></a>(dialog, response, res)</dt></dl>
+ <dl><dt><strong>round_banquero</strong> <em>lambda</em> numero, precision</dt></dl>
+ <dl><dt><a name="-set_unset_urgency_hint"><strong>set_unset_urgency_hint</strong></a>(window, activar_hint)</dt></dl>
+ <dl><dt><a name="-str_booleano"><strong>str_booleano</strong></a>(valor)</dt><dd><tt>Para&nbsp;imprimir&nbsp;valores&nbsp;booleanos.&nbsp;Si&nbsp;es&nbsp;TRUE&nbsp;devuelve&nbsp;'Sí',<br>
+si&nbsp;no&nbsp;'No'&nbsp;y&nbsp;en&nbsp;caso&nbsp;de&nbsp;error&nbsp;''.</tt></dd></dl>
+ <dl><dt><a name="-str_fecha"><strong>str_fecha</strong></a>(fecha<font color="#909090">=(2008, 1, 17, 18, 19, 52, 3, 17, 0)</font>)</dt><dd><tt>Devuelve&nbsp;como&nbsp;una&nbsp;cadena&nbsp;de&nbsp;texto&nbsp;en&nbsp;el&nbsp;formato&nbsp;dd/mm/aaaa<br>
+la&nbsp;fecha&nbsp;pasada.&nbsp;<br>
+"fecha"&nbsp;debe&nbsp;ser&nbsp;de&nbsp;tipo&nbsp;time.struct_time,&nbsp;un<br>
+mx.DateTime&nbsp;o&nbsp;bien&nbsp;una&nbsp;tupla&nbsp;[dd,&nbsp;mm,&nbsp;aaaa]&nbsp;como<br>
+las&nbsp;que&nbsp;devuelve&nbsp;"mostrar_calendario".<br>
+Si&nbsp;no&nbsp;se&nbsp;pasa&nbsp;ningún&nbsp;parámetro&nbsp;devuelve&nbsp;la&nbsp;fecha&nbsp;<br>
+del&nbsp;sistema.<br>
+Si&nbsp;se&nbsp;pasa&nbsp;None,&nbsp;devuelve&nbsp;la&nbsp;cadena&nbsp;vacía&nbsp;''.<br>
+Si&nbsp;la&nbsp;fecha&nbsp;no&nbsp;es&nbsp;de&nbsp;ningún&nbsp;tipo&nbsp;de&nbsp;los&nbsp;permitidos<br>
+saltará&nbsp;una&nbsp;excepción&nbsp;que&nbsp;debe&nbsp;ser&nbsp;atendida&nbsp;en&nbsp;<br>
+capas&nbsp;superiores&nbsp;de&nbsp;la&nbsp;pila&nbsp;de&nbsp;llamadas.</tt></dd></dl>
+ <dl><dt><a name="-str_fechahora"><strong>str_fechahora</strong></a>(datetime)</dt><dd><tt>Devuelve&nbsp;el&nbsp;datetime&nbsp;recibido&nbsp;como&nbsp;una&nbsp;cadena&nbsp;que&nbsp;<br>
+muestra&nbsp;la&nbsp;fecha&nbsp;y&nbsp;la&nbsp;hora.</tt></dd></dl>
+ <dl><dt><a name="-str_hora"><strong>str_hora</strong></a>(fh)</dt><dd><tt>Devuelve&nbsp;la&nbsp;parte&nbsp;de&nbsp;la&nbsp;hora&nbsp;de&nbsp;una&nbsp;fecha<br>
+completa&nbsp;(fecha&nbsp;+&nbsp;hora,&nbsp;DateTime).</tt></dd></dl>
+ <dl><dt><a name="-str_hora_corta"><strong>str_hora_corta</strong></a>(fh)</dt><dd><tt>Devuelve&nbsp;la&nbsp;parte&nbsp;de&nbsp;la&nbsp;hora&nbsp;de&nbsp;una&nbsp;fecha<br>
+completa&nbsp;(fecha&nbsp;+&nbsp;hora,&nbsp;DateTime).</tt></dd></dl>
+ <dl><dt><a name="-textview_get_all_text"><strong>textview_get_all_text</strong></a>(w)</dt><dd><tt>Devuelve&nbsp;todo&nbsp;el&nbsp;texto&nbsp;de&nbsp;un&nbsp;textview.</tt></dd></dl>
+ <dl><dt><a name="-tipo_gobject"><strong>tipo_gobject</strong></a>(valor)</dt><dd><tt>A&nbsp;partir&nbsp;de&nbsp;un&nbsp;valor&nbsp;devuelve&nbsp;el&nbsp;tipo&nbsp;correspondiente<br>
+según&nbsp;las&nbsp;constantes&nbsp;gobject.<br>
+El&nbsp;tipo&nbsp;lo&nbsp;devuelve&nbsp;como&nbsp;cadena&nbsp;para&nbsp;poder&nbsp;montar&nbsp;el<br>
+model&nbsp;a&nbsp;partir&nbsp;de&nbsp;un&nbsp;eval&nbsp;del&nbsp;constructor.&nbsp;(No&nbsp;hay<br>
+forma&nbsp;de&nbsp;añadir&nbsp;columnas&nbsp;una&nbsp;vez&nbsp;el&nbsp;constructor&nbsp;del&nbsp;<br>
+ListStore&nbsp;ha&nbsp;sido&nbsp;llamado,&nbsp;así&nbsp;que&nbsp;no&nbsp;veo&nbsp;otra&nbsp;<br>
+manera&nbsp;de&nbsp;hacerlo&nbsp;que&nbsp;no&nbsp;sea&nbsp;con&nbsp;un&nbsp;eval&nbsp;y&nbsp;cadenas).</tt></dd></dl>
+ <dl><dt><a name="-unificar"><strong>unificar</strong></a>(lista)</dt><dd><tt>Devuelve&nbsp;una&nbsp;lista&nbsp;con&nbsp;valores&nbsp;únicos.</tt></dd></dl>
+ <dl><dt><a name="-unir_fecha_y_hora"><strong>unir_fecha_y_hora</strong></a>(mxfecha, mxhora)</dt><dd><tt>Devuelve&nbsp;un&nbsp;DateTime&nbsp;con&nbsp;la&nbsp;fecha&nbsp;"mxfecha"&nbsp;y&nbsp;la&nbsp;hora&nbsp;"mxhora".<br>
+Acepta&nbsp;DateTime&nbsp;y&nbsp;DateTimeDelta&nbsp;como&nbsp;parte&nbsp;«hora».</tt></dd></dl>
+ <dl><dt><a name="-verificar_source"><strong>verificar_source</strong></a>(nombre_archivo)</dt><dd><tt>Comprueba&nbsp;el&nbsp;MD5&nbsp;de&nbsp;un&nbsp;archivo&nbsp;con&nbsp;el&nbsp;del&nbsp;servidor,&nbsp;<br>
+si&nbsp;no&nbsp;coinciden&nbsp;descarga&nbsp;el&nbsp;archivo&nbsp;indicado&nbsp;y&nbsp;el&nbsp;<br>
+nuevo&nbsp;md5.</tt></dd></dl>
+ <dl><dt><a name="-wrap"><strong>wrap</strong></a>(text, width)</dt><dd><tt>&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;word-wrap&nbsp;function&nbsp;that&nbsp;preserves&nbsp;existing&nbsp;line&nbsp;breaks<br>
+&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;most&nbsp;spaces&nbsp;in&nbsp;the&nbsp;text.&nbsp;Expects&nbsp;that&nbsp;existing&nbsp;line<br>
+&nbsp;&nbsp;&nbsp;&nbsp;breaks&nbsp;are&nbsp;posix&nbsp;newlines&nbsp;(<br>
+).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Sacado&nbsp;de&nbsp;<a href="http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/148061">http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/148061</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;Desconozco&nbsp;la&nbsp;licencia.&nbsp;Eliminar&nbsp;en&nbsp;caso&nbsp;de&nbsp;que&nbsp;no&nbsp;sea&nbsp;compatible&nbsp;con&nbsp;la&nbsp;GPL&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cuando&nbsp;la&nbsp;averigüe.</tt></dd></dl>
+</td></tr></table>
+</body></html>

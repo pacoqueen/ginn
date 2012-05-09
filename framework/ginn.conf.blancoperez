@@ -1,0 +1,15 @@
+tipobd  postgres
+user    blancope
+pass    bl45yrt
+dbname  bpinn
+host    192.168.1.100
+host    localhost
+logo    bypbp_100.png
+title   Barnices y Pinturas Blanco Pérez
+desplegar_tickets 0
+valorar_albaranes 1
+diastpv 7
+carta_portes 1
+ventanas_sobre fc
+puerto_ticketera /tmp/ticket.txt
+multipagina 2

@@ -1,0 +1,13 @@
+tipobd  postgres
+user    ufbinn
+pass    ufbinn
+dbname  fbinn
+host    localhost
+logo    logofblanco.png
+title   Ferretería Blanco
+puerto_ticketera /dev/lp1
+anchoticket 42
+mostrarcontactoenticket 1
+oki 1
+valorar_albaranes 1
+diastpv 1

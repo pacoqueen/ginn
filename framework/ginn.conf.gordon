@@ -1,0 +1,6 @@
+tipobd	postgres
+user 	geotexan
+pass	gy298d.l
+dbname 	ginn
+host	192.168.0.1
+modelo_presupuesto presupuesto2

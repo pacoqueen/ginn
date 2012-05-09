@@ -1,0 +1,64 @@
+Creating filelist for BD
+Have a non-directory at the top, so creating directory top_dir
+Adding /home/geotexan/geotexan/geotexinn02/./ChangeLog to top_dir
+Adding /home/geotexan/geotexan/geotexinn02/./ChangeLog.bak to top_dir
+Adding /home/geotexan/geotexan/geotexinn02/./COPYING to top_dir
+Creating filelist for CVS
+Adding /home/geotexan/geotexan/geotexinn02/./cvschangelogbuilder_geotexinn02.cache to top_dir
+Creating filelist for doc
+Creating filelist for formularios
+Creating filelist for framework
+Creating filelist for gajim-0.9.1
+Adding /home/geotexan/geotexan/geotexinn02/./GPL to top_dir
+Adding /home/geotexan/geotexan/geotexinn02/./gpl.txt to top_dir
+Creating filelist for imagenes
+Creating filelist for informes
+Creating filelist for libgmail-0.1.3.3
+Adding /home/geotexan/geotexan/geotexinn02/./post_outage.py to top_dir
+Creating filelist for PyChart-1.39
+Adding /home/geotexan/geotexan/geotexinn02/./README to top_dir
+Creating filelist for SQLObject
+Creating filelist for utils
+Categorizing files.
+Finding a working MD5 command....
+Found a working MD5 command.
+Computing results.
+
+
+SLOC	Directory	SLOC-by-Language (Sorted)
+53093   formularios     python=53093
+24513   gajim-0.9.1     python=22155,sh=1710,ansic=648
+11413   informes        python=11413
+8874    SQLObject       python=8874
+8011    framework       python=7955,sh=56
+7160    PyChart-1.39    python=7160
+2494    BD              python=2465,sh=29
+2322    doc             sh=2039,python=283
+969     libgmail-0.1.3.3 python=969
+577     utils           python=577
+11      top_dir         python=11
+0       CVS             (none)
+0       imagenes        (none)
+
+
+Totals grouped by language (dominant language first):
+python:      114955 (96.25%)
+sh:            3834 (3.21%)
+ansic:          648 (0.54%)
+
+
+
+
+Total Physical Source Lines of Code (SLOC)                = 119,437
+Development Effort Estimate, Person-Years (Person-Months) = 27.93 (335.21)
+ (Basic COCOMO model, Person-Months = 2.4 * (KSLOC**1.05))
+Schedule Estimate, Years (Months)                         = 1.42 (17.01)
+ (Basic COCOMO model, Months = 2.5 * (person-months**0.38))
+Total Estimated Cost to Develop                           = $ 1,448,104
+ (average salary = $21,600/year, overhead = 2.40).
+SLOCCount, Copyright (C) 2001-2004 David A. Wheeler
+SLOCCount is Open Source Software/Free Software, licensed under the GNU GPL.
+SLOCCount comes with ABSOLUTELY NO WARRANTY, and you are welcome to
+redistribute it under certain conditions as specified by the GNU GPL license;
+see the documentation for details.
+Please credit this data as "generated using David A. Wheeler's 'SLOCCount'."

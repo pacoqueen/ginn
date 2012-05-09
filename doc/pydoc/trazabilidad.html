@@ -1,0 +1,149 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module trazabilidad</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>trazabilidad</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/queen/geotexan/geotexinn02/formularios/trazabilidad.py">/home/queen/geotexan/geotexinn02/formularios/trazabilidad.py</a></font></td></tr></table>
+    <p><tt>#&nbsp;-*-&nbsp;coding:&nbsp;utf-8&nbsp;-*-</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="cmdgtk.html">cmdgtk</a><br>
+<a href="gtk.html">gtk</a><br>
+</td><td width="25%" valign=top><a href="mx.html">mx</a><br>
+<a href="os.html">os</a><br>
+</td><td width="25%" valign=top><a href="pclases.html">pclases</a><br>
+<a href="pygtk.html">pygtk</a><br>
+</td><td width="25%" valign=top><a href="time.html">time</a><br>
+<a href="utils.html">utils</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="ventana.html#Ventana">ventana.Ventana</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="trazabilidad.html#Trazabilidad">Trazabilidad</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Trazabilidad">class <strong>Trazabilidad</strong></a>(<a href="ventana.html#Ventana">ventana.Ventana</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="ventana.html#Ventana">Ventana</a>&nbsp;de&nbsp;trazabilidad&nbsp;interna&nbsp;de&nbsp;objetos.<br>
+Acepta&nbsp;tanto&nbsp;códigos&nbsp;de&nbsp;trazabilidad&nbsp;como&nbsp;consultas&nbsp;a&nbsp;la&nbsp;BD&nbsp;de&nbsp;SQLObject.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Trazabilidad-__init__"><strong>__init__</strong></a>(self, objeto<font color="#909090">=None</font>, usuario<font color="#909090">=None</font>, ventana_padre<font color="#909090">=None</font>, locals_adicionales<font color="#909090">={}</font>)</dt></dl>
+
+<dl><dt><a name="Trazabilidad-buscar"><strong>buscar</strong></a>(self, b)</dt></dl>
+
+<dl><dt><a name="Trazabilidad-buscar_articulo"><strong>buscar_articulo</strong></a>(self, txt)</dt></dl>
+
+<dl><dt><a name="Trazabilidad-buscar_bala"><strong>buscar_bala</strong></a>(self, txt)</dt></dl>
+
+<dl><dt><a name="Trazabilidad-buscar_rollo"><strong>buscar_rollo</strong></a>(self, txt)</dt></dl>
+
+<dl><dt><a name="Trazabilidad-cambiar_valor"><strong>cambiar_valor</strong></a>(self, cell, path, text)</dt></dl>
+
+<dl><dt><a name="Trazabilidad-cerrar"><strong>cerrar</strong></a>(self, tv, iter, path)</dt></dl>
+
+<dl><dt><a name="Trazabilidad-chequear_cambios"><strong>chequear_cambios</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Trazabilidad-expandir"><strong>expandir</strong></a>(self, tv, iter, path)</dt></dl>
+
+<dl><dt><a name="Trazabilidad-insertar_ajenos"><strong>insertar_ajenos</strong></a>(self, objeto, padre, model)</dt><dd><tt>Inserta&nbsp;los&nbsp;nombres&nbsp;de&nbsp;las&nbsp;claves&nbsp;ajenas&nbsp;del&nbsp;objeto<br>
+con&nbsp;un&nbsp;"child"&nbsp;vacío&nbsp;para&nbsp;poder&nbsp;mostrar&nbsp;el&nbsp;desplegable&nbsp;y<br>
+rellenar&nbsp;los&nbsp;campos&nbsp;de&nbsp;la&nbsp;clave&nbsp;ajena&nbsp;en&nbsp;cuestión&nbsp;en&nbsp;caso<br>
+de&nbsp;que&nbsp;se&nbsp;despliegue.</tt></dd></dl>
+
+<dl><dt><a name="Trazabilidad-insertar_campos"><strong>insertar_campos</strong></a>(self, objeto, padre, model)</dt><dd><tt>Inserta&nbsp;los&nbsp;campos&nbsp;del&nbsp;objeto&nbsp;colgando&nbsp;de&nbsp;la&nbsp;rama&nbsp;"iter".<br>
+Siempre&nbsp;empieza&nbsp;por&nbsp;el&nbsp;ID&nbsp;y&nbsp;el&nbsp;nombre&nbsp;de&nbsp;la&nbsp;tabla&nbsp;del&nbsp;objeto&nbsp;y&nbsp;<br>
+a&nbsp;continuación&nbsp;sus&nbsp;campos.<br>
+Devuelve&nbsp;el&nbsp;iter&nbsp;del&nbsp;objeto&nbsp;insertado.</tt></dd></dl>
+
+<dl><dt><a name="Trazabilidad-insertar_multiples"><strong>insertar_multiples</strong></a>(self, objeto, padre, model)</dt><dd><tt>Inserta&nbsp;un&nbsp;campo&nbsp;con&nbsp;desplegable&nbsp;por&nbsp;cada&nbsp;relación&nbsp;a&nbsp;muchos&nbsp;<br>
+del&nbsp;objeto,&nbsp;y&nbsp;dentro&nbsp;de&nbsp;éste&nbsp;tantos&nbsp;nombres&nbsp;de&nbsp;la&nbsp;tabla&nbsp;ajena<br>
+como&nbsp;tuplas&nbsp;relacionadas&nbsp;que&nbsp;tenga.<br>
+Además,&nbsp;por&nbsp;cada&nbsp;tupla&nbsp;creará&nbsp;un&nbsp;"child"&nbsp;vacío&nbsp;que&nbsp;se&nbsp;susituirá&nbsp;<br>
+por&nbsp;los&nbsp;datos&nbsp;de&nbsp;este&nbsp;registro&nbsp;cuando&nbsp;expanda&nbsp;la&nbsp;fila.</tt></dd></dl>
+
+<dl><dt><a name="Trazabilidad-insertar_nombre"><strong>insertar_nombre</strong></a>(self, objeto, padre, model, nombre_opcional<font color="#909090">=''</font>)</dt></dl>
+
+<dl><dt><a name="Trazabilidad-insertar_rama"><strong>insertar_rama</strong></a>(self, objeto, padre, model)</dt></dl>
+
+<dl><dt><a name="Trazabilidad-pasar_foco"><strong>pasar_foco</strong></a>(self, widget, event)</dt></dl>
+
+<dl><dt><a name="Trazabilidad-rellenar_datos"><strong>rellenar_datos</strong></a>(self, articulo)</dt></dl>
+
+<hr>
+Methods inherited from <a href="ventana.html#Ventana">ventana.Ventana</a>:<br>
+<dl><dt><a name="Trazabilidad-abrir_gajim"><strong>abrir_gajim</strong></a>(self)</dt><dd><tt>Calcado&nbsp;de&nbsp;menu.py.&nbsp;Sólo&nbsp;lleva&nbsp;las&nbsp;modificaciones&nbsp;necesarias&nbsp;para&nbsp;hacerlo&nbsp;funcionar&nbsp;desde&nbsp;aquí.</tt></dd></dl>
+
+<dl><dt><a name="Trazabilidad-acerca_de"><strong>acerca_de</strong></a>(self)</dt><dd><tt>Calcado&nbsp;de&nbsp;menu.py.&nbsp;Modificado&nbsp;ligeramente&nbsp;para&nbsp;hacerlo&nbsp;funcionar&nbsp;aquí.</tt></dd></dl>
+
+<dl><dt><a name="Trazabilidad-actualizar_objeto_y_enlaces"><strong>actualizar_objeto_y_enlaces</strong></a>(self, actualizar_ventana_tambien<font color="#909090">=True</font>)</dt></dl>
+
+<dl><dt><a name="Trazabilidad-actualizar_ventana"><strong>actualizar_ventana</strong></a>(self, widget<font color="#909090">=None</font>, objeto_anterior<font color="#909090">=None</font>)</dt><dd><tt>Actualiza&nbsp;el&nbsp;contenido&nbsp;de&nbsp;los&nbsp;controles&nbsp;de&nbsp;la&nbsp;ventana<br>
+para&nbsp;que&nbsp;muestren&nbsp;todos&nbsp;los&nbsp;datos&nbsp;del&nbsp;objeto&nbsp;actual.<br>
+widget&nbsp;no&nbsp;se&nbsp;usa.&nbsp;Se&nbsp;recibe&nbsp;para&nbsp;el&nbsp;caso&nbsp;en&nbsp;que&nbsp;se&nbsp;llama&nbsp;a&nbsp;<br>
+la&nbsp;función&nbsp;desde&nbsp;un&nbsp;botón.<br>
+objeto_anterior&nbsp;es&nbsp;un&nbsp;objeo&nbsp;de&nbsp;pclases.&nbsp;Sería&nbsp;el&nbsp;que&nbsp;se&nbsp;<br>
+muestra&nbsp;en&nbsp;pantalla&nbsp;justo&nbsp;antes&nbsp;de&nbsp;llamar&nbsp;a&nbsp;actualizar_ventana<br>
+y&nbsp;recargar&nbsp;los&nbsp;datos.&nbsp;Si&nbsp;se&nbsp;recibe&nbsp;y&nbsp;hay&nbsp;cambios&nbsp;pendientes&nbsp;de<br>
+guardar,&nbsp;el&nbsp;contenido&nbsp;de&nbsp;la&nbsp;ventana&nbsp;se&nbsp;guarda&nbsp;en&nbsp;ese&nbsp;objeto<br>
+ANTES&nbsp;de&nbsp;mostrar&nbsp;el&nbsp;nuevo&nbsp;(o&nbsp;el&nbsp;mismo&nbsp;con&nbsp;nueva&nbsp;información)&nbsp;<br>
+en&nbsp;los&nbsp;widgets&nbsp;de&nbsp;pantalla.</tt></dd></dl>
+
+<dl><dt><a name="Trazabilidad-add_connections"><strong>add_connections</strong></a>(self, dict)</dt><dd><tt>Recorre&nbsp;el&nbsp;diccionario&nbsp;y&nbsp;crea&nbsp;las&nbsp;conexiones&nbsp;con&nbsp;<br>
+los&nbsp;callbacks.</tt></dd></dl>
+
+<dl><dt><a name="Trazabilidad-aviso_actualizacion"><strong>aviso_actualizacion</strong></a>(self)</dt><dd><tt>Muestra&nbsp;una&nbsp;ventana&nbsp;modal&nbsp;con&nbsp;el&nbsp;mensaje&nbsp;de&nbsp;objeto&nbsp;<br>
+actualizado.</tt></dd></dl>
+
+<dl><dt><a name="Trazabilidad-build_menu_superior"><strong>build_menu_superior</strong></a>(self)</dt><dd><tt>Construye&nbsp;un&nbsp;menú&nbsp;con&nbsp;las&nbsp;mismas&nbsp;opciones&nbsp;que&nbsp;el&nbsp;menú&nbsp;principal.</tt></dd></dl>
+
+<dl><dt><a name="Trazabilidad-check_permisos"><strong>check_permisos</strong></a>(self, nombre_fichero_ventana)</dt><dd><tt>Activa&nbsp;o&nbsp;desactiva&nbsp;los&nbsp;controles&nbsp;dependiendo&nbsp;de&nbsp;los&nbsp;<br>
+permisos&nbsp;del&nbsp;usuario.</tt></dd></dl>
+
+<dl><dt><a name="Trazabilidad-chequear_hilo"><strong>chequear_hilo</strong></a>(self)</dt><dd><tt>Consulta&nbsp;el&nbsp;hilo&nbsp;notificador&nbsp;del&nbsp;objeto&nbsp;actual.<br>
+En&nbsp;realidad&nbsp;es&nbsp;una&nbsp;mera&nbsp;excusa&nbsp;para&nbsp;obligar&nbsp;a&nbsp;GTK&nbsp;a&nbsp;<br>
+atender&nbsp;al&nbsp;objeto&nbsp;lo&nbsp;antes&nbsp;posible&nbsp;en&nbsp;caso&nbsp;de&nbsp;<br>
+notificación.</tt></dd></dl>
+
+<dl><dt><a name="Trazabilidad-ir_a"><strong>ir_a</strong></a>(self, objeto)</dt></dl>
+
+<dl><dt><a name="Trazabilidad-make_connections"><strong>make_connections</strong></a>(self)</dt><dd><tt>Realiza&nbsp;las&nbsp;conexiones&nbsp;básicas&nbsp;entre&nbsp;widgets&nbsp;y&nbsp;callbacks.<br>
+Para&nbsp;el&nbsp;resto&nbsp;de&nbsp;conexiones,&nbsp;usar&nbsp;add_connections.<br>
+La&nbsp;ventana&nbsp;principal&nbsp;DEBE&nbsp;llamarse&nbsp;"ventana".</tt></dd></dl>
+
+<dl><dt><a name="Trazabilidad-make_funciones_ociosas"><strong>make_funciones_ociosas</strong></a>(self)</dt><dd><tt>Inicia&nbsp;las&nbsp;funciones&nbsp;ociosas&nbsp;de&nbsp;chequeo&nbsp;de&nbsp;cambios<br>
+remotos&nbsp;(actualizar)&nbsp;y&nbsp;locales&nbsp;(guardar).</tt></dd></dl>
+
+<dl><dt><a name="Trazabilidad-salir"><strong>salir</strong></a>(self, boton, event<font color="#909090">=None</font>, mostrar_ventana<font color="#909090">=True</font>)</dt><dd><tt>Muestra&nbsp;una&nbsp;ventana&nbsp;de&nbsp;confirmación&nbsp;y&nbsp;<br>
+sale&nbsp;de&nbsp;la&nbsp;ventana&nbsp;cerrando&nbsp;el&nbsp;bucle<br>
+local&nbsp;de&nbsp;gtk_main.<br>
+Si&nbsp;mostrar_ventana&nbsp;es&nbsp;False,&nbsp;sale&nbsp;directamente<br>
+sin&nbsp;preguntar&nbsp;al&nbsp;usuario.</tt></dd></dl>
+
+<dl><dt><a name="Trazabilidad-volver_a_cursor_original"><strong>volver_a_cursor_original</strong></a>(self)</dt><dd><tt>Calcado&nbsp;de&nbsp;menu.py.&nbsp;Sólo&nbsp;lleva&nbsp;las&nbsp;modificaciones&nbsp;necesarias&nbsp;para&nbsp;hacerlo&nbsp;funcionar&nbsp;desde&nbsp;aquí.</tt></dd></dl>
+
+</td></tr></table></td></tr></table>
+</body></html>

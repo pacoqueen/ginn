@@ -1,0 +1,159 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module consulta_marcado_ce</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>consulta_marcado_ce</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/bogado/Geotexan/geotexinn02/formularios/consulta_marcado_ce.py">/home/bogado/Geotexan/geotexinn02/formularios/consulta_marcado_ce.py</a></font></td></tr></table>
+    <p><tt>#&nbsp;-*-&nbsp;coding:&nbsp;utf-8&nbsp;-*-</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="geninformes.html">geninformes</a><br>
+<a href="gtk.html">gtk</a><br>
+<a href="mx.html">mx</a><br>
+</td><td width="25%" valign=top><a href="pclases.html">pclases</a><br>
+<a href="pygtk.html">pygtk</a><br>
+<a href="re.html">re</a><br>
+</td><td width="25%" valign=top><a href="sqlobject.html">sqlobject</a><br>
+<a href="sys.html">sys</a><br>
+<a href="time.html">time</a><br>
+</td><td width="25%" valign=top><a href="utils.html">utils</a><br>
+<a href="ventana_progreso.html">ventana_progreso</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="ventana.html#Ventana">ventana.Ventana</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="consulta_marcado_ce.html#ConsultaMarcadoCE">ConsultaMarcadoCE</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ConsultaMarcadoCE">class <strong>ConsultaMarcadoCE</strong></a>(<a href="ventana.html#Ventana">ventana.Ventana</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="ConsultaMarcadoCE-__init__"><strong>__init__</strong></a>(self, objeto<font color="#909090">=None</font>, usuario<font color="#909090">=None</font>)</dt><dd><tt>Constructor.&nbsp;objeto&nbsp;puede&nbsp;ser&nbsp;un&nbsp;objeto&nbsp;de&nbsp;pclases&nbsp;con&nbsp;el&nbsp;que<br>
+comenzar&nbsp;la&nbsp;ventana&nbsp;(en&nbsp;lugar&nbsp;del&nbsp;primero&nbsp;de&nbsp;la&nbsp;tabla,&nbsp;que&nbsp;es<br>
+el&nbsp;que&nbsp;se&nbsp;muestra&nbsp;por&nbsp;defecto).</tt></dd></dl>
+
+<dl><dt><a name="ConsultaMarcadoCE-abrir_resultados_partida"><strong>abrir_resultados_partida</strong></a>(self, tv, path, view_col)</dt><dd><tt>Abre&nbsp;la&nbsp;ventana&nbsp;del&nbsp;laboratorio&nbsp;de&nbsp;resultados&nbsp;de&nbsp;la&nbsp;<br>
+partida&nbsp;de&nbsp;la&nbsp;fila&nbsp;a&nbsp;la&nbsp;que&nbsp;se&nbsp;ha&nbsp;hecho&nbsp;doble&nbsp;clic.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaMarcadoCE-buscar"><strong>buscar</strong></a>(self, boton)</dt></dl>
+
+<dl><dt><a name="ConsultaMarcadoCE-chequear_cambios"><strong>chequear_cambios</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ConsultaMarcadoCE-imprimir"><strong>imprimir</strong></a>(self, boton)</dt><dd><tt>Prepara&nbsp;la&nbsp;vista&nbsp;preliminar&nbsp;para&nbsp;la&nbsp;impresión&nbsp;del&nbsp;informe.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaMarcadoCE-rellenar_tabla"><strong>rellenar_tabla</strong></a>(self, partidas)</dt><dd><tt>Rellena&nbsp;el&nbsp;model&nbsp;con&nbsp;los&nbsp;items&nbsp;de&nbsp;la&nbsp;consulta.<br>
+Elementos&nbsp;es&nbsp;un&nbsp;diccionario&nbsp;con&nbsp;objetos&nbsp;fecha&nbsp;como&nbsp;claves&nbsp;y&nbsp;<br>
+un&nbsp;diccionaro&nbsp;de&nbsp;dos&nbsp;elementos&nbsp;como&nbsp;valor.&nbsp;El&nbsp;segundo&nbsp;diccionario<br>
+debe&nbsp;tener&nbsp;tres&nbsp;claves:&nbsp;'pagos',&nbsp;'vencimientos'&nbsp;y&nbsp;'logic'.&nbsp;En&nbsp;cada<br>
+una&nbsp;de&nbsp;ellas&nbsp;se&nbsp;guarda&nbsp;una&nbsp;lista&nbsp;de&nbsp;objetos&nbsp;de&nbsp;la&nbsp;clase&nbsp;correspondiente.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaMarcadoCE-set_fecha"><strong>set_fecha</strong></a>(self, boton)</dt><dd><tt>Muestra&nbsp;un&nbsp;calendario&nbsp;y&nbsp;pone&nbsp;la&nbsp;fecha&nbsp;seleccionada&nbsp;en&nbsp;el&nbsp;entry&nbsp;<br>
+que&nbsp;le&nbsp;corresponde&nbsp;al&nbsp;botón&nbsp;pulsado.</tt></dd></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>fin</strong> = None</dl>
+
+<dl><dt><strong>inicio</strong> = None</dl>
+
+<dl><dt><strong>resultado</strong> = []</dl>
+
+<hr>
+Methods inherited from <a href="ventana.html#Ventana">ventana.Ventana</a>:<br>
+<dl><dt><a name="ConsultaMarcadoCE-abrir_gajim"><strong>abrir_gajim</strong></a>(self)</dt><dd><tt>Calcado&nbsp;de&nbsp;menu.py.&nbsp;Sólo&nbsp;lleva&nbsp;las&nbsp;modificaciones&nbsp;necesarias&nbsp;para&nbsp;hacerlo&nbsp;funcionar&nbsp;desde&nbsp;aquí.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaMarcadoCE-acerca_de"><strong>acerca_de</strong></a>(self)</dt><dd><tt>Calcado&nbsp;de&nbsp;menu.py.&nbsp;Modificado&nbsp;ligeramente&nbsp;para&nbsp;hacerlo&nbsp;funcionar&nbsp;aquí.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaMarcadoCE-actualizar_objeto_y_enlaces"><strong>actualizar_objeto_y_enlaces</strong></a>(self, actualizar_ventana_tambien<font color="#909090">=True</font>)</dt></dl>
+
+<dl><dt><a name="ConsultaMarcadoCE-actualizar_ventana"><strong>actualizar_ventana</strong></a>(self, widget<font color="#909090">=None</font>, objeto_anterior<font color="#909090">=None</font>)</dt><dd><tt>Actualiza&nbsp;el&nbsp;contenido&nbsp;de&nbsp;los&nbsp;controles&nbsp;de&nbsp;la&nbsp;ventana<br>
+para&nbsp;que&nbsp;muestren&nbsp;todos&nbsp;los&nbsp;datos&nbsp;del&nbsp;objeto&nbsp;actual.<br>
+widget&nbsp;no&nbsp;se&nbsp;usa.&nbsp;Se&nbsp;recibe&nbsp;para&nbsp;el&nbsp;caso&nbsp;en&nbsp;que&nbsp;se&nbsp;llama&nbsp;a&nbsp;<br>
+la&nbsp;función&nbsp;desde&nbsp;un&nbsp;botón.<br>
+objeto_anterior&nbsp;es&nbsp;un&nbsp;objeo&nbsp;de&nbsp;pclases.&nbsp;Sería&nbsp;el&nbsp;que&nbsp;se&nbsp;<br>
+muestra&nbsp;en&nbsp;pantalla&nbsp;justo&nbsp;antes&nbsp;de&nbsp;llamar&nbsp;a&nbsp;actualizar_ventana<br>
+y&nbsp;recargar&nbsp;los&nbsp;datos.&nbsp;Si&nbsp;se&nbsp;recibe&nbsp;y&nbsp;hay&nbsp;cambios&nbsp;pendientes&nbsp;de<br>
+guardar,&nbsp;el&nbsp;contenido&nbsp;de&nbsp;la&nbsp;ventana&nbsp;se&nbsp;guarda&nbsp;en&nbsp;ese&nbsp;objeto<br>
+ANTES&nbsp;de&nbsp;mostrar&nbsp;el&nbsp;nuevo&nbsp;(o&nbsp;el&nbsp;mismo&nbsp;con&nbsp;nueva&nbsp;información)&nbsp;<br>
+en&nbsp;los&nbsp;widgets&nbsp;de&nbsp;pantalla.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaMarcadoCE-add_connections"><strong>add_connections</strong></a>(self, dict)</dt><dd><tt>Recorre&nbsp;el&nbsp;diccionario&nbsp;y&nbsp;crea&nbsp;las&nbsp;conexiones&nbsp;con&nbsp;<br>
+los&nbsp;callbacks.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaMarcadoCE-aviso_actualizacion"><strong>aviso_actualizacion</strong></a>(self)</dt><dd><tt>Muestra&nbsp;una&nbsp;ventana&nbsp;modal&nbsp;con&nbsp;el&nbsp;mensaje&nbsp;de&nbsp;objeto&nbsp;<br>
+actualizado.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaMarcadoCE-build_menu_superior"><strong>build_menu_superior</strong></a>(self)</dt><dd><tt>Construye&nbsp;un&nbsp;menú&nbsp;con&nbsp;las&nbsp;mismas&nbsp;opciones&nbsp;que&nbsp;el&nbsp;menú&nbsp;principal.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaMarcadoCE-check_permisos"><strong>check_permisos</strong></a>(self, nombre_fichero_ventana)</dt><dd><tt>Activa&nbsp;o&nbsp;desactiva&nbsp;los&nbsp;controles&nbsp;dependiendo&nbsp;de&nbsp;los&nbsp;<br>
+permisos&nbsp;del&nbsp;usuario.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaMarcadoCE-chequear_hilo"><strong>chequear_hilo</strong></a>(self)</dt><dd><tt>Consulta&nbsp;el&nbsp;hilo&nbsp;notificador&nbsp;del&nbsp;objeto&nbsp;actual.<br>
+En&nbsp;realidad&nbsp;es&nbsp;una&nbsp;mera&nbsp;excusa&nbsp;para&nbsp;obligar&nbsp;a&nbsp;GTK&nbsp;a&nbsp;<br>
+atender&nbsp;al&nbsp;objeto&nbsp;lo&nbsp;antes&nbsp;posible&nbsp;en&nbsp;caso&nbsp;de&nbsp;<br>
+notificación.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaMarcadoCE-intentar_guardar_objeto_anterior_antes_de_actualizar"><strong>intentar_guardar_objeto_anterior_antes_de_actualizar</strong></a>(self, objeto_anterior)</dt><dd><tt>Primero&nbsp;verifica&nbsp;si&nbsp;hay&nbsp;cambios&nbsp;pendientes&nbsp;de&nbsp;guardar&nbsp;en&nbsp;la&nbsp;ventana&nbsp;<br>
+actual&nbsp;antes&nbsp;de&nbsp;actualizar&nbsp;el&nbsp;objeto&nbsp;en&nbsp;pantalla.<br>
+La&nbsp;forma&nbsp;de&nbsp;hacerlo&nbsp;es&nbsp;mirar&nbsp;si&nbsp;b_guardar&nbsp;está&nbsp;habilitado.&nbsp;<br>
+En&nbsp;ese&nbsp;caso&nbsp;intenta&nbsp;guardar&nbsp;los&nbsp;cambios&nbsp;del&nbsp;objeto&nbsp;anterior&nbsp;antes&nbsp;<br>
+de&nbsp;sustituirlo&nbsp;en&nbsp;pantalla&nbsp;por&nbsp;el&nbsp;nuevo&nbsp;(que&nbsp;es&nbsp;lo&nbsp;que&nbsp;se&nbsp;está&nbsp;<br>
+intentando&nbsp;"actualizar"&nbsp;en&nbsp;realidad,&nbsp;el&nbsp;self.<strong>objeto</strong>&nbsp;que&nbsp;aún&nbsp;no&nbsp;está&nbsp;<br>
+en&nbsp;pantalla).<br>
+Devuelve&nbsp;True&nbsp;si&nbsp;se&nbsp;ha&nbsp;guardado&nbsp;y&nbsp;se&nbsp;puede&nbsp;continuar&nbsp;la&nbsp;actualización&nbsp;<br>
+del&nbsp;nuevo&nbsp;objeto&nbsp;para&nbsp;mostrarlo&nbsp;en&nbsp;pantalla&nbsp;o&nbsp;False&nbsp;si&nbsp;se&nbsp;debe&nbsp;<br>
+interrumpir&nbsp;y&nbsp;dejar&nbsp;que&nbsp;el&nbsp;usuario&nbsp;guarde&nbsp;o&nbsp;descarte&nbsp;antes&nbsp;de&nbsp;pasar&nbsp;<br>
+a&nbsp;otro&nbsp;objeto&nbsp;como&nbsp;self.<strong>objeto</strong>.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaMarcadoCE-ir_a"><strong>ir_a</strong></a>(self, objeto)</dt></dl>
+
+<dl><dt><a name="ConsultaMarcadoCE-make_connections"><strong>make_connections</strong></a>(self)</dt><dd><tt>Realiza&nbsp;las&nbsp;conexiones&nbsp;básicas&nbsp;entre&nbsp;widgets&nbsp;y&nbsp;callbacks.<br>
+Para&nbsp;el&nbsp;resto&nbsp;de&nbsp;conexiones,&nbsp;usar&nbsp;add_connections.<br>
+La&nbsp;ventana&nbsp;principal&nbsp;DEBE&nbsp;llamarse&nbsp;"ventana".</tt></dd></dl>
+
+<dl><dt><a name="ConsultaMarcadoCE-make_funciones_ociosas"><strong>make_funciones_ociosas</strong></a>(self)</dt><dd><tt>Inicia&nbsp;las&nbsp;funciones&nbsp;ociosas&nbsp;de&nbsp;chequeo&nbsp;de&nbsp;cambios<br>
+remotos&nbsp;(actualizar)&nbsp;y&nbsp;locales&nbsp;(guardar).</tt></dd></dl>
+
+<dl><dt><a name="ConsultaMarcadoCE-refocus_entry"><strong>refocus_entry</strong></a>(self, widget, *args)</dt><dd><tt>Si&nbsp;hay&nbsp;botón&nbsp;guardar,&nbsp;guarda.<br>
+Pasa&nbsp;el&nbsp;foco&nbsp;al&nbsp;siguiente&nbsp;widget.<br>
+Usar&nbsp;solo&nbsp;como&nbsp;callback&nbsp;de&nbsp;la&nbsp;señal&nbsp;"activate"&nbsp;de&nbsp;los&nbsp;Entry,&nbsp;que&nbsp;se&nbsp;<br>
+dispara&nbsp;al&nbsp;pulsar&nbsp;Enter&nbsp;o&nbsp;programáticamente&nbsp;con&nbsp;.activate().</tt></dd></dl>
+
+<dl><dt><a name="ConsultaMarcadoCE-revivir"><strong>revivir</strong></a>(self, widget)</dt><dd><tt>Vuelve&nbsp;a&nbsp;habilitar&nbsp;los&nbsp;manejadores&nbsp;del&nbsp;widget.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaMarcadoCE-salir"><strong>salir</strong></a>(self, boton, event<font color="#909090">=None</font>, mostrar_ventana<font color="#909090">=True</font>)</dt><dd><tt>Muestra&nbsp;una&nbsp;ventana&nbsp;de&nbsp;confirmación&nbsp;y&nbsp;<br>
+sale&nbsp;de&nbsp;la&nbsp;ventana&nbsp;cerrando&nbsp;el&nbsp;bucle<br>
+local&nbsp;de&nbsp;gtk_main.<br>
+Si&nbsp;mostrar_ventana&nbsp;es&nbsp;False,&nbsp;sale&nbsp;directamente<br>
+sin&nbsp;preguntar&nbsp;al&nbsp;usuario.</tt></dd></dl>
+
+<dl><dt><a name="ConsultaMarcadoCE-suspender"><strong>suspender</strong></a>(self, widget)</dt><dd><tt>Bloquea&nbsp;los&nbsp;manejadores&nbsp;de&nbsp;eventos&nbsp;del&nbsp;widget&nbsp;recibido&nbsp;hasta&nbsp;que&nbsp;se&nbsp;le&nbsp;<br>
+"trae&nbsp;a&nbsp;la&nbsp;vida"&nbsp;(TM)&nbsp;con&nbsp;.<a href="#ConsultaMarcadoCE-revivir">revivir</a>(widget).</tt></dd></dl>
+
+<dl><dt><a name="ConsultaMarcadoCE-volver_a_cursor_original"><strong>volver_a_cursor_original</strong></a>(self)</dt><dd><tt>Calcado&nbsp;de&nbsp;menu.py.&nbsp;Sólo&nbsp;lleva&nbsp;las&nbsp;modificaciones&nbsp;necesarias&nbsp;para&nbsp;hacerlo&nbsp;funcionar&nbsp;desde&nbsp;aquí.</tt></dd></dl>
+
+</td></tr></table></td></tr></table>
+</body></html>

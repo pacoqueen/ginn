@@ -1,0 +1,10 @@
+DISCLAIMER
+
+barcode era originalmente una extensión para ReportLab.
+
+El motivo de incluirlo aquí es pura y simple comodidad (y vagnacia, para qué negarlo).
+
+barcode se distribuye bajo la misma licencia que ReportLab y es propiedad de ReportLab, Inc.
+
+_code39, _barcode y EANBarCode no estaban en el paquete original.
+

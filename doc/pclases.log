@@ -1,0 +1,5820 @@
+This is e-TeX, Version 3.14159-2.1 (Web2C 7.4.5) (format=latex 2006.5.19)  28 AUG 2006 01:15
+entering extended mode
+**pclases.tex
+(./pclases.tex
+LaTeX2e <2001/06/01>
+Babel <v3.7h> and hyphenation patterns for american, french, german, ngerman, b
+ahasa, basque, catalan, croatian, czech, danish, dutch, finnish, greek, iceland
+ic, irish, italian, latin, magyar, norsk, norsk, portuges, romanian, russian, s
+lovak, slovene, spanish, swedish, turkish, ukrainian, nohyphenation, loaded.
+(/usr/share/texmf/tex/latex/base/latex209.def
+File: latex209.def 1998/05/13 v0.52 Standard LaTeX file
+
+
+          Entering LaTeX 2.09 COMPATIBILITY MODE
+ *************************************************************
+    !!WARNING!!    !!WARNING!!    !!WARNING!!    !!WARNING!!   
+ 
+ This mode attempts to provide an emulation of the LaTeX 2.09
+ author environment so that OLD documents can be successfully
+ processed. It should NOT be used for NEW documents!
+ 
+ New documents should use Standard LaTeX conventions and start
+ with the \documentclass command.
+ 
+ Compatibility mode is UNLIKELY TO WORK with LaTeX 2.09 style
+ files that change any internal macros, especially not with
+ those that change the FONT SELECTION or OUTPUT ROUTINES.
+ 
+ Therefore such style files MUST BE UPDATED to use
+          Current Standard LaTeX: LaTeX2e.
+ If you suspect that you may be using such a style file, which
+ is probably very, very old by now, then you should attempt to
+ get it updated by sending a copy of this error message to the
+ author of that file.
+ *************************************************************
+
+\footheight=\dimen102
+\@maxsep=\dimen103
+\@dblmaxsep=\dimen104
+\@cla=\count79
+\@clb=\count80
+\mscount=\count81
+(/usr/share/texmf/tex/latex/base/tracefnt.sty
+Package: tracefnt 1997/05/29 v3.0j Standard LaTeX package (font tracing)
+\tracingfonts=\count82
+LaTeX Info: Redefining \selectfont on input line 96.
+)
+\symbold=\mathgroup4
+\symsans=\mathgroup5
+\symtypewriter=\mathgroup6
+\symitalic=\mathgroup7
+\symsmallcaps=\mathgroup8
+\symslanted=\mathgroup9
+LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 288.
+LaTeX Font Info:    Redeclaring math alphabet \mathsf on input line 289.
+LaTeX Font Info:    Redeclaring math alphabet \mathtt on input line 290.
+LaTeX Font Info:    Redeclaring math alphabet \mathit on input line 296.
+LaTeX Info: Redefining \em on input line 306.
+
+(/usr/share/texmf/tex/latex/base/latexsym.sty
+Package: latexsym 1998/08/17 v2.2e Standard LaTeX package (lasy symbols)
+\symlasy=\mathgroup10
+LaTeX Font Info:    Overwriting symbol font `lasy' in version `bold'
+(Font)                  U/lasy/m/n --> U/lasy/b/n on input line 42.
+)
+LaTeX Font Info:    Redeclaring math delimiter \lgroup on input line 370.
+LaTeX Font Info:    Redeclaring math delimiter \rgroup on input line 372.
+LaTeX Font Info:    Redeclaring math delimiter \bracevert on input line 374.
+
+(/usr/share/texmf/tex/latex/config/latex209.cfg
+File: latex209.cfg 2001/06/05 v1.0 teTeX customized LaTeX 2.09 compatibility mo
+de setup
+)
+(/usr/share/texmf/tex/latex/tools/rawfonts.sty
+Package: rawfonts 1994/05/08 Low-level LaTeX 2.09 font compatibility
+
+(/usr/share/texmf/tex/latex/tools/somedefs.sty
+Package: somedefs 1994/06/01 Toolkit for optional definitions
+)
+LaTeX Font Info:    Try loading font information for U+lasy on input line 44.
+
+(/usr/share/texmf/tex/latex/base/ulasy.fd
+File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
+)))
+(/usr/share/texmf/tex/latex/base/article.cls
+Document Class: article 2001/04/21 v1.4e Standard LaTeX document class
+(/usr/share/texmf/tex/latex/base/size10.clo
+File: size10.clo 2001/04/21 v1.4e Standard LaTeX file (size option)
+)
+\c@part=\count83
+\c@section=\count84
+\c@subsection=\count85
+\c@subsubsection=\count86
+\c@paragraph=\count87
+\c@subparagraph=\count88
+\c@figure=\count89
+\c@table=\count90
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+Compatibility mode: definition of \rm ignored.
+Compatibility mode: definition of \sf ignored.
+Compatibility mode: definition of \tt ignored.
+Compatibility mode: definition of \bf ignored.
+Compatibility mode: definition of \it ignored.
+Compatibility mode: definition of \sl ignored.
+Compatibility mode: definition of \sc ignored.
+LaTeX Info: Redefining \cal on input line 501.
+LaTeX Info: Redefining \mit on input line 502.
+\bibindent=\dimen105
+)
+No file pclases.aux.
+\openout1 = `pclases.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+
+Underfull \hbox (badness 10000) in paragraph at lines 10--12
+
+ []
+
+Missing character: There is no ^^c3 in font cmtt10!
+Missing character: There is no ^^a1 in font cmtt10!
+
+Underfull \hbox (badness 10000) in paragraph at lines 19--47
+
+ []
+
+Runaway argument?
+SQLObjectChanged \end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.60 
+     
+? q
+OK, entering \batchmode...
+Runaway argument?
+Abono(sqlobject.main.SQLObject, PRPCTOO) \item [AlbaranDeEntradaDeAbo\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.153 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+Runaway argument?
+Abono(sqlobject.main.SQLObject, PRPCTOO) \item [AlbaranDeEntradaDeAbo\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.246 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+Overfull \hbox (87.41473pt too wide) in paragraph at lines 247--247
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 247--247
+
+ []
+
+
+Overfull \hbox (7.10385pt too wide) in paragraph at lines 256--260
+[]\OT1/cmr/m/n/10 Abono ]sqlob-ject.main.SQLObject
+ []
+
+ [1
+
+]
+Underfull \hbox (badness 10000) in paragraph at lines 262--263
+
+ []
+
+Runaway argument?
+{\bf {\it get}} {\it lambda} self\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.265 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+Runaway argument?
+{\bf {\it set}} {\it lambda} self, val\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.267 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.268 \end{description}
+                       
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.270 ]\begin{description}
+                          \item[{\bf {\it get}} {\it lambda} self\end{descri...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.270 ]\begin{description}
+                          \item[{\bf {\it get}} {\it lambda} self\end{descri...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf {\it get}} {\it lambda} self\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.271 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.272 ]\begin{description}
+                          \item[{\bf {\it set}} {\it lambda} self, val\end{d...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf {\it set}} {\it lambda} self, val\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.273 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.274 \end{description}
+                       
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.276 ]\begin{description}
+                          \item[{\bf {\it get}} {\it lambda} self\end{descri...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf {\it get}} {\it lambda} self\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.277 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.278 ]\begin{description}
+                          \item[{\bf {\it set}} {\it lambda} self, val\end{d...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf {\it set}} {\it lambda} self, val\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.279 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.280 \end{description}
+                       
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.282 ]\begin{description}
+                          \item[{\bf {\it get}} {\it lambda} self\end{descri...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.282 ]\begin{description}
+                          \item[{\bf {\it get}} {\it lambda} self\end{descri...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf {\it get}} {\it lambda} self\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.283 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.284 ]\begin{description}
+                          \item[{\bf {\it set}} {\it lambda} self, val\end{d...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf {\it set}} {\it lambda} self, val\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.285 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.286 \end{description}
+                       
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.288 ]\begin{description}
+                          \item[{\bf {\it get}} {\it lambda} self\end{descri...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf {\it get}} {\it lambda} self\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.289 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.290 ]\begin{description}
+                          \item[{\bf {\it set}} {\it lambda} self, val\end{d...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf {\it set}} {\it lambda} self, val\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.291 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.292 \end{description}
+                       
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.294 ]\begin{description}
+                          \item[{\bf {\it get}} {\it lambda} self\end{descri...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.294 ]\begin{description}
+                          \item[{\bf {\it get}} {\it lambda} self\end{descri...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf {\it get}} {\it lambda} self\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.295 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.296 \end{description}
+                       
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.298 ]\begin{description}
+                          \item[{\bf {\it get}} {\it lambda} self\end{descri...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf {\it get}} {\it lambda} self\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.299 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+Overfull \hbox (28.80608pt too wide) in paragraph at lines 300--300
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 300--300
+
+ []
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.302 ]\begin{description}
+                          \item[{\bf {\it get}} {\it lambda} self\end{descri...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf {\it get}} {\it lambda} self\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.303 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.304 ]\begin{description}
+                          \item[{\bf {\it set}} {\it lambda} self, val\end{d...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf {\it set}} {\it lambda} self, val\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.305 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.306 \end{description}
+                       
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.308 ]\begin{description}
+                          \item[{\bf {\it get}} {\it lambda} self\end{descri...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.308 ]\begin{description}
+                          \item[{\bf {\it get}} {\it lambda} self\end{descri...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf {\it get}} {\it lambda} self\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.309 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.310 ]\begin{description}
+                          \item[{\bf {\it set}} {\it lambda} self, val\end{d...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf {\it set}} {\it lambda} self, val\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.311 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.312 \end{description}
+                       
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 314--315
+
+ []
+
+Runaway argument?
+{\bf q} = abono\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.316 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.319 \begin{description}
+                         \item[{\bf \_\_init\_\_}(self, **kw)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.319 \begin{description}
+                         \item[{\bf \_\_init\_\_}(self, **kw)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf \_\_init\_\_}(self, **kw)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.320 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.321 \begin{description}
+                         \item[{\bf \_\_repr\_\_}(self)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.321 \begin{description}
+                         \item[{\bf \_\_repr\_\_}(self)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf \_\_repr\_\_}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.322 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.323 \begin{description}
+                         \item[{\bf destroySelf}(self)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.323 \begin{description}
+                         \item[{\bf destroySelf}(self)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf destroySelf}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.324 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.325 \begin{description}
+                         \item[{\bf expire}(self)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.325 \begin{description}
+                         \item[{\bf expire}(self)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf expire}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.326 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.327 \begin{description}
+                         \item[{\bf set}(self, **kw)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.327 \begin{description}
+                         \item[{\bf set}(self, **kw)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf set}(self, **kw)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.328 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.329 \begin{description}
+                         \item[{\bf sync}(self)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.329 \begin{description}
+                         \item[{\bf sync}(self)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf sync}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.330 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.331 \begin{description}
+                         \item[{\bf syncUpdate}(self)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.331 \begin{description}
+                         \item[{\bf syncUpdate}(self)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf syncUpdate}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.332 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.335 \begin{description}
+                         \item[{\bf addColumn}(cls, columnDef, changeSchema=...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.335 \begin{description}
+                         \item[{\bf addColumn}(cls, columnDef, changeSchema=...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf addColumn}(cls, columnDef, changeSchema=False, connection=None) \ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.336 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.337 \begin{description}
+                         \item[{\bf addColumnsFromDatabase}(cls, connection=...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.337 \begin{description}
+                         \item[{\bf addColumnsFromDatabase}(cls, connection=...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf addColumnsFromDatabase}(cls, connection=None) from sqlobject.mai\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.338 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.339 \begin{description}
+                         \item[{\bf addIndex}(cls, indexDef) from sqlobject....
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.339 \begin{description}
+                         \item[{\bf addIndex}(cls, indexDef) from sqlobject....
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf addIndex}(cls, indexDef) from sqlobject.main.MetaSQLObject\end {\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.340 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.341 \begin{description}
+                         \item[{\bf addJoin}(cls, joinDef) from sqlobject.ma...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.341 \begin{description}
+                         \item[{\bf addJoin}(cls, joinDef) from sqlobject.ma...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf addJoin}(cls, joinDef) from sqlobject.main.MetaSQLObject\end {de\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.342 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.343 \begin{description}
+                         \item[{\bf clearTable}(cls, connection=None) from s...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.343 \begin{description}
+                         \item[{\bf clearTable}(cls, connection=None) from s...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf clearTable}(cls, connection=None) from sqlobject.main.MetaSQLObj\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.344 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.345 \begin{description}
+                         \item[{\bf coerceID}(cls, value) from sqlobject.mai...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.345 \begin{description}
+                         \item[{\bf coerceID}(cls, value) from sqlobject.mai...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf coerceID}(cls, value) from sqlobject.main.MetaSQLObject\end {des\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.346 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.347 \begin{description}
+                         \item[{\bf createIndexes}(cls, ifNotExists=False, c...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.347 \begin{description}
+                         \item[{\bf createIndexes}(cls, ifNotExists=False, c...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf createIndexes}(cls, ifNotExists=False, connection=None) from sql\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.348 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.349 \begin{description}
+                         \item[{\bf createJoinTables}(cls, ifNotExists=False...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.349 \begin{description}
+                         \item[{\bf createJoinTables}(cls, ifNotExists=False...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf createJoinTables}(cls, ifNotExists=False, connection=None) from \ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.350 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.351 \begin{description}
+                         \item[{\bf createJoinTablesSQL}(cls, connection=Non...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.351 \begin{description}
+                         \item[{\bf createJoinTablesSQL}(cls, connection=Non...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf createJoinTablesSQL}(cls, connection=None) from sqlobject.main.M\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.352 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.353 \begin{description}
+                         \item[{\bf createTable}(cls, ifNotExists=False, cre...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.353 \begin{description}
+                         \item[{\bf createTable}(cls, ifNotExists=False, cre...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf createTable}(cls, ifNotExists=False, createJoinTables=True, crea\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.354 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.355 \begin{description}
+                         \item[{\bf createTableSQL}(cls, createJoinTables=Tr...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.355 \begin{description}
+                         \item[{\bf createTableSQL}(cls, createJoinTables=Tr...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf createTableSQL}(cls, createJoinTables=True, connection=None) fro\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.356 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.357 \begin{description}
+                         \item[{\bf delColumn}(cls, column, changeSchema=Fal...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.357 \begin{description}
+                         \item[{\bf delColumn}(cls, column, changeSchema=Fal...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf delColumn}(cls, column, changeSchema=False, connection=None) fro\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.358 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.359 \begin{description}
+                         \item[{\bf delJoin}(cls, joinDef) from sqlobject.ma...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.359 \begin{description}
+                         \item[{\bf delJoin}(cls, joinDef) from sqlobject.ma...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf delJoin}(cls, joinDef) from sqlobject.main.MetaSQLObject\end {de\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.360 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.361 \begin{description}
+                         \item[{\bf delete}(cls, id) from sqlobject.main.Met...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.361 \begin{description}
+                         \item[{\bf delete}(cls, id) from sqlobject.main.Met...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf delete}(cls, id) from sqlobject.main.MetaSQLObject\end {descript\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.362 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.363 \begin{description}
+                         \item[{\bf dropJoinTables}(cls, ifExists=False, con...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.363 \begin{description}
+                         \item[{\bf dropJoinTables}(cls, ifExists=False, con...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf dropJoinTables}(cls, ifExists=False, connection=None) from sqlob\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.364 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.365 \begin{description}
+                         \item[{\bf dropTable}(cls, ifExists=False, dropJoin...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.365 \begin{description}
+                         \item[{\bf dropTable}(cls, ifExists=False, dropJoin...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf dropTable}(cls, ifExists=False, dropJoinTables=True, cascade=Fal\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.366 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.367 \begin{description}
+                         \item[{\bf get}(cls, id, connection=None, selectRes...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.367 \begin{description}
+                         \item[{\bf get}(cls, id, connection=None, selectRes...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf get}(cls, id, connection=None, selectResults=None) from sqlobjec\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.368 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.369 \begin{description}
+                         \item[{\bf select}(cls, clause=None, clauseTables=N...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.369 \begin{description}
+                         \item[{\bf select}(cls, clause=None, clauseTables=N...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf select}(cls, clause=None, clauseTables=None, orderBy=<class sqlo\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.370 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.371 \begin{description}
+                         \item[{\bf selectBy}(cls, connection=None, **kw) fr...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.371 \begin{description}
+                         \item[{\bf selectBy}(cls, connection=None, **kw) fr...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf selectBy}(cls, connection=None, **kw) from sqlobject.main.MetaSQ\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.372 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.373 \begin{description}
+                         \item[{\bf setConnection}(cls, value) from sqlobjec...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.373 \begin{description}
+                         \item[{\bf setConnection}(cls, value) from sqlobjec...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf setConnection}(cls, value) from sqlobject.main.MetaSQLObject\end \ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.374 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.375 \begin{description}
+                         \item[{\bf sqlrepr}(cls, value, connection=None) fr...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.375 \begin{description}
+                         \item[{\bf sqlrepr}(cls, value, connection=None) fr...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf sqlrepr}(cls, value, connection=None) from sqlobject.main.MetaSQ\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.376 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.379 \begin{description}
+                         \item[{\bf \_\_dict\_\_} = <dictproxy object>]{\tt ...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.379 \begin{description}
+                         \item[{\bf \_\_dict\_\_} = <dictproxy object>]{\tt ...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.379 ...[{\bf \_\_dict\_\_} = <dictproxy object>]
+                                                  {\tt dictionary~for~instan...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.379 ...[{\bf \_\_dict\_\_} = <dictproxy object>]
+                                                  {\tt dictionary~for~instan...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.379 ...[{\bf \_\_dict\_\_} = <dictproxy object>]
+                                                  {\tt dictionary~for~instan...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.379 ...~variables~(if~defined)}\end{description}
+                                                  
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (225.53409pt too wide) in paragraph at lines 318--379
+[]\OT1/cmr/m/n/10 Methods
+ []
+
+
+Overfull \hbox (199.36736pt too wide) in paragraph at lines 318--379
+\OT1/cmr/m/n/10 in-
+ []
+
+
+Overfull \hbox (204.95068pt too wide) in paragraph at lines 318--379
+\OT1/cmr/m/n/10 her-
+ []
+
+
+Overfull \hbox (204.36737pt too wide) in paragraph at lines 318--379
+\OT1/cmr/m/n/10 ited
+ []
+
+
+Overfull \hbox (208.00629pt too wide) in paragraph at lines 318--379
+\OT1/cmr/m/n/10 from
+ []
+
+
+Overfull \hbox (213.5896pt too wide) in paragraph at lines 318--379
+\OT1/cmr/m/n/10 sqlob-
+ []
+
+
+Overfull \hbox (282.83978pt too wide) in paragraph at lines 318--379
+\OT1/cmr/m/n/10 ject.main.SQLObject: 
+ []
+
+
+Overfull \hbox (210.58958pt too wide) in paragraph at lines 318--379
+\OT1/cmr/m/n/10 Class
+ []
+
+
+Overfull \hbox (213.25627pt too wide) in paragraph at lines 318--379
+\OT1/cmr/m/n/10 meth-
+ []
+
+
+Overfull \hbox (202.47849pt too wide) in paragraph at lines 318--379
+\OT1/cmr/m/n/10 ods
+ []
+
+
+Overfull \hbox (199.36736pt too wide) in paragraph at lines 318--379
+\OT1/cmr/m/n/10 in-
+ []
+
+
+Overfull \hbox (204.95068pt too wide) in paragraph at lines 318--379
+\OT1/cmr/m/n/10 her-
+ []
+
+
+Overfull \hbox (204.36737pt too wide) in paragraph at lines 318--379
+\OT1/cmr/m/n/10 ited
+ []
+
+
+Overfull \hbox (208.00629pt too wide) in paragraph at lines 318--379
+\OT1/cmr/m/n/10 from
+ []
+
+
+Overfull \hbox (213.5896pt too wide) in paragraph at lines 318--379
+\OT1/cmr/m/n/10 sqlob-
+ []
+
+
+Overfull \hbox (282.83978pt too wide) in paragraph at lines 318--379
+\OT1/cmr/m/n/10 ject.main.SQLObject: 
+ []
+
+
+Overfull \hbox (209.2285pt too wide) in paragraph at lines 318--379
+\OT1/cmr/m/n/10 Data
+ []
+
+
+Overfull \hbox (203.81183pt too wide) in paragraph at lines 318--379
+\OT1/cmr/m/n/10 and
+ []
+
+
+Overfull \hbox (210.50627pt too wide) in paragraph at lines 318--379
+\OT1/cmr/m/n/10 other
+ []
+
+
+Overfull \hbox (199.92291pt too wide) in paragraph at lines 318--379
+\OT1/cmr/m/n/10 at-
+ []
+
+
+Overfull \hbox (221.67296pt too wide) in paragraph at lines 318--379
+\OT1/cmr/m/n/10 tributes
+ []
+
+
+Overfull \hbox (199.36736pt too wide) in paragraph at lines 318--379
+\OT1/cmr/m/n/10 in-
+ []
+
+
+Overfull \hbox (204.95068pt too wide) in paragraph at lines 318--379
+\OT1/cmr/m/n/10 her-
+ []
+
+
+Overfull \hbox (204.36737pt too wide) in paragraph at lines 318--379
+\OT1/cmr/m/n/10 ited
+ []
+
+
+Overfull \hbox (208.00629pt too wide) in paragraph at lines 318--379
+\OT1/cmr/m/n/10 from
+ []
+
+
+Overfull \hbox (213.5896pt too wide) in paragraph at lines 318--379
+\OT1/cmr/m/n/10 sqlob-
+ []
+
+
+Overfull \hbox (282.83978pt too wide) in paragraph at lines 318--379
+\OT1/cmr/m/n/10 ject.main.SQLObject: 
+ []
+
+
+Overfull \hbox (429.19856pt too wide) in paragraph at lines 318--379
+\OT1/cmtt/m/n/10 dictionary for instance variables (if defined) 
+ []
+
+ [2]
+Runaway argument?
+{\bf \_\_metaclass\_\_} = <class \verb |'|sqlobject.main.MetaSQLObjec\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.382 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.383 \begin{description}
+                         \item[{\bf \_\_weakref\_\_} = <attribute \verb|'|\_...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.383 \begin{description}
+                         \item[{\bf \_\_weakref\_\_} = <attribute \verb|'|\_...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (716.37485pt too wide) in paragraph at lines 383--383
+[]
+ []
+
+
+Overfull \hbox (460.1984pt too wide) in paragraph at lines 383--383
+\OT1/cmtt/m/n/10 list of weak references to the object (if defined) 
+ []
+
+
+Overfull \hbox (225.53409pt too wide) in paragraph at lines 386--387
+[]\OT1/cmr/m/n/10 Methods
+ []
+
+
+Overfull \hbox (199.36736pt too wide) in paragraph at lines 386--387
+\OT1/cmr/m/n/10 in-
+ []
+
+
+Overfull \hbox (204.95068pt too wide) in paragraph at lines 386--387
+\OT1/cmr/m/n/10 her-
+ []
+
+
+Overfull \hbox (204.36737pt too wide) in paragraph at lines 386--387
+\OT1/cmr/m/n/10 ited
+ []
+
+
+Overfull \hbox (208.00629pt too wide) in paragraph at lines 386--387
+\OT1/cmr/m/n/10 from
+ []
+
+
+Overfull \hbox (219.22849pt too wide) in paragraph at lines 386--387
+\OT1/cmr/m/n/10 PRPC-
+ []
+
+
+Overfull \hbox (213.25629pt too wide) in paragraph at lines 386--387
+\OT1/cmr/m/n/10 TOO: 
+ []
+
+
+Overfull \hbox (187.70067pt too wide) in paragraph at lines 386--387
+
+ []
+
+Missing character: There is no ^^c3 in font cmtt10!
+Missing character: There is no ^^b3 in font cmtt10!
+Missing character: There is no ^^c3 in font cmtt10!
+Missing character: There is no ^^b3 in font cmtt10!
+Missing character: There is no ^^c3 in font cmtt10!
+Missing character: There is no ^^a9 in font cmtt10!
+Missing character: There is no ^^c3 in font cmtt10!
+Missing character: There is no ^^b3 in font cmtt10!
+
+Overfull \hbox (291.95956pt too wide) in paragraph at lines 387--390
+[]
+ []
+
+
+Overfull \hbox (412.9488pt too wide) in paragraph at lines 387--390
+\OT1/cmtt/m/n/10 Abre una conexin con la BD y la asigna al 
+ []
+
+
+Overfull \hbox (349.94936pt too wide) in paragraph at lines 387--390
+\OT1/cmtt/m/n/10 atributo conexin de la clase. 
+ []
+
+
+Overfull \hbox (402.4489pt too wide) in paragraph at lines 387--390
+\OT1/cmtt/m/n/10 No sale del mtodo hasta que consigue la 
+ []
+
+
+Overfull \hbox (239.70032pt too wide) in paragraph at lines 387--390
+\OT1/cmtt/m/n/10 conexin. 
+ []
+
+Runaway argument?
+{\bf abrir\_cursor}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.393 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.394 \begin{description}
+                         \item[{\bf cerrar\_conexion}(self)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.394 \begin{description}
+                         \item[{\bf cerrar\_conexion}(self)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf cerrar\_conexion}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.395 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.396 \begin{description}
+                         \item[{\bf cerrar\_cursor}(self)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.396 \begin{description}
+                         \item[{\bf cerrar\_cursor}(self)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf cerrar\_cursor}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.397 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.398 \begin{description}
+                         \item[{\bf chequear\_cambios}(self)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.398 \begin{description}
+                         \item[{\bf chequear\_cambios}(self)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf chequear\_cambios}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.399 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.400 \begin{description}
+                         \item[{\bf comparar\_swap}(self)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.400 \begin{description}
+                         \item[{\bf comparar\_swap}(self)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf comparar\_swap}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.401 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.402 \begin{description}
+                         \item[{\bf destroy\_en\_cascada}(self)]{\tt Destruy...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.402 \begin{description}
+                         \item[{\bf destroy\_en\_cascada}(self)]{\tt Destruy...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Missing character: There is no ^^c3 in font cmtt10!
+Missing character: There is no ^^ad in font cmtt10!
+
+Overfull \hbox (364.01193pt too wide) in paragraph at lines 402--403
+[]
+ []
+
+
+Overfull \hbox (531.19829pt too wide) in paragraph at lines 402--403
+\OT1/cmtt/m/n/10 Destruye recursivamente los objetos que dependientes y 
+ []
+
+
+Overfull \hbox (384.19957pt too wide) in paragraph at lines 402--403
+\OT1/cmtt/m/n/10 finalmente al objeto en s. 
+ []
+
+Runaway argument?
+{\bf ejecutar\_hilo}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.406 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.407 \begin{description}
+                         \item[{\bf esperarNotificacion}(self, nomnot, func=...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.407 \begin{description}
+                         \item[{\bf esperarNotificacion}(self, nomnot, func=...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Missing character: There is no ^^c3 in font cmtt10!
+Missing character: There is no ^^b3 in font cmtt10!
+Missing character: There is no ^^c3 in font cmtt10!
+Missing character: There is no ^^b3 in font cmtt10!
+Missing character: There is no ^^c3 in font cmtt10!
+Missing character: There is no ^^b3 in font cmtt10!
+Missing character: There is no ^^c3 in font cmtt10!
+Missing character: There is no ^^b3 in font cmtt10!
+Missing character: There is no ^^c3 in font cmtt10!
+Missing character: There is no ^^a1 in font cmtt10!
+Missing character: There is no ^^c3 in font cmtt10!
+Missing character: There is no ^^b3 in font cmtt10!
+
+Overfull \hbox (557.3338pt too wide) in paragraph at lines 407--411
+[]
+ []
+
+
+Overfull \hbox (472.9489pt too wide) in paragraph at lines 407--411
+\OT1/cmtt/m/n/10 Cdigo del hilo que vigila la notificacin. 
+ []
+
+
+Overfull \hbox (467.69894pt too wide) in paragraph at lines 407--411
+\OT1/cmtt/m/n/10 self -> Objeto al que pertenece el hilo. 
+ []
+
+
+Overfull \hbox (509.69858pt too wide) in paragraph at lines 407--411
+\OT1/cmtt/m/n/10 nomnot es el nombre de la notificacin a esperar. 
+ []
+
+
+Overfull \hbox (535.94835pt too wide) in paragraph at lines 407--411
+\OT1/cmtt/m/n/10 func es una funcin opcional que ser llamada cuando se 
+ []
+
+
+Overfull \hbox (383.69968pt too wide) in paragraph at lines 407--411
+\OT1/cmtt/m/n/10 produzca la notificacin. 
+ []
+
+Runaway argument?
+{\bf make\_swap}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.414 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.415 \begin{description}
+                         \item[{\bf parar\_hilo}(self)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.415 \begin{description}
+                         \item[{\bf parar\_hilo}(self)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf parar\_hilo}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.416 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.424 \begin{description}
+                         \item[Method resolution order:
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.424 \begin{description}
+                         \item[Method resolution order:
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.425 ]
+       AlbaranDeEntradaDeAbono
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.425 ]
+       AlbaranDeEntradaDeAbono
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.425 ]
+       AlbaranDeEntradaDeAbono
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.429 \end{description}
+                       
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (277.7008pt too wide) in paragraph at lines 420--429
+[] 
+ []
+
+
+Overfull \hbox (297.81194pt too wide) in paragraph at lines 420--429
+\OT1/cmr/m/n/10 class
+ []
+
+
+Overfull \hbox (293.42294pt too wide) in paragraph at lines 420--429
+\OT1/cmr/bx/n/10 Al-
+ []
+
+
+Overfull \hbox (310.22838pt too wide) in paragraph at lines 420--429
+\OT1/cmr/bx/n/10 baran-
+ []
+
+
+Overfull \hbox (309.5687pt too wide) in paragraph at lines 420--429
+\OT1/cmr/bx/n/10 DeEn-
+ []
+
+
+Overfull \hbox (322.40193pt too wide) in paragraph at lines 420--429
+\OT1/cmr/bx/n/10 tradaDe-
+ []
+
+
+Overfull \hbox (433.13145pt too wide) in paragraph at lines 420--429
+\OT1/cmr/bx/n/10 Abono\OT1/cmr/m/n/10 (sqlobject.main.SQLObject,
+ []
+
+
+Overfull \hbox (309.22862pt too wide) in paragraph at lines 420--429
+\OT1/cmr/m/n/10 PRPC-
+ []
+
+
+Overfull \hbox (304.36754pt too wide) in paragraph at lines 420--429
+\OT1/cmr/m/n/10 TOO)
+ []
+
+
+Overfull \hbox (401.50665pt too wide) in paragraph at lines 420--429
+\OT1/cmr/m/n/10 AlbaranDeEntradaDeAbono
+ []
+
+
+Overfull \hbox (306.36752pt too wide) in paragraph at lines 420--429
+\OT1/cmr/m/n/10 ]sqlob-
+ []
+
+
+Overfull \hbox (370.06213pt too wide) in paragraph at lines 420--429
+\OT1/cmr/m/n/10 ject.main.SQLObject
+ []
+
+
+Overfull \hbox (353.48987pt too wide) in paragraph at lines 420--429
+\OT1/cmr/m/n/10 ][][]builtin[][].object
+ []
+
+
+Overfull \hbox (312.00641pt too wide) in paragraph at lines 420--429
+\OT1/cmr/m/n/10 ]PRPC-
+ []
+
+
+Overfull \hbox (300.47864pt too wide) in paragraph at lines 420--429
+\OT1/cmr/m/n/10 TOO 
+ []
+
+
+Overfull \hbox (312.6731pt too wide) in paragraph at lines 431--432
+[]\OT1/cmr/m/n/10 Properties
+ []
+
+
+Overfull \hbox (281.03413pt too wide) in paragraph at lines 431--432
+\OT1/cmr/m/n/10 de-
+ []
+
+
+Overfull \hbox (288.81195pt too wide) in paragraph at lines 431--432
+\OT1/cmr/m/n/10 fined
+ []
+
+
+Overfull \hbox (288.8397pt too wide) in paragraph at lines 431--432
+\OT1/cmr/m/n/10 here: 
+ []
+
+
+Overfull \hbox (267.70079pt too wide) in paragraph at lines 431--432
+
+ []
+
+ [3]
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.433 ]\begin{description}
+                          \item[{\bf {\it get}} {\it lambda} self\end{descri...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf {\it get}} {\it lambda} self\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.434 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.435 ]\begin{description}
+                          \item[{\bf {\it set}} {\it lambda} self, val\end{d...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (439.13191pt too wide) in paragraph at lines 435--435
+[]
+ []
+
+
+Overfull \hbox (290.4786pt too wide) in paragraph at lines 435--435
+\OT1/cmr/m/n/10 ] 
+ []
+
+Runaway argument?
+{\bf {\it set}} {\it lambda} self, val\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.436 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.437 \end{description}
+                       
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.439 ]\begin{description}
+                          \item[{\bf {\it get}} {\it lambda} self\end{descri...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.439 ]\begin{description}
+                          \item[{\bf {\it get}} {\it lambda} self\end{descri...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf {\it get}} {\it lambda} self\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.440 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.441 \end{description}
+                       
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.443 ]\begin{description}
+                          \item[{\bf {\it get}} {\it lambda} self\end{descri...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf {\it get}} {\it lambda} self\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.444 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.445 ]\begin{description}
+                          \item[{\bf {\it set}} {\it lambda} self, val\end{d...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (472.77072pt too wide) in paragraph at lines 445--445
+[]
+ []
+
+
+Overfull \hbox (320.47865pt too wide) in paragraph at lines 445--445
+\OT1/cmr/m/n/10 ] 
+ []
+
+Runaway argument?
+{\bf {\it set}} {\it lambda} self, val\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.446 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.447 \end{description}
+                       
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.449 ]\begin{description}
+                          \item[{\bf {\it get}} {\it lambda} self\end{descri...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.449 ]\begin{description}
+                          \item[{\bf {\it get}} {\it lambda} self\end{descri...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf {\it get}} {\it lambda} self\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.450 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.451 ]\begin{description}
+                          \item[{\bf {\it set}} {\it lambda} self, val\end{d...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (340.47868pt too wide) in paragraph at lines 451--451
+[]\OT1/cmr/m/n/10 ] 
+ []
+
+Runaway argument?
+{\bf {\it set}} {\it lambda} self, val\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.452 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.453 \end{description}
+                       
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (359.22873pt too wide) in paragraph at lines 455--456
+[]\OT1/cmr/m/n/10 Data
+ []
+
+
+Overfull \hbox (353.81206pt too wide) in paragraph at lines 455--456
+\OT1/cmr/m/n/10 and
+ []
+
+
+Overfull \hbox (360.5065pt too wide) in paragraph at lines 455--456
+\OT1/cmr/m/n/10 other
+ []
+
+
+Overfull \hbox (349.92314pt too wide) in paragraph at lines 455--456
+\OT1/cmr/m/n/10 at-
+ []
+
+
+Overfull \hbox (371.67319pt too wide) in paragraph at lines 455--456
+\OT1/cmr/m/n/10 tributes
+ []
+
+
+Overfull \hbox (351.03424pt too wide) in paragraph at lines 455--456
+\OT1/cmr/m/n/10 de-
+ []
+
+
+Overfull \hbox (358.81206pt too wide) in paragraph at lines 455--456
+\OT1/cmr/m/n/10 fined
+ []
+
+
+Overfull \hbox (358.83981pt too wide) in paragraph at lines 455--456
+\OT1/cmr/m/n/10 here: 
+ []
+
+
+Overfull \hbox (337.7009pt too wide) in paragraph at lines 455--456
+
+ []
+
+Runaway argument?
+{\bf q} = albaran\_de\_entrada\_de\_abono\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.457 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.460 \begin{description}
+                         \item[{\bf \_\_init\_\_}(self, **kw)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.460 \begin{description}
+                         \item[{\bf \_\_init\_\_}(self, **kw)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf \_\_init\_\_}(self, **kw)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.461 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.462 \begin{description}
+                         \item[{\bf \_\_repr\_\_}(self)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.462 \begin{description}
+                         \item[{\bf \_\_repr\_\_}(self)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf \_\_repr\_\_}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.463 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.464 \begin{description}
+                         \item[{\bf destroySelf}(self)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.464 \begin{description}
+                         \item[{\bf destroySelf}(self)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf destroySelf}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.465 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.466 \begin{description}
+                         \item[{\bf expire}(self)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.466 \begin{description}
+                         \item[{\bf expire}(self)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf expire}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.467 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.468 \begin{description}
+                         \item[{\bf set}(self, **kw)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.468 \begin{description}
+                         \item[{\bf set}(self, **kw)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf set}(self, **kw)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.469 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.470 \begin{description}
+                         \item[{\bf sync}(self)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.470 \begin{description}
+                         \item[{\bf sync}(self)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf sync}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.471 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.472 \begin{description}
+                         \item[{\bf syncUpdate}(self)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.472 \begin{description}
+                         \item[{\bf syncUpdate}(self)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf syncUpdate}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.473 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.476 \begin{description}
+                         \item[{\bf addColumn}(cls, columnDef, changeSchema=...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.476 \begin{description}
+                         \item[{\bf addColumn}(cls, columnDef, changeSchema=...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf addColumn}(cls, columnDef, changeSchema=False, connection=None) \ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.477 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.478 \begin{description}
+                         \item[{\bf addColumnsFromDatabase}(cls, connection=...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.478 \begin{description}
+                         \item[{\bf addColumnsFromDatabase}(cls, connection=...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf addColumnsFromDatabase}(cls, connection=None) from sqlobject.mai\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.479 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.480 \begin{description}
+                         \item[{\bf addIndex}(cls, indexDef) from sqlobject....
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.480 \begin{description}
+                         \item[{\bf addIndex}(cls, indexDef) from sqlobject....
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf addIndex}(cls, indexDef) from sqlobject.main.MetaSQLObject\end {\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.481 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.482 \begin{description}
+                         \item[{\bf addJoin}(cls, joinDef) from sqlobject.ma...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.482 \begin{description}
+                         \item[{\bf addJoin}(cls, joinDef) from sqlobject.ma...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf addJoin}(cls, joinDef) from sqlobject.main.MetaSQLObject\end {de\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.483 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.484 \begin{description}
+                         \item[{\bf clearTable}(cls, connection=None) from s...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.484 \begin{description}
+                         \item[{\bf clearTable}(cls, connection=None) from s...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf clearTable}(cls, connection=None) from sqlobject.main.MetaSQLObj\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.485 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.486 \begin{description}
+                         \item[{\bf coerceID}(cls, value) from sqlobject.mai...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.486 \begin{description}
+                         \item[{\bf coerceID}(cls, value) from sqlobject.mai...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf coerceID}(cls, value) from sqlobject.main.MetaSQLObject\end {des\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.487 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.488 \begin{description}
+                         \item[{\bf createIndexes}(cls, ifNotExists=False, c...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.488 \begin{description}
+                         \item[{\bf createIndexes}(cls, ifNotExists=False, c...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf createIndexes}(cls, ifNotExists=False, connection=None) from sql\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.489 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.490 \begin{description}
+                         \item[{\bf createJoinTables}(cls, ifNotExists=False...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.490 \begin{description}
+                         \item[{\bf createJoinTables}(cls, ifNotExists=False...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf createJoinTables}(cls, ifNotExists=False, connection=None) from \ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.491 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.492 \begin{description}
+                         \item[{\bf createJoinTablesSQL}(cls, connection=Non...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.492 \begin{description}
+                         \item[{\bf createJoinTablesSQL}(cls, connection=Non...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf createJoinTablesSQL}(cls, connection=None) from sqlobject.main.M\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.493 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.494 \begin{description}
+                         \item[{\bf createTable}(cls, ifNotExists=False, cre...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.494 \begin{description}
+                         \item[{\bf createTable}(cls, ifNotExists=False, cre...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf createTable}(cls, ifNotExists=False, createJoinTables=True, crea\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.495 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.496 \begin{description}
+                         \item[{\bf createTableSQL}(cls, createJoinTables=Tr...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.496 \begin{description}
+                         \item[{\bf createTableSQL}(cls, createJoinTables=Tr...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf createTableSQL}(cls, createJoinTables=True, connection=None) fro\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.497 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.498 \begin{description}
+                         \item[{\bf delColumn}(cls, column, changeSchema=Fal...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.498 \begin{description}
+                         \item[{\bf delColumn}(cls, column, changeSchema=Fal...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf delColumn}(cls, column, changeSchema=False, connection=None) fro\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.499 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.500 \begin{description}
+                         \item[{\bf delJoin}(cls, joinDef) from sqlobject.ma...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.500 \begin{description}
+                         \item[{\bf delJoin}(cls, joinDef) from sqlobject.ma...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf delJoin}(cls, joinDef) from sqlobject.main.MetaSQLObject\end {de\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.501 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.502 \begin{description}
+                         \item[{\bf delete}(cls, id) from sqlobject.main.Met...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.502 \begin{description}
+                         \item[{\bf delete}(cls, id) from sqlobject.main.Met...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf delete}(cls, id) from sqlobject.main.MetaSQLObject\end {descript\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.503 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.504 \begin{description}
+                         \item[{\bf dropJoinTables}(cls, ifExists=False, con...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.504 \begin{description}
+                         \item[{\bf dropJoinTables}(cls, ifExists=False, con...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf dropJoinTables}(cls, ifExists=False, connection=None) from sqlob\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.505 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.506 \begin{description}
+                         \item[{\bf dropTable}(cls, ifExists=False, dropJoin...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.506 \begin{description}
+                         \item[{\bf dropTable}(cls, ifExists=False, dropJoin...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf dropTable}(cls, ifExists=False, dropJoinTables=True, cascade=Fal\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.507 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.508 \begin{description}
+                         \item[{\bf get}(cls, id, connection=None, selectRes...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.508 \begin{description}
+                         \item[{\bf get}(cls, id, connection=None, selectRes...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf get}(cls, id, connection=None, selectResults=None) from sqlobjec\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.509 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.510 \begin{description}
+                         \item[{\bf select}(cls, clause=None, clauseTables=N...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.510 \begin{description}
+                         \item[{\bf select}(cls, clause=None, clauseTables=N...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf select}(cls, clause=None, clauseTables=None, orderBy=<class sqlo\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.511 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.512 \begin{description}
+                         \item[{\bf selectBy}(cls, connection=None, **kw) fr...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.512 \begin{description}
+                         \item[{\bf selectBy}(cls, connection=None, **kw) fr...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf selectBy}(cls, connection=None, **kw) from sqlobject.main.MetaSQ\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.513 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.514 \begin{description}
+                         \item[{\bf setConnection}(cls, value) from sqlobjec...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.514 \begin{description}
+                         \item[{\bf setConnection}(cls, value) from sqlobjec...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf setConnection}(cls, value) from sqlobject.main.MetaSQLObject\end \ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.515 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.516 \begin{description}
+                         \item[{\bf sqlrepr}(cls, value, connection=None) fr...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.516 \begin{description}
+                         \item[{\bf sqlrepr}(cls, value, connection=None) fr...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf sqlrepr}(cls, value, connection=None) from sqlobject.main.MetaSQ\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.517 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.520 \begin{description}
+                         \item[{\bf \_\_dict\_\_} = <dictproxy object>]{\tt ...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.520 \begin{description}
+                         \item[{\bf \_\_dict\_\_} = <dictproxy object>]{\tt ...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.520 ...[{\bf \_\_dict\_\_} = <dictproxy object>]
+                                                  {\tt dictionary~for~instan...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.520 ...[{\bf \_\_dict\_\_} = <dictproxy object>]
+                                                  {\tt dictionary~for~instan...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.520 ...[{\bf \_\_dict\_\_} = <dictproxy object>]
+                                                  {\tt dictionary~for~instan...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.520 ...~variables~(if~defined)}\end{description}
+                                                  
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (675.53477pt too wide) in paragraph at lines 459--520
+[]\OT1/cmr/m/n/10 Methods
+ []
+
+
+Overfull \hbox (649.36804pt too wide) in paragraph at lines 459--520
+\OT1/cmr/m/n/10 in-
+ []
+
+
+Overfull \hbox (654.95137pt too wide) in paragraph at lines 459--520
+\OT1/cmr/m/n/10 her-
+ []
+
+
+Overfull \hbox (654.36806pt too wide) in paragraph at lines 459--520
+\OT1/cmr/m/n/10 ited
+ []
+
+
+Overfull \hbox (658.00697pt too wide) in paragraph at lines 459--520
+\OT1/cmr/m/n/10 from
+ []
+
+
+Overfull \hbox (663.59029pt too wide) in paragraph at lines 459--520
+\OT1/cmr/m/n/10 sqlob-
+ []
+
+
+Overfull \hbox (732.84047pt too wide) in paragraph at lines 459--520
+\OT1/cmr/m/n/10 ject.main.SQLObject: 
+ []
+
+
+Overfull \hbox (660.59027pt too wide) in paragraph at lines 459--520
+\OT1/cmr/m/n/10 Class
+ []
+
+
+Overfull \hbox (663.25696pt too wide) in paragraph at lines 459--520
+\OT1/cmr/m/n/10 meth-
+ []
+
+
+Overfull \hbox (652.47917pt too wide) in paragraph at lines 459--520
+\OT1/cmr/m/n/10 ods
+ []
+
+
+Overfull \hbox (649.36804pt too wide) in paragraph at lines 459--520
+\OT1/cmr/m/n/10 in-
+ []
+
+
+Overfull \hbox (654.95137pt too wide) in paragraph at lines 459--520
+\OT1/cmr/m/n/10 her-
+ []
+
+
+Overfull \hbox (654.36806pt too wide) in paragraph at lines 459--520
+\OT1/cmr/m/n/10 ited
+ []
+
+
+Overfull \hbox (658.00697pt too wide) in paragraph at lines 459--520
+\OT1/cmr/m/n/10 from
+ []
+
+
+Overfull \hbox (663.59029pt too wide) in paragraph at lines 459--520
+\OT1/cmr/m/n/10 sqlob-
+ []
+
+
+Overfull \hbox (732.84047pt too wide) in paragraph at lines 459--520
+\OT1/cmr/m/n/10 ject.main.SQLObject: 
+ []
+
+
+Overfull \hbox (659.22919pt too wide) in paragraph at lines 459--520
+\OT1/cmr/m/n/10 Data
+ []
+
+
+Overfull \hbox (653.81252pt too wide) in paragraph at lines 459--520
+\OT1/cmr/m/n/10 and
+ []
+
+
+Overfull \hbox (660.50696pt too wide) in paragraph at lines 459--520
+\OT1/cmr/m/n/10 other
+ []
+
+
+Overfull \hbox (649.9236pt too wide) in paragraph at lines 459--520
+\OT1/cmr/m/n/10 at-
+ []
+
+
+Overfull \hbox (671.67365pt too wide) in paragraph at lines 459--520
+\OT1/cmr/m/n/10 tributes
+ []
+
+
+Overfull \hbox (649.36804pt too wide) in paragraph at lines 459--520
+\OT1/cmr/m/n/10 in-
+ []
+
+
+Overfull \hbox (654.95137pt too wide) in paragraph at lines 459--520
+\OT1/cmr/m/n/10 her-
+ []
+
+
+Overfull \hbox (654.36806pt too wide) in paragraph at lines 459--520
+\OT1/cmr/m/n/10 ited
+ []
+
+
+Overfull \hbox (658.00697pt too wide) in paragraph at lines 459--520
+\OT1/cmr/m/n/10 from
+ []
+
+
+Overfull \hbox (663.59029pt too wide) in paragraph at lines 459--520
+\OT1/cmr/m/n/10 sqlob-
+ []
+
+
+Overfull \hbox (732.84047pt too wide) in paragraph at lines 459--520
+\OT1/cmr/m/n/10 ject.main.SQLObject: 
+ []
+
+
+Overfull \hbox (879.19925pt too wide) in paragraph at lines 459--520
+\OT1/cmtt/m/n/10 dictionary for instance variables (if defined) 
+ []
+
+ [4]
+Runaway argument?
+{\bf \_\_metaclass\_\_} = <class \verb |'|sqlobject.main.MetaSQLObjec\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.523 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.524 \begin{description}
+                         \item[{\bf \_\_weakref\_\_} = <attribute \verb|'|\_...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.524 \begin{description}
+                         \item[{\bf \_\_weakref\_\_} = <attribute \verb|'|\_...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (1166.37553pt too wide) in paragraph at lines 524--524
+[]
+ []
+
+
+Overfull \hbox (910.19908pt too wide) in paragraph at lines 524--524
+\OT1/cmtt/m/n/10 list of weak references to the object (if defined) 
+ []
+
+
+Overfull \hbox (675.53477pt too wide) in paragraph at lines 527--528
+[]\OT1/cmr/m/n/10 Methods
+ []
+
+
+Overfull \hbox (649.36804pt too wide) in paragraph at lines 527--528
+\OT1/cmr/m/n/10 in-
+ []
+
+
+Overfull \hbox (654.95137pt too wide) in paragraph at lines 527--528
+\OT1/cmr/m/n/10 her-
+ []
+
+
+Overfull \hbox (654.36806pt too wide) in paragraph at lines 527--528
+\OT1/cmr/m/n/10 ited
+ []
+
+
+Overfull \hbox (658.00697pt too wide) in paragraph at lines 527--528
+\OT1/cmr/m/n/10 from
+ []
+
+
+Overfull \hbox (669.22917pt too wide) in paragraph at lines 527--528
+\OT1/cmr/m/n/10 PRPC-
+ []
+
+
+Overfull \hbox (663.25697pt too wide) in paragraph at lines 527--528
+\OT1/cmr/m/n/10 TOO: 
+ []
+
+
+Overfull \hbox (637.70135pt too wide) in paragraph at lines 527--528
+
+ []
+
+Missing character: There is no ^^c3 in font cmtt10!
+Missing character: There is no ^^b3 in font cmtt10!
+Missing character: There is no ^^c3 in font cmtt10!
+Missing character: There is no ^^b3 in font cmtt10!
+Missing character: There is no ^^c3 in font cmtt10!
+Missing character: There is no ^^a9 in font cmtt10!
+Missing character: There is no ^^c3 in font cmtt10!
+Missing character: There is no ^^b3 in font cmtt10!
+
+Overfull \hbox (741.96025pt too wide) in paragraph at lines 528--531
+[]
+ []
+
+
+Overfull \hbox (862.9495pt too wide) in paragraph at lines 528--531
+\OT1/cmtt/m/n/10 Abre una conexin con la BD y la asigna al 
+ []
+
+
+Overfull \hbox (799.95004pt too wide) in paragraph at lines 528--531
+\OT1/cmtt/m/n/10 atributo conexin de la clase. 
+ []
+
+
+Overfull \hbox (852.44958pt too wide) in paragraph at lines 528--531
+\OT1/cmtt/m/n/10 No sale del mtodo hasta que consigue la 
+ []
+
+
+Overfull \hbox (689.701pt too wide) in paragraph at lines 528--531
+\OT1/cmtt/m/n/10 conexin. 
+ []
+
+Runaway argument?
+{\bf abrir\_cursor}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.534 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.535 \begin{description}
+                         \item[{\bf cerrar\_conexion}(self)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.535 \begin{description}
+                         \item[{\bf cerrar\_conexion}(self)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf cerrar\_conexion}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.536 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.537 \begin{description}
+                         \item[{\bf cerrar\_cursor}(self)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.537 \begin{description}
+                         \item[{\bf cerrar\_cursor}(self)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf cerrar\_cursor}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.538 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.539 \begin{description}
+                         \item[{\bf chequear\_cambios}(self)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.539 \begin{description}
+                         \item[{\bf chequear\_cambios}(self)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf chequear\_cambios}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.540 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.541 \begin{description}
+                         \item[{\bf comparar\_swap}(self)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.541 \begin{description}
+                         \item[{\bf comparar\_swap}(self)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf comparar\_swap}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.542 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.543 \begin{description}
+                         \item[{\bf destroy\_en\_cascada}(self)]{\tt Destruy...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.543 \begin{description}
+                         \item[{\bf destroy\_en\_cascada}(self)]{\tt Destruy...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Missing character: There is no ^^c3 in font cmtt10!
+Missing character: There is no ^^ad in font cmtt10!
+
+Overfull \hbox (814.01262pt too wide) in paragraph at lines 543--544
+[]
+ []
+
+
+Overfull \hbox (981.19897pt too wide) in paragraph at lines 543--544
+\OT1/cmtt/m/n/10 Destruye recursivamente los objetos que dependientes y 
+ []
+
+
+Overfull \hbox (834.20026pt too wide) in paragraph at lines 543--544
+\OT1/cmtt/m/n/10 finalmente al objeto en s. 
+ []
+
+Runaway argument?
+{\bf ejecutar\_hilo}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.547 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.548 \begin{description}
+                         \item[{\bf esperarNotificacion}(self, nomnot, func=...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.548 \begin{description}
+                         \item[{\bf esperarNotificacion}(self, nomnot, func=...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Missing character: There is no ^^c3 in font cmtt10!
+Missing character: There is no ^^b3 in font cmtt10!
+Missing character: There is no ^^c3 in font cmtt10!
+Missing character: There is no ^^b3 in font cmtt10!
+Missing character: There is no ^^c3 in font cmtt10!
+Missing character: There is no ^^b3 in font cmtt10!
+Missing character: There is no ^^c3 in font cmtt10!
+Missing character: There is no ^^b3 in font cmtt10!
+Missing character: There is no ^^c3 in font cmtt10!
+Missing character: There is no ^^a1 in font cmtt10!
+Missing character: There is no ^^c3 in font cmtt10!
+Missing character: There is no ^^b3 in font cmtt10!
+
+Overfull \hbox (1007.33449pt too wide) in paragraph at lines 548--552
+[]
+ []
+
+
+Overfull \hbox (922.94958pt too wide) in paragraph at lines 548--552
+\OT1/cmtt/m/n/10 Cdigo del hilo que vigila la notificacin. 
+ []
+
+
+Overfull \hbox (917.69963pt too wide) in paragraph at lines 548--552
+\OT1/cmtt/m/n/10 self -> Objeto al que pertenece el hilo. 
+ []
+
+
+Overfull \hbox (959.69926pt too wide) in paragraph at lines 548--552
+\OT1/cmtt/m/n/10 nomnot es el nombre de la notificacin a esperar. 
+ []
+
+
+Overfull \hbox (985.94904pt too wide) in paragraph at lines 548--552
+\OT1/cmtt/m/n/10 func es una funcin opcional que ser llamada cuando se 
+ []
+
+
+Overfull \hbox (833.70036pt too wide) in paragraph at lines 548--552
+\OT1/cmtt/m/n/10 produzca la notificacin. 
+ []
+
+Runaway argument?
+{\bf make\_swap}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.555 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.556 \begin{description}
+                         \item[{\bf parar\_hilo}(self)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.556 \begin{description}
+                         \item[{\bf parar\_hilo}(self)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf parar\_hilo}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.557 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.565 \begin{description}
+                         \item[Method resolution order:
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.565 \begin{description}
+                         \item[Method resolution order:
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.566 ]
+       AlbaranEntrada
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.566 ]
+       AlbaranEntrada
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.566 ]
+       AlbaranEntrada
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.570 \end{description}
+                       
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (727.70149pt too wide) in paragraph at lines 561--570
+[] 
+ []
+
+
+Overfull \hbox (747.81262pt too wide) in paragraph at lines 561--570
+\OT1/cmr/m/n/10 class
+ []
+
+
+Overfull \hbox (743.42363pt too wide) in paragraph at lines 561--570
+\OT1/cmr/bx/n/10 Al-
+ []
+
+
+Overfull \hbox (753.84021pt too wide) in paragraph at lines 561--570
+\OT1/cmr/bx/n/10 bara-
+ []
+
+
+Overfull \hbox (751.86803pt too wide) in paragraph at lines 561--570
+\OT1/cmr/bx/n/10 nEn-
+ []
+
+
+Overfull \hbox (876.61826pt too wide) in paragraph at lines 561--570
+\OT1/cmr/bx/n/10 trada\OT1/cmr/m/n/10 (sqlobject.main.SQLObject,
+ []
+
+
+Overfull \hbox (759.22931pt too wide) in paragraph at lines 561--570
+\OT1/cmr/m/n/10 PRPC-
+ []
+
+
+Overfull \hbox (754.36823pt too wide) in paragraph at lines 561--570
+\OT1/cmr/m/n/10 TOO)
+ []
+
+
+Overfull \hbox (798.45168pt too wide) in paragraph at lines 561--570
+\OT1/cmr/m/n/10 AlbaranEntrada
+ []
+
+
+Overfull \hbox (756.36821pt too wide) in paragraph at lines 561--570
+\OT1/cmr/m/n/10 ]sqlob-
+ []
+
+
+Overfull \hbox (820.06282pt too wide) in paragraph at lines 561--570
+\OT1/cmr/m/n/10 ject.main.SQLObject
+ []
+
+
+Overfull \hbox (803.49055pt too wide) in paragraph at lines 561--570
+\OT1/cmr/m/n/10 ][][]builtin[][].object
+ []
+
+
+Overfull \hbox (762.0071pt too wide) in paragraph at lines 561--570
+\OT1/cmr/m/n/10 ]PRPC-
+ []
+
+
+Overfull \hbox (750.47932pt too wide) in paragraph at lines 561--570
+\OT1/cmr/m/n/10 TOO 
+ []
+
+
+Overfull \hbox (762.67378pt too wide) in paragraph at lines 572--573
+[]\OT1/cmr/m/n/10 Properties
+ []
+
+
+Overfull \hbox (731.03482pt too wide) in paragraph at lines 572--573
+\OT1/cmr/m/n/10 de-
+ []
+
+
+Overfull \hbox (738.81264pt too wide) in paragraph at lines 572--573
+\OT1/cmr/m/n/10 fined
+ []
+
+
+Overfull \hbox (738.8404pt too wide) in paragraph at lines 572--573
+\OT1/cmr/m/n/10 here: 
+ []
+
+
+Overfull \hbox (717.70148pt too wide) in paragraph at lines 572--573
+
+ []
+
+ [5]
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.574 ]\begin{description}
+                          \item[{\bf {\it get}} {\it lambda} self\end{descri...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf {\it get}} {\it lambda} self\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.575 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.576 ]\begin{description}
+                          \item[{\bf {\it set}} {\it lambda} self, val\end{d...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (889.1326pt too wide) in paragraph at lines 576--576
+[]
+ []
+
+
+Overfull \hbox (740.4793pt too wide) in paragraph at lines 576--576
+\OT1/cmr/m/n/10 ] 
+ []
+
+Runaway argument?
+{\bf {\it set}} {\it lambda} self, val\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.577 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.578 \end{description}
+                       
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.580 ]\begin{description}
+                          \item[{\bf {\it get}} {\it lambda} self\end{descri...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.580 ]\begin{description}
+                          \item[{\bf {\it get}} {\it lambda} self\end{descri...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf {\it get}} {\it lambda} self\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.581 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.582 \end{description}
+                       
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.584 ]\begin{description}
+                          \item[{\bf {\it get}} {\it lambda} self\end{descri...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf {\it get}} {\it lambda} self\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.585 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.586 ]\begin{description}
+                          \item[{\bf {\it set}} {\it lambda} self, val\end{d...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (907.50758pt too wide) in paragraph at lines 586--586
+[]
+ []
+
+
+Overfull \hbox (770.47934pt too wide) in paragraph at lines 586--586
+\OT1/cmr/m/n/10 ] 
+ []
+
+Runaway argument?
+{\bf {\it set}} {\it lambda} self, val\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.587 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.588 \end{description}
+                       
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.590 ]\begin{description}
+                          \item[{\bf {\it get}} {\it lambda} self\end{descri...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.590 ]\begin{description}
+                          \item[{\bf {\it get}} {\it lambda} self\end{descri...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf {\it get}} {\it lambda} self\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.591 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.592 ]\begin{description}
+                          \item[{\bf {\it set}} {\it lambda} self, val\end{d...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (790.47937pt too wide) in paragraph at lines 592--592
+[]\OT1/cmr/m/n/10 ] 
+ []
+
+Runaway argument?
+{\bf {\it set}} {\it lambda} self, val\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.593 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.594 \end{description}
+                       
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.596 ]\begin{description}
+                          \item[{\bf {\it get}} {\it lambda} self\end{descri...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf {\it get}} {\it lambda} self\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.597 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.598 ]\begin{description}
+                          \item[{\bf {\it set}} {\it lambda} self, val\end{d...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (917.99269pt too wide) in paragraph at lines 598--598
+[]
+ []
+
+
+Overfull \hbox (810.4794pt too wide) in paragraph at lines 598--598
+\OT1/cmr/m/n/10 ] 
+ []
+
+Runaway argument?
+{\bf {\it set}} {\it lambda} self, val\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.599 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.600 \end{description}
+                       
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (829.22945pt too wide) in paragraph at lines 602--603
+[]\OT1/cmr/m/n/10 Data
+ []
+
+
+Overfull \hbox (823.81277pt too wide) in paragraph at lines 602--603
+\OT1/cmr/m/n/10 and
+ []
+
+
+Overfull \hbox (830.50722pt too wide) in paragraph at lines 602--603
+\OT1/cmr/m/n/10 other
+ []
+
+
+Overfull \hbox (819.92386pt too wide) in paragraph at lines 602--603
+\OT1/cmr/m/n/10 at-
+ []
+
+
+Overfull \hbox (841.6739pt too wide) in paragraph at lines 602--603
+\OT1/cmr/m/n/10 tributes
+ []
+
+
+Overfull \hbox (821.03496pt too wide) in paragraph at lines 602--603
+\OT1/cmr/m/n/10 de-
+ []
+
+
+Overfull \hbox (828.81277pt too wide) in paragraph at lines 602--603
+\OT1/cmr/m/n/10 fined
+ []
+
+
+Overfull \hbox (828.84053pt too wide) in paragraph at lines 602--603
+\OT1/cmr/m/n/10 here: 
+ []
+
+
+Overfull \hbox (807.70161pt too wide) in paragraph at lines 602--603
+
+ []
+
+Runaway argument?
+{\bf q} = albaran\_entrada\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.604 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.607 \begin{description}
+                         \item[{\bf \_\_init\_\_}(self, **kw)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.607 \begin{description}
+                         \item[{\bf \_\_init\_\_}(self, **kw)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf \_\_init\_\_}(self, **kw)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.608 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.609 \begin{description}
+                         \item[{\bf \_\_repr\_\_}(self)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.609 \begin{description}
+                         \item[{\bf \_\_repr\_\_}(self)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf \_\_repr\_\_}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.610 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.611 \begin{description}
+                         \item[{\bf destroySelf}(self)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.611 \begin{description}
+                         \item[{\bf destroySelf}(self)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf destroySelf}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.612 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.613 \begin{description}
+                         \item[{\bf expire}(self)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.613 \begin{description}
+                         \item[{\bf expire}(self)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf expire}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.614 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.615 \begin{description}
+                         \item[{\bf set}(self, **kw)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.615 \begin{description}
+                         \item[{\bf set}(self, **kw)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf set}(self, **kw)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.616 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.617 \begin{description}
+                         \item[{\bf sync}(self)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.617 \begin{description}
+                         \item[{\bf sync}(self)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf sync}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.618 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.619 \begin{description}
+                         \item[{\bf syncUpdate}(self)\end{description}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.619 \begin{description}
+                         \item[{\bf syncUpdate}(self)\end{description}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf syncUpdate}(self)\end {description} 
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.620 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.623 \begin{description}
+                         \item[{\bf addColumn}(cls, columnDef, changeSchema=...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.623 \begin{description}
+                         \item[{\bf addColumn}(cls, columnDef, changeSchema=...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf addColumn}(cls, columnDef, changeSchema=False, connection=None) \ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.624 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.625 \begin{description}
+                         \item[{\bf addColumnsFromDatabase}(cls, connection=...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.625 \begin{description}
+                         \item[{\bf addColumnsFromDatabase}(cls, connection=...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf addColumnsFromDatabase}(cls, connection=None) from sqlobject.mai\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.626 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.627 \begin{description}
+                         \item[{\bf addIndex}(cls, indexDef) from sqlobject....
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.627 \begin{description}
+                         \item[{\bf addIndex}(cls, indexDef) from sqlobject....
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf addIndex}(cls, indexDef) from sqlobject.main.MetaSQLObject\end {\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.628 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.629 \begin{description}
+                         \item[{\bf addJoin}(cls, joinDef) from sqlobject.ma...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.629 \begin{description}
+                         \item[{\bf addJoin}(cls, joinDef) from sqlobject.ma...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf addJoin}(cls, joinDef) from sqlobject.main.MetaSQLObject\end {de\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.630 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.631 \begin{description}
+                         \item[{\bf clearTable}(cls, connection=None) from s...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.631 \begin{description}
+                         \item[{\bf clearTable}(cls, connection=None) from s...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf clearTable}(cls, connection=None) from sqlobject.main.MetaSQLObj\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.632 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.633 \begin{description}
+                         \item[{\bf coerceID}(cls, value) from sqlobject.mai...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.633 \begin{description}
+                         \item[{\bf coerceID}(cls, value) from sqlobject.mai...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf coerceID}(cls, value) from sqlobject.main.MetaSQLObject\end {des\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.634 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.635 \begin{description}
+                         \item[{\bf createIndexes}(cls, ifNotExists=False, c...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.635 \begin{description}
+                         \item[{\bf createIndexes}(cls, ifNotExists=False, c...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf createIndexes}(cls, ifNotExists=False, connection=None) from sql\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.636 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.637 \begin{description}
+                         \item[{\bf createJoinTables}(cls, ifNotExists=False...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.637 \begin{description}
+                         \item[{\bf createJoinTables}(cls, ifNotExists=False...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf createJoinTables}(cls, ifNotExists=False, connection=None) from \ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.638 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.639 \begin{description}
+                         \item[{\bf createJoinTablesSQL}(cls, connection=Non...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.639 \begin{description}
+                         \item[{\bf createJoinTablesSQL}(cls, connection=Non...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf createJoinTablesSQL}(cls, connection=None) from sqlobject.main.M\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.640 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.641 \begin{description}
+                         \item[{\bf createTable}(cls, ifNotExists=False, cre...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.641 \begin{description}
+                         \item[{\bf createTable}(cls, ifNotExists=False, cre...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf createTable}(cls, ifNotExists=False, createJoinTables=True, crea\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.642 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.643 \begin{description}
+                         \item[{\bf createTableSQL}(cls, createJoinTables=Tr...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.643 \begin{description}
+                         \item[{\bf createTableSQL}(cls, createJoinTables=Tr...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Runaway argument?
+{\bf createTableSQL}(cls, createJoinTables=True, connection=None) fro\ETC.
+! Paragraph ended before \@item was complete.
+<to be read again> 
+                   \par 
+l.644 
+      
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+! LaTeX Error: Too deeply nested.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.645 \begin{description}
+                         \item[{\bf delColumn}(cls, column, changeSchema=Fal...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+! TeX capacity exceeded, sorry [save size=5000].
+\GenericError  #1#2#3#4->\begingroup 
+                                     \immediate \write \@unused   \def \Mess...
+l.645 \begin{description}
+                         \item[{\bf delColumn}(cls, column, changeSchema=Fal...
+If you really absolutely need more capacity,
+you can ask a wizard to enlarge me.
+
+ 
+Here is how much of TeX's memory you used:
+ 476 strings out of 95370
+ 5208 string characters out of 1188185
+ 55108 words of memory out of 1000001
+ 3565 multiletter control sequences out of 10000+50000
+ 18987 words of font info for 72 fonts, out of 500000 for 1000
+ 198 hyphenation exceptions out of 1000
+ 25i,4n,22p,279b,5001s stack positions out of 1500i,500n,5000p,200000b,5000s
+Output written on pclases.dvi (5 pages, 6708 bytes).

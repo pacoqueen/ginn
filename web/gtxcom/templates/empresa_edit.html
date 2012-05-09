@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block titulo %}Geotexan - Empresas{% endblock %}
+
+{% block encabezado %}Editar empresa{% endblock %}
+{% block datos %}
+    {{ id }} {{ request.method }}</br>
+    <form action="." method="POST">
+        <table>
+            {{ form.as_table }}
+        </table>
+        <p><input type="submit" value="Guardar"></p>
+    </form>
+{% endblock %}
+

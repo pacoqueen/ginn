@@ -1,0 +1,13 @@
+tipobd  postgres
+user    madrid   
+pass    madrid  
+dbname  madrid  
+host    192.168.1.100
+logo    logo-inn.png
+title   Almacén delegación de Madrid    
+desplegar_tickets 0
+valorar_albaranes 0
+valorar_albaranes_con_iva 0
+diastpv 7
+carta_portes 0
+ventanas_sobre fc  

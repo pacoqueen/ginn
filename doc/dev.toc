@@ -1,0 +1,23 @@
+\select@language {spanish}
+\contentsline {section}{\'Indice}{2}
+\contentsline {section}{\'{I}ndice de figuras}{2}
+\contentsline {section}{\numberline {1}Licencia}{3}
+\contentsline {section}{\numberline {2}Cr'editos}{6}
+\contentsline {section}{\numberline {3}Dependencias}{6}
+\contentsline {section}{\numberline {4}Changelog}{6}
+\contentsline {section}{\numberline {5}Instalaci\IeC {\'o}n}{46}
+\contentsline {subsection}{\numberline {5.1}Clientes}{46}
+\contentsline {subsection}{\numberline {5.2}Servidor}{47}
+\contentsline {subsubsection}{\numberline {5.2.1}Copias de seguridad y actualizaciones.}{47}
+\contentsline {paragraph}{}{47}
+\contentsline {paragraph}{}{48}
+\contentsline {paragraph}{}{48}
+\contentsline {paragraph}{}{48}
+\contentsline {section}{\numberline {6}Documentaci\IeC {\'o}n}{48}
+\contentsline {section}{\numberline {7}Esquemas y figuras}{48}
+\contentsline {subsection}{\numberline {7.1}\emph {Screenshot}}{48}
+\contentsline {subsection}{\numberline {7.2}SLOC - COCOMO}{48}
+\contentsline {subsection}{\numberline {7.3}CVS Changelog}{51}
+\contentsline {section}{\numberline {8}Planificaci\IeC {\'o}n}{54}
+\contentsline {section}{\numberline {9}Diagramas}{56}
+\contentsline {section}{\numberline {10}\emph {Roadmap} y estad\IeC {\'\i }sticas}{57}

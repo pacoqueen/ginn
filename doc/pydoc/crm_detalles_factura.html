@@ -1,0 +1,191 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module crm_detalles_factura</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>crm_detalles_factura</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/bogado/Geotexan/geotexinn02/formularios/crm_detalles_factura.py">/home/bogado/Geotexan/geotexinn02/formularios/crm_detalles_factura.py</a></font></td></tr></table>
+    <p><tt>#&nbsp;-*-&nbsp;coding:&nbsp;utf-8&nbsp;-*-</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="geninformes.html">geninformes</a><br>
+<a href="gtk.html">gtk</a><br>
+</td><td width="25%" valign=top><a href="mx.html">mx</a><br>
+<a href="pango.html">pango</a><br>
+</td><td width="25%" valign=top><a href="pclase2tv.html">pclase2tv</a><br>
+<a href="pclases.html">pclases</a><br>
+</td><td width="25%" valign=top><a href="pygtk.html">pygtk</a><br>
+<a href="utils.html">utils</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="ventana.html#Ventana">ventana.Ventana</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="crm_detalles_factura.html#CRM_DetallesFactura">CRM_DetallesFactura</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="CRM_DetallesFactura">class <strong>CRM_DetallesFactura</strong></a>(<a href="ventana.html#Ventana">ventana.Ventana</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="CRM_DetallesFactura-__init__"><strong>__init__</strong></a>(self, objeto<font color="#909090">=None</font>, usuario<font color="#909090">=None</font>)</dt><dd><tt>Constructor.&nbsp;objeto&nbsp;puede&nbsp;ser&nbsp;un&nbsp;objeto&nbsp;de&nbsp;pclases&nbsp;con&nbsp;el&nbsp;que<br>
+comenzar&nbsp;la&nbsp;ventana&nbsp;(en&nbsp;lugar&nbsp;del&nbsp;primero&nbsp;de&nbsp;la&nbsp;tabla,&nbsp;que&nbsp;es<br>
+el&nbsp;que&nbsp;se&nbsp;muestra&nbsp;por&nbsp;defecto).</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-abrir_cliente"><strong>abrir_cliente</strong></a>(self, boton)</dt><dd><tt>Abre&nbsp;el&nbsp;cliente&nbsp;de&nbsp;la&nbsp;factura&nbsp;en&nbsp;pantalla.</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-abrir_docpago"><strong>abrir_docpago</strong></a>(self, tv, path, col)</dt><dd><tt>Abre&nbsp;el&nbsp;documento&nbsp;de&nbsp;pago&nbsp;al&nbsp;que&nbsp;se&nbsp;le&nbsp;ha&nbsp;hecho&nbsp;doble&nbsp;clic&nbsp;en&nbsp;una&nbsp;<br>
+ventana&nbsp;nueva.</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-abrir_factura"><strong>abrir_factura</strong></a>(self, boton)</dt><dd><tt>Abre&nbsp;la&nbsp;factura&nbsp;en&nbsp;una&nbsp;ventana&nbsp;nueva.</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-add_docpago"><strong>add_docpago</strong></a>(self, boton)</dt><dd><tt>Dependiendo&nbsp;de&nbsp;la&nbsp;forma&nbsp;de&nbsp;pago&nbsp;de&nbsp;la&nbsp;factura&nbsp;abre&nbsp;la&nbsp;ventana&nbsp;de&nbsp;<br>
+documentos&nbsp;de&nbsp;pago&nbsp;correspondiente&nbsp;con&nbsp;el&nbsp;objeto&nbsp;ya&nbsp;creado.</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-add_tvitem"><strong>add_tvitem</strong></a>(self, boton)</dt><dd><tt>Elimina&nbsp;la&nbsp;tarea&nbsp;seleccionada&nbsp;en&nbsp;el&nbsp;TreeView.</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-adjuntar"><strong>adjuntar</strong></a>(self, boton)</dt><dd><tt>Adjunta&nbsp;un&nbsp;documento&nbsp;a&nbsp;la&nbsp;factura&nbsp;de&nbsp;compra.</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-buscar"><strong>buscar</strong></a>(self, boton)</dt></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-cambiar_nombre_adjunto"><strong>cambiar_nombre_adjunto</strong></a>(self, cell, path, texto)</dt></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-cambiar_observaciones_adjunto"><strong>cambiar_observaciones_adjunto</strong></a>(self, cell, path, texto)</dt></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-cambiar_observaciones_pagare"><strong>cambiar_observaciones_pagare</strong></a>(self, cell, path, texto)</dt></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-chequear_cambios"><strong>chequear_cambios</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-colorear_alarmas"><strong>colorear_alarmas</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-drop_adjunto"><strong>drop_adjunto</strong></a>(self, boton)</dt><dd><tt>Elimina&nbsp;el&nbsp;elemento&nbsp;seleccionado.</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-drop_docpago"><strong>drop_docpago</strong></a>(self, boton)</dt><dd><tt>Elimina&nbsp;el&nbsp;documento&nbsp;de&nbsp;pago&nbsp;seleccionado.</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-drop_tvitem"><strong>drop_tvitem</strong></a>(self, boton)</dt><dd><tt>Elimina&nbsp;la&nbsp;tarea&nbsp;seleccionada&nbsp;en&nbsp;el&nbsp;TreeView.</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-elegir_o_crear_obra"><strong>elegir_o_crear_obra</strong></a>(self)</dt><dd><tt>Crea&nbsp;una&nbsp;nueva&nbsp;obra&nbsp;relacionada&nbsp;con&nbsp;la&nbsp;factura&nbsp;de&nbsp;venta&nbsp;de&nbsp;la&nbsp;ventana.</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-guardar_adjunto"><strong>guardar_adjunto</strong></a>(self, boton)</dt><dd><tt>Ofrece&nbsp;al&nbsp;usuario&nbsp;una&nbsp;ventana&nbsp;para&nbsp;guardar&nbsp;el&nbsp;adjunto&nbsp;seleccionado.</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-imprimir"><strong>imprimir</strong></a>(self, boton)</dt><dd><tt>Prepara&nbsp;la&nbsp;vista&nbsp;preliminar&nbsp;para&nbsp;la&nbsp;impresión&nbsp;del&nbsp;informe.</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-rellenar_adjuntos"><strong>rellenar_adjuntos</strong></a>(self)</dt><dd><tt>Introduce&nbsp;los&nbsp;adjuntos&nbsp;del&nbsp;objeto&nbsp;en&nbsp;la&nbsp;tabla&nbsp;de&nbsp;adjuntos.</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-rellenar_pagares"><strong>rellenar_pagares</strong></a>(self)</dt><dd><tt>Rellena&nbsp;la&nbsp;tabla&nbsp;de&nbsp;documentos&nbsp;de&nbsp;pago&nbsp;con&nbsp;pagarés&nbsp;y&nbsp;confirmings.</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-rellenar_tabla_contactos"><strong>rellenar_tabla_contactos</strong></a>(self, *args, **kw)</dt><dd><tt>Es&nbsp;relación&nbsp;muchos&nbsp;a&nbsp;muchos,&nbsp;no&nbsp;puedo&nbsp;usar&nbsp;el&nbsp;pclases2tv&nbsp;(de&nbsp;momento).</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-rellenar_widgets"><strong>rellenar_widgets</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-ver_adjunto"><strong>ver_adjunto</strong></a>(self, boton)</dt><dd><tt>Intenta&nbsp;abrir&nbsp;el&nbsp;adjunto&nbsp;seleccionado.</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-ver_factura_en_tv"><strong>ver_factura_en_tv</strong></a>(self, tv, path, view_column)</dt><dd><tt>Despliega&nbsp;en&nbsp;el&nbsp;TreeView&nbsp;de&nbsp;facturas&nbsp;la&nbsp;factura&nbsp;de&nbsp;la&nbsp;tarea&nbsp;y&nbsp;sitúa&nbsp;<br>
+el&nbsp;cursor&nbsp;en&nbsp;ella.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="ventana.html#Ventana">ventana.Ventana</a>:<br>
+<dl><dt><a name="CRM_DetallesFactura-abrir_gajim"><strong>abrir_gajim</strong></a>(self)</dt><dd><tt>Calcado&nbsp;de&nbsp;menu.py.&nbsp;Sólo&nbsp;lleva&nbsp;las&nbsp;modificaciones&nbsp;necesarias&nbsp;para&nbsp;hacerlo&nbsp;funcionar&nbsp;desde&nbsp;aquí.</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-acerca_de"><strong>acerca_de</strong></a>(self)</dt><dd><tt>Calcado&nbsp;de&nbsp;menu.py.&nbsp;Modificado&nbsp;ligeramente&nbsp;para&nbsp;hacerlo&nbsp;funcionar&nbsp;aquí.</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-actualizar_objeto_y_enlaces"><strong>actualizar_objeto_y_enlaces</strong></a>(self, actualizar_ventana_tambien<font color="#909090">=True</font>)</dt></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-actualizar_ventana"><strong>actualizar_ventana</strong></a>(self, widget<font color="#909090">=None</font>, objeto_anterior<font color="#909090">=None</font>)</dt><dd><tt>Actualiza&nbsp;el&nbsp;contenido&nbsp;de&nbsp;los&nbsp;controles&nbsp;de&nbsp;la&nbsp;ventana<br>
+para&nbsp;que&nbsp;muestren&nbsp;todos&nbsp;los&nbsp;datos&nbsp;del&nbsp;objeto&nbsp;actual.<br>
+widget&nbsp;no&nbsp;se&nbsp;usa.&nbsp;Se&nbsp;recibe&nbsp;para&nbsp;el&nbsp;caso&nbsp;en&nbsp;que&nbsp;se&nbsp;llama&nbsp;a&nbsp;<br>
+la&nbsp;función&nbsp;desde&nbsp;un&nbsp;botón.<br>
+objeto_anterior&nbsp;es&nbsp;un&nbsp;objeo&nbsp;de&nbsp;pclases.&nbsp;Sería&nbsp;el&nbsp;que&nbsp;se&nbsp;<br>
+muestra&nbsp;en&nbsp;pantalla&nbsp;justo&nbsp;antes&nbsp;de&nbsp;llamar&nbsp;a&nbsp;actualizar_ventana<br>
+y&nbsp;recargar&nbsp;los&nbsp;datos.&nbsp;Si&nbsp;se&nbsp;recibe&nbsp;y&nbsp;hay&nbsp;cambios&nbsp;pendientes&nbsp;de<br>
+guardar,&nbsp;el&nbsp;contenido&nbsp;de&nbsp;la&nbsp;ventana&nbsp;se&nbsp;guarda&nbsp;en&nbsp;ese&nbsp;objeto<br>
+ANTES&nbsp;de&nbsp;mostrar&nbsp;el&nbsp;nuevo&nbsp;(o&nbsp;el&nbsp;mismo&nbsp;con&nbsp;nueva&nbsp;información)&nbsp;<br>
+en&nbsp;los&nbsp;widgets&nbsp;de&nbsp;pantalla.</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-add_connections"><strong>add_connections</strong></a>(self, dict)</dt><dd><tt>Recorre&nbsp;el&nbsp;diccionario&nbsp;y&nbsp;crea&nbsp;las&nbsp;conexiones&nbsp;con&nbsp;<br>
+los&nbsp;callbacks.</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-aviso_actualizacion"><strong>aviso_actualizacion</strong></a>(self)</dt><dd><tt>Muestra&nbsp;una&nbsp;ventana&nbsp;modal&nbsp;con&nbsp;el&nbsp;mensaje&nbsp;de&nbsp;objeto&nbsp;<br>
+actualizado.</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-build_menu_superior"><strong>build_menu_superior</strong></a>(self)</dt><dd><tt>Construye&nbsp;un&nbsp;menú&nbsp;con&nbsp;las&nbsp;mismas&nbsp;opciones&nbsp;que&nbsp;el&nbsp;menú&nbsp;principal.</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-check_permisos"><strong>check_permisos</strong></a>(self, nombre_fichero_ventana)</dt><dd><tt>Activa&nbsp;o&nbsp;desactiva&nbsp;los&nbsp;controles&nbsp;dependiendo&nbsp;de&nbsp;los&nbsp;<br>
+permisos&nbsp;del&nbsp;usuario.</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-chequear_hilo"><strong>chequear_hilo</strong></a>(self)</dt><dd><tt>Consulta&nbsp;el&nbsp;hilo&nbsp;notificador&nbsp;del&nbsp;objeto&nbsp;actual.<br>
+En&nbsp;realidad&nbsp;es&nbsp;una&nbsp;mera&nbsp;excusa&nbsp;para&nbsp;obligar&nbsp;a&nbsp;GTK&nbsp;a&nbsp;<br>
+atender&nbsp;al&nbsp;objeto&nbsp;lo&nbsp;antes&nbsp;posible&nbsp;en&nbsp;caso&nbsp;de&nbsp;<br>
+notificación.</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-intentar_guardar_objeto_anterior_antes_de_actualizar"><strong>intentar_guardar_objeto_anterior_antes_de_actualizar</strong></a>(self, objeto_anterior)</dt><dd><tt>Primero&nbsp;verifica&nbsp;si&nbsp;hay&nbsp;cambios&nbsp;pendientes&nbsp;de&nbsp;guardar&nbsp;en&nbsp;la&nbsp;ventana&nbsp;<br>
+actual&nbsp;antes&nbsp;de&nbsp;actualizar&nbsp;el&nbsp;objeto&nbsp;en&nbsp;pantalla.<br>
+La&nbsp;forma&nbsp;de&nbsp;hacerlo&nbsp;es&nbsp;mirar&nbsp;si&nbsp;b_guardar&nbsp;está&nbsp;habilitado.&nbsp;<br>
+En&nbsp;ese&nbsp;caso&nbsp;intenta&nbsp;guardar&nbsp;los&nbsp;cambios&nbsp;del&nbsp;objeto&nbsp;anterior&nbsp;antes&nbsp;<br>
+de&nbsp;sustituirlo&nbsp;en&nbsp;pantalla&nbsp;por&nbsp;el&nbsp;nuevo&nbsp;(que&nbsp;es&nbsp;lo&nbsp;que&nbsp;se&nbsp;está&nbsp;<br>
+intentando&nbsp;"actualizar"&nbsp;en&nbsp;realidad,&nbsp;el&nbsp;self.<strong>objeto</strong>&nbsp;que&nbsp;aún&nbsp;no&nbsp;está&nbsp;<br>
+en&nbsp;pantalla).<br>
+Devuelve&nbsp;True&nbsp;si&nbsp;se&nbsp;ha&nbsp;guardado&nbsp;y&nbsp;se&nbsp;puede&nbsp;continuar&nbsp;la&nbsp;actualización&nbsp;<br>
+del&nbsp;nuevo&nbsp;objeto&nbsp;para&nbsp;mostrarlo&nbsp;en&nbsp;pantalla&nbsp;o&nbsp;False&nbsp;si&nbsp;se&nbsp;debe&nbsp;<br>
+interrumpir&nbsp;y&nbsp;dejar&nbsp;que&nbsp;el&nbsp;usuario&nbsp;guarde&nbsp;o&nbsp;descarte&nbsp;antes&nbsp;de&nbsp;pasar&nbsp;<br>
+a&nbsp;otro&nbsp;objeto&nbsp;como&nbsp;self.<strong>objeto</strong>.</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-ir_a"><strong>ir_a</strong></a>(self, objeto)</dt></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-make_connections"><strong>make_connections</strong></a>(self)</dt><dd><tt>Realiza&nbsp;las&nbsp;conexiones&nbsp;básicas&nbsp;entre&nbsp;widgets&nbsp;y&nbsp;callbacks.<br>
+Para&nbsp;el&nbsp;resto&nbsp;de&nbsp;conexiones,&nbsp;usar&nbsp;add_connections.<br>
+La&nbsp;ventana&nbsp;principal&nbsp;DEBE&nbsp;llamarse&nbsp;"ventana".</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-make_funciones_ociosas"><strong>make_funciones_ociosas</strong></a>(self)</dt><dd><tt>Inicia&nbsp;las&nbsp;funciones&nbsp;ociosas&nbsp;de&nbsp;chequeo&nbsp;de&nbsp;cambios<br>
+remotos&nbsp;(actualizar)&nbsp;y&nbsp;locales&nbsp;(guardar).</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-refocus_entry"><strong>refocus_entry</strong></a>(self, widget, *args)</dt><dd><tt>Si&nbsp;hay&nbsp;botón&nbsp;guardar,&nbsp;guarda.<br>
+Pasa&nbsp;el&nbsp;foco&nbsp;al&nbsp;siguiente&nbsp;widget.<br>
+Usar&nbsp;solo&nbsp;como&nbsp;callback&nbsp;de&nbsp;la&nbsp;señal&nbsp;"activate"&nbsp;de&nbsp;los&nbsp;Entry,&nbsp;que&nbsp;se&nbsp;<br>
+dispara&nbsp;al&nbsp;pulsar&nbsp;Enter&nbsp;o&nbsp;programáticamente&nbsp;con&nbsp;.activate().</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-revivir"><strong>revivir</strong></a>(self, widget)</dt><dd><tt>Vuelve&nbsp;a&nbsp;habilitar&nbsp;los&nbsp;manejadores&nbsp;del&nbsp;widget.</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-salir"><strong>salir</strong></a>(self, boton, event<font color="#909090">=None</font>, mostrar_ventana<font color="#909090">=True</font>)</dt><dd><tt>Muestra&nbsp;una&nbsp;ventana&nbsp;de&nbsp;confirmación&nbsp;y&nbsp;<br>
+sale&nbsp;de&nbsp;la&nbsp;ventana&nbsp;cerrando&nbsp;el&nbsp;bucle<br>
+local&nbsp;de&nbsp;gtk_main.<br>
+Si&nbsp;mostrar_ventana&nbsp;es&nbsp;False,&nbsp;sale&nbsp;directamente<br>
+sin&nbsp;preguntar&nbsp;al&nbsp;usuario.</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-suspender"><strong>suspender</strong></a>(self, widget)</dt><dd><tt>Bloquea&nbsp;los&nbsp;manejadores&nbsp;de&nbsp;eventos&nbsp;del&nbsp;widget&nbsp;recibido&nbsp;hasta&nbsp;que&nbsp;se&nbsp;le&nbsp;<br>
+"trae&nbsp;a&nbsp;la&nbsp;vida"&nbsp;(TM)&nbsp;con&nbsp;.<a href="#CRM_DetallesFactura-revivir">revivir</a>(widget).</tt></dd></dl>
+
+<dl><dt><a name="CRM_DetallesFactura-volver_a_cursor_original"><strong>volver_a_cursor_original</strong></a>(self)</dt><dd><tt>Calcado&nbsp;de&nbsp;menu.py.&nbsp;Sólo&nbsp;lleva&nbsp;las&nbsp;modificaciones&nbsp;necesarias&nbsp;para&nbsp;hacerlo&nbsp;funcionar&nbsp;desde&nbsp;aquí.</tt></dd></dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-abrir_adjunto_from_tv"><strong>abrir_adjunto_from_tv</strong></a>(tv, path, col)</dt><dd><tt>Abre&nbsp;el&nbsp;adjunto&nbsp;con&nbsp;el&nbsp;programa&nbsp;asociado&nbsp;al&nbsp;mime-type&nbsp;del&nbsp;mismo.</tt></dd></dl>
+ <dl><dt><a name="-callback"><strong>callback</strong></a>(treeview, allocation, column, cell)</dt></dl>
+ <dl><dt><a name="-colorear_tv_alarmas"><strong>colorear_tv_alarmas</strong></a>(tv)</dt></dl>
+</td></tr></table>
+</body></html>

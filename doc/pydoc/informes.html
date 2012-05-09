@@ -1,0 +1,64 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module informes</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>informes</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/bogado/Geotexan/geotexinn02/formularios/informes.py">/home/bogado/Geotexan/geotexinn02/formularios/informes.py</a></font></td></tr></table>
+    <p><tt>#&nbsp;-*-&nbsp;coding:&nbsp;utf-8&nbsp;-*-</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="geninformes.html">geninformes</a><br>
+<a href="gtk.html">gtk</a><br>
+</td><td width="25%" valign=top><a href="os.html">os</a><br>
+<a href="pygtk.html">pygtk</a><br>
+</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+<a href="utils.html">utils</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-abrir_csv"><strong>abrir_csv</strong></a>(csv)</dt><dd><tt>Si&nbsp;la&nbsp;plataforma&nbsp;es&nbsp;MS-Windows&nbsp;abre&nbsp;el&nbsp;archivo&nbsp;con&nbsp;la&nbsp;aplicación&nbsp;<br>
+predeterminada&nbsp;para&nbsp;los&nbsp;archivos&nbsp;CSV&nbsp;(por&nbsp;desgracia&nbsp;me&nbsp;imagino&nbsp;que&nbsp;<br>
+MS-Excel).&nbsp;Si&nbsp;no,&nbsp;intenta&nbsp;abrirlo&nbsp;con&nbsp;OpenOffice.org&nbsp;Calc.</tt></dd></dl>
+ <dl><dt><a name="-abrir_pdf"><strong>abrir_pdf</strong></a>(pdf)</dt><dd><tt>Ejecuta&nbsp;una&nbsp;aplicación&nbsp;para&nbsp;visualizar&nbsp;el&nbsp;pdf&nbsp;en&nbsp;pantalla.<br>
+Si&nbsp;es&nbsp;MS-Windows&nbsp;tiro&nbsp;de&nbsp;adobre&nbsp;acrobat&nbsp;(a&nbsp;no&nbsp;ser&nbsp;que&nbsp;encuentre<br>
+algo&nbsp;mejor,&nbsp;más&nbsp;portable&nbsp;y&nbsp;empotrable).&nbsp;Si&nbsp;es&nbsp;UNIX-like&nbsp;lanzo<br>
+el&nbsp;evince,&nbsp;que&nbsp;es&nbsp;más&nbsp;completito&nbsp;que&nbsp;el&nbsp;xpdf.<br>
+Ni&nbsp;que&nbsp;decir&nbsp;tiene&nbsp;que&nbsp;todo&nbsp;eso&nbsp;debe&nbsp;instalarse&nbsp;aparte.</tt></dd></dl>
+ <dl><dt><a name="-get_ruta_ghostscript"><strong>get_ruta_ghostscript</strong></a>()</dt><dd><tt>Devuelve&nbsp;la&nbsp;ruta&nbsp;al&nbsp;ejecutable&nbsp;gswin32.exe.<br>
+Si&nbsp;no&nbsp;lo&nbsp;encuentra,&nbsp;devuelve&nbsp;None.</tt></dd></dl>
+ <dl><dt><a name="-imprimir_con_gs"><strong>imprimir_con_gs</strong></a>(fichero, impresora<font color="#909090">=None</font>, blanco_y_negro<font color="#909090">=False</font>)</dt><dd><tt>Imprime&nbsp;el&nbsp;fichero&nbsp;(PDF&nbsp;o&nbsp;PostScript)&nbsp;a&nbsp;través&nbsp;de&nbsp;GhostScript.<br>
+Si&nbsp;impresora&nbsp;es&nbsp;None,&nbsp;imprime&nbsp;sin&nbsp;intervención&nbsp;del&nbsp;usuario&nbsp;en&nbsp;la&nbsp;impresora&nbsp;por&nbsp;defecto.<br>
+¡SOLO&nbsp;PARA&nbsp;SISTEMAS&nbsp;MS-WINDOWS!</tt></dd></dl>
+ <dl><dt><a name="-mandar_a_imprimir_con_acrobat"><strong>mandar_a_imprimir_con_acrobat</strong></a>(fichero)</dt><dd><tt>Lanza&nbsp;un&nbsp;trabajo&nbsp;de&nbsp;impresión&nbsp;a&nbsp;través&nbsp;de&nbsp;acrobat&nbsp;reader.<br>
+Usa&nbsp;parámetros&nbsp;no&nbsp;documentados&nbsp;y&nbsp;oficialmente&nbsp;no&nbsp;soportados&nbsp;<br>
+por&nbsp;acrobat.&nbsp;Esta&nbsp;función&nbsp;es&nbsp;temporal,&nbsp;hasta&nbsp;que&nbsp;encuentre&nbsp;<br>
+un&nbsp;visor/impresor&nbsp;de&nbsp;PDF&nbsp;desde&nbsp;línea&nbsp;de&nbsp;comandos.<br>
+Win-only.&nbsp;No&nbsp;funciona&nbsp;en&nbsp;posix&nbsp;ni&nbsp;aún&nbsp;teniendo&nbsp;el&nbsp;reader<br>
+para&nbsp;esa&nbsp;plataforma&nbsp;(creo).<br>
+NO&nbsp;USAR&nbsp;CON&nbsp;ROLLOS:&nbsp;No&nbsp;cuadra&nbsp;bien&nbsp;la&nbsp;etiqueta&nbsp;y&nbsp;además&nbsp;deja&nbsp;abierta&nbsp;la&nbsp;ventana&nbsp;después.<br>
+Impresora&nbsp;CAB&nbsp;harcoded&nbsp;(y&nbsp;además&nbsp;no&nbsp;es&nbsp;el&nbsp;nombre&nbsp;por&nbsp;defecto&nbsp;de&nbsp;la&nbsp;impresora).</tt></dd></dl>
+ <dl><dt><a name="-mandar_a_imprimir_con_foxit"><strong>mandar_a_imprimir_con_foxit</strong></a>(fichero)</dt><dd><tt>Lanza&nbsp;un&nbsp;trabajo&nbsp;de&nbsp;impresión&nbsp;a&nbsp;través&nbsp;de&nbsp;foxit&nbsp;reader&nbsp;o&nbsp;<br>
+LPR&nbsp;si&nbsp;el&nbsp;sistema&nbsp;es&nbsp;UNIX.&nbsp;<br>
+OJO:&nbsp;Siempre&nbsp;manda&nbsp;a&nbsp;la&nbsp;impresora&nbsp;por&nbsp;defecto.</tt></dd></dl>
+ <dl><dt><a name="-que_simpatico_es_el_interprete_de_windows"><strong>que_simpatico_es_el_interprete_de_windows</strong></a>(comando, parametro)</dt><dd><tt>El&nbsp;os.system&nbsp;llama&nbsp;a&nbsp;cmd&nbsp;/C&nbsp;y/o&nbsp;/K,&nbsp;y&nbsp;el&nbsp;cmd.exe&nbsp;es&nbsp;muy&nbsp;simpático&nbsp;y&nbsp;se&nbsp;<br>
+comporta&nbsp;como&nbsp;le&nbsp;da&nbsp;la&nbsp;gana.&nbsp;No&nbsp;sabe&nbsp;ni&nbsp;escapar&nbsp;los&nbsp;espacios&nbsp;de&nbsp;sus&nbsp;propias&nbsp;rutas,&nbsp;<br>
+por&nbsp;lo&nbsp;que&nbsp;como&nbsp;intentes&nbsp;ejecutar&nbsp;algo&nbsp;dentro&nbsp;de&nbsp;Archivos&nbsp;de&nbsp;programa...&nbsp;total,&nbsp;<br>
+que&nbsp;hay&nbsp;que&nbsp;encerrar&nbsp;todo&nbsp;entre&nbsp;comillas&nbsp;y&nbsp;otra&nbsp;vez&nbsp;entre&nbsp;comillas.<br>
+mi&nbsp;nota:&nbsp;PUTAMIERDA<br>
+ver:&nbsp;<a href="http://jason.diamond.name/weblog/2005/04/14/dont-quote-me-on-this">http://jason.diamond.name/weblog/2005/04/14/dont-quote-me-on-this</a></tt></dd></dl>
+</td></tr></table>
+</body></html>

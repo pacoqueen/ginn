@@ -1,0 +1,138 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module menu</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>menu</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/queen/geotexan/geotexinn02/formularios/menu.py">/home/queen/geotexan/geotexinn02/formularios/menu.py</a></font></td></tr></table>
+    <p><tt>#&nbsp;-*-&nbsp;coding:&nbsp;utf-8&nbsp;-*-</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="gobject.html">gobject</a><br>
+<a href="gtk.html">gtk</a><br>
+</td><td width="25%" valign=top><a href="mx.html">mx</a><br>
+<a href="os.html">os</a><br>
+</td><td width="25%" valign=top><a href="pygtk.html">pygtk</a><br>
+<a href="sys.html">sys</a><br>
+</td><td width="25%" valign=top><a href="traceback.html">traceback</a><br>
+<a href="utils.html">utils</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="menu.html#Menu">Menu</a>
+</font></dt><dt><font face="helvetica, arial"><a href="menu.html#MetaF">MetaF</a>
+</font></dt></dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Menu">class <strong>Menu</strong></a></font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Menu-__init__"><strong>__init__</strong></a>(self, user<font color="#909090">=None</font>, passwd<font color="#909090">=None</font>)</dt><dd><tt>user:&nbsp;Usuario.&nbsp;Si&nbsp;es&nbsp;None&nbsp;se&nbsp;solicitará&nbsp;en&nbsp;la&nbsp;ventana&nbsp;de&nbsp;autentificación.<br>
+passwd:&nbsp;Contraseña.&nbsp;Si&nbsp;es&nbsp;None,&nbsp;se&nbsp;solicitaré&nbsp;en&nbsp;la&nbsp;ventana&nbsp;de&nbsp;autentificación.<br>
+Si&nbsp;user&nbsp;y&nbsp;passws&nbsp;son&nbsp;distintos&nbsp;a&nbsp;None,&nbsp;no&nbsp;se&nbsp;mostrará&nbsp;la&nbsp;ventana&nbsp;de&nbsp;autentificación<br>
+a&nbsp;no&nbsp;ser&nbsp;que&nbsp;sean&nbsp;incorrectos.</tt></dd></dl>
+
+<dl><dt><a name="Menu-abrir"><strong>abrir</strong></a>(self, iview, path, model)</dt></dl>
+
+<dl><dt><a name="Menu-abrir_gajim"><strong>abrir_gajim</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Menu-abrir_pruebas_coherencia"><strong>abrir_pruebas_coherencia</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Menu-acerca_de"><strong>acerca_de</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Menu-construir_modulo"><strong>construir_modulo</strong></a>(self, nombre, ventanas, ordenar<font color="#909090">=True</font>)</dt><dd><tt>Crea&nbsp;un&nbsp;IconView&nbsp;con&nbsp;las<br>
+ventanas&nbsp;que&nbsp;contiene&nbsp;el&nbsp;módulo.<br>
+Recibe&nbsp;una&nbsp;lista&nbsp;de&nbsp;objetos&nbsp;ventana&nbsp;de&nbsp;pclases.<br>
+Si&nbsp;«ordenar»&nbsp;es&nbsp;False&nbsp;usa&nbsp;el&nbsp;orden&nbsp;de&nbsp;la&nbsp;lista&nbsp;de&nbsp;ventanas&nbsp;<br>
+recibidas.&nbsp;En&nbsp;otro&nbsp;caso&nbsp;las&nbsp;organiza&nbsp;por&nbsp;orden&nbsp;alfabético.</tt></dd></dl>
+
+<dl><dt><a name="Menu-construir_ventana"><strong>construir_ventana</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Menu-create_frame"><strong>create_frame</strong></a>(self, modulo)</dt></dl>
+
+<dl><dt><a name="Menu-create_menu"><strong>create_menu</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Menu-cutmaister"><strong>cutmaister</strong></a>(self, texto, MAX<font color="#909090">=20</font>)</dt><dd><tt>Si&nbsp;el&nbsp;texto&nbsp;tiene&nbsp;una&nbsp;longitud&nbsp;superior&nbsp;a&nbsp;20&nbsp;caracteres&nbsp;de&nbsp;ancho&nbsp;lo<br>
+corta&nbsp;en&nbsp;varias&nbsp;líneas.</tt></dd></dl>
+
+<dl><dt><a name="Menu-get_usuario"><strong>get_usuario</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Menu-launch_browser_mailer"><strong>launch_browser_mailer</strong></a>(self, dialogo, uri, tipo)</dt></dl>
+
+<dl><dt><a name="Menu-mostrar"><strong>mostrar</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Menu-mostrar_item_seleccionado"><strong>mostrar_item_seleccionado</strong></a>(self, icon_view, model)</dt></dl>
+
+<dl><dt><a name="Menu-on_select"><strong>on_select</strong></a>(self, icon_view, model<font color="#909090">=None</font>)</dt></dl>
+
+<dl><dt><a name="Menu-salir"><strong>salir</strong></a>(self, boton, event<font color="#909090">=None</font>, mostrar_ventana<font color="#909090">=True</font>, ventana<font color="#909090">=None</font>)</dt><dd><tt>Muestra&nbsp;una&nbsp;ventana&nbsp;de&nbsp;confirmación&nbsp;y&nbsp;<br>
+sale&nbsp;de&nbsp;la&nbsp;ventana&nbsp;cerrando&nbsp;el&nbsp;bucle<br>
+local&nbsp;de&nbsp;gtk_main.<br>
+Si&nbsp;mostrar_ventana&nbsp;es&nbsp;False,&nbsp;sale&nbsp;directamente<br>
+sin&nbsp;preguntar&nbsp;al&nbsp;usuario.</tt></dd></dl>
+
+<dl><dt><a name="Menu-volver_a_cursor_original"><strong>volver_a_cursor_original</strong></a>(self)</dt></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="MetaF">class <strong>MetaF</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>"Metafichero"&nbsp;para&nbsp;almacenar&nbsp;la&nbsp;salida&nbsp;de&nbsp;errores&nbsp;y&nbsp;poder&nbsp;<br>
+enviar&nbsp;informes&nbsp;de&nbsp;error.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="MetaF-__get__"><strong>__get__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="MetaF-__init__"><strong>__init__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="MetaF-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="MetaF-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="MetaF-vacio"><strong>vacio</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="MetaF-write"><strong>write</strong></a>(self, t)</dt></dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-construir_y_enviar"><strong>construir_y_enviar</strong></a>(w, ventana, remitente, observaciones, texto, usuario)</dt></dl>
+ <dl><dt><a name="-crear_ventana"><strong>crear_ventana</strong></a>(titulo, texto, usuario)</dt></dl>
+ <dl><dt><a name="-enviar_correo"><strong>enviar_correo</strong></a>(texto, usuario<font color="#909090">=None</font>)</dt></dl>
+ <dl><dt><a name="-guardar_error_a_disco"><strong>guardar_error_a_disco</strong></a>(remitente, observaciones, texto)</dt><dd><tt>Pregunta&nbsp;si&nbsp;guardar&nbsp;el&nbsp;error&nbsp;en&nbsp;disco&nbsp;como&nbsp;archivo&nbsp;de&nbsp;texto.</tt></dd></dl>
+ <dl><dt><a name="-import_pclases"><strong>import_pclases</strong></a>()</dt><dd><tt>Importa&nbsp;y&nbsp;devuelve&nbsp;el&nbsp;módulo&nbsp;pclases.</tt></dd></dl>
+ <dl><dt><a name="-mostrar_dialogo_y_guardar"><strong>mostrar_dialogo_y_guardar</strong></a>(txt)</dt></dl>
+ <dl><dt><a name="-save_to_file"><strong>save_to_file</strong></a>(nombre, texto)</dt><dd><tt>Abre&nbsp;el&nbsp;archivo&nbsp;"nombre"&nbsp;y&nbsp;guarda&nbsp;el&nbsp;texto&nbsp;en&nbsp;él.&nbsp;Si&nbsp;ya&nbsp;existe,&nbsp;lo&nbsp;añade.</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>path_framework</strong> = '../framework'</td></tr></table>
+</body></html>

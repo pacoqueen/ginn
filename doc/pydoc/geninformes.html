@@ -1,0 +1,869 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module geninformes</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>geninformes</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/bogado/Geotexan/geotexinn02/informes/geninformes.py">/home/bogado/Geotexan/geotexinn02/informes/geninformes.py</a></font></td></tr></table>
+    <p><tt>#&nbsp;-*-&nbsp;coding:&nbsp;utf-8&nbsp;-*-</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="Image.html">Image</a><br>
+<a href="reportlab.pdfgen.canvas.html">reportlab.pdfgen.canvas</a><br>
+<a href="barcode.code93.html">barcode.code93</a><br>
+<a href="gobject.html">gobject</a><br>
+</td><td width="25%" valign=top><a href="mx.html">mx</a><br>
+<a href="os.html">os</a><br>
+<a href="pclases.html">pclases</a><br>
+<a href="re.html">re</a><br>
+</td><td width="25%" valign=top><a href="reportlab.html">reportlab</a><br>
+<a href="sqlobject.html">sqlobject</a><br>
+<a href="sys.html">sys</a><br>
+<a href="time.html">time</a><br>
+</td><td width="25%" valign=top><a href="utils.html">utils</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-abono"><strong>abono</strong></a>(cliente, factdata, lineasAbono, lineasDevolucion, arancel, vencimiento, texto, totales, impuesto<font color="#909090">=1.1599999999999999</font>, facturas_abonadas<font color="#909090">=None</font>, orden_ventanas<font color="#909090">=None</font>)</dt><dd><tt>Con&nbsp;los&nbsp;datos&nbsp;de&nbsp;entrada&nbsp;genera&nbsp;la&nbsp;factura.<br>
+&nbsp;<br>
+@params<br>
+&nbsp;<br>
+cliente&nbsp;--&gt;&nbsp;es&nbsp;un&nbsp;diccionario&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'numcli'&nbsp;Número&nbsp;de&nbsp;cliente<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'nombre'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'cif'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'direccion'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'cp'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'localidad'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'pais'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'telf'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'fax'<br>
+&nbsp;<br>
+factdata&nbsp;--&gt;&nbsp;datos&nbsp;de&nbsp;la&nbsp;cabecera&nbsp;de&nbsp;la&nbsp;factura,&nbsp;es&nbsp;diccionario&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'facnum'&nbsp;Número&nbsp;de&nbsp;factura<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'fecha'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'pedido'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'albaranes'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'observaciones'<br>
+&nbsp;<br>
+lineas&nbsp;--&gt;&nbsp;datos&nbsp;del&nbsp;cuerpo&nbsp;de&nbsp;la&nbsp;factura,&nbsp;es&nbsp;una&nbsp;lista&nbsp;(un&nbsp;elemento<br>
+por&nbsp;línea)&nbsp;de&nbsp;diccionarios&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'codigo'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'cantidad'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'descripcion'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'precio'&nbsp;precio&nbsp;unitario<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'descuento'<br>
+&nbsp;<br>
+arancel&nbsp;--&gt;&nbsp;una&nbsp;cadena&nbsp;con&nbsp;el&nbsp;código&nbsp;de&nbsp;arancel,&nbsp;si&nbsp;no&nbsp;es&nbsp;para&nbsp;extranjero<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;es&nbsp;None&nbsp;y&nbsp;se&nbsp;aplica&nbsp;el&nbsp;impuesto.&nbsp;Con&nbsp;arancel&nbsp;el&nbsp;impuesto&nbsp;es&nbsp;0<br>
+&nbsp;<br>
+vencimiento&nbsp;--&gt;&nbsp;diccionario&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'fecha'&nbsp;--&gt;&nbsp;fecha&nbsp;de&nbsp;vencimiento<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'pago'&nbsp;--&gt;&nbsp;forma&nbsp;de&nbsp;pago<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'documento'&nbsp;--&gt;&nbsp;es&nbsp;un&nbsp;diccionario&nbsp;con...^H^H^H^H^H^H&nbsp;DE&nbsp;DICCIONARIO<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NADA,&nbsp;MONADA.<br>
+&nbsp;<br>
+texto&nbsp;--&gt;&nbsp;cadena&nbsp;que&nbsp;se&nbsp;pone&nbsp;en&nbsp;el&nbsp;cuadro&nbsp;IMPORTA&nbsp;LA&nbsp;PRESENTE&nbsp;FACTURA<br>
+&nbsp;<br>
+totales&nbsp;--&gt;diccionario&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-'subtotal'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-'cargo'&nbsp;None&nbsp;si&nbsp;no&nbsp;tiene<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-'descuento'&nbsp;None&nbsp;si&nbsp;no&nbsp;tiene<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-'totaliva'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-'total'<br>
+&nbsp;<br>
+impuesto&nbsp;--&gt;&nbsp;valor&nbsp;numerico&nbsp;con&nbsp;el&nbsp;impuesto&nbsp;aplicado.&nbsp;Con&nbsp;arancel&nbsp;se&nbsp;pone<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;0&nbsp;automaticamente</tt></dd></dl>
+ <dl><dt><a name="-abono_old"><strong>abono_old</strong></a>(cliente, factdata, lineasAbono, lineasDevolucion, texto)</dt><dd><tt>**************<br>
+**&nbsp;OBSOLETO&nbsp;**<br>
+**************<br>
+&nbsp;<br>
+Con&nbsp;los&nbsp;datos&nbsp;de&nbsp;entrada&nbsp;genera&nbsp;el&nbsp;abono.<br>
+&nbsp;<br>
+@params<br>
+&nbsp;<br>
+cliente&nbsp;--&gt;&nbsp;es&nbsp;un&nbsp;diccionario&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'numcli'&nbsp;Número&nbsp;de&nbsp;cliente<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'nombre'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'cif'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'direccion'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'cp'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'localidad'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'pais'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'telf'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'fax'<br>
+&nbsp;<br>
+factdata&nbsp;--&gt;&nbsp;datos&nbsp;de&nbsp;la&nbsp;cabecera&nbsp;de&nbsp;la&nbsp;factura,&nbsp;es&nbsp;diccionario&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'facnum'&nbsp;Número&nbsp;de&nbsp;factura<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'fecha'<br>
+&nbsp;<br>
+lineasAbono&nbsp;y&nbsp;lineasDescuento&nbsp;--&gt;&nbsp;datos&nbsp;del&nbsp;cuerpo&nbsp;de&nbsp;la&nbsp;factura,&nbsp;es&nbsp;una<br>
+&nbsp;&nbsp;lista&nbsp;(un&nbsp;elemento&nbsp;por&nbsp;línea)&nbsp;de&nbsp;diccionarios&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'producto'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'importe'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'cantidad'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'total'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'observaciones'<br>
+&nbsp;<br>
+texto&nbsp;--&nbsp;&gt;&nbsp;observaciones</tt></dd></dl>
+ <dl><dt><a name="-abreviar"><strong>abreviar</strong></a>(cad, l<font color="#909090">=8</font>)</dt><dd><tt>Acorta&nbsp;una&nbsp;cadena&nbsp;hasta&nbsp;dejarla&nbsp;en&nbsp;una&nbsp;longitud&nbsp;«l»&nbsp;intentando&nbsp;<br>
+respetar&nbsp;la&nbsp;primera&nbsp;palabra.</tt></dd></dl>
+ <dl><dt><a name="-agregarFila"><strong>agregarFila</strong></a>(origen, linea, limite, cadena, hoja, fuente, tamano, a_derecha<font color="#909090">=False</font>, altura_linea<font color="#909090">=10</font>, centrado<font color="#909090">=False</font>, simular<font color="#909090">=False</font>, subrayador_fosforito<font color="#909090">=None</font>)</dt><dd><tt>Intenta&nbsp;escribir&nbsp;el&nbsp;texto&nbsp;en&nbsp;el&nbsp;espacio&nbsp;comprendido&nbsp;entre<br>
+origen&nbsp;y&nbsp;limite.&nbsp;Si&nbsp;no&nbsp;tiene&nbsp;espacio&nbsp;suficiente&nbsp;la&nbsp;corta<br>
+en&nbsp;las&nbsp;líneas&nbsp;que&nbsp;sean&nbsp;necesarias&nbsp;y&nbsp;devuelve&nbsp;el&nbsp;número<br>
+de&nbsp;líneas&nbsp;que&nbsp;ha&nbsp;avanzado.<br>
+&nbsp;<br>
+Si&nbsp;a_derecha&nbsp;==&nbsp;True,&nbsp;dibuja&nbsp;el&nbsp;texto&nbsp;alineado&nbsp;a&nbsp;la&nbsp;derecha.<br>
+altura_linea&nbsp;es&nbsp;la&nbsp;altura&nbsp;de&nbsp;la&nbsp;línea&nbsp;(en&nbsp;positivo).<br>
+&nbsp;<br>
+Si&nbsp;«simular»&nbsp;es&nbsp;True&nbsp;no&nbsp;escribe&nbsp;nada,&nbsp;simplemente&nbsp;devuelve&nbsp;las&nbsp;líneas&nbsp;<br>
+que&nbsp;se&nbsp;sumarían&nbsp;en&nbsp;caso&nbsp;de&nbsp;hacerlo.<br>
+&nbsp;<br>
+Si&nbsp;«subrayador_fosforito»&nbsp;es&nbsp;una&nbsp;tupla&nbsp;de&nbsp;tres&nbsp;números&nbsp;entre&nbsp;0&nbsp;y&nbsp;1,&nbsp;<br>
+subraya&nbsp;las&nbsp;líneas&nbsp;escritas&nbsp;en&nbsp;el&nbsp;color&nbsp;RGB&nbsp;de&nbsp;la&nbsp;tupla.</tt></dd></dl>
+ <dl><dt><a name="-albaran"><strong>albaran</strong></a>(composan, cliente, envio, general, lineas, observaciones, destino, transporte, conformeT, conformeD)</dt><dd><tt>Con&nbsp;los&nbsp;datos&nbsp;de&nbsp;entrada&nbsp;genera&nbsp;el&nbsp;albarán.<br>
+&nbsp;<br>
+@params<br>
+&nbsp;<br>
+composan&nbsp;--&gt;&nbsp;es&nbsp;un&nbsp;valor&nbsp;booleano&nbsp;que&nbsp;si&nbsp;es&nbsp;True&nbsp;genera&nbsp;el<br>
+albarán&nbsp;de&nbsp;composán&nbsp;(amarillo)&nbsp;y&nbsp;si&nbsp;es&nbsp;False&nbsp;genera&nbsp;el<br>
+albarán&nbsp;de&nbsp;Geotexan&nbsp;(verde)<br>
+&nbsp;<br>
+cliente&nbsp;--&gt;&nbsp;datos&nbsp;del&nbsp;cliente&nbsp;(no&nbsp;los&nbsp;de&nbsp;envio),&nbsp;es&nbsp;un&nbsp;diccionario&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'nombre'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'direccion'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'cp'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'localidad'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'provincia'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'pais'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'&nbsp;'telf'<br>
+&nbsp;<br>
+envio&nbsp;--&gt;&nbsp;datos&nbsp;que&nbsp;se&nbsp;ven&nbsp;en&nbsp;el&nbsp;sobre,&nbsp;es&nbsp;un&nbsp;diccionario&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'nombre'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'direccion'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'cp'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'localidad'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'provincia'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'pais'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'telf'<br>
+&nbsp;<br>
+general&nbsp;--&gt;&nbsp;datos&nbsp;de&nbsp;la&nbsp;cabecera&nbsp;del&nbsp;albarán,&nbsp;diccionario&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'albnum'&nbsp;Número&nbsp;de&nbsp;albarán<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'fecha'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'exp'&nbsp;Expedido&nbsp;en<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'clinum'&nbsp;Número&nbsp;de&nbsp;cliente<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'pednum'&nbsp;Número&nbsp;de&nbsp;pedido<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'numref'&nbsp;Número&nbsp;de&nbsp;referencia<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'&nbsp;'sref'&nbsp;MIRAR&nbsp;Viene&nbsp;en&nbsp;el&nbsp;albarán&nbsp;como&nbsp;S/REFERENCIA<br>
+&nbsp;<br>
+lineas&nbsp;--&gt;&nbsp;datos&nbsp;del&nbsp;cuerpo&nbsp;del&nbsp;albarán,&nbsp;es&nbsp;una&nbsp;lista&nbsp;(un&nbsp;elemento<br>
+por&nbsp;línea)&nbsp;de&nbsp;diccionarios&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'bultos'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'codigo'&nbsp;//Debe&nbsp;soportar&nbsp;13&nbsp;digitos&nbsp;en&nbsp;la&nbsp;hoja<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'descripcion'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'cantidad'&nbsp;Cantidad&nbsp;servida<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'numped'&nbsp;Número&nbsp;de&nbsp;pedido<br>
+&nbsp;<br>
+observaciones&nbsp;--&gt;&nbsp;una&nbsp;cadena<br>
+&nbsp;<br>
+destino&nbsp;--&gt;&nbsp;una&nbsp;cadena<br>
+&nbsp;<br>
+transporte&nbsp;--&gt;&nbsp;una&nbsp;cadena<br>
+&nbsp;<br>
+conformeT&nbsp;--&gt;&nbsp;datos&nbsp;del&nbsp;transportista&nbsp;para&nbsp;la&nbsp;firma&nbsp;de&nbsp;conforme.&nbsp;Es<br>
+un&nbsp;diccionario&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'nombre'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'dni'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'telf'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'matricula'<br>
+&nbsp;<br>
+conformeD&nbsp;--&gt;&nbsp;conforme&nbsp;destino&nbsp;sólo&nbsp;para&nbsp;el&nbsp;albarán&nbsp;de&nbsp;composán.&nbsp;Es&nbsp;None<br>
+para&nbsp;el&nbsp;normal&nbsp;y&nbsp;para&nbsp;el&nbsp;de&nbsp;composán&nbsp;es&nbsp;un&nbsp;diccionario&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'nombre'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'dni'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'telf'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'matricula'</tt></dd></dl>
+ <dl><dt><a name="-albaranEntrada"><strong>albaranEntrada</strong></a>(general, lineas, observaciones)</dt><dd><tt>Con&nbsp;los&nbsp;datos&nbsp;de&nbsp;entrada&nbsp;genera&nbsp;el&nbsp;albarán.<br>
+&nbsp;<br>
+@params<br>
+&nbsp;<br>
+general&nbsp;--&gt;&nbsp;datos&nbsp;de&nbsp;la&nbsp;cabecera&nbsp;del&nbsp;albarán,&nbsp;diccionario&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'albnum'&nbsp;Número&nbsp;de&nbsp;albarán<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'fecha'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'proveedor'&nbsp;--&gt;&nbsp;una&nbsp;cadena&nbsp;con&nbsp;los&nbsp;proveedores&nbsp;separados&nbsp;por&nbsp;comas:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'pednum'&nbsp;Número&nbsp;de&nbsp;los&nbsp;pedidos&nbsp;asociados&nbsp;al&nbsp;albarán<br>
+&nbsp;<br>
+lineas&nbsp;--&gt;&nbsp;datos&nbsp;del&nbsp;cuerpo&nbsp;del&nbsp;albarán,&nbsp;es&nbsp;una&nbsp;lista&nbsp;(un&nbsp;elemento<br>
+por&nbsp;línea)&nbsp;de&nbsp;diccionarios&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'codigo'&nbsp;//Debe&nbsp;soportar&nbsp;13&nbsp;digitos&nbsp;en&nbsp;la&nbsp;hoja<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'descripcion'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'cantidad'&nbsp;Cantidad&nbsp;servida<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'numped'&nbsp;Pedido&nbsp;al&nbsp;que&nbsp;está&nbsp;asociada&nbsp;la&nbsp;línea<br>
+&nbsp;<br>
+observaciones&nbsp;--&gt;&nbsp;una&nbsp;cadena</tt></dd></dl>
+ <dl><dt><a name="-albaranValorado"><strong>albaranValorado</strong></a>(cliente, envio, general, lineas, observaciones, destino, transporte, conformeT, valorar_con_iva<font color="#909090">=True</font>)</dt><dd><tt>Con&nbsp;los&nbsp;datos&nbsp;de&nbsp;entrada&nbsp;genera&nbsp;el&nbsp;albarán.<br>
+&nbsp;<br>
+cliente&nbsp;--&gt;&nbsp;datos&nbsp;del&nbsp;cliente&nbsp;(no&nbsp;los&nbsp;de&nbsp;envio),&nbsp;es&nbsp;un&nbsp;diccionario&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'nombre'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'direccion'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'cp'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'localidad'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'provincia'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'pais'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'&nbsp;'telf'<br>
+&nbsp;<br>
+envio&nbsp;--&gt;&nbsp;datos&nbsp;que&nbsp;se&nbsp;ven&nbsp;en&nbsp;el&nbsp;sobre,&nbsp;es&nbsp;un&nbsp;diccionario&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'nombre'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'direccion'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'cp'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'localidad'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'provincia'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'pais'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'telf'<br>
+&nbsp;<br>
+general&nbsp;--&gt;&nbsp;datos&nbsp;de&nbsp;la&nbsp;cabecera&nbsp;del&nbsp;albarán,&nbsp;diccionario&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'albnum'&nbsp;Número&nbsp;de&nbsp;albarán<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'fecha'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'exp'&nbsp;Expedido&nbsp;en<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'clinum'&nbsp;Número&nbsp;de&nbsp;cliente<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'pednum'&nbsp;Número&nbsp;de&nbsp;pedido<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'numref'&nbsp;Número&nbsp;de&nbsp;referencia<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'&nbsp;'sref'&nbsp;MIRAR&nbsp;Viene&nbsp;en&nbsp;el&nbsp;albarán&nbsp;como&nbsp;S/REFERENCIA<br>
+&nbsp;<br>
+lineas&nbsp;--&gt;&nbsp;datos&nbsp;del&nbsp;cuerpo&nbsp;del&nbsp;albarán,&nbsp;es&nbsp;una&nbsp;lista&nbsp;(un&nbsp;elemento<br>
+por&nbsp;línea)&nbsp;de&nbsp;diccionarios&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'bultos'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'codigo'&nbsp;//Debe&nbsp;soportar&nbsp;13&nbsp;digitos&nbsp;en&nbsp;la&nbsp;hoja<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'descripcion'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'cantidad'&nbsp;Cantidad&nbsp;servida<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'numped'&nbsp;Número&nbsp;de&nbsp;pedido<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'precio&nbsp;unitario'&nbsp;//&nbsp;Precio&nbsp;unitario&nbsp;como&nbsp;cadena.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'total'&nbsp;//&nbsp;Total&nbsp;de&nbsp;línea&nbsp;como&nbsp;cadena<br>
+&nbsp;<br>
+observaciones&nbsp;--&gt;&nbsp;una&nbsp;cadena<br>
+&nbsp;<br>
+destino&nbsp;--&gt;&nbsp;una&nbsp;cadena<br>
+&nbsp;<br>
+transporte&nbsp;--&gt;&nbsp;una&nbsp;cadena<br>
+&nbsp;<br>
+conformeT&nbsp;--&gt;&nbsp;datos&nbsp;del&nbsp;transportista&nbsp;para&nbsp;la&nbsp;firma&nbsp;de&nbsp;conforme.&nbsp;Es<br>
+un&nbsp;diccionario&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'nombre'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'dni'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'telf'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'matricula'</tt></dd></dl>
+ <dl><dt><a name="-albaranesCliente"><strong>albaranesCliente</strong></a>(datos, nombrecliente, fecha<font color="#909090">=None</font>)</dt><dd><tt>Crea&nbsp;un&nbsp;informe&nbsp;relativo&nbsp;a&nbsp;los&nbsp;albaranes&nbsp;realizados&nbsp;por&nbsp;un&nbsp;cliente&nbsp;dado</tt></dd></dl>
+ <dl><dt><a name="-albaranesFacturados"><strong>albaranesFacturados</strong></a>(datos, fecha<font color="#909090">=None</font>, clienteproveedor<font color="#909090">='Cliente'</font>)</dt><dd><tt>Crea&nbsp;un&nbsp;informe&nbsp;de&nbsp;los&nbsp;albaranes&nbsp;ya&nbsp;facturados&nbsp;para&nbsp;un&nbsp;periodo&nbsp;de&nbsp;fecha<br>
+dado.</tt></dd></dl>
+ <dl><dt><a name="-albaranesSinFacturar"><strong>albaranesSinFacturar</strong></a>(datos, fecha<font color="#909090">=None</font>, clienteproveedor<font color="#909090">='Cliente'</font>)</dt><dd><tt>Crea&nbsp;un&nbsp;informe&nbsp;de&nbsp;los&nbsp;albaranes&nbsp;NO&nbsp;facturados&nbsp;para&nbsp;un&nbsp;periodo&nbsp;de&nbsp;fecha<br>
+dado.<br>
+OBSOLETO.&nbsp;DEPRECATED.</tt></dd></dl>
+ <dl><dt><a name="-apaisar"><strong>apaisar</strong></a>(apaisar<font color="#909090">=True</font>)</dt></dl>
+ <dl><dt><a name="-ausencia"><strong>ausencia</strong></a>(empleado, centro, fecha, turno, motivo, motivos)</dt><dd><tt>Imprime&nbsp;un&nbsp;informe&nbsp;para&nbsp;una&nbsp;ausencia&nbsp;dada</tt></dd></dl>
+ <dl><dt><a name="-bajoMinimos"><strong>bajoMinimos</strong></a>(titulo, datos, fecha, proveedor<font color="#909090">=''</font>)</dt><dd><tt>Crea&nbsp;un&nbsp;informe&nbsp;con&nbsp;los&nbsp;productos&nbsp;por&nbsp;debajo&nbsp;del&nbsp;mínimo&nbsp;en&nbsp;almacen</tt></dd></dl>
+ <dl><dt><a name="-buscar_datos_existencias"><strong>buscar_datos_existencias</strong></a>(p, hasta)</dt><dd><tt>Devuelve&nbsp;los&nbsp;datos&nbsp;del&nbsp;producto&nbsp;p&nbsp;para&nbsp;el&nbsp;informe&nbsp;de&nbsp;existencias<br>
+en&nbsp;función&nbsp;de&nbsp;si&nbsp;hay&nbsp;fecha&nbsp;límite&nbsp;o&nbsp;no.</tt></dd></dl>
+ <dl><dt><a name="-cabecera"><strong>cabecera</strong></a>(c, texto, fecha<font color="#909090">=None</font>, apaisado<font color="#909090">=False</font>)</dt><dd><tt>Dibuja&nbsp;la&nbsp;cabecera&nbsp;del&nbsp;informe</tt></dd></dl>
+ <dl><dt><a name="-calcular_medidas"><strong>calcular_medidas</strong></a>(cheque)</dt><dd><tt>Si&nbsp;«cheque»&nbsp;es&nbsp;True&nbsp;devuelve&nbsp;las&nbsp;medidas&nbsp;para&nbsp;un&nbsp;cheque,&nbsp;si&nbsp;no,&nbsp;las<br>
+devuelve&nbsp;para&nbsp;un&nbsp;pagaré.</tt></dd></dl>
+ <dl><dt><a name="-calcular_medidas_cmr"><strong>calcular_medidas_cmr</strong></a>()</dt><dd><tt>Medidas&nbsp;del&nbsp;CMR.</tt></dd></dl>
+ <dl><dt><a name="-calcular_medidas_fax"><strong>calcular_medidas_fax</strong></a>()</dt><dd><tt>Devuelve&nbsp;las&nbsp;medidas&nbsp;de&nbsp;los&nbsp;campos&nbsp;de&nbsp;la&nbsp;hoja&nbsp;de&nbsp;fax.</tt></dd></dl>
+ <dl><dt><a name="-calcular_medidas_presupuesto"><strong>calcular_medidas_presupuesto</strong></a>()</dt><dd><tt>Devuelve&nbsp;las&nbsp;medidas&nbsp;de&nbsp;los&nbsp;campos&nbsp;de&nbsp;la&nbsp;hoja&nbsp;de&nbsp;fax.</tt></dd></dl>
+ <dl><dt><a name="-calcular_medidas_recibo"><strong>calcular_medidas_recibo</strong></a>()</dt><dd><tt>Devuelve&nbsp;un&nbsp;diccionario&nbsp;con&nbsp;las&nbsp;medidas&nbsp;de&nbsp;los&nbsp;elementos&nbsp;que&nbsp;componen<br>
+el&nbsp;PDF&nbsp;de&nbsp;un&nbsp;recibo.<br>
+Son&nbsp;medidas&nbsp;relativas.&nbsp;Hay&nbsp;que&nbsp;sumarles&nbsp;los&nbsp;márgenes&nbsp;y&nbsp;el&nbsp;desplazamiento<br>
+deseado&nbsp;antes&nbsp;de&nbsp;usarlas&nbsp;en&nbsp;el&nbsp;canvas.</tt></dd></dl>
+ <dl><dt><a name="-calcular_posiciones_etiqueta_caja"><strong>calcular_posiciones_etiqueta_caja</strong></a>(ancho, alto, tipo<font color="#909090">=0</font>)</dt><dd><tt>Devuelve&nbsp;un&nbsp;diccionario&nbsp;de&nbsp;posiciones,&nbsp;fuentes&nbsp;y&nbsp;tamaños&nbsp;donde&nbsp;se&nbsp;<br>
+dibujarán&nbsp;los&nbsp;textos&nbsp;de&nbsp;la&nbsp;etiqueta&nbsp;en&nbsp;función&nbsp;del&nbsp;tipo&nbsp;recibido.</tt></dd></dl>
+ <dl><dt><a name="-calcular_posiciones_etiqueta_pale"><strong>calcular_posiciones_etiqueta_pale</strong></a>(ancho, alto, tipo<font color="#909090">=0</font>)</dt><dd><tt>Devuelve&nbsp;un&nbsp;diccionario&nbsp;de&nbsp;posiciones,&nbsp;fuentes&nbsp;y&nbsp;tamaños&nbsp;donde&nbsp;se&nbsp;<br>
+dibujarán&nbsp;los&nbsp;textos&nbsp;de&nbsp;la&nbsp;etiqueta&nbsp;en&nbsp;función&nbsp;del&nbsp;tipo&nbsp;recibido.</tt></dd></dl>
+ <dl><dt><a name="-cambiar_caracteres_problematicos"><strong>cambiar_caracteres_problematicos</strong></a>(cadena)</dt></dl>
+ <dl><dt><a name="-cambiar_tildes"><strong>cambiar_tildes</strong></a>(cadena)</dt><dd><tt>Cambia&nbsp;las&nbsp;tildes&nbsp;de&nbsp;la&nbsp;cadena&nbsp;con&nbsp;caracteres&nbsp;sin&nbsp;tilde.</tt></dd></dl>
+ <dl><dt><a name="-carta_pago"><strong>carta_pago</strong></a>(pagare, cheque<font color="#909090">=True</font>, textofijo<font color="#909090">=True</font>)</dt><dd><tt>Recibe&nbsp;un&nbsp;pagaré&nbsp;de&nbsp;pclases&nbsp;y&nbsp;genera&nbsp;un&nbsp;PDF&nbsp;con&nbsp;el&nbsp;texto&nbsp;debidamente<br>
+formateado.<br>
+Si&nbsp;«cheque»&nbsp;==&nbsp;True&nbsp;imprime&nbsp;un&nbsp;cheque&nbsp;al&nbsp;pie&nbsp;del&nbsp;documento.<br>
+Si&nbsp;es&nbsp;False&nbsp;imprime&nbsp;un&nbsp;pagaré.<br>
+Si&nbsp;"textofijo"&nbsp;es&nbsp;True,&nbsp;imprimo&nbsp;el&nbsp;texto&nbsp;que&nbsp;no&nbsp;cambia&nbsp;en&nbsp;las&nbsp;cartas&nbsp;de<br>
+pago.&nbsp;Si&nbsp;es&nbsp;False&nbsp;se&nbsp;supone&nbsp;que&nbsp;los&nbsp;folios&nbsp;vienen&nbsp;de&nbsp;la&nbsp;imprenta&nbsp;con<br>
+ese&nbsp;texto&nbsp;ya&nbsp;escrito&nbsp;y&nbsp;lo&nbsp;omito.</tt></dd></dl>
+ <dl><dt><a name="-chequeCaixa"><strong>chequeCaixa</strong></a>(cantidad, destinatario, euros, fecha)</dt><dd><tt>Imprime&nbsp;un&nbsp;cheque&nbsp;de&nbsp;La&nbsp;Caixa</tt></dd></dl>
+ <dl><dt><a name="-chequeMonte"><strong>chequeMonte</strong></a>(cantidad, destinatario, euros, fecha)</dt><dd><tt>Imprime&nbsp;un&nbsp;cheque&nbsp;de&nbsp;El&nbsp;Monte</tt></dd></dl>
+ <dl><dt><a name="-cmr"><strong>cmr</strong></a>(albaran, lugar<font color="#909090">=''</font>, transportista<font color="#909090">=''</font>, porteadores<font color="#909090">=''</font>, lugar_carga<font color="#909090">=''</font>)</dt><dd><tt>Crea&nbsp;un&nbsp;PDF&nbsp;con&nbsp;el&nbsp;CMR&nbsp;del&nbsp;albarán&nbsp;de&nbsp;salida&nbsp;recibido.<br>
+(En&nbsp;realidad&nbsp;es&nbsp;la&nbsp;carta&nbsp;de&nbsp;portes,&nbsp;pero&nbsp;ya&nbsp;se&nbsp;le&nbsp;ha<br>
+quedado&nbsp;el&nbsp;nombre&nbsp;de&nbsp;CMR).</tt></dd></dl>
+ <dl><dt><a name="-cmr_anexos"><strong>cmr_anexos</strong></a>(c, m, f, a)</dt></dl>
+ <dl><dt><a name="-cmr_bruto"><strong>cmr_bruto</strong></a>(c, m, f)</dt></dl>
+ <dl><dt><a name="-cmr_cargadora"><strong>cmr_cargadora</strong></a>(c, m, f)</dt></dl>
+ <dl><dt><a name="-cmr_control"><strong>cmr_control</strong></a>(c, m, f)</dt></dl>
+ <dl><dt><a name="-cmr_debido"><strong>cmr_debido</strong></a>(c, m, f)</dt></dl>
+ <dl><dt><a name="-cmr_descr"><strong>cmr_descr</strong></a>(c, m, f, a)</dt></dl>
+ <dl><dt><a name="-cmr_dest"><strong>cmr_dest</strong></a>(c, m, f, a)</dt></dl>
+ <dl><dt><a name="-cmr_entrega"><strong>cmr_entrega</strong></a>(c, m, f, lugar_entrega)</dt></dl>
+ <dl><dt><a name="-cmr_estipulaciones"><strong>cmr_estipulaciones</strong></a>(c, m, f)</dt></dl>
+ <dl><dt><a name="-cmr_etransp"><strong>cmr_etransp</strong></a>(c, m, f, a, transportista)</dt></dl>
+ <dl><dt><a name="-cmr_fdest"><strong>cmr_fdest</strong></a>(c, m, f)</dt></dl>
+ <dl><dt><a name="-cmr_fecha"><strong>cmr_fecha</strong></a>(c, m, f, a, lugar_de_carga_linea1<font color="#909090">=''</font>, lugar_de_carga_linea2<font color="#909090">=''</font>)</dt></dl>
+ <dl><dt><a name="-cmr_form"><strong>cmr_form</strong></a>(c, m, f, a)</dt></dl>
+ <dl><dt><a name="-cmr_inst"><strong>cmr_inst</strong></a>(c, m, f)</dt></dl>
+ <dl><dt><a name="-cmr_neto"><strong>cmr_neto</strong></a>(c, m, f, a)</dt></dl>
+ <dl><dt><a name="-cmr_num"><strong>cmr_num</strong></a>(c, m, f, a)</dt></dl>
+ <dl><dt><a name="-cmr_pagado"><strong>cmr_pagado</strong></a>(c, m, f)</dt></dl>
+ <dl><dt><a name="-cmr_porteadores"><strong>cmr_porteadores</strong></a>(c, m, f, porteadores)</dt></dl>
+ <dl><dt><a name="-cmr_reservas"><strong>cmr_reservas</strong></a>(c, m, f)</dt></dl>
+ <dl><dt><a name="-cmr_rte"><strong>cmr_rte</strong></a>(c, m, f)</dt></dl>
+ <dl><dt><a name="-cmr_transp"><strong>cmr_transp</strong></a>(c, m, f, transportista)</dt></dl>
+ <dl><dt><a name="-cmr_vol"><strong>cmr_vol</strong></a>(c, m, f)</dt></dl>
+ <dl><dt><a name="-compras"><strong>compras</strong></a>(datos, fecha<font color="#909090">=None</font>)</dt><dd><tt>Crea&nbsp;un&nbsp;informe&nbsp;relativo&nbsp;a&nbsp;las&nbsp;compras&nbsp;realizadas&nbsp;en&nbsp;un&nbsp;periodo&nbsp;de&nbsp;fecha<br>
+dado.</tt></dd></dl>
+ <dl><dt><a name="-comprobar_nueva_pagina_presupuesto"><strong>comprobar_nueva_pagina_presupuesto</strong></a>(c, lineatexto, medidas, fuentes)</dt><dd><tt>Si&nbsp;lineatexto&nbsp;está&nbsp;cerca&nbsp;del&nbsp;pie&nbsp;de&nbsp;la&nbsp;hoja,&nbsp;avanza&nbsp;el&nbsp;canvas<br>
+una&nbsp;página&nbsp;y&nbsp;vuelve&nbsp;a&nbsp;la&nbsp;posición&nbsp;inicial.</tt></dd></dl>
+ <dl><dt><a name="-consulta_productividad"><strong>consulta_productividad</strong></a>(titulo, str_fecha, datos)</dt><dd><tt>Construye&nbsp;y&nbsp;devuelve&nbsp;un&nbsp;PDF&nbsp;con&nbsp;los&nbsp;datos&nbsp;recibidos&nbsp;de&nbsp;la<br>
+consulta&nbsp;de&nbsp;productividad&nbsp;global.</tt></dd></dl>
+ <dl><dt><a name="-consumoPartida"><strong>consumoPartida</strong></a>(partida, salida<font color="#909090">='txt'</font>)</dt><dd><tt>Recibe&nbsp;una&nbsp;partida&nbsp;e&nbsp;imprime&nbsp;un&nbsp;listado&nbsp;de&nbsp;consumos&nbsp;de&nbsp;los&nbsp;partes&nbsp;de<br>
+fabricación&nbsp;de&nbsp;todos&nbsp;los&nbsp;rollos&nbsp;de&nbsp;esa&nbsp;partida&nbsp;y&nbsp;el&nbsp;listado&nbsp;de&nbsp;balas<br>
+empleadas&nbsp;en&nbsp;la&nbsp;misma.<br>
+La&nbsp;partida&nbsp;debe&nbsp;ser&nbsp;un&nbsp;OBJETO&nbsp;partida&nbsp;de&nbsp;PCLASES.<br>
+Si&nbsp;salida&nbsp;==&nbsp;"txt"&nbsp;devuelve&nbsp;una&nbsp;cadena&nbsp;de&nbsp;texto&nbsp;con&nbsp;el&nbsp;resultado&nbsp;de<br>
+la&nbsp;consulta.<br>
+Si&nbsp;salida&nbsp;==&nbsp;"pdf"&nbsp;devuelve&nbsp;el&nbsp;nombre&nbsp;del&nbsp;archivo&nbsp;PDF&nbsp;generado.</tt></dd></dl>
+ <dl><dt><a name="-consumo_fibra_partida"><strong>consumo_fibra_partida</strong></a>(datos, fecha<font color="#909090">=None</font>, cols_a_derecha<font color="#909090">=()</font>)</dt><dd><tt>Crea&nbsp;un&nbsp;informe&nbsp;con&nbsp;un&nbsp;listado&nbsp;de&nbsp;balas&nbsp;de&nbsp;fibra<br>
+consumidas&nbsp;por&nbsp;una&nbsp;partida&nbsp;de&nbsp;geotextiles.</tt></dd></dl>
+ <dl><dt><a name="-consumo_fibra_produccion_gtx"><strong>consumo_fibra_produccion_gtx</strong></a>(datos, fecha<font color="#909090">=None</font>)</dt><dd><tt>titulo&nbsp;=&nbsp;'Producción:&nbsp;consumo&nbsp;de&nbsp;materiales.'</tt></dd></dl>
+ <dl><dt><a name="-consumo_produccion"><strong>consumo_produccion</strong></a>(datos, fecha<font color="#909090">=None</font>)</dt><dd><tt>Consulta&nbsp;de&nbsp;consumos&nbsp;de&nbsp;producción.</tt></dd></dl>
+ <dl><dt><a name="-corregir_nombres_fecha"><strong>corregir_nombres_fecha</strong></a>(s)</dt><dd><tt>Porque&nbsp;todo&nbsp;hombre&nbsp;debe&nbsp;enfrentarse&nbsp;al&nbsp;menos&nbsp;una<br>
+vez&nbsp;en&nbsp;su&nbsp;vida&nbsp;a&nbsp;dos&nbsp;tipos&nbsp;de&nbsp;sistemas&nbsp;operativos:<br>
+los&nbsp;que&nbsp;se&nbsp;no&nbsp;se&nbsp;pasan&nbsp;por&nbsp;el&nbsp;forro&nbsp;las&nbsp;locales,<br>
+y&nbsp;MS-Windows.</tt></dd></dl>
+ <dl><dt><a name="-crm_generar_pdf_detalles_factura"><strong>crm_generar_pdf_detalles_factura</strong></a>(factura)</dt><dd><tt>A&nbsp;partir&nbsp;de&nbsp;un&nbsp;objeto&nbsp;factura&nbsp;genera&nbsp;el&nbsp;PDF&nbsp;con&nbsp;su&nbsp;información&nbsp;CRM:<br>
+-&nbsp;Datos&nbsp;de&nbsp;la&nbsp;factura.<br>
+-&nbsp;Contactos.<br>
+-&nbsp;Anotaciones.<br>
+-&nbsp;Vencimientos.</tt></dd></dl>
+ <dl><dt><a name="-cuadrito"><strong>cuadrito</strong></a>(c, x, y, relleno)</dt><dd><tt>Dibuja&nbsp;en&nbsp;checkbox&nbsp;en&nbsp;el&nbsp;pdf&nbsp;y&nbsp;lo&nbsp;rellena<br>
+si&nbsp;el&nbsp;parámetro&nbsp;está&nbsp;a&nbsp;1</tt></dd></dl>
+ <dl><dt><a name="-cursiva"><strong>cursiva</strong></a>(c, x, y, text, fontName, fontSize, fillColor, skewAngle)</dt></dl>
+ <dl><dt><a name="-domenech_h_etiquetasBalasEtiquetadora"><strong>domenech_h_etiquetasBalasEtiquetadora</strong></a>(balas, seriep<font color="#909090">=None</font>, numped<font color="#909090">=None</font>)</dt><dd><tt>Crea&nbsp;etiquetas&nbsp;para&nbsp;las&nbsp;balas&nbsp;de<br>
+un&nbsp;parte&nbsp;de&nbsp;la&nbsp;línea&nbsp;de&nbsp;fibra.<br>
+Una&nbsp;por&nbsp;etiqueta&nbsp;del&nbsp;tamaño&nbsp;estándar&nbsp;de&nbsp;la&nbsp;impresora&nbsp;CAB:&nbsp;12.55&nbsp;x&nbsp;8.4.<br>
+Lleva&nbsp;el&nbsp;código&nbsp;especial&nbsp;para&nbsp;Domenech&nbsp;en&nbsp;horizontal.<br>
+«seriep»&nbsp;es&nbsp;la&nbsp;serie&nbsp;del&nbsp;pedido&nbsp;y&nbsp;si&nbsp;no&nbsp;es&nbsp;None,&nbsp;se&nbsp;muestra&nbsp;en&nbsp;los<br>
+3&nbsp;primeros&nbsp;dígitos.<br>
+«numped»&nbsp;es&nbsp;el&nbsp;número&nbsp;de&nbsp;pedido&nbsp;procedente&nbsp;de&nbsp;Domenech&nbsp;y&nbsp;si&nbsp;no&nbsp;es&nbsp;None&nbsp;se<br>
+muestra&nbsp;en&nbsp;6&nbsp;dígitos&nbsp;tras&nbsp;la&nbsp;serie&nbsp;(si&nbsp;la&nbsp;hubiera).<br>
+Estos&nbsp;dos&nbsp;grupos&nbsp;de&nbsp;dígitos&nbsp;opcionales&nbsp;(«seriep»&nbsp;y&nbsp;«numped»)&nbsp;son&nbsp;comunes<br>
+a&nbsp;toda&nbsp;la&nbsp;serie&nbsp;de&nbsp;balas&nbsp;de&nbsp;las&nbsp;que&nbsp;se&nbsp;generarán&nbsp;las&nbsp;etiquetas.<br>
+El&nbsp;formato&nbsp;completo&nbsp;es:<br>
+*&nbsp;3&nbsp;dígitos:&nbsp;serie&nbsp;del&nbsp;pedido,&nbsp;completado&nbsp;con&nbsp;ceros&nbsp;por&nbsp;la&nbsp;izquierda.<br>
+*&nbsp;6&nbsp;dígitos:&nbsp;número&nbsp;de&nbsp;pedido,&nbsp;completado&nbsp;con&nbsp;ceros&nbsp;por&nbsp;la&nbsp;izquierda.<br>
+*-7-dígitos:-código-de-producto:---&nbsp;YA&nbsp;NO&nbsp;(tercera&nbsp;vez&nbsp;que&nbsp;vuelven&nbsp;a&nbsp;ser&nbsp;6)<br>
+*&nbsp;6&nbsp;dígitos:&nbsp;código&nbsp;de&nbsp;producto:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;007336&nbsp;FIBRA&nbsp;PP&nbsp;6.7&nbsp;Dtx&nbsp;NATURAL.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;007337&nbsp;FIBRA&nbsp;PP&nbsp;6.7&nbsp;Dtx&nbsp;NEGRO.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;007674&nbsp;FIBRA&nbsp;PP&nbsp;4.5&nbsp;Dtx&nbsp;NEGRO.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;007852&nbsp;FIBRA&nbsp;PP&nbsp;4.5&nbsp;Dtx&nbsp;NATURAL.<br>
+*&nbsp;10&nbsp;dígitos:&nbsp;número&nbsp;de&nbsp;lote,&nbsp;completado&nbsp;con&nbsp;ceros&nbsp;por&nbsp;la&nbsp;izquierda.<br>
+*&nbsp;15&nbsp;dígitos:&nbsp;número&nbsp;de&nbsp;bala,&nbsp;completado&nbsp;con&nbsp;ceros&nbsp;por&nbsp;la&nbsp;izquierda.<br>
+*&nbsp;3&nbsp;dígitos:&nbsp;parte&nbsp;entera&nbsp;del&nbsp;peso&nbsp;de&nbsp;la&nbsp;bala&nbsp;en&nbsp;kilogramos,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;completado&nbsp;con&nbsp;ceros&nbsp;por&nbsp;la&nbsp;izquierda.<br>
+*&nbsp;2&nbsp;dígitos:&nbsp;parte&nbsp;decimal&nbsp;del&nbsp;peso&nbsp;de&nbsp;la&nbsp;bala&nbsp;en&nbsp;kilogramos,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;completado&nbsp;con&nbsp;ceros&nbsp;por&nbsp;la&nbsp;derecha.<br>
+&nbsp;<br>
+Por&nbsp;ejemplo,&nbsp;el&nbsp;código&nbsp;correspondiente&nbsp;a&nbsp;una&nbsp;bala&nbsp;de&nbsp;fibra&nbsp;negra&nbsp;de<br>
+polipropileno&nbsp;de&nbsp;6.7&nbsp;dtex,&nbsp;correspondiente&nbsp;al&nbsp;lote&nbsp;660,&nbsp;de&nbsp;número<br>
+57394,&nbsp;con&nbsp;286.50&nbsp;kg&nbsp;de&nbsp;peso&nbsp;y&nbsp;solicitada&nbsp;en&nbsp;el&nbsp;pedido&nbsp;4/2158;&nbsp;sería:<br>
+004002158007337000000066000000000005739428650<br>
+007337000000066000000000005739428650&nbsp;Si&nbsp;no&nbsp;lleva&nbsp;serie&nbsp;ni&nbsp;pedido.</tt></dd></dl>
+ <dl><dt><a name="-domenech_v_etiquetasBalasEtiquetadora"><strong>domenech_v_etiquetasBalasEtiquetadora</strong></a>(balas, seriep<font color="#909090">=None</font>, numped<font color="#909090">=None</font>)</dt><dd><tt>Crea&nbsp;etiquetas&nbsp;para&nbsp;las&nbsp;balas&nbsp;de<br>
+un&nbsp;parte&nbsp;de&nbsp;la&nbsp;línea&nbsp;de&nbsp;fibra.<br>
+Una&nbsp;por&nbsp;etiqueta&nbsp;del&nbsp;tamaño&nbsp;estándar&nbsp;de&nbsp;la&nbsp;impresora&nbsp;CAB:&nbsp;12.55&nbsp;x&nbsp;8.4.<br>
+Lleva&nbsp;el&nbsp;código&nbsp;especial&nbsp;para&nbsp;Domenech&nbsp;en&nbsp;vertical.<br>
+«seriep»&nbsp;es&nbsp;la&nbsp;serie&nbsp;del&nbsp;pedido&nbsp;y&nbsp;si&nbsp;no&nbsp;es&nbsp;None,&nbsp;se&nbsp;muestra&nbsp;en&nbsp;los<br>
+3&nbsp;primeros&nbsp;dígitos.<br>
+«numped»&nbsp;es&nbsp;el&nbsp;número&nbsp;de&nbsp;pedido&nbsp;procedente&nbsp;de&nbsp;Domenech&nbsp;y&nbsp;si&nbsp;no&nbsp;es&nbsp;None&nbsp;se<br>
+muestra&nbsp;en&nbsp;6&nbsp;dígitos&nbsp;tras&nbsp;la&nbsp;serie&nbsp;(si&nbsp;la&nbsp;hubiera).<br>
+Estos&nbsp;dos&nbsp;grupos&nbsp;de&nbsp;dígitos&nbsp;opcionales&nbsp;(«seriep»&nbsp;y&nbsp;«numped»)&nbsp;son&nbsp;comunes<br>
+a&nbsp;toda&nbsp;la&nbsp;serie&nbsp;de&nbsp;balas&nbsp;de&nbsp;las&nbsp;que&nbsp;se&nbsp;generarán&nbsp;las&nbsp;etiquetas.<br>
+El&nbsp;formato&nbsp;completo&nbsp;es:<br>
+*&nbsp;3&nbsp;dígitos:&nbsp;serie&nbsp;del&nbsp;pedido,&nbsp;completado&nbsp;con&nbsp;ceros&nbsp;por&nbsp;la&nbsp;derecha.<br>
+*&nbsp;6&nbsp;dígitos:&nbsp;número&nbsp;de&nbsp;pedido,&nbsp;completado&nbsp;con&nbsp;ceros&nbsp;por&nbsp;la&nbsp;derecha.<br>
+*&nbsp;6&nbsp;dígitos:&nbsp;código&nbsp;de&nbsp;producto:&nbsp;(Solían&nbsp;ser&nbsp;7&nbsp;hasta&nbsp;verano'08.&nbsp;Confirmado&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6&nbsp;en&nbsp;octubre&nbsp;de&nbsp;2008)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;007336&nbsp;FIBRA&nbsp;PP&nbsp;6.7&nbsp;Dtx&nbsp;NATURAL.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;007337&nbsp;FIBRA&nbsp;PP&nbsp;6.7&nbsp;Dtx&nbsp;NEGRO.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;007674&nbsp;FIBRA&nbsp;PP&nbsp;4.5&nbsp;Dtx&nbsp;NEGRO.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;007852&nbsp;FIBRA&nbsp;PP&nbsp;4.5&nbsp;Dtx&nbsp;NATURAL.<br>
+*&nbsp;10&nbsp;dígitos:&nbsp;número&nbsp;de&nbsp;lote,&nbsp;completado&nbsp;con&nbsp;ceros&nbsp;por&nbsp;la&nbsp;derecha.<br>
+*&nbsp;15&nbsp;dígitos:&nbsp;número&nbsp;de&nbsp;bala,&nbsp;completado&nbsp;con&nbsp;ceros&nbsp;por&nbsp;la&nbsp;derecha.<br>
+*&nbsp;3&nbsp;dígitos:&nbsp;parte&nbsp;entera&nbsp;del&nbsp;peso&nbsp;de&nbsp;la&nbsp;bala&nbsp;en&nbsp;kilogramos,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;completado&nbsp;con&nbsp;ceros&nbsp;por&nbsp;la&nbsp;derecha.<br>
+*&nbsp;2&nbsp;dígitos:&nbsp;parte&nbsp;decimal&nbsp;del&nbsp;peso&nbsp;de&nbsp;la&nbsp;bala&nbsp;en&nbsp;kilogramos,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;completado&nbsp;con&nbsp;ceros&nbsp;por&nbsp;la&nbsp;izquierda.<br>
+&nbsp;<br>
+Por&nbsp;ejemplo,&nbsp;el&nbsp;código&nbsp;correspondiente&nbsp;a&nbsp;una&nbsp;bala&nbsp;de&nbsp;fibra&nbsp;negra&nbsp;de<br>
+polipropileno&nbsp;de&nbsp;6.7&nbsp;dtex,&nbsp;correspondiente&nbsp;al&nbsp;lote&nbsp;660,&nbsp;de&nbsp;número<br>
+57394,&nbsp;con&nbsp;286.50&nbsp;kg&nbsp;de&nbsp;peso&nbsp;y&nbsp;solicitada&nbsp;en&nbsp;el&nbsp;pedido&nbsp;4/2158;&nbsp;sería:<br>
+0040021580007337000000066000000000005739428650</tt></dd></dl>
+ <dl><dt><a name="-draw_fondo_pijama"><strong>draw_fondo_pijama</strong></a>(c, x0, y0, x1, contador, datos_col, xcoords, fuente, tamanno, cols_a_derecha, cols_centradas, rgbcolor<font color="#909090">=(0.80000000000000004, 0.90000000000000002, 0.69999999999999996)</font>)</dt><dd><tt>Dibuja&nbsp;un&nbsp;rectángulo&nbsp;del&nbsp;color&nbsp;recibido&nbsp;entre&nbsp;las&nbsp;coordenadas&nbsp;(x0,&nbsp;y0)&nbsp;y&nbsp;<br>
+(x1,&nbsp;y0&nbsp;+&nbsp;#líneas&nbsp;de&nbsp;texto&nbsp;*&nbsp;altura)&nbsp;siempre&nbsp;que&nbsp;el&nbsp;contador&nbsp;sea&nbsp;impar.<br>
+La&nbsp;coordenada&nbsp;"y"&nbsp;final&nbsp;puede&nbsp;no&nbsp;coincidir&nbsp;con&nbsp;la&nbsp;recibida&nbsp;si&nbsp;para&nbsp;<br>
+mostrar&nbsp;los&nbsp;textos&nbsp;de&nbsp;«datos_col»&nbsp;se&nbsp;necesita&nbsp;más&nbsp;de&nbsp;una&nbsp;línea.</tt></dd></dl>
+ <dl><dt><a name="-el_encogedor_de_fuentes_de_doraemon"><strong>el_encogedor_de_fuentes_de_doraemon</strong></a>(canvas, fuente, tamannoini, xini, xfin, y, texto, alineacion<font color="#909090">=-1</font>)</dt><dd><tt>Comenzando&nbsp;por&nbsp;el&nbsp;tamaño&nbsp;inicial&nbsp;"tamannoini",&nbsp;encoge&nbsp;el&nbsp;texto<br>
+hasta&nbsp;que&nbsp;quepa&nbsp;en&nbsp;los&nbsp;límites&nbsp;fijados&nbsp;y&nbsp;después&nbsp;lo&nbsp;escribe.<br>
+Convierte&nbsp;el&nbsp;texto&nbsp;por&nbsp;si&nbsp;está&nbsp;en&nbsp;una&nbsp;codificación&nbsp;no&nbsp;soportada.<br>
+Al&nbsp;finalizar,&nbsp;devuelve&nbsp;las&nbsp;propiedades&nbsp;de&nbsp;texto&nbsp;del&nbsp;canvas&nbsp;a<br>
+su&nbsp;estado&nbsp;original&nbsp;y&nbsp;la&nbsp;fuente&nbsp;a&nbsp;su&nbsp;tamaño&nbsp;inicial.<br>
+NO&nbsp;AVANZA&nbsp;LÍNEA.<br>
+Si&nbsp;alineacion&nbsp;==&nbsp;-1:&nbsp;Alineación&nbsp;a&nbsp;la&nbsp;izquierda.&nbsp;Si&nbsp;0,&nbsp;centrado&nbsp;y&nbsp;si&nbsp;1,&nbsp;a<br>
+la&nbsp;derecha.</tt></dd></dl>
+ <dl><dt><a name="-empleados"><strong>empleados</strong></a>()</dt><dd><tt>Crea&nbsp;un&nbsp;informe&nbsp;con&nbsp;el&nbsp;código&nbsp;asociado&nbsp;a&nbsp;cada&nbsp;empleado</tt></dd></dl>
+ <dl><dt><a name="-entradasAlmacen"><strong>entradasAlmacen</strong></a>(datos, fecha<font color="#909090">=None</font>, cols_a_derecha<font color="#909090">=()</font>)</dt><dd><tt>Crea&nbsp;un&nbsp;informe&nbsp;de&nbsp;valoración&nbsp;de&nbsp;entradas&nbsp;en&nbsp;almacén.</tt></dd></dl>
+ <dl><dt><a name="-escribe"><strong>escribe</strong></a>(cadena_original, limite<font color="#909090">=None</font>)</dt><dd><tt>Dada&nbsp;una&nbsp;cadena&nbsp;la&nbsp;convierte&nbsp;a&nbsp;un&nbsp;formato&nbsp;en&nbsp;el&nbsp;que<br>
+ReportLab&nbsp;es&nbsp;capaz&nbsp;de&nbsp;escribir&nbsp;tildes.</tt></dd></dl>
+ <dl><dt><a name="-escribir_cabecera"><strong>escribir_cabecera</strong></a>(canvas, medidas, fuentes)</dt><dd><tt>Escribe&nbsp;la&nbsp;cabecera&nbsp;del&nbsp;fax.</tt></dd></dl>
+ <dl><dt><a name="-escribir_cuerpo_fax"><strong>escribir_cuerpo_fax</strong></a>(canvas, medidas, fuentes, empresa, contacto, fax, telefono, de, asunto, fecha, beneficiario, banco, cuenta, porcuenta, ccc, concepto, importe, firmado, swift, iban, observaciones, conceptoLibre)</dt><dd><tt>Cuerpo&nbsp;del&nbsp;fax.</tt></dd></dl>
+ <dl><dt><a name="-escribir_cuerpo_presupuesto"><strong>escribir_cuerpo_presupuesto</strong></a>(c, medidas, fuentes, presupuesto, una_linea)</dt><dd><tt>Cuerpo&nbsp;del&nbsp;fax.</tt></dd></dl>
+ <dl><dt><a name="-escribir_despedida_presupuesto"><strong>escribir_despedida_presupuesto</strong></a>(presupuesto, medidas, lineatexto, c, fuentes, una_linea)</dt></dl>
+ <dl><dt><a name="-escribir_info_cmr"><strong>escribir_info_cmr</strong></a>(c, a, m, f, lugar_entrega<font color="#909090">=''</font>, transportista<font color="#909090">=''</font>, porteadores<font color="#909090">=''</font>, lugar_carga_linea1<font color="#909090">=''</font>, lugar_carga_linea2<font color="#909090">=''</font>)</dt></dl>
+ <dl><dt><a name="-escribir_mail"><strong>escribir_mail</strong></a>(c, x, y, email)</dt><dd><tt>Escribe&nbsp;y&nbsp;hace&nbsp;"clicable"&nbsp;la&nbsp;dirección&nbsp;de&nbsp;correo&nbsp;electrónico&nbsp;«email»<br>
+en&nbsp;la&nbsp;posición&nbsp;(x,&nbsp;y)&nbsp;del&nbsp;canvas&nbsp;«c».</tt></dd></dl>
+ <dl><dt><a name="-escribir_pie"><strong>escribir_pie</strong></a>(canvas, medidas, fuentes)</dt><dd><tt>Pie&nbsp;del&nbsp;fax&nbsp;(dirección).</tt></dd></dl>
+ <dl><dt><a name="-escribir_productos_presupuesto"><strong>escribir_productos_presupuesto</strong></a>(presupuesto, medidas, lineatexto, c, fuentes, una_linea)</dt></dl>
+ <dl><dt><a name="-escribir_servicios_presupuesto"><strong>escribir_servicios_presupuesto</strong></a>(presupuesto, medidas, lineatexto, c, fuentes, una_linea)</dt></dl>
+ <dl><dt><a name="-escribir_texto_presupuesto"><strong>escribir_texto_presupuesto</strong></a>(presupuesto, medidas, lineatexto, c, fuentes, una_linea)</dt></dl>
+ <dl><dt><a name="-etiquetasBalas"><strong>etiquetasBalas</strong></a>(balas)</dt><dd><tt>Crea&nbsp;etiquetas&nbsp;para&nbsp;las&nbsp;balas&nbsp;de<br>
+un&nbsp;parte&nbsp;de&nbsp;la&nbsp;línea&nbsp;de&nbsp;fibra.<br>
+4&nbsp;por&nbsp;folio&nbsp;(A4)</tt></dd></dl>
+ <dl><dt><a name="-etiquetasBalasCableEtiquetadora"><strong>etiquetasBalasCableEtiquetadora</strong></a>(balas)</dt><dd><tt>Crea&nbsp;etiquetas&nbsp;para&nbsp;las&nbsp;balas&nbsp;de&nbsp;cable&nbsp;de<br>
+un&nbsp;parte&nbsp;de&nbsp;la&nbsp;línea&nbsp;de&nbsp;fibra.<br>
+Una&nbsp;por&nbsp;etiqueta&nbsp;del&nbsp;tamaño&nbsp;estándar&nbsp;de&nbsp;la&nbsp;impresora&nbsp;CAB:&nbsp;12.55&nbsp;x&nbsp;8.4.</tt></dd></dl>
+ <dl><dt><a name="-etiquetasBalasEtiquetadora"><strong>etiquetasBalasEtiquetadora</strong></a>(*args, **kw)</dt></dl>
+ <dl><dt><a name="-etiquetasBigbags"><strong>etiquetasBigbags</strong></a>(bigbags)</dt><dd><tt>Crea&nbsp;etiquetas&nbsp;en&nbsp;cuartillas&nbsp;(A5)&nbsp;para&nbsp;los<br>
+bigbags&nbsp;recibidos.</tt></dd></dl>
+ <dl><dt><a name="-etiquetasRollos"><strong>etiquetasRollos</strong></a>(rollos, mostrar_marcado)</dt><dd><tt>Crea&nbsp;etiquetas&nbsp;para&nbsp;los&nbsp;rollos&nbsp;de<br>
+un&nbsp;parte&nbsp;de&nbsp;la&nbsp;línea&nbsp;de&nbsp;geotextil.<br>
+4&nbsp;por&nbsp;folio&nbsp;(A4).</tt></dd></dl>
+ <dl><dt><a name="-etiquetasRollosCEtiquetadora"><strong>etiquetasRollosCEtiquetadora</strong></a>(rollos)</dt><dd><tt>Crea&nbsp;etiquetas&nbsp;para&nbsp;las&nbsp;rollos&nbsp;de&nbsp;cable&nbsp;de<br>
+un&nbsp;parte&nbsp;de&nbsp;la&nbsp;línea&nbsp;de&nbsp;fibra.<br>
+Una&nbsp;por&nbsp;etiqueta&nbsp;del&nbsp;tamaño&nbsp;estándar&nbsp;de&nbsp;la&nbsp;impresora&nbsp;CAB:&nbsp;12.55&nbsp;x&nbsp;8.4.</tt></dd></dl>
+ <dl><dt><a name="-etiquetasRollosEtiquetadora"><strong>etiquetasRollosEtiquetadora</strong></a>(rollos, mostrar_marcado)</dt><dd><tt>Crea&nbsp;etiquetas&nbsp;para&nbsp;los&nbsp;rollos&nbsp;de<br>
+un&nbsp;parte&nbsp;de&nbsp;la&nbsp;línea&nbsp;de&nbsp;geotextil.<br>
+Una&nbsp;por&nbsp;etiqueta&nbsp;del&nbsp;tamaño&nbsp;estándar&nbsp;de&nbsp;la&nbsp;impresora&nbsp;GEMINI:&nbsp;12.55&nbsp;x&nbsp;8.4.</tt></dd></dl>
+ <dl><dt><a name="-existencias"><strong>existencias</strong></a>(hasta<font color="#909090">=None</font>, exportar_a_csv_a<font color="#909090">=None</font>)</dt><dd><tt>Imprime&nbsp;un&nbsp;informe&nbsp;de&nbsp;existencias&nbsp;al&nbsp;día&nbsp;actual&nbsp;si&nbsp;"hasta"&nbsp;es&nbsp;None<br>
+o&nbsp;hasta&nbsp;la&nbsp;fecha&nbsp;indicada.<br>
+Esta&nbsp;función&nbsp;deja&nbsp;obsoleta&nbsp;a&nbsp;la&nbsp;anterior,&nbsp;que&nbsp;ahora&nbsp;se&nbsp;llama&nbsp;_existencias.</tt></dd></dl>
+ <dl><dt><a name="-existencias_fibra_por_lote"><strong>existencias_fibra_por_lote</strong></a>(fecha<font color="#909090">=None</font>)</dt><dd><tt>Imprime&nbsp;las&nbsp;existencias&nbsp;de&nbsp;fibra&nbsp;en&nbsp;almacén&nbsp;desglosadas&nbsp;por&nbsp;lote.</tt></dd></dl>
+ <dl><dt><a name="-existencias_no_nulas"><strong>existencias_no_nulas</strong></a>(hasta<font color="#909090">=None</font>, exportar_a_csv_a<font color="#909090">=None</font>)</dt><dd><tt>Imprime&nbsp;un&nbsp;informe&nbsp;de&nbsp;existencias&nbsp;al&nbsp;día&nbsp;actual&nbsp;si&nbsp;"hasta"&nbsp;es&nbsp;None<br>
+o&nbsp;hasta&nbsp;la&nbsp;fecha&nbsp;indicada.<br>
+Esta&nbsp;función&nbsp;deja&nbsp;obsoleta&nbsp;a&nbsp;la&nbsp;anterior,&nbsp;que&nbsp;ahora&nbsp;se&nbsp;llama&nbsp;_existencias.</tt></dd></dl>
+ <dl><dt><a name="-existencias_productos"><strong>existencias_productos</strong></a>(informe, fecha, hasta<font color="#909090">=None</font>, almacen<font color="#909090">=None</font>, ruta_csv<font color="#909090">=None</font>)</dt><dd><tt>Crea&nbsp;un&nbsp;informe&nbsp;relativo&nbsp;a&nbsp;los&nbsp;geotextiles&nbsp;o&nbsp;balas&nbsp;bajo&nbsp;mínimos.<br>
+El&nbsp;parametro&nbsp;informe&nbsp;puede&nbsp;valer&nbsp;'rollos'&nbsp;o&nbsp;'balas'.<br>
+Si&nbsp;ruta_csv&nbsp;es&nbsp;!=&nbsp;None&nbsp;volcará&nbsp;los&nbsp;datos&nbsp;del&nbsp;PDF&nbsp;en&nbsp;un&nbsp;CSV&nbsp;en&nbsp;esa&nbsp;ruta.</tt></dd></dl>
+ <dl><dt><a name="-exportar_a_csv"><strong>exportar_a_csv</strong></a>(ruta, cabecera, datos)</dt></dl>
+ <dl><dt><a name="-factura"><strong>factura</strong></a>(cliente, factdata, lineas, arancel, vencimiento, texto, totales, impuesto<font color="#909090">=1.1599999999999999</font>, orden_ventanas<font color="#909090">=None</font>, es_copia<font color="#909090">=False</font>)</dt><dd><tt>Con&nbsp;los&nbsp;datos&nbsp;de&nbsp;entrada&nbsp;genera&nbsp;la&nbsp;factura.<br>
+&nbsp;<br>
+@params<br>
+&nbsp;<br>
+cliente&nbsp;--&gt;&nbsp;es&nbsp;un&nbsp;diccionario&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'numcli'&nbsp;Número&nbsp;de&nbsp;cliente<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'nombre'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'cif'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'direccion'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'cp'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'localidad'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'pais'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'telf'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'fax'<br>
+&nbsp;<br>
+factdata&nbsp;--&gt;&nbsp;datos&nbsp;de&nbsp;la&nbsp;cabecera&nbsp;de&nbsp;la&nbsp;factura,&nbsp;es&nbsp;diccionario&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'facnum'&nbsp;Número&nbsp;de&nbsp;factura<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'fecha'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'pedido'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'albaranes'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'observaciones'<br>
+&nbsp;<br>
+lineas&nbsp;--&gt;&nbsp;datos&nbsp;del&nbsp;cuerpo&nbsp;de&nbsp;la&nbsp;factura,&nbsp;es&nbsp;una&nbsp;lista&nbsp;(un&nbsp;elemento<br>
+por&nbsp;línea)&nbsp;de&nbsp;diccionarios&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'codigo'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'cantidad'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'descripcion'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'precio'&nbsp;precio&nbsp;unitario<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'descuento'<br>
+&nbsp;<br>
+arancel&nbsp;--&gt;&nbsp;una&nbsp;cadena&nbsp;con&nbsp;el&nbsp;código&nbsp;de&nbsp;arancel,&nbsp;si&nbsp;no&nbsp;es&nbsp;para&nbsp;extranjero<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;es&nbsp;None&nbsp;y&nbsp;se&nbsp;aplica&nbsp;el&nbsp;impuesto.&nbsp;Con&nbsp;arancel&nbsp;el&nbsp;impuesto&nbsp;es&nbsp;0<br>
+&nbsp;<br>
+vencimiento&nbsp;--&gt;&nbsp;diccionario&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'fecha'&nbsp;--&gt;&nbsp;fecha&nbsp;de&nbsp;vencimiento<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'pago'&nbsp;--&gt;&nbsp;forma&nbsp;de&nbsp;pago<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'documento'&nbsp;--&gt;&nbsp;es&nbsp;un&nbsp;diccionario&nbsp;con&nbsp;el&nbsp;documento&nbsp;de&nbsp;pago,&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-'forma'&nbsp;--&gt;&nbsp;modo&nbsp;de&nbsp;pago&nbsp;y&nbsp;cuenta&nbsp;de&nbsp;destino&nbsp;del&nbsp;pago<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-'iban'&nbsp;--&gt;&nbsp;iban&nbsp;de&nbsp;la&nbsp;cuenta&nbsp;destino<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-'swift'&nbsp;--&gt;&nbsp;swift&nbsp;de&nbsp;la&nbsp;cuenta&nbsp;destino<br>
+&nbsp;<br>
+texto&nbsp;--&gt;&nbsp;cadena&nbsp;que&nbsp;se&nbsp;pone&nbsp;en&nbsp;el&nbsp;cuadro&nbsp;IMPORTA&nbsp;LA&nbsp;PRESENTE&nbsp;FACTURA<br>
+&nbsp;<br>
+totales&nbsp;--&gt;diccionario&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-'subtotal'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-'cargo'&nbsp;None&nbsp;si&nbsp;no&nbsp;tiene<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-'descuento'&nbsp;None&nbsp;si&nbsp;no&nbsp;tiene<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-'totaliva'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-'total'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-'totirpf'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-'irpf'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-'recargo_equivalencia':&nbsp;Si&nbsp;no&nbsp;lleva,&nbsp;esta&nbsp;clave&nbsp;no&nbsp;existe&nbsp;en&nbsp;el<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;diccionario.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-'totrecargo_equivalencia':&nbsp;Cadena&nbsp;con&nbsp;importe&nbsp;total&nbsp;del&nbsp;recargo&nbsp;de<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;equivalencia.<br>
+&nbsp;<br>
+impuesto&nbsp;--&gt;&nbsp;valor&nbsp;numerico&nbsp;con&nbsp;el&nbsp;impuesto&nbsp;aplicado.&nbsp;Con&nbsp;arancel&nbsp;se&nbsp;pone<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;0&nbsp;automaticamente</tt></dd></dl>
+ <dl><dt><a name="-facturacion_por_cliente_y_fechas"><strong>facturacion_por_cliente_y_fechas</strong></a>(titulo, fechaini, fechafin, datos)</dt><dd><tt>Construye&nbsp;y&nbsp;devuelve&nbsp;un&nbsp;PDF&nbsp;con&nbsp;los&nbsp;datos&nbsp;recibidos.</tt></dd></dl>
+ <dl><dt><a name="-fax_transferencia"><strong>fax_transferencia</strong></a>(empresa, contacto, fax, telefono, de, asunto, fecha, beneficiario, banco, cuenta, porcuenta, ccc, concepto, importe, firmado, swift<font color="#909090">=''</font>, iban<font color="#909090">=''</font>, observaciones<font color="#909090">=''</font>, conceptoLibre<font color="#909090">=''</font>)</dt><dd><tt>Recibe&nbsp;los&nbsp;datos&nbsp;a&nbsp;imprimir&nbsp;en&nbsp;el&nbsp;fax&nbsp;*como&nbsp;cadenas*.</tt></dd></dl>
+ <dl><dt><a name="-generar_data_caja"><strong>generar_data_caja</strong></a>(caja, tipo<font color="#909090">=0</font>)</dt><dd><tt>Devuelve&nbsp;un&nbsp;diccionario&nbsp;de&nbsp;datos&nbsp;de&nbsp;caja&nbsp;que&nbsp;se&nbsp;van&nbsp;a&nbsp;mostrar&nbsp;en&nbsp;la&nbsp;<br>
+etiqueta.&nbsp;Todos&nbsp;los&nbsp;datos&nbsp;van&nbsp;ya&nbsp;como&nbsp;texto.</tt></dd></dl>
+ <dl><dt><a name="-generar_data_pale"><strong>generar_data_pale</strong></a>(pale, tipo<font color="#909090">=0</font>)</dt><dd><tt>Devuelve&nbsp;un&nbsp;diccionario&nbsp;de&nbsp;datos&nbsp;de&nbsp;palé&nbsp;que&nbsp;se&nbsp;van&nbsp;a&nbsp;mostrar&nbsp;en&nbsp;la&nbsp;<br>
+etiqueta.&nbsp;Todos&nbsp;los&nbsp;datos&nbsp;van&nbsp;ya&nbsp;como&nbsp;texto.</tt></dd></dl>
+ <dl><dt><a name="-generar_etiqueta_caja"><strong>generar_etiqueta_caja</strong></a>(cajas, tipo<font color="#909090">=0</font>)</dt><dd><tt>Genera&nbsp;una&nbsp;etiqueta&nbsp;por&nbsp;cada&nbsp;caja&nbsp;recibida&nbsp;(o&nbsp;de&nbsp;la&nbsp;única&nbsp;recibido&nbsp;si&nbsp;el&nbsp;<br>
+parámetro&nbsp;no&nbsp;es&nbsp;una&nbsp;lista)&nbsp;del&nbsp;tipo&nbsp;especificado:<br>
+0:&nbsp;Etiqueta&nbsp;completa<br>
+1:&nbsp;Etiqueta&nbsp;sin&nbsp;nombre&nbsp;empresa.<br>
+2:&nbsp;Etiqueta&nbsp;mínima.</tt></dd></dl>
+ <dl><dt><a name="-generar_etiqueta_pale"><strong>generar_etiqueta_pale</strong></a>(pales, tipo<font color="#909090">=0</font>)</dt><dd><tt>Genera&nbsp;una&nbsp;etiqueta&nbsp;por&nbsp;cada&nbsp;palé&nbsp;recibido&nbsp;(o&nbsp;del&nbsp;único&nbsp;recibido&nbsp;si&nbsp;el&nbsp;<br>
+parámetro&nbsp;no&nbsp;es&nbsp;una&nbsp;lista)&nbsp;del&nbsp;tipo&nbsp;especificado:<br>
+0:&nbsp;Etiqueta&nbsp;completa<br>
+1:&nbsp;Etiqueta&nbsp;sin&nbsp;nombre&nbsp;empresa.<br>
+2:&nbsp;Etiqueta&nbsp;mínima.</tt></dd></dl>
+ <dl><dt><a name="-generar_pdf_presupuesto"><strong>generar_pdf_presupuesto</strong></a>(presupuesto)</dt><dd><tt>Recibe&nbsp;un&nbsp;objeto&nbsp;Presupuesto&nbsp;con&nbsp;el&nbsp;que&nbsp;genera&nbsp;una&nbsp;carta&nbsp;de&nbsp;oferta&nbsp;de<br>
+precio.</tt></dd></dl>
+ <dl><dt><a name="-generar_recibo"><strong>generar_recibo</strong></a>(c, medidas, fuentes, xoffset, yoffset, datos)</dt><dd><tt>Dibuja&nbsp;en&nbsp;el&nbsp;canvas&nbsp;«c»&nbsp;un&nbsp;recibo&nbsp;usando&nbsp;las&nbsp;medidas&nbsp;y&nbsp;datos&nbsp;recibidos.<br>
+A&nbsp;cada&nbsp;medida&nbsp;le&nbsp;suma&nbsp;el&nbsp;offset&nbsp;en&nbsp;X&nbsp;e&nbsp;Y&nbsp;antes&nbsp;de&nbsp;aplicarla.</tt></dd></dl>
+ <dl><dt><a name="-get_ancho_alto"><strong>get_ancho_alto</strong></a>(imagen, limitev<font color="#909090">=None</font>, limiteh<font color="#909090">=None</font>)</dt><dd><tt>Devuelve&nbsp;el&nbsp;ancho&nbsp;y&nbsp;el&nbsp;alto&nbsp;de&nbsp;la&nbsp;imagen<br>
+correspondiente&nbsp;al&nbsp;nombre&nbsp;de&nbsp;fichero&nbsp;recibido.<br>
+¡Necesita&nbsp;PIL!<br>
+Si&nbsp;limiteh&nbsp;es&nbsp;distinto&nbsp;de&nbsp;None,&nbsp;se&nbsp;redimensiona&nbsp;la<br>
+imagen&nbsp;en&nbsp;caso&nbsp;de&nbsp;que&nbsp;supere&nbsp;el&nbsp;límite&nbsp;horizontal.<br>
+Lo&nbsp;mismo&nbsp;con&nbsp;limitev.</tt></dd></dl>
+ <dl><dt><a name="-get_lineas_euros"><strong>get_lineas_euros</strong></a>(cantidad, n<font color="#909090">=80</font>, mayusculas<font color="#909090">=False</font>)</dt><dd><tt>Devuelve&nbsp;la&nbsp;cantidad&nbsp;recibida&nbsp;en&nbsp;letras,&nbsp;dividido&nbsp;en<br>
+dos&nbsp;líneas&nbsp;si&nbsp;el&nbsp;número&nbsp;de&nbsp;caracteres&nbsp;de&nbsp;la&nbsp;misma&nbsp;es<br>
+superior&nbsp;a&nbsp;"n".</tt></dd></dl>
+ <dl><dt><a name="-get_lineas_proveedor"><strong>get_lineas_proveedor</strong></a>(pagare)</dt><dd><tt>Devuelve&nbsp;la&nbsp;dirección&nbsp;completa&nbsp;del&nbsp;proveedor&nbsp;del&nbsp;pagaré&nbsp;dividida&nbsp;en&nbsp;líneas.</tt></dd></dl>
+ <dl><dt><a name="-get_str_pedidos_albaranes"><strong>get_str_pedidos_albaranes</strong></a>(factura)</dt><dd><tt>Devuelve&nbsp;una&nbsp;cadena&nbsp;con&nbsp;los&nbsp;pedidos&nbsp;y&nbsp;albaranes&nbsp;entre&nbsp;paréntesis&nbsp;de&nbsp;las<br>
+LDV&nbsp;de&nbsp;la&nbsp;factura.</tt></dd></dl>
+ <dl><dt><a name="-give_me_the_name_baby"><strong>give_me_the_name_baby</strong></a>()</dt></dl>
+ <dl><dt><a name="-hello"><strong>hello</strong></a>(c)</dt></dl>
+ <dl><dt><a name="-imprimir2"><strong>imprimir2</strong></a>(archivo, titulo, campos, datos, fecha<font color="#909090">=None</font>, cols_a_derecha<font color="#909090">=()</font>, graficos<font color="#909090">=[]</font>, apaisado<font color="#909090">=False</font>, sobrecampos<font color="#909090">=()</font>, lineas_verticales<font color="#909090">=()</font>, exportar_a_csv_a<font color="#909090">=None</font>, cols_centradas<font color="#909090">=()</font>, pijama<font color="#909090">=False</font>)</dt><dd><tt>Veamos,&nbsp;veamos.&nbsp;La&nbsp;idea&nbsp;es&nbsp;tener&nbsp;este&nbsp;método&nbsp;y&nbsp;pasarle&nbsp;chorrecientos<br>
+parámetros&nbsp;de&nbsp;modo&nbsp;que&nbsp;luego&nbsp;el&nbsp;método&nbsp;se&nbsp;encargue&nbsp;de&nbsp;ordenar&nbsp;las&nbsp;cosas.<br>
+Hay&nbsp;varios&nbsp;problemas&nbsp;inciales:<br>
+-&nbsp;Cada&nbsp;informe&nbsp;imprime&nbsp;unos&nbsp;datos&nbsp;que&nbsp;no&nbsp;tienen&nbsp;porqué&nbsp;tener&nbsp;nada&nbsp;que&nbsp;ver<br>
+&nbsp;&nbsp;con&nbsp;el&nbsp;formulario&nbsp;o&nbsp;el&nbsp;objeto&nbsp;en&nbsp;pantalla.&nbsp;Incluso&nbsp;pueden&nbsp;imprimirse<br>
+&nbsp;&nbsp;desde&nbsp;el&nbsp;menú&nbsp;principal,&nbsp;es&nbsp;decir,&nbsp;sin&nbsp;ningún&nbsp;objeto&nbsp;en&nbsp;memoria.<br>
+-&nbsp;Cada&nbsp;informe&nbsp;imprime&nbsp;unos&nbsp;campos,&nbsp;cada&nbsp;campo&nbsp;tiene&nbsp;un&nbsp;tamaño&nbsp;máximo&nbsp;y<br>
+&nbsp;&nbsp;han&nbsp;de&nbsp;ajustarse&nbsp;de&nbsp;modo&nbsp;que&nbsp;quepan&nbsp;todos&nbsp;al&nbsp;mismo&nbsp;tiempo&nbsp;que&nbsp;la&nbsp;cosa<br>
+&nbsp;&nbsp;quede&nbsp;elegante.<br>
+&nbsp;<br>
+Parámetros&nbsp;a&nbsp;pasar:<br>
+-&nbsp;Nombre&nbsp;del&nbsp;archivo&nbsp;de&nbsp;salida&nbsp;*.pdf<br>
+-&nbsp;Título&nbsp;(cabecera)&nbsp;del&nbsp;informe<br>
+-&nbsp;Lista&nbsp;de&nbsp;campos&nbsp;(los&nbsp;títulos)&nbsp;y&nbsp;el&nbsp;ancho&nbsp;máximo&nbsp;de&nbsp;cada&nbsp;uno&nbsp;de&nbsp;modo&nbsp;que<br>
+&nbsp;&nbsp;una&nbsp;funcioncilla&nbsp;calcule&nbsp;el&nbsp;ancho&nbsp;de&nbsp;cada&nbsp;uno&nbsp;en&nbsp;el&nbsp;papel.&nbsp;Hay&nbsp;que&nbsp;tener<br>
+&nbsp;&nbsp;en&nbsp;cuenta&nbsp;que&nbsp;la&nbsp;longitud&nbsp;horizontal&nbsp;de&nbsp;impresión&nbsp;es&nbsp;de&nbsp;rm-lm&nbsp;pixeles.<br>
+&nbsp;&nbsp;Esto&nbsp;no&nbsp;es&nbsp;tan&nbsp;fácil&nbsp;además&nbsp;que&nbsp;las&nbsp;fuentes&nbsp;no&nbsp;son&nbsp;Monospace,&nbsp;ummm.<br>
+&nbsp;&nbsp;Bueno,&nbsp;hay&nbsp;otra&nbsp;salida:&nbsp;Considerar&nbsp;los&nbsp;porcentajes&nbsp;que&nbsp;debe&nbsp;ocupar&nbsp;cada<br>
+&nbsp;&nbsp;campo&nbsp;y&nbsp;así&nbsp;dividirlo&nbsp;y&nbsp;ubicarlo&nbsp;sobre&nbsp;la&nbsp;marcha.&nbsp;Así&nbsp;que&nbsp;finalmente&nbsp;el<br>
+&nbsp;&nbsp;parámetro&nbsp;campos&nbsp;es&nbsp;una&nbsp;lista&nbsp;de&nbsp;tuplas&nbsp;de&nbsp;la&nbsp;forma&nbsp;('Campo',<br>
+&nbsp;&nbsp;porcentaje).&nbsp;El&nbsp;porcentaje&nbsp;es&nbsp;lo&nbsp;que&nbsp;ocupa&nbsp;ese&nbsp;campo.&nbsp;Lo&nbsp;primero&nbsp;será<br>
+&nbsp;&nbsp;comprobar&nbsp;que&nbsp;la&nbsp;suma&nbsp;de&nbsp;los&nbsp;porcentajes&nbsp;no&nbsp;es&nbsp;mayor&nbsp;que&nbsp;100.<br>
+-&nbsp;Lista&nbsp;de&nbsp;datos:&nbsp;Es&nbsp;sencillo.&nbsp;Una&nbsp;lista&nbsp;con&nbsp;todas&nbsp;las&nbsp;filas&nbsp;del&nbsp;informe.<br>
+&nbsp;&nbsp;Cada&nbsp;fila&nbsp;es&nbsp;una&nbsp;tupla&nbsp;cuya&nbsp;longitud&nbsp;(y&nbsp;orden)&nbsp;debe&nbsp;ser&nbsp;igual&nbsp;al&nbsp;número<br>
+&nbsp;&nbsp;de&nbsp;campos.<br>
+&nbsp;<br>
+cols_a_derecha&nbsp;es&nbsp;una&nbsp;lista&nbsp;de&nbsp;los&nbsp;índices&nbsp;de&nbsp;las&nbsp;columnas<br>
+(empezando&nbsp;por&nbsp;0)&nbsp;que&nbsp;deben&nbsp;ser&nbsp;alineadas&nbsp;a&nbsp;la&nbsp;derecha.<br>
+&nbsp;<br>
+graficos&nbsp;es&nbsp;una&nbsp;lista&nbsp;de&nbsp;NOMBRES&nbsp;DE&nbsp;ARCHIVO&nbsp;que&nbsp;contienen&nbsp;imágenes&nbsp;que<br>
+serán&nbsp;colocadas&nbsp;una&nbsp;tras&nbsp;otra&nbsp;al&nbsp;final&nbsp;del&nbsp;informe.<br>
+&nbsp;<br>
+Seguimos&nbsp;complicando&nbsp;el&nbsp;tema.&nbsp;"sobrecampos"&nbsp;es&nbsp;una&nbsp;lista&nbsp;de<br>
+(('palabra1',&nbsp;x1%),&nbsp;('palabra2',&nbsp;x2%),&nbsp;...)&nbsp;que&nbsp;se&nbsp;colocarán&nbsp;en&nbsp;la<br>
+cabecera&nbsp;de&nbsp;los&nbsp;campos,&nbsp;un&nbsp;poco&nbsp;más&nbsp;arriba&nbsp;de&nbsp;los&nbsp;títulos,&nbsp;centradas&nbsp;en<br>
+las&nbsp;posiciones&nbsp;"x"&nbsp;indicadas&nbsp;(tanto&nbsp;porciento&nbsp;respecto&nbsp;al&nbsp;ancho&nbsp;de&nbsp;la<br>
+página).<br>
+&nbsp;<br>
+¡No&nbsp;se&nbsp;vayan&nbsp;todavía,&nbsp;aún&nbsp;hay&nbsp;más!&nbsp;Si&nbsp;algún&nbsp;campo&nbsp;contiene&nbsp;la&nbsp;cadena&nbsp;de<br>
+texto&nbsp;"---"&nbsp;se&nbsp;dibujará&nbsp;una&nbsp;línea&nbsp;en&nbsp;el&nbsp;ancho&nbsp;de&nbsp;ese&nbsp;campo.&nbsp;Si&nbsp;es&nbsp;"==="<br>
+dibujará&nbsp;una&nbsp;línea&nbsp;doble.<br>
+&nbsp;<br>
+Seguimos&nbsp;aumentando&nbsp;la&nbsp;lista&nbsp;interminable&nbsp;de&nbsp;parámetros:<br>
+"lineas_verticales"&nbsp;es&nbsp;una&nbsp;lista&nbsp;de&nbsp;posiciones&nbsp;(siempre&nbsp;en&nbsp;tantos&nbsp;por<br>
+ciento)&nbsp;donde&nbsp;se&nbsp;dibujarán&nbsp;líneas&nbsp;verticales&nbsp;que&nbsp;irán&nbsp;desde&nbsp;el&nbsp;borde<br>
+superior&nbsp;de&nbsp;la&nbsp;cabecera&nbsp;hasta&nbsp;el&nbsp;borde&nbsp;inferior&nbsp;del&nbsp;cuadro&nbsp;del&nbsp;cuerpo&nbsp;si<br>
+el&nbsp;segundo&nbsp;elemento&nbsp;de&nbsp;cada&nbsp;sublista&nbsp;es&nbsp;False&nbsp;o&nbsp;desde&nbsp;el&nbsp;borde&nbsp;superior&nbsp;de<br>
+la&nbsp;cabecera&nbsp;hasta&nbsp;el&nbsp;borde&nbsp;inferior&nbsp;de&nbsp;la&nbsp;página&nbsp;si&nbsp;es&nbsp;True:<br>
+P.ej:&nbsp;((20,&nbsp;False),&nbsp;(50,&nbsp;True))&nbsp;produce:<br>
+-----------------<br>
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+-----------------<br>
+|&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+|&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+-----------------<br>
+&nbsp;<br>
+Ahora&nbsp;acepta&nbsp;colores&nbsp;en&nbsp;el&nbsp;texto.&nbsp;Hay&nbsp;que&nbsp;pasarlos&nbsp;en&nbsp;cualquier&nbsp;posición<br>
+del&nbsp;texto&nbsp;a&nbsp;colorear&nbsp;de&nbsp;la&nbsp;siguiente&nbsp;forma:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(ejemplo)&nbsp;"Uno&nbsp;de&nbsp;los&nbsp;valores[color=rojo]"&nbsp;&nbsp;-&gt;&nbsp;Escribirá&nbsp;"Uno&nbsp;de&nbsp;los<br>
+&nbsp;&nbsp;&nbsp;&nbsp;valores"&nbsp;en&nbsp;rojo.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;De&nbsp;momento&nbsp;acepta:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[color=rojo]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[color=azul]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[color=verde]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[color=gris]<br>
+&nbsp;<br>
+"Mais"&nbsp;cositas:&nbsp;Si&nbsp;un&nbsp;campo&nbsp;contiene&nbsp;la&nbsp;cadena&nbsp;"&gt;-&gt;",&nbsp;se&nbsp;extenderá&nbsp;el<br>
+límite&nbsp;del&nbsp;campo&nbsp;anterior&nbsp;al&nbsp;límite&nbsp;de&nbsp;ese&nbsp;campo&nbsp;de&nbsp;forma&nbsp;que&nbsp;el&nbsp;texto<br>
+del&nbsp;campo&nbsp;anterior&nbsp;ocupará&nbsp;el&nbsp;espacio&nbsp;de&nbsp;su&nbsp;campo&nbsp;y&nbsp;el&nbsp;del&nbsp;que&nbsp;contiene<br>
+"&gt;-&gt;".<br>
+&nbsp;<br>
+Otro&nbsp;parámetro&nbsp;one&nbsp;more&nbsp;time:&nbsp;exportar_a_csv_a.&nbsp;Si&nbsp;es&nbsp;None&nbsp;no&nbsp;hace&nbsp;nada.<br>
+Si&nbsp;es&nbsp;una&nbsp;cadena&nbsp;de&nbsp;texto&nbsp;volcará&nbsp;una&nbsp;versión&nbsp;en&nbsp;formato&nbsp;CSV&nbsp;del&nbsp;informe<br>
+generado&nbsp;(es&nbsp;decir,&nbsp;cabecera&nbsp;+&nbsp;datos,&nbsp;básicamente).&nbsp;El&nbsp;archivo&nbsp;resultante<br>
+se&nbsp;abre&nbsp;directamente&nbsp;con&nbsp;el&nbsp;programa&nbsp;relacionado,&nbsp;NO&nbsp;SE&nbsp;DEVUELVE,&nbsp;SE&nbsp;RECIBE<br>
+EL&nbsp;NOMBRE&nbsp;DEL&nbsp;FICHERO&nbsp;DESTINO.<br>
+&nbsp;<br>
+«pijama»&nbsp;es&nbsp;un&nbsp;parámetro&nbsp;de&nbsp;última&nbsp;hornada&nbsp;que&nbsp;sirve&nbsp;para&nbsp;irte&nbsp;a&nbsp;la&nbsp;cama&nbsp;a&nbsp;<br>
+soñar&nbsp;con&nbsp;la&nbsp;teniente&nbsp;Ellen&nbsp;Ripley.&nbsp;También&nbsp;vale&nbsp;para&nbsp;que&nbsp;las&nbsp;líneas&nbsp;se&nbsp;<br>
+dibujen&nbsp;con&nbsp;color&nbsp;de&nbsp;fondo&nbsp;alternativo&nbsp;al&nbsp;estilo&nbsp;de&nbsp;los&nbsp;viejos&nbsp;rollos&nbsp;de&nbsp;<br>
+papel&nbsp;contínuo&nbsp;en&nbsp;verde-blanco.</tt></dd></dl>
+ <dl><dt><a name="-imprimir_tarifa"><strong>imprimir_tarifa</strong></a>(datos, nombre<font color="#909090">=''</font>, fecha<font color="#909090">=None</font>)</dt><dd><tt>Imprime&nbsp;una&nbsp;tarifa&nbsp;con&nbsp;su&nbsp;lista&nbsp;de&nbsp;precios.</tt></dd></dl>
+ <dl><dt><a name="-incidencias"><strong>incidencias</strong></a>(datos, fecha<font color="#909090">=None</font>)</dt><dd><tt>Crea&nbsp;un&nbsp;informe&nbsp;relativo&nbsp;a&nbsp;las&nbsp;incidencias&nbsp;en&nbsp;un&nbsp;periodo&nbsp;dado</tt></dd></dl>
+ <dl><dt><a name="-informe_marcado_ce"><strong>informe_marcado_ce</strong></a>(producto, rango_partidas<font color="#909090">=None</font>, ventana_padre<font color="#909090">=None</font>, ignorar_errores<font color="#909090">=False</font>, exportar_a_csv_a<font color="#909090">=None</font>)</dt><dd><tt>Genera&nbsp;un&nbsp;PDF&nbsp;con&nbsp;el&nbsp;informe&nbsp;de&nbsp;marcado&nbsp;CD&nbsp;para&nbsp;el&nbsp;producto&nbsp;"producto".<br>
+Si&nbsp;"rango_partida"&nbsp;es&nbsp;!=&nbsp;None,&nbsp;mostrará&nbsp;en&nbsp;el&nbsp;PDF&nbsp;solo&nbsp;las&nbsp;partidas&nbsp;de<br>
+la&nbsp;lista&nbsp;o&nbsp;tupla&nbsp;de&nbsp;objetos&nbsp;partida.<br>
+Si&nbsp;en&nbsp;el&nbsp;rango&nbsp;hay&nbsp;una&nbsp;partida&nbsp;que&nbsp;no&nbsp;pernece&nbsp;al&nbsp;producto&nbsp;la&nbsp;ignora.<br>
+Si&nbsp;"rango_partida"&nbsp;es&nbsp;None,&nbsp;imprime&nbsp;todas&nbsp;las&nbsp;partidas&nbsp;del&nbsp;producto.<br>
+En&nbsp;el&nbsp;informe&nbsp;generado&nbsp;las&nbsp;partidas&nbsp;se&nbsp;ordenan&nbsp;por&nbsp;número&nbsp;de&nbsp;partida<br>
+independientemente&nbsp;del&nbsp;orden&nbsp;en&nbsp;que&nbsp;se&nbsp;reciban&nbsp;(si&nbsp;es&nbsp;que&nbsp;la&nbsp;lista&nbsp;de<br>
+partidas&nbsp;no&nbsp;es&nbsp;None).<br>
+Si&nbsp;"ventana_padre"&nbsp;es&nbsp;diferente&nbsp;de&nbsp;None,&nbsp;los&nbsp;mensajes&nbsp;de&nbsp;error&nbsp;los&nbsp;mostrará<br>
+en&nbsp;un&nbsp;diálogo&nbsp;a&nbsp;la&nbsp;vez&nbsp;que&nbsp;por&nbsp;salida&nbsp;estándar.</tt></dd></dl>
+ <dl><dt><a name="-laboratorioLotes"><strong>laboratorioLotes</strong></a>(datos, fecha<font color="#909090">=None</font>)</dt><dd><tt>Crea&nbsp;un&nbsp;informe&nbsp;con&nbsp;los&nbsp;resultados&nbsp;de&nbsp;pruebas<br>
+sobre&nbsp;lotes&nbsp;en&nbsp;el&nbsp;laboratorio</tt></dd></dl>
+ <dl><dt><a name="-laboratorioPartidas"><strong>laboratorioPartidas</strong></a>(datos, fecha<font color="#909090">=None</font>)</dt><dd><tt>Crea&nbsp;un&nbsp;informe&nbsp;con&nbsp;los&nbsp;resultados&nbsp;de&nbsp;pruebas<br>
+sobre&nbsp;partidas&nbsp;en&nbsp;el&nbsp;laboratorio</tt></dd></dl>
+ <dl><dt><a name="-listado_balas"><strong>listado_balas</strong></a>(datos, desc_producto, fecha<font color="#909090">=None</font>)</dt><dd><tt>Listado&nbsp;de&nbsp;balas&nbsp;de&nbsp;un&nbsp;producto&nbsp;concreto&nbsp;(listado_balas.py).</tt></dd></dl>
+ <dl><dt><a name="-listado_clientes"><strong>listado_clientes</strong></a>(clientes)</dt><dd><tt>Imprime&nbsp;un&nbsp;listado&nbsp;de&nbsp;clientes.&nbsp;Los&nbsp;clientes&nbsp;a<br>
+imprimir&nbsp;los&nbsp;recibe&nbsp;como&nbsp;lista&nbsp;o&nbsp;como&nbsp;SelectResult.</tt></dd></dl>
+ <dl><dt><a name="-listado_clientes_solo_riesgos"><strong>listado_clientes_solo_riesgos</strong></a>(clientes)</dt><dd><tt>Imprime&nbsp;un&nbsp;listado&nbsp;de&nbsp;clientes.&nbsp;Los&nbsp;clientes&nbsp;a<br>
+imprimir&nbsp;los&nbsp;recibe&nbsp;como&nbsp;lista&nbsp;o&nbsp;como&nbsp;SelectResult.</tt></dd></dl>
+ <dl><dt><a name="-listado_proveedores"><strong>listado_proveedores</strong></a>(proveedores)</dt><dd><tt>Imprime&nbsp;un&nbsp;listado&nbsp;de&nbsp;provedores.&nbsp;Los&nbsp;proveedores&nbsp;a<br>
+imprimir&nbsp;los&nbsp;recibe&nbsp;como&nbsp;lista&nbsp;o&nbsp;como&nbsp;SelectResult.</tt></dd></dl>
+ <dl><dt><a name="-listado_rollos"><strong>listado_rollos</strong></a>(datos, desc_producto, fecha<font color="#909090">=None</font>)</dt><dd><tt>Listado&nbsp;de&nbsp;balas&nbsp;de&nbsp;un&nbsp;producto&nbsp;concreto&nbsp;(listado_balas.py).</tt></dd></dl>
+ <dl><dt><a name="-marca_de_agua"><strong>marca_de_agua</strong></a>(c, texto<font color="#909090">='BORRADOR'</font>, color<font color="#909090">=(1.0, 0.69999999999999996, 0.69999999999999996)</font>, fontsize<font color="#909090">=42</font>)</dt><dd><tt>c&nbsp;es&nbsp;un&nbsp;canvas&nbsp;donde&nbsp;se&nbsp;dibujará&nbsp;en&nbsp;ángulo&nbsp;el&nbsp;texto&nbsp;recibido<br>
+como&nbsp;marca&nbsp;de&nbsp;agua.<br>
+color&nbsp;debe&nbsp;ser&nbsp;una&nbsp;lista&nbsp;de&nbsp;3&nbsp;valores&nbsp;(RGB)&nbsp;entre&nbsp;0.0&nbsp;y&nbsp;1.0</tt></dd></dl>
+ <dl><dt><a name="-marcoParte"><strong>marcoParte</strong></a>(c, texto)</dt><dd><tt>Dibuja&nbsp;la&nbsp;cabecera&nbsp;del&nbsp;parte</tt></dd></dl>
+ <dl><dt><a name="-oldPackingListBalas"><strong>oldPackingListBalas</strong></a>(datos, numpagina<font color="#909090">=1</font>, titulo<font color="#909090">='Packing list'</font>)</dt><dd><tt>Imprime&nbsp;el&nbsp;packing&nbsp;list&nbsp;de&nbsp;una&nbsp;serie&nbsp;de&nbsp;balas.<br>
+numpagina&nbsp;es&nbsp;el&nbsp;número&nbsp;de&nbsp;página&nbsp;del&nbsp;packing&nbsp;list.<br>
+Si&nbsp;el&nbsp;albarán&nbsp;tiene&nbsp;varias&nbsp;LDVs,&nbsp;se&nbsp;llamará&nbsp;a&nbsp;esta&nbsp;función<br>
+para&nbsp;crear&nbsp;una&nbsp;hoja&nbsp;de&nbsp;packing&nbsp;list&nbsp;por&nbsp;producto.&nbsp;En&nbsp;cada<br>
+llamada&nbsp;numpagina&nbsp;traerá&nbsp;el&nbsp;valor&nbsp;correspondiente,&nbsp;y<br>
+se&nbsp;usará&nbsp;para&nbsp;diferenciar&nbsp;los&nbsp;archivos&nbsp;generados&nbsp;(ya&nbsp;que<br>
+se&nbsp;crearán&nbsp;todos&nbsp;a&nbsp;la&nbsp;vez&nbsp;y&nbsp;probablemente&nbsp;con&nbsp;la&nbsp;misma<br>
+fecha&nbsp;y&nbsp;hora).</tt></dd></dl>
+ <dl><dt><a name="-packingListBalas"><strong>packingListBalas</strong></a>(datos, numpagina<font color="#909090">=1</font>, titulo<font color="#909090">='Packing list'</font>)</dt><dd><tt>Imprime&nbsp;el&nbsp;packing&nbsp;list&nbsp;de&nbsp;una&nbsp;serie&nbsp;de&nbsp;balas.<br>
+numpagina&nbsp;es&nbsp;el&nbsp;número&nbsp;de&nbsp;página&nbsp;del&nbsp;packing&nbsp;list.<br>
+Si&nbsp;el&nbsp;albarán&nbsp;tiene&nbsp;varias&nbsp;LDVs,&nbsp;se&nbsp;llamará&nbsp;a&nbsp;esta&nbsp;función<br>
+para&nbsp;crear&nbsp;una&nbsp;hoja&nbsp;de&nbsp;packing&nbsp;list&nbsp;por&nbsp;producto.&nbsp;En&nbsp;cada<br>
+llamada&nbsp;numpagina&nbsp;traerá&nbsp;el&nbsp;valor&nbsp;correspondiente,&nbsp;y<br>
+se&nbsp;usará&nbsp;para&nbsp;diferenciar&nbsp;los&nbsp;archivos&nbsp;generados&nbsp;(ya&nbsp;que<br>
+se&nbsp;crearán&nbsp;todos&nbsp;a&nbsp;la&nbsp;vez&nbsp;y&nbsp;probablemente&nbsp;con&nbsp;la&nbsp;misma<br>
+fecha&nbsp;y&nbsp;hora).</tt></dd></dl>
+ <dl><dt><a name="-pagareCaixa"><strong>pagareCaixa</strong></a>(fechaPago, cantidad, proveedor, euros, fechaEmision)</dt><dd><tt>Imprime&nbsp;un&nbsp;pagaré&nbsp;de&nbsp;La&nbsp;Caixa</tt></dd></dl>
+ <dl><dt><a name="-pagareMonte"><strong>pagareMonte</strong></a>(fechaPago, cantidad, proveedor, euros, fechaEmision)</dt><dd><tt>Imprime&nbsp;un&nbsp;pagaré&nbsp;de&nbsp;El&nbsp;Monte</tt></dd></dl>
+ <dl><dt><a name="-parse_fuente"><strong>parse_fuente</strong></a>(cad, hoja)</dt><dd><tt>Si&nbsp;la&nbsp;cadena&nbsp;contiene&nbsp;algo&nbsp;de&nbsp;la&nbsp;forma&nbsp;[fuente=%s]&nbsp;intenta&nbsp;reconocer&nbsp;&nbsp;<br>
+la&nbsp;fuente&nbsp;y&nbsp;devuelve&nbsp;la&nbsp;misma&nbsp;cadena&nbsp;sin&nbsp;la&nbsp;subcadena&nbsp;<br>
+reconocida.<br>
+La&nbsp;subcadena&nbsp;debe&nbsp;ser&nbsp;de&nbsp;la&nbsp;forma&nbsp;"nombre&nbsp;fuente::tamaño"<br>
+Fuentes&nbsp;reconocidas&nbsp;(al&nbsp;menos):<br>
+['Courier',<br>
+&nbsp;'Courier-Bold',<br>
+&nbsp;'Courier-BoldOblique',<br>
+&nbsp;'Courier-Oblique',<br>
+&nbsp;'Helvetica',<br>
+&nbsp;'Helvetica-Bold',<br>
+&nbsp;'Helvetica-BoldOblique',<br>
+&nbsp;'Helvetica-Oblique',<br>
+&nbsp;'Symbol',<br>
+&nbsp;'Times-Bold',<br>
+&nbsp;'Times-BoldItalic',<br>
+&nbsp;'Times-Italic',<br>
+&nbsp;'Times-Roman',<br>
+&nbsp;'ZapfDingbats']<br>
+Devuelve&nbsp;None&nbsp;donde&nbsp;no&nbsp;pueda&nbsp;reconocer&nbsp;fuente&nbsp;o&nbsp;tamaño.</tt></dd></dl>
+ <dl><dt><a name="-parteBalas"><strong>parteBalas</strong></a>(datos, lineas)</dt><dd><tt>Crea&nbsp;un&nbsp;informe&nbsp;con&nbsp;los&nbsp;datos&nbsp;de<br>
+un&nbsp;parte&nbsp;de&nbsp;la&nbsp;línea&nbsp;de&nbsp;fibra</tt></dd></dl>
+ <dl><dt><a name="-parteRollos"><strong>parteRollos</strong></a>(datos, lineas)</dt><dd><tt>Crea&nbsp;un&nbsp;informe&nbsp;con&nbsp;los&nbsp;datos&nbsp;de<br>
+un&nbsp;parte&nbsp;de&nbsp;la&nbsp;línea&nbsp;de&nbsp;geotextil</tt></dd></dl>
+ <dl><dt><a name="-pedidoCompra"><strong>pedidoCompra</strong></a>(general, proveedor, lineas, entregas, observaciones, formapago, direntrega0, direntrega1, direntrega2, responsable0, responsable1, portes0, portes1, mostrar_precios<font color="#909090">=True</font>, observaciones0<font color="#909090">=''</font>, observaciones1<font color="#909090">=''</font>)</dt><dd><tt>Con&nbsp;los&nbsp;datos&nbsp;de&nbsp;entrada&nbsp;genera&nbsp;el&nbsp;impreso.<br>
+&nbsp;<br>
+@params<br>
+&nbsp;<br>
+general&nbsp;--&gt;&nbsp;datos&nbsp;de&nbsp;la&nbsp;cabecera&nbsp;del&nbsp;albarán,&nbsp;diccionario&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'pednum'&nbsp;Número&nbsp;de&nbsp;pedido<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'proveedor'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'fecha'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'iva'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'descuento'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'subtotal'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'totalIVA'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'totalDescuento<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'total'<br>
+&nbsp;<br>
+lineas&nbsp;--&gt;&nbsp;datos&nbsp;del&nbsp;cuerpo&nbsp;del&nbsp;albarán,&nbsp;es&nbsp;una&nbsp;lista&nbsp;(un&nbsp;elemento<br>
+por&nbsp;línea)&nbsp;de&nbsp;diccionarios&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'codigo'&nbsp;//Debe&nbsp;soportar&nbsp;13&nbsp;digitos&nbsp;en&nbsp;la&nbsp;hoja<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'descripcion'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'cantidad'&nbsp;Cantidad&nbsp;servida<br>
+&nbsp;<br>
+observaciones&nbsp;--&gt;&nbsp;una&nbsp;cadena<br>
+mostrar_precios&nbsp;--&gt;&nbsp;Si&nbsp;False,&nbsp;oculta&nbsp;la&nbsp;columna&nbsp;de&nbsp;los&nbsp;precios.</tt></dd></dl>
+ <dl><dt><a name="-pedidosCliente"><strong>pedidosCliente</strong></a>(datos, cliente, fecha<font color="#909090">=None</font>)</dt><dd><tt>Crea&nbsp;un&nbsp;informe&nbsp;relativo&nbsp;a&nbsp;los&nbsp;pedidos&nbsp;realizados&nbsp;por&nbsp;un&nbsp;cliente&nbsp;dado</tt></dd></dl>
+ <dl><dt><a name="-pendiente_recibir"><strong>pendiente_recibir</strong></a>(exportar_a_csv_a<font color="#909090">=None</font>)</dt><dd><tt>Crea&nbsp;un&nbsp;informe&nbsp;los&nbsp;pedidos&nbsp;pendientes&nbsp;de&nbsp;recibir.</tt></dd></dl>
+ <dl><dt><a name="-pendiente_servir"><strong>pendiente_servir</strong></a>(tipo, porpedido, porproducto, nombrecliente<font color="#909090">=''</font>)</dt><dd><tt>Crea&nbsp;un&nbsp;informe&nbsp;los&nbsp;pedidos&nbsp;pendientes&nbsp;de&nbsp;servir.<br>
+tipo&nbsp;debe&nbsp;ser&nbsp;"geotextiles"&nbsp;o&nbsp;"fibra".<br>
+Recibe&nbsp;los&nbsp;datos&nbsp;a&nbsp;mostrar&nbsp;por&nbsp;pedido&nbsp;y&nbsp;por&nbsp;producto.</tt></dd></dl>
+ <dl><dt><a name="-pie"><strong>pie</strong></a>(c, actualPagina, totalPagina, apaisado<font color="#909090">=False</font>)</dt><dd><tt>Pone&nbsp;el&nbsp;número&nbsp;de&nbsp;página&nbsp;y&nbsp;una&nbsp;línea&nbsp;en&nbsp;el&nbsp;pie</tt></dd></dl>
+ <dl><dt><a name="-pintar_data_caja"><strong>pintar_data_caja</strong></a>(c, data, ancho, alto, tipo<font color="#909090">=0</font>)</dt><dd><tt>Escribe&nbsp;en&nbsp;el&nbsp;canvas,&nbsp;en&nbsp;las&nbsp;posiciones&nbsp;indicadas&nbsp;por&nbsp;el&nbsp;tipo&nbsp;de&nbsp;<br>
+etiqueta,&nbsp;los&nbsp;datos&nbsp;de&nbsp;la&nbsp;caja&nbsp;recibida&nbsp;en&nbsp;«data».</tt></dd></dl>
+ <dl><dt><a name="-pintar_data_pale"><strong>pintar_data_pale</strong></a>(c, data, ancho, alto, tipo<font color="#909090">=0</font>)</dt><dd><tt>Escribe&nbsp;en&nbsp;el&nbsp;canvas,&nbsp;en&nbsp;las&nbsp;posiciones&nbsp;indicadas&nbsp;por&nbsp;el&nbsp;tipo&nbsp;de&nbsp;<br>
+etiqueta,&nbsp;los&nbsp;datos&nbsp;del&nbsp;palé&nbsp;recibidos&nbsp;en&nbsp;«data».</tt></dd></dl>
+ <dl><dt><a name="-prefactura"><strong>prefactura</strong></a>(cliente, factdata, lineas, arancel, vencimiento, texto, totales, impuesto<font color="#909090">=1.1599999999999999</font>, orden_ventanas<font color="#909090">=None</font>)</dt><dd><tt>Con&nbsp;los&nbsp;datos&nbsp;de&nbsp;entrada&nbsp;genera&nbsp;la&nbsp;prefactura&nbsp;o&nbsp;factura&nbsp;pro&nbsp;forma.<br>
+&nbsp;<br>
+@params<br>
+&nbsp;<br>
+cliente&nbsp;--&gt;&nbsp;es&nbsp;un&nbsp;diccionario&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'numcli'&nbsp;Número&nbsp;de&nbsp;cliente<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'nombre'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'cif'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'direccion'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'cp'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'localidad'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'pais'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'telf'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'fax'<br>
+&nbsp;<br>
+factdata&nbsp;--&gt;&nbsp;datos&nbsp;de&nbsp;la&nbsp;cabecera&nbsp;de&nbsp;la&nbsp;factura,&nbsp;es&nbsp;diccionario&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'facnum'&nbsp;Número&nbsp;de&nbsp;factura<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'fecha'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'pedido'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'albaranes'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'observaciones'<br>
+&nbsp;<br>
+lineas&nbsp;--&gt;&nbsp;datos&nbsp;del&nbsp;cuerpo&nbsp;de&nbsp;la&nbsp;factura,&nbsp;es&nbsp;una&nbsp;lista&nbsp;(un&nbsp;elemento<br>
+por&nbsp;línea)&nbsp;de&nbsp;diccionarios&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'codigo'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'cantidad'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'descripcion'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'precio'&nbsp;precio&nbsp;unitario<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'descuento'<br>
+&nbsp;<br>
+arancel&nbsp;--&gt;&nbsp;una&nbsp;cadena&nbsp;con&nbsp;el&nbsp;código&nbsp;de&nbsp;arancel,&nbsp;si&nbsp;no&nbsp;es&nbsp;para&nbsp;extranjero<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;es&nbsp;None&nbsp;y&nbsp;se&nbsp;aplica&nbsp;el&nbsp;impuesto.&nbsp;Con&nbsp;arancel&nbsp;el&nbsp;impuesto&nbsp;es&nbsp;0<br>
+&nbsp;<br>
+vencimiento&nbsp;--&gt;&nbsp;diccionario&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'fecha'&nbsp;--&gt;&nbsp;fecha&nbsp;de&nbsp;vencimiento<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'pago'&nbsp;--&gt;&nbsp;forma&nbsp;de&nbsp;pago<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'documento'&nbsp;--&gt;&nbsp;es&nbsp;un&nbsp;diccionario&nbsp;con&nbsp;el&nbsp;documento&nbsp;de&nbsp;pago,&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-'forma'&nbsp;--&gt;&nbsp;modo&nbsp;de&nbsp;pago&nbsp;y&nbsp;cuenta&nbsp;de&nbsp;destino&nbsp;del&nbsp;pago<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-'iban'&nbsp;--&gt;&nbsp;iban&nbsp;de&nbsp;la&nbsp;cuenta&nbsp;destino<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.'swift'&nbsp;--&gt;&nbsp;swift&nbsp;de&nbsp;la&nbsp;cuenta&nbsp;destino<br>
+&nbsp;<br>
+texto&nbsp;--&gt;&nbsp;cadena&nbsp;que&nbsp;se&nbsp;pone&nbsp;en&nbsp;el&nbsp;cuadro&nbsp;IMPORTA&nbsp;LA&nbsp;PRESENTE&nbsp;FACTURA<br>
+&nbsp;<br>
+totales&nbsp;--&gt;diccionario&nbsp;con:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-'subtotal'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-'cargo'&nbsp;None&nbsp;si&nbsp;no&nbsp;tiene<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-'descuento'&nbsp;None&nbsp;si&nbsp;no&nbsp;tiene<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-'totaliva'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-'total'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-'totirpf'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-'irpf'<br>
+&nbsp;<br>
+impuesto&nbsp;--&gt;&nbsp;valor&nbsp;numerico&nbsp;con&nbsp;el&nbsp;impuesto&nbsp;aplicado.&nbsp;Con&nbsp;arancel&nbsp;se&nbsp;pone<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;0&nbsp;automaticamente</tt></dd></dl>
+ <dl><dt><a name="-primLinea"><strong>primLinea</strong></a>()</dt></dl>
+ <dl><dt><a name="-probar_fuentes_disponibles"><strong>probar_fuentes_disponibles</strong></a>()</dt><dd><tt>Crea&nbsp;y&nbsp;abre&nbsp;un&nbsp;PDF&nbsp;con&nbsp;las&nbsp;fuentes&nbsp;disponibles&nbsp;en&nbsp;la<br>
+instalación&nbsp;de&nbsp;ReportLab&nbsp;local.</tt></dd></dl>
+ <dl><dt><a name="-producido_produccion"><strong>producido_produccion</strong></a>(datos, fecha<font color="#909090">=None</font>, grafico<font color="#909090">=None</font>)</dt><dd><tt>titulo&nbsp;=&nbsp;'Producción:&nbsp;Productos&nbsp;terminados.'</tt></dd></dl>
+ <dl><dt><a name="-prueba"><strong>prueba</strong></a>()</dt></dl>
+ <dl><dt><a name="-prueba2"><strong>prueba2</strong></a>()</dt></dl>
+ <dl><dt><a name="-prueba_cmr"><strong>prueba_cmr</strong></a>()</dt></dl>
+ <dl><dt><a name="-pruebines"><strong>pruebines</strong></a>()</dt><dd><tt>Prepara&nbsp;los&nbsp;datos&nbsp;para&nbsp;llamar&nbsp;al&nbsp;generador&nbsp;de&nbsp;informes</tt></dd></dl>
+ <dl><dt><a name="-pruebines2"><strong>pruebines2</strong></a>()</dt></dl>
+ <dl><dt><a name="-pruebines3"><strong>pruebines3</strong></a>()</dt></dl>
+ <dl><dt><a name="-pruebines4"><strong>pruebines4</strong></a>()</dt></dl>
+ <dl><dt><a name="-pruebines5"><strong>pruebines5</strong></a>()</dt></dl>
+ <dl><dt><a name="-pruebines6"><strong>pruebines6</strong></a>()</dt></dl>
+ <dl><dt><a name="-pruebines_cajas_guaje"><strong>pruebines_cajas_guaje</strong></a>()</dt></dl>
+ <dl><dt><a name="-pruebines_nuevas_etiquetas_domenech"><strong>pruebines_nuevas_etiquetas_domenech</strong></a>()</dt></dl>
+ <dl><dt><a name="-pruebines_pales_guaje"><strong>pruebines_pales_guaje</strong></a>()</dt></dl>
+ <dl><dt><a name="-recibo"><strong>recibo</strong></a>(numrecibo, lugar_libramiento, importe, fecha_libramiento, vencimiento, codigo_cliente, numfactura, fechafactura, persona_pago, domicilio_pago, cuenta_pago, nombre_librado, direccion_librado)</dt><dd><tt>Recibe&nbsp;los&nbsp;datos&nbsp;a&nbsp;imprimir&nbsp;en&nbsp;el&nbsp;recibo&nbsp;*como&nbsp;cadenas*.</tt></dd></dl>
+ <dl><dt><a name="-rectangulo"><strong>rectangulo</strong></a>(hoja, esquina1, esquina2, texto<font color="#909090">=''</font>, alinTxtX<font color="#909090">=None</font>, alinTxtY<font color="#909090">=None</font>, doble<font color="#909090">=False</font>, color_relleno<font color="#909090">=None</font>)</dt><dd><tt>Dada&nbsp;la&nbsp;tupla&nbsp;esquina&nbsp;superior&nbsp;izquierda&nbsp;y&nbsp;la<br>
+tupla&nbsp;inferior&nbsp;derecha&nbsp;traza&nbsp;un&nbsp;rectángulo<br>
+Si&nbsp;se&nbsp;pasa&nbsp;un&nbsp;texto&nbsp;como&nbsp;parámetro&nbsp;lo&nbsp;escribe&nbsp;en&nbsp;la<br>
+esquina&nbsp;superior&nbsp;izquierda&nbsp;por&nbsp;dentro</tt></dd></dl>
+ <dl><dt><a name="-repuestos"><strong>repuestos</strong></a>(hasta<font color="#909090">=None</font>, exportar_a_csv_a<font color="#909090">=None</font>)</dt><dd><tt>Imprime&nbsp;un&nbsp;informe&nbsp;de&nbsp;existencias&nbsp;al&nbsp;día&nbsp;actual&nbsp;si&nbsp;"hasta"&nbsp;es&nbsp;None<br>
+o&nbsp;hasta&nbsp;la&nbsp;fecha&nbsp;indicada.<br>
+OJO:&nbsp;Los&nbsp;repuestos&nbsp;deben&nbsp;tener&nbsp;como&nbsp;tipo&nbsp;de&nbsp;material&nbsp;uno&nbsp;que&nbsp;tenga&nbsp;en<br>
+su&nbsp;descripción&nbsp;"aceite",&nbsp;"lubricante"&nbsp;o&nbsp;"repuesto".<br>
+Devuelve&nbsp;tantos&nbsp;nombres&nbsp;de&nbsp;archivo&nbsp;como&nbsp;tipos&nbsp;de&nbsp;material&nbsp;de&nbsp;repuestos<br>
+haya&nbsp;en&nbsp;la&nbsp;base&nbsp;de&nbsp;datos.</tt></dd></dl>
+ <dl><dt><a name="-repuestos_no_nulos"><strong>repuestos_no_nulos</strong></a>(hasta<font color="#909090">=None</font>, exportar_a_csv_a<font color="#909090">=None</font>)</dt><dd><tt>Imprime&nbsp;un&nbsp;informe&nbsp;de&nbsp;existencias&nbsp;al&nbsp;día&nbsp;actual&nbsp;si&nbsp;"hasta"&nbsp;es&nbsp;None<br>
+o&nbsp;hasta&nbsp;la&nbsp;fecha&nbsp;indicada.<br>
+OJO:&nbsp;Los&nbsp;repuestos&nbsp;deben&nbsp;tener&nbsp;como&nbsp;tipo&nbsp;de&nbsp;material&nbsp;uno&nbsp;que&nbsp;tenga&nbsp;en<br>
+su&nbsp;descripción&nbsp;"aceite",&nbsp;"lubricante"&nbsp;o&nbsp;"repuesto".<br>
+Devuelve&nbsp;tantos&nbsp;nombres&nbsp;de&nbsp;archivo&nbsp;como&nbsp;tipos&nbsp;de&nbsp;material&nbsp;de&nbsp;repuestos<br>
+haya&nbsp;en&nbsp;la&nbsp;base&nbsp;de&nbsp;datos.</tt></dd></dl>
+ <dl><dt><a name="-resumen_totales_geotextiles"><strong>resumen_totales_geotextiles</strong></a>(datos, str_fecha, str_anno)</dt><dd><tt>Informe&nbsp;resumen&nbsp;de&nbsp;totales&nbsp;de&nbsp;producción,&nbsp;existencias,&nbsp;salidas&nbsp;y<br>
+pedidos&nbsp;de&nbsp;geotextiles.</tt></dd></dl>
+ <dl><dt><a name="-sigLinea"><strong>sigLinea</strong></a>(valor<font color="#909090">=15</font>, actual<font color="#909090">=None</font>)</dt></dl>
+ <dl><dt><a name="-texto_libre"><strong>texto_libre</strong></a>(texto, txtcabecera<font color="#909090">=''</font>, incluir_fecha_del_dia<font color="#909090">=True</font>)</dt><dd><tt>Simplemente&nbsp;vuelca&nbsp;el&nbsp;texto&nbsp;recibido&nbsp;en&nbsp;un&nbsp;PDF.</tt></dd></dl>
+ <dl><dt><a name="-tmp_domenech_etiquetasBalasEtiquetadora"><strong>tmp_domenech_etiquetasBalasEtiquetadora</strong></a>(balas)</dt><dd><tt>Crea&nbsp;etiquetas&nbsp;para&nbsp;las&nbsp;balas&nbsp;de<br>
+un&nbsp;parte&nbsp;de&nbsp;la&nbsp;línea&nbsp;de&nbsp;fibra.<br>
+Una&nbsp;por&nbsp;etiqueta&nbsp;del&nbsp;tamaño&nbsp;estándar&nbsp;de&nbsp;la&nbsp;impresora&nbsp;CAB:&nbsp;12.55&nbsp;x&nbsp;8.4.</tt></dd></dl>
+ <dl><dt><a name="-trazabilidad"><strong>trazabilidad</strong></a>(texto)</dt><dd><tt>Simplemente&nbsp;vuelca&nbsp;el&nbsp;texto&nbsp;recibido&nbsp;en&nbsp;un&nbsp;PDF.</tt></dd></dl>
+ <dl><dt><a name="-vencimientosCobro"><strong>vencimientosCobro</strong></a>(datos, fecha<font color="#909090">=None</font>)</dt><dd><tt>Crea&nbsp;un&nbsp;informe&nbsp;relativo&nbsp;a&nbsp;las&nbsp;incidencias&nbsp;en&nbsp;un&nbsp;periodo&nbsp;dado</tt></dd></dl>
+ <dl><dt><a name="-vencimientosPago"><strong>vencimientosPago</strong></a>(datos, fecha<font color="#909090">=None</font>)</dt><dd><tt>Crea&nbsp;un&nbsp;informe&nbsp;relativo&nbsp;a&nbsp;las&nbsp;incidencias&nbsp;en&nbsp;un&nbsp;periodo&nbsp;dado</tt></dd></dl>
+ <dl><dt><a name="-ventas"><strong>ventas</strong></a>(datos, fecha<font color="#909090">=None</font>)</dt><dd><tt>Crea&nbsp;un&nbsp;informe&nbsp;relativo&nbsp;a&nbsp;las&nbsp;ventas&nbsp;realizadas&nbsp;en&nbsp;un&nbsp;periodo&nbsp;de&nbsp;fecha<br>
+dado.</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>A4</strong> = (595.27559055118104, 841.88976377952747)<br>
+<strong>MAXLINAB</strong> = 28<br>
+<strong>MAXLINEAS</strong> = 47<br>
+<strong>bm</strong> = 56.689999999999998<br>
+<strong>cm</strong> = 28.346456692913385<br>
+<strong>height</strong> = 841.88976377952747<br>
+<strong>inch</strong> = 72.0<br>
+<strong>lm</strong> = 28.350000000000001<br>
+<strong>mm</strong> = 2.8346456692913389<br>
+<strong>rm</strong> = 566.91999999999996<br>
+<strong>tm</strong> = 680<br>
+<strong>width</strong> = 595.27559055118104</td></tr></table>
+</body></html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head><style type="text/css">
+pre {background-color: #e0e0e0}
+</style>
+
+<link rel="STYLESHEET" href="pychart.css" type='text/css' />
+<link rel="first" href="pychart.html" title='PyChart' />
+<link rel='index' href='genindex.html' title='Index' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="genindex.html" />
+<link rel="prev" href="module-zap.html" />
+<link rel="parent" href="pychart.html" />
+<link rel="next" href="creating-canvas.html" />
+<meta name='aesop' content='information' />
+<title>21 canvas - Controlling output and format</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="20 Zap marks"
+  href="module-zap.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="PyChart"
+  href="pychart.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="21.1 Creating a canvas"
+  href="creating-canvas.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="module-zap.html">20 Zap marks</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="pychart.html">PyChart</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="creating-canvas.html">21.1 Creating a canvas</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION0002100000000000000000">
+21 <tt class="module">canvas</tt> - Controlling output and format</A>
+</H1>
+<A NAME="module-canvas"></A><a id='l2h-344' xml:id='l2h-344'></a>
+
+<P>
+<dl><dt><b><span class="typelabel">class</span>&nbsp;<tt id='l2h-343' xml:id='l2h-343' class="class">canvas.T</tt></b>
+<dd>
+Canvas is an object that corresponds to a single output file. It
+provides a set of methods for drawing lines, polygons, texts, and other
+things in a manner independent of the file's format.  Canvas is usually
+hidden from the user, as  PyChart creates a <em>default canvas</em> when it
+starts up and implicitly writes all charts on the default canvas (unless
+the user specifies otherwise; more on that later). There are some
+occasions, however, in which you might want to manipulate a canvas
+explicitly, e.g., when you want to create multiple plots from a single
+file, or you just want to add lines and texts directly.
+
+<P>
+Class <code>canvas.T</code> is an abstract base class.  PyChart provides several
+subclasses that correspond to specific file formats. For example,
+<code>pscanvas.T</code> implements methods for PostScript output. Class
+<code>pdfcanvas.T</code> implements methods for PDF output.
+<a id='l2h-345' xml:id='l2h-345'></a>format
+</dl>
+
+<P>
+
+<p><br /></p><hr class='online-navigation' />
+<div class='online-navigation'>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></a>
+
+<UL CLASS="ChildLinks">
+<LI><A href="creating-canvas.html">21.1 Creating a canvas</a>
+<LI><A href="drawing-graph-canvas.html">21.2 Drawing plots on canvas</a>
+<LI><A href="drawing-canvas.html">21.3 Drawing other objects on canvas</a>
+<LI><A href="clipping-canvas.html">21.4 Clipping</a>
+<LI><A href="property-canvas.html">21.5 Setting canvas properties</a>
+<LI><A href="default-canvas.html">21.6 Shortcut functions for the default canvas</a>
+</ul>
+<!--End of Table of Child-Links-->
+</div>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="20 Zap marks"
+  href="module-zap.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="PyChart"
+  href="pychart.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="21.1 Creating a canvas"
+  href="creating-canvas.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="module-zap.html">20 Zap marks</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="pychart.html">PyChart</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="creating-canvas.html">21.1 Creating a canvas</A>
+</div>
+</div>
+<hr />
+<span class="release-info">Documentation released on July 2, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>
