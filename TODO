@@ -1,1 +1,5 @@
-Cambiar a GPL3, limpiar y git.
+[ ] Cambiar a GPL3, limpiar y git.
+[X] Cambiar SQLObject por el oficial.
+[ ] Empaquetar como setup.py
+[ ] Usar sqlite en pruebas.
+[ ] Adaptar a gtk.Builder
