@@ -1,4 +1,0 @@
-El módulo SQLObject no pertenece a GeotexInn. Se empaqueta junto al proyecto por motivos de comodidad en caso de no estar instalado correctamente en el site-packages.
-
-Para más información acerca de SQLObject: http://www.sqlobject.org/
-
