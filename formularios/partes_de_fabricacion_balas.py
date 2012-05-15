@@ -2791,7 +2791,10 @@ class PartesDeFabricacionBalas(Ventana):
         producto = self.buscar_producto_compra("GRANZA")
         if producto == None:
             return
-        cantidad = utils.dialogo_entrada(titulo = 'CANTIDAD', texto = 'Introduzca la cantidad que había en el silo antes de comenzar el parte de producción:')
+        cantidad = utils.dialogo_entrada(titulo = 'CANTIDAD', 
+            texto = 'Introduzca la cantidad que había en el silo antes de '
+                    'comenzar el parte de producción:', 
+            padre = self.wids['ventana'])
         if cantidad == None:
             return
         try:
