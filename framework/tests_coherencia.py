@@ -856,8 +856,19 @@ def comprobar_consumos_granza(report_mode = False,
             granza_consumida = pdp.get_granza_consumida()
             fibra_fabricada = sum([a.peso for a in pdp.articulos])
             if granza_consumida < fibra_fabricada * 0.9:
-                print >> sys.stderr, "El parte de producción ID %d (%s) consumió menos del 90%% de granza (%s) respecto a la fibra fabricada(%s)." % (
-                    pdp.id, utils.str_fecha(pdp.fecha), utils.float2str(granza_consumida), utils.float2str(fibra_fabricada))
+                try:
+                    porcentaje = 100.0 * granza_consumida / fibra_fabricada 
+                except ZeroDivisionError:
+                    porcentaje = 100.0
+                txt_error = "El parte de producción ID %d (%s) consumió "\
+                            "menos del 90%% de granza (%s) respecto a la "\
+                            "fibra fabricada (%s): %.2f %%" % (
+                                pdp.id, 
+                                utils.str_fecha(pdp.fecha), 
+                                utils.float2str(granza_consumida), 
+                                utils.float2str(fibra_fabricada), 
+                                porcentaje)
+                print >> sys.stderr, txt_error
                 res = False
                 if not report_mode:
                     break
