@@ -550,41 +550,32 @@ class Menu:
         try:
             self.ventana.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
             while gtk.events_pending(): gtk.main_iteration(False)
-            # HACK: Debe haber una forma mejor de hacerlo. De momento me 
-            #       aprovecho de que el mainloop no va a atender al 
-            #       timeout aunque se cumpla el tiempo, ya que está 
-            #       ocupado en abrir la ventana, con lo que el cursor 
-            #       sale del "busy" justo cuando debe, al abrirse la 
-            #       ventana.
-            v = None 
-            gobject.timeout_add(100, self.volver_a_cursor_original)
-            # NOTA: OJO: TODO: Usuario harcoded. Cambiar en cuanto sea 
-            #                  posible.
-            if ((self.get_usuario().usuario == "geotextil" or 
-                 self.get_usuario().usuario == "fibra" or 
-                 self.get_usuario().nivel >= 3) 
-                and "partes_de_fabricacion" in archivo
-                and self.get_usuario().usuario != "cemento"):
-                exec "import %s" % archivo
-                v = eval('%s.%s' % (archivo, clase))
-                try:
-                    v(permisos = "rx", usuario = self.get_usuario())
-                except TypeError:   # La ventana no soporta el modelo 
-                                    # antiguo de permisos.
-                    v(usuario = self.get_usuario())
-            else:
-                try:
-                    self.lanzar_ventana(archivo, clase)
-                except Exception, e:
-                    print e
-                    sys.stderr.write(`e`)
-                    self._lanzar_ventana(archivo, clase)
+            # HACK: Debe haber una forma mejor de hacerlo. De momento me
+            # aprovecho de que el mainloop no va a atender al
+            # timeout aunque se cumpla el tiempo, ya que está
+            # ocupado en abrir la ventana, con lo que el cursor
+            # sale del "busy" justo cuando debe, al abrirse la
+            # ventana.
+            v = None
+            pclases = import_pclases()
+            gobject.timeout_add(200, self.volver_a_cursor_original)
+            try:
+                self.lanzar_ventana(archivo)
+                if pclases.DEBUG:
+                    print _("¡El lanzador multiproceso de Doraemon! (%s)") % (
+                        archivo)
+            except Exception, e:
+                sys.stderr.write(`e`)
+                self._lanzar_ventana(archivo, clase)
+                if pclases.DEBUG:
+                    print _("¡El lanzador bloqueante de Nobita! (%s)") % (
+                        archivo)
         except:
             self.ventana.window.set_cursor(None)
-            utils.escribir_barra_estado(self.statusbar, 
-                "Error detectado. Iniciando informe por correo.", 
-                self.logger, 
-                self.usuario.usuario)
+            utils.ui.escribir_barra_estado(self.statusbar,
+                _("Error detectado. Iniciando informe por correo."),
+                self.logger,
+                self.__usuario.usuario)
             self.enviar_correo_error_ventana()
 
     def _lanzar_ventana(self, archivo, clase):
@@ -603,24 +594,52 @@ class Menu:
         v = eval('%s.%s' % (archivo, clase))
         v(usuario = self.get_usuario())
 
-    def lanzar_ventana(self, archivo, clase):
+    def lanzar_ventana(self, archivo):
         """
         EXPERIMENTAL
         """
-        self._lanzar_ventana(archivo, clase)
-        return
-        # XXX
-        from multiprocessing import Process
-        v = Process(target = self._importar_e_instanciar, 
-                    args = (archivo, clase))
-        try:
-            self.ventanas_abiertas.append(v)
-        except (AttributeError):
-            self.ventanas_abiertas = [v]
-        v.start()
-        # Esto debería ir en otra función al salir:
-        for v in self.ventanas_abiertas:
-            v.join()
+        from subprocess import Popen
+        usuario = self.get_usuario()
+        if os.path.basename(os.path.abspath(os.curdir)) == "formularios":
+            ruta = os.path.abspath(os.path.join(".", archivo+".py"))
+        else:
+            ruta = os.path.abspath(
+                    os.path.join(".", "formularios", archivo+".py"))
+        pclases = import_pclases()
+        if pclases.DEBUG:
+            print _("Lanzando..."), ruta,
+            print _("¿Existe?"), os.path.exists(ruta)
+        # FIXME: Esto no funciona en el W2003 Server de CICAN. Dice que...
+        # WindowsError: [Error 193] %1 no es una aplicación Win32 válida.
+        # Creo que es porque sin ponerle un "start" delante ni nada a la ruta,
+        # no sabe con qué abrirlo. Es como si desde el cmd escribiera algo.txt.
+        # No se ejecuta. Necesita ponerse delante el nombre del programa que
+        # abre el archivo o usar "start" para que lo haga con el
+        # predeterminado. Otra opción sería usar el multi-open. Investigaré.
+        # Con el "start" tampoco tira. Da un error (2, blahblahblah...)
+        if os.name == "nt":
+            bin_params = ["start {0}".format(ruta)]
+        else:
+            bin_params = [ruta]
+        if usuario:
+            idusuario = usuario.id
+            bin_params.append("--usuario=%s" % idusuario)
+        config = ConfigConexion()
+        fconfig = config.get_file()
+        if fconfig:
+            bin_params.append("--config=%s" % fconfig)
+            #fconfig_original = replace_fconfig(fconfig) # TODO: FIXME: Ver
+            # el comentario de dos líneas más abajo.
+        Popen(bin_params)
+        if fconfig:
+            # TODO: FIXME: No restaura el contenido original. ¿Tal vez lo
+            # hago demasiado rápido? ¿Debería sincronizarme con señales? ¿Y
+            # qué pasa con las máquinas windows donde ni el fork ni las
+            # señales funcionan en condiciones? Y si lo hago nada más lanzar
+            # el menú y restauro al salir, ¿qué pasa si se me cuelga y tengo
+            # que cerrar a capón? Me quedo sin el original. Merde.
+            #restore_fconfig(fconfig_original)
+            pass
 
     def enviar_correo_error_ventana(self):
         print "Se ha detectado un error"
