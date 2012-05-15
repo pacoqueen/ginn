@@ -3117,7 +3117,14 @@ class PartesDeFabricacionBalas(Ventana):
                             cantidad = cantidad_a_consumir)
                     granza.existencias -= cantidad_a_consumir
                     granza.add_existencias(-cantidad_a_consumir)
-                    self.logger.warning("CONSUMO LÍNEA FIBRA: Consumiendo %s kg de granza reciclada (%s) para la bala o bigbag %s. Queda en almacén: %s %s" % (utils.float2str(cantidad_a_consumir), granza.descripcion, articulo.codigo_interno, utils.float2str(granza.existencias), granza.unidad))
+                    self.logger.warning("CONSUMO LÍNEA FIBRA: Consumiendo %s",
+                        " kg de granza reciclada (%s) para la bala o bigbag "
+                        "%s. Queda en almacén: %s %s" % (
+                            utils.float2str(cantidad_a_consumir), 
+                            granza.descripcion, 
+                            articulo.codigo_interno, 
+                            utils.float2str(granza.existencias), 
+                            granza.unidad))
 
     def descontar_material_adicional(self, articulo, restar = True):
         """
