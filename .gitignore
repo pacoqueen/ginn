@@ -29,3 +29,7 @@ pip-log.txt
 # Vim
 *.swp
 
+# Log y backups
+ginn.log
+*.backup
+
