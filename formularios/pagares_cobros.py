@@ -214,7 +214,7 @@ class PagaresCobros(Ventana):
         self.wids['b_nuevo'].set_sensitive(True)
         self.wids['b_buscar'].set_sensitive(True)
         cols = (('Factura', 'gobject.TYPE_STRING', False, True, True, None),
-                ('Importe', 'gobject.TYPE_STRING', 
+                ('Importe cobrado', 'gobject.TYPE_STRING', 
                     True, True, False, self.cambiar_importe_cobro),
                 ('Fecha vencimiento', 'gobject.TYPE_STRING', 
                     False, True, False, None),
