@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.3.6: http://docutils.sourceforge.net/" />
+<title>SQLObject FAQ</title>
+<link rel="stylesheet" href="default.css" type="text/css" />
+</head>
+<body>
+<h1 class="title">SQLObject FAQ</h1>
+<div class="document" id="sqlobject-faq">
+<div class="contents topic" id="contents">
+<p class="topic-title first"><a name="contents">Contents</a></p>
+<ul class="simple">
+<li><a class="reference" href="#how-can-i-do-a-left-join" id="id1" name="id1">How can I do a LEFT JOIN?</a><ul>
+<li><a class="reference" href="#simple" id="id2" name="id2">Simple</a></li>
+<li><a class="reference" href="#efficient" id="id3" name="id3">Efficient</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#how-does-inheritance-work" id="id4" name="id4">How Does Inheritance Work?</a></li>
+<li><a class="reference" href="#composite-compound-attributes" id="id5" name="id5">Composite/Compound Attributes</a></li>
+<li><a class="reference" href="#non-integer-ids" id="id6" name="id6">Non-Integer IDs</a></li>
+<li><a class="reference" href="#binary-values" id="id7" name="id7">Binary Values</a></li>
+<li><a class="reference" href="#reloading-modules" id="id8" name="id8">Reloading Modules</a></li>
+</ul>
+</div>
+<div class="section" id="how-can-i-do-a-left-join">
+<h1><a name="how-can-i-do-a-left-join">How can I do a LEFT JOIN?</a></h1>
+<p>The short: you can't.  You don't need to.  That's a relational way of
+thinking, not an object way of thinking.  But it's okay!  It's not
+hard to do the same thing, even if it's not with the same query.</p>
+<p>For these examples, imagine you have a bunch of customers, with
+contacts.  Not all customers have a contact, some have several.  The
+left join would look like:</p>
+<pre class="literal-block">
+SELECT customer.id, customer.first_name, customer.last_name, 
+       contact.id, contact.address
+FROM customer
+LEFT JOIN contact ON contact.customer_id = customer.id
+</pre>
+<div class="section" id="simple">
+<h2><a name="simple">Simple</a></h2>
+
+<pre class="literal-block"><tt><span class="keyword">for</span> <span class="normal">customer</span> <span class="keyword">in</span> <span class="normal">Customer</span><span class="symbol">.</span><span class="function">select</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">:</span>
+    <span class="keyword">print</span> <span class="normal">customer</span><span class="symbol">.</span><span class="normal">firstName</span><span class="symbol">,</span> <span class="normal">customer</span><span class="symbol">.</span><span class="normal">lastName</span>
+    <span class="keyword">for</span> <span class="normal">contact</span> <span class="keyword">in</span> <span class="normal">customer</span><span class="symbol">.</span><span class="normal">contacts</span><span class="symbol">:</span>
+        <span class="keyword">print</span> <span class="string">'   '</span><span class="symbol">,</span> <span class="normal">contact</span><span class="symbol">.</span><span class="normal">phoneNumber</span>
+</tt></pre>
+<p>The effect is the same as the left join -- you get all the customers,
+and you get all their contacts.  The problem, however, is that you
+will be executing more queries -- a query for each customer to fetch
+the contacts -- where with the left join you'd only do one query.  The
+actual amount of information returned from the database will be the
+same.  There's a good chance that this won't be significantly slower.
+I'd advise doing it this way unless you hit an actual performance
+problem.</p>
+</div>
+<div class="section" id="efficient">
+<h2><a name="efficient">Efficient</a></h2>
+<p>Lets say you really don't want to do all those queries.  Okay, fine:</p>
+
+<pre class="literal-block"><tt><span class="normal">custContacts</span> <span class="symbol">=</span> <span class="symbol">{</span><span class="symbol">}</span>
+<span class="keyword">for</span> <span class="normal">contact</span> <span class="keyword">in</span> <span class="normal">Contact</span><span class="symbol">.</span><span class="function">select</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">:</span>
+    <span class="normal">custContacts</span><span class="symbol">.</span><span class="function">setdefault</span><span class="symbol">(</span><span class="normal">contact</span><span class="symbol">.</span><span class="normal">customerID</span><span class="symbol">,</span> <span class="symbol">[</span><span class="symbol">]</span><span class="symbol">)</span><span class="symbol">.</span><span class="function">append</span><span class="symbol">(</span><span class="normal">contact</span><span class="symbol">)</span>
+<span class="keyword">for</span> <span class="normal">customer</span> <span class="keyword">in</span> <span class="normal">Customer</span><span class="symbol">.</span><span class="function">select</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">:</span>
+    <span class="keyword">print</span> <span class="normal">customer</span><span class="symbol">.</span><span class="normal">firstName</span><span class="symbol">,</span> <span class="normal">customer</span><span class="symbol">.</span><span class="normal">lastName</span>
+    <span class="keyword">for</span> <span class="normal">contact</span> <span class="keyword">in</span> <span class="normal">custContacts</span><span class="symbol">.</span><span class="function">get</span><span class="symbol">(</span><span class="normal">customer</span><span class="symbol">.</span><span class="normal">id</span><span class="symbol">,</span> <span class="symbol">[</span><span class="symbol">]</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="keyword">print</span> <span class="string">'   '</span><span class="symbol">,</span> <span class="normal">contact</span><span class="symbol">.</span><span class="normal">phoneNumber</span>
+</tt></pre>
+<p>This way there will only be at most two queries.  It's a little more
+crude, but this is an optimization, and optimizations often look less
+than pretty.</p>
+<p>But, say you don't want to get everyone, just some group of people
+(presumably a large enough group that you still need this
+optimization):</p>
+
+<pre class="literal-block"><tt><span class="normal">query</span> <span class="symbol">=</span> <span class="normal">Customer</span><span class="symbol">.</span><span class="normal">q</span><span class="symbol">.</span><span class="normal">firstName</span><span class="symbol">.</span><span class="function">startswith</span><span class="symbol">(</span><span class="string">'J'</span><span class="symbol">)</span>
+<span class="normal">custContacts</span> <span class="symbol">=</span> <span class="symbol">{</span><span class="symbol">}</span>
+<span class="keyword">for</span> <span class="normal">contact</span> <span class="keyword">in</span> <span class="normal">Contact</span><span class="symbol">.</span><span class="function">select</span><span class="symbol">(</span><span class="function">AND</span><span class="symbol">(</span><span class="normal">Contact</span><span class="symbol">.</span><span class="normal">q</span><span class="symbol">.</span><span class="normal">customerID</span> <span class="symbol">=</span><span class="symbol">=</span> <span class="normal">Customer</span><span class="symbol">.</span><span class="normal">q</span><span class="symbol">.</span><span class="normal">id</span><span class="symbol">,</span>
+                                  <span class="normal">query</span><span class="symbol">)</span><span class="symbol">)</span><span class="symbol">:</span>
+    <span class="normal">custContacts</span><span class="symbol">.</span><span class="function">setdefault</span><span class="symbol">(</span><span class="normal">contact</span><span class="symbol">.</span><span class="normal">customerID</span><span class="symbol">,</span> <span class="symbol">[</span><span class="symbol">]</span><span class="symbol">)</span><span class="symbol">.</span><span class="function">append</span><span class="symbol">(</span><span class="normal">contact</span><span class="symbol">)</span>
+<span class="keyword">for</span> <span class="normal">customer</span> <span class="keyword">in</span> <span class="normal">Customer</span><span class="symbol">.</span><span class="function">select</span><span class="symbol">(</span><span class="normal">query</span><span class="symbol">)</span><span class="symbol">:</span>
+    <span class="keyword">print</span> <span class="normal">customer</span><span class="symbol">.</span><span class="normal">firstName</span><span class="symbol">,</span> <span class="normal">customer</span><span class="symbol">.</span><span class="normal">lastName</span>
+    <span class="keyword">for</span> <span class="normal">contact</span> <span class="keyword">in</span> <span class="normal">custContacts</span><span class="symbol">.</span><span class="function">get</span><span class="symbol">(</span><span class="normal">customer</span><span class="symbol">.</span><span class="normal">id</span><span class="symbol">,</span> <span class="symbol">[</span><span class="symbol">]</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="keyword">print</span> <span class="string">'   '</span><span class="symbol">,</span> <span class="normal">contact</span><span class="symbol">.</span><span class="normal">phoneNumber</span>
+</tt></pre>
+</div>
+</div>
+<div class="section" id="how-does-inheritance-work">
+<h1><a name="how-does-inheritance-work">How Does Inheritance Work?</a></h1>
+<p>SQLObject is not intended to represent every Python inheritance
+structure in an RDBMS -- rather it is intended to represent RDBMS
+structures as Python objects.  So lots of things you can do in Python
+you can't do with SQLObject classes.  However, some form of
+inheritance is possible.</p>
+<p>One way of using this is to create local conventions.  Perhaps:</p>
+
+<pre class="literal-block"><tt><span class="keyword">class</span> <span class="function">SiteSQLObject</span><span class="symbol">(</span><span class="normal">SQLObject</span><span class="symbol">)</span><span class="symbol">:</span>
+    <span class="normal">_connection</span> <span class="symbol">=</span> <span class="normal">DBConnection</span><span class="symbol">.</span><span class="function">MySQLConnection</span><span class="symbol">(</span><span class="normal">user</span><span class="symbol">=</span><span class="string">'test'</span><span class="symbol">,</span> <span class="normal">db</span><span class="symbol">=</span><span class="string">'test'</span><span class="symbol">)</span>
+    <span class="normal">_style</span> <span class="symbol">=</span> <span class="function">MixedCaseStyle</span><span class="symbol">(</span><span class="symbol">)</span>
+
+    <span class="comment"># And maybe you want a list of the columns, to autogenerate</span>
+    <span class="comment"># forms from:</span>
+    <span class="keyword">def</span> <span class="function">columns</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="keyword">return</span> <span class="symbol">[</span><span class="normal">col</span><span class="symbol">.</span><span class="normal">name</span> <span class="keyword">for</span> <span class="normal">col</span> <span class="keyword">in</span> <span class="normal">self</span><span class="symbol">.</span><span class="normal">_columns</span><span class="symbol">]</span>
+</tt></pre>
+<p>Since SQLObject doesn't have a firm introspection mechanism (at least
+not yet) the example shows the beginnings of a bit of ad hoc
+introspection (in this case exposing the <tt class="literal"><span class="pre">_columns</span></tt> attribute in a
+more pleasing/public interface).</p>
+<p>However, this doesn't relate to <em>database</em> inheritance at all, since
+we didn't define any columns.  What if we do?</p>
+
+<pre class="literal-block"><tt><span class="keyword">class</span> <span class="function">Person</span><span class="symbol">(</span><span class="normal">SQLObject</span><span class="symbol">)</span><span class="symbol">:</span>
+    <span class="normal">firstName</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="symbol">)</span>
+    <span class="normal">lastName</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="symbol">)</span>
+
+<span class="keyword">class</span> <span class="function">Employee</span><span class="symbol">(</span><span class="normal">Person</span><span class="symbol">)</span><span class="symbol">:</span>
+    <span class="normal">position</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="symbol">)</span>
+</tt></pre>
+<p>Unfortunately, the resultant schema probably doesn't look like what
+you might have wanted:</p>
+
+<pre class="literal-block"><tt><span class="normal">CREATE</span> <span class="normal">TABLE</span> <span class="function">person</span> <span class="symbol">(</span>
+    <span class="normal">id</span> <span class="normal">INT</span> <span class="normal">PRIMARY</span> <span class="normal">KEY</span><span class="symbol">,</span>
+    <span class="normal">first_name</span> <span class="normal">TEXT</span><span class="symbol">,</span>
+    <span class="normal">last_name</span> <span class="normal">TEXT</span>
+<span class="symbol">)</span><span class="symbol">;</span>
+
+<span class="normal">CREATE</span> <span class="normal">TABLE</span> <span class="function">employee</span> <span class="symbol">(</span>
+    <span class="normal">id</span> <span class="normal">INT</span> <span class="normal">PRIMARY</span> <span class="normal">KEY</span>
+    <span class="normal">first_name</span> <span class="normal">TEXT</span><span class="symbol">,</span>
+    <span class="normal">last_name</span> <span class="normal">TEXT</span><span class="symbol">,</span>
+    <span class="normal">position</span> <span class="normal">TEXT</span>
+<span class="symbol">)</span>
+</tt></pre>
+<p>All the columns from <tt class="literal"><span class="pre">person</span></tt> are just repeated in the <tt class="literal"><span class="pre">employee</span></tt>
+table.  What's more, an ID for a Person is distinct from an ID for an
+employee, so for instance you must choose <tt class="literal"><span class="pre">ForeignKey(&quot;Person&quot;)</span></tt> or
+<tt class="literal"><span class="pre">ForeignKey(&quot;Employee&quot;)</span></tt>, you can't have a foreign key that
+sometimes refers to one, and sometimes refers to the other.</p>
+<p>Altogether, not very useful.  You probably want a <tt class="literal"><span class="pre">person</span></tt> table,
+and then an <tt class="literal"><span class="pre">employee</span></tt> table with a one-to-one relation between the
+two.  Of course, you can have that, just create the appropriate
+classes/tables -- but it will appear as two distinct classes, and
+you'd have to do something like <tt class="literal"><span class="pre">Person(1).employee.position</span></tt>.  Of
+course, you can always create the necessary shortcuts, like:</p>
+
+<pre class="literal-block"><tt><span class="keyword">class</span> <span class="function">Person</span><span class="symbol">(</span><span class="normal">SQLObject</span><span class="symbol">)</span><span class="symbol">:</span>
+    <span class="normal">firstName</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="symbol">)</span>
+    <span class="normal">lastName</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="symbol">)</span>
+
+    <span class="keyword">def</span> <span class="function">_get_employee</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="normal">value</span> <span class="symbol">=</span> <span class="normal">Employee</span><span class="symbol">.</span><span class="function">selectBy</span><span class="symbol">(</span><span class="normal">person</span><span class="symbol">=</span><span class="normal">self</span><span class="symbol">)</span>
+        <span class="keyword">if</span> <span class="normal">value</span><span class="symbol">:</span>
+            <span class="keyword">return</span> <span class="normal">value</span><span class="symbol">[</span><span class="number">0</span><span class="symbol">]</span>
+        <span class="keyword">else</span><span class="symbol">:</span>
+            <span class="keyword">raise</span> <span class="normal">AttributeError</span><span class="symbol">,</span> <span class="string">'%r is not an employee'</span> <span class="symbol">%</span> <span class="normal">self</span>
+    <span class="keyword">def</span> <span class="function">_get_isEmployee</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="normal">value</span> <span class="symbol">=</span> <span class="normal">Employee</span><span class="symbol">.</span><span class="function">selectBy</span><span class="symbol">(</span><span class="normal">person</span><span class="symbol">=</span><span class="normal">self</span><span class="symbol">)</span>
+        <span class="comment"># turn into a bool:</span>
+        <span class="keyword">return</span> <span class="keyword">not</span> <span class="keyword">not</span> <span class="normal">value</span>
+    <span class="keyword">def</span> <span class="function">_set_isEmployee</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">,</span> <span class="normal">value</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="keyword">if</span> <span class="normal">value</span><span class="symbol">:</span>
+            <span class="comment"># Make sure we are an employee...</span>
+            <span class="keyword">if</span> <span class="keyword">not</span> <span class="normal">self</span><span class="symbol">.</span><span class="normal">isEmployee</span><span class="symbol">:</span>
+                <span class="normal">Empoyee</span><span class="symbol">.</span><span class="function">new</span><span class="symbol">(</span><span class="normal">person</span><span class="symbol">=</span><span class="normal">self</span><span class="symbol">,</span> <span class="normal">position</span><span class="symbol">=</span><span class="normal">None</span><span class="symbol">)</span>
+        <span class="keyword">else</span><span class="symbol">:</span>
+            <span class="keyword">if</span> <span class="normal">self</span><span class="symbol">.</span><span class="normal">isEmployee</span><span class="symbol">:</span>
+                <span class="normal">self</span><span class="symbol">.</span><span class="normal">employee</span><span class="symbol">.</span><span class="function">destroySelf</span><span class="symbol">(</span><span class="symbol">)</span>
+    <span class="keyword">def</span> <span class="function">_get_position</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="keyword">return</span> <span class="normal">self</span><span class="symbol">.</span><span class="normal">employee</span><span class="symbol">.</span><span class="normal">position</span>
+    <span class="keyword">def</span> <span class="function">_set_position</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">,</span> <span class="normal">value</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="normal">self</span><span class="symbol">.</span><span class="normal">employee</span><span class="symbol">.</span><span class="normal">position</span> <span class="symbol">=</span> <span class="normal">value</span>
+
+<span class="keyword">class</span> <span class="function">Employee</span><span class="symbol">(</span><span class="normal">SQLObject</span><span class="symbol">)</span><span class="symbol">:</span>
+    <span class="normal">person</span> <span class="symbol">=</span> <span class="function">ForeignKey</span><span class="symbol">(</span><span class="string">'Person'</span><span class="symbol">)</span>
+    <span class="normal">position</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="symbol">)</span>
+</tt></pre>
+<p>It's not the most elegant setup, but it's functional and flexible.
+There are no plans for further support for inheritance (especially
+since the composition of multiple classes is usually a better solution
+anyway).</p>
+</div>
+<div class="section" id="composite-compound-attributes">
+<h1><a name="composite-compound-attributes">Composite/Compound Attributes</a></h1>
+<p>A composite attribute is an attribute formed from two columns.  For
+example:</p>
+
+<pre class="literal-block"><tt><span class="normal">CREATE</span> <span class="normal">TABLE</span> <span class="function">invoice_item</span> <span class="symbol">(</span>
+    <span class="normal">id</span> <span class="normal">INT</span> <span class="normal">PRIMARY</span> <span class="normal">KEY</span><span class="symbol">,</span>
+    <span class="normal">amount</span> <span class="function">NUMERIC</span><span class="symbol">(</span><span class="number">10</span><span class="symbol">,</span> <span class="number">2</span><span class="symbol">)</span><span class="symbol">,</span>
+    <span class="normal">currency</span> <span class="function">CHAR</span><span class="symbol">(</span><span class="number">3</span><span class="symbol">)</span>
+<span class="symbol">)</span><span class="symbol">;</span>
+</tt></pre>
+<p>Now, you'll probably want to deal with one amount/currency value,
+instead of two columns.  SQLObject doesn't directly support this, but
+it's easy (and encouraged) to do it on your own:</p>
+
+<pre class="literal-block"><tt><span class="keyword">class</span> <span class="function">InvoiceItem</span><span class="symbol">(</span><span class="normal">SQLObject</span><span class="symbol">)</span><span class="symbol">:</span>
+    <span class="normal">amount</span> <span class="symbol">=</span> <span class="function">Currency</span><span class="symbol">(</span><span class="symbol">)</span>
+    <span class="normal">currency</span> <span class="symbol">=</span> <span class="function">StringChar</span><span class="symbol">(</span><span class="normal">length</span><span class="symbol">=</span><span class="number">3</span><span class="symbol">)</span>
+
+    <span class="keyword">def</span> <span class="function">_get_price</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="keyword">return</span> <span class="function">Price</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">.</span><span class="normal">amount</span><span class="symbol">,</span> <span class="normal">self</span><span class="symbol">.</span><span class="normal">currency</span><span class="symbol">)</span>
+    <span class="keyword">def</span> <span class="function">_set_price</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">,</span> <span class="normal">price</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="normal">self</span><span class="symbol">.</span><span class="normal">amount</span> <span class="symbol">=</span> <span class="normal">price</span><span class="symbol">.</span><span class="normal">amount</span>
+        <span class="normal">self</span><span class="symbol">.</span><span class="normal">currency</span> <span class="symbol">=</span> <span class="normal">price</span><span class="symbol">.</span><span class="normal">currency</span>
+
+<span class="keyword">class</span> <span class="function">Price</span><span class="symbol">(</span><span class="normal">object</span><span class="symbol">)</span><span class="symbol">:</span>
+    <span class="keyword">def</span> <span class="function">__init__</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">,</span> <span class="normal">amount</span><span class="symbol">,</span> <span class="normal">currency</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="normal">self</span><span class="symbol">.</span><span class="normal">_amount</span> <span class="symbol">=</span> <span class="normal">amount</span>
+        <span class="normal">self</span><span class="symbol">.</span><span class="normal">_currency</span> <span class="symbol">=</span> <span class="normal">currency</span>
+
+    <span class="keyword">def</span> <span class="function">_get_amount</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="keyword">return</span> <span class="normal">self</span><span class="symbol">.</span><span class="normal">_amount</span>
+    <span class="normal">amount</span> <span class="symbol">=</span> <span class="function">property</span><span class="symbol">(</span><span class="normal">_get_amount</span><span class="symbol">)</span>
+
+    <span class="keyword">def</span> <span class="function">_get_currency</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="keyword">return</span> <span class="normal">self</span><span class="symbol">.</span><span class="normal">_currency</span>
+    <span class="normal">currency</span> <span class="symbol">=</span> <span class="function">property</span><span class="symbol">(</span><span class="normal">_get_currency</span><span class="symbol">)</span>
+
+    <span class="keyword">def</span> <span class="function">__repr__</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="keyword">return</span> <span class="string">'&lt;Price: %s %s&gt;'</span> <span class="symbol">%</span> <span class="symbol">(</span><span class="normal">self</span><span class="symbol">.</span><span class="normal">amount</span><span class="symbol">,</span> <span class="normal">self</span><span class="symbol">.</span><span class="normal">currency</span><span class="symbol">)</span>
+</tt></pre>
+<p>You'll note we go to some trouble to make sure that <tt class="literal"><span class="pre">Price</span></tt> is an
+immutable object.  This is important, because if <tt class="literal"><span class="pre">Price</span></tt> wasn't and
+someone changed an attribute, the containing <tt class="literal"><span class="pre">InvoiceItem</span></tt> instance
+wouldn't detect the change and update the database.  (Also, since
+<tt class="literal"><span class="pre">Price</span></tt> doesn't subclass <tt class="literal"><span class="pre">SQLObject</span></tt>, we have to be explicit about
+creating properties)  Some people refer to this sort of class as a
+<em>Value Object</em>, that can be used similar to how an integer or string
+is used.</p>
+<p>You could also use a mutable composite class:</p>
+
+<pre class="literal-block"><tt><span class="keyword">class</span> <span class="function">Address</span><span class="symbol">(</span><span class="normal">SQLObject</span><span class="symbol">)</span><span class="symbol">:</span>
+    <span class="normal">street</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="symbol">)</span>
+    <span class="normal">city</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="symbol">)</span>
+    <span class="normal">state</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="normal">length</span><span class="symbol">=</span><span class="number">2</span><span class="symbol">)</span>
+
+    <span class="normal">latitude</span> <span class="symbol">=</span> <span class="function">FloatCol</span><span class="symbol">(</span><span class="symbol">)</span>
+    <span class="normal">longitude</span> <span class="symbol">=</span> <span class="function">FloatCol</span><span class="symbol">(</span><span class="symbol">)</span>
+
+    <span class="keyword">def</span> <span class="function">_init</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">,</span> <span class="normal">id</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="normal">SQLObject</span><span class="symbol">.</span><span class="function">_init</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">,</span> <span class="normal">id</span><span class="symbol">)</span>
+        <span class="normal">self</span><span class="symbol">.</span><span class="normal">_coords</span> <span class="symbol">=</span> <span class="function">SOCoords</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">)</span>
+
+    <span class="keyword">def</span> <span class="function">_get_coords</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="keyword">return</span> <span class="normal">self</span><span class="symbol">.</span><span class="normal">_coords</span>
+
+<span class="keyword">class</span> <span class="function">SOCoords</span><span class="symbol">(</span><span class="normal">object</span><span class="symbol">)</span><span class="symbol">:</span>
+    <span class="keyword">def</span> <span class="function">__init__</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">,</span> <span class="normal">so</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="normal">self</span><span class="symbol">.</span><span class="normal">_so</span> <span class="symbol">=</span> <span class="normal">so</span>
+
+    <span class="keyword">def</span> <span class="function">_get_latitude</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="keyword">return</span> <span class="normal">self</span><span class="symbol">.</span><span class="normal">_so</span><span class="symbol">.</span><span class="normal">latitude</span>
+    <span class="keyword">def</span> <span class="function">_set_latitude</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">,</span> <span class="normal">value</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="normal">self</span><span class="symbol">.</span><span class="normal">_so</span><span class="symbol">.</span><span class="normal">latitude</span> <span class="symbol">=</span> <span class="normal">value</span>
+    <span class="normal">latitude</span> <span class="symbol">=</span> <span class="function">property</span><span class="symbol">(</span><span class="normal">_get_latitude</span><span class="symbol">,</span> <span class="normal">set_latitude</span><span class="symbol">)</span>
+
+    <span class="keyword">def</span> <span class="function">_get_longitude</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="keyword">return</span> <span class="normal">self</span><span class="symbol">.</span><span class="normal">_so</span><span class="symbol">.</span><span class="normal">longitude</span>
+    <span class="keyword">def</span> <span class="function">_set_longitude</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">,</span> <span class="normal">value</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="normal">self</span><span class="symbol">.</span><span class="normal">_so</span><span class="symbol">.</span><span class="normal">longitude</span> <span class="symbol">=</span> <span class="normal">value</span>
+    <span class="normal">longitude</span> <span class="symbol">=</span> <span class="function">property</span><span class="symbol">(</span><span class="normal">_get_longitude</span><span class="symbol">,</span> <span class="normal">set_longitude</span><span class="symbol">)</span>
+</tt></pre>
+<p>Pretty much a proxy, really, but <tt class="literal"><span class="pre">SOCoords</span></tt> could contain other
+logic, could interact with non-SQLObject-based latitude/longitude
+values, or could be used among several objects that have
+latitude/longitude columns.</p>
+</div>
+<div class="section" id="non-integer-ids">
+<h1><a name="non-integer-ids">Non-Integer IDs</a></h1>
+<p>Yes, you can use non-integer IDs, but only in <a class="reference" href="http://sqlobject.org/#anonymous-cvs">CVS</a> now.</p>
+<p>If you use non-integer IDs, you will not be able to use automatic
+<tt class="literal"><span class="pre">CREATE</span> <span class="pre">TABLE</span></tt> generation (i.e., <tt class="literal"><span class="pre">createTable</span></tt>).  You also will
+have to give your own ID values when creating an object, like:</p>
+<pre class="literal-block">
+color = Something.new(id=&quot;blue&quot;, r=0, b=100, g=0)
+</pre>
+<p>IDs are, and always will in future versions, be considered immutable.
+Right now that is not enforced; you can assign to the <tt class="literal"><span class="pre">id</span></tt>
+attribute.  But if you do you'll just mess everything up.  This will
+probably be taken away sometime to avoid possibly confusing bugs
+(actually, assigning to <tt class="literal"><span class="pre">id</span></tt> is almost certain to cause confusing
+bugs).</p>
+<p>If you are concerned about enforcing the type of IDs (which can be a
+problem even with integer IDs) you may want to do this:</p>
+<pre class="literal-block">
+def Color(SQLObject):
+    def _init(self, id, connection=None):
+        id = str(id)
+        SQLObject._init(self, id, connection)
+</pre>
+<p>Instead of <tt class="literal"><span class="pre">str()</span></tt> you may use <tt class="literal"><span class="pre">int()</span></tt> or whatever else you want.
+This will be resolved in a future version when ID column types can be
+declared like other columns.</p>
+</div>
+<div class="section" id="binary-values">
+<h1><a name="binary-values">Binary Values</a></h1>
+<p>Binary values can be difficult to store in databases, as SQL doesn't
+have a widely-implemented way to express binaries as literals, and
+there's differing support in database.</p>
+<p>A possible way to keep this data in a database is by using encoding.
+Base 64 is a good encoding, reasonably compact but also safe.  As
+an example, imagine you want to store images in the database:</p>
+
+<pre class="literal-block"><tt><span class="keyword">class</span> <span class="function">Image</span><span class="symbol">(</span><span class="normal">SQLObject</span><span class="symbol">)</span><span class="symbol">:</span>
+
+    <span class="normal">data</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="symbol">)</span>
+    <span class="normal">height</span> <span class="symbol">=</span> <span class="function">IntCol</span><span class="symbol">(</span><span class="symbol">)</span>
+    <span class="normal">width</span> <span class="symbol">=</span> <span class="function">IntCol</span><span class="symbol">(</span><span class="symbol">)</span>
+
+    <span class="keyword">def</span> <span class="function">_set_data</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">,</span> <span class="normal">value</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="normal">self</span><span class="symbol">.</span><span class="function">_SO_set_data</span><span class="symbol">(</span><span class="normal">value</span><span class="symbol">.</span><span class="function">encode</span><span class="symbol">(</span><span class="string">'base64'</span><span class="symbol">)</span><span class="symbol">)</span>
+
+    <span class="keyword">def</span> <span class="function">_get_data</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">,</span> <span class="normal">value</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="keyword">return</span> <span class="normal">self</span><span class="symbol">.</span><span class="function">_SO_get_data</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">.</span><span class="function">decode</span><span class="symbol">(</span><span class="string">'base64'</span><span class="symbol">)</span>
+</tt></pre>
+<p>SQLite does not respect backslash quoting, so for instance <tt class="literal"><span class="pre">\n</span></tt> is
+not interpreted as a newline.  For the moment there's no resolution,
+and this will mess up your base64-encoded values.  As a workaround:</p>
+
+<pre class="literal-block"><tt><span class="keyword">class</span> <span class="function">Image</span><span class="symbol">(</span><span class="normal">SQLObject</span><span class="symbol">)</span><span class="symbol">:</span>
+    <span class="normal">data</span> <span class="symbol">=</span> <span class="function">StringCol</span><span class="symbol">(</span><span class="symbol">)</span>
+
+    <span class="keyword">def</span> <span class="function">_set_data</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">,</span> <span class="normal">value</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="comment"># base64 just ignores whitespace, so we can get rid of \n's</span>
+        <span class="normal">self</span><span class="symbol">.</span><span class="function">_SO_set_data</span><span class="symbol">(</span><span class="normal">value</span><span class="symbol">.</span><span class="function">encode</span><span class="symbol">(</span><span class="string">'base64'</span><span class="symbol">)</span><span class="symbol">.</span><span class="function">replace</span><span class="symbol">(</span><span class="string">'\n'</span><span class="symbol">,</span> <span class="string">''</span><span class="symbol">)</span><span class="symbol">)</span>
+
+    <span class="keyword">def</span> <span class="function">_get_data</span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">)</span><span class="symbol">:</span>
+        <span class="keyword">return</span> <span class="normal">self</span><span class="symbol">.</span><span class="function">_SO_get_data</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">.</span><span class="function">decode</span><span class="symbol">(</span><span class="string">'base64'</span><span class="symbol">)</span>
+</tt></pre>
+</div>
+<div class="section" id="reloading-modules">
+<h1><a name="reloading-modules">Reloading Modules</a></h1>
+<p>If you've tried to reload a module that defines SQLObject subclasses,
+you've probably encountered various odd errors.  The short answer: you
+can't reload these modules.</p>
+<p>The long answer: reloading modules in Python doesn't work very well.
+Reloading actually means <em>re-running</em> the module.  Every <tt class="literal"><span class="pre">class</span></tt>
+statement creates a class -- but your old classes don't disappear.
+When you reload a module, new classes are created, and they take over
+the names in the module.</p>
+<p>SQLObject, however, doesn't search the names in a module to find a
+class.  When you say <tt class="literal"><span class="pre">ForeignKey('SomeClass')</span></tt>, SQLObject looks for
+any SQLObject subclass anywhere with the name <tt class="literal"><span class="pre">SomeClass</span></tt>.  This is
+to avoid problems with circular imports and circular dependencies, as
+tables have forward- and back-references, and other circular
+dependencies.  SQLObject resolves these dependencies lazily.</p>
+<p>But when you reload a module, suddenly there will be two SQLObject
+classes in the process with the same name.  SQLObject doesn't know
+that one of them is obsolete.  And even if it did, it doesn't know
+every other place in the system that has a reference to that obsolete
+class.</p>
+<p>For this reason and several others, reloading modules is highly
+error-prone and difficult to support.</p>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.3.6: http://docutils.sourceforge.net/" />
+<title>SQLObject Developer Guide</title>
+<link rel="stylesheet" href="default.css" type="text/css" />
+</head>
+<body>
+<h1 class="title">SQLObject Developer Guide</h1>
+<div class="document" id="sqlobject-developer-guide">
+<div class="contents topic" id="contents">
+<p class="topic-title first"><a name="contents">Contents</a></p>
+<ul class="simple">
+<li><a class="reference" href="#style-guide" id="id1" name="id1">Style Guide</a></li>
+<li><a class="reference" href="#testing" id="id2" name="id2">Testing</a></li>
+</ul>
+</div>
+<a class="target" id="start" name="start"></a><p>These are some notes on developing SQLObject.  I'll try to expand them
+as things come up.  If you are committing to the SQLObject repository,
+please also read <tt class="literal"><span class="pre">/using-this-repository.txt</span></tt>, which is just about
+file layout and repository cooperation.</p>
+<blockquote>
+-- Ian Bicking</blockquote>
+<div class="section" id="style-guide">
+<h1><a name="style-guide">Style Guide</a></h1>
+<p>Generally you should follow the recommendations in <a class="reference" href="http://www.python.org/peps/pep-0008.html">PEP 8</a>, the
+Python Style Guide.  Some things to take particular note of:</p>
+<ul>
+<li><p class="first"><strong>No tabs</strong>.  Not anywhere.  Always indent with 4 spaces.</p>
+</li>
+<li><p class="first">I don't stress too much on line length.  But try to break lines up
+by grouping with parenthesis instead of with backslashes (if you
+can).</p>
+</li>
+<li><p class="first">But if you are having problems with line length, maybe you should
+just break the expression up into multiple statements.</p>
+</li>
+<li><p class="first">Blank lines between methods, unless they are very small and closely
+bound to each other.</p>
+</li>
+<li><p class="first">Never use the form <tt class="literal"><span class="pre">condition</span> <span class="pre">and</span> <span class="pre">trueValue</span> <span class="pre">or</span> <span class="pre">falseValue</span></tt>.  Break
+it out and use a variable.</p>
+</li>
+<li><p class="first">Careful of namespace pollution.  SQLObject does allow for <tt class="literal"><span class="pre">from</span>
+<span class="pre">sqlobject</span> <span class="pre">import</span> <span class="pre">*</span></tt> so names should be fairly distinct, or they
+shouldn't be exported in <tt class="literal"><span class="pre">sqlobject.__init__</span></tt>.</p>
+</li>
+<li><p class="first">I'm very picky about whitespace.  There's one and only one right way
+to do it.  Good examples:</p>
+<pre class="literal-block">
+short = 3
+longerVar = 4
+
+if x == 4:
+    do stuff
+
+func(arg1='a', arg2='b')
+func((a + b)*10)
+</pre>
+<p><strong>Bad</strong> examples:</p>
+<pre class="literal-block">
+short    =3
+longerVar=4
+
+if x==4: do stuff
+
+func(arg1 = 'a', arg2 = 'b')
+func(a,b)
+func( a, b )
+[ 1, 2, 3 ]
+</pre>
+<p>To me, the poor use of whitespace seems lazy.  I'll think less of
+your code (justified or not) for this very trivial reason.  I will
+fix all your code for you if you don't do it yourself, because I
+can't bear to look at sloppy whitespace.</p>
+</li>
+<li><p class="first">Use <tt class="literal"><span class="pre">&#64;&#64;</span></tt> to mark something that is suboptimal, or where you have a
+concern that it's not right.  Try to also date it and put your
+username there.</p>
+</li>
+<li><p class="first">Docstrings are good.  They should look like:</p>
+<pre class="literal-block">
+class AClass(object):
+    &quot;&quot;&quot;
+    doc string...
+    &quot;&quot;&quot;
+</pre>
+<p>Don't use single quotes (''').  Don't bother trying make the string
+less vertically compact.</p>
+</li>
+<li><p class="first">Comments go right before the thing they are commenting on.</p>
+</li>
+<li><p class="first">Methods never, ever, ever start with capital letters.  Generally
+only classes are capitalized.  But definitely never methods.</p>
+</li>
+<li><p class="first">mixedCase is preferred.</p>
+</li>
+<li><p class="first">Use <tt class="literal"><span class="pre">cls</span></tt> to refer to a class.  Use <tt class="literal"><span class="pre">meta</span></tt> to refer to a
+metaclass (which also happens to be a class, but calling a metaclass
+<tt class="literal"><span class="pre">cls</span></tt> will be confusing).</p>
+</li>
+<li><p class="first">Use <tt class="literal"><span class="pre">isinstance</span></tt> instead of comparing types.  E.g.:</p>
+<pre class="literal-block">
+if isinstance(var, str): ...
+# Bad:
+if type(var) is StringType: ...
+</pre>
+</li>
+<li><p class="first">Never, ever use two leading underscores.  This is annoyingly
+private.  If name clashes are a concern, use name mangling instead
+(e.g., <tt class="literal"><span class="pre">_SO_blahblah</span></tt>).  This is essentially the same thing as
+double-underscore, only it's transparent where double underscore
+obscures.</p>
+</li>
+<li><p class="first">Module names should be unique in the package.  Subpackages shouldn't
+share module names with sibling or parent packages.  Sadly this
+isn't possible for <tt class="literal"><span class="pre">__init__</span></tt>, but it's otherwise easy enough.</p>
+</li>
+<li><p class="first">Module names should be all lower case, and probably have no
+underscores (smushedwords).</p>
+</li>
+</ul>
+</div>
+<div class="section" id="testing">
+<h1><a name="testing">Testing</a></h1>
+<p>Tests are important.  Tests keep everything from falling apart.  All
+new additions should have tests.</p>
+<p>Right now all the tests are in one big file <tt class="literal"><span class="pre">tests.py</span></tt>.  Which is
+unfortunate, but that's the way it is.  They may seem complex, but
+they aren't so bad really.  They all subclass from <tt class="literal"><span class="pre">SQLObjectTest</span></tt>.</p>
+<p>The <tt class="literal"><span class="pre">classes</span></tt> attribute is special in a test class.  This is a list
+of <cite>SQLObject</cite> subclasses that this test uses.  <cite>SQLObjectTest</cite> will
+create the tables before the tests are run, and destroy them after.</p>
+<p>You may also define an <tt class="literal"><span class="pre">.inserts()</span></tt> method.  This method sets up the
+basic data.  When doing verbose input (<tt class="literal"><span class="pre">-vv</span></tt>) you won't see these
+inserts, since they may be overwhelming.  Use the command-line options
+<tt class="literal"><span class="pre">--inserts</span></tt> to show them (as well as the create statement.</p>
+<p>When running tests, use <tt class="literal"><span class="pre">-ddbname</span></tt> to test with <tt class="literal"><span class="pre">dbname</span></tt> (e.g.,
+<tt class="literal"><span class="pre">-dmysql</span></tt>, <tt class="literal"><span class="pre">-dpostgres</span></tt>, etc), or <tt class="literal"><span class="pre">-dall</span></tt> to use Postgres,
+MySQL, Firebird, and SQLite (all the core supported databases;
+everything I have installed on my computer).  Please try to test as
+many databases as you can.  At least SQLite and one other should be
+easy, though if you can test both Postgres and MySQL that would be
+much better.</p>
+<p>If you submit a patch or implement a feature without a test, I'll be
+forced to write the test.  That's no fun for me, to just be writing
+tests.  So please, write tests; everything at least needs to be
+exercised, even if the tests are absolutely complete.</p>
+</div>
+</div>
+</body>
+</html>
