@@ -33,3 +33,6 @@ pip-log.txt
 ginn.log
 *.backup
 
+# Control de versiones CVS
+CVS
+CVS/*
