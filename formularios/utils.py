@@ -4032,6 +4032,24 @@ def parse_cif(cif):
     >>> parse_cif("1234567890")
     '1234567890'
     """
+    # [Update: 29/05/2012] Javi me pasa estos formatos, que son con los que 
+    #                      ellos normalmente trabajan:
+    >>> samples = {'Alemania': 'DE123456789', # DE + 9 números
+                   'Bélgica': 'BE0123456789', # BE + 0|1 + 9 números
+                   'Bulgaria': 'BG', # BG + 9 ó 10 números
+                   'España': 'ES', # ES + 9 caracteres. 
+                    # Primero y último: letra o dígitos, resto solo dígitos
+                   'Francia': '', # FR + 2 letras + 9 números
+                   'Hungría': '', # HU + 8 números
+                   'Italia': '', # IT + 11 números
+                   'Malta': '', # MT + 8 números
+                   'Polonia': '', # PL + 10 números
+                   'Portugal': '', 
+                   'Reino Unido': '', 
+                   'Rumania': '', 
+                  }
+    # PORASQUI: ¡Y NECESITO EL "COMPILADOR"!
+
     # PLAN: Chequear que si el CIF/NIF es "españolo", que sea correcto. La 
     # letra es fácil de sacar (y hasta podría metérsela en caso de que solo 
     # hubiera 8 números sin letra). La comprobación de NIF de Hacienda no la 
