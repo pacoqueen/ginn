@@ -29,9 +29,11 @@ pip-log.txt
 # Vim
 *.swp
 
-# Log y backups
+# Log, backups y demás información sensible e inútil para el desarrollo
 ginn.log
 *.backup
+BD/baks_sql
+adjuntos/*
 
 # Control de versiones CVS
 CVS
