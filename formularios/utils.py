@@ -3985,8 +3985,9 @@ def sort_nicely(l):
         # Python 2.3, me temo. No soportado. Uso ordenación normal.
         l.sort()
 
-def parse_cif(cif):
+def parse_cif(cif = None):
     """
+    Si cif es None, ejecuta tests de todos los posibles.
     Devuelve un cif correcto o la cadena vacía si no se puede obtener un 
     CIF/DNI o CIF internacional válido.
     Formatos reconocidos: 
@@ -4034,21 +4035,6 @@ def parse_cif(cif):
     """
     # [Update: 29/05/2012] Javi me pasa estos formatos, que son con los que 
     #                      ellos normalmente trabajan:
-    >>> samples = {'Alemania': 'DE123456789', # DE + 9 números
-                   'Bélgica': 'BE0123456789', # BE + 0|1 + 9 números
-                   'Bulgaria': 'BG', # BG + 9 ó 10 números
-                   'España': 'ES', # ES + 9 caracteres. 
-                    # Primero y último: letra o dígitos, resto solo dígitos
-                   'Francia': '', # FR + 2 letras + 9 números
-                   'Hungría': '', # HU + 8 números
-                   'Italia': '', # IT + 11 números
-                   'Malta': '', # MT + 8 números
-                   'Polonia': '', # PL + 10 números
-                   'Portugal': '', 
-                   'Reino Unido': '', 
-                   'Rumania': '', 
-                  }
-    # PORASQUI: ¡Y NECESITO EL "COMPILADOR"!
 
     # PLAN: Chequear que si el CIF/NIF es "españolo", que sea correcto. La 
     # letra es fácil de sacar (y hasta podría metérsela en caso de que solo 
@@ -4064,52 +4050,127 @@ def parse_cif(cif):
         while "  " in cif:
             cif = cif.replace("  ", " ")
         especiales = " "    # El espacio, de momento, y por culpa del FR.
+    if not cif:
+        samples = {'Alemania':   'DE123456789', # DE + 9 números
+                   'Bélgica':    'BE0123456789', # BE + 0|1 + 9 números
+                   'Bulgaria':   'BG1234567890', # BG + 9 ó 10 números
+                   'España':     'ESA23546789', # ES + 9 caracteres. 
+                    # Primero y último: letra o dígitos, resto solo dígitos
+                   'Francia':     'FRAA123456789', # FR + 2 letras + 9 números
+                   'Hungría':     'HU12345678', # HU + 8 números
+                   'Italia':      'IT12345678901', # IT + 11 números
+                   'Malta':       'MT12345678', # MT + 8 números
+                   'Polonia':     'PL1234567890', # PL + 10 números
+                   'Portugal':    'PT123456789', # PT + 9 números  
+                   'Reino Unido': 'GB123123412123', # GB + 3, 4 y 2 números. 
+                                      # Para grupos de empresas 3 números más.
+                   'Rumania':     'RO12', # RO + 2 a 10 números.
+                  }
+        # TEST MODE
+        samples['_NIF'] = '00000000T'
+        samples['_CIF'] = 'X12345678'
+        samples['_Internacional'] = 'XYZ12345678'
+        samples['_Griego'] = '123456789'
+        samples['_Internacional 2'] = 'XY123456789'
+        samples['_República checa'] = 'XY12345678'
+        samples['_Especiales organismos oficiales'] = 'X1234567Y'
+        samples['_Canadienses'] = '142461409RM0001'
+        samples['_Gibraltar'] = '12345'
+        samples['_Francia'] = 'FR64 384 813 341 00029'
+        samples['_Polonia'] = '1234567890'
+        res = {}
+        aciertos = 0
+        for pais in samples:
+            res[pais] = parse_cif(samples[pais])
+            if res[pais]:
+                aciertos += 1
+        print "WARNING: TEST MODE: %.2f %% aciertos" % (
+                aciertos * 100.0 / len(samples.keys()))
     else:
-        especiales = ""
-    cif = "".join([l for l in cif if l in letras or l in numeros 
-                                                 or l in especiales])
-    rex = re.compile(
-                     "(FR[0-9]{2}\s[0-9]{3}\s[0-9]{3}\s[0-9]{3}\s[0-9]{5})"
-                     "|"
-                     "([A-Z][0-9]{8})"
-                     "|"
-                     "([A-Z]{2}[0-9]{9})"
-                     "|"
-                     "([A-Z]{2}[0-9]{8})"
-                     "|"
-                     "([A-Z]{3}[0-9]{8})"
-                     "|"
-                     "([A-Z][0-9]{7}[A-Z])"
-                     "|"
-                     "([0-9]{8}[A-Z])"
-                     "|"
-                     "([0-9]{9}[A-Z]{2}[0-9]{4})"
-                     "|"
-                     "([0-9]{10})"
-                     "|"
-                     "([0-9]{9})"
-                     "|"
-                     "([0-9]{5})"
-                    )
-    res = rex.findall(cif)
-    try:
-        res = [i for i in res[0] if i]
-            # La posición donde se encuentre dependerá de con qué parte del 
-            # patrón coincida:
-            # 0 -> NIF 12345678X
-            # 1 -> CIF X12345678
-            # 2 -> Internacional: XYZ12345678
-            # 3 -> Griego: 123456789
-            # 4 -> Internacional 2: XY123456789
-        if not res:
-            res = ""
+        # PLAN: Chequear que si el CIF/NIF es "españolo", que sea correcto. La 
+        # letra es fácil de sacar (y hasta podría metérsela en caso de que solo 
+        # hubiera 8 números sin letra). La comprobación de NIF de Hacienda no la 
+        # conozco, pero debe andar por algún lado, porque el programa de ayuda 
+        # del 349 detecta NIF incorrectos.
+        import string, re
+        cif = str(cif).upper().strip()
+        letras = string.letters[string.letters.index("A"):]
+        numeros = "0123456789"
+        if cif.startswith("FR"):
+            cif = cif.replace("\t", " ")
+            while "  " in cif:
+                cif = cif.replace("  ", " ")
+            especiales = " "    # El espacio, de momento, y por culpa del FR.
         else:
+            especiales = ""
+        cif = "".join([l for l in cif if l in letras or l in numeros 
+                                                     or l in especiales])
+        rex = re.compile(
+                         "(FR[0-9]{2}\s[0-9]{3}\s[0-9]{3}\s[0-9]{3}\s[0-9]{5})"
+                         "|"
+                         '(DE[0-9]{9})'
+                         "|"
+                         '(BE(0|1)[0-9]{9})'
+                         "|"
+                         '(BG[0-9]{9}[0-9]?)' 
+                         "|"
+                         '(ES[A-Z][0-9]{8})' 
+                         "|"
+                         '(ES[0-9]{8}[A-Z])' 
+                         "|"
+                         '(FR[A-Z{2}[0-9]{9})' 
+                         "|"
+                         '(HU[0-9]{8})' 
+                         "|"
+                         '(IT[0-9]{11})'
+                         "|"
+                         '(MT[0-9]{8})'
+                         "|"
+                         '(PL[0-9]{10})'
+                         "|"
+                         '(PT[0-9]{9})'
+                         "|"
+                         '(GB[0-9]{9}([0-9]{3})?)' 
+                         "|"
+                         '(RO[0-9]{2,10})'
+                         "|"
+                         "([A-Z][0-9]{8})"
+                         "|"
+                         "([A-Z]{2}[0-9]{9})"
+                         "|"
+                         "([A-Z]{2}[0-9]{8})"
+                         "|"
+                         "([A-Z]{3}[0-9]{8})"
+                         "|"
+                         "([A-Z][0-9]{7}[A-Z])"
+                         "|"
+                         "([0-9]{8}[A-Z])"
+                         "|"
+                         "([0-9]{9}[A-Z]{2}[0-9]{4})"
+                         "|"
+                         "([0-9]{10})"
+                         "|"
+                         "([0-9]{9})"
+                         "|"
+                         "([0-9]{5})"
+                        )
+        res = rex.findall(cif)
+        try:
+            res = [i for i in res[0] if i]
+                # La posición donde se encuentre dependerá de con qué parte del 
+                # patrón coincida:
+                # 0 -> NIF 12345678X
+                # 1 -> CIF X12345678
+                # 2 -> Internacional: XYZ12345678
+                # 3 -> Griego: 123456789
+                # 4 -> Internacional 2: XY123456789
+                # Etc.
             res = res[0]
-    except IndexError:
-        res = ""
-    # CWT: CIFs pendientes, después pasa lo que pasa.
-    if cif == "PENDIENTE":
-        return cif 
+        except IndexError:
+            res = ""
+        # CWT: CIFs pendientes, después pasa lo que pasa.
+        if cif == "PENDIENTE":
+            return cif 
     return res
 
 def set_fecha(entry):
