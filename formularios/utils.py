@@ -4035,21 +4035,6 @@ def parse_cif(cif = None):
     """
     # [Update: 29/05/2012] Javi me pasa estos formatos, que son con los que 
     #                      ellos normalmente trabajan:
-
-    # PLAN: Chequear que si el CIF/NIF es "españolo", que sea correcto. La 
-    # letra es fácil de sacar (y hasta podría metérsela en caso de que solo 
-    # hubiera 8 números sin letra). La comprobación de NIF de Hacienda no la 
-    # conozco, pero debe andar por algún lado, porque el programa de ayuda 
-    # del 349 detecta NIF incorrectos.
-    import string, re
-    cif = str(cif).upper().strip()
-    letras = string.letters[string.letters.index("A"):]
-    numeros = "0123456789"
-    if cif.startswith("FR"):
-        cif = cif.replace("\t", " ")
-        while "  " in cif:
-            cif = cif.replace("  ", " ")
-        especiales = " "    # El espacio, de momento, y por culpa del FR.
     if not cif:
         samples = {'Alemania':   'DE123456789', # DE + 9 números
                    'Bélgica':    'BE0123456789', # BE + 0|1 + 9 números
