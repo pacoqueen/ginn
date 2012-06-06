@@ -26,7 +26,8 @@ pip-log.txt
 #Mr Developer
 .mr.developer.cfg
 
-# Vim
+# Vim y gedit
+*~
 *.swp
 
 # Log, backups y demás información sensible e inútil para el desarrollo
