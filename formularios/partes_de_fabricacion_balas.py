@@ -2405,8 +2405,6 @@ class PartesDeFabricacionBalas(Ventana):
                                 es_bala = False
                             self.descontar_material_adicional(articulo, restar = False)
                             # TODO: Falta aumentar la granza al igual que se hace cuando se cambia el peso de una bala.
-                            articulo.bala = None
-                            articulo.bigbag = None
                             articulo.parteDeProduccion = None
                             articulo.destroySelf()
                             if es_bala:
