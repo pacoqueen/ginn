@@ -124,7 +124,6 @@ class BalasCable(Ventana):
         """
         for b in balas:
             a = b.articulo
-            a.balaCable = None
             try:
                 a.destroySelf()
             except Exception, msg:
