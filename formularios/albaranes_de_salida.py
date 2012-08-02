@@ -2524,12 +2524,19 @@ class AlbaranesDeSalida(Ventana):
                       AND articulo.id IN (%s);
                     """ % idsarticulos
                     sqlpaleres = pclases.Pale._connection.queryOne(sql)
-                    bultos = sqlpaleres[0][0]   
+                    try:
+                        bultos = sqlpaleres[0][0] 
                                             # It MUST to work. Si no, prefiero 
                                             # que pete, aunque temporalmente 
                                             # usaré el algoritmo lento.
+                    except TypeError, msg:
+                        bultos = sqlpaleres[0]
+                            # En versiones avanzadas de SQLObject el queryOne 
+                            # devuelve por fin ONE registro, no una lista con 
+                            # un registro.
                 except Exception, msg:
                     print "albaranes_de_salida.py::imprimir ->", msg
+                    print bultos
                     bultospales = []
                     for ldv in prods[producto]:
                         bultospales += [a.caja.pale 

@@ -39,3 +39,7 @@ framework/ginn.conf*
 # Control de versiones CVS
 CVS
 CVS/*
+
+# Temporales de vi
+.*.swp
+
