@@ -2517,7 +2517,8 @@ class AlbaranesDeSalida(Ventana):
                             for id in self.__ldvs[ldv.id]['idsarticulos']]
                     idsarticulos = ", ".join(idsarticulos)
                     sql = """
-                    SELECT COUNT(*) 
+                    -- SELECT COUNT(*) 
+                    SELECT COUNT(DISTINCT(pale.id)) 
                     FROM pale, caja, articulo 
                     WHERE pale.id = caja.pale_id 
                       AND caja.id = articulo.caja_id 
