@@ -1,0 +1,22 @@
+Metadata-Version: 1.0
+Name: SQLObject
+Version: 0.6.1
+Summary: Object-Relational Manager, aka database wrapper
+Home-page: http://sqlobject.org
+Author: Ian Bicking
+Author-email: ianb@colorstudy.com
+License: LGPL
+Download-URL: http://prdownloads.sourceforge.net/sqlobject/SQLObject-0.6.1.tar.gz?download
+Description: Classes created using SQLObject wrap database rows, presenting a
+        friendly-looking Python object instead of a database/SQL interface.
+        Emphasizes convenience.  Works with MySQL, Postgres, SQLite, Firebird.
+        Requires Python 2.2+.
+        
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)
+Classifier: Programming Language :: Python
+Classifier: Topic :: Database
+Classifier: Topic :: Database :: Front-Ends
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
