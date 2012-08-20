@@ -633,7 +633,7 @@ class ProductosCompra(Ventana, VentanaGenerica):
                           utils.float2str(preciotarifa * 1.18, 2, 
                                           autodec = True), 
                           tarifa.esta_vigente(), 
-                          tarifa.periodoValidezFin != None 
+                          not tarifa.periodoValidezFin 
                             and utils.str_fecha(tarifa.periodoValidezFin) 
                             or "", 
                           tarifa.id))
