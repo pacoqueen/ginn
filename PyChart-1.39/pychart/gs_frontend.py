@@ -33,6 +33,7 @@ def _get_gs_path():
 # clientes Windows:
     if sys.platform == "win32":
         os.environ['PATH'] += ";C:\\Archivos de programa\\gs\\gs8.54\\bin"
+        os.environ['PATH'] += ";C:\\Program Files (x86)\\gs\\gs9.05\\bin"
 # -------------
     
     path = os.environ.get("PATH", os.defpath)

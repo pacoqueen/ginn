@@ -1715,38 +1715,45 @@ def albaran(composan, cliente, envio, general, lineas, observaciones, destino,
         c.drawString(lm+1.7*inch, bm+inch+4, escribe(transporte))
 
     # Pie de albarán (Conforme transportista)
-    c.setFont("Helvetica-Bold", 10)
+    c.setFont("Helvetica-Bold", 8)
     linea = bm+0.75*inch
-    c.drawString(lm+0.5*inch, linea, escribe('CONFORME TRANSPORTISTA'))
+    xtransportista = lm + 0.5*inch
+    xalmacen = width/3 + 0.75*inch
+    xdestino = 2*width/3 + 0.5*inch
+    c.drawString(xtransportista, linea, escribe('CONFORME TRANSPORTISTA'))
     if composan:
-        c.drawString(width/2+0.5*inch, linea, escribe('CONFORME DESTINO'))
+        c.drawString(xalmacen, linea, escribe('CONFORME DESTINO'))
     else:
-        c.drawString(width/2+0.5*inch, linea, escribe('Vº Bº JEFE DE ALMACÉN'))
+        c.drawString(xalmacen, linea, escribe('Vº Bº JEFE DE ALMACÉN'))
+    c.drawString(xdestino, linea, escribe('CONFORME DESTINO'))
     linea = sigLinea()
-    c.drawString(lm+0.5*inch, linea, escribe('Nombre:'))
+    c.drawString(xtransportista, linea, escribe('Nombre:'))
     if composan:
-        c.drawString(width/2+0.5*inch, linea, escribe('Nombre:'))
+        c.drawString(xalmacen, linea, escribe('Nombre:'))
+    c.drawString(xdestino, linea, escribe('Nombre y apellidos:'))
     linea = sigLinea()
-    c.drawString(lm+0.5*inch, linea, escribe('DNI:'))
+    c.drawString(xtransportista, linea, escribe('DNI:'))
     if composan:
-        c.drawString(width/2+0.5*inch, linea, escribe('DNI:'))
+        c.drawString(xalmacen, linea, escribe('DNI:'))
     linea = sigLinea()
-    c.drawString(lm+0.5*inch, linea, escribe('Tfno. Contacto:'))
+    c.drawString(xtransportista, linea, escribe('Tfno. Contacto:'))
     if composan:
-        c.drawString(width/2+0.5*inch, linea, escribe('Tfno. Contacto:'))
+        c.drawString(xalmacen, linea, escribe('Tfno. Contacto:'))
+    c.drawString(xdestino, linea, escribe('DNI:'))
     linea = sigLinea()
-    c.drawString(lm+0.5*inch, linea, escribe('Matrícula:'))
+    c.drawString(xtransportista, linea, escribe('Matrícula:'))
     if composan:
-        c.drawString(width/2+0.5*inch, linea, escribe('Matrícula:'))
+        c.drawString(xalmacen, linea, escribe('Matrícula:'))
     linea = sigLinea()
-    c.drawString(lm+0.5*inch, linea, escribe('FIRMA'))
+    c.drawString(xtransportista, linea, escribe('FIRMA'))
     if composan:
-        c.drawString(width/2+0.5*inch, linea, escribe('FIRMA'))
+        c.drawString(xalmacen, linea, escribe('FIRMA'))
+    c.drawString(xdestino, linea, escribe('FIRMA'))
 
     # DATA
     linea = bm+0.75*inch
     linea = sigLinea()
-    xconformeT = lm+2*inch
+    xconformeT = lm+1.45*inch
     if conformeT != None:
         c.drawString(xconformeT, linea, escribe(conformeT['nombre']))
         linea = sigLinea()

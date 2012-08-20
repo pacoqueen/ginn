@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.3.6: http://docutils.sourceforge.net/" />
+<title>SQLBuilder</title>
+<link rel="stylesheet" href="default.css" type="text/css" />
+</head>
+<body>
+<h1 class="title">SQLBuilder</h1>
+<div class="document" id="sqlbuilder">
+<p>A number of variables from SQLBuilder are included with <tt class="literal"><span class="pre">from</span>
+<span class="pre">SQLObject</span> <span class="pre">import</span> <span class="pre">*</span></tt> -- see the <a class="reference" href="SQLObject.html#exported-symbols">relevant SQLObject documentation</a>
+for more.  Its functionality is also available through the special
+<tt class="literal"><span class="pre">q</span></tt> attribute of <cite>SQLObject</cite> classes.</p>
+<div class="section" id="using-sqlbuilder">
+<h1><a name="using-sqlbuilder">Using SQLBuilder</a></h1>
+<p>SQLBuilder uses clever overriding of operators to make Python
+expressions build SQL expressions -- so long as you start with a Magic
+Object that knows how to fake it.</p>
+<p>With SQLObject, you get a Magic Object by access the <tt class="literal"><span class="pre">q</span></tt> attribute
+of a table class -- this gives you an object that represents the
+field.  Maybe explanations aren't as good.  Here's some examples:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; from SQLBuilder import *
+&gt;&gt;&gt; person = table.person
+# person is now equivalent to the Person.q object from the SQLObject
+# documentation
+&gt;&gt;&gt; person
+person
+&gt;&gt;&gt; person.first_name
+person.first_name
+&gt;&gt;&gt; person.first_name == 'John'
+person.first_name = 'John'
+&gt;&gt;&gt; name = 'John'
+&gt;&gt;&gt; person.first_name != name
+person.first_name &lt;&gt; 'John'
+&gt;&gt;&gt; AND(person.first_name == 'John', person.last_name == 'Doe')
+(person.first_name = 'John AND person.last_name = 'Doe')
+</pre>
+<p>Most of the operators work properly: &lt;, &gt;, &lt;=, &gt;=, !=, ==, +, -, /,
+*, **, %.  However, <tt class="literal"><span class="pre">and</span></tt>, <tt class="literal"><span class="pre">or</span></tt>, and <tt class="literal"><span class="pre">not</span></tt> <strong>do not work</strong>.
+You can use &amp;, |, and ~ instead -- but be aware that these have
+the same precedence as multiplication.  So:</p>
+<pre class="literal-block">
+# This isn't what you want:
+&gt;&gt; person.first_name == 'John' &amp; person.last_name == 'Doe'
+(person.first_name = ('John' AND person.last_name)) = 'Doe'
+# This is:
+&gt;&gt; (person.first_name == 'John') &amp; (person.last_name == 'Doe')
+((person.first_name = 'John') AND (person.last_name == 'Doe'))
+</pre>
+<p>SQLBuilder also contains the functions <tt class="literal"><span class="pre">AND</span></tt>, <tt class="literal"><span class="pre">OR</span></tt>, and <tt class="literal"><span class="pre">NOT</span></tt> which
+also work -- I find these easier to work with.  <tt class="literal"><span class="pre">AND</span></tt> and <tt class="literal"><span class="pre">OR</span></tt> can
+take any number of arguments.</p>
+<p>You can also use <tt class="literal"><span class="pre">.startswith()</span></tt> and <tt class="literal"><span class="pre">.endswith()</span></tt> on a SQL
+expression -- these will translate to appropriate <tt class="literal"><span class="pre">LIKE</span></tt> statements
+(but all <tt class="literal"><span class="pre">%</span></tt> quoting is handled for you, so you can ignore that
+implementation detail).  There is also a <tt class="literal"><span class="pre">LIKE</span></tt> function, where you
+can pass your string, with <tt class="literal"><span class="pre">%</span></tt> for the wildcard, as usual.</p>
+<p>If you want to access a SQL function, use the <tt class="literal"><span class="pre">func</span></tt> variable,
+like:</p>
+<pre class="literal-block">
+&gt;&gt; person.created &lt; func.NOW()
+</pre>
+<p>That's it -- enjoy!</p>
+</div>
+</div>
+</body>
+</html>
