@@ -50,6 +50,7 @@ except ImportError:
     import pclases
 import mx
 import mx.DateTime
+import datetime
     
 
 class HorasTrabajadas(Ventana):
@@ -315,7 +316,6 @@ class HorasTrabajadas(Ventana):
         res = []
         aux = {}
         #ininoche = mx.DateTime.DateTimeDeltaFrom(hours = 22, minutes = 0)
-        finnoche = mx.DateTime.DateTimeDeltaFrom(hours = 6, minutes = 0)
         # Hay que ordenar los partes por fecha y hora para que se contabilicen 
         # bien las horas extras.
         from ventana_progreso import VentanaProgreso
@@ -350,8 +350,6 @@ class HorasTrabajadas(Ventana):
                                 'id': ht.empleado.id})
                 pos = aux[ht.empleado.id]['pos']
                 # Cálculo de las horas nocturnas:
-                #if ht.partedeproduccion.horainicio >= ininoche and \
-                #    ht.partedeproduccion.horafin <= finnoche:
                 if ht.partedeproduccion.es_nocturno():
                     # OJO: Nunca se dará un parte que cubra dos franjas horarias de dos turnos
                     # diferentes, por tanto, si por ejemplo un empleado hace 2 horas de un parte de 6
@@ -364,6 +362,13 @@ class HorasTrabajadas(Ventana):
                 # Cálculo de las horas extras: El primer parte del día es el de las 6:00. 
                 # Si la hora de inicio del parte es inferior a esa, se considerará del día 
                 # anterior a efectos de horas extras.
+                # Compruebo qué tipo de fechas estoy manejando y preparo 
+                # la variable de hora de fin de noche.
+                if isinstance(ht.partedeproduccion.horainicio, datetime.time):
+                    finnoche = datetime.time(hour = 6)
+                else:
+                    finnoche = mx.DateTime.DateTimeDeltaFrom(hours = 6, 
+                                                             minutes = 0)
                 if ht.partedeproduccion.horainicio < finnoche:
                     dia = (ht.partedeproduccion.fecha - mx.DateTime.oneDay)
                 else:
@@ -429,7 +434,6 @@ class HorasTrabajadas(Ventana):
         res = []
         aux = {}
         #ininoche = mx.DateTime.DateTimeDeltaFrom(hours = 22, minutes = 0)
-        finnoche = mx.DateTime.DateTimeDeltaFrom(hours = 6, minutes = 0)
         # Hay que ordenar los partes por fecha y hora para que se contabilicen 
         # bien las horas extras.
         from ventana_progreso import VentanaProgreso
@@ -458,12 +462,17 @@ class HorasTrabajadas(Ventana):
                             'id': parte_de_trabajo.empleado.id})
             pos = aux[parte_de_trabajo.empleado.id]['pos']
             # Cálculo de las horas nocturnas:
-            #if self.get_solo_hora(ht.horainicio) >= ininoche and \
-            #   self.get_solo_hora(ht.horafin) <= finnoche:
             if parte_de_trabajo.es_nocturno():
                 noche = parte_de_trabajo.horas
             else:
                 noche = mx.DateTime.DateTimeDeltaFrom(hours = 0)
+            # Compruebo qué tipo de fechas estoy manejando y preparo 
+            # la variable de hora de fin de noche.
+            if isinstance(parte_de_trabajo.horafin, datetime.time):
+                finnoche = datetime.time(hour = 6)
+            else:
+                finnoche = mx.DateTime.DateTimeDeltaFrom(hours = 6, 
+                                                         minutes = 0)
             if self.get_solo_hora(parte_de_trabajo.horafin) < finnoche:
                 dia = (parte_de_trabajo.horainicio - mx.DateTime.oneDay).strftime('%Y-%m-%d')
             else:
