@@ -4035,11 +4035,7 @@ def parse_cif(cif = None):
     """
     # [Update: 29/05/2012] Javi me pasa estos formatos, que son con los que 
     #                      ellos normalmente trabajan:
-<<<<<<< HEAD
-    if not cif:
-=======
     if cif is None:
->>>>>>> blade-runner
         samples = {'Alemania':   'DE123456789', # DE + 9 números
                    'Bélgica':    'BE0123456789', # BE + 0|1 + 9 números
                    'Bulgaria':   'BG1234567890', # BG + 9 ó 10 números
