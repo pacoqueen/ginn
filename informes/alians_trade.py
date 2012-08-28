@@ -310,9 +310,18 @@ if __name__ == "__main__":
     sys.path.append("../formularios")
     import pclases
     from partes_de_fabricacion_rollos import build_etiqueta
-    rollos = [pclases.Rollo.select(orderBy = "-id")[0]]
-    pv = rollos[0].productoVenta
-    rollos.append(pv.articulos[-1].rollo)
+    rollos = []
+    for pv in pclases.ProductoVenta.select(
+            pclases.ProductoVenta.q.nombre.contains("PINEMA")):
+        while len(rollos) <= 2:
+            for a in pv.articulos:
+                rollos.append(a.rollo)
+                if len(rollos) > 2:
+                    break
+    if not rollos:
+        rollos = [pclases.Rollo.select(orderBy = "-id")[0]]
+        pv = rollos[0].productoVenta
+        rollos.append(pv.articulos[-1].rollo)
     rollos = [build_etiqueta(r)[0] for r in rollos]
     abrir_pdf(etiqueta_rollos_polaco(rollos, mostrar_marcado = True))
 
