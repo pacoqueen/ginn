@@ -19,6 +19,10 @@ pdfmetrics.registerFont(TTFont('Vera', 'Vera.ttf'))
 pdfmetrics.registerFont(TTFont('VeraB', 'VeraBd.ttf'))
 pdfmetrics.registerFont(TTFont('VeraI', 'VeraIt.ttf'))
 pdfmetrics.registerFont(TTFont('VeraBI', 'VeraBI.ttf'))
+pdfmetrics.registerFont(TTFont('Liberation', 'LiberationSans-Regular.ttf'))
+pdfmetrics.registerFont(TTFont('LiberationB', 'LiberationSans-Bold.ttf'))
+pdfmetrics.registerFont(TTFont('LiberationI', 'LiberationSans-Italic.ttf'))
+pdfmetrics.registerFont(TTFont('LiberationBI', 'LiberationSans-BoldItalic.ttf'))
 
 
 DEBUG=True
@@ -32,8 +36,11 @@ BOLD, ITALIC, LEFT, CENTER, RIGHT = (int('00001', 2),
                                          int('00100', 2), 
                                          int('01000', 2), 
                                          int('10000', 2))
+FONT = "Liberation"
+SIZE = 6
+
+
 def print_debug(*args, **kw):
-    return
     for arg in args:
         print "\tDEBUG->", 
         print arg
@@ -81,8 +88,6 @@ def etiqueta_rollos_polaco(rollos, mostrar_marcado = True):
     texto_marcado1 = "1488-CPD-0275/Z"
     texto_marcado2 = "12"
     X_HEADER = WH_ALIANS[0] + 0.2*cm
-    FONT = "Vera"
-    SIZE = 6
     data = [("PRODUCENT/PRODUCER:", {'x': X_HEADER, 
                                      'format': CENTER}), 
             ("ALIANS TRADE SP. Z O.O.", {'x': X_HEADER, 
@@ -122,8 +127,8 @@ def etiqueta_rollos_polaco(rollos, mostrar_marcado = True):
             "ZASTOSOWANIE/ APPLICATION: w drogownictwie, kolejnictwie, w robotach ", 
             "ziemnych i konstrukcjach oporowych, w systemach drenażowych, w ", 
             "zabezpieczeniach antyerozyjnych, w budowie zbiorników wodnych i zapór, ", 
-            "w budowie kanałów, tuneli i konstrukcji podziemnych, w budowie składowisk", 
-            "odpadów stałych i zbiorników odpadów ciekłych.", 
+            "w budowie kanałów, tuneli i konstrukcji podziemnych, w budowie ", 
+            "składowisk odpadów stałych i zbiorników odpadów ciekłych.", 
             "PRZEZNACZENIE/ INTENDED FUNCTIONS: rozdzielenie, filtracja, ", 
             "drenaż, wzmocnienie.", 
             # De aquí para abajo, en dos columnas
@@ -167,13 +172,14 @@ def etiqueta_rollos_polaco(rollos, mostrar_marcado = True):
                         xy_ce[0], xy_ce[1],  
                         width = WH_MARCADO[0], 
                         height = WH_MARCADO[1])
-            c.setFont(FONT, SIZE)
+            c.setFont("Helvetica-Bold", SIZE)
             c.drawCentredString(xy_textmarcado[0], 
                                 xy_textmarcado[1], 
                                 escribe(texto_marcado1))
             c.drawCentredString(xy_textmarcado[0], 
                                 xy_textmarcado[1] - H_TEXTMARCADO, 
                                 escribe(texto_marcado2))
+            c.setFont(FONT, SIZE)
         # Texto de la etiqueta
         c.setFont(FONT, SIZE)
         for i in range(len(data)):
@@ -194,7 +200,7 @@ def etiqueta_rollos_polaco(rollos, mostrar_marcado = True):
     c.save()
     return nomarchivo
 
-def render(c, x, y, texto = "", opciones = {}, fuente = "Vera", 
+def render(c, x, y, texto = "", opciones = {}, fuente = "Liberation", 
            tamanno = 6, w = 8.4*cm, h = 12.55*cm, margen = 0.05*cm, 
            rollo = None):
     """Escribe en el PDF el texto en la posición (x, y) con la fuente, tamaño 
@@ -216,9 +222,12 @@ def render(c, x, y, texto = "", opciones = {}, fuente = "Vera",
     ncols = len(textos)
     offset_x = (w - x - margen) / ncols
     for texto in textos:
+        fuente, tamanno = FONT, SIZE
         posx = x + (offset_x * textos.index(texto))
+        texto, fuente, tamanno, dinamico = extract_texto(
+                texto, fuente, tamanno, rollo)
         for o in opciones:
-            if o == "size":
+            if o == "size" and not dinamico:
                 tamanno = opciones['size']
             elif o == "x":
                 posx = opciones[o]
@@ -230,64 +239,15 @@ def render(c, x, y, texto = "", opciones = {}, fuente = "Vera",
                     ancho_texto = c.stringWidth(texto, fuente, tamanno)
                     print_debug(texto, ancho_texto = ancho_texto)
                     posx -= ancho_texto / 2 
-                if formato & BOLD:
+                if formato & BOLD and not fuente.endswith("B") and not dinamico:
                     fuente += "B"
-                if formato & ITALIC:
+                if (formato & ITALIC and not fuente.endswith("I") 
+                        and not dinamico): # Esto es una chapuza... :(
+                    # Sería mejor que el extract_text devolviera también el 
+                    # formato y no andar así. Pero cuando no hay tiempo se 
+                    # tira de flags. Qué remedio.
                     fuente += "I"
-        if texto.startswith("$"):
-            tamanno += 2
-            fuente = "VeraB" 
-            try:
-                nombre_producto = rollo['objeto'].productoVenta.nombre
-                numrollo = rollo['objeto'].numrollo
-                cer = rollo['objeto'].productoVenta.camposEspecificosRollo
-                peso = rollo['objeto'].peso
-                try:
-                    fecha = rollo['objeto'].articulo.parteDeProduccion.fecha
-                except AttributeError:
-                    fecha = datetime.date.today()
-                gramos = cer.gramos
-                metrosLineales = cer.metrosLineales
-                ancho = cer.ancho
-            except AttributeError: 
-                # No registro creado todavía. Objeto es None.
-                nombre_producto = rollo['productoVenta'].nombre
-                numrollo = rollo['nrollo']
-                cer = rollo['productoVenta'].camposEspecificosRollo
-                peso = cer.pesoTeorico
-                fecha = datetime.date.today()
-                gramos = cer.gramos
-                metrosLineales = cer.metrosLineales
-                ancho = cer.ancho
-            except TypeError:
-                # El propio rollo es None. Datos de prueba.
-                nombre_producto = "NOMBRE DEL PRODUCTO"
-                numrollo = 123456
-                cer = None 
-                peso = 0.0
-                fecha = datetime.date.today()
-                gramos = 1.23
-                metrosLineales = 123
-                ancho = 4.5
-            if texto == "$PRODUCTO": 
-                texto = nombre_producto
-            elif texto == "$NUMROLLO":
-                texto = utils.float2str(numrollo, autodec = True)
-            elif texto == "$GRAMAJE":
-                texto = `gramos` + "±2.18%"
-            elif texto == "$LARGO": 
-                texto = utils.float2str(metrosLineales, autodec = True, 
-                                        separador_decimales = ".")
-            elif texto == "$ANCHO": 
-                texto = utils.float2str(ancho,
-                                        separador_decimales = ".")
-            elif texto == "$PESO": 
-                texto = utils.float2str(peso, 
-                                        separador_decimales = ".")
-            elif texto == "$FECHA": 
-                texto = utils.str_fecha(fecha)
         c.saveState()
-        print_debug(texto, tamanno = tamanno, posx = posx)
         c.setFont(fuente, tamanno)
         #######################################################################
         # TODO: HARCODED: Caso especial. Si gramaje > 180, hay que añadir 
@@ -302,6 +262,73 @@ def render(c, x, y, texto = "", opciones = {}, fuente = "Vera",
         #######################################################################
         c.drawString(posx, y, texto)
         c.restoreState()
+
+def extract_texto(texto, fuente, tamanno, rollo):
+    """Extrae la información relativa al producto.
+
+    :texto: Texto a analizar
+    :returns: Texto corregido con la información que corresponda (fecha, 
+              nombre del producto, número de rollo...), fuente y tamaño.
+              Devuelve también un flag si no era texto "estático" y se ha 
+              modificado aquí.
+
+    """
+    if texto.startswith("$"):
+        tamanno += 2
+        fuente = "VeraB" 
+        try:
+            nombre_producto = rollo['objeto'].productoVenta.nombre
+            numrollo = rollo['objeto'].numrollo
+            cer = rollo['objeto'].productoVenta.camposEspecificosRollo
+            peso = rollo['objeto'].peso
+            try:
+                fecha = rollo['objeto'].articulo.parteDeProduccion.fecha
+            except AttributeError:
+                fecha = datetime.date.today()
+            gramos = cer.gramos
+            metrosLineales = cer.metrosLineales
+            ancho = cer.ancho
+        except AttributeError: 
+            # No registro creado todavía. Objeto es None.
+            nombre_producto = rollo['productoVenta'].nombre
+            numrollo = rollo['nrollo']
+            cer = rollo['productoVenta'].camposEspecificosRollo
+            peso = cer.pesoTeorico
+            fecha = datetime.date.today()
+            gramos = cer.gramos
+            metrosLineales = cer.metrosLineales
+            ancho = cer.ancho
+        except TypeError:
+            # El propio rollo es None. Datos de prueba.
+            nombre_producto = "NOMBRE DEL PRODUCTO"
+            numrollo = 123456
+            cer = None 
+            peso = 0.0
+            fecha = datetime.date.today()
+            gramos = 1.23
+            metrosLineales = 123
+            ancho = 4.5
+        if texto == "$PRODUCTO": 
+            texto = nombre_producto
+        elif texto == "$NUMROLLO":
+            texto = utils.float2str(numrollo, autodec = True)
+        elif texto == "$GRAMAJE":
+            texto = `gramos` + "±2.18%"
+        elif texto == "$LARGO": 
+            texto = utils.float2str(metrosLineales, autodec = True, 
+                                    separador_decimales = ".")
+        elif texto == "$ANCHO": 
+            texto = utils.float2str(ancho,
+                                    separador_decimales = ".")
+        elif texto == "$PESO": 
+            texto = utils.float2str(peso, 
+                                    separador_decimales = ".")
+        elif texto == "$FECHA": 
+            texto = utils.str_fecha(fecha)
+        dinamico = True
+    else:
+        dinamico = False
+    return texto, fuente, tamanno, dinamico
 
 
 if __name__ == "__main__":
