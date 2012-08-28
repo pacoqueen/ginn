@@ -250,7 +250,7 @@ def render(c, x, y, texto = "", opciones = {}, fuente = "Liberation",
         c.saveState()
         c.setFont(fuente, tamanno)
         #######################################################################
-        # TODO: HARCODED: Caso especial. Si gramaje > 180, hay que añadir 
+        # TODO: HARCODED: Caso especial. Si gramaje 180 o más, hay que añadir 
         # la palabra "ochrona" a una de las líneas.
         try:
             cer = rollo['objeto'].productoVenta.camposEspecificosRollo
