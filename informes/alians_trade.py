@@ -25,10 +25,10 @@ try:
     pdfmetrics.registerFont(TTFont('LiberationI', 'LiberationSans-Italic.ttf'))
     pdfmetrics.registerFont(TTFont('LiberationBI', 'LiberationSans-BoldItalic.ttf'))
 except TTFError:
-    pdfmetrics.registerFont(TTFont('Liberation', os.path.join("..", 'LiberationSans-Regular.ttf')))
-    pdfmetrics.registerFont(TTFont('LiberationB', os.path.join("..", 'LiberationSans-Bold.ttf')))
-    pdfmetrics.registerFont(TTFont('LiberationI', os.path.join("..", 'LiberationSans-Italic.ttf')))
-    pdfmetrics.registerFont(TTFont('LiberationBI', os.path.join("..", 'LiberationSans-BoldItalic.ttf')))
+    pdfmetrics.registerFont(TTFont('Liberation', os.path.join("..", "informes", 'LiberationSans-Regular.ttf')))
+    pdfmetrics.registerFont(TTFont('LiberationB', os.path.join("..", "informes", 'LiberationSans-Bold.ttf')))
+    pdfmetrics.registerFont(TTFont('LiberationI', os.path.join("..", "informes", 'LiberationSans-Italic.ttf')))
+    pdfmetrics.registerFont(TTFont('LiberationBI', os.path.join("..", "informes", 'LiberationSans-BoldItalic.ttf')))
 
 
 
