@@ -36,7 +36,7 @@ except TTFError:
 
 
 
-DEBUG=True
+DEBUG = False
 mm = cm / 10.0
 # Formato 0b solo en python >= 2.6
 #try:
@@ -162,8 +162,9 @@ def etiqueta_rollos_polaco(rollos, mostrar_marcado = True):
     # (0,0) está abajo. Yo relleno la etiqueta de arriba a abajo.
     y_lines = [(xy_textmarcado[1] - 2*H_TEXTMARCADO) - (y * alto_linea) 
                 for y in range(len(data) +1)[1:]]
-    print_debug(y_lines = y_lines)
-    print_debug(alto_linea = alto_linea)
+    if DEBUG:
+        print_debug(y_lines = y_lines)
+        print_debug(alto_linea = alto_linea)
 
     # Creo la hoja
     nomarchivo = os.path.join(gettempdir(),
@@ -248,7 +249,8 @@ def render(c, x, y, texto = "", opciones = {}, fuente = "Liberation",
                     # lo hago entre la X indicada y el borde derecho.
                     posx = x + (w - x - margen) / 2
                     ancho_texto = c.stringWidth(texto, fuente, tamanno)
-                    print_debug(texto, ancho_texto = ancho_texto)
+                    if DEBUG:
+                        print_debug(texto, ancho_texto = ancho_texto)
                     posx -= ancho_texto / 2 
                 if formato & BOLD and not fuente.endswith("B") and not dinamico:
                     fuente += "B"

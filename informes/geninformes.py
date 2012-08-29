@@ -73,6 +73,31 @@ from tempfile import gettempdir
 import Image
 import re
 
+# Un par de fuentes TrueType con soporte casi completo para UTF-8.
+import reportlab.rl_config
+reportlab.rl_config.warnOnMissingFontGlyphs = 0
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont, TTFError
+try:
+    pdfmetrics.registerFont(TTFont('Vera', 'Vera.ttf'))
+    pdfmetrics.registerFont(TTFont('VeraB', 'VeraBd.ttf'))
+    pdfmetrics.registerFont(TTFont('VeraI', 'VeraIt.ttf'))
+    pdfmetrics.registerFont(TTFont('VeraBI', 'VeraBI.ttf'))
+    pdfmetrics.registerFont(TTFont('Liberation', 'LiberationSans-Regular.ttf'))
+    pdfmetrics.registerFont(TTFont('LiberationB', 'LiberationSans-Bold.ttf'))
+    pdfmetrics.registerFont(TTFont('LiberationI', 'LiberationSans-Italic.ttf'))
+    pdfmetrics.registerFont(TTFont('LiberationBI', 'LiberationSans-BoldItalic.ttf'))
+except TTFError:
+    pdfmetrics.registerFont(TTFont('Vera', os.path.join("..", "informes", 'Vera.ttf')))
+    pdfmetrics.registerFont(TTFont('VeraB', os.path.join("..", "informes", 'VeraBd.ttf')))
+    pdfmetrics.registerFont(TTFont('VeraI', os.path.join("..", "informes", 'VeraIt.ttf')))
+    pdfmetrics.registerFont(TTFont('VeraBI', os.path.join("..", "informes", 'VeraBI.ttf')))
+    pdfmetrics.registerFont(TTFont('Liberation', os.path.join("..", "informes", 'LiberationSans-Regular.ttf')))
+    pdfmetrics.registerFont(TTFont('LiberationB', os.path.join("..", "informes", 'LiberationSans-Bold.ttf')))
+    pdfmetrics.registerFont(TTFont('LiberationI', os.path.join("..", "informes", 'LiberationSans-Italic.ttf')))
+    pdfmetrics.registerFont(TTFont('LiberationBI', os.path.join("..", "informes", 'LiberationSans-BoldItalic.ttf')))
+
+
 # Medidas fundamentales
 # Ancho y alto
 global width, height, tm , bm, lm, rm, linea
@@ -3379,7 +3404,8 @@ def factura(cliente,
                                 # saltar a la siguiente.
                 # Chapuza formatos (refactorizar ya y mirar el lenguaje de
                 # marcas de ReportLab. No reinventes la rueda).
-                fuente = "Helvetica"
+                fuente = "Liberation"
+                #fuente = "Helvetica"
                 tamanno = 10
                 alineacion_descripcion = -1     # -1: Izquierda, 0: Centrado,
                                                 # 1: Derecha
