@@ -15,16 +15,20 @@ import reportlab.rl_config
 reportlab.rl_config.warnOnMissingFontGlyphs = 0
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont, TTFError
-pdfmetrics.registerFont(TTFont('Vera', 'Vera.ttf'))
-pdfmetrics.registerFont(TTFont('VeraB', 'VeraBd.ttf'))
-pdfmetrics.registerFont(TTFont('VeraI', 'VeraIt.ttf'))
-pdfmetrics.registerFont(TTFont('VeraBI', 'VeraBI.ttf'))
 try:
+    pdfmetrics.registerFont(TTFont('Vera', 'Vera.ttf'))
+    pdfmetrics.registerFont(TTFont('VeraB', 'VeraBd.ttf'))
+    pdfmetrics.registerFont(TTFont('VeraI', 'VeraIt.ttf'))
+    pdfmetrics.registerFont(TTFont('VeraBI', 'VeraBI.ttf'))
     pdfmetrics.registerFont(TTFont('Liberation', 'LiberationSans-Regular.ttf'))
     pdfmetrics.registerFont(TTFont('LiberationB', 'LiberationSans-Bold.ttf'))
     pdfmetrics.registerFont(TTFont('LiberationI', 'LiberationSans-Italic.ttf'))
     pdfmetrics.registerFont(TTFont('LiberationBI', 'LiberationSans-BoldItalic.ttf'))
 except TTFError:
+    pdfmetrics.registerFont(TTFont('Vera', os.path.join("..", "informes", 'Vera.ttf')))
+    pdfmetrics.registerFont(TTFont('VeraB', os.path.join("..", "informes", 'VeraBd.ttf')))
+    pdfmetrics.registerFont(TTFont('VeraI', os.path.join("..", "informes", 'VeraIt.ttf')))
+    pdfmetrics.registerFont(TTFont('VeraBI', os.path.join("..", "informes", 'VeraBI.ttf')))
     pdfmetrics.registerFont(TTFont('Liberation', os.path.join("..", "informes", 'LiberationSans-Regular.ttf')))
     pdfmetrics.registerFont(TTFont('LiberationB', os.path.join("..", "informes", 'LiberationSans-Bold.ttf')))
     pdfmetrics.registerFont(TTFont('LiberationI', os.path.join("..", "informes", 'LiberationSans-Italic.ttf')))
