@@ -1,7 +1,0 @@
-tipobd	postgres
-user 	geotexan
-pass	gy298d.l
-dbname 	ginn
-host	localhost    
-host	62.174.64.193 
-modelo_presupuesto presupuesto2
