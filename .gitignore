@@ -38,3 +38,7 @@ adjuntos/*
 # Control de versiones CVS
 CVS
 CVS/*
+
+# Gedit
+*~
+
