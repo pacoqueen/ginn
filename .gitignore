@@ -34,6 +34,7 @@ ginn.log
 *.backup
 BD/baks_sql
 adjuntos/*
+framework/ginn.conf*
 
 # Control de versiones CVS
 CVS
