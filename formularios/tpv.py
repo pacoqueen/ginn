@@ -1020,7 +1020,15 @@ class TPV(Ventana):
                     self.logger.error(txt)
                     print txt
                     precio = 0.0
-            uno_mas_iva = (mx.DateTime.localtime() >= mx.DateTime.DateFrom(2010, 7, 1) and 0.18 or 0.16) + 1
+            hoy = mx.DateTime.localtime()
+            if (hoy >= mx.DateTime.DateFrom(2010, 7, 1)
+                and hoy <= mx.DateTime.DateFrom(2012, 9, 1)):
+                ivahoy = 0.18
+            elif hoy < mx.DateTime.DateFrom(2010, 7, 1):
+                ivahoy = 0.16
+            else:
+                ivahoy = 0.21
+            uno_mas_iva = 1 + ivahoy
             precio_con_iva = precio * uno_mas_iva
                 # En tickets se debe mostrar siempre el P.V.P. con 18% de IVA.
             if (hasattr(self.producto, "controlExistencias") 
@@ -1083,7 +1091,15 @@ class TPV(Ventana):
                 cantidad = 0.0
             if cantidad > 99999:    # Me aseguro de que no haya metido un 
                 cantidad = 1        # código en la cantidad.
-            uno_mas_iva = (mx.DateTime.localtime() >= mx.DateTime.DateFrom(2010, 7, 1) and 0.18 or 0.16) + 1
+            hoy = mx.DateTime.localtime()
+            if (hoy >= mx.DateTime.DateFrom(2010, 7, 1)
+                and hoy <= mx.DateTime.DateFrom(2012, 9, 1)):
+                ivahoy = 0.18
+            elif hoy < mx.DateTime.DateFrom(2010, 7, 1):
+                ivahoy = 0.16
+            else:
+                ivahoy = 0.21
+            uno_mas_iva = 1 + ivahoy
             try:
                 precio = utils._float(self.wids['e_precio'].get_text()) / uno_mas_iva
                 # En la LDV no debe llevar IVA.
@@ -1722,7 +1738,7 @@ def crear_factura(cliente, padre = None):
                         descuento = 0.0, 
                         cargo = 0.0, 
                         observaciones = "", 
-                        iva = 0.18, 
+                        iva = 0.21, 
                         bloqueada = False, 
                         irpf = irpf)
         except Exception, msg:
@@ -1761,14 +1777,14 @@ def buscar_producto(padre = None, tarifa = None, texto_defecto = ""):
                          tarifa_defecto = pclases.Tarifa.get_tarifa_defecto())
             else:
                 precio = pc.precioDefecto
-            resultados.append(("PC:%d" % (pc.id), pc.codigo, pc.descripcion, "%s €" % (utils.float2str(precio * 1.18)), "%s %s" % (utils.float2str(pc.existencias), pc.unidad)))
+            resultados.append(("PC:%d" % (pc.id), pc.codigo, pc.descripcion, "%s €" % (utils.float2str(precio * 1.21)), "%s %s" % (utils.float2str(pc.existencias), pc.unidad)))
         for pv in productos_venta:
             if tarifa != None:
                 precio = tarifa.obtener_precio(pv, 
                          tarifa_defecto = pclases.Tarifa.get_tarifa_defecto())
             else:
                 precio = pv.precioDefecto
-            resultados.append(("PV:%d" % (pv.id), pv.codigo, pv.descripcion, "%s €" % (utils.float2str(precio * 1.18)), pv.get_str_stock()))
+            resultados.append(("PV:%d" % (pv.id), pv.codigo, pv.descripcion, "%s €" % (utils.float2str(precio * 1.21)), pv.get_str_stock()))
         resultados.sort(func_ordenar_por_item_dos)
         idproducto = utils.dialogo_resultado(resultados, 
                                              "Seleccione un producto:", 
@@ -2000,7 +2016,7 @@ def cortar_linea_ticket(ldv, ancho, separador_lineas = ""):
     try:
         uno_mas_iva = ldv.ticket.get_iva() + 1
     except AttributeError:
-        uno_mas_iva = 1.18
+        uno_mas_iva = 1.21
     IZQ = 5
     DER = 7
     CENDER = 6    # Centro derecha (precio unitario)
@@ -2432,7 +2448,7 @@ def crear_nuevo_cliente(nombre, padre = None):
                                               provincia = provincia,
                                               cp = cp,
                                               vencimientos = "0",
-                                              iva = 0.18,
+                                              iva = 0.21,
                                               direccionfacturacion = direccion,
                                               nombref = nombre,
                                               paisfacturacion = pais,
