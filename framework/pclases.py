@@ -5970,12 +5970,20 @@ class Ticket(SQLObject, PRPCTOO):
     def get_iva(self):
         """
         Devuelve el IVA aplicable al ticket en función de su fecha: antes 
-        del 1 de julio, 16%; después, el 18%.
+        del 1 de julio de 2010, 16%; después y hasta el 1 de septiembre de 
+        2012, el 18%. A partir de entonces, el 21%
         """
         fechahora = mx.DateTime.DateFrom(self.fechahora.year, 
                                          self.fechahora.month, 
                                          self.fechahora.day)
-        return fechahora >= mx.DateTime.DateFrom(2010, 7, 1) and 0.18 or 0.16
+        if fechahora >= mx.DateTime.DateFrom(2012, 9, 1):
+            iva = 0.21
+        elif (fechahora >= mx.DateTime.DateFrom(2010, 7, 1) and 
+            fechahora < mx.DateTime.DateFrom(2012, 9, 1)):
+            iva = 0.18
+        else:
+            iva = 0.16
+        return iva
 
     def calcular_total(self, iva_incluido = True):
         """
@@ -5997,9 +6005,8 @@ class Ticket(SQLObject, PRPCTOO):
                 subtotal += ldv.precio * ldv.cantidad * (1 - ldv.descuento)
             #print "  --> No he usado consulta."
         if iva_incluido:
-            # iva = 0.18  
             iva = self.get_iva()
-            # Las ventas de ticket llevan impepinablemente el 18% de IVA.
+            # Las ventas de ticket llevan impepinablemente el 21% de IVA.
         else:
             iva = 0
         total = subtotal * (1 + iva)
@@ -6368,7 +6375,7 @@ class LineaDeVenta(SQLObject, PRPCTOO, Venta):
                   and self.albaranSalida.clienteID != None):
                 res *= 1 + self.albaranSalida.cliente.iva
             elif self.ticketID != None:
-                res *= 1.18     # PVP siempre 18% de IVA.
+                res *= 1.21     # PVP siempre 21% de IVA.
         if precision != None:
             res = round(res, precision)
         return res
@@ -9150,7 +9157,7 @@ class Presupuesto(SQLObject, PRPCTOO):
             dde = DatosDeLaEmpresa.select()[0]
             iva = dde.iva
         except IndexError:
-            iva = 0.18
+            iva = 0.21
         total_iva = utils.ffloat(subtotal) * iva 
         return total_iva
     
@@ -13793,18 +13800,23 @@ class Cliente(SQLObject, PRPCTOO):
         y corrija las funciones donde se usa.
         Si se especifica fecha y el cliente tiene el IVA estándar, se compara 
         la fecha con el 1 de julio de 2.010 que fue cuando entró en vigor la 
-        ley del nuevo IVA al 18%. Se hace así para el cálculo de los abonos, 
+        ley del nuevo IVA al 18%, o con el 1 de septiembre de 2012 que se 
+        volvió a cambiar al 21%. Se hace así para el cálculo de los abonos, 
         donde no se guarda el IVA, sino que se determina a partir del cliente.
         """
         if self.iva == None:
             # Aprovecho para quitar los Nones del IVA de los clientes.
-            self.iva = 0.18 
+            self.iva = 0.21 
         iva = self.iva
         if iva > 1:
             iva /= 100.0
-        if (iva == 0.18 and fecha 
-            and fecha <= mx.DateTime.DateTimeFrom(2010, 7, 1)):
+        if (iva == 0.21 and fecha 
+            and fecha < mx.DateTime.DateTimeFrom(2010, 7, 1)):
             iva = 0.16  # IVA estándar oficial antes del 1 de julio de 2.010
+        elif (iva == 0.21 and fecha 
+            and fecha >= mx.DateTime.DateTimeFrom(2010, 7, 1)
+            and fecha < mx.DateTime.DateTimeFrom(2012, 9, 1)):
+            iva = 0.18  # IVA estándar oficial antes del 1 de sept. de 2.012
         return iva
 
     def get_vencimientos(self, fecha_base = mx.DateTime.localtime()):
@@ -17994,12 +18006,12 @@ class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
         """
         Devuelve el IVA de la factura de abono.
         Siempre será el IVA del cliente.
-        En caso de error devuelve 0.18.
+        En caso de error devuelve 0.21.
         """
         try:
             iva = self.cliente.get_iva_norm(fecha = self.fecha)
         except:
-            iva = 0.18
+            iva = 0.21
         #for abono in self.abonos:
         #    if abono.clienteID != None:
         #        # OJO: La fecha para ver el IVA que le corresponde es la de 
