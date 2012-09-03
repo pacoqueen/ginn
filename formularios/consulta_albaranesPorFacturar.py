@@ -335,14 +335,14 @@ class ConsultaAlbaranesPorFacturar(Ventana):
         self.transportes = []
         selfinicio = self.inicio and utils.parse_fecha("/".join(self.inicio.split("/")[::-1])) or None
         selffin = utils.parse_fecha("/".join(self.fin.split("/")[::-1]))
-        if selfinicio == None:
+        if not selfinicio:
             albaranesentrada = pclases.AlbaranEntrada.select(pclases.AlbaranEntrada.q.fecha <= selffin, orderBy = 'fecha')
         else:
             albaranesentrada = pclases.AlbaranEntrada.select(sqlobject.AND(pclases.AlbaranEntrada.q.fecha >= selfinicio,
                                                                    pclases.AlbaranEntrada.q.fecha <= selffin), 
                                                      orderBy='fecha')
         for proveedor in pclases.Proveedor.select():
-            if selfinicio == None:
+            if not selfinicio:
                 self.comisiones += [c for c in proveedor.get_comisiones_pendientes_de_facturar() 
                                     if c.fecha <= selffin and c not in self.comisiones]
                 self.transportes += [t for t in proveedor.get_transportes_pendientes_de_facturar() 
@@ -354,7 +354,7 @@ class ConsultaAlbaranesPorFacturar(Ventana):
                 for t in proveedor.get_transportes_pendientes_de_facturar():
                     if selfinicio <= t.fecha <= selffin and t not in self.transportes:
                         self.transportes.append(t)
-        if selfinicio == None:
+        if not selfinicio:
             albaranessalida = pclases.AlbaranSalida.select(pclases.AND(pclases.AlbaranSalida.q.fecha <= selffin, 
                                                                  pclases.AlbaranSalida.q.facturable == True), 
                                                      orderBy = 'fecha')
@@ -385,7 +385,7 @@ class ConsultaAlbaranesPorFacturar(Ventana):
         sys.path.append(os.path.join("..", "informes"))
         from treeview2pdf import treeview2pdf
         from informes import abrir_pdf
-        if (self.inicio) == None: 
+        if not self.inicio:
             fechaInforme = 'Hasta '+utils.str_fecha(time.strptime(self.fin,"%Y/%m/%d"))
         else:
             fechaInforme = utils.str_fecha(time.strptime(self.inicio,"%Y/%m/%d"))+' - '+utils.str_fecha(time.strptime(self.fin,"%Y/%m/%d"))
