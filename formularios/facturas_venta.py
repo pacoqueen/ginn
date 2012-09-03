@@ -2875,8 +2875,8 @@ class FacturasVenta(Ventana):
             # el caso, doy soporte temporalmente al recargo de equivalencia 
             # si el IVA es 20%. En realidad debería ir con un atributo en la 
             # clase factura y demás, pero no es algo prioritario de momento.
-            totales['iva'] = "%d %%" % ((self.objeto.iva - 0.04) * 100)
-            totales['recargo_equivalencia'] = "4 %"
+            totales['iva'] = "%d %%" % ((self.objeto.iva - 0.052) * 100)
+            totales['recargo_equivalencia'] = "5.2 %"
             base_imponible = self.objeto.calcular_base_imponible()
             totales['totaliva'] = "%s €" % utils.float2str(base_imponible*0.21)
             totales['totrecargo_equivalencia'] = "%s €" % utils.float2str(base_imponible * 0.04)
