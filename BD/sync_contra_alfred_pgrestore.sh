@@ -1,6 +1,6 @@
 #!/bin/sh
 
-HOST=alfred 
+HOST=alfred
 
 if [ $# -eq 1 ]; then   # TODO: Detectar si es tar.bz2 o el .pgdump
     FPGDUMP=$1
@@ -9,7 +9,7 @@ else
     ssh geotexan@$HOST "/home/geotexan/geotexinn02/BD/backup_full.sh"
     scp geotexan@$HOST:/tmp/full_ginn.pgdump.tar.bz2 /tmp
     FPGDUMP=/tmp/full_ginn.pgdump
-    cd /tmp 
+    cd /tmp
     tar xvjf /tmp/full_ginn.pgdump.tar.bz2
     cd -
 fi
