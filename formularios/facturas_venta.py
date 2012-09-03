@@ -2870,7 +2870,7 @@ class FacturasVenta(Ventana):
         else:
             descuento = descuento+' ('+self.wids['e_descuento'].get_text()+')'
         totales['descuento'] = descuento
-        if self.objeto.iva == 0.22: # 18% + 4% de Recargo de Equivalencia.
+        if self.objeto.iva == 0.262: # 21% + 5.2% de Recargo de Equivalencia.
             # OJO: Very ugly and dirty HACK etc. Como aún no se ha presentado  
             # el caso, doy soporte temporalmente al recargo de equivalencia 
             # si el IVA es 20%. En realidad debería ir con un atributo en la 
@@ -2878,7 +2878,7 @@ class FacturasVenta(Ventana):
             totales['iva'] = "%d %%" % ((self.objeto.iva - 0.04) * 100)
             totales['recargo_equivalencia'] = "4 %"
             base_imponible = self.objeto.calcular_base_imponible()
-            totales['totaliva'] = "%s €" % utils.float2str(base_imponible*0.18)
+            totales['totaliva'] = "%s €" % utils.float2str(base_imponible*0.21)
             totales['totrecargo_equivalencia'] = "%s €" % utils.float2str(base_imponible * 0.04)
         else:
             totales['iva'] = self.wids['e_iva'].get_text()
