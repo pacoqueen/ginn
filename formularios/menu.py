@@ -1028,12 +1028,17 @@ def main():
     # Si hay ficheros de estilo gtk, los cargo por orden: General de la 
     # aplicación y específico del usuario en WIN y UNIX. Se machacan opciones 
     # de por ese orden.
+    GTKRC2 = ".gtkrc-2.0" # Depende de la versión...
     GTKRC = "gtkrc"
     gtk.rc_parse(os.path.join("..", GTKRC))
+    gtk.rc_parse(os.path.join("..", GTKRC2)) # Si no existe se ignora de 
+                                             # manera silenciosa.
     if "HOME" in os.environ:
         gtk.rc_parse(os.path.join(os.environ["HOME"], GTKRC))
+        gtk.rc_parse(os.path.join(os.environ["HOME"], GTKRC2))
     if "HOMEPATH" in os.environ:
         gtk.rc_parse(os.path.join(os.environ["HOMEPATH"], GTKRC))
+        gtk.rc_parse(os.path.join(os.environ["HOMEPATH"], GTKRC2))
     # Ver http://www.pygtk.org/docs/pygtk/class-gtkrcstyle.html para la 
     # referencia de estilos. Ejemplo: 
     # bogado@cpus006:~/Geotexan/geotexinn02/formularios$ cat ../gtkrc 
