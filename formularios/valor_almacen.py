@@ -170,7 +170,7 @@ class ValorAlmacen(Ventana):
         for t in tarifas:
             if t.esta_vigente():
                 filas.append((t.nombre, t.id))
-                filas.append((t.nombre + " + 18% IVA", 0))
+                filas.append((t.nombre + " + 21% IVA", 0))
         model = self.wids['tv_datos'].get_model()
         model.clear()
         for concepto, id in filas:
@@ -189,7 +189,7 @@ class ValorAlmacen(Ventana):
                 vpro.set_valor(0.6, 'Valorando a tarifa %s...' % tarifa.nombre)
                 valoracion = valorar_segun_tarifa(tarifa)
             else:           # HACK
-                valoracion *= 1.18  # De nuevo, la valoración de la iteración 
+                valoracion *= 1.21  # De nuevo, la valoración de la iteración 
                 # anterior. Es decir, la de esta tarifa pero sin IVA.
             model.append((concepto, 
                           utils.float2str(valoracion), 

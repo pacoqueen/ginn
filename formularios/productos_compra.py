@@ -254,7 +254,7 @@ class ProductosCompra(Ventana, VentanaGenerica):
                     self.cambiar_precio_tarifa), 
                 ('Porcentaje', 'gobject.TYPE_STRING', True, True, False, 
                     self.cambiar_porcentaje_tarifa), 
-                ('Precio +18% IVA', 'gobject.TYPE_STRING', True, True, False, 
+                ('Precio +21% IVA', 'gobject.TYPE_STRING', True, True, False, 
                     self.cambiar_pvp_tarifa), 
                 ('Vigente', 'gobject.TYPE_BOOLEAN', False, True, False, None), 
                 ('Hasta', 'gobject.TYPE_STRING', False, True, False, None), 
@@ -630,7 +630,7 @@ class ProductosCompra(Ventana, VentanaGenerica):
                                           autodec = True), 
                           utils.float2str(preciotarifa, 3, autodec = True), 
                           "%s %%" % (utils.float2str(porcentaje, 1)), 
-                          utils.float2str(preciotarifa * 1.18, 2, 
+                          utils.float2str(preciotarifa * 1.21, 2, 
                                           autodec = True), 
                           tarifa.esta_vigente(), 
                           not tarifa.periodoValidezFin 
@@ -680,7 +680,7 @@ class ProductosCompra(Ventana, VentanaGenerica):
                                texto = "El texto %s no es válido." % (texto), 
                                padre = self.wids['ventana'])
         else:
-            nuevoprecio /= 1.18
+            nuevoprecio /= 1.21
             if tarifa.obtener_precio(self.objeto) != nuevoprecio:
                 tarifa.asignarTarifa(self.objeto, nuevoprecio)
                 self.rellenar_tarifas()
