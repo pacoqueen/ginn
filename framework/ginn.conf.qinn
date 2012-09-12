@@ -1,8 +1,0 @@
-tipobd	postgres
-user 	qinn      
-pass	qinn    
-dbname 	qinn
-host	localhost    
-modelo_presupuesto presupuesto2
-logo logo-inn.png
-

@@ -26,7 +26,7 @@ pip-log.txt
 #Mr Developer
 .mr.developer.cfg
 
-# Vim y gedit
+# Gedit
 *~
 
 # Log, backups y demás información sensible e inútil para el desarrollo
@@ -34,7 +34,7 @@ ginn.log
 *.backup
 BD/baks_sql
 adjuntos/*
-framework/ginn.conf*
+framework/*ginn*.conf*
 
 # Control de versiones CVS
 CVS

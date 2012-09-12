@@ -42,6 +42,20 @@ from informes import abrir_csv
 from tempfile import gettempdir
 import csv
 
+def to_float(t):
+    """
+    Si t es una cadena de texto con el símbolo del euro o de metros cuadrados, 
+    convierte todo lo que puede a flotante con técnica "greedy".
+    En otro caso lanza una excepción ValueError al igual que hace el _float 
+    de utils.
+    """
+    simbolos = ("€", "m²", " m", " kg")
+    for s in simbolos:
+        if s in t:
+            res = utils.parse_float(t)
+            return res
+    raise ValueError
+
 def treeview2csv(tv, filtro_ceros = []):
     """
     A partir de un TreeView crea un csv con su contenido.
@@ -106,7 +120,7 @@ def get_datos_from_tv(tv, filtro_ceros):
                 dato = valor and u"Sí".encode("iso-8859-15") or "No"
             else:
                 try:
-                    valor = utils._float(valor)
+                    valor = to_float(valor)
                     valor = str(valor).replace(".", ",")
                 except ValueError:
                     pass    # No es flotante ni se puede convertir a él.
@@ -157,7 +171,7 @@ def agregar_hijos(fila, numcols, numespacios, tv):
                     dato = valor and u"Sí".encode("iso-8859-15") or "No"
                 else:
                     try:
-                        valor = utils._float(valor)
+                        valor = to_float(valor)
                         valor = str(valor).replace(".", ",")
                     except ValueError:
                         pass    # No es flotante ni se puede convertir a él.

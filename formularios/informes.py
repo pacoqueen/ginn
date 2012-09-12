@@ -73,6 +73,8 @@ def abrir_pdf(pdf):
         # OJO(Diego) Lo he cambiado por un problema de dependencias y el evince
         if not ((not os.system("evince %s &" % pdf)) or \
                 (not os.system("acroread %s &" % pdf)) or \
+                (not os.system("xdg-open %s &" % pdf)) or \
+                (not os.system("gnome-open %s &" % pdf)) or \
                 (not os.system("xpdf %s &" % pdf))):
             utils.dialogo_info(titulo = "VISOR PDF NO ENCONTRADO", 
                                texto = "No se encontró evince, acroread ni xpdf en el sistema.\nNo fue posible mostrar el archivo %s." % (pdf))
