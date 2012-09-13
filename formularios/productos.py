@@ -229,7 +229,7 @@ class Productos(Ventana):
                 porcentaje = tarifa.get_porcentaje(producto, True)
                 precio_tarifa = precio * (1 + porcentaje)
                 tarifa.asignarTarifa(producto, precio_tarifa)
-                precio_tarifa *= 1.18
+                precio_tarifa *= 1.21
                 porcentaje *= 100.0
                 model[path][numcol] = "%s (%s %%)" % (utils.float2str(precio_tarifa), 
                                                       utils.float2str(porcentaje, 1))
@@ -267,7 +267,7 @@ class Productos(Ventana):
         except ValueError:
             try:
                 porcentaje = utils.parse_porcentaje(texto, True)
-                precio = producto.precioDefecto * (1.0 + porcentaje) * 1.18
+                precio = producto.precioDefecto * (1.0 + porcentaje) * 1.21
             except ValueError:
                 utils.dialogo_info(titulo = "ERROR DE FORMATO", 
                                    texto = "El texto %s no es correcto." % (texto), 
@@ -276,7 +276,7 @@ class Productos(Ventana):
         tarifa = self.__tarifas[numcol - 5]
         precio_tarifa, porcentaje = calcular_precio(precio, producto.precioDefecto)
         tarifa.asignarTarifa(producto, precio_tarifa)
-        precio_tarifa *= 1.18
+        precio_tarifa *= 1.21
         model[path][numcol] = "%s (%s %%)" % (utils.float2str(precio_tarifa), utils.float2str(porcentaje, 1))
 
     def imprimir(self, boton):
@@ -353,7 +353,7 @@ class Productos(Ventana):
                 if tarifa.esta_en_tarifa(pv):
                     porcentaje = tarifa.get_porcentaje(pv)
                     precio = tarifa.obtener_precio(pv)
-                    fila.append("%s (%s %%)" % (utils.float2str(precio * 1.18), 
+                    fila.append("%s (%s %%)" % (utils.float2str(precio * 1.21), 
                                                 utils.float2str(porcentaje, 1)))
                 else:
                     fila.append("-")
@@ -372,7 +372,7 @@ class Productos(Ventana):
                 if tarifa.esta_en_tarifa(pc):
                     porcentaje = tarifa.get_porcentaje(pc)
                     precio = tarifa.obtener_precio(pc)
-                    fila.append("%s (%s %%)" % (utils.float2str(precio * 1.18), 
+                    fila.append("%s (%s %%)" % (utils.float2str(precio * 1.21), 
                                                 utils.float2str(porcentaje, 1)))
                 else:
                     fila.append("-")
@@ -411,7 +411,7 @@ def pasar_foco_enter(widget, event, destino):
                     # que la superclase Ventana vuelva a pasar el foco.
 
 def calcular_precio(precio, preciocosto):
-    precio_sin_iva = precio / 1.18
+    precio_sin_iva = precio / 1.21
     try:
         porcentaje = 100.0 * ((precio_sin_iva / preciocosto) - 1)
     except ZeroDivisionError:

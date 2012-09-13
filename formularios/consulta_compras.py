@@ -316,10 +316,10 @@ class ConsultaCompras(Ventana):
                                          ta.concepto, 
                                          "", 
                                          utils.float2str(ta.precio), 
-                                         utils.float2str(ta.precio * 1.18), 
+                                         utils.float2str(ta.precio * 1.21), 
                                          "", 
                                          utils.float2str(ta.precio), 
-                                         utils.float2str(ta.precio * 1.18), 
+                                         utils.float2str(ta.precio * 1.21), 
                                          "", 
                                          "", 
                                          # [20111006] Tres nuevas columnas:
@@ -327,7 +327,7 @@ class ConsultaCompras(Ventana):
                                          get_formapago(ta), 
                                          get_fechavto(ta), 
                                          ta.puid))
-                    totalalbaran += ta.precio * 1.18
+                    totalalbaran += ta.precio * 1.21
             model[padre][9] = utils.float2str(totalalbaran, 2)
             total += totalalbaran
         self.wids['e_total'].set_text("%s €" % utils.float2str(total))

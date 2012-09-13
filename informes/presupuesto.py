@@ -431,7 +431,7 @@ if __name__ == "__main__":
                          "qué calor")
         totales = {"Base imponible": "100.50 €", 
                    "IVA 21%": 100.5 * 0.21, 
-                   "TOTAL": 100.5 * 1.18, 
+                   "TOTAL": 100.5 * 1.21, 
                    "orden": ("Base imponible", "IVA 16%", "TOTAL")}
         texto = """Estimado señor Floppy:
                     Es un placer decirle a la cara que usted apesta.

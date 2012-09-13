@@ -4390,7 +4390,7 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
 
 
 def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
-          vencimiento, texto, totales, impuesto = 1.18,
+          vencimiento, texto, totales, impuesto = 1.21,
           facturas_abonadas = None, 
           orden_ventanas = None):
     """

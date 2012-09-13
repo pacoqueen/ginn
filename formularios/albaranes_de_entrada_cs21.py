@@ -365,7 +365,7 @@ class AlbaranesDeEntradaCS21(Ventana):
             ldc = pclases.LineaDeCompra.get(model[path][-1])
             producto = ldc.productoCompra
             tarifa = pclases.Tarifa.get(idtarifa)
-            precio_sin_iva = precio / 1.18
+            precio_sin_iva = precio / 1.21
             tarifa.asignarTarifa(producto, precio_sin_iva)
             self.actualizar_ventana()
 
@@ -484,7 +484,7 @@ class AlbaranesDeEntradaCS21(Ventana):
                 tarifas = []
                 for t in pclases.Tarifa.select(orderBy = "nombre"):
                     if t.vigente:
-                        con_iva = t.obtener_precio(l.productoCompra) * 1.18
+                        con_iva = t.obtener_precio(l.productoCompra) * 1.21
                         tarifas.append(utils.float2str(con_iva))
                 model.append(fila[:-1] + tarifas + [fila[-1]])
 

@@ -2769,10 +2769,10 @@ def buscar_producto_general(padre = None,
                                             precio_cache = preciotarifa), 1))
                                 )
                             resultados[-1].insert(4, "%s" % (
-                                float2str(preciotarifa * 1.18)))
+                                float2str(preciotarifa * 1.21)))
                         else:
                             resultados[-1].insert(3, "%s (%s %%)" % (
-                                float2str(preciotarifa * 1.18), 
+                                float2str(preciotarifa * 1.21), 
                                 float2str(tarifa.get_porcentaje(pc, 
                                     precio_cache = preciotarifa), 1))
                                 )
@@ -2784,10 +2784,10 @@ def buscar_producto_general(padre = None,
                                     precio_cache = preciotarifa), 1))
                                 )
                             resultados[-1].append("%s" % (float2str(
-                                preciotarifa * 1.18)))
+                                preciotarifa * 1.21)))
                         else:
                             resultados[-1].append("%s (%s %%)" % (
-                                float2str(preciotarifa * 1.18), 
+                                float2str(preciotarifa * 1.21), 
                                 float2str(tarifa.get_porcentaje(pc, 
                                     precio_cache = preciotarifa), 1))
                                 )
@@ -2801,18 +2801,18 @@ def buscar_producto_general(padre = None,
                         if incluir_sin_iva:
                             resultados[-1].insert(3, "%s (%s %%)" % (float2str(preciotarifa), 
                                                   float2str(tarifa.get_porcentaje(pv, precio_cache = preciotarifa), 1)))
-                            resultados[-1].insert(4, "%s" % (float2str(preciotarifa * 1.18)))
+                            resultados[-1].insert(4, "%s" % (float2str(preciotarifa * 1.21)))
                         else:
-                            resultados[-1].insert(3, "%s (%s %%)" % (float2str(preciotarifa * 1.18), 
+                            resultados[-1].insert(3, "%s (%s %%)" % (float2str(preciotarifa * 1.21), 
                                                   float2str(tarifa.get_porcentaje(pv, precio_cache = preciotarifa), 1))
                                                  )
                     else:
                         if incluir_sin_iva:
                             resultados[-1].append("%s (%s %%)" % (float2str(preciotarifa), 
                                                           float2str(tarifa.get_porcentaje(pv, precio_cache = preciotarifa), 1)))
-                            resultados[-1].append("%s" % (float2str(preciotarifa * 1.18))) 
+                            resultados[-1].append("%s" % (float2str(preciotarifa * 1.21))) 
                         else:
-                            resultados[-1].append("%s (%s %%)" % (float2str(preciotarifa * 1.18), 
+                            resultados[-1].append("%s (%s %%)" % (float2str(preciotarifa * 1.21), 
                                                   float2str(tarifa.get_porcentaje(pv, precio_cache = preciotarifa), 1))
                                                  )
         if mostrar_precios:

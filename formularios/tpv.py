@@ -211,7 +211,6 @@ def ventana_ticket(ticket, usuario, padre = None):
                       ("", 
                        ldv.producto.codigo, 
                        descripcion, 
-                       # "%s €" % (utils.float2str(ldv.precio * 1.18)),
                        "%s €" % (utils.float2str(ldv.precio 
                                                  * (1 + ticket.get_iva())
                                                  * (1 - ldv.descuento))),
@@ -647,7 +646,6 @@ class TPV(Ventana):
             precio = ldv.precio
             strcantidad = utils.float2str(cantidad, 2, autodec = True)
             self.wids['e_cantidad'].set_text(strcantidad)
-            #strprecio = utils.float2str(precio * 1.18, 2, autodec = True)
             uno_mas_iva = pclases.Ticket.get(idticket).get_iva() + 1
             strprecio = utils.float2str(precio * uno_mas_iva, 2, autodec=True)
             self.wids['e_precio'].set_text(strprecio)
@@ -843,13 +841,12 @@ class TPV(Ventana):
         try:
             uno_mas_iva = ldv.ticket.get_iva() + 1
         except AttributeError:
-            uno_mas_iva = 1.18
+            uno_mas_iva = 1.21
         totalldv = ldv.get_subtotal(iva = False) * uno_mas_iva
         model.append(padre, 
                       ("", 
                        ldv.producto.codigo, 
                        descripcion, 
-                       #"%s €" % (utils.float2str(ldv.precio * 1.18)),
                        "%s €" % (utils.float2str(ldv.precio * uno_mas_iva 
                                                  * (1 - ldv.descuento))),
                         # P.V.P. lleva 18% de IVA.
@@ -944,13 +941,12 @@ class TPV(Ventana):
             try:
                 uno_mas_iva = ldv.ticket.get_iva() + 1
             except AttributeError:
-                uno_mas_iva = 1.18
+                uno_mas_iva = 1.21
             totalldv = ldv.get_subtotal(iva = False) * uno_mas_iva
             model.append(padre, 
                           ("", 
                            ldv.producto.codigo, 
                            descripcion, 
-                           #"%s €" % (utils.float2str(ldv.precio * 1.18)),
                            "%s €" % (utils.float2str(ldv.precio * uno_mas_iva
                                                      * (1 - ldv.descuento))),
                             # P.V.P. lleva 18% de IVA.
@@ -2023,7 +2019,6 @@ def cortar_linea_ticket(ldv, ancho, separador_lineas = ""):
     CEN = ancho - IZQ - DER - CENDER - 3
     cant = utils.float2str(ldv.cantidad, 2, autodec = True)
     cant = " " * (IZQ - len(cant)) + cant
-    #precio = utils.float2str(ldv.precio * 1.18)
     precio = utils.float2str(ldv.precio * uno_mas_iva)
     precio = " " * (CENDER - len(precio)) + precio
     # El descuento va en una línea aparte en el ticket en papel.
