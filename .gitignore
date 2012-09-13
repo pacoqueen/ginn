@@ -43,3 +43,6 @@ CVS/*
 # Temporales de vi
 .*.swp
 
+# Aptana/Eclipse
+.project
+.pydevproject
