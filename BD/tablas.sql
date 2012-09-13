@@ -114,8 +114,8 @@ CREATE TABLE proveedor(
     motivo TEXT DEFAULT '',     -- NEW! 05/12/06. Si está inhabilitado no se
                                 -- permitirá hacerle más pedidos de
                                 -- compra.(CWT)
-    iva FLOAT DEFAULT 0.18,     -- NEW! 30/01/07. Iva por defecto del
-                                -- proveedor (16% a no ser que sea extranjero).
+    iva FLOAT DEFAULT 0.21,     -- NEW! 30/01/07. Iva por defecto del
+                                -- proveedor (21% a no ser que sea extranjero).
     nombre_banco TEXT DEFAULT ''    -- NEW! 07/02/2007. CWT: Nombre del
                                     -- banco. No es lo mismo que "banco"
                                     -- ¿Porcuá? pues no lo sé.
@@ -157,7 +157,7 @@ CREATE TABLE pedido_compra(
     proveedor_id INT REFERENCES proveedor,   -- Id del proveedor del pedido.
     fecha DATE DEFAULT CURRENT_DATE,
     numpedido TEXT,
-    iva FLOAT DEFAULT 0.18,
+    iva FLOAT DEFAULT 0.21,
     descuento FLOAT DEFAULT 0.0, -- Descuento en fracción de 1: 23,44% = 0.2344
     entregas TEXT DEFAULT '',    -- Texto libre para indicar entregas.
     forma_de_pago TEXT DEFAULT '',   -- NEW! 26/09/06
@@ -1161,7 +1161,7 @@ CREATE TABLE cliente(
     ciudad TEXT DEFAULT '',
     provincia TEXT DEFAULT '',
     cp TEXT DEFAULT '',
-    iva FLOAT DEFAULT 0.18,
+    iva FLOAT DEFAULT 0.21,
     direccionfacturacion TEXT DEFAULT '',
     paisfacturacion TEXT DEFAULT '',
     ciudadfacturacion TEXT DEFAULT '',
@@ -1275,7 +1275,7 @@ CREATE TABLE pedido_venta(
         -- principio bastaba con la tarifa del cliente, ya no.
     fecha DATE DEFAULT CURRENT_DATE,
     numpedido TEXT,
-    iva FLOAT DEFAULT 0.18,
+    iva FLOAT DEFAULT 0.21,
     descuento FLOAT DEFAULT 0.0,     -- Descuento como fracción de 1.
                                      -- 1,44% = 0.0144
     bloqueado BOOLEAN DEFAULT FALSE, -- NEW! 08/10/06
@@ -1815,8 +1815,8 @@ CREATE TABLE factura_venta(
     descuento FLOAT DEFAULT 0.0,
     cargo NUMERIC(9, 2) DEFAULT 0.0,
     observaciones TEXT DEFAULT '',
-    iva FLOAT DEFAULT 0.18,    -- Si el cliente no tiene un IVA válido
-                               -- definido, se usará el 18%.
+    iva FLOAT DEFAULT 0.21,    -- Si el cliente no tiene un IVA válido
+                               -- definido, se usará el 21%.
     -- OJO: No se tiene en cuenta Recargo de Equivalencia por petición expresa
     -- en documento de requisitos.
     bloqueada BOOLEAN DEFAULT False,
@@ -1842,8 +1842,8 @@ CREATE TABLE prefactura(
     descuento FLOAT DEFAULT 0.0,
     cargo NUMERIC(9, 2) DEFAULT 0.0,
     observaciones TEXT DEFAULT '',
-    iva FLOAT DEFAULT 0.18,     -- Si el cliente no tiene un IVA válido
-                                -- definido, se usará el 18%.
+    iva FLOAT DEFAULT 0.21,     -- Si el cliente no tiene un IVA válido
+                                -- definido, se usará el 21%.
     -- OJO: No se tiene en cuenta Recargo de Equivalencia por petición expresa
     -- en documento de requisitos.
     bloqueada BOOLEAN DEFAULT False,
@@ -1945,7 +1945,7 @@ CREATE TABLE factura_compra(
     numfactura TEXT,
     descuento FLOAT DEFAULT 0.0,
     cargo NUMERIC(9,2) DEFAULT 0.0,
-    iva FLOAT DEFAULT 0.18,
+    iva FLOAT DEFAULT 0.21,
     bloqueada BOOLEAN DEFAULT FALSE,
         -- Estado se usará a modo de "flag" para indicar si la factura está
         -- marcada como bloqueada (bloqueada = aceptada, recibida y pagada, no
@@ -1998,7 +1998,7 @@ CREATE TABLE linea_de_compra(
     carga_silo_id INT REFERENCES carga_silo DEFAULT NULL,   -- NEW! 01/11/06
         -- (Inhabilita silo_id, pero es tarde para quitarlo sin inutilizar las
         -- copias de seguridad)
-    iva FLOAT DEFAULT 0.18      -- NEW! 15/02/07. IVA de la LDC. Por
+    iva FLOAT DEFAULT 0.21      -- NEW! 15/02/07. IVA de la LDC. Por
         -- compatibilidad con los servicios de las facturas de compra con IVA
         -- mixto.
 );
@@ -2100,7 +2100,7 @@ CREATE TABLE servicio_tomado(
     descuento FLOAT DEFAULT 0.0,
     comision_id INT REFERENCES comision DEFAULT NULL,
     transporte_a_cuenta_id INT REFERENCES transporte_a_cuenta DEFAULT NULL,
-    iva FLOAT DEFAULT 0.18      -- NEW! 15/02/07. IVA del servicio para
+    iva FLOAT DEFAULT 0.21      -- NEW! 15/02/07. IVA del servicio para
         -- facturas de compra "especiales" con IVA mixto. Si una
         -- factura de compra tiene servicios a diferentes IVAs, el IVA de la
         -- factura debe ser 0% e ignorarse.
@@ -2711,7 +2711,7 @@ CREATE TABLE datos_de_la_empresa(
     logoiso2 TEXT DEFAULT 'bvqi2.png', -- NEW! 27/06/07. Si bvqi es True en
                                        -- algunos impresos aparecerá este logo.
     recargo_equivalencia BOOLEAN DEFAULT FALSE, -- 4% adicional de IVA y eso.
-    iva FLOAT DEFAULT 0.18, -- IVA soportado por defecto, sin contar R.E.
+    iva FLOAT DEFAULT 0.21, -- IVA soportado por defecto, sin contar R.E.
     ped_compra_texto_fijo TEXT DEFAULT 'ROGAMOS NOS REMITAN COPIA DE ESTE PEDIDO SELLADO Y FIRMADO POR UDS.',   -- Sólo lo puede editar el usuario de nivel 0 (admin).
     ped_compra_texto_editable TEXT DEFAULT 'ESTA MERCANCIA SE DEBE ENTREGAR CON ALBARAN DE GEOTEXAN S.A. Y ENVIARNOS COPIA DEL MISMO CON LA FIRMA Y SELLO DE RECIBIDO POR EL CLIENTE. ESTO ES CONDICIÓN IMPRESCINDIBLE PARA LA TRAMITACIÓN DE SU FACTURA.', -- Se puede editar por cualquiera con permiso de escritura en pedidos de compra.
     ped_compra_texto_editable_con_nivel1 TEXT DEFAULT 'PAGO A 120 DÍAS F.F. PAGO LOS 25.' -- Solo lo puede editar en perdidos de compra los usuarios con nivel 0 ó 1.

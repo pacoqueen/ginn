@@ -121,7 +121,7 @@ class Proveedores(Ventana):
                     try:
                         res = utils.parse_porcentaje(res, fraccion = True)
                     except ValueError:
-                        res = 0.18
+                        res = 0.21
         except AttributeError:
             buffer = widget.get_buffer()
             res = buffer.get_text(buffer.get_start_iter(), buffer.get_end_iter())

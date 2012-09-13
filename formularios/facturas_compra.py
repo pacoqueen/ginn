@@ -1074,7 +1074,7 @@ class FacturasDeEntrada(Ventana):
                 if iva == None:
                     iva = 0.0
             else:
-                iva = 0.18
+                iva = 0.21
             factura = pclases.FacturaCompra(fecha = time.localtime(),
                                         numfactura = numfactura,
                                         proveedor = proveedor, 

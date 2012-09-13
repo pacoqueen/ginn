@@ -140,7 +140,7 @@ class ListadoProductos(Ventana):
             dde = pclases.DatosDeLaEmpresa.select()[0]
             iva = dde.iva
         except IndexError:
-            iva = 0.18
+            iva = 0.21
         tarifa = pclases.Tarifa.get_tarifa_defecto()
         for i in items:
             if tarifa:

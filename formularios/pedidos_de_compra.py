@@ -692,7 +692,7 @@ class PedidosDeCompra(Ventana):
                     fecha = time.localtime(), 
                     numpedido = numpedido, 
                     descuento = 0,
-                    iva = 0.18, 
+                    iva = 0.21, 
                     cerrado = False, 
                     bloqueado = True, 
                     direccionEntrega0 = de0, 
@@ -1067,7 +1067,7 @@ class PedidosDeCompra(Ventana):
         try:
             iva = utils.parse_porcentaje(self.wids['e_iva'].get_text()) / 100.0
         except ValueError:
-            iva = 0.18
+            iva = 0.21
         # Verifico que numpedido no esté repetido:
         peds = pclases.PedidoCompra.select(pclases.PedidoCompra.q.numpedido!=pedido.numpedido)
         nums = [p.numpedido for p in peds]

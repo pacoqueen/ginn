@@ -352,7 +352,7 @@ def go_from_presupuesto(presupuesto):
         dde = pclases.DatosDeLaEmpresa.select()[0]
         iva = dde.iva
     except IndexError:
-        iva = 0.18
+        iva = 0.21
     totales = {"orden": ["Base imponible", 
                          "IVA %d%%" % (iva * 100), 
                          "TOTAL"], 
@@ -430,7 +430,7 @@ if __name__ == "__main__":
                          "con el sol", 
                          "qué calor")
         totales = {"Base imponible": "100.50 €", 
-                   "IVA 16%": 100.5 * 0.18, 
+                   "IVA 21%": 100.5 * 0.21, 
                    "TOTAL": 100.5 * 1.18, 
                    "orden": ("Base imponible", "IVA 16%", "TOTAL")}
         texto = """Estimado señor Floppy:

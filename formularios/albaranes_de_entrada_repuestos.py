@@ -517,7 +517,7 @@ class AlbaranesDeEntradaRepuestos(Ventana):
         try:
             iva = producto.proveedores[0].iva
         except (IndexError, AttributeError):
-            iva = 0.18
+            iva = 0.21
         linea = pclases.LineaDeCompra(productoCompra = producto,
                                       cantidad = cantidad,
                                       albaranEntrada = albaran,

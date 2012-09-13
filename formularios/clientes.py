@@ -1287,7 +1287,7 @@ class Clientes(Ventana):
         self.wids['e_cp'].set_text(cliente.cp or '')
         if cliente.iva == None or cliente.iva == '':
             cliente.notificador.desactivar()
-            cliente.iva = 0.18
+            cliente.iva = 0.21
             cliente.sync()
             cliente.notificador.activar(self.aviso_actualizacion)
         if pclases.DEBUG:
@@ -1512,7 +1512,7 @@ class Clientes(Ventana):
                                           provincia = '',
                                           cp = '',
                                           vencimientos = '180 D.F.F.',
-                                          iva = 0.18,
+                                          iva = 0.21,
                                           direccionfacturacion = '',
                                           nombref = '',
                                           paisfacturacion = '',
@@ -1648,7 +1648,7 @@ class Clientes(Ventana):
                 except:
                     self.logger.warning("clientes.py-> El IVA no se pudo conv"
                                       "ertir a entero. Pongo IVA por defecto.")
-                    cliente.set(iva = 0.18)
+                    cliente.set(iva = 0.21)
             elif c == "riesgoConcedido":
                 try:
                     cliente.riesgoConcedido = utils._float(datos[c])

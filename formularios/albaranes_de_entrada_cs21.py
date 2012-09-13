@@ -584,7 +584,7 @@ class AlbaranesDeEntradaCS21(Ventana):
         Otras veces se ha vuelto a incluir como algo imprescindible, semanas 
         después se ha vuelto a querer impedir albaranes sin pedido... ¿no es 
         fantabuloso?
-        El IVA será el de algún proveedor habitual o 0.18 si no se encuentran. 
+        El IVA será el de algún proveedor habitual o 0.21 si no se encuentran. 
         """
         albaran = self.objeto
         producto = self.pedir_producto()
@@ -594,7 +594,7 @@ class AlbaranesDeEntradaCS21(Ventana):
         try:
             iva = producto.proveedores[0].iva
         except (IndexError, AttributeError):
-            iva = 0.18
+            iva = 0.21
         linea = pclases.LineaDeCompra(productoCompra = producto,
                                       cantidad = cantidad,
                                       albaranEntrada = albaran,

@@ -722,7 +722,7 @@ class PedidosDeVenta(Ventana):
             try:
                 iva = cliente.get_iva_norm() 
             except:
-                iva = 0.18
+                iva = 0.21
             self.wids['e_iva'].set_text('%s %%' % (utils.float2str(iva*100,0)))
         # ---------------------------------------------------------------------
         self.wids['cbe_cliente'].child.get_completion().connect(
@@ -1555,7 +1555,7 @@ class PedidosDeVenta(Ventana):
             cliente = None, 
             fecha = time.localtime(), 
             numpedido = numpedido,
-            iva = 0.18,
+            iva = 0.21,
             descuento = 0,
             transporteACargo = False,
             bloqueado = True,
@@ -1658,7 +1658,7 @@ class PedidosDeVenta(Ventana):
         try:
             iva = utils.parse_porcentaje(ivastr, fraccion = True)
         except ValueError:
-            iva = 0.18
+            iva = 0.21
         if idcliente != None:
             try:
                 idcliente = pclases.Cliente.get(idcliente)

@@ -310,7 +310,7 @@ class ConsultaBajoMinimos(Ventana):
                                                 fecha = time.localtime(), 
                                                 numpedido = numpedido, 
                                                 descuento = 0,
-                                                iva = 0.18, 
+                                                iva = 0.21, 
                                                 cerrado = False) 
                     for path in paths:
                         id = model[path][-1]
