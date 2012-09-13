@@ -214,14 +214,14 @@ def ventana_ticket(ticket, usuario, padre = None):
                        "%s €" % (utils.float2str(ldv.precio 
                                                  * (1 + ticket.get_iva())
                                                  * (1 - ldv.descuento))),
-                        # P.V.P. lleva 18% de IVA.
+                        # P.V.P. lleva 21% de IVA.
                        "%s" % (ldv.descuento 
                                and utils.float2str(ldv.descuento * 100, 
                                                    autodec = True) + "%" 
                                or ""), 
                        "%s" % utils.float2str(ldv.cantidad), 
                        "%s €" % utils.float2str(totalldv),
-                        # Ventas de ticket llevan 18% de IVA. 
+                        # Ventas de ticket llevan 21% de IVA. 
                         # Lo calculo aquí porque la 
                         # función toma el IVA en función del 
                         # cliente del pedido/albarán/factura.
@@ -849,14 +849,14 @@ class TPV(Ventana):
                        descripcion, 
                        "%s €" % (utils.float2str(ldv.precio * uno_mas_iva 
                                                  * (1 - ldv.descuento))),
-                        # P.V.P. lleva 18% de IVA.
+                        # P.V.P. lleva 21% de IVA.
                        "%s" % (ldv.descuento 
                                and utils.float2str(ldv.descuento * 100, 
                                                    autodec = True) + "%" 
                                or ""), 
                        "%s" % utils.float2str(ldv.cantidad), 
                        "%s €" % utils.float2str(totalldv),
-                        # Ventas de ticket llevan 18% de IVA. 
+                        # Ventas de ticket llevan 21% de IVA. 
                         # Lo calculo aquí porque la 
                         # función toma el IVA en función del 
                         # cliente del pedido/albarán/factura.
@@ -949,14 +949,14 @@ class TPV(Ventana):
                            descripcion, 
                            "%s €" % (utils.float2str(ldv.precio * uno_mas_iva
                                                      * (1 - ldv.descuento))),
-                            # P.V.P. lleva 18% de IVA.
+                            # P.V.P. lleva 21% de IVA.
                            "%s" % (ldv.descuento 
                                    and utils.float2str(ldv.descuento * 100, 
                                                        autodec = True) + "%" 
                                or ""), 
                            "%s" % utils.float2str(ldv.cantidad), 
                            "%s €" % utils.float2str(totalldv),
-                            # Ventas de ticket llevan 18% de IVA. 
+                            # Ventas de ticket llevan 21% de IVA. 
                             # Lo calculo aquí porque la 
                             # función toma el IVA en función del 
                             # cliente del pedido/albarán/factura.
@@ -1026,7 +1026,7 @@ class TPV(Ventana):
                 ivahoy = 0.21
             uno_mas_iva = 1 + ivahoy
             precio_con_iva = precio * uno_mas_iva
-                # En tickets se debe mostrar siempre el P.V.P. con 18% de IVA.
+                # En tickets se debe mostrar siempre el P.V.P. con 21% de IVA.
             if (hasattr(self.producto, "controlExistencias") 
                 and self.producto.controlExistencias):
                 existencias = utils.float2str(self.producto.existencias, 
