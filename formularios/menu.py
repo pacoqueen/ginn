@@ -275,7 +275,7 @@ class Menu:
         <u>Menú de acceso a módulos de la aplicación</u></big>        
 
         <i>v.%s</i></big>         
-        <small>Base de datos: %s. Host: %s</small>         
+        <small><b>%s</b> en <b>%s</b></small>         
         """ % (config.get_title(), __version__, config.get_dbname(), 
                config.get_host()))
         texto.set_justify(gtk.JUSTIFY_CENTER)

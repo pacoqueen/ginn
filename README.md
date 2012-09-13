@@ -1,7 +1,7 @@
 ginn
 ====
 
-Geotex-INN --- Copyright 2005-2008 Francisco José Rodríguez Bogado, Diego Muñoz Escalante.
+Geotex-INN --- Copyright 2005-2012 Francisco José Rodríguez Bogado, Diego Muñoz Escalante.
 
 Para información más detalla acerca de este software, ir a http://ginn.sf.net
 
@@ -14,9 +14,7 @@ Los derechos del software contenido en el directorio utils corresponden a sus re
 ## Ramas
 **blade-runner**: Versión de desarrollo. Todas las novedades se introducen primero aquí.
 
-**cvs**: Versión *"estable"* usada en producción.
-
-**master**: Versión principal donde integrar `cvs` y `blade-runner`.
+**master**: Versión *"estable"* usada en producción donde integrar `blade-runner`.
 
 **bp**: Código de la versión de Barnices y Pinturas Blanco Pérez.
 
