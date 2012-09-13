@@ -71,7 +71,7 @@ if path_framework not in sys.path:
     sys.path.append(path_framework)
 from configuracion import ConfigConexion
 
-__version__ = '3.9.6 (build ~3392) C14r4'
+__version__ = '3.9.7 (build ~3392)'
 __version_info__ = tuple(
     [int(num) for num in __version__.split()[0].split('.')] + 
     [txt.replace("(", "").replace(")", "") for txt in __version__.split()[1:]]
@@ -274,8 +274,10 @@ class Menu:
 
         <u>Menú de acceso a módulos de la aplicación</u></big>        
 
-        <i>v.%s</i></big>        
-        """ % (config.get_title(), __version__))
+        <i>v.%s</i></big>         
+        <small>Base de datos: %s. Host: %s</small>         
+        """ % (config.get_title(), __version__, config.get_dbname(), 
+               config.get_host()))
         texto.set_justify(gtk.JUSTIFY_CENTER)
         texto.set_use_markup(True)
         event_box = gtk.EventBox()
@@ -289,7 +291,7 @@ class Menu:
         cuerpo_central = self.create_menu()
         self.caja.pack_start(cuerpo_central)
         self.caja.pack_start(self.statusbar, False, True)
-        
+
     def create_menu(self):
         pclases = import_pclases()
         model = gtk.ListStore(str, gtk.gdk.Pixbuf)
