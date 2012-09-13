@@ -46,3 +46,4 @@ CVS/*
 # Aptana/Eclipse
 .project
 .pydevproject
+.settings
