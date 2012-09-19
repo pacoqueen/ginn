@@ -12841,6 +12841,56 @@ class AlbaranSalida(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
+    def cambiar_destino(self, almacen_destino = None):
+        """Cambia el destino de un albarán. Si ya tenía cantidades asignadas, 
+        altera también sus existencias en cada almacén para ajustarlo a la 
+        realidad.
+        Usar con precaución. Cambiar el destino de un albarán antiguo que 
+        tenga, por ejemplo, artículos trazables que se hayan movido a otro 
+        almacén para servirlos desde allí provocará una ruptura en la 
+        trazabilidad.
+
+        Si el nuevo almacén es None, puede ser porque se cambia el tipo de 
+        albarán a uno normal con destino a un cliente. En ese caso simplemente 
+        corrige las existencias del almacén actual pero no aumenta en ningún 
+        otro.
+
+        :almacen_destino: objeto Almacén o None.
+        """
+        # Para cada línea del albarán:
+        #   - Si es producto de compra, aumenta las existencias en el nuevo 
+        #   almacén en la cantidad indicada por la línea de venta.
+        #   - Si es producto de venta comprueba que esté en el almacén que 
+        #   tenía asignado el albarán antes del cambio. Si es así, entonces 
+        #   saca el artículo de allí y lo mete en el almacén recibido.
+        # Y finalmente, si todo ha ido bien, cambia el propio almacén de 
+        # destino del albarán.
+        for ldv in self.lineasDeVenta:
+            producto = ldv.producto
+            if isinstance(ldv.producto, ProductoCompra):
+                cantidad = ldv.cantidad
+                # Saco del que estaba:
+                producto.add_existencias(cantidad, self.almacenDestino, 
+                        actualizar_global = True)
+                # Aumento en el nuevo:
+                if almacen_destino != None:
+                    producto.add_existencias(cantidad, almacen_destino, 
+                            actualizar_global = True)
+            elif isinstance(producto, ProductoVenta):
+                pass    # Los recorremos después artículo por artículo.
+        for a in self.articulos:
+            if a.almacen:
+                if a.almacen == self.almacen:
+                    # Corrijo línea de movimiento y artículo
+                    a.lineaDeMovimiento.almacen = almacen_destino
+                    a.almacen = almacen_destino
+                else:
+                    # Ya no está en el almacén en el que estaba.
+                    pass # No sé si dar error o qué... Rompería la trazabilidad, pero abortar aquí el proceso sería peor. FIXME: Hacer un "rollback" o algo.
+            else:   # Se vendió a un cliente.
+                a.almacen = almacen_destino
+        self.almacenDestino = almacen_destino
+
     def determinar_obra(self, ventana_padre = None, preguntar_usuario = False, 
                         dejar_crear_nueva = False):
         """
