@@ -132,7 +132,6 @@ class Clientes(Ventana):
         """Copia al portapapeles la dirección de correspondencia del cliente
         en pantalla.
         """
-        clipboard = gtk.clipboard_get(gtk.gdk.SELECTION_CLIPBOARD)
         direccion = "\n".join((self.objeto.nombre, 
                                self.objeto.direccion, 
                                self.objeto.ciudad, 
@@ -140,14 +139,12 @@ class Clientes(Ventana):
                                  and self.objeto.cp+" "+self.objeto.provincia
                                  or self.objeto.provincia, 
                                self.objeto.pais))
-        clipboard.set_text(direccion)
-        clipboard.store()
+        copy_to_clipboard(direccion)
 
     def copiar_fiscal(self, boton = None):
         """Copia al portapapeles la dirección fiscal completa del cliente 
         en pantalla.
         """
-        clipboard = gtk.clipboard_get(gtk.gdk.SELECTION_CLIPBOARD)
         direccion = "\n".join((self.objeto.nombref, 
                                self.objeto.direccionfacturacion, 
                                self.objeto.ciudadfacturacion, 
@@ -156,8 +153,27 @@ class Clientes(Ventana):
                                     " " + self.objeto.provinciafacturacion
                                  or self.objeto.provinciafacturacion, 
                                self.objeto.paisfacturacion))
-        clipboard.set_text(direccion)
-        clipboard.store()
+        copy_to_clipboard(direccion)
+
+    def copy_to_clipboard(self, texto):
+        """Copia el texto recibido en el portapapeles y lo hace disponible a 
+        otras aplicaciones.
+
+        :texto: Texto a copiar
+        """
+        try:
+            import Tkinter
+            r = Tk()
+            r.clipboard_append(texto)
+        except ImportError:
+            # Solo funciona entre aplicaciones GTK. MERDE! 
+            # Parece que Tkinter tiene algo mejor para mí. Intento eso primero.
+            clipboard = gtk.clipboard_get(gtk.gdk.SELECTION_CLIPBOARD)
+            clipboard.set_text(texto)
+            try:
+                clipboard.store()
+            except:    # pyGTK < 2.6
+                pass
 
     def globalizar_contacto(self, boton):
         """
