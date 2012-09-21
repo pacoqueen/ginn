@@ -155,26 +155,6 @@ class Clientes(Ventana):
                                self.objeto.paisfacturacion))
         copy_to_clipboard(direccion)
 
-    def copy_to_clipboard(self, texto):
-        """Copia el texto recibido en el portapapeles y lo hace disponible a 
-        otras aplicaciones.
-
-        :texto: Texto a copiar
-        """
-        try:
-            import Tkinter
-            r = Tk()
-            r.clipboard_append(texto)
-        except ImportError:
-            # Solo funciona entre aplicaciones GTK. MERDE! 
-            # Parece que Tkinter tiene algo mejor para mí. Intento eso primero.
-            clipboard = gtk.clipboard_get(gtk.gdk.SELECTION_CLIPBOARD)
-            clipboard.set_text(texto)
-            try:
-                clipboard.store()
-            except:    # pyGTK < 2.6
-                pass
-
     def globalizar_contacto(self, boton):
         """
         Añade los contactos seleccionados a todas las obras del cliente.
@@ -1987,6 +1967,26 @@ def buscar_clientes_obras(txt):
                 res.append(cliente)
     res = pclases.SQLlist(res)
     return res
+
+def copy_to_clipboard(texto):
+    """Copia el texto recibido en el portapapeles y lo hace disponible a 
+    otras aplicaciones.
+
+    :texto: Texto a copiar
+    """
+    try:
+        import Tkinter
+        r = Tk()
+        r.clipboard_append(texto)
+    except ImportError:
+        # Solo funciona entre aplicaciones GTK. MERDE! 
+        # Parece que Tkinter tiene algo mejor para mí. Intento eso primero.
+        clipboard = gtk.clipboard_get(gtk.gdk.SELECTION_CLIPBOARD)
+        clipboard.set_text(texto)
+        try:
+            clipboard.store()
+        except:    # pyGTK < 2.6
+            pass
 
 
 if __name__ == '__main__':
