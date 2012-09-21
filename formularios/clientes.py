@@ -141,6 +141,7 @@ class Clientes(Ventana):
                                  or self.objeto.provincia, 
                                self.objeto.pais))
         clipboard.set_text(direccion)
+        clipboard.store()
 
     def copiar_fiscal(self, boton = None):
         """Copia al portapapeles la dirección fiscal completa del cliente 
@@ -156,6 +157,7 @@ class Clientes(Ventana):
                                  or self.objeto.provinciafacturacion, 
                                self.objeto.paisfacturacion))
         clipboard.set_text(direccion)
+        clipboard.store()
 
     def globalizar_contacto(self, boton):
         """
