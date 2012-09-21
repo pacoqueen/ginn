@@ -1975,7 +1975,7 @@ def copy_to_clipboard(texto):
     :texto: Texto a copiar
     """
     try:
-        import Tkinter
+        from Tkinter import Tk
         r = Tk()
         r.clipboard_append(texto)
     except ImportError:
