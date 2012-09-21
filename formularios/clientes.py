@@ -132,7 +132,7 @@ class Clientes(Ventana):
         """Copia al portapapeles la dirección de correspondencia del cliente
         en pantalla.
         """
-        clipboard = gtk.clipboard_get(gtk.gdk.SELECTION_CLIPBOARD)
+        clipboard = gtk.clipboard_get(gtk.gdk.PRIMARY_CLIPBOARD)
         direccion = "\n".join((self.objeto.nombre, 
                                self.objeto.direccion, 
                                self.objeto.ciudad, 
@@ -146,7 +146,7 @@ class Clientes(Ventana):
         """Copia al portapapeles la dirección fiscal completa del cliente 
         en pantalla.
         """
-        clipboard = gtk.clipboard_get(gtk.gdk.SELECTION_CLIPBOARD)
+        clipboard = gtk.clipboard_get(gtk.gdk.PRIMARY_CLIPBOARD)
         direccion = "\n".join((self.objeto.nombref, 
                                self.objeto.direccionfacturacion, 
                                self.objeto.ciudadfacturacion, 
