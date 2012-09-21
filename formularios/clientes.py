@@ -115,7 +115,10 @@ class Clientes(Ventana):
                        'b_drop_contacto/clicked': self.drop_contacto, 
                        'b_unificar_obras/clicked': self.unificar_obras, 
                        'b_globalizar_contacto/clicked': 
-                                                    self.globalizar_contacto, 
+                                                   self.globalizar_contacto, 
+                       'b_copiar_correspondencia/clicked': 
+                                                   self.copiar_correspondencia,
+                       'b_copiar_fiscal/clicked':  self.copiar_fiscal
                       }  
         self.inicializar_ventana()
         if self.objeto == None:
@@ -124,6 +127,35 @@ class Clientes(Ventana):
             self.ir_a(objeto, deep_refresh = False)
         self.add_connections(connections)
         gtk.main()
+
+    def copiar_correspondencia(self, boton = None):
+        """Copia al portapapeles la dirección de correspondencia del cliente
+        en pantalla.
+        """
+        clipboard = gtk.clipboard_get(gtk.gdk.SELECTION_CLIPBOARD)
+        direccion = "\n".join((self.objeto.nombre, 
+                               self.objeto.direccion, 
+                               self.objeto.ciudad, 
+                               self.objeto.cp 
+                                 and self.objeto.cp+" "+self.objeto.provincia
+                                 or self.objeto.provincia, 
+                               self.objeto.pais))
+        clipboard.set_text(direccion)
+
+    def copiar_fiscal(self, boton = None):
+        """Copia al portapapeles la dirección fiscal completa del cliente 
+        en pantalla.
+        """
+        clipboard = gtk.clipboard_get(gtk.gdk.SELECTION_CLIPBOARD)
+        direccion = "\n".join((self.objeto.nombref, 
+                               self.objeto.direccionfacturacion, 
+                               self.objeto.ciudadfacturacion, 
+                               self.objeto.cpfacturacion 
+                                 and self.objeto.cpfacturacion + 
+                                    " " + self.objeto.provinciafacturacion
+                                 or self.objeto.provinciafacturacion, 
+                               self.objeto.paisfacturacion))
+        clipboard.set_text(direccion)
 
     def globalizar_contacto(self, boton):
         """
