@@ -32,9 +32,16 @@ import gtk.glade
 LANZAR_KEY_EXCEPTION = True # Si False se devuelve None cuando se busca un 
                             # widget que no existe y se ignora la excepción.
 
+BUILDER = False  # Flag para ver si trabajamos con libglade o con gtkBuilder.
+
 class Widgets:
-    def __init__(self, file):
-        self.widgets = gtk.glade.XML(file)
+    def __init__(self, uifile):
+        try:
+            self.widgets = gtk.glade.XML(uifile)
+        except RuntimeError:
+            self.widgets = gtk.Builder()
+            self.widgets.add_from_file(uifile)
+            BUILDER = True
         self.dynwidgets = {}    # Widgets generados dinámicamente
         
     def __getitem__(self, key):
@@ -56,6 +63,13 @@ class Widgets:
         """
         Devuelve una lista de claves del diccionario de widgets.
         """
-        return [w.name for w in self.widgets.get_widget_prefix('')] + self.dynwidgets.keys()
+        try:
+            listaclaves = [w.name for w in self.widgets.get_widget_prefix('')] 
+        except AttributeError:
+            # PORASQUI: Peta si uso el get_objects() de Builder y a partir de 
+            # ahí extraigo los nombres... 
+            listaclaves = [] 
+        listaclaves += self.dynwidgets.keys()
+        return listaclaves
 
 
