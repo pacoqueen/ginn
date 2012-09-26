@@ -1532,22 +1532,13 @@ Las copias llevan marca de agua identificándolas.</property>
                           <widget class="GtkComboBoxEntry" id="e_vencimientos">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="items">180 D.F.F.
-30 D.F.F.
-60 D.F.F.
-90 D.F.F.
-120 D.F.F.
-30-60 D.F.F.
-30-60-90 D.F.F.
-30-60-90-120 D.F.F.
-30 D.F.R.
-60 D.F.R.
-90 D.F.R.
-120 D.F.R.
-30-60 D.F.R.
-30-60-90 D.F.R.
-30-60-90-120 D.F.R.
-120 D.U.D.M.F.F.</property>
+                            <property name="items">0 D. F. F.
+45 D. F. F.
+60 D. F. F.
+85 D. F. F.
+120 D. F. F.
+180 D. F. F.
+210 D. F. F.</property>
                             <child internal-child="entry">
                               <widget class="GtkEntry" id="comboboxentry-entry6">
                                 <property name="can_focus">False</property>

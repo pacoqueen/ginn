@@ -84,7 +84,7 @@ class Clientes(Ventana):
         self.usuario = usuario
         self._objetoreciencreado = None
         # Ventana.__init__(self, 'clientes.glade', objeto)
-        Ventana.__init__(self, 'ui/clientes.ui', objeto)
+        Ventana.__init__(self, 'clientes.glade', objeto)
         connections = {'b_salir/clicked': self.salir,
                        'b_pedidos/clicked': self.ver_pedidos,
                        'b_productos/clicked': self.ver_productos,

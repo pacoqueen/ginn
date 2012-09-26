@@ -66,9 +66,7 @@ class Widgets:
         try:
             listaclaves = [w.name for w in self.widgets.get_widget_prefix('')] 
         except AttributeError:
-            # PORASQUI: Peta si uso el get_objects() de Builder y a partir de 
-            # ahí extraigo los nombres... 
-            listaclaves = [] 
+            listaclaves = [w.name for w in self.widgets.get_objects()] 
         listaclaves += self.dynwidgets.keys()
         return listaclaves
 
