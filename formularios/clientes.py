@@ -1289,8 +1289,35 @@ class Clientes(Ventana):
                     res = buffer.get_text(buffer.get_bounds()[0], 
                                           buffer.get_bounds()[1])
                 except AttributeError:
-                    res = widget.child.get_text()
+                    try:
+                        # FIXME: Esto falla con versiones antiguas de Gtk
+                        res = widget.child.get_text()
+                    except AttributeError:
+                        # HACK: Lo cambio por un Entry normal.
+                        widget = self.very_ugly_dirty_hack(widget)
+                        res = widget.get_text()
+
         return res
+
+    def very_ugly_dirty_hack(self, w):
+        """Apaño para cambiar el GtkComboBoxEntry por un Entry normal. En 
+        versiones de pygtk antiguas contra libglade el Entry hijo del combo 
+        se convierte en un CellRenderer que no tiene child para hacerle un 
+        set_text.
+
+        El nombre es temporal (porque pienso arreglarlo en condiciones y 
+        acabar con esta mierda).
+        """
+        nombrew = w.get_property('name')
+        nuevo = gtk.Entry()
+        self.wids[nombrew] = nuevo
+        #nuevo.set_properties(*w.get_properties())
+        #self.wids.widgets.pop(nombrew)
+        #print self.wids.keys(), nombrew in self.wids.keys()
+        from widgets import replace_widget 
+        replace_widget(w, nuevo)
+        nuevo.show()
+        return nuevo
 
     def rellenar_widgets(self):
         """
@@ -1335,7 +1362,17 @@ class Clientes(Ventana):
         self.wids['e_cpfacturacion'].set_text(cliente.cpfacturacion or '')
         self.wids['e_email'].set_text(cliente.email or '')
         self.wids['e_contacto'].set_text(cliente.contacto or '')
-        self.wids['e_vencimientos'].child.set_text(cliente.vencimientos or '')
+        # FIXME: Esto falla en versiones antiguas de Gtk.
+        txtvtos = cliente.vencimientos or ''
+        if isinstance(self.wids['e_vencimientos'], gtk.Entry):
+            self.wids['e_vencimientos'].set_text(txtvtos)
+        else:
+            try:
+                self.wids['e_vencimientos'].child.set_text(txtvtos)
+            except AttributeError:
+                self.wids['e_vencimientos'] = self.very_ugly_dirty_hack(
+                        self.wids['e_vencimientos'])
+                self.wids['e_vencimientos'].set_text(txtvtos)
         self.wids['e_diadepago'].set_text(cliente.diadepago or '')
         self.wids['e_documentodepago'].set_text(cliente.documentodepago or '')
         self.wids['e_motivo'].set_text(cliente.motivo)

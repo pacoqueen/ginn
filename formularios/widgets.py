@@ -45,14 +45,30 @@ class Widgets:
         self.dynwidgets = {}    # Widgets generados dinámicamente
         
     def __getitem__(self, key):
-        res = self.widgets.get_widget(key)
-        if res == None:  # Si no es del archivo glade...
-            try:         # tal vez se haya creado "programáticamente".
+        """Si USE_DEPRECATED es True, imita el antiguo comportamiento donde los 
+        widgets cargados desde fichero tienen prioridad sobre los creados 
+        "programáticamente". USE_DEPRECATED es una "macro" definida en 
+        el código de la clase widgets.py.
+        """
+        USE_DEPRECATED = False
+        # IMPORTANTE: Cambio el orden y ahora tienen preferencia los widgets 
+        # creados dinámicamente a posteriori.
+        if not USE_DEPRECATED:
+            try: 
                 res = self.dynwidgets[key]
-            except KeyError, msg:
-                res = None
-                if LANZAR_KEY_EXCEPTION:
-                    raise KeyError, "Widget '%s' no existe." % key
+            except KeyError:
+                res = self.widgets.get_widget(key)
+            if res == None and LANZAR_KEY_EXCEPTION:
+                raise KeyError, "Widget '%s' no existe." % key
+        else:
+            res = self.widgets.get_widget(key)
+            if res == None:  # Si no es del archivo glade...
+                try:         # tal vez se haya creado "programáticamente".
+                    res = self.dynwidgets[key]
+                except KeyError, msg:
+                    res = None
+                    if LANZAR_KEY_EXCEPTION:
+                        raise KeyError, "Widget '%s' no existe." % key
         return res
 
     def __setitem__(self, key, value):
@@ -70,4 +86,22 @@ class Widgets:
         listaclaves += self.dynwidgets.keys()
         return listaclaves
 
+def replace_widget(current, new):
+    """
+    Replace one widget with another.
+    'current' has to be inside a container (e.g. gtk.VBox).
+    """
+    container = current.parent
+    assert container # is "current" inside a container widget?
+
+    # stolen from gazpacho code (widgets/base/base.py):
+    props = {}
+    for pspec in gtk.container_class_list_child_properties(container):
+        props[pspec.name] = container.child_get_property(current, pspec.name)
+
+    gtk.Container.remove(container, current)
+    container.add(new)
+
+    for name, value in props.items():
+        container.child_set_property(new, name, value)
 
