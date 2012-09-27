@@ -1590,7 +1590,7 @@ class Clientes(Ventana):
                                           email = '',
                                           contacto = '',
                                           observaciones = '',
-                                          documentodepago = 'PAGARÉ',
+                                          documentodepago = 'PAGARÉ A LA ORDEN',
                                           diadepago = '25',
                                           formadepago = '180 D.F.F.',
                                           inhabilitado = False, 
