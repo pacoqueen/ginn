@@ -26,7 +26,7 @@
                 <property name="n_rows">4</property>
                 <property name="n_columns">4</property>
                 <child>
-                  <widget class="GtkButton" id="b_buscar">
+                  <widget class="GtkButton" id="b_buscarfecha">
                     <property name="label" translatable="yes">Buscar fecha</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>

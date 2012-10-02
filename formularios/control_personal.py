@@ -190,7 +190,7 @@ class ControlPersonal(Ventana, VentanaGenerica):
         self.wids['b_buscar'] = gtk.Button()
         self.wids['b_guardar'] = gtk.Button()
         connections = {'b_actualizar/clicked': self.actualizar_ventana, 
-                       'b_buscar/clicked': self.buscar_fecha, 
+                       'b_buscarfecha/clicked': self.buscar_fecha, 
                        'ch_bloqueado/clicked': self.bloquear, 
                        'ch_festivo/clicked': self.marcar_festivo, 
                        "b_ultimo_vacio/clicked": self.ir_a_ultimo_vacio, 
