@@ -20,8 +20,8 @@ def etiqueta_nied(rollos, mostrar_marcado = False):
     de GNT11_080.pdf. En otro caso usa el GNT11_120.pdf por defecto.
     """
     try:
-        pv = rollos[0]
-    except IndexError:
+        pv = rollos[0].productoVenta
+    except (IndexError, AttributeError):
         nomarchivo = os.path.abspath(os.path.join(os.path.dirname(__file__), 
                                                   "GNT11_120.pdf"))
     else:
