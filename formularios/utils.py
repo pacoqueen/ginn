@@ -4036,10 +4036,10 @@ def parse_cif(cif = None):
     # [Update: 29/05/2012] Javi me pasa estos formatos, que son con los que 
     #                      ellos normalmente trabajan:
     if cif is None:
-        samples = {'Alemania':   'DE123456789', # DE + 9 números
-                   'Bélgica':    'BE0123456789', # BE + 0|1 + 9 números
-                   'Bulgaria':   'BG1234567890', # BG + 9 ó 10 números
-                   'España':     'ESA23546789', # ES + 9 caracteres. 
+        samples = {'Alemania':    'DE123456789', # DE + 9 números
+                   'Bélgica':     'BE0123456789', # BE + 0|1 + 9 números
+                   'Bulgaria':    'BG1234567890', # BG + 9 ó 10 números
+                   'España':      'ESA23546789', # ES + 9 caracteres. 
                     # Primero y último: letra o dígitos, resto solo dígitos
                    'Francia':     'FRAA123456789', # FR + 2 letras + 9 números
                    'Hungría':     'HU12345678', # HU + 8 números
