@@ -4006,6 +4006,11 @@ def parse_cif(cif = None):
     En teoría lo siguiente debería valer de unittest con 
     import doctest; doctest.testmod()
 
+    Un par de páginas con los listados de códigos de países y VAT numbers:
+    http://www.hmrc.gov.uk/vat/managing/international/esl/country-codes.htm
+    http://www.alfanet.es/nif-iva.php
+
+
     >>> parse_cif("")
     ''
     >>> parse_cif("pendiente")
