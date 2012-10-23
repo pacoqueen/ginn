@@ -4042,6 +4042,7 @@ def parse_cif(cif = None):
                    'España':      'ESA23546789', # ES + 9 caracteres. 
                     # Primero y último: letra o dígitos, resto solo dígitos
                    'Francia':     'FRAA123456789', # FR + 2 letras + 9 números
+                   'Mónaco':      'FR00123456789', # FR + 11 números
                    'Hungría':     'HU12345678', # HU + 8 números
                    'Italia':      'IT12345678901', # IT + 11 números
                    'Malta':       'MT12345678', # MT + 8 números
@@ -4103,7 +4104,7 @@ def parse_cif(cif = None):
                          "|"
                          '(ES[0-9]{8}[A-Z])' 
                          "|"
-                         '(FR[A-Z{2}[0-9]{9})' 
+                         '(FR[A-Z0-9]{2}[0-9]{9})' 
                          "|"
                          '(HU[0-9]{8})' 
                          "|"
