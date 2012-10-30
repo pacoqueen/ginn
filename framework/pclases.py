@@ -1718,9 +1718,20 @@ class Silo(SQLObject, PRPCTOO):
                 except IndexError:
                     print "El silo no se ha cargado nunca. No se puede ajustar"
                     return -1 
-                carga.cantidad += abs(cantidad_cargada - cantidad_consumida) + cantidad
+                delta_existencias = abs(cantidad_cargada - cantidad_consumida) + cantidad
+                carga.cantidad += delta_existencias
                 if ajustar_producto_compra:
-                    carga.productoCompra.existencias += abs(cantidad_cargada - cantidad_consumida) + cantidad
+                    carga.productoCompra.existencias += delta_existencias
+                    try:
+                        stock_almacen_ppal = [s for s 
+                                        in carga.productoCompra.stocksAlmacen
+                                        if s.almacen.ppal][0]
+                    except IndexError:
+                        stock_almacen_ppal = StockAlmacen(
+                                almacen = Almacen.get_almacen_principal(), 
+                                productoCompra = carga.productoCompra, 
+                                existencias = 0)
+                    stock_almacen_ppal.existencias += delta_existencias
                 en_el_silo = cantidad
             else:
                 print "ERROR pclases.py (Silo.ajustar)-> No hay cargas efectivas pero la cantidad en el silo es mayor que 0."
