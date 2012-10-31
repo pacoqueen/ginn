@@ -124,7 +124,8 @@ def get_nombre_archivo_from_tv(tv):
     Devuelve el nombre del archivo que se generará a partir
     del nombre del widget TreeView.
     """
-    nomtreeview = tv.get_name().replace(" ", "_")
+    # Algunos caracteres dan problemas en SO Windows.
+    nomtreeview = tv.get_name().replace(" ", "_").replace(":", "_")
     nomarchivo = os.path.join(gettempdir(), "%s_%s.pdf" % (
                     nomtreeview, geninformes.give_me_the_name_baby()))
     return nomarchivo
