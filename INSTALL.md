@@ -30,7 +30,7 @@ Servidor
 
 		pg_restore -c -d ginn populate.sql
 
-> El usuario de la aplicación que viene en el conjunto de datos de ejemplo es `admin` con contraseña `admin`.
+> El usuario de la aplicación que viene en el [conjunto de datos de ejemplo][1] es `admin` con contraseña `admin`.
 
 ### Compartido SAMBA ###
 
@@ -88,4 +88,8 @@ Clientes
 1. Montar directorio compartido o, desde el propio servidor, entrar en `ginn/formularios`.
 
 2. Ejecutar `menu.py`
+
+---
+
+[1]: https://github.com/pacoqueen/ginn/blob/master/BD/populate.sql
 
