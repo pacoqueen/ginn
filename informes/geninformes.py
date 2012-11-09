@@ -219,7 +219,8 @@ def cambiar_caracteres_problematicos(cadena):
     for mala, buena in (("ñ", "nn"), ("Ñ", "NN"), 
                         ("ü", "u"), ("Ü", "U"), 
                         ("ç", "c"), ("Ç", "C"), 
-                        ("(", ""), (")", "")):
+                        ("(", ""), (")", ""), 
+                        ("'", "")):
         cadena = cadena.replace(mala, buena)
     return cadena
 
