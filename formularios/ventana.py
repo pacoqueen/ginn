@@ -68,7 +68,8 @@ def refrescar_cache_sqlobject():
 
 
 class Ventana:
-    def __init__(self, glade, objeto = None, usuario = None):
+    def __init__(self, glade, objeto = None, usuario = None, 
+                 icono = 'logo_w.xpm'):
         """
         Constructor.
         glade es una cadena con el nombre del fichero .glade a cargar.
@@ -77,6 +78,9 @@ class Ventana:
         clase que servirá únicamente para crear un menú superior en 
         la ventana con las opciones de menú disponibles para el usuario.
         Si el usuario es None, no se crea ningún menú.
+        «icono» es la ruta al icono por defecto que está en este mismo 
+        directorio de formularios (logo_w.xpm) o una ruta **RELATIVA** a 
+        otro icono soportado por Pixbuf.
         """
         if isinstance(usuario, int):
             import pclases
@@ -92,7 +96,7 @@ class Ventana:
         # servidor:
         #  cp /home/compartido/betav2/formularios/ginn.log \
         #     /home/compartido/betav2/formularios/`date +"%Y%m%d"`_ginn.log \
-        #  && "echo > /home/compartido/betav2/formularios/ginn.log"
+        #  && (echo > /home/compartido/betav2/formularios/ginn.log)
         #hdlr = handlers.RotatingFileHandler('ginn.log', 
         #                                    maxBytes = 1024*1024, 
         #                                    backupCount = 1024, 
@@ -113,8 +117,14 @@ class Ventana:
         try:
             self.wids['ventana'].set_border_width(5)
             # TODO:Cambiar por uno correspondiente al logo de la configuración. 
-            logo_xpm = gtk.gdk.pixbuf_new_from_file('logo_w.xpm')
-            self.wids['ventana'].set_icon(logo_xpm)
+            fichero = os.path.basename(__file__) 
+            clase = str(self.__class__).split(".")[-1]
+            try:
+                icono = determine_ico_from_filename(fichero, clase)
+                self.wids['ventana'].set_icon_from_file(icono)
+            except:     # Icono por defecto "de toa la vida de Elvis".
+                logo_xpm = gtk.gdk.pixbuf_new_from_file("logo_w.xpm")
+                self.wids['ventana'].set_icon(logo_xpm)
             self.wids['barra_estado'] = gtk.Statusbar()
             label_statusbar = self.wids['barra_estado'].get_children()[0].child
             font = pango.FontDescription("Monospace oblique 7")
@@ -948,6 +958,35 @@ class Ventana:
                                   for k in more_info]) + \
                        ")"
         self.logger.warning(txt2log)
+
+
+def determine_ico_from_filename(archivo, clase):
+    """@todo: A partir del nombre de archivo y de la clase devuelve la ruta 
+    del icono que le corresponde según la configuración almacenada en la 
+    base de datos. Si no se encuentra, devuelve "logo_w.xpm" que es el icono 
+    por defecto de las ventanas de la aplicación.
+
+    :archivo: string
+    :clase: string
+    :returns: string
+
+    """
+    from menu import import_pclases
+    pclases = import_pclases()
+    try:
+        v = pclases.Ventana.select(pclases.AND(
+                                    pclases.Ventana.q.fichero == archivo, 
+                                    pclases.Ventana.q.clase == clase))[0]
+    except IndexError:
+        try:
+            v = pclases.Ventana.selectBy(clase = clase)[0]
+        except IndexError:
+            ico = "logo_w.xpm"
+        else:
+            ico = os.path.join("..", "imagenes", v.icono)
+    else:
+        ico = os.path.join("..", "imagenes", v.icono)
+    return ico
 
 
 class MetaPermiso:

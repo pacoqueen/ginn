@@ -475,9 +475,9 @@ class Menu:
         iview.set_text_column(0)
         iview.set_pixbuf_column(1)
         iview.set_item_width(180)
-        iview.connect('item-activated', self.abrir, model)
         iview.connect('selection-changed', self.mostrar_item_seleccionado, 
                       model)
+        iview.connect('item-activated', self.abrir, model)
         contenedor.add(iview)
         return contenedor
 
@@ -574,6 +574,7 @@ class Menu:
                 except TypeError:   # La ventana no soporta el modelo 
                                     # antiguo de permisos.
                     v(usuario = self.get_usuario())
+                #v.wids['ventana'].set_icon_from_filename(icowindow)
             else:
                 try:
                     self.lanzar_ventana(archivo, clase)
@@ -596,6 +597,7 @@ class Menu:
         exec "import %s" % archivo
         v = eval('%s.%s' % (archivo, clase))
         v(usuario = self.get_usuario())
+        #v.wids['ventana'].set_icon_from_filename(icowindow)
         # Podría incluso guardar los objetos ventana que se van 
         # abriendo para controlar... no sé, algo, contar las ventanas 
         # abiertas o qué se yo.
