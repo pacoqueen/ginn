@@ -50,6 +50,34 @@ CREATE OPERATOR +^ (PROCEDURE='xor', LEFTARG = BOOL, RIGHTARG = BOOL);
 
 ---- TABLAS ------
 
+------------------------------------------------------------------------------
+-- Tabla de formas de pago/cobro.                                           --
+-- Ya iba siendo hora de unificarlas. De momento se usará en pedidos de     --
+-- venta. Después iré cambiando en el resto de tablas.                      --
+-- NEW! 13/11/2012                                                          --
+-- Formas de pago habituales:                                               --
+-- * Contado                                                                --
+-- * Transferencia bancaria                                                 --
+-- * Pagaré a la orden                                                      --
+-- * Pagaré no a la orden                                                   --
+-- * Confirming                                                             --
+-- * Cheque                                                                 --
+-- * Carta de crédito                                                       --
+-- Periodos:                                                                --
+-- 30, 60, 90, 120, 150, 180, 210, 240                                      --
+------------------------------------------------------------------------------
+CREATE TABLE documento_de_pago(
+    id SERIAL PRIMARY KEY, 
+    documento TEXT DEFAULT ''
+);
+
+CREATE TABLE forma_de_pago(
+    id SERIAL PRIMARY KEY, 
+    -- PORASQUI
+    texto TEXT DEFAULT '120 D. F. F.', 
+    dias INT DEFAULT 120 
+);
+
 -------------
 -- Tarifas --
 -------------
@@ -3005,28 +3033,6 @@ CREATE TABLE tarea(
     fechadone TIMESTAMP DEFAULT NULL
 );
 
-------------------------------------------------------------------------------
--- Tabla de formas de pago/cobro.                                           --
--- Ya iba siendo hora de unificarlas. De momento se usará en pedidos de     --
--- venta. Después iré cambiando en el resto de tablas.                      --
--- NEW! 13/11/2012                                                          --
--- Formas de pago habituales:                                               --
--- * Contado                                                                --
--- * Transferencia bancaria                                                 --
--- * Pagaré a la orden                                                      --
--- * Pagaré no a la orden                                                   --
--- * Confirming                                                             --
--- * Cheque                                                                 --
--- * Carta de crédito                                                       --
--- Periodos:                                                                --
--- 30, 60, 90, 120, 150, 180, 210, 240                                      --
-------------------------------------------------------------------------------
-CREATE TABLE forma_de_pago(
-    id SERIAL PRIMARY KEY, 
-    -- PORASQUI
-    texto TEXT DEFAULT '120 D. F. F.', 
-    dias INT DEFAULT 120 
-);
 
 ------------------------ FUNCIONES ------------------------
 CREATE FUNCTION ultimo_lote_mas_uno()
