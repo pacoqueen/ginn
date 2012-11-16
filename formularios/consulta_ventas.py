@@ -214,13 +214,14 @@ class ConsultaVentas(Ventana):
 
     def colorear(self, tv):
         def cell_func(column, cell, model, itr, numcol):
-            if ((model[itr][2].startswith("-") 
-                 or model[itr][3].startswith("-")) 
-                and model[itr][4].startswith("-")):
+            if (((model[itr][2] and model[itr][2].startswith("-")) 
+                 or (model[itr][3] and model[itr][3].startswith("-"))) 
+                and (model[itr][4] and model[itr][4].startswith("-"))):
                 cell.set_property("foreground", "red")
             else:
                 cell.set_property("foreground", None)
-            if (model[itr][2].startswith('[') and model[itr][2].endswith(']')):
+            if (model[itr][2] and model[itr][2].startswith('[') 
+                    and model[itr][2].endswith(']')):
                 cell.set_property("style-set", True)
                 cell.set_property("style", pango.STYLE_ITALIC)
             else:
@@ -1216,6 +1217,7 @@ class ConsultaVentas(Ventana):
                                         servicios)
 
     def rellenar_tabla_clientes(self, resultado, resultado_abonos, servicios):
+        # TODO: Faltan los abonos. Caso CETCO cuando consulto desde agosto.
         idalmacen = utils.combo_get_value(self.wids['cbe_almacen'])
         if idalmacen == -1:
             almacen = None
