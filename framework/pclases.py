@@ -555,6 +555,7 @@ class FormaDePago(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
     documentoDePagoID = ForeignKey('DocumentoDePago')
+    pedidosVenta = MultipleJoin('PedidoVenta')
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
