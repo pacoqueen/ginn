@@ -18,18 +18,24 @@ if [ -d $DEST ]; then
     cd ../..
     echo "Estamos en ",
     echo $(pwd)
-    read -p "ENTER para corregir permisos de grupo..." mierda
+    #read -p "ENTER para corregir permisos de grupo..." mierda
+    echo "Corrigiendo permisos de grupo..." 
     chmod g+rw -R ginn
-    read -p "Copiando fichero de configuración. Pulsa ENTER para continuar..." mierda
+    #read -p "Copiando fichero de configuración. Pulsa ENTER para continuar..." mierda
+    echo "Coppiando fichero de configuración..."
     cp -vf $DEST/ginn/framework/ginn.conf /tmp
-    read -p "Copiando ficheros de desarrollo a compartido. Pulsa ENTER para empezar..." mierda
+    #read -p "Copiando ficheros de desarrollo a compartido. Pulsa ENTER para empezar..." mierda
+    echo "Copiando ficheros de desarrollo a compartido..."
     sudo rsync -av ginn $DEST
-    read -p "Eliminado .git. Pulsa ENTER para empezar..." mierda
+    #read -p "Eliminado .git. Pulsa ENTER para empezar..." mierda
+    echo "Eliminado .git..."
     find $DEST/ginn -name ".git" -type d -exec rm -rf '{}' \;
     rm $DEST/ginn/.gitignore
-    read -p "Pulsa ENTER para restaurar fichero de configuración..." mierda
+    #read -p "Pulsa ENTER para restaurar fichero de configuración..." mierda
+    echo "Restaurando fichero de configuración..."
     cp -vf /tmp/ginn.conf $DEST/ginn/framework/
-    read -p "Asignando permisos. Pulsa ENTER para seguir..." mierda
+    #read -p "Asignando permisos. Pulsa ENTER para seguir..." mierda
+    echo "Asignando permisos..."
     sudo chown -R nobody:nogroup $DEST/ginn
 else
     echo "Este script debe ejecutarse en el servidor"
