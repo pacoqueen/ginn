@@ -499,6 +499,8 @@ class PedidosDeVenta(Ventana):
         if idcomercial == -1:
             idcomercial = None
         condicion = condicion and self.objeto.comercialID == idcomercial
+        idfdp = utils.combo_get_value(self.wids['cbe_fdp'])
+        condicion = condicion and self.objeto.formaDePagoID == idfdp
         condicion = condicion and self.objeto.direccionCorrespondencia == self.wids['e_direccionCorrespondencia'].get_text()
         condicion = condicion and self.objeto.nombreCorrespondencia == self.wids['e_nombreCorrespondencia'].get_text()
         condicion = condicion and self.objeto.cpCorrespondencia == self.wids['e_cpCorrespondencia'].get_text()
@@ -561,7 +563,9 @@ class PedidosDeVenta(Ventana):
         # XXX: Modificación para recientes.
         self.wids['b_reciente'].set_sensitive(True)
         # XXX: EOModificación para recientes.
-        self.wids['e_total_ldvs'].modify_base(gtk.STATE_NORMAL, self.wids['e_total_ldvs'].get_colormap().alloc_color("PaleGreen"))
+        self.wids['e_total_ldvs'].modify_base(gtk.STATE_NORMAL, 
+                self.wids['e_total_ldvs'].get_colormap().alloc_color(
+                    "PaleGreen"))
         font_desc = pango.FontDescription('Sans Oblique Condensed 8')
         self.wids['e_total_ldvs'].modify_font(font_desc)
         self.wids['e_subtotal'].set_alignment(1.0)
@@ -740,6 +744,27 @@ class PedidosDeVenta(Ventana):
                 or "ERR_INC_BD") 
               for c in comerciales] + [(-1, "Sin comercial relacionado")]) 
         utils.rellenar_lista(self.wids['cb_obra'], [])
+        # --- Forma de cobro
+        t = self.wids['e_descuento'].parent
+        ncols = t.get_property("n-columns")
+        nrows = t.get_property("n-rows")
+        t.resize(ncols, nrows + 1)
+        label = gtk.Label("Forma de cobro: ")
+        label.set_justify(gtk.JUSTIFY_RIGHT)
+        t.attach(label, 1, 2, nrows, nrows + 1)
+        label.show()
+        self.wids['cbe_fdp'] = gtk.ComboBoxEntry()
+        self.wids['cbe_fdp'].show()
+        fdps = [(fdp.id, fdp.toString()) 
+                for fdp in pclases.FormaDePago.select(
+                    orderBy = ("plazo", "documento_de_pago_id"))]
+        # TODO: Sería usable que se marcara con un astersico, en negrita o 
+        #       algo la forma de pago del cliente. Para que el usuario lo 
+        #       pudiera seleccionar ya que no se permite un valor por defecto
+        #       para obligar al usuario a rellenarlo y evitar errores entre el 
+        #       teclado y la silla.
+        utils.rellenar_lista(self.wids['cbe_fdp'], fdps)
+        t.attach(self.wids['cbe_fdp'], 2, ncols, nrows, nrows + 1)
 
     def abrir_producto_from_ldp(self,tv, path, view_column):
         """
@@ -1021,6 +1046,9 @@ class PedidosDeVenta(Ventana):
         self.wids['e_obra'].set_text(self.objeto.textoObra)
         if pclases.DEBUG: 
             print "Después de comerciales:", time.time()-antes
+        # Forma de pago:
+        utils.combo_set_from_db(self.wids['cbe_fdp'], 
+                self.objeto.formaDePago and self.objeto.formaDePagoID or None)
         # Dirección de correspondencia
         self.wids['e_nombreCorrespondencia'].set_text(
             self.objeto.nombreCorrespondencia)
@@ -1721,6 +1749,15 @@ class PedidosDeVenta(Ventana):
         if idcomercial == -1:
             idcomercial = None
         self.objeto.comercialID = idcomercial
+        idfdp = utils.combo_get_value(self.wids['cbe_fdp'])
+        if not idfdp:
+            utils.dialogo_info(titulo = "FORMA DE PAGO INCORRECTA", 
+                    texto = "No ha seleccionado una forma de pago.\n"
+                    "Se establecerá la forma de cobro predeterminada.", 
+                    padre = self.wids['ventana'])
+            fdp = pclases.FormaDePago.porDefecto()
+            idfdp = fdp.id
+        self.objeto.formaDePagoID = idfdp
         self.objeto.syncUpdate()
         self.actualizar_ventana()
         self.wids['b_guardar'].set_sensitive(False)

@@ -4019,14 +4019,25 @@ class AlbaranesDeSalida(Ventana):
         ok = False
         # NOTA: Casi-casi igual al de facturas_venta.py. Si cambia algo importante aquí, cambiar también allí y viceversa.
         cliente = factura.cliente
-        if cliente.vencimientos != None and cliente.vencimientos != '':
+        try:
+            pedido = self.objeto.get_pedidos()[0]
+        except IndexError:
+            vtos = None
+        else:
             try:
-                vtos = cliente.get_vencimientos(factura.fecha)
-            except:
-                utils.dialogo_info(titulo = 'ERROR VENCIMIENTOS POR DEFECTO', 
-                                   texto = 'Los vencimientos por defecto del cliente no se pudieron procesar correctamente.\nVerifique que están bien escritos y el formato es correcto en la ventana de clientes.', 
-                                   padre = self.wids['ventana'])
-                return ok	# Los vencimientos no son válidos o no tiene.
+                vtos = [pedido.formaDePago.plazo]
+            except AttributeError:
+                vtos = None
+        if not vtos:
+            if cliente.vencimientos != None and cliente.vencimientos != '':
+                try:
+                    vtos = cliente.get_vencimientos(factura.fecha)
+                except:
+                    utils.dialogo_info(titulo = 'ERROR VENCIMIENTOS POR DEFECTO', 
+                                       texto = 'Los vencimientos por defecto del cliente no se pudieron procesar correctamente.\nVerifique que están bien escritos y el formato es correcto en la ventana de clientes.', 
+                                       padre = self.wids['ventana'])
+                    return ok	# Los vencimientos no son válidos o no tiene.
+        if vtos:
             self.borrar_vencimientos_y_estimaciones(factura)
             total = self.rellenar_totales(factura)
             numvtos = len(vtos)
@@ -4040,12 +4051,18 @@ class AlbaranesDeSalida(Ventana):
                 diaest = cliente.get_dias_de_pago()
             else:
                 diaest = False
+            if factura.get_pedidos():
+                try:
+                    pedido = factura.get_pedidos()[0]
+                    str_formapago = pedido.formaDePago.toString()
+                except (AttributeError, IndexError):
+                    str_formapago = factura.cliente and factura.cliente.textoformacobro or ""
             for incr in vtos:
                 fechavto = factura.fecha + (incr * mx.DateTime.oneDay)
                 vto = pclases.VencimientoCobro(fecha = fechavto,
                                                importe = cantidad,
                                                facturaVenta = factura, 
-                                               observaciones = factura.cliente and factura.cliente.textoformacobro or "", 
+                                               observaciones = str_formapago, 
                                                cuentaOrigen = factura.cliente and factura.cliente.cuentaOrigen or None)
                 if diaest:
 # XXX 24/05/06

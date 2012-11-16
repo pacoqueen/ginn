@@ -73,9 +73,8 @@ CREATE TABLE documento_de_pago(
 
 CREATE TABLE forma_de_pago(
     id SERIAL PRIMARY KEY, 
-    -- PORASQUI
-    texto TEXT DEFAULT '120 D. F. F.', 
-    dias INT DEFAULT 120 
+    documento_de_pago_id INT REFERENCES documento_de_pago, 
+    plazo INT DEFAULT 120 
 );
 
 -------------
@@ -1330,7 +1329,8 @@ CREATE TABLE pedido_venta(
     texto_obra TEXT DEFAULT '',   --- NEW! 27/02/2009 -- Antes se llamaba 
         -- solo "obra", pero como ahora hay un obraID, he tenido que renombrar
         -- el campo.
-    obra_id INT REFERENCES obra DEFAULT NULL    -- NEW! 09/09/2009 Beatles' day
+    obra_id INT REFERENCES obra DEFAULT NULL,   -- NEW! 09/09/2009 Beatles' day
+    forma_de_pago_id INT REFERENCES forma_de_pago DEFAULT NULL
 );
 
 ----------------------------

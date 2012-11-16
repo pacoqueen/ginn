@@ -544,6 +544,44 @@ def print_verbose(cont, total, antes):
 cont, tiempo = print_verbose(cont, total, tiempo)
 ##############
 
+class DocumentoDePago(SQLObject, PRPCTOO):
+    _connection = conn
+    _fromDatabase = True
+
+    def _init(self, *args, **kw):
+        starter(self, *args, **kw)
+
+class FormaDePago(SQLObject, PRPCTOO):
+    _connection = conn
+    _fromDatabase = True
+    documentoDePagoID = ForeignKey('DocumentoDePago')
+
+    def _init(self, *args, **kw):
+        starter(self, *args, **kw)
+
+    def toString(self):
+        return "%s, %d D. F. F." % (self.documentoDePago.documento, self.plazo)
+
+    def porDefecto(clase):
+        """
+        Devuelve la forma de cobro por defecto.
+        """
+        try:
+            docdefecto = DocumentoDePago.select(
+                    DocumentoDePago.q.documento == "Pagaré a la orden")[0]
+        except IndexError:
+            docdefecto = DocumentoDePago("Pagaré a la orden")
+        try:
+            fdp = clase.select(AND(clase.q.plazo == 120, 
+                                   clase.q.documentoDePagoID == docdefecto.id
+                                  ))[0]
+        except IndexError:
+            fdp = clase(plazo = 120, documentoDePago = docdefecto)
+        return fdp
+
+    porDefecto = classmethod(porDefecto)
+
+
 class Almacen(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
@@ -8881,6 +8919,7 @@ class PedidoVenta(SQLObject, PRPCTOO):
     documentos = MultipleJoin('Documento')
     comercialID = ForeignKey("Comercial", default = None)
     obraID = ForeignKey('Obra', default = None)
+    formaDePagoID = ForeignKey("FormaDePago", default = None)
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -14815,6 +14854,14 @@ class SuperFacturaVenta:
             else:
                 if ldv.pedidoVenta not in pedidos:
                     pedidos.append(ldv.pedidoVenta)
+        for srv in self.servicios:
+            pedido = srv.pedidoVenta
+            if not incluir_nones:
+                if pedido and pedido not in pedidos:
+                    pedidos.append(pedido)
+            else:
+                if pedido not in pedidos:
+                    pedidos.append(pedido)
         return pedidos
 
     def calcular_total(self):

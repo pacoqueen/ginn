@@ -96,6 +96,7 @@ class ConsultaVentas(Ventana):
                     False, True, False, None),
                 ('Destino', 'gobject.TYPE_STRING', False, True, False, None), 
                 ('Factura', 'gobject.TYPE_STRING', False, True, False, None), 
+                ('Forma de cobro', 'gobject.TYPE_STRING', False, True, False, None), 
                 ('Idlineadecompra', 'gobject.TYPE_INT64', 
                     False, False, False, None))
         tv = self.wids['tv_datos']
@@ -121,6 +122,8 @@ class ConsultaVentas(Ventana):
                 ('Importe c/IVA', 'gobject.TYPE_STRING', 
                     False, True, False, None),
                 ('Nº. factura', 'gobject.TYPE_STRING', 
+                    False, True, False, None),
+                ('Forma de cobro', 'gobject.TYPE_STRING', 
                     False, True, False, None),
                 ('Id', 'gobject.TYPE_INT64', False, False, False, None))
         utils.preparar_treeview(self.wids['tv_cliente'], cols)
@@ -654,9 +657,17 @@ class ConsultaVentas(Ventana):
             pedido = lda.pedidoVenta.numpedido
         fra = lda.facturaVenta or lda.prefactura
         if fra == None:
-            factura = "-"
+            factura = ""
+            if pedido != "":
+                fdp = pedido.formaDePago and pedido.formaDePago.toString() or ""
+            else:
+                fdp = ""
         else:
             factura = fra.numfactura
+            try:
+                fdp = factura.vencimientosCobro.observaciones
+            except AttributeError:
+                fdp = ""
         if lda.albaranSalida != None and lda.albaranSalida.cliente != None:
             cliente = lda.albaranSalida.cliente.nombre
         elif fra != None and fra.cliente != None:
@@ -703,6 +714,7 @@ class ConsultaVentas(Ventana):
              transporte, 
              destino, 
              factura,
+             fdp, 
              lda.id))
         return tarifa, total
 
@@ -765,14 +777,22 @@ class ConsultaVentas(Ventana):
             self.por_tarifa[tarifa]['kilos_cable'] += kilos_cable
             padre = self.por_tarifa[tarifa]['nodo']
         if ldd.pedidoVentaID == None:
-            pedido = '-'
+            pedido = ''
         else:
             pedido = ldd.pedidoVenta.numpedido
         fra = ldd.facturaVenta or ldd.prefactura
         if fra == None:
-            factura = "-"
+            factura = ""
+            if pedido != "":
+                fdp = pedido.formaDePago and pedido.formaDePago.toString() or ""
+            else:
+                fdp = ""
         else:
             factura = fra.numfactura
+            try:
+                fdp = factura.vencimientosCobro.observaciones
+            except AttributeError:
+                fdp = ""
         if ldd.albaranSalida != None and ldd.albaranSalida.cliente != None:
             cliente = ldd.albaranSalida.cliente.nombre
         elif fra != None and fra.cliente != None:
@@ -822,6 +842,7 @@ class ConsultaVentas(Ventana):
              transporte, 
              destino, 
              factura,
+             fdp, 
              ldd.id))
         return tarifa, total
 
@@ -885,9 +906,17 @@ class ConsultaVentas(Ventana):
             pedido = i.pedidoVenta.numpedido
         fra = i.facturaVenta or i.prefactura
         if fra == None:
-            factura = '-'
+            factura = ""
+            if pedido != "":
+                fdp = pedido.formaDePago and pedido.formaDePago.toString() or ""
+            else:
+                fdp = ""
         else:
             factura = fra.numfactura
+            try:
+                fdp = factura.vencimientosCobro.observaciones
+            except AttributeError:
+                fdp = ""
         if i.albaranSalida != None and i.albaranSalida.cliente != None:
             cliente = i.albaranSalida.cliente.nombre
         elif fra != None and fra.cliente != None:
@@ -989,9 +1018,17 @@ class ConsultaVentas(Ventana):
             pedido = i.pedidoVenta.numpedido
         fra = i.facturaVenta or i.prefactura
         if fra == None:
-            factura = '-'
+            factura = ""
+            if pedido != "":
+                fdp = pedido.formaDePago and pedido.formaDePago.toString() or ""
+            else:
+                fdp = ""
         else:
             factura = fra.numfactura
+            try:
+                fdp = factura.vencimientosCobro.observaciones
+            except AttributeError:
+                fdp = ""
         if i.albaranSalida != None and i.albaranSalida.cliente != None:
             cliente = i.albaranSalida.cliente.nombre
         elif fra != None and fra.cliente != None:
@@ -1218,12 +1255,24 @@ class ConsultaVentas(Ventana):
                                   "",
                                   cliente and cliente.id or 0))
             for factura in self.por_cliente[cliente]:
+                # TODO: Si tiene varios vencimientos, combinar textos. 
+                try:
+                    fdp = factura.vencimientosCobro[0].observaciones
+                except (IndexError, AttributeError):
+                    try:
+                        fdp = factura.get_pedidos()[0].formaDePago.toString()
+                    except (IndexError, AttributeError):
+                        try:
+                            fdp = factura.cliente.get_texto_forma_cobro()
+                        except (IndexError, AttributeError):
+                            ftp = ""
                 model.append(padre, 
                         ("", 
                          factura.cliente.cif, 
                          utils.str_fecha(factura.fecha), 
                          utils.float2str(factura.calcular_importe_total()), 
                          factura.numfactura, 
+                         fdp, 
                          factura.id))
 
     def rellenar_tabla_comerciales(self, resultado, resultado_abonos, 
@@ -1287,6 +1336,7 @@ class ConsultaVentas(Ventana):
                 totfactura = factura.calcular_importe_total()
                 model.append(padre, 
                              (factura.numfactura, 
+                                 # TODO: Aquí también forma de cobro
                               utils.float2str(facturado), 
                               utils.float2str(beneficio), 
                               utils.float2str(totfactura), 
@@ -1358,6 +1408,8 @@ class ConsultaVentas(Ventana):
                 totfactura = factura.calcular_importe_total()
                 model.append(padre, 
                              (factura.numfactura, 
+                                 # PORASQUI: Y además peta.
+                                 # TODO: Aquí también forma de cobro
                               utils.float2str(facturado), 
                               utils.float2str(beneficio), 
                               utils.float2str(totfactura), 
