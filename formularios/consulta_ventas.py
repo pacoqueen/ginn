@@ -876,6 +876,7 @@ class ConsultaVentas(Ventana):
                                      "", 
                                      "", 
                                      "", 
+                                     "", 
                                      "",
                                      tarifa and tarifa.id or 0))
             self.por_tarifa[tarifa] = {'nodo': padre, 
