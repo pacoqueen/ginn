@@ -162,6 +162,8 @@ class ConsultaVentas(Ventana):
         self.por_comercial = {}
         self.por_proveedor = {}
         cols = (('Comercial', 'gobject.TYPE_STRING', False, True, True, None),
+                ('Forma de pago', 'gobject.TYPE_STRING', 
+                    False, True, False, None),
                 ('Facturación del comercial\n(IVA incl.)', 
                     'gobject.TYPE_STRING', False, True, False, None),
                 ('Beneficio', 'gobject.TYPE_STRING', False, True, False, None),
@@ -170,13 +172,15 @@ class ConsultaVentas(Ventana):
                 ('Id', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_treeview(self.wids['tv_comercial'], cols)
         tv = self.wids['tv_comercial']
-        tv.get_column(1).get_cell_renderers()[0].set_property('xalign', 1) 
         tv.get_column(2).get_cell_renderers()[0].set_property('xalign', 1) 
+        tv.get_column(3).get_cell_renderers()[0].set_property('xalign', 1) 
         tv.connect("row-activated", self.abrir_factura_o_comercial)
         self.wids['ch_servicios'].set_active(True)  # Por defecto lo voy a 
             # activar para que se vean las ventas totales en la nueva pestaña
             # por cliente.
         cols = (('Proveedor', 'gobject.TYPE_STRING', False, True, True, None),
+                ('Forma de pago', 'gobject.TYPE_STRING', 
+                    False, True, False, None),
                 ('Asignable al proveedor\n(IVA incl.)', 
                     'gobject.TYPE_STRING', False, True, False, None),
                 ('Beneficio', 'gobject.TYPE_STRING', False, True, False, None),
@@ -185,8 +189,8 @@ class ConsultaVentas(Ventana):
                 ('Id', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_treeview(self.wids['tv_proveedor'], cols)
         tv = self.wids['tv_proveedor']
-        tv.get_column(1).get_cell_renderers()[0].set_property('xalign', 1) 
         tv.get_column(2).get_cell_renderers()[0].set_property('xalign', 1) 
+        tv.get_column(3).get_cell_renderers()[0].set_property('xalign', 1) 
         tv.connect("row-activated", self.abrir_factura_o_proveedor)
         gtk.main()
     
@@ -509,13 +513,13 @@ class ConsultaVentas(Ventana):
             for fila in model:
                 if fila[0] == "Sin comercial":
                     color = 7
-                elif utils._float(fila[1]) == maximo_ventas:
+                elif utils._float(fila[2]) == maximo_ventas:
                     color = 0
                 else:
                     color = 3
-                datachart.append([fila[0], utils._float(fila[1]), color])
+                datachart.append([fila[0], utils._float(fila[2]), color])
             # Filtro y me quedo con el TOP5:
-            datachart.sort(lambda c1, c2: int(c2[1] - c1[1]))
+            datachart.sort(lambda c1, c2: int(c2[2] - c1[2]))
             #_datachart = datachart[:5]
             #_datachart.append(("Resto", sum([c[1] for c in datachart[5:]])))
             #datachart = _datachart
@@ -557,13 +561,13 @@ class ConsultaVentas(Ventana):
             for fila in model:
                 if fila[0] == "Sin proveedor":
                     color = 7
-                elif utils._float(fila[1]) == maximo_ventas:
+                elif utils._float(fila[2]) == maximo_ventas:
                     color = 0
                 else:
                     color = 3
-                datachart.append([fila[0], utils._float(fila[1]), color])
+                datachart.append([fila[0], utils._float(fila[2]), color])
             # Filtro y me quedo con el TOP5:
-            datachart.sort(lambda c1, c2: int(c2[1] - c1[1]))
+            datachart.sort(lambda c1, c2: int(c2[2] - c1[2]))
             #_datachart = datachart[:5]
             #_datachart.append(("Resto", sum([c[1] for c in datachart[5:]])))
             #datachart = _datachart
@@ -1327,6 +1331,7 @@ class ConsultaVentas(Ventana):
                 nombre_comercial = "Sin comercial"
             padre = model.append(None, 
                                  (nombre_comercial, 
+                                  "", 
                                   "0.0", 
                                   "0.0", 
                                   "0.0", 
@@ -1340,17 +1345,19 @@ class ConsultaVentas(Ventana):
                 totfactura = factura.calcular_importe_total()
                 model.append(padre, 
                              (factura.numfactura, 
-                                 # TODO: Aquí también forma de cobro
+                              factura.vencimientosCobro 
+                                and factura.vencimientosCobro[0].observaciones 
+                                or "", 
                               utils.float2str(facturado), 
                               utils.float2str(beneficio), 
                               utils.float2str(totfactura), 
                               factura.get_puid()))
-                model[padre][1] = utils.float2str(
-                                    utils._float(model[padre][1]) + facturado)
                 model[padre][2] = utils.float2str(
-                                    utils._float(model[padre][2]) + beneficio)
+                                    utils._float(model[padre][2]) + facturado)
                 model[padre][3] = utils.float2str(
-                                    utils._float(model[padre][3]) + totfactura)
+                                    utils._float(model[padre][3]) + beneficio)
+                model[padre][4] = utils.float2str(
+                                    utils._float(model[padre][4]) + totfactura)
 
     def rellenar_tabla_proveedores(self, resultado, resultado_abonos, 
                                    servicios):
@@ -1399,6 +1406,7 @@ class ConsultaVentas(Ventana):
                 nombre_proveedor = "Sin proveedor"
             padre = model.append(None, 
                                  (nombre_proveedor, 
+                                  "", 
                                   "0.0", 
                                   "0.0", 
                                   "0.0", 
@@ -1412,17 +1420,19 @@ class ConsultaVentas(Ventana):
                 totfactura = factura.calcular_importe_total()
                 model.append(padre, 
                              (factura.numfactura, 
-                                 # TODO: Aquí también forma de cobro
+                              factura.vencimientosCobro 
+                                and factura.vencimientosCobro[0].observaciones 
+                                or "", 
                               utils.float2str(facturado), 
                               utils.float2str(beneficio), 
                               utils.float2str(totfactura), 
                               factura.get_puid()))
-                model[padre][1] = utils.float2str(
-                                    utils._float(model[padre][1]) + facturado)
                 model[padre][2] = utils.float2str(
-                                    utils._float(model[padre][2]) + beneficio)
+                                    utils._float(model[padre][2]) + facturado)
                 model[padre][3] = utils.float2str(
-                                    utils._float(model[padre][3]) + totfactura)
+                                    utils._float(model[padre][3]) + beneficio)
+                model[padre][4] = utils.float2str(
+                                    utils._float(model[padre][4]) + totfactura)
 
     def rellenar_tabla_por_producto(self, 
                                     resultado, 
@@ -1470,18 +1480,18 @@ class ConsultaVentas(Ventana):
         datos = []
         model = self.wids['tv_datos'].get_model()
         for iter in model:
-            datos.append((iter[0], iter[1], iter[2], iter[3], iter[4], iter[5],
-                          iter[6], iter[7], iter[8], iter[9], iter[10], 
-                          iter[11]))
+            datos.append((iter[0],  iter[1],  iter[2],  iter[3],  iter[4], 
+                          iter[5],  iter[6],  iter[7],  iter[8],  iter[9], 
+                          iter[10], iter[11], iter[12]))
             hijos = iter.iterchildren()
             if hijos != None:
                 for hijo in hijos:
                     datos.append((hijo[0], hijo[1], hijo[2], hijo[3], hijo[4], 
                                   hijo[5], hijo[6], hijo[7], hijo[8], hijo[9], 
-                                  hijo[10], hijo[11]))
+                                  hijo[10], hijo[11], hijo[12]))
             datos.append(("---", "---", "---", "---", "---", "---", "---", 
-                          "---", "---", "---", "---", "---"))
-        datos.append(("", "", "", "", "", "", "", "", "", "", "", ""))
+                          "---", "---", "---", "---", "---", "---"))
+        datos.append(("", "", "", "", "", "", "", "", "", "", "", "", ""))
         if self.metros_totales != 0:
             metros_totales = "TOTAL m² de geotextiles: %s " % (
                                 utils.float2str(self.metros_totales))

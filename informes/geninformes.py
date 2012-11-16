@@ -5488,17 +5488,18 @@ def ventas(datos, fecha = None):
     archivo = os.path.join(gettempdir(), 'ventas_%s' % give_me_the_name_baby())
     titulo = 'Listado de ventas'
     campos = [('F. Alb.', 7),
-              ('Producto', 14),
+              ('Producto', 13),
               ('Cantidad', 7),
               ('Precio', 5),
-              ('Total', 7),
+              ('Total', 6),
               ('Cliente', 15),
               ('Pedido', 7),
               ('Comercial', 7),
               ('Albarán', 5),
               ('Transporte', 5),
-              ('Destino', 14),
-              ('Factura', 7)]
+              ('Destino', 13),
+              ('Factura', 5), 
+              ('Forma de pago', 5)]
     return imprimir2(archivo, titulo, campos, datos, fecha,
                      cols_a_derecha = (2, 3, 4), apaisado = True)
 
