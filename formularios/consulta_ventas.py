@@ -213,16 +213,7 @@ class ConsultaVentas(Ventana):
         abrir_csv(treeview2csv(tv))
 
     def colorear(self, tv):
-        """
-        Colorea el listview dependiendo de si la cantidad pendiente de 
-        servir es superior a las existencias en almacén.
-        """
         def cell_func(column, cell, model, itr, numcol):
-            """
-            Si la fila corresponde a una factura cobrada en un pagaré, colorea 
-            la fila completa con un color generado a partir del número de 
-            pagaré.
-            """
             if ((model[itr][2].startswith("-") 
                  or model[itr][3].startswith("-")) 
                 and model[itr][4].startswith("-")):
@@ -324,7 +315,7 @@ class ConsultaVentas(Ventana):
     def chequear_cambios(self):
         pass
 
-    def rellenar_tabla(self, items, items_abono, servicios):
+    def rellenar_tabla_por_tarifa(self, items, items_abono, servicios):
     	"""
         Rellena el model con los items de la consulta
         """ 
@@ -420,7 +411,7 @@ class ConsultaVentas(Ventana):
             chart.plot(datachart)
             self.wids['eventbox_chart'].show_all()
         except Exception, msg:
-            txt = "consulta_ventas.py::rellenar_tabla -> "\
+            txt = "consulta_ventas.py::rellenar_tabla_por_tarifa -> "\
                   "Error al dibujar gráfica (charting): %s" % msg
             print txt
             self.logger.error(txt)
@@ -652,21 +643,22 @@ class ConsultaVentas(Ventana):
             self.por_tarifa[tarifa]['total'] += total_ldv
             padre = self.por_tarifa[tarifa]['nodo']
         if lda.pedidoVentaID == None:
-            pedido = '-'
+            pedido = ''
         else:
             pedido = lda.pedidoVenta.numpedido
         fra = lda.facturaVenta or lda.prefactura
         if fra == None:
             factura = ""
-            if pedido != "":
-                fdp = pedido.formaDePago and pedido.formaDePago.toString() or ""
-            else:
-                fdp = ""
+            fdp = ""
+        #    if pedido != "":
+        #        fdp = pedido.formaDePago and pedido.formaDePago.toString() or ""
+        #    else:
+        #        fdp = ""
         else:
             factura = fra.numfactura
             try:
-                fdp = factura.vencimientosCobro.observaciones
-            except AttributeError:
+                fdp = fra.vencimientosCobro[0].observaciones
+            except (AttributeError, IndexError):
                 fdp = ""
         if lda.albaranSalida != None and lda.albaranSalida.cliente != None:
             cliente = lda.albaranSalida.cliente.nombre
@@ -675,7 +667,7 @@ class ConsultaVentas(Ventana):
         elif lda.pedidoVenta != None and lda.pedidoVenta.cliente != None:
             cliente = lda.pedidoVenta.cliente.nombre
         else:
-            cliente = "-"
+            cliente = ""
         destino = lda.albaranSalida and lda.albaranSalida.nombre or cliente
         total = total + (precio * lda.cantidad)
         if lda.productoVenta and lda.productoVenta.es_rollo():
@@ -710,7 +702,7 @@ class ConsultaVentas(Ventana):
              cliente, 
              pedido,
              comercial, 
-             lda.albaranSalidaID and lda.albaranSalida.numalbaran or "-",
+             lda.albaranSalidaID and lda.albaranSalida.numalbaran or "",
              transporte, 
              destino, 
              factura,
@@ -758,6 +750,7 @@ class ConsultaVentas(Ventana):
                                      "",
                                      "", 
                                      "",
+                                     "", 
                                      tarifa and tarifa.id or 0))
             self.por_tarifa[tarifa] = {'nodo': padre, 
                                   'ldvs': [ldd, ], 
@@ -783,15 +776,16 @@ class ConsultaVentas(Ventana):
         fra = ldd.facturaVenta or ldd.prefactura
         if fra == None:
             factura = ""
-            if pedido != "":
-                fdp = pedido.formaDePago and pedido.formaDePago.toString() or ""
-            else:
-                fdp = ""
+            fdp = ""
+            #if pedido != "":
+            #    fdp = pedido.formaDePago and pedido.formaDePago.toString() or ""
+            #else:
+            #    fdp = ""
         else:
             factura = fra.numfactura
             try:
-                fdp = factura.vencimientosCobro.observaciones
-            except AttributeError:
+                fdp = fra.vencimientosCobro[0].observaciones
+            except (IndexError, AttributeError):
                 fdp = ""
         if ldd.albaranSalida != None and ldd.albaranSalida.cliente != None:
             cliente = ldd.albaranSalida.cliente.nombre
@@ -800,7 +794,7 @@ class ConsultaVentas(Ventana):
         elif ldd.pedidoVenta != None and ldd.pedidoVenta.cliente != None:
             cliente = ldd.pedidoVenta.cliente.nombre
         else:
-            cliente = "-"
+            cliente = ""
         destino = ldd.albaranSalida and ldd.albaranSalida.nombre or cliente
         total = total + precio # * ldd.cantidad)  # El precio en la LDD ya es 
         # el subtotal. Es el precio de la unidad completa, no en m² ni kg.
@@ -838,7 +832,7 @@ class ConsultaVentas(Ventana):
              cliente, 
              pedido,
              comercial, 
-             ldd.albaranSalidaID and ldd.albaranSalida.numalbaran or "-",
+             ldd.albaranSalidaID and ldd.albaranSalida.numalbaran or "",
              transporte, 
              destino, 
              factura,
@@ -901,21 +895,22 @@ class ConsultaVentas(Ventana):
             self.por_tarifa[tarifa]['kilos_cable'] += kilos_cable
             padre = self.por_tarifa[tarifa]['nodo']
         if i.pedidoVentaID == None:
-            pedido = '-'
+            pedido = ''
         else:
             pedido = i.pedidoVenta.numpedido
         fra = i.facturaVenta or i.prefactura
         if fra == None:
             factura = ""
-            if pedido != "":
-                fdp = pedido.formaDePago and pedido.formaDePago.toString() or ""
-            else:
-                fdp = ""
+            fdp = ""
+            #if pedido != "":
+            #    fdp = pedido.formaDePago and pedido.formaDePago.toString() or ""
+            #else:
+            #    fdp = ""
         else:
             factura = fra.numfactura
             try:
-                fdp = factura.vencimientosCobro.observaciones
-            except AttributeError:
+                fdp = fra.vencimientosCobro[0].observaciones
+            except (IndexError, AttributeError):
                 fdp = ""
         if i.albaranSalida != None and i.albaranSalida.cliente != None:
             cliente = i.albaranSalida.cliente.nombre
@@ -924,7 +919,7 @@ class ConsultaVentas(Ventana):
         elif i.pedidoVenta != None and i.pedidoVenta.cliente != None:
             cliente = i.pedidoVenta.cliente.nombre
         else:
-            cliente = "-"
+            cliente = ""
         destino = (i.albaranSalida and i.albaranSalida.nombre 
                    and i.albaranSalida.nombre or cliente)
         total = total + (precio * i.cantidad)
@@ -968,10 +963,11 @@ class ConsultaVentas(Ventana):
              cliente, 
              pedido,
              comercial, 
-             i.albaranSalidaID and i.albaranSalida.numalbaran or "-",
+             i.albaranSalidaID and i.albaranSalida.numalbaran or "",
              transporte, 
              destino, 
              factura,
+             fdp, 
              i.id))
         return tarifa, total
         
@@ -994,6 +990,7 @@ class ConsultaVentas(Ventana):
                                      "",
                                      "", 
                                      "",
+                                     "", 
                                      tarifa and tarifa.id or 0))
             self.por_tarifa[tarifa] = {'nodo': padre, 
                                   'ldvs': [i, ], 
@@ -1013,21 +1010,22 @@ class ConsultaVentas(Ventana):
             self.por_tarifa[tarifa]['kilos_cable'] += kilos_cable
             padre = self.por_tarifa[tarifa]['nodo']
         if i.pedidoVentaID == None:
-            pedido = '-'
+            pedido = ''
         else:
             pedido = i.pedidoVenta.numpedido
         fra = i.facturaVenta or i.prefactura
         if fra == None:
+            fdp = ""
             factura = ""
-            if pedido != "":
-                fdp = pedido.formaDePago and pedido.formaDePago.toString() or ""
-            else:
-                fdp = ""
+            #if pedido != "":
+            #    fdp = pedido.formaDePago and pedido.formaDePago.toString() or ""
+            #else:
+            #    fdp = ""
         else:
             factura = fra.numfactura
             try:
-                fdp = factura.vencimientosCobro.observaciones
-            except AttributeError:
+                fdp = fra.vencimientosCobro[0].observaciones
+            except (IndexError, AttributeError):
                 fdp = ""
         if i.albaranSalida != None and i.albaranSalida.cliente != None:
             cliente = i.albaranSalida.cliente.nombre
@@ -1036,7 +1034,7 @@ class ConsultaVentas(Ventana):
         elif i.pedidoVenta != None and i.pedidoVenta.cliente != None:
             cliente = i.pedidoVenta.cliente.nombre
         else:
-            cliente = "-"
+            cliente = ""
         destino = i.albaranSalida and i.albaranSalida.nombre or cliente
         total = total + (precio * i.cantidad)
         cantidad = utils.float2str(i.cantidad, autodec = True)
@@ -1063,10 +1061,11 @@ class ConsultaVentas(Ventana):
              cliente, 
              pedido,
              comercial, 
-             i.albaranSalidaID and i.albaranSalida.numalbaran or "-",
+             i.albaranSalidaID and i.albaranSalida.numalbaran or "",
              transporte, 
              destino, 
              factura,
+             fdp, 
              -i.id))
         return tarifa, total
         
@@ -1200,9 +1199,9 @@ class ConsultaVentas(Ventana):
                 self.resultado_abonos['lineasDeDevolucion'].append(ldd)
         vpro.set_valor(0.9, "Analizando facturas y abonos...")
         vpro.ocultar()
-        self.rellenar_tabla(self.resultado, 
-                            self.resultado_abonos, 
-                            servicios)
+        self.rellenar_tabla_por_tarifa(self.resultado, 
+                                       self.resultado_abonos, 
+                                       servicios)
         self.rellenar_tabla_por_producto(self.resultado, 
                                          self.resultado_abonos, 
                                          servicios)
@@ -1253,19 +1252,21 @@ class ConsultaVentas(Ventana):
                                        for f in self.por_cliente[cliente]
                                        if not f is None])), 
                                   "",
+                                  "", 
                                   cliente and cliente.id or 0))
             for factura in self.por_cliente[cliente]:
                 # TODO: Si tiene varios vencimientos, combinar textos. 
                 try:
                     fdp = factura.vencimientosCobro[0].observaciones
                 except (IndexError, AttributeError):
-                    try:
-                        fdp = factura.get_pedidos()[0].formaDePago.toString()
-                    except (IndexError, AttributeError):
-                        try:
-                            fdp = factura.cliente.get_texto_forma_cobro()
-                        except (IndexError, AttributeError):
-                            ftp = ""
+                    fdp = ""    # Solo fdp confirmada en la factura.
+                    #try:
+                    #    fdp = factura.get_pedidos()[0].formaDePago.toString()
+                    #except (IndexError, AttributeError):
+                        #try:
+                        #    fdp = factura.cliente.get_texto_forma_cobro()
+                        #except (IndexError, AttributeError):
+                        #    ftp = ""
                 model.append(padre, 
                         ("", 
                          factura.cliente.cif, 
@@ -1408,7 +1409,6 @@ class ConsultaVentas(Ventana):
                 totfactura = factura.calcular_importe_total()
                 model.append(padre, 
                              (factura.numfactura, 
-                                 # PORASQUI: Y además peta.
                                  # TODO: Aquí también forma de cobro
                               utils.float2str(facturado), 
                               utils.float2str(beneficio), 
