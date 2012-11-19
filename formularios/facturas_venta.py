@@ -2333,6 +2333,9 @@ class FacturasVenta(Ventana):
                     str_formapago = pedido.formaDePago.toString()
                 except (AttributeError, IndexError):
                     str_formapago = factura.cliente and factura.cliente.textoformacobro or ""
+            else:
+                # ¿Factura sin pedido?
+                str_formapago = factura.cliente.textoformacobro
             for incr in vtos:
                 fechavto = factura.fecha + (incr * mx.DateTime.oneDay)
                 vto = pclases.VencimientoCobro(fecha = fechavto,
