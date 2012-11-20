@@ -1103,23 +1103,29 @@ class AbonosVenta(Ventana):
         abono = self.objeto
         if abono == None:
             return
-        iva = abono.cliente.get_iva_norm(fecha = abono.fecha)
-        cliente = {'numcli':str(abono.cliente.id),
-                   'nombre':abono.cliente.nombre,
-                   'nombref':abono.cliente.nombref,
-                   'cif':abono.cliente.cif,
-                   'direccion':abono.cliente.direccion,
-                   'cp':abono.cliente.cp,
-                   'localidad':abono.cliente.ciudad,
-                   'provincia':abono.cliente.provincia,
-                   'pais':abono.cliente.pais,
-                   'telf':abono.cliente.telefono,
-                   'fax':'',
-                   'direccionf':abono.cliente.direccionfacturacion,
-                   'cpf':abono.cliente.cpfacturacion,
-                   'localidadf':abono.cliente.ciudadfacturacion,
-                   'provinciaf':abono.cliente.provinciafacturacion,
-                   'paisf':abono.cliente.paisfacturacion} 
+        # Se debe abonar con el IVA de la fecha de la factura abonada. Si hay 
+        # varias, me quedo con la más reciente.
+        try:
+            fecha_fra = max([f.fecha for f in abono.get_facturas()])
+            iva = abono.cliente.get_iva_norm(fecha = fecha_fra)
+        except ValueError:
+            iva = abono.cliente.get_iva_norm(fecha = abono.fecha)
+        cliente = {'numcli': str(abono.cliente.id),
+                   'nombre': abono.cliente.nombre,
+                   'nombref': abono.cliente.nombref,
+                   'cif': abono.cliente.cif,
+                   'direccion': abono.cliente.direccion,
+                   'cp': abono.cliente.cp,
+                   'localidad': abono.cliente.ciudad,
+                   'provincia': abono.cliente.provincia,
+                   'pais': abono.cliente.pais,
+                   'telf': abono.cliente.telefono,
+                   'fax': '',
+                   'direccionf': abono.cliente.direccionfacturacion,
+                   'cpf': abono.cliente.cpfacturacion,
+                   'localidadf': abono.cliente.ciudadfacturacion,
+                   'provinciaf': abono.cliente.provinciafacturacion,
+                   'paisf': abono.cliente.paisfacturacion} 
         lineasAbono = []
         model = self.wids['tv_precios'].get_model()
         for i in range(len(model)):
