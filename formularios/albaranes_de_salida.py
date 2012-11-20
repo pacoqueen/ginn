@@ -4312,7 +4312,8 @@ def imprimir_factura(factura, usuario = None, abrir = True, es_copia = False,
             cuenta = ""
         documentosDePago.append("%s %s" % (vto.observaciones, cuenta))
     vencimiento = {'fecha': "; ".join(fechasVencimiento),
-                   'pago': factura.cliente.vencimientos,
+                   # 'pago': factura.cliente.vencimientos,
+                   'pago': str(factura.get_plazo_pago(default = "")),
                    'documento': "; ".join(documentosDePago)}
     import numerals
     totalfra = factura.calcular_total()

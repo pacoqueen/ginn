@@ -15390,6 +15390,49 @@ class SuperFacturaVenta:
                             total += cobro.importe
         return total
 
+    def get_plazo_pago(self, default = None):
+        """
+        Calcula el número de días de la forma de pago de la factura. Si no 
+        tiene vencimientos, se lo trae del pedido. Si tampoco tiene, del 
+        cliente y si no, devuelve None o el valor especificado en "default".
+        :returns: Entero o lista de enteros con el número de días de la 
+                  forma de pago. O valor indicado en "default".
+        """
+        res = []
+        import re
+        regexpr = re.compile("\d+")
+        # De los vencimientos de la propia factura.
+        for vto in self.vencimientosCobro:
+            for v in regexpr.findall(vto.observaciones):
+                try:
+                    v = int(v)
+                    if not ((v % 15 == 0) and (0 <= v <= 365)):
+                        continue #No es un plazo. Es número de cuenta o algo.
+                except (ValueError, TypeError):     # Are you kidding me? 
+                    continue
+                if v not in res:
+                    res.append(v)
+        # No hay vencimientos. Del pedido.
+        if not res:
+            for p in self.get_pedidos():
+                if p.formaDePago and p.formaDePago.plazo not in res:
+                    res.append(p.formaDePago.plazo)
+        # No hay pedidos. Del cliente.
+        if not res:
+            for v in self.cliente.get_dias_de_pago():
+                if v not in res:
+                    res.append(v)
+        # Me quedo con lo que haya o devuelvo por defecto:
+        if res:
+            if len(res) == 1:
+                plazo = res[0]
+            else:
+                res.sort()
+                plazo = res
+        else:
+            plazo = default
+        return plazo
+
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 class FacturaVenta(SQLObject, PRPCTOO, SuperFacturaVenta):

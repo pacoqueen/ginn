@@ -2868,7 +2868,8 @@ class FacturasVenta(Ventana):
                 documentosDePago.append("%s %s" % (vto.observaciones, cuenta))
         documentosDePago = utils.unificar(documentosDePago)
         vencimiento = {'fecha': "; ".join(fechasVencimiento),
-                       'pago': factura.cliente.vencimientos,
+                       # 'pago': factura.cliente.vencimientos,
+                       'pago': str(factura.get_plazo_pago(default = "")),
                        'documento': "; ".join(documentosDePago)}
         import numerals
         total = self.wids['e_total'].get_text()
