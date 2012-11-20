@@ -1750,19 +1750,19 @@ class PedidosDeVenta(Ventana):
             idcomercial = None
         self.objeto.comercialID = idcomercial
         idfdp = utils.combo_get_value(self.wids['cbe_fdp'])
-        fdps = [(fdp.id, fdp.toString()) 
-                for fdp in pclases.FormaDePago.select(
-                    orderBy = ("plazo", "documento_de_pago_id"))]
         while not idfdp:
+            fdps = [(fdp.id, fdp.toString()) 
+                    for fdp in pclases.FormaDePago.select(
+                        orderBy = ("plazo", "documento_de_pago_id"))]
+            # CWT: No hay forma de pago por defecto.
+            #fdp = pclases.FormaDePago.porDefecto()
             idfdp = utils.dialogo_combo(titulo = "FORMA DE PAGO INCORRECTA", 
                     texto = "No ha seleccionado una forma de pago.\n"
                     "No podrá continuar hasta seleccionar una del\n"
                     "desplegable a continuación.", 
                     padre = self.wids['ventana'], 
-                    ops = fdps)
-            # CWT: No hay forma de pago por defecto.
-            #fdp = pclases.FormaDePago.porDefecto()
-            #idfdp = fdp.id
+                    ops = fdps)  
+                    # valor_por_defecto = fdp.id)
         self.objeto.formaDePagoID = idfdp
         self.objeto.syncUpdate()
         self.actualizar_ventana()
