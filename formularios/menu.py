@@ -255,7 +255,7 @@ class Menu:
         self.ventana.set_position(gtk.WIN_POS_CENTER)
         self.ventana.resize(800, 600)
         self.ventana.set_title('Menú GINN')
-        self.ventana.set_icon(gtk.gdk.pixbuf_new_from_file('logo.xpm'))
+        self.ventana.set_icon(gtk.gdk.pixbuf_new_from_file('logo_w.xpm'))
         self.ventana.set_border_width(10)
         self.ventana.connect("delete_event", self.salir, True, self.ventana)
         self.caja = gtk.VBox()

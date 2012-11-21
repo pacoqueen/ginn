@@ -69,7 +69,7 @@ def refrescar_cache_sqlobject():
 
 class Ventana:
     def __init__(self, glade, objeto = None, usuario = None, 
-                 icono = 'logo_w.xpm'):
+                 icono = 'logo.xpm'):
         """
         Constructor.
         glade es una cadena con el nombre del fichero .glade a cargar.
@@ -79,7 +79,7 @@ class Ventana:
         la ventana con las opciones de menú disponibles para el usuario.
         Si el usuario es None, no se crea ningún menú.
         «icono» es la ruta al icono por defecto que está en este mismo 
-        directorio de formularios (logo_w.xpm) o una ruta **RELATIVA** a 
+        directorio de formularios (logo.xpm) o una ruta **RELATIVA** a 
         otro icono soportado por Pixbuf.
         """
         if isinstance(usuario, int):
@@ -123,7 +123,7 @@ class Ventana:
                 icono = determine_ico_from_filename(fichero, clase)
                 self.wids['ventana'].set_icon_from_file(icono)
             except:     # Icono por defecto "de toa la vida de Elvis".
-                logo_xpm = gtk.gdk.pixbuf_new_from_file("logo_w.xpm")
+                logo_xpm = gtk.gdk.pixbuf_new_from_file("logo.xpm")
                 self.wids['ventana'].set_icon(logo_xpm)
             self.wids['barra_estado'] = gtk.Statusbar()
             label_statusbar = self.wids['barra_estado'].get_children()[0].child
@@ -963,7 +963,7 @@ class Ventana:
 def determine_ico_from_filename(archivo, clase):
     """@todo: A partir del nombre de archivo y de la clase devuelve la ruta 
     del icono que le corresponde según la configuración almacenada en la 
-    base de datos. Si no se encuentra, devuelve "logo_w.xpm" que es el icono 
+    base de datos. Si no se encuentra, devuelve "logo.xpm" que es el icono 
     por defecto de las ventanas de la aplicación.
 
     :archivo: string
@@ -981,7 +981,7 @@ def determine_ico_from_filename(archivo, clase):
         try:
             v = pclases.Ventana.selectBy(clase = clase)[0]
         except IndexError:
-            ico = "logo_w.xpm"
+            ico = "logo.xpm"
         else:
             ico = os.path.join("..", "imagenes", v.icono)
     else:

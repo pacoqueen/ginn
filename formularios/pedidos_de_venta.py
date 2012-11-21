@@ -760,6 +760,7 @@ class PedidosDeVenta(Ventana):
                 for fdp in pclases.FormaDePago.select(
                     pclases.FormaDePago.q.activa == True, 
                     orderBy = ("documento_de_pago_id", "plazo"))]
+        #fdps.sort(key = lambda p: p[1])
         # TODO: Sería usable que se marcara con un astersico, en negrita o 
         #       algo la forma de pago del cliente. Para que el usuario lo 
         #       pudiera seleccionar ya que no se permite un valor por defecto
@@ -1757,6 +1758,7 @@ class PedidosDeVenta(Ventana):
                     for fdp in pclases.FormaDePago.select(
                         pclases.FormaDePago.q.activa == True, 
                         orderBy = ("documento_de_pago_id", "plazo"))]
+            #fdps.sort(key = lambda p: p[1])
             # CWT: No hay forma de pago por defecto.
             #fdp = pclases.FormaDePago.porDefecto()
             idfdp = utils.dialogo_combo(titulo = "FORMA DE PAGO INCORRECTA", 
