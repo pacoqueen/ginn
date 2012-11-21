@@ -74,7 +74,9 @@ CREATE TABLE documento_de_pago(
 CREATE TABLE forma_de_pago(
     id SERIAL PRIMARY KEY, 
     documento_de_pago_id INT REFERENCES documento_de_pago, 
-    plazo INT DEFAULT 120 
+    plazo INT DEFAULT 120, 
+    activa BOOLEAN DEFAULT TRUE -- NEW! 21/11/2012 Para no seguir usando 
+                                -- formas de pago obsoletas.
 );
 
 -------------

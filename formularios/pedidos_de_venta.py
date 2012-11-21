@@ -758,6 +758,7 @@ class PedidosDeVenta(Ventana):
         self.wids['cbe_fdp'].show()
         fdps = [(fdp.id, fdp.toString()) 
                 for fdp in pclases.FormaDePago.select(
+                    pclases.FormaDePago.q.activa == True, 
                     orderBy = ("plazo", "documento_de_pago_id"))]
         # TODO: Sería usable que se marcara con un astersico, en negrita o 
         #       algo la forma de pago del cliente. Para que el usuario lo 
@@ -1754,6 +1755,7 @@ class PedidosDeVenta(Ventana):
         while not idfdp:
             fdps = [(fdp.id, fdp.toString()) 
                     for fdp in pclases.FormaDePago.select(
+                        pclases.FormaDePago.q.activa == True, 
                         orderBy = ("plazo", "documento_de_pago_id"))]
             # CWT: No hay forma de pago por defecto.
             #fdp = pclases.FormaDePago.porDefecto()

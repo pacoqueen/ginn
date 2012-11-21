@@ -547,6 +547,7 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class DocumentoDePago(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    formasDePago = MultipleJoin("FormaDePago")
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
