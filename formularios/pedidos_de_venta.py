@@ -278,8 +278,9 @@ class PedidosDeVenta(Ventana):
                 except pclases.SQLObjectNotFound:
                     pass    # Pedido borrado.
                 else:
-                    ui_string += "<menuitem action='%s'/>" % (p.get_info())
-                    lista.append((p.get_info(), p.id))
+                    ui_string += "<menuitem action='%s'/>" % (
+                            utils.sanitize(p.get_info()))
+                    lista.append((utils.sanitize(p.get_info()), p.id))
             ui_string += """
                             </popup>
                         </ui>

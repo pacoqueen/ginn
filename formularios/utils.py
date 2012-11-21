@@ -4292,6 +4292,20 @@ def dividir_cadena(s, trozos = 2):
         cadena2 = pivote + cadena2
     return cadena1, cadena2
 
+def sanitize(cad):
+    """@todo: Cambia caracteres "problemáticos" por equivalentes en la 
+    cadena para evitar errores en nombres de fichero, menús de glade...
+
+    :cad: Cadena de texto
+    :returns: Cadena de texto con caracteres reemplazados.
+
+    """
+    equivalencias = ((r"'", u"'"), 
+                     (r"/", u"-"))
+    for mala, buena in equivalencias:
+        cad = cad.replace(mala, buena)
+    return cad
+
 if __name__=="__main__":
     import sys, os
     print dialogo_radio(titulo='Seleccione una opción', 
