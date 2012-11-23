@@ -4056,6 +4056,7 @@ def parse_cif(cif = None):
                    'Reino Unido': 'GB123123412123', # GB + 3, 4 y 2 números. 
                                       # Para grupos de empresas 3 números más.
                    'Rumania':     'RO12', # RO + 2 a 10 números.
+                   'Irlanda':     'IE 6388047V', # IE + 1 número + letra o número + 5 números + letra.
                   }
         # TEST MODE
         samples['_NIF'] = '00000000T'
@@ -4124,6 +4125,8 @@ def parse_cif(cif = None):
                          '(GB[0-9]{9}([0-9]{3})?)' 
                          "|"
                          '(RO[0-9]{2,10})'
+                         "|"
+                         "(IE[0-9][0-9|A-Z][0-9]{5}[A-Z])"
                          "|"
                          "([A-Z][0-9]{8})"
                          "|"
