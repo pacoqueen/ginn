@@ -522,11 +522,14 @@ class PendientesServir(Ventana):
         else:
             nombrecliente = ""
         if self.gpped != None and self.gpped != []:
-            informes.abrir_pdf(geninformes.pendiente_servir("geotextiles", self.gpped, self.gppro, nombrecliente))
+            informes.abrir_pdf(geninformes.pendiente_servir("geotextiles", 
+                               self.gpped, self.gppro, nombrecliente))
         if self.fpped != None and self.fpped != []:
-            informes.abrir_pdf(geninformes.pendiente_servir("fibra", self.fpped, self.fppro, nombrecliente))
+            informes.abrir_pdf(geninformes.pendiente_servir("fibra", 
+                               self.fpped, self.fppro, nombrecliente))
         if self.opped != None and self.opped != []:
-            informes.abrir_pdf(geninformes.pendiente_servir("otros", self.opped, self.oppro, nombrecliente))
+            informes.abrir_pdf(geninformes.pendiente_servir("otros", 
+                               self.opped, self.oppro, nombrecliente))
 
 
 if __name__ == '__main__':

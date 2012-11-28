@@ -9451,22 +9451,23 @@ def pendiente_servir(tipo, porpedido, porproducto, nombrecliente = ""):
         'pendiente_servir_%s_%s' % (tipo, give_me_the_name_baby()))
     titulo = 'Pdte. servir: %s%s' % (tipo,
         nombrecliente != "" and " - %s" % (nombrecliente) or "")
-    campos = [('Pedido',         8),
-              ('Fecha',          8),
-              ('Cliente',       22),
-              ('Producto',      22),
-              ('Pendiente',      9),
-              ('Stock total',    9),
-              ('Fecha',          8),
-              ('entrega',       14) ]
+    campos = [('Pedido',         9),
+              ('Fecha',          7),
+              ('Cliente',       19),
+              ('Producto',      19),
+              ('Pendiente',      8),
+              ('Stock total',    8),
+              ('Fecha',          7),
+              ('entrega',       12), 
+              ('Forma de pago', 11) ]
     datos = []
     for fila in porpedido:
         datos.append(fila[:-1])
-    datos.append(("", ) * 8)
-    datos.append(("", ) * 8)
+    datos.append(("", ) * 9)
+    datos.append(("", ) * 9)
     datos.append(("", ) * 3 + ("POR PRODUCTO:", ) + ("", ) * 4)
     #datos.append(("", ) * 3 + ("-"*30, ) + ("", ) * 4)
-    datos.append(("", ) * 3 + ("---", ) + ("", ) * 4)
+    datos.append(("", ) * 3 + ("---", ) + ("", ) * 5)
     for fila in porproducto:
         datos.append(("",
                       "",
@@ -9476,13 +9477,13 @@ def pendiente_servir(tipo, porpedido, porproducto, nombrecliente = ""):
                       fila[2],
                       fila[3],
                       ""))
-
     return imprimir2(archivo,
                      titulo,
                      campos,
                      datos,
                      fecha = mx.DateTime.localtime().strftime('%d/%m/%Y'),
-                     cols_a_derecha = (4, 5))
+                     cols_a_derecha = (4, 5), 
+                     apaisado = True)
 
 def consumo_fibra_produccion_gtx(datos, fecha = None):
     """
