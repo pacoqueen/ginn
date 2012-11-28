@@ -15434,6 +15434,40 @@ class SuperFacturaVenta:
             plazo = default
         return plazo
 
+    def get_plazo_pagado(self):
+        """
+        Devuelve el número de días transcurrido entre la fecha de la factura 
+        y el día en que se hizo realmente el pago (o se hará, si es un 
+        vencimiento futuro).
+        Si el pago no se ha hecho, devuelve None
+        """
+# TODO: PORASQUI
+        plazo = None
+        return plazo
+
+    def get_documento_pagado(self):
+        """
+        :returns: Devuelve una cadena con el documento de cobro entregado 
+                  por el cliente. None si no se ha llegado a documentar.
+        """
+# TODO: PORASQUI
+        documento = None
+        return documento
+
+    def get_str_cobro_real(self, default = ""):
+        """
+        :returns: Devuelve una cadena con el número de días reales 
+                  transcurridos hasta el vencimiento del cobro y el 
+                  documento de cobro real entregado por el cliente.
+                  Si la factura/prefactura/abono no ha sido cobrada
+                  todavía, devuelve la cadena recibida en "default".
+        """
+        plazo = self.get_plazo_pagado()
+        if plazo is not None:
+            documento = self.get_documento_pagado()
+            default = "%s, %d D. F. F." % (documento, plazo)
+        return default
+
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 class FacturaVenta(SQLObject, PRPCTOO, SuperFacturaVenta):

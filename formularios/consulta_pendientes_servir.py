@@ -51,8 +51,10 @@ except ImportError:
     sys.path.append(os.path.join('..','informes'))
     import geninformes
 from utils import _float as float
+from crm_seguimiento_impagos import show_fecha
 
-def buscar_pendiente_servir(cliente = None, padre = None, wids = None):
+def buscar_pendiente_servir(cliente = None, fini = None, ffin = None, 
+                            padre = None, wids = None):
     """
     Devuelve una tupla de 4 listas:
     pedidos pendientes de servir de fibra, total de fibra pendiente de servir 
@@ -73,12 +75,14 @@ def buscar_pendiente_servir(cliente = None, padre = None, wids = None):
     if pclases.ProductoVenta.select().count() > 0:
         vpro.set_valor(1/9.0, 
             "Analizando pedidos pendientes de servir (fibra)...")
-        fibra = build_diccionario_pendiente_servir(cliente, "fibra")
+        fibra = build_diccionario_pendiente_servir(cliente, "fibra", 
+                                                   fini, ffin)
         vpro.set_valor(2/9.0, 
             "Analizando pedidos pendientes de servir (geotextiles)...")
-        gtx = build_diccionario_pendiente_servir(cliente, "geotextiles")
+        gtx = build_diccionario_pendiente_servir(cliente, "geotextiles", 
+                                                 fini, ffin)
     vpro.set_valor(3/9.0, "Analizando pedidos pendientes de servir (otros)...")
-    otros = build_diccionario_pendiente_servir(cliente, "otros")
+    otros = build_diccionario_pendiente_servir(cliente, "otros", fini, ffin)
 
     if pclases.ProductoVenta.select().count() > 0:
         vpro.set_valor(4/9.0, 
@@ -217,15 +221,23 @@ def build_datos_por_pedido(fibra_o_gtx):
                     por_producto[producto] += pendiente
                     str_producto = producto.descripcion
                     str_fechaentrega = utils.str_fecha(fechaentrega)
-                    if not hasattr(producto, "controlExistencias") or producto.controlExistencias:
-                        if (hasattr(producto, "get_stock_A") and pendiente > producto.get_stock_A()) \
-                           or (not hasattr(producto, "get_stock_A") and pendiente > producto.get_stock()):
+                    if (not hasattr(producto, "controlExistencias") 
+                        or producto.controlExistencias):
+                        if (hasattr(producto, "get_stock_A") 
+                            and pendiente > producto.get_stock_A()) \
+                           or (not hasattr(producto, "get_stock_A") 
+                               and pendiente > producto.get_stock()):
                             str_producto = "-> %s" % (str_producto)
                         if pendiente > producto.get_stock():
                             str_producto = "-" + str_producto
                     str_existencias = producto.get_str_stock()
                     id = pedido.id
-                    if not hasattr(producto, "controlExistencias") or producto.controlExistencias:
+                    try:
+                        fdp = pedido.formaDePago.toString()
+                    except AttributeError:
+                        fdp = ""
+                    if (not hasattr(producto, "controlExistencias") 
+                        or producto.controlExistencias):
                         datos.append((numpedido,
                                       fechapedido,
                                       cliente, 
@@ -234,6 +246,7 @@ def build_datos_por_pedido(fibra_o_gtx):
                                       str_existencias, 
                                       str_fechaentrega, 
                                       textoentrega or "", 
+                                      fdp, 
                                       id))
                     else:
                         datos.append((numpedido, 
@@ -244,26 +257,36 @@ def build_datos_por_pedido(fibra_o_gtx):
                                       "-", 
                                       str_fechaentrega, 
                                       textoentrega or "", 
+                                      fdp, 
                                       id))
     return datos, por_producto
 
 
-def build_diccionario_pendiente_servir(cliente, tipo):
+def build_diccionario_pendiente_servir(cliente, tipo, fini, ffin):
     """
     Construye y devuelve un diccionario que será de la forma 
     LDPs_pendientes[pedido][producto][fecha_entrega][texto_entrega] = 
         cantidad_pendiente
+    fini y ffin son las fechas entre las que buscar o None si no hay filtro.
     """
     LDPs_pendientes = {}    
     # Pedidos no cerrados.
+    criterios = [pclases.PedidoVenta.q.cerrado == False]
+    if fini:
+        criterios.append(pclases.PedidoVenta.q.fecha >= fini)
+    if ffin:
+        criterios.append(pclases.PedidoVenta.q.fecha <= ffin)
     if cliente == None:
-        pedidos = pclases.PedidoVenta.select(
-            pclases.PedidoVenta.q.cerrado == False, orderBy = "numpedido")
+        if len(criterios) == 1:
+            pedidos = pclases.PedidoVenta.select(criterios[0], 
+                                                 orderBy = "numpedido")
+        else:
+            pedidos = pclases.PedidoVenta.select(pclases.AND(*criterios), 
+                                                 orderBy = "numpedido")
     else:
-        pedidos = pclases.PedidoVenta.select(pclases.AND(
-                pclases.PedidoVenta.q.cerrado == False,
-                pclases.PedidoVenta.q.clienteID == cliente.id), 
-            orderBy = "numpedido")
+        criterios.append(pclases.PedidoVenta.q.clienteID == cliente.id)
+        pedidos = pclases.PedidoVenta.select(pclases.AND(*criterios), 
+                                             orderBy = "numpedido")
     # Filtro todas las LDP y me quedo con las realmente pendientes del tipo 
     # especificado:
     for pedido in pedidos:
@@ -316,11 +339,37 @@ class PendientesServir(Ventana):
         self.usuario = usuario
         Ventana.__init__(self, 'consulta_pendientes_servir.glade', objeto)
         connections = {'b_salir/clicked': self.salir,
+                       'b_fechaini/clicked': self.set_inicio,
+                       'b_fechafin/clicked': self.set_fin, 
+                       'e_fechaini/focus-out-event': show_fecha, 
+                       'e_fechafin/focus-out-event': show_fecha, 
                        'b_imprimir/clicked': self.imprimir, 
                        'cbe_cliente/changed': self.cambiar_cliente} 
         self.add_connections(connections)
         self.inicializar_ventana()
         gtk.main()
+
+    def set_inicio(self, boton):
+        try:
+            temp = utils.mostrar_calendario(
+                    fecha_defecto = utils.parse_fecha(
+                        self.wids['e_fechaini'].get_text()), 
+                    padre = self.wids['ventana'])
+        except (ValueError, TypeError):
+            temp = utils.mostrar_calendario(
+                    padre = self.wids['ventana'])
+        self.wids['e_fechaini'].set_text(utils.str_fecha(temp))
+
+    def set_fin(self, boton):
+        try:
+            temp = utils.mostrar_calendario(
+                    fecha_defecto = utils.parse_fecha(
+                        self.wids["e_fechafin"].get_text()), 
+                    padre = self.wids['ventana'])
+        except (ValueError, TypeError):
+            temp = utils.mostrar_calendario(
+                    padre = self.wids['ventana'])
+        self.wids['e_fechafin'].set_text(utils.str_fecha(temp))
     
     def cambiar_cliente(self, cb):
         self.rellenar_tabla()
@@ -328,12 +377,30 @@ class PendientesServir(Ventana):
     def rellenar_tabla(self):
         idcliente = utils.combo_get_value(self.wids['cbe_cliente'])
         if idcliente >= 0:
+            try:
+                fini = utils.parse_fecha(self.wids['e_fechaini'].get_text())
+            except (TypeError, ValueError):
+                fini = None
+            try:
+                ffin = utils.parse_fecha(self.wids['e_fechafin'].get_text())
+            except (TypeError, ValueError):
+                ffin = None
             if idcliente != 0:
                 # Filtrar el cliente.
-                self.fpped, self.fppro, self.gpped, self.gppro, self.opped, self.oppro = buscar_pendiente_servir(cliente = pclases.Cliente.get(idcliente), padre = self.wids['ventana'])
+                (self.fpped, self.fppro, self.gpped, self.gppro, self.opped, 
+                 self.oppro) = buscar_pendiente_servir(
+                                cliente = pclases.Cliente.get(idcliente), 
+                                fini = fini, 
+                                ffin = ffin, 
+                                padre = self.wids['ventana'])
             else:
                 # No filtrarlo
-                self.fpped, self.fppro, self.gpped, self.gppro, self.opped, self.oppro = buscar_pendiente_servir(cliente = None, padre = self.wids['ventana'])
+                (self.fpped, self.fppro, self.gpped, self.gppro, self.opped, 
+                 self.oppro) = buscar_pendiente_servir(
+                                cliente = None, 
+                                fini = fini, 
+                                ffin = ffin, 
+                                padre = self.wids['ventana'])
             tvs = []
             if pclases.ProductoVenta.select().count() > 0:
                 tvs += [(self.fpped, 'tv_fibra_por_pedido'), 
@@ -356,7 +423,8 @@ class PendientesServir(Ventana):
         idpedido = model[path][-1]
         if idpedido > 0:
             import pedidos_de_venta
-            v = pedidos_de_venta.PedidosDeVenta(pclases.PedidoVenta.get(idpedido), usuario = self.usuario)
+            v = pedidos_de_venta.PedidosDeVenta(
+                    pclases.PedidoVenta.get(idpedido), usuario = self.usuario)
 
     def inicializar_ventana(self):
         """
@@ -371,9 +439,14 @@ class PendientesServir(Ventana):
                 ('Cliente', 'gobject.TYPE_STRING', False, True, False, None), 
                 ('Producto', 'gobject.TYPE_STRING', False, True, False, None), 
                 ('Pendiente', 'gobject.TYPE_STRING', False, True, False, None), 
-                ('Existencias totales', 'gobject.TYPE_STRING', False, True, False, None), 
-                ('Fecha entrega', 'gobject.TYPE_STRING', False, True, False, None), 
-                ('Texto entrega', 'gobject.TYPE_STRING', False, True, False, None), 
+                ('Existencias totales', 'gobject.TYPE_STRING', 
+                    False, True, False, None), 
+                ('Fecha entrega', 'gobject.TYPE_STRING', 
+                    False, True, False, None), 
+                ('Texto entrega', 'gobject.TYPE_STRING', 
+                    False, True, False, None), 
+                ("Forma de cobro", "gobject.TYPE_STRING", 
+                    False, True, False, None), 
                 ('IDPedido', 'gobject.TYPE_INT64', False, False, False, None))
         utils.preparar_listview(self.wids['tv_fibra_por_pedido'], cols)
         utils.preparar_listview(self.wids['tv_gtx_por_pedido'], cols)
@@ -411,6 +484,9 @@ class PendientesServir(Ventana):
             self.wids['notebook1'].remove_page(1)
             self.wids['notebook1'].remove_page(0)
             self.wids['notebook1'].set_current_page(-1)
+        self.wids['e_fechaini'].set_text("")    # fechaini = None
+        self.wids['e_fechafin'].set_text(
+                utils.str_fecha(mx.DateTime.localtime()))
     
     def colorear(self, tv):
         """

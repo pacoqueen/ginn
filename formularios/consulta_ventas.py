@@ -1099,12 +1099,10 @@ class ConsultaVentas(Ventana):
         self.wids['e_fechainicio'].set_text(utils.str_fecha(temp))
         self.inicio = str(temp[2])+'/'+str(temp[1])+'/'+str(temp[0])
 
-
     def set_fin(self, boton):
         temp = utils.mostrar_calendario(padre = self.wids['ventana'])
         self.wids['e_fechafin'].set_text(utils.str_fecha(temp))
         self.fin = str(temp[2])+'/'+str(temp[1])+'/'+str(temp[0])
-
 
     def por_fecha(self, e1, e2):
         """

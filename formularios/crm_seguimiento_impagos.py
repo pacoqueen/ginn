@@ -154,8 +154,8 @@ class CRM_SeguimientoImpagos(Ventana):
                        'b_drop_todo/clicked': self.drop_todo, 
                        'b_expandir/clicked': self.expandir_facturas, 
                        'b_contraer/clicked': self.contraer_facturas, 
-                       'e_fechaini/focus-out-event': self.show_fecha, 
-                       'e_fechafin/focus-out-event': self.show_fecha, 
+                       'e_fechaini/focus-out-event': show_fecha, 
+                       'e_fechafin/focus-out-event': show_fecha, 
                        'b_abrir/clicked': self.abrir_facturas_seleccionadas, 
                        'b_asignar_obra/clicked': self.asignar_obra, 
                        'b_cambiar_cliente/clicked': self.cambiar_cliente
@@ -236,17 +236,6 @@ class CRM_SeguimientoImpagos(Ventana):
         self.wids['e_fechafin'].set_text(
             utils.str_fecha(mx.DateTime.localtime()))
         gtk.main()
-
-    def show_fecha(self, entry, event):
-        """
-        Muestra la fecha en modo texto después de parsearla.
-        """
-        if entry.get_text():
-            try:
-                entry.set_text(utils.str_fecha(utils.parse_fecha(
-                    entry.get_text())))
-            except (ValueError, TypeError):
-                entry.set_text(utils.str_fecha(mx.DateTime.localtime()))
 
     def expandir_facturas(self, boton):
         """
@@ -1123,6 +1112,18 @@ class CRM_SeguimientoImpagos(Ventana):
         from informes import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
+
+
+def show_fecha(entry, event):
+    """
+    Muestra la fecha en modo texto después de parsearla.
+    """
+    if entry.get_text():
+        try:
+            entry.set_text(utils.str_fecha(utils.parse_fecha(
+                entry.get_text())))
+        except (ValueError, TypeError):
+            entry.set_text(utils.str_fecha(mx.DateTime.localtime()))
 
 
 if __name__ == '__main__':
