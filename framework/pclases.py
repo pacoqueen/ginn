@@ -17204,6 +17204,7 @@ class Empleado(SQLObject, PRPCTOO):
     diasAsuntosPropiosRestantes = property(get_diasAsuntosPropiosRestantes, doc = "Días de ausencia por asuntos propios restantes para el año en curso.")
 
     def calcular_horas_produccion(self, fechaini, fechafin):
+        # UNUSED, NOT TESTED
         """
         Devuelve el tiempo trabajado en partes de producción en horas en forma 
         de diccionario de fibras, geotextiles y geocompuestos:
@@ -17237,7 +17238,7 @@ class Empleado(SQLObject, PRPCTOO):
         for parte in partes:
             for ht in parte.horasTrabajadas:
                 if ht.empleado == self:
-                    dia = parte.get_fechalaboral()
+                    fecha = parte.get_fechalaboral()
                     if parte.es_de_fibra():
                         tipo = "fibra"
                     elif parte.es_de_geotextiles():
@@ -17247,10 +17248,16 @@ class Empleado(SQLObject, PRPCTOO):
                                           "ras_produccion -> El parte no es "\
                                           "de fibra ni de geotextiles. ¿Ya s"\
                                           "e ha abierto la línea de geocompu"\
-                                          "estos? ¿Y yo con estos pelos?"
-                    if dia not in dias[tipo]:
-                        dias[tipo][dia] = {"dia": mx.DateTime.DateTimeDelta(0)}
-                        # TODO: PORASQUI
+                                          "estos y yo con estos pelos?"
+                    try:
+                        dias[tipo][fecha]["día"] += ht.horas_dia
+                    except KeyError:
+                        dias[tipo][fecha]["día"] = ht.horas_dia
+                    try:
+                        dias[tipo][fecha]["noche"] += ht.horas_noche
+                    except KeyError:
+                        dias[tipo][fecha]["noche"] = ht.horas_noche
+        return dias
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
@@ -17288,6 +17295,33 @@ class HorasTrabajadas(SQLObject, PRPCTOO):
     # Por coherencia con el resto de clases
     parteDeProduccion = property(get_parteDeProduccion, set_parteDeProduccion)
     # Por coherencia con el resto de clases
+
+    def get_horas_dia(self):
+        """
+        :returns: DateTimeDelta con el número de horas trabajadas entre 
+                  las 6:00 y las 22:00.
+        """
+        horainicio = mx.DateTime.TimeFrom(self.parteDeProduccion.horainicio)
+        horafin = horainicio + self.horas
+        NOCHE = mx.DateTime.DateTimeDeltaFrom(22*60*60)
+        DIA = mx.DateTime.DateTimeDeltaFrom(6*60*60)
+        if horainicio >= DIA:
+            horasdia = mx.DateTime.DateTimeDeltaFrom(self.horas)
+            if horafin > NOCHE:
+                horasdia -= (horafin - NOCHE)
+        else:
+            horasdia = horafin - DIA
+        return horasdia
+
+    def get_horas_noche(self):
+        """
+        :returns: DateTimeDelta con el número de horas transcurridas entre 
+                  22:00 y las 6:00.
+        """
+        return mx.DateTime.DateTimeDeltaFrom(self.horas) - self.get_horas_dia()
+
+    horas_dia = property(get_horas_dia)
+    horas_noche = property(get_horas_noche)
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
