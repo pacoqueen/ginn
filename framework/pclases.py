@@ -2738,6 +2738,22 @@ class Cobro(SQLObject, PRPCTOO):
                             cobrado += compromiso_cobro.cantidad
         return cobrado  # 0.0 es False.
 
+    def get_fechaVencimiento(self):
+        """
+        Devuelve la fecha de vencimiento del documento de pago asociado 
+        al cobro. Si la forma de pago no lleva vencimiento devolverá la 
+        fecha en que se hace real en que se hace el cobro.
+        """
+        if self.confirming:
+            res = self.confirming.fechaVencimiento
+        elif self.pagareCobro:
+            res = self.pagareCobro.fechaVencimiento
+        else:
+            res = self.fecha
+        return res
+
+    fechaVencimiento = property(get_fechaVencimiento)
+
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 class PagareCobro(SQLObject, PRPCTOO):
@@ -15441,8 +15457,14 @@ class SuperFacturaVenta:
         vencimiento futuro).
         Si el pago no se ha hecho, devuelve None
         """
-# TODO: PORASQUI
-        plazo = None
+        plazos = utils.unificar([c.fechaVencimiento for c in self.cobros])
+        # Devuelvo el mayor de los plazos porque esta función va a servir 
+        # para medir la desviación respecto a la forma de pago original y 
+        # queremos saber el peor de los casos.
+        try:
+            plazo = max(plazos)
+        except ValueError:
+            plazo = None
         return plazo
 
     def get_documento_pagado(self):
@@ -15450,8 +15472,12 @@ class SuperFacturaVenta:
         :returns: Devuelve una cadena con el documento de cobro entregado 
                   por el cliente. None si no se ha llegado a documentar.
         """
-# TODO: PORASQUI
-        documento = None
+        docs = utils.unificar([c.documentoDePago for c in self.cobros])
+        if not docs:
+            documento = None
+        else:   # Nunca se da el caso de varios documentos para un cobro, pero 
+                # por si acaso...
+            documento = ", ".join()# PORASQUI
         return documento
 
     def get_str_cobro_real(self, default = ""):
