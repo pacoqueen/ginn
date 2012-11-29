@@ -122,6 +122,7 @@ from select import select
 from configuracion import ConfigConexion
 
 import mx, mx.DateTime
+from math import ceil
 
 # GET FUN !
 
@@ -2752,7 +2753,111 @@ class Cobro(SQLObject, PRPCTOO):
             res = self.fecha
         return res
 
+    @staticmethod
+    def _parse_fdp(txt, force_create = False):
+        try:
+            plazo = int(rex.findall(txt)[0])
+        except (IndexError, TypeError, ValueError):
+            if "CONTADO" in txt:
+                plazo = 0
+            else:
+                return None
+        if not ((plazo % 15) == 0 and (0 <= plazo <= 365)):
+            return None
+        documento = txt.split(",")[0]
+        documento_de_pago = Cobro._parse_docpago(documento)
+        if not documento_de_pago:
+            return None
+        try:
+            fdp = FormaDePago.select(AND(
+                    FormaDePago.q.plazo == plazo, 
+                    FormaDePago.q.documentoDePagoID == documento_de_pago.id
+                ))[0]
+        except IndexError:
+            # Aquí me aseguro, ya que el documento de pago es válido, de 
+            # crear la forma de pago correcta si así se me ha indicado.
+            if force_create:
+                fdp = FormaDePago(plazo = plazo, 
+                                  documentoDePago = documento_de_pago)
+            else:
+                fdp = None
+        return fdp
+
+    @staticmethod
+    def _parse_docpago(txt):
+        txt = txt.upper()
+        if ("PAGAR" in txt or "PGR" in txt) and "ORD" in txt:
+            # CWT: Si no se especifica si es a la orden o no a la orden, 
+            # entonces tengo que respetar lo que decía el vencimiento 
+            # textualmente.
+            if " NO ":
+                doc = DocumentoDePago.selectBy(
+                        documento = "Pagaré no a la orden")[0]
+            else:
+                doc = DocumentoDePago.selectBy(
+                        documento = "Pagaré a la orden")[0]
+        elif "CONFIRMING" in txt:
+            doc = DocumentoDePago.selectBy(
+                    documento = "Confirming")[0]
+        elif "CONTADO" in txt or "EFECTIVO" in txt:
+            doc = DocumentoDePago.selectBy(
+                    documento = "Contado")[0]
+        elif "TRANSF" in txt:
+            doc = DocumentoDePago.selectBy(
+                    documento = "Transferencia bancaria")[0]
+        elif "NO A LA ORDEN" in txt:
+            doc = DocumentoDePago.selectBy(
+                    documento = "Pagaré no a la orden")[0]
+        elif "CHEQUE" in txt:
+            doc = DocumentoDePago.selectBy(
+                    documento = "Cheque")[0]
+        elif "CARTA" in txt:
+            doc = DocumentoDePago.selectBy(
+                    documento = "Carta de crédito")[0]
+        # TODO: Falta recibo. Pero no me han dicho nada. Tampoco si cuando dice 
+        #       "PAGARÉ" es a la orden o no a la orden.
+        else:
+            doc = None
+        return doc
+
+    def get_documentoDePago(self):
+        """
+        :returns: Un objeto DocumentoDePago concordante con el 
+                  usado en el cobro. Si no se puede determinar devuelve 
+                  lo que ponga literalmente en la cadena de texto almacenada 
+                  en los vencimientos. Y si la factura no tiene vencimientos, 
+                  entonces devuelve None (caso altamente improbable).
+        """
+        doc = None
+        vencimiento = None
+        vtoscobros = self.facturaVenta.emparejar_vencimientos()
+        for vto in vtoscobros['vtos']:
+            if self in vtoscobros[vto]:
+                vencimiento = vto
+        if vencimiento:
+            doc = Cobro._parse_docpago(vencimiento.observaciones)
+        if not doc:
+            if self.confirming:
+                try:
+                    doc = DocumentoDePago.selectBy(documento = "Confirming")[0]
+                except IndexError:
+                    doc = None
+        if not doc: # No puedo tirar del vencimiento que corresponde al cobro. 
+                    # Tiro del primero de ellos, que es el caso más común.
+            try:
+                vto = self.facturaVenta.vencimientosCobro[0]
+                try:
+                    doc = vto.observaciones.split(",")[0]
+                except IndexError:
+                    doc = vto.observaciones
+            except IndexError:
+                # Ni siquiera tiene vencimientos, tendré que devolver 
+                # None ¿Qué hago si no? 
+                doc = None
+        return doc
+
     fechaVencimiento = property(get_fechaVencimiento)
+    documentoDePago = property(get_documentoDePago)
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
@@ -15458,6 +15563,7 @@ class SuperFacturaVenta:
         Si el pago no se ha hecho, devuelve None
         """
         plazos = utils.unificar([c.fechaVencimiento for c in self.cobros])
+        plazos = ([ceil((f - self.fecha).days) for f in plazos])
         # Devuelvo el mayor de los plazos porque esta función va a servir 
         # para medir la desviación respecto a la forma de pago original y 
         # queremos saber el peor de los casos.
@@ -15472,12 +15578,18 @@ class SuperFacturaVenta:
         :returns: Devuelve una cadena con el documento de cobro entregado 
                   por el cliente. None si no se ha llegado a documentar.
         """
-        docs = utils.unificar([c.documentoDePago for c in self.cobros])
-        if not docs:
+        strings_cobros = []
+        for c in self.cobros:
+            doc = c.documentoDePago
+            if isinstance(doc, DocumentoDePago):
+                strings_cobros.append(doc.documento)
+            else:
+                if doc:     # Puede ser None
+                    strings_cobros.append(doc)  # que ya es una cadena
+        if not strings_cobros:
             documento = None
-        else:   # Nunca se da el caso de varios documentos para un cobro, pero 
-                # por si acaso...
-            documento = ", ".join()# PORASQUI
+        else:
+            documento = ", ".join(strings_cobros)
         return documento
 
     def get_str_cobro_real(self, default = ""):
@@ -15491,7 +15603,10 @@ class SuperFacturaVenta:
         plazo = self.get_plazo_pagado()
         if plazo is not None:
             documento = self.get_documento_pagado()
-            default = "%s, %d D. F. F." % (documento, plazo)
+            if documento is None:  # Viene de una factura sin vencimientos.
+                pass
+            else:
+                default = "%s, %d D. F. F." % (documento, plazo)
         return default
 
 cont, tiempo = print_verbose(cont, total, tiempo)

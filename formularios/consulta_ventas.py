@@ -676,7 +676,7 @@ class ConsultaVentas(Ventana):
                 fdp = fra.vencimientosCobro[0].observaciones
             except (AttributeError, IndexError):
                 fdp = ""
-            fdpreal = fra.get_str_cobro_real()      # PORASQUI
+            fdpreal = fra.get_str_cobro_real()
         if lda.albaranSalida != None and lda.albaranSalida.cliente != None:
             cliente = lda.albaranSalida.cliente.nombre
         elif fra != None and fra.cliente != None:
@@ -796,6 +796,7 @@ class ConsultaVentas(Ventana):
         if fra == None:
             factura = ""
             fdp = ""
+            fdpreal = ""
             #if pedido != "":
             #    fdp = pedido.formaDePago and pedido.formaDePago.toString() or ""
             #else:
@@ -806,6 +807,7 @@ class ConsultaVentas(Ventana):
                 fdp = fra.vencimientosCobro[0].observaciones
             except (IndexError, AttributeError):
                 fdp = ""
+            fdpreal = fra.get_str_cobro_real()
         if ldd.albaranSalida != None and ldd.albaranSalida.cliente != None:
             cliente = ldd.albaranSalida.cliente.nombre
         elif fra != None and fra.cliente != None:
@@ -923,7 +925,7 @@ class ConsultaVentas(Ventana):
         fra = i.facturaVenta or i.prefactura
         if fra == None:
             factura = ""
-            fdp = ""
+            fdp = fdpreal = ""
             #if pedido != "":
             #    fdp = pedido.formaDePago and pedido.formaDePago.toString() or ""
             #else:
@@ -934,6 +936,7 @@ class ConsultaVentas(Ventana):
                 fdp = fra.vencimientosCobro[0].observaciones
             except (IndexError, AttributeError):
                 fdp = ""
+            fdpreal = fra.get_str_cobro_real()
         if i.albaranSalida != None and i.albaranSalida.cliente != None:
             cliente = i.albaranSalida.cliente.nombre
         elif fra != None and fra.cliente != None:
@@ -1039,8 +1042,7 @@ class ConsultaVentas(Ventana):
             pedido = i.pedidoVenta.numpedido
         fra = i.facturaVenta or i.prefactura
         if fra == None:
-            fdp = ""
-            factura = ""
+            fdp = factura = fdpreal = ""
             #if pedido != "":
             #    fdp = pedido.formaDePago and pedido.formaDePago.toString() or ""
             #else:
@@ -1051,6 +1053,7 @@ class ConsultaVentas(Ventana):
                 fdp = fra.vencimientosCobro[0].observaciones
             except (IndexError, AttributeError):
                 fdp = ""
+            fdpreal = fra.get_str_cobro_real()
         if i.albaranSalida != None and i.albaranSalida.cliente != None:
             cliente = i.albaranSalida.cliente.nombre
         elif fra != None and fra.cliente != None:
@@ -1292,6 +1295,7 @@ class ConsultaVentas(Ventana):
                         #    fdp = factura.cliente.get_texto_forma_cobro()
                         #except (IndexError, AttributeError):
                         #    ftp = ""
+                fdpreal = factura.get_str_cobro_real()
                 model.append(padre, 
                         ("", 
                          factura.cliente.cif, 
@@ -1363,6 +1367,7 @@ class ConsultaVentas(Ventana):
                 facturado = factura.dividir_total_por_comercial()[comercial]
                 beneficio=factura.dividir_beneficio_por_comercial()[comercial]
                 totfactura = factura.calcular_importe_total()
+                fdpreal = factura.get_str_cobro_real()
                 model.append(padre, 
                              (factura.numfactura, 
                               factura.vencimientosCobro 
@@ -1440,6 +1445,7 @@ class ConsultaVentas(Ventana):
                 facturado = factura.dividir_total_por_proveedor()[proveedor]
                 beneficio=factura.dividir_beneficio_por_proveedor()[proveedor]
                 totfactura = factura.calcular_importe_total()
+                fdpreal = factura.get_str_cobro_real()
                 model.append(padre, 
                              (factura.numfactura, 
                               factura.vencimientosCobro 
