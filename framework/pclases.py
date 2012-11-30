@@ -2872,8 +2872,40 @@ class Cobro(SQLObject, PRPCTOO):
         """
         fechafra = self.facturaVenta.fecha
         fechavto = self.fechaVencimiento
-        res = ceil((fechavto - fechafra).days)
+        res = int(ceil((fechavto - fechafra).days))
         return res
+
+    def calc_diferencia_plazo_pago(self):
+        """
+        :returns: Número entero con la diferencia en días entre el plazo 
+                  de pago que tenía el vencimiento y el plazo de pago real 
+                  que ha acabado teniendo el documento de cobro.
+                  Se calcula restando a la fecha de vencimiento del cobro 
+                  la fecha de vencimiento original.
+                  Si el cobro no tiene factura o la factura no tiene 
+                  vencimientos, etc. Devuelve None.
+        """
+        retraso = None
+        try:
+            vtoscobros = self.facturaVenta.emparejar_vencimientos()
+        except AttributeError:
+            retraso = None  # No tiene factura el cobro. WTF? 
+        else:
+            fechavto = None
+            for vto in vtoscobros["vtos"]:
+                if self in vtoscobros[vto]:
+                    fechavto = vto.fecha
+                    break
+            if fechavto is None:
+                try:        # Pruebo con el último vencimiento.
+                    fechavto = vto.fecha
+                except (AttributeError, NameError): 
+                    retraso = None # No tiene vencimientos la fra.
+            try:
+                retraso = int(ceil((self.fechaVencimiento - fechavto).days))
+            except (AttributeError, TypeError, ValueError):
+                retraso = None
+        return retraso
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
