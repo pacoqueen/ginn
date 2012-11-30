@@ -181,6 +181,7 @@ class ConsultaVentas(Ventana):
         tv = self.wids['tv_comercial']
         tv.get_column(2).get_cell_renderers()[0].set_property('xalign', 1) 
         tv.get_column(3).get_cell_renderers()[0].set_property('xalign', 1) 
+        tv.get_column(4).get_cell_renderers()[0].set_property('xalign', 1) 
         tv.connect("row-activated", self.abrir_factura_o_comercial)
         self.wids['ch_servicios'].set_active(True)  # Por defecto lo voy a 
             # activar para que se vean las ventas totales en la nueva pestaña

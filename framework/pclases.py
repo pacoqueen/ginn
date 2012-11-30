@@ -2662,10 +2662,12 @@ class Cobro(SQLObject, PRPCTOO):
             self.facturaVenta.cliente = cliente
         if self.prefacturaID != None:
             self.prefactura.cliente = cliente
-        if self.facturaDeAbonoID != None and self.facturaDeAbono.abonoID != None:
+        if (self.facturaDeAbonoID != None 
+            and self.facturaDeAbono.abonoID != None):
             self.facturaDeAbono.abono.cliente = cliente
 
-    cliente = property(get_cliente, set_cliente, doc = "Cliente relacionado con el cobro.")
+    cliente = property(get_cliente, set_cliente, 
+                       doc = "Cliente relacionado con el cobro.")
     numfactura = property(get_numfactura, doc = get_numfactura.__doc__)
 
     def esta_cobrado(self, fecha_base = None, gato_en_talega = False):
@@ -2831,29 +2833,31 @@ class Cobro(SQLObject, PRPCTOO):
         doc = None
         vencimiento = None
         vtoscobros = self.facturaVenta.emparejar_vencimientos()
-        for vto in vtoscobros['vtos']:
-            if self in vtoscobros[vto]:
-                vencimiento = vto
-        if vencimiento:
-            doc = Cobro._parse_docpago(vencimiento.observaciones)
+        doc = Cobro._parse_docpago(self.observaciones)
         if not doc:
-            if self.confirming:
+            for vto in vtoscobros['vtos']:
+                if self in vtoscobros[vto]:
+                    vencimiento = vto
+            if vencimiento:
+                doc = Cobro._parse_docpago(vencimiento.observaciones)
+            if not doc:
+                if self.confirming:
+                    try:
+                        doc = DocumentoDePago.selectBy(documento = "Confirming")[0]
+                    except IndexError:
+                        doc = None
+            if not doc: # No puedo tirar del vencimiento que corresponde al cobro. 
+                        # Tiro del primero de ellos, que es el caso más común.
                 try:
-                    doc = DocumentoDePago.selectBy(documento = "Confirming")[0]
+                    vto = self.facturaVenta.vencimientosCobro[0]
+                    try:
+                        doc = vto.observaciones.split(",")[0]
+                    except IndexError:
+                        doc = vto.observaciones
                 except IndexError:
+                    # Ni siquiera tiene vencimientos, tendré que devolver 
+                    # None ¿Qué hago si no? 
                     doc = None
-        if not doc: # No puedo tirar del vencimiento que corresponde al cobro. 
-                    # Tiro del primero de ellos, que es el caso más común.
-            try:
-                vto = self.facturaVenta.vencimientosCobro[0]
-                try:
-                    doc = vto.observaciones.split(",")[0]
-                except IndexError:
-                    doc = vto.observaciones
-            except IndexError:
-                # Ni siquiera tiene vencimientos, tendré que devolver 
-                # None ¿Qué hago si no? 
-                doc = None
         return doc
 
     fechaVencimiento = property(get_fechaVencimiento)
