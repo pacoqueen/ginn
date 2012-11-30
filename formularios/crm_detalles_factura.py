@@ -139,6 +139,8 @@ class CRM_DetallesFactura(Ventana):
                 ("Importe", 'gobject.TYPE_STRING', False, True, False, None),
                 ("Observaciones", 'gobject.TYPE_STRING', 
                     True, True, False, self.cambiar_observaciones_pagare),
+                ("Plazo pago real", "gobject.TYPE_INT", 
+                    False, True, False, None), 
                 ("PUID", 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_listview(self.wids['tv_documentos_pago'], cols)
         self.wids['tv_documentos_pago'].connect("row-activated",
@@ -389,7 +391,9 @@ class CRM_DetallesFactura(Ventana):
             model.append((o.codigo, utils.str_fecha(o.fechaRecepcion), 
                           utils.str_fecha(o.fechaCobro), 
                           utils.float2str(o.cantidad), 
-                          o.observaciones, o.get_puid()))
+                          o.observaciones, 
+                          c.calc_plazo_pago_real(), 
+                          o.get_puid()))
 
     def adjuntar(self, boton):
         """

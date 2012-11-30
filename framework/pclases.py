@@ -2863,6 +2863,18 @@ class Cobro(SQLObject, PRPCTOO):
     fechaVencimiento = property(get_fechaVencimiento)
     documentoDePago = property(get_documentoDePago)
 
+    def calc_plazo_pago_real(self):
+        """
+        :returns: Devuelve un número entero con los días que han transcurrido 
+                  desde la fecha de la factura hasta la del cobro real o el 
+                  vencimiento del documento del cobro. Si ocurre algún 
+                  error, devuelve None.
+        """
+        fechafra = self.facturaVenta.fecha
+        fechavto = self.fechaVencimiento
+        res = ceil((fechavto - fechafra).days)
+        return res
+
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 class PagareCobro(SQLObject, PRPCTOO):
@@ -15566,8 +15578,8 @@ class SuperFacturaVenta:
         vencimiento futuro).
         Si el pago no se ha hecho, devuelve None
         """
-        plazos = utils.unificar([c.fechaVencimiento for c in self.cobros])
-        plazos = ([ceil((f - self.fecha).days) for f in plazos])
+        plazos = utils.unificar([c.calc_plazo_pago_real() 
+                                 for c in self.cobros])
         # Devuelvo el mayor de los plazos porque esta función va a servir 
         # para medir la desviación respecto a la forma de pago original y 
         # queremos saber el peor de los casos.
