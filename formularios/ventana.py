@@ -950,7 +950,8 @@ class Ventana:
         """
         txt2log = "%s%s -> " % (
                     self.usuario and self.usuario.usuario + ": " or "", 
-                    hasattr(self, "__class__") and `self.__class__` or "")
+                    hasattr(self, "__class__") and self.__class__.__name__ 
+                        or "")
         txt2log += texto 
         if more_info:
             txt2log += " (" + \
