@@ -168,7 +168,7 @@ class ConsultaPendientesVtoBueno(Ventana):
         Dadas fecha de inicio y de fin, lista todos los albaranes
         pendientes de facturar.
         """
-        if self.inicio == None:
+        if not self.inicio:
             facturas = pclases.FacturaCompra.select(pclases.FacturaCompra.q.fecha <= self.fin, orderBy = 'fecha')
         else:
             facturas = pclases.FacturaCompra.select(sqlobject.AND(pclases.FacturaCompra.q.fecha >= self.inicio,pclases.FacturaCompra.q.fecha <= self.fin), orderBy='fecha')       
