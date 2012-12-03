@@ -665,12 +665,13 @@ CREATE TABLE almacen(
     fax TEXT DEFAULT '',
     email TEXT DEFAULT '',
     pais TEXT DEFAULT 'España', 
-    principal BOOLEAN DEFAULT TRUE  --OJO: solo se usará el primero de los 
+    principal BOOLEAN DEFAULT TRUE, --OJO: solo se usará el primero de los 
                     -- almacenes principales definidos (en caso de que por 
                     -- error se crearan varios). Si el almacén es principal 
                     -- la producción y los consumos de las líneas se harán 
                     -- directamente en él.
     -- ¿Llegaremos a necesitar datos GIS?
+    activo BOOLEAN DEFAULT TRUE
 );
 
 --------------------------
