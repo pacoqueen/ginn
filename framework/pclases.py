@@ -6465,7 +6465,7 @@ class LineaDeVenta(SQLObject, PRPCTOO, Venta):
             elif self.productoVenta.es_caja():
                 try:
                     cantidad = utils.float2str(self.cantidad / 
-                        self.productoVenta.camposEspecificosBala.gramos, 0)
+                       self.productoVenta.camposEspecificosBala.gramosBolsa, 0)
                 except ZeroDivisionError:
                     cantidad = "0"
                 unidad = "bolsa"
