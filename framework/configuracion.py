@@ -102,6 +102,7 @@ class ConfigConexion:
             print "ERROR: configuracion::__set_conf -> Fichero de configuración %s no encontrado." % (fileconf)
         else:
             self.__conf = self.__parse()
+            self.__fileconf.close()
 
     def set_file(self, fileconf):
         """
