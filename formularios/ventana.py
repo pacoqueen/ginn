@@ -103,7 +103,8 @@ class Ventana:
         #                                    encoding = "utf-8")
         formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
         hdlr.setFormatter(formatter)
-        self.logger.addHandler(hdlr)
+        if not self.logger.handlers:    # Primera vez no hay handlers. Añado:
+            self.logger.addHandler(hdlr)
         # self.logger.setLevel(logging.INFO)
         self.wids = Widgets(glade)
         self.handlers_id = dict([(w, {}) for w in self.wids.keys()])
