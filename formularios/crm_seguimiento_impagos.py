@@ -727,31 +727,37 @@ class CRM_SeguimientoImpagos(Ventana):
         """
         model = tv.get_model()
         id = model[path][-1]
-        if model[path].parent:  # Es nodo hijo: abono o factura.
-            if id > 0:  # Si es negativo es un ID de cliente. No me interesa.
-                fra = pclases.FacturaVenta.get(id)
-                #import facturas_venta
-                #v = facturas_venta.FacturasVenta(fra, usuario = self.usuario)
-                import crm_detalles_factura
-                v = crm_detalles_factura.CRM_DetallesFactura(fra, 
-                                                        usuario = self.usuario)
-                # Actualizo último evento porque probablemente lo haya cambiado
-                # en la ventana recién abierta. El resto de datos de la 
-                # factura debería permanecer tal cual (¿A excepción de los 
-                # vencimientos? No creo. No se renegocian... o no debería.).
-                last_evento = fra.get_last_evento()
-                if last_evento:
-                    last_evento = "[%s] %s" % (
-                        utils.str_fechahora(last_evento.fechahora), 
-                        last_evento.texto)
-                else:
-                    last_evento = ""
-                model[path][5] = last_evento
-            elif id < 0:   # Ahora los id negativos son de abonos, no clientes.
-                fda = pclases.FacturaDeAbono.get(-id)
-                a = fda.abono
-                import abonos_venta
-                v = abonos_venta.AbonosVenta(a, usuario = self.usuario)
+        if model[path].parent:  # Es nodo hijo: abono, factura u obra.
+            if model[path].parent.parent: # Es abono o factura
+                if id > 0:  # Si es negativo es un ID de cliente. No me interesa.
+                    fra = pclases.FacturaVenta.get(id)
+                    #import facturas_venta
+                    #v = facturas_venta.FacturasVenta(fra, usuario = self.usuario)
+                    import crm_detalles_factura
+                    v = crm_detalles_factura.CRM_DetallesFactura(fra, 
+                                                            usuario = self.usuario)
+                    # Actualizo último evento porque probablemente lo haya cambiado
+                    # en la ventana recién abierta. El resto de datos de la 
+                    # factura debería permanecer tal cual (¿A excepción de los 
+                    # vencimientos? No creo. No se renegocian... o no debería.).
+                    last_evento = fra.get_last_evento()
+                    if last_evento:
+                        last_evento = "[%s] %s" % (
+                            utils.str_fechahora(last_evento.fechahora), 
+                            last_evento.texto)
+                    else:
+                        last_evento = ""
+                    model[path][5] = last_evento
+                elif id < 0:   # Ahora los id negativos son de abonos, no clientes.
+                    fda = pclases.FacturaDeAbono.get(-id)
+                    a = fda.abono
+                    import abonos_venta
+                    v = abonos_venta.AbonosVenta(a, usuario = self.usuario)
+            else:   # Es obra. Abro... ¿cliente?
+                idcliente = model[path].parent[-1]
+                cliente = pclases.Cliente.get(idcliente)
+                import clientes
+                v = clientes.Clientes(cliente, usuario = self.usuario)
         else:
             cliente = pclases.Cliente.get(id)
             import clientes
