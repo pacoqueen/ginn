@@ -76,7 +76,8 @@ class ConsultaExistenciasPorAlmacen(Ventana):
                 ('Producto', 'gobject.TYPE_STRING', False, True, True, None),
                 ("Total", "gobject.TYPE_STRING", False, True, False, None), 
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None)]
-        for a in pclases.Almacen.select(orderBy = "-id"):
+        for a in pclases.Almacen.select(pclases.Almacen.q.activo == True, 
+                                        orderBy = "-id"):
             # Por cada almacén una columna en el treeview 
             cols.insert(2, (a.nombre, "gobject.TYPE_STRING", 
                             False, True, False, None))
@@ -164,7 +165,8 @@ class ConsultaExistenciasPorAlmacen(Ventana):
         txtvpro = "Recuperando existencias por almacén..."
         i = 0.0
         vpro.set_valor(i, txtvpro)
-        almacenes = pclases.Almacen.select(orderBy = "id")
+        almacenes = pclases.Almacen.select(pclases.Almacen.q.activo == True, 
+                                           orderBy = "id")
         itotal = (pclases.ProductoCompra.select(
                     pclases.ProductoCompra.q.obsoleto == False).count() 
                  + pclases.ProductoVenta.select().count())
@@ -239,7 +241,8 @@ class ConsultaExistenciasPorAlmacen(Ventana):
             titulo = "Existencias por almacén"
         else:
             pagina = 0
-            almacenes = pclases.Almacen.select(orderBy = "id")
+            almacenes = pclases.Almacen.select(pclases.Almacen.q.activo==True,
+                                               orderBy = "id")
             for a in almacenes:
                 pagina += 1
                 if pagina == pagina_activa:

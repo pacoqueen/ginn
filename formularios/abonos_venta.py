@@ -177,7 +177,9 @@ class AbonosVenta(Ventana):
         self.wids['e_cantidad'].set_alignment(1.0)
         utils.rellenar_lista(self.wids['cbe_almacen'], 
                         [(a.id, a.nombre) 
-                         for a in pclases.Almacen.select(orderBy = "nombre")])
+                         for a in pclases.Almacen.select(
+                             pclases.Almacen.q.activo == True, 
+                             orderBy = "nombre")])
 
     def activar_widgets(self, s):
         """
@@ -314,7 +316,10 @@ class AbonosVenta(Ventana):
         self.wids['e_albaranes'].set_text(", ".join([a.numalbaran 
             for a in abono.albaranesSalida]))
         utils.combo_set_from_db(self.wids['cbe_almacen'], 
-                                abono.almacenID)
+                                abono.almacenID, 
+                                forced_value = abono.almacen 
+                                                and abono.almacen.nombre
+                                                or None)
         self.wids['e_cobro'].set_text(self.objeto.get_str_cobro())
         self.objeto.make_swap()
 

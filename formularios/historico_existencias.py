@@ -204,7 +204,8 @@ class HistoricoExistencias(Ventana):
         self.wids['ventana'].window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
         vpro.mostrar()
         act = 0.0
-        tot = 2 + pclases.Almacen.select().count()
+        tot = 2 + pclases.Almacen.select(
+                                    pclases.Almacen.q.activo == True).count()
         msgtexto = 'Calculando existencias a %s.' % fechastr
         vpro.set_valor(act/tot, msgtexto)
         vpro._ventana.realize()
@@ -221,7 +222,8 @@ class HistoricoExistencias(Ventana):
                                fechastr, hasta = fecha))
             act += 1
             vpro.set_valor(act/tot, msgtexto)
-            for a in pclases.Almacen.select(orderBy = "id"):
+            for a in pclases.Almacen.select(pclases.Almacen.q.activo == True, 
+                                            orderBy = "id"):
                 informes.abrir_pdf(geninformes.existencias_productos('rollos', 
                                    fechastr, hasta = fecha, almacen = a))
                 act += 1

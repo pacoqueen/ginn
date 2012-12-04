@@ -79,8 +79,8 @@ class ConsultaExistencias(Ventana):
             "%s, %s" % (utils.str_fecha(time.localtime()), 
                         time.strftime("%H:%M")), 
             ruta_csv = ruta_csv))
-        if pclases.Almacen.select().count() > 1:
-            for a in pclases.Almacen.select():
+        if pclases.Almacen.select(pclases.Almacen.q.activo==True).count() > 1:
+            for a in pclases.Almacen.select(pclases.Almacen.q.activo == True):
                 if csv:
                     ruta_csv = tempfile.NamedTemporaryFile(
                         suffix = "_%s.csv" % a.nombre, 

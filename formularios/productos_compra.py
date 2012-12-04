@@ -600,7 +600,8 @@ class ProductosCompra(Ventana, VentanaGenerica):
         model = self.wids['tv_existencias'].get_model()
         self.wids['tv_existencias'].set_model(None)
         model.clear()
-        for a in pclases.Almacen.select(orderBy = "id"):
+        for a in pclases.Almacen.select(pclases.Almacen.q.activo == True, 
+                                        orderBy = "id"):
             existencias = a.get_existencias(self.objeto)
             try:
                 strexistencias = utils.float2str(existencias)

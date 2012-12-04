@@ -152,7 +152,9 @@ class ConsultaVentas(Ventana):
         utils.rellenar_lista(self.wids['cbe_cliente'], opciones)
         utils.combo_set_from_db(self.wids['cbe_cliente'], -1)
         opciones = [(c.id, c.nombre) 
-                    for c in pclases.Almacen.select(orderBy = "id")]
+                    for c in pclases.Almacen.select(
+                        pclases.Almacen.q.activo == True, 
+                        orderBy = "id")]
         opciones.insert(0, (-1, "Todos"))
         utils.rellenar_lista(self.wids['cbe_almacen'], opciones)
         utils.combo_set_from_db(self.wids['cbe_almacen'], -1)

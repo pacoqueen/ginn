@@ -187,7 +187,10 @@ class AlbaranesDeSalida(Ventana):
             self.objeto.almacenOrigen = pclases.Almacen.get_almacen_principal()
             self.objeto.syncUpdate()
             utils.combo_set_from_db(self.wids['cbe_almacenOrigenID'], 
-                                    self.objeto.almacenOrigenID)
+                                    self.objeto.almacenOrigenID, 
+                                    forced_value = self.objeto.almacenOrigen 
+                                        and self.objeto.almacenOrigen.nombre 
+                                        or None)
             self.wids['cbe_almacenOrigenID'].child.set_text(
                 self.objeto.almacenOrigen.nombre)
         # 2.- Si el almacén origen y destino son el mismo muestra diálogo de 
@@ -925,10 +928,14 @@ class AlbaranesDeSalida(Ventana):
         utils.preparar_treeview(self.wids['tv_abonado'], cols)
         utils.rellenar_lista(self.wids['cbe_almacenOrigenID'], 
                         [(a.id, a.nombre) 
-                         for a in pclases.Almacen.select(orderBy = "nombre")])
+                         for a in pclases.Almacen.select(
+                             pclases.Almacen.q.activo == True, 
+                             orderBy = "nombre")])
         utils.rellenar_lista(self.wids['cbe_almacenDestinoID'], 
                         [(a.id, a.nombre) 
-                         for a in pclases.Almacen.select(orderBy = "nombre")])
+                         for a in pclases.Almacen.select(
+                             pclases.Almacen.q.activo == True, 
+                             orderBy = "nombre")])
         # Si el negocio no vende artículos individuales, ¿para qué mostrar el 
         # botón de añadir rangos?
         if (pclases.Rollo.select().count() +
@@ -1533,9 +1540,15 @@ class AlbaranesDeSalida(Ventana):
         self.suspender(self.wids['cbe_almacenOrigenID'])
         self.suspender(self.wids['cbe_almacenDestinoID'])
         utils.combo_set_from_db(self.wids['cbe_almacenOrigenID'], 
-                                self.objeto.almacenOrigenID)
+                                self.objeto.almacenOrigenID, 
+                                forced_value = self.objeto.almacenOrigen 
+                                    and self.objeto.almacenOrigen.nombre 
+                                    or None)
         utils.combo_set_from_db(self.wids['cbe_almacenDestinoID'], 
-                                self.objeto.almacenDestinoID)
+                                self.objeto.almacenDestinoID, 
+                                forced_value = self.objeto.almacenDestino 
+                                    and self.objeto.almacenDestino.nombre 
+                                    or None)
         self.revivir(self.wids['cbe_almacenOrigenID'])
         self.revivir(self.wids['cbe_almacenDestinoID'])
         self.wids['b_guardar'].set_sensitive(False) # Deshabilito el guardar 
@@ -1791,7 +1804,9 @@ class AlbaranesDeSalida(Ventana):
         # va la pinza al usuario, se olvida de elegirlo y se queda con el 
         # principal por defecto, etc.
         almacenes = [(a.id, a.nombre) 
-                     for a in pclases.Almacen.select(orderBy = "id")]
+                     for a in pclases.Almacen.select(
+                         pclases.Almacen.q.activo == True, 
+                         orderBy = "id")]
         almacenppal = pclases.Almacen.get_almacen_principal_id_or_none()
         almo = utils.dialogo_combo(titulo = "ALMACÉN ORIGEN", 
                     texto = "Seleccione el almacén origen de la mercancía",  

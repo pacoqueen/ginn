@@ -280,7 +280,9 @@ class AlbaranesDeEntrada(Ventana):
         lista_provs = [(p.id, p.nombre) for p in provs if not p.inhabilitado]
         utils.rellenar_lista(self.wids['cmbe_proveedor'], lista_provs)
         lista_alms = [(a.id, a.nombre) 
-                      for a in pclases.Almacen.select(orderBy = "id")]
+                      for a in pclases.Almacen.select(
+                          pclases.Almacen.q.activo == True, 
+                          orderBy = "id")]
         utils.rellenar_lista(self.wids['cbe_almacenID'], lista_alms)
         # Inicialización del resto de widgets:
         cols = (('Código', 'gobject.TYPE_STRING', False, True, False, None),
@@ -605,7 +607,11 @@ class AlbaranesDeEntrada(Ventana):
             self.wids['cbe_almacenID'].set_active(-1)
             self.wids['cbe_almacenID'].child.set_text("")
         else:
-            utils.combo_set_from_db(self.wids['cbe_almacenID'], albaran.almacenID)
+            utils.combo_set_from_db(self.wids['cbe_almacenID'], 
+                    albaran.almacenID, 
+                    forced_value = albaran.almacen  
+                                    and albaran.almacen.nombre 
+                                    or None)
         self.wids['e_facturas'].set_text(", ".join([f.numfactura for f in albaran.facturasCompra]))
         self.wids['e_pedidos'].set_text(", ".join([p.numpedido for p in albaran.pedidosCompra]))
         self.objeto.make_swap()
@@ -783,7 +789,9 @@ class AlbaranesDeEntrada(Ventana):
             return
         if albaran != None: albaran.notificador.set_func(lambda : None)
         almacenes = [(a.id, a.nombre) 
-                     for a in pclases.Almacen.select(orderBy = "id")]
+                     for a in pclases.Almacen.select(
+                         pclases.Almacen.q.activo == True, 
+                         orderBy = "id")]
         almacenppal = pclases.Almacen.get_almacen_principal_id_or_none()
         if len(almacenes) > 1:
             almo = utils.dialogo_combo(titulo = "ALMACÉN DESTINO", 

@@ -1149,7 +1149,7 @@ def rellenar_lista(wid, textos):
         cb.pack_start(cell, True)
         cb.add_attribute(cell, 'text', 1)
 
-def combo_set_from_db(combo_widget, db_item):
+def combo_set_from_db(combo_widget, db_item, forced_value = None):
     """
     Establece como elemento activo de un widget
     el elemento del model correspondiente con 
@@ -1159,17 +1159,27 @@ def combo_set_from_db(combo_widget, db_item):
     que se corresponda con esa columna (por lo 
     general debería ser un id).
     NO acepta tuplas completas.
+    Si «force_value» es algo, se usará en caso de que no se 
+    encuentre el db_item en el model. 
     """
     list_model = combo_widget.get_model()
     iter = list_model.get_iter_first()
     while iter != None and list_model.get_value(iter, 0) != db_item:
         iter = list_model.iter_next(iter)
     if iter == None: # No estaba el db_item en el model.
-        combo_widget.set_active(-1)     # Por si es un comboBoxEntry
-        try:
-            combo_widget.child.set_text("")
-        except:
-            pass
+        if not forced_value:
+            combo_widget.set_active(-1)     # Por si es un comboBoxEntry
+            try:
+                combo_widget.child.set_text("")
+            except:
+                pass
+        else:   # Lo inserto en el model. No queda otra.
+            list_model.append((db_item, forced_value))
+            combo_widget.set_active(len(list_model) - 1)
+            try:
+                combo_widget.child.set_text(list_model[-1][1])
+            except AttributeError:  # No es un comboBoxEntry
+                pass
     else:
         combo_widget.set_active_iter(iter)
 

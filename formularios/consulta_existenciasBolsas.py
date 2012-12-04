@@ -90,7 +90,8 @@ class ConsultaExistenciasBolsas(Ventana):
         self.tvs = [(self.wids["tv_datos"], self.wids['e_total_kilos'], 
                      self.wids['e_total_bultos'], None)]
         nb = self.wids['nb_almacenes']
-        for a in pclases.Almacen.select(orderBy = "id"):
+        for a in pclases.Almacen.select(
+                pclases.Almacen.q.activo == True, orderBy = "id"):
             tv, e_kg, e_bultos, box = build_tv(a)
             self.tvs.append((tv, e_kg, e_bultos, a))
             nb.append_page(box, gtk.Label(a.nombre))

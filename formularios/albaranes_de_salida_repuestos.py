@@ -130,7 +130,9 @@ class AlbaranesDeSalidaRepuestos(Ventana):
         utils.preparar_treeview(self.wids['tv_ldvs'], cols)
         self.wids['tv_ldvs'].get_selection().set_mode(gtk.SELECTION_MULTIPLE)
         almacenes = [(a.id, a.nombre) 
-                     for a in pclases.Almacen.select(orderBy = "id")]
+                     for a in pclases.Almacen.select(
+                         pclases.Almacen.q.activo == True, 
+                         orderBy = "id")]
         utils.rellenar_lista(self.wids['cbe_almacen'], 
                              almacenes)
 
@@ -238,7 +240,10 @@ class AlbaranesDeSalidaRepuestos(Ventana):
         self.wids['ch_bloqueado'].set_active(self.objeto.bloqueado)
         self.suspender(self.wids['cbe_almacen'])
         utils.combo_set_from_db(self.wids['cbe_almacen'], 
-                                self.objeto.almacenOrigenID)
+                                self.objeto.almacenOrigenID, 
+                                forced_value = self.objeto.almacenOrigen 
+                                    and self.objeto.almacenOrigen.nombre 
+                                    or None)
         self.revivir(self.wids['cbe_almacen'])
         self.rellenar_ldvs()
         self.wids['b_guardar'].set_sensitive(False) 
@@ -283,7 +288,9 @@ class AlbaranesDeSalidaRepuestos(Ventana):
         if albaran != None: albaran.notificador.desactivar()
         propia_empresa = utils_administracion.id_propia_empresa_cliente()
         almacenes = [(a.id, a.nombre) 
-                     for a in pclases.Almacen.select(orderBy = "id")]
+                     for a in pclases.Almacen.select(
+                         pclases.Almacen.q.activo == True, 
+                         orderBy = "id")]
         almacenppal = pclases.Almacen.get_almacen_principal_id_or_none()
         almo = utils.dialogo_combo(titulo = "ALMACÉN ORIGEN", 
                     texto = "Seleccione el almacén origen de la mercancía",  

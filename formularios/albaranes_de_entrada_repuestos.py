@@ -292,7 +292,9 @@ class AlbaranesDeEntradaRepuestos(Ventana):
             for cell in self.wids['tv_ldvs'].get_column(n).get_cell_renderers():
                 cell.set_property('xalign', 1.0)
         almacenes = [(a.id, a.nombre) 
-                     for a in pclases.Almacen.select(orderBy = "id")]
+                     for a in pclases.Almacen.select(
+                         pclases.Almacen.q.activo == True, 
+                         orderBy = "id")]
         utils.rellenar_lista(self.wids['cbe_almacen'], 
                              almacenes)
 
@@ -497,7 +499,9 @@ class AlbaranesDeEntradaRepuestos(Ventana):
         self.wids['e_pedidos'].set_text(", ".join([p.numpedido for p in albaran.pedidosCompra]))
         self.suspender(self.wids['cbe_almacen'])
         utils.combo_set_from_db(self.wids['cbe_almacen'], 
-                                self.objeto.almacenID)
+                                self.objeto.almacenID, 
+                                forced_value = self.objeto.almacen 
+                                    and self.objeto.almacen.nombre or None)
         self.revivir(self.wids['cbe_almacen'])
         self.objeto.make_swap()
 
@@ -664,7 +668,9 @@ class AlbaranesDeEntradaRepuestos(Ventana):
             return
         if albaran != None: albaran.notificador.set_func(lambda : None)
         almacenes = [(a.id, a.nombre) 
-                     for a in pclases.Almacen.select(orderBy = "id")]
+                     for a in pclases.Almacen.select(
+                         pclases.Almacen.q.activo == True, 
+                         orderBy = "id")]
         almacenppal = pclases.Almacen.get_almacen_principal_id_or_none()
         almo = utils.dialogo_combo(titulo = "ALMACÉN DESTINO", 
                     texto = "Seleccione el almacén destino de la mercancía",  
