@@ -757,7 +757,7 @@ class CRM_SeguimientoImpagos(Ventana):
                 idcliente = model[path].parent[-1]
                 cliente = pclases.Cliente.get(idcliente)
                 import clientes
-                v = clientes.Cliente(cliente, usuario = self.usuario)
+                v = clientes.Clientes(cliente, usuario = self.usuario)
         else:
             cliente = pclases.Cliente.get(id)
             import clientes
