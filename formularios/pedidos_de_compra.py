@@ -710,7 +710,8 @@ class PedidosDeCompra(Ventana):
             self.objeto = pedido
         self.actualizar_ventana()
 
-    def actualizar_ventana(self, widget=None, objeto_anterior = None):
+    def actualizar_ventana(self, widget=None, objeto_anterior = None, 
+                           deep_refresh = False):
         """
         Actualiza el contenido de los controles de la
         ventana para que muestren todos los datos 
@@ -721,6 +722,8 @@ class PedidosDeCompra(Ventana):
         if pedido != None:
             try:
                 pedido.sync()  
+                if deep_refresh:
+                    self.actualizar_objeto_y_enlaces(False)
                 # Por si acaso hay cambios remotos que no están en el objeto.
             except: # HA SIDO BORRADO
                 utils.dialogo_info(titulo = 'BORRADO', 
