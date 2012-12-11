@@ -233,6 +233,7 @@ class ConsultaVencimientosCobros(Ventana):
             fechaRecepcion = mx.DateTime.localtime(), 
             fechaCobrado = None, 
             procesado = False)
+        pclases.Auditoria.nuevo(pagare, self.usuario, __file__)
         cobro = pclases.Cobro(facturaVenta = factura, 
                               cliente = cliente, 
                               # logicMovimientos = logic, 
@@ -241,6 +242,7 @@ class ConsultaVencimientosCobros(Ventana):
                               importe = importe, 
                               observaciones = observaciones, 
                               facturaDeAbono = None)
+        pclases.Auditoria.nuevo(cobro, self.usuario, __file__)
         import pagares_cobros
         pp = pagares_cobros.PagaresCobros(pagare)
         self.buscar(None)   # Para recargar.
@@ -271,6 +273,7 @@ class ConsultaVencimientosCobros(Ventana):
                                   importe = importe, 
                                   observaciones = observaciones, 
                                   facturaDeAbono = None)
+            pclases.Auditoria.nuevo(cobro, self.usuario, __file__)
             import facturas_venta
             fc = facturas_venta.FacturasVenta(factura)
             self.buscar(None)   # Para recargar.

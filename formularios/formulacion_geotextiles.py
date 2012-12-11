@@ -228,6 +228,7 @@ class FormulacionGeotextiles(Ventana):
         self.objeto = linea.formulacion
         if self.objeto == None:
             self.objeto = pclases.Formulacion(nombre = "GEOTEXTILES", observaciones = "Generado automáticamente.")
+            pclases.Auditoria.nuevo(self.objeto, self.usuario, __file__)
             linea.formulacion = self.objeto
         nombres_ca_existentes = [ca.nombre for ca in self.objeto.consumosAdicionales]
         nombres_ca = {'ensimaje': (0.3, ' %'), 
@@ -247,6 +248,7 @@ class FormulacionGeotextiles(Ventana):
                                               unidad = nombres_ca[nombre][1],
                                               formulacionID = self.objeto.id,
                                               productoCompraID = None)
+                pclases.Auditoria.nuevo(ca, self.usuario, __file__)
                 for productoVenta in pclases.ProductoVenta.select(pclases.ProductoVenta.q.camposEspecificosRolloID != None):
                     ca.addProductoVenta(productoVenta)
                 self.cas[nombre] = ca
@@ -362,6 +364,8 @@ class FormulacionGeotextiles(Ventana):
                                         nombre = nombre, 
                                         cantidad = cantidad, 
                                         unidad = unidad)
+                pclases.Auditoria.nuevo(nuevo_consumo_adicional, self.usuario, 
+                                        __file__)
                 for producto in productos:
                     nuevo_consumo_adicional.addProductoVenta(producto)
                 self.rellenar_consumos_adicionales_por_producto()

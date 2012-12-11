@@ -644,6 +644,7 @@ class PartesDeFabricacionRollos(Ventana):
                                   actualizado = False,
                                   parteDeProduccion = self.objeto,
                                   productoCompra = producto)
+        pclases.Auditoria.nuevo(consumo, self.usuario, __file__)
         self.actualizar_consumo(consumo, True)
         self.objeto.unificar_consumos()
         actualizar_albaran_interno_con_tubos(self.objeto)
@@ -1539,6 +1540,7 @@ class PartesDeFabricacionRollos(Ventana):
             prodestandar = 0,
             observaciones = '',
             bloqueado = False)
+        pclases.Auditoria.nuevo(partedeproduccion, self.usuario, __file__)
         partedeproduccion._corregir_campos_fechahora()
         self.objeto = partedeproduccion
         self.wids['e_partida'].set_text('')
@@ -2142,6 +2144,7 @@ class PartesDeFabricacionRollos(Ventana):
             # NOTA: La BD está diseñada para soportar varios ítems en 
             # detallesdeproducción. De momento seguiré con 1 ítem por detalle.
             # Así que creo una nueva línea de detalle.
+            pclases.Auditoria.nuevo(incidencia, self.usuario, __file__)
             self.actualizar_ventana()
         else:
             utils.dialogo_info(titulo = 'ERROR HORARIO', 
@@ -2323,6 +2326,7 @@ class PartesDeFabricacionRollos(Ventana):
             numpartida = numpartida.upper().replace("P-", "")
         partida = pclases.Partida(numpartida = numpartida,
                                   codigo = "P-%s" % (numpartida))
+        pclases.Auditoria.nuevo(partida, self.usuario, __file__)
         partida_actual = self.get_partida()
         if partida_actual != None:
             for b in partida_actual.balas:  # Cambio de partida las balas 
@@ -2695,6 +2699,7 @@ class PartesDeFabricacionRollos(Ventana):
                                 envio = mx.DateTime.localtime(),
                                 recepcion = None, 
                                 loteCem = None)
+            pclases.Auditoria.nuevo(m, self.usuario, __file__)
             _codigo[0] = codigo
             if utils.dialogo(titulo = "MUESTRA ENVIADA",
                              texto = "Muestra creada, enviada y pendiente para su análisis en laboratorio.\n¿Desea enviar una alerta?", 
@@ -3174,6 +3179,7 @@ class PartesDeFabricacionRollos(Ventana):
                                               antes = producto.existencias, 
                                               despues = producto.existencias - cantidad_a_consumir, 
                                               cantidad = cantidad_a_consumir)
+                    pclases.Auditoria.nuevo(consumo, self.usuario, __file__)
                     # Actualizar existencias
                     producto.existencias -= cantidad_a_consumir
                     producto.add_existencias(-cantidad_a_consumir) 
@@ -3370,6 +3376,7 @@ def crear_articulo(numrollo,
                               densidad = densidad,
                               muestra = False, 
                               rollob = False) 
+        pclases.Auditoria.nuevo(rollo, self.usuario, __file__)
         rollod = None
     else:
         codigo = 'X%d' % (numrollo)  # NOTA: Cambiar aquí si al final el código será distinto al número de rollo.
@@ -3406,6 +3413,7 @@ def crear_articulo(numrollo,
                                                          metrosLineales = largo, 
                                                          ancho = ancho, 
                                                          pesoEmbalaje = pesoEmbalaje)
+                        pclases.Auditoria.nuevo(rollod, self.usuario, __file__)
                     except Exception, msg:
                         txt = "Rollo defectuoso %s no se pudo crear. Probablemente número duplicado. Mensaje de la excepción: %s" % (codigo, msg)
                         print txt
@@ -3417,6 +3425,7 @@ def crear_articulo(numrollo,
                             productoVenta = producto,
                             albaranSalida = None, 
                             almacen = pclases.Almacen.get_almacen_principal())
+        pclases.Auditoria.nuevo(articulo, self.usuario, __file__)
     else:
         articulo = None
     return articulo
@@ -3752,6 +3761,7 @@ def actualizar_albaran_interno_con_tubos(pdp):
                                    pedidoVenta = None, 
                                    facturaVenta = None, 
                                    productoVenta = None)
+        pclases.Auditoria.nuevo(ldv, None, __file__)
 
 
 if __name__ == "__main__":

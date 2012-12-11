@@ -164,6 +164,7 @@ class PartesDeFabricacionBolsas(Ventana):
                     descripcion = "Línea de embolsado de fibra de cemento.", 
                     observaciones = "Produce bolsas de fibra de cemento a par"\
                         "tir de bigbags fabricados en la línea de fibra.")
+            pclases.Auditoria.nuevo(linea, self.usuario, __file__)
         self.linea = linea
         self.formulacion = linea.formulacion
         self.inicializar_ventana()
@@ -827,6 +828,7 @@ class PartesDeFabricacionBolsas(Ventana):
                     numbolsas = numbolsas, 
                     numcajas = numcajasdefecto 
                     )
+            pclases.Auditoria.nuevo(pale, self.usuario, __file__)
             # 2.- Creo las cajas.
             for i in range(pale.numcajas):
                 numcaja, codigo = pclases.Caja.get_next_numcaja()
@@ -841,6 +843,7 @@ class PartesDeFabricacionBolsas(Ventana):
                                     fechahora = mx.DateTime.localtime(), 
                                     peso = peso, 
                                     numbolsas = numbolsas)
+                pclases.Auditoria.nuevo(caja, self.usuario, __file__)
                 # 3.- Creo los artículos.
                 #for j in range(pale.numbolsas):
                 #    vpro.set_valor(icont / tot, "Creando palé %s"%pale.codigo)
@@ -870,6 +873,7 @@ class PartesDeFabricacionBolsas(Ventana):
                             almacen = pclases.Almacen.get_almacen_principal(), 
                             rolloC = None, 
                             balaCable = None)
+                pclases.Auditoria.nuevo(articulo, self.usuario, __file__)
                 icont += 1
             # OJO: Le paso el último artículo porque la formulación de esta 
             # línea será por PALÉS COMPLETOS.
@@ -1008,6 +1012,7 @@ class PartesDeFabricacionBolsas(Ventana):
             bloqueado = False, 
             partidaCem = pclases.PartidaCem.get_nueva_o_ultima_vacia(), 
             merma = 0.0)
+        pclases.Auditoria.nuevo(partedeproduccion, self.usuario, __file__)
         partedeproduccion._corregir_campos_fechahora()
         self.objeto = partedeproduccion
         self.wids['e_partida'].set_text(self.objeto.partidaCem.codigo)
@@ -1262,6 +1267,7 @@ class PartesDeFabricacionBolsas(Ventana):
                 horafin = horafin,
                 parteDeProduccion = self.objeto,
                 observaciones = observaciones)
+            pclases.Auditoria.nuevo(incidencia, self.usuario, __file__)
             #self.actualizar_ventana()
             self.rellenar_tabla_incidencias()
             self.rellenar_estadisticas()
@@ -1467,6 +1473,7 @@ class PartesDeFabricacionBolsas(Ventana):
             if not self.usuario or self.usuario.nivel <= 1:
                 partida = pclases.PartidaCem(numpartida = codigo, 
                                              codigo = "M-%d" % codigo)
+                pclases.Auditoria.nuevo(partida, self.usuario, __file__)
             else:
                 danextone = ultima_partida 
                 if danextone:
@@ -1695,6 +1702,8 @@ class PartesDeFabricacionBolsas(Ventana):
                             descuento = 0.0, 
                             notas = "", 
                             descripcionComplementaria = "Reembolsado")]
+                        pclases.Auditoria.nuevo(lineas_albaran[pv_bb], 
+                                                self.usuario, __file__)
                     bb.articulo.albaranSalida = albint
                     lineas_albaran[pv_bb][-1].cantidad += bb.pesobigbag
                     lineas_albaran[pv_bb][-1].syncUpdate()
@@ -1816,6 +1825,7 @@ class PartesDeFabricacionBolsas(Ventana):
                         antes = producto.existencias, 
                         despues = producto.existencias - cantidad_a_consumir, 
                         cantidad = cantidad_a_consumir)
+                    pclases.Auditoria.nuevo(consumo, self.usuario, __file__)
                     # Actualizar existencias
                     producto.existencias -= cantidad_a_consumir
                     producto.add_existencias(-cantidad_a_consumir) 

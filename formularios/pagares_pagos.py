@@ -350,6 +350,7 @@ class PagaresPagos(Ventana):
                                          fechaEmision = fecha_defecto, 
                                          fechaCobrado = None)
         pagare = self.objeto
+        pclases.Auditoria.nuevo(pagare, self.usuario, __file__)
         pagare.notificador.set_func(self.aviso_actualizacion)
         utils.dialogo_info('PAGARÉ CREADO', 
                            '\n       Nuevo pagaré creado.        \n', 
@@ -644,6 +645,7 @@ class PagaresPagos(Ventana):
                             importe = vencimiento.importe,
                             proveedor = proveedor,
                             observaciones = 'Cubierto por el pagaré con fecha %s.' % (utils.str_fecha(self.objeto.fechaEmision)))
+        pclases.Auditoria.nuevo(pago, self.usuario, __file__)
         if pagare.pagado == pagare.cantidad:
             pagare.pagado = sum([c.importe for c in pagare.pagos])
             pagare.cantidad = pagare.pagado
@@ -713,6 +715,7 @@ class PagaresPagos(Ventana):
                                         fecha = fecha, 
                                         importe = importe, 
                                         observaciones = observaciones)
+                    pclases.Auditoria.nuevo(pago, self.usuario, __file__)
                     if pagare.pagado == pagare.cantidad:
                         pagare.pagado = sum([c.importe for c in pagare.pagos])
                         pagare.cantidad = pagare.pagado
@@ -841,6 +844,7 @@ class PagaresPagos(Ventana):
                                 observaciones = apuntelogic.comentario,
                                 proveedor = proveedor,
                                 logicMovimientos = apuntelogic)
+            pclases.Auditoria.nuevo(pago, self.usuario, __file__)
             if pagare.pagado == pagare.cantidad:
                 pagare.pagado = sum([c.importe for c in pagare.pagos])
                 pagare.cantidad = pagare.pagado

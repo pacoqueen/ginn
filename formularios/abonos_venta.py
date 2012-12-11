@@ -613,6 +613,7 @@ class AbonosVenta(Ventana):
                                                 observaciones = observaciones, 
                                                 fecha = mx.DateTime.localtime()
                                                )
+        pclases.Auditoria.nuevo(adeda, self.usuario, __file__)
         for ldd in [l for l in self.objeto.lineasDeDevolucion 
                     if l.albaranDeEntradaDeAbono == None]:
             ldd.albaranSalida = ldd.articulo.albaranSalida
@@ -677,6 +678,7 @@ class AbonosVenta(Ventana):
                                         albaranDeEntradaDeAbono = None, 
                                         albaranSalida = None,
                                         precio = precio)
+        pclases.Auditoria.nuevo(ldd, self.usuario, __file__)
 
     def seleccionar_articulos(self, ldv):
         """
@@ -806,6 +808,7 @@ class AbonosVenta(Ventana):
                                                cantidad = 1.0, 
                                                precio = precio, 
                                                descuento = 0.0)
+                        pclases.Auditoria.nuevo(srv, self.usuario, __file__)
                         lda = pclases.LineaDeAbono(lineaDeVenta = None, 
                                 abono = self.objeto, 
                                 servicio = srv, 
@@ -813,6 +816,7 @@ class AbonosVenta(Ventana):
                                 cantidad = 1.0, 
                                 observaciones = 'Línea sin correspondencia en'
                                                 ' facturas.')
+                        pclases.Auditoria.nuevo(lda, self.usuario, __file__)
                         self.actualizar_ventana()
         else:
             fras = pclases.FacturaVenta.select(
@@ -843,11 +847,13 @@ class AbonosVenta(Ventana):
                                        lineaDeVenta = ldv, 
                                        cantidad = ldv.cantidad, 
                                        servicio = None)
+            pclases.Auditoria.nuevo(lda, self.usuario, __file__)
         if serv != None:
             lda = pclases.LineaDeAbono(abono = abono, 
                                        lineaDeVenta = None,
                                        cantidad = serv.cantidad,
                                        servicio = serv)
+            pclases.Auditoria.nuevo(lda, self.usuario, __file__)
 
     def seleccionar_ldvs_de_factura(self, factura):
         """
@@ -975,6 +981,7 @@ class AbonosVenta(Ventana):
                             numabono = numabono,
                             cliente = cliente, 
                             almacen = pclases.Almacen.get_almacen_principal())
+        pclases.Auditoria.nuevo(abono, self.usuario, __file__)
         self.objeto = abono
         self.actualizar_ventana()
         abono.notificador.set_func(self.aviso_actualizacion)
@@ -1394,8 +1401,10 @@ class AbonosVenta(Ventana):
         if self.objeto.facturaDeAbono == None:
             if self.objeto.fecha:
                 fa = pclases.FacturaDeAbono(fecha = self.objeto.fecha)
+                pclases.Auditoria.nuevo(fa, self.usuario, __file__)
             else: 
                 fa = pclases.FacturaDeAbono(fecha = mx.DateTime.localtime())
+                pclases.Auditoria.nuevo(fa, self.usuario, __file__)
             self.objeto.facturaDeAbono = fa
             self.objeto.make_swap()
             utils.dialogo_info(titulo = 'FACTURA GENERADA',

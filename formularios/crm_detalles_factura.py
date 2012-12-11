@@ -254,6 +254,7 @@ class CRM_DetallesFactura(Ventana):
                     observaciones = "Creado desde CRM.", 
                     fechaCobrado = None, 
                     procesado = False)
+                pclases.Auditoria.nuevo(pagare, self.usuario, __file__)
                 for v in pagares:
                     observaciones="Pagaré %s con fecha %s y vencimiento %s" % (
                                 pagare.codigo, 
@@ -268,6 +269,7 @@ class CRM_DetallesFactura(Ventana):
                                       fecha = v.fecha, 
                                       importe = v.importe, 
                                       observaciones = observaciones) 
+                    pclases.Auditoria.nuevo(c, self.usuario, __file__)
                     # Anulo alarmas pendientes:
                     for a in v.facturaVenta.alarmas:
                         if estado_no_pendiente:
@@ -288,6 +290,7 @@ class CRM_DetallesFactura(Ventana):
                     observaciones = "Creado desde CRM.", 
                     fechaCobrado = None, 
                     procesado = False)
+                pclases.Auditoria.nuevo(confirming, self.usuario, __file__)
                 for v in confirmings:
                     observaciones = "Confirming %s con fecha %s "\
                                     "y vencimiento %s" % (
@@ -303,6 +306,7 @@ class CRM_DetallesFactura(Ventana):
                                       fecha = v.fecha, 
                                       importe = v.importe, 
                                       observaciones = observaciones) 
+                    pclases.Auditoria.nuevo(c, self.usuario, __file__)
                     # Anulo alarmas pendientes:
                     for a in v.facturaVenta.alarmas:
                         if estado_no_pendiente:
@@ -551,6 +555,8 @@ class CRM_DetallesFactura(Ventana):
                                                     correoe = "", 
                                                     web = "", 
                                                     observaciones = "")
+                        pclases.Auditoria.nuevo(contacto, self.usuario, 
+                                                __file__)
                     else:
                         contacto = pclases.Contacto.get(idcontacto)
                 else:
@@ -563,6 +569,8 @@ class CRM_DetallesFactura(Ventana):
                                                     correoe = "", 
                                                     web = "", 
                                                     observaciones = "")
+                        pclases.Auditoria.nuevo(contacto, self.usuario, 
+                                                __file__)
                 if contacto not in self.objeto.obra.contactos:
                     contacto.addObra(self.objeto.obra)
                 self.wids['e_obra'].set_text(self.objeto.obra 
@@ -643,6 +651,7 @@ class CRM_DetallesFactura(Ventana):
                     observaciones = "Creada desde módulo CRM: detalles de "\
                                     "factura.", 
                     generica = False)
+            pclases.Auditoria.nuevo(obra, self.usuario, __file__)
             obra.addCliente(self.objeto.cliente)
         elif idobra:
             obra = pclases.Obra.get(idobra)

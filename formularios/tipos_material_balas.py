@@ -137,6 +137,7 @@ class TiposMaterialBala(Ventana):
     	nuevocodigo = utils.dialogo_entrada('Introduzca el código asociado al material')
         if nuevotipo != None and nuevocodigo !=None :
             tipodematerialBala = pclases.TipoMaterialBala(descripcion = nuevotipo, codigo = nuevocodigo)
+            pclases.Auditoria.nuevo(tipodematerialBala, self.usuario, __file__)
     	self.rellenar_tabla()
     
     

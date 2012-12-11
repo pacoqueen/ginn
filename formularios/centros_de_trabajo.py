@@ -498,7 +498,9 @@ class CentrosDeTrabajo(Ventana):
         centroTrabajo = self.objeto
         if centroTrabajo!=None:
             centroTrabajo.notificador.set_func(lambda : None)
-        centroTrabajo = pclases.CentroTrabajo(nombre = 'Introduzca aquí el nombre del centro de trabajo')
+        centroTrabajo = pclases.CentroTrabajo(
+                nombre = 'Introduzca aquí el nombre del centro de trabajo')
+        pclases.Auditoria.nuevo(centroTrabajo, self.usuario, __file__)
         utils.dialogo_info(titulo = 'NUEVO CENTRO DE TRABAJO CREADO',
                            texto = 'Introduzca los datos del centro de trabajo.\nRecuerde pulsar el botón GUARDAR cuando termine.\n', 
                            padre = self.wids['ventana'])

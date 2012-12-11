@@ -120,6 +120,7 @@ def id_propia_empresa_cliente():
                                       tarifa = None, 
                                       contador = None,
                                       cliente = None)
+            pclases.Auditoria.nuevo(empresa, None, __file__)
         except TypeError:   # Me falta algún campo.
             print "utils_administracion.py::id_propia_empresa_cliente -> "\
                   "ERROR: TypeError al crear empresa como cliente."

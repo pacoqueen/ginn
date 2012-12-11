@@ -251,6 +251,7 @@ class ConsultaMensualNominas(Ventana):
                                       vacacionesYAsuntosPropios = False, 
                                       festivo = False, 
                                       plusAbsentismo = 0.0)
+            pclases.Auditoria.nuevo(ch, self.usuario, __file__)
         ch.plusAbsentismo += a_guardar  # Por si era el mismo, sumo.
         ch.syncUpdate()
         model[path][3] = utils.float2str(
@@ -334,6 +335,7 @@ class ConsultaMensualNominas(Ventana):
                                       plusAbsentismo = 0.0, 
                                       conceptoLibre = "", 
                                       importeLibre = 0.0)
+            pclases.Auditoria.nuevo(ch, self.usuario, __file__)
         ch.importeLibre += a_guardar  # Por si era el mismo, sumo.
         ch.syncUpdate()
         model[path][4] = utils.float2str(

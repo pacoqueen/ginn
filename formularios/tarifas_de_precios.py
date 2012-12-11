@@ -585,6 +585,7 @@ class TarifasDePrecios(Ventana):
         if nombre != None:
             tarifa = self.objeto
             tarifa = pclases.Tarifa(nombre=nombre, observaciones='', periodoValidezIni = None, periodoValidezFin = None)
+            pclases.Auditoria.nuevo(tarifa, self.usuario, __file__)
             self.insertar_tarifa_en_lista(tarifa)
             self.wids['cb_nombre_tarifa'].set_active(self.buscar_indice_texto(self.wids['cb_nombre_tarifa'], tarifa.nombre))
             self.seleccionar_tarifa(self.wids['cb_nombre_tarifa'])

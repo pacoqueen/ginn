@@ -384,6 +384,7 @@ class ProductosDeVentaRollosGeocompuestos(Ventana):
                                             rollosPorCamion = 0, 
                                             c = False, 
                                             modeloEtiqueta = None)
+        pclases.Auditoria.nuevo(campos, self.usuario, __file__)
         linea = pclases.LineaDeProduccion.select(pclases.OR(
             pclases.LineaDeProduccion.q.nombre.contains('geocompuesto'), 
             pclases.LineaDeProduccion.q.nombre.contains('comercializado')))[0]
@@ -396,6 +397,7 @@ class ProductosDeVentaRollosGeocompuestos(Ventana):
                                     preciopordefecto = 0, 
                                     minimo = 0,
                                     arancel = '')
+        pclases.Auditoria.nuevo(producto, self.usuario, __file__)
         self._objetoreciencreado = producto
         utils.dialogo_info('PRODUCTO CREADO', 
                            'Se ha creado un producto nuevo.\nA continuación complete la información del producto y guarde los cambios.', 
@@ -570,6 +572,7 @@ class ProductosDeVentaRollosGeocompuestos(Ventana):
         ce = pclases.CamposEspecificos(productoVenta = producto,
                                      nombre = campo,
                                      valor = valor)
+        pclases.Auditoria.nuevo(ce, self.usuario, __file__)
         self.mostrar_especificos()
 
     def seleccionar_campoesp(self, campos):

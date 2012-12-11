@@ -574,6 +574,7 @@ class ControlPersonal(Ventana, VentanaGenerica):
                                           bajaLaboral = baja, 
                                           vacacionesYAsuntosPropios 
                                             = asuntos_propios)
+                pclases.Auditoria.nuevo(ch, self.usuario, __file__)
             self.add_grupo(fila, ch, filas, grupos)
             self.add_empleado(fila, ch)
             self.add_horas_regulares(fila, ch)
@@ -683,6 +684,7 @@ class ControlPersonal(Ventana, VentanaGenerica):
                     reg_orden = pclases.OrdenEmpleados(empleadoID = eid, 
                                                        orden = i, 
                                                        fecha = fecha)
+                    pclases.Auditoria.nuevo(reg_orden, self.usuario, __file__)
                 else:
                     regs_new_order.append(reg_orden)
                     reg_orden.orden = i
@@ -693,6 +695,7 @@ class ControlPersonal(Ventana, VentanaGenerica):
                 reg_orden = pclases.OrdenEmpleados(empleadoID = eid, 
                                                    orden = i, 
                                                    fecha = fecha)
+                pclases.Auditoria.nuevo(reg_orden, self.usuario, __file__)
                 regs_new_order.append(reg_orden)
         self.orden = regs_new_order
 
@@ -1043,6 +1046,7 @@ class ControlPersonal(Ventana, VentanaGenerica):
                     h = pclases.ControlHorasProduccion(
                             lineaDeProduccion = linea, 
                             controlHorasID = id)
+                    pclases.Auditoria.nuevo(h, self.usuario, __file__)
                 entries[h] = gtk.Entry()
                 entries[h].set_alignment(0.9)
                 tabla.attach(gtk.Label(linea.nombre), 0, 1, fila, fila+1)
@@ -1140,6 +1144,7 @@ class ControlPersonal(Ventana, VentanaGenerica):
                     h = pclases.ControlHorasMantenimiento(
                             lineaDeProduccion = linea, 
                             controlHorasID = id)
+                    pclases.Auditoria.nuevo(h, self.usuario, __file__)
                 entries[h] = gtk.Entry()
                 entries[h].set_alignment(0.9)
                 tabla.attach(gtk.Label(linea.nombre), 0, 1, fila, fila+1)

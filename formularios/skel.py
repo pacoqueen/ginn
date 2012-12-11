@@ -208,10 +208,11 @@ class XXXSkel(Ventana, VentanaGenerica):
         XXXobjeto_anterior = self.objeto
         if XXXobjeto_anterior != None:
             XXXobjeto_anterior.notificador.desactivar()
-        XXXobjeto = pclases.CuentaDestino()
+        XXXobjeto = pclases.XXXClase()
         utils.dialogo_info('NUEVO XXX CREADO', 
                            'Se ha creado un nuevo XXX.\nA continuación complete la información del misma y guarde los cambios.', 
                            padre = self.wids['ventana'])
+        pclases.Auditoria.nuevo(XXXobjeto, self.usuario, __file__)
         XXXobjeto.notificador.activar(self.aviso_actualizacion)
         self.objeto = XXXobjeto
         self._objetoreciencreado = self.objeto

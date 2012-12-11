@@ -496,6 +496,7 @@ class MotivosAusencia(Ventana):
         if motivo!=None:
             motivo.notificador.set_func(lambda : None)
         motivo = pclases.Motivo(descripcion = 'Introduzca aquí el motivo')
+        pclases.Auditoria.nuevo(motivo, self.usuario, __file__)
         utils.dialogo_info(titulo = 'NUEVO MOTIVO DE AUSENCIA CREADO',
                            texto = 'Introduzca los datos del motivo de ausencia.\nRecuerde pulsar el botón GUARDAR cuando termine.\n', 
                            padre = self.wids['ventana'])

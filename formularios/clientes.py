@@ -258,6 +258,7 @@ class Clientes(Ventana):
                     if not c:
                         c = pclases.Contacto(nombre = nombre, 
                                              apellidos = apellidos)
+                        pclases.Auditoria.nuevo(c, self.usuario, __file__)
                     for iter in iters:
                         idobra = model[iter][-1]
                         obra = pclases.Obra.get(idobra)
@@ -375,6 +376,7 @@ class Clientes(Ventana):
                                 observaciones = "", 
                                 pais = "", 
                                 generica = False)
+            pclases.Auditoria.nuevo(obra, self.usuario, __file__)
             obra.addCliente(self.objeto)
             self.rellenar_obras()
 
@@ -1467,6 +1469,7 @@ class Clientes(Ventana):
             c = pclases.CuentaBancariaCliente(clienteID = self.objeto.id, 
                                               banco = "Nueva cuenta bancaria", 
                                               observaciones = "Introduzca la información de la cuenta.")
+            pclases.Auditoria.nuevo(c, self.usuario, __file__)
             self.rellenar_cuentas()
 
     def drop_cuenta(self, boton):
@@ -1602,6 +1605,7 @@ class Clientes(Ventana):
                                           fax = '', 
                                           packingListConCodigo = False, 
                                           facturarConAlbaran = True)
+            pclases.Auditoria.nuevo(self.objeto, self.usuario, __file__)
             self._objetoreciencreado = self.objeto
             self.objeto.notificador.set_func(self.aviso_actualizacion)
             self.actualizar_ventana(objeto_anterior = anterior, 
@@ -1928,6 +1932,7 @@ class Clientes(Ventana):
         if prefijo != None and sufijo != None:
             contador = pclases.Contador(contador = 0, prefijo = prefijo, 
                                         sufijo = sufijo)
+            pclases.Auditoria.nuevo(contador, self.usuario, __file__)
         else:
             return
         cliente = self.objeto

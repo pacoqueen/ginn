@@ -851,6 +851,7 @@ class ProductosCompra(Ventana, VentanaGenerica):
                                           existencias = 0, 
                                           obsoleto = False, 
                                           proveedor = None)
+        pclases.Auditoria.nuevo(producto, self.usuario, __file__)
         self._objetoreciencreado = producto
         utils.dialogo_info('PRODUCTO CREADO',  
                            'Se ha creado un producto nuevo.\nA continuación '\

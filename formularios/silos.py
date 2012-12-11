@@ -335,6 +335,7 @@ class Silos(Ventana):
                 silo = pclases.Silo(nombre = nombre,
                                     capacidad = capacidad, 
                                     observaciones = observaciones)
+                pclases.Auditoria.nuevo(silo, self.usuario, __file__)
                 self.rellenar_widgets()
 
     def borrar(self, widget):

@@ -146,6 +146,7 @@ class LineasDeVentaSinPedido(Ventana):
                                     descuento = linea_sin_pedido.descuento, 
                                     fechaEntrega = None, 
                                     textoEntrega='')
+        pclases.Auditoria.nuevo(ldc, self.usuario, __file__)
     	self.rellenar_tabla()
         import pedidos_de_venta
         pedidos_de_venta.PedidosDeVenta(objeto = pedido, usuario = self.usuario)
@@ -171,10 +172,13 @@ class LineasDeVentaSinPedido(Ventana):
             except:
                 if linea_sin_pedido.facturaVenta != None:
                     pedido = pclases.PedidoVenta(cliente = linea_sin_pedido.facturaVenta.cliente, numpedido = numpedido, fecha = mx.DateTime.localtime())
+                    pclases.Auditoria.nuevo(pedido, self.usuario, __file__)
                 elif linea_sin_pedido.prefactura != None:
                     pedido = pclases.PedidoVenta(cliente = linea_sin_pedido.prefactura.cliente, numpedido = numpedido, fecha = mx.DateTime.localtime())
+                    pclases.Auditoria.nuevo(pedido, self.usuario, __file__)
                 elif linea_sin_pedido.albaranSalida != None:
                     pedido = pclases.PedidoVenta(cliente = linea_sin_pedido.albaranSalida.cliente, numpedido = numpedido, fecha = mx.DateTime.localtime())
+                    pclases.Auditoria.nuevo(pedido, self.usuario, __file__)
                 else:
                     utils.dialogo_info(titulo='INFO',texto='La línea seleccionada no tiene ni albarán ni factura asociada.\nPor lo que para crear el pedido deber introducir un cliente', padre = self.wids['ventana'])
                     clientes = []
@@ -183,6 +187,7 @@ class LineasDeVentaSinPedido(Ventana):
                     cliente = utils.dialogo_combo(titulo = 'Seleccione cliente',texto = 'Seleccione el cliente para el pedido creado para la línea', ops = clientes)
                     if cliente != None:
                         pedido = pclases.PedidoVenta(cliente = cliente, numpedido = numpedido)
+                        pclases.Auditoria.nuevo(pedido, self.usuario, __file__)
                     else:
                         utils.dialogo_info(titulo = 'ERROR', texto= 'No se creó el pedido', padre = self.wids['ventana'])
                         return
@@ -197,6 +202,7 @@ class LineasDeVentaSinPedido(Ventana):
                                         descuento = linea_sin_pedido.descuento, 
                                         fechaEntrega = None, 
                                         textoEntrega='')
+            pclases.Auditoria.nuevo(ldc, self.usuario, __file__)
             self.rellenar_tabla()
             import pedidos_de_venta
             pedidos_de_venta.PedidosDeVenta(objeto = pedido, usuario = self.usuario)

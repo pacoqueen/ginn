@@ -202,6 +202,8 @@ class Transferencias(Ventana, VentanaGenerica):
             import cuentas_destino
             nueva_cuenta_destino = pclases.CuentaDestino(proveedor = self.objeto.proveedor, 
                                                          nombre = "Nueva cuenta de %s" % (self.objeto.proveedor and self.objeto.proveedor.nombre or "?"))
+            pclases.Auditoria.nuevo(nueva_cuenta_destino, self.usuario, 
+                                    __file__)
             utils.dialogo_info(titulo = "NUEVA CUENTA CREADA", 
                                texto = """
                 A continuación complete la información de la nueva cuenta del proveedor                 
@@ -376,6 +378,7 @@ class Transferencias(Ventana, VentanaGenerica):
                                      facturaCompra = factura, 
                                      proveedor = factura.proveedor, 
                                      importe = importe)
+                pclases.Auditoria.nuevo(nuevo, self.usuario, __file__)
             except IndexError:
                 utils.dialogo_info(titulo = "ERROR CREANDO TRANSFERENCIA", 
                                    texto = "Se produjo un error al crear una nueva transferencia.\nProbablemente no existan cuentas en la aplicación desde donde realizar transferencias.", 

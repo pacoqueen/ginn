@@ -1067,6 +1067,7 @@ class TPV(Ventana):
             # XXX
             if self.ticket == None:
                 self.ticket = pclases.Ticket()
+                pclases.Auditoria.nuevo(self.ticket, self.usuario, __file__)
                 # XXX
                 if pclases.DEBUG:
                     print "Tras crear nuevo ticket", time.time() - inicio
@@ -1171,6 +1172,7 @@ class TPV(Ventana):
                                            cantidad = cantidad, 
                                            precio = precio, 
                                            descuento = descuento)
+                pclases.Auditoria.nuevo(ldv, self.usuario, __file__)
                 # XXX
                 if pclases.DEBUG:
                     print "Tras crear nueva LDV.", time.time() - inicio
@@ -1464,6 +1466,7 @@ class TPV(Ventana):
                                                facturaVenta = factura, 
                                                observaciones = factura.cliente and factura.cliente.textoformacobro or "", 
                                                cuentaOrigen = factura.cliente and factura.cliente.cuentaOrigen or None)
+                pclases.Auditoria.nuevo(vto, self.usuario, __file__)
                 if diaest:
 # XXX 24/05/06
                     # Esto es más complicado de lo que pueda parecer a simple vista. Ante poca inspiración... ¡FUERZA BRUTA!
@@ -1651,6 +1654,9 @@ class TPV(Ventana):
                                                       fecha = v.fecha, 
                                                       importe = v.importe, 
                                                       observaciones = "Cobrado al facturar desde TPV.")
+                                    pclases.Auditoria.nuevo(c, 
+                                                            self.usuario, 
+                                                            __file__)
                             if debe_generar_recibo(factura, 
                                                    self.wids['ventana']):
                                 generar_recibo(factura, 
@@ -1737,6 +1743,7 @@ def crear_factura(cliente, padre = None):
                         iva = 0.21, 
                         bloqueada = False, 
                         irpf = irpf)
+            pclases.Auditoria.nuevo(factura, self.usuario, __file__)
         except Exception, msg:
             factura = None
             print "tpv::crear_factura -> No se pudo crear la factura. "\
@@ -2465,6 +2472,7 @@ def crear_nuevo_cliente(nombre, padre = None):
                                               fax = '', 
                                               riesgoAsegurado = -1, 
                                               riesgoConcedido = -1)
+                    pclases.Auditoria.nuevo(cliente, self.usuario, __file__)
                     idcliente = cliente.id
                 except Exception, msg: # CIF duplicado o cualquier historia así.
                     utils.dialogo_info(titulo = "ERROR", 

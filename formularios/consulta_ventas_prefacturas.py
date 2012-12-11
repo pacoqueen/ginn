@@ -246,11 +246,14 @@ class ConsultaVentasPrefacturas(Ventana):
             prefacturas = pclases.Prefactura.select(pclases.Prefactura.q.fecha <= fechafin, orderBy = 'fecha')
             vpro.set_valor(0.5, "Analizando prefacturas...")
         else:
-            fechainicio = mx.DateTime.DateTimeFrom(day = int(self.inicio.split("/")[2]), 
-                                                   month = int(self.inicio.split("/")[1]), 
-                                                   year = int(self.inicio.split("/")[0]))
-            prefacturas = pclases.Prefactura.select(pclases.AND(pclases.Prefactura.q.fecha >= fechainicio,
-                                                                pclases.Prefactura.q.fecha <= fechafin), orderBy='fecha')
+            fechainicio = mx.DateTime.DateTimeFrom(
+                                    day = int(self.inicio.split("/")[2]), 
+                                    month = int(self.inicio.split("/")[1]), 
+                                    year = int(self.inicio.split("/")[0]))
+            prefacturas = pclases.Prefactura.select(pclases.AND(
+                                    pclases.Prefactura.q.fecha >= fechainicio,
+                                    pclases.Prefactura.q.fecha <= fechafin), 
+                                orderBy='fecha')
             vpro.set_valor(0.5, "Analizando prefacturas...")
         self.resultado = list(prefacturas)
         vpro.set_valor(0.8, "Analizando prefacturas...")

@@ -130,6 +130,7 @@ class TiposIncidencia(Ventana):
         """
     	nuevotipo = utils.dialogo_entrada('Introduzca el nuevo tipo de incidencia')
         tipodeincidencia = pclases.TipoDeIncidencia(descripcion = nuevotipo)
+        pclases.Auditoria.nuevo(tipodeincidencia, self.usuario, __file__)
     	self.rellenar_tabla()
     
     

@@ -121,6 +121,7 @@ class Nominas(Ventana):
         if observaciones.count() == 0:
             obs = pclases.ObservacionesNominas(fecha = mx.DateTime.DateTimeFrom(day = 1, month = mes, year = anno), 
                                                observaciones = texto)
+            pclases.Auditoria.nuevo(obs, self.usuario, __file__)
         else:
             obs = observaciones[0]
             if observaciones.count() > 1:
@@ -728,6 +729,7 @@ class Nominas(Ventana):
                                     fechaini = fecha_ini, 
                                     fechafin = fecha_fin
                                    )
+            pclases.Auditoria.nuevo(nomina, self.usuario, __file__)
             nomina.calcular_total()
         
     def rellenar_nominas(self, boton = None):

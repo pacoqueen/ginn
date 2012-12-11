@@ -707,6 +707,7 @@ class PedidosDeCompra(Ventana):
                     observaciones1 = o1,    # Necesarios permisos para 
                     observaciones2 = o2,    # modificarlas.
                     formaDePago = o2)
+                pclases.Auditoria.nuevo(pedido, self.usuario, __file__)
             self.objeto = pedido
         self.actualizar_ventana()
 
@@ -963,6 +964,7 @@ class PedidosDeCompra(Ventana):
                                              productoCompra = producto,
                                              descuento = 0, 
                                              fechaEntrega = None) 
+        pclases.Auditoria.nuevo(ldpc, self.usuario, __file__)
         self.actualizar_ventana()
 
     def borrar_ldc(self, widget):

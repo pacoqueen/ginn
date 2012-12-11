@@ -610,6 +610,7 @@ En ambos casos el límite inferior es flexible -por compensación-.)""")
                                 pendiente = True,
                                 envio = mx.DateTime.localtime(),
                                 recepcion = None)
+            pclases.Auditoria.nuevo(m, self.usuario, __file__)
             if utils.dialogo(titulo = "MUESTRA ENVIADA",
                              texto = "Muestra creada, enviada y pendiente para su análisis en laboratorio.\n¿Desea enviar una alerta?", 
                              padre = self.wids['ventana']):

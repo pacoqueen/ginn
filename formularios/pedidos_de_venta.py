@@ -337,6 +337,7 @@ class PedidosDeVenta(Ventana):
                                        cantidad = 0, 
                                        precio = 0, 
                                        descuento = 0)
+                pclases.Auditoria.nuevo(srv, self.usuario, __file__)
                 self.actualizar_ventana()
 
     def drop_servicio(self, widget):
@@ -1592,6 +1593,7 @@ class PedidosDeVenta(Ventana):
             bloqueado = True,
             cerrado = False, 
             tarifa = tarifa_defecto)
+        pclases.Auditoria.nuevo(self.objeto, self.usuario, __file__)
         self.objeto.notificador.activar(self.aviso_actualizacion)
         # XXX: Añado a objetos recientes.
         objsr = pclases.ListaObjetosRecientes.buscar("pedidos_de_venta.py", 
@@ -1810,6 +1812,7 @@ class PedidosDeVenta(Ventana):
                                        cantidad = cantidad, 
                                        precio = precio, 
                                        descuento = 0)
+            pclases.Auditoria.nuevo(ldv, self.usuario, __file__)
         self.actualizar_ventana()
 
     def seleccionar_cantidad(self, producto):
@@ -2131,6 +2134,7 @@ class PedidosDeVenta(Ventana):
                                             descuento = 0, 
                                             fechaEntrega = None, 
                                             textoEntrega = "")
+                pclases.Auditoria.nuevo(ldp, self.usuario, __file__)
             elif isinstance(producto, pclases.ProductoVenta):
                 ldp = pclases.LineaDePedido(pedidoVenta = self.objeto, 
                                             productoVenta = producto, 
@@ -2139,6 +2143,7 @@ class PedidosDeVenta(Ventana):
                                             descuento = 0, 
                                             fechaEntrega = None, 
                                             textoEntrega = "")
+                pclases.Auditoria.nuevo(ldp, self.usuario, __file__)
         self.actualizar_ventana()
 
     def drop_ldp(self, boton):
@@ -2296,6 +2301,7 @@ class PedidosDeVenta(Ventana):
                     descuento = productos[producto]['descuento'], 
                     notas = "\n\n".join(productos[producto]['notas']), 
                     descripcionComplementaria = desc_compl) 
+                pclases.Auditoria.nuevo(ldv, self.usuario, __file__)
                 lineas_de_venta_creadas.append(ldv)
             # 4.- Asocio las LDVs al albarán de salida. (Hecho arriba)
             # 5.- Cierro el albarán si ha entrado todo.
@@ -2415,6 +2421,7 @@ def crear_nuevo_albaran_salida(pedido):
                                     fecha = pedido.fecha, 
                                     almacenOrigen = almacen, 
                                     almacenDestino = None)
+    pclases.Auditoria.nuevo(albaran, None, __file__)
     return albaran
 
 def crear_nueva_factura_venta(pedido):
@@ -2449,6 +2456,7 @@ def crear_nueva_factura_venta(pedido):
         iva = pedido.iva, 
         bloqueada = False, 
         irpf = dde.irpf)
+    pclases.Auditoria.nuevo(fra, None, __file__)
     return fra
 
 

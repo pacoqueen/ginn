@@ -529,6 +529,7 @@ class AlbaranesDeEntradaRepuestos(Ventana):
                                       facturaCompra = None, 
                                       iva = iva, 
                                       precio = producto.preciopordefecto)
+        pclases.Auditoria.nuevo(linea, self.usuario, __file__)
         if linea.productoCompra.controlExistencias: 
             # XXX DEBUG
             #print linea.productoCompra.existencias
@@ -620,6 +621,7 @@ class AlbaranesDeEntradaRepuestos(Ventana):
                                             descuento = l.descuento,
                                             facturaCompra = None, 
                                             iva = iva)
+                pclases.Auditoria.nuevo(ldc, self.usuario, __file__)
                 if ldc.productoCompra.controlExistencias: 
                     # XXX DEBUG
                     #print ldc.productoCompra.existencias
@@ -684,6 +686,7 @@ class AlbaranesDeEntradaRepuestos(Ventana):
                                          proveedorID = idproveedor, 
                                          repuestos = True, 
                                          almacenID = almo)
+        pclases.Auditoria.nuevo(albaran, self.usuario, __file__)
         utils.dialogo_info('ALBARÁN CREADO', 
                            'El albarán %s ha sido creado.\nComplete la información asociando entradas al mismo.' % str(albaran.numalbaran),
                            padre = self.wids['ventana'])

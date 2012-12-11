@@ -213,7 +213,9 @@ class Contadores(Ventana):
         if prefijo != None:
             sufijo = utils.dialogo_entrada('Introduzca el sufijo del nuevo contador')
             if sufijo != None:
-                contador = pclases.Contador(prefijo = prefijo, sufijo = sufijo, contador = 1)
+                contador = pclases.Contador(prefijo = prefijo, sufijo = sufijo,
+                                            contador = 1)
+                pclases.Auditoria.nuevo(contador, self.usuario, __file__)
                 self.rellenar_tabla()
     
     

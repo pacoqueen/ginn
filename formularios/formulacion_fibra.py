@@ -264,6 +264,7 @@ class FormulacionFibra(Ventana):
         if self.objeto == None:
             self.objeto = pclases.Formulacion(nombre = "FIBRA", 
                             observaciones = "Generado automáticamente.")
+            pclases.Auditoria.nuevo(self.objeto, self.usuario, __file__)
             linea.formulacion = self.objeto
         nombres_ca_existentes = [ca.nombre for ca 
                                     in self.objeto.consumosAdicionales]
@@ -285,6 +286,7 @@ class FormulacionFibra(Ventana):
                                               unidad = nombres_ca[nombre][1],
                                               formulacionID = self.objeto.id,
                                               productoCompraID = None)
+                pclases.Auditoria.nuevo(ca, self.usuario, __file__)
                 for productoVenta in pclases.ProductoVenta.select(pclases.ProductoVenta.q.camposEspecificosBalaID != None):
                     if not productoVenta.es_bolsa():
                         # Las bolsas son fibra pero llevan su propia 
@@ -400,6 +402,8 @@ class FormulacionFibra(Ventana):
                                         nombre = nombre, 
                                         cantidad = cantidad, 
                                         unidad = unidad)
+                pclases.Auditoria.nuevo(nuevo_consumo_adicional, self.usuario, 
+                                        __file__)
                 for producto in productos:
                     nuevo_consumo_adicional.addProductoVenta(producto)
                 self.rellenar_consumos_adicionales_por_producto()

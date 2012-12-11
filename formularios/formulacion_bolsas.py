@@ -292,6 +292,7 @@ class FormulacionBolsaCemento(Ventana):
             self.logger.error(txt)
             self.objeto = pclases.Formulacion(nombre = "EMBOLSADO", 
                                 observaciones = "Generado automáticamente.")
+            pclases.Auditoria.nuevo(self.objeto, self.usuario, __file__)
             self.linea.formulacion = self.objeto
         nombres_ca_existentes = [ca.nombre 
                                  for ca in self.objeto.consumosAdicionales]
@@ -314,6 +315,7 @@ class FormulacionBolsaCemento(Ventana):
                                               unidad = nombres_ca[nombre][1],
                                               formulacionID = self.objeto.id,
                                               productoCompraID = None)
+                pclases.Auditoria.nuevo(ca, self.usuario, __file__)
                 for productoVenta in productos_embolsado:
                     ceb = productoVenta.camposEspecificosBala.cajasPale
                     if ceb == cantidad_defecto:
@@ -452,6 +454,8 @@ class FormulacionBolsaCemento(Ventana):
                     nombre = nombre, 
                     cantidad = cantidad, 
                     unidad = unidad)
+                pclases.Auditoria.nuevo(nuevo_consumo_adicional, self.usuario, 
+                                        __file__)
                 for producto in productos:
                     nuevo_consumo_adicional.addProductoVenta(producto)
                 self.rellenar_consumos_adicionales_por_producto()

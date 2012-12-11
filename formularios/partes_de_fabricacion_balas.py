@@ -110,6 +110,7 @@ def buscar_o_crear_albaran_interno(pdp, incluir_consumos_auto = False):
                                     pedidoVenta = None, 
                                     facturaVenta = None, 
                                     productoVenta = None)
+                pclases.Auditoria.nuevo(ldv, None, __file__)
     return albint
         
 def verificar_solapamiento(partedeproduccion, padre = None, 
@@ -707,6 +708,7 @@ class PartesDeFabricacionBalas(Ventana):
                                   actualizado = False,
                                   parteDeProduccion = self.objeto,
                                   productoCompra = producto)
+        pclases.Auditoria.nuevo(consumo, self.usuario, __file__)
         self.actualizar_consumo(consumo, True)
         self.objeto.unificar_consumos()
         self.rellenar_filtros()
@@ -1583,6 +1585,7 @@ class PartesDeFabricacionBalas(Ventana):
                                                       prodestandar = 0,
                                                       observaciones = ';;;;;',
                                                       bloqueado = False)
+        pclases.Auditoria.nuevo(partedeproduccion, self.usuario, __file__)
         partedeproduccion._corregir_campos_fechahora()
         self.objeto = partedeproduccion
         self.wids['e_numlote'].set_text('')
@@ -2319,6 +2322,7 @@ class PartesDeFabricacionBalas(Ventana):
                                     claseb = False,
                                     motivo = '',
                                     muestra = False)
+                pclases.Auditoria.nuevo(bala, self.usuario, __file__)
             except:
                 utils.dialogo_info(titulo = 'BALA NO CREADA', 
                     texto = 'La bala no se pudo crear. Verifique que el '
@@ -2332,6 +2336,7 @@ class PartesDeFabricacionBalas(Ventana):
                             productoVenta = self.producto,
                             albaranSalida = None, 
                             almacen = pclases.Almacen.get_almacen_principal())
+            pclases.Auditoria.nuevo(articulo, self.usuario, __file__)
         if articulo != None:
             self.descontar_material_adicional(articulo)
             self.actualizar_ventana()
@@ -2350,6 +2355,7 @@ class PartesDeFabricacionBalas(Ventana):
                                     muestra = False, 
                                     claseb = False, 
                                     motivo = "")
+            pclases.Auditoria.nuevo(bigbag, self.usuario, __file__)
         except:
             utils.dialogo_info(titulo = "BIGBAG NO CREADO", 
                                texto = "El bigbag no se pudo crear. Verifique que el número %d no esté duplicado." % (numero), 
@@ -2362,6 +2368,7 @@ class PartesDeFabricacionBalas(Ventana):
                             productoVenta = self.producto, 
                             albaranSalida = None, 
                             almacen = pclases.Almacen.get_almacen_principal())
+        pclases.Auditoria.nuevo(articulo, self.usuario, __file__)
         return articulo
 
     def drop_bala(self, boton):
@@ -2490,6 +2497,7 @@ class PartesDeFabricacionBalas(Ventana):
                 horafin = horafin,
                 parteDeProduccion = self.objeto,
                 observaciones = observaciones)
+            pclases.Auditoria.nuevo(incidencia, self.usuario, __file__)
             if incidencia.horainicio > incidencia.horafin:  
                 incidencia.horainicio, incidencia.horafin = incidencia.horafin, incidencia.horainicio
             self.actualizar_ventana()
@@ -2690,6 +2698,7 @@ class PartesDeFabricacionBalas(Ventana):
                                        tolerancia = 0.4, 
                                        humedad = None, 
                                        mediatitulo = 0.0)
+                pclases.Auditoria.nuevo(lote, self.usuario, __file__)
         else:
             codigo = codigo.upper()
             if "L-" not in codigo:
@@ -2707,6 +2716,7 @@ class PartesDeFabricacionBalas(Ventana):
                                        padre = self.wids['ventana'])
                     return None
                 lote = pclases.Lote(numlote = numlote, codigo = codigo)
+                pclases.Auditoria.nuevo(lote, self.usuario, __file__)
         for a in self.objeto.articulos:
             if a.es_bala():
                 a.bala.lote = lote
@@ -2812,6 +2822,7 @@ class PartesDeFabricacionBalas(Ventana):
                                   actualizado = False,
                                   parteDeProduccion = self.objeto,
                                   productoCompra = producto)
+        pclases.Auditoria.nuevo(consumo, self.usuario, __file__)
         # self.actualizar_consumo(consumo, True)
         self.objeto.unificar_consumos()
         self.rellenar_granza()
@@ -2946,6 +2957,7 @@ class PartesDeFabricacionBalas(Ventana):
                                 envio = mx.DateTime.localtime(),
                                 recepcion = None, 
                                 loteCem = None)
+            pclases.Auditoria.nuevo(m, self.usuario, __file__)
             _codigo[0] = codigo
             if utils.dialogo(titulo = "MUESTRA ENVIADA",
                              texto = "Muestra creada, enviada y pendiente para su análisis en laboratorio.\n¿Desea enviar una alerta?", 
@@ -3082,6 +3094,7 @@ class PartesDeFabricacionBalas(Ventana):
                             antes = producto_consumido.existencias, 
                             despues = producto_consumido.existencias + cargado, 
                             cantidad = -cargado)
+                    pclases.Auditoria.nuevo(consumo, self.usuario, __file__)
                     self.logger.warning("CONSUMO LÍNEA FIBRA: %s anulado de silo %s. Ocupado: %s" % (utils.float2str(cargado), silo.nombre, silo.ocupado))
                 else:
                     utils.dialogo_info(titulo = "ERROR EN SILO", 
@@ -3115,6 +3128,7 @@ class PartesDeFabricacionBalas(Ventana):
                             antes = granza.existencias, 
                             despues = granza.existencias - cantidad_a_consumir, 
                             cantidad = cantidad_a_consumir)
+                    pclases.Auditoria.nuevo(consumo, self.usuario, __file__)
                     granza.existencias -= cantidad_a_consumir
                     granza.add_existencias(-cantidad_a_consumir)
                     self.logger.warning("CONSUMO LÍNEA FIBRA: Consumiendo %s",
@@ -3561,6 +3575,7 @@ class PartesDeFabricacionBalas(Ventana):
                         antes = producto.existencias, 
                         despues = producto.existencias - cantidad_a_consumir, 
                         cantidad = cantidad_a_consumir)
+                    pclases.Auditoria.nuevo(consumo, self.usuario, __file__)
                     # Actualizar existencias
                     producto.existencias -= cantidad_a_consumir
                     producto.syncUpdate()
@@ -3734,6 +3749,7 @@ def crear_nueva_bala(numbala, codigo_bala, peso, ventana_parte):
                                 muestra = False, 
                                 claseb = False, 
                                 motivo = "")
+            pclases.Auditoria.nuevo(bala, self.usuario, __file__)
             parte = ventana_parte.objeto
             producto = ventana_parte.producto
             articulo = pclases.Articulo(bala = bala, 
@@ -3743,6 +3759,7 @@ def crear_nueva_bala(numbala, codigo_bala, peso, ventana_parte):
                             albaranSalida = None, 
                             productoVenta = producto, 
                             almacen = pclases.Almacen.get_almacen_principal())
+            pclases.Auditoria.nuevo(articulo, self.usuario, __file__)
             ventana_parte.descontar_material_adicional(articulo)
             try:
                 imprimir_etiqueta(articulo, ventana_parte)

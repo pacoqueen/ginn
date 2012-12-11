@@ -311,6 +311,7 @@ class AlbaranesDeSalidaRepuestos(Ventana):
                                     fecha = mx.DateTime.localtime(), 
                                     almacenOrigenID = almo, 
                                     almacenDestino = None)
+            pclases.Auditoria.nuevo(albaran, self.usuario, __file__)
             utils.dialogo_info('ALBARÁN CREADO', 
                                'El albarán %s ha sido creado.\nNo olvide asociar las salidas.' % albaran.numalbaran, 
                                padre = self.wids['ventana'])
@@ -442,6 +443,7 @@ class AlbaranesDeSalidaRepuestos(Ventana):
                                                    productoVenta = None, 
                                                    productoCompra = prod, 
                                                    cantidad = 0)
+                        pclases.Auditoria.nuevo(ldv, self.usuario, __file__)
                         self.actualizar_ventana()
 
     def cambiar_cantidad_ldv(self, cell, path, text):

@@ -312,6 +312,7 @@ class ConsultaBajoMinimos(Ventana):
                                                 descuento = 0,
                                                 iva = 0.21, 
                                                 cerrado = False) 
+                    pclases.Auditoria.nuevo(pedido, self.usuario, __file__)
                     for path in paths:
                         id = model[path][-1]
                         ldp=pclases.LineaDePedidoDeCompra(pedidoCompra=pedido,
@@ -323,6 +324,7 @@ class ConsultaBajoMinimos(Ventana):
                                 textoEntrega = None, 
                                 notas = "Creado a partir de la consulta de "
                                         "faltas.")
+                        pclases.Auditoria.nuevo(ldp, self.usuario, __file__)
                     import pedidos_de_compra
                     ventana_pedido = pedidos_de_compra.PedidosDeCompra(pedido)
 

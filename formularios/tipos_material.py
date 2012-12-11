@@ -130,6 +130,7 @@ class TiposMaterial(Ventana):
         """
         nuevotipo = utils.dialogo_entrada('Introduzca el nuevo tipo de material')
         tipodematerial = pclases.TipoDeMaterial(descripcion = nuevotipo)
+        pclases.Auditoria.nuevo(tipodematerial, self.usuario, __file__)
         self.rellenar_tabla()
     
     

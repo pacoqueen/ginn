@@ -251,6 +251,7 @@ class PartesDeTrabajo(Ventana):
                                     horafin = hora + (mx.DateTime.oneHour * 8), 
                                     trabajo = '', 
                                     centroTrabajo = e.centroTrabajo)
+        pclases.Auditoria.nuevo(pt, self.usuario, __file__)
 
     # --------------- Manejadores de eventos ----------------------------
     def add(self, w):

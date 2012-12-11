@@ -177,6 +177,7 @@ class ResultadosGrasa(Ventana):
                 prueba = pclases.PruebaGrasa(fecha = time.strptime(fecha, '%d/%m/%Y'),
                                                     resultado = resultado,
                                                     lote = self.lote)
+                pclases.Auditoria.nuevo(prueba, self.usuario, __file__)
             except:
                 utils.dialogo_info(titulo = 'ERROR', 
                                    texto = 'Verifique que ha introducido los datos correctamente.')

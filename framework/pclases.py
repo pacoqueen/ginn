@@ -437,7 +437,7 @@ class PRPCTOO:
         """
         Devuelve un identificador único (¿único? I don't think so) para toda 
         la base de datos.
-        Las clases pueden redefinir este método. Y de hecho deberían de acorde 
+        Las clases pueden redefinir este método. Y de hecho deberían de, acorde
         a la lógica de negocio.
         """
         #pre = "".join([l for l in self.__class__.__name__ if l.isupper()])
@@ -526,7 +526,7 @@ FRA_NO_DOCUMENTADA,FRA_NO_VENCIDA,FRA_IMPAGADA,FRA_COBRADA,FRA_ABONO = range(5)
 
 
 # VERBOSE MODE
-total = 152 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
+total = 153 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
             # Más bien grep print_verbose pclases.py | wc -l
 cont = 0
 import time
@@ -18659,6 +18659,7 @@ class Usuario(SQLObject, PRPCTOO):
     estadisticas = MultipleJoin('Estadistica')
     listasObjetosRecientes = MultipleJoin("ListaObjetosRecientes")
     empleados = MultipleJoin("Empleado")
+    auditorias = MultipleJoin("Auditoria")
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -18737,6 +18738,7 @@ class Ventana(SQLObject, PRPCTOO):
     permisos = MultipleJoin('Permiso')
     estadisticas = MultipleJoin('Estadistica')
     listasObjetosRecientes = MultipleJoin("ListaObjetosRecientes")
+    auditorias = MultipleJoin("Auditoria")
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -20167,7 +20169,42 @@ class IdReciente(SQLObject, PRPCTOO):
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
+class Auditoria(SQLObject, PRPCTOO):
+    _connection = conn
+    _fromDatabase = True
+    usuarioID = ForeignKey('Usuario')
+    ventanaID = ForeignKey("Ventana")
 
+    def _init(self, *args, **kw):
+        starter(self, *args, **kw)
+
+    @staticmethod
+    def nuevo(objeto, usuario, ventana):
+        """
+        Nuevo registro en la base de datos. Creo un objeto auditoría 
+        con el usuario recibido y determino IP y nombre de la máquina.
+        """
+        from autenticacion import get_IPLocal
+        from socket import gethostname
+        ip = get_IPLocal() 
+        host = gethostname()
+        if isinstance(ventana, str):
+            if ventana.endswith(".pyc"):
+                ventana = ventana[:-1]
+            ventana = os.path.basename(ventana)
+            try:
+                ventana = Ventana.select(Ventana.q.fichero == ventana)[0]
+            except IndexError:
+                ventana = None
+        Auditoria(usuario = usuario, 
+                  ventana = ventana, 
+                  puid = objeto.puid, 
+                  action = "create", 
+                  ip = ip, 
+                  hostname = host)
+
+cont, tiempo = print_verbose(cont, total, tiempo)
+ 
 ## XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX
 
 def getObjetoPUID(puid):

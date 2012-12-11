@@ -353,6 +353,7 @@ class Proveedores(Ventana):
                                         diadepago = '25', 
                                         inhabilitado = False)
         proveedor = self._objetoreciencreado = self.objeto
+        pclases.Auditoria.nuevo(proveedor, self.usuario, __file__)
         proveedor.notificador.set_func(self.aviso_actualizacion)
         utils.dialogo_info('PROVEEDOR CREADO', 
             'Inserte el resto de la información del proveedor', 

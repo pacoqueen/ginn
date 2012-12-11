@@ -256,16 +256,18 @@ class ConsultaVentasPorProducto(Ventana):
         fini = utils.parse_fecha(self.wids['e_fechainicio'].get_text())
         ffin = utils.parse_fecha(self.wids['e_fechafin'].get_text())
         vpro.set_valor(0.3, "Buscando albaranes de salida...")
-        albs = pclases.AlbaranSalida.select(pclases.AND(pclases.AlbaranSalida.q.fecha >= fini, 
-                                                        pclases.AlbaranSalida.q.fecha <= ffin), 
+        albs = pclases.AlbaranSalida.select(pclases.AND(
+                                    pclases.AlbaranSalida.q.fecha >= fini, 
+                                    pclases.AlbaranSalida.q.fecha <= ffin), 
                                             orderBy = "fecha")
         ldvs = []
         for a in albs:
             for ldv in a.lineasDeVenta: # Lo hago así para cargar aquí todo el peso de traer las LDVs, y así aligero el rellenar_tabla.
                 ldvs.append(ldv)
         vpro.set_valor(0.6, "Analizando facturas y abonos...")
-        adedas = pclases.AlbaranDeEntradaDeAbono.select(pclases.AND(pclases.AlbaranDeEntradaDeAbono.q.fecha >= fini, 
-                                                                    pclases.AlbaranDeEntradaDeAbono.q.fecha <= ffin), 
+        adedas = pclases.AlbaranDeEntradaDeAbono.select(pclases.AND(
+                            pclases.AlbaranDeEntradaDeAbono.q.fecha >= fini, 
+                            pclases.AlbaranDeEntradaDeAbono.q.fecha <= ffin), 
                                                         orderBy = "fecha")
         ldds = []
         for a in adedas:

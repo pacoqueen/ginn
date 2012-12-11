@@ -345,6 +345,7 @@ class ResultadosFluidez(Ventana):
                                          silo = self.wids['e_silo'].get_text(), 
                                          lote = self.wids['e_lote'].get_text(), 
                                                                      mfi = mfi)
+                pclases.Auditoria.nuevo(prueba, self.usuario, __file__)
                 if resultado2:
                     try:
                         resultado = float(resultado2)
@@ -356,6 +357,7 @@ class ResultadosFluidez(Ventana):
                             silo = self.wids['e_silo'].get_text(), 
                             lote = self.wids['e_lote'].get_text(),
                             mfi = mfi)
+                        pclases.Auditoria.nuevo(prueba, self.usuario, __file__)
                     except Exception, msg:
                         utils.dialogo_info(titulo = 'ERROR', 
                                            texto = 'Verifique que ha introducido los datos correctamente.\n\n\nInformación de depuración: %s' % (msg), 

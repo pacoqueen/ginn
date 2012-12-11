@@ -120,12 +120,14 @@ class CalendarioLaboral(Ventana):
             # Para crear y buscar calendarios siempre se usará 1 como día. Lo importante es mes y año.
         if calendarios.count() == 0: # Crear
             calendario = pclases.CalendarioLaboral(lineaDeProduccion = ldp, mesAnno = fechacalendario)
+            pclases.Auditoria.nuevo(calendario, self.usuario, __file__)
             # Añado los festivos genéricos.
             festivos = tuple([(f.fecha.day, f.fecha.month) for f in pclases.FestivoGenerico.select() \
                                 if f.fecha.month == calendario.mesAnno.month])
             for dia, mes in festivos:
                 fechafestivo = mx.DateTime.DateTimeFrom(day = dia, month = mes, year = calendario.mesAnno.year)
                 festivo = pclases.Festivo(calendarioLaboral = calendario, fecha = fechafestivo)
+                pclases.Auditoria.nuevo(festivo, self.usuario, __file__)
         else:
             calendario = calendarios[0]
         return calendario, idldp 
@@ -317,6 +319,7 @@ class CalendarioLaboral(Ventana):
         fecha = mx.DateTime.DateTimeFrom(day = dia, month = mes, year = anno)
         if ch.get_active(): # Convierto en festivo.
             festivo = pclases.Festivo(calendarioLaboral = self.objeto, fecha = fecha)
+            pclases.Auditoria.nuevo(festivo, self.usuario, __file__)
             # Borro widgets anteriores:
             cols = self.wids['tcal'].get_property("n-columns")
             for col in xrange(1, cols-2):
@@ -339,6 +342,7 @@ class CalendarioLaboral(Ventana):
         fecha = mx.DateTime.DateTimeFrom(day = dia, month = mes, year = anno)
         if ch.get_active(): # Convierto en vacaciones.
             vacaciones = pclases.Vacaciones(calendarioLaboral = self.objeto, fecha = fecha)
+            pclases.Auditoria.nuevo(vacaciones, self.usuario, __file__)
             # Borro widgets anteriores:
             cols = self.wids['tcal'].get_property("n-columns")
             for col in xrange(1, cols-2):
@@ -370,6 +374,7 @@ class CalendarioLaboral(Ventana):
                                                grupo = grupo, 
                                                calendarioLaboral = self.objeto, 
                                                fecha = mx.DateTime.DateTimeFrom(day = dia, month = mes, year = anno))
+            pclases.Auditoria.nuevo(nuevolaborable, self.usuario, __file__)
         else:
             laborable = laborable[0]
             laborable.turno = turno

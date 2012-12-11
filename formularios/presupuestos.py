@@ -184,6 +184,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                                         cerrado = False, 
                                         comercial = self.objeto.comercial, 
                                         obra = self.objeto.obra)
+                pclases.Auditoria.nuevo(nuevopedido, self.usuario, __file__)
             if nuevopedido != None:
                 for ldp in self.objeto.lineasDePedido:
                     if ldp.pedidoVenta == None:
@@ -273,6 +274,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                                             fechaEntrega = None, 
                                             textoEntrega = "", 
                                             presupuesto = self.objeto)
+            pclases.Auditoria.nuevo(ldp, self.usuario, __file__)
         self.rellenar_tablas()
     
     def drop_ldp(self, boton):
@@ -315,6 +317,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                                        precio = 0, 
                                        descuento = 0, 
                                        presupuesto = self.objeto)
+                pclases.Auditoria.nuevo(srv, self.usuario, __file__)
                 self.rellenar_tablas()
     
     def drop_srv(self, boton):
@@ -838,6 +841,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 despedida = despedida, 
                 numpresupuesto = numpresupuesto, 
                 comercial = comercial)
+            pclases.Auditoria.nuevo(presupuesto, self.usuario, __file__)
             utils.dialogo_info('NUEVA OFERTA CREADA', 
                                'Nuevo presupuesto creado con éxito.\n\nRepase los valores por defecto antes de imprimir la carta de oferta.', 
                                padre = self.wids['ventana'])

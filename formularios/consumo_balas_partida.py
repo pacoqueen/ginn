@@ -145,6 +145,7 @@ class ConsumoBalasPartida(Ventana):
                 partida = pclases.Partida(numpartida = numpartida, 
                                           codigo = "P-" + `numpartida`, 
                                           partidaCarga = self.objeto)
+                pclases.Auditoria.nuevo(partida, self.usuario, __file__)
             else:
                 self.logger.error("consumo_balas_partida.py::add_partida_gtx -> Encontrada más de una partida con el mismo número. NO DEBERÍA OCURRIR.")
         self.actualizar_ventana()
@@ -543,6 +544,7 @@ Sin embalaje.</i></small>""" % (merma))
                         return
                     partida = pclases.PartidaCarga(numpartida = numpartida,
                                                 codigo = "PC%d" % (numpartida))
+                    pclases.Auditoria.nuevo(partida, self.usuario, __file__)
                     self.objeto = partida
                     self.actualizar_ventana()
 

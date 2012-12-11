@@ -475,6 +475,7 @@ class Usuarios(Ventana):
         usuario = self.objeto
         if ventana not in [p.ventana for p in usuario.permisos]:
             p = pclases.Permiso(usuario = usuario, ventana = ventana, permiso = permitir)
+            pclases.Auditoria.nuevo(p, self.usuario, __file__)
         else:
             p = [p for p in usuario.permisos if p.ventana == ventana][0]
             p.permiso = permitir
@@ -708,6 +709,7 @@ class Usuarios(Ventana):
                                         nombre = '',
                                         cuenta = '',
                                         cpass = '')
+        pclases.Auditoria.nuevo(usuario, self.usuario, __file__)
         utils.dialogo_info('USUARIO CREADO', 'El usuario %s ha sido creado.\nNo olvide completar el resto de información relativa al mismo.' % usuario.usuario)
         usuario.notificador.activar(self.aviso_actualizacion)
         self.objeto = usuario
@@ -847,6 +849,7 @@ class Usuarios(Ventana):
         descripcion = self.wids['e_descripcion_modulo'].get_text()
         if nombre:
             m = pclases.Modulo(nombre = nombre, icono = icono, descripcion = descripcion)
+            pclases.Auditoria.nuevo(m, self.usuario, __file__)
             self.limpiar_modulo()
             self.rellenar_tab_modulos()
         
@@ -872,6 +875,7 @@ class Usuarios(Ventana):
         clase = self.wids['e_clase_ventana'].get_text()
         if fichero and descripcion and clase:
             v = pclases.Ventana(descripcion = descripcion, icono = icono, clase = clase, fichero = fichero, modulo = None)
+            pclases.Auditoria.nuevo(v, self.usuario, __file__)
             self.limpiar_ventana()
             self.rellenar_tab_modulos()
         

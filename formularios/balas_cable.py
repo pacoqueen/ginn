@@ -191,6 +191,7 @@ class BalasCable(Ventana):
         Crea una nueva bala de cable y su artículo relacionado.
         """
         b = pclases.BalaCable(peso = peso)
+        pclases.Auditoria.nuevo(b, self.usuario, __file__)
         try:
             a = pclases.Articulo(balaCable = b, 
                             bala = None, 
@@ -201,6 +202,7 @@ class BalasCable(Ventana):
                             parteDeProduccion = None, 
                             albaranSalida = None, 
                             almacen = pclases.Almacen.get_almacen_principal())
+            pclases.Auditoria.nuevo(a, self.usuario, __file__)
         except:
             b.destroySelf()
             b = None

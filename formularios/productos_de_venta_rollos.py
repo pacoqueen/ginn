@@ -207,6 +207,7 @@ class ProductosDeVentaRollos(Ventana):
                                         = self.objeto.camposEspecificosRollo, 
                                     fechaInicio = mx.DateTime.localtime(), 
                                     fechaFin = None)
+            pclases.Auditoria.nuevo(nce, self.usuario, __file__)
             utils.combo_set_from_db(self.wids['cb_marcado'], nce.id)
             self.rellenar_marcado_ce(nce)
 

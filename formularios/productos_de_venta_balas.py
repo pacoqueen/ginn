@@ -487,6 +487,7 @@ class ProductosDeVentaBalas(Ventana):
                                             gramosBolsa = None,
                                             bolsasCaja = None,
                                             cajasPale = None)
+        pclases.Auditoria.nuevo(campos, self.usuario, __file__)
         linea = pclases.LineaDeProduccion.select(
             pclases.LineaDeProduccion.q.nombre.contains('fibra'))[0]
             # Por defecto se va a crear como producto de la línea de fibras. 
@@ -500,6 +501,7 @@ class ProductosDeVentaBalas(Ventana):
                                     preciopordefecto = 0, 
                                     minimo = 0,
                                     arancel = '')
+        pclases.Auditoria.nuevo(producto, self.usuario, __file__)
         self._objetoreciencreado = producto
         utils.dialogo_info('PRODUCTO CREADO', 
                            'Se ha creado un producto nuevo.\nA continuación '
@@ -725,6 +727,7 @@ class ProductosDeVentaBalas(Ventana):
         ce = pclases.CamposEspecificos(productoVenta = producto,
                                        nombre = campo,
                                        valor = valor)
+        pclases.Auditoria.nuevo(ce, self.usuario, __file__)
         self.mostrar_especificos()
 
     def seleccionar_campoesp(self, campos):

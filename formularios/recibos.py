@@ -751,6 +751,7 @@ class Recibos(Ventana, VentanaGenerica):
                                     cuentaOrigen = cuentaOrigen, 
                                     nombreLibrado = "", 
                                     direccionLibrado = "")
+            pclases.Auditoria.nuevo(recibo, self.usuario, __file__)
             # CWT:
             self.cliente = None
         except Exception, msg:

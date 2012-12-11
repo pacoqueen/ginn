@@ -292,6 +292,7 @@ class CRM_SeguimientoImpagos(Ventana):
                         observaciones = "Creado automáticamente desde "
                             "crm_seguimiento_impagos al cerrar la tarea %d"%(
                              tarea.id))
+            pclases.Auditoria.nuevo(nota, self.usuario, __file__)
         else:
             nota = pclases.Nota(facturaVenta = tarea.facturaVenta, 
                     fechahora = mx.DateTime.localtime(), 
@@ -299,6 +300,7 @@ class CRM_SeguimientoImpagos(Ventana):
                     observaciones = "Creado automáticamente desde "
                     "crm_seguimiento_impagos al abrir la tarea %d"%(
                        tarea.id))
+            pclases.Auditoria.nuevo(nota, self.usuario, __file__)
         last_evento = nota
         model = self.wids['tv_datos'].get_model()
         for fila in model:
@@ -483,6 +485,7 @@ class CRM_SeguimientoImpagos(Ventana):
                     observaciones = "Creada desde módulo CRM: detalles de "\
                                     "factura.", 
                     generica = False)
+            pclases.Auditoria.nuevo(obra, self.usuario, __file__)
         elif idobra:
             obra = pclases.Obra.get(idobra)
         else:
@@ -549,6 +552,7 @@ class CRM_SeguimientoImpagos(Ventana):
                                           pendiente = True, 
                                           fechadone = None, 
                                           fecha = mx.DateTime.localtime()) 
+                    pclases.Auditoria.nuevo(tarea, self.usuario, __file__)
                 self.buscar_todos()
 
     def nueva_nota(self, idfras):
@@ -560,6 +564,7 @@ class CRM_SeguimientoImpagos(Ventana):
                 tarea = pclases.Nota(facturaVentaID = id, 
                                      texto = texto, 
                                      fechahora = mx.DateTime.localtime()) 
+                pclases.Auditoria.nuevo(tarea, self.usuario, __file__)
             self.buscar_anotaciones()
 
     def nueva_alarma(self, idfras):
@@ -616,6 +621,7 @@ class CRM_SeguimientoImpagos(Ventana):
                                            estado = estado, 
                                            fechahoraAlarma = fechalarma, 
                                            objetoRelacionado = None) 
+                        pclases.Auditoria.nuevo(tarea, self.usuario, __file__)
                     self.buscar_alertas()
 
     def drop_todo(self, boton):

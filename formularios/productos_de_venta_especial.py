@@ -438,6 +438,7 @@ class ProductosDeVentaEspecial(Ventana):
                                                    observaciones = '',
                                                    stock = 0.0,
                                                    existencias = 0)
+        pclases.Auditoria.nuevo(campos, self.usuario, __file__)
         producto = pclases.ProductoVenta(lineaDeProduccion = None,
                                          camposEspecificosBala = None,
                                          camposEspecificosRollo = None, 
@@ -448,6 +449,7 @@ class ProductosDeVentaEspecial(Ventana):
                                          preciopordefecto = 0, 
                                          minimo = 0,
                                          arancel = '')
+        pclases.Auditoria.nuevo(producto, self.usuario, __file__)
         self._objetoreciencreado = producto
         utils.dialogo_info('PRODUCTO CREADO', 
                            'Se ha creado un producto nuevo.\n\n\nA continuación complete la información del producto y guarde los cambios.\n', 
@@ -650,6 +652,7 @@ class ProductosDeVentaEspecial(Ventana):
                 ce = pclases.CamposEspecificos(productoVenta = producto,
                                              nombre = campo,
                                              valor = valor)
+                pclases.Auditoria.nuevo(ce, self.usuario, __file__)
                 self.mostrar_especificos()
 
     def seleccionar_campoesp(self, campos):

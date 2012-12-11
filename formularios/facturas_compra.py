@@ -1090,6 +1090,7 @@ class FacturasDeEntrada(Ventana):
                                         fechaVistoBuenoUsuario = None, 
                                         bloqueada = False, 
                                         vencimientosConfirmados = False)
+            pclases.Auditoria.nuevo(factura, self.usuario, __file__)
             factura.notificador.set_func(self.aviso_actualizacion)
             self.objeto = self._objetoreciencreado = factura
             # XXX: Añado a objetos recientes.
@@ -1402,6 +1403,7 @@ class FacturasDeEntrada(Ventana):
                                                      year = fecha[2]),
                     importe = cantidad,
                     observaciones = '')
+            pclases.Auditoria.nuevo(vto, self.usuario, __file__)
         self.objeto.vencimientosConfirmados = False
         self.objeto.make_swap() # Para evitar falso positivo de actualización
         self.rellenar_vencimientos()
@@ -1456,6 +1458,7 @@ class FacturasDeEntrada(Ventana):
                                     and factura.proveedor.textoformapago or "",
                     fechaPagado = None, 
                     procesado = False)
+            pclases.Auditoria.nuevo(vto, self.usuario, __file__)
         self.objeto.vencimientosConfirmados = False
         self.objeto.make_swap() # Para evitar falso positivo de actualización
         # Para no sobrecargar mucho la red volviendo a rellenar LDVs y tal.
@@ -1483,6 +1486,7 @@ class FacturasDeEntrada(Ventana):
             vto = pclases.EstimacionPago(fecha = fecha,
                                           facturaCompra = factura,
                                           importe = 0)
+            pclases.Auditoria.nuevo(vto, self.usuario, __file__)
         self.rellenar_vencimientos()
 
     def borrar_vencimientos_y_estimaciones(self, factura):
@@ -1561,6 +1565,7 @@ class FacturasDeEntrada(Ventana):
                                     and factura.proveedor.textoformapago or "",
                                 fechaPagado = None,
                                 procesado = False) 
+                        pclases.Auditoria.nuevo(vto, self.usuario, __file__)
                         if diaest:
                             while True:
                                 try:
@@ -1639,6 +1644,7 @@ class FacturasDeEntrada(Ventana):
                                           facturaCompra = factura,
                                           importe = cantidad, 
                                           fechaPagado = None)
+            pclases.Auditoria.nuevo(vto, self.usuario, __file__)
         self.objeto.vencimientosConfirmados = False
         self.objeto.make_swap() # Para evitar falso positivo de actualización
         # Para no sobrecargar mucho la red volviendo a rellenar LDVs y tal.
@@ -1830,6 +1836,7 @@ class FacturasDeEntrada(Ventana):
             pago = pclases.Pago(fecha = fecha,
                                   facturaCompra = factura,
                                   importe = 0)
+            pclases.Auditoria.nuevo(pago, self.usuario, __file__)
         self.rellenar_vencimientos()
 
     def cambiar_fecha_pago(self, cell, path, texto):
@@ -1855,6 +1862,7 @@ class FacturasDeEntrada(Ventana):
             pago = pclases.Pago(fecha = fecha,
                                 facturaCompra = factura,
                                 importe = utils._float(self.wids['tv_vencimientos'].get_model()[path][1]))
+            pclases.Auditoria.nuevo(pago, self.usuario, __file__)
         self.rellenar_vencimientos()
 
 
@@ -1881,6 +1889,7 @@ class FacturasDeEntrada(Ventana):
             pago = pclases.Pago(fecha = time.localtime(),
                                   facturaCompra = factura,
                                   importe = importe)
+            pclases.Auditoria.nuevo(pago, self.usuario, __file__)
         self.rellenar_vencimientos()
         
     def cambiar_observaciones_vto(self, cell, path, texto):
@@ -1973,6 +1982,7 @@ class FacturasDeEntrada(Ventana):
                                             # línea por defecto es el de la 
                                             # factura.
                                         entrega = '')
+            pclases.Auditoria.nuevo(ldc, self.usuario, __file__)
             self.objeto.vistoBuenoUsuario = True    # Si no lleva albaranes no necesita el visto bueno del usuario
             self.objeto.fechaVistoBuenoUsuario = mx.DateTime.localtime()
             self.actualizar_ventana()
@@ -1995,6 +2005,7 @@ class FacturasDeEntrada(Ventana):
                                                       transporteACuenta = None, 
                                                       comision = None, 
                                                       iva = self.objeto.iva)
+                    pclases.Auditoria.nuevo(servicio, self.usuario, __file__)
                     self.objeto.vistoBuenoUsuario = True    # Si no lleva albaranes no necesita el visto bueno del usuario
                     self.objeto.fechaVistoBuenoUsuario = mx.DateTime.localtime()
                     self.actualizar_ventana()

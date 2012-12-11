@@ -202,6 +202,7 @@ class ConsultaVencimientosPagos(Ventana):
                                     observaciones = observaciones, 
                                     fechaEmision = mx.DateTime.localtime(), 
                                     fechaCobrado = None)
+        pclases.Auditoria.nuevo(pagare, self.usuario, __file__)
         for path in paths:
             iter = model.get_iter(path)
             id = model[iter][-1]
@@ -222,12 +223,6 @@ class ConsultaVencimientosPagos(Ventana):
                 observaciones = ''
                 proveedor = vencimiento.facturaCompra and vencimiento.facturaCompra.proveedor or None
                 logic = None
-            #pagare = pclases.PagarePago(fechaPago = fechavto, 
-            #                            cantidad = importe, 
-            #                            pagado = -1, 
-            #                            observaciones = "%s" \
-            #                                % (observaciones != "" and "\nCuenta logic: %s" % (observaciones) or ""), 
-            #                            fechaEmision = mx.DateTime.localtime())
             pago = pclases.Pago(facturaCompra = factura, 
                                 proveedor = proveedor, 
                                 logicMovimientos = logic, 
@@ -235,6 +230,7 @@ class ConsultaVencimientosPagos(Ventana):
                                 fecha = fechavto,
                                 importe = importe, 
                                 observaciones = observaciones)
+            pclases.Auditoria.nuevo(pago, self.usuario, __file__)
             # Actualizo campos del pagaré: 
             pagare.fechaPago = fechavto     # Se quedará con la fecha del vencimiento de lo último seleccionado. Todas deberían ser la misma, de cualquier modo.
             pagare.cantidad += importe
@@ -284,6 +280,7 @@ class ConsultaVencimientosPagos(Ventana):
                                                                                         (factura and factura.numfactura) or observaciones), 
                                 cuentaOrigen = pclases.CuentaOrigen.select(orderBy = "-id")[0], 
                                 cuentaDestino = proveedor and proveedor.cuentasDestino and proveedor.cuentasDestino[0] or None)
+            pclases.Auditoria.nuevo(pago, self.usuario, __file__)
             import transferencias
             tr = transferencias.Transferencias(pago, usuario = self.usuario)
             self.buscar(None)   # Para recargar.
@@ -315,6 +312,7 @@ class ConsultaVencimientosPagos(Ventana):
                                     fecha = fecha,
                                     importe = importe, 
                                     observaciones = observaciones)
+                pclases.Auditoria.nuevo(pago, self.usuario, __file__)
                 import facturas_compra
                 fc = facturas_compra.FacturasDeEntrada(factura, usuario = self.usuario)
                 self.buscar(None)   # Para recargar.

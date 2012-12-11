@@ -1260,6 +1260,7 @@ class FacturasVenta(Ventana):
                                        bloqueada = False, 
                                        irpf = irpf)
                 # ¡¡¡¿Por qué sigue teniendo el cliente el IVA como entero en vez de fracción de 1?!!!
+        pclases.Auditoria.nuevo(factura, self.usuario, __file__)
         numero_contador = int(numfactura.replace(cliente.contador.prefijo, '').replace(cliente.contador.sufijo, '')) + 1
         if numero_contador > cliente.contador.contador:
             # Si crea una factura que no sea la última (para rellenar algún hueco o algo), NO DEBE ACTUALIZAR EL CONTADOR.
@@ -1888,6 +1889,7 @@ class FacturasVenta(Ventana):
                                        cantidad = cantidad, 
                                        precio = precio, 
                                        descuento = 0)
+            pclases.Auditoria.nuevo(ldv, self.usuario, __file__)
             descontar_existencias(ldv, nueva = True)
             nueva_ldv = ldv
         self.actualizar_ventana()
@@ -1909,6 +1911,7 @@ class FacturasVenta(Ventana):
                                                 concepto = concepto,
                                                 precio = precio,
                                                 descuento = 0)
+                    pclases.Auditoria.nuevo(servicio, self.usuario, __file__)
                     # Cantidad es 1 por defecto.
                 except Exception, e:
                     utils.dialogo_info(texto = """
@@ -2028,6 +2031,7 @@ class FacturasVenta(Ventana):
                                                   concepto = servicio.concepto,
                                                   precio = servicio.precio,
                                                   descuento = servicio.descuento)
+                pclases.Auditoria.nuevo(nuevo_servicio, self.usuario, __file__)
             self.rellenar_servicios()
             self.rellenar_vencimientos()    # Para que verifique si los totales coinciden
         
@@ -2067,11 +2071,13 @@ class FacturasVenta(Ventana):
                     cuentaOrigen = factura.cliente 
                                         and factura.cliente.cuentaOrigen 
                                         or None)
+            pclases.Auditoria.nuevo(vto, self.usuario, __file__)
         else:
             vto = pclases.EstimacionCobro(facturaVenta = factura,
                                           fecha = fechaca,
                                           importe = cantidad,
                                           observaciones = '')
+            pclases.Auditoria.nuevo(vto, self.usuario, __file__)
         self.rellenar_contenido()
         
     def drop_vto(self, boton):
@@ -2118,6 +2124,7 @@ class FacturasVenta(Ventana):
                                            importe = 0,
                                            observaciones = factura.cliente and factura.cliente.textoformacobro or "",
                                            cuentaOrigen = factura.cliente and factura.cliente.cuentaOrigen or None)
+            pclases.Auditoria.nuevo(vto, self.usuario, __file__)
         self.rellenar_vencimientos()		# Para no sobrecargar mucho la red volviendo a rellenar LDVs y tal.
 
     def cambiar_estimado(self, cell, path, texto):
@@ -2143,6 +2150,7 @@ class FacturasVenta(Ventana):
             vto = pclases.EstimacionCobro(fecha = fecha,
                                           facturaVenta = factura,
                                           importe = 0)
+            pclases.Auditoria.nuevo(vto, self.usuario, __file__)
         self.rellenar_vencimientos()
 
     def cambiar_cobro(self, cell, path, texto):
@@ -2176,6 +2184,7 @@ class FacturasVenta(Ventana):
                                   facturaVenta = factura,
                                   importe = 0, 
                                   facturaDeAbono = None)
+            pclases.Auditoria.nuevo(cobro, self.usuario, __file__)
         self.rellenar_vencimientos()
 
     def cambiar_importe_cobro(self, cell, path, texto):
@@ -2204,6 +2213,7 @@ class FacturasVenta(Ventana):
                                   facturaVenta = factura,
                                   importe = importe, 
                                   facturaDeAbono = None)
+            pclases.Auditoria.nuevo(cobro, self.usuario, __file__)
         self.rellenar_vencimientos()
    
     def cambiar_cuenta_transferencia(self, cell, path, texto):
@@ -2266,6 +2276,7 @@ class FacturasVenta(Ventana):
                                   facturaVenta = factura,
                                   importe = factura.calcular_pendiente_cobro(), 
                                   facturaDeAbono = None)
+            pclases.Auditoria.nuevo(cobro, self.usuario, __file__)
         else:
             # Borro cobro
             model = self.wids['tv_vencimientos'].get_model()
@@ -2345,6 +2356,7 @@ class FacturasVenta(Ventana):
                         cuentaOrigen = factura.cliente 
                                         and factura.cliente.cuentaOrigen 
                                         or None)
+                pclases.Auditoria.nuevo(vto, self.usuario, __file__)
                 if diaest:
                     # Esto es más complicado de lo que pueda parecer a simple 
                     # vista. Ante poca inspiración... ¡FUERZA BRUTA!
@@ -2495,6 +2507,7 @@ class FacturasVenta(Ventana):
                                            importe = cantidad,
                                            observaciones = factura.cliente and factura.cliente.textoformacobro or "", 
                                            cuentaOrigen = factura.cliente and factura.cliente.cuentaOrigen or None)
+            pclases.Auditoria.nuevo(vto, self.usuario, __file__)
         self.rellenar_vencimientos()		# Para no sobrecargar mucho la red volviendo a rellenar LDVs y tal.
 
     def cambiar_precio(self, cell, path, texto):
@@ -2672,6 +2685,7 @@ class FacturasVenta(Ventana):
                         cuentaOrigen = factura.cliente 
                                         and factura.cliente.cuentaOrigen 
                                         or None)
+                pclases.Auditoria.nuevo(v, self.usuario, __file__)
             self.rellenar_vencimientos()
         # GTX4: Uso dirección de envío de la obra. Si no tiene obra, 
         # entonces la del albarán. Si no hay albarán, pues la del cliente.
@@ -3007,6 +3021,7 @@ class FacturasVenta(Ventana):
                                          importe = importe)
                 # TODO: ¿Debería marcar aquí el pago como NO pendiente, o 
                 # tendría que esperar al vencimiento de la factura?
+                pclases.Auditoria.nuevo(pa, self.usuario, __file__)
             self.rellenar_abonos()
 
     def rellenar_abonos(self):
@@ -3222,6 +3237,7 @@ def generar_recibo(factura, usuario=None, logger=None, ventana_padre=None):
                                     nombreLibrado = "", 
                                     direccionLibrado = "", 
                                     cuentaBancariaCliente = cuenta_cliente)
+            pclases.Auditoria.nuevo(recibo, self.usuario, __file__)
             observaciones = "Recibo bancario número %d con fecha de emisión %s." % (recibo.numrecibo, utils.str_fecha(recibo.fechaLibramiento))
             vto.observaciones += observaciones
             vto.recibo = recibo

@@ -490,6 +490,7 @@ class Grupos(Ventana):
                               jefeturno = None, 
                               operario1 = None,
                               operario2 = None)
+        pclases.Auditoria.nuevo(grupo, self.usuario, __file__)
         utils.dialogo_info(titulo = 'NUEVO GRUPO CREADO',
                            texto = 'Introduzca los datos del grupo.\nRecuerde pulsar el botón GUARDAR cuando termine.\n', 
                            padre = self.wids['ventana'])

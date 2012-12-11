@@ -213,6 +213,7 @@ class CuentasDestino(Ventana, VentanaGenerica):
         if cuenta_anterior != None:
             cuenta_anterior.notificador.desactivar()
         cuenta = pclases.CuentaDestino()
+        pclases.Auditoria.nuevo(cuenta, self.usuario, __file__)
         utils.dialogo_info('NUEVA CUENTA CREADA', 
                            'Se ha creado una cuenta nueva.\nA continuación complete la información de la misma y guarde los cambios.', 
                            padre = self.wids['ventana'])

@@ -114,6 +114,7 @@ class PagaresCobros(Ventana):
                                     'Duplicado. Cambie el número de pagaré.')),
                 fechaCobrado = original.fechaCobrado, 
                 procesado = original.procesado)
+            pclases.Auditoria.nuevo(copia, self.usuario, __file__)
             original.cantidad = copia.cantidad
             for cobro in original.cobros:
                 nuevo_cobro = pclases.Cobro(pagareCobro = copia, 
@@ -125,6 +126,7 @@ class PagaresCobros(Ventana):
                    importe = cobro.importe / 2.0, 
                    observaciones = 'Pagaré con fecha ??/??/???? y '
                                    'vencimiento ??/??/???? (pdte. de cobro)')
+                pclases.Auditoria.nuevo(nuevo_cobro, self.usuario, __file__)
                 cobro.importe = nuevo_cobro.importe
                 factura = cobro.facturaVenta or cobro.prefactura
                 if len(factura.vencimientosCobro) == 1:
@@ -136,6 +138,7 @@ class PagaresCobros(Ventana):
                                 importe = vto_original.importe / 2.0, 
                                 observaciones='Duplicado automáticamente por '
                                               'división de pagaré.')
+                    pclases.Auditoria.nuevo(vto_copia, self.usuario, __file__)
                     vto_original.importe = vto_copia.importe
                 elif len(factura.vencimientosCobro) > 1:
                     # Hay que determinar el vencimiento a duplicar.
@@ -476,6 +479,7 @@ class PagaresCobros(Ventana):
                                     fechaCobrado = None, 
                                     procesado = False)
         pagare = self.objeto
+        pclases.Auditoria.nuevo(pagare, self.usuario, __file__)
         pagare.notificador.set_func(self.aviso_actualizacion)
         utils.dialogo_info(titulo = 'PAGARÉ CREADO', 
                            texto = 'No olvide relacionar las facturas que '
@@ -842,6 +846,7 @@ class PagaresCobros(Ventana):
                                   importe = vencimiento.importe,
                                   observaciones = observaciones, 
                                   facturaDeAbono = None)
+            pclases.Auditoria.nuevo(cobro, self.usuario, __file__)
             if actualizar_cantidad:
                 if pagare.cobrado == pagare.cantidad:
                     pagare.cobrado = sum([c.importe for c in pagare.cobros])
@@ -877,6 +882,7 @@ class PagaresCobros(Ventana):
                           importe = frabono.importeTotal,
                           observaciones = observaciones, 
                           facturaDeAbono = frabono)
+        pclases.Auditoria.nuevo(c, self.usuario, __file__)
         if antes == pagare.cantidad:
             actualizar_cantidad = True  # Como el importe es la suma de los 
                                         # cobros, el nuevo que añado ahora 

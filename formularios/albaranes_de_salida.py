@@ -288,6 +288,7 @@ class AlbaranesDeSalida(Ventana):
                                 ciudad = self.wids['e_ciudad'].get_text(), 
                                 telefono = self.wids['e_telf'].get_text(), 
                                 pais = self.wids['e_pais'].get_text())
+            pclases.Auditoria.nuevo(t, self.usuario, __file__)
             self.wids['cbe_nom'].get_model().append((t.id, t.nombre))
         utils.combo_set_from_db(self.wids['cbe_nom'], t.id)
         return t
@@ -298,6 +299,7 @@ class AlbaranesDeSalida(Ventana):
                                   telefono = self.wids['e_telefono'].get_text(),
                                   agencia = self.wids['e_agencia'].get_text(),
                                   matricula = self.wids['e_matricula'].get_text())
+        pclases.Auditoria.nuevo(t, self.usuario, __file__)
         self.wids['cbe_dni'].get_model().append((t.id, t.dni))
         utils.combo_set_from_db(self.wids['cbe_dni'], t.id)
     
@@ -1712,6 +1714,7 @@ class AlbaranesDeSalida(Ventana):
                                            productoVenta = a.productoVenta, 
                                            albaranSalida = albaran, 
                                            cantidad = 0)
+                pclases.Auditoria.nuevo(ldv, self.usuario, __file__)
                 idldv = ldv.id
                 d[idldv] = {'codigo': ldv.producto.codigo, 'articulos': [], 
                             'cantidad' : 0.0, 'ldv': ldv, 'idsarticulos': []}
@@ -1832,6 +1835,7 @@ class AlbaranesDeSalida(Ventana):
                 fecha = mx.DateTime.localtime(), 
                 almacenOrigenID = almo, 
                 almacenDestinoID = None)
+            pclases.Auditoria.nuevo(albaran, self.usuario, __file__)
             # OJO: Con la última modificación de SQLObject el valor por 
             # defecto para los DateTime no es correcto.Mirar si en otros 
             # nuevo_* ocurre lo mismo.
@@ -2159,6 +2163,7 @@ class AlbaranesDeSalida(Ventana):
                                 precio = ldp.precio, 
                                 descuento = ldp.descuento, 
                                 notas = ldp.notas)
+                        pclases.Auditoria.nuevo(ldv, self.usuario, __file__)
                         ajustar_existencias(ldv)
                     else:
                         # Si no se ha albaraneado porque la cantidad del 
@@ -3491,6 +3496,7 @@ class AlbaranesDeSalida(Ventana):
                                      concepto = concepto,
                                      precio = precio,
                                      descuento = 0)
+                    pclases.Auditoria.nuevo(servicio, self.usuario, __file__)
                     # Cantidad es 1 por defecto.
                     self.modificado = True
                 except Exception, e:
@@ -3591,12 +3597,13 @@ class AlbaranesDeSalida(Ventana):
         """
         Añade un nuevo transporte a cuenta al albarán actual.
         """
-        pclases.TransporteACuenta(concepto = "Transporte pagado.", 
-            precio = 0, 
-            proveedor = None,
-            observaciones = "Introduzca el precio y empresa transportista.", 
-            fecha = mx.DateTime.localtime(), 
-            albaranSalidaID = self.objeto.id)
+        t = pclases.TransporteACuenta(concepto = "Transporte pagado.", 
+                precio = 0, 
+                proveedor = None,
+                observaciones="Introduzca el precio y empresa transportista.", 
+                fecha = mx.DateTime.localtime(), 
+                albaranSalidaID = self.objeto.id)
+        pclases.Auditoria.nuevo(t, self.usuario, __file__)
         self.rellenar_transportes_a_cuenta()
 
     def cambiar_concepto_tac(self, cell, path, texto):
@@ -3786,14 +3793,15 @@ class AlbaranesDeSalida(Ventana):
                                texto = "Seleccione primero el cliente del albarán.", 
                                padre = self.wids['ventana'])
         else:
-            pclases.Comision(cliente = cliente.cliente, 
-                porcentaje = cliente.porcentaje, 
-                precio = self.objeto.calcular_total() * cliente.porcentaje, 
-                fecha = mx.DateTime.localtime(), 
-                concepto = "Comisión por ventas. Albarán %s." % (
+            c = pclases.Comision(cliente = cliente.cliente, 
+                    porcentaje = cliente.porcentaje, 
+                    precio = self.objeto.calcular_total() * cliente.porcentaje, 
+                    fecha = mx.DateTime.localtime(), 
+                    concepto = "Comisión por ventas. Albarán %s." % (
                                                 self.objeto.numalbaran), 
-                observaciones = "", 
-                albaranSalida = self.objeto)
+                    observaciones = "", 
+                    albaranSalida = self.objeto)
+            pclases.Auditoria.nuevo(c, self.usuario, __file__)
             self.rellenar_comisiones()
 
     def drop_comision(self, boton):
@@ -3945,6 +3953,7 @@ class AlbaranesDeSalida(Ventana):
                                            descuento = descuento, 
                                            irpf = irpf, 
                                            obra = obra_albaran)
+            pclases.Auditoria.nuevo(factura, self.usuario, __file__)
             for ldv in ldvs_facturables:
                 ldv.facturaVenta = factura
             for srv in srvs_facturables:
@@ -4079,6 +4088,7 @@ class AlbaranesDeSalida(Ventana):
                                                facturaVenta = factura, 
                                                observaciones = str_formapago, 
                                                cuentaOrigen = factura.cliente and factura.cliente.cuentaOrigen or None)
+                pclases.Auditoria.nuevo(vto, self.usuario, __file__)
                 if diaest:
 # XXX 24/05/06
                     # Esto es más complicado de lo que pueda parecer a simple 

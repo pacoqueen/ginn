@@ -543,6 +543,7 @@ class Empleados(Ventana):
                                     dni = '', 
                                     nomina = 0, 
                                     usuario = None)
+        pclases.Auditoria.nuevo(empleado, self.usuario, __file__)
         utils.dialogo_info(titulo = 'NUEVO EMPLEADO CREADO',
                            texto = 'Introduzca los datos del empleado.\nRecuerde pulsar el botón GUARDAR cuando termine.\n', 
                            padre = self.wids['ventana'])

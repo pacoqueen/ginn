@@ -60,7 +60,8 @@ def get_IPLocal():
     arreglarlo)
     """
     from socket import getfqdn, gethostname, gethostbyname, gaierror
-    ifaces = ("eth0", "eth3", "wlan0", "wlan3", "ra0")
+    ifaces = ("eth0", "wlan0", "eth1", "wlan1", "eth2", "wlan2", "eth3", 
+              "wlan3", "ra0", "ra1")
     for iface in ifaces:
         try:
             ip = gethostbyname(getfqdn())
@@ -69,15 +70,15 @@ def get_IPLocal():
         if ip == "127.0.0.1" or ip == "127.0.1.1":
             import os
             try:
-                comando_ifconfig = "/sbin/ifconfig %s | grep inet" % iface
+                comando_ifconfig = "/sbin/ifconfig %s 2>/dev/null | grep inet" % iface
                 ip = os.popen(comando_ifconfig).read().split()[1].split(":")[-1].strip()   # HACK: Do the trick! 
                 if not ip:  # ¿IPv6? «No en esta vida.»
-                    comando_ifconfig = "/sbin/ifconfig | grep inet | grep -v inet6 | grep -v 127"
+                    comando_ifconfig = "/sbin/ifconfig 2>/dev/null | grep inet | grep -v inet6 | grep -v 127"
                     ip = os.popen(comando_ifconfig).read().split()[1].split(":")[-1].strip()   # HACK: Do the trick! 
             except:
                 ip = "Desconocida. Host: %s" % (gethostname())
             else:
-                return ""   # Si tengo IP no sigo probando.
+                break   # Si tengo IP no sigo probando.
     return ip
 
 

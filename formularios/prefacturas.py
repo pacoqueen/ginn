@@ -974,6 +974,7 @@ class Prefacturas(Ventana):
                                              cargo = 0,
                                              bloqueada = False, 
                                              irpf = irpf)
+                pclases.Auditoria.nuevo(factura, self.usuario, __file__)
                 self.objeto = self._objetoreciencreado = factura
                 self.actualizar_ventana()
                 factura.notificador.set_func(self.aviso_actualizacion)
@@ -1378,6 +1379,7 @@ class Prefacturas(Ventana):
                     precio = precio, 
                     descuento = 0)
                     #almacenOrigen = pclases.Almacen.get_almacen_principal())
+            pclases.Auditoria.nuevo(ldv, self.usuario, __file__)
             descontar_existencias(ldv, nueva = True)
         self.actualizar_ventana()
 
@@ -1398,6 +1400,7 @@ class Prefacturas(Ventana):
                                                 concepto = concepto,
                                                 precio = precio,
                                                 descuento = 0)
+                    pclases.Auditoria.nuevo(servicio, self.usuario, __file__)
                     # Cantidad es 1 por defecto.
                 except Exception, e:
                     utils.dialogo_info(texto = """
@@ -1511,6 +1514,7 @@ class Prefacturas(Ventana):
                                                   concepto = servicio.concepto,
                                                   precio = servicio.precio,
                                                   descuento = servicio.descuento)
+                pclases.Auditoria.nuevo(nuevo_servicio, self.usuario, __file__)
             self.rellenar_servicios()
             self.rellenar_vencimientos()    # Para que verifique si los totales coinciden
         
@@ -1549,6 +1553,7 @@ class Prefacturas(Ventana):
                                           fecha = mx.DateTime.DateTimeFrom(day = fecha[0], month = fecha[1], year = fecha[2]),
                                           importe = cantidad,
                                           observaciones = '')
+        pclases.Auditoria.nuevo(vto, self.usuario, __file__)
         self.rellenar_contenido()
         
     def drop_vto(self, boton):
@@ -1593,6 +1598,7 @@ class Prefacturas(Ventana):
                                            importe = 0,
                                            observaciones = factura.cliente and factura.cliente.textoformacobro or "",
                                            cuentaOrigen = factura.cliente and factura.cliente.cuentaOrigen or None)
+            pclases.Auditoria.nuevo(vto, self.usuario, __file__)
         self.rellenar_vencimientos()		# Para no sobrecargar mucho la red volviendo a rellenar LDVs y tal.
 
     def cambiar_estimado(self, cell, path, texto):
@@ -1616,6 +1622,7 @@ class Prefacturas(Ventana):
                                           prefactura = factura, 
                                           facturaVenta = None, 
                                           importe = 0)
+            pclases.Auditoria.nuevo(vto, self.usuario, __file__)
         self.rellenar_vencimientos()
 
     def cambiar_cobro(self, cell, path, texto):
@@ -1647,6 +1654,7 @@ class Prefacturas(Ventana):
                                   facturaVenta = None, 
                                   importe = 0, 
                                   facturaDeAbono = None)
+            pclases.Auditoria.nuevo(cobro, self.usuario, __file__)
         self.rellenar_vencimientos()
 
     def cambiar_importe_cobro(self, cell, path, texto):
@@ -1674,6 +1682,7 @@ class Prefacturas(Ventana):
                                   facturaVenta = None, 
                                   importe = importe, 
                                   facturaDeAbono = None)
+            pclases.Auditoria.nuevo(cobro, self.usuario, __file__)
         self.rellenar_vencimientos()
    
     def cambiar_cuenta_transferencia(self, cell, path, texto):
@@ -1753,6 +1762,7 @@ class Prefacturas(Ventana):
                                                facturaVenta = None, 
                                                observaciones = factura.cliente and factura.cliente.textoformacobro or "", 
                                                cuentaOrigen = factura.cliente and factura.cliente.cuentaOrigen or None)
+                pclases.Auditoria.nuevo(vto, self.usuario, __file__)
                 if diaest:
                     # Esto es más complicado de lo que pueda parecer a simple vista. Ante poca inspiración... ¡FUERZA BRUTA!
                     fechas_est = []
@@ -1860,6 +1870,7 @@ class Prefacturas(Ventana):
                                            importe = cantidad,
                                            observaciones = factura.cliente and factura.cliente.textoformacobro or "", 
                                            cuentaOrigen = factura.cliente and factura.cliente.cuentaOrigen or None)
+            pclases.Auditoria.nuevo(vto, self.usuario, __file__)
         self.rellenar_vencimientos()		# Para no sobrecargar mucho la red volviendo a rellenar LDVs y tal.
 
     def cambiar_precio(self, cell, path, texto):
@@ -1986,6 +1997,7 @@ class Prefacturas(Ventana):
                         cuentaOrigen = factura.cliente 
                                         and factura.cliente.cuentaOrigen 
                                         or None)
+                pclases.Auditoria.nuevo(v, self.usuario, __file__)
             self.rellenar_vencimientos()
         cliente = {'numcli':str(factura.cliente.id),
                    'nombre':factura.cliente.nombre,
@@ -2198,6 +2210,7 @@ class Prefacturas(Ventana):
                                          facturaVenta = None, 
                                          facturaDeAbono = fa,
                                          importe = importe)
+                pclases.Auditoria.nuevo(pa, self.usuario, __file__)
             self.rellenar_abonos()
 
     def rellenar_abonos(self):
@@ -2309,6 +2322,7 @@ def descontar_existencias(ldv, nueva = False):
                                             facturable = True, 
                                             motivo ="", 
                                             bloqueado = False)
+                pclases.Auditoria.nuevo(alb, self.usuario, __file__)
             except Exception, msg:
                 texto = """
                 No se pudo crear albarán de salida número %s.

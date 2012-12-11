@@ -3920,6 +3920,9 @@ def seleccionar_repuesto(tipo, ventana_padre = None, dejar_crear = True,
                                             codigo = codigo, 
                                             obsoleto = False, 
                                             proveedor = proveedor_defecto)
+                if ventana_padre:
+                    usuario = ventana_padre.usuario
+                pclases.Auditoria.nuevo(pc, usuario, __file__)
                 res = pc
     return res
 

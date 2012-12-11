@@ -424,6 +424,7 @@ class Ausencias(Ventana):
                     ausencia = pclases.Ausencia(empleado = self.objeto, 
                                                 fecha = fecha + (mx.DateTime.oneDay * i), 
                                                 motivo = motivo)
+                    pclases.Auditoria.nuevo(ausencia, self.usuario, __file__)
                 self.actualizar_ventana()
             except ValueError:
                 utils.dialogo_info(titulo = "VALOR INCORRECTO",
@@ -466,6 +467,7 @@ class Ausencias(Ventana):
         baja = pclases.Baja(empleado = self.objeto, 
                             fechaInicio = fecha, 
                             fechaFin = fechaFin)
+        pclases.Auditoria.nuevo(baja, self.usuario, __file__)
         self.actualizar_ventana()
 
     def drop_baja(self, boton):

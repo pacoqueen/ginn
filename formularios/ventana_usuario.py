@@ -59,6 +59,7 @@ class Usuarios(Ventana):
         comenzar la ventana (en lugar del primero de la tabla, que es
         el que se muestra por defecto).
         """
+        self.usuario = usuario
         Ventana.__init__(self, 'ventana_usuario.glade', objeto)
         connections = {'b_salir/clicked': self.salir,
                        'b_actualizar/clicked': self.actualizar_ventana, 
@@ -325,6 +326,7 @@ class Usuarios(Ventana):
                                         nombre = '',
                                         cuenta = '',
                                         cpass = '')
+        pclases.Auditoria.nuevo(usuario, self.usuario, __file__)
         utils.dialogo_info('USUARIO CREADO', 'El usuario %s ha sido creado.\nNo olvide completar el resto de información relativa al mismo.' % usuario.usuario)
         usuario.notificador.activar(self.aviso_actualizacion)
         self.objeto = usuario

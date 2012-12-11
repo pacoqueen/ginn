@@ -237,6 +237,7 @@ class RollosC(Ventana):
         Crea una nueva rollo «C» y su artículo relacionado.
         """
         b = pclases.RolloC(peso = peso)
+        pclases.Auditoria.nuevo(b, self.usuario, __file__)
         try:
             a = pclases.Articulo(rolloC = b, 
                             bala = None, 
@@ -247,6 +248,7 @@ class RollosC(Ventana):
                             parteDeProduccion = None, 
                             albaranSalida = None, 
                             almacen = pclases.Almacen.get_almacen_principal())
+            pclases.Auditoria.nuevo(a, self.usuario, __file__)
         except:
             b.destroySelf()
             b = None

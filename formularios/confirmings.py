@@ -120,6 +120,7 @@ class Confirmings(Ventana):
                             'Duplicado. Cambie el número de confirming.')), 
                         fechaCobrado = original.fechaCobrado, 
                         procesado = original.procesado)
+            pclases.Auditoria.nuevo(copia, self.usuario, __file__)
             original.cantidad = copia.cantidad
             for cobro in original.cobros:
                 nuevo_cobro = pclases.Cobro(confirming = copia, 
@@ -132,6 +133,7 @@ class Confirmings(Ventana):
                                 observaciones = 'Confirming con fecha ??/??/'
                                                 '???? y vencimiento ??/??/??'
                                                 '?? (pdte. de cobro)')
+                pclases.Auditoria.nuevo(nuevo_cobro, self.usuario, __file__)
                 cobro.importe = nuevo_cobro.importe
                 factura = cobro.facturaVenta or cobro.prefactura
                 if len(factura.vencimientosCobro) == 1:
@@ -143,6 +145,7 @@ class Confirmings(Ventana):
                                     importe = vto_original.importe / 2.0, 
                                     observaciones='Duplicado automáticamente '
                                         'por división de confirming.')
+                    pclases.Auditoria.nuevo(vto_copia, self.usuario, __file__)
                     vto_original.importe = vto_copia.importe
                 elif len(factura.vencimientosCobro) > 1:
                     # Hay que determinar el vencimiento a duplicar.
@@ -504,6 +507,7 @@ class Confirmings(Ventana):
                                     fechaCobrado = None,
                                     procesado = False)
         confirming = self.objeto
+        pclases.Auditoria.nuevo(confirming, self.usuario, __file__)
         confirming.notificador.set_func(self.aviso_actualizacion)
         utils.dialogo_info(titulo = 'PAGARÉ CREADO', 
                            texto = 'No olvide relacionar las facturas que '
@@ -914,6 +918,7 @@ class Confirmings(Ventana):
                                   importe = vencimiento.importe,
                                   observaciones = observaciones, 
                                   facturaDeAbono = None)
+            pclases.Auditoria.nuevo(cobro, self.usuario, __file__)
             if actualizar_cantidad:
                 if confirming.cobrado == confirming.cantidad:
                     confirming.cobrado = sum([c.importe 
@@ -951,6 +956,7 @@ class Confirmings(Ventana):
                           importe = frabono.importeTotal,
                           observaciones = observaciones, 
                           facturaDeAbono = frabono)
+        pclases.Auditoria.nuevo(c, self.usuario, __file__)
         if antes == confirming.cantidad:
             actualizar_cantidad = True  # Como el importe es la suma de los 
                 # cobros, el nuevo que añado ahora tiene que actualizar la 

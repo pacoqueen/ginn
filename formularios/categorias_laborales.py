@@ -506,7 +506,9 @@ class CategoriasLaborales(Ventana):
         categoria_laboral = self.objeto
         if categoria_laboral!=None:
             categoria_laboral.notificador.set_func(lambda : None)
-        categoria_laboral = pclases.CategoriaLaboral(lineaDeProduccionID = None, codigo = '', puesto = '')
+        categoria_laboral = pclases.CategoriaLaboral(
+                lineaDeProduccionID = None, codigo = '', puesto = '')
+        pclases.Auditoria.nuevo(categoria_laboral, self.usuario, __file__)
         utils.dialogo_info(titulo = 'NUEVA CATEGORÍA LABORAL CREADA',
                            texto = 'Introduzca los datos de la categoria laboral.\nRecuerde pulsar el botón GUARDAR cuando termine.\n',
                            padre = self.wids['ventana'])
