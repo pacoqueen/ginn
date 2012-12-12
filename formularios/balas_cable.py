@@ -126,14 +126,14 @@ class BalasCable(Ventana):
             a = b.articulo
             a.balaCable = None
             try:
-                a.destroySelf()
+                a.destroy(ventana = __file__)
             except Exception, msg:
                 self.logger.error("%sbalas_cable::borrar_balas -> Artículo ID %d de bala ID %d (%s) no se pudo eliminar. Excepción: %s" 
                     % (self.usuario and self.usuario.usuario + ": " or "", a.id, b.id, b.codigo, msg))
                 a.balaCable = b
             else:
                 try:
-                    b.destroySelf()
+                    b.destroy(ventana = __file__)
                 except Exception, msg:
                     self.logger.error("%sbalas_cable::borrar_balas -> Bala ID %d (%s) no se pudo eliminar. Excepción: %s" 
                         % (self.usuario and self.usuario.usuario + ": " or "", b.id, b.codigo, msg))
@@ -204,7 +204,7 @@ class BalasCable(Ventana):
                             almacen = pclases.Almacen.get_almacen_principal())
             pclases.Auditoria.nuevo(a, self.usuario, __file__)
         except:
-            b.destroySelf()
+            b.destroy(ventana = __file__)
             b = None
         return b
 

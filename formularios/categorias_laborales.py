@@ -490,7 +490,7 @@ class CategoriasLaborales(Ventana):
             return
         if categoria_laboral != None: categoria_laboral.notificador.set_func(lambda : None)
         try:
-            categoria_laboral.destroySelf()
+            categoria_laboral.destroy(ventana = __file__)
         except:
             utils.dialogo_info('CATEGORÍA LABORAL NO ELIMINADA', 'La categoria laboral está implicada en operaciones que impiden su borrado.\n(Por ejemplo, puede estar aún relacionada con empleados.)')
         self.ir_a_primero()

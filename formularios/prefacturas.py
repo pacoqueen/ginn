@@ -899,10 +899,10 @@ class Prefacturas(Ventana):
     def borrar_vencimientos_y_estimaciones(self, factura):
         for vto in factura.vencimientosCobro:
             vto.factura = None
-            vto.destroySelf()
+            vto.destroy(ventana = __file__)
         for est in factura.estimacionesCobro:
             est.factura = None
-            est.destroySelf()
+            est.destroy(ventana = __file__)
 
     def get_numero_numfactura_from(self, numfactura, cliente):
         """
@@ -1213,15 +1213,15 @@ class Prefacturas(Ventana):
                 # De paso, intento eliminarla por completo, por si no tiene relación con pedidos y demás.
                 ldv.eliminar()
             for servicio in factura.servicios:
-                servicio.destroySelf()
+                servicio.destroy(ventana = __file__)
             for estimacion in factura.estimacionesCobro:
-                estimacion.destroySelf()
+                estimacion.destroy(ventana = __file__)
             for vencimiento in factura.vencimientosCobro:
-                vencimiento.destroySelf()
+                vencimiento.destroy(ventana = __file__)
             for cobro in factura.cobros:
-                cobro.destroySelf()
+                cobro.destroy(ventana = __file__)
             try:
-                factura.destroySelf()
+                factura.destroy(ventana = __file__)
             except psycopg_ProgrammingError:
                 utils.dialogo_info(titulo = "ERROR", 
                                    texto = "No se pudo borrar la factura por completo.", 
@@ -1263,7 +1263,7 @@ class Prefacturas(Ventana):
         ldv.prefactura = None
         if ldv.albaranSalidaID == None:     # Si no tiene ni factura ni albarán, la intento eliminar
             try:
-                ldv.destroySelf()
+                ldv.destroy(ventana = __file__)
             except:
                 print "prefacturas.py (drop_ldv): LDV ID %d sin factura ni albarán, pero no se pudo eliminar." % (ldv.id)
         self.rellenar_contenido()
@@ -1525,7 +1525,7 @@ class Prefacturas(Ventana):
             servicio = pclases.Servicio.get(idservicio)
             servicio.prefactura = None
             if servicio.albaranSalida == None:
-                servicio.destroySelf()  # No debería saltar ninguna excepción. 
+                servicio.destroy(ventana = __file__)  # No debería saltar ninguna excepción. 
             self.rellenar_servicios()
             self.rellenar_contenido()   # Por si provenía de un albarán, que vuelva a él.
         
@@ -1569,10 +1569,10 @@ class Prefacturas(Ventana):
         idest = ids[1]
         if idvto > 0:	# Si realmente hay un vto. (ver rellenar_vencimientos).
             vto = pclases.VencimientoCobro.get(idvto)
-            vto.destroySelf()
+            vto.destroy(ventana = __file__)
         if idest > 0:
             est = pclases.EstimacionCobro.get(idest)
-            est.destroySelf()
+            est.destroy(ventana = __file__)
         self.rellenar_contenido()
 
     def cambiar_vto(self, cell, path, texto):
@@ -1636,7 +1636,7 @@ class Prefacturas(Ventana):
             # Texto vacío, borrar pago si lo había.
             if idcobro > 0:
                 cobro = pclases.Cobro.get(idcobro)
-                cobro.destroySelf()
+                cobro.destroy(ventana = __file__)
                 self.rellenar_vencimientos()
                 return
         try:
@@ -1664,7 +1664,7 @@ class Prefacturas(Ventana):
             # Texto vacío, borrar pago si lo había.
             if idcobro > 0:
                 cobro = pclases.Cobro.get(idcobro)
-                cobro.destroySelf()
+                cobro.destroy(ventana = __file__)
                 self.rellenar_vencimientos()
                 return
         try:
@@ -2228,7 +2228,7 @@ class Prefacturas(Ventana):
             idpa = model[iter][-1]
             pa = pclases.PagoDeAbono.get(idpa)
             try:
-                pa.destroySelf()
+                pa.destroy(ventana = __file__)
             except:
                 utils.dialogo_info(titulo = "ERROR AL ELIMINAR ABONO", texto = "Se produjo un error al eliminar el pago de abono.\nConsulte al administrador de la aplicación o inténtelo de nuevo después de cerrar y volver a abrir la ventana.", padre = self.wids['ventana'])
                 # Capturar una excepción para mostrar un simple diálogo es digno de un artículo de 

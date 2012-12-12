@@ -479,7 +479,7 @@ class MotivosAusencia(Ventana):
             return
         if motivo != None: motivo.notificador.set_func(lambda : None)
         try:
-            motivo.destroySelf()
+            motivo.destroy(ventana = __file__)
         except: 
             utils.dialogo_info('MOTIVO DE AUSENCIA NO ELIMINADO', 'El motivo de ausencia está implicado en operaciones que impiden su borrado.\n(Por ejemplo, puede haberse ausado ya en alguna baja voluntaria.)')
         self.ir_a_primero()

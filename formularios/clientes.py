@@ -225,7 +225,7 @@ class Clientes(Ventana):
                     abono.obra = buena
                 mala.removeCliente(self.objeto)
                 try:
-                    mala.destroySelf()
+                    mala.destroy(ventana = __file__)
                 except: # Queda algún cliente relacionado con la obra. No 
                         # la termino de eliminar.
                     pass
@@ -346,7 +346,7 @@ class Clientes(Ventana):
                 if res == True:
                     for o in c.obras:
                         o.removeContacto(c)
-                    c.destroySelf()
+                    c.destroy(ventana = __file__)
                 else:
                     sel = self.wids['tv_obras'].get_selection()
                     modelobras, itersobras = sel.get_selected_rows() 
@@ -444,7 +444,7 @@ class Clientes(Ventana):
                 for c in contactos:
                     obra.removeContacto(c)
                 try:
-                    obra.destroySelf()
+                    obra.destroy(ventana = __file__)
                 except Exception, msg:
                     obra.addCliente(self.objeto)
                     for c in contactos:
@@ -1484,7 +1484,7 @@ class Clientes(Ventana):
                 id = model[path][-1]
                 c = pclases.CuentaBancariaCliente.get(id)
                 try:
-                    c.destroySelf()
+                    c.destroy(ventana = __file__)
                 except:
                     txt = """
                     La cuenta está implicada en operaciones, cobro de 
@@ -1791,7 +1791,7 @@ class Clientes(Ventana):
             if utils.dialogo('¿Está seguro de eliminar el cliente actual?', 'BORRAR CLIENTE'):
                 cliente.notificador.set_func(lambda : None)
                 try:
-                    cliente.destroySelf()
+                    cliente.destroy(ventana = __file__)
                     self.ir_a_primero()
                 except:
                     txt = """

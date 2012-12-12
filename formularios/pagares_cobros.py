@@ -1010,7 +1010,7 @@ class PagaresCobros(Ventana):
                                         # y por tanto debo respetarlo.
         else:
             actualizar_cantidad = False
-        cobro.destroySelf()
+        cobro.destroy(ventana = __file__)
         if actualizar_cantidad:
             pagare.cantidad = sum([c.importe for c in pagare.cobros])
             if pagare.cobrado > pagare.cantidad:
@@ -1037,8 +1037,8 @@ class PagaresCobros(Ventana):
                 pagare.notificador.set_func(lambda : None)
                 try:
                     for c in pagare.cobros:
-                        c.destroySelf()
-                    pagare.destroySelf()
+                        c.destroy(ventana = __file__)
+                    pagare.destroy(ventana = __file__)
                     self.ir_a_primero()
                 except:
                     txt = """

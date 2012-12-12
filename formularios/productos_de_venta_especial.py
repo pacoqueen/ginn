@@ -626,7 +626,7 @@ class ProductosDeVentaEspecial(Ventana):
             cee = producto.camposEspecificosEspecial
             producto.camposEspecificosEspecial = None
             try:
-                producto.destroySelf()
+                producto.destroy(ventana = __file__)
             except:
                 producto.camposEspecificosEspecial = cee
                 utils.dialogo_info(titulo = "PRODUCTO NO BORRADO", 
@@ -634,7 +634,7 @@ class ProductosDeVentaEspecial(Ventana):
                                    padre = self.wids['ventana'])
                 self.actualizar_ventana()
                 return
-            cee.destroySelf()
+            cee.destroy(ventana = __file__)
             self.objeto = None
             self.ir_a_primero()
 
@@ -668,7 +668,7 @@ class ProductosDeVentaEspecial(Ventana):
         if idce == None:
             return
         ce = pclases.CamposEspecificos.get(idce)
-        ce.destroySelf()
+        ce.destroy(ventana = __file__)
         self.mostrar_especificos()
 
     def change_campoesp(self, w):

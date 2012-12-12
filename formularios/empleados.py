@@ -520,7 +520,7 @@ class Empleados(Ventana):
             return
         if empleado != None: empleado.notificador.set_func(lambda : None)
         try:
-            empleado.destroySelf()
+            empleado.destroy(ventana = __file__)
         except: 
             utils.dialogo_info('EMPLEADO NO ELIMINADO', 'No se pudo eliminar el empleado.', padre = self.wids['ventana'])
         self.ir_a_primero()

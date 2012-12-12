@@ -470,7 +470,7 @@ class Grupos(Ventana):
             return
         if grupo != None: grupo.notificador.set_func(lambda : None)
         try:
-            grupo.destroySelf()
+            grupo.destroy(ventana = __file__)
         except: 
             utils.dialogo_info('GRUPO NO ELIMINADA', 'La categoria laboral está implicada en operaciones que impiden su borrado.\n(Por ejemplo, puede estar aún relacionada con grupos.)')
         self.ir_a_primero()

@@ -964,7 +964,7 @@ class CacheExistencias:
         elif recs.count > 1:
             # Error de coherencia. Más de un reg. de caché. Borro todos.
             for r in recs:
-                r.destroy()
+                r.destroySelf() #¿Para qué auditarlo? Uso el destroy de sqlobj. 
             return None
         else:   # recs.count() == 0
             return None
@@ -982,7 +982,7 @@ class CacheExistencias:
             cache = cache[0]
         else:   # cache.count() > 1 or cache.count() == 0:
             for c in cache:
-                c.destroy()
+                c.destroySelf()
             cache = clase(productoVenta = producto, 
                           fecha = fecha, 
                           almacen = almacen, 
@@ -7075,7 +7075,7 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
                    HistorialExistenciasCompra.q.productoCompraID == self.id, 
                    HistorialExistenciasCompra.q.almacenID == a.id, 
                    HistorialExistenciasCompra.q.fecha == mx.DateTime.today())):
-                    hec.destroy()
+                    hec.destroySelf()
                 HistorialExistenciasCompra(productoCompra = self, 
                         cantidad = a.get_existencias(self), 
                         observaciones = "Cacheado por ajuste de existencias", 
@@ -7131,12 +7131,12 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
         i = 0
         if not almacen:
             for hec in self.historialesExistenciasCompra:
-                hec.destroy()
+                hec.destroySelf()
                 i += 1
         else:
             for hec in self.historialesExistenciasCompra:
                 if hec.almacen == almacen:
-                    hec.destroy()
+                    hec.destroySelf()
                     i += 1
         if DEBUG:
             print "pclases::ajustar_a_fecha_pasada -> "\
@@ -7191,7 +7191,7 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
                         selfdesc = self.descripcion
                         print "\t... Borrando históricos de %s" % (selfdesc)
                     for hec in self.historialesExistenciasCompra:
-                        hec.destroy()
+                        hec.destroySelf()
                     # Y vuelvo a intentarlo.
                     self.ajustar_a_fecha_pasada(fecha, cantidad, bultos, 
                                                 almacen, check_assert = False)
@@ -7216,7 +7216,7 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
                         selfdesc = self.descripcion
                         print "\t... Borrando históricos de %s" % selfdesc
                     for hec in self.historialesExistenciasCompra:
-                        hec.destroy()
+                        hec.destroySelf()
                     # Y vuelvo a intentarlo.
                     self.ajustar_a_fecha_pasada(fecha, cantidad, bultos, 
                                                 almacen, check_assert = False)
@@ -7299,7 +7299,7 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
                           "-> Más de un registro en caché o forzado por "\
                           "parámetro. Los elimino todos y recuento."
                     for reg in regs_cache:
-                        reg.destroy()
+                        reg.destroySelf()
                     res = self.get_existencias_historico(fecha, 
                             almacen = almacen, 
                             observaciones_historico = observaciones_historico)
@@ -7307,7 +7307,7 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
                     if not forzar:
                         res = regs_cache[0].cantidad
                     else:
-                        regs_cache[0].destroy()
+                        regs_cache[0].destroySelf()
                         res = None
             else:       # not almacen
                 # Para todos los almacenes necesito sumatorio, pero no a partir 
@@ -8281,7 +8281,7 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
                             " Registro unificado por duplicidad de producto."]
         # Elimino los registros existentes y creo los nuevos:
         for h in self.historialesExistenciasCompra + d.historialesExistenciasCompra:
-            h.destroy()
+            h.destroySelf()
         for fecha in final:
             h = pclases.HistorialExistenciasCompra(productoCompra = o, 
                                             cantidad = final[fecha][0], 
@@ -10960,7 +10960,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                 # Si hay más de uno, los borro todos.
                 if len(registros_historicos) > 1:
                     for r in registros_historicos:
-                        r.destroy()
+                        r.destroySelf()
                 # ¿Y por qué querría yo actualizar a coj*nes? Si me está 
                 # preguntando la función de crear históricos, provocaré  
                 # recursividad infinita. 
@@ -19639,7 +19639,7 @@ class Estadistica(SQLObject, PRPCTOO):
                 st = sts[0]
                 for s in sts[1:]:
                     st.veces += s.veces
-                    s.destroy()
+                    s.destroySelf()
             st = st[0]
         st.ultimaVez = mx.DateTime.localtime()
         st.veces += 1
@@ -20126,30 +20126,30 @@ class ListaObjetosRecientes(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
-    def push(self, id):
+    def push(self, ide):
         """
         Añade un objeto reciente a la lista de IDs si no estaba ya.
         Mantiene siempre la lista con un máximo de MAX_RECIENTES elementos.
         """
-        if id not in [i.objetoID for i in self.idsRecientes]:
+        if ide not in [i.objetoID for i in self.idsRecientes]:
             if len(self.idsRecientes) >= self.MAX_RECIENTES:
                 self.pop()
         else:
-            self.pop(id)
-        idr = IdReciente(listaObjetosRecientes = self, objetoID = id)
+            self.pop(ide)
+        idr = IdReciente(listaObjetosRecientes = self, objetoID = ide)
 
-    def pop(self, id = None):
+    def pop(self, ide = None):
         """
         Si se recibe un ID y éste está en la lista, lo saca y lo devuelve.
         En otro caso saca de la pila el que tenga ID más bajo (es decir, el 
         más antiguo).
         """
-        if id != None:
-            if id not in [r.objetoID for r in self.idsRecientes]:
+        if ide != None:
+            if ide not in [r.objetoID for r in self.idsRecientes]:
                 raise ValueError, "ID %d no está en la lista de ids recientes."
-            idr = [r for r in self.idsRecientes if r.objetoID == id][0]
-            idr.destroy()
-            res_id = id
+            idr = [r for r in self.idsRecientes if r.objetoID == ide][0]
+            idr.destroySelf()
+            res_id = ide
         else:
             if len(self.idsRecientes) == 0:
                 raise ValueError, "Lista de ids recientes vacía."
@@ -20157,7 +20157,7 @@ class ListaObjetosRecientes(SQLObject, PRPCTOO):
             idrs.sort(lambda r1, r2: int(r1.id - r2.id))
             idr = idrs[0]
             res_id = idr.objetoID
-            idr.destroy()
+            idr.destroySelf()
         return res_id
 
     def get_lista(self):
@@ -20465,7 +20465,7 @@ def do_unittests():
 
 if __name__ == '__main__':
     DEBUG = True
-    #do_unittests()
-    r = Rollo.select()[0]
-    r.destroy_en_cascada()
+    do_unittests()
+    #r = Rollo.select()[0]
+    #r.destroy_en_cascada()
 

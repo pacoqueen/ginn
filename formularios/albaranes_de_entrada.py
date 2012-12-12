@@ -354,7 +354,7 @@ class AlbaranesDeEntrada(Ventana):
                     if carga != None:
                         ldc.cargaSilo = None
                         try:
-                            carga.destroySelf()
+                            carga.destroy(ventana = __file__)
                         except:
                             ldc.cargaSilo = carga
                             ldc.silo = carga.silo
@@ -384,7 +384,7 @@ class AlbaranesDeEntrada(Ventana):
                 carga_anterior = ldc.cargaSilo
                 ldc.cargaSilo = None
                 ldc.silo = None
-                carga_anterior.destroySelf()
+                carga_anterior.destroy(ventana = __file__)
             except:
                 utils.dialogo_info(titulo = "OPERACIÓN NO PERMITIDA", 
                                    texto="No puede cambiar el silo de carga.", 
@@ -720,7 +720,7 @@ class AlbaranesDeEntrada(Ventana):
                 #print linea.productoCompra.existencias
                 # XXX EODEBUG
             if linea.facturaCompraID == None:
-                linea.destroySelf()
+                linea.destroy(ventana = __file__)
             else:
                 linea.albaranEntrada = None
         self.actualizar_ventana()
@@ -939,7 +939,7 @@ class AlbaranesDeEntrada(Ventana):
                         if ldc.silo != None:
                             cs = ldc.cargaSilo 
                             ldc.cargaSilo = None
-                            cs.destroySelf()
+                            cs.destroy(ventana = __file__)
                 for linea in albaran.lineasDeCompra:
                     producto = linea.productoCompra
                     if linea.productoCompra.controlExistencias: 

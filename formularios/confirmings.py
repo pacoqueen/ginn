@@ -1064,7 +1064,7 @@ class Confirmings(Ventana):
                     # y por tanto debo respetarlo.
         else:
             actualizar_cantidad = False
-        cobro.destroySelf()
+        cobro.destroy(ventana = __file__)
         if actualizar_cantidad:
             confirming.cantidad = sum([c.importe for c in confirming.cobros])
             if confirming.cobrado > confirming.cantidad:
@@ -1091,8 +1091,8 @@ class Confirmings(Ventana):
                 confirming.notificador.set_func(lambda : None)
                 try:
                     for c in confirming.cobros:
-                        c.destroySelf()
-                    confirming.destroySelf()
+                        c.destroy(ventana = __file__)
+                    confirming.destroy(ventana = __file__)
                     self.ir_a_primero()
                 except:
                     txt = """

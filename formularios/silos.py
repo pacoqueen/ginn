@@ -351,7 +351,7 @@ class Silos(Ventana):
         if idsilo != None:
             silo = pclases.Silo.get(idsilo)
             try:
-                silo.destroySelf()
+                silo.destroy(ventana = __file__)
             except:
                 utils.dialogo_info(titulo = "SILO NO BORRADO", 
                                    texto = "El silo no se pudo eliminar.\nProbablemente esté implicado en cargas y consumos.", 

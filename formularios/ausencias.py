@@ -436,7 +436,7 @@ class Ausencias(Ventana):
         if iter != None:
             id = model[iter][-1]
             ausencia = pclases.Ausencia.get(id)
-            ausencia.destroySelf()
+            ausencia.destroy(ventana = __file__)
             self.actualizar_ventana()
         else:
             utils.dialogo_info(titulo = "SELECCIONE AUSENCIA", 
@@ -475,7 +475,7 @@ class Ausencias(Ventana):
         if iter != None:
             id = model[iter][-1]
             baja = pclases.Baja.get(id)
-            baja.destroySelf()
+            baja.destroy(ventana = __file__)
             self.actualizar_ventana()
         else:
             utils.dialogo_info(titulo = "SELECCIONE BAJA", 

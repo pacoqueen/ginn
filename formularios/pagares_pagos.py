@@ -664,7 +664,7 @@ class PagaresPagos(Ventana):
             model, path = self.wids['tv_pagos'].get_selection().get_selected()
             idc = model[path][-1]
             pago = pclases.Pago.get(idc)
-            pago.destroySelf()
+            pago.destroy(ventana = __file__)
             pagare.cantidad = sum([c.importe for c in pagare.pagos])
             if pagare.pagado > pagare.cantidad:
                 pagare.pagado = pagare.cantidad
@@ -740,8 +740,8 @@ class PagaresPagos(Ventana):
                 pagare.notificador.set_func(lambda : None)
                 try:
                     for c in pagare.pagos:
-                        c.destroySelf()
-                    pagare.destroySelf()
+                        c.destroy(ventana = __file__)
+                    pagare.destroy(ventana = __file__)
                     self.ir_a_primero()
                 except:
                     txt = """

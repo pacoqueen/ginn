@@ -9411,7 +9411,7 @@ def pendiente_recibir(exportar_a_csv_a = None):
                 print "geninformes.py (pendiente_recibir): ¡LDPC ID %s no ti"\
                       "ene pedido de compra! Eliminando..." % (ldpc.id),
                 try:
-                    ldpc.destroySelf()
+                    ldpc.destroy(ventana = __file__)
                     print "OK"
                 except Exception, msg:
                     print "KO: %s" % (msg)

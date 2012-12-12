@@ -539,7 +539,7 @@ class TarifasDePrecios(Ventana):
         # get_selected_rows devuelve una lista con el TreeView como primer elemento y los paths de las filas seleccionadas en otra lista como segundo (posición 1) elemento.
             idprecio = model[path][-1]
             precio = pclases.Precio.get(idprecio)
-            precio.destroySelf()
+            precio.destroy(ventana = __file__)
         self.actualizar_ventana()
 
     def seleccionar_tarifa(self, combo):
@@ -598,10 +598,10 @@ class TarifasDePrecios(Ventana):
         if utils.dialogo('¿Eliminar tarifa?'):
             tarifa = self.objeto
             for p in tarifa.precios:
-                p.destroySelf()
+                p.destroy(ventana = __file__)
             self.borrar_tarifa_de_lista(tarifa)
             tarifa.notificador.set_func(lambda : None)
-            tarifa.destroySelf()
+            tarifa.destroy(ventana = __file__)
             # Ahora me muevo a la primera de las tarifas o a None si no hay:
             m = self.wids['cb_nombre_tarifa'].get_model() 
             if len(m)==0:

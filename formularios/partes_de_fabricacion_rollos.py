@@ -659,7 +659,7 @@ class PartesDeFabricacionRollos(Ventana):
         consumo = [c for c in self.objeto.consumos if c.id == idconsumo][0]
         self.actualizar_consumo(consumo, False)
         consumo.parteDeProduccion = None
-        consumo.destroySelf()
+        consumo.destroy(ventana = __file__)
         self.rellenar_agujas()
     
     def cambiar_cantidad_aguja(self, cell, path, texto):
@@ -1724,7 +1724,7 @@ class PartesDeFabricacionRollos(Ventana):
         partedeproduccion = self.objeto
         partedeproduccion.notificador.desactivar()
         try:
-            partedeproduccion.destroySelf()
+            partedeproduccion.destroy(ventana = __file__)
         except:
             utils.dialogo_info('PARTE NO BORRADO', 'El parte no se eliminó.\nSi tiene rollos o empleados asociados, trate primero de eliminarlos y vuelva a intentarlo.', padre = self.wids['ventana'])
             return
@@ -2053,11 +2053,11 @@ class PartesDeFabricacionRollos(Ventana):
                     # «articulo» viola la restricción check «articulo_check»
                     articulo.rolloDefectuoso = rolloDefectuoso
                     articulo.parteDeProduccion = None
-                    articulo.destroySelf()
+                    articulo.destroy(ventana = __file__)
                     if rollo != None:
-                        rollo.destroySelf()
+                        rollo.destroy(ventana = __file__)
                     if rolloDefectuoso != None:
-                        rolloDefectuoso.destroySelf()
+                        rolloDefectuoso.destroy(ventana = __file__)
                 except Exception, e:
                     utils.dialogo_info(titulo = 'ERROR: ROLLO NO BORRADO', 
                         texto = 'El rollo no ha sido eliminado completamente.'
@@ -2173,7 +2173,7 @@ class PartesDeFabricacionRollos(Ventana):
                     incidencia = pclases.Incidencia.get(id)
                     incidencia.parteDeProduccion = None
                     try:
-                        incidencia.destroySelf()
+                        incidencia.destroy(ventana = __file__)
                     except:
                         utils.dialogo_info(titulo = 'INCIDENCIA NO ELIMINADA', 
                                            texto = 'Ocurrió un error al intentar eliminar la incidencia.', 
@@ -3099,7 +3099,7 @@ class PartesDeFabricacionRollos(Ventana):
                 mensaje = "partes_de_fabricacion_rollos.py::get_empleados_de_calendario -> Laborable ID %d no tiene turno relacionado. Intento eliminarlo de la BD." % (laborable.id)
                 self.logger.error(mensaje)
                 try:
-                    laborable.destroySelf()
+                    laborable.destroy(ventana = __file__)
                     idlaborable = laborable.id
                     self.logger.warning("partes_de_fabricacion_rollos.py::get_empleados_de_calendario -> Registro laborable ID %d ELIMINADO SATISFACTORIAMENTE." % (idlaborable))
                 except:
@@ -3203,7 +3203,7 @@ class PartesDeFabricacionRollos(Ventana):
                             # inserciones y borrados puede quedar el consumo 
                             # con cantidad 0.0000...1, que debe ser borrado.
                             try:
-                                c.destroySelf()
+                                c.destroy(ventana = __file__)
                             except Exception, msg:
                                 self.logger.error("%sConsumo ID %d no se pudo eliminar. Excepción: %s" 
                                                   % (self.usuario and self.usuario.usuario + ": " or "", 
@@ -3748,7 +3748,7 @@ def actualizar_albaran_interno_con_tubos(pdp):
     for ldv in pdp.albaranInterno.lineasDeVenta:
         if ldv.productoCompra in cons_tubos:
             try:
-                ldv.destroySelf()
+                ldv.destroy(ventana = __file__)
             except Exception, msg:
                 # ¿La LDV está relacionada con un pedido o algo "asina"?
                 ldv.albaranSalida = None

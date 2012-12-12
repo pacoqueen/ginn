@@ -91,7 +91,7 @@ def buscar_o_crear_albaran_interno(pdp, incluir_consumos_auto = False):
     if albint != None:
         # 1.- Elimino las LDVs del albarán para volcarlas de nuevo
         for ldv in albint.lineasDeVenta:
-            ldv.destroySelf()
+            ldv.destroy(ventana = __file__)
         # 2.- Agrego los consumos QUE NO SEAN AUTOMÁTICOS NI DE GRANZA como 
         # nuevas LDVs del albarán interno, a no ser que se indique lo 
         # contrario por parámetro.
@@ -721,7 +721,7 @@ class PartesDeFabricacionBalas(Ventana):
         consumo = [c for c in self.objeto.consumos if c.id == idconsumo][0]
         self.actualizar_consumo(consumo, False)
         consumo.parteDeProduccion = None
-        consumo.destroySelf()
+        consumo.destroy(ventana = __file__)
         self.rellenar_filtros()
     
     def cambiar_cantidad_antes(self, cell, path, texto):
@@ -1794,7 +1794,7 @@ class PartesDeFabricacionBalas(Ventana):
         if (len(partedeproduccion.incidencias) == 0 
             and len(partedeproduccion.articulos) == 0):
             try:
-                #partedeproduccion.destroySelf()
+                #partedeproduccion.destroy(ventana = __file__)
                 partedeproduccion.destroy_en_cascada()
             except:
                 utils.dialogo_info('PARTE NO BORRADO', 'El parte no se eliminó.\nSi tiene producción, incidencias o empleados asociados, trate primero de eliminarlos y vuelva a intentarlo.', padre = self.wids['ventana'])
@@ -2415,11 +2415,11 @@ class PartesDeFabricacionBalas(Ventana):
                             articulo.bala = None
                             articulo.bigbag = None
                             articulo.parteDeProduccion = None
-                            articulo.destroySelf()
+                            articulo.destroy(ventana = __file__)
                             if es_bala:
-                                bala.destroySelf()
+                                bala.destroy(ventana = __file__)
                             if es_bigbag:
-                                bigbag.destroySelf()
+                                bigbag.destroy(ventana = __file__)
                         except ZeroDivisionError: 
                             utils.dialogo_info(titulo = 'ERROR', texto = 'Ocurrió un error. No se pudo eliminar completamente.\nAnote el número de bala (%s) y contacte con el administrador de la aplicación\npara subsanar la inconsistencia.' % (bala and bala.codigo or "no disponible"), padre = self.wids['ventana'])
                             # bala.parteDeProduccion = self.objeto
@@ -2522,7 +2522,7 @@ class PartesDeFabricacionBalas(Ventana):
                     incidencia = pclases.Incidencia.get(id)
                     incidencia.parteDeProduccion = None
                     try:
-                        incidencia.destroySelf()
+                        incidencia.destroy(ventana = __file__)
                     except:
                         utils.dialogo_info(titulo = 'INCIDENCIA NO ELIMINADA', texto = 'Ocurrió un error al intentar eliminar la incidencia.', padre = self.wids['ventana'])
             self.actualizar_ventana()
@@ -2835,7 +2835,7 @@ class PartesDeFabricacionBalas(Ventana):
         consumo = [c for c in self.objeto.consumos if c.id == idconsumo][0]
         self.actualizar_consumo(consumo, False)
         consumo.parteDeProduccion = None
-        consumo.destroySelf()
+        consumo.destroy(ventana = __file__)
         self.rellenar_granza()
 
     # XXX vvv
@@ -3479,7 +3479,7 @@ class PartesDeFabricacionBalas(Ventana):
                 mensaje = "partes_de_fabricacion_balas.py::get_empleados_de_calendario -> Laborable ID %d no tiene turno relacionado. Intento eliminarlo de la BD." % (laborable.id)
                 self.logger.error(mensaje)
                 try:
-                    laborable.destroySelf()
+                    laborable.destroy(ventana = __file__)
                     idlaborable = laborable.id
                     self.logger.warning("partes_de_fabricacion_balas.py::get_empleados_de_calendario -> Registro laborable ID %d ELIMINADO SATISFACTORIAMENTE." % (idlaborable))
                 except:
@@ -3594,7 +3594,7 @@ class PartesDeFabricacionBalas(Ventana):
                     for c in self.objeto.consumos:
                         if c.cantidad == 0:
                             try:
-                                c.destroySelf()
+                                c.destroy(ventana = __file__)
                             except Exception, msg:
                                 self.logger.error("%sConsumo ID %d no se pudo eliminar. Excepción: %s" 
                                                   % (self.usuario and self.usuario.usuario + ": " or "", 

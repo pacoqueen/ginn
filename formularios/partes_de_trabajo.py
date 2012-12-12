@@ -270,7 +270,7 @@ class PartesDeTrabajo(Ventana):
         for path in paths:
             id = model[path][-1] # El id de empleado es la columna 0
             pdt = pclases.ParteDeTrabajo.get(id)
-            pdt.destroySelf()
+            pdt.destroy(ventana = __file__)
         self.rellenar_tabla()
         self.rellenar_tabla_calendario()
 

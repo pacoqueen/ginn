@@ -1207,7 +1207,7 @@ class PartesDeFabricacionBolsas(Ventana):
         partedeproduccion = self.objeto
         partedeproduccion.notificador.desactivar()
         try:
-            partedeproduccion.destroySelf()
+            partedeproduccion.destroy(ventana = __file__)
         except:
             utils.dialogo_info('PARTE NO BORRADO', 
                 'El parte no se eliminó.\nSi tiene bolsas o empleados asociad'\
@@ -1362,7 +1362,7 @@ class PartesDeFabricacionBolsas(Ventana):
                 incidencia = pclases.Incidencia.get(id)
                 incidencia.parteDeProduccion = None
                 try:
-                    incidencia.destroySelf()
+                    incidencia.destroy(ventana = __file__)
                 except:
                     utils.dialogo_info(titulo = 'INCIDENCIA NO ELIMINADA', 
                                        texto = 'Ocurrió un error al intentar '\
@@ -1615,7 +1615,7 @@ class PartesDeFabricacionBolsas(Ventana):
                 print "ERROR: %s" % (mensaje)
                 self.logger.error(mensaje)
                 try:
-                    laborable.destroySelf()
+                    laborable.destroy(ventana = __file__)
                     idlaborable = laborable.id
                     self.logger.warning("partes_de_fabricacion_bolsas.py::get_empleados_de_calendario -> Registro laborable ID %d ELIMINADO SATISFACTORIAMENTE." % (idlaborable))
                 except:
@@ -1731,7 +1731,7 @@ class PartesDeFabricacionBolsas(Ventana):
                     consumo.parteDeProduccion = None
                     try:
                         consumo.anular_consumo()
-                        #consumo.destroySelf()
+                        #consumo.destroy(ventana = __file__)
                     except:
                         utils.dialogo_info(titulo = 'INCIDENCIA NO ELIMINADA', 
                                     texto = 'Ocurrió un error al intentar '\
@@ -1848,7 +1848,7 @@ class PartesDeFabricacionBolsas(Ventana):
                             # inserciones y borrados puede quedar el consumo 
                             # con cantidad 0.0000...1, que debe ser borrado.
                             try:
-                                c.destroySelf()
+                                c.destroy(ventana = __file__)
                             except Exception, msg:
                                 self.logger.error("%sConsumo ID %d no se pudo eliminar. Excepción: %s" 
                                                   % (self.usuario and self.usuario.usuario + ": " or "", 

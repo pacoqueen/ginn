@@ -526,7 +526,7 @@ class AlbaranesDeSalidaRepuestos(Ventana):
         for ldv in albaran.lineasDeVenta:
             self.desvincular_ldv_del_albaran(ldv)
         try:
-            albaran.destroySelf()
+            albaran.destroy(ventana = __file__)
         except:
             utils.dialogo_info('ERROR', 'No se pudo eliminar.\nIntente eliminar primero los productos, servicios, transportes y comisiones del albarán.', padre = self.wids['ventana'])
             return

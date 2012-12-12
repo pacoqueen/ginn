@@ -1355,17 +1355,17 @@ class FacturasDeEntrada(Ventana):
         factura = self.objeto
         factura.notificador.set_func(lambda : None)
         try:
-            factura.destroySelf()
+            factura.destroy(ventana = __file__)
         except:
             # Si tiene relaciones desvinculo las LDC primero para que no se eliminen, ya que 
             # deben seguir apareciendo en los albaranes de entrada.
             for l in factura.lineasDeCompra:
                 l.facturaCompra = None
                 if l.albaranEntradaID == None:
-                    l.destroySelf()
+                    l.destroy(ventana = __file__)
             for s in factura.serviciosTomados:
                 try:
-                    s.destroySelf()
+                    s.destroy(ventana = __file__)
                 except:
                     txt = "facturas_compra.py::borrar_factura -> No se pudo eliminar el servicioTomado ID %d" % (s.id)
                     self.logger.error(txt)
@@ -1421,10 +1421,10 @@ class FacturasDeEntrada(Ventana):
         idest = ids[1]
         if idvto > 0:   # Si realmente hay un vto. (ver rellenar_vencimientos).
             vto = pclases.VencimientoPago.get(idvto)
-            vto.destroySelf()
+            vto.destroy(ventana = __file__)
         if idest > 0:
             est = pclases.EstimacionPago.get(idest)
-            est.destroySelf()
+            est.destroy(ventana = __file__)
         self.objeto.vencimientosConfirmados = False
         self.objeto.make_swap() # Para evitar falso positivo de actualización
         self.rellenar_vencimientos()
@@ -1492,10 +1492,10 @@ class FacturasDeEntrada(Ventana):
     def borrar_vencimientos_y_estimaciones(self, factura):
         for vto in factura.vencimientosPago:
             vto.factura = None
-            vto.destroySelf()
+            vto.destroy(ventana = __file__)
         for est in factura.estimacionesPago:
             est.factura = None
-            est.destroySelf()
+            est.destroy(ventana = __file__)
 
 
     def crear_vencimientos_por_defecto(self, w):
@@ -1818,7 +1818,7 @@ class FacturasDeEntrada(Ventana):
             # Texto vacío, borrar pago si lo había.
             if idpago > 0:
                 pago = pclases.Pago.get(idpago)
-                pago.destroySelf()
+                pago.destroy(ventana = __file__)
                 self.rellenar_vencimientos()
                 return
         try:
@@ -1846,7 +1846,7 @@ class FacturasDeEntrada(Ventana):
             # Texto vacío, borrar pago si lo había.
             if idpago > 0:
                 pago = pclases.Pago.get(idpago)
-                pago.destroySelf()
+                pago.destroy(ventana = __file__)
             self.rellenar_vencimientos()
             return
         try:
@@ -1873,7 +1873,7 @@ class FacturasDeEntrada(Ventana):
             # Texto vacío, borrar pago si lo había.
             if idpago > 0:
                 pago = pclases.Pago.get(idpago)
-                pago.destroySelf()
+                pago.destroy(ventana = __file__)
                 self.rellenar_vencimientos()
                 return
         try:
@@ -2028,7 +2028,7 @@ class FacturasDeEntrada(Ventana):
                 ldc.facturaCompra  = None
                 if ldc.albaranEntrada == None and ldc.pedidoCompra == None:
                     try:
-                        ldc.destroySelf()
+                        ldc.destroy(ventana = __file__)
                     except:
                         self.logger.error("facturas_compra.py (drop_linea_de_compra): LDC ID %d no se pudo eliminar. Debe tener relaciones activas.")
             elif idldc != -1 and model[iter].parent != None:
@@ -2039,7 +2039,7 @@ class FacturasDeEntrada(Ventana):
                 transporte = s.transporteACuenta
                 comision = s.comision
                 if transporte == None and comision == None:
-                    s.destroySelf()
+                    s.destroy(ventana = __file__)
                 else:
                     if transporte != None:
                         transporte.facturar(None)
@@ -2220,7 +2220,7 @@ class FacturasDeEntrada(Ventana):
             docid = model[iter][-1]
             documento = pclases.Documento.get(docid)
             utils.mover_a_tmp(documento.get_ruta_completa())
-            documento.destroySelf()
+            documento.destroy(ventana = __file__)
             self.rellenar_adjuntos()
 
     def ver_adjunto(self, boton):   # XXX: Código para adjuntos.

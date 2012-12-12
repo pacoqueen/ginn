@@ -265,7 +265,7 @@ class PedidosDeVenta(Ventana):
         hacer clic en uno de ellos, se abre en la ventana actual.
         """
         reg = pclases.ListaObjetosRecientes.buscar("pedidos_de_venta.py", 
-                                              self.usuario) 
+                                                   self.usuario) 
         if reg:
             lista = []
             ui_string = """
@@ -378,7 +378,7 @@ class PedidosDeVenta(Ventana):
         srv.pedidoVenta = None
         if srv.presupuesto == None:
             try:
-                srv.destroySelf()
+                srv.destroy(ventana = __file__)
             except:
                 self.logger.error("%spedidos_de_venta.py::drop_servicio -> No"
                                   " se pudo eliminar el servicio ID %d." % (
@@ -1206,7 +1206,7 @@ class PedidosDeVenta(Ventana):
         for ldv in self.objeto.lineasDeVenta:
             if ldv.albaranSalidaID == None and ldv.facturaVentaID == None and ldv.prefactura == None:
                 try:
-                    ldv.destroySelf()
+                    ldv.destroy(ventana = __file__)
                     self.logger.error("%spedidos_de_venta.py::rellenar_tabla -> Eliminada LDV ID %d sin albarán ni factura(s)." % (self.usuario and self.usuario.usuario + ": " or "", ldv.id))
                     continue
                 except:
@@ -2189,7 +2189,7 @@ class PedidosDeVenta(Ventana):
         ldp.pedidoVenta = None
         if ldp.presupuesto == None:
             try:
-                ldp.destroySelf()
+                ldp.destroy(ventana = __file__)
             except:
                 self.logger.error("%spedidos_de_venta.py::drop_ldp -> No se pudo eliminar la LDP ID %d." % (self.usuario and self.usuario.usuario + ": " or "", ldp.id))
         self.guardar(None)  # Por si no están guardadas la fecha y proveedor
@@ -2373,7 +2373,7 @@ def unificar_ldps(pedido):
                 ldps_copia[i].cantidad += ldps_copia[j].cantidad
                 if ldps_copia[j].notas:
                     ldps_copia[i].notas += "\n%s" % ldps_copia[j].notas
-                ldps_copia[j].destroySelf()
+                ldps_copia[j].destroy(ventana = __file__)
                 borradas.append(j)
 
 def ldps_iguales(ldp1, ldp2):

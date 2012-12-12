@@ -97,7 +97,7 @@ class TiposMaterial(Ventana):
             utils.dialogo_info('ERROR','Seleccione material a eliminar')
             return
         try:    
-            tipodematerial.destroySelf()
+            tipodematerial.destroy(ventana = __file__)
         except:
             utils.dialogo_info('ERROR','No se ha podido eliminar el tipo de material. Probablemente existan procesos con este tipo de material.')
         self.rellenar_tabla()

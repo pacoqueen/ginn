@@ -153,7 +153,7 @@ class Recibos(Ventana, VentanaGenerica):
                             except AttributeError, msg:  # No tiene factura, o la factura no tiene cliente. Dejo las observaciones que tuviera.
                                 txterror = "%srecibos::drop_factura -> El vencimientoCobro ID %d no tiene factura, o su factura no tiene cliente. Mensaje de la excepción: %s" % (self.usuario and self.usuario.usuario + ": " or "", vto.id, msg)
                                 self.logger.warning(txterror)
-                self.objeto.destroySelf()
+                self.objeto.destroy(ventana = __file__)
             except Exception, msg:
                 utils.dialogo_info(titulo = "ERROR", texto = "El registro no se pudo eliminar", padre = self.wids['ventana'])
                 self.logger.error("%srecibos::borrar -> No se pudo eliminar el recibo ID %d. Excepcion: %s" % 

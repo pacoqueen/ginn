@@ -486,7 +486,7 @@ class Transferencias(Ventana, VentanaGenerica):
         else:
             transferencia.notificador.desactivar()
             try:
-                transferencia.destroySelf()
+                transferencia.destroy(ventana = __file__)
             except Exception, e:
                 self.logger.error("transferencias::borrar -> Pago ID %d no se pudo eliminar. Excepción: %s." % (transferencia.id, e))
                 utils.dialogo_info(titulo = "TRANSFERENCIA NO BORRADA", 

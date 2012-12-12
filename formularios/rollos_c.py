@@ -103,7 +103,7 @@ class RollosC(Ventana):
                 print mensaje
                 if not cer.productosVenta:  # Sobra. Lo borro.
                     try:
-                        cer.destroySelf()
+                        cer.destroy(ventana = __file__)
                     except Excepcion, msg:
                         mensaje = "%srollos_c::__init__ -> CamposEspecificosRollo ID %d sin productosVenta no se pudo eliminar. Excepción: %s" % (self.usuario and self.usuario.usuario + ": " or "", cer.id, msg)
                         print mensaje
@@ -158,7 +158,7 @@ class RollosC(Ventana):
             a = b.articulo
             a.rolloC = None
             try:
-                a.destroySelf()
+                a.destroy(ventana = __file__)
             except Exception, msg:
                 self.logger.error("%srollos_c::borrar_rollos -> Artículo ID %d de rollo ID %d (%s) no se pudo eliminar. Excepción: %s" 
                     % (self.usuario and self.usuario.usuario + ": " or "", a.id, b.id, b.codigo, msg))
@@ -166,7 +166,7 @@ class RollosC(Ventana):
                 self.consumir(b)
             else:
                 try:
-                    b.destroySelf()
+                    b.destroy(ventana = __file__)
                 except Exception, msg:
                     self.logger.error("%srollos_c::borrar_rollos -> Rollo ID %d (%s) no se pudo eliminar. Excepción: %s" 
                         % (self.usuario and self.usuario.usuario + ": " or "", b.id, b.codigo, msg))
@@ -250,7 +250,7 @@ class RollosC(Ventana):
                             almacen = pclases.Almacen.get_almacen_principal())
             pclases.Auditoria.nuevo(a, self.usuario, __file__)
         except:
-            b.destroySelf()
+            b.destroy(ventana = __file__)
             b = None
         return b
 

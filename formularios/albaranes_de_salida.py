@@ -2412,7 +2412,7 @@ class AlbaranesDeSalida(Ventana):
         ldv.albaranSalida = None
         if ldv.facturaVentaID == None and ldv.prefacturaID == None:
             try:
-                ldv.destroySelf()
+                ldv.destroy(ventana = __file__)
             except:
                 txterror = "albarabes_de_salida::desvincular_ldv_del_albaran -> La LDV ID %d no tiene albarán ni factura(s) pero no se pudo eliminar." % (ldv.id)
                 print txterror
@@ -2434,7 +2434,7 @@ class AlbaranesDeSalida(Ventana):
             self.desvincular_ldv_del_albaran(ldv)
         self.desvincular_articulos_del_albaran(albaran.articulos)
         try:
-            albaran.destroySelf()
+            albaran.destroy(ventana = __file__)
         except:
             utils.dialogo_info('ERROR', 'No se pudo eliminar.\nIntente eliminar primero los productos, servicios, transportes y comisiones del albarán.', padre = self.wids['ventana'])
             return
@@ -3574,7 +3574,7 @@ class AlbaranesDeSalida(Ventana):
             if (servicio.facturaVenta == None 
                 and servicio.prefacturaID == None
                 and servicio.pedidoVenta == None):
-                servicio.destroySelf()  # No debería saltar ninguna excepción. 
+                servicio.destroy(ventana = __file__)  # No debería saltar ninguna excepción. 
             self.rellenar_servicios()
             self.modificado = True
             self.objeto.calcular_comisiones()
@@ -3590,7 +3590,7 @@ class AlbaranesDeSalida(Ventana):
                 idtac = model[path][-1]
                 #tac = pclases.TransporteACuenta.get(idtac)
                 tac = pclases.getObjetoPUID(idtac)
-                tac.destroySelf()
+                tac.destroy(ventana = __file__)
             self.rellenar_transportes_a_cuenta()
 
     def add_transporte_a_cuenta(self, boton):
@@ -3813,7 +3813,7 @@ class AlbaranesDeSalida(Ventana):
             for path in paths:
                 idcomision = model[path][-1]
                 comision = pclases.getObjetoPUID(idcomision)
-                comision.destroySelf()
+                comision.destroy(ventana = __file__)
             self.rellenar_comisiones()
 
 # XXX Parte de facturación automática: 
@@ -3995,10 +3995,10 @@ class AlbaranesDeSalida(Ventana):
     def borrar_vencimientos_y_estimaciones(self, factura):
         for vto in factura.vencimientosCobro:
             vto.factura = None
-            vto.destroySelf()
+            vto.destroy(ventana = __file__)
         for est in factura.estimacionesCobro:
             est.factura = None
-            est.destroySelf()
+            est.destroy(ventana = __file__)
     
     def rellenar_totales(self, factura):
         """

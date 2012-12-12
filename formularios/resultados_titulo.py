@@ -243,7 +243,7 @@ class ResultadosTitulo(Ventana):
                                           padre = self.wids['ventana']):
             id = model[iter][-1]
             prueba = pclases.PruebaTitulo.get(id)
-            prueba.destroySelf()
+            prueba.destroy(ventana = __file__)
             self.rellenar_pruebas()
 
     def set_lote(self, w):

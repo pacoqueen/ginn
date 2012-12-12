@@ -652,7 +652,7 @@ class TPV(Ventana):
             self.wids['e_descuento'].set_value(100 * ldv.descuento)
             self.producto = ldv.producto
             try:
-                ldv.destroySelf()
+                ldv.destroy(ventana = __file__)
             except:
                 texto = "tpv::activar_ticket -> No se pudo eliminar LDV ID "\
                         "%d al hacerle doble clic para editarla." % (ldv.id)
@@ -1417,7 +1417,7 @@ class TPV(Ventana):
                         try:
                             producto = ldv.producto
                             cantidad = ldv.cantidad
-                            ldv.destroySelf()
+                            ldv.destroy(ventana = __file__)
                         except Exception, msg:
                             utils.dialogo_info(titulo = "ERROR DE BORRADO", 
                                                texto = "La venta no se pudo eliminar.\nTal vez esté implicada en otras operaciones que impiden su borrado.\n\n\nInformación de depuración:\n%s" % (msg))
@@ -1507,10 +1507,10 @@ class TPV(Ventana):
     def borrar_vencimientos_y_estimaciones(self, factura):
         for vto in factura.vencimientosCobro:
             vto.factura = None
-            vto.destroySelf()
+            vto.destroy(ventana = __file__)
         for est in factura.estimacionesCobro:
             est.factura = None
-            est.destroySelf()
+            est.destroy(ventana = __file__)
     
     def rellenar_totales(self, factura):
         """
@@ -1680,10 +1680,10 @@ class TPV(Ventana):
                                     # queden tickets vacíos.
                                     ticket = ldv.ticket
                                     ldv.ticket = None
-                                    ticket.destroySelf()
+                                    ticket.destroy(ventana = __file__)
                                 ldv.ticket = None
                                 if ldv.albaranSalida==ldv.facturaVenta==None:
-                                    ldv.destroySelf()
+                                    ldv.destroy(ventana = __file__)
                             #self.actualizar_ventana()
                             #self._rellenar_ultimas_ventas()
                             self.wids['b_actualizar'].clicked()
@@ -1691,7 +1691,7 @@ class TPV(Ventana):
                         utils.dialogo_info(titulo = "NO SE CREÓ LA FACTURA", 
                                            texto = "Todas las líneas seleccionadas ya se encuentran facturadas.\nNo se pueden volver a facturar.", 
                                            padre = self.wids['ventana'])
-                        factura.destroySelf()
+                        factura.destroy(ventana = __file__)
                     self.actualizar_ventana()
 
     def arqueo(self, boton):

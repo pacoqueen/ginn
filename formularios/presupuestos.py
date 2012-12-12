@@ -289,7 +289,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 ldp = pclases.LineaDePedido.get(idldp)
                 if ldp.pedidoVenta == None:
                     try:
-                        ldp.destroySelf()
+                        ldp.destroy(ventana = __file__)
                     except:
                         fallo = True
                 else:
@@ -332,7 +332,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 srv = pclases.Servicio.get(idsrv)
                 if srv.pedidoVenta == None and srv.albaranSalida == None and srv.get_factura_o_prefactura() == None:
                     try:
-                        srv.destroySelf()
+                        srv.destroy(ventana = __file__)
                     except:
                         fallo = True
                 else:

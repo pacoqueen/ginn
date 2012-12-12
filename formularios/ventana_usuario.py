@@ -260,7 +260,7 @@ class Usuarios(Ventana):
                 utils.dialogo_info(titulo = "ALERTA PENDIENTE", texto = "La alerta seleccionada aún no ha sido leída por el usuario.\nMárquela como leída si realmente quiere borrarla.")
             else:
                 try:
-                    alerta.destroySelf()
+                    alerta.destroy(ventana = __file__)
                 except:
                     utils.dialogo_info(titulo = "ERROR", texto = "El mensaje no se pudo borrar", padre = self.wids['ventana'])
                 self.rellenar_alertas()
@@ -423,12 +423,12 @@ class Usuarios(Ventana):
         usuario.notificador.desactivar()
         for permiso in usuario.permisos:
             permiso.usuario = None
-            permiso.destroySelf()
+            permiso.destroy(ventana = __file__)
         for alerta in usuario.alerta:
             alerta.usuario = None
-            alerta.destroySelf()
+            alerta.destroy(ventana = __file__)
         try:
-            usuario.destroySelf()
+            usuario.destroy(ventana = __file__)
         except:
             utils.dialogo_info('ERROR', 'No se pudo eliminar.\nIntente borrar primero sus mensajes pendientes, etc.', padre = self.wids['ventana'])
             return

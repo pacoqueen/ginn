@@ -99,7 +99,7 @@ class TiposMaterialBala(Ventana):
             utils.dialogo_info('ERROR','Seleccione material de bala a eliminar')
             return
         try:	
-            tipodematerialBala.destroySelf()
+            tipodematerialBala.destroy(ventana = __file__)
         except:
             utils.dialogo_info('ERROR','No se ha podido eliminar el tipo de material de bala. Probablemente existan procesos con este tipo de material.')
         self.rellenar_tabla()

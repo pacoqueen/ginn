@@ -617,7 +617,7 @@ class Nominas(Ventana):
            utils.dialogo(titulo = "¿RECALCULAR NÓMINAS?", texto = txt, padre = self.wids['ventana']):
             # Borrar y crear
             for nomina in nominas:
-                nomina.destroySelf()
+                nomina.destroy(ventana = __file__)
             self.crear_nominas(mes, anno, fechaini, fechafin)
             self.rellenar_nominas()
         else:

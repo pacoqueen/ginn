@@ -309,7 +309,7 @@ class CalendarioLaboral(Ventana):
             for laborable in [l for l in self.objeto.laborables if l.fecha.day == dia and \
                                                                        l.fecha.month == mes and \
                                                                        l.fecha.year == anno]:
-                laborable.destroySelf()
+                laborable.destroy(ventana = __file__)
 
 
     def actualizar_festivo(self, ch):
@@ -333,7 +333,7 @@ class CalendarioLaboral(Ventana):
             self.wids['tcal'].show_all()
         else:               # Borrarlo
             for festivo in [f for f in self.objeto.festivos if f.fecha == fecha]:
-                festivo.destroySelf()
+                festivo.destroy(ventana = __file__)
 
     def actualizar_vacaciones(self, ch):
         dia = int(ch.get_name())
@@ -356,7 +356,7 @@ class CalendarioLaboral(Ventana):
             self.wids['tcal'].show_all()
         else:               # Borrarlo
             for vacaciones in [v for v in self.objeto.vacaciones if v.fecha == fecha]:
-                vacaciones.destroySelf()
+                vacaciones.destroy(ventana = __file__)
 
     def actualizar_turno(self, cbe):
         dia, idgrupo = map(int, cbe.get_name().split("_"))

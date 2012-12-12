@@ -177,7 +177,7 @@ class Contadores(Ventana):
             utils.dialogo_info('ERROR','Seleccione contador a eliminar')
             return
         try:    
-            contador.destroySelf()
+            contador.destroy(ventana = __file__)
         except:
             utils.dialogo_info('ERROR','No se ha podido eliminar el contador. Probablemente existan clientes con este contador.')
         self.rellenar_tabla()

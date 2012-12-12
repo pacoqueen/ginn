@@ -180,7 +180,7 @@ class ProductosDeVentaRollos(Ventana):
         marcado_activo_id = utils.combo_get_value(self.wids['cb_marcado'])
         if marcado_activo_id:
             marcado = pclases.MarcadoCe.get(marcado_activo_id)
-            marcado.destroySelf()
+            marcado.destroy(ventana = __file__)
             self.actualizar_ventana()
 
     def cambiar_marcado_mostrado(self, cb):
@@ -962,7 +962,7 @@ class ProductosDeVentaRollos(Ventana):
             cer = producto.camposEspecificosRollo
             producto.camposEspecificosRollo = None
             try:
-                producto.destroySelf()
+                producto.destroy(ventana = __file__)
             except:
                 producto.camposEspecificosRollo = cer
                 utils.dialogo_info(titulo = "PRODUCTO NO BORRADO", 
@@ -970,7 +970,7 @@ class ProductosDeVentaRollos(Ventana):
                                    padre = self.wids['ventana'])
                 self.actualizar_ventana()
                 return
-            cer.destroySelf()
+            cer.destroy(ventana = __file__)
             self.objeto = None
             self.ir_a_primero()
         # self.actualizar_ventana()
@@ -1024,7 +1024,7 @@ class ProductosDeVentaRollos(Ventana):
         if idce == None:
             return
         ce = pclases.CamposEspecificos.get(idce)
-        ce.destroySelf()
+        ce.destroy(ventana = __file__)
         self.mostrar_especificos()
 
     def change_campoesp(self, w):
@@ -2119,7 +2119,7 @@ def insertar_nuevos_valores_marcado():
         try:
             producto = cer.productosVenta[0]
         except IndexError:
-            cer.destroySelf()
+            cer.destroy(ventana = __file__)
             continue
         for campo in valores:
             for nt in valores[campo]:

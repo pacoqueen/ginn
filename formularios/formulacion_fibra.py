@@ -430,7 +430,7 @@ class FormulacionFibra(Ventana):
                     try:
                         for p in consumo_adicional_por_producto.productosVenta:
                             consumo_adicional_por_producto.removeProductoVenta(p)
-                        consumo_adicional_por_producto.destroySelf()
+                        consumo_adicional_por_producto.destroy(ventana = __file__)
                     except pclases.psycopg_ProgrammingError, msg:
                         utils.dialogo_info(titulo = "ERROR: INFORME A LOS DESARROLLADORES", 
                                            texto = "Ocurrió un error al eliminar el consumo.\nDEBUG: Traza de la excepción:\n%s" % (msg), 

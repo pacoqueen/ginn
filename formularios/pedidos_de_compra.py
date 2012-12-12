@@ -980,7 +980,7 @@ class PedidosDeCompra(Ventana):
             idldpc = model[path][-1]
             ldpc = pclases.LineaDePedidoDeCompra.get(idldpc)
             try:
-                ldpc.destroySelf()
+                ldpc.destroy(ventana = __file__)
             except:
                 utils.dialogo_info('NO SE PUDO ELIMINAR COMPLETAMENTE', 
                                    "El producto no se pudo eliminar completamente.\nVerifique que no esté implicado en otras operaciones, \nque no se ha confirmado ya la recepción, etc.",
@@ -1005,7 +1005,7 @@ class PedidosDeCompra(Ventana):
                     producto = ldc.productoCompra
                     cantidad = ldc.cantidad
                     try:
-                        ldc.destroySelf()
+                        ldc.destroy(ventana = __file__)
                     except:
                         fallidas += 1
                     else: 
@@ -1016,7 +1016,7 @@ class PedidosDeCompra(Ventana):
                     ldc.pedidoCompra = None
             for ldpc in pedido.lineasDePedidoDeCompra:
                 try:
-                    ldpc.destroySelf()
+                    ldpc.destroy(ventana = __file__)
                 except:
                     fallidas += 1
             # Si aquí quedan líneas de venta es porque el impacto de 
@@ -1030,7 +1030,7 @@ class PedidosDeCompra(Ventana):
                 if pedido != None:
                     pedido.notificador.desactivar()
                 try:
-                    pedido.destroySelf()
+                    pedido.destroy(ventana = __file__)
                     self.ir_a_primero()
                 except:
                     utils.dialogo_info('ERROR EN LA ELIMINACIÓN',

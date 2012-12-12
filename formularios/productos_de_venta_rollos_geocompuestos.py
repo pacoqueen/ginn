@@ -535,8 +535,8 @@ class ProductosDeVentaRollosGeocompuestos(Ventana):
             producto.notificador.desactivar()
             cer = producto.camposEspecificosRollo
             producto.camposEspecificosRollo = None
-            cer.destroySelf()
-            producto.destroySelf()
+            cer.destroy(ventana = __file__)
+            producto.destroy(ventana = __file__)
             producto = None
             self.ir_a_primero()
 
@@ -587,7 +587,7 @@ class ProductosDeVentaRollosGeocompuestos(Ventana):
         if idce == None:
             return
         ce = pclases.CamposEspecificos.get(idce)
-        ce.destroySelf()
+        ce.destroy(ventana = __file__)
         self.mostrar_especificos()
 
     def change_campoesp(self, w):

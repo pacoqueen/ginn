@@ -97,7 +97,7 @@ class TiposIncidencia(Ventana):
             utils.dialogo_info('ERROR','Seleccione incidencia a eliminar')
             return
         try:	
-            tipodeincidencia.destroySelf()
+            tipodeincidencia.destroy(ventana = __file__)
         except:
             utils.dialogo_info('ERROR','No se ha podido eliminar el tipo de incidencia. Probablemente existan procesos con este tipo de incidencia.')
         self.rellenar_tabla()

@@ -225,7 +225,7 @@ class ResultadosPoros(Ventana):
         if iter != None and utils.dialogo(titulo = 'BORRAR PRUEBA', texto = '¿Está seguro?'):
             id = model[iter][-1]
             prueba = claseprueba.get(id)
-            prueba.destroySelf()
+            prueba.destroy(ventana = __file__)
             self.rellenar_pruebas()
 
     def set_partida(self, w):

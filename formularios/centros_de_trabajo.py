@@ -482,7 +482,7 @@ class CentrosDeTrabajo(Ventana):
             return
         if centroTrabajo != None: centroTrabajo.notificador.set_func(lambda : None)
         try:
-            centroTrabajo.destroySelf()
+            centroTrabajo.destroy(ventana = __file__)
         except: 
             utils.dialogo_info('CATEGORÍA LABORAL NO ELIMINADA', 'La categoria laboral está implicada en operaciones que impiden su borrado.\n(Por ejemplo, puede estar aún relacionada con centroTrabajos.)')
         self.ir_a_primero()

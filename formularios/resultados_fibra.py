@@ -523,7 +523,7 @@ class ResultadosFibra(Ventana):
                 if id != 0:
                     clase = self.get_clase(columnaid+1)
                     prueba = clase.get(id)
-                    prueba.destroySelf()
+                    prueba.destroy(ventana = __file__)
             self.rellenar_pruebas()
 
     def set_lote(self, w):
@@ -666,7 +666,7 @@ class ResultadosFibra(Ventana):
                 prueba = clase.get(int(id))
                 if texto == "": 
                     try:
-                        prueba.destroySelf()
+                        prueba.destroy(ventana = __file__)
                     except:
                         utils.dialogo_info(titulo = "ERROR", 
                                            texto = "El resultado no se pudo eliminar.", 

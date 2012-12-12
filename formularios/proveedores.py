@@ -446,7 +446,7 @@ class Proveedores(Ventana):
             if utils.dialogo('¿Está seguro de eliminar el proveedor actual?', '¿BORRAR PROVEEDOR?', padre = self.wids['ventana']):
                 proveedor.notificador.set_func(lambda : None)
                 try:
-                    proveedor.destroySelf()
+                    proveedor.destroy(ventana = __file__)
                     self.ir_a_primero()
                 except:
                     utils.dialogo_info(titulo = 'PROVEEDOR NO ELIMINADO', 

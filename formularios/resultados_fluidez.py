@@ -383,10 +383,10 @@ class ResultadosFluidez(Ventana):
         if iter != None and utils.dialogo(titulo = 'BORRAR PRUEBA', texto = '¿Está seguro?'):
             id1, id2 = [int(i) for i in model[iter][-1].split(":")]
             prueba = pclases.PruebaGranza.get(id1)
-            prueba.destroySelf()
+            prueba.destroy(ventana = __file__)
             if id2 > 0:
                 prueba = pclases.PruebaGranza.get(id2)
-                prueba.destroySelf()
+                prueba.destroy(ventana = __file__)
             self.rellenar_pruebas()
 
     def proveedores(self, p):

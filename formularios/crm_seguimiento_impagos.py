@@ -645,7 +645,7 @@ class CRM_SeguimientoImpagos(Ventana):
         for iter in iters: 
             id = model[iter][-1]
             tarea = clase.get(id)
-            tarea.destroySelf()
+            tarea.destroy(ventana = __file__)
             to_remove.append(model.get_iter(iter))
         for iter in to_remove:
             model.remove(iter)

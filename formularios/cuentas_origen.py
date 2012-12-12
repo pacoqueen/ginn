@@ -310,7 +310,7 @@ class CuentasOrigen(Ventana, VentanaGenerica):
         else:
             cuenta.notificador.desactivar()
             try:
-                cuenta.destroySelf()
+                cuenta.destroy(ventana = __file__)
             except Exception, e:
                 self.logger.error("cuentas_origen::borrar -> Cuenta ID %d no se pudo eliminar. Excepción: %s." % (cuenta.id, e))
                 utils.dialogo_info(titulo = "CUENTA NO BORRADA", 

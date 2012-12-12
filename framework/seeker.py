@@ -535,7 +535,7 @@ class VentanaGenerica(Ventana):
         """
         if self.objeto != None:
             try:
-                self.objeto.destroySelf()
+                self.objeto.destroy(ventana = __file__)
             except:
                 utils.dialogo_info(titulo = "NO SE PUEDE ELIMINAR", 
                                    texto = "El objeto está relacionado con otros aún activos.", 

@@ -275,7 +275,7 @@ class CRM_DetallesFactura(Ventana):
                         if estado_no_pendiente:
                             a.estado = estado_no_pendiente
                         else:
-                            a.destroySelf()
+                            a.destroy(ventana = __file__)
                 import pagares_cobros
                 pagares_cobros.PagaresCobros(usuario = self.usuario, 
                                              objeto = pagare)
@@ -312,7 +312,7 @@ class CRM_DetallesFactura(Ventana):
                         if estado_no_pendiente:
                             a.estado = estado_no_pendiente
                         else:
-                            a.destroySelf()
+                            a.destroy(ventana = __file__)
                 import confirmings as ventana_confirming 
                 ventana_confirming.Confirmings(usuario = self.usuario, 
                                                objeto = confirming)
@@ -431,7 +431,7 @@ class CRM_DetallesFactura(Ventana):
                         self.usuario and self.usuario.usuario or "", msg)
                 print txt
                 self.logger.error(txt)
-            documento.destroySelf()
+            documento.destroy(ventana = __file__)
             self.rellenar_adjuntos()
 
     def ver_adjunto(self, boton):
@@ -507,7 +507,7 @@ class CRM_DetallesFactura(Ventana):
                 if isinstance(objeto, pclases.Contacto):
                     objeto.removeObra(self.objeto.obra) # Si hay contactos en 
                         # el TreeView, hay obra en self.objeto.
-                objeto.destroySelf()
+                objeto.destroy(ventana = __file__)
             except Exception, msg:
                 utils.dialogo_info(titulo = "ERROR", 
                     texto = "Ocurrió un error y no se pudo eliminar la fila"\

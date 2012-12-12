@@ -683,8 +683,8 @@ class ProductosDeVentaBalas(Ventana):
             producto.notificador.desactivar()
             campos = producto.camposEspecificosBala
             try:
-                producto.destroySelf()
-                campos.destroySelf()
+                producto.destroy(ventana = __file__)
+                campos.destroy(ventana = __file__)
             except:
                 utils.dialogo_info(titulo = "NO SE PUEDE ELIMINAR",
                                    texto = "El producto no se puede eliminar. Verifique que no\ntiene ventas o producción relacionada.", 
@@ -742,7 +742,7 @@ class ProductosDeVentaBalas(Ventana):
         if idce == None:
             return
         ce = pclases.CamposEspecificos.get(idce)
-        ce.destroySelf()
+        ce.destroy(ventana = __file__)
         self.mostrar_especificos()
 
     def change_campoesp(self, w):

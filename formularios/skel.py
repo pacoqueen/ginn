@@ -314,7 +314,7 @@ class XXXSkel(Ventana, VentanaGenerica):
         else:
             XXXobjeto.notificador.desactivar()
             try:
-                XXXobjeto.destroySelf()
+                XXXobjeto.destroy(ventana = __file__)
             except Exception, e:
                 self.logger.error("XXXskel.py::borrar -> XXX ID %d no se pudo eliminar. Excepción: %s." % (XXXobjeto.id, e))
                 utils.dialogo_info(titulo = "XXX NO BORRADO", 
