@@ -41,12 +41,6 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, time, sqlobject
-try:
-    import pclases
-except ImportError:
-    import sys
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    import pclases
 import sys, os
 try:
     from hashlib import md5
@@ -168,10 +162,16 @@ class Autenticacion(Ventana):
         indicado sin comprobar la contraseña.
         """
         try:
+            from pclases import Usuario
+        except ImportError:
+            import sys
+            from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
+            from pclases import usuario
+        try:
             md5passwd = md5.new(passwd).hexdigest()
         except AttributeError:  # Es el md5 de hashlib
             md5passwd = md5(passwd).hexdigest()
-        user = pclases.Usuario.select(pclases.Usuario.q.usuario == usuario)
+        user = Usuario.select(Usuario.q.usuario == usuario)
         ok = user.count() == 1
         if user.count() > 1:
             self.logger.error("Caso imposible. Más de un usuario con el "\

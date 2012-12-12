@@ -3048,7 +3048,8 @@ CREATE TABLE auditoria(
     action TEXT,        -- creación, modificación o borrado
     ip TEXT DEFAULT NULL,   -- IP desde la que realizó la acción
     hostname TEXT DEFAULT NULL, -- Si es posible, el nombre de la máquina.
-    fechahora TIMESTAMP DEFAULT LOCALTIMESTAMP(0)
+    fechahora TIMESTAMP DEFAULT LOCALTIMESTAMP(0), 
+    descripcion TEXT DEFAULT NULL
 );
 
 ------------------------ FUNCIONES ------------------------

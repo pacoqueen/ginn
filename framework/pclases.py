@@ -72,6 +72,8 @@ VERBOSE = False
 if DEBUG or VERBOSE:
     print "IMPORTANDO PCLASES"
 
+logged_user = None
+
 import sys, os
 #try:
 #    from sqlobject import *
@@ -98,13 +100,6 @@ except ImportError, msg:
           "es_nocturno() de los partes de trabajo y fabricación, o "\
           "el envío de correos electrónicos -de facturas, por ejemplo-"\
           ", saltará una excepción.\n%s" % (msg)
-
-try:
-    from utils_administracion import id_propia_empresa_cliente
-except ImportError, msg:
-    print "WARNING: No se pudo importar utils. Si usa el metodo es_i"\
-          "nterno() de los albaranes de salida saltará una excepción"\
-          ".\n%s" % (msg)
 
 try:
     import notificacion
@@ -242,7 +237,8 @@ class PRPCTOO:
                 if DEBUG: print " --> Conexión abierta."
                 return
             except:
-                print "ERROR estableciendo conexión secundaria para IPC. Vuelvo a intentar"
+                print "ERROR estableciendo conexión secundaria para IPC."\
+                      " Vuelvo a intentar"
     
     def abrir_cursor(self):
         self.cursor = self.conexion.cursor()
@@ -345,7 +341,7 @@ class PRPCTOO:
         """
         Destruye recursivamente los objetos que dependientes y 
         finalmente al objeto en sí.
-        OJO: Es potencialmente peligroso y no ha sido probado en profundidad.
+        OJO: Es potencialmente peligroso y no ha sido probado a fondo.
              Puede llegar a provocar un RuntimeError por alcanzar la 
              profundidad máxima de recursividad intentando eliminarse en 
              cascada a sí mismo por haber ciclos en la BD. 
@@ -357,7 +353,27 @@ class PRPCTOO:
                 if DEBUG:
                     print "Eliminando %s..." % dependiente
                 dependiente.destroy_en_cascada()
-        self.destroySelf()
+        self.destroy()
+
+    def destroy(self, usuario = None, ventana = None):
+        try:
+            descripcion = self.get_info()
+        except Exception, msg:  # Seguro que vengo de destroy_en_cascada
+            if DEBUG:
+                print "pclases::destroy: Excepción ignorada:\n\t%s" % msg
+            descripcion = `self`.replace("'", '"')
+        puid = self.get_puid()
+        try:
+            self.destroySelf()
+        except Exception, msg: # IntegrityError:
+            pass    # «a lo» rollback
+            if DEBUG:   
+                print "pclases:destroy: Objeto no borrado\n\t%s"\
+                      "\n\tExcepción: %s" % (
+                        descripcion, msg)
+        else:
+            Auditoria.borrado(puid, usuario, ventana, descripcion)
+            del self
 
     def copyto(self, obj, eliminar = False):
         """
@@ -391,7 +407,7 @@ class PRPCTOO:
                     print "   >>> Después: ", getattr(propagado, nombre_clave_ajena)
         if eliminar:
             try:
-                self.destroySelf()
+                self.destroy()
             except:     # No debería. Pero aún así, me aseguro de que quede 
                         # eliminado (POSTCONDICIÓN).
                 self.destroy_en_cascada()
@@ -948,7 +964,7 @@ class CacheExistencias:
         elif recs.count > 1:
             # Error de coherencia. Más de un reg. de caché. Borro todos.
             for r in recs:
-                r.destroySelf()
+                r.destroy()
             return None
         else:   # recs.count() == 0
             return None
@@ -966,7 +982,7 @@ class CacheExistencias:
             cache = cache[0]
         else:   # cache.count() > 1 or cache.count() == 0:
             for c in cache:
-                c.destroySelf()
+                c.destroy()
             cache = clase(productoVenta = producto, 
                           fecha = fecha, 
                           almacen = almacen, 
@@ -4382,7 +4398,7 @@ class Proveedor(SQLObject, PRPCTOO):
                 # Chequeo coherencia:
                 for servicio in comision.serviciosTomados:
                     if servicio.facturaCompraID == None:
-                        servicio.destroySelf()
+                        servicio.destroy()
                 # Ahora miro si de verdad está facturado o no.
                 if comision.serviciosTomados == []:
                     comisiones.append(comision)
@@ -4408,7 +4424,7 @@ class Proveedor(SQLObject, PRPCTOO):
             # Chequeo coherencia:
             for servicio in transporte.serviciosTomados:
                 if servicio.facturaCompraID == None:
-                    servicio.destroySelf()
+                    servicio.destroy()
             # Ahora miro si de verdad está facturado o no.
             if transporte.serviciosTomados == []:
                 transportes.append(transporte)
@@ -6563,7 +6579,7 @@ class LineaDeVenta(SQLObject, PRPCTOO, Venta):
             rels += 1
         if rels == 0:
             try:
-                self.destroySelf()
+                self.destroy()
             except Exception, msg:  
                 # No es buena práctica capturar _cualquier_ excepción 
                 # genérica. Esto es eventual para temas de depuración.
@@ -6795,7 +6811,7 @@ class PedidoCompra(SQLObject, PRPCTOO):
                     a_borrar.append(ldc2)
         for ldc in a_borrar:
             try:
-                ldc.destroySelf()
+                ldc.destroy()
             except:
                 print "pclases.py::unificar_ldcs-> No se pudo eliminar la LDP ID %d. Se asigna 0 a cantidad para evitar descuadres." % (ldc.id)
                 ldc.cantidad = 0
@@ -6816,7 +6832,7 @@ class PedidoCompra(SQLObject, PRPCTOO):
                     a_borrar.append(ldpc2)
         for ldpc in a_borrar:
             try:
-                ldpc.destroySelf()
+                ldpc.destroy()
             except:
                 print "pclases.py::unificar_ldpcs-> No se pudo eliminar la LDP ID %d. Se asigna 0 a cantidad para evitar descuadres." % (ldpc.id)
                 ldpc.cantidad = 0
@@ -7059,7 +7075,7 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
                    HistorialExistenciasCompra.q.productoCompraID == self.id, 
                    HistorialExistenciasCompra.q.almacenID == a.id, 
                    HistorialExistenciasCompra.q.fecha == mx.DateTime.today())):
-                    hec.destroySelf()
+                    hec.destroy()
                 HistorialExistenciasCompra(productoCompra = self, 
                         cantidad = a.get_existencias(self), 
                         observaciones = "Cacheado por ajuste de existencias", 
@@ -7115,12 +7131,12 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
         i = 0
         if not almacen:
             for hec in self.historialesExistenciasCompra:
-                hec.destroySelf()
+                hec.destroy()
                 i += 1
         else:
             for hec in self.historialesExistenciasCompra:
                 if hec.almacen == almacen:
-                    hec.destroySelf()
+                    hec.destroy()
                     i += 1
         if DEBUG:
             print "pclases::ajustar_a_fecha_pasada -> "\
@@ -7175,7 +7191,7 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
                         selfdesc = self.descripcion
                         print "\t... Borrando históricos de %s" % (selfdesc)
                     for hec in self.historialesExistenciasCompra:
-                        hec.destroySelf()
+                        hec.destroy()
                     # Y vuelvo a intentarlo.
                     self.ajustar_a_fecha_pasada(fecha, cantidad, bultos, 
                                                 almacen, check_assert = False)
@@ -7200,7 +7216,7 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
                         selfdesc = self.descripcion
                         print "\t... Borrando históricos de %s" % selfdesc
                     for hec in self.historialesExistenciasCompra:
-                        hec.destroySelf()
+                        hec.destroy()
                     # Y vuelvo a intentarlo.
                     self.ajustar_a_fecha_pasada(fecha, cantidad, bultos, 
                                                 almacen, check_assert = False)
@@ -7283,7 +7299,7 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
                           "-> Más de un registro en caché o forzado por "\
                           "parámetro. Los elimino todos y recuento."
                     for reg in regs_cache:
-                        reg.destroySelf()
+                        reg.destroy()
                     res = self.get_existencias_historico(fecha, 
                             almacen = almacen, 
                             observaciones_historico = observaciones_historico)
@@ -7291,7 +7307,7 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
                     if not forzar:
                         res = regs_cache[0].cantidad
                     else:
-                        regs_cache[0].destroySelf()
+                        regs_cache[0].destroy()
                         res = None
             else:       # not almacen
                 # Para todos los almacenes necesito sumatorio, pero no a partir 
@@ -8265,7 +8281,7 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
                             " Registro unificado por duplicidad de producto."]
         # Elimino los registros existentes y creo los nuevos:
         for h in self.historialesExistenciasCompra + d.historialesExistenciasCompra:
-            h.destroySelf()
+            h.destroy()
         for fecha in final:
             h = pclases.HistorialExistenciasCompra(productoCompra = o, 
                                             cantidad = final[fecha][0], 
@@ -8286,12 +8302,12 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
             existencias[a] = 0.0
         for sa in bueno.stocksAlmacen:
             existencias[a] += sa.existencias
-            sa.destroySelf()
+            sa.destroy()
         for malo in malos:
             for sa in malo.stocksAlmacen:
                 if malo.controlExistencias:
                     existencias[a] += sa.existencias
-                sa.destroySelf()
+                sa.destroy()
         if DEBUG:
             print "DEBUG: pclases.ProductoCompra.unificar_productos_compra ->"\
                   " Existencias:", existencias
@@ -8303,7 +8319,7 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
                       "compra -> Unificando historiales..."
             bueno._unificar_historiales(malo)
             for precio in malo.precios:     # Respeto la tarifa del bueno.
-                precio.destroySelf()
+                precio.destroy()
         # Unifico resto de registros dependientes (pedidos, etc.)
         unificar(bueno, malos, borrar_despues = True)
         # Actualizo existencias.
@@ -9070,7 +9086,7 @@ class Articulo(SQLObject, PRPCTOO):
             except IndexError:
                 res = 2
             else:
-                linea_de_movimiento.destroySelf()
+                linea_de_movimiento.destroy()
                 self.almacen = origen
                 self.syncUpdate()
                 res = 0
@@ -10944,7 +10960,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                 # Si hay más de uno, los borro todos.
                 if len(registros_historicos) > 1:
                     for r in registros_historicos:
-                        r.destroySelf()
+                        r.destroy()
                 # ¿Y por qué querría yo actualizar a coj*nes? Si me está 
                 # preguntando la función de crear históricos, provocaré  
                 # recursividad infinita. 
@@ -13242,7 +13258,7 @@ class AlbaranSalida(SQLObject, PRPCTOO):
         # TODO: Esto se convertirá en un boolean en la tabla cuando 
         #       se pruebe a fondo.
         res = False
-        idPropiaEmpresa = id_propia_empresa_cliente()
+        idPropiaEmpresa = Cliente.id_propia_empresa_cliente()
         if idPropiaEmpresa != 0:
             res = self.clienteID == idPropiaEmpresa
             if res:
@@ -14593,6 +14609,36 @@ class Cliente(SQLObject, PRPCTOO):
             if a.facturaDeAbono:
                 yield a.facturaDeAbono
         # raise StopIteration  # PAMIQUENOHACEFALTAMIARMITA
+
+    @classmethod
+    def id_propia_empresa_cliente(clase_cliente):
+        """
+        Devuelve el id de la propia empresa en la tabla clientes.
+        """
+        try:
+            empresa = DatosDeLaEmpresa.select()[0]
+        except:
+            print "ERROR: No hay datos de la empresa."
+            return 0
+        try:
+            empresa = clase_cliente.select(
+                    clase_cliente.q.nombre == empresa.nombre)[0]
+        except IndexError:  # Pues la creo.
+            try:
+                empresa = Cliente(nombre = empresa.nombre, 
+                                  tarifa = None, 
+                                  contador = None,
+                                  cliente = None)
+                Auditoria.nuevo(empresa, None, __file__)
+            except TypeError:   # Me falta algún campo.
+                print "utils_administracion.py::id_propia_empresa_cliente -> "\
+                      "ERROR: TypeError al crear empresa como cliente."
+                return 0
+        except:  # ¿SQLObjectNotFound?
+            print "utils_administracion.py::id_propia_empresa_cliente -> "\
+                  "ERROR: La empresa no está en la tabla de clientes."
+            return 0
+        return empresa.id
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
@@ -17003,7 +17049,7 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         if qry.count() != 0:
             # qry[0].empleado = None
             # qry[0].parteDeProduccion = None
-            qry[0].destroySelf()
+            qry[0].destroy()
             
     def rolloEnParte(self, numrollo):
         """
@@ -17164,7 +17210,7 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
             if len(dcons[key]) > 1:
                 for consumo in dcons[key][1:]:
                     dcons[key][0].cantidad += consumo.cantidad
-                    consumo.destroySelf()
+                    consumo.destroy()
             # OJO: HACK: CHAPUZA: HARCODED: etc... Caso especial de los tubos 
             # de cartón. Se deben consumir en cantidades enteras, así que 
             # compruebo si es un consumo de ese tipo, y en ese caso redondeo 
@@ -17208,7 +17254,7 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
             if len(dcons[key]) > 1:
                 for desecho in dcons[key][1:]:
                     dcons[key][0].cantidad += desecho.cantidad
-                    desecho.destroySelf()
+                    desecho.destroy()
 
     def get_granza_consumida(self):
         """
@@ -17661,7 +17707,7 @@ class DescuentoDeMaterial(SQLObject, PRPCTOO):
         """
         cantidad_final = self.cambiar_cantidad(0)
         assert cantidad_final == 0, "El descuento de material ID %d (desecho) no se pudo anular por descuadre de cantidad. Cantidad sobrante = %f" % (self.id, cantidad_final)
-        self.destroySelf()
+        self.destroy()
         
 
 cont, tiempo = print_verbose(cont, total, tiempo)
@@ -17695,7 +17741,7 @@ class Consumo(SQLObject, PRPCTOO):
         producto.existencias += self.cantidad
         producto.sync()
         if a_silo == None:
-            self.destroySelf()
+            self.destroy()
         else:
             carga = a_silo.get_carga_mas_antigua()
             if carga != None:
@@ -17708,7 +17754,7 @@ class Consumo(SQLObject, PRPCTOO):
                 self.syncUpdate()
                 self.parteDeProduccion.unificar_consumos()
             else:
-                self.destroySelf()
+                self.destroy()
                 raise ValueError, "pclases.py::anular_consumo_silo -> No se pudo trasladar el consumo al silo %s por no haber existencias en él. El consumo se eliminó. Cree un nuevo consumo después de asegurarse que el silo %s tiene carga suficiente." % (a_silo.nombre, a_silo.nombre)
 
     def anular_consumo(self):
@@ -17721,7 +17767,7 @@ class Consumo(SQLObject, PRPCTOO):
         producto.sync()
         producto.existencias += self.cantidad
         producto.sync()
-        self.destroySelf()
+        self.destroy()
 
     def es_de_granza(self):
         """
@@ -18696,7 +18742,7 @@ class Usuario(SQLObject, PRPCTOO):
                                      Alerta.q.usuarioID == self.id))
         if not permitir_duplicado:
             for m in mensajes:
-                m.destroySelf()
+                m.destroy()
         a = Alerta(usuario = self, mensaje = texto, entregado = False)
 
     def cambiar_password(self, nueva):
@@ -19099,7 +19145,7 @@ class TransporteACuenta(SQLObject, PRPCTOO):
         """
         for servicio in self.serviciosTomados:
             if servicio.facturaCompraID == None:
-                servicio.destroySelf()
+                servicio.destroy()
     
     def facturar(self, facturaCompra):
         """
@@ -19121,7 +19167,7 @@ class TransporteACuenta(SQLObject, PRPCTOO):
                                       descuento = 0)
         else:
             for servicio in self.serviciosTomados:
-                servicio.destroySelf()
+                servicio.destroy()
             servicio = None
         return servicio
 
@@ -19171,7 +19217,7 @@ class Comision(SQLObject, PRPCTOO):
         """
         for servicio in self.serviciosTomados:
             if servicio.facturaCompraID == None:
-                servicio.destroySelf()
+                servicio.destroy()
 
     def facturar(self, facturaCompra):
         """
@@ -19193,7 +19239,7 @@ class Comision(SQLObject, PRPCTOO):
                                       descuento = 0)
         else:
             for servicio in self.serviciosTomados:
-                servicio.destroySelf()
+                servicio.destroy()
             servicio = None
         return servicio
 
@@ -19593,7 +19639,7 @@ class Estadistica(SQLObject, PRPCTOO):
                 st = sts[0]
                 for s in sts[1:]:
                     st.veces += s.veces
-                    s.destroySelf()
+                    s.destroy()
             st = st[0]
         st.ultimaVez = mx.DateTime.localtime()
         st.veces += 1
@@ -20102,7 +20148,7 @@ class ListaObjetosRecientes(SQLObject, PRPCTOO):
             if id not in [r.objetoID for r in self.idsRecientes]:
                 raise ValueError, "ID %d no está en la lista de ids recientes."
             idr = [r for r in self.idsRecientes if r.objetoID == id][0]
-            idr.destroySelf()
+            idr.destroy()
             res_id = id
         else:
             if len(self.idsRecientes) == 0:
@@ -20111,7 +20157,7 @@ class ListaObjetosRecientes(SQLObject, PRPCTOO):
             idrs.sort(lambda r1, r2: int(r1.id - r2.id))
             idr = idrs[0]
             res_id = idr.objetoID
-            idr.destroySelf()
+            idr.destroy()
         return res_id
 
     def get_lista(self):
@@ -20179,7 +20225,7 @@ class Auditoria(SQLObject, PRPCTOO):
         starter(self, *args, **kw)
 
     @staticmethod
-    def nuevo(objeto, usuario, ventana):
+    def nuevo(objeto, usuario, ventana, descripcion = None):
         """
         Nuevo registro en la base de datos. Creo un objeto auditoría 
         con el usuario recibido y determino IP y nombre de la máquina.
@@ -20196,12 +20242,78 @@ class Auditoria(SQLObject, PRPCTOO):
                 ventana = Ventana.select(Ventana.q.fichero == ventana)[0]
             except IndexError:
                 ventana = None
+        if not descripcion:
+            descripcion = objeto.get_info()
+        if not usuario:
+            usuario = logged_user
         Auditoria(usuario = usuario, 
                   ventana = ventana, 
                   puid = objeto.puid, 
                   action = "create", 
                   ip = ip, 
-                  hostname = host)
+                  hostname = host, 
+                  descripcion = descripcion)
+
+    @staticmethod
+    def borrado(puid, usuario, ventana, descripcion = None):
+        """
+        Registro borrado en la base de datos. Creo un objeto auditoría con 
+        una breve descripción del registro eliminado, usuario y ventana desde 
+        la que se ha hecho. Determino IP y nombre de la máquina aquí.
+        """
+        from autenticacion import get_IPLocal
+        from socket import gethostname
+        ip = get_IPLocal() 
+        host = gethostname()
+        if isinstance(ventana, str):
+            if ventana.endswith(".pyc"):
+                ventana = ventana[:-1]
+            ventana = os.path.basename(ventana)
+            try:
+                ventana = Ventana.select(Ventana.q.fichero == ventana)[0]
+            except IndexError:
+                ventana = None
+        if not usuario:
+            usuario = logged_user
+        Auditoria(usuario = usuario, 
+                  ventana = ventana, 
+                  puid = puid, 
+                  action = "drop", 
+                  ip = ip, 
+                  hostname = host, 
+                  descripcion = descripcion)
+
+    @staticmethod
+    def modificado(objeto, usuario, ventana, descripcion = None):
+        """
+        Registro modificado en la base de datos. Creo un objeto auditoría con 
+        una breve descripción del registro cambiado, usuario y ventana desde 
+        la que se ha hecho. Determino IP y nombre de la máquina aquí.
+        """
+        from autenticacion import get_IPLocal
+        from socket import gethostname
+        ip = get_IPLocal() 
+        host = gethostname()
+        if isinstance(ventana, str):
+            if ventana.endswith(".pyc"):
+                ventana = ventana[:-1]
+            ventana = os.path.basename(ventana)
+            try:
+                ventana = Ventana.select(Ventana.q.fichero == ventana)[0]
+            except IndexError:
+                ventana = None
+        if not descripcion:
+            descripcion = objeto.get_info()  # Nuevos valores. Mejor que nada.
+        if not usuario:
+            usuario = logged_user
+        Auditoria(usuario = usuario, 
+                  ventana = ventana, 
+                  puid = objeto.puid, 
+                  action = "update", 
+                  ip = ip, 
+                  hostname = host, 
+                  descripcion = descripcion)
+
 
 cont, tiempo = print_verbose(cont, total, tiempo)
  
@@ -20279,7 +20391,7 @@ def unificar(bueno, malos, borrar_despues = True):
                 dependiente.syncUpdate()
     if borrar_despues:
         for malo in malos:
-            malo.destroySelf()
+            malo.destroy()
 
 def el_anecdoton(fecha):
     """
@@ -20337,39 +20449,11 @@ def buscar_puids_sobre_fecha(fecha, nameclase, namecol):
     puids = [o.get_puid() for o in consulta]
     return puids
 
-
-if __name__ == '__main__':
+def do_unittests():
     # Pruebas unitarias
-    for clase in ('PruebaTenacidad', 'PruebaElongacion', 'PruebaRizo', 
-                  'PruebaEncogimiento', 'PruebaGrasa', 'PruebaTitulo', 
-                  'PruebaGramaje', 'PruebaLongitudinal', 
-                  'PruebaAlargamientoLongitudinal', 'PruebaTransversal', 
-                  'PruebaAlargamientoTransversal', 'PruebaCompresion', 
-                  'PruebaPerforacion', 'PruebaEspesor', 'PruebaPermeabilidad', 
-                  'PruebaPoros', 'PruebaGranza', 'FacturaCompra', 
-                  'PruebaPiramidal', 
-                  'LineaDeCompra', 'VencimientoPago', 'Pago', 'EstimacionPago', 
-                  'VencimientoCobro', 'PagarePago', 'Cobro', 'PagareCobro', 
-                  'EstimacionCobro', 'TipoMaterialBala', 'Bala', 
-                  'TipoDeMaterial', 'Proveedor', 'Partida', 'Muestra', 
-                  'Rollo', 'LineaDeVenta', 'PedidoCompra', 'ProductoCompra', 
-                  'CamposEspecificosBala', 'AlbaranEntrada', 'Articulo', 
-                  'PedidoVenta', 'CamposEspecificos', 'CamposEspecificosRollo', 
-                  'ProductoVenta', 'AlbaranSalida', 'LineaDeProduccion', 
-                  'Formulacion', 'ConsumoAdicional', 'Cliente', 'Contador', 
-                  'FacturaVenta', 'Servicio', 'Lote', 'Transportista', 
-                  'Tarifa', 'Precio', 'ParteDeProduccion', 'CentroTrabajo', 
-                  'Empleado', 'HorasTrabajadas', 'Nomina', 'Consumo', 
-                  'TipoDeIncidencia', 'Incidencia', 'Abono', 'LineaDeAbono', 
-                  'LineaDeDevolucion', 'AlbaranDeEntradaDeAbono', 
-                  'FacturaDeAbono', 'PagoDeAbono', 'Usuario', 'Modulo', 
-                  'Ventana', 'Permiso', 'Alerta', 'DatosDeLaEmpresa', 
-                  'LogicMovimientos', 'ParteDeTrabajo', 'CategoriaLaboral', 
-                  'Motivo', 'Ausencia', 'CalendarioLaboral', 'Festivo', 
-                  'FestivoGenerico', 'Vacaciones', 'Turno', 'Grupo', 
-                  'Laborable', 'Silo', 'CargaSilo', 'HistorialExistencias', 
-                  'TransporteACuenta', 'Comision', 'ServicioTomado', 
-                  'CamposEspecificosEspecial', 'ControlHoras' ):
+    cmd_grep = r"egrep ^class %s | grep PRPCTOO | grep ')' | cut -d ' ' -f 2 | cut -d '(' -f 1" % __file__
+    clases_persistentes = [s.replace("\n", "") for s in os.popen(cmd_grep)]
+    for clase in clases_persistentes:
         try:
             c = eval(clase)
             print "Buscando primer registro de %s... " % (clase),
@@ -20378,4 +20462,10 @@ if __name__ == '__main__':
         except IndexError:
             print "[KO] - La clase %s no tiene registros" % (clase)
 
+
+if __name__ == '__main__':
+    DEBUG = True
+    #do_unittests()
+    r = Rollo.select()[0]
+    r.destroy_en_cascada()
 

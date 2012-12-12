@@ -37,6 +37,8 @@
 ## 
 ###################################################################
 
+raise ImportError, "Este módulo está obsoleto."
+
 import sys
 sys.path.append('../framework')
 
@@ -45,14 +47,14 @@ def id_propia_empresa_proveedor():
     """
     Devuelve el id de la propia empresa en la tabla proveedores.
     """
-    import pclases
+    from pclases import DatosDeLaEmpresa, Proveedor
     try:
-        empresa = pclases.DatosDeLaEmpresa.select()[0]
+        empresa = DatosDeLaEmpresa.select()[0]
     except:
         print "ERROR: No hay datos de la empresa."
         return 0
     try:
-        empresa = pclases.Proveedor.select(pclases.Proveedor.q.nombre==empresa.nombre)[0]
+        empresa = Proveedor.select(Proveedor.q.nombre == empresa.nombre)[0]
     except:  #IndexError? SQLObjectNotFound?
         print "ERROR: La empresa no está en la tabla de de proveedores."
         return 0
@@ -68,8 +70,9 @@ def ultimo_pedido_de_venta():
     # la propia empresa:
     idproveedor = id_propia_empresa_proveedor()
     try:
-        ultimopedido = pclases.Pedido.select(pclases.Pedido.q.idproveedorID==idproveedor,
-                                             orderBy="-numpedido")[0]
+        ultimopedido = pclases.Pedido.select(
+                pclases.Pedido.q.idproveedorID==idproveedor,
+                orderBy="-numpedido")[0]
         ultimonumpedido = ultimopedido.numpedido
     except IndexError:
         # No hay pedidos de venta, así que ultimonumpedido es 0:
@@ -83,7 +86,7 @@ def ultimo_numalbaran(venta, interno):
     o 0 si no hay ninguno.
     """
     import pclases
-    albs = pclases.Albaran.select(pclases.AND(pclases.Albaran.q.venta == venta, 
+    albs = pclases.Albaran.select(pclases.AND(pclases.Albaran.q.venta == venta,
                                   pclases.Albaran.q.interno == interno),
                                   orderBy="-numalbaran")
     if albs.count() == 0:
@@ -105,22 +108,21 @@ def id_propia_empresa_cliente():
     """
     Devuelve el id de la propia empresa en la tabla clientes.
     """
-    import pclases
+    from pclases import DatosDeLaEmpresa, Cliente, Auditoria
     try:
-        empresa = pclases.DatosDeLaEmpresa.select()[0]
+        empresa = DatosDeLaEmpresa.select()[0]
     except:
         print "ERROR: No hay datos de la empresa."
         return 0
     try:
-        empresa = pclases.Cliente.select(
-            pclases.Cliente.q.nombre == empresa.nombre)[0]
+        empresa = Cliente.select(Cliente.q.nombre == empresa.nombre)[0]
     except IndexError:  # Pues la creo.
         try:
-            empresa = pclases.Cliente(nombre = empresa.nombre, 
-                                      tarifa = None, 
-                                      contador = None,
-                                      cliente = None)
-            pclases.Auditoria.nuevo(empresa, None, __file__)
+            empresa = Cliente(nombre = empresa.nombre, 
+                              tarifa = None, 
+                              contador = None,
+                              cliente = None)
+            Auditoria.nuevo(empresa, None, __file__)
         except TypeError:   # Me falta algún campo.
             print "utils_administracion.py::id_propia_empresa_cliente -> "\
                   "ERROR: TypeError al crear empresa como cliente."

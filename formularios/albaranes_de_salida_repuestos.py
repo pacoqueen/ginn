@@ -48,7 +48,6 @@ except ImportError:
     import geninformes
 from utils import ffloat, _float as float
 import mx, mx.DateTime
-import utils_administracion
 
 class AlbaranesDeSalidaRepuestos(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -286,7 +285,7 @@ class AlbaranesDeSalidaRepuestos(Ventana):
                                padre = self.wids['ventana'])
             return
         if albaran != None: albaran.notificador.desactivar()
-        propia_empresa = utils_administracion.id_propia_empresa_cliente()
+        propia_empresa = Cliente.id_propia_empresa_cliente()
         almacenes = [(a.id, a.nombre) 
                      for a in pclases.Almacen.select(
                          pclases.Almacen.q.activo == True, 
