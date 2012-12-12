@@ -207,7 +207,7 @@ class CRM_DetallesFactura(Ventana):
         model, iter = sel.get_selected()
         if iter:
             objeto = pclases.getObjetoPUID(model[iter][-1])
-            objeto.destroy_en_cascada()
+            objeto.destroy_en_cascada(ventana = __file__)
             model.remove(iter)
 
     def add_docpago(self, boton):

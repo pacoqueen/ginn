@@ -1067,7 +1067,7 @@ class ProductosCompra(Ventana, VentanaGenerica):
                         padre = self.wids['ventana'])) or numlineas == 0:
                 producto.notificador.set_func(lambda : None)
                 # producto.destroy(ventana = __file__)
-                producto.destroy_en_cascada()   # CWT
+                producto.destroy_en_cascada(ventana = __file__)   # CWT
                 self.objeto = None
                 self.ir_a_primero()
         except: 

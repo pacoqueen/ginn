@@ -1945,7 +1945,7 @@ class PedidosDeVenta(Ventana):
         # Desactivo notificador:
         self.objeto.notificador.desactivar()
         # Y por último destruyo el self.objeto:
-        self.objeto.destroy_en_cascada()
+        self.objeto.destroy_en_cascada(ventana = __file__)
         self.ir_a_primero()
 
     def aplicar_tarifa(self, cb):

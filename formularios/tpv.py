@@ -1403,7 +1403,7 @@ class TPV(Ventana):
                         if ticket == self.ticket:   # Estoy borrando el actual:
                             self.ticket = None
                             self.mostrar_info_ticket()
-                        ticket.destroy_en_cascada()
+                        ticket.destroy_en_cascada(__file__)
                 else:   # Es una LDV
                     idldv = model[iter][-1]
                     try: 

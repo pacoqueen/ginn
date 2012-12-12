@@ -834,7 +834,7 @@ class AlbaranesDeEntradaRepuestos(Ventana):
                         #print linea.productoCompra.existencias
                         # XXX EODEBUG
                 albaran.notificador.set_func(lambda : None)
-                albaran.destroy_en_cascada()
+                albaran.destroy_en_cascada(ventana = __file__)
                 self.ir_a_primero()
     
     def imprimir(self, boton):

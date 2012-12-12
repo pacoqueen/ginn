@@ -337,7 +337,7 @@ class PRPCTOO:
         if DEBUG: print "Parando hilo..."
         self.cerrar_conexion()
 
-    def destroy_en_cascada(self):
+    def destroy_en_cascada(self, usuario = None, ventana = None):
         """
         Destruye recursivamente los objetos que dependientes y 
         finalmente al objeto en sí.
@@ -352,8 +352,8 @@ class PRPCTOO:
             # for dependiente in eval("self.%s" % (lista)):
                 if DEBUG:
                     print "Eliminando %s..." % dependiente
-                dependiente.destroy_en_cascada()
-        self.destroy()
+                dependiente.destroy_en_cascada(ventana = ventana)
+        self.destroy(ventana = ventana)
 
     def destroy(self, usuario = None, ventana = None):
         try:

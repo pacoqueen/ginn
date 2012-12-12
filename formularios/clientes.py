@@ -1501,7 +1501,7 @@ class Clientes(Ventana):
                                      padre = self.wids['ventana']):
                         #for r in c.recibos:
                         #    r.cuentaBancariaCliente = None
-                        c.destroy_en_cascada()
+                        c.destroy_en_cascada(ventana = __file__)
             self.rellenar_cuentas()
 
     # --------------- Manejadores de eventos ----------------------------

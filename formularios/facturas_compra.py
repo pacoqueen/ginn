@@ -1370,7 +1370,7 @@ class FacturasDeEntrada(Ventana):
                     txt = "facturas_compra.py::borrar_factura -> No se pudo eliminar el servicioTomado ID %d" % (s.id)
                     self.logger.error(txt)
                     print txt
-            factura.destroy_en_cascada()
+            factura.destroy_en_cascada(ventana = __file__)
         self.ir_a_primero()
         self.actualizar_ventana()
 

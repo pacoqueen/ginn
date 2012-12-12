@@ -267,7 +267,7 @@ class ControlPersonal(Ventana, VentanaGenerica):
                 chs_toerase = pclases.ControlHoras.select(
                     pclases.ControlHoras.q.fecha == fecha_parte_en_ventana)
                 for ch in chs_toerase:
-                    ch.destroy_en_cascada()
+                    ch.destroy_en_cascada(ventana = __file__)
                 for ch in chs_toclone:
                     chnuevo = ch.clone(fecha = fecha_parte_en_ventana)
                     for chm in ch.controlesHorasProduccion:

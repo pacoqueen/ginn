@@ -1795,7 +1795,7 @@ class PartesDeFabricacionBalas(Ventana):
             and len(partedeproduccion.articulos) == 0):
             try:
                 #partedeproduccion.destroy(ventana = __file__)
-                partedeproduccion.destroy_en_cascada()
+                partedeproduccion.destroy_en_cascada(ventana = __file__)
             except:
                 utils.dialogo_info('PARTE NO BORRADO', 'El parte no se eliminó.\nSi tiene producción, incidencias o empleados asociados, trate primero de eliminarlos y vuelva a intentarlo.', padre = self.wids['ventana'])
                 return

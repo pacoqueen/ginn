@@ -1326,7 +1326,7 @@ class PartesDeFabricacionBolsas(Ventana):
                 # esta línea es por PALÉS COMPLETOS.
                 descontar_material_adicional(self, articulo, restar = False)
             try:
-                objeto.destroy_en_cascada()
+                objeto.destroy_en_cascada(ventana = __file__)
             except Exception, msg:
                 vpro.ocultar()
                 error = True

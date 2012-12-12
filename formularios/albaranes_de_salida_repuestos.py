@@ -513,7 +513,7 @@ class AlbaranesDeSalidaRepuestos(Ventana):
         #producto.syncUpdate()
         producto.add_existencias(ldv.cantidad, self.objeto.almacenOrigen, 
                                  actualizar_global = True)
-        ldv.destroy_en_cascada()
+        ldv.destroy_en_cascada(ventana = __file__)
 
     def borrar_albaran(self, boton):
         """

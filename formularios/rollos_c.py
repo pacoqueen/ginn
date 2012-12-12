@@ -171,7 +171,7 @@ class RollosC(Ventana):
                     self.logger.error("%srollos_c::borrar_rollos -> Rollo ID %d (%s) no se pudo eliminar. Excepción: %s" 
                         % (self.usuario and self.usuario.usuario + ": " or "", b.id, b.codigo, msg))
                     try:
-                        b.destroy_en_cascada()
+                        b.destroy_en_cascada(ventana = __file__)
                     except Exception, msg:
                         self.logger.error("%srollos_c::borrar_rollos -> Rollo ID %d (%s) no se pudo eliminar en cascada. Excepción: %s" 
                             % (self.usuario and self.usuario.usuario + ": " or "", b.id, b.codigo, msg))

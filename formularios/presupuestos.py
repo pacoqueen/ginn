@@ -962,7 +962,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         if utils.dialogo('¿Eliminar el presupuesto?\n\n\nATENCIÓN: Tenga en cuenta que si el presupuesto está aceptado se eliminará también \nla parte correspondiente de los pedidos relacionados con el mismo, etc...\n\n\nSI NO ESTÁ SEGURO, RESPONDA «NO».', 'BORRAR', padre = self.wids['ventana']):
             presupuesto.notificador.desactivar()
             try:
-                presupuesto.destroy_en_cascada()
+                presupuesto.destroy_en_cascada(ventana = __file__)
             except Exception, e:
                 self.logger.error("presupuestos::borrar -> Presupuesto ID %d no se pudo eliminar. Excepción: %s." % (presupuesto.id, e))
                 utils.dialogo_info(titulo = "PRESUPUESTO NO BORRADO", 
