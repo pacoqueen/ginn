@@ -14141,6 +14141,10 @@ class Cliente(SQLObject, PRPCTOO):
                         otherColumn='obra_id', 
                         intermediateTable='obra__cliente')
     cobros = MultipleJoin("Cobro")
+    bancos = RelatedJoin('Banco', 
+                         joinColumn = 'cliente_id', 
+                         otherColumn = 'banco_id', 
+                         intermediateTable = 'banco__cliente')
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -20410,9 +20414,25 @@ class Banco(SQLObject, PRPCTOO):
     _fromDatabase = True
     pagaresCobro = MultipleJoin('PagareCobro')
     confirmings = MultipleJoin("Confirming")
+    clientes = RelatedJoin('Cliente', 
+                           joinColumn = 'banco_id', 
+                           otherColumn = 'cliente_id', 
+                           intermediateTable = 'banco__cliente')
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
+    
+    @staticmethod
+    def digitos_control(entidad, oficina, cuenta):
+        def proc(digitos):
+            if not digitos.isdigit() or len(digitos) != 10:
+                raise ValueError('Debe ser numero de 10 digitos: %s' % digitos)
+            factores = [1, 2, 4, 8, 5, 10, 9, 7, 3, 6]
+            resultado = 11-sum(int(d)*f for d,f in zip(digitos, factores)) % 11
+            if resultado == 10:  return 1
+            if resultado == 11:  return 0
+            return resultado
+        return '%d%d' % (proc('00'+entidad+oficina), proc(cuenta))
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 

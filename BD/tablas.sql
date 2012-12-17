@@ -2312,7 +2312,22 @@ CREATE TABLE vencimiento_cobro(
 ---------------------
 CREATE TABLE banco(
     id SERIAL PRIMARY KEY, 
-    nombre TEXT
+    nombre TEXT, 
+    iban TEXT DEFAULT '', -- 34 caracteres [http://es.wikipedia.org/wiki/IBAN]
+    -- Línea descuento 
+    limite FLOAT DEFAULT NULL, 
+    interes FLOAT DEFAULT NULL, 
+    comision_estudio FLOAT DEFAULT NULL, 
+    concentracion FLOAT DEFAULT NULL, 
+    exceso_vencimiento INT DEFAULT NULL
+);
+
+-------------------------------------------------
+-- Concentración clientes en remesas de bancos --
+-------------------------------------------------
+CREATE TABLE banco__cliente(
+    banco_id INT NOT NULL REFERENCES banco, 
+    cliente_id INT NOT NULL REFERENCES cliente
 );
 
 ------------------------
