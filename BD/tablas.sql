@@ -2307,6 +2307,24 @@ CREATE TABLE vencimiento_cobro(
     recibo_id INT REFERENCES recibo DEFAULT NULL    -- NEW! 22/05/07
 );
 
+---------------------
+-- Tabla de bancos --
+---------------------
+CREATE TABLE banco(
+    id SERIAL PRIMARY KEY, 
+    nombre TEXT
+);
+
+------------------------
+-- Remesas de pagarés --
+------------------------
+CREATE TABLE remesa(
+    id SERIAL PRIMARY KEY, 
+    banco_id INT REFERENCES banco DEFAULT NULL, 
+    fecha_prevista DATE DEFAULT NULL, 
+    codigo TEXT DEFAULT ''
+);
+
 -----------------------
 -- Tablas de Pagarés --
 -- NEW! 25/05/2006   --
@@ -2327,9 +2345,12 @@ CREATE TABLE pagare_cobro(
         -- haberse negociado. Si cobrado >= cantidad, este campo guarda la 
         -- fecha en que se ha realizado el cobro y el pagaré ha dejado de 
         -- estar pendiente.
-    procesado BOOLEAN DEFAULT FALSE -- Si True ya se ha procesado 
+    procesado BOOLEAN DEFAULT FALSE, -- Si True ya se ha procesado 
         -- automáticamente y no hace falta actualizar el estado al cumplir la 
         -- fecha de vencimiento.
+    a_la_orden BOOLEAN DEFAULT TRUE, 
+    banco_id INT REFERENCES banco DEFAULT NULL, 
+    remesa_id INT REFERENCES remesa DEFAULT NULL
 );
 
 --------------------------
@@ -2352,9 +2373,10 @@ CREATE TABLE confirming(
         -- haberse negociado. Si cobrado >= cantidad, este campo guarda la 
         -- fecha en que se ha realizado el cobro y el confirming ha dejado de 
         -- estar pendiente.
-    procesado BOOLEAN DEFAULT FALSE -- Si True ya se ha procesado 
+    procesado BOOLEAN DEFAULT FALSE, -- Si True ya se ha procesado 
         -- automáticamente y no hace falta actualizar el estado al cumplir la 
         -- fecha de vencimiento.
+    remesa_id INT REFERENCES remesa DEFAULT NULL
 );      -- NEW! 20/11/2008
 
 ----------------------------

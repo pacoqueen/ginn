@@ -113,7 +113,9 @@ class PagaresCobros(Ventana):
                 observaciones = '\n'.join((original.observaciones, 
                                     'Duplicado. Cambie el número de pagaré.')),
                 fechaCobrado = original.fechaCobrado, 
-                procesado = original.procesado)
+                procesado = original.procesado, 
+                aLaOrden = original.aLaOrden, 
+                banco = original.banco)
             pclases.Auditoria.nuevo(copia, self.usuario, __file__)
             original.cantidad = copia.cantidad
             for cobro in original.cobros:
@@ -190,6 +192,10 @@ class PagaresCobros(Ventana):
                 == "%s" % (utils.float2str(pagare.cantidad)))
         condicion = condicion and (
             self.wids['e_codigo'].get_text() == pagare.codigo)
+        condicion = condicion and (
+            self.wids['ch_aLaOrden'].get_active() == pagare.aLaOrden)
+        condicion = condicion and (
+            utils.combo_get_value(self.wids['cbe_banco']) == pagare.bancoID)
         return not condicion    # Concición verifica que sea igual
 
     def aviso_actualizacion(self):
@@ -200,7 +206,8 @@ class PagaresCobros(Ventana):
         utils.dialogo_info('ACTUALIZAR',
                            'El pagare ha sido modificado remotamente.\n'
                            'Debe actualizar la información mostrada en '
-                           'pantalla.\nPulse el botón «Actualizar»')
+                           'pantalla.\nPulse el botón «Actualizar»', 
+                           padre = self.wids['ventana'])
         self.wids['b_actualizar'].set_sensitive(True)
 
     def inicializar_ventana(self):
@@ -231,7 +238,10 @@ class PagaresCobros(Ventana):
         self.wids['tv_cobros'].connect("row-activated", self.abrir_factura)
         utils.rellenar_lista(self.wids['cbe_cliente'], 
                              [(c.id, c.nombre) for c in 
-                                pclases.Cliente.select(orderBy="nombre")])
+                                pclases.Cliente.select(orderBy = "nombre")])
+        utils.rellenar_lista(self.wids['cbe_banco'], 
+                             [(b.id, b.nombre) for b in 
+                                 pclases.Banco.select(orderBy = "nombre")])
         utils.combo_set_from_db(self.wids['cbe_cliente'], -1)   # Esto quitará 
                                                 # el elemento activo del combo.
         self.wids['cbe_cliente'].child.set_text("")
@@ -356,11 +366,14 @@ class PagaresCobros(Ventana):
                               "%s €" % (utils.float2str(r.cantidad)), 
                               utils.str_fecha(r.fechaCobro), 
                               r.pendiente and "Sí" or "No", 
-                              ", ".join([c.numfactura for c in r.cobros])))
+                              ", ".join([c.numfactura for c in r.cobros]), 
+                              r.aLaOrden, 
+                              r.banco and r.banco.nombre or ""))
         idpagare = utils.dialogo_resultado(filas_res,
                     titulo = 'Seleccione Pagaré',
                     cabeceras = ('ID', 'Número', 'Cliente', 'Fecha recepción', 
-                            'Importe', 'Vencimiento', 'Pendiente', 'Facturas'),
+                            'Importe', 'Vencimiento', 'Pendiente', 'Facturas',
+                            'A la orden', 'Banco'),
                     padre = self.wids['ventana'])
         if idpagare < 0:
             return None
@@ -427,6 +440,9 @@ class PagaresCobros(Ventana):
             self.wids['tb_pendiente'].set_label('Pagaré pendiente')
         self.rellenar_cobros()
         self.wids['cbe_cliente'].set_sensitive(len(pagare.cobros) == 0)
+        self.wids['ch_aLaOrden'].set_active(pagare.aLaOrden)
+        utils.combo_set_from_db(self.wids['cbe_banco'], pagare.bancoID)
+        self.wids['l_estado'].set_text(pagare.get_str_estado())
         self.objeto.make_swap()
 
     def rellenar_cobros(self):
@@ -595,6 +611,8 @@ class PagaresCobros(Ventana):
         self.objeto.observaciones = observaciones
         self.objeto.cantidad = cantidad
         self.objeto.codigo = codigo
+        self.objeto.aLaOrden = self.wids['ch_aLaOrden'].get_active()
+        self.objeto.bancoID = utils.combo_get_value(self.wids['cbe_banco'])
         # Fuerzo la actualización de la BD y no espero a que SQLObject lo 
         # haga por mí:
         pagare.syncUpdate()

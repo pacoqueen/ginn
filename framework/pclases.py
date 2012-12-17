@@ -540,9 +540,11 @@ PREFIJO_BOLSA = "K"
 # "Macros/constantes" de tipos de facturas:
 FRA_NO_DOCUMENTADA,FRA_NO_VENCIDA,FRA_IMPAGADA,FRA_COBRADA,FRA_ABONO = range(5)
 
+# Estados de pagarés/confirming
+GESTION, CARTERA, DESCONTADO, IMPAGADO, COBRADO = range(5)
 
 # VERBOSE MODE
-total = 153 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
+total = 155 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
             # Más bien grep print_verbose pclases.py | wc -l
 cont = 0
 import time
@@ -2932,6 +2934,8 @@ class PagareCobro(SQLObject, PRPCTOO):
     # fechaCobro = ... default=None.     NOTA: No lo pilla por defecto de la BD. En la creación de objetos en las 
     #                                    ventanas habrá que decirle explícitamente que será None.    
     documentos = MultipleJoin('Documento')
+    bancoID = ForeignKey('Banco')
+    remesaID = ForeignKey('Remesa')
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -2987,6 +2991,47 @@ class PagareCobro(SQLObject, PRPCTOO):
     
     actualizar_estado_cobro = classmethod(actualizar_estado_cobro)
 
+    def get_estado(self, fecha = mx.DateTime.today()):
+        """
+        Devuelve el estado del pagaré:
+        0: Gestión de cobro: En el banco esperando al vencimiento.
+        1: En cartera: Disponible para negociar.
+        2: Descontado: En remesa.
+        3: Impagado: Pasó la fecha de vto. y no se ha cobrado.
+        4: Cobrado: Cobrado al vencimiento o en la remesa.
+        """
+        if self.remesa:
+            if self.remesa.fechaCobro and self.remesa.fechaCobro <= fecha:
+                return COBRADO
+            else:
+                return DESCONTADO
+        elif self.esta_pendiente() and self.fechaCobro < fecha:
+            return IMPAGADO
+        elif not self.esta_pendiente() and self.fechaCobrado <= fecha:
+            return COBRADO
+        else:
+            return CARTERA
+        # TODO: Falta el estado GESTION
+
+    def get_str_estado(self):
+        """
+        Estados:
+            Gestión de cobro -> Se lleva al banco para cobrar al vencimiento.
+            En cartera -> Pagaré disponible para negociar en remesa.
+            Descontado -> Pagaré en remesa.
+            Impagado -> Pasa la fecha de vencimiento y no se ha cobrado.
+            Cobrado -> Pasa la fecha de vencimiento y se ha cobrado o la 
+                       remesa se ha aceptado.
+        """
+        ESTADOS = ("Gestión de cobro", 
+                   "En cartera", 
+                   "Descontado", 
+                   "Impagado", 
+                   "Cobrado")
+        estado = self.get_estado()
+        str_estado = ESTADOS[estado]
+        return str_estado
+
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 class Confirming(SQLObject, PRPCTOO):
@@ -2994,6 +3039,8 @@ class Confirming(SQLObject, PRPCTOO):
     _fromDatabase = True
     cobros = MultipleJoin('Cobro')
     documentos = MultipleJoin('Documento')
+    bancoID = ForeignKey('Banco')
+    remesaID = ForeignKey('Remesa')
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -3056,6 +3103,47 @@ class Confirming(SQLObject, PRPCTOO):
         actualizar_estado_cobro_de(clase) 
     
     actualizar_estado_cobro = classmethod(actualizar_estado_cobro)
+
+    def get_estado(self, fecha = mx.DateTime.today()):
+        """
+        Devuelve el estado del pagaré:
+        0: Gestión de cobro: En el banco esperando al vencimiento.
+        1: En cartera: Disponible para negociar.
+        2: Descontado: En remesa.
+        3: Impagado: Pasó la fecha de vto. y no se ha cobrado.
+        4: Cobrado: Cobrado al vencimiento o en la remesa.
+        """
+        if self.remesa:
+            if self.remesa.fechaCobro and self.remesa.fechaCobro <= fecha:
+                return COBRADO
+            else:
+                return DESCONTADO
+        elif self.esta_pendiente() or self.fechaCobrado > fecha:
+            return IMPAGADO
+        elif not self.esta_pendiente() and self.fechaCobrado <= fecha:
+            return COBRADO
+        else:
+            return CARTERA
+        # TODO: Falta el estado GESTION
+
+    def get_str_estado(self):
+        """
+        Estados:
+            Gestión de cobro -> Se lleva al banco para cobrar al vencimiento.
+            En cartera -> Pagaré disponible para negociar en remesa.
+            Descontado -> Pagaré en remesa.
+            Impagado -> Pasa la fecha de vencimiento y no se ha cobrado.
+            Cobrado -> Pasa la fecha de vencimiento y se ha cobrado o la 
+                       remesa se ha aceptado.
+        """
+        ESTADOS = ("Gestión de cobro", 
+                   "En cartera", 
+                   "Descontado", 
+                   "Impagado", 
+                   "Cobrado")
+        estado = self.get_estado()
+        str_estado = ESTADOS[estado]
+        return str_estado
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
@@ -20314,6 +20402,29 @@ class Auditoria(SQLObject, PRPCTOO):
                   hostname = host, 
                   descripcion = descripcion)
 
+
+cont, tiempo = print_verbose(cont, total, tiempo)
+
+class Banco(SQLObject, PRPCTOO):
+    _connection = conn
+    _fromDatabase = True
+    pagaresCobro = MultipleJoin('PagareCobro')
+    confirmings = MultipleJoin("Confirming")
+
+    def _init(self, *args, **kw):
+        starter(self, *args, **kw)
+
+cont, tiempo = print_verbose(cont, total, tiempo)
+
+class Remesa(SQLObject, PRPCTOO):
+    _connection = conn
+    _fromDatabase = True
+    bancoID = ForeignKey("Banco")
+    pagaresCobro = MultipleJoin('PagareCobro')
+    confirmings = MultipleJoin("Confirming")
+
+    def _init(self, *args, **kw):
+        starter(self, *args, **kw)
 
 cont, tiempo = print_verbose(cont, total, tiempo)
  

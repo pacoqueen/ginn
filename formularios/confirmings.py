@@ -119,7 +119,8 @@ class Confirmings(Ventana):
                         observaciones = '\n'.join((original.observaciones, 
                             'Duplicado. Cambie el número de confirming.')), 
                         fechaCobrado = original.fechaCobrado, 
-                        procesado = original.procesado)
+                        procesado = original.procesado, 
+                        banco = original.banco)
             pclases.Auditoria.nuevo(copia, self.usuario, __file__)
             original.cantidad = copia.cantidad
             for cobro in original.cobros:
@@ -196,6 +197,8 @@ class Confirmings(Ventana):
                 == "%s" % (utils.float2str(confirming.cantidad)))
         condicion = condicion and (
             self.wids['e_codigo'].get_text() == confirming.codigo)
+        condicion = condicion and (
+            utils.combo_get_value(self.wids['cbe_banco'])==confirming.bancoID)
         return not condicion	# Concición verifica que sea igual
 
     def aviso_actualizacion(self):
@@ -261,6 +264,9 @@ class Confirmings(Ventana):
             iter_cliente_seleccionado, 
             self.wids['cbe_cliente'].get_model(), 
             self.wids['cbe_cliente'].get_active_iter())
+        utils.rellenar_lista(self.wids['cbe_banco'], 
+                             [(b.id, b.nombre) for b in 
+                                 pclases.Banco.select(orderBy = "nombre")])
 
     def colorear_cobros(self, tv):
         """
@@ -363,7 +369,8 @@ class Confirmings(Ventana):
                               "%s €" % (utils.float2str(r.cantidad)), 
                               utils.str_fecha(r.fechaCobro), 
                               r.pendiente and "Sí" or "No", 
-                              ", ".join([c.numfactura for c in r.cobros])))
+                              ", ".join([c.numfactura for c in r.cobros]), 
+                              r.banco and r.banco.nombre or ""))
         idconfirming = utils.dialogo_resultado(filas_res,
                                            titulo = 'Seleccione Confirming',
                                            cabeceras = ('ID', 
@@ -373,7 +380,8 @@ class Confirmings(Ventana):
                                                         'Importe', 
                                                         'Vencimiento', 
                                                         'Pendiente', 
-                                                        'Facturas'), 
+                                                        'Facturas', 
+                                                        'Banco'), 
                                            padre = self.wids['ventana'])
         if idconfirming < 0:
             return None
@@ -438,6 +446,8 @@ class Confirmings(Ventana):
         self.show_texto_boton_pendiente()
         self.rellenar_cobros()
         self.wids['cbe_cliente'].set_sensitive(len(confirming.cobros) == 0)
+        utils.combo_set_from_db(self.wids['cbe_banco'], confirming.bancoID)
+        self.wids['l_estado'].set_text(confirming.get_str_estado())
         self.objeto.make_swap()
 
     def show_texto_boton_pendiente(self):
@@ -623,6 +633,7 @@ class Confirmings(Ventana):
         self.objeto.observaciones = observaciones
         self.objeto.cantidad = cantidad
         self.objeto.codigo = codigo
+        self.objeto.bancoID = utils.combo_get_value(self.wids['cbe_banco'])
         # Fuerzo la actualización de la BD y no espero a que SQLObject lo 
         # haga por mí:
         confirming.syncUpdate()
