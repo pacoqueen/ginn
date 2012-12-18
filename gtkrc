@@ -1,7 +1,7 @@
-#style 'blanco_y_negro' { bg[NORMAL] = '#FFFFFF'
-#                          fg[NORMAL] = '#000000' 
-#                         base[NORMAL] = '#FFFFFF' 
-#                         text[NORMAL] = '#000000' 
-#                       }
-#class '*' style 'blanco_y_negro'
+style 'blanco_y_morado' { bg[NORMAL] = '#FFFFFF'
+                          fg[NORMAL] = '#6633FF' 
+                         base[NORMAL] = '#FFFFFF' 
+                         text[NORMAL] = '#6633FF' 
+                       }
+class '*' style 'blanco_y_morado'
 
