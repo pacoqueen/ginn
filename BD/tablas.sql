@@ -2325,9 +2325,11 @@ CREATE TABLE banco(
 -------------------------------------------------
 -- Concentración clientes en remesas de bancos --
 -------------------------------------------------
-CREATE TABLE banco__cliente(
+CREATE TABLE concentracion_remesa(
+    id SERIAL PRIMARY KEY, 
     banco_id INT NOT NULL REFERENCES banco, 
-    cliente_id INT NOT NULL REFERENCES cliente
+    cliente_id INT NOT NULL REFERENCES cliente, 
+    concentracion FLOAT
 );
 
 ------------------------

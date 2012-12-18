@@ -28,11 +28,16 @@ ALTER TABLE confirming ADD COLUMN banco_id INT REFERENCES banco DEFAULT NULL;
 UPDATE confirming SET banco_id = NULL;
 ALTER TABLE confirming ADD COLUMN remesa_id INT REFERENCES remesa DEFAULT NULL;
 UPDATE confirming SET remesa_id = NULL;
-CREATE TABLE banco__cliente(
+CREATE TABLE concentracion_remesa(
+    id SERIAL PRIMARY KEY, 
     banco_id INT NOT NULL REFERENCES banco, 
-    cliente_id INT NOT NULL REFERENCES cliente
+    cliente_id INT NOT NULL REFERENCES cliente, 
+    concentracion FLOAT
 );
+GRANT ALL ON DATABASE ginn TO geotexan;
+GRANT ALL ON remesa TO geotexan;
+GRANT ALL ON banco TO geotexan;
+GRANT ALL ON concentracion_remesa TO geotexan;
 EOF
 done
-#echo "Ahora conéctate y comprueba desde pclases que tienes permisos sobre la tabla, sino, toca hacer un GRANT ALL ON auditoria TO quiensea; GRANT ALL on auditoria_id_seq TO quiensea;"
 

@@ -544,7 +544,7 @@ FRA_NO_DOCUMENTADA,FRA_NO_VENCIDA,FRA_IMPAGADA,FRA_COBRADA,FRA_ABONO = range(5)
 GESTION, CARTERA, DESCONTADO, IMPAGADO, COBRADO = range(5)
 
 # VERBOSE MODE
-total = 155 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
+total = 156 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
             # Más bien grep print_verbose pclases.py | wc -l
 cont = 0
 import time
@@ -14141,10 +14141,7 @@ class Cliente(SQLObject, PRPCTOO):
                         otherColumn='obra_id', 
                         intermediateTable='obra__cliente')
     cobros = MultipleJoin("Cobro")
-    bancos = RelatedJoin('Banco', 
-                         joinColumn = 'cliente_id', 
-                         otherColumn = 'banco_id', 
-                         intermediateTable = 'banco__cliente')
+    concentracionesRemesa = MultipleJoin("ConcentracionRemesa")
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -20406,7 +20403,17 @@ class Auditoria(SQLObject, PRPCTOO):
                   hostname = host, 
                   descripcion = descripcion)
 
+cont, tiempo = print_verbose(cont, total, tiempo)
 
+class ConcentracionRemesa(SQLObject, PRPCTOO):
+    _connection = conn
+    _fromDatabase = True
+    banco = ForeignKey("Banco")
+    cliente = ForeignKey("Cliente")
+
+    def _init(self, *args, **kw):
+        starter(self, *args, **kw)
+ 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 class Banco(SQLObject, PRPCTOO):
@@ -20414,10 +20421,7 @@ class Banco(SQLObject, PRPCTOO):
     _fromDatabase = True
     pagaresCobro = MultipleJoin('PagareCobro')
     confirmings = MultipleJoin("Confirming")
-    clientes = RelatedJoin('Cliente', 
-                           joinColumn = 'banco_id', 
-                           otherColumn = 'cliente_id', 
-                           intermediateTable = 'banco__cliente')
+    concentracionesRemesa = MultipleJoin("ConcentracionRemesa")
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)

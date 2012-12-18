@@ -12,6 +12,7 @@ CREATE TABLE auditoria(
     fechahora TIMESTAMP DEFAULT LOCALTIMESTAMP(0), 
     descripcion TEXT DEFAULT NULL
 );
+GRANT ALL ON auditoria TO geotexan;
 EOF
 done
 echo "Ahora conéctate y comprueba desde pclases que tienes permisos sobre la tabla, sino, toca hacer un GRANT ALL ON auditoria TO quiensea; GRANT ALL on auditoria_id_seq TO quiensea;"
