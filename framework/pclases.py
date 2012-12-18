@@ -2994,7 +2994,8 @@ class PagareCobro(SQLObject, PRPCTOO):
     def get_estado(self, fecha = mx.DateTime.today()):
         """
         Devuelve el estado del pagaré:
-        0: Gestión de cobro: En el banco esperando al vencimiento.
+        0: Gestión de cobro: Entregado al banco al vencimiento y esperando a 
+                             que nos hagan efectivo el importe.
         1: En cartera: Disponible para negociar.
         2: Descontado: En remesa.
         3: Impagado: Pasó la fecha de vto. y no se ha cobrado.
@@ -3118,7 +3119,7 @@ class Confirming(SQLObject, PRPCTOO):
                 return COBRADO
             else:
                 return DESCONTADO
-        elif self.esta_pendiente() or self.fechaCobrado > fecha:
+        elif self.esta_pendiente() and self.fechaCobro < fecha:
             return IMPAGADO
         elif not self.esta_pendiente() and self.fechaCobrado <= fecha:
             return COBRADO

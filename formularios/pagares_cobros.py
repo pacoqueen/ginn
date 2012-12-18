@@ -442,7 +442,8 @@ class PagaresCobros(Ventana):
         self.wids['cbe_cliente'].set_sensitive(len(pagare.cobros) == 0)
         self.wids['ch_aLaOrden'].set_active(pagare.aLaOrden)
         utils.combo_set_from_db(self.wids['cbe_banco'], pagare.bancoID)
-        self.wids['l_estado'].set_text(pagare.get_str_estado())
+        self.wids['l_estado'].set_text("<i>%s</i>" % pagare.get_str_estado())
+        self.wids['l_estado'].set_use_markup(True)
         self.objeto.make_swap()
 
     def rellenar_cobros(self):

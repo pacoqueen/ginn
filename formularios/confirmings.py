@@ -447,7 +447,8 @@ class Confirmings(Ventana):
         self.rellenar_cobros()
         self.wids['cbe_cliente'].set_sensitive(len(confirming.cobros) == 0)
         utils.combo_set_from_db(self.wids['cbe_banco'], confirming.bancoID)
-        self.wids['l_estado'].set_text(confirming.get_str_estado())
+        self.wids['l_estado'].set_text("<i>%s</i>"%confirming.get_str_estado())
+        self.wids['l_estado'].set_use_markup(True)
         self.objeto.make_swap()
 
     def show_texto_boton_pendiente(self):
