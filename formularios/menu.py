@@ -71,7 +71,7 @@ if path_framework not in sys.path:
     sys.path.append(path_framework)
 from configuracion import ConfigConexion
 
-__version__ = '3.9.8 (build ~3392)'
+__version__ = '4.0.1 (alpha)'
 __version_info__ = tuple(
     [int(num) for num in __version__.split()[0].split('.')] + 
     [txt.replace("(", "").replace(")", "") for txt in __version__.split()[1:]]
