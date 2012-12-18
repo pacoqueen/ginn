@@ -142,14 +142,18 @@ class ConsultaCartera(Ventana):
         total = 0.0
         vpro = VentanaProgreso(padre = self.wids['ventana'])
         vpro.mostrar()
-        vpro.set_valor(0.0, "Buscando efectos... (%d/%d)" 
+        vpro.set_valor(0.0, "Filtrando efectos... (%d/%d)" 
                 % (0, elementos.count()))
         i = 0.0
         tot = elementos.count()
+        clienteid = utils.combo_get_value(self.wids['cbe_cliente'])
+        cliente = pclases.Cliente.get(clienteid)
     	for efecto in elementos:
             i += 1
-            vpro.set_valor(i / tot, "Buscando efectos... (%d/%d)" 
+            vpro.set_valor(i / tot, "Filtrando efectos... (%d/%d)" 
                     % (i, elementos.count()))
+            if cliente and efecto.cliente != cliente:
+                continue
             if efecto.get_estado() == pclases.CARTERA:
                 if hasattr(efecto, "aLaOrden"):
                     if efecto.aLaOrden:
@@ -197,10 +201,6 @@ class ConsultaCartera(Ventana):
                     pclases.PagareCobro.q.fechaCobro <= self.fin)
             criteriosc.append(
                     pclases.Confirming.q.fechaCobro <= self.fin)
-        clienteid = utils.combo_get_value(self.wids['cbe_cliente'])
-        if clienteid:
-            criteriosp.append(pclases.PagareCobro.q.clienteID == clienteid)
-            criteriosc.append(pclases.Confirming.q.clienteID == clienteid)
         try:
             importe = float(self.wids['e_importe'].get_text())
         except (ValueError, TypeError):
