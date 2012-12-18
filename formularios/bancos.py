@@ -135,7 +135,9 @@ class Bancos(Ventana, VentanaGenerica):
         """
         if self.objeto == None:
             s = False
-        ws = tuple(["tv_concentracion", "b_borrar"] + [self.dic_campos[k] for k in self.dic_campos.keys()])
+        ws = tuple(["tv_concentracion", "b_borrar", "b_add_concentracion", 
+                    "b_drop_concentracion"] 
+                   + [self.dic_campos[k] for k in self.dic_campos.keys()])
         for w in ws:
             try:
                 self.wids[w].set_sensitive(s)

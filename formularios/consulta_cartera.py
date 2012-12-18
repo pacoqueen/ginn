@@ -89,9 +89,9 @@ class ConsultaCartera(Ventana):
         for cell in col.get_cell_renderers():
             cell.set_property("xalign", 1)
         temp = time.localtime()
-        self.inicio = None
-        self.fin = str(temp[0])+'/'+str(temp[1])+'/'+str(temp[2])
-        self.wids['e_fechafin'].set_text(utils.str_fecha(temp))
+        self.fin = None
+        self.inicio = str(temp[0])+'/'+str(temp[1])+'/'+str(temp[2])
+        self.wids['e_fechainicio'].set_text(utils.str_fecha(temp))
         utils.rellenar_lista(self.wids['cbe_cliente'], 
                 [(c.id, c.nombre) for c in pclases.Cliente.select(
                     pclases.Cliente.q.inhabilitado == False, 
