@@ -147,7 +147,10 @@ class ConsultaCartera(Ventana):
         i = 0.0
         tot = elementos.count()
         clienteid = utils.combo_get_value(self.wids['cbe_cliente'])
-        cliente = pclases.Cliente.get(clienteid)
+        if clienteid:
+            cliente = pclases.Cliente.get(clienteid)
+        else:
+            cliente = None
     	for efecto in elementos:
             i += 1
             vpro.set_valor(i / tot, "Filtrando efectos... (%d/%d)" 
