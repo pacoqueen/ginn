@@ -3121,7 +3121,8 @@ class Confirming(SQLObject, PRPCTOO):
                 return DESCONTADO
         elif self.esta_pendiente() and self.fechaCobro < fecha:
             return IMPAGADO
-        elif not self.esta_pendiente() and self.fechaCobrado <= fecha:
+        elif not self.esta_pendiente() and (self.fechaCobrado 
+                                            and self.fechaCobrado <= fecha):
             return COBRADO
         else:
             return CARTERA
