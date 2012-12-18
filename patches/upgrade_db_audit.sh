@@ -13,6 +13,7 @@ CREATE TABLE auditoria(
     descripcion TEXT DEFAULT NULL
 );
 GRANT ALL ON auditoria TO geotexan;
+GRANT ALL ON auditoria_id_seq TO geotexan;
 EOF
 done
 echo "Ahora conéctate y comprueba desde pclases que tienes permisos sobre la tabla, sino, toca hacer un GRANT ALL ON auditoria TO quiensea; GRANT ALL on auditoria_id_seq TO quiensea;"

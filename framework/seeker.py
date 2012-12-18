@@ -255,7 +255,7 @@ class VentanaGenerica(Ventana):
                        'b_nuevo/clicked': self.nuevo, 
                        'b_borrar/clicked': self.borrar, 
                        'b_buscar/clicked': self.buscar, 
-                       'b_guardar/clicked': self.guardar
+                       'b_guardar/clicked': self.guardar 
                       }
         self.add_connections(connections)
         self.inicializar_ventana()
@@ -332,7 +332,6 @@ class VentanaGenerica(Ventana):
         de devolverlo.
         Lanza una excepción si ocurre algún error de conversión.
         """
-        DEBUG = False
         if nombre_widget == None:
             nombre_widget = col.name
         widget = self.wids[nombre_widget]
@@ -348,28 +347,34 @@ class VentanaGenerica(Ventana):
                 valor = int(valor)
             else:
                 valor = widget.get_text()
-                try:
-                    valor = int(valor)
-                except Exception, e:
-                    if DEBUG:
-                        print "Excepción %s capturada al convertir %s a entero." % (e, valor)
-                    raise e
+                if valor.strip() == "":
+                    valor = None
+                else:
+                    try:
+                        valor = int(valor)
+                    except Exception, e:
+                        if pclases.DEBUG:
+                            print "Excepción %s capturada al convertir %s a entero." % (e, valor)
+                        raise e
         elif isinstance(col, pclases.SOFloatCol):
             valor = widget.get_text()
-            try:
-                valor = utils._float(valor)
-            except Exception, e:
-                # Intento leerlo como euro
+            if valor.strip() == "":
+                valor = None
+            else:
                 try:
-                    valor = utils.parse_euro(valor)
+                    valor = utils._float(valor)
                 except Exception, e:
-                    # Intento leerlo como porcentaje
+                    # Intento leerlo como euro
                     try:
-                        valor = utils.parse_porcentaje(valor)
+                        valor = utils.parse_euro(valor)
                     except Exception, e:
-                        if DEBUG:
-                            print "Excepción %s capturada al convertir %s a flotante." % (e, valor)
-                        raise e
+                        # Intento leerlo como porcentaje
+                        try:
+                            valor = utils.parse_porcentaje(valor)
+                        except Exception, e:
+                            if pclases.DEBUG:
+                                print "Excepción %s capturada al convertir %s a flotante." % (e, valor)
+                            raise e
         elif isinstance(col, pclases.SOBoolCol):
             valor = widget.get_active()
         elif isinstance(col, pclases.SODateCol):
@@ -377,7 +382,7 @@ class VentanaGenerica(Ventana):
             try:
                 valor = utils.parse_fecha(valor)
             except Exception, e:
-                if DEBUG:
+                if pclases.DEBUG:
                     print "Excepción %s capturada al convertir %s a fecha." % (e, valor)
                 raise e
         elif isinstance(col, pclases.SOForeignKey):
@@ -427,17 +432,20 @@ class VentanaGenerica(Ventana):
                     else:
                         valor = ""
                 except Exception, e:
-                    if DEBUG:
+                    if pclases.DEBUG:
                         print "Excepción %s capturada al convertir %s de entero a cadena." % (e, valor)
                     raise e
                 widget.set_text(valor)
         elif isinstance(col, pclases.SOFloatCol):
-            try:
-                valor = utils.float2str(valor)
-            except Exception, e:
-                if DEBUG:
-                    print "Excepción %s capturada al convertir %s de flotante a cadena." % (e, valor)
-                raise e
+            if valor is None:
+                valor = ""
+            else:
+                try:
+                    valor = utils.float2str(valor)
+                except Exception, e:
+                    if pclases.DEBUG:
+                        print "Excepción %s capturada al convertir %s de flotante a cadena." % (e, valor)
+                    raise e
             widget.set_text(valor)
         elif isinstance(col, pclases.SOBoolCol):
             widget.set_active(valor)
@@ -445,7 +453,7 @@ class VentanaGenerica(Ventana):
             try:
                 valor = utils.str_fecha(valor)
             except Exception, e:
-                if DEBUG:
+                if pclases.DEBUG:
                     print "Excepción %s capturada al convertir %s de fecha a cadena." % (e, valor)
                 raise e
             widget.set_text(valor)
@@ -535,7 +543,7 @@ class VentanaGenerica(Ventana):
         """
         if self.objeto != None:
             try:
-                self.objeto.destroy(ventana = __file__)
+                self.objeto.destroy(usuario = self.usuario)
             except:
                 utils.dialogo_info(titulo = "NO SE PUEDE ELIMINAR", 
                                    texto = "El objeto está relacionado con otros aún activos.", 
@@ -557,7 +565,6 @@ class VentanaGenerica(Ventana):
             for columna in columnas:
                 fila.append(getattr(registro, columna))
             model.append((fila))
-
 
 # Utilidades genéricas de widgets
 def build_widget(col, label = None):

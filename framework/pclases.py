@@ -20408,8 +20408,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class ConcentracionRemesa(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
-    banco = ForeignKey("Banco")
-    cliente = ForeignKey("Cliente")
+    bancoID = ForeignKey("Banco")
+    clienteID = ForeignKey("Cliente")
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -20421,6 +20421,7 @@ class Banco(SQLObject, PRPCTOO):
     _fromDatabase = True
     pagaresCobro = MultipleJoin('PagareCobro')
     confirmings = MultipleJoin("Confirming")
+    remesas = MultipleJoin("Remesa")
     concentracionesRemesa = MultipleJoin("ConcentracionRemesa")
 
     def _init(self, *args, **kw):

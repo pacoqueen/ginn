@@ -62,7 +62,7 @@ class Bancos(Ventana, VentanaGenerica):
                            "interes":            "e_interes", 
                            "comisionEstudio":    "e_comision", 
                            "concentracion":      "e_concentracion", 
-                           "exceso_vencimiento": "e_exceso", 
+                           "excesoVencimiento": "e_exceso", 
                           }
         Ventana.__init__(self, 'bancos.glade', objeto)
         connections = {'b_salir/clicked': self.salir,
@@ -71,7 +71,8 @@ class Bancos(Ventana, VentanaGenerica):
                        'b_actualizar/clicked': self.actualizar_ventana,
                        'b_guardar/clicked': self.guardar,
                        'b_buscar/clicked': self.buscar,
-                       # XXX: Más widgets y señales si se necesitan.
+                       'b_add_concentracion/clicked': self.add_concentracion, 
+                       'b_drop_concentracion/clicked': self.drop_concentracion, 
                       }  
         self.add_connections(connections)
         self.inicializar_ventana()
@@ -120,7 +121,7 @@ class Bancos(Ventana, VentanaGenerica):
         # Inicialización del resto de widgets:
         cols = (('Cliente', 'gobject.TYPE_STRING', False, True, True, None),
                 ("Concentración máxima", "gobject.TYPE_STRING", 
-                    False, True, False, None), 
+                    True, True, False, self.cambiar_concentracion), 
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_listview(self.wids['tv_concentracion'], cols)
 
@@ -181,14 +182,68 @@ class Bancos(Ventana, VentanaGenerica):
         self.objeto.make_swap()
 
     def rellenar_tabla_concentraciones(self):
-        model = self.wids['tv_concentraciones'].get_model()
+        model = self.wids['tv_concentracion'].get_model()
         model.clear()
         total = 0.0
-        for p in self.objeto.clientes:
-            model.append((p.nombre, 
-                utils.float2str(p.concentracion),     # PORASQUI: Relación muchos a muchos con atributos... ¿y de dónde lo saco? Grrr.... :'(
-                          p.id))
-        self.wids['XXXe_total_si_lo_hay'].set_text(utils.float2str(total))
+        for c in self.objeto.concentracionesRemesa:
+            model.append((c.cliente.nombre, 
+                          utils.float2str(c.concentracion), 
+                          c.puid))
+
+    def add_concentracion(self, boton):
+        clientes = [(c.id, c.nombre) 
+                    for c in pclases.Cliente.select(
+                        pclases.Cliente.q.inhabilitado == False, 
+                        orderBy = "nombre")
+                    if c not in [cr.cliente for cr 
+                                 in self.objeto.concentracionesRemesa]]
+        clienteid = utils.dialogo_combo(titulo = "SELECCIONE UN CLIENTE", 
+                texto = "Seleccione o teclee el nombre de un cliente:", 
+                padre = self.wids['ventana'], 
+                ops = clientes)
+        if clienteid:
+            cliente = pclases.Cliente.get(clienteid)
+            pclases.ConcentracionRemesa(cliente = cliente, 
+                                        banco = self.objeto, 
+                                        concentracion = 0.0)
+            self.rellenar_tabla_concentraciones()
+    
+    def drop_concentracion(self, boton):
+        if not utils.dialogo(titulo = "¿BORRAR?", 
+                texto = "Se eliminará la fila seleccionada. ¿Continuar?", 
+                padre = self.wids['ventana']):
+            return
+        model,path=self.wids['tv_concentracion'].get_selection().get_selected()
+        puid = model[path][-1]
+        cr = pclases.getObjetoPUID(puid)
+        cr.destroy(usuario = self.usuario, ventana = __file__)
+        self.rellenar_tabla_concentraciones()
+
+    def cambiar_concentracion(self, cell, path, texto):
+        model = self.wids['tv_concentracion'].get_model()
+        try:
+            concentracion = utils._float(texto)
+        except (ValueError, TypeError):
+            utils.dialogo_info("ERROR EN FORMATO", 
+                    "Introduzca la concentración como fracción de 1."
+                    "\n(P. ej. 20% = 0.2)", 
+                    padre = self.wids['ventana'])
+        else:
+            puid = model[path][-1]
+            cr = pclases.getObjetoPUID(puid)
+            if (sum([c.concentracion 
+                    for c in self.objeto.concentracionesRemesa if c != cr])
+                + concentracion) > 1.0:
+                utils.dialogo_info(titulo = "EXCESO CONCENTRACIÓN", 
+                    texto = "La concentración total no puede superar el 100%."
+                            "\nSe corregirá.", 
+                    padre = self.wids['ventana'])
+                concentracion = 1.0 - sum([c.concentracion 
+                    for c in self.objeto.concentracionesRemesa
+                    if c != cr])
+            cr.concentracion = concentracion
+            cr.syncUpdate()
+            model[path][1] = cr.concentracion
             
     def nuevo(self, widget):
         """
@@ -198,19 +253,26 @@ class Bancos(Ventana, VentanaGenerica):
         en la ventana para que puedan ser editados el resto
         de campos que no se hayan pedido aquí.
         """
-        XXXobjeto_anterior = self.objeto
-        if XXXobjeto_anterior != None:
-            XXXobjeto_anterior.notificador.desactivar()
-        XXXobjeto = pclases.XXXClase()
-        utils.dialogo_info('NUEVO XXX CREADO', 
-                           'Se ha creado un nuevo XXX.\nA continuación complete la información del misma y guarde los cambios.', 
+        objeto_anterior = self.objeto
+        if objeto_anterior != None:
+            objeto_anterior.notificador.desactivar()
+        objeto = pclases.Banco(nombre = "Nuevo banco", 
+                               limite = None, 
+                               interes = None, 
+                               comisionEstudio = None, 
+                               concentracion = None, 
+                               excesoVencimiento = None)
+        utils.dialogo_info('NUEVO BANCO CREADO', 
+                           'Se ha creado un nuevo banco.\nA continuación '
+                           'complete la información del misma y guarde '
+                           'los cambios.', 
                            padre = self.wids['ventana'])
-        pclases.Auditoria.nuevo(XXXobjeto, self.usuario, __file__)
-        XXXobjeto.notificador.activar(self.aviso_actualizacion)
-        self.objeto = XXXobjeto
+        pclases.Auditoria.nuevo(objeto, self.usuario, __file__)
+        objeto.notificador.activar(self.aviso_actualizacion)
+        self.objeto = objeto
         self._objetoreciencreado = self.objeto
         self.activar_widgets(True)
-        self.actualizar_ventana(objeto_anterior = XXXobjeto_anterior)
+        self.actualizar_ventana(objeto_anterior = objeto_anterior)
 
     def buscar(self, widget):
         """
@@ -219,9 +281,9 @@ class Bancos(Ventana, VentanaGenerica):
         en la ventana a no ser que se pulse en Cancelar en
         la ventana de resultados.
         """
-        XXXobjeto = self.objeto
-        a_buscar = utils.dialogo_entrada(titulo = "BUSCAR XXX", 
-                                         texto = "Introduzca XXX:", 
+        objeto = self.objeto
+        a_buscar = utils.dialogo_entrada(titulo = "BUSCAR BANCO", 
+                                         texto = "Introduzca nombre o cuenta:",
                                          padre = self.wids['ventana']) 
         if a_buscar != None:
             try:
@@ -229,8 +291,8 @@ class Bancos(Ventana, VentanaGenerica):
             except ValueError:
                 ida_buscar = -1
             # TODO: Cambiar por el nuevo buscar de utils que combina la búsqueda de varias palabras en cualquier orden con OR.
-            criterio = pclases.OR(self.clase.q.campo1.contains(a_buscar),
-                                  self.clase.q.campo2.contains(a_buscar),
+            criterio = pclases.OR(self.clase.q.nombre.contains(a_buscar),
+                                  self.clase.q.iban.contains(a_buscar),
                                   self.clase.q.id == ida_buscar)
             resultados = self.clase.select(criterio)
             if resultados.count() > 1:
@@ -248,20 +310,20 @@ class Bancos(Ventana, VentanaGenerica):
                 return
             ## Un único resultado
             # Primero anulo la función de actualización
-            if XXXobjeto != None:
-                XXXobjeto.notificador.desactivar()
+            if objeto != None:
+                objeto.notificador.desactivar()
             # Pongo el objeto como actual
             try:
-                XXXobjeto = resultados[0]
+                objeto = resultados[0]
             except IndexError:
                 utils.dialogo_info(titulo = "ERROR", 
                                    texto = "Se produjo un error al recuperar la información.\nCierre y vuelva a abrir la ventana antes de volver a intentarlo.", 
                                    padre = self.wids['texto'])
                 return
             # Y activo la función de notificación:
-            XXXobjeto.notificador.activar(self.aviso_actualizacion)
+            objeto.notificador.activar(self.aviso_actualizacion)
             self.activar_widgets(True)
-        self.objeto = XXXobjeto
+        self.objeto = objeto
         self.actualizar_ventana()
 
     def guardar(self, widget):
@@ -295,23 +357,24 @@ class Bancos(Ventana, VentanaGenerica):
         restricción de la BD, cancelará la eliminación
         y avisará al usuario.
         """
-        XXXobjeto = self.objeto
-        if not utils.dialogo('¿Eliminar el XXX?', 
+        objeto = self.objeto
+        if not utils.dialogo('¿Eliminar el banco?', 
                              'BORRAR', 
                              padre = self.wids['ventana']):
             return
-        if XXXobjeto.pagos != []:
-            utils.dialogo_info('XXX NO ELIMINADO', 
-                               'El XXX está implicado en operaciones que impiden su borrado.', 
+        if objeto.remesas != []:
+            utils.dialogo_info('BANCO NO ELIMINADO', 
+                               'El banco está implicado en operaciones que '
+                               'impiden su borrado.', 
                                padre = self.wids['ventana'])
         else:
-            XXXobjeto.notificador.desactivar()
+            objeto.notificador.desactivar()
             try:
-                XXXobjeto.destroy(ventana = __file__)
+                objeto.destroy(usuario = self.usuario, ventana = __file__)
             except Exception, e:
-                self.logger.error("XXXskel.py::borrar -> XXX ID %d no se pudo eliminar. Excepción: %s." % (XXXobjeto.id, e))
-                utils.dialogo_info(titulo = "XXX NO BORRADO", 
-                                   texto = "El XXX no se pudo eliminar.\n\nSe generó un informe de error en el «log» de la aplicación.",
+                self.logger.error("bancos.py::borrar -> PUID %s no se pudo eliminar. Excepción: %s." % (objeto.puid, e))
+                utils.dialogo_info(titulo = "BANCO NO BORRADO", 
+                                   texto = "El banco no se pudo eliminar.\n\nSe generó un informe de error en el «log» de la aplicación.",
                                    padre = self.wids['ventana'])
                 self.actualizar_ventana()
                 return
@@ -319,5 +382,5 @@ class Bancos(Ventana, VentanaGenerica):
             self.ir_a_primero()
 
 if __name__ == "__main__":
-    p = XXXSkel()
+    p = Bancos()
 
