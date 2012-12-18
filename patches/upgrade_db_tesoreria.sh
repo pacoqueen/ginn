@@ -1,4 +1,4 @@
-databases="ginn"
+databases="dev_ginn ginn"
 for db in $databases; do
     psql $db << EOF
 ALTER TABLE pagare_cobro ADD COLUMN a_la_orden BOOLEAN DEFAULT TRUE;

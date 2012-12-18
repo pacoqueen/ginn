@@ -1,4 +1,4 @@
-databases="ginn qinn bpinn crisva fbinn"
+databases="dev_ginn ginn" # qinn bpinn crisva fbinn"
 for db in $databases; do
     psql $db << EOF
 CREATE TABLE auditoria(
