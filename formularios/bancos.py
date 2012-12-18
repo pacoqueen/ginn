@@ -205,9 +205,10 @@ class Bancos(Ventana, VentanaGenerica):
                 ops = clientes)
         if clienteid:
             cliente = pclases.Cliente.get(clienteid)
-            pclases.ConcentracionRemesa(cliente = cliente, 
-                                        banco = self.objeto, 
-                                        concentracion = 0.0)
+            conc = pclases.ConcentracionRemesa(cliente = cliente, 
+                                               banco = self.objeto, 
+                                               concentracion = 0.0)
+            pclases.Auditoria.nuevo(conc, self.usuario, __file__)
             self.rellenar_tabla_concentraciones()
     
     def drop_concentracion(self, boton):
@@ -233,19 +234,19 @@ class Bancos(Ventana, VentanaGenerica):
         else:
             puid = model[path][-1]
             cr = pclases.getObjetoPUID(puid)
-            if (sum([c.concentracion 
-                    for c in self.objeto.concentracionesRemesa if c != cr])
-                + concentracion) > 1.0:
-                utils.dialogo_info(titulo = "EXCESO CONCENTRACIÓN", 
-                    texto = "La concentración total no puede superar el 100%."
-                            "\nSe corregirá.", 
-                    padre = self.wids['ventana'])
-                concentracion = 1.0 - sum([c.concentracion 
-                    for c in self.objeto.concentracionesRemesa
-                    if c != cr])
+            #if (sum([c.concentracion 
+            #        for c in self.objeto.concentracionesRemesa if c != cr])
+            #    + concentracion) > 1.0:
+            #    utils.dialogo_info(titulo = "EXCESO CONCENTRACIÓN", 
+            #        texto = "La concentración total no puede superar el 100%."
+            #                "\nSe corregirá.", 
+            #        padre = self.wids['ventana'])
+            #    concentracion = 1.0 - sum([c.concentracion 
+            #        for c in self.objeto.concentracionesRemesa
+            #        if c != cr])
             cr.concentracion = concentracion
             cr.syncUpdate()
-            model[path][1] = cr.concentracion
+            model[path][1] = utils.float2str(cr.concentracion)
             
     def nuevo(self, widget):
         """
