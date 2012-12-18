@@ -38,6 +38,9 @@ GRANT ALL ON DATABASE ginn TO geotexan;
 GRANT ALL ON remesa TO geotexan;
 GRANT ALL ON banco TO geotexan;
 GRANT ALL ON concentracion_remesa TO geotexan;
+GRANT ALL ON remesa_id_seq TO geotexan;
+GRANT ALL ON banco_id_seq TO geotexan;
+GRANT ALL ON concentracion_remesa_id_seq TO geotexan;
 EOF
 done
 
