@@ -20428,6 +20428,32 @@ class Banco(SQLObject, PRPCTOO):
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
+
+    def get_disponible(self):
+        """
+        Disponible en la línea de crédito: límite - remesas aceptadas no 
+        vencidas.
+        """
+        res = self.limite
+        if res != None:
+            for r in self.remesas:
+                if r.aceptada and not r.esta_vencida():
+                    res -= r.importe
+        return res
+
+    def get_concentracion_actual(self):
+        """
+        Devuelve el porcentaje máximo de concentración de un cliente en 
+        las remesas aceptadas y no vencidas del banco.
+        """
+        concentraciones = [r.concentracion for r in self.remesas]
+        try:
+            concentracion = max(concentraciones, key = lambda c: c[0])
+        except ValueError:
+            concentracion = None
+        return concentracion
+
+    concentracion = property(get_concentracion_actual)
     
     @staticmethod
     def digitos_control(entidad, oficina, cuenta):
@@ -20452,6 +20478,40 @@ class Remesa(SQLObject, PRPCTOO):
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
+
+    def esta_vencida(self, fecha_base = mx.DateTime.today()):
+        """
+        True si la primera fecha de vencimiento está cumplida.
+        """
+        fecha_vto = min(min([c.fechaVencimiento for c in self.confirmings]), 
+                        min([p.fechaVencimiento for p in self.pagaresCobro]))
+        return fecha_vto > fecha_base
+
+    @property
+    def importe(self):
+        return (sum([p.cantidad for p in self.pagaresCobro]) 
+                +sum([c.cantidad for c in self.confirmings]))
+
+    @property
+    def concentracion(self):
+        """
+        Devuelve el porcentaje de concentración máximo, el importe total y el 
+        objeto cliente al que pertenece esa concentración en la remesa actual.
+        """
+        # La concentración se calcula por el importe sobre el total.
+        total = self.importe
+        concentraciones = {}
+        for p in self.pagaresCobro + self.confirmings:
+            try:
+                concentraciones[p.cliente] += p.cantidad
+            except KeyError:
+                concentraciones[p.cliente] = p.cantidad
+        cliente_maximo = max(concentraciones, 
+                     key = lambda cliente: concentraciones[cliente])
+        res = (concentraciones[cliente] / total, 
+               concentraciones[cliente], 
+               cliente)
+        return res
 
 cont, tiempo = print_verbose(cont, total, tiempo)
  

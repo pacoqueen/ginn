@@ -124,10 +124,61 @@ class ConsultaCartera(Ventana):
             if model[iter][0]:
                 a_remesar.append(pclases.getObjetoPUID(model[iter][-1]))
             iter = model.iter_next(iter)
-        # TODO: PORASQUI
-        utils.dialogo_info(titulo = "PREVISUALIZAR REMESA", 
-                           texto = "%d efectos a remesar." % len(a_remesar), 
-                           padre = self.wids['ventana'])
+        self.dialogo_previsualizacion(a_remesar)
+
+    def dialogo_previsualizacion(self, a_remesar):
+        def mostrar_detalle(combo, detalle):
+            idbanco = utils.combo_get_value(combo)
+            if idbanco:
+                banco = pclases.Banco.get(idbanco)
+                concentracion_actual = banco.get_concentracion_actual()
+                if concentracion_actual != None:
+                    str_concentracion_actual = utils.float2str(
+                                                        concentracion_actual)
+                else:
+                    str_concentracion_actual = "N/A"
+                disponible = banco.get_disponible()
+                if disponible == None:
+                    str_disponible = "Sin límite"
+                else:
+                    str_disponible = utils.float2str(disponible)
+                txt = "Detalle línea descuento:\n"\
+                        "\tDisponible: %s\n"\
+                        "\tConcentración: %s %%\n"\
+                        "\tConcentración máxima: %s %%" % (
+                                str_disponible, 
+                                str_concentracion_actual, 
+                                banco.concentracion != None
+                                    and utils.float2str(banco.concentracion)
+                                    or "N/A")
+                detalle.set_text(txt)
+        def aceptar(boton, ventana, combo):
+            print utils.combo_get_value(combo)
+            # TODO: PORASQUI: Generar remesa en estudio y abrir la ventana de remesas con esa como objeto activo.
+            ventana.destroy()
+        def cancelar(boton, ventana):
+            ventana.destroy()
+        w = gtk.Window()
+        w.set_title("SELECCIONE BANCO")
+        cbe = gtk.ComboBoxEntry()
+        bancos = [(b.id, b.nombre) 
+                  for b in pclases.Banco.select(orderBy = "nombre")]
+        utils.rellenar_lista(cbe, bancos)
+        detalle = gtk.Label("Detalle banco seleccionado.")
+        cbe.connect("changed", mostrar_detalle, detalle)
+        botonera = gtk.HBox()
+        b_cancelar = gtk.Button("Cancelar")
+        b_aceptar = gtk.Button("Aceptar")
+        b_cancelar.connect("clicked", cancelar, w)
+        b_aceptar.connect("clicked", aceptar, w, cbe)
+        botonera.add(b_cancelar)
+        botonera.add(b_aceptar)
+        box = gtk.VBox()
+        box.add(cbe)
+        box.add(detalle)
+        box.add(botonera)
+        w.add(box)
+        w.show_all()
 
     def rellenar_tabla(self, elementos):
     	"""

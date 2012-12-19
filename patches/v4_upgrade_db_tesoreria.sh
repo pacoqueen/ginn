@@ -20,7 +20,8 @@ CREATE TABLE remesa(
     banco_id INT REFERENCES banco DEFAULT NULL, 
     fecha_prevista DATE DEFAULT NULL, 
     codigo TEXT DEFAULT '', 
-    fecha_cobro DATE DEFAULT NULL
+    fecha_cobro DATE DEFAULT NULL, 
+    aceptada BOOLEAN DEFAULT FALSE
 );
 ALTER TABLE pagare_cobro ADD COLUMN remesa_id INT REFERENCES remesa DEFAULT NULL;
 UPDATE pagare_cobro SET remesa_id = NULL;
