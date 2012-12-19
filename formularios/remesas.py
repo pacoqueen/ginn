@@ -24,18 +24,10 @@
 
 
 ###################################################################
-## skel.py - Esqueleto para ventanas.
-###################################################################
-## NOTAS:
-##  Usar ESTA ventana a partir de ahora para crear nuevas.
-##  Hereda de ventana y ventana genérica, y la mayoría de funciones
-##  están automatizadas partiendo tan solo de la clase y un 
-##  diccionario que empareje widgets y atributos.
-## ----------------------------------------------------------------
-##  
+## remesas.py - Remesas de efectos de cobro.
 ###################################################################
 ## Changelog:
-## 17 de diciembre de 2007 -> Inicio
+## 19 de diciembre de 2012 -> Inicio
 ## 
 ###################################################################
 
@@ -55,7 +47,7 @@ except ImportError:
 from utils import _float as float
 
 
-class XXXSkel(Ventana, VentanaGenerica):
+class Remesas(Ventana, VentanaGenerica):
     def __init__(self, objeto = None, usuario = None):
         """
         Constructor. objeto puede ser un objeto de pclases con el que
@@ -63,17 +55,23 @@ class XXXSkel(Ventana, VentanaGenerica):
         el que se muestra por defecto).
         """
         self.usuario = usuario
-        self.clase = pclases.XXXClaseDePclases
-        self.dic_campos = {"XXXcampo_de_pclases": "XXXnombre_del_widget_en_glade", 
+        self.clase = pclases.Remesa
+        self.dic_campos = {# "importe":       "e_importe", 
+                           "bancoID":       "cb_banco", 
+                           "fechaPrevista": "e_fecha", 
+                           "codigo":        "e_codigo", 
+                           "fechaCobro":    "e_fechaCobro", 
+                           "id":            "e_id", 
+                           "aceptada":      "ch_aceptada", 
                           }
-        Ventana.__init__(self, 'XXXfichero_glade.glade', objeto)
+        Ventana.__init__(self, 'remesas.glade', objeto)
         connections = {'b_salir/clicked': self.salir,
                        'b_nuevo/clicked': self.nuevo,
                        'b_borrar/clicked': self.borrar,
                        'b_actualizar/clicked': self.actualizar_ventana,
                        'b_guardar/clicked': self.guardar,
                        'b_buscar/clicked': self.buscar,
-                       # XXX: Más widgets y señales si se necesitan.
+                       "b_confirmar/clicked": self.confirmar
                       }  
         self.add_connections(connections)
         self.inicializar_ventana()
@@ -93,14 +91,21 @@ class XXXSkel(Ventana, VentanaGenerica):
         else:
             igual = self.objeto != None
             for colname in self.dic_campos:
+                if colname in ("id", ):
+                    continue
                 col = self.clase._SO_columnDict[colname]
                 try:
-                    valor_ventana = self.leer_valor(col, self.dic_campos[colname])
+                    valor_ventana = self.leer_valor(col, 
+                                                    self.dic_campos[colname])
                 except (ValueError, mx.DateTime.RangeError, TypeError):
-                    igual = False
+                    if isinstance(col, pclases.SODateCol):
+                        valor_ventana = None
+                    else:
+                        igual = False
                 valor_objeto = getattr(self.objeto, col.name)
                 if isinstance(col, pclases.SODateCol):
-                    valor_objeto = utils.abs_mxfecha(valor_objeto)
+                    if valor_objeto:
+                        valor_objeto = utils.abs_mxfecha(valor_objeto)
                 igual = igual and (valor_ventana == valor_objeto)
                 if not igual:
                     break
@@ -120,14 +125,37 @@ class XXXSkel(Ventana, VentanaGenerica):
         self.wids['b_nuevo'].set_sensitive(True)
         self.wids['b_buscar'].set_sensitive(True)
         # Inicialización del resto de widgets:
-        # XXX: Aquí generalmente se inicializan los TreeViews y combos.
-        cols = (('XXXNombreCol', 'gobject.TYPE_STRING', XXXEditable, XXXOrdenable, XXXBuscable, XXXCallbackEdicion),
-                ('ID', 'gobject.TYPE_INT64', False, False, False, None))
+        cols = (('Confirmado', 'gobject.TYPE_BOOLEAN', True, True, False, 
+                    self.confirmar_efecto),
+                ('Código', 'gobject.TYPE_STRING', False, True, True, None),
+                ('Cliente', 'gobject.TYPE_STRING', False, True, False, None),
+                ('Importe', 'gobject.TYPE_STRING', False, True, False, None),
+                ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
                 # La última columna (oculta en la Vista) siempre es el id.
-        utils.preparar_listview(self.wids['XXXtv_treeview'], cols)
-        utils.rellenar_lista(self.wids['XXXcbe_comboboxentry'], 
-                             [(p.id, p.XXXcampo) for p in 
-                                pclases.XXXClase.select(orderBy = "XXXcampo")])
+        utils.preparar_listview(self.wids['tv_efectos'], cols)
+        utils.rellenar_lista(self.wids['cb_banco'], 
+                             [(p.id, p.nombre) for p in 
+                                pclases.Banco.select(orderBy = "nombre")])
+        self.wids['tv_efectos'].connect("row-activated", self.abrir_efecto) 
+        col = self.wids['tv_efectos'].get_column(3)
+        for cell in col.get_cell_renderers():
+            cell.set_property("xalign", 1)
+        # TODO: Aunque haga esto aquí, se habilita/deshabilita al actualizar
+        #       la ventana.
+        self.wids['ch_aceptada'].set_sensitive(False)
+        self.wids['b_confirmar'].set_sensitive(
+                self.objeto and not self.objeto.aceptada or False)
+
+    def abrir_efecto(self, tv, path, view_column):
+        model = tv.get_model()
+        puid = model[path][-1]
+        objeto = pclases.getObjetoPUID(puid)
+        if isinstance(objeto, pclases.PagareCobro):
+            import pagares_cobros
+            v = pagares_cobros.PagaresCobros(objeto, usuario = self.usuario)
+        elif isinstance(objeto, pclases.Confirming):
+            import confirmings
+            v = confirmings.Confirmings(objeto, usuario = self.usuario)
 
     def activar_widgets(self, s, chequear_permisos = True):
         """
@@ -139,10 +167,14 @@ class XXXSkel(Ventana, VentanaGenerica):
         """
         if self.objeto == None:
             s = False
-        ws = tuple(["XXXWidgets_que_no_tengan_«adaptador»_en_el_diccionario_del_constructor", "XXXtv_treeview", "b_borrar"] + [self.dic_campos[k] for k in self.dic_campos.keys()])
-            # XXX: b_nuevo y b_buscar no se activan/desactivan aquí, sino en el
-            #      chequeo de permisos.
+        ws = tuple(["b_confirmar", "tv_efectos", "b_borrar", 
+                    "e_importe_seleccionado"] 
+                   + [self.dic_campos[k] for k in self.dic_campos.keys()])
         for w in ws:
+            # Caso especial. Me interesa dejar fuera el check de activado 
+            # porque el usuario no lo va a editar directamente:
+            if ws == "ch_aceptada":
+                continue
             try:
                 self.wids[w].set_sensitive(s)
             except Exception, msg:
@@ -150,7 +182,7 @@ class XXXSkel(Ventana, VentanaGenerica):
                 import traceback
                 traceback.print_last()
         if chequear_permisos:
-            self.check_permisos(nombre_fichero_ventana = "XXXskel.py")
+            self.check_permisos(nombre_fichero_ventana = "remesas.py")
 
     def refinar_resultados_busqueda(self, resultados):
         """
@@ -162,10 +194,10 @@ class XXXSkel(Ventana, VentanaGenerica):
         """
         filas_res = []
         for r in resultados:
-            filas_res.append((r.id, r.XXXcampo1, r.XXXcampo2))
+            filas_res.append((r.id, r.codigo, r.banco))
         id = utils.dialogo_resultado(filas_res,
-                                     titulo = 'SELECCIONE XXXLO_QUE_SEA',
-                                     cabeceras = ('ID', 'XXXCampo1', 'XXXCampo2'), 
+                                     titulo = 'SELECCIONE REMESA',
+                                     cabeceras = ('ID', 'Código', 'Banco'), 
                                      padre = self.wids['ventana'])
         if id < 0:
             return None
@@ -180,22 +212,35 @@ class XXXSkel(Ventana, VentanaGenerica):
         hay que tener cuidado de no llamar a 
         esta función en ese caso.
         """
-        XXXobjeto = self.objeto
+        remesa = self.objeto
         for nombre_col in self.dic_campos:
-            self.escribir_valor(XXXobjeto._SO_columnDict[nombre_col], getattr(XXXobjeto, nombre_col), self.dic_campos[nombre_col])
-        self.rellenar_tabla_XXX()
+            if nombre_col not in ("id", ):
+                self.escribir_valor(remesa._SO_columnDict[nombre_col], 
+                                    getattr(remesa, nombre_col), 
+                                    self.dic_campos[nombre_col])
+            else:
+                self.wids[self.dic_campos[nombre_col]].set_text(
+                        str(getattr(remesa, nombre_col)))
+        self.rellenar_tabla_efectos()
         self.objeto.make_swap()
+        self.wids['l_estado'].set_text("<i>%s</i>" % remesa.get_str_estado())
+        self.wids['l_estado'].set_use_markup(True)
+        self.wids['ch_aceptada'].set_sensitive(False)
+        self.wids['b_confirmar'].set_sensitive(
+                self.objeto and not self.objeto.aceptada or False)
 
-    def rellenar_tabla_XXX(self):
-        model = self.wids['XXXtv_treeview'].get_model()
+    def rellenar_tabla_efectos(self):
+        model = self.wids['tv_efectos'].get_model()
         model.clear()
         total = 0.0
-        for p in self.objeto.XXXunoamuchos:
-            total += p.XXXcampoacumulable
-            model.append((p.XXXcampo1, 
-                          utils.float2str(p.XXXcampoacumulable), 
-                          p.id))
-        self.wids['XXXe_total_si_lo_hay'].set_text(utils.float2str(total))
+        for p in self.objeto.pagaresCobro + self.objeto.confirmings:
+            total += p.cantidad
+            model.append((False, 
+                          p.codigo, 
+                          p.cliente and p.cliente.nombre or "", 
+                          utils.float2str(p.cantidad), 
+                          p.puid))
+        self.wids['e_importe'].set_text(utils.float2str(total))
             
     def nuevo(self, widget):
         """
@@ -205,19 +250,25 @@ class XXXSkel(Ventana, VentanaGenerica):
         en la ventana para que puedan ser editados el resto
         de campos que no se hayan pedido aquí.
         """
-        XXXobjeto_anterior = self.objeto
-        if XXXobjeto_anterior != None:
-            XXXobjeto_anterior.notificador.desactivar()
-        XXXobjeto = pclases.XXXClase()
-        utils.dialogo_info('NUEVO XXX CREADO', 
-                           'Se ha creado un nuevo XXX.\nA continuación complete la información del misma y guarde los cambios.', 
+        remesa_anterior = self.objeto
+        if remesa_anterior != None:
+            remesa_anterior.notificador.desactivar()
+        remesa = pclases.Remesa(banco = None, 
+                                fechaPrevista = None, 
+                                codigo = "", 
+                                fechaCobro = None, 
+                                aceptada = False)
+        utils.dialogo_info('NUEVA REMESA CREADA', 
+                           'Se ha creado una nueva remesa.\n'
+                           'A continuación complete la información de la '
+                           'misma y guarde los cambios.', 
                            padre = self.wids['ventana'])
-        pclases.Auditoria.nuevo(XXXobjeto, self.usuario, __file__)
-        XXXobjeto.notificador.activar(self.aviso_actualizacion)
-        self.objeto = XXXobjeto
+        pclases.Auditoria.nuevo(remesa, self.usuario, __file__)
+        remesa.notificador.activar(self.aviso_actualizacion)
+        self.objeto = remesa
         self._objetoreciencreado = self.objeto
         self.activar_widgets(True)
-        self.actualizar_ventana(objeto_anterior = XXXobjeto_anterior)
+        self.actualizar_ventana(objeto_anterior = remesa_anterior)
 
     def buscar(self, widget):
         """
@@ -226,18 +277,16 @@ class XXXSkel(Ventana, VentanaGenerica):
         en la ventana a no ser que se pulse en Cancelar en
         la ventana de resultados.
         """
-        XXXobjeto = self.objeto
-        a_buscar = utils.dialogo_entrada(titulo = "BUSCAR XXX", 
-                                         texto = "Introduzca XXX:", 
+        remesa = self.objeto
+        a_buscar = utils.dialogo_entrada(titulo = "BUSCAR REMESA", 
+                                         texto = "Introduzca código:", 
                                          padre = self.wids['ventana']) 
         if a_buscar != None:
             try:
                 ida_buscar = int(a_buscar)
             except ValueError:
                 ida_buscar = -1
-            # TODO: Cambiar por el nuevo buscar de utils que combina la búsqueda de varias palabras en cualquier orden con OR.
-            criterio = pclases.OR(self.clase.q.campo1.contains(a_buscar),
-                                  self.clase.q.campo2.contains(a_buscar),
+            criterio = pclases.OR(self.clase.q.codigo.contains(a_buscar),
                                   self.clase.q.id == ida_buscar)
             resultados = self.clase.select(criterio)
             if resultados.count() > 1:
@@ -255,20 +304,20 @@ class XXXSkel(Ventana, VentanaGenerica):
                 return
             ## Un único resultado
             # Primero anulo la función de actualización
-            if XXXobjeto != None:
-                XXXobjeto.notificador.desactivar()
+            if remesa != None:
+                remesa.notificador.desactivar()
             # Pongo el objeto como actual
             try:
-                XXXobjeto = resultados[0]
+                remesa = resultados[0]
             except IndexError:
                 utils.dialogo_info(titulo = "ERROR", 
                                    texto = "Se produjo un error al recuperar la información.\nCierre y vuelva a abrir la ventana antes de volver a intentarlo.", 
                                    padre = self.wids['texto'])
                 return
             # Y activo la función de notificación:
-            XXXobjeto.notificador.activar(self.aviso_actualizacion)
+            remesa.notificador.activar(self.aviso_actualizacion)
             self.activar_widgets(True)
-        self.objeto = XXXobjeto
+        self.objeto = remesa
         self.actualizar_ventana()
 
     def guardar(self, widget):
@@ -280,13 +329,14 @@ class XXXSkel(Ventana, VentanaGenerica):
         self.objeto.notificador.activar(lambda: None)
         # Actualizo los datos del objeto
         for colname in self.dic_campos:
-            col = self.clase._SO_columnDict[colname]
-            try:
-                valor_ventana = self.leer_valor(col, self.dic_campos[colname])
-                setattr(self.objeto, colname, valor_ventana)
-            except (ValueError, mx.DateTime.RangeError, TypeError):
-                pass    # TODO: Avisar al usuario o algo. El problema es que no hay una forma "limpia" de obtener el valor que ha fallado.
-        # Fuerzo la actualización de la BD y no espero a que SQLObject lo haga por mí:
+            if colname not in ("id", ):
+                col = self.clase._SO_columnDict[colname]
+                try:
+                    valor_ventana = self.leer_valor(col, self.dic_campos[colname])
+                    setattr(self.objeto, colname, valor_ventana)
+                except (ValueError, mx.DateTime.RangeError, TypeError):
+                    pass 
+            # Fuerzo la actualización de la BD y no espero a que SQLObject lo haga por mí:
         self.objeto.syncUpdate()
         self.objeto.sync()
         # Vuelvo a activar el notificador
@@ -302,29 +352,50 @@ class XXXSkel(Ventana, VentanaGenerica):
         restricción de la BD, cancelará la eliminación
         y avisará al usuario.
         """
-        XXXobjeto = self.objeto
-        if not utils.dialogo('¿Eliminar el XXX?', 
+        remesa = self.objeto
+        if not utils.dialogo('¿Eliminar la remesa?', 
                              'BORRAR', 
                              padre = self.wids['ventana']):
             return
-        if XXXobjeto.pagos != []:
-            utils.dialogo_info('XXX NO ELIMINADO', 
-                               'El XXX está implicado en operaciones que impiden su borrado.', 
+        if remesa.pagos != []:
+            utils.dialogo_info('REMESA NO ELIMINADA', 
+                               'La remesa está implicada en operaciones '
+                               'que impiden su borrado.', 
                                padre = self.wids['ventana'])
         else:
-            XXXobjeto.notificador.desactivar()
+            remesa.notificador.desactivar()
             try:
-                XXXobjeto.destroy(ventana = __file__)
+                remesa.destroy(ventana = __file__)
             except Exception, e:
-                self.logger.error("XXXskel.py::borrar -> XXX ID %d no se pudo eliminar. Excepción: %s." % (XXXobjeto.id, e))
-                utils.dialogo_info(titulo = "XXX NO BORRADO", 
-                                   texto = "El XXX no se pudo eliminar.\n\nSe generó un informe de error en el «log» de la aplicación.",
+                self.logger.error("remesas.py::borrar -> Remesa ID %d no se pudo eliminar. Excepción: %s." % (remesa.id, e))
+                utils.dialogo_info(titulo = "REMESA NO BORRADA", 
+                                   texto = "La remesa no se pudo eliminar.\n"
+                                           "\nSe generó un informe de error "
+                                           "en el «log» de la aplicación.",
                                    padre = self.wids['ventana'])
                 self.actualizar_ventana()
                 return
             self.objeto = None
             self.ir_a_primero()
 
+    def confirmar_efecto(self, cell, path):
+        model = self.wids['tv_efectos'].get_model()
+        model[path][0] = not model[path][0]
+        a_confirmar = []
+        iter = model.get_iter_first()
+        while iter:
+            if model[iter][0]:
+                a_confirmar.append(pclases.getObjetoPUID(model[iter][-1]))
+            iter = model.iter_next(iter)
+        self.wids['e_importe_seleccionado'].set_text(
+                utils.float2str(sum([o.cantidad for o in a_confirmar])))
+
+    def confirmar(self, boton):
+        # TODO: PORASQUI
+        utils.dialogo_info(titulo = "NO IMPLEMENTADO", 
+                texto = "Aceptación de la remesa en el banco confirmada.", 
+                padre = self.wids['ventana'])
+
 if __name__ == "__main__":
-    p = XXXSkel()
+    p = Remesas()
 

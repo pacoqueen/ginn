@@ -153,9 +153,18 @@ class ConsultaCartera(Ventana):
                                     or "N/A")
                 detalle.set_text(txt)
         def aceptar(boton, ventana, combo):
-            print utils.combo_get_value(combo)
-            # TODO: PORASQUI: Generar remesa en estudio y abrir la ventana de remesas con esa como objeto activo.
+            banco = pclases.Banco.get(utils.combo_get_value(combo))
+            remesa = pclases.Remesa(banco = banco, 
+                                    fechaPrevista = None, 
+                                    codigo = "", 
+                                    fechaCobro = None, 
+                                    aceptada = False)
+            for efecto in a_remesar:
+                efecto.remesa = remesa
+                efecto.syncUpdate()
             ventana.destroy()
+            import remesas
+            remesas.Remesas(objeto = remesa, usuario = self.usuario)
         def cancelar(boton, ventana):
             ventana.destroy()
         w = gtk.Window()

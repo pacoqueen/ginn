@@ -20449,7 +20449,7 @@ class Banco(SQLObject, PRPCTOO):
         concentraciones = [r.concentracion for r in self.remesas]
         try:
             concentracion = max(concentraciones, key = lambda c: c[0])
-        except ValueError:
+        except (ValueError, TypeError):
             concentracion = None
         return concentracion
 
@@ -20506,12 +20506,24 @@ class Remesa(SQLObject, PRPCTOO):
                 concentraciones[p.cliente] += p.cantidad
             except KeyError:
                 concentraciones[p.cliente] = p.cantidad
-        cliente_maximo = max(concentraciones, 
-                     key = lambda cliente: concentraciones[cliente])
-        res = (concentraciones[cliente] / total, 
-               concentraciones[cliente], 
-               cliente)
+        if concentraciones:
+            cliente_maximo = max(concentraciones, 
+                         key = lambda cliente: concentraciones[cliente])
+            res = (concentraciones[cliente_maximo] / total, 
+                   concentraciones[cliente_maximo], 
+                   cliente_maximo)
+        else:
+            res = None
         return res
+
+    def get_str_estado(self):
+        # TODO: Me faltaría saber si necesito distinguir una remesa que 
+        # todavía no se ha enviado al banco porque la estoy preparando.
+        if self.aceptada:
+            return "Confirmada"    # El banco la ha aceptado y me da las pelas.
+        else:
+            return "En estudio"    # El banco me la está mirando y puede que 
+                                   # me confirme un efecto, todos o ninguno.
 
 cont, tiempo = print_verbose(cont, total, tiempo)
  
