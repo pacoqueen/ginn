@@ -353,9 +353,11 @@ class PRPCTOO:
                 if DEBUG:
                     print "Eliminando %s..." % dependiente
                 dependiente.destroy_en_cascada(ventana = ventana)
-        self.destroy(ventana = ventana)
+        self.destroy(usuario = usuario, ventana = ventana)
 
     def destroy(self, usuario = None, ventana = None):
+        # Si no se especifica usuario se determinará a través de logged_user, 
+        # que se instancia al crear cada ventana.
         try:
             descripcion = self.get_info()
         except Exception, msg:  # Seguro que vengo de destroy_en_cascada

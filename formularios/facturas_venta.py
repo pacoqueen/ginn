@@ -1100,10 +1100,10 @@ class FacturasVenta(Ventana):
     def borrar_vencimientos_y_estimaciones(self, factura):
         for vto in factura.vencimientosCobro:
             vto.factura = None
-            vto.destroy(ventana = __file__)
+            vto.destroy(usuario = self.usuario, ventana = __file__)
         for est in factura.estimacionesCobro:
             est.factura = None
-            est.destroy(ventana = __file__)
+            est.destroy(usuario = self.usuario, ventana = __file__)
 
     def get_numero_numfactura_from(self, numfactura, cliente):
         """
@@ -1666,12 +1666,16 @@ class FacturasVenta(Ventana):
         él y sus LDVs.
         NO decrementa (ni debe) el contador de facturas.
         """
-        if not utils.dialogo(texto = 'Se eliminará la factura actual y todas sus relaciones con ventas, pedidos, etc.\n¿Está seguro?', 
+        if not utils.dialogo(texto = 'Se eliminará la factura actual y todas'
+                                     ' sus relaciones con ventas, pedidos, '
+                                     'etc.\n¿Está seguro?', 
                              titulo = 'BORRAR FACTURA', 
                              padre = self.wids['ventana']): 
             return
         factura = self.objeto
         factura.notificador.set_func(lambda : None)
+        for a in factura.alarmas:
+            a.destroy(usuario = self.usuario, ventana = __file__)
         for ldv in factura.lineasDeVenta:
             # TODO: OJO. Mirar también las relaciones con los TICKETS.
             self.desvincular_ldv_de_factura(ldv)
@@ -1679,19 +1683,19 @@ class FacturasVenta(Ventana):
             ldv.eliminar()
         for servicio in factura.servicios:
             if not servicio.pedidoVenta:
-                servicio.destroy(ventana = __file__)
+                servicio.destroy(usuario = self.usuario, ventana = __file__)
             else:
                 servicio.facturaVenta = None
         for estimacion in factura.estimacionesCobro:
-            estimacion.destroy(ventana = __file__)
+            estimacion.destroy(usuario = self.usuario, ventana = __file__)
         for vencimiento in factura.vencimientosCobro:
-            vencimiento.destroy(ventana = __file__)
+            vencimiento.destroy(usuario = self.usuario, ventana = __file__)
         for cobro in factura.cobros:
-            cobro.destroy(ventana = __file__)
+            cobro.destroy(usuario = self.usuario, ventana = __file__)
         try:
             numfactura = factura.numfactura
             contador = factura.cliente.contador
-            factura.destroy(ventana = __file__)
+            factura.destroy(usuario = self.usuario, ventana = __file__)
             self.ir_a_primero()
         except psycopg_ProgrammingError:
             utils.dialogo_info(titulo = "ERROR", 
@@ -1746,7 +1750,7 @@ class FacturasVenta(Ventana):
         if ldv.albaranSalidaID == None:
             # Si no tiene ni factura ni albarán, la intento eliminar
             try:
-                ldv.destroy(ventana = __file__)
+                ldv.destroy(usuario = self.usuario, ventana = __file__)
             except:
                 print "facturas_venta.py (drop_ldv): LDV ID %d sin factura ni albarán, pero no se pudo eliminar." % (ldv.id)
         self.rellenar_contenido()
@@ -2042,7 +2046,7 @@ class FacturasVenta(Ventana):
             servicio = pclases.Servicio.get(idservicio)
             servicio.facturaVenta = None
             if servicio.albaranSalida == None:
-                servicio.destroy(ventana = __file__)  # No debería saltar ninguna excepción. 
+                servicio.destroy(usuario = self.usuario, ventana = __file__)  # No debería saltar ninguna excepción. 
             self.rellenar_servicios()
             self.rellenar_contenido()   # Por si provenía de un albarán, que 
                                         # vuelva a él.
@@ -2093,10 +2097,10 @@ class FacturasVenta(Ventana):
         idest = ids[1]
         if idvto > 0:	# Si realmente hay un vto. (ver rellenar_vencimientos).
             vto = pclases.VencimientoCobro.get(idvto)
-            vto.destroy(ventana = __file__)
+            vto.destroy(usuario = self.usuario, ventana = __file__)
         if idest > 0:
             est = pclases.EstimacionCobro.get(idest)
-            est.destroy(ventana = __file__)
+            est.destroy(usuario = self.usuario, ventana = __file__)
         self.rellenar_contenido()
 
     def cambiar_vto(self, cell, path, texto):
@@ -2164,7 +2168,7 @@ class FacturasVenta(Ventana):
             # Texto vacío, borrar pago si lo había.
             if idcobro > 0:
                 cobro = pclases.Cobro.get(idcobro)
-                cobro.destroy(ventana = __file__)
+                cobro.destroy(usuario = self.usuario, ventana = __file__)
                 self.rellenar_vencimientos()
                 return
         try:
@@ -2194,7 +2198,7 @@ class FacturasVenta(Ventana):
             # Texto vacío, borrar pago si lo había.
             if idcobro > 0:
                 cobro = pclases.Cobro.get(idcobro)
-                cobro.destroy(ventana = __file__)
+                cobro.destroy(usuario = self.usuario, ventana = __file__)
                 self.rellenar_vencimientos()
                 return
         try:
@@ -2286,7 +2290,7 @@ class FacturasVenta(Ventana):
                     padre = self.wids['ventana'], 
                     defecto = False):
                 cobro = pclases.Cobro.get(idcobro)
-                cobro.destroy(ventana = __file__)
+                cobro.destroy(usuario = self.usuario, ventana = __file__)
         self.rellenar_vencimientos()
 
     def crear_vencimientos_por_defecto(self, w):
@@ -3039,7 +3043,7 @@ class FacturasVenta(Ventana):
             idpa = model[iter][-1]
             pa = pclases.PagoDeAbono.get(idpa)
             try:
-                pa.destroy(ventana = __file__)
+                pa.destroy(usuario = self.usuario, ventana = __file__)
             except:
                 utils.dialogo_info(titulo = "ERROR AL ELIMINAR ABONO", 
                     texto = "Se produjo un error al eliminar el pago de abono."
