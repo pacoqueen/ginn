@@ -30,7 +30,7 @@ except IndexError:
 ventanas = []
 for fventana, descripcion, clase, icono in fventanas:
     try:
-        ventanas.append(pclases.Ventana.selectBy(fichero = nomventana)[0])
+        ventanas.append(pclases.Ventana.selectBy(fichero = fventana)[0])
     except IndexError:
         ventanas.append(pclases.Ventana(modulo = tesoreria, 
                                         descripcion = descripcion, 
@@ -38,8 +38,8 @@ for fventana, descripcion, clase, icono in fventanas:
                                         clase = clase, 
                                         icono = icono))
 
-for nomuser in ("administrador", "javier", "kiko", "nicolas"):
-    u = pclases.Usuario.selectBy(usuario = nomuser)
+for nomuser in ("admin", "javier", "kiko", "nicolas"):
+    u = pclases.Usuario.selectBy(usuario = nomuser)[0]
     for v in ventanas:
         permiso = u.get_permiso(v)
         try:
