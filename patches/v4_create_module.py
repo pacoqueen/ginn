@@ -4,7 +4,8 @@
 import os, sys
 sys.path.insert(0, (os.path.join(os.path.abspath(os.path.dirname(__file__)), 
                     "..", "framework")))
-
+os.chdir(os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", 
+                      "framework"))
 import pclases
 
 fventanas = (("consulta_cartera.py", 
