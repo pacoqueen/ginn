@@ -124,7 +124,6 @@ class ConsultaCartera(Ventana):
                 a_remesar.append(pclases.getObjetoPUID(model[iter][-1]))
             iter = model.iter_next(iter)
         self.dialogo_previsualizacion(a_remesar)
-        self.buscar()
 
     def dialogo_previsualizacion(self, a_remesar):
         def mostrar_detalle(combo, detalle):
@@ -163,6 +162,7 @@ class ConsultaCartera(Ventana):
                 efecto.remesa = remesa
                 efecto.syncUpdate()
             ventana.destroy()
+            self.buscar()
             import remesas
             remesas.Remesas(objeto = remesa, usuario = self.usuario)
         def cancelar(boton, ventana):
@@ -170,6 +170,7 @@ class ConsultaCartera(Ventana):
         w = gtk.Window()
         w.set_title("SELECCIONE BANCO")
         w.set_modal(True)
+        w.set_transient_for(self.wids['ventana'])
         cbe = gtk.ComboBoxEntry()
         bancos = [(b.id, b.nombre) 
                   for b in pclases.Banco.select(orderBy = "nombre")]

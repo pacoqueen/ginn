@@ -2347,7 +2347,9 @@ CREATE TABLE remesa(
     id SERIAL PRIMARY KEY, 
     banco_id INT REFERENCES banco DEFAULT NULL, 
     fecha_prevista DATE DEFAULT NULL, 
-    codigo TEXT DEFAULT ''
+    codigo TEXT DEFAULT '', 
+    fecha_cobro DATE DEFAULT NULL, 
+    aceptada BOOLEAN DEFAULT FALSE
 );
 
 -----------------------

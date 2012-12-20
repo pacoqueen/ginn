@@ -11,7 +11,7 @@ import pclases
 fventanas = (("consulta_cartera.py", 
                 "Consultar efectos en cartera", 
                 "ConsultaCartera", 
-                "informes.png"), 
+                "informe.png"), 
              ("bancos.py", 
                  "Fichas de banco", 
                  "Bancos", 
