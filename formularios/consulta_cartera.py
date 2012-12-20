@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
-#                          Diego Muñoz Escalante.                             #
-# (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
+# Copyright (C) 2005-2012  Francisco José Rodríguez Bogado                    #
+#                          (pacoqueen@users.sourceforge.net)                  #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
 #                                                                             #
@@ -82,7 +81,7 @@ class ConsultaCartera(Ventana):
                     False, True, False, None),
                 ('Fecha vencimiento', 'gobject.TYPE_STRING', 
                     False, True, False, None),
-                ('id','gobject.TYPE_STRING',False,False,False,None))
+                ('puid', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_listview(self.wids['tv_datos'], cols)
         self.wids['tv_datos'].connect("row-activated", self.abrir_efecto)
         col = self.wids['tv_datos'].get_column(3)
@@ -125,6 +124,7 @@ class ConsultaCartera(Ventana):
                 a_remesar.append(pclases.getObjetoPUID(model[iter][-1]))
             iter = model.iter_next(iter)
         self.dialogo_previsualizacion(a_remesar)
+        self.buscar()
 
     def dialogo_previsualizacion(self, a_remesar):
         def mostrar_detalle(combo, detalle):
@@ -169,6 +169,7 @@ class ConsultaCartera(Ventana):
             ventana.destroy()
         w = gtk.Window()
         w.set_title("SELECCIONE BANCO")
+        w.set_modal(True)
         cbe = gtk.ComboBoxEntry()
         bancos = [(b.id, b.nombre) 
                   for b in pclases.Banco.select(orderBy = "nombre")]
@@ -240,18 +241,18 @@ class ConsultaCartera(Ventana):
         vpro.ocultar()
         self.wids['e_total'].set_text(utils.float2str(total))
         
-    def set_inicio(self,boton):
+    def set_inicio(self, boton):
         temp = utils.mostrar_calendario(padre = self.wids['ventana'])
         self.wids['e_fechainicio'].set_text(utils.str_fecha(temp))
         self.inicio = str(temp[2])+'/'+str(temp[1])+'/'+str(temp[0])
 
 
-    def set_fin(self,boton):
+    def set_fin(self, boton):
         temp = utils.mostrar_calendario(padre = self.wids['ventana'])
         self.wids['e_fechafin'].set_text(utils.str_fecha(temp))
         self.fin = str(temp[2])+'/'+str(temp[1])+'/'+str(temp[0])
 
-    def buscar(self,boton):
+    def buscar(self, boton = None):
         criteriosp = [pclases.PagareCobro.q.remesaID == None]
         criteriosc = [pclases.Confirming.q.remesaID == None]
         if self.inicio:

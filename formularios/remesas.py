@@ -357,7 +357,7 @@ class Remesas(Ventana, VentanaGenerica):
                              'BORRAR', 
                              padre = self.wids['ventana']):
             return
-        if remesa.pagos != []:
+        if remesa.confirmings + remesa.pagaresCobro:
             utils.dialogo_info('REMESA NO ELIMINADA', 
                                'La remesa está implicada en operaciones '
                                'que impiden su borrado.', 

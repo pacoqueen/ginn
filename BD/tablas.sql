@@ -2314,6 +2314,14 @@ CREATE TABLE banco(
     id SERIAL PRIMARY KEY, 
     nombre TEXT, 
     iban TEXT DEFAULT '', -- 34 caracteres [http://es.wikipedia.org/wiki/IBAN]
+    direccion TEXT DEFAULT '',  
+    ciudad TEXT DEFAULT '', 
+    provincia TEXT DEFAULT '', 
+    pais TEXT DEFAULT 'España', 
+    contacto TEXT DEFAULT '', 
+    web TEXT DEFAULT '', 
+    telefono TEXT DEFAULT '', 
+    fax TEXT DEFAULT '', 
     -- Línea descuento 
     limite FLOAT DEFAULT NULL, 
     interes FLOAT DEFAULT NULL, 

@@ -408,7 +408,7 @@ class VentanaGenerica(Ventana):
             for col in self.clase._SO_joinList:
                 self.rellenar_tabla(col)
 
-    def escribir_valor(self, col, valor, nombre_widget = None):
+    def escribir_valor(self, col, valor, nombre_widget = None, precision = 2):
         """
         Muestra el valor "valor" en el widget correspondiente 
         al campo "col", haciendo las transformaciones necesarias
@@ -441,7 +441,7 @@ class VentanaGenerica(Ventana):
                 valor = ""
             else:
                 try:
-                    valor = utils.float2str(valor)
+                    valor = utils.float2str(valor, precision = precision)
                 except Exception, e:
                     if pclases.DEBUG:
                         print "Excepción %s capturada al convertir %s de flotante a cadena." % (e, valor)

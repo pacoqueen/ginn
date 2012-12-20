@@ -62,7 +62,15 @@ class Bancos(Ventana, VentanaGenerica):
                            "interes":            "e_interes", 
                            "comisionEstudio":    "e_comision", 
                            "concentracion":      "e_concentracion", 
-                           "excesoVencimiento": "e_exceso", 
+                           "excesoVencimiento":  "e_exceso", 
+                           "direccion":          "e_direccion", 
+                           "ciudad":             "e_ciudad", 
+                           "provincia":          "e_provincia", 
+                           "pais":               "e_pais", 
+                           "contacto":           "e_contacto", 
+                           "web":                "e_web", 
+                           "telefono":           "e_telefono", 
+                           "fax":                "e_fax"
                           }
         Ventana.__init__(self, 'bancos.glade', objeto)
         connections = {'b_salir/clicked': self.salir,
@@ -178,8 +186,15 @@ class Bancos(Ventana, VentanaGenerica):
         """
         banco = self.objeto
         for nombre_col in self.dic_campos:
-            self.escribir_valor(banco._SO_columnDict[nombre_col], 
-                    getattr(banco, nombre_col), self.dic_campos[nombre_col])
+            if nombre_col not in ("interes", "comisionEstudio"):
+                self.escribir_valor(banco._SO_columnDict[nombre_col], 
+                                    getattr(banco, nombre_col), 
+                                    self.dic_campos[nombre_col])
+            else:
+                self.escribir_valor(banco._SO_columnDict[nombre_col], 
+                                    getattr(banco, nombre_col), 
+                                    self.dic_campos[nombre_col], 
+                                    precision = 3)
         self.rellenar_tabla_concentraciones()
         self.objeto.make_swap()
 
@@ -343,7 +358,7 @@ class Bancos(Ventana, VentanaGenerica):
                 valor_ventana = self.leer_valor(col, self.dic_campos[colname])
                 setattr(self.objeto, colname, valor_ventana)
             except (ValueError, mx.DateTime.RangeError, TypeError):
-                pass    # TODO: Avisar al usuario o algo. El problema es que no hay una forma "limpia" de obtener el valor que ha fallado.
+                pass
         # Fuerzo la actualización de la BD y no espero a que SQLObject lo haga por mí:
         self.objeto.syncUpdate()
         self.objeto.sync()

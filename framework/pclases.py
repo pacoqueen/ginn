@@ -20453,7 +20453,7 @@ class Banco(SQLObject, PRPCTOO):
             concentracion = None
         return concentracion
 
-    concentracion = property(get_concentracion_actual)
+    concentracion_actual = property(get_concentracion_actual)
     
     @staticmethod
     def digitos_control(entidad, oficina, cuenta):
