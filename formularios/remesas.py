@@ -194,7 +194,8 @@ class Remesas(Ventana, VentanaGenerica):
         """
         filas_res = []
         for r in resultados:
-            filas_res.append((r.id, r.codigo, r.banco))
+            filas_res.append(
+                    (r.id, r.codigo, r.banco and r.banco.nombre or ""))
         id = utils.dialogo_resultado(filas_res,
                                      titulo = 'SELECCIONE REMESA',
                                      cabeceras = ('ID', 'Código', 'Banco'), 

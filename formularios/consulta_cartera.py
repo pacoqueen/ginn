@@ -133,7 +133,7 @@ class ConsultaCartera(Ventana):
                 concentracion_actual = banco.get_concentracion_actual()
                 if concentracion_actual != None:
                     str_concentracion_actual = utils.float2str(
-                                                        concentracion_actual)
+                                                concentracion_actual[0] * 100)
                 else:
                     str_concentracion_actual = "N/A"
                 disponible = banco.get_disponible()
@@ -143,13 +143,13 @@ class ConsultaCartera(Ventana):
                     str_disponible = utils.float2str(disponible)
                 txt = "Detalle línea descuento:\n"\
                         "\tDisponible: %s\n"\
-                        "\tConcentración: %s %%\n"\
-                        "\tConcentración máxima: %s %%" % (
+                        "\tConcentración máxima actual: %s %%\n"\
+                        "\tConcentración máxima permitida: %s %%" % (
                                 str_disponible, 
                                 str_concentracion_actual, 
                                 banco.concentracion != None
-                                    and utils.float2str(banco.concentracion)
-                                    or "N/A")
+                                 and utils.float2str(banco.concentracion * 100)
+                                 or "N/A")
                 detalle.set_text(txt)
         def aceptar(boton, ventana, combo):
             banco = pclases.Banco.get(utils.combo_get_value(combo))

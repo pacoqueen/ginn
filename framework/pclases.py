@@ -2998,7 +2998,7 @@ class PagareCobro(SQLObject, PRPCTOO):
         Devuelve el estado del pagaré:
         0: Gestión de cobro: Entregado al banco al vencimiento y esperando a 
                              que nos hagan efectivo el importe.
-        1: En cartera: Disponible para negociar.
+        1: En cartera: Disponible para negociar o en remesa no enviada al banco.
         2: Descontado: En remesa.
         3: Impagado: Pasó la fecha de vto. y no se ha cobrado.
         4: Cobrado: Cobrado al vencimiento o en la remesa.
@@ -3006,6 +3006,8 @@ class PagareCobro(SQLObject, PRPCTOO):
         if self.remesa:
             if self.remesa.fechaCobro and self.remesa.fechaCobro <= fecha:
                 return COBRADO
+            elif self.remesa and not self.remesa.fechaPrevista:
+                return CARTERA
             else:
                 return DESCONTADO
         elif self.esta_pendiente() and self.fechaCobro < fecha:
