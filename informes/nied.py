@@ -17,7 +17,8 @@ def etiqueta_nied(rollos, mostrar_marcado = False):
     Genera un PDF con tantas páginas iguales como número de elementos tenga 
     la lista de rollos recibida.
     Si el rollo va a 0.80 m de ancho, devuelve en cada página el diseño 
-    de GNT11_080.pdf. En otro caso usa el GNT11_120.pdf por defecto.
+    de GNT11_080.pdf. Si va a un metro, el diseño de GNT11_100.pdf.
+    En otro caso usa el GNT11_120.pdf por defecto.
     """
     try:
         pv = rollos[0]['objeto'].productoVenta
@@ -29,6 +30,8 @@ def etiqueta_nied(rollos, mostrar_marcado = False):
         try:
             if pv.camposEspecificosRollo.ancho == 0.8:
                 modelo = "GNT11_080.png"
+            elif pv.camposEspecificosRollo.ancho == 1.0:
+                modelo = "GNT11_100.png"
         except AttributeError:
             pass    # Uso modelo por defecto.
         pagina = os.path.abspath(os.path.join(os.path.dirname(__file__), 
