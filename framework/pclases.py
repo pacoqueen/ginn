@@ -20521,10 +20521,17 @@ class Remesa(SQLObject, PRPCTOO):
         return res
 
     def get_str_estado(self):
-        # TODO: Me faltaría saber si necesito distinguir una remesa que 
-        # todavía no se ha enviado al banco porque la estoy preparando.
+        # TODO: PORASQUI: Esto está mal. Los estados deberían ir: 
+        #           En preparación -> En estudio -> Confirmada / Rechazada.
         if self.aceptada:
             return "Confirmada"    # El banco la ha aceptado y me da las pelas.
+        elif not self.fechaPrevista:
+            return "En preparación" # Se está montando la remesa. Todavía no 
+                                    # se ha enviado al banco.
+        #elif self.fechaPrevista and not self.aceptada:
+        #    return "Rechazada"  # No se ha aceptado después de haberse enviado.
+        # Las rechazadas se borran directamente. No se guardan y por tanto no 
+        # hay estado para ellas. 
         else:
             return "En estudio"    # El banco me la está mirando y puede que 
                                    # me confirme un efecto, todos o ninguno.

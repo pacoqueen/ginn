@@ -81,6 +81,8 @@ class ConsultaCartera(Ventana):
                     False, True, False, None),
                 ('Fecha vencimiento', 'gobject.TYPE_STRING', 
                     False, True, False, None),
+                ("En remesa en preparación", "gobject.TYPE_STRING", 
+                    False, True, False, None), 
                 ('puid', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_listview(self.wids['tv_datos'], cols)
         self.wids['tv_datos'].connect("row-activated", self.abrir_efecto)
@@ -237,6 +239,7 @@ class ConsultaCartera(Ventana):
                                       str_a_la_orden, 
                                       utils.str_fecha(efecto.fechaRecepcion), 
                                       utils.str_fecha(efecto.fechaVencimiento), 
+                                      efecto.remesa and efecto.remesa.id or "",
                                       efecto.puid))
                 total += efecto.cantidad
         vpro.ocultar()
@@ -254,8 +257,17 @@ class ConsultaCartera(Ventana):
         self.fin = str(temp[2])+'/'+str(temp[1])+'/'+str(temp[0])
 
     def buscar(self, boton = None):
+        # TODO: PORASQUI: Esto no es así. Un efecto puede estar en remesa 
+        # pero estar también en cartera si la remesa no tiene fecha 
+        # prevista de abono (es decir, no se ha enviado al banco a su estudio).
         criteriosp = [pclases.PagareCobro.q.remesaID == None]
         criteriosc = [pclases.Confirming.q.remesaID == None]
+        # De modo que además la relación uno a muchos tiene pinta de estar 
+        # mal. Sería muchos a muchos porque un efecto puede estar en dos 
+        # remesas en preparación A LA VEZ, aunque solo en una en estudio o 
+        # confirmada. 
+        criteriosp = []
+        criteriosc = []
         if self.inicio:
             criteriosp.append(
                     pclases.PagareCobro.q.fechaCobro >= self.inicio)
