@@ -381,7 +381,8 @@ class Menu:
         else:
             modulo = "Favoritos"
         self.current_frame = self.create_frame(modulo)
-        utils.escribir_barra_estado(self.statusbar, category, self.logger, self.usuario.usuario)
+        utils.escribir_barra_estado(self.statusbar, category, self.logger, 
+                                    self.usuario.usuario)
         self.content_box.pack_end(self.current_frame, fill=True, expand=True)
         self.ventana.show_all()
         
@@ -477,8 +478,33 @@ class Menu:
         iview.set_item_width(180)
         iview.connect('selection-changed', self.mostrar_item_seleccionado, 
                       model)
-        iview.connect('item-activated', self.abrir, model)
         contenedor.add(iview)
+        #iview.connect('item-activated', self.abrir, model)
+        # HACK: PyGTK 2.28 en Windows con python 2.7 no reconoce el 
+        # gtk.gdk._2BUTTON_PRESS y se pierde el doble clic que abre las 
+        # ventanas. No llega a lanzarse nunca la señal "item-activated".
+        # Esto es un pequeño apaño muy chapu.
+        def button_press(widget, event):
+            widget.clics += 1
+        def motion(widget, event):
+            widget.clics = 0
+            return True
+        def button_release(widget, event):
+            if widget.clics >= 2:
+                # Este es el segundo. Lanzo el item-activated
+                try:
+                    paths = widget.get_selected_items()
+                    path = paths[0]
+                except IndexError:
+                    pass    # "Nada seleccionado"
+                else:
+                    #widget.item_activated(path)
+                    self.abrir(widget, path, model)
+            widget.clics = 0
+            return True
+        iview.connect('button-press-event', button_press)
+        iview.connect('motion-notify-event', motion)
+        iview.connect('button-release-event', button_release)
         return contenedor
 
     def mostrar_item_seleccionado(self, icon_view, model):
