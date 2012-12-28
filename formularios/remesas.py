@@ -194,7 +194,8 @@ class Remesas(Ventana, VentanaGenerica):
         """
         filas_res = []
         for r in resultados:
-            filas_res.append((r.id, r.codigo, r.banco))
+            filas_res.append(
+                    (r.id, r.codigo, r.banco and r.banco.nombre or ""))
         id = utils.dialogo_resultado(filas_res,
                                      titulo = 'SELECCIONE REMESA',
                                      cabeceras = ('ID', 'Código', 'Banco'), 
@@ -331,6 +332,7 @@ class Remesas(Ventana, VentanaGenerica):
         for colname in self.dic_campos:
             if colname not in ("id", ):
                 col = self.clase._SO_columnDict[colname]
+                # FIXME: Las fechas en blanco se deberían guardar como Nones. Ahora mismo vuelve al valor que tuviera antes.
                 try:
                     valor_ventana = self.leer_valor(col, self.dic_campos[colname])
                     setattr(self.objeto, colname, valor_ventana)

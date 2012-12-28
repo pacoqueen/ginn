@@ -684,7 +684,7 @@ class AlbaranesDeEntradaCS21(Ventana):
                 #print linea.productoCompra.existencias
                 # XXX EODEBUG
             if linea.facturaCompraID == None:
-                linea.destroy(ventana = __file__)
+                linea.destroy(usuario = self.usuario, ventana = __file__)
             else:
                 linea.albaranEntrada = None
         self.actualizar_ventana()
@@ -885,7 +885,7 @@ class AlbaranesDeEntradaCS21(Ventana):
                         if ldc.silo != None:
                             cs = ldc.cargaSilo 
                             ldc.cargaSilo = None
-                            cs.destroy(ventana = __file__)
+                            cs.destroy(usuario = self.usuario, ventana = __file__)
                 for linea in albaran.lineasDeCompra:
                     producto = linea.productoCompra
                     if linea.productoCompra.controlExistencias: 

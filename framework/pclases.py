@@ -353,9 +353,11 @@ class PRPCTOO:
                 if DEBUG:
                     print "Eliminando %s..." % dependiente
                 dependiente.destroy_en_cascada(ventana = ventana)
-        self.destroy(ventana = ventana)
+        self.destroy(usuario = usuario, ventana = ventana)
 
     def destroy(self, usuario = None, ventana = None):
+        # Si no se especifica usuario se determinará a través de logged_user, 
+        # que se instancia al crear cada ventana.
         try:
             descripcion = self.get_info()
         except Exception, msg:  # Seguro que vengo de destroy_en_cascada
@@ -2996,7 +2998,7 @@ class PagareCobro(SQLObject, PRPCTOO):
         Devuelve el estado del pagaré:
         0: Gestión de cobro: Entregado al banco al vencimiento y esperando a 
                              que nos hagan efectivo el importe.
-        1: En cartera: Disponible para negociar.
+        1: En cartera: Disponible para negociar o en remesa no enviada al banco.
         2: Descontado: En remesa.
         3: Impagado: Pasó la fecha de vto. y no se ha cobrado.
         4: Cobrado: Cobrado al vencimiento o en la remesa.
@@ -3004,6 +3006,8 @@ class PagareCobro(SQLObject, PRPCTOO):
         if self.remesa:
             if self.remesa.fechaCobro and self.remesa.fechaCobro <= fecha:
                 return COBRADO
+            elif self.remesa and not self.remesa.fechaPrevista:
+                return CARTERA
             else:
                 return DESCONTADO
         elif self.esta_pendiente() and self.fechaCobro < fecha:
@@ -20520,10 +20524,17 @@ class Remesa(SQLObject, PRPCTOO):
         return res
 
     def get_str_estado(self):
-        # TODO: Me faltaría saber si necesito distinguir una remesa que 
-        # todavía no se ha enviado al banco porque la estoy preparando.
+        # TODO: PORASQUI: Esto está mal. Los estados deberían ir: 
+        #           En preparación -> En estudio -> Confirmada / Rechazada.
         if self.aceptada:
             return "Confirmada"    # El banco la ha aceptado y me da las pelas.
+        elif not self.fechaPrevista:
+            return "En preparación" # Se está montando la remesa. Todavía no 
+                                    # se ha enviado al banco.
+        #elif self.fechaPrevista and not self.aceptada:
+        #    return "Rechazada"  # No se ha aceptado después de haberse enviado.
+        # Las rechazadas se borran directamente. No se guardan y por tanto no 
+        # hay estado para ellas. 
         else:
             return "En estudio"    # El banco me la está mirando y puede que 
                                    # me confirme un efecto, todos o ninguno.

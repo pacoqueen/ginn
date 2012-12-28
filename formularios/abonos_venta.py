@@ -729,7 +729,7 @@ class AbonosVenta(Ventana):
         try:
             if ldd.albaranSalida:
                 ldd.articulo.albaranSalida = ldd.albaranSalida.id
-            ldd.destroy(ventana = __file__)
+            ldd.destroy(usuario = self.usuario, ventana = __file__)
             # Y el artículo vuelve al limbo de los almacenes (al cliente, 
             # quicir).
             ldd.articulo.almacen = None
@@ -933,7 +933,7 @@ class AbonosVenta(Ventana):
         idlda = model[iter][-1]
         lda = pclases.LineaDeAbono.get(idlda)
         try:
-            lda.destroy(ventana = __file__)
+            lda.destroy(usuario = self.usuario, ventana = __file__)
             self.actualizar_ventana()
         except:
             utils.dialogo_info(titulo = 'ERROR',
@@ -1103,8 +1103,8 @@ class AbonosVenta(Ventana):
         abono.notificador.set_func(lambda : None)
         for ldd in abono.lineasDeDevolucion + abono.lineasDeAbono:
             ldd.abono = None
-            ldd.destroy(ventana = __file__)
-        abono.destroy(ventana = __file__)
+            ldd.destroy(usuario = self.usuario, ventana = __file__)
+        abono.destroy(usuario = self.usuario, ventana = __file__)
         self.ir_a_primero()
         
     def imprimir(self,boton):
@@ -1436,8 +1436,8 @@ class AbonosVenta(Ventana):
                     self.objeto.facturaDeAbono = None
                     self.objeto.make_swap()
                     for c in fa.cobros:
-                        c.destroy(ventana = __file__)
-                    fa.destroy(ventana = __file__)
+                        c.destroy(usuario = self.usuario, ventana = __file__)
+                    fa.destroy(usuario = self.usuario, ventana = __file__)
                     utils.dialogo_info(titulo = 'CREAR NUEVA FACTURA',
                                        texto = "Ahora puede crear una nueva f"
                                                "actura con el abono", 

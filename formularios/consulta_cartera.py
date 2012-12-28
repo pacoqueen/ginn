@@ -81,6 +81,8 @@ class ConsultaCartera(Ventana):
                     False, True, False, None),
                 ('Fecha vencimiento', 'gobject.TYPE_STRING', 
                     False, True, False, None),
+                ("En remesa en preparación", "gobject.TYPE_STRING", 
+                    False, True, False, None), 
                 ('puid', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_listview(self.wids['tv_datos'], cols)
         self.wids['tv_datos'].connect("row-activated", self.abrir_efecto)
@@ -124,7 +126,6 @@ class ConsultaCartera(Ventana):
                 a_remesar.append(pclases.getObjetoPUID(model[iter][-1]))
             iter = model.iter_next(iter)
         self.dialogo_previsualizacion(a_remesar)
-        self.buscar()
 
     def dialogo_previsualizacion(self, a_remesar):
         def mostrar_detalle(combo, detalle):
@@ -134,7 +135,7 @@ class ConsultaCartera(Ventana):
                 concentracion_actual = banco.get_concentracion_actual()
                 if concentracion_actual != None:
                     str_concentracion_actual = utils.float2str(
-                                                        concentracion_actual)
+                                                concentracion_actual[0] * 100)
                 else:
                     str_concentracion_actual = "N/A"
                 disponible = banco.get_disponible()
@@ -144,13 +145,13 @@ class ConsultaCartera(Ventana):
                     str_disponible = utils.float2str(disponible)
                 txt = "Detalle línea descuento:\n"\
                         "\tDisponible: %s\n"\
-                        "\tConcentración: %s %%\n"\
-                        "\tConcentración máxima: %s %%" % (
+                        "\tConcentración máxima actual: %s %%\n"\
+                        "\tConcentración máxima permitida: %s %%" % (
                                 str_disponible, 
                                 str_concentracion_actual, 
                                 banco.concentracion != None
-                                    and utils.float2str(banco.concentracion)
-                                    or "N/A")
+                                 and utils.float2str(banco.concentracion * 100)
+                                 or "N/A")
                 detalle.set_text(txt)
         def aceptar(boton, ventana, combo):
             banco = pclases.Banco.get(utils.combo_get_value(combo))
@@ -163,6 +164,7 @@ class ConsultaCartera(Ventana):
                 efecto.remesa = remesa
                 efecto.syncUpdate()
             ventana.destroy()
+            self.buscar()
             import remesas
             remesas.Remesas(objeto = remesa, usuario = self.usuario)
         def cancelar(boton, ventana):
@@ -170,6 +172,7 @@ class ConsultaCartera(Ventana):
         w = gtk.Window()
         w.set_title("SELECCIONE BANCO")
         w.set_modal(True)
+        w.set_transient_for(self.wids['ventana'])
         cbe = gtk.ComboBoxEntry()
         bancos = [(b.id, b.nombre) 
                   for b in pclases.Banco.select(orderBy = "nombre")]
@@ -236,6 +239,7 @@ class ConsultaCartera(Ventana):
                                       str_a_la_orden, 
                                       utils.str_fecha(efecto.fechaRecepcion), 
                                       utils.str_fecha(efecto.fechaVencimiento), 
+                                      efecto.remesa and efecto.remesa.id or "",
                                       efecto.puid))
                 total += efecto.cantidad
         vpro.ocultar()
@@ -253,8 +257,17 @@ class ConsultaCartera(Ventana):
         self.fin = str(temp[2])+'/'+str(temp[1])+'/'+str(temp[0])
 
     def buscar(self, boton = None):
+        # TODO: PORASQUI: Esto no es así. Un efecto puede estar en remesa 
+        # pero estar también en cartera si la remesa no tiene fecha 
+        # prevista de abono (es decir, no se ha enviado al banco a su estudio).
         criteriosp = [pclases.PagareCobro.q.remesaID == None]
         criteriosc = [pclases.Confirming.q.remesaID == None]
+        # De modo que además la relación uno a muchos tiene pinta de estar 
+        # mal. Sería muchos a muchos porque un efecto puede estar en dos 
+        # remesas en preparación A LA VEZ, aunque solo en una en estudio o 
+        # confirmada. 
+        criteriosp = []
+        criteriosc = []
         if self.inicio:
             criteriosp.append(
                     pclases.PagareCobro.q.fechaCobro >= self.inicio)
