@@ -102,7 +102,7 @@ class Confirmings(Ventana):
         confirming, duplica también los vencimientos asociados dividiendo 
         el importe en 2.
         """
-        if utils.dialogo(titulo = "¿DIVIDIR PAGARÉ?", 
+        if utils.dialogo(titulo = "¿DIVIDIR CONFIRMING?", 
                          texto = "Se procederá a dividir el confirming actual"
                                  " en dos.\nAmbos serán idénticos y tendrán c"
                                  "omo importe total la mitad del importe actu"
@@ -439,17 +439,21 @@ class Confirmings(Ventana):
 
     def show_texto_boton_pendiente(self):
         """
-        Muestra el texto del botón de pendiente acorde al estado del pagaré.
+        Muestra el texto del botón de pendiente acorde al estado del 
+        confirming.
         """
         confirming = self.objeto
         if not confirming:
             txtbutton = "No vencido"
         else:
             if self.wids['tb_pendiente'].get_active():
-                if confirming.fechaCobrado < confirming.fechaVencimiento:
-                    txtbutton = "Confirming adelantado"
+                if confirming.fechaCobrado:
+                    if confirming.fechaCobrado < confirming.fechaVencimiento:
+                        txtbutton = "Confirming adelantado"
+                    else:
+                        txtbutton = 'Confirming cobrado'
                 else:
-                    txtbutton = 'Confirming cobrado'
+                    txtbutton = 'Confirming pendiente o no vencido'
             else:
                 txtbutton = 'Confirming pendiente o no vencido'
         self.wids['tb_pendiente'].set_label(txtbutton)
@@ -497,7 +501,8 @@ class Confirmings(Ventana):
         confirming = self.objeto
         if confirming != None:
             confirming.notificador.set_func(lambda : None)
-        self.objeto = pclases.Confirming(fechaCobro = mx.DateTime.localtime(), 
+        self.objeto = pclases.Confirming(fechaCobro = mx.DateTime.localtime() 
+                                                  + (mx.DateTime.oneDay * 60), 
                                     cantidad = 0, 
                                     cobrado = -1, 
                                     fechaRecepcion = mx.DateTime.localtime(), 
@@ -505,7 +510,7 @@ class Confirmings(Ventana):
                                     procesado = False)
         confirming = self.objeto
         confirming.notificador.set_func(self.aviso_actualizacion)
-        utils.dialogo_info(titulo = 'PAGARÉ CREADO', 
+        utils.dialogo_info(titulo = 'CONFIRMING CREADO', 
                            texto = 'No olvide relacionar las facturas que '
                                    'cubre el efecto.', 
                            padre = self.wids['ventana'])
@@ -522,7 +527,7 @@ class Confirmings(Ventana):
         la ventana de resultados.
         """
         confirming = self.objeto
-        a_buscar = utils.dialogo_entrada(titulo = "BUSCAR PAGARÉ", 
+        a_buscar = utils.dialogo_entrada(titulo = "BUSCAR CONFIRMING", 
                     texto = "Introduzca número, fecha del confirming o "
                             "número de factura:", 
                     padre = self.wids['ventana'])
@@ -1080,7 +1085,7 @@ class Confirmings(Ventana):
         confirming = self.objeto
         if confirming != None:
             if utils.dialogo('¿Está seguro de eliminar el confirming actual?', 
-                             'BORRAR PAGARÉ', 
+                             'BORRAR CONFIRMING', 
                              padre = self.wids['ventana']):
                 confirming.notificador.set_func(lambda : None)
                 try:

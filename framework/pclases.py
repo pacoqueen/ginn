@@ -2994,6 +2994,9 @@ class Confirming(SQLObject, PRPCTOO):
         """
         if fecha_base == mx.DateTime.today() and fecha_base >= self.fechaCobro:
             self.cobrado = self.cantidad
+            # Si se ha cobrado pero no tengo fecha de cobro, esto es un sindiós
+            if not self.fechaCobrado:
+                self.fechaCobrado = fecha_base
             self.syncUpdate()
         res = self.cobrado < self.cantidad #or fecha_base < self.fechaCobro 
             # Si se adelanta el confirming, ya no está pendiente.
