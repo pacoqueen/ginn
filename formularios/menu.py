@@ -500,7 +500,7 @@ class Menu:
                 else:
                     #widget.item_activated(path)
                     self.abrir(widget, path, model)
-            widget.clics = 0
+                    widget.clics = 0
             return True
         iview.connect('button-press-event', button_press)
         iview.connect('motion-notify-event', motion)
