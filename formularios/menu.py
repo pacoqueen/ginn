@@ -71,7 +71,7 @@ if path_framework not in sys.path:
     sys.path.append(path_framework)
 from configuracion import ConfigConexion
 
-__version__ = '3.9.8 (build ~3392)'
+__version__ = '4.0.1 (alpha)'
 __version_info__ = tuple(
     [int(num) for num in __version__.split()[0].split('.')] + 
     [txt.replace("(", "").replace(")", "") for txt in __version__.split()[1:]]
@@ -177,12 +177,10 @@ class Menu:
         import gestor_mensajes, autenticacion
         login = autenticacion.Autenticacion(user, passwd)
         pclases = import_pclases()
-        if pclases.VERBOSE:
-            print "Cargando gestor de mensajes..."
         self.logger = login.logger
         if not login.loginvalido():
             sys.exit(1)
-        self.usuario = login.loginvalido()
+        pclases.logged_user = self.usuario = login.loginvalido()
         # Configuración del correo para informes de error:
         if self.usuario.cuenta:
             gtkexcepthook.feedback = self.usuario.cuenta
@@ -196,8 +194,10 @@ class Menu:
                 gtkexcepthook.ssl = False
                 gtkexcepthook.port = 25
             gtkexcepthook.devs_to = "rodriguez.bogado@gmail.com"\
-                                    ", frbogado@novaweb.es"
+                                    ", informatica@geotexan.com"
         # Continúo con el gestor de mensajes y resto de ventana menú.
+        if pclases.VERBOSE:
+            print "Cargando gestor de mensajes..."
         self.__gm = gestor_mensajes.GestorMensajes(self.usuario)
         # DONE: Dividir la ventana en expansores con los módulos del programa 
         # (categorías) y dentro de ellos un IconView con los iconos de cada 
@@ -502,9 +502,22 @@ class Menu:
                     self.abrir(widget, path, model)
                     widget.clics = 0
             return True
+        def key_pressed(widget, event):
+            # Abro ventanas también con espacio y ENTER porque he desactivado 
+            # el item-activated.
+            if event.keyval == gtk.gdk.keyval_from_name("Return"):
+                try:
+                    paths = widget.get_selected_items()
+                    path = paths[0]
+                except IndexError:
+                    pass    # "Nada seleccionado"
+                else:
+                    #widget.item_activated(path)
+                    self.abrir(widget, path, model)
         iview.connect('button-press-event', button_press)
         iview.connect('motion-notify-event', motion)
         iview.connect('button-release-event', button_release)
+        iview.connect('key-press-event', key_pressed)
         return contenedor
 
     def mostrar_item_seleccionado(self, icon_view, model):
