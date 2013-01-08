@@ -29,7 +29,7 @@
 ## NOTAS:
 ##  
 ## ----------------------------------------------------------------
-##  
+## TODO: Permitir cargar otro fichero de log diferente al actual.
 ###################################################################
 ## Changelog:
 ## 2 de febrero de 2007 -> Inicio
