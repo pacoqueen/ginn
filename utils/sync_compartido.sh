@@ -22,8 +22,9 @@ if [ -d $DEST ]; then
     echo "Corrigiendo permisos de grupo..." 
     chmod g+rw -R ginn
     #read -p "Copiando fichero de configuración. Pulsa ENTER para continuar..." mierda
-    echo "Coppiando fichero de configuración..."
+    echo "Coppiando fichero de log y configuración..."
     cp -vf $DEST/ginn/framework/ginn.conf /tmp
+    cp -vf $DEST/ginn/formularios/ginn.log /tmp
     #read -p "Copiando ficheros de desarrollo a compartido. Pulsa ENTER para empezar..." mierda
     echo "Copiando ficheros de desarrollo a compartido..."
     sudo rsync -av ginn $DEST
@@ -32,8 +33,9 @@ if [ -d $DEST ]; then
     find $DEST/ginn -name ".git" -type d -exec rm -rf '{}' \;
     rm $DEST/ginn/.gitignore
     #read -p "Pulsa ENTER para restaurar fichero de configuración..." mierda
-    echo "Restaurando fichero de configuración..."
+    echo "Restaurando fichero de log y configuración..."
     cp -vf /tmp/ginn.conf $DEST/ginn/framework/
+    cp -vf /tmp/ginn.log $DEST/ginn/formularios/
     #read -p "Asignando permisos. Pulsa ENTER para seguir..." mierda
     echo "Asignando permisos..."
     sudo chown -R nobody:nogroup $DEST/ginn
