@@ -500,11 +500,24 @@ class Menu:
                 else:
                     #widget.item_activated(path)
                     self.abrir(widget, path, model)
-            widget.clics = 0
+                    widget.clics = 0
             return True
+        def key_pressed(widget, event):
+            # Abro ventanas también con espacio y ENTER porque he desactivado 
+            # el item-activated.
+            if event.keyval == gtk.gdk.keyval_from_name("Return"):
+                try:
+                    paths = widget.get_selected_items()
+                    path = paths[0]
+                except IndexError:
+                    pass    # "Nada seleccionado"
+                else:
+                    #widget.item_activated(path)
+                    self.abrir(widget, path, model)
         iview.connect('button-press-event', button_press)
         iview.connect('motion-notify-event', motion)
         iview.connect('button-release-event', button_release)
+        iview.connect('key-press-event', key_pressed)
         return contenedor
 
     def mostrar_item_seleccionado(self, icon_view, model):
