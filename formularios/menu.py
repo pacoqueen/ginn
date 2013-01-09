@@ -1164,7 +1164,7 @@ def read_changelog():
     """
     try:
         directorido = os.path.abspath(os.path.dirname(__file__))
-        f = open(os.path.join(directorido, "ChangeLog.git.txt", 'r'))
+        f = open(os.path.join(directorido, "..", "ChangeLog.git.txt", 'r'))
     except IOError:
         gitcommand = 'git log | grep -v "commit " | grep -v "Author:" | egrep -v "$^" | grep -v "Merge: "'
         f = os.popen(gitcommand)
