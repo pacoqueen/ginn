@@ -18,7 +18,7 @@ class MarqueeLabel(gtk.Label):
         padre del widget. Se deja para futuras versiones.
         speed es el número de caracteres por segundo que se desplazan.
         """
-        self.texto_original = self.texto = texto
+        self.texto_original = self.texto = texto.decode("utf-8")
         self._long = init_long
         self.parte_visible = texto[:self._long]
         FRAME_DELAY = int(round(1000.0 / speed))
@@ -50,7 +50,7 @@ class MarqueeLabel(gtk.Label):
 
 def test():
     w = gtk.Window()
-    longtext = " ".join(["Texto muy largo %d." % j
+    longtext = " ".join(["Texto á muy largo %d." % j
                          for j in range(25)])
     marquee = MarqueeLabel(longtext)
     w.add(marquee)
