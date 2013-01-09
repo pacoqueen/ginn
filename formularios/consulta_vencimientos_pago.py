@@ -562,10 +562,15 @@ class ConsultaVencimientosPagos(Ventana):
         está dentro de los criterios.
         """
         fechavto = self.get_fecha_vto_logic(tuplalogic) 
-        res = (fechavto 
-               and fechavto >= fechaini 
-               and fechavto <= fechafin 
-               and tuplalogic.pagos == [])
+        if fechaini:
+            res = (fechavto 
+                   and fechavto >= fechaini 
+                   and fechavto <= fechafin 
+                   and tuplalogic.pagos == [])
+        else:
+            res = (fechavto 
+                   and fechavto <= fechafin 
+                   and tuplalogic.pagos == [])
         return res
 
     def get_fecha_vto_logic(self, l):
