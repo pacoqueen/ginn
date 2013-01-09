@@ -71,6 +71,8 @@ if path_framework not in sys.path:
     sys.path.append(path_framework)
 from configuracion import ConfigConexion
 
+import custom_widgets
+
 __version__ = '4.0.1 (alpha)'
 __version_info__ = tuple(
     [int(num) for num in __version__.split()[0].split('.')] + 
@@ -285,7 +287,24 @@ class Menu:
         event_box.add(texto)
         event_box.modify_bg(gtk.STATE_NORMAL, 
                             event_box.get_colormap().alloc_color("white"))
-        self.cabecera.pack_start(event_box)
+        half_header = gtk.VBox()
+        half_header.add(event_box)
+        txtchangelog = read_changelog()
+        if txtchangelog:
+            marquee_changelog = custom_widgets.MarqueeLabel(
+                    txtchangelog, init_long = 61)
+            little_label = gtk.Label(
+                    "<small><i>Últimas actualizaciones:</i></small>")
+            little_label.set_use_markup(True)
+            little_label.set_property("xalign", 0.1)
+            half_header.add(little_label)
+            marquee_changelog_event = gtk.EventBox()
+            marquee_changelog_event.add(marquee_changelog)
+            half_header.add(marquee_changelog_event)
+            def reset(*args, **kw):
+                marquee_changelog.rewind()
+            marquee_changelog_event.connect("button-press-event", reset)
+        self.cabecera.pack_start(half_header)
         self.caja.pack_start(self.cabecera, fill=True, expand=False)
         self.current_frame = None
         cuerpo_central = self.create_menu()
@@ -1137,6 +1156,22 @@ def main():
         enviar_correo('Errores en segundo plano. La stderr contiene:\n%s' 
                         % (errores), 
                       m.get_usuario())
+
+def read_changelog():
+    """
+    Carga el ChangeLog de git del fichero ChangeLog.git.txt o ejecuta un 
+    git-log directamente si no lo encuentra.
+    """
+    try:
+        directorido = os.path.abspath(os.path.dirname(__file__))
+        f = open(os.path.join(directorido, "ChangeLog.git.txt", 'r'))
+    except IOError:
+        gitcommand = 'git log | grep -v "commit " | grep -v "Author:" | egrep -v "$^" | grep -v "Merge: "'
+        f = os.popen(gitcommand)
+    content = " ".join([l.replace("\n", " ").replace("Date: ", " |") 
+                        for l in f.readlines()])
+    f.close()
+    return content
 
 
 if __name__ == '__main__':

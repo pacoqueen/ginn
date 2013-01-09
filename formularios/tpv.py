@@ -1868,7 +1868,7 @@ def actualizar_existencias(producto, cantidad):
                     bultos = cantidad / cantidad_por_bulto
                 except ZeroDivisionError:
                     bultos = 0
-                # TODO: PORASQUI: No hay rastro de las existencias por almacén 
+                # TODO: No hay rastro de las existencias por almacén 
                 # en los productos de venta especiales. FUUUUUUUUUUUUUUUU
                 producto.camposEspecificosEspecial.stock -= cantidad
                 producto.camposEspecificosEspecial.existencias -= int(bultos)
@@ -2343,7 +2343,7 @@ def pasar_foco_enter(widget, event, wids, destino):
         destino.grab_focus() 
 
 def dialogo_nuevo_cliente(nombre, padre = None):
-    # TODO: PORASQUI: No se comprueba que el CIF del cliente sea válido.
+    # TODO: No se comprueba que el CIF del cliente sea válido.
     res = [None]
     de = gtk.Dialog("DATOS DEL CLIENTE",
                     padre,
@@ -2384,7 +2384,7 @@ def dialogo_nuevo_cliente(nombre, padre = None):
     tabla.attach(gtk.Label("Provincia: "), 0, 1, 5, 6)
     tabla.attach(gtk.Label("País: "), 0, 1, 6, 7)
     tabla.attach(gtk.Entry(), 1, 2, 0, 1)
-    tabla.get_children()[0].set_text(nombre) # La lista de get_children es LIFO.
+    tabla.get_children()[0].set_text(nombre) #La lista de get_children es LIFO.
     tabla.attach(gtk.Entry(), 1, 2, 1, 2)
     tabla.attach(gtk.Entry(), 1, 2, 2, 3)
     tabla.attach(gtk.Entry(), 1, 2, 3, 4)

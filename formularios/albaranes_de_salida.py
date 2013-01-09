@@ -4476,7 +4476,7 @@ def ajustar_existencias(ldv, cantidad_anterior = None):
                 bultos = 0
             #print producto.camposEspecificosEspecial.stock, cantidad
             #print producto.camposEspecificosEspecial.existencias, bultos
-            # TODO: PORASQUI: No hay rastro de las existencias por almacén 
+            # TODO: No hay rastro de las existencias por almacén 
             # en los productos de venta especiales. FUUUUUUUUUUUUUUUU
             producto.camposEspecificosEspecial.stock -= cantidad
             producto.camposEspecificosEspecial.existencias -= int(bultos)
