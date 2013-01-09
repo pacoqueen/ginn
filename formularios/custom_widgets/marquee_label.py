@@ -8,17 +8,17 @@ class MarqueeLabel(gtk.Label):
     Label con el texto desplazándose "cutremente" de derecha a izquierda.
     """
     # TODO: Permitir que use markups el texto.
-    # TODO: Permitir que el texto mostrado sea mayor o menor en función del 
+    # TODO: Permitir que el texto mostrado sea mayor o menor en función del
     #       tamaño del padre.
 
     def __init__(self, texto = "", init_long = 30, speed = 10):
         """
         init_long es la longitud EN CARACTERES de la parte del texto mostrado.
-        Idealmente debería verse la parte que quepa en función del tamaño del 
+        Idealmente debería verse la parte que quepa en función del tamaño del
         padre del widget. Se deja para futuras versiones.
         speed es el número de caracteres por segundo que se desplazan.
         """
-        self.texto_original = self.texto = texto
+        self.texto_original = self.texto = texto.decode("utf-8")
         self._long = init_long
         self.parte_visible = texto[:self._long]
         FRAME_DELAY = int(round(1000.0 / speed))
@@ -36,10 +36,10 @@ class MarqueeLabel(gtk.Label):
         self.set_text(self.parte_visible)
         #self.set_use_markup(True)
         return True
-    
+
     def rewind(self, speed = None):
         """
-        Rebobina el texto el número de caracteres indicado en "speed". Si es 
+        Rebobina el texto el número de caracteres indicado en "speed". Si es
         None, vuelve al principio.
         """
         if speed is None: # reset!
@@ -50,7 +50,7 @@ class MarqueeLabel(gtk.Label):
 
 def test():
     w = gtk.Window()
-    longtext = " ".join(["Texto muy largo %d." % j 
+    longtext = " ".join(["Texto á muy largo %d." % j
                          for j in range(25)])
     marquee = MarqueeLabel(longtext)
     w.add(marquee)
@@ -60,4 +60,3 @@ def test():
 
 if __name__ == "__main__":
     test()
-
