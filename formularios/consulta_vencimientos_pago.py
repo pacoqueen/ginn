@@ -462,7 +462,7 @@ class ConsultaVencimientosPagos(Ventana):
         Dadas fecha de inicio y de fin, devuelve todos los vencimientos 
         no pagados al completo.
         """
-        if self.inicio == None:
+        if not self.inicio:
             vencimientos = pclases.VencimientoPago.select(
                             pclases.VencimientoPago.q.fecha <= self.fin, 
                             orderBy = 'fecha')
@@ -694,7 +694,7 @@ class ConsultaVencimientosPagos(Ventana):
                               utils.float2str(i[1]['importe']),
                               i[1]['comentario'],
                               i[1]['cuenta']))
-        if (self.inicio) == None:            
+        if not self.inicio:            
             fechaInforme = 'Hasta '+utils.str_fecha(self.fin)
         else:
             fechaInforme = utils.str_fecha(self.inicio)+' - '+utils.str_fecha(self.fin)
