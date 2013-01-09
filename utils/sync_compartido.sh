@@ -28,7 +28,7 @@ if [ -d $DEST ]; then
     #read -p "Copiando ficheros de desarrollo a compartido. Pulsa ENTER para empezar..." mierda
     echo "Copiando ficheros de desarrollo a compartido..."
     sudo rsync -av ginn $DEST
-    #read -p "Eliminado .git. Pulsa ENTER para empezar..." mierda
+    #read -p "Eliminado .git. Pulsa ENTER para empezar..." merdellOn
     echo "Eliminado .git..."
     find $DEST/ginn -name ".git" -type d -exec rm -rf '{}' \;
     rm $DEST/ginn/.gitignore
@@ -36,9 +36,12 @@ if [ -d $DEST ]; then
     echo "Restaurando fichero de log y configuración..."
     cp -vf /tmp/ginn.conf $DEST/ginn/framework/
     cp -vf /tmp/ginn.log $DEST/ginn/formularios/
-    #read -p "Asignando permisos. Pulsa ENTER para seguir..." mierda
+    #read -p "Asignando permisos. Pulsa ENTER para seguir..." merde
     echo "Asignando permisos..."
     sudo chown -R nobody:nogroup $DEST/ginn
+    echo "Regenerando log..."
+    cd ginn
+    git log | grep -v "commit " | grep -v "Author:" | egrep -v "$^" | grep -v "Merge: " > $DEST/ginn/ChangeLog.git.txt
 else
     echo "Este script debe ejecutarse en el servidor"
 fi
