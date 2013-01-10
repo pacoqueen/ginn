@@ -22,7 +22,11 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA  #
 ###############################################################################
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Reconocimiento del código del widget de escala de estrellas a quien 
+=======
+# Reconocimiento del código del widget de escala de estrellas a quien
+>>>>>>> master
 =======
 # Reconocimiento del código del widget de escala de estrellas a quien
 >>>>>>> master
@@ -36,7 +40,11 @@ try:
 except:
     raise SystemExit
 <<<<<<< HEAD
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> master
 =======
 
 >>>>>>> master
@@ -46,7 +54,11 @@ if gtk.pygtk_version < (2, 0):
     print "Se necesita PyGtk 2.0 o posterior."
     raise SystemExit
 <<<<<<< HEAD
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> master
 =======
 
 >>>>>>> master
@@ -60,6 +72,9 @@ gobject.type_register(MarqueeLabel)
 
 __all__ = ["Velocimetro", "StarHScale", "MarqueeLabel"]
 <<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 =======
 >>>>>>> master

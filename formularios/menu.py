@@ -1160,6 +1160,7 @@ def main():
 def read_changelog():
     """
 <<<<<<< HEAD
+<<<<<<< HEAD
     Carga el ChangeLog de git del fichero ChangeLog.git.txt o ejecuta un 
     git-log directamente si no lo encuentra.
     """
@@ -1171,6 +1172,8 @@ def read_changelog():
         f = os.popen(gitcommand)
     content = " ".join([l.replace("\n", " ").replace("Date: ", " |") 
 =======
+=======
+>>>>>>> master
     Carga el ChangeLog de git del fichero ChangeLog.git.txt o ejecuta un
     git-log directamente si no lo encuentra.
     """
@@ -1181,6 +1184,9 @@ def read_changelog():
         gitcommand = 'git log | grep -v "commit " | grep -v "Author:" | egrep -v "$^" | grep -v "Merge: "'
         f = os.popen(gitcommand)
     content = " ".join([l.replace("\n", " ").replace("Date: ", " |")
+<<<<<<< HEAD
+>>>>>>> master
+=======
 >>>>>>> master
                         for l in f.readlines()])
     f.close()
