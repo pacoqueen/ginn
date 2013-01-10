@@ -44,12 +44,6 @@ except ImportError:
     sys.path.append(pathjoin("..", "framework"))
     import pclases
 import mx
-try:
-    import geninformes
-except ImportError:
-    sys.path.append('../informes')
-    import geninformes
-
 
 class ListadoProductos(Ventana):
     inicio = None
