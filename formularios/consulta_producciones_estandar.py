@@ -68,6 +68,8 @@ class ProduccionesEstandar(Ventana):
         self.wids['tv_datos'].connect("row-activated", self.abrir_producto)
         #self.wids['e_buscar'].grab_focus()
         self.wids['e_buscar'].set_property("visible", False)
+        self.wids['label1'].set_property("visible", False)
+        self.wids['ventana'].set_title("Velocidades de la línea de geotextiles según producto")
         gtk.main()
 
     def exportar(self, boton):
@@ -131,7 +133,7 @@ class ProduccionesEstandar(Ventana):
 
     def buscar(self, boton):
         productos = pclases.ProductoVenta.select(
-                pclases.ProductoVenta.camposEspecificosRolloID != None)
+                pclases.ProductoVenta.q.camposEspecificosRolloID != None)
         self.rellenar_tabla(productos)
 
     def limpiar_tv(self, boton):
@@ -151,7 +153,8 @@ class ProduccionesEstandar(Ventana):
         strfecha = utils.str_fecha(mx.DateTime.localtime())
         informe = treeview2pdf(self.wids['tv_datos'], 
                         titulo="Listado de productos con velocidades", 
-                        fecha = strfecha) 
+                        fecha = strfecha, 
+                        apaisado = False) 
         if informe:
             abrir_pdf(informe)
 
