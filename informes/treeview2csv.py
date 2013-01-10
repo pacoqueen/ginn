@@ -42,17 +42,27 @@ from informes import abrir_csv
 from tempfile import gettempdir
 import csv
 
-def to_float(t):
+def to_float(t, sensibilidad = 2):
     """
     Si t es una cadena de texto con el símbolo del euro o de metros cuadrados, 
     convierte todo lo que puede a flotante con técnica "greedy".
     En otro caso lanza una excepción ValueError al igual que hace el _float 
     de utils.
+    sensibilidad es un parámetro para evitar falsos positivos. Si en la cadena 
+    hay un cierto número de palabras (2 por defecto) entonces no convierte a 
+    número flotante.
     """
-    simbolos = ("€", "m²", " m", " kg")
+    from string import digits as numeros
+    palabras = []
+    for p in t.split():
+        if p[0] not in numeros:
+            palabras.append(p)
+            if len(palabras) >= sensibilidad:
+                raise ValueError
+    simbolos = ("€", "m²", " m", " kg", " k")
     for s in simbolos:
         if s in t:
-            res = utils.parse_float(t)
+            res = utils.parse_float(t[:t.index(s)])
             return res
     raise ValueError
 
