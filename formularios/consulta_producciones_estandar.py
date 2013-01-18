@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
-#                          Diego Muñoz Escalante.                             #
-# (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
+# Copyright (C) 2005-2013  Francisco José Rodríguez Bogado                    #
+#                          <pacoqueen@users.sourceforge.net>                  #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
 #                                                                             #
@@ -24,11 +23,9 @@
 ###############################################################################
 
 ###################################################################
-## listado_productos.py - Listado simple de productos para imprimir
+## consulta_producciones_estandar.py                               
 ###################################################################
-## TODO: Barra de progreso. Aunque habría varios puntos donde 
-##       meterla, no solo en el rellenar_tabla. También en las 
-##       sugerencias, en el buscar...
+## Listado de productos de venta (rollos) con sus velocidades. 
 ###################################################################
 
 from ventana import Ventana
@@ -45,37 +42,34 @@ except ImportError:
     import pclases
 import mx
 
-class ListadoProductos(Ventana):
-    inicio = None
-    fin = None
-    cliente = None
-    resultado = []
+class ProduccionesEstandar(Ventana):
 
     def __init__(self, objeto = None, usuario = None):
-        """
-        Constructor. objeto puede ser un objeto de pclases con el que
-        comenzar la ventana (en lugar del primero de la tabla, que es
-        el que se muestra por defecto).
-        """
         self.usuario = usuario
-        global fin
         Ventana.__init__(self, 'listado_productos.glade', objeto)
         connections = {'b_salir/clicked': self.salir,
                        'b_limpiar/clicked': self.limpiar_tv, 
                        'b_buscar/clicked': self.buscar,
                        'b_imprimir/clicked': self.imprimir,
                        'b_exportar/clicked': self.exportar}
+        self.wids['b_limpiar'].set_property("visible", False)
         self.add_connections(connections)
         cols = (('Código', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Descripción', 'gobject.TYPE_STRING', False,True,False,None),
-                ('PVP', 'gobject.TYPE_STRING', False,True,False,None),
+                ('Gramos', 'gobject.TYPE_STRING', False,True,False,None),
+                ('Producción estándar', 
+                    'gobject.TYPE_STRING', False,True,False,None),
                 ('ID', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_listview(self.wids['tv_datos'], cols)
-        col = self.wids['tv_datos'].get_column(2)
-        for cell in col.get_cell_renderers():
-            cell.set_property("xalign", 1)
+        for ncol in (2, 3):
+            col = self.wids['tv_datos'].get_column(ncol)
+            for cell in col.get_cell_renderers():
+                cell.set_property("xalign", 1)
         self.wids['tv_datos'].connect("row-activated", self.abrir_producto)
-        self.wids['e_buscar'].grab_focus()
+        #self.wids['e_buscar'].grab_focus()
+        self.wids['e_buscar'].set_property("visible", False)
+        self.wids['label1'].set_property("visible", False)
+        self.wids['ventana'].set_title("Velocidades de la línea de geotextiles según producto")
         gtk.main()
 
     def exportar(self, boton):
@@ -129,72 +123,18 @@ class ListadoProductos(Ventana):
         Rellena el model con los items de la consulta
         """
         model = self.wids['tv_datos'].get_model()
-        #model.clear()
-        try:
-            dde = pclases.DatosDeLaEmpresa.select()[0]
-            iva = dde.iva
-        except IndexError:
-            iva = 0.21
-        tarifa = pclases.Tarifa.get_tarifa_defecto()
+        model.clear()
         for i in items:
-            if tarifa:
-                pvp = tarifa.obtener_precio(i) * (1 + iva)
-            else:
-                pvp = i.precioDefecto * (1 + iva)
             model.append((i.codigo,
                           i.descripcion,
-                          utils.float2str(pvp),
+                          i.camposEspecificosRollo.gramos, 
+                          utils.float2str(i.prodestandar),
                           i.get_puid()))
 
     def buscar(self, boton):
-        a_buscar = self.wids['e_buscar'].get_text()
-        productos = []
-        for p in utils.buscar_productos_compra(a_buscar):
-            productos.append(p)
-        for p in utils.buscar_productos_venta(a_buscar):
-            productos.append(p)
-        if not len(productos) and len(a_buscar): 
-            # Busca algo de texto pero no se encontró
-            try:
-                productos = self.sugerir_productos(a_buscar)
-            except (ImportError, ValueError):
-                utils.dialogo_info(titulo = "SIN RESULTADOS", 
-                                   texto = "No se encontraron productos con el"
-                                           "texto «%s»." % a_buscar, 
-                                   padre = self.wids['ventana'])
+        productos = pclases.ProductoVenta.select(
+                pclases.ProductoVenta.q.camposEspecificosRolloID != None)
         self.rellenar_tabla(productos)
-
-    def sugerir_productos(self, txt):
-        """
-        Intenta sugerir productos según el corrector Norving.
-        """
-        dirutils = os.path.join("..", "utils")
-        if dirutils not in sys.path:
-            sys.path.append(dirutils)
-        import spelling
-        palabras = []
-        for pc in pclases.ProductoCompra.select():
-            palabras.append(pc.codigo.lower())
-            palabras.append(pc.descripcion.lower())
-        for pc in pclases.ProductoVenta.select():
-            palabras.append(pc.codigo.lower())
-            palabras.append(pc.descripcion.lower())
-        palabras = " ".join(palabras)
-        corrector = spelling.SpellCorrector(palabras)
-        sugerencia = corrector.correct(txt.lower())
-        if sugerencia != txt:
-            res = utils.dialogo(titulo = "SUGERENCIA DE BÚSQUEDA", 
-                    texto="No se encontró «%s», ¿tal vez quiso decir «%s»?" % (
-                            txt, sugerencia), 
-                    padre = self.wids['ventana'])
-            if res:
-                res = ([p for p in utils.buscar_productos_compra(sugerencia)]+ 
-                       [p for p in utils.buscar_productos_venta(sugerencia)])
-            else:
-                res = []
-        else:
-            raise ValueError, "Sin alternativas que sugerir."
-        return res
 
     def limpiar_tv(self, boton):
         """
@@ -212,11 +152,12 @@ class ListadoProductos(Ventana):
         from informes import abrir_pdf
         strfecha = utils.str_fecha(mx.DateTime.localtime())
         informe = treeview2pdf(self.wids['tv_datos'], 
-                        titulo="Listado de productos con PVP (IVA incluido)", 
-                        fecha = strfecha) 
+                        titulo="Listado de productos con velocidades", 
+                        fecha = strfecha, 
+                        apaisado = False) 
         if informe:
             abrir_pdf(informe)
 
 if __name__ == '__main__':
-    t = ListadoProductos()
+    t = ProduccionesEstandar()
 
