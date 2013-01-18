@@ -37,25 +37,13 @@ if [ -d $DEST ]; then
     cp -vf /tmp/ginn.conf $DEST/ginn/framework/
     cp -vf /tmp/ginn.log $DEST/ginn/formularios/
     #read -p "Asignando permisos. Pulsa ENTER para seguir..." merde
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> master
     echo "Regenerando log..."
     cd ginn
     sudo chown $(whoami) $DEST/ginn/ChangeLog.git.txt
     chmod +w $DEST/ginn/ChangeLog.git.txt
     git log | grep -v "commit " | grep -v "Author:" | egrep -v "$^" | grep -v "Merge: " > $DEST/ginn/ChangeLog.git.txt
-<<<<<<< HEAD
->>>>>>> master
-=======
->>>>>>> master
     echo "Asignando permisos..."
     sudo chown -R nobody:nogroup $DEST/ginn
-    echo "Regenerando log..."
-    cd ginn
-    git log | grep -v "commit " | grep -v "Author:" | egrep -v "$^" | grep -v "Merge: " > $DEST/ginn/ChangeLog.git.txt
 else
     echo "Este script debe ejecutarse en el servidor"
 fi

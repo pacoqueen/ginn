@@ -21,17 +21,6 @@
 # along with GeotexInn; if not, write to the Free Software                    #
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA  #
 ###############################################################################
-<<<<<<< HEAD
-<<<<<<< HEAD
-# Reconocimiento del código del widget de escala de estrellas a quien 
-=======
-# Reconocimiento del código del widget de escala de estrellas a quien
->>>>>>> master
-=======
-# Reconocimiento del código del widget de escala de estrellas a quien
->>>>>>> master
-# corresponda (ver docstring de la clase).
-###############################################################################
 
 try:
     import gtk
@@ -39,29 +28,11 @@ try:
     from gtk import gdk
 except:
     raise SystemExit
-<<<<<<< HEAD
-<<<<<<< HEAD
-    
-=======
-
->>>>>>> master
-=======
-
->>>>>>> master
-
 import pygtk
 if gtk.pygtk_version < (2, 0):
     print "Se necesita PyGtk 2.0 o posterior."
     raise SystemExit
-<<<<<<< HEAD
-<<<<<<< HEAD
-  
-=======
 
->>>>>>> master
-=======
-
->>>>>>> master
 from velocimetro import Velocimetro
 from starhscale import StarHScale
 from marquee_label import MarqueeLabel
@@ -71,10 +42,4 @@ gobject.type_register(Velocimetro)
 gobject.type_register(MarqueeLabel)
 
 __all__ = ["Velocimetro", "StarHScale", "MarqueeLabel"]
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-=======
->>>>>>> master
-=======
->>>>>>> master
