@@ -1,6 +1,6 @@
 --#############################################################################
--- Copyright (C) 2005, 2008 Francisco José Rodríguez Bogado,                  #
---                          Diego Muñoz Escalante.                            #
+-- Copyright (C) 2005-2013 Francisco José Rodríguez Bogado,                   #
+--                         Diego Muñoz Escalante.                             #
 -- (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)         #
 --                                                                            #
 -- This file is part of GeotexInn.                                            #
@@ -2376,8 +2376,8 @@ CREATE TABLE pagare_cobro(
         -- automáticamente y no hace falta actualizar el estado al cumplir la 
         -- fecha de vencimiento.
     a_la_orden BOOLEAN DEFAULT TRUE, 
-    banco_id INT REFERENCES banco DEFAULT NULL, 
-    remesa_id INT REFERENCES remesa DEFAULT NULL
+    banco_id INT REFERENCES banco DEFAULT NULL
+    -- remesa_id INT REFERENCES remesa DEFAULT NULL
 );
 
 --------------------------
@@ -2400,11 +2400,34 @@ CREATE TABLE confirming(
         -- haberse negociado. Si cobrado >= cantidad, este campo guarda la 
         -- fecha en que se ha realizado el cobro y el confirming ha dejado de 
         -- estar pendiente.
-    procesado BOOLEAN DEFAULT FALSE, -- Si True ya se ha procesado 
+    procesado BOOLEAN DEFAULT FALSE  -- Si True ya se ha procesado 
         -- automáticamente y no hace falta actualizar el estado al cumplir la 
         -- fecha de vencimiento.
-    remesa_id INT REFERENCES remesa DEFAULT NULL
+    -- remesa_id INT REFERENCES remesa DEFAULT NULL
 );      -- NEW! 20/11/2008
+
+----------------------
+-- Efectos de cobro --
+-----------------------------------------------------
+-- Tabla "padre" de pagarés de cobro y confirming. --
+-----------------------------------------------------
+CREATE TABLE efecto(
+    id SERIAL PRIMARY KEY, 
+    pagare_cobro_id INT REFERENCES pagare_cobro DEFAULT NULL, 
+    confirming_id INT REFERENCES confirming DEFAULT NULL
+    cuenta_bancaria_cliente_id INT REFERENCES cuenta_bancaria_cliente DEFAULT NULL, 
+    -- Ya me traeré a esta tabla campos comunes a confirming y pagarés para 
+    -- optimizar las búsquedas con criterio más que nada.
+    CHECK (pagare_cobro_id IS NULL +^ confirming_id IS NULL)
+);      -- NEW! 17/01/2013
+
+------------------------------------------------------------
+-- Relación uno a muchos entre efectos de cobro y remesas --
+------------------------------------------------------------
+CREATE TABLE efecto__remesa(
+    efecto_id INT NOT NULL REFERENCES efecto, 
+    remesa_id INT NOT NULL REFERENCES remesa
+);      -- NEW! 17/01/2013
 
 ----------------------------
 -- Estimaciones de cobros --

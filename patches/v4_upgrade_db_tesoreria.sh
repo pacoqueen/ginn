@@ -31,18 +31,22 @@ CREATE TABLE remesa(
     fecha_cobro DATE DEFAULT NULL, 
     aceptada BOOLEAN DEFAULT FALSE
 );
-ALTER TABLE pagare_cobro ADD COLUMN remesa_id INT REFERENCES remesa DEFAULT NULL;
-UPDATE pagare_cobro SET remesa_id = NULL;
 ALTER TABLE confirming ADD COLUMN banco_id INT REFERENCES banco DEFAULT NULL;
 UPDATE confirming SET banco_id = NULL;
-ALTER TABLE confirming ADD COLUMN remesa_id INT REFERENCES remesa DEFAULT NULL;
-UPDATE confirming SET remesa_id = NULL;
 CREATE TABLE concentracion_remesa(
     id SERIAL PRIMARY KEY, 
     banco_id INT NOT NULL REFERENCES banco, 
     cliente_id INT NOT NULL REFERENCES cliente, 
     concentracion FLOAT
 );
+CREATE TABLE efecto(
+    id SERIAL PRIMARY KEY, 
+    pagare_cobro_id INT REFERENCES pagare_cobro DEFAULT NULL, 
+    confirming_id INT REFERENCES confirming DEFAULT NULL
+    cuenta_bancaria_cliente_id INT REFERENCES cuenta_bancaria_cliente DEFAULT NULL, 
+    CHECK (pagare_cobro_id IS NULL +^ confirming_id IS NULL)
+)
+
 GRANT ALL ON DATABASE ginn TO geotexan;
 GRANT ALL ON remesa TO geotexan;
 GRANT ALL ON banco TO geotexan;
@@ -50,6 +54,15 @@ GRANT ALL ON concentracion_remesa TO geotexan;
 GRANT ALL ON remesa_id_seq TO geotexan;
 GRANT ALL ON banco_id_seq TO geotexan;
 GRANT ALL ON concentracion_remesa_id_seq TO geotexan;
+GRANT ALL ON efecto TO geotexan;
+GRANT ALL ON efecto_id_seq TO geotexan;
+CREATE TABLE efecto__remesa(
+    efecto_id INT NOT NULL REFERENCES efecto, 
+    remesa_id INT NOT NULL REFERENCES remesa
+);      -- NEW! 17/01/2013
+GRANT ALL ON efecto__remesa TO geotexan;
+GRANT ALL ON efecto__remesa_id_seq TO geotexan;
+
 EOF
 done
 

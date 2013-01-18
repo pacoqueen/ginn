@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008 Francisco José Rodríguez Bogado,                    #
+# Copyright (C) 2005-2013 Francisco José Rodríguez Bogado,                    #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -2937,7 +2937,8 @@ class PagareCobro(SQLObject, PRPCTOO):
     #                                    ventanas habrá que decirle explícitamente que será None.    
     documentos = MultipleJoin('Documento')
     bancoID = ForeignKey('Banco')
-    remesaID = ForeignKey('Remesa')
+    # remesaID = ForeignKey('Remesa')
+    efectos = MultipleJoin("Efecto")
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -2947,6 +2948,14 @@ class PagareCobro(SQLObject, PRPCTOO):
         Devuelve un identificador único, etcétera, etcétera
         """
         return "%s:%d" % ("PAGC", self.id)
+    # PORASQUI: Reconstruir la base de datos con el parche, probar esto, etc.
+
+    @property
+    def efecto(self):
+        try:
+            return self.efectos[0]
+        except IndexError:
+            return None
 
     def esta_pendiente(self):
         return self.cantidad > self.cobrado
@@ -3045,10 +3054,18 @@ class Confirming(SQLObject, PRPCTOO):
     cobros = MultipleJoin('Cobro')
     documentos = MultipleJoin('Documento')
     bancoID = ForeignKey('Banco')
-    remesaID = ForeignKey('Remesa')
+    #remesaID = ForeignKey('Remesa')
+    efectos = MultipleJoin("Efecto")
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
+
+    @property
+    def efecto(self):
+        try:
+            return self.efectos[0]
+        except IndexError:
+            return None
     
     def esta_pendiente(self, fecha_base = mx.DateTime.today()):
         """
@@ -19560,6 +19577,7 @@ class CuentaBancariaCliente(SQLObject, PRPCTOO):
     _fromDatabase = True
     clienteID = ForeignKey('Cliente')
     recibos = MultipleJoin("Recibo")
+    efectos = MultipleJoin("Efecto")
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -20476,12 +20494,30 @@ class Banco(SQLObject, PRPCTOO):
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
+class Efecto(SQLObject, PRPCTOO):
+    _connection = conn
+    _fromDatabase = True
+    pagareCobroID = ForeignKey("PagareCobro")
+    confirmingID = ForeignKey("Confirming")
+    cuentaBancariaClienteID = ForeignKey("CuentaBancariaCliente")
+    remesas = RelatedJoin('Remesa', 
+                joinColumn = 'efecto_id', 
+                otherColumn = 'remesa_id', 
+                intermediateTable = 'efecto__remesa')
+
+    def _init(self, *args, **kw):
+        starter(self, *args, **kw)
+
 class Remesa(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
     bancoID = ForeignKey("Banco")
-    pagaresCobro = MultipleJoin('PagareCobro')
-    confirmings = MultipleJoin("Confirming")
+    efectos = RelatedJoin('Efecto', 
+                joinColumn = 'remesa_id', 
+                otherColumn = 'efecto_id', 
+                intermediateTable = 'efecto__remesa')
+    #pagaresCobro = MultipleJoin('PagareCobro')
+    #confirmings = MultipleJoin("Confirming")
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)

@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
-#                          (pacoqueen@users.sourceforge.net                   #
+# Copyright (C) 2005-2013  Francisco José Rodríguez Bogado,                   #
+#                          (pacoqueen@users.sourceforge.net)                  #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
 #                                                                             #
@@ -29,6 +29,8 @@
 ## Changelog:
 ## 17 de diciembre de 2012 -> Inicio
 ## 
+## TODO: PORASQUI: De alguna manera esta ventana debería estar 
+##       relacionada íntimamente con cuentas_origen.py
 ###################################################################
 
 import sys, os
