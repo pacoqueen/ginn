@@ -2948,14 +2948,35 @@ class PagareCobro(SQLObject, PRPCTOO):
         Devuelve un identificador único, etcétera, etcétera
         """
         return "%s:%d" % ("PAGC", self.id)
-    # PORASQUI: Reconstruir la base de datos con el parche, probar esto, etc.
+    
+    @property
+    def remesado(self):
+        """
+        True si está en una remesa confirmada. Condiciones para ello:
+        * Que estén tengan un efecto relacionado.
+        * Que el efecto esté en una remesa.
+        * Que la remesa esté confirmada (aceptada = True).
+        """
+        try:
+            return reduce(lambda x, y: x and y, 
+                          [r.aceptada for r in self.efecto.remesas])
+        except (AttributeError, TypeError): # No efecto o efecto pero no remesa.
+            return False
 
     @property
     def efecto(self):
         try:
             return self.efectos[0]
         except IndexError:
-            return None
+            efecto = Efecto(pagareCobro = self, 
+                            confirming = None, 
+                            cuentaBancariaCliente = None)
+            return efecto 
+    
+    @efecto.setter
+    def efecto(self, value_efecto):
+        value_efecto.pagareCobro = self
+        value_efecto.confirming = None
 
     def esta_pendiente(self):
         return self.cantidad > self.cobrado
@@ -3001,6 +3022,17 @@ class PagareCobro(SQLObject, PRPCTOO):
         actualizar_estado_cobro_de(clase) 
     
     actualizar_estado_cobro = classmethod(actualizar_estado_cobro)
+
+    @property
+    def remesa(self):
+        """
+        Devuelve la remesa confirmada a la que pertenece el pagaré. Si está en 
+        varias remesas no confirmadas o en ninguna, devuelve None.
+        """
+        try:
+            return [r for r in self.efecto.remesas if r.aceptada][0]
+        except (AttributeError, IndexError):
+            return None
 
     def get_estado(self, fecha = mx.DateTime.today()):
         """
@@ -3061,12 +3093,34 @@ class Confirming(SQLObject, PRPCTOO):
         starter(self, *args, **kw)
 
     @property
+    def remesado(self):
+        """
+        True si está en una remesa confirmada. Condiciones para ello:
+        * Que estén tengan un efecto relacionado.
+        * Que el efecto esté en una remesa.
+        * Que la remesa esté confirmada (aceptada = True).
+        """
+        try:
+            return reduce(lambda x, y: x and y, 
+                          [r.aceptada for r in self.efecto.remesas])
+        except (AttributeError, TypeError): # No efecto o efecto pero no remesa.
+            return False
+
+    @property
     def efecto(self):
         try:
             return self.efectos[0]
         except IndexError:
-            return None
+            efecto = Efecto(pagareCobro = None, 
+                            confirming = self, 
+                            cuentaBancariaCliente = None)
+            return efecto
     
+    @efecto.setter
+    def efecto(self, value_efecto):
+        value_efecto.pagareCobro = None
+        value_efecto.confirming = self 
+
     def esta_pendiente(self, fecha_base = mx.DateTime.today()):
         """
         Devuelve True si el confirming ya se ha cobrado completamente.
@@ -3129,9 +3183,22 @@ class Confirming(SQLObject, PRPCTOO):
     
     actualizar_estado_cobro = classmethod(actualizar_estado_cobro)
 
+    @property
+    def remesa(self):
+        try:
+            return [r for r in self.efecto.remesas if r.aceptada][0]
+        except (AttributeError, IndexError):
+            return None
+    #    try:
+    #        return self.efecto.remesa
+    #    except AttributeError:
+    #        Efecto(pagareCobro = None, 
+    #               confirming = self, 
+    #               cuentaBancariaCliente = None)
+
     def get_estado(self, fecha = mx.DateTime.today()):
         """
-        Devuelve el estado del pagaré:
+        Devuelve el estado del confirming:
         0: Gestión de cobro: En el banco esperando al vencimiento.
         1: En cartera: Disponible para negociar.
         2: Descontado: En remesa.
@@ -20508,6 +20575,61 @@ class Efecto(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
+    @property
+    def importe(self):
+        try:
+            return self.confirming.cantidad
+        except AttributeError:
+            return self.pagareCobro.cantidad
+
+    @property
+    def codigo(self):
+        try:
+            return self.confirming.codigo
+        except AttributeError:
+            return self.pagareCobro.codigo
+
+    @property
+    def cliente(self):
+        try:
+            return self.confirming.cliente
+        except AttributeError:
+            return self.pagareCobro.cliente
+
+    @property
+    def cantidad(self):
+        try:
+            return self.confirming.cantidad
+        except AttributeError:
+            return self.pagareCobro.cantidad
+
+    @property
+    def fechaRecepcion(self):
+        try:
+            return self.confirming.fechaRecepcion
+        except AttributeError:
+            return self.pagareCobro.fechaRecepcion
+
+    @property
+    def fechaVencimiento(self):
+        try:
+            return self.confirming.fechaVencimiento
+        except AttributeError:
+            return self.pagareCobro.fechaVencimiento
+
+    def get_estado(self, fecha = mx.DateTime.today()):
+        try:
+            return self.pagareCobro.get_estado(fecha)
+        except AttributeError:
+            return self.confirming.get_estado(fecha)
+
+    def get_str_estado(self):
+        try:
+            return self.pagareCobro.get_str_estado()
+        except AttributeError:
+            return self.confirming.get_str_estado()
+
+
 class Remesa(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
@@ -20526,14 +20648,12 @@ class Remesa(SQLObject, PRPCTOO):
         """
         True si la primera fecha de vencimiento está cumplida.
         """
-        fecha_vto = min(min([c.fechaVencimiento for c in self.confirmings]), 
-                        min([p.fechaVencimiento for p in self.pagaresCobro]))
+        fecha_vto = min([c.fechaVencimiento for c in self.efectos])
         return fecha_vto > fecha_base
 
     @property
     def importe(self):
-        return (sum([p.cantidad for p in self.pagaresCobro]) 
-                +sum([c.cantidad for c in self.confirmings]))
+        return sum([p.cantidad for p in self.efectos])
 
     @property
     def concentracion(self):
@@ -20544,7 +20664,7 @@ class Remesa(SQLObject, PRPCTOO):
         # La concentración se calcula por el importe sobre el total.
         total = self.importe
         concentraciones = {}
-        for p in self.pagaresCobro + self.confirmings:
+        for p in self.efectos:
             try:
                 concentraciones[p.cliente] += p.cantidad
             except KeyError:

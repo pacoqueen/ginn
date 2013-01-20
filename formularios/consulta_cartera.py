@@ -161,8 +161,10 @@ class ConsultaCartera(Ventana):
                                     fechaCobro = None, 
                                     aceptada = False)
             for efecto in a_remesar:
-                efecto.remesa = remesa
-                efecto.syncUpdate()
+                remesa.addEfecto(efecto)
+                #efecto.addRemesa(remesa)
+                #efecto.syncUpdate()
+            efecto.syncUpdate()
             ventana.destroy()
             self.buscar()
             import remesas
@@ -222,8 +224,8 @@ class ConsultaCartera(Ventana):
             if cliente and efecto.cliente != cliente:
                 continue
             if efecto.get_estado() == pclases.CARTERA:
-                if hasattr(efecto, "aLaOrden"):
-                    if efecto.aLaOrden:
+                if efecto.pagareCobro:
+                    if efecto.pagareCobro.aLaOrden:
                         str_a_la_orden = "Pagaré a la orden"
                     else:
                         str_a_la_orden = "Pagaré no a la orden"
@@ -234,12 +236,14 @@ class ConsultaCartera(Ventana):
                                       efecto.cliente 
                                         and efecto.cliente.nombre or "", 
                                       utils.float2str(efecto.cantidad),
-                                      efecto.banco and efecto.banco.nombre 
+                                      efecto.cuentaBancariaCliente 
+                                        and efecto.cuentaBancariaCliente.banco 
                                         or "", 
                                       str_a_la_orden, 
                                       utils.str_fecha(efecto.fechaRecepcion), 
                                       utils.str_fecha(efecto.fechaVencimiento), 
-                                      efecto.remesa and efecto.remesa.id or "",
+                                      ", ".join(["%s (%d)" % (r.codigo, r.id)
+                                                 for r in efecto.remesas]),
                                       efecto.puid))
                 total += efecto.cantidad
         vpro.ocultar()
@@ -257,15 +261,11 @@ class ConsultaCartera(Ventana):
         self.fin = str(temp[2])+'/'+str(temp[1])+'/'+str(temp[0])
 
     def buscar(self, boton = None):
-        # TODO: PORASQUI: Esto no es así. Un efecto puede estar en remesa 
+        # Un efecto puede estar en remesa 
         # pero estar también en cartera si la remesa no tiene fecha 
         # prevista de abono (es decir, no se ha enviado al banco a su estudio).
-        criteriosp = [pclases.PagareCobro.q.remesaID == None]
-        criteriosc = [pclases.Confirming.q.remesaID == None]
-        # De modo que además la relación uno a muchos tiene pinta de estar 
-        # mal. Sería muchos a muchos porque un efecto puede estar en dos 
-        # remesas en preparación A LA VEZ, aunque solo en una en estudio o 
-        # confirmada. 
+        #criteriosp = [pclases.PagareCobro.q.remesaID == None]
+        #criteriosc = [pclases.Confirming.q.remesaID == None]
         criteriosp = []
         criteriosc = []
         if self.inicio:
@@ -287,8 +287,25 @@ class ConsultaCartera(Ventana):
             criteriosc.append(pclases.Confirming.q.cantidad >= importe)
         pagares = pclases.PagareCobro.select(pclases.AND(*criteriosp))
         confirmings = pclases.Confirming.select(pclases.AND(*criteriosc))
-        elementos = pclases.SQLlist(pclases.SQLlist(pagares) 
-                                    + pclases.SQLlist(confirmings))
+        # Ahora filtro para quitar los efectos que ya están confirmados.
+        elementos = [] 
+        for p in pagares:
+            if not p.remesado and p.esta_pendiente():
+                if not p.efecto:
+                    pclases.Efecto(pagareCobro = p, 
+                                   confirming = None, 
+                                   cuentaBancariaCliente = None)
+                efecto = p.efecto
+                elementos.append(efecto)
+        for c in confirmings:
+            if not c.remesado and c.esta_pendiente():
+                if not c.efecto:
+                    pclases.Efecto(pagareCobro = None, 
+                                   confirming = c, 
+                                   cuentaBancariaCliente = None)
+                efecto = c.efecto
+                elementos.append(efecto)
+        elementos = pclases.SQLlist(elementos)
         self.rellenar_tabla(elementos)
         
 

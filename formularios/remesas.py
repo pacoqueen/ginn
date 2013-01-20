@@ -71,7 +71,9 @@ class Remesas(Ventana, VentanaGenerica):
                        'b_actualizar/clicked': self.actualizar_ventana,
                        'b_guardar/clicked': self.guardar,
                        'b_buscar/clicked': self.buscar,
-                       "b_confirmar/clicked": self.confirmar
+                       "b_confirmar/clicked": self.confirmar, 
+                       "b_add_efecto/clicked": self.add_efecto, 
+                       "b_drop_efecto/clicked": self.drop_efecto, 
                       }  
         self.add_connections(connections)
         self.inicializar_ventana()
@@ -79,6 +81,8 @@ class Remesas(Ventana, VentanaGenerica):
             self.ir_a_primero()
         else:
             self.ir_a(objeto)
+        self.wids['b_add_efecto'].set_property("visible", False)
+        self.wids['b_drop_efecto'].set_property("visible", False)
         gtk.main()
 
     def es_diferente(self):
@@ -146,16 +150,31 @@ class Remesas(Ventana, VentanaGenerica):
         self.wids['b_confirmar'].set_sensitive(
                 self.objeto and not self.objeto.aceptada or False)
 
+    def add_efecto(self, boton):
+        """
+        Añade un pagaré o un confirming a la remesa, creando si hace falta 
+        el efecto "intermedio".
+        """
+        raise NotImplemented, "You are not supposed to be here..."
+
+    def drop_efecto(self, boton):
+        """
+        Desvincula el efecto de la remesa.
+        """
+        raise NotImplemented, "Too soon, little prince."
+
     def abrir_efecto(self, tv, path, view_column):
         model = tv.get_model()
         puid = model[path][-1]
         objeto = pclases.getObjetoPUID(puid)
-        if isinstance(objeto, pclases.PagareCobro):
+        if objeto.pagareCobro:
             import pagares_cobros
-            v = pagares_cobros.PagaresCobros(objeto, usuario = self.usuario)
-        elif isinstance(objeto, pclases.Confirming):
+            v = pagares_cobros.PagaresCobros(objeto.pagareCobro, 
+                                             usuario = self.usuario)
+        elif objeto.confirming:
             import confirmings
-            v = confirmings.Confirmings(objeto, usuario = self.usuario)
+            v = confirmings.Confirmings(objeto.confirming, 
+                                        usuario = self.usuario)
 
     def activar_widgets(self, s, chequear_permisos = True):
         """
@@ -173,7 +192,7 @@ class Remesas(Ventana, VentanaGenerica):
         for w in ws:
             # Caso especial. Me interesa dejar fuera el check de activado 
             # porque el usuario no lo va a editar directamente:
-            if ws == "ch_aceptada":
+            if w == "ch_aceptada":
                 continue
             try:
                 self.wids[w].set_sensitive(s)
@@ -195,10 +214,12 @@ class Remesas(Ventana, VentanaGenerica):
         filas_res = []
         for r in resultados:
             filas_res.append(
-                    (r.id, r.codigo, r.banco and r.banco.nombre or ""))
+                    (r.id, r.codigo, r.banco and r.banco.nombre or "", 
+                     sum([e.importe for e in r.efectos])))
         id = utils.dialogo_resultado(filas_res,
                                      titulo = 'SELECCIONE REMESA',
-                                     cabeceras = ('ID', 'Código', 'Banco'), 
+                                     cabeceras = ('ID', 'Código', 'Banco', 
+                                                  'Importe'), 
                                      padre = self.wids['ventana'])
         if id < 0:
             return None
@@ -234,7 +255,7 @@ class Remesas(Ventana, VentanaGenerica):
         model = self.wids['tv_efectos'].get_model()
         model.clear()
         total = 0.0
-        for p in self.objeto.pagaresCobro + self.objeto.confirmings:
+        for p in self.objeto.efectos:
             total += p.cantidad
             model.append((False, 
                           p.codigo, 
@@ -359,7 +380,7 @@ class Remesas(Ventana, VentanaGenerica):
                              'BORRAR', 
                              padre = self.wids['ventana']):
             return
-        if remesa.confirmings + remesa.pagaresCobro:
+        if remesa.efectos:
             utils.dialogo_info('REMESA NO ELIMINADA', 
                                'La remesa está implicada en operaciones '
                                'que impiden su borrado.', 
@@ -393,10 +414,17 @@ class Remesas(Ventana, VentanaGenerica):
                 utils.float2str(sum([o.cantidad for o in a_confirmar])))
 
     def confirmar(self, boton):
-        # TODO: PORASQUI
-        utils.dialogo_info(titulo = "NO IMPLEMENTADO", 
-                texto = "Aceptación de la remesa en el banco confirmada.", 
-                padre = self.wids['ventana'])
+        # PORASQUI: ¿Botón desconfirmar?
+        # Hay que desvincular los efectos de las demás remesas
+        for e in self.objeto.efectos:
+            for r in e.remesas:
+                if r != self.objeto:
+                    e.removeRemesa(r)
+        # PLAN: ¿Cómo activo el notificador de otras posibles remesas abiertas
+        # tras este cambio?
+        # Y confirmar la actual marcando el campo "aceptada" y fecha de cobro.
+        self.objeto.aceptada = True
+        self.objeto.fechaCobro = mx.DateTime.localtime()
 
 if __name__ == "__main__":
     p = Remesas()
