@@ -130,12 +130,25 @@ class ConsultaCartera(Ventana):
     def dialogo_previsualizacion(self, a_remesar):
         def mostrar_detalle(combo, detalle):
             idbanco = utils.combo_get_value(combo)
+            importe = sum([i.cantidad for i in a_remesar])
+            str_importe = utils.float2str(importe)
+            por, imp, cli = calcular_concentracion(a_remesar)
+            if not por:
+                str_concentracion = "-"
+            else:
+                str_concentracion_seleccion = "%s %%, %s €, %s" % (
+                                                    utils.float2str(por * 100),
+                                                    utils.float2str(imp),
+                                                    cli.nombre)
             if idbanco:
                 banco = pclases.Banco.get(idbanco)
                 concentracion_actual = banco.get_concentracion_actual()
                 if concentracion_actual != None:
                     str_concentracion_actual = utils.float2str(
                                                 concentracion_actual[0] * 100)
+                    # TODO:PORASQUI: También hay que chequear que la concentración de un 
+                    # cliente no supere la permitida por el banco para ese 
+                    # cliente en concreto.
                 else:
                     str_concentracion_actual = "N/A"
                 disponible = banco.get_disponible()
@@ -143,16 +156,23 @@ class ConsultaCartera(Ventana):
                     str_disponible = "Sin límite"
                 else:
                     str_disponible = utils.float2str(disponible)
+                    if disponible < importe:
+                        str_disponible = '<span foreground ="red">' + str_disponible + "</span>"
                 txt = "Detalle línea descuento:\n"\
+                        "\tImporte seleccionado: %s\n"\
                         "\tDisponible: %s\n"\
-                        "\tConcentración máxima actual: %s %%\n"\
+                        "\tMáxima concentración remesa seleccionada: %s\n"\
+                        "\tConcentración máxima actual en banco: %s %%\n"\
                         "\tConcentración máxima permitida: %s %%" % (
+                                str_importe, 
                                 str_disponible, 
+                                str_concentracion_seleccion,
                                 str_concentracion_actual, 
                                 banco.concentracion != None
                                  and utils.float2str(banco.concentracion * 100)
                                  or "N/A")
                 detalle.set_text(txt)
+                detalle.set_use_markup(True)
         def aceptar(boton, ventana, combo):
             banco = pclases.Banco.get(utils.combo_get_value(combo))
             remesa = pclases.Remesa(banco = banco, 
@@ -307,7 +327,33 @@ class ConsultaCartera(Ventana):
                 elementos.append(efecto)
         elementos = pclases.SQLlist(elementos)
         self.rellenar_tabla(elementos)
-        
+
+
+def calcular_concentracion(efectos):
+    """
+    Devuelve el porcentaje máximo de importes de los efectos de un mismo 
+    cliente.
+    """
+    concentraciones = {}
+    remesa_importe = sum([p.cantidad for p in efectos])
+    for p in efectos:
+        try:
+            concentraciones[p.cliente][1] += p.cantidad
+        except KeyError:
+            concentraciones[p.cliente] = [None, p.cantidad]
+    for cliente in concentraciones:
+        concentraciones[cliente][0] = \
+                concentraciones[cliente][1] / remesa_importe
+    if concentraciones:
+        cliente_maximo = max(concentraciones, 
+                     key = lambda cliente: concentraciones[cliente])
+        res = (concentraciones[cliente_maximo][0], 
+               concentraciones[cliente_maximo][1], 
+               cliente_maximo)
+    else:
+        res = (None, None, None)
+    return res
+
 
 if __name__ == '__main__':
     t = ConsultaCartera()    

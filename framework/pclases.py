@@ -20663,21 +20663,28 @@ class Remesa(SQLObject, PRPCTOO):
         """
         # La concentración se calcula por el importe sobre el total.
         total = self.importe
-        concentraciones = {}
-        for p in self.efectos:
-            try:
-                concentraciones[p.cliente] += p.cantidad
-            except KeyError:
-                concentraciones[p.cliente] = p.cantidad
+        concentraciones = self.calcular_concentraciones()
         if concentraciones:
             cliente_maximo = max(concentraciones, 
-                         key = lambda cliente: concentraciones[cliente])
-            res = (concentraciones[cliente_maximo] / total, 
-                   concentraciones[cliente_maximo], 
+                         key = lambda cliente: concentraciones[cliente][0])
+            res = (concentraciones[cliente_maximo][0], 
+                   concentraciones[cliente_maximo][1], 
                    cliente_maximo)
         else:
             res = None
         return res
+
+    def calcular_concentraciones(self):
+        concentraciones = {}
+        for p in self.efectos:
+            try:
+                concentraciones[p.cliente][1] += p.cantidad
+            except KeyError:
+                concentraciones[p.cliente] = [None, p.cantidad]
+        for cliente in concentraciones:
+            concentraciones[cliente][0] = \
+                    concentraciones[cliente][1] / self.importe
+        return concentraciones
 
     def get_str_estado(self):
         # TODO: PORASQUI: Esto está mal. Los estados deberían ir: 

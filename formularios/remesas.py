@@ -137,6 +137,11 @@ class Remesas(Ventana, VentanaGenerica):
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
                 # La última columna (oculta en la Vista) siempre es el id.
         utils.preparar_listview(self.wids['tv_efectos'], cols)
+        cols = (('Cliente', 'gobject.TYPE_STRING', False, True, True, None),
+                ('Porcentaje','gobject.TYPE_STRING', False, True, False, None),
+                ('Importe', 'gobject.TYPE_STRING', False, True, False, None), 
+                ('PUID cliente', 'gobject.TYPE_STRING', False, False, False, None))
+        utils.preparar_listview(self.wids['tv_concentracion'], cols)
         utils.rellenar_lista(self.wids['cb_banco'], 
                              [(p.id, p.nombre) for p in 
                                 pclases.Banco.select(orderBy = "nombre")])
@@ -144,8 +149,6 @@ class Remesas(Ventana, VentanaGenerica):
         col = self.wids['tv_efectos'].get_column(3)
         for cell in col.get_cell_renderers():
             cell.set_property("xalign", 1)
-        # TODO: Aunque haga esto aquí, se habilita/deshabilita al actualizar
-        #       la ventana.
         self.wids['ch_aceptada'].set_sensitive(False)
         self.wids['b_confirmar'].set_sensitive(
                 self.objeto and not self.objeto.aceptada or False)
@@ -250,6 +253,15 @@ class Remesas(Ventana, VentanaGenerica):
         self.wids['ch_aceptada'].set_sensitive(False)
         self.wids['b_confirmar'].set_sensitive(
                 self.objeto and not self.objeto.aceptada or False)
+        model = self.wids['tv_concentracion'].get_model()
+        model.clear()
+        concentraciones = self.objeto.calcular_concentraciones()
+        for cliente in concentraciones:
+            importe, porcentaje = concentraciones[cliente] 
+            model.append((utils.float2str(porcentaje * 100) + " %", 
+                          cliente.nombre, 
+                          utils.float2str(importe) + " €", 
+                          cliente.puid))
 
     def rellenar_tabla_efectos(self):
         model = self.wids['tv_efectos'].get_model()
@@ -425,6 +437,20 @@ class Remesas(Ventana, VentanaGenerica):
         # Y confirmar la actual marcando el campo "aceptada" y fecha de cobro.
         self.objeto.aceptada = True
         self.objeto.fechaCobro = mx.DateTime.localtime()
+        if not self.objeto.codigo:
+            self.wids['e_codigo'].set_text('Inserte código aquí.')
+            utils.dialogo_info(titulo = "COMPRUEBE DATOS", 
+                               texto = "Introduzca el código de remesa "
+                                       "facilitado por el banco.", 
+                               padre = self.wids['ventana'])
+        if not self.fechaPrevista:
+            self.wids['e_fecha'].set_text(
+                    utils.str_fecha(mx.DateTime.localtime() 
+                                    + (mx.DateTime.oneDay * 2)))
+            utils.dialogo_info(titulo = "COMPRUEBE DATOS", 
+                               texto = "Corrija la fecha prevista de ingreso.",
+                               padre = self.wids['ventana'])
+        self.actualizar_ventana()
 
 if __name__ == "__main__":
     p = Remesas()
