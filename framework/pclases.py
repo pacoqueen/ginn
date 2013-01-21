@@ -2686,6 +2686,7 @@ class Cobro(SQLObject, PRPCTOO):
             and self.facturaDeAbono.abonoID != None):
             self.facturaDeAbono.abono.cliente = cliente
 
+# TODO: PORASQUI: URGENTE: FIXME: La tabla ya tiene un cliente_id. ¿Por qué esta property? Voy a tener que corregir los values BD y todo... :(
     cliente = property(get_cliente, set_cliente, 
                        doc = "Cliente relacionado con el cobro.")
     numfactura = property(get_numfactura, doc = get_numfactura.__doc__)
@@ -20547,6 +20548,38 @@ class Banco(SQLObject, PRPCTOO):
         return concentracion
 
     concentracion_actual = property(get_concentracion_actual)
+
+    def comprobar_concentracion_clientes(self, efectos):
+        """
+        Devuelve una lista de clientes que superan la concentración permitida 
+        en este banco con la concentración permitida y la concentración en 
+        el conjunto de efectos recibida.
+        """
+        concentraciones = {}
+        importe_total = 0.0
+        res = []
+        for efecto in efectos:
+            cliente = efecto.cliente
+            try:
+                concentraciones[cliente] += efecto.cantidad
+            except KeyError:
+                concentraciones[cliente] = efecto.cantidad
+            importe_total += efecto.cantidad
+        for cliente in concentraciones:
+            concentraciones[cliente] = concentraciones[cliente] / importe_total
+            try:
+                concentracion_remesa = ConcentracionRemesa.select(AND(
+                    ConcentracionRemesa.q.clienteID == 
+                                            (cliente and cliente.id or None), 
+                    ConcentracionRemesa.q.bancoID == self.id))[0]
+                concentracion_maxima_cliente=concentracion_remesa.concentracion
+            except IndexError:
+                concentracion_maxima_cliente = None
+            if (concentracion_maxima_cliente != None 
+                and concentraciones[cliente] > concentracion_maxima_cliente):
+                res.append((cliente, concentracion_maxima_cliente, 
+                            concentraciones[cliente]))
+        return res
     
     @staticmethod
     def digitos_control(entidad, oficina, cuenta):

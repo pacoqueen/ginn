@@ -259,9 +259,9 @@ class Remesas(Ventana, VentanaGenerica):
         for cliente in concentraciones:
             porcentaje, importe = concentraciones[cliente] 
             model.append((utils.float2str(porcentaje * 100) + " %", 
-                          cliente.nombre, 
+                          cliente and cliente.nombre or "", 
                           utils.float2str(importe) + " €", 
-                          cliente.puid))
+                          cliente and cliente.puid or None))
 
     def rellenar_tabla_efectos(self):
         model = self.wids['tv_efectos'].get_model()

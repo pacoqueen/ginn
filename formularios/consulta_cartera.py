@@ -133,8 +133,8 @@ class ConsultaCartera(Ventana):
             importe = sum([i.cantidad for i in a_remesar])
             str_importe = utils.float2str(importe)
             por, imp, cli = calcular_concentracion(a_remesar)
-            if not por:
-                str_concentracion = "-"
+            if por == None:
+                str_concentracion_seleccion = "-"
             else:
                 str_concentracion_seleccion = "%s %% (%s €) %s" % (
                                                     utils.float2str(por * 100),
@@ -142,13 +142,23 @@ class ConsultaCartera(Ventana):
                                                     cli.nombre)
             if idbanco:
                 banco = pclases.Banco.get(idbanco)
+                concentraciones_cliente_superadas \
+                        = banco.comprobar_concentracion_clientes(a_remesar)
+                if concentraciones_cliente_superadas:
+                    str_concentracion_seleccion = '<span foreground="red">%s'%(
+                            str_concentracion_seleccion)
+                    for cliente, conc_max, conc_cliente \
+                            in concentraciones_cliente_superadas:
+                        str_concentracion_seleccion += \
+                                "\n\t\t* Cliente %s = %s %% - Máx.: %s %%" % (
+                                    cliente.nombre, 
+                                    utils.float2str(conc_cliente * 100), 
+                                    utils.float2str(conc_max * 100))
+                    str_concentracion_seleccion += "</span>"
                 concentracion_actual = banco.get_concentracion_actual()
                 if concentracion_actual != None:
                     str_concentracion_actual = utils.float2str(
                                                 concentracion_actual[0] * 100)
-                    # TODO:PORASQUI: También hay que chequear que la concentración de un 
-                    # cliente no supere la permitida por el banco para ese 
-                    # cliente en concreto.
                 else:
                     str_concentracion_actual = "N/A"
                 disponible = banco.get_disponible()
