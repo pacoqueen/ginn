@@ -452,7 +452,7 @@ class Remesas(Ventana, VentanaGenerica):
         self.objeto.fechaCobro = mx.DateTime.localtime()
         self.objeto.syncUpdate()
         self.actualizar_ventana()
-        self.sync()
+        self.objeto.sync()
         if not self.objeto.codigo:
             self.wids['e_codigo'].set_text('Inserte código aquí.')
             utils.dialogo_info(titulo = "COMPRUEBE DATOS", 
