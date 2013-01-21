@@ -158,6 +158,9 @@ class ConsultaCartera(Ventana):
                     str_disponible = utils.float2str(disponible)
                     if disponible < importe:
                         str_disponible = '<span foreground ="red">' + str_disponible + "</span>"
+                concentracion_banco = (0 < banco.concentracion < 1.0 
+                                        and banco.concentracion * 100 
+                                        or banco.concentracion)
                 txt = "Detalle línea descuento:\n"\
                         "\tImporte seleccionado: %s\n"\
                         "\tDisponible: %s\n"\
@@ -169,7 +172,7 @@ class ConsultaCartera(Ventana):
                                 str_concentracion_seleccion,
                                 str_concentracion_actual, 
                                 banco.concentracion != None
-                                 and utils.float2str(banco.concentracion * 100)
+                                 and utils.float2str(concentracion_banco)
                                  or "N/A")
                 detalle.set_text(txt)
                 detalle.set_use_markup(True)
