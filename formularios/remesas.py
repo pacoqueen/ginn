@@ -450,6 +450,9 @@ class Remesas(Ventana, VentanaGenerica):
         # Y confirmar la actual marcando el campo "aceptada" y fecha de cobro.
         self.objeto.aceptada = True
         self.objeto.fechaCobro = mx.DateTime.localtime()
+        self.objeto.syncUpdate()
+        self.actualizar_ventana()
+        self.sync()
         if not self.objeto.codigo:
             self.wids['e_codigo'].set_text('Inserte código aquí.')
             utils.dialogo_info(titulo = "COMPRUEBE DATOS", 
@@ -463,10 +466,7 @@ class Remesas(Ventana, VentanaGenerica):
             utils.dialogo_info(titulo = "COMPRUEBE DATOS", 
                                texto = "Corrija la fecha prevista de ingreso.",
                                padre = self.wids['ventana'])
-        self.syncUpdate()
-        self.sync()
-        self.guardar(None)
-        self.actualizar_ventana()
+        #self.guardar(None)
 
 if __name__ == "__main__":
     p = Remesas()
