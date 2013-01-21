@@ -3109,8 +3109,8 @@ class Confirming(SQLObject, PRPCTOO):
         except (AttributeError, TypeError): # No efecto o efecto pero no remesa.
             return False
 
-    @property
-    def efecto(self):
+    #@property
+    def get_efecto(self):
         try:
             return self.efectos[0]
         except IndexError:
@@ -3119,10 +3119,12 @@ class Confirming(SQLObject, PRPCTOO):
                             cuentaBancariaCliente = None)
             return efecto
     
-    @efecto.setter
-    def efecto(self, value_efecto):
+    #@efecto.setter
+    def set_efecto(self, value_efecto):
         value_efecto.pagareCobro = None
         value_efecto.confirming = self 
+
+    efecto = property(get_efecto, set_efecto)
 
     def esta_pendiente(self, fecha_base = mx.DateTime.today()):
         """
