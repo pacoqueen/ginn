@@ -20538,7 +20538,8 @@ class Banco(SQLObject, PRPCTOO):
         Devuelve el porcentaje máximo de concentración de un cliente en 
         las remesas aceptadas y no vencidas del banco.
         """
-        concentraciones = [r.concentracion for r in self.remesas]
+        concentraciones = [r.concentracion for r in self.remesas 
+                            if r.concentracion]
         try:
             concentracion = max(concentraciones, key = lambda c: c[0])
         except (ValueError, TypeError):
