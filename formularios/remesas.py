@@ -269,7 +269,7 @@ class Remesas(Ventana, VentanaGenerica):
         total = 0.0
         for p in self.objeto.efectos:
             total += p.cantidad
-            model.append((False, 
+            model.append((self.objeto.aceptada, # False, 
                           p.codigo, 
                           p.cliente and p.cliente.nombre or "", 
                           utils.float2str(p.cantidad), 
@@ -427,8 +427,21 @@ class Remesas(Ventana, VentanaGenerica):
 
     def confirmar(self, boton):
         # PORASQUI: ¿Botón desconfirmar?
-        # Hay que desvincular los efectos de las demás remesas
+        efectos_a_confirmar = []
+        model = self.wids['tv_efectos'].get_model()
+        a_confirmar = []
+        iter = model.get_iter_first()
+        while iter:
+            if model[iter][0]:
+                efectos_a_confirmar.append(
+                        pclases.getObjetoPUID(model[iter][-1]))
+            iter = model.iter_next(iter)
+        # Los efectos no marcados vuelven a cartera.
         for e in self.objeto.efectos:
+            if e not in efectos_a_confirmar:
+                self.objeto.removeEfecto(e)
+        # Hay que desvincular los efectos de las demás remesas
+        for e in efectos_a_confirmar:
             for r in e.remesas:
                 if r != self.objeto:
                     e.removeRemesa(r)
@@ -450,6 +463,9 @@ class Remesas(Ventana, VentanaGenerica):
             utils.dialogo_info(titulo = "COMPRUEBE DATOS", 
                                texto = "Corrija la fecha prevista de ingreso.",
                                padre = self.wids['ventana'])
+        self.syncUpdate()
+        self.sync()
+        self.guardar(None)
         self.actualizar_ventana()
 
 if __name__ == "__main__":
