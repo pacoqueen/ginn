@@ -443,7 +443,7 @@ class Remesas(Ventana, VentanaGenerica):
                                texto = "Introduzca el código de remesa "
                                        "facilitado por el banco.", 
                                padre = self.wids['ventana'])
-        if not self.fechaPrevista:
+        if not self.objeto.fechaPrevista:
             self.wids['e_fecha'].set_text(
                     utils.str_fecha(mx.DateTime.localtime() 
                                     + (mx.DateTime.oneDay * 2)))
