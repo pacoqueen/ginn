@@ -136,7 +136,7 @@ class ConsultaCartera(Ventana):
             if not por:
                 str_concentracion = "-"
             else:
-                str_concentracion_seleccion = "%s %%, %s €, %s" % (
+                str_concentracion_seleccion = "%s %% (%s €) %s" % (
                                                     utils.float2str(por * 100),
                                                     utils.float2str(imp),
                                                     cli.nombre)

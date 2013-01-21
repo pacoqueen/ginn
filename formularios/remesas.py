@@ -137,8 +137,8 @@ class Remesas(Ventana, VentanaGenerica):
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
                 # La última columna (oculta en la Vista) siempre es el id.
         utils.preparar_listview(self.wids['tv_efectos'], cols)
-        cols = (('Cliente', 'gobject.TYPE_STRING', False, True, True, None),
-                ('Porcentaje','gobject.TYPE_STRING', False, True, False, None),
+        cols = (('Porcentaje','gobject.TYPE_STRING', False, True, False, None),
+                ('Cliente', 'gobject.TYPE_STRING', False, True, True, None),
                 ('Importe', 'gobject.TYPE_STRING', False, True, False, None), 
                 ('PUID cliente', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_listview(self.wids['tv_concentracion'], cols)
@@ -257,7 +257,7 @@ class Remesas(Ventana, VentanaGenerica):
         model.clear()
         concentraciones = self.objeto.calcular_concentraciones()
         for cliente in concentraciones:
-            importe, porcentaje = concentraciones[cliente] 
+            porcentaje, importe = concentraciones[cliente] 
             model.append((utils.float2str(porcentaje * 100) + " %", 
                           cliente.nombre, 
                           utils.float2str(importe) + " €", 
