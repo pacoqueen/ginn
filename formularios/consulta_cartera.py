@@ -157,23 +157,31 @@ class ConsultaCartera(Ventana):
                 else:
                     str_disponible = utils.float2str(disponible)
                     if disponible < importe:
-                        str_disponible = '<span foreground ="red">' + str_disponible + "</span>"
-                concentracion_banco = (0 < banco.concentracion < 1.0 
-                                        and banco.concentracion * 100 
-                                        or banco.concentracion)
+                        str_disponible = '<span foreground="red">' + str_disponible + "</span>"
+                if banco.concentracion != None:
+                    concentracion_banco = (0 < banco.concentracion < 1.0 
+                                             and banco.concentracion * 100 
+                                             or banco.concentracion)
+                    str_concentracion_banco = "%s %%" % utils.float2str(
+                                                           concentracion_banco)
+                    if (por != None and (por * 100.0) > concentracion_banco):
+                            # Porcentaje de concentración máxima de los 
+                            # efectos seleccionados.
+                        str_concentracion_banco = ('<span foreground="red">' 
+                            + str_concentracion_banco + '</span>')
+                else:
+                    str_concentracion_banco = "N/A"
                 txt = "Detalle línea descuento:\n"\
                         "\tImporte seleccionado: %s\n"\
                         "\tDisponible: %s\n"\
                         "\tMáxima concentración remesa seleccionada: %s\n"\
                         "\tConcentración máxima actual en banco: %s %%\n"\
-                        "\tConcentración máxima permitida: %s %%" % (
+                        "\tConcentración máxima permitida: %s" % (
                                 str_importe, 
                                 str_disponible, 
                                 str_concentracion_seleccion,
                                 str_concentracion_actual, 
-                                banco.concentracion != None
-                                 and utils.float2str(concentracion_banco)
-                                 or "N/A")
+                                str_concentracion_banco)
                 detalle.set_text(txt)
                 detalle.set_use_markup(True)
         def aceptar(boton, ventana, combo):
