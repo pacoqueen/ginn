@@ -125,7 +125,31 @@ class ConsultaCartera(Ventana):
             if model[iter][0]:
                 a_remesar.append(pclases.getObjetoPUID(model[iter][-1]))
             iter = model.iter_next(iter)
-        self.dialogo_previsualizacion(a_remesar)
+        todas_mismo_tipo = True
+        if a_remesar:
+            adan = a_remesar[0]
+            if adan.confirming: # Todas confirming
+                for e in a_remesar:
+                    if not e.confirming:
+                        todas_mismo_tipo = False
+                        break
+            elif adan.pagareCobro.aLaOrden:     # Todas A la orden
+                for e in a_remesar:
+                    if not e.pagareCobro or not e.pagareCobro.aLaOrden:
+                        todas_mismo_tipo = False
+                        break
+            else:   # Todas no a la orden
+                for e in a_remesar:
+                    if not e.pagareCobro or e.pagareCobro.aLaOrden:
+                        todas_mismo_tipo = False
+                        break
+        if todas_mismo_tipo:
+            self.dialogo_previsualizacion(a_remesar)
+        else:
+            utils.dialogo_info(titulo = "REMESA NO PERMITIDA", 
+                    texto = "Todos los efectos de la remesa deben ser"
+                            " del mismo tipo.", 
+                    padre = self.wids['ventana'])
 
     def dialogo_previsualizacion(self, a_remesar):
         def mostrar_detalle(combo, detalle):

@@ -20688,6 +20688,26 @@ class Remesa(SQLObject, PRPCTOO):
         """
         fecha_vto = min([c.fechaVencimiento for c in self.efectos])
         return fecha_vto > fecha_base
+    @property
+    def tipo(self):
+        """
+        Remesa a la orden o no a la orden en función del tipo de los 
+        efectos que incluye.
+        """
+        # Todos los efectos deben ser del mismo tipo, así que me basta con 
+        # ver el primero
+        try:
+            e = self.efectos[0]
+        except IndexError:
+            return "Vacía"
+        else:
+            if e.confirming:
+                return "Confirming"
+            else:
+                if e.pagareCobro.aLaOrden:
+                    return "A la orden"
+                else:
+                    return "No a la orden"
 
     @property
     def importe(self):

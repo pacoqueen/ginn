@@ -250,6 +250,8 @@ class Remesas(Ventana, VentanaGenerica):
         self.objeto.make_swap()
         self.wids['l_estado'].set_text("<i>%s</i>" % remesa.get_str_estado())
         self.wids['l_estado'].set_use_markup(True)
+        self.wids['l_tipo'].set_text("<i>%s</i>" % remesa.tipo)
+        self.wids['l_tipo'].set_use_markup(True)
         self.wids['ch_aceptada'].set_sensitive(False)
         self.wids['b_confirmar'].set_sensitive(
                 self.objeto and not self.objeto.aceptada or False)
