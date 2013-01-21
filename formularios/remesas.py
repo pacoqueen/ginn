@@ -81,8 +81,11 @@ class Remesas(Ventana, VentanaGenerica):
             self.ir_a_primero()
         else:
             self.ir_a(objeto)
+        # Este botón me va a dar más problemas que otra cosa. Si dejo al 
+        # usuario que meta efectos sin el control de límites del banco, 
+        # mezclando tipos, etc. al final esto va a ser un descontrol.
         self.wids['b_add_efecto'].set_property("visible", False)
-        self.wids['b_drop_efecto'].set_property("visible", False)
+        self.wids['b_drop_efecto'].set_property("visible", True)
         gtk.main()
 
     def es_diferente(self):
@@ -152,19 +155,81 @@ class Remesas(Ventana, VentanaGenerica):
         self.wids['ch_aceptada'].set_sensitive(False)
         self.wids['b_confirmar'].set_sensitive(
                 self.objeto and not self.objeto.aceptada or False)
+        self.wids['b_add_efecto'].set_sensitive(
+                self.objeto and not self.objeto.aceptada or False)
 
     def add_efecto(self, boton):
         """
         Añade un pagaré o un confirming a la remesa, creando si hace falta 
         el efecto "intermedio".
         """
-        raise NotImplemented, "You are not supposed to be here..."
-
+        efectos = []
+        # TODO: Aquí falta una barra de progreso y/o pedir un criterio de 
+        #       búsqueda. O bien abrir la ventana de consulta pero con un 
+        #       botón añadir a una remesa existente en lugar de "Generar".
+        for p in pclases.PagareCobro.select():
+            if not p.remesado and p.esta_pendiente():
+                if not p.efecto:
+                    pclases.Efecto(pagareCobro = p, 
+                                   confirming = None, 
+                                   cuentaBancariaCliente = None)
+                efecto = p.efecto
+                efectos.append(efecto)
+        # Los confirming no se envían en remesas. Solo pagarés.
+        #for c in pclases.Confirming.select():
+        #    if not c.remesado and c.esta_pendiente():
+        #        if not c.efecto:
+        #            pclases.Efecto(pagareCobro = None, 
+        #                           confirming = c, 
+        #                           cuentaBancariaCliente = None)
+        #        efecto = c.efecto
+        #        efectos.append(efecto)
+        efectos = [(e.id, 
+                    e. codigo, 
+                    e.cliente and e.cliente.nombre or "", 
+                    utils.float2str(e.cantidad), 
+                    utils.str_fecha(e.fechaVencimiento), 
+                    utils.str_fecha(e.fechaRecepcion), 
+                    e.get_str_tipo())
+                   for e in efectos]
+        idefectos = utils.dialogo_resultado(efectos, 
+            titulo = "SELECCIONE EFECTOS DE COBRO", 
+            texto = "Seleccione uno o varios efectos a incluir en la remesa.",  
+            padre = self.wids['ventana'], 
+            cabeceras = ["ID", "Código", "Cliente", "Importe", 
+                         "Fecha de vencimiento", "Fecha de recepción", "Tipo"],
+            multi = True)
+        # FIXME: Ojo. No se hacen las comprobaciones de límite de 
+        #        concentraciones, disponible, etc. Ni siquiera se indican 
+        #        visualmente en la ventana los valores para ver si la remesa
+        #        excede los límites aceptados por el banco.
+        for idefecto in idefectos:
+            efecto = pclases.Efecto.get(idefecto)
+            self.objeto.addEfecto(efecto)
+        if idefectos:
+            self.actualizar_ventana()
+ 
     def drop_efecto(self, boton):
         """
         Desvincula el efecto de la remesa.
         """
-        raise NotImplemented, "Too soon, little prince."
+        if self.objeto.aceptada:
+            utils.dialogo_info(titulo = "REMESA CONFIRMADA", 
+                    texto = "La remesa está confirmada, no puede \n"
+                            "devolver los efectos a cartera.", 
+                    padre = self.wids['ventana'])
+        else:
+            model,iter = self.wids['tv_efectos'].get_selection().get_selected()
+            if iter == None:
+                utils.dialogo(titulo = "SELECCIONE EFECTO A BORRAR", 
+                        texto = "No ha seleccionado ningún efecto para "
+                                "retirar de la remesa.", 
+                        padre = self.wids['ventana'])
+            else:
+                puid = model[iter][-1]
+                efecto = pclases.getObjetoPUID(puid)
+                self.objeto.removeEfecto(efecto)
+                self.actualizar_ventana()
 
     def abrir_efecto(self, tv, path, view_column):
         model = tv.get_model()
@@ -189,7 +254,7 @@ class Remesas(Ventana, VentanaGenerica):
         """
         if self.objeto == None:
             s = False
-        ws = tuple(["b_confirmar", "tv_efectos", "b_borrar", 
+        ws = tuple(["b_add_efecto", "b_confirmar", "tv_efectos", "b_borrar", 
                     "e_importe_seleccionado"] 
                    + [self.dic_campos[k] for k in self.dic_campos.keys()])
         for w in ws:
@@ -255,6 +320,8 @@ class Remesas(Ventana, VentanaGenerica):
         self.wids['ch_aceptada'].set_sensitive(False)
         self.wids['b_confirmar'].set_sensitive(
                 self.objeto and not self.objeto.aceptada or False)
+        self.wids['b_add_efecto'].set_sensitive(
+                self.objeto and not self.objeto.aceptada or False)
         model = self.wids['tv_concentracion'].get_model()
         model.clear()
         concentraciones = self.objeto.calcular_concentraciones()
@@ -264,6 +331,9 @@ class Remesas(Ventana, VentanaGenerica):
                           cliente and cliente.nombre or "", 
                           utils.float2str(importe) + " €", 
                           cliente and cliente.puid or None))
+        self.wids['b_confirmar'].get_child().set_text(self.objeto and 
+                self.objeto.aceptada and "Desconfirmar remesa" 
+                or "Confirmar remesa")
 
     def rellenar_tabla_efectos(self):
         model = self.wids['tv_efectos'].get_model()
@@ -335,8 +405,13 @@ class Remesas(Ventana, VentanaGenerica):
                 # (Más abajo será cuando se cambie realmente el objeto actual por este resultado.)
             elif resultados.count() < 1:
                 ## Sin resultados de búsqueda
-                utils.dialogo_info('SIN RESULTADOS', 'La búsqueda no produjo resultados.\nPruebe a cambiar el texto buscado o déjelo en blanco para ver una lista completa.\n(Atención: Ver la lista completa puede resultar lento si el número de elementos es muy alto)',
-                                   padre = self.wids['ventana'])
+                utils.dialogo_info('SIN RESULTADOS', 
+                        'La búsqueda no produjo resultados.\nPruebe a cambiar '
+                        'el texto buscado o déjelo en blanco para ver una '
+                        'lista completa.\n(Atención: Ver la lista completa '
+                        'puede resultar lento si el número de elementos es '
+                        'muy alto)',
+                        padre = self.wids['ventana'])
                 return
             ## Un único resultado
             # Primero anulo la función de actualización
@@ -427,48 +502,70 @@ class Remesas(Ventana, VentanaGenerica):
         self.wids['e_importe_seleccionado'].set_text(
                 utils.float2str(sum([o.cantidad for o in a_confirmar])))
 
+    def desconfirmar(self, boton):
+        if utils.dialogo(titulo = "¿DESCONFIRMAR EFECTO?", 
+                texto = "Se desconfirmará el efecto y borrará la\n" 
+                        "fecha de cobro estimada y de aceptación.", 
+                padre = self.wids['ventana']):
+            self.objeto.aceptada = False
+            self.objeto.fechaCobro = None
+            self.objeto.fechaPrevista = None
+            self.objeto.syncUpdate()
+            self.actualizar_ventana()
+
     def confirmar(self, boton):
-        # PORASQUI: ¿Botón desconfirmar?
-        efectos_a_confirmar = []
-        model = self.wids['tv_efectos'].get_model()
-        a_confirmar = []
-        iter = model.get_iter_first()
-        while iter:
-            if model[iter][0]:
-                efectos_a_confirmar.append(
-                        pclases.getObjetoPUID(model[iter][-1]))
-            iter = model.iter_next(iter)
-        # Los efectos no marcados vuelven a cartera.
-        for e in self.objeto.efectos:
-            if e not in efectos_a_confirmar:
-                self.objeto.removeEfecto(e)
-        # Hay que desvincular los efectos de las demás remesas
-        for e in efectos_a_confirmar:
-            for r in e.remesas:
-                if r != self.objeto:
-                    e.removeRemesa(r)
-        # PLAN: ¿Cómo activo el notificador de otras posibles remesas abiertas
-        # tras este cambio?
-        # Y confirmar la actual marcando el campo "aceptada" y fecha de cobro.
-        self.objeto.aceptada = True
-        self.objeto.fechaCobro = mx.DateTime.localtime()
-        self.objeto.syncUpdate()
-        self.actualizar_ventana()
-        self.objeto.sync()
-        if not self.objeto.codigo:
-            self.wids['e_codigo'].set_text('Inserte código aquí.')
-            utils.dialogo_info(titulo = "COMPRUEBE DATOS", 
-                               texto = "Introduzca el código de remesa "
-                                       "facilitado por el banco.", 
-                               padre = self.wids['ventana'])
-        if not self.objeto.fechaPrevista:
-            self.wids['e_fecha'].set_text(
-                    utils.str_fecha(mx.DateTime.localtime() 
-                                    + (mx.DateTime.oneDay * 2)))
-            utils.dialogo_info(titulo = "COMPRUEBE DATOS", 
-                               texto = "Corrija la fecha prevista de ingreso.",
-                               padre = self.wids['ventana'])
-        #self.guardar(None)
+        if self.objeto and self.objeto.aceptada:
+            self.desconfirmar(boton)
+        else:
+            efectos_a_confirmar = []
+            model = self.wids['tv_efectos'].get_model()
+            a_confirmar = []
+            iter = model.get_iter_first()
+            while iter:
+                if model[iter][0]:
+                    efectos_a_confirmar.append(
+                            pclases.getObjetoPUID(model[iter][-1]))
+                iter = model.iter_next(iter)
+            if not efectos_a_confirmar:
+                continuar = utils.dialogo(titulo = "REMESA VACÍA", 
+                        texto = "No ha seleccionado ningún efecto de cobro.\n"
+                                "Se devolverán todos a cartera. ¿Está seguro?",
+                        padre = self.wids['ventana'], 
+                        defecto = False)
+                if not continuar:
+                    return
+            # Los efectos no marcados vuelven a cartera.
+            for e in self.objeto.efectos:
+                if e not in efectos_a_confirmar:
+                    self.objeto.removeEfecto(e)
+            # Hay que desvincular los efectos de las demás remesas
+            for e in efectos_a_confirmar:
+                for r in e.remesas:
+                    if r != self.objeto:
+                        e.removeRemesa(r)
+            # PLAN: ¿Cómo activo el notificador de otras posibles remesas 
+            #       abiertas tras este cambio?
+            #       Y confirmar la actual marcando el campo "aceptada" y fecha 
+            #       de cobro.
+            self.objeto.aceptada = True
+            self.objeto.fechaCobro = mx.DateTime.localtime()
+            self.objeto.syncUpdate()
+            self.actualizar_ventana()
+            self.objeto.sync()
+            if not self.objeto.codigo:
+                self.wids['e_codigo'].set_text('Inserte código aquí.')
+                utils.dialogo_info(titulo = "COMPRUEBE DATOS", 
+                                   texto = "Introduzca el código de remesa "
+                                           "facilitado por el banco.", 
+                                   padre = self.wids['ventana'])
+            if not self.objeto.fechaPrevista:
+                self.wids['e_fecha'].set_text(
+                        utils.str_fecha(mx.DateTime.localtime() 
+                                        + (mx.DateTime.oneDay * 2)))
+                utils.dialogo_info(titulo = "COMPRUEBE DATOS", 
+                            texto = "Corrija la fecha prevista de ingreso.",
+                            padre = self.wids['ventana'])
+            #self.guardar(None)
 
 if __name__ == "__main__":
     p = Remesas()

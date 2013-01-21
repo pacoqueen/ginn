@@ -289,13 +289,7 @@ class ConsultaCartera(Ventana):
             if cliente and efecto.cliente != cliente:
                 continue
             if efecto.get_estado() == pclases.CARTERA:
-                if efecto.pagareCobro:
-                    if efecto.pagareCobro.aLaOrden:
-                        str_a_la_orden = "Pagaré a la orden"
-                    else:
-                        str_a_la_orden = "Pagaré no a la orden"
-                else:
-                    str_a_la_orden = "Confirming"
+                str_a_la_orden = efecto.get_str_tipo()
                 padre = model.append((False, 
                                       efecto.codigo, 
                                       efecto.cliente 
@@ -351,7 +345,10 @@ class ConsultaCartera(Ventana):
             criteriosp.append(pclases.PagareCobro.q.cantidad >= importe)
             criteriosc.append(pclases.Confirming.q.cantidad >= importe)
         pagares = pclases.PagareCobro.select(pclases.AND(*criteriosp))
-        confirmings = pclases.Confirming.select(pclases.AND(*criteriosc))
+        #confirmings = pclases.Confirming.select(pclases.AND(*criteriosc))
+        # Los confirmings no se envían en remesas al banco. Se negocian uno a 
+        # uno y por otra vía.
+        confirmings = []
         # Ahora filtro para quitar los efectos que ya están confirmados.
         elementos = [] 
         for p in pagares:

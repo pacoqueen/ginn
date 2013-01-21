@@ -20655,6 +20655,16 @@ class Efecto(SQLObject, PRPCTOO):
         except AttributeError:
             return self.pagareCobro.fechaVencimiento
 
+    def get_str_tipo(self):
+        if self.pagareCobro:
+            if self.pagareCobro.aLaOrden:
+                str_a_la_orden = "Pagaré a la orden"
+            else:
+                str_a_la_orden = "Pagaré no a la orden"
+        else:
+            str_a_la_orden = "Confirming"
+        return str_a_la_orden
+
     def get_estado(self, fecha = mx.DateTime.today()):
         try:
             return self.pagareCobro.get_estado(fecha)
