@@ -1,6 +1,17 @@
 databases="dev_ginn ginn"
 for db in $databases; do
     psql $db << EOF
+CREATE TABLE documento_de_pago(
+    id SERIAL PRIMARY KEY, 
+    documento TEXT DEFAULT ''
+);
+CREATE TABLE forma_de_pago(
+    id SERIAL PRIMARY KEY, 
+    documento_de_pago_id INT REFERENCES documento_de_pago, 
+    plazo INT DEFAULT 120, 
+    activa BOOLEAN DEFAULT TRUE 
+);
+ALTER TABLE pedido_venta ADD COLUMN forma_de_pago_id INT REFERENCES forma_de_pago DEFAULT NULL;
 ALTER TABLE pagare_cobro ADD COLUMN a_la_orden BOOLEAN DEFAULT TRUE;
 UPDATE pagare_cobro SET a_la_orden = TRUE;
 CREATE TABLE banco(
@@ -57,6 +68,10 @@ GRANT ALL ON banco_id_seq TO geotexan;
 GRANT ALL ON concentracion_remesa_id_seq TO geotexan;
 GRANT ALL ON efecto TO geotexan;
 GRANT ALL ON efecto_id_seq TO geotexan;
+GRANT ALL ON documento_de_pago TO geotexan;
+GRANT ALL ON documento_de_pago_id_seq TO geotexan;
+GRANT ALL ON forma_de_pago TO geotexan;
+GRANT ALL ON forma_de_pago_id_seq TO geotexan;
 CREATE TABLE efecto__remesa(
     efecto_id INT NOT NULL REFERENCES efecto, 
     remesa_id INT NOT NULL REFERENCES remesa
