@@ -546,7 +546,7 @@ FRA_NO_DOCUMENTADA,FRA_NO_VENCIDA,FRA_IMPAGADA,FRA_COBRADA,FRA_ABONO = range(5)
 GESTION, CARTERA, DESCONTADO, IMPAGADO, COBRADO = range(5)
 
 # VERBOSE MODE
-total = 156 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
+total = 159 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
             # Más bien grep print_verbose pclases.py | wc -l
 cont = 0
 import time
@@ -20769,6 +20769,62 @@ class Remesa(SQLObject, PRPCTOO):
         else:
             return "En estudio"    # El banco me la está mirando y puede que 
                                    # me confirme un efecto, todos o ninguno.
+
+cont, tiempo = print_verbose(cont, total, tiempo)
+
+class PresupuestoAnual(SQLObject, PRPCTOO):
+    _connection = conn
+    _fromDatabase = True
+    conceptosPresupuestoAnual = MultipleJoin("ConceptoPresupuestoAnual")
+
+    def _init(self, *args, **kw):
+        starter(self, *args, **kw)
+
+    @staticmethod
+    def check_defaults():
+        """
+        Comprueba que existen --y si no, los crea-- los conceptos por defecto 
+        para el presupuesto anual.
+        """
+        conceptos = {"Gastos personal": 
+                        ("Nómina mes", "Paga extra", "Hoja de gastos", 
+                         "Seguros sociales"), 
+                     "Impuestos": [], 
+                     "Proveedores granza": []}
+        for c in conceptos:
+            try:
+                pa = PresupuestoAnual.select(
+                        PresupuestoAnual.q.descripcion == c)[0]
+            except IndexError:
+                pa = PresupuestoAnual(descripcion = c)
+            for subc in conceptos[c]:
+                if not ConceptoPresupuestoAnual.select(AND(
+                        ConceptoPresupuestoAnual.q.descripcion == subc, 
+                        ConceptoPresupuestoAnual.q.presupuestoAnualID == pa.id)
+                       ).count():
+                    ConceptoPresupuestoAnual(presupuestoAnual = pa, 
+                                             descripcion = subc)
+
+cont, tiempo = print_verbose(cont, total, tiempo)
+
+class ConceptoPresupuestoAnual(SQLObject, PRPCTOO):
+    _connection = conn
+    _fromDatabase = True
+    presupuestoAnualID = ForeignKey("PresupuestoAnual")
+    valoresPresupuestoAnual = MultipleJoin("ValorPresupuestoAnual")
+
+    def _init(self, *args, **kw):
+        starter(self, *args, **kw)
+
+cont, tiempo = print_verbose(cont, total, tiempo)
+
+class ValorPresupuestoAnual(SQLObject, PRPCTOO):
+    _connection = conn
+    _fromDatabase = True
+    conceptoPresupuestoAnualID = ForeignKey("ConceptoPresupuestoAnual")
+
+    def _init(self, *args, **kw):
+        starter(self, *args, **kw)
 
 cont, tiempo = print_verbose(cont, total, tiempo)
  

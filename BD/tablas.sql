@@ -3108,6 +3108,30 @@ CREATE TABLE tarea(
     fechadone TIMESTAMP DEFAULT NULL
 );
 
+-----------------------------------
+-- Tablas para presupuesto anual --
+-----------------------------------
+CREATE TABLE presupuesto_anual(
+    -- Conceptos "de primer nivel". En principio no editables por el usuario.
+    id SERIAL PRIMARY KEY, 
+    descripcion TEXT DEFAULT ''
+);
+
+CREATE TABLE concepto_presupuesto_anual(
+    -- Conceptos. Primera columna de las flas del presupuesto.
+    id SERIAL PRIMARY KEY, 
+    presupuesto_anual_id INT REFERENCES presupuesto_anual NOT NULL, 
+    descripcion TEXT DEFAULT ''
+);
+
+CREATE TABLE valor_presupuesto_anual(
+    id SERIAL PRIMARY KEY, 
+    concepto_presupuesto_anual_id INT REFERENCES concepto_presupuesto_anual NOT NULL, 
+    mes DATE NOT NULL,  -- Me interesa mes y año nada más.
+    importe FLOAT DEFAULT 0.0, 
+    precio FLOAT DEFAULT 1 -- Para estimaciones que sean del tipo importe=precio*algo (toneladas para los proveedores de granza, por ejemplo).
+);
+
 --------------------------------------------------------------
 -- Tabla para guardar usuario, fecha y hora de creación,    --
 -- modificación o eliminación de un objeto.                 --

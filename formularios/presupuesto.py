@@ -45,7 +45,7 @@ except ImportError:
     import pclases
     from seeker import VentanaGenerica 
 from utils import _float as float
-from ventana_progreso import VentanaProgreso
+from ventana_progreso import VentanaProgreso, VentanaActividad
 
 
 class Presupuesto(Ventana, VentanaGenerica):
@@ -55,6 +55,7 @@ class Presupuesto(Ventana, VentanaGenerica):
         comenzar la ventana (en lugar del primero de la tabla, que es
         el que se muestra por defecto).
         """
+        pclases.PresupuestoAnual.check_defaults()
         self.usuario = usuario
         self.clase = None
         self.dic_campos = {}
@@ -68,6 +69,7 @@ class Presupuesto(Ventana, VentanaGenerica):
                       }  
         self.add_connections(connections)
         self.inicializar_ventana()
+        self.actualizar_ventana(None)
         gtk.main()
 
     def es_diferente(self):
@@ -107,14 +109,17 @@ class Presupuesto(Ventana, VentanaGenerica):
         self.wids['b_nuevo'].set_sensitive(True)
         self.wids['b_buscar'].set_sensitive(True)
         # Inicialización del resto de widgets:
-        cols = [('Concepto', 'gobject.TYPE_STRING', False, True, True, None)]
+        cols = [('Concepto', 'gobject.TYPE_STRING', True, True, True, 
+                 self.cambiar_concepto)]
         for m in range(12):
             mes = mx.DateTime.localtime().month + m
             strmes = mx.DateTime.DateTimeFrom(month = mes).strftime("%B")
-            cols += [(strmes, 'gobject.TYPE_STRING', False, True, True, None)]
-        cols += [('ID', 'gobject.TYPE_INT64', False, False, False, None)]
-                # La última columna (oculta en la Vista) siempre es el id.
-        utils.preparar_listview(self.wids['tv_datos'], cols)
+            cols += [(strmes, 'gobject.TYPE_STRING', True, True, True, 
+                      self.cambiar_importe, m)]
+        cols += [('PUID', 'gobject.TYPE_STRING', False, False, False, None)]
+        utils.preparar_treeview(self.wids['tv_datos'], cols)
+        for n in range(1, 13):
+            col = self.wids['tv_datos'].get_column(n).get_cell_renderers()[0].set_property("xalign", 1)
         self.wids['ventana'].resize(800, 600)
 
     def activar_widgets(self, s, chequear_permisos = True):
@@ -138,6 +143,9 @@ class Presupuesto(Ventana, VentanaGenerica):
         if chequear_permisos:
             self.check_permisos(nombre_fichero_ventana = "presupuesto.py")
 
+    def actualizar_ventana(self, boton = None):
+        self.rellenar_widgets()
+
     def rellenar_widgets(self):
         """
         Introduce la información del objeto actual
@@ -153,11 +161,89 @@ class Presupuesto(Ventana, VentanaGenerica):
         vpro.mostrar()
         model = self.wids['tv_datos'].get_model()
         model.clear()
-        for m in range(12):
-            model.append((m, "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", None)) 
-            vpro.set_valor(m/12.0, 
-                           mx.DateTime.DateTimeFrom(month = m).strftime("%B"))
-            # PORASQUI: XXX: Rellenar filas y columnas 
+        vpro.set_valor(0, "Cargando conceptos de primer nivel...") 
+        padres = {}
+        pas = pclases.PresupuestoAnual.select()
+        pas_count = pas.count()
+        i = 0.0
+        for pa in pas:
+            fila = (pa.descripcion, 
+                    "", "", "", "", "", "", "", "", "", "", "", "", # 12 meses
+                    pa.puid)
+            nodo = model.append(None, fila) 
+            padres[pa] = nodo 
+            vpro.set_valor(i / pas_count, 
+                           "Cargando conceptos de primer nivel...") 
+            i += 1
+        i = 0.0
+        mes_actual = mx.DateTime.DateTimeFrom(mx.DateTime.localtime().year, 
+                                              mx.DateTime.localtime().month,
+                                              1)
+        mes_final = mx.DateTime.DateTimeFrom(mx.DateTime.localtime().year + 1, 
+                                             mx.DateTime.localtime().month,
+                                             1)
+        precalculo = precalcular_mes_actual(mes_actual, self.wids['ventana'])
+        conceptos = pclases.ConceptoPresupuestoAnual.select()
+        conceptos_count = conceptos.count()
+        filas = {}
+        for c in conceptos:
+            # TODO: Esto no es tan fácil. En el mes en curso los valores deben ser parte realidad sacada de los albaranes y parte estimado. ¿O era solo datos del mes en curso, sin estimación, y en el resto es donde viene de la BD?
+            filas[c] = [0, 0, 0, 0, 
+                        0, 0, 0, 0, 
+                        0, 0, 0, 0]
+            vpro.set_valor(i / conceptos_count, 
+                           "Cargando conceptos de presupuesto...") 
+            i += 1
+        i = 0.0
+        valores = pclases.ValorPresupuestoAnual.select(pclases.AND(
+            pclases.ValorPresupuestoAnual.q.mes >= mes_actual, 
+            pclases.ValorPresupuestoAnual.q.mes < mes_final)) 
+        valores_count = valores.count()
+        for v in valores:
+            c = v.conceptoPresupuestoAnual
+            mes_offset = (v.mes.month - mes_actual.month) % 12
+            if (v.mes.month == mes_actual.month 
+                    and c.descripcion == "Proveedores granza"): # OJO: HARCODED
+                # Este valor no lo muestro. Tengo que tirar de datos reales.
+                filas[c][mes_offset] = precalculo[c]
+            else:
+                filas[c][mes_offset] = v.importe
+            vpro.set_valor(i / conceptos_count, 
+                           "Cargando valores de presupuesto...") 
+            i += 1
+        i = 0.0
+        nodos_conceptos = {}
+        for c in filas:
+            vpro.set_valor(i / len(filas.keys()), 
+                           "Montando matriz...")
+            pa = c.presupuestoAnual
+            nodo_padre = padres[pa]
+            fila = [c.descripcion] + filas[c] + [c.puid]
+            nodos_conceptos[c] = model.append(nodo_padre, fila)
+            for i in range(1, 13):
+                try:
+                    model[nodo_padre][i] = utils.float2str(
+                        utils.parse_float(model[nodo_padre][i]) + fila[i])
+                except (TypeError, ValueError):
+                    model[nodo_padre][i] = utils.float2str(fila[i])
+            i += 1
+        # Vuelvo a volcar todos los valores precalculados. Puede que alguno 
+        # no se mostrara en el primer bucle por no haber valores antiguos de 
+        # ese mes y no entrara en la rama "if" (ver arriba).
+        i = 0.0
+        for c in precalculo:
+            vpro.set_valor(i / len(precalculo.keys()),
+                    "Aplicando sustitución por valores reales...")
+            pa = c.presupuestoAnual
+            nodo_padre = padres[pa]
+            nodo_concepto = nodos_conceptos[c]
+            model[nodo_concepto][1] = utils.float2str(precalculo[c])
+            try:
+                model[nodo_padre][1] = utils.float2str(
+                    utils.parse_float(model[nodo_padre][1]) + precalculo[c])
+            except (TypeError, ValueError):
+                model[nodo_padre][1] = utils.float2str(precalculo[c])
+            i += 1
         vpro.ocultar()
             
     def nuevo(self, widget):
@@ -168,8 +254,21 @@ class Presupuesto(Ventana, VentanaGenerica):
         en la ventana para que puedan ser editados el resto
         de campos que no se hayan pedido aquí.
         """
-        # TODO: : Nuevo concepto
-        pass
+        tipos = [(i.id, i.descripcion) 
+                 for i in pclases.PresupuestoAnual.select()]
+        tipo = utils.dialogo_combo(titulo = "NUEVO CONCEPTO", 
+                                   texto = "Seleccione tipo:", 
+                                   ops = tipos, 
+                                   padre = self.wids['ventana'])
+        if tipo:
+            pa = pclases.PresupuestoAnual.get(tipo)
+            descripcion = utils.dialogo_entrada(titulo = "NUEVO CONCEPTO", 
+                    texto = "Introduzca descripción:", 
+                    padre = self.wids['ventana'])
+            if descripcion:
+                c = pclases.ConceptoPresupuestoAnual(presupuestoAnual = pa, 
+                        descripcion = descripcion)
+                self.actualizar_ventana()
 
     def buscar(self, widget):
         """
@@ -185,8 +284,141 @@ class Presupuesto(Ventana, VentanaGenerica):
         """
         Elimina los datos de la fila seleccionada o la fila completa.
         """
-        # TODO: 
-        pass
+        model, iter = self.wids['tv_datos'].get_selection().get_selected()
+        if iter:
+            puid = model[iter][-1]
+            o = pclases.getObjetoPUID(puid)
+            if (isinstance(o, pclases.ConceptoPresupuestoAnual) 
+                    and utils.dialogo(titulo = "ELIMINAR CONCEPTO", 
+                        texto = "Se eliminará la fila completa. ¿Continuar?", 
+                        padre = self.wids['ventana'])):
+                o.destroy_en_cascada(ventana = __file__)
+                self.actualizar_ventana(None)
+
+    def cambiar_concepto(self, cell, path, value):
+        model = self.wids['tv_datos'].get_model()
+        puid = model[path][-1]
+        o = pclases.getObjetoPUID(puid)
+        if isinstance(o, pclases.ConceptoPresupuestoAnual): 
+            o.descripcion = value
+            o.syncUpdate()
+            model[path][0] = o.descripcion
+            #self.actualizar_ventana(None)
+
+    def cambiar_importe(self, cell, path, value, mes_offset):
+        try:
+            # TODO: Permitir fórmulas y mostrar precio si es un proveedor de granza.
+            value = utils._float(value)
+        except (TypeError, ValueError):
+            utils.dialogo(titulo = "ERROR", 
+                    texto = "El texto introducido no es un número.", 
+                    padre = self.wids['ventana'])
+        else:
+            model = self.wids['tv_datos'].get_model()
+            puid = model[path][-1]
+            o = pclases.getObjetoPUID(puid)
+            if isinstance(o, pclases.ConceptoPresupuestoAnual): 
+                fecha_actual = mx.DateTime.DateTimeFrom(
+                                                mx.DateTime.localtime().year, 
+                                                mx.DateTime.localtime().month,
+                                                1)
+                mes_actual = fecha_actual.month
+                mes_buscado = (mes_actual + mes_offset) % 12
+                try:
+                    v = [i for i in o.valoresPresupuestoAnual 
+                                            if i.mes.month == mes_buscado][0]
+                except (IndexError):
+                    v = pclases.ValorPresupuestoAnual(
+                            conceptoPresupuestoAnual = o, 
+                            mes = mx.DateTime.DateTimeFrom(fecha_actual.year,
+                                mes_buscado, 1))
+                    if v < fecha_actual:
+                        v.mes = v.mes + mx.DateTime.DateTimeFrom(
+                                year = v.mes.year + 1, 
+                                month = v.mes.month, 
+                                day = 1)
+                v.importe = value
+                v.syncUpdate()
+                model[path][mes_offset + 1] = utils.float2str(v.importe)
+
+
+def precalcular_mes_actual(fecha_actual, ventana_padre = None):
+    """
+    Devuelve un diccionario de conceptos con el valor del mes en curso. Si el 
+    concepto no existe, lo crea en la base de datos
+    """
+    vpro = VentanaActividad(ventana_padre, 
+            "Precalculando datos reales del mes en curso...")
+    vpro.mostrar()
+    # Valores que puedo conocer del ERP (de momento):
+    # 1.- IVA (soportado - repercutido)
+    # TODO: PORASQUI
+    # 2.- Entradas de granza
+    vpro.mover()
+    primes = fecha_actual
+    finmes = mx.DateTime.DateTimeFrom(primes.year, primes.month, -1)
+    vpro.mover()
+    # Primero: productos granza:
+    granzas = pclases.ProductoCompra.select(pclases.AND(
+        pclases.ProductoCompra.q.descripcion.contains("granza"), 
+        pclases.ProductoCompra.q.obsoleto == False, 
+        pclases.ProductoCompra.q.tipoDeMaterialID 
+            == pclases.TipoDeMaterial.select(
+                 pclases.TipoDeMaterial.q.descripcion.contains("prima")
+                )[0].id))
+    # Saco datos de facturas:
+    fras = pclases.FacturaCompra.select(pclases.AND(
+        pclases.FacturaCompra.q.fecha >= primes, 
+        pclases.FacturaCompra.q.fecha <= finmes))
+    # Filtro para quedarme con las de granza:
+    vpro.mover()
+    res = {}
+    for f in fras:
+        for ldc in f.lineasDeCompra:
+            if ldc.productoCompra in granzas:
+                concepto = buscar_concepto_proveedor_granza(ldc.proveedor)
+                try:
+                    res[concepto] += ldc.get_subtotal()
+                except KeyError:
+                    res[concepto] = ldc.get_subtotal()
+            vpro.mover()
+    # Y ahora de los albaranes no facturados.
+    albs = pclases.AlbaranEntrada.select(pclases.AND(
+        pclases.AlbaranEntrada.q.fecha >= primes, 
+        pclases.AlbaranEntrada.q.fecha <= finmes))
+    # Filtro para quedarme con los de granza:
+    vpro.mover()
+    for a in albs:
+        for ldc in a.lineasDeCompra:
+            # Solo quiero lo no facturado.
+            if not ldc.facturaCompraID and ldc.productoCompra in granzas:
+                concepto = buscar_concepto_proveedor_granza(ldc.proveedor)
+                try:
+                    res[concepto] += ldc.get_subtotal()
+                except KeyError:
+                    res[concepto] = ldc.get_subtotal()
+            vpro.mover()
+    vpro.ocultar()
+    return res
+
+def buscar_concepto_proveedor_granza(proveedor):
+    """
+    Busca el concepto del presupuesto anual correspondiente al proveedor. Si 
+    no lo encuentra, lo crea.
+    """
+    try:
+        concepto = pclases.ConceptoPresupuestoAnual.select(
+          pclases.ConceptoPresupuestoAnual.q.descripcion==proveedor.nombre)[0]
+    except IndexError:
+        concepto = pclases.ConceptoPresupuestoAnual(
+                descripcion = proveedor.nombre, 
+                presupuestoAnual = pclases.PresupuestoAnual.select(
+                    pclases.PresupuestoAnual.q.descripcion 
+                        == "Proveedores granza")[0] # EXISTE. Hay un check al 
+                                            # principio que se asegura de eso.
+                )
+    return concepto
+
 
 if __name__ == "__main__":
     p = Presupuesto()

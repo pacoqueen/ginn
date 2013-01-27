@@ -77,6 +77,36 @@ CREATE TABLE efecto__remesa(
     remesa_id INT NOT NULL REFERENCES remesa
 );      -- NEW! 17/01/2013
 GRANT ALL ON efecto__remesa TO geotexan;
+-----------------------------------
+-- Tablas para presupuesto anual --
+-----------------------------------
+CREATE TABLE presupuesto_anual(
+    -- Conceptos "de primer nivel". En principio no editables por el usuario.
+    id SERIAL PRIMARY KEY, 
+    descripcion TEXT DEFAULT ''
+);
+
+CREATE TABLE concepto_presupuesto_anual(
+    -- Conceptos. Primera columna de las flas del presupuesto.
+    id SERIAL PRIMARY KEY, 
+    presupuesto_anual_id INT REFERENCES presupuesto_anual NOT NULL, 
+    descripcion TEXT DEFAULT ''
+);
+
+CREATE TABLE valor_presupuesto_anual(
+    id SERIAL PRIMARY KEY, 
+    concepto_presupuesto_anual_id INT REFERENCES concepto_presupuesto_anual NOT NULL, 
+    mes DATE NOT NULL, 
+    importe FLOAT DEFAULT 0.0, 
+    precio FLOAT DEFAULT 1
+);
+
+GRANT ALL ON presupuesto_anual TO geotexan;
+GRANT ALL ON presupuesto_anual_id_seq TO geotexan;
+GRANT ALL ON concepto_presupuesto_anual TO geotexan;
+GRANT ALL ON concepto_presupuesto_anual_id_seq TO geotexan;
+GRANT ALL ON valor_presupuesto_anual TO geotexan;
+GRANT ALL ON valor_presupuesto_anual_id_seq TO geotexan;
 
 EOF
 done
