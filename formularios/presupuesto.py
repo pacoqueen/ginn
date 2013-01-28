@@ -115,7 +115,7 @@ class Presupuesto(Ventana, VentanaGenerica):
         cols = [('Concepto', 'gobject.TYPE_STRING', True, True, True, 
                  self.cambiar_concepto)]
         for m in range(12):
-            mes = (mx.DateTime.localtime().month + m) % 12
+            mes = ((mx.DateTime.localtime().month + m) % 12) + 1
             strmes = mx.DateTime.DateTimeFrom(month = mes).strftime("%B")
             cols += [(strmes, 'gobject.TYPE_STRING', True, True, True, 
                       self.cambiar_importe, m)]
