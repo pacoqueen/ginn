@@ -28,7 +28,8 @@
 ###################################################################
 ## Changelog:
 ## 25 de enero de 2012 -> Inicio
-## 
+## TODO: Falta también doble clic para ver de dónde vienen los 
+##       datos precalculados y tal.
 ###################################################################
 
 import sys, os
@@ -70,6 +71,8 @@ class Presupuesto(Ventana, VentanaGenerica):
         self.add_connections(connections)
         self.inicializar_ventana()
         self.actualizar_ventana(None)
+        self.wids['tv_datos'].expand_all()
+        self.wids['ventana'].resize(800, 600)
         gtk.main()
 
     def es_diferente(self):
@@ -187,7 +190,6 @@ class Presupuesto(Ventana, VentanaGenerica):
         conceptos_count = conceptos.count()
         filas = {}
         for c in conceptos:
-            # TODO: Esto no es tan fácil. En el mes en curso los valores deben ser parte realidad sacada de los albaranes y parte estimado. ¿O era solo datos del mes en curso, sin estimación, y en el resto es donde viene de la BD?
             filas[c] = [0, 0, 0, 0, 
                         0, 0, 0, 0, 
                         0, 0, 0, 0]
@@ -203,9 +205,13 @@ class Presupuesto(Ventana, VentanaGenerica):
             c = v.conceptoPresupuestoAnual
             mes_offset = (v.mes.month - mes_actual.month) % 12
             if (v.mes.month == mes_actual.month 
-                    and c.descripcion == "Proveedores granza"): # OJO: HARCODED
+                    and c.presupuestoAnual.descripcion 
+                            == "Proveedores granza"): # OJO: HARCODED
                 # Este valor no lo muestro. Tengo que tirar de datos reales.
-                filas[c][mes_offset] = precalculo[c]
+                try:
+                    filas[c][mes_offset] = precalculo[c]
+                except KeyError: # Se ha metido a mano. No hay datos reales.
+                    filas[c][mes_offset] = v.importe
             else:
                 filas[c][mes_offset] = v.importe
             vpro.set_valor(i / conceptos_count, 
@@ -309,6 +315,7 @@ class Presupuesto(Ventana, VentanaGenerica):
     def cambiar_importe(self, cell, path, value, mes_offset):
         try:
             # TODO: Permitir fórmulas y mostrar precio si es un proveedor de granza.
+            # TODO: Si es un valor precalculado no debe dejar cambiarlo. Aunque realmente no se cambia, al refrescar se vuelve a machacar el valor tecleado.
             value = utils._float(value)
         except (TypeError, ValueError):
             utils.dialogo(titulo = "ERROR", 
@@ -339,9 +346,55 @@ class Presupuesto(Ventana, VentanaGenerica):
                                 year = v.mes.year + 1, 
                                 month = v.mes.month, 
                                 day = 1)
+                if o.presupuestoAnual.descripcion == "Proveedores granza":
+                    precio = utils.dialogo_entrada(titulo = "PRECIO TONELADA", 
+                            texto = "Modifique el precio por tonelada estimado"
+                                    "\npara %s en %s:" % (o.descripcion, 
+                                                        v.mes.strftime("%B")),
+                            padre = self.wids['ventana'], 
+                            valor_por_defecto = utils.float2str(v.precio, 
+                                                                autodec = True)
+                            )
+                    if precio:
+                        try:
+                            precio = utils._float(precio)
+                        except (TypeError, ValueError):
+                            utils.dialogo_info(titulo = "ERROR DE FORMATO", 
+                                    texto = "El valor tecleado («%s») no es "
+                                            "válido." % precio, 
+                                    padre = self.wids['ventana'])
+                            return
+                    else:   # Canceló
+                        return
+                    toneladas = utils.dialogo_entrada(titulo = "TONELADAS", 
+                            texto = "Introduzca el número de toneladas "
+                            "\nestimadas para el mes %s y proveedor %s:" % (
+                                v.mes.strftime("%B"), 
+                                o.descripcion), 
+                            padre = self.wids['ventana'], 
+                            valor_por_defecto = utils.float2str(
+                                value / precio, autodec = True))
+                    if toneladas:
+                        try:
+                            toneladas = utils._float(toneladas)
+                            value = importe = toneladas * precio
+                            v.precio = precio
+                        except (TypeError, ValueError):
+                            utils.dialogo_info(titulo = "ERROR DE FORMATO", 
+                                    texto = "El valor tecleado («%s») no es "
+                                            "válido." % importe, 
+                                    padre = self.wids['ventana'])
+                            return
+                    else:   # Canceló
+                        return
                 v.importe = value
                 v.syncUpdate()
+                valor_anterior = utils._float(model[path][mes_offset + 1])
                 model[path][mes_offset + 1] = utils.float2str(v.importe)
+                path_padre = model[path].parent.path
+                delta = v.importe - valor_anterior
+                model[path_padre][mes_offset + 1] = utils._float(
+                        model[path_padre][mes_offset + 1]) + delta 
 
 
 def precalcular_mes_actual(fecha_actual, ventana_padre = None, usuario = None):
@@ -436,6 +489,6 @@ def buscar_concepto_proveedor_granza(proveedor, usuario = None):
 
 
 if __name__ == "__main__":
-    pclases.DEBUG = True
+    #pclases.DEBUG = True
     p = Presupuesto()
 
