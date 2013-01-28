@@ -504,7 +504,10 @@ class Menu:
         # ventanas. No llega a lanzarse nunca la señal "item-activated".
         # Esto es un pequeño apaño muy chapu.
         def button_press(widget, event):
-            widget.clics += 1
+            try:
+                widget.clics += 1
+            except AttributeError:
+                widget.clics = 1
         def motion(widget, event):
             widget.clics = 0
             return True
