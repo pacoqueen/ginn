@@ -2296,6 +2296,12 @@ class LineaDeCompra(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
+    def get_info(self):
+        return "%s; %f * %.2f = %.2f" % (self.productoCompra.descripcion, 
+                                           self.cantidad, 
+                                           self.precio * (1 - self.descuento), 
+                                           self.get_subtotal())
+
     def get_fecha_albaran(self):
         """
         Devuelve la fecha del albarán al que pertenece la línea de compra
@@ -8551,6 +8557,11 @@ class AlbaranEntrada(SQLObject, PRPCTOO):
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
+
+    def get_info(self):
+        return "Albarán %s (%s) del proveedor %s." % (self.numalbaran,
+                utils.str_fecha(self.fecha), 
+                self.proveedor and self.proveedor.nombre or "")
         
     def contar_lineas_facturadas(self):
         """

@@ -268,6 +268,7 @@ class Presupuesto(Ventana, VentanaGenerica):
             if descripcion:
                 c = pclases.ConceptoPresupuestoAnual(presupuestoAnual = pa, 
                         descripcion = descripcion)
+                pclases.Auditoria.nuevo(c, self.usuario, __file__)
                 self.actualizar_ventana()
 
     def buscar(self, widget):
@@ -332,6 +333,7 @@ class Presupuesto(Ventana, VentanaGenerica):
                             conceptoPresupuestoAnual = o, 
                             mes = mx.DateTime.DateTimeFrom(fecha_actual.year,
                                 mes_buscado, 1))
+                    pclases.Auditoria.nuevo(v, self.usuario, __file__)
                     if v < fecha_actual:
                         v.mes = v.mes + mx.DateTime.DateTimeFrom(
                                 year = v.mes.year + 1, 
@@ -342,7 +344,7 @@ class Presupuesto(Ventana, VentanaGenerica):
                 model[path][mes_offset + 1] = utils.float2str(v.importe)
 
 
-def precalcular_mes_actual(fecha_actual, ventana_padre = None):
+def precalcular_mes_actual(fecha_actual, ventana_padre = None, usuario = None):
     """
     Devuelve un diccionario de conceptos con el valor del mes en curso. Si el 
     concepto no existe, lo crea en la base de datos
@@ -370,13 +372,18 @@ def precalcular_mes_actual(fecha_actual, ventana_padre = None):
     fras = pclases.FacturaCompra.select(pclases.AND(
         pclases.FacturaCompra.q.fecha >= primes, 
         pclases.FacturaCompra.q.fecha <= finmes))
+    if pclases.DEBUG:
+        print __file__, fras.count(), "facturas encontradas."
     # Filtro para quedarme con las de granza:
     vpro.mover()
     res = {}
     for f in fras:
         for ldc in f.lineasDeCompra:
             if ldc.productoCompra in granzas:
-                concepto = buscar_concepto_proveedor_granza(ldc.proveedor)
+                if pclases.DEBUG:
+                    print __file__, a.get_info(), ldc.get_info()
+                concepto = buscar_concepto_proveedor_granza(ldc.proveedor, 
+                                                            usuario)
                 try:
                     res[concepto] += ldc.get_subtotal()
                 except KeyError:
@@ -386,22 +393,29 @@ def precalcular_mes_actual(fecha_actual, ventana_padre = None):
     albs = pclases.AlbaranEntrada.select(pclases.AND(
         pclases.AlbaranEntrada.q.fecha >= primes, 
         pclases.AlbaranEntrada.q.fecha <= finmes))
+    if pclases.DEBUG:
+        print __file__, albs.count(), "albaranes encontrados."
     # Filtro para quedarme con los de granza:
     vpro.mover()
     for a in albs:
         for ldc in a.lineasDeCompra:
             # Solo quiero lo no facturado.
             if not ldc.facturaCompraID and ldc.productoCompra in granzas:
-                concepto = buscar_concepto_proveedor_granza(ldc.proveedor)
+                if pclases.DEBUG:
+                    print __file__, a.get_info(), ldc.get_info()
+                concepto = buscar_concepto_proveedor_granza(ldc.proveedor, 
+                                                            usuario)
                 try:
                     res[concepto] += ldc.get_subtotal()
                 except KeyError:
                     res[concepto] = ldc.get_subtotal()
             vpro.mover()
     vpro.ocultar()
+    if pclases.DEBUG:
+        print __file__, res
     return res
 
-def buscar_concepto_proveedor_granza(proveedor):
+def buscar_concepto_proveedor_granza(proveedor, usuario = None):
     """
     Busca el concepto del presupuesto anual correspondiente al proveedor. Si 
     no lo encuentra, lo crea.
@@ -417,9 +431,11 @@ def buscar_concepto_proveedor_granza(proveedor):
                         == "Proveedores granza")[0] # EXISTE. Hay un check al 
                                             # principio que se asegura de eso.
                 )
+        pclases.Auditoria.nuevo(concepto, usuario, __file__)
     return concepto
 
 
 if __name__ == "__main__":
+    pclases.DEBUG = True
     p = Presupuesto()
 
