@@ -352,8 +352,7 @@ class Presupuesto(Ventana, VentanaGenerica):
                                     "\npara %s en %s:" % (o.descripcion, 
                                                         v.mes.strftime("%B")),
                             padre = self.wids['ventana'], 
-                            valor_por_defecto = utils.float2str(v.precio, 
-                                                                autodec = True)
+                            valor_por_defecto = utils.float2str(v.precio) 
                             )
                     if precio:
                         try:
@@ -372,8 +371,7 @@ class Presupuesto(Ventana, VentanaGenerica):
                                 v.mes.strftime("%B"), 
                                 o.descripcion), 
                             padre = self.wids['ventana'], 
-                            valor_por_defecto = utils.float2str(
-                                value / precio, autodec = True))
+                            valor_por_defecto=utils.float2str(value / precio))
                     if toneladas:
                         try:
                             toneladas = utils._float(toneladas)
@@ -489,6 +487,6 @@ def buscar_concepto_proveedor_granza(proveedor, usuario = None):
 
 
 if __name__ == "__main__":
-    #pclases.DEBUG = True
+    pclases.DEBUG = True
     p = Presupuesto()
 
