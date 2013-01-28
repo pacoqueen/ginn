@@ -28,8 +28,8 @@
 ###################################################################
 ## Changelog:
 ## 25 de enero de 2012 -> Inicio
-## TODO: Falta también doble clic para ver de dónde vienen los 
-##       datos precalculados y tal.
+## TODO: Falta también doble clic o clic secundario para ver de 
+##       dónde vienen los datos precalculados y tal. (Ventana inspect)
 ###################################################################
 
 import sys, os
@@ -123,7 +123,15 @@ class Presupuesto(Ventana, VentanaGenerica):
         utils.preparar_treeview(self.wids['tv_datos'], cols)
         for n in range(1, 13):
             col = self.wids['tv_datos'].get_column(n).get_cell_renderers()[0].set_property("xalign", 1)
-        self.wids['ventana'].resize(800, 600)
+        self.wids['tv_datos'].connect("row-activated", self.inspect)
+
+    def inspect(self, tv, path, col):
+        """
+        Muestra de dónde vienen los datos precalculados.
+        """
+        # TODO: PORASQUI: Hay que revisar las notas porque esto ya no es así. 
+        # Lo que he hecho y lo que quieren ahora es como la noche y el día.
+        pass
 
     def activar_widgets(self, s, chequear_permisos = True):
         """
