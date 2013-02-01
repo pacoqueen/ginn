@@ -32,6 +32,7 @@ pip-log.txt
 # Log, backups y demás información sensible e inútil para el desarrollo
 ginn.log
 *.backup
+BD/ginn.?.dump
 BD/baks_sql
 adjuntos/*
 framework/*ginn*.conf*
@@ -47,3 +48,6 @@ CVS/*
 .project
 .pydevproject
 .settings
+
+# KDE
+.directory
