@@ -3523,7 +3523,7 @@ def factura(cliente,
                 else:
                     try:
                         c.drawRightString(xprecio, linea,
-                            escribe(utils.float2str(l['precio'], 3)))
+                            escribe(utils.float2str(l['precio'], 4)))
                     except ValueError, msg:
                         raise ValueError, msg
                 c.setFont(fuente, tamanno)
