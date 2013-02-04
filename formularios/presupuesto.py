@@ -28,8 +28,12 @@
 ###################################################################
 ## Changelog:
 ## 25 de enero de 2012 -> Inicio
-## TODO: Falta también doble clic o clic secundario para ver de 
+## DONE: Falta también doble clic o clic secundario para ver de 
 ##       dónde vienen los datos precalculados y tal. (Ventana inspect)
+##       Eso lo dejamos ya para la dynconsulta.
+## TODO: ¿Cómo enlazo los proveedores con los registros de la BD? 
+##       Si un proveedor cambia de nombre, esta ventana ni se cosca
+##       y después va a ser imposible enlazarlos para contrastar datos.
 ###################################################################
 
 import sys, os
@@ -47,6 +51,7 @@ except ImportError:
     from seeker import VentanaGenerica 
 from utils import _float as float
 from ventana_progreso import VentanaProgreso, VentanaActividad
+from albaranes_de_salida import buscar_proveedor
 
 
 class Presupuesto(Ventana, VentanaGenerica):
@@ -122,7 +127,12 @@ class Presupuesto(Ventana, VentanaGenerica):
             mes = self.mes_actual
         for m in range(12):
             mescol = ((mes - 1 + m) % 12) + 1
-            strmes = mx.DateTime.DateTimeFrom(month = mescol).strftime("%B")
+            fechacol = mx.DateTime.DateTimeFrom(month = mescol, 
+                    year = mx.DateTime.localtime().year + (m > 0 and 1 or 0))
+            if mescol == 1:
+                strmes = fechacol.strftime("%B'%y")
+            else:
+                strmes = fechacol.strftime("%B")
             cols += [(strmes, 'gobject.TYPE_STRING', True, True, True, 
                       self.cambiar_importe, m)]
         cols += [('PUID', 'gobject.TYPE_STRING', False, False, False, None)]
@@ -138,6 +148,9 @@ class Presupuesto(Ventana, VentanaGenerica):
         """
         # TODO: PORASQUI: Hay que revisar las notas porque esto ya no es así. 
         # Lo que he hecho y lo que quieren ahora es como la noche y el día.
+        # Afortunadamente no todo es trabajo perdido. La dynconsulta será un cp
+        # de esta pero activando los precáculos y mostrando en ventas el max 
+        # entre el presupuesto y lo real.
         pass
 
     def activar_widgets(self, s, chequear_permisos = True):
@@ -281,7 +294,6 @@ class Presupuesto(Ventana, VentanaGenerica):
             if fila[-2] and utils._float(fila[-2]) != 0:
                 pasar_mes = True
                 break
-        print pasar_mes
         if not pasar_mes:
             # Valores antiguos
             mes_final = mx.DateTime.DateTimeFrom(mes_actual.year, mes, 1)
@@ -297,7 +309,6 @@ class Presupuesto(Ventana, VentanaGenerica):
                 pclases.ValorPresupuestoAnual.q.mes >= mes_anterior, 
                 pclases.ValorPresupuestoAnual.q.mes < mes_final)) 
             valores_count = valores.count()
-            print mes_final, mes_anterior, valores_count
             if not valores_count or sum([v.importe for v in valores]) == 0:
                 # No hay nada que copiar. Bucle infinito a cero.
                 pass
@@ -309,7 +320,6 @@ class Presupuesto(Ventana, VentanaGenerica):
                         year = mes_anterior.year + 1, 
                         month = mes_anterior.month, 
                         day = 1))
-                    print "Creado", nv
                     pclases.Auditoria.nuevo(nv, self.usuario, __file__)
                     i += 1
                 # Y refresco (una tónica, por favor)
@@ -332,19 +342,48 @@ class Presupuesto(Ventana, VentanaGenerica):
                                    ops = tipos, 
                                    padre = self.wids['ventana'])
         if tipo >= 0:
-            descripcion = utils.dialogo_entrada(titulo = "NUEVO CONCEPTO", 
+            if tipo > 0:
+                pa = pclases.PresupuestoAnual.get(tipo)
+                if "proveedores granza" in pa.descripcion.lower():
+                    # Si es del tipo de proveedores, entonces tengo que 
+                    # añadir un proveedor de granza.
+                    nombre = utils.dialogo_entrada(
+                            titulo = "NOMBRE PROVEEDOR", 
+                            texto = "Introduzca el nombre del proveedor:", 
+                            padre = self.wids['ventana'])
+                    if nombre != None:
+                        proveedor = buscar_proveedor(nombre, 
+                                self.wids['ventana'])
+                        if proveedor:
+                            # TODO: Check que el proveedor no esté ya en 
+                            #       el presupuesto.
+                            c = pclases.ConceptoPresupuestoAnual(
+                                    presupuestoAnual = pa,
+                                    descripcion = proveedor.nombre)
+                            # TODO: Me queda poder enlazar este registro
+                            #       con el proveedor en la BD. Solo con la 
+                            #       descripción se pierde cohesión.
+                            pclases.Auditoria.nuevo(c, self.usuario, 
+                                                    __file__)
+                else:
+                    descripcion = utils.dialogo_entrada(
+                        titulo = "NUEVO CONCEPTO", 
+                        texto = "Introduzca descripción:", 
+                        padre = self.wids['ventana'])
+                    if descripcion:
+                        c = pclases.ConceptoPresupuestoAnual(
+                                presupuestoAnual = pa,
+                                descripcion = descripcion)
+                        pclases.Auditoria.nuevo(c, self.usuario, __file__)
+            else: # Concepto de primer nivel
+                descripcion = utils.dialogo_entrada(
+                    titulo = "NUEVO CONCEPTO", 
                     texto = "Introduzca descripción:", 
                     padre = self.wids['ventana'])
-            if descripcion:
-                if tipo > 0:
-                    pa = pclases.PresupuestoAnual.get(tipo)
-                    c = pclases.ConceptoPresupuestoAnual(presupuestoAnual = pa,
-                            descripcion = descripcion)
-                    pclases.Auditoria.nuevo(c, self.usuario, __file__)
-                else:
+                if descripcion:
                     pa = pclases.PresupuestoAnual(descripcion = descripcion)
                     pclases.Auditoria.nuevo(pa, self.usuario, __file__)
-                self.actualizar_ventana()
+            self.actualizar_ventana()
 
     def buscar(self, widget):
         """

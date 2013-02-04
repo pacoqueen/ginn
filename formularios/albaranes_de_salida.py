@@ -4384,7 +4384,8 @@ def imprimir_factura(factura, usuario = None, abrir = True, es_copia = False,
         informes.abrir_pdf(nomarchivo)
     return nomarchivo
     
-def buscar_proveedor(nombre, ventana_padre = None):
+def buscar_proveedor(nombre, ventana_padre = None, 
+                     incluir_inhabilitados = False):
     """
     Busca un proveedor por su nombre. Si no lo encuentra solo con el 
     parámetro recibido o si encuentra más de uno, muestra una ventana 
@@ -4392,7 +4393,13 @@ def buscar_proveedor(nombre, ventana_padre = None):
     Devuelve el proveedor seleccionado o None.
     """
     proveedor = None
-    proveedores = pclases.Proveedor.select(pclases.Proveedor.q.nombre.contains(nombre))
+    if incluir_inhabilitados:
+        proveedores = pclases.Proveedor.select(
+                pclases.Proveedor.q.nombre.contains(nombre))
+    else:
+        proveedores = pclases.Proveedor.select(pclases.AND(
+            pclases.Proveedor.q.inhabilitado == False, 
+            pclases.Proveedor.q.nombre.contains(nombre)))
     numresultados = proveedores.count()
     if numresultados == 0:
         proveedores = pclases.Proveedor.select()
