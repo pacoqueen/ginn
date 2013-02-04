@@ -31,9 +31,13 @@
 ## DONE: Falta también doble clic o clic secundario para ver de 
 ##       dónde vienen los datos precalculados y tal. (Ventana inspect)
 ##       Eso lo dejamos ya para la dynconsulta.
-## TODO: ¿Cómo enlazo los proveedores con los registros de la BD? 
-##       Si un proveedor cambia de nombre, esta ventana ni se cosca
-##       y después va a ser imposible enlazarlos para contrastar datos.
+## TODO: ¿Faltaría asegurarme de que todos los conceptos que cuelgan 
+##       de proveedores de granza tienen un valor != None en proveedorID?
+##       Solo se pueden meter conceptos desde esta ventana y se enlaza 
+##       programáticamente. No debería haber problema ni registros 
+##       de proveedores de granza sin proveedor.
+## TODO: Faltan las ventas. Se puede crear a mano como un concepto más. 
+##       No haría falta código nuevo para nada.
 ###################################################################
 
 import sys, os
@@ -359,10 +363,8 @@ class Presupuesto(Ventana, VentanaGenerica):
                             #       el presupuesto.
                             c = pclases.ConceptoPresupuestoAnual(
                                     presupuestoAnual = pa,
-                                    descripcion = proveedor.nombre)
-                            # TODO: Me queda poder enlazar este registro
-                            #       con el proveedor en la BD. Solo con la 
-                            #       descripción se pierde cohesión.
+                                    descripcion = proveedor.nombre, 
+                                    proveedor = proveedor)
                             pclases.Auditoria.nuevo(c, self.usuario, 
                                                     __file__)
                 else:
@@ -416,10 +418,19 @@ class Presupuesto(Ventana, VentanaGenerica):
         puid = model[path][-1]
         o = pclases.getObjetoPUID(puid)
         if isinstance(o, pclases.ConceptoPresupuestoAnual): 
-            o.descripcion = value
-            o.syncUpdate()
-            model[path][0] = o.descripcion
-            #self.actualizar_ventana(None)
+            if o.proveedor:
+                utils.dialogo_info(titulo = "PROVEEDOR NO MODIFICABLE", 
+                        texto = "El nombre del proveedor no se puede cambiar \n"
+                                "desde esta ventana, use la de proveedores.\n"
+                                "Si lo que quiere es usar otro proveedor, \n"
+                                "elimine la línea e introduzca un nuevo \n"
+                                "proveedor en su lugar.", 
+                        padre = self.wids['ventana'])
+            else:
+                o.descripcion = value
+                o.syncUpdate()
+                model[path][0] = o.descripcion
+                #self.actualizar_ventana(None)
 
     def cambiar_importe(self, cell, path, value, mes_offset):
         try:

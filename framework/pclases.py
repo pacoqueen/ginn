@@ -4512,6 +4512,7 @@ class Proveedor(SQLObject, PRPCTOO):
     documentos = MultipleJoin('Documento')
     productosCompra = MultipleJoin("ProductoCompra")    # Productos que tiene 
                                     # asignados como proveedor por defecto.
+    conceptosPresupuestoAnual = MultipleJoin("ConceptoPresupuestoAnual")
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -20822,6 +20823,7 @@ class ConceptoPresupuestoAnual(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
     presupuestoAnualID = ForeignKey("PresupuestoAnual")
+    proveedorID = ForeignKey("Proveedor", default = None)
     valoresPresupuestoAnual = MultipleJoin("ValorPresupuestoAnual")
 
     def _init(self, *args, **kw):

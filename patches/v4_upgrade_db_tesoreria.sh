@@ -90,7 +90,8 @@ CREATE TABLE concepto_presupuesto_anual(
     -- Conceptos. Primera columna de las flas del presupuesto.
     id SERIAL PRIMARY KEY, 
     presupuesto_anual_id INT REFERENCES presupuesto_anual NOT NULL, 
-    descripcion TEXT DEFAULT ''
+    descripcion TEXT DEFAULT '', 
+    proveedor_id INT REFERENCES proveedor DEFAULT NULL
 );
 
 CREATE TABLE valor_presupuesto_anual(
