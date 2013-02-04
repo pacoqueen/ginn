@@ -121,8 +121,8 @@ class Presupuesto(Ventana, VentanaGenerica):
         else:
             mes = self.mes_actual
         for m in range(12):
-            mes = ((mes - 1 + m) % 12) + 1
-            strmes = mx.DateTime.DateTimeFrom(month = mes).strftime("%B")
+            mescol = ((mes - 1 + m) % 12) + 1
+            strmes = mx.DateTime.DateTimeFrom(month = mescol).strftime("%B")
             cols += [(strmes, 'gobject.TYPE_STRING', True, True, True, 
                       self.cambiar_importe, m)]
         cols += [('PUID', 'gobject.TYPE_STRING', False, False, False, None)]
@@ -204,7 +204,9 @@ class Presupuesto(Ventana, VentanaGenerica):
         mes_final = mx.DateTime.DateTimeFrom(mes_actual.year + 1, 
                                              mes_actual.month,
                                              1)
-        precalculo = precalcular_mes_actual(mes_actual, self.wids['ventana'])
+        # Esto va en dynconsulta. No se utilizan valores reales aquí.
+        #precalculo = precalcular_mes_actual(mes_actual, self.wids['ventana'])
+        precalculo = []
         conceptos = pclases.ConceptoPresupuestoAnual.select()
         conceptos_count = conceptos.count()
         filas = {}
@@ -235,7 +237,7 @@ class Presupuesto(Ventana, VentanaGenerica):
                     filas[c][mes_offset] = v.importe
             else:
                 filas[c][mes_offset] = v.importe
-            vpro.set_valor(i / conceptos_count, 
+            vpro.set_valor(i / valores_count, 
                            "Cargando valores de presupuesto...") 
             i += 1
         i = 0.0
@@ -247,12 +249,14 @@ class Presupuesto(Ventana, VentanaGenerica):
             nodo_padre = padres[pa]
             fila = [c.descripcion] + filas[c] + [c.puid]
             nodos_conceptos[c] = model.append(nodo_padre, fila)
-            for i in range(1, 13):
+            for mes_matriz in range(1, 13):
                 try:
-                    model[nodo_padre][i] = utils.float2str(
-                        utils.parse_float(model[nodo_padre][i]) + fila[i])
+                    model[nodo_padre][mes_matriz] = utils.float2str(
+                            utils.parse_float(model[nodo_padre][mes_matriz]) 
+                            + fila[mes_matriz])
                 except (TypeError, ValueError):
-                    model[nodo_padre][i] = utils.float2str(fila[i])
+                    model[nodo_padre][mes_matriz] = utils.float2str(
+                            fila[mes_matriz])
             i += 1
         # Vuelvo a volcar todos los valores precalculados. Puede que alguno 
         # no se mostrara en el primer bucle por no haber valores antiguos de 
@@ -271,6 +275,45 @@ class Presupuesto(Ventana, VentanaGenerica):
             except (TypeError, ValueError):
                 model[nodo_padre][1] = utils.float2str(precalculo[c])
             i += 1
+        # Ahora toca pasar el mes que se ha ido al final del año actual
+        pasar_mes = False
+        for fila in model:
+            if fila[-2] and utils._float(fila[-2]) != 0:
+                pasar_mes = True
+                break
+        print pasar_mes
+        if not pasar_mes:
+            # Valores antiguos
+            mes_final = mx.DateTime.DateTimeFrom(mes_actual.year, mes, 1)
+            if mes == 1:
+                anno = mes_final.year - 1
+                mes = 12
+            else:
+                anno = mes_final.year
+                mes = mes - 1
+            mes_anterior = mx.DateTime.DateTimeFrom(anno, mes, 1)
+            # Copio a valores nuevos
+            valores = pclases.ValorPresupuestoAnual.select(pclases.AND(
+                pclases.ValorPresupuestoAnual.q.mes >= mes_anterior, 
+                pclases.ValorPresupuestoAnual.q.mes < mes_final)) 
+            valores_count = valores.count()
+            print mes_final, mes_anterior, valores_count
+            if not valores_count or sum([v.importe for v in valores]) == 0:
+                # No hay nada que copiar. Bucle infinito a cero.
+                pass
+            else:
+                for v in valores:
+                    vpro.set_valor(i / valores_count, 
+                                   "Trasladando valores antiguos...") 
+                    nv = v.clone(mes = mx.DateTime.DateTimeFrom(
+                        year = mes_anterior.year + 1, 
+                        month = mes_anterior.month, 
+                        day = 1))
+                    print "Creado", nv
+                    pclases.Auditoria.nuevo(nv, self.usuario, __file__)
+                    i += 1
+                # Y refresco (una tónica, por favor)
+                self.actualizar_ventana()
         vpro.ocultar()
             
     def nuevo(self, widget):
