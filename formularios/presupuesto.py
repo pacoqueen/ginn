@@ -50,12 +50,13 @@ from ventana_progreso import VentanaProgreso, VentanaActividad
 
 
 class Presupuesto(Ventana, VentanaGenerica):
-    def __init__(self, objeto = None, usuario = None):
+    def __init__(self, objeto = None, usuario = None, mes_actual = None):
         """
         Constructor. objeto puede ser un objeto de pclases con el que
         comenzar la ventana (en lugar del primero de la tabla, que es
         el que se muestra por defecto).
         """
+        self.mes_actual = mes_actual
         pclases.PresupuestoAnual.check_defaults()
         self.usuario = usuario
         self.clase = None
@@ -87,7 +88,8 @@ class Presupuesto(Ventana, VentanaGenerica):
             for colname in self.dic_campos:
                 col = self.clase._SO_columnDict[colname]
                 try:
-                    valor_ventana = self.leer_valor(col, self.dic_campos[colname])
+                    valor_ventana = self.leer_valor(col, 
+                                                    self.dic_campos[colname])
                 except (ValueError, mx.DateTime.RangeError, TypeError):
                     igual = False
                 valor_objeto = getattr(self.objeto, col.name)
@@ -114,15 +116,20 @@ class Presupuesto(Ventana, VentanaGenerica):
         # Inicialización del resto de widgets:
         cols = [('Concepto', 'gobject.TYPE_STRING', True, True, True, 
                  self.cambiar_concepto)]
+        if not self.mes_actual:
+            mes = mx.DateTime.localtime().month
+        else:
+            mes = self.mes_actual
         for m in range(12):
-            mes = ((mx.DateTime.localtime().month - 1 + m) % 12) + 1
+            mes = ((mes - 1 + m) % 12) + 1
             strmes = mx.DateTime.DateTimeFrom(month = mes).strftime("%B")
             cols += [(strmes, 'gobject.TYPE_STRING', True, True, True, 
                       self.cambiar_importe, m)]
         cols += [('PUID', 'gobject.TYPE_STRING', False, False, False, None)]
         utils.preparar_treeview(self.wids['tv_datos'], cols)
         for n in range(1, 13):
-            col = self.wids['tv_datos'].get_column(n).get_cell_renderers()[0].set_property("xalign", 1)
+            col = self.wids['tv_datos'].get_column(n).get_cell_renderers()[0]\
+                    .set_property("xalign", 1)
         self.wids['tv_datos'].connect("row-activated", self.inspect)
 
     def inspect(self, tv, path, col):
@@ -187,11 +194,15 @@ class Presupuesto(Ventana, VentanaGenerica):
                            "Cargando conceptos de primer nivel...") 
             i += 1
         i = 0.0
+        if not self.mes_actual:
+            mes = mx.DateTime.localtime().month
+        else:
+            mes = self.mes_actual
         mes_actual = mx.DateTime.DateTimeFrom(mx.DateTime.localtime().year, 
-                                              mx.DateTime.localtime().month,
+                                              mes,
                                               1)
-        mes_final = mx.DateTime.DateTimeFrom(mx.DateTime.localtime().year + 1, 
-                                             mx.DateTime.localtime().month,
+        mes_final = mx.DateTime.DateTimeFrom(mes_actual.year + 1, 
+                                             mes_actual.month,
                                              1)
         precalculo = precalcular_mes_actual(mes_actual, self.wids['ventana'])
         conceptos = pclases.ConceptoPresupuestoAnual.select()
@@ -212,9 +223,11 @@ class Presupuesto(Ventana, VentanaGenerica):
         for v in valores:
             c = v.conceptoPresupuestoAnual
             mes_offset = (v.mes.month - mes_actual.month) % 12
-            if (v.mes.month == mes_actual.month 
-                    and c.presupuestoAnual.descripcion 
-                            == "Proveedores granza"): # OJO: HARCODED
+            if False:
+            # Esta funcionalidad es de dynconsulta. Aquí siempre datos manuales
+            #if (v.mes.month == mes_actual.month 
+            #        and c.presupuestoAnual.descripcion 
+            #                == "Proveedores granza"): # OJO: HARCODED
                 # Este valor no lo muestro. Tengo que tirar de datos reales.
                 try:
                     filas[c][mes_offset] = precalculo[c]
@@ -270,19 +283,24 @@ class Presupuesto(Ventana, VentanaGenerica):
         """
         tipos = [(i.id, i.descripcion) 
                  for i in pclases.PresupuestoAnual.select()]
+        tipos.insert(0, (0, "Añadir concepto de primer nivel"))
         tipo = utils.dialogo_combo(titulo = "NUEVO CONCEPTO", 
                                    texto = "Seleccione tipo:", 
                                    ops = tipos, 
                                    padre = self.wids['ventana'])
-        if tipo:
-            pa = pclases.PresupuestoAnual.get(tipo)
+        if tipo >= 0:
             descripcion = utils.dialogo_entrada(titulo = "NUEVO CONCEPTO", 
                     texto = "Introduzca descripción:", 
                     padre = self.wids['ventana'])
             if descripcion:
-                c = pclases.ConceptoPresupuestoAnual(presupuestoAnual = pa, 
-                        descripcion = descripcion)
-                pclases.Auditoria.nuevo(c, self.usuario, __file__)
+                if tipo > 0:
+                    pa = pclases.PresupuestoAnual.get(tipo)
+                    c = pclases.ConceptoPresupuestoAnual(presupuestoAnual = pa,
+                            descripcion = descripcion)
+                    pclases.Auditoria.nuevo(c, self.usuario, __file__)
+                else:
+                    pa = pclases.PresupuestoAnual(descripcion = descripcion)
+                    pclases.Auditoria.nuevo(pa, self.usuario, __file__)
                 self.actualizar_ventana()
 
     def buscar(self, widget):
@@ -292,7 +310,8 @@ class Presupuesto(Ventana, VentanaGenerica):
         en la ventana a no ser que se pulse en Cancelar en
         la ventana de resultados.
         """
-        # TODO: : Buscar dentro de todas las filas un texto tecleado y pasarle el foco o algo.
+        # TODO: Buscar dentro de todas las filas un texto tecleado y 
+        #       pasarle el foco o algo.
         pass
 
     def borrar(self, widget):
@@ -322,8 +341,11 @@ class Presupuesto(Ventana, VentanaGenerica):
 
     def cambiar_importe(self, cell, path, value, mes_offset):
         try:
-            # TODO: Permitir fórmulas y mostrar precio si es un proveedor de granza.
-            # TODO: Si es un valor precalculado no debe dejar cambiarlo. Aunque realmente no se cambia, al refrescar se vuelve a machacar el valor tecleado.
+            # TODO: Permitir fórmulas y mostrar precio si es un proveedor de 
+            #       granza.
+            # TODO: Si es un valor precalculado no debe dejar cambiarlo. 
+            #       Aunque realmente no se cambia, al refrescar se vuelve a 
+            #       machacar el valor tecleado.
             value = utils._float(value)
         except (TypeError, ValueError):
             utils.dialogo(titulo = "ERROR", 
@@ -334,9 +356,13 @@ class Presupuesto(Ventana, VentanaGenerica):
             puid = model[path][-1]
             o = pclases.getObjetoPUID(puid)
             if isinstance(o, pclases.ConceptoPresupuestoAnual): 
+                if not self.mes_actual:
+                    mes = mx.DateTime.localtime().month
+                else:
+                    mes = self.mes_actual
                 fecha_actual = mx.DateTime.DateTimeFrom(
                                                 mx.DateTime.localtime().year, 
-                                                mx.DateTime.localtime().month,
+                                                mes,
                                                 1)
                 mes_actual = fecha_actual.month
                 mes_buscado = (mes_actual + mes_offset) % 12
@@ -440,7 +466,7 @@ def precalcular_mes_actual(fecha_actual, ventana_padre = None, usuario = None):
         for ldc in f.lineasDeCompra:
             if ldc.productoCompra in granzas:
                 if pclases.DEBUG:
-                    print __file__, a.get_info(), ldc.get_info()
+                    print __file__, f.get_info(), ldc.get_info()
                 concepto = buscar_concepto_proveedor_granza(ldc.proveedor, 
                                                             usuario)
                 try:
@@ -496,5 +522,9 @@ def buscar_concepto_proveedor_granza(proveedor, usuario = None):
 
 if __name__ == "__main__":
     pclases.DEBUG = True
-    p = Presupuesto()
+    try:    # Para testeo. 1 = Enero
+        mes = int(sys.argv[1])
+    except (TypeError, ValueError, IndexError):
+        mes = None
+    p = Presupuesto(mes_actual = mes)
 
