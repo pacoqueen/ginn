@@ -546,7 +546,7 @@ FRA_NO_DOCUMENTADA,FRA_NO_VENCIDA,FRA_IMPAGADA,FRA_COBRADA,FRA_ABONO = range(5)
 GESTION, CARTERA, DESCONTADO, IMPAGADO, COBRADO = range(5)
 
 # VERBOSE MODE
-total = 159 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
+total = 160 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
             # Más bien grep print_verbose pclases.py | wc -l
 cont = 0
 import time
@@ -4499,6 +4499,34 @@ class CuentaOrigen(SQLObject, PRPCTOO):
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
+class TipoDeProveedor(SQLObject, PRPCTOO):
+    _connection = conn
+    _fromDatabase = True
+    proveedores = MultipleJoin("Proveedor")
+
+    def _init(self, *args, **kw):
+        starter(self, *args, **kw)
+
+    def get_info(self):
+        return "%s: %d proveedores en esta categoría." % (
+                self.descripcion, len(self.proveedores))
+
+    @staticmethod
+    def check_defaults():
+        """
+        Comprueba que existen --y si no, los crea-- los tipos por defecto.
+        """
+        tipos = ("Granza", "Comercializados", "Transporte", "Repuestos", 
+                 "Suministros", "Materiales", "Resto")
+        for t in tipos:
+            try: 
+                assert TipoDeProveedor.selectBy(descripcion = t).count() > 0
+            except AssertionError:
+                tipo = TipoDeProveedor(descripcion = t)
+                Auditoria.nuevo(tipo, None, __file__)
+
+cont, tiempo = print_verbose(cont, total, tiempo)
+
 class Proveedor(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
@@ -4513,9 +4541,22 @@ class Proveedor(SQLObject, PRPCTOO):
     productosCompra = MultipleJoin("ProductoCompra")    # Productos que tiene 
                                     # asignados como proveedor por defecto.
     conceptosPresupuestoAnual = MultipleJoin("ConceptoPresupuestoAnual")
+    tipoDeProveedorID = ForeignKey("TipoDeProveedor", default = None)
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
+
+    def get_tipos_de_proveedor_secundarios(self):
+        """
+        En función de los pedidos hechos al proveedor devuelve todos los 
+        tipos de material que nos ha servido.
+        """
+        tipos_material = []
+        for p in self.get_productos():
+            t = p.tipoDeMaterial
+            if t not in tipos_material: 
+                tipos_material.append(t)
+        return tipos_material
 
     def es_extranjero(self):
         """
@@ -14228,6 +14269,33 @@ class ConsumoAdicional(SQLObject, PRPCTOO):
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
+class TipoDeCliente(SQLObject, PRPCTOO):
+    _connection = conn
+    _fromDatabase = True
+    clientes = MultipleJoin("Cliente")
+
+    def _init(self, *args, **kw):
+        starter(self, *args, **kw)
+
+    def get_info(self):
+        return "%s: %d clientes en esta categoría." % (
+                self.descripcion, len(self.clientes))
+
+    @staticmethod
+    def check_defaults():
+        """
+        Comprueba que existen --y si no, los crea-- los tipos por defecto.
+        """
+        tipos = ("Industrial", "General", "Fibra", "Geocem", "Comercializado")
+        for t in tipos:
+            try: 
+                assert TipoDeCliente.selectBy(descripcion = t).count() > 0
+            except AssertionError:
+                tipo = TipoDeCliente(descripcion = t)
+                Auditoria.nuevo(tipo, None, __file__)
+
+cont, tiempo = print_verbose(cont, total, tiempo)
+
 class Cliente(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
@@ -14252,6 +14320,7 @@ class Cliente(SQLObject, PRPCTOO):
                         intermediateTable='obra__cliente')
     cobros = MultipleJoin("Cobro")
     concentracionesRemesa = MultipleJoin("ConcentracionRemesa")
+    tipoDeClienteID = ForeignKey("TipoDeCliente", default = None)
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -20802,7 +20871,24 @@ class PresupuestoAnual(SQLObject, PRPCTOO):
                         ("Nómina mes", "Paga extra", "Hoja de gastos", 
                          "Seguros sociales"), 
                      "Impuestos": [], 
-                     "Proveedores granza": []}
+                     "Gastos financieros": ("Estructurales", "Corrientes"), 
+                     "Proveedores granza": [], 
+                     "Resto proveedores": 
+                        ("Comercializados", "Transporte", "Repuestos", 
+                         "Suministros", "Materiales", "Resto"), 
+                     "Clientes": 
+                        ("Nacionales - Industrial", 
+                            "Nacionales - General", 
+                            "Nacionales - Fibra", 
+                            "Nacionales - Geocem", 
+                            "Nacionales - Comercializado"
+                         "Internacionales - Industrial", 
+                            "Internacionales - General", 
+                            "Internacionales - Fibra", 
+                            "Internacionales - Geocem", 
+                            "Internacionales - Comercializado"
+                        )
+                    }
         for c in conceptos:
             try:
                 pa = PresupuestoAnual.select(
@@ -20840,6 +20926,12 @@ class ValorPresupuestoAnual(SQLObject, PRPCTOO):
         starter(self, *args, **kw)
 
 cont, tiempo = print_verbose(cont, total, tiempo)
+
+
+# Con esto me aseguro de que existen los tipos de proveedor mínimos necesarios.
+TipoDeProveedor.check_defaults()
+TipoDeCliente.check_defaults()
+
  
 ## XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX
 

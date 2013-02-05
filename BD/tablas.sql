@@ -91,6 +91,14 @@ CREATE TABLE tarifa(
     periodo_validez_fin DATE DEFAULT NULL       -- no tiene caducidad.
 );
 
+--------------------------
+-- Tipos de proveedores --
+--------------------------
+CREATE TABLE tipo_de_proveedor(
+    id INT SERIAL PRIMARY KEY, 
+    descripcion TEXT
+);
+
 ---------------------
 -- Tabla proveedor --
 ---------------------
@@ -145,9 +153,10 @@ CREATE TABLE proveedor(
                                 -- compra.(CWT)
     iva FLOAT DEFAULT 0.21,     -- NEW! 30/01/07. Iva por defecto del
                                 -- proveedor (21% a no ser que sea extranjero).
-    nombre_banco TEXT DEFAULT ''    -- NEW! 07/02/2007. CWT: Nombre del
+    nombre_banco TEXT DEFAULT '',   -- NEW! 07/02/2007. CWT: Nombre del
                                     -- banco. No es lo mismo que "banco"
                                     -- ¿Porcuá? pues no lo sé.
+    tipo_de_proveedor_id INT REFERENCES tipo_de_proveedor DEFAULT NULL
 );
 
 --------------------
@@ -1176,6 +1185,14 @@ CREATE TABLE cuenta_origen(
     telefono TEXT DEFAULT ''      -- NEW! 27/02/2007.
 );
 
+----------------------
+-- Tipos de cliente --
+----------------------
+CREATE TABLE tipo_de_cliente(
+    id SERIAL PRIMARY KEY, 
+    descripcion TEXT
+);
+
 --------------
 -- Clientes --
 --------------
@@ -1245,7 +1262,8 @@ CREATE TABLE cliente(
     riesgo_concedido FLOAT DEFAULT -1.0, -- NEW! 06/11/2008. -1 = Indefinido
     packing_list_con_codigo BOOLEAN DEFAULT FALSE,  -- NEW! 27/02/2009
     facturar_con_albaran BOOLEAN DEFAULT TRUE,      -- NEW! 02/03/2009
-    copias_factura INT DEFAULT 0    -- Sin incluir la original. NEW! 09/07/2009
+    copias_factura INT DEFAULT 0,   -- Sin incluir la original. NEW! 09/07/2009
+    tipo_de_cliente_id INT REFERENCES tipo_de_cliente DEFAULT NULL
 );
 
 ------------------------------------

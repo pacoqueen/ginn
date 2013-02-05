@@ -109,6 +109,25 @@ GRANT ALL ON concepto_presupuesto_anual_id_seq TO geotexan;
 GRANT ALL ON valor_presupuesto_anual TO geotexan;
 GRANT ALL ON valor_presupuesto_anual_id_seq TO geotexan;
 
+CREATE TABLE tipo_de_proveedor(
+    id SERIAL PRIMARY KEY, 
+    descripcion TEXT
+);
+
+ALTER TABLE proveedor ADD COLUMN tipo_de_proveedor_id INT REFERENCES tipo_de_proveedor DEFAULT NULL;
+GRANT ALL ON tipo_de_proveedor TO geotexan;
+GRANT ALL ON tipo_de_proveedor_id_seq TO geotexan;
+
+CREATE TABLE tipo_de_cliente(
+    id SERIAL PRIMARY KEY, 
+    descripcion TEXT
+);
+
+ALTER TABLE cliente ADD COLUMN tipo_de_cliente_id INT REFERENCES tipo_de_cliente DEFAULT NULL;
+GRANT ALL ON tipo_de_cliente TO geotexan;
+GRANT ALL ON tipo_de_cliente_id_seq TO geotexan;
+
+
 EOF
 done
 

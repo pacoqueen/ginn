@@ -980,6 +980,7 @@ class Clientes(Ventana):
                         and cli.name != "cuentaOrigenID" 
                         and cli.name != "riesgoConcedido" 
                         and cli.name != "riesgoAsegurado"
+                        and cli.name != "tipoDeClienteID"
                         and cli.name != "copiasFactura"] 
             # Quito la columna tarifa que no se muestra en el formulario 
             # de clientes
@@ -1021,6 +1022,7 @@ class Clientes(Ventana):
         condicion = condicion and utils.combo_get_value(self.wids['cbe_comercial']) ==  cliente.clienteID
         condicion = condicion and utils.combo_get_value(self.wids['cbe_proveedor']) == cliente.proveedorID
         condicion = condicion and utils.combo_get_value(self.wids['cbe_cuenta']) == cliente.cuentaOrigenID
+        condicion = condicion and utils.combo_get_value(self.wids['cb_tipo_de_cliente']) == cliente.tipoDeClienteID
         condicion = condicion and self.wids['e_porcentaje'].get_text() == "%s %%" % (utils.float2str(cliente.porcentaje * 100))
         condicion = condicion and self.wids['ch_envio_albaran'].get_active() == cliente.enviarCorreoAlbaran
         condicion = condicion and self.wids['ch_envio_factura'].get_active() == cliente.enviarCorreoFactura
@@ -1080,6 +1082,9 @@ class Clientes(Ventana):
         utils.rellenar_lista(self.wids['cbe_cuenta'], 
             [(c.id, "%s: %s %s" % (c.nombre, c.banco, c.ccc)) 
                 for c in pclases.CuentaOrigen.select(orderBy = "nombre")])
+        utils.rellenar_lista(self.wids['cb_tipo_de_cliente'], 
+            [(c.id, c.descripcion) 
+                for c in pclases.TipoDeCliente.select(orderBy = "id")])
         cols = (('Cliente', 'gobject.TYPE_STRING', False, True, True, None), 
                 ('Comisión', 'gobject.TYPE_STRING', False, True, False, None), 
                 ('IDCliente', 'gobject.TYPE_INT64', False, True, False, None))
@@ -1288,8 +1293,7 @@ class Clientes(Ventana):
             except AttributeError:
                 try:
                     buffer = widget.get_buffer()
-                    res = buffer.get_text(buffer.get_bounds()[0], 
-                                          buffer.get_bounds()[1])
+                    res = buffer.get_text(*buffer.get_bounds())
                 except AttributeError:
                     try:
                         # FIXME: Esto falla con versiones antiguas de Gtk
@@ -1298,7 +1302,6 @@ class Clientes(Ventana):
                         # HACK: Lo cambio por un Entry normal.
                         widget = self.very_ugly_dirty_hack(widget)
                         res = widget.get_text()
-
         return res
 
     def very_ugly_dirty_hack(self, w):
@@ -1403,6 +1406,8 @@ class Clientes(Ventana):
                                 cliente.proveedorID)
         utils.combo_set_from_db(self.wids['cbe_cuenta'], 
                                 cliente.cuentaOrigenID)
+        utils.combo_set_from_db(self.wids['cb_tipo_de_cliente'], 
+                                cliente.tipoDeClienteID)
         self.wids['e_porcentaje'].set_text(
             "%s %%" % (utils.float2str(cliente.porcentaje * 100)))
         if pclases.DEBUG:
@@ -1704,9 +1709,13 @@ class Clientes(Ventana):
                       and c.name != "enviarCorreoPacking" 
                       and c.name != "proveedorID" 
                       and c.name != "cuentaOrigenID"
+                      and c.name != "tipoDeClienteID"
                       and c.name != "copiasFactura"]: 
                       # Omito columna tarifa
             datos[c] = self.leer_valor(self.wids['e_%s' % c])
+            if pclases.DEBUG:
+                if c == "observaciones":
+                    print "Campo", c, ":", datos[c]
         # Desactivo el notificador momentáneamente
         cliente.notificador.set_func(lambda: None)
         # Actualizo los datos del objeto
@@ -1733,6 +1742,9 @@ class Clientes(Ventana):
                     cliente.riesgoAsegurado = -1
             else:
                 setattr(cliente, c, datos[c])
+                if pclases.DEBUG:
+                    if c == "observaciones":
+                        print datos[c]
                 # eval('cliente.set(%s = "%s")' % (c, datos[c]))
         # CWT: Chequeo que tenga CIF, y si no lo tiene, lo pido por 
         #      diálogo ad eternum.
@@ -1756,6 +1768,8 @@ class Clientes(Ventana):
         cliente.clienteID = utils.combo_get_value(self.wids['cbe_comercial'])
         cliente.proveedorID = utils.combo_get_value(self.wids['cbe_proveedor'])
         cliente.cuentaOrigenID = utils.combo_get_value(self.wids['cbe_cuenta'])
+        cliente.tipoDeClienteID = utils.combo_get_value(
+                                            self.wids['cb_tipo_de_cliente'])
         try:
             cliente.porcentaje = utils.parse_porcentaje(
                 self.wids['e_porcentaje'].get_text(), 

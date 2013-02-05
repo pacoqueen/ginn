@@ -124,7 +124,8 @@ class Proveedores(Ventana):
                         res = 0.21
         except AttributeError:
             buffer = widget.get_buffer()
-            res = buffer.get_text(buffer.get_start_iter(), buffer.get_end_iter())
+            res = buffer.get_text(buffer.get_start_iter(), 
+                                  buffer.get_end_iter())
         return res
 
     def es_diferente(self):
@@ -136,12 +137,16 @@ class Proveedores(Ventana):
         if proveedor == None: return False	# Si no hay proveedor activo, devuelvo que no hay cambio respecto a la ventana
         condicion = True
         for c in proveedor._SO_columns:
-            textobj = eval('proveedor.%s' % c.name)
-            textven = self.leer_valor(self.wids['e_%s' % c.name]) 
-            condicion = condicion and textobj == textven
-            if not condicion:
-#                print textobj, textven, c.name
-                break
+            if c.name != "tipoDeProveedorID":
+                textobj = eval('proveedor.%s' % c.name)
+                textven = self.leer_valor(self.wids['e_%s' % c.name]) 
+                condicion = condicion and textobj == textven
+                if not condicion:
+                    break
+            else:
+                condicion = (condicion 
+                    and proveedor.tipoDeProveedorID == utils.combo_get_value(
+                        self.wids['cb_tipo_de_proveedor']))
         return not condicion	# Concición verifica que sea igual
 
     def aviso_actualizacion(self):
@@ -172,10 +177,18 @@ class Proveedores(Ventana):
                 ('Swift', 'gobject.TYPE_STRING', False, True, False, None),
                 ('IBAN', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Cuenta', 'gobject.TYPE_STRING', False, True, False, None),
-                ('Nombre banco', 'gobject.TYPE_STRING', False, True, False, None),
-                ('Observaciones', 'gobject.TYPE_STRING', False, True, False, None),
+                ('Nombre banco', 'gobject.TYPE_STRING', 
+                    False, True, False, None),
+                ('Observaciones', 'gobject.TYPE_STRING', 
+                    False, True, False, None),
                 ('ID', 'gobject.TYPE_INT64', False, False, False, None))
         utils.preparar_listview(self.wids['tv_cuentas'], cols)
+        cols = (("Tipo", "gobject.TYPE_STRING", False, True, True, None), 
+                ("ID", "gobject.TYPE_STRING", False, False, False, None))
+        utils.preparar_listview(self.wids['tv_tipos_de_materiales'], cols)
+        utils.rellenar_lista(self.wids['cb_tipo_de_proveedor'], 
+                [(t.id, t.descripcion) 
+                    for t in pclases.TipoDeProveedor.select(orderBy = "id")])
 
     def activar_widgets(self, s, chequear_permisos = True):
         """
@@ -262,15 +275,20 @@ class Proveedores(Ventana):
             self.wids['ventana'].set_title("Proveedores - %s" % (proveedor.nombre))
             # Aprovechando que todo son "text" y los "entry" se llaman casi igual:
             for c in proveedor._SO_columns:
-                textobj = getattr(proveedor, c.name)
-                # Reparo los Nones que haya en la BD
-                if textobj == None:
-                    proveedor.notificador.set_func(lambda : None)
-                    textobj = ''
-                    setattr(proveedor, c.name, textobj)
-                    proveedor.notificador.set_func(self.aviso_actualizacion)
-                self.escribir_valor(self.wids['e_%s' % c.name], textobj) 
+                if c.name != "tipoDeProveedorID":
+                    textobj = getattr(proveedor, c.name)
+                    # Reparo los Nones que haya en la BD
+                    if textobj == None:
+                        proveedor.notificador.set_func(lambda : None)
+                        textobj = ''
+                        setattr(proveedor, c.name, textobj)
+                        proveedor.notificador.set_func(self.aviso_actualizacion)
+                    self.escribir_valor(self.wids['e_%s' % c.name], textobj) 
+                else:
+                    utils.combo_set_from_db(self.wids['cb_tipo_de_proveedor'], 
+                            proveedor.tipoDeProveedorID)
             self.rellenar_cuentas()
+            self.rellenar_tipos_de_material()
             self.objeto.make_swap()
 
     def rellenar_cuentas(self):
@@ -290,6 +308,12 @@ class Proveedores(Ventana):
                           cuenta.nombreBanco, 
                           cuenta.observaciones, 
                           cuenta.id))
+
+    def rellenar_tipos_de_material(self):
+        model = self.wids['tv_tipos_de_materiales'].get_model()
+        model.clear()
+        for t in self.objeto.get_tipos_de_proveedor_secundarios():
+            model.append((t.descripcion, t.id))
 
     # --------------- Manejadores de eventos ----------------------------
     def crear_nuevo_proveedor(self, widget):
@@ -427,9 +451,13 @@ class Proveedores(Ventana):
         cif = self.wids['e_cif'].get_text()
         self.wids['e_cif'].set_text(utils.parse_cif(cif) or self.objeto.cif)
         for c in [c.name for c in proveedor._SO_columns]:
-            valor = self.leer_valor(self.wids['e_%s' % c])
+            if c != "tipoDeProveedorID":
+                valor = self.leer_valor(self.wids['e_%s' % c])
+            else:
+                valor=utils.combo_get_value(self.wids['cb_tipo_de_proveedor'])
             setattr(proveedor, c, valor)
-        # Fuerzo la actualización de la BD y no espero a que SQLObject lo haga por mí:
+        # Fuerzo la actualización de la BD y no espero a que SQLObject lo 
+        # haga por mí:
         proveedor.syncUpdate()
         # Vuelvo a activar el notificador
         proveedor.notificador.set_func(self.aviso_actualizacion)
