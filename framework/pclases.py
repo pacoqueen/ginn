@@ -20873,6 +20873,8 @@ class PresupuestoAnual(SQLObject, PRPCTOO):
                      "Impuestos": [], 
                      "Gastos financieros": ("Estructurales", "Corrientes"), 
                      "Proveedores granza": [], 
+                    # Coincide con los tipos por defecto de clientes y 
+                    # proveedores (ver su check_defaults)
                      "Resto proveedores": 
                         ("Comercializados", "Transporte", "Repuestos", 
                          "Suministros", "Materiales", "Resto"), 
@@ -20881,7 +20883,7 @@ class PresupuestoAnual(SQLObject, PRPCTOO):
                             "Nacionales - General", 
                             "Nacionales - Fibra", 
                             "Nacionales - Geocem", 
-                            "Nacionales - Comercializado"
+                            "Nacionales - Comercializado", 
                          "Internacionales - Industrial", 
                             "Internacionales - General", 
                             "Internacionales - Fibra", 
