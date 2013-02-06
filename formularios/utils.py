@@ -1615,23 +1615,38 @@ def mostrar_hora(horas = 0, minutos = 0, segundos = 0, titulo = 'HORA',
     wids['ventana'].set_title(titulo)
     wids['ventana'].set_transient_for(padre)
     #-------------------------------------------------------------------------#
-    def aceptar(boton, hora):                                                                           #
-        lista_valores = map(lambda x: wids[x].get_text(), ('sp_hora', 'sp_minutos', 'sp_segundos'))     #
-        lista_valores = ['%02d' % int(v) for v in lista_valores]                                        #
-        hora[0] = ':'.join(lista_valores)                                                               #
-        wids['ventana'].destroy()                                                                       #
-    def cancelar(boton):                                                                                #
-        wids['ventana'].destroy()                                                                       #
+    def aceptar(boton, hora):                                                 #
+        lista_valores = map(lambda x: wids[x].get_text(),                     #
+                                ('sp_hora', 'sp_minutos', 'sp_segundos'))     #
+        lista_valores = ['%02d' % int(v) for v in lista_valores]              #
+        hora[0] = ':'.join(lista_valores)                                     #
+        wids['ventana'].destroy()                                             #
+    def cancelar(boton):                                                      #
+        wids['ventana'].destroy()                                             #
+    def show_leading_zeros(spin_button):
+        adjustment = spin_button.get_adjustment()
+        spin_button.set_text("%02d" % (int(adjustment.get_value())))
+        return True
     #-------------------------------------------------------------------------#
     connections = {'ventana/destroy': gtk.main_quit,
-                   'b_cancelar/clicked': cancelar}
+                   'b_cancelar/clicked': cancelar, 
+                   'sp_hora/output': show_leading_zeros, 
+                   'sp_minutos/output': show_leading_zeros, 
+                   'sp_segundos/output': show_leading_zeros 
+                  }
     for wid_con, func in connections.iteritems():
         wid, con = wid_con.split('/')
         wids[wid].connect(con, func)
     wids['b_aceptar'].connect('clicked', aceptar, hora)
-    wids['sp_hora'].set_text(str(horas))
-    wids['sp_minutos'].set_text(str(minutos))
-    wids['sp_segundos'].set_text(str(segundos))
+    wids['sp_hora'].set_text("%2d" % horas)
+    wids['sp_minutos'].set_text("%2d" % minutos)
+    wids['sp_segundos'].set_text("%2d" % segundos)
+    wids['sp_hora'].get_adjustment().set_value(horas)
+    wids['sp_minutos'].get_adjustment().set_value(minutos)
+    wids['sp_segundos'].get_adjustment().set_value(segundos)
+    show_leading_zeros(wids['sp_hora'])
+    show_leading_zeros(wids['sp_minutos'])
+    show_leading_zeros(wids['sp_segundos'])
     if not ver_segundos:
         wids['sp_segundos'].set_child_visible(False)
         wids['label2'].set_child_visible(False)

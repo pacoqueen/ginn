@@ -67,7 +67,8 @@ from utils import _float as float
 from ventana_progreso import VentanaActividad, VentanaProgreso
 import re, os
 from partes_de_fabricacion_balas import verificar_solapamiento, \
-                                        buscar_o_crear_albaran_interno
+                                        buscar_o_crear_albaran_interno, \
+                                        entran_en_turno
 from partes_de_fabricacion_rollos import descontar_material_adicional
 
 def copy2(entry1, evento, entry2, sumar = 0):
@@ -1250,7 +1251,7 @@ class PartesDeFabricacionBolsas(Ventana):
             horaini += mx.DateTime.oneDay   # Debe llevar la fecha del día 
                                             # siguiente.
             horafin += mx.DateTime.oneDay
-        if self.entran_en_turno(horaini, horafin):
+        if entran_en_turno(self.objeto, horaini, horafin):
             observaciones = utils.dialogo_entrada(titulo = 'OBSERVACIONES', 
                     texto = 'Introduzca observaciones sobre la incidencia:',
                     padre = self.wids['ventana'])
@@ -1271,26 +1272,12 @@ class PartesDeFabricacionBolsas(Ventana):
                         'el turno del parte.', 
                 padre = self.wids['ventana'])
 
-    def entran_en_turno(self, hi, hf):
-        # TODO: Falta comprobar que además de que entran en el turno no se 
-        # pisen con otras incidencias del mismo parte.
-        tini = self.objeto.horainicio
-        tfin = self.objeto.horafin
-        hini=mx.DateTime.DateTimeDeltaFrom(':'.join(map(str,hi.tuple()[3:6])))
-        hfin=mx.DateTime.DateTimeDeltaFrom(':'.join(map(str,hf.tuple()[3:6])))
-        if tini <= tfin:
-            hini_dentro = hini >= tini and hini <= tfin
-            hfin_dentro = hfin >= tini and hfin <= tfin
-        else:
-            hini_dentro = hini >= tini or hini <= tfin 
-            hfin_dentro = hfin >= tini or hfin <= tfin 
-        return hini_dentro and hfin_dentro
-
     def drop_pale(self, boton):
         """
         Elimina el palé, sus cajas, bolsas y consumos relacionados.
         """
-        model, paths = self.wids['tv_produccion'].get_selection().get_selected_rows()
+        model, paths = self.wids['tv_produccion'].get_selection().\
+                                                            get_selected_rows()
         if (not paths or 
             not utils.dialogo(titulo = "¿ESTÁ SEGURO?", 
                     texto = "Se van a eliminar %d líneas. ¿Desea continuar?"%(
