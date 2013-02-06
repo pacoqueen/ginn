@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # By Queen ---------------------
 import os, sys
 try:
@@ -61,15 +63,24 @@ from types import InstanceType, ClassType, TypeType
 ## Quoting
 ########################################
 
-sqlStringReplace = [
-    ('\\', '\\\\'),
-    ("'", "\\'"),
-    ('\000', '\\0'),
-    ('\b', '\\b'),
-    ('\n', '\\n'),
-    ('\r', '\\r'),
-    ('\t', '\\t'),
-    ]
+## By Queen: Al menos con Python2.7+psycopg2 2.4.5-1 y Postgre 9.1 usa la 
+##           sintaxis VALUES(E'...'), con lo que no hace falta esto. Si se 
+##           usa duplica la '\\' en \n en lugar de conservar el salto de 
+##           línea.
+from psycopg2 import __version__ as pg2version
+if pg2version >= "2.4.5":
+    sqlStringReplace = []
+else:
+    sqlStringReplace = [
+        ('\\', '\\\\'),
+        ("'", "\\'"),
+        ('\000', '\\0'),
+        ('\b', '\\b'),
+        ('\n', '\\n'),
+        ('\r', '\\r'),
+        ('\t', '\\t'),
+        ]
+## -- EOQ
 
 def isoStr(val):
     """
