@@ -4525,6 +4525,18 @@ class TipoDeProveedor(SQLObject, PRPCTOO):
                 tipo = TipoDeProveedor(descripcion = t)
                 Auditoria.nuevo(tipo, None, __file__)
 
+    @classmethod
+    def get_por_defecto(claseproveedor):
+        """
+        Devuelve el tipo de cliente por defecto a usar.
+        """
+        try:
+            tdp = claseproveedor.selectBy(descripcion = "Repuestos")[0]
+        except IndexError:
+            tdp = claseproveedor(descripcion = "Repuestos")
+            Auditoria.nuevo(tdp, None, __file__)
+        return tdp
+
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 class Proveedor(SQLObject, PRPCTOO):
@@ -14293,6 +14305,18 @@ class TipoDeCliente(SQLObject, PRPCTOO):
             except AssertionError:
                 tipo = TipoDeCliente(descripcion = t)
                 Auditoria.nuevo(tipo, None, __file__)
+
+    @classmethod
+    def get_por_defecto(clasecliente):
+        """
+        Devuelve el tipo de cliente por defecto a usar.
+        """
+        try:
+            tdc = clasecliente.selectBy(descripcion = "General")[0]
+        except IndexError:
+            tdc = clasecliente(descripcion = "General")
+            Auditoria.nuevo(tdc, None, __file__)
+        return tdc
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 

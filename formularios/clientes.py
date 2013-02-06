@@ -1577,6 +1577,7 @@ class Clientes(Ventana):
             if cliente != None:
                 cliente.notificador.set_func(lambda : None)
             tarifa_por_defecto = pclases.Tarifa.get_tarifa_defecto()
+            tipo_defecto = pclases.TipoDeCliente.get_por_defecto()
             self.objeto = pclases.Cliente(nombre = nombre,
                                           tarifa = tarifa_por_defecto,
                                           contadorID = None,
@@ -1609,7 +1610,8 @@ class Clientes(Ventana):
                                           enviarCorreoPacking = False, 
                                           fax = '', 
                                           packingListConCodigo = False, 
-                                          facturarConAlbaran = True)
+                                          facturarConAlbaran = True, 
+                                          tipoDeCliente = tipo_defecto)
             pclases.Auditoria.nuevo(self.objeto, self.usuario, __file__)
             self._objetoreciencreado = self.objeto
             self.objeto.notificador.set_func(self.aviso_actualizacion)

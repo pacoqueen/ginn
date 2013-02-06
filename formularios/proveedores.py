@@ -349,6 +349,7 @@ class Proveedores(Ventana):
         cif = utils.parse_cif(cif)
         if proveedor != None:
             proveedor.notificador.set_func(lambda : None)
+        tipo_por_defecto = pclases.TipoDeProveedor.get_por_defecto()
         self.objeto = pclases.Proveedor(nombre = nombre,
                                         cif = cif,
                                         direccion = '', # La carta de 
@@ -375,7 +376,8 @@ class Proveedores(Ventana):
                                         documentodepago = 'Pagaré',
                                         vencimiento = '120 D.F.F.',
                                         diadepago = '25', 
-                                        inhabilitado = False)
+                                        inhabilitado = False, 
+                                        tipoDeProveedor = tipo_por_defecto)
         proveedor = self._objetoreciencreado = self.objeto
         pclases.Auditoria.nuevo(proveedor, self.usuario, __file__)
         proveedor.notificador.set_func(self.aviso_actualizacion)
