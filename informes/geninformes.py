@@ -2759,7 +2759,7 @@ def pedidoCompra(general, proveedor, lineas, entregas, observaciones,
     # TODO: Calcular en cuántas líneas tengo que dividir el texto para que 
     #       quepa en el ancho del folio.
     c.saveState()
-    fuente, tamanno = "Helvetica-Oblique", 8    # "Times-Italic", 10
+    fuente, tamanno = "Helvetica-Oblique", 8 
     c.setFont(fuente, tamanno)
     ancho_condiciones = c.stringWidth(txt, fuente, tamanno)
     ancho_max = rm - (lm+.5*inch)
