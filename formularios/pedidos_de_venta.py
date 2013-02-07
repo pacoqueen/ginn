@@ -607,6 +607,15 @@ class PedidosDeVenta(Ventana):
         cell.set_property('xalign', 1.0)
         postomatic.attach_menu_notas(self.wids['tv_ldvs'], 
                                      pclases.LineaDeVenta, self.usuario, 1)
+        # CWT: 4 decimales en precio y subtotal:
+        self.wids['tv_ldvs'].get_column(3).set_cell_data_func(
+                self.wids['tv_ldvs'].get_column(3).get_cell_renderers()[0], 
+                utils.redondear_flotante_en_cell_cuando_sea_posible, 
+                (3, 4))
+        self.wids['tv_ldvs'].get_column(5).set_cell_data_func(
+                self.wids['tv_ldvs'].get_column(5).get_cell_renderers()[0], 
+                utils.redondear_flotante_en_cell_cuando_sea_posible, 
+                (5, 4))
         cols = (('Código', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Descripción', 'gobject.TYPE_STRING', False, True, True, None),
                 ('Cantidad', 'gobject.TYPE_FLOAT', True, False, False, 
@@ -1183,7 +1192,10 @@ class PedidosDeVenta(Ventana):
             contenido = model[itr][i]
             if (isinstance(contenido, type(0.1)) 
                 and not isinstance(cell, gtk.CellRendererPixbuf)):
-                cell.set_property('text', (utils.float2str(contenido, 3)))
+                if i in (3, 5): # CWT: 4 decimales en precio y subtotal
+                    cell.set_property("text", (utils.float2str(contenido, 4)))
+                else:
+                    cell.set_property('text', (utils.float2str(contenido, 3)))
 
         cols = self.wids['tv_ldps'].get_columns()
         for i in xrange(len(cols)):
