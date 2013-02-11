@@ -71,7 +71,8 @@ class DynConsulta(Ventana, VentanaGenerica):
                        # 'b_guardar/clicked': self.guardar,
                        'b_buscar/clicked': self.buscar,
                        'sp_mes_actual/value-changed': self.update_mes_actual, 
-                       'sp_num_meses/value-changed': self.update_num_meses
+                       'sp_num_meses/value-changed': self.update_num_meses, 
+                       'tv_datos/query-tooltip': self.tooltip_query
                       }  
         self.inicializar_ventana()
         self.actualizar_ventana(None)
@@ -79,6 +80,19 @@ class DynConsulta(Ventana, VentanaGenerica):
         self.wids['ventana'].resize(800, 600)
         self.add_connections(connections)
         gtk.main()
+
+    def tooltip_query(self, treeview, x, y, mode, tooltip):
+        path = treeview.get_path_at_pos(x, y)
+        
+        if path:
+            treepath, column = path[:2]
+            
+            model = treeview.get_model()
+            iter = model.get_iter(treepath)
+            
+            tooltip.set_text(model[iter][0])
+
+        return False
 
     def es_diferente(self):
         """
@@ -137,6 +151,8 @@ class DynConsulta(Ventana, VentanaGenerica):
             col = self.wids['tv_datos'].get_column(n).get_cell_renderers()[0]\
                     .set_property("xalign", 1)
         self.wids['tv_datos'].connect("row-activated", self.inspect)
+        self.wids['tv_datos'].set_tooltip_column(0)
+        self.wids['tv_datos'].connect("query-tooltip", self.tooltip_query)
 
     def inspect(self, tv, path, col):
         """
@@ -229,8 +245,7 @@ class DynConsulta(Ventana, VentanaGenerica):
         mes_final = mx.DateTime.DateTimeFrom(anno_final, 
                                              mes_final, 
                                              1)
-        # Esto va en dynconsulta. No se utilizan valores reales aquí.
-        precalculo = precalcular_mes_actual(mes_actual, self.wids['ventana'])
+        precalc_mes_actual = precalcular(mes_actual, self.wids['ventana'])
         conceptos = pclases.ConceptoPresupuestoAnual.select()
         conceptos_count = conceptos.count()
         filas = {}
@@ -254,7 +269,7 @@ class DynConsulta(Ventana, VentanaGenerica):
                             == "Proveedores granza"): # OJO: HARCODED
                 # Este valor no lo muestro. Tengo que tirar de datos reales.
                 try:
-                    filas[c][mes_offset] = precalculo[c]
+                    filas[c][mes_offset] = precalc_mes_actual[c]
                 except KeyError: # Se ha metido a mano. No hay datos reales.
                     filas[c][mes_offset] = v.importe
             else:
@@ -284,18 +299,19 @@ class DynConsulta(Ventana, VentanaGenerica):
         # no se mostrara en el primer bucle por no haber valores antiguos de 
         # ese mes y no entrara en la rama "if" (ver arriba).
         i = 0.0
-        for c in precalculo:
-            vpro.set_valor(i / len(precalculo.keys()),
+        for c in precalc_mes_actual:
+            vpro.set_valor(i / len(precalc_mes_actual.keys()),
                     "Aplicando sustitución por valores reales...")
             pa = c.presupuestoAnual
             nodo_padre = padres[pa]
             nodo_concepto = nodos_conceptos[c]
-            model[nodo_concepto][1] = utils.float2str(precalculo[c])
+            model[nodo_concepto][1] = utils.float2str(precalc_mes_actual[c])
             try:
-                model[nodo_padre][1] = utils.float2str(
-                    utils.parse_float(model[nodo_padre][1]) + precalculo[c])
+                model[nodo_padre][1] = (utils.float2str(
+                    utils.parse_float(model[nodo_padre][1]) 
+                    + precalc_mes_actual[c]))
             except (TypeError, ValueError):
-                model[nodo_padre][1] = utils.float2str(precalculo[c])
+                model[nodo_padre][1] = utils.float2str(precalc_mes_actual[c])
             i += 1
         # Ahora toca pasar el mes que se ha ido al final del año actual
         pasar_mes = False
@@ -346,10 +362,11 @@ class DynConsulta(Ventana, VentanaGenerica):
         #       pasarle el foco o algo.
         pass
 
-def precalcular_mes_actual(fecha_actual, ventana_padre = None, usuario = None):
+def precalcular(fecha, ventana_padre = None, usuario = None):
     """
-    Devuelve un diccionario de conceptos con el valor del mes en curso. Si el 
-    concepto no existe, lo crea en la base de datos
+    Devuelve un diccionario de conceptos del mes especificado con los valores
+    que se puedan calcular a partir de datos reales.
+    Si el concepto no existe, lo crea en la base de datos
     """
     vpro = VentanaActividad(ventana_padre, 
             "Precalculando datos reales del mes en curso...")
@@ -359,7 +376,7 @@ def precalcular_mes_actual(fecha_actual, ventana_padre = None, usuario = None):
     # TODO: PORASQUI
     # 2.- Entradas de granza
     vpro.mover()
-    primes = fecha_actual
+    primes = fecha
     finmes = mx.DateTime.DateTimeFrom(primes.year, primes.month, -1)
     vpro.mover()
     # Primero: productos granza:
