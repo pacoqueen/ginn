@@ -2756,8 +2756,6 @@ def pedidoCompra(general, proveedor, lineas, entregas, observaciones,
             datos_empresa.ciudad, 
             datos_empresa.provincia, 
             datos_empresa.pais)
-    # TODO: Calcular en cuántas líneas tengo que dividir el texto para que 
-    #       quepa en el ancho del folio.
     c.saveState()
     fuente, tamanno = "Helvetica-Oblique", 8 
     c.setFont(fuente, tamanno)

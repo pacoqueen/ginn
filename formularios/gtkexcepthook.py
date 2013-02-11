@@ -134,10 +134,19 @@ def analyse (exctyp, value, tb):
             context = []
         trace.write (''.join (['    ' + x.replace ('\t', '  ') for x in filter (lambda a: a.strip(), context)]))
         if len (all):
-            trace.write ('  variables: %s\n' % str (all))
+            trace.write ('  variables: %s\n' % myprettyprint(all))
 
     trace.write ('%s: %s' % (exctyp.__name__, value))
     return trace
+
+def myprettyprint(stuff):
+    from pprint import pformat
+    return pformat(stuff)
+    #from myprettyprint import print_dict
+    #if isinstance(stuff, dict):
+    #    return print_dict(stuff)
+    #else:
+    #    return pformat(stuff)
 
 def _info (exctyp, value, tb):
     trace = None
