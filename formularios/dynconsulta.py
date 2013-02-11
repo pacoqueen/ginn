@@ -57,7 +57,8 @@ class DynConsulta(Ventana, VentanaGenerica):
         comenzar la ventana (en lugar del primero de la tabla, que es
         el que se muestra por defecto).
         """
-        self.mes_actual = mes_actual
+        self.mes_actual = (mes_actual != None and mes_actual 
+                                            or mx.DateTime.localtime().month)
         self.num_meses = num_meses != None and num_meses or 12
         self.usuario = usuario
         self.clase = None
@@ -142,11 +143,18 @@ class DynConsulta(Ventana, VentanaGenerica):
         Muestra de dónde vienen los datos precalculados.
         """
         indexcol = get_col_pos(tv, col)
-        mes = self.mes_actual + indexcol - 1
-        print mes
-        print col.get_property("title")
-        print tv.get_model()[path][-1]
-        # TODO: 
+        if indexcol > 0:
+            mes = self.mes_actual + indexcol - 1
+            model = tv.get_model()
+            valor = model[path][indexcol]
+            concepto = pclases.getObjetoPUID(model[path][-1]).descripcion
+            txt_inspect = "Aquí va una traza del valor %s (%s)"\
+                          " para el mes %s (%d)." % (
+                            valor, concepto, col.get_property("title"), mes)
+            utils.dialogo_info(
+                    titulo = "INSPECCIONAR VALOR «%s»" % valor, 
+                    texto = txt_inspect, 
+                    padre = self.wids['ventana'])
 
     def activar_widgets(self, s, chequear_permisos = True):
         """
