@@ -62,6 +62,7 @@ class DynConsulta(Ventana, VentanaGenerica):
         self.num_meses = num_meses != None and num_meses or 12
         self.usuario = usuario
         self.clase = None
+        self.precalc = {}
         self.dic_campos = {}
         Ventana.__init__(self, 'dynconsulta.glade', objeto)
         connections = {'b_salir/clicked': self.salir,
@@ -150,6 +151,8 @@ class DynConsulta(Ventana, VentanaGenerica):
         for n in range(1, self.num_meses + 1):
             col = self.wids['tv_datos'].get_column(n).get_cell_renderers()[0]\
                     .set_property("xalign", 1)
+        col = self.wids['tv_datos'].get_column(0)
+        col.set_expand(True)
         self.wids['tv_datos'].connect("row-activated", self.inspect)
         self.wids['tv_datos'].set_tooltip_column(0)
         self.wids['tv_datos'].connect("query-tooltip", self.tooltip_query)
@@ -245,7 +248,7 @@ class DynConsulta(Ventana, VentanaGenerica):
         mes_final = mx.DateTime.DateTimeFrom(anno_final, 
                                              mes_final, 
                                              1)
-        precalc_mes_actual = precalcular(mes_actual, self.wids['ventana'])
+        self.precalc[mes_actual] = precalcular(mes_actual, self.wids['ventana'])
         conceptos = pclases.ConceptoPresupuestoAnual.select()
         conceptos_count = conceptos.count()
         filas = {}
@@ -269,7 +272,7 @@ class DynConsulta(Ventana, VentanaGenerica):
                             == "Proveedores granza"): # OJO: HARCODED
                 # Este valor no lo muestro. Tengo que tirar de datos reales.
                 try:
-                    filas[c][mes_offset] = precalc_mes_actual[c]
+                    filas[c][mes_offset] = self.precalc[mes_actual][c]
                 except KeyError: # Se ha metido a mano. No hay datos reales.
                     filas[c][mes_offset] = v.importe
             else:
@@ -299,19 +302,21 @@ class DynConsulta(Ventana, VentanaGenerica):
         # no se mostrara en el primer bucle por no haber valores antiguos de 
         # ese mes y no entrara en la rama "if" (ver arriba).
         i = 0.0
-        for c in precalc_mes_actual:
-            vpro.set_valor(i / len(precalc_mes_actual.keys()),
+        for c in self.precalc[mes_actual]:
+            vpro.set_valor(i / len(self.precalc[mes_actual].keys()),
                     "Aplicando sustitución por valores reales...")
             pa = c.presupuestoAnual
             nodo_padre = padres[pa]
             nodo_concepto = nodos_conceptos[c]
-            model[nodo_concepto][1] = utils.float2str(precalc_mes_actual[c])
+            model[nodo_concepto][1] = utils.float2str(
+                    self.precalc[mes_actual][c])
             try:
                 model[nodo_padre][1] = (utils.float2str(
                     utils.parse_float(model[nodo_padre][1]) 
-                    + precalc_mes_actual[c]))
+                    + self.precalc[mes_actual][c]))
             except (TypeError, ValueError):
-                model[nodo_padre][1] = utils.float2str(precalc_mes_actual[c])
+                model[nodo_padre][1] = utils.float2str(
+                                                self.precalc[mes_actual][c])
             i += 1
         # Ahora toca pasar el mes que se ha ido al final del año actual
         pasar_mes = False
