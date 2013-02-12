@@ -319,30 +319,33 @@ class DynConsulta(Ventana, VentanaGenerica):
                                                 self.precalc[mes_actual][c])
             i += 1
         # Ahora toca pasar el mes que se ha ido al final del año actual
-        pasar_mes = False
+        pasar_mes = True
         for fila in model:
             if fila[-2] and utils._float(fila[-2]) != 0:
-                pasar_mes = True
+                pasar_mes = False
                 break
-        if not pasar_mes:
+        if pasar_mes:
             # Valores antiguos
-            mes_final = mx.DateTime.DateTimeFrom(mes_actual.year, mes, 1)
+            mes_primero_en_tabla = mx.DateTime.DateTimeFrom(mes_actual.year, 
+                                                 mes_actual.month, 
+                                                 1)
             if mes == 1:
-                anno = mes_final.year - 1
+                anno = mes_primero_en_tabla.year - 1
                 mes = 12
             else:
-                anno = mes_final.year
+                anno = mes_primero_en_tabla.year
                 mes = mes - 1
             mes_anterior = mx.DateTime.DateTimeFrom(anno, mes, 1)
             # Copio a valores nuevos
             valores = pclases.ValorPresupuestoAnual.select(pclases.AND(
                 pclases.ValorPresupuestoAnual.q.mes >= mes_anterior, 
-                pclases.ValorPresupuestoAnual.q.mes < mes_final)) 
+                pclases.ValorPresupuestoAnual.q.mes < mes_primero_en_tabla)) 
             valores_count = valores.count()
             if not valores_count or sum([v.importe for v in valores]) == 0:
                 # No hay nada que copiar. Bucle infinito a cero.
                 pass
             else:
+                # PORASQUI: Con ./dynconsulta.py 9 2 entra en bucle infinito.
                 for v in valores:
                     vpro.set_valor(i / valores_count, 
                                    "Trasladando valores antiguos...") 
@@ -352,7 +355,7 @@ class DynConsulta(Ventana, VentanaGenerica):
                         day = 1))
                     pclases.Auditoria.nuevo(nv, self.usuario, __file__)
                     i += 1
-                # Y refresco (una tónica, por favor)
+                # Y refresco (una tónica, por favor. ¡CHISTACO!)
                 self.actualizar_ventana()
         vpro.ocultar()
             
