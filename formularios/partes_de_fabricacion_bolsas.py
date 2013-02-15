@@ -1278,21 +1278,6 @@ class PartesDeFabricacionBolsas(Ventana):
                         'el turno del parte.', 
                 padre = self.wids['ventana'])
 
-    def entran_en_turno(self, hi, hf):
-        # TODO: Falta comprobar que además de que entran en el turno no se 
-        # pisen con otras incidencias del mismo parte.
-        tini = self.objeto.horainicio
-        tfin = self.objeto.horafin
-        hini=mx.DateTime.DateTimeDeltaFrom(':'.join(map(str,hi.tuple()[3:6])))
-        hfin=mx.DateTime.DateTimeDeltaFrom(':'.join(map(str,hf.tuple()[3:6])))
-        if tini <= tfin:
-            hini_dentro = hini >= tini and hini <= tfin
-            hfin_dentro = hfin >= tini and hfin <= tfin
-        else:
-            hini_dentro = hini >= tini or hini <= tfin 
-            hfin_dentro = hfin >= tini or hfin <= tfin 
-        return hini_dentro and hfin_dentro
-
     def drop_pale(self, boton):
         """
         Elimina el palé, sus cajas, bolsas y consumos relacionados.

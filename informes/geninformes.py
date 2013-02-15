@@ -2669,7 +2669,7 @@ def pedidoCompra(general, proveedor, lineas, entregas, observaciones,
     # -- Cuadro global
     linea = tm - 1 * inch
     lineaAbajo = linea - 16
-    finDatos = bm + 2.75*inch
+    finDatos = bm + 2.4*inch
     rectangulo(c, (lm+0.5*inch, linea), (rm, finDatos))
     # -- Cabeceras
     rectangulo(c, (lm+0.5*inch, linea), (lm+1.5*inch, lineaAbajo),
@@ -2743,33 +2743,6 @@ def pedidoCompra(general, proveedor, lineas, entregas, observaciones,
             for i in xrange(saltos):
                 linea = sigLinea()
         c.restoreState()
-
-    # Texto de condiciones: [GINN-70]
-    txt = "La factura de los materiales y/o servicios contenidos en este "\
-          "pedido deberán estar en poder de %s en %s; %s - %s (%s, %s) antes "\
-          "del día 10 del mes siguiente al del suministro. En caso contrario "\
-          "el procedimiento de aceptación y pago de la factura se pospondrá "\
-          "al mes siguiente." % (
-            datos_empresa.nombre, 
-            datos_empresa.direccion, 
-            datos_empresa.cp, 
-            datos_empresa.ciudad, 
-            datos_empresa.provincia, 
-            datos_empresa.pais)
-    c.saveState()
-    fuente, tamanno = "Helvetica-Oblique", 8 
-    c.setFont(fuente, tamanno)
-    ancho_condiciones = c.stringWidth(txt, fuente, tamanno)
-    ancho_max = rm - (lm+.5*inch)
-    from math import ceil
-    numlineas = int(ceil(ancho_condiciones / ancho_max))
-    import textwrap
-    txt = textwrap.wrap(txt, len(txt) / numlineas)
-    for i in range(numlineas):
-        c.drawCentredString((lm+.5*inch) + ((rm - (lm+0.5*inch))/2), 
-                            finDatos - 0.4*cm - (i * (tamanno + 2)),
-                            escribe(txt[i]))
-    c.restoreState()
 
     # Dirección de entrega
     arr = bm + 2.2*inch
@@ -2899,7 +2872,7 @@ def pedidoCompra(general, proveedor, lineas, entregas, observaciones,
     c.rotate(90)
     c.setFont("Helvetica", 7)
     c.drawCentredString(height/2, -lm-32,
-                        escribe(datos_empresa.registroMercantil))
+                        escribe('%s' % (datos_empresa.registroMercantil)))
 
 
     # Salvamos la página
@@ -9438,7 +9411,7 @@ def pendiente_recibir(exportar_a_csv_a = None):
                 print "geninformes.py (pendiente_recibir): ¡LDPC ID %s no ti"\
                       "ene pedido de compra! Eliminando..." % (ldpc.id),
                 try:
-                    ldpc.destroy(ventana = __file__)
+                    ldpc.destroySelf()
                     print "OK"
                 except Exception, msg:
                     print "KO: %s" % (msg)
