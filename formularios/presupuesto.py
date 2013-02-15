@@ -78,7 +78,6 @@ class Presupuesto(Ventana, VentanaGenerica):
         self.add_connections(connections)
         self.inicializar_ventana()
         self.actualizar_ventana(None)
-        self.wids['tv_datos'].expand_all()
         self.wids['ventana'].resize(800, 600)
         gtk.main()
 
@@ -175,6 +174,7 @@ class Presupuesto(Ventana, VentanaGenerica):
         esta función en ese caso.
         """
         self.rellenar_tabla()
+        self.wids['tv_datos'].expand_all()
 
     def rellenar_tabla(self):
         vpro = VentanaProgreso(padre = self.wids['ventana'])

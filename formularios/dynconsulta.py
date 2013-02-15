@@ -66,6 +66,7 @@ class DynConsulta(Ventana, VentanaGenerica):
         self.clase = None
         self.precalc = {}
         self.dic_campos = {}
+        self.old_model = {}
         Ventana.__init__(self, 'dynconsulta.glade', objeto)
         connections = {'b_salir/clicked': self.salir,
                        'b_nuevo/clicked': self.nuevo,
@@ -79,22 +80,18 @@ class DynConsulta(Ventana, VentanaGenerica):
                       }  
         self.inicializar_ventana()
         self.actualizar_ventana(None)
-        self.wids['tv_datos'].expand_all()
         self.wids['ventana'].resize(800, 600)
         self.add_connections(connections)
         gtk.main()
 
     def tooltip_query(self, treeview, x, y, mode, tooltip):
         path = treeview.get_path_at_pos(x, y)
-        
         if path:
             treepath, column = path[:2]
-            
             model = treeview.get_model()
             iter = model.get_iter(treepath)
-            
-            tooltip.set_text(model[iter][0])
-
+            texto = model[iter][0].replace("&", "&amp;")
+            tooltip.set_text(texto)
         return False
 
     def es_diferente(self):
@@ -182,6 +179,38 @@ class DynConsulta(Ventana, VentanaGenerica):
         self.wids['tv_datos'].connect("row-activated", self.inspect)
         self.wids['tv_datos'].set_tooltip_column(0)
         self.wids['tv_datos'].connect("query-tooltip", self.tooltip_query)
+        self.colorear(self.wids['tv_datos'])
+
+    def colorear(self, tv):
+        """
+        Pone en rojo los valores que han cambiado respecto a la última vez 
+        que se actualizó el model.
+        """
+        def cell_func(col, cell, model, itr, numcol):
+            valor = model[itr][numcol]
+            if not model.iter_parent(itr):  # Es concepto de primer nivel
+                padre = model[itr][0]
+                try:
+                    old_valor = self.old_model[padre]['valores'][numcol-1]
+                except (KeyError, IndexError):
+                    old_valor = None
+            else:
+                padre = model[model.iter_parent(itr)][0]
+                hijo = model[itr][0]
+                try:
+                    old_valor = self.old_model[padre]['hijos'][hijo][numcol-1]
+                except (KeyError, IndexError):
+                    old_valor = None
+            if old_valor != None and valor != old_valor:
+                cell.set_property("foreground", "red")
+            else:
+                cell.set_property("foreground", None)
+        cols = tv.get_columns()
+        for i in xrange(1, len(cols)):
+            column = cols[i]
+            cells = column.get_cell_renderers()
+            for cell in cells:
+                column.set_cell_data_func(cell, cell_func, i)
 
     def inspect(self, tv, path, col):
         """
@@ -224,6 +253,7 @@ class DynConsulta(Ventana, VentanaGenerica):
 
     def actualizar_ventana(self, boton = None):
         self.rellenar_widgets()
+        self.wids['tv_datos'].expand_all()
 
     def rellenar_widgets(self):
         """
@@ -239,14 +269,16 @@ class DynConsulta(Ventana, VentanaGenerica):
         vpro = VentanaProgreso(padre = self.wids['ventana'])
         vpro.mostrar()
         model = self.wids['tv_datos'].get_model()
+        self.old_model = bak_model(model)
         model.clear()
         padres = self.cargar_conceptos_primer_nivel(vpro)
         filas = self.cargar_conceptos_segundo_nivel(vpro)
         filas = self.montar_filas(filas, vpro)
         nodos_conceptos = self.mostrar_matriz_en_treeview(filas, padres, vpro)
-        # Vuelvo a volcar todos los valores precalculados. Puede que alguno 
-        # no se mostrara en el primer bucle por no haber valores antiguos de 
-        # ese mes y no entrara en la rama "if" (ver arriba).
+        # Vuelvo a volcar todos los valores precalculados. Se calculan al 
+        # cargar los conceptos de segundo nivel. Se muestran en primera 
+        # instancia estos datos reales en `montar_filas` en lugar de tirar de 
+        # las estimaciones de ValorPresupuestoAnual.
         self.mostrar_valores_reales_precalculados(nodos_conceptos, 
                                                   padres, 
                                                   vpro)
@@ -261,39 +293,83 @@ class DynConsulta(Ventana, VentanaGenerica):
     def ciclar_mes(self, vpro):
         model = self.wids['tv_datos'].get_model()
         pasar_mes = True
-        for fila in model:
-            print fila[0], fila[-2] and utils._float(fila[-2])
-            if fila[-2] and utils._float(fila[-2]) != 0:
-                pasar_mes = False
-                break
-        if pasar_mes:
+        # Primero busco valores que ya existen en la BD. Porque puede ser que 
+        # los valores a cero en el TreeView provengan de datos "reales" (esto 
+        # es, no estimados) que se almacenan en precalc y tienen preferencia 
+        # sobre los datos del presupuesto a la hora de mostrarse. En ese caso 
+        # siempre se van a mostrar los valores 0 y siempre va a intentar 
+        # pasar el mes de año pasado al actual, duplicando los valores en la 
+        # BD.
+        ultimo_mes_en_tabla = self.fecha_mes_final
+        mes = ultimo_mes_en_tabla.month
+        if mes == 1:
+            anno = ultimo_mes_en_tabla.year - 1
+            mes = 12
+        else:
+            mes -= 1
+            anno = ultimo_mes_en_tabla.year
+        penultimo_mes_en_tabla = mx.DateTime.DateFrom(anno, mes, 1)
+        valores = pclases.ValorPresupuestoAnual.select(pclases.AND(
+            pclases.ValorPresupuestoAnual.q.mes <= ultimo_mes_en_tabla, 
+            pclases.ValorPresupuestoAnual.q.mes > penultimo_mes_en_tabla))
+        if pclases.DEBUG:
+            print __file__, "ultimo_mes_en_tabla", ultimo_mes_en_tabla
+            print __file__, "penultimo_mes_en_tabla", penultimo_mes_en_tabla
+            print __file__, "valores.count()", valores.count()
+        if not valores.count():     # Nunca se ha hecho el presupuesto para 
+            # ese mes/año. Hora de crearlo a partir del año pasado (si es que 
+            # no hay valores precalculados o algo y realmente está todo a 0).
+            # Ahora compruebo entonces los valores actuales en el TreeView 
+            # para ver si está todo a cero.
+            for fila in model:
+                if pclases.DEBUG:
+                    print fila[0], fila[-2] and utils._float(fila[-2])
+                if fila[-2] and utils._float(fila[-2]) != 0:
+                    pasar_mes = False
+                    break
+            if pclases.DEBUG: print "(1) >>> pasar_mes", pasar_mes
             # Valores antiguos los busco en el año pasado.
-            # PORASQUI: mes_a_buscar = self.fecha_mes_actual + 
-            mes_primero_en_tabla = self.fecha_mes_actual
-            if mes_primero_en_tabla.month == 1:
-                anno = mes_primero_en_tabla.year - 1
-                mes = 12
+            anno_pasado = mx.DateTime.DateTimeFrom(
+                    ultimo_mes_en_tabla.year - 1,
+                    ultimo_mes_en_tabla.month, 
+                    1)
+            if anno_pasado.month == 12:
+                anno_pasado_month = 1
+                anno_pasado_year = anno_pasado.year + 1
             else:
-                anno = mes_primero_en_tabla.year
-                mes = mes_primero_en_tabla.month - 1
-            mes_anterior = mx.DateTime.DateTimeFrom(anno, mes, 1)
-            # Copio a valores nuevos
-            valores = pclases.ValorPresupuestoAnual.select(pclases.AND(
-                pclases.ValorPresupuestoAnual.q.mes >= mes_anterior, 
-                pclases.ValorPresupuestoAnual.q.mes < mes_primero_en_tabla)) 
-            valores_count = valores.count()
-            if not valores_count or sum([v.importe for v in valores]) == 0:
+                anno_pasado_month = anno_pasado.month + 1
+                anno_pasado_year = anno_pasado.year
+            anno_pasado_mas_1_mes = mx.DateTime.DateTimeFrom(
+                    anno_pasado_year,
+                    anno_pasado_month, 
+                    1)
+            valores_clonar = pclases.ValorPresupuestoAnual.select(pclases.AND(
+                    pclases.ValorPresupuestoAnual.q.mes >= anno_pasado, 
+                    pclases.ValorPresupuestoAnual.q.mes < anno_pasado_mas_1_mes
+                    ))
+            valores_count = valores_clonar.count()
+            if (not valores_count 
+                    or sum([v.importe for v in valores_clonar]) == 0):
                 # No hay nada que copiar. Bucle infinito a cero.
-                pass
-            else:
-                # PORASQUI: Con ./dynconsulta.py 9 2 entra en bucle infinito.
-                for v in valores:
+                pasar_mes = False
+            if pclases.DEBUG:
+                print __file__, valores_count
+                for v in valores_clonar:
+                    print v.get_info(), v.importe
+            if pclases.DEBUG: print "(2) >>> pasar_mes", pasar_mes
+            if pasar_mes:
+                # Copio a valores nuevos
+                i = 0.0
+                for v in valores_clonar:
                     vpro.set_valor(i / valores_count, 
                                    "Trasladando valores antiguos...") 
                     nv = v.clone(mes = mx.DateTime.DateTimeFrom(
-                        year = mes_anterior.year + 1, 
-                        month = mes_anterior.month, 
+                        year = v.mes.year + 1, 
+                        month = v.mes.month, 
                         day = 1))
+                    if pclases.DEBUG:
+                        print __file__, "Nuevo valor:", nv.get_info(), \
+                                nv.importe, utils.str_fecha(nv.mes)
                     pclases.Auditoria.nuevo(nv, self.usuario, __file__)
                     i += 1
                 # Y refresco (una tónica, por favor. ¡CHISTACO!)
@@ -331,7 +407,9 @@ class DynConsulta(Ventana, VentanaGenerica):
                            "Montando matriz...")
             pa = c.presupuestoAnual
             nodo_padre = padres[pa]
-            fila = [c.descripcion] + filas[c] + [c.puid]
+            fila = [c.descripcion # FIXME: .replace("&", "&amp;") # 
+                                  #        Problemas con el tooltip.
+                    ] + filas[c] + [c.puid]
             nodos_conceptos[c] = model.append(nodo_padre, fila)
             for mes_matriz in range(1, self.num_meses + 1):
                 try:
@@ -351,6 +429,7 @@ class DynConsulta(Ventana, VentanaGenerica):
             pclases.ValorPresupuestoAnual.q.mes < self.fecha_mes_final)) 
         valores_count = valores.count()
         for v in valores:
+            v.sync()
             c = v.conceptoPresupuestoAnual
             mes_offset = (v.mes.month - self.fecha_mes_actual.month) % (
                                                                 self.num_meses)
@@ -394,7 +473,7 @@ class DynConsulta(Ventana, VentanaGenerica):
         pas_count = pas.count()
         i = 0.0
         for pa in pas:
-            fila = [pa.descripcion] 
+            fila = [pa.descripcion] #FIXME: .replace("&", "&amp;")]
             for m in range(self.num_meses):
                 fila.append("")
             fila.append(pa.puid)
@@ -514,6 +593,18 @@ def get_col_pos(tv, col):
     """
     return tv.get_columns().index(col)
 
+
+def bak_model(model):
+    res = {}
+    for fila in model:
+        res[fila[0]] = {'valores': [], 'hijos': {}}
+        for i in range(1, len(fila)):
+            res[fila[0]]['valores'].append(fila[i])
+        for sub_fila in fila.iterchildren():
+            res[fila[0]]['hijos'][sub_fila[0]] = []
+            for j in range(1, len(sub_fila)):
+                res[fila[0]]['hijos'][sub_fila[0]].append(sub_fila[j])
+    return res
 
 if __name__ == "__main__":
     """
