@@ -28,15 +28,12 @@
 ###################################################################
 ## Changelog:
 ## 25 de enero de 2012 -> Inicio
-## DONE: Falta también doble clic o clic secundario para ver de 
-##       dónde vienen los datos precalculados y tal. (Ventana inspect)
-##       Eso lo dejamos ya para la dynconsulta.
 ## TODO: ¿Faltaría asegurarme de que todos los conceptos que cuelgan 
 ##       de proveedores de granza tienen un valor != None en proveedorID?
 ##       Solo se pueden meter conceptos desde esta ventana y se enlaza 
 ##       programáticamente. No debería haber problema ni registros 
 ##       de proveedores de granza sin proveedor.
-## TODO: Faltan las ventas. Se puede crear a mano como un concepto más. 
+## DONE: Faltan las ventas. Se puede crear a mano como un concepto más. 
 ##       No haría falta código nuevo para nada.
 ###################################################################
 
@@ -144,18 +141,6 @@ class Presupuesto(Ventana, VentanaGenerica):
         for n in range(1, 13):
             col = self.wids['tv_datos'].get_column(n).get_cell_renderers()[0]\
                     .set_property("xalign", 1)
-        self.wids['tv_datos'].connect("row-activated", self.inspect)
-
-    def inspect(self, tv, path, col):
-        """
-        Muestra de dónde vienen los datos precalculados.
-        """
-        # TODO: PORASQUI: Hay que revisar las notas porque esto ya no es así. 
-        # Lo que he hecho y lo que quieren ahora es como la noche y el día.
-        # Afortunadamente no todo es trabajo perdido. La dynconsulta será un cp
-        # de esta pero activando los precáculos y mostrando en ventas el max 
-        # entre el presupuesto y lo real.
-        pass
 
     def activar_widgets(self, s, chequear_permisos = True):
         """
@@ -222,7 +207,6 @@ class Presupuesto(Ventana, VentanaGenerica):
                                              mes_actual.month,
                                              1)
         # Esto va en dynconsulta. No se utilizan valores reales aquí.
-        #precalculo = precalcular_mes_actual(mes_actual, self.wids['ventana'])
         precalculo = []
         conceptos = pclases.ConceptoPresupuestoAnual.select()
         conceptos_count = conceptos.count()
@@ -520,97 +504,6 @@ class Presupuesto(Ventana, VentanaGenerica):
                 delta = v.importe - valor_anterior
                 model[path_padre][mes_offset + 1] = utils._float(
                         model[path_padre][mes_offset + 1]) + delta 
-
-
-def precalcular_mes_actual(fecha_actual, ventana_padre = None, usuario = None):
-    """
-    Devuelve un diccionario de conceptos con el valor del mes en curso. Si el 
-    concepto no existe, lo crea en la base de datos
-    """
-    vpro = VentanaActividad(ventana_padre, 
-            "Precalculando datos reales del mes en curso...")
-    vpro.mostrar()
-    # Valores que puedo conocer del ERP (de momento):
-    # 1.- IVA (soportado - repercutido)
-    # TODO: PORASQUI
-    # 2.- Entradas de granza
-    vpro.mover()
-    primes = fecha_actual
-    finmes = mx.DateTime.DateTimeFrom(primes.year, primes.month, -1)
-    vpro.mover()
-    # Primero: productos granza:
-    granzas = pclases.ProductoCompra.select(pclases.AND(
-        pclases.ProductoCompra.q.descripcion.contains("granza"), 
-        pclases.ProductoCompra.q.obsoleto == False, 
-        pclases.ProductoCompra.q.tipoDeMaterialID 
-            == pclases.TipoDeMaterial.select(
-                 pclases.TipoDeMaterial.q.descripcion.contains("prima")
-                )[0].id))
-    # Saco datos de facturas:
-    fras = pclases.FacturaCompra.select(pclases.AND(
-        pclases.FacturaCompra.q.fecha >= primes, 
-        pclases.FacturaCompra.q.fecha <= finmes))
-    if pclases.DEBUG:
-        print __file__, fras.count(), "facturas encontradas."
-    # Filtro para quedarme con las de granza:
-    vpro.mover()
-    res = {}
-    for f in fras:
-        for ldc in f.lineasDeCompra:
-            if ldc.productoCompra in granzas:
-                if pclases.DEBUG:
-                    print __file__, f.get_info(), ldc.get_info()
-                concepto = buscar_concepto_proveedor_granza(ldc.proveedor, 
-                                                            usuario)
-                try:
-                    res[concepto] += ldc.get_subtotal()
-                except KeyError:
-                    res[concepto] = ldc.get_subtotal()
-            vpro.mover()
-    # Y ahora de los albaranes no facturados.
-    albs = pclases.AlbaranEntrada.select(pclases.AND(
-        pclases.AlbaranEntrada.q.fecha >= primes, 
-        pclases.AlbaranEntrada.q.fecha <= finmes))
-    if pclases.DEBUG:
-        print __file__, albs.count(), "albaranes encontrados."
-    # Filtro para quedarme con los de granza:
-    vpro.mover()
-    for a in albs:
-        for ldc in a.lineasDeCompra:
-            # Solo quiero lo no facturado.
-            if not ldc.facturaCompraID and ldc.productoCompra in granzas:
-                if pclases.DEBUG:
-                    print __file__, a.get_info(), ldc.get_info()
-                concepto = buscar_concepto_proveedor_granza(ldc.proveedor, 
-                                                            usuario)
-                try:
-                    res[concepto] += ldc.get_subtotal()
-                except KeyError:
-                    res[concepto] = ldc.get_subtotal()
-            vpro.mover()
-    vpro.ocultar()
-    if pclases.DEBUG:
-        print __file__, res
-    return res
-
-def buscar_concepto_proveedor_granza(proveedor, usuario = None):
-    """
-    Busca el concepto del presupuesto anual correspondiente al proveedor. Si 
-    no lo encuentra, lo crea.
-    """
-    try:
-        concepto = pclases.ConceptoPresupuestoAnual.select(
-          pclases.ConceptoPresupuestoAnual.q.descripcion==proveedor.nombre)[0]
-    except IndexError:
-        concepto = pclases.ConceptoPresupuestoAnual(
-                descripcion = proveedor.nombre, 
-                presupuestoAnual = pclases.PresupuestoAnual.select(
-                    pclases.PresupuestoAnual.q.descripcion 
-                        == "Proveedores granza")[0] # EXISTE. Hay un check al 
-                                            # principio que se asegura de eso.
-                )
-        pclases.Auditoria.nuevo(concepto, usuario, __file__)
-    return concepto
 
 
 if __name__ == "__main__":

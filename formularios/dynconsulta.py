@@ -59,7 +59,9 @@ class DynConsulta(Ventana, VentanaGenerica):
         """
         self.mes_actual = (mes_actual != None and mes_actual 
                                             or mx.DateTime.localtime().month)
+        self.update_mes_actual()
         self.num_meses = num_meses != None and num_meses or 12
+        self.update_mes_final()
         self.usuario = usuario
         self.clase = None
         self.precalc = {}
@@ -72,7 +74,7 @@ class DynConsulta(Ventana, VentanaGenerica):
                        # 'b_guardar/clicked': self.guardar,
                        'b_buscar/clicked': self.buscar,
                        'sp_mes_actual/value-changed': self.update_mes_actual, 
-                       'sp_num_meses/value-changed': self.update_num_meses, 
+                       'sp_num_meses/value-changed': self.update_mes_final, 
                        'tv_datos/query-tooltip': self.tooltip_query
                       }  
         self.inicializar_ventana()
@@ -102,15 +104,39 @@ class DynConsulta(Ventana, VentanaGenerica):
         """
         return False
 
-    def update_mes_actual(self, sp):
-        self.mes_actual = sp.get_value_as_int()
-        self.inicializar_ventana()
-        self.actualizar_ventana(None)
+    def update_mes_actual(self, spinbutton_mes = None):
+        try:
+            self.mes_actual = spinbutton_mes.get_value_as_int()
+        except AttributeError: # ¿No se ha creado el glade todavía?
+            glade_loaded = False
+        else:
+            glade_loaded = True
+        self.fecha_mes_actual = mx.DateTime.DateTimeFrom(
+                                                mx.DateTime.localtime().year, 
+                                                self.mes_actual,
+                                                1)
+        if glade_loaded:
+            self.inicializar_ventana()
+            self.actualizar_ventana(None)
     
-    def update_num_meses(self, sp):
-        self.num_meses = sp.get_value_as_int()
-        self.inicializar_ventana()
-        self.actualizar_ventana(None)
+    def update_mes_final(self, sp = None):
+        try:
+            self.num_meses = sp.get_value_as_int()
+        except AttributeError: # ¿No se ha cargado el glade todavía?
+            glade_loaded = False
+        else:
+            glade_loaded = True
+        mes_final = ((self.fecha_mes_actual.month-1 + self.num_meses) % 12) + 1
+        anno_final = self.fecha_mes_actual.year + (self.num_meses / 12)
+        while mes_final > 12:
+            anno_final += 1
+            mes_final -= 12
+        self.fecha_mes_final = mx.DateTime.DateTimeFrom(anno_final, 
+                                                        mes_final, 
+                                                        1)
+        if glade_loaded:
+            self.inicializar_ventana()
+            self.actualizar_ventana(None)
 
     def inicializar_ventana(self):
         """
@@ -214,127 +240,42 @@ class DynConsulta(Ventana, VentanaGenerica):
         vpro.mostrar()
         model = self.wids['tv_datos'].get_model()
         model.clear()
-        vpro.set_valor(0, "Cargando conceptos de primer nivel...") 
-        padres = {}
-        pas = pclases.PresupuestoAnual.select()
-        pas_count = pas.count()
-        i = 0.0
-        for pa in pas:
-            fila = [pa.descripcion] 
-            for m in range(self.num_meses):
-                fila.append("")
-            fila.append(pa.puid)
-            nodo = model.append(None, fila) 
-            padres[pa] = nodo 
-            vpro.set_valor(i / pas_count, 
-                           "Cargando conceptos de primer nivel...") 
-            i += 1
-        i = 0.0
-        if not self.mes_actual:
-            mes = mx.DateTime.localtime().month
-        else:
-            mes = self.mes_actual
-        mes_actual = mx.DateTime.DateTimeFrom(mx.DateTime.localtime().year, 
-                                              mes,
-                                              1)
-        mes_final = mx.DateTime.DateTimeFrom(mes_actual.year + 1, 
-                                             mes_actual.month,
-                                             1)
-        anno_final = mes_actual.year
-        mes_final = mes_actual.month + self.num_meses
-        while mes_final > 12:
-            anno_final += 1
-            mes_final -= 12
-        mes_final = mx.DateTime.DateTimeFrom(anno_final, 
-                                             mes_final, 
-                                             1)
-        self.precalc[mes_actual] = precalcular(mes_actual, self.wids['ventana'])
-        conceptos = pclases.ConceptoPresupuestoAnual.select()
-        conceptos_count = conceptos.count()
-        filas = {}
-        for c in conceptos:
-            filas[c] = []
-            for m in range(self.num_meses):
-                filas[c].append(0)
-            vpro.set_valor(i / conceptos_count, 
-                           "Cargando conceptos de dynconsulta...") 
-            i += 1
-        i = 0.0
-        valores = pclases.ValorPresupuestoAnual.select(pclases.AND(
-            pclases.ValorPresupuestoAnual.q.mes >= mes_actual, 
-            pclases.ValorPresupuestoAnual.q.mes < mes_final)) 
-        valores_count = valores.count()
-        for v in valores:
-            c = v.conceptoPresupuestoAnual
-            mes_offset = (v.mes.month - mes_actual.month) % self.num_meses
-            if (v.mes.month == mes_actual.month 
-                    and c.presupuestoAnual.descripcion 
-                            == "Proveedores granza"): # OJO: HARCODED
-                # Este valor no lo muestro. Tengo que tirar de datos reales.
-                try:
-                    filas[c][mes_offset] = self.precalc[mes_actual][c]
-                except KeyError: # Se ha metido a mano. No hay datos reales.
-                    filas[c][mes_offset] = v.importe
-            else:
-                filas[c][mes_offset] = v.importe
-            vpro.set_valor(i / valores_count, 
-                           "Cargando valores de dynconsulta...") 
-            i += 1
-        i = 0.0
-        nodos_conceptos = {}
-        for c in filas:
-            vpro.set_valor(i / len(filas.keys()), 
-                           "Montando matriz...")
-            pa = c.presupuestoAnual
-            nodo_padre = padres[pa]
-            fila = [c.descripcion] + filas[c] + [c.puid]
-            nodos_conceptos[c] = model.append(nodo_padre, fila)
-            for mes_matriz in range(1, self.num_meses + 1):
-                try:
-                    model[nodo_padre][mes_matriz] = utils.float2str(
-                            utils.parse_float(model[nodo_padre][mes_matriz]) 
-                            + fila[mes_matriz])
-                except (TypeError, ValueError):
-                    model[nodo_padre][mes_matriz] = utils.float2str(
-                            fila[mes_matriz])
-            i += 1
+        padres = self.cargar_conceptos_primer_nivel(vpro)
+        filas = self.cargar_conceptos_segundo_nivel(vpro)
+        filas = self.montar_filas(filas, vpro)
+        nodos_conceptos = self.mostrar_matriz_en_treeview(filas, padres, vpro)
         # Vuelvo a volcar todos los valores precalculados. Puede que alguno 
         # no se mostrara en el primer bucle por no haber valores antiguos de 
         # ese mes y no entrara en la rama "if" (ver arriba).
-        i = 0.0
-        for c in self.precalc[mes_actual]:
-            vpro.set_valor(i / len(self.precalc[mes_actual].keys()),
-                    "Aplicando sustitución por valores reales...")
-            pa = c.presupuestoAnual
-            nodo_padre = padres[pa]
-            nodo_concepto = nodos_conceptos[c]
-            model[nodo_concepto][1] = utils.float2str(
-                    self.precalc[mes_actual][c])
-            try:
-                model[nodo_padre][1] = (utils.float2str(
-                    utils.parse_float(model[nodo_padre][1]) 
-                    + self.precalc[mes_actual][c]))
-            except (TypeError, ValueError):
-                model[nodo_padre][1] = utils.float2str(
-                                                self.precalc[mes_actual][c])
-            i += 1
-        # Ahora toca pasar el mes que se ha ido al final del año actual
+        self.mostrar_valores_reales_precalculados(nodos_conceptos, 
+                                                  padres, 
+                                                  vpro)
+        # Ahora toca pasar el mes que se ha ido al final del año actual. Ciclo 
+        # el mes si el último mes mostrado en la cuadrícula está completamente 
+        # a cero. Uso como datos de referencia el del mismo mes pero del 
+        # año anterior. Si también está a cero (nunca se ha presupuestado ese
+        # mes en la historia del programa), desisto.
+        self.ciclar_mes(vpro)
+        vpro.ocultar()
+
+    def ciclar_mes(self, vpro):
+        model = self.wids['tv_datos'].get_model()
         pasar_mes = True
         for fila in model:
+            print fila[0], fila[-2] and utils._float(fila[-2])
             if fila[-2] and utils._float(fila[-2]) != 0:
                 pasar_mes = False
                 break
         if pasar_mes:
-            # Valores antiguos
-            mes_primero_en_tabla = mx.DateTime.DateTimeFrom(mes_actual.year, 
-                                                 mes_actual.month, 
-                                                 1)
-            if mes == 1:
+            # Valores antiguos los busco en el año pasado.
+            # PORASQUI: mes_a_buscar = self.fecha_mes_actual + 
+            mes_primero_en_tabla = self.fecha_mes_actual
+            if mes_primero_en_tabla.month == 1:
                 anno = mes_primero_en_tabla.year - 1
                 mes = 12
             else:
                 anno = mes_primero_en_tabla.year
-                mes = mes - 1
+                mes = mes_primero_en_tabla.month - 1
             mes_anterior = mx.DateTime.DateTimeFrom(anno, mes, 1)
             # Copio a valores nuevos
             valores = pclases.ValorPresupuestoAnual.select(pclases.AND(
@@ -357,7 +298,112 @@ class DynConsulta(Ventana, VentanaGenerica):
                     i += 1
                 # Y refresco (una tónica, por favor. ¡CHISTACO!)
                 self.actualizar_ventana()
-        vpro.ocultar()
+
+    def mostrar_valores_reales_precalculados(self, 
+                                             nodos_conceptos, 
+                                             padres, 
+                                             vpro):
+        model = self.wids['tv_datos'].get_model()
+        i = 0.0
+        for c in self.precalc[self.fecha_mes_actual]:
+            vpro.set_valor(i / len(self.precalc[self.fecha_mes_actual].keys()),
+                    "Aplicando sustitución por valores reales...")
+            pa = c.presupuestoAnual
+            nodo_padre = padres[pa]
+            nodo_concepto = nodos_conceptos[c]
+            model[nodo_concepto][1] = utils.float2str(
+                    self.precalc[self.fecha_mes_actual][c])
+            try:
+                model[nodo_padre][1] = (utils.float2str(
+                    utils.parse_float(model[nodo_padre][1]) 
+                    + self.precalc[self.fecha_mes_actual][c]))
+            except (TypeError, ValueError):
+                model[nodo_padre][1] = utils.float2str(
+                                        self.precalc[self.fecha_mes_actual][c])
+            i += 1
+
+    def mostrar_matriz_en_treeview(self, filas, padres, vpro):
+        model = self.wids['tv_datos'].get_model()
+        i = 0.0
+        nodos_conceptos = {}
+        for c in filas:
+            vpro.set_valor(i / len(filas.keys()), 
+                           "Montando matriz...")
+            pa = c.presupuestoAnual
+            nodo_padre = padres[pa]
+            fila = [c.descripcion] + filas[c] + [c.puid]
+            nodos_conceptos[c] = model.append(nodo_padre, fila)
+            for mes_matriz in range(1, self.num_meses + 1):
+                try:
+                    model[nodo_padre][mes_matriz] = utils.float2str(
+                            utils.parse_float(model[nodo_padre][mes_matriz]) 
+                            + fila[mes_matriz])
+                except (TypeError, ValueError):
+                    model[nodo_padre][mes_matriz] = utils.float2str(
+                            fila[mes_matriz])
+            i += 1
+        return nodos_conceptos 
+
+    def montar_filas(self, filas, vpro):
+        i = 0.0
+        valores = pclases.ValorPresupuestoAnual.select(pclases.AND(
+            pclases.ValorPresupuestoAnual.q.mes >= self.fecha_mes_actual, 
+            pclases.ValorPresupuestoAnual.q.mes < self.fecha_mes_final)) 
+        valores_count = valores.count()
+        for v in valores:
+            c = v.conceptoPresupuestoAnual
+            mes_offset = (v.mes.month - self.fecha_mes_actual.month) % (
+                                                                self.num_meses)
+            if (v.mes.month == self.fecha_mes_actual.month 
+                    and c.presupuestoAnual.descripcion 
+                            == "Proveedores granza"): # OJO: HARCODED
+                # Este valor no lo muestro. Tengo que tirar de datos reales.
+                try:
+                    filas[c][mes_offset]=self.precalc[self.fecha_mes_actual][c]
+                except KeyError: # Se ha metido a mano. No hay datos reales.
+                    filas[c][mes_offset] = v.importe
+            else:
+                filas[c][mes_offset] = v.importe
+            vpro.set_valor(i / valores_count, 
+                           "Cargando valores de dynconsulta...") 
+            i += 1
+        return filas
+
+    def cargar_conceptos_segundo_nivel(self, vpro):
+        i = 0.0
+        self.precalc[self.fecha_mes_actual] = precalcular(
+                                                        self.fecha_mes_actual, 
+                                                        self.wids['ventana'])
+        conceptos = pclases.ConceptoPresupuestoAnual.select()
+        conceptos_count = conceptos.count()
+        filas = {}
+        for c in conceptos:
+            filas[c] = []
+            for m in range(self.num_meses):
+                filas[c].append(0)
+            vpro.set_valor(i / conceptos_count, 
+                           "Cargando conceptos de dynconsulta...") 
+            i += 1
+        return filas
+
+    def cargar_conceptos_primer_nivel(self, vpro):
+        vpro.set_valor(0, "Cargando conceptos de primer nivel...") 
+        model = self.wids['tv_datos'].get_model()
+        padres = {}
+        pas = pclases.PresupuestoAnual.select()
+        pas_count = pas.count()
+        i = 0.0
+        for pa in pas:
+            fila = [pa.descripcion] 
+            for m in range(self.num_meses):
+                fila.append("")
+            fila.append(pa.puid)
+            nodo = model.append(None, fila) 
+            padres[pa] = nodo 
+            vpro.set_valor(i / pas_count, 
+                           "Cargando conceptos de primer nivel...") 
+            i += 1
+        return padres
             
     def buscar(self, widget):
         """
