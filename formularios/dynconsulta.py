@@ -108,7 +108,7 @@ class DynConsulta(Ventana, VentanaGenerica):
             glade_loaded = False
         else:
             glade_loaded = True
-        self.fecha_mes_actual = mx.DateTime.DateTimeFrom(
+        self.fecha_mes_actual = mx.DateTime.DateFrom(
                                                 mx.DateTime.localtime().year, 
                                                 self.mes_actual,
                                                 1)
@@ -128,9 +128,9 @@ class DynConsulta(Ventana, VentanaGenerica):
         while mes_final > 12:
             anno_final += 1
             mes_final -= 12
-        self.fecha_mes_final = mx.DateTime.DateTimeFrom(anno_final, 
-                                                        mes_final, 
-                                                        1)
+        self.fecha_mes_final = mx.DateTime.DateFrom(anno_final, 
+                                                    mes_final, 
+                                                    1)
         if glade_loaded:
             self.inicializar_ventana()
             self.actualizar_ventana(None)
@@ -162,7 +162,7 @@ class DynConsulta(Ventana, VentanaGenerica):
             mes = self.mes_actual
         for m in range(self.num_meses):
             mescol = ((mes - 1 + m) % 12) + 1 
-            fechacol = mx.DateTime.DateTimeFrom(month = mescol, 
+            fechacol = mx.DateTime.DateFrom(month = mescol, 
                     year = mx.DateTime.localtime().year + (m > 0 and 1 or 0))
             if mescol == 1:
                 strmes = fechacol.strftime("%B'%y")
@@ -201,7 +201,9 @@ class DynConsulta(Ventana, VentanaGenerica):
                     old_valor = self.old_model[padre]['hijos'][hijo][numcol-1]
                 except (KeyError, IndexError):
                     old_valor = None
-            if old_valor != None and valor != old_valor:
+            if self.old_model and old_valor != valor: 
+                # Valor puede ser None porque es la primera vez que se muestran
+                # toodos los datos y en ese caso no debe colorear.
                 cell.set_property("foreground", "red")
             else:
                 cell.set_property("foreground", None)
@@ -252,17 +254,18 @@ class DynConsulta(Ventana, VentanaGenerica):
             self.check_permisos(nombre_fichero_ventana = "dynconsulta.py")
 
     def actualizar_ventana(self, boton = None):
+        # TODO: PORASQUI: En realidad lo estoy haciendo mal. Tengo que buscar 
+        # vencimientos que caigan en el mes que sea, no facturas de esa fecha 
+        # cuyos vencimientos caerán en cualquiera sabe qué mes futuro. Por 
+        # tanto, en este mes van a caer facturas de meses anteriores que 
+        # aquí no estoy tratando y estoy perdiendo esos datos reales.
+        self.precalc = precalcular(self.fecha_mes_actual, self.wids['ventana'])
         self.rellenar_widgets()
         self.wids['tv_datos'].expand_all()
 
     def rellenar_widgets(self):
-        """
-        Introduce la información del objeto actual
-        en los widgets.
-        No se chequea que sea != None, así que
-        hay que tener cuidado de no llamar a 
-        esta función en ese caso.
-        """
+        # Los únicos otros dos widgets son los de mes de inicio y ancho de 
+        # tabla en meses, que ya se rellenan ellos solos.
         self.rellenar_tabla()
 
     def rellenar_tabla(self):
@@ -329,7 +332,7 @@ class DynConsulta(Ventana, VentanaGenerica):
                     break
             if pclases.DEBUG: print "(1) >>> pasar_mes", pasar_mes
             # Valores antiguos los busco en el año pasado.
-            anno_pasado = mx.DateTime.DateTimeFrom(
+            anno_pasado = mx.DateTime.DateFrom(
                     ultimo_mes_en_tabla.year - 1,
                     ultimo_mes_en_tabla.month, 
                     1)
@@ -339,7 +342,7 @@ class DynConsulta(Ventana, VentanaGenerica):
             else:
                 anno_pasado_month = anno_pasado.month + 1
                 anno_pasado_year = anno_pasado.year
-            anno_pasado_mas_1_mes = mx.DateTime.DateTimeFrom(
+            anno_pasado_mas_1_mes = mx.DateTime.DateFrom(
                     anno_pasado_year,
                     anno_pasado_month, 
                     1)
@@ -363,7 +366,7 @@ class DynConsulta(Ventana, VentanaGenerica):
                 for v in valores_clonar:
                     vpro.set_valor(i / valores_count, 
                                    "Trasladando valores antiguos...") 
-                    nv = v.clone(mes = mx.DateTime.DateTimeFrom(
+                    nv = v.clone(mes = mx.DateTime.DateFrom(
                         year = v.mes.year + 1, 
                         month = v.mes.month, 
                         day = 1))
@@ -381,7 +384,11 @@ class DynConsulta(Ventana, VentanaGenerica):
                                              vpro):
         model = self.wids['tv_datos'].get_model()
         i = 0.0
-        for c in self.precalc[self.fecha_mes_actual]:
+        try:
+            datos_reales_este_mes = self.precalc[self.fecha_mes_actual]
+        except KeyError:    # Lo no nay ;)
+            datos_reales_este_mes = []
+        for c in datos_reales_este_mes:
             vpro.set_valor(i / len(self.precalc[self.fecha_mes_actual].keys()),
                     "Aplicando sustitución por valores reales...")
             pa = c.presupuestoAnual
@@ -450,9 +457,6 @@ class DynConsulta(Ventana, VentanaGenerica):
 
     def cargar_conceptos_segundo_nivel(self, vpro):
         i = 0.0
-        self.precalc[self.fecha_mes_actual] = precalcular(
-                                                        self.fecha_mes_actual, 
-                                                        self.wids['ventana'])
         conceptos = pclases.ConceptoPresupuestoAnual.select()
         conceptos_count = conceptos.count()
         filas = {}
@@ -506,49 +510,39 @@ def precalcular(fecha, ventana_padre = None, usuario = None):
     vpro.mostrar()
     # Valores que puedo conocer del ERP (de momento):
     # 1.- IVA (soportado - repercutido)
-    # TODO: PORASQUI
+    # TODO: 
     # 2.- Entradas de granza
+    res = calcular_entradas_de_granza(vpro, fecha, usuario)
+    if pclases.DEBUG:
+        print __file__, res
+    return res
+
+def calcular_entradas_de_granza(vpro, fecha, usuario):
     vpro.mover()
     primes = fecha
-    finmes = mx.DateTime.DateTimeFrom(primes.year, primes.month, -1)
+    finmes = mx.DateTime.DateFrom(primes.year, primes.month, -1)
     vpro.mover()
     # Primero: productos granza:
-    granzas = pclases.ProductoCompra.select(pclases.AND(
-        pclases.ProductoCompra.q.descripcion.contains("granza"), 
-        pclases.ProductoCompra.q.obsoleto == False, 
-        pclases.ProductoCompra.q.tipoDeMaterialID 
-            == pclases.TipoDeMaterial.select(
-                 pclases.TipoDeMaterial.q.descripcion.contains("prima")
-                )[0].id))
+    granzas = buscar_productos_granza()
     # Saco datos de facturas:
-    fras = pclases.FacturaCompra.select(pclases.AND(
-        pclases.FacturaCompra.q.fecha >= primes, 
-        pclases.FacturaCompra.q.fecha <= finmes))
-    if pclases.DEBUG:
-        print __file__, fras.count(), "facturas encontradas."
+    fras = buscar_facturas_compra(primes, finmes)
     # Filtro para quedarme con las de granza:
     vpro.mover()
     res = {}
-    for f in fras:
-        for ldc in f.lineasDeCompra:
-            if ldc.productoCompra in granzas:
-                if pclases.DEBUG:
-                    print __file__, f.get_info(), ldc.get_info()
-                concepto = buscar_concepto_proveedor_granza(ldc.proveedor, 
-                                                            usuario)
-                try:
-                    res[concepto] += ldc.get_subtotal()
-                except KeyError:
-                    res[concepto] = ldc.get_subtotal()
-            vpro.mover()
-    # Y ahora de los albaranes no facturados.
-    albs = pclases.AlbaranEntrada.select(pclases.AND(
-        pclases.AlbaranEntrada.q.fecha >= primes, 
-        pclases.AlbaranEntrada.q.fecha <= finmes))
-    if pclases.DEBUG:
-        print __file__, albs.count(), "albaranes encontrados."
-    # Filtro para quedarme con los de granza:
+    # TODO: PORASQUI: No puedo calcular para el mes actual. La cantidad final 
+    # irá con toda probabilidad a meses posteriores (depende de la forma de 
+    # pago del proveedor, cliente, concepto del presupesto...).
+    clasificar_facturas_compra(fras, granzas, usuario, res, vpro)
     vpro.mover()
+    # Y ahora de los albaranes no facturados.
+    albs = buscar_albaranes_de_entrada(primes, finmes)
+    vpro.mover()
+    # Filtro para quedarme con los de granza:
+    clasificar_albaranes_de_entrada(albs, granzas, usuario, res, vpro)
+    vpro.ocultar()
+    return res
+
+def clasificar_albaranes_de_entrada(albs, granzas, usuario, res, vpro):
     for a in albs:
         for ldc in a.lineasDeCompra:
             # Solo quiero lo no facturado.
@@ -557,15 +551,85 @@ def precalcular(fecha, ventana_padre = None, usuario = None):
                     print __file__, a.get_info(), ldc.get_info()
                 concepto = buscar_concepto_proveedor_granza(ldc.proveedor, 
                                                             usuario)
+                fecha = primero_de_mes(ldc.albaranEntrada.fecha)
+                if fecha not in res:
+                    res[fecha] = {}
                 try:
-                    res[concepto] += ldc.get_subtotal()
+                    res[fecha][concepto] += ldc.get_subtotal()
                 except KeyError:
-                    res[concepto] = ldc.get_subtotal()
+                    res[fecha][concepto] = ldc.get_subtotal()
             vpro.mover()
-    vpro.ocultar()
+
+def buscar_albaranes_de_entrada(primes, finmes):
+    albs = pclases.AlbaranEntrada.select(pclases.AND(
+        pclases.AlbaranEntrada.q.fecha >= primes, 
+        pclases.AlbaranEntrada.q.fecha <= finmes))
     if pclases.DEBUG:
-        print __file__, res
-    return res
+        print __file__, albs.count(), "albaranes encontrados."
+    return albs
+
+def clasificar_facturas_compra(fras, granzas, usuario, res, vpro):
+    for f in fras:
+        for ldc in f.lineasDeCompra:
+            ldc.sync
+            ldc.sync()
+            ldc.facturaCompra and ldc.facturaCompra.sync()
+            ldc.albaranEntrada and ldc.albaranEntrada.sync()
+            if ldc.productoCompra in granzas:
+                if pclases.DEBUG:
+                    print __file__, f.get_info(), ldc.get_info()
+                concepto = buscar_concepto_proveedor_granza(ldc.proveedor, 
+                                                            usuario)
+                fechas_mes_vto = buscar_mes_vto(ldc.facturaCompra)
+                importe = ldc.get_subtotal() / len(fechas_mes_vto)
+                for fecha_mes_vto in fechas_mes_vto:
+                    if fecha_mes_vto not in res:
+                        res[fecha_mes_vto] = {}
+                    try:
+                        res[fecha_mes_vto][concepto] += importe
+                    except KeyError:
+                        res[fecha_mes_vto][concepto] = importe
+            vpro.mover()
+
+def buscar_mes_vto(fra_compra):
+    """Devuelve las fechas de vencimiento de la factura. Si no tiene 
+    vencimientos (algún usuario se está haciendo el remolón con su trabajo) 
+    entonces devuelve la fecha de la factura.
+    Las fechas las devuelve a primero del mes que sea, ignorando el día real
+    de pago.
+
+    :fra_compra: pclases.FacturaCompra
+    :returns: mx.DateTime.Date
+
+    """
+    fechas = []
+    for v in fra_compra.vencimientosPago:
+        fechas.append(primero_de_mes(v.fecha))
+    if not fechas:
+        fechas = [primero_de_mes(fra_compra.fecha)]
+    return fechas
+
+def primero_de_mes(f):
+    return mx.DateTime.DateFrom(f.year, f.month, 1)
+
+def buscar_facturas_compra(primes, finmes):
+    # FIXME: Mal. Muy mal. No debo buscar fras. de compra, sino VENCIMIENTOS. 
+    fras = pclases.FacturaCompra.select(pclases.AND(
+        pclases.FacturaCompra.q.fecha >= primes, 
+        pclases.FacturaCompra.q.fecha <= finmes))
+    if pclases.DEBUG:
+        print __file__, fras.count(), "facturas encontradas."
+    return fras
+
+def buscar_productos_granza():
+    granzas = pclases.ProductoCompra.select(pclases.AND(
+        pclases.ProductoCompra.q.descripcion.contains("granza"), 
+        pclases.ProductoCompra.q.obsoleto == False, 
+        pclases.ProductoCompra.q.tipoDeMaterialID 
+            == pclases.TipoDeMaterial.select(
+                 pclases.TipoDeMaterial.q.descripcion.contains("prima")
+                )[0].id))
+    return granzas
 
 def buscar_concepto_proveedor_granza(proveedor, usuario = None):
     """

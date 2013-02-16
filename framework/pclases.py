@@ -2322,7 +2322,9 @@ class LineaDeCompra(SQLObject, PRPCTOO):
     precioConDescuento = property(get_precio_con_descuento, doc = get_precio_con_descuento.__doc__)
 
     def get_proveedor(self):
-        return self.albaranEntrada and self.albaranEntrada.proveedor or None
+        return ((self.albaranEntrada and self.albaranEntrada.proveedor) 
+                or (self.facturaCompra and self.facturaCompra.proveedor)
+                or None)
         
     def get_nombre_proveedor(self):
         proveedor = self.get_proveedor() 
