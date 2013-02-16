@@ -20953,6 +20953,15 @@ class ValorPresupuestoAnual(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
+    def es_de_granza(self):
+        """
+        Devuelve True si es un valor de presupuesto de un concepto 
+        correspondiente a compras a proveedores de materia prima (granza).
+        """
+        # OJO: HARCODED
+        c = self.conceptoPresupuestoAnual
+        return c.presupuestoAnual.descripcion == "Proveedores granza"
+
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 

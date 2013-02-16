@@ -419,6 +419,7 @@ class DynConsulta(Ventana, VentanaGenerica):
                     ] + filas[c] + [c.puid]
             nodos_conceptos[c] = model.append(nodo_padre, fila)
             for mes_matriz in range(1, self.num_meses + 1):
+                # Actualizo totales de fila padre
                 try:
                     model[nodo_padre][mes_matriz] = utils.float2str(
                             utils.parse_float(model[nodo_padre][mes_matriz]) 
@@ -440,9 +441,13 @@ class DynConsulta(Ventana, VentanaGenerica):
             c = v.conceptoPresupuestoAnual
             mes_offset = (v.mes.month - self.fecha_mes_actual.month) % (
                                                                 self.num_meses)
-            if (v.mes.month == self.fecha_mes_actual.month 
-                    and c.presupuestoAnual.descripcion 
-                            == "Proveedores granza"): # OJO: HARCODED
+            # PORASQUI: Aquí es donde debería comprobar el criterio de 
+            #           sustitición en cada caso: forma de pago en compras, 
+            #           mes siguiente (¿o era trimestral?) en IVA, etc.
+            if criterio_sustitucion(v, self.fecha_mes_actual):
+            #if (v.mes.month == self.fecha_mes_actual.month 
+            #        and c.presupuestoAnual.descripcion 
+            #                == "Proveedores granza"): # OJO: HARCODED
                 # Este valor no lo muestro. Tengo que tirar de datos reales.
                 try:
                     filas[c][mes_offset]=self.precalc[self.fecha_mes_actual][c]
@@ -669,6 +674,15 @@ def bak_model(model):
             for j in range(1, len(sub_fila)):
                 res[fila[0]]['hijos'][sub_fila[0]].append(sub_fila[j])
     return res
+
+def criterio_sustitucion(valor_presupuesto, fecha = None):
+    sustituir_por_reales = False
+    if fecha == None:
+        fecha = primero_de_mes(mx.DateTime.today())
+    if (valor_presupuesto.es_de_granza() 
+            and valor_presupuesto.mes.month == fecha.month):
+        sustituir_por_reales = True
+    return sustituir_por_reales
 
 if __name__ == "__main__":
     """
