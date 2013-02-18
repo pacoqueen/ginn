@@ -20962,6 +20962,27 @@ class ValorPresupuestoAnual(SQLObject, PRPCTOO):
         c = self.conceptoPresupuestoAnual
         return c.presupuestoAnual.descripcion == "Proveedores granza"
 
+    def es_de_iva(self):
+        """
+        Devuelve True si es un valor de presupuesto de un concepto 
+        correspondiente al IVA mensual.
+        """
+        # OJO: HARCODED
+        c = self.conceptoPresupuestoAnual
+        return c.presupuestoAnual.descripcion == "IVA"
+
+    @property
+    def toneladas(self):
+        """
+        Si el valor es de un proveedor de granza, devuelve las toneladas 
+        calculadas como importe / precio por tonelada. Si no, lanza una 
+        excepción ValueError.
+        """
+        if self.es_de_granza():
+            return self.importe / self.precio
+        else:
+            raise ValueError
+
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 
