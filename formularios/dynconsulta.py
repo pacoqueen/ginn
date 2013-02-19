@@ -835,7 +835,7 @@ def criterio_sustitucion(valor_presupuesto, importe_valor_real,
                          fecha_primera_col, fecha = None):
     if pclases.DEBUG:
         print __file__, 
-    if fecha == None:
+    if not fecha:
         fecha = primero_de_mes(mx.DateTime.today())
     # Si ni siquiera hay valor presupuestado, está claro, ¿no? Mostrar el real:
     sustituir_por_reales = True
