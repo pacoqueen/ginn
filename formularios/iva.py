@@ -169,6 +169,7 @@ class IVA(Ventana):
         # Me quito las facturas con IVA 0 (usualmente generadas para controlar ingresos a Hacienda y SS) y las de 
         # Portugal (21% de IVA) que irían en adquisiciones intracomunitarias en caso de que la empresa esté dada de 
         # alta como operador intracomunitario y sería autorrepercutido, etc.
+        # FIXME: El IVA en España es ahora al 21%. No puedo usar eso para discernir las facturas.
         facturas = list(fraventas) + [f for f in fracompras if not f.iva_homogeneo() or (f.iva != 0.0 and f.iva < 0.21)]
         facturas.sort(lambda f1, f2: utils.orden_por_campo_o_id(f1, f2, "fecha"))
         return facturas

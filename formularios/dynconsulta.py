@@ -428,6 +428,7 @@ class DynConsulta(Ventana, VentanaGenerica):
         para que se actualice el nodo padre únicamente sumando esa cantidad y 
         así evitar recalcular toda la "subcolumna".
         """
+# FIXME: Mucho ojo, tengo que volcar el dato real en el mes del vencimiento pero retirar el consumo de granza del mes de la factura/albarán.
         if valor_presupuestado:
             valor_presupuestado_importe = valor_presupuestado.importe
             if valor_presupuestado.es_de_granza():
@@ -831,6 +832,8 @@ def bak_model(model):
 
 def criterio_sustitucion(valor_presupuesto, importe_valor_real, 
                          fecha_primera_col, fecha = None):
+    if pclases.DEBUG:
+        print __file__, 
     if fecha == None:
         fecha = primero_de_mes(mx.DateTime.today())
     # Si ni siquiera hay valor presupuestado, está claro, ¿no? Mostrar el real:
@@ -862,11 +865,12 @@ def criterio_sustitucion(valor_presupuesto, importe_valor_real,
             ### Caso ventas.
             # TODO
             if pclases.DEBUG:
-                print __file__, "-------->>>>", \
-                        valor_presupuesto.conceptoPresupuestoAnual\
-                            .descripcion,\
-                        valor_presupuesto.mes.month, "sustituir_por_reales [",\
-                        sustituir_por_reales, "]"
+                print "-------->>>>", \
+                    valor_presupuesto.conceptoPresupuestoAnual.descripcion, \
+                    valor_presupuesto.mes.month, "; presup.:", \
+                    valor_presupuesto.importe, "; real:", importe_valor_real, 
+    if pclases.DEBUG:
+        print "sustituir_por_reales [", sustituir_por_reales, "]"
     return sustituir_por_reales
 
 def buscar_valor_presupuestado(fecha, concepto):

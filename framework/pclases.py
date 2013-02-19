@@ -20969,7 +20969,8 @@ class ValorPresupuestoAnual(SQLObject, PRPCTOO):
         """
         # OJO: HARCODED
         c = self.conceptoPresupuestoAnual
-        return c.presupuestoAnual.descripcion == "IVA"
+        assert c.presupuestoAnual.descripcion == "Impuestos"
+        return c.descripcion == "IVA"
 
     @property
     def toneladas(self):
