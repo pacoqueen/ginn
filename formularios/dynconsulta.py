@@ -48,6 +48,7 @@ from ventana_progreso import VentanaProgreso, VentanaActividad
 from albaranes_de_salida import buscar_proveedor
 from widgets import replace_widget
 
+pclases.DEBUG = True
 
 class DynConsulta(Ventana, VentanaGenerica):
     def __init__(self, objeto = None, usuario = None, mes_actual = None, 
