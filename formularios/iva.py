@@ -166,11 +166,15 @@ class IVA(Ventana):
         fracompras = pclases.FacturaCompra.select(pclases.AND(pclases.FacturaCompra.q.fecha >= fini, 
                                                               pclases.FacturaCompra.q.fecha <= ffin))
         #facturas = list(fraventas) + list(fracompras)
-        # Me quito las facturas con IVA 0 (usualmente generadas para controlar ingresos a Hacienda y SS) y las de 
-        # Portugal (21% de IVA) que irían en adquisiciones intracomunitarias en caso de que la empresa esté dada de 
-        # alta como operador intracomunitario y sería autorrepercutido, etc.
-        # FIXME: El IVA en España es ahora al 21%. No puedo usar eso para discernir las facturas.
-        facturas = list(fraventas) + [f for f in fracompras if not f.iva_homogeneo() or (f.iva != 0.0 and f.iva < 0.21)]
+        # Me quito las facturas con IVA 0 (usualmente generadas para 
+        # controlar ingresos a Hacienda y SS) y las de Portugal (23% de IVA) 
+        # que irían en adquisiciones intracomunitarias en caso de que la 
+        # empresa esté dada de alta como operador intracomunitario y sería 
+        # autorrepercutido, etc. 
+        # [19/02/2013] Aprovecho que el IVA en España está ya al 21% para 
+        # filtrar por ahí en lugar de por la nacionalidad del 
+        # proveedor. POTENTIAL RISK!
+        facturas = list(fraventas) + [f for f in fracompras if not f.iva_homogeneo() or (f.iva != 0.0 and f.iva < 0.23)]
         facturas.sort(lambda f1, f2: utils.orden_por_campo_o_id(f1, f2, "fecha"))
         return facturas
 

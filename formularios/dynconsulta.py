@@ -429,7 +429,7 @@ class DynConsulta(Ventana, VentanaGenerica):
         para que se actualice el nodo padre únicamente sumando esa cantidad y 
         así evitar recalcular toda la "subcolumna".
         """
-# FIXME: Mucho ojo, tengo que volcar el dato real en el mes del vencimiento pero retirar el consumo de granza del mes de la factura/albarán.
+# FIXME: PORASQUI: Mucho ojo, tengo que volcar el dato real en el mes del vencimiento pero retirar el consumo de granza del mes de la factura/albarán.
         if valor_presupuestado:
             valor_presupuestado_importe = valor_presupuestado.importe
             if valor_presupuestado.es_de_granza():
@@ -493,6 +493,9 @@ class DynConsulta(Ventana, VentanaGenerica):
 
     def montar_filas(self, filas, vpro):
         i = 0.0
+        # Estos valores se metieron en la fecha y concepto que fueran, pero 
+        # aquí tienen que moverse a la fecha de la FDP que corresponda al 
+        # concepto. 
         valores = pclases.ValorPresupuestoAnual.select(pclases.AND(
             pclases.ValorPresupuestoAnual.q.mes >= self.fecha_mes_actual, 
             pclases.ValorPresupuestoAnual.q.mes < self.fecha_mes_final)) 
@@ -509,6 +512,9 @@ class DynConsulta(Ventana, VentanaGenerica):
         return filas
 
     def cargar_conceptos_segundo_nivel(self, vpro):
+        """
+        Solo carga los conceptos. Con todos los valores a cero.
+        """
         i = 0.0
         conceptos = pclases.ConceptoPresupuestoAnual.select()
         conceptos_count = conceptos.count()
