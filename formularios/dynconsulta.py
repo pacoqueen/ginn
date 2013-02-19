@@ -232,6 +232,7 @@ class DynConsulta(Ventana, VentanaGenerica):
         """
         Muestra de dónde vienen los datos precalculados.
         """
+        # TODO: PORASQUI: Esto va a ser complicado...
         indexcol = get_col_pos(tv, col)
         if indexcol > 0:
             mes = self.mes_actual + indexcol - 1
@@ -374,27 +375,6 @@ class DynConsulta(Ventana, VentanaGenerica):
                                              nodos_conceptos, 
                                              padres, 
                                              vpro):
-            # PORASQUI: Aquí es donde debería comprobar el criterio de 
-            #           sustitición en cada caso: forma de pago en compras, 
-            #           mes siguiente (¿o era trimestral?) en IVA, etc.
-            # TODO: Hay otro problema: Supongamos un valor precalculado que es 
-            # de un concepto que no existe en los valores presupuestados, por 
-            # lo tanto no puede sustituir a nadie y se va a ignorar.
-        #    if criterio_sustitucion(v, self.fecha_mes_actual):
-            #if (v.mes.month == self.fecha_mes_actual.month 
-            #        and c.presupuestoAnual.descripcion 
-            #                == "Proveedores granza"): # OJO: HARCODED
-                # Tengo que tirar de datos reales. Este valor no lo muestro, o 
-                # muestro solo la parte proporcional que resta de los datos 
-                # reales (mirar specs para asegurarme).
-        #        filas[c][mes_offset] = ""
-                # Los datos reales los volcaré después.
-                #try:
-                #    filas[c][mes_offset]=self.precalc[self.fecha_mes_actual][c]
-                #except KeyError: # Se ha metido a mano. No hay datos reales.
-                #    filas[c][mes_offset] = v.importe
-            # TODO: Si me muevo a mayo el total es 2000 reales + 275 estimados, pero solo veo en el cell 2000 de reales. Eso es porque todavía no estoy sustituyendo realmente los datos, sino machacando.
-        model = self.wids['tv_datos'].get_model()
         for mescol in range(self.num_meses):
             fechacol = restar_mes(self.fecha_mes_actual, -mescol)
             i = 0.0
@@ -404,33 +384,42 @@ class DynConsulta(Ventana, VentanaGenerica):
                 datos_reales = []
             for concepto in datos_reales:
                 vpro.set_valor(
-                        i / len(self.precalc[fechacol].keys()),
+                        i / len(datos_reales.keys()),
                         "Aplicando sustitución por valores reales en %s..." 
                             % fechacol.strftime("%B"))
                 # Si había un valor previo, tengo que retirar la estimación 
                 # y sumar lo real. En caso de granza, entonces la parte 
                 # proporcional de las Tm.
-                importe_valor_real = self.precalc[fechacol][concepto]
+                try:
+                    importe_valor_real = datos_reales[concepto]['importe']
+                except TypeError:
+                    # Solo los precálculos de granza tienen importe y Tm. El 
+                    # resto solo importes.
+                    importe_valor_real = datos_reales[concepto]
                 valor_presupuestado = buscar_valor_presupuestado(fechacol, 
                                                                  concepto)
                 if criterio_sustitucion(valor_presupuestado, 
-                                        importe_valor_real):
+                                        importe_valor_real, 
+                                        self.fecha_mes_actual, 
+                                        fechacol):
                     # Y si no, dejo lo que estaba.
                     if pclases.DEBUG:
                         print __file__, "Cambio presupuesto por real:", \
+                                concepto.descripcion,\
                                 valor_presupuestado, importe_valor_real
                     diff = self.cambiar_valor_presupuestado(importe_valor_real, 
                                                             valor_presupuestado,
                                                             concepto, 
                                                             fechacol, 
-                                                            )
-                    # PORASQUI: ¿De dónde salía nodo_padre y qué era?
-                    self.actualizar_sumatorio_padre(model, nodo_padre, mescol, 
-                                                    fechacol, diff)
+                                                            mescol, 
+                                                            nodos_conceptos)
+                    self.actualizar_sumatorio_padre(mescol, concepto, padres, 
+                                                    diff)
                 i += 1
 
-    def cambiar_valor_presupuestado(self, valor_real, valor_presupuestado, 
-                                    concepto, fechacol):
+    def cambiar_valor_presupuestado(self, importe_valor_real, 
+                                    valor_presupuestado, concepto, fechacol, 
+                                    mescol, nodos_conceptos):
         """
         Si el valor presupuestado es de granza, quita el importe 
         correspondiente a las toneladas del valor real y suma este valor 
@@ -442,26 +431,32 @@ class DynConsulta(Ventana, VentanaGenerica):
         if valor_presupuestado:
             valor_presupuestado_importe = valor_presupuestado.importe
             if valor_presupuestado.es_de_granza():
-                valor_real_toneladas=self.precalc[fechacol][concepto]['toneladas']
+                precalc_concepto = self.precalc[fechacol][concepto]
+                valor_real_toneladas = precalc_concepto['toneladas']
                 valor_presup_restante = (valor_presupuestado.precio 
                     * (valor_presupuestado.toneladas - valor_real_toneladas))
             else:
-                # Como voy a sustituirlo entero, el valor restante es 0.0 para que 
-                # solo se vea el valor real que le voy a sumar.
+                # Como voy a sustituirlo entero, el valor restante es 0.0 para 
+                # que solo se vea el valor real que le voy a sumar.
                 valor_presup_restante = 0.0
-            pa = concepto.presupuestoAnual
-            nodo_padre = padres[pa]
-            nodo_concepto = nodos_conceptos[concepto]
-            model[nodo_concepto][mescol + 1] = utils.float2str(
-                    valor_presup_restante + valor_real)
         else:
             valor_presup_restante = 0.0
             valor_presupuestado_importe = 0.0
-        return (valor_presup_restante + valor_real)-valor_presupuestado_importe
+        model = self.wids['tv_datos'].get_model()
+        nodo_concepto = nodos_conceptos[concepto]
+        model[nodo_concepto][mescol + 1] = utils.float2str(
+                                    valor_presup_restante + importe_valor_real)
+        delta = ((valor_presup_restante + importe_valor_real) 
+                - valor_presupuestado_importe)
+        if pclases.DEBUG:
+            print __file__, ">>> cambiar_valor_presupuestado >>> ð =", delta
+        return delta
 
-    def actualizar_sumatorio_padre(self, model, nodo_padre, mescol, fechacol, 
-                                   diff):
+    def actualizar_sumatorio_padre(self, mescol, concepto, padres, diff):
         # Thanks bicycle repair man!
+        model = self.wids['tv_datos'].get_model()
+        pa = concepto.presupuestoAnual
+        nodo_padre = padres[pa]
         try:
             model[nodo_padre][mescol + 1] = (utils.float2str(
                 utils.parse_float(model[nodo_padre][mescol + 1]) 
@@ -567,29 +562,35 @@ def precalcular(fecha_ini, fecha_fin, ventana_padre = None, usuario = None):
     # 1.- Entradas de granza
     res = calcular_entradas_de_granza(vpro, fecha_ini, fecha_fin, usuario)
     # 2.- IVA (soportado - repercutido)
-    calcular_iva_real(res, vpro, fecha_ini)
+    calcular_iva_real(res, vpro, fecha_ini, fecha_fin)
     # 3.- Ventas por tipo (internacionales, geotextiles, geocompuestos...)
     #calcular_ventas(res, vpro, fecha_ini, fecha_fin)
     if pclases.DEBUG:
         print __file__, res
     return res
 
-def calcular_iva_real(res, vpro, fecha):
+def calcular_iva_real(res, vpro, fechaini, fechafin):
     """
     Calcula el IVA del mes de la fecha y lo almacena en el concepto 
     «Impuestos» de los valores precalculados.
     """
     vpro.mover()
     concepto = buscar_concepto_iva()
-    vpro.mover()
-    soportado = calcular_soportado(vpro, fecha)
-    vpro.mover()
-    repercutido = calcular_repercutido(vpro, fecha)
-    vpro.mover()
-    try:
-        res[fecha][concepto]['importe'] = soportado - repercutido 
-    except KeyError:
-        res[fecha] = {concepto: soportado - repercutido}
+    fecha = fechaini
+    while fecha <= fechafin:
+        vpro.mover()
+        soportado = calcular_soportado(vpro, fecha)
+        vpro.mover()
+        repercutido = calcular_repercutido(vpro, fecha)
+        vpro.mover()
+        importe_iva = soportado - repercutido
+        if importe_iva:
+            # Paso de guardar valores nulos. La RAM es un bien escaso!
+            try:
+                res[fecha][concepto]['importe'] = importe_iva 
+            except KeyError:
+                res[fecha] = {concepto: importe_iva}
+        fecha = restar_mes(fecha, -1)
     # FIXME: Devuelvo en negativo o positivo, pero el resto de cifras (ventas, 
     # compras, salarios, etc.) va en positivo aunque sean gastos. Preguntar en 
     # la siguiente reunión.
@@ -685,7 +686,11 @@ def clasificar_albaranes_de_entrada(albs, granzas, usuario, res, vpro):
     for a in albs:
         for ldc in a.lineasDeCompra:
             # Solo quiero lo no facturado.
-            if not ldc.facturaCompraID and ldc.productoCompra in granzas:
+            if (not ldc.facturaCompraID and ldc.productoCompra in granzas
+                    and ldc.cantidad):
+                # Si la línea no tiene cantidad de nada, paso. No quiero 
+                # guardar valores nulos que me coman tiempo de proceso o RAM.
+                # Piensa como si siguieras programando con 640 K, old boy.
                 if pclases.DEBUG:
                     print __file__, a.get_info(), ldc.get_info()
                 concepto = buscar_concepto_proveedor_granza(ldc.proveedor, 
@@ -824,30 +829,44 @@ def bak_model(model):
                 res[fila[0]]['hijos'][sub_fila[0]].append(sub_fila[j])
     return res
 
-def criterio_sustitucion(valor_presupuesto, fecha = None):
-    # TODO: PORASQUI: Falta el criterio del IVA, comprobar que este es correcto...
+def criterio_sustitucion(valor_presupuesto, importe_valor_real, 
+                         fecha_primera_col, fecha = None):
+    if fecha == None:
+        fecha = primero_de_mes(mx.DateTime.today())
+    # Si ni siquiera hay valor presupuestado, está claro, ¿no? Mostrar el real:
     sustituir_por_reales = True
     if valor_presupuesto:
-        sustituir_por_reales = False
-        if fecha == None:
-            fecha = primero_de_mes(mx.DateTime.today())
-        if (valor_presupuesto.es_de_granza() 
-                and valor_presupuesto.mes.month == fecha.month):
-            # PORASQUI: (también) TODO: Principio de realidad: Siempre que haya 
-            # datos reales, se sustituyen las estimaciones por datos reales. 
-            # Esto significa que si han entrado 15 toneladas de granza, en el mes 
-            # de su vencimiento se retiran 15 toneladas al precio estimado y se 
-            # pone el importe real de esas 15 toneladas sumadas al resto de 
-            # estimado. ¿Seguro? Revisa las specs, anda.
+        # Para el mes actual SIEMPRE valores reales.
+        if primero_de_mes(fecha) <= fecha_primera_col <= final_de_mes(fecha):
             sustituir_por_reales = True
-        if (valor_presupuesto.es_de_iva() 
-                and valor_presupuesto.mes.month == fecha.month):
-            sustituir_por_reales = True
-        if pclases.DEBUG:
-            print __file__, "-------->>>>", \
-                    valor_presupuesto.conceptoPresupuestoAnual.descripcion, \
-                    valor_presupuesto.mes.month, "sustituir_por_reales [", \
-                    sustituir_por_reales, "]"
+        else:
+            sustituir_por_reales = False
+            ### Caso granza
+            if valor_presupuesto.es_de_granza():
+                # DONE: Principio de realidad: Siempre que 
+                # haya datos reales, se sustituyen las estimaciones por datos 
+                # reales. En granza además se puede hacer de forma 
+                # proporcional complementando al presupuesto.
+                # Esto significa que si han entrado 15 toneladas de granza, 
+                # en el mes de su vencimiento se retiran 15 toneladas al 
+                # precio estimado y se pone el importe real de esas 15 
+                # toneladas sumadas al resto de estimado. 
+                sustituir_por_reales = True
+            ### Caso IVA
+            if (valor_presupuesto.es_de_iva() 
+                    and importe_valor_real > valor_presupuesto.importe):
+                # En el caso del IVA se muestra el importe calculado a partir 
+                # de datos reales cuando sea el mes corriente (primer "if" de 
+                # arriba) o cuando se supere la estimación.
+                sustituir_por_reales = True
+            ### Caso ventas.
+            # TODO
+            if pclases.DEBUG:
+                print __file__, "-------->>>>", \
+                        valor_presupuesto.conceptoPresupuestoAnual\
+                            .descripcion,\
+                        valor_presupuesto.mes.month, "sustituir_por_reales [",\
+                        sustituir_por_reales, "]"
     return sustituir_por_reales
 
 def buscar_valor_presupuestado(fecha, concepto):
