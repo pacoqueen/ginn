@@ -3148,7 +3148,14 @@ CREATE TABLE valor_presupuesto_anual(
     concepto_presupuesto_anual_id INT REFERENCES concepto_presupuesto_anual NOT NULL, 
     mes DATE NOT NULL,  -- Me interesa mes y año nada más.
     importe FLOAT DEFAULT 0.0, 
-    precio FLOAT DEFAULT 1 -- Para estimaciones que sean del tipo importe=precio*algo (toneladas para los proveedores de granza, por ejemplo).
+    precio FLOAT DEFAULT 1,     -- Para estimaciones que sean del tipo 
+                                -- importe=precio*algo (toneladas para los 
+                                -- proveedores de granza, por ejemplo).
+    vencimiento DATE DEFAULT NULL   -- Vencimiento real del importe estimado 
+                                    -- en el mes «mes». Si es nulo, es el 
+                                    -- propio «mes». Por rendimiento en las 
+                                    -- búsquedas, lo mejor es que tenga un 
+                                    -- valor, aunque sea el mismo.
 );
 
 --------------------------------------------------------------

@@ -447,10 +447,13 @@ class Presupuesto(Ventana, VentanaGenerica):
                     v = [i for i in o.valoresPresupuestoAnual 
                                             if i.mes.month == mes_buscado][0]
                 except (IndexError):
+                    mes_importe = mx.DateTime.DateTimeFrom(fecha_actual.year,
+                                                           mes_buscado, 1)
+                    mes_vencimiento = o.vencimiento_por_defecto(mes_importe)
                     v = pclases.ValorPresupuestoAnual(
                             conceptoPresupuestoAnual = o, 
-                            mes = mx.DateTime.DateTimeFrom(fecha_actual.year,
-                                mes_buscado, 1))
+                            mes = mes_importe, 
+                            vencimiento = mes_vencimiento)
                     pclases.Auditoria.nuevo(v, self.usuario, __file__)
                     if v < fecha_actual:
                         v.mes = v.mes + mx.DateTime.DateTimeFrom(

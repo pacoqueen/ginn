@@ -99,7 +99,8 @@ CREATE TABLE valor_presupuesto_anual(
     concepto_presupuesto_anual_id INT REFERENCES concepto_presupuesto_anual NOT NULL, 
     mes DATE NOT NULL, 
     importe FLOAT DEFAULT 0.0, 
-    precio FLOAT DEFAULT 1
+    precio FLOAT DEFAULT 1, 
+    vencimiento DATE NULL
 );
 
 GRANT ALL ON presupuesto_anual TO geotexan;

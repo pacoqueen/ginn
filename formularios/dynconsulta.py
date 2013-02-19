@@ -429,7 +429,7 @@ class DynConsulta(Ventana, VentanaGenerica):
         para que se actualice el nodo padre únicamente sumando esa cantidad y 
         así evitar recalcular toda la "subcolumna".
         """
-# FIXME: PORASQUI: Mucho ojo, tengo que volcar el dato real en el mes del vencimiento pero retirar el consumo de granza del mes de la factura/albarán.
+# FIXME: PORASQUI: Mucho ojo, tengo que volcar el dato real en el mes del vencimiento pero retirar el consumo de granza del mes de la factura/albarán. Voy a cambiar todas las búsquedas de valores para tirar del nuevo campo "vencimiento" en lugar de "mes".
         if valor_presupuestado:
             valor_presupuestado_importe = valor_presupuestado.importe
             if valor_presupuestado.es_de_granza():

@@ -20943,6 +20943,27 @@ class ConceptoPresupuestoAnual(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
+    def vencimiento_por_defecto(self, fecha = mx.DateTime.today()):
+        """
+        En función del tipo de concepto devuelve la fecha de vencimiento 
+        para el importe presupuestado.
+        """
+        if self.descripcion == "IVA":
+            # Vence el 20 del mes siguiente a no ser que:
+            # - Sea diciembre, que entonces se tiene hasta el 30 de enero en 
+            #   lugar del 20.
+            # - Si es julio, en lugar de vencer el 20 de agosto lo hace el 20 
+            #   de septiembre.
+            if fecha.month == 12:
+                vto = mx.DateTime.DateFrom(fecha.year + 1, 1, 30)
+            elif fecha.month == 7:
+                vto = mx.DateTime.DateFrom(fecha.year, 9, 20)
+            else:
+                vto = mx.DateTime.DateFrom(fecha.year, fecha.month + 1, 20)
+#PORASQUI
+        #elif self.
+
+
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 class ValorPresupuestoAnual(SQLObject, PRPCTOO):
