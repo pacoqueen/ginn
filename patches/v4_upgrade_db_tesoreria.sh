@@ -100,7 +100,7 @@ CREATE TABLE valor_presupuesto_anual(
     mes DATE NOT NULL, 
     importe FLOAT DEFAULT 0.0, 
     precio FLOAT DEFAULT 1, 
-    vencimiento DATE NULL
+    vencimiento DATE DEFAULT NULL
 );
 
 GRANT ALL ON presupuesto_anual TO geotexan;

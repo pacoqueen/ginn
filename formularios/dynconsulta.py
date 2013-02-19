@@ -885,6 +885,7 @@ def buscar_valor_presupuestado(fecha, concepto):
     Devuelve el objeto valor del presupuesto para la fecha y concepto 
     especificados.
     """
+# PORASQUI: Buscar por vencimiento.
     try:
         return pclases.ValorPresupuestoAnual.select(pclases.AND(
             pclases.ValorPresupuestoAnual.q.mes == fecha, 

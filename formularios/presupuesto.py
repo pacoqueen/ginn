@@ -449,7 +449,8 @@ class Presupuesto(Ventana, VentanaGenerica):
                 except (IndexError):
                     mes_importe = mx.DateTime.DateTimeFrom(fecha_actual.year,
                                                            mes_buscado, 1)
-                    mes_vencimiento = o.vencimiento_por_defecto(mes_importe)
+                    mes_vencimiento = o.calcular_vencimiento(mes_importe)
+# PORASQUI: Es una lista de vencimientos. Si son varios, partir el ValorPresupuesto
                     v = pclases.ValorPresupuestoAnual(
                             conceptoPresupuestoAnual = o, 
                             mes = mes_importe, 
