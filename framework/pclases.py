@@ -2672,13 +2672,20 @@ class Cobro(SQLObject, PRPCTOO):
         Devuelve el objeto cliente relacionado con el cobro 
         o None si no se encontró.
         """
+        cliente = None
         if self.facturaVentaID != None:
-            return self.facturaVenta.cliente
+            cliente = self.facturaVenta.cliente
         if self.prefacturaID != None:
-            return self.prefactura.cliente
-        if self.facturaDeAbonoID != None and self.facturaDeAbono.abonoID != None:
-            return self.facturaDeAbono.abono.cliente
-        return None
+            cliente = self.prefactura.cliente
+        if (self.facturaDeAbonoID != None 
+                and self.facturaDeAbono.abonoID != None):
+            cliente = self.facturaDeAbono.abono.cliente
+        if self.clienteID != cliente:
+            try:
+                self.clienteID = cliente.id
+            except AttributeError:  # No hay cliente
+                self.clienteID = None
+        return cliente
 
     def set_cliente(self, cliente):
         """
@@ -2691,10 +2698,15 @@ class Cobro(SQLObject, PRPCTOO):
         if self.prefacturaID != None:
             self.prefactura.cliente = cliente
         if (self.facturaDeAbonoID != None 
-            and self.facturaDeAbono.abonoID != None):
+                and self.facturaDeAbono.abonoID != None):
             self.facturaDeAbono.abono.cliente = cliente
+        self.clienteID = cliente.id
 
-# TODO: PORASQUI: URGENTE: FIXME: La tabla ya tiene un cliente_id. ¿Por qué esta property? Voy a tener que corregir los values BD y todo... :(
+    # DONE: La tabla ya tiene un cliente_id. ¿Por qué esta property? 
+    #       Probablemente sea una modificación posterior. Me aseguro en el 
+    #       getter y en el setter que se mantiene la coherencia entre la 
+    #       propiedad calculada (cliente) y el atributo de la tabla 
+    #       (clienteID)
     cliente = property(get_cliente, set_cliente, 
                        doc = "Cliente relacionado con el cobro.")
     numfactura = property(get_numfactura, doc = get_numfactura.__doc__)

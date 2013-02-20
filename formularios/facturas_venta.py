@@ -2187,7 +2187,9 @@ class FacturasVenta(Ventana):
             cobro = pclases.Cobro(fecha = fecha,
                                   facturaVenta = factura,
                                   importe = 0, 
-                                  facturaDeAbono = None)
+                                  facturaDeAbono = None, 
+                                  cliente = 
+                                    factura and factura.cliente or None)
             pclases.Auditoria.nuevo(cobro, self.usuario, __file__)
         self.rellenar_vencimientos()
 
@@ -2216,7 +2218,9 @@ class FacturasVenta(Ventana):
             cobro = pclases.Cobro(fecha = time.localtime(),
                                   facturaVenta = factura,
                                   importe = importe, 
-                                  facturaDeAbono = None)
+                                  facturaDeAbono = None, 
+                                  cliente = 
+                                    factura and factura.cliente or None)
             pclases.Auditoria.nuevo(cobro, self.usuario, __file__)
         self.rellenar_vencimientos()
    
@@ -2279,7 +2283,9 @@ class FacturasVenta(Ventana):
             cobro = pclases.Cobro(fecha = mx.DateTime.today(),
                                   facturaVenta = factura,
                                   importe = factura.calcular_pendiente_cobro(), 
-                                  facturaDeAbono = None)
+                                  facturaDeAbono = None, 
+                                  cliente = 
+                                    factura and factura.cliente or None)
             pclases.Auditoria.nuevo(cobro, self.usuario, __file__)
         else:
             # Borro cobro

@@ -265,7 +265,8 @@ class CRM_DetallesFactura(Ventana):
                                       facturaVenta = v.facturaVenta, 
                                       prefactura = None, 
                                       facturaDeAbono = None, 
-                                      cliente = None, 
+                                      cliente = v.facturaVenta 
+                                            and v.facturaVenta.cliente or None,
                                       fecha = v.fecha, 
                                       importe = v.importe, 
                                       observaciones = observaciones) 
@@ -302,7 +303,8 @@ class CRM_DetallesFactura(Ventana):
                                       facturaVenta = v.facturaVenta, 
                                       prefactura = None, 
                                       facturaDeAbono = None, 
-                                      cliente = None, 
+                                      cliente = v.facturaVenta 
+                                        and v.facturaVenta.cliente or None, 
                                       fecha = v.fecha, 
                                       importe = v.importe, 
                                       observaciones = observaciones) 

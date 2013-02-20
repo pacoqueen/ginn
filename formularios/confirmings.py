@@ -928,13 +928,20 @@ class Confirmings(Ventana):
                 self.objeto.codigo, 
                 utils.str_fecha(self.objeto.fechaRecepcion), 
                 utils.str_fecha(self.objeto.fechaCobro))
+            if vencimiento.facturaVenta:
+                cliente = vencimiento.facturaVenta.cliente
+            elif vencimiento.prefactura:
+                cliente = vencimiento.prefactura.cliente
+            else:
+                cliente = None
             cobro = pclases.Cobro(facturaVenta = vencimiento.facturaVenta,
                                   prefactura = vencimiento.prefactura, 
                                   confirming = self.objeto,
                                   fecha = vencimiento.fecha,
                                   importe = vencimiento.importe,
                                   observaciones = observaciones, 
-                                  facturaDeAbono = None)
+                                  facturaDeAbono = None, 
+                                  cliente = cliente)
             pclases.Auditoria.nuevo(cobro, self.usuario, __file__)
             if actualizar_cantidad:
                 if confirming.cobrado == confirming.cantidad:
@@ -972,7 +979,8 @@ class Confirmings(Ventana):
                           fecha = frabono.fecha,
                           importe = frabono.importeTotal,
                           observaciones = observaciones, 
-                          facturaDeAbono = frabono)
+                          facturaDeAbono = frabono, 
+                          cliente = frabono and frabono.cliente or None)
         pclases.Auditoria.nuevo(c, self.usuario, __file__)
         if antes == confirming.cantidad:
             actualizar_cantidad = True  # Como el importe es la suma de los 

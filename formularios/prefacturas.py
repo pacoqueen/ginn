@@ -1653,7 +1653,9 @@ class Prefacturas(Ventana):
                                   prefactura = factura,
                                   facturaVenta = None, 
                                   importe = 0, 
-                                  facturaDeAbono = None)
+                                  facturaDeAbono = None, 
+                                  cliente = 
+                                    factura and factura.cliente or None)
             pclases.Auditoria.nuevo(cobro, self.usuario, __file__)
         self.rellenar_vencimientos()
 
@@ -1681,7 +1683,9 @@ class Prefacturas(Ventana):
                                   prefactura = factura, 
                                   facturaVenta = None, 
                                   importe = importe, 
-                                  facturaDeAbono = None)
+                                  facturaDeAbono = None, 
+                                  cliente = 
+                                    factura and factura.cliente or None)
             pclases.Auditoria.nuevo(cobro, self.usuario, __file__)
         self.rellenar_vencimientos()
    
