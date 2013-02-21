@@ -29,7 +29,7 @@
 ## Changelog:
 ## 17 de diciembre de 2012 -> Inicio
 ## 
-## TODO: PORASQUI: De alguna manera esta ventana debería estar 
+## TODO: De alguna manera esta ventana debería estar 
 ##       relacionada íntimamente con cuentas_origen.py
 ###################################################################
 

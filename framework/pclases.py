@@ -2706,7 +2706,7 @@ class Cobro(SQLObject, PRPCTOO):
     #       Probablemente sea una modificación posterior. Me aseguro en el 
     #       getter y en el setter que se mantiene la coherencia entre la 
     #       propiedad calculada (cliente) y el atributo de la tabla 
-    #       (clienteID)
+    #       (clienteID).
     cliente = property(get_cliente, set_cliente, 
                        doc = "Cliente relacionado con el cobro.")
     numfactura = property(get_numfactura, doc = get_numfactura.__doc__)
@@ -20588,7 +20588,7 @@ class Auditoria(SQLObject, PRPCTOO):
                   action = "drop", 
                   ip = ip, 
                   hostname = host, 
-                  descripcion = descripcion)
+                  descripcion = descripcion.replace("'", '"'))
 
     @staticmethod
     def modificado(objeto, usuario, ventana, descripcion = None):
@@ -20874,7 +20874,7 @@ class Remesa(SQLObject, PRPCTOO):
         return concentraciones
 
     def get_str_estado(self):
-        # TODO: PORASQUI: Esto está mal. Los estados deberían ir: 
+        # DONE: Los estados van: 
         #           En preparación -> En estudio -> Confirmada / Rechazada.
         if self.aceptada:
             return "Confirmada"    # El banco la ha aceptado y me da las pelas.
@@ -20955,15 +20955,11 @@ class ConceptoPresupuestoAnual(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
-    def calcular_vencimiento(self, fecha = mx.DateTime.today()):
+    def calcular_vencimientos(self, fecha = mx.DateTime.today()):
         """
         En función del tipo de concepto devuelve la fecha de vencimiento 
         para el importe presupuestado.
         """
-        # Para acutalizar los valores cuando "upgradee":
-        # for v in pclases.ValorPresupuestoAnual.select(): v.vencimiento = v.conceptoPresupuestoAnual.calcular_vencimiento(v.mes)
-# PORASQUI: Es una lista de vencimientos. Si son varios, partir el ValorPresupuesto
-
         if self.descripcion == "IVA":
             # Vence el 20 del mes siguiente a no ser que:
             # - Sea diciembre, que entonces se tiene hasta el 30 de enero en 
@@ -20971,16 +20967,16 @@ class ConceptoPresupuestoAnual(SQLObject, PRPCTOO):
             # - Si es julio, en lugar de vencer el 20 de agosto lo hace el 20 
             #   de septiembre.
             if fecha.month == 12:
-                vto = mx.DateTime.DateFrom(fecha.year + 1, 1, 30)
+                vto = [mx.DateTime.DateFrom(fecha.year + 1, 1, 30)]
             elif fecha.month == 7:
-                vto = mx.DateTime.DateFrom(fecha.year, 9, 20)
+                vto = [mx.DateTime.DateFrom(fecha.year, 9, 20)]
             else:
-                vto = mx.DateTime.DateFrom(fecha.year, fecha.month + 1, 20)
+                vto = [mx.DateTime.DateFrom(fecha.year, fecha.month + 1, 20)]
         elif self.proveedor:
             # Cada proveedor vence en la fecha que diga su forma de pago.
             vto = self.proveedor.get_fechas_vtos_por_defecto(fecha)
         else:
-            vto = fecha
+            vto = [fecha]
         return vto
 
 cont, tiempo = print_verbose(cont, total, tiempo)
@@ -20992,6 +20988,36 @@ class ValorPresupuestoAnual(SQLObject, PRPCTOO):
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
+
+    def get_info(self):
+        return "(%d) %s: %s. Mes presupuesto: %s. Fecha vencimiento: %s." % (
+                self.id, self.concepto, utils.float2str(self.importe), 
+                self.mes.strftime("%B '%y"), utils.str_fecha(self.vencimiento))
+
+    @classmethod
+    ###########################################################################
+    # Para actualizar los valores cuando "upgradee":
+    def upgradear(classVPA):
+        # Only for upgrading purposes. DO NOT USE ON DEPLOY OR PRODUCTION.
+        for v in classVPA.select(): 
+            concepto = v.conceptoPresupuestoAnual
+            vencimientos = concepto.calcular_vencimientos(v.mes)
+            if len(vencimientos) == 1:
+                v.vencimiento = vencimientos[0]
+            else:
+                numvtos = len(vencimientos)
+                v.vencimiento = vencimientos.pop()
+                v.importe /= numvtos
+                while vencimientos:
+                    nv = v.clone(vencimiento = vencimientos.pop())
+    ###########################################################################
+
+    @property
+    def concepto(self):
+        try:
+            return self.conceptoPresupuestoAnual.descripcion
+        except AttributeError:
+            return ""
 
     def es_de_granza(self):
         """

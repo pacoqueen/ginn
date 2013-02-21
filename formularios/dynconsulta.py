@@ -371,7 +371,7 @@ class DynConsulta(Ventana, VentanaGenerica):
                     i += 1
                 # Y refresco (una tónica, por favor. ¡CHISTACO!)
                 self.actualizar_ventana()
-
+# PORASQUI: /\.mes[^_] y reemplazar por vencimiento donde corresponda. No en todos sitios. Por ejemplo, no en ciclar mes. 
     def mostrar_valores_reales_precalculados(self, 
                                              nodos_conceptos, 
                                              padres, 
@@ -885,10 +885,10 @@ def buscar_valor_presupuestado(fecha, concepto):
     Devuelve el objeto valor del presupuesto para la fecha y concepto 
     especificados.
     """
-# PORASQUI: Buscar por vencimiento.
     try:
         return pclases.ValorPresupuestoAnual.select(pclases.AND(
-            pclases.ValorPresupuestoAnual.q.mes == fecha, 
+            pclases.ValorPresupuestoAnual.q.vencimiento>=primero_de_mes(fecha),
+            pclases.ValorPresupuestoAnual.q.vencimiento <= fin_de_mes(fecha), 
             pclases.ValorPresupuestoAnual.q.conceptoPresupuestoAnualID 
                 == concepto.id))[0]
     except IndexError:
