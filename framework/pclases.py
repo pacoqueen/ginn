@@ -387,13 +387,14 @@ class PRPCTOO:
         PRECONDICIÓN: "obj" debe ser del mismo tipo que "self".
         POSTCONDICIÓN: si "eliminar", self debe quedar eliminado.
         """
-        DEBUG = False
-        assert type(obj) == type(self) and obj != None, "Los objetos deben pertenecer a la misma clase y no ser nulos."
+        assert type(obj) == type(self) and obj != None, \
+                "Los objetos deben pertenecer a la misma clase y no ser nulos."
         for nombre_col in self._SO_columnDict:
             valor = getattr(obj, nombre_col)
             if valor == None or (isinstance(valor, str) and valor.strip() == ""):
-                if DEBUG:
-                    print "Cambiando valor de columna %s en objeto destino." % (nombre_col)
+                if DEBUG and VERBOSE:
+                    print "Cambiando valor de columna %s en objeto destino."%(
+                            nombre_col)
                 setattr(obj, nombre_col, getattr(self, nombre_col))
         for col in self._SO_joinList:
             atributo_lista = col.joinMethodName
@@ -401,11 +402,11 @@ class PRPCTOO:
             nombre_clave_ajena = repr(self.__class__).replace("'", ".").split(".")[-2] + "ID" # HACK (y de los feos)
             nombre_clave_ajena = nombre_clave_ajena[0].lower() + nombre_clave_ajena[1:]       # HACK (y de los feos)
             for propagado in lista_muchos:
-                if DEBUG:
+                if DEBUG and VERBOSE:
                     print "Cambiando valor de columna %s en objeto destino." % (nombre_clave_ajena)
                     print "   >>> Antes: ", getattr(propagado, nombre_clave_ajena)
                 setattr(propagado, nombre_clave_ajena, obj.id)
-                if DEBUG:
+                if DEBUG and VERBOSE:
                     print "   >>> Después: ", getattr(propagado, nombre_clave_ajena)
         if eliminar:
             try:
