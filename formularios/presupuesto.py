@@ -277,43 +277,79 @@ class Presupuesto(Ventana, VentanaGenerica):
                 model[nodo_padre][1] = utils.float2str(precalculo[c])
             i += 1
         # Ahora toca pasar el mes que se ha ido al final del año actual
-        pasar_mes = False
-        for fila in model:
-            if fila[-2] and utils._float(fila[-2]) != 0:
-                pasar_mes = True
-                break
-        if not pasar_mes:
-            # Valores antiguos
-            mes_final = mx.DateTime.DateTimeFrom(mes_actual.year, mes, 1)
-            if mes == 1:
-                anno = mes_final.year - 1
-                mes = 12
-            else:
-                anno = mes_final.year
-                mes = mes - 1
-            mes_anterior = mx.DateTime.DateTimeFrom(anno, mes, 1)
-            # Copio a valores nuevos
-            valores = pclases.ValorPresupuestoAnual.select(pclases.AND(
-                pclases.ValorPresupuestoAnual.q.mes >= mes_anterior, 
-                pclases.ValorPresupuestoAnual.q.mes < mes_final)) 
-            valores_count = valores.count()
-            if not valores_count or sum([v.importe for v in valores]) == 0:
+        self.ciclar_mes(vpro)
+        vpro.ocultar()
+
+    def ciclar_mes(self, vpro):
+        model = self.wids['tv_datos'].get_model()
+        pasar_mes = True
+        # Primero busco valores que ya existen en la BD. Porque puede ser que 
+        # los valores a cero en el TreeView provengan de datos "reales" (esto 
+        # es, no estimados) que se almacenan en precalc y tienen preferencia 
+        # sobre los datos del presupuesto a la hora de mostrarse. En ese caso 
+        # siempre se van a mostrar los valores 0 y siempre va a intentar 
+        # pasar el mes de año pasado al actual, duplicando los valores en la 
+        # BD.
+        ultimo_mes_en_tabla = self.fecha_mes_final
+        mes = ultimo_mes_en_tabla.month
+        if mes == 1:
+            anno = ultimo_mes_en_tabla.year - 1
+            mes = 12
+        else:
+            mes -= 1
+            anno = ultimo_mes_en_tabla.year
+        penultimo_mes_en_tabla = restar_mes(ultimo_mes_en_tabla)
+        valores = pclases.ValorPresupuestoAnual.select(pclases.AND(
+            pclases.ValorPresupuestoAnual.q.mes <= ultimo_mes_en_tabla, 
+            pclases.ValorPresupuestoAnual.q.mes > penultimo_mes_en_tabla))
+        if pclases.DEBUG:
+            print __file__, "ultimo_mes_en_tabla", ultimo_mes_en_tabla
+            print __file__, "penultimo_mes_en_tabla", penultimo_mes_en_tabla
+            print __file__, "valores.count()", valores.count()
+        if not valores.count():     # Nunca se ha hecho el presupuesto para 
+            # ese mes/año. Hora de crearlo a partir del año pasado (si es que 
+            # no hay valores precalculados o algo y realmente está todo a 0).
+            # Ahora compruebo entonces los valores actuales en el TreeView 
+            # para ver si está todo a cero.
+            for fila in model:
+                if pclases.DEBUG:
+                    print fila[0], fila[-2] and utils._float(fila[-2])
+                if fila[-2] and utils._float(fila[-2]) != 0:
+                    pasar_mes = False
+                    break
+            if pclases.DEBUG: print "(1) >>> pasar_mes", pasar_mes
+            # Valores antiguos los busco en el año pasado.
+            anno_pasado = restar_mes(ultimo_mes_en_tabla, 12)
+            anno_pasado_mas_1_mes = restar_mes(anno_pasado, -1)
+            valores_clonar = pclases.ValorPresupuestoAnual.select(pclases.AND(
+                    pclases.ValorPresupuestoAnual.q.mes >= anno_pasado, 
+                    pclases.ValorPresupuestoAnual.q.mes < anno_pasado_mas_1_mes
+                    ))
+            valores_count = valores_clonar.count()
+            if (not valores_count 
+                    or sum([v.importe for v in valores_clonar]) == 0):
                 # No hay nada que copiar. Bucle infinito a cero.
-                pass
-            else:
-                for v in valores:
+                pasar_mes = False
+            if pclases.DEBUG:
+                print __file__, valores_count
+                for v in valores_clonar:
+                    print v.get_info(), v.importe
+            if pclases.DEBUG: print "(2) >>> pasar_mes", pasar_mes
+            if pasar_mes:
+                # Copio a valores nuevos
+                i = 0.0
+                for v in valores_clonar:
                     vpro.set_valor(i / valores_count, 
                                    "Trasladando valores antiguos...") 
-                    nv = v.clone(mes = mx.DateTime.DateTimeFrom(
-                        year = mes_anterior.year + 1, 
-                        month = mes_anterior.month, 
-                        day = 1))
+                    nv = v.clone(mes = restar_mes(v.mes, -12))
+                    if pclases.DEBUG:
+                        print __file__, "Nuevo valor:", nv.get_info(), \
+                                nv.importe, utils.str_fecha(nv.mes)
                     pclases.Auditoria.nuevo(nv, self.usuario, __file__)
                     i += 1
-                # Y refresco (una tónica, por favor)
+                # Y refresco (una tónica, por favor. ¡CHISTACO!)
                 self.actualizar_ventana()
-        vpro.ocultar()
-            
+
     def nuevo(self, widget):
         """
         Función callback del botón b_nuevo.
