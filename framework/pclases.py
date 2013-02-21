@@ -20998,7 +20998,7 @@ class ValorPresupuestoAnual(SQLObject, PRPCTOO):
     @classmethod
     ###########################################################################
     # Para actualizar los valores cuando "upgradee":
-    def upgradear(classVPA):
+    def _upgradear(classVPA):
         # Only for upgrading purposes. DO NOT USE ON DEPLOY OR PRODUCTION.
         for v in classVPA.select(): 
             concepto = v.conceptoPresupuestoAnual
