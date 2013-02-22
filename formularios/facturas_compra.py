@@ -72,7 +72,8 @@ try:
     import pclases
 except ImportError:
     import sys
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
+    from os.path import join as pathjoin
+    sys.path.append(pathjoin("..", "framework"))
     import pclases
 from utils import _float as float
 
@@ -201,24 +202,36 @@ class FacturasDeEntrada(Ventana):
         """
         VENTANA = "facturas_compra.py"
         if self.usuario != None and self.usuario.nivel > 0:
-            ventanas = pclases.Ventana.select(pclases.Ventana.q.fichero == VENTANA)
+            ventanas = pclases.Ventana.select(
+                        pclases.Ventana.q.fichero == VENTANA)
             if ventanas.count() == 1:   # Siempre debería ser 1.
                 permiso = self.usuario.get_permiso(ventanas[0])
                 if permiso.escritura:
                     if self.usuario.nivel <= 1:
-                        # print "Activo widgets para usuario con nivel de privilegios <= 1."
+                        if pclases.DEBUG and pclases.VERBOSE:
+                            print "Activo widgets para usuario con nivel "\
+                                    "de privilegios <= 1."
                         self.activar_widgets(True, chequear_permisos = False)
                     else:
-                        # print "Activo widgets porque permiso de escritura y objeto no bloqueado o recién creado."
-                        self.activar_widgets(self.objeto != None and (not self.objeto.bloqueado 
-                                                                      or self._objetoreciencreado == self.objeto), 
-                                             chequear_permisos = False)
-                else:   # No tiene permiso de escritura. Sólo puede modificar el objeto que acaba de crear.
+                        if pclases.DEBUG and pclases.VERBOSE:
+                            print "Activo widgets porque permiso de "\
+                                    "escritura y objeto no bloqueado o "\
+                                    "recién creado."
+                        self.activar_widgets(self.objeto != None 
+                            and (not self.objeto.bloqueado 
+                                 or self._objetoreciencreado == self.objeto), 
+                            chequear_permisos = False)
+                else:   # No tiene permiso de escritura. Sólo puede modificar 
+                        # el objeto que acaba de crear.
                     if self._objetoreciencreado == self.objeto: 
-                        # print "Activo widgets porque objeto recién creado aunque no tiene permiso de escritura."
+                        if pclases.DEBUG and pclases.VERBOSE:
+                            print "Activo widgets porque objeto recién creado"\
+                                    " aunque no tiene permiso de escritura."
                         self.activar_widgets(True, chequear_permisos = False)
                     else:
-                        # print "Desactivo widgets porque no permiso de escritura."
+                        if pclases.DEBUG and pclases.VERBOSE:
+                            print "Desactivo widgets porque no permiso de "\
+                                    "escritura."
                         self.activar_widgets(False, chequear_permisos = False)
                 self.wids['b_buscar'].set_sensitive(permiso.lectura)
                 # XXX: Modificación para recientes.
@@ -235,7 +248,8 @@ class FacturasDeEntrada(Ventana):
         idproveedor = utils.combo_get_value(cb)
         if idproveedor != None and self.objeto and not self.objeto.bloqueada:
             proveedor = pclases.Proveedor.get(idproveedor)
-            self.wids['e_iva'].set_text("%s %%" % (utils.float2str(proveedor.iva * 100, 0)))
+            self.wids['e_iva'].set_text(
+                    "%s %%" % (utils.float2str(proveedor.iva * 100, 0)))
 
     def cambiar_fecha_visto_bueno(self, boton):
         """
@@ -247,7 +261,8 @@ class FacturasDeEntrada(Ventana):
                 ("comercial", "e_fecha_visto_bueno_comercial"))
         for nombre, entry in mapa:
             if nombre in boton.name:
-                self.wids[entry].set_text(utils.str_fecha(utils.mostrar_calendario(padre = self.wids['ventana'])))
+                self.wids[entry].set_text(utils.str_fecha(
+                    utils.mostrar_calendario(padre = self.wids['ventana'])))
 
     def mostrar_visto_bueno_auto(self, chbox):
         """
@@ -263,12 +278,13 @@ class FacturasDeEntrada(Ventana):
                 proveedor = r.proveedor.nombre
             else:
                 proveedor = ''
-            filas_res.append((r.id, r.numalbaran, utils.str_fecha(r.fecha), proveedor, ))
+            filas_res.append((r.id, r.numalbaran, utils.str_fecha(r.fecha), 
+                              proveedor, ))
         idalbaran = utils.dialogo_resultado(filas_res,
-                                            titulo = 'Seleccione albarán',
-                                            cabeceras = ('ID Interno', 'Num. Albarán', 'Fecha', 'Proveedor'), 
-                                            padre = self.wids['ventana'], 
-                                            multi = True) 
+            titulo = 'Seleccione albarán',
+            cabeceras = ('ID Interno', 'Num. Albarán', 'Fecha', 'Proveedor'), 
+            padre = self.wids['ventana'], 
+            multi = True) 
         if not idalbaran or idalbaran[0] < 0:
             return []
         else:
@@ -284,16 +300,19 @@ class FacturasDeEntrada(Ventana):
         no se encuentra.
         """
         albaran = None
-        codigo = utils.dialogo_entrada('Introduzca número de albarán.', 'NÚMERO DE ALBARÁN', padre = self.wids['ventana'])
+        codigo = utils.dialogo_entrada('Introduzca número de albarán.', 
+                                       'NÚMERO DE ALBARÁN', 
+                                       padre = self.wids['ventana'])
         if codigo != None:
-            albaranes = pclases.AlbaranEntrada.select(pclases.AlbaranEntrada.q.numalbaran.contains(codigo))
+            albaranes = pclases.AlbaranEntrada.select(
+                    pclases.AlbaranEntrada.q.numalbaran.contains(codigo))
             encontrados = albaranes.count()
             proveedor = utils.combo_get_value(self.wids['cmbe_proveedor'])
             if proveedor == None:
-                #albaranes = [p for p in albaranes if p.facturasCompra == []]
-                albaranes = [a for a in albaranes if [ldc for ldc in a.lineasDeCompra if ldc.facturaCompra == None] != []]
+                albaranes = [a for a in albaranes 
+                        if [ldc for ldc in a.lineasDeCompra 
+                            if ldc.facturaCompra == None] != []]
             else:
-                #albaranes = [p for p in albaranes if p.facturasCompra == [] and p.proveedorID == proveedor]
                 albaranes = [a for a in albaranes 
                              if [ldc for ldc in a.lineasDeCompra 
                                  if ldc.facturaCompra == None] != [] 
@@ -309,12 +328,20 @@ class FacturasDeEntrada(Ventana):
             elif len(albaranes) < 1:
                 if encontrados > len(albaranes):
                     if proveedor == None:
-                        mens_error = "El albarán buscado ya se encuentra facturado. Verifíquelo desde la ventana de albaranes de entrada."
+                        mens_error = "El albarán buscado ya se encuentra " \
+                            "facturado. Verifíquelo desde la ventana de " \
+                            "albaranes de entrada."
                     else:
-                        mens_error = "El albaran buscado ya se encuentra facturado o no pertenece al proveedor de la factura.\nVerifíquelo en la ventana de albaranes de entrada."
+                        mens_error = "El albaran buscado ya se encuentra " \
+                            "facturado o no pertenece al proveedor de la " \
+                            "factura.\nVerifíquelo en la ventana de " \
+                            "albaranes de entrada."
                 else:
-                    mens_error = 'No se encontró ningún albarán con ese número.'
-                utils.dialogo_info('ALBARÁN NO ENCONTRADO', mens_error, padre = self.wids['ventana'])
+                    mens_error = 'No se encontró ningún albarán con ese ' \
+                                 'número.'
+                utils.dialogo_info('ALBARÁN NO ENCONTRADO', 
+                                   mens_error, 
+                                   padre = self.wids['ventana'])
                 return None
             albaran = albaranes
         return albaran
@@ -331,23 +358,54 @@ class FacturasDeEntrada(Ventana):
         # se evalúa lo que esté detrás del and en las instrucciones 
         # posteriores.
         factura = self.objeto
-        if factura == None: return False    # Si no hay factura activo, devuelvo que no hay cambio respecto a la ventana
-        condicion = (str(factura.numfactura) == self.wids['e_numfactura'].get_text())
+        if factura == None: return False    # Si no hay factura activo, 
+                    # devuelvo que no hay cambio respecto a la ventana
+        condicion = (str(factura.numfactura) 
+                == self.wids['e_numfactura'].get_text())
         bounds = self.wids['txt_observaciones'].get_buffer().get_bounds()
-        condicion = condicion and (self.wids['txt_observaciones'].get_buffer().get_text(bounds[0], bounds[1]) == factura.observaciones)
-        condicion = condicion and (utils.str_fecha(factura.fecha) == self.wids['e_fecha'].get_text())
-        condicion = condicion and (utils.str_fecha(factura.fechaEntrada) == self.wids['e_fecha_entrada'].get_text())
-        condicion = condicion and (utils.combo_get_value(self.wids['cmbe_proveedor']) == factura.proveedorID) 
-        condicion = condicion and self.wids['e_descuento'].get_text() == "%s %%" % (utils.float2str(factura.descuento * 100, autodec = True))
-        condicion = condicion and self.wids['e_iva'].get_text() == "%s %%" % (utils.float2str(factura.iva * 100, 0))
-        condicion = condicion and self.wids['e_cargo'].get_text() == utils.float2str(factura.cargo, 2)
-        condicion = condicion and self.wids['chk_bloqueada'].get_active() == factura.bloqueada
-        condicion = condicion and self.wids['ch_visto_bueno_comercial'].get_active() == factura.vistoBuenoComercial
-        condicion = condicion and self.wids['ch_visto_bueno_tecnico'].get_active() == factura.vistoBuenoTecnico
-        condicion = condicion and self.wids['ch_visto_bueno_director'].get_active() == factura.vistoBuenoDirector
-        condicion = condicion and self.wids['e_fecha_visto_bueno_comercial'].get_text() == utils.str_fecha(factura.fechaVistoBuenoComercial)
-        condicion = condicion and self.wids['e_fecha_visto_bueno_tecnico'].get_text() == utils.str_fecha(factura.fechaVistoBuenoTecnico)
-        condicion = condicion and self.wids['e_fecha_visto_bueno_director'].get_text() == utils.str_fecha(factura.fechaVistoBuenoDirector)
+        condicion = condicion and (
+                self.wids['txt_observaciones'].get_buffer().get_text(
+                    bounds[0],bounds[1]) 
+                == factura.observaciones)
+        condicion = condicion and (
+                utils.str_fecha(factura.fecha) 
+                == self.wids['e_fecha'].get_text())
+        condicion = condicion and (
+                utils.str_fecha(factura.fechaEntrada) 
+                == self.wids['e_fecha_entrada'].get_text())
+        condicion = condicion and (
+                utils.combo_get_value(self.wids['cmbe_proveedor']) 
+                == factura.proveedorID) 
+        condicion = condicion and (
+                self.wids['e_descuento'].get_text() 
+                == "%s %%" % (utils.float2str(factura.descuento * 100, 
+                                              autodec = True)))
+        condicion = condicion and (
+                self.wids['e_iva'].get_text() 
+                == "%s %%" % (utils.float2str(factura.iva * 100, 0)))
+        condicion = condicion and (
+                self.wids['e_cargo'].get_text() 
+                == utils.float2str(factura.cargo, 2))
+        condicion = condicion and (
+                self.wids['chk_bloqueada'].get_active() == factura.bloqueada)
+        condicion = condicion and (
+                self.wids['ch_visto_bueno_comercial'].get_active() 
+                == factura.vistoBuenoComercial)
+        condicion = condicion and (
+                self.wids['ch_visto_bueno_tecnico'].get_active() 
+                == factura.vistoBuenoTecnico)
+        condicion = condicion and (
+                self.wids['ch_visto_bueno_director'].get_active() 
+                == factura.vistoBuenoDirector)
+        condicion = condicion and (
+                self.wids['e_fecha_visto_bueno_comercial'].get_text() 
+                == utils.str_fecha(factura.fechaVistoBuenoComercial))
+        condicion = condicion and (
+                self.wids['e_fecha_visto_bueno_tecnico'].get_text() 
+                == utils.str_fecha(factura.fechaVistoBuenoTecnico))
+        condicion = condicion and (
+                self.wids['e_fecha_visto_bueno_director'].get_text() 
+                == utils.str_fecha(factura.fechaVistoBuenoDirector))
         return not condicion    # "condicion" verifica que sea igual
 
 
@@ -370,8 +428,10 @@ class FacturasDeEntrada(Ventana):
         rellenando los combos, formateando el TreeView -si lo hay-...
         """
         import pango
-        self.wids['e_numerocontrol'].modify_base(gtk.STATE_NORMAL, self.wids['e_numerocontrol'].get_colormap().alloc_color("gray"))
-        self.wids['e_numerocontrol'].modify_font(pango.FontDescription("Sans Bold 12"))
+        self.wids['e_numerocontrol'].modify_base(gtk.STATE_NORMAL, 
+            self.wids['e_numerocontrol'].get_colormap().alloc_color("gray"))
+        self.wids['e_numerocontrol'].modify_font(
+            pango.FontDescription("Sans Bold 12"))
         self.wids['e_numerocontrol'].set_alignment(0.5)
         # Inicialmente no se muestra NADA. Sólo se le deja al
         # usuario la opción de buscar o crear nuevo.
@@ -408,15 +468,15 @@ class FacturasDeEntrada(Ventana):
                )
         utils.preparar_treeview(self.wids['tv_ldvs'], cols)
         for n in (2, 3, 4, 5, 6, 7):
-            for cell in self.wids['tv_ldvs'].get_column(n).get_cell_renderers():
-                cell.set_property('xalign', 1.0)
+            for cel in self.wids['tv_ldvs'].get_column(n).get_cell_renderers():
+                cel.set_property('xalign', 1.0)
         cols = (('Vencimiento', 'gobject.TYPE_STRING', True, True, True, 
                     self.cambiar_vto),
                 ('Cantidad', 'gobject.TYPE_STRING', True, True, False, 
                     self.cambiar_cantidad), 
                 ('Forma de pago', 'gobject.TYPE_STRING', True, True, False, 
                     self.cambiar_observaciones_vto),
-                ('Realizado', 'gobject.TYPE_BOOLEAN', False, True, False, None),
+                ('Realizado', 'gobject.TYPE_BOOLEAN', False,True,False,None),
                 ('Fecha pago', 'gobject.TYPE_STRING', True, True, False, 
                     self.cambiar_fecha_pago),
                 ('Importe del pago', 'gobject.TYPE_STRING', True, True, False, 
@@ -441,22 +501,27 @@ class FacturasDeEntrada(Ventana):
                 ('ID', 'gobject.TYPE_INT64', False, False, False, None)
                )
         utils.preparar_listview(self.wids['tv_peds_y_albs'], cols)
-        self.wids['tv_peds_y_albs'].connect("row-activated", self.abrir_pedido_o_albaran)
+        self.wids['tv_peds_y_albs'].connect("row-activated", 
+                                            self.abrir_pedido_o_albaran)
         
         # XXX: Código para adjuntos:
-        cols = (('Nombre', 'gobject.TYPE_STRING', True, True, True, self.cambiar_nombre_adjunto), 
-                ('Observaciones', 'gobject.TYPE_STRING', True, True, False, self.cambiar_observaciones_adjunto),
+        cols = (('Nombre', 'gobject.TYPE_STRING', True, True, True, 
+                    self.cambiar_nombre_adjunto), 
+                ('Observaciones', 'gobject.TYPE_STRING', True, True, False, 
+                    self.cambiar_observaciones_adjunto),
                 ('ID', 'gobject.TYPE_INT64', False, False, False, None))
         utils.preparar_listview(self.wids['tv_adjuntos'], cols)
-        self.wids['tv_adjuntos'].connect("row-activated", abrir_adjunto_from_tv)
+        self.wids['tv_adjuntos'].connect("row-activated",abrir_adjunto_from_tv)
     
-    def cambiar_nombre_adjunto(self, cell, path, texto): # XXX: Código para adjuntos.
+    # XXX: Código para adjuntos.
+    def cambiar_nombre_adjunto(self, cell, path, texto): 
         model = self.wids['tv_adjuntos'].get_model() 
         iddoc = model[path][-1]
         pclases.Documento.get(iddoc).nombre = texto
         model[path][0] = pclases.Documento.get(iddoc).nombre
 
-    def cambiar_observaciones_adjunto(self, cell, path, texto): # XXX: Código para adjuntos.
+    # XXX: Código para adjuntos.
+    def cambiar_observaciones_adjunto(self, cell, path, texto): 
         model = self.wids['tv_adjuntos'].get_model() 
         iddoc = model[path][-1]
         pclases.Documento.get(iddoc).observaciones = texto
@@ -466,7 +531,9 @@ class FacturasDeEntrada(Ventana):
         try:
             iva = utils.parse_porcentaje(texto) / 100.0
         except:
-            utils.dialogo_info(titulo = "ERROR", texto = "La cantidad %s no es un número válido." % (texto), padre = self.wids['ventana'])
+            utils.dialogo_info(titulo = "ERROR", 
+                    texto = "La cantidad %s no es un número válido." % (texto),
+                    padre = self.wids['ventana'])
             return
         model = self.wids['tv_ldvs'].get_model()
         idldc = model[path][-1]
@@ -483,7 +550,10 @@ class FacturasDeEntrada(Ventana):
         try:
             descuento = utils.parse_porcentaje(texto) / 100.0
         except:
-            utils.dialogo_info(titulo = "ERROR", texto = "La cantidad debe ser numérica, en fracción de la unidad y sin símbolos de porcentaje", padre = self.wids['ventana'])
+            utils.dialogo_info(titulo = "ERROR", 
+                    texto = "La cantidad debe ser numérica, en fracción de la"
+                            " unidad y sin símbolos de porcentaje", 
+                    padre = self.wids['ventana'])
             return
         model = self.wids['tv_ldvs'].get_model()
         idldc = model[path][-1]
@@ -510,26 +580,53 @@ class FacturasDeEntrada(Ventana):
         try:
             precio = float(texto)
         except:
-            utils.dialogo_info(titulo = "ERROR", texto = "La cantidad debe ser numérica", padre = self.wids['ventana'])
+            utils.dialogo_info(titulo = "ERROR", 
+                    texto = "La cantidad debe ser numérica", 
+                    padre = self.wids['ventana'])
             return
         model = self.wids['tv_ldvs'].get_model()
         idldc = model[path][-1]
         if model[path].parent == None:
             if idldc != -1:
                 ldc = pclases.LineaDeCompra.get(idldc)
-                txt = "El albarán ya ha sido valorado con el precio %s € para esta línea.\n  ¿Está seguro de querer cambiarlo a %s €?" \
-                    % (utils.float2str(ldc.precio, 4, autodec = True), utils.float2str(precio, 4, autodec = True))
-                if (ldc.albaranEntradaID != None and ldc.precio != 0 and ldc.precio != precio and utils.dialogo(titulo = "¿CAMIBAR PRECIO?", texto = txt, padre = self.wids['ventana'])) \
-                   or (ldc.albaranEntradaID == None or ldc.precio == 0):    # No tiene albarán o no estaba valorado
+                txt = "El albarán ya ha sido valorado con el precio %s € para"\
+                      " esta línea.\n  ¿Está seguro de querer cambiarlo a "\
+                      "%s €?" % (utils.float2str(ldc.precio, 4, autodec=True), 
+                                 utils.float2str(precio, 4, autodec = True))
+                if ((ldc.albaranEntradaID != None 
+                        and ldc.precio != 0 
+                        and ldc.precio != precio 
+                        and utils.dialogo(
+                            titulo = "¿CAMIBAR PRECIO?", 
+                            texto = txt, 
+                            padre = self.wids['ventana'])) 
+                    or (ldc.albaranEntradaID == None or ldc.precio == 0)): 
+                        # No tiene albarán o no estaba valorado
                     ldc.precio = precio
-                    self.objeto.vistoBuenoUsuario = True    # Partimos de que si el precio lo ha cambiado el usuario, 
-                        # tiene su propio visto bueno. (De verdad que me parece absurdísimo el tema del visto bueno del usuario).
+                    self.objeto.vistoBuenoUsuario = True    # Partimos de que 
+                        # si el precio lo ha cambiado el usuario, 
+                        # tiene su propio visto bueno. (De verdad que me 
+                        # parece absurdísimo el tema del visto bueno del 
+                        # usuario). Pero CWT.
                     if not self.objeto.vistoBuenoAutomatico:
-                        self.objeto.vistoBuenoUsuario = self.objeto.vistoBuenoDirector = self.objeto.vistoBuenoTecnico = self.objeto.vistoBuenoComercial = False
-                        self.objeto.fechaVistoBuenoUsuario = self.objeto.fechaVistoBuenoDirector = self.objeto.fechaVistoBuenoTecnico = self.objeto.fechaVistoBuenoComercial = None
+                        self.objeto.vistoBuenoUsuario \
+                                = self.objeto.vistoBuenoDirector \
+                                = self.objeto.vistoBuenoTecnico \
+                                = self.objeto.vistoBuenoComercial = False
+                        self.objeto.fechaVistoBuenoUsuario \
+                                = self.objeto.fechaVistoBuenoDirector \
+                                = self.objeto.fechaVistoBuenoTecnico \
+                                = self.objeto.fechaVistoBuenoComercial = None
                     else:
-                        self.objeto.vistoBuenoUsuario = self.objeto.vistoBuenoDirector = self.objeto.vistoBuenoTecnico = self.objeto.vistoBuenoComercial = True
-                        self.objeto.fechaVistoBuenoUsuario = self.objeto.fechaVistoBuenoDirector = self.objeto.fechaVistoBuenoTecnico = self.objeto.fechaVistoBuenoComercial = mx.DateTime.localtime()
+                        self.objeto.vistoBuenoUsuario \
+                                = self.objeto.vistoBuenoDirector \
+                                = self.objeto.vistoBuenoTecnico \
+                                = self.objeto.vistoBuenoComercial = True
+                        self.objeto.fechaVistoBuenoUsuario \
+                                = self.objeto.fechaVistoBuenoDirector \
+                                = self.objeto.fechaVistoBuenoTecnico \
+                                = self.objeto.fechaVistoBuenoComercial \
+                                = mx.DateTime.localtime()
         else:
             s = pclases.ServicioTomado.get(idldc)
             s.qprecio = precio
@@ -544,7 +641,8 @@ class FacturasDeEntrada(Ventana):
         try:
             idldc = model[path][-1]
         except IndexError, e:
-            self.logger.error("facturas_compra.py::cambiar_descripcion -> %s.\npath: %s" % (e, path))
+            self.logger.error("facturas_compra.py::cambiar_descripcion -> "
+                              "%s.\npath: %s" % (e, path))
         else:
             if model[path].parent != None:
                 s = pclases.ServicioTomado.get(idldc)
@@ -552,12 +650,15 @@ class FacturasDeEntrada(Ventana):
             self.rellenar_widgets()
 
     def cambiar_cantidad_ldc(self, cell, path, texto):
-        # ¡HAY QUE PROBAR LAS COSAS! Esta ventana ha llegado a MARZO con la mitad de las cosas
-        # por implementar y la otra mitad fallando. Cojones ya. El mileniarismo va a chegaaar.
+        # ¡HAY QUE PROBAR LAS COSAS! Esta ventana ha llegado a MARZO con la 
+        # mitad de las cosas por implementar y la otra mitad fallando. Cojones 
+        # ya. El mileniarismo va a chegaaar.
         try:
             cantidad = float(texto)
         except:
-            utils.dialogo_info(titulo = "ERROR", texto = "La cantidad debe ser numérica", padre = self.wids['ventana'])
+            utils.dialogo_info(titulo = "ERROR", 
+                    texto = "La cantidad debe ser numérica", 
+                    padre = self.wids['ventana'])
             return
         model = self.wids['tv_ldvs'].get_model()
         idldc = model[path][-1]
@@ -568,12 +669,14 @@ class FacturasDeEntrada(Ventana):
                     ldc.cantidad = cantidad
                 else:
                     utils.dialogo_info(titulo = "CANTIDAD INCORRECTA", 
-                                       texto = """
-                    La cantidad tecleada (%s) no se corresponde con la entrada en almacén reflejada en el albarán.                  
-                    Si la cantidad es incorrecta, cambie el albarán de entrada.                                                     
-                    Si lo que quiere es facturar más cantidad de la recibida, cree una línea sin albarán del mismo                  
-                    producto.""" % (texto), 
-                                       padre = self.wids['ventana'])
+                        texto = "La cantidad tecleada (%s) no se corresponde\n"
+                                " con la entrada en almacén reflejada en el \n"
+                                "albarán. Si la cantidad es incorrecta, \n"
+                                "cambie el albarán de entrada. Si lo que \n"
+                                "quiere es facturar más cantidad de la \n"
+                                "recibida, cree una línea sin albarán del \n"
+                                "mismo producto." % (texto), 
+                        padre = self.wids['ventana'])
         else:
             s = pclases.ServicioTomado.get(idldc)
             s.qcantidad = cantidad
@@ -595,45 +698,57 @@ class FacturasDeEntrada(Ventana):
                 model.append(None, (l.productoCompra.codigo,
                                     l.productoCompra.descripcion,
                                     utils.float2str(l.cantidad),
-                                    utils.float2str(l.precio, 4, autodec = True),
-                                    "%s %%" % (utils.float2str(l.iva * 100, 0)),
-                                    "%s %%" % (utils.float2str(l.descuento * 100, 0)),
-                                    utils.float2str(l.get_subtotal(iva = False), 3, autodec = True),
-                                    utils.float2str(l.get_subtotal(iva = True), 3, autodec = True),
-                                    l.pedidoCompra and l.pedidoCompra.numpedido or "", 
-                                    l.albaranEntrada and l.albaranEntrada.numalbaran or "", 
+                                    utils.float2str(l.precio, 4, autodec=True),
+                                    "%s %%" % (utils.float2str(l.iva*100, 0)),
+                                    "%s %%" % (utils.float2str(
+                                        l.descuento * 100, 0)),
+                                    utils.float2str(l.get_subtotal(iva=False), 
+                                                    3, autodec = True),
+                                    utils.float2str(l.get_subtotal(iva = True),
+                                                    3, autodec = True),
+                                    l.pedidoCompra 
+                                        and l.pedidoCompra.numpedido or "", 
+                                    l.albaranEntrada 
+                                        and l.albaranEntrada.numalbaran or "", 
                                     l.id))
                 subtotal += l.get_subtotal(iva = False)
             if factura.serviciosTomados:
-                nodo_servicios = model.append(None, ("SERVICIOS", "", "", "", "", "", "", "", "", "", -1))
+                nodo_servicios = model.append(None, 
+                        ("SERVICIOS", "", "", "", "", "", "", "", "", "", -1))
             servicios = factura.serviciosTomados[:]
             servicios.sort(lambda s1, s2: int(s1.id - s2.id))
             for servicio in servicios:
                 if servicio.transporteACuentaID != None:
-                    NumAlbaranSalida = servicio.transporteACuenta.albaranSalida.numalbaran
+                    trpte = servicio.transporteACuenta
+                    trpte.sync()
+                    NumAlbaranSalida = trpte.albaranSalida.numalbaran
                     albaran_salida = "Ntro. Alb. %s" % (NumAlbaranSalida)
                     pedido = "-"
                 elif servicio.comisionID != None:
-                    NumAlbaranSalida = servicio.comision.albaranSalida.numalbaran
+                    NumAlbaranSalida=servicio.comision.albaranSalida.numalbaran
                     albaran_salida = "Ntro. Alb. %s" % (NumAlbaranSalida)
-                    NumFactura = (servicio.comision.facturaVenta and servicio.comision.facturaVenta.numfactura) or \
-                                 (servicio.comision.prefactura and servicio.comision.prefactura.numfactura) or "-"
+                    NumFactura = ((servicio.comision.facturaVenta 
+                                and servicio.comision.facturaVenta.numfactura) 
+                            or (servicio.comision.prefactura 
+                                and servicio.comision.prefactura.numfactura) 
+                            or "-")
                     pedido = "Ntra. Fra. %s" % (NumFactura)
                 else:
                     albaran_salida = "-"
                     pedido = "-"
                 totservicio = servicio.get_subtotal(iva = False)
                 model.append(nodo_servicios, ("SERVICIO", 
-                                              servicio.qconcepto, 
-                                              utils.float2str(servicio.qcantidad), 
-                                              utils.float2str(servicio.qprecio, 4, autodec = True), 
-                                              "%s %%" % (utils.float2str(servicio.iva * 100, 0)), 
-                                              "%s %%" % (utils.float2str(servicio.qdescuento * 100, 0)), 
-                                              utils.float2str(totservicio, 3, autodec = True),
-                                              utils.float2str(servicio.get_subtotal(iva = True), 3, autodec = True),
-                                              pedido, 
-                                              albaran_salida,  
-                                              servicio.id))
+                    servicio.qconcepto, 
+                    utils.float2str(servicio.qcantidad), 
+                    utils.float2str(servicio.qprecio, 4, autodec = True), 
+                    "%s %%" % (utils.float2str(servicio.iva * 100, 0)), 
+                    "%s %%" % (utils.float2str(servicio.qdescuento * 100, 0)), 
+                    utils.float2str(totservicio, 3, autodec = True),
+                    utils.float2str(servicio.get_subtotal(iva = True), 3, 
+                                    autodec = True),
+                    pedido, 
+                    albaran_salida,  
+                    servicio.id))
                 subtotal += totservicio 
             self.wids['tv_ldvs'].expand_all()
         return subtotal
@@ -649,19 +764,26 @@ class FacturasDeEntrada(Ventana):
         Si chequear_permisos se debe poner a False para 
         evitar recursión infinita.
         """
-        if (self.objeto and self.objeto.bloqueada and self.usuario and self.usuario.nivel >= 2) or (not self.objeto):
+        if (self.objeto and self.objeto.bloqueada and self.usuario 
+                and self.usuario.nivel >= 2) or (not self.objeto):
             s = False
-        ws = ('b_add_albaran', 'b_borrar', 'e_numfactura', 'hbox6', 'b_drop_albaran', 'cmbe_proveedor',  
-              'b_fecha', 'tv_ldvs', 'e_fecha', 'e_fecha_entrada', 'b_add_vto', 'b_drop_vto', 'b_vtos_defecto', 
-              'b_add_ldc', 'b_drop_ldc', 'b_comisiones_y_transportes', 'b_fecha_entrada', 'b_comprobar_visto_bueno', 
+        ws = ('b_add_albaran', 'b_borrar', 'e_numfactura', 'hbox6', 
+              'b_drop_albaran', 'cmbe_proveedor',  
+              'b_fecha', 'tv_ldvs', 'e_fecha', 'e_fecha_entrada', 'b_add_vto', 
+              'b_drop_vto', 'b_vtos_defecto', 
+              'b_add_ldc', 'b_drop_ldc', 'b_comisiones_y_transportes', 
+              'b_fecha_entrada', 'b_comprobar_visto_bueno', 
               'vbox_adjuntos')  # XXX: Código para adjuntos.
         for w in ws:
             if w == 'b_comisiones_y_transportes' or w == 'b_add_albaran':
-                self.wids[w].set_sensitive(s and self.wids[w].get_property("sensitive"))
+                self.wids[w].set_sensitive(s 
+                        and self.wids[w].get_property("sensitive"))
             else:
                 self.wids[w].set_sensitive(s)
-        if self.objeto and self.objeto.bloqueada and self.usuario and self.usuario.nivel == 2:
-            # Si el usuario tiene nivel 2 y permiso sobre la ventana (si ha podido abrirla es que sí), 
+        if (self.objeto and self.objeto.bloqueada and self.usuario 
+            and self.usuario.nivel == 2):
+            # Si el usuario tiene nivel 2 y permiso sobre la ventana (si ha 
+            # podido abrirla es que sí), 
             # le dejo editar los vencimientos y cobros.
             self.wids['expander1'].set_sensitive(True)
         self.habilitar_firmas()
@@ -675,13 +797,17 @@ class FacturasDeEntrada(Ventana):
         txtws = []
         if self.usuario:
             prews = ("ch_", "e_fecha_", "b_fecha_")
-            txtws.append(("visto_bueno_comercial", self.usuario.firmaComercial or self.usuario.firmaTotal))
-            txtws.append(("visto_bueno_director", self.usuario.firmaDirector or self.usuario.firmaTotal))
-            txtws.append(("visto_bueno_tecnico", self.usuario.firmaTecnico or self.usuario.firmaTotal))
+            txtws.append(("visto_bueno_comercial", 
+                self.usuario.firmaComercial or self.usuario.firmaTotal))
+            txtws.append(("visto_bueno_director", 
+                self.usuario.firmaDirector or self.usuario.firmaTotal))
+            txtws.append(("visto_bueno_tecnico", 
+                self.usuario.firmaTecnico or self.usuario.firmaTotal))
             for prew in prews:
                 for txtw, sens in txtws:
                     self.wids["%s%s" % (prew, txtw)].set_sensitive(sens)
-            self.wids['b_comprobar_visto_bueno'].set_sensitive(self.usuario.firmaUsuario or self.usuario.firmaTotal)
+            self.wids['b_comprobar_visto_bueno'].set_sensitive(
+                    self.usuario.firmaUsuario or self.usuario.firmaTotal)
 
     def ir_a_primero(self):
         """
@@ -693,8 +819,9 @@ class FacturasDeEntrada(Ventana):
             # Anulo el aviso de actualización del envío que deja de ser activo.
             if factura != None: factura.notificador.desactivar()
             factura = pclases.FacturaCompra.select(orderBy = "-id")[0]    
-                # Selecciono todos los facturaes de compra y me quedo con el primero de la lista.
-            factura.notificador.activar(self.aviso_actualizacion)       # Activo la notificación
+                # Selecciono todos los facturaes de compra y me quedo con el 
+                # primero de la lista.
+            factura.notificador.activar(self.aviso_actualizacion) 
         except IndexError:
             factura = None
         self.objeto = factura
@@ -738,38 +865,47 @@ class FacturasDeEntrada(Ventana):
         utils.rellenar_lista(self.wids['cmbe_proveedor'], lista_provs)
         factura = self.objeto
         if factura != None:
-            self.wids['ventana'].set_title("Facturas de compra - %s" % (factura.numfactura))
+            self.wids['ventana'].set_title("Facturas de compra - %s" % (
+                factura.numfactura))
         else:
             self.wids['ventana'].set_title("Facturas de compra")
         self.wids['e_numfactura'].set_text(factura.numfactura)
         self.wids['e_fecha'].set_text(utils.str_fecha(factura.fecha))
-        self.wids['e_fecha_entrada'].set_text(utils.str_fecha(factura.fechaEntrada))
-        utils.combo_set_from_db(self.wids['cmbe_proveedor'], factura.proveedorID) 
+        self.wids['e_fecha_entrada'].set_text(utils.str_fecha(
+            factura.fechaEntrada))
+        utils.combo_set_from_db(self.wids['cmbe_proveedor'], 
+                factura.proveedorID) 
         iva_homogeneo = factura.iva_es_correcto()
-        self.wids['e_iva'].set_text("%s %%" % (utils.float2str(factura.iva * 100, 0)))
+        self.wids['e_iva'].set_text("%s %%" % (
+            utils.float2str(factura.iva * 100, 0)))
         self.wids['e_iva'].set_sensitive(iva_homogeneo)
         self.wids['label16'].set_sensitive(iva_homogeneo)
         try: 
             totiva = factura.importeIva
         except AssertionError, msg:
-            self.logger.error('facturas_compra::rellenar_widgets -> Disparada "assertion" de totales: %s' % msg)
-            totiva = subtotal * factura.iva     # Pongo el iva que en teoría debería salir en total y ya veré en el log qué ha pasado.
+            self.logger.error('facturas_compra::rellenar_widgets -> Disparada'
+                              ' "assertion" de totales: %s' % msg)
+            totiva = subtotal * factura.iva     # Pongo el iva que en teoría 
+                # debería salir en total y ya veré en el log qué ha pasado.
         self.wids['e_totiva'].set_text("%s €" % (utils.float2str(totiva)))
-        #self.wids['e_total'].set_text("%s €" % (utils.float2str(subtotal + totiva)))
         try:
-            self.wids['e_total'].set_text("%s €" % (utils.float2str(self.objeto.importeTotal)))
+            self.wids['e_total'].set_text("%s €" % (
+                utils.float2str(self.objeto.importeTotal)))
         except AssertionError, msg:
             print msg
             self.wids['e_total'].set_text("0,0 €")
-        self.wids['txt_observaciones'].get_buffer().set_text(factura.observaciones)
+        self.wids['txt_observaciones'].get_buffer().set_text(
+                factura.observaciones)
         # Totales
         self.wids['e_cargo'].set_text(utils.float2str(factura.cargo))
-        self.wids['e_descuento'].set_text("%s %%" % (utils.float2str(factura.descuento * 100, autodec = True)))
+        self.wids['e_descuento'].set_text("%s %%" % (
+            utils.float2str(factura.descuento * 100, autodec = True)))
         self.wids['chk_bloqueada'].set_active(factura.bloqueada)
         subtotal = self.rellenar_tabla(self.wids['tv_ldvs'])
         self.wids['e_subtotal'].set_text("%s €" % (utils.float2str(subtotal)))
         subtotal *= (1 - factura.descuento)
-        self.wids['e_totdescuento'].set_text("%s €" % (utils.float2str(subtotal)))
+        self.wids['e_totdescuento'].set_text("%s €" % (
+            utils.float2str(subtotal)))
         subtotal += utils._float(factura.cargo)
         self.wids['e_totcargo'].set_text("%s €" % (utils.float2str(subtotal)))
         #subtotal = round(subtotal, 2)
@@ -791,16 +927,18 @@ class FacturasDeEntrada(Ventana):
             docs = self.objeto.documentos[:]
             docs.sort(lambda x, y: utils.orden_por_campo_o_id(x, y, "id"))
             for adjunto in self.objeto.documentos:
-                model.append((adjunto.nombre, adjunto.observaciones, adjunto.id))
+                model.append((adjunto.nombre,adjunto.observaciones,adjunto.id))
 
     def comprobar_si_albaranes_pendientes(self):
         """
         Comprueba si al proveedor le quedan albaranes pendientes 
         de facturar y habilita el botón o no en función de eso.
         """
-        pendiente = True    # Para que si no hay proveedor le deje buscar entre todos los albaranes.
+        pendiente = True    # Para que si no hay proveedor le deje buscar 
+                            # entre todos los albaranes.
         if self.objeto.proveedorID != None:
-            pendiente = len(self.objeto.proveedor.get_albaranes_pendientes_de_facturar()) != 0
+            prov = self.objeto.proveedor
+            pendiente = len(prov.get_albaranes_pendientes_de_facturar()) != 0
         self.wids['b_add_albaran'].set_sensitive(pendiente)
 
     def comprobar_si_comisiones_y_transportes_pendientes(self):
@@ -810,7 +948,10 @@ class FacturasDeEntrada(Ventana):
         """
         pendiente = False
         if self.objeto.proveedorID != None:
-            pendiente = len(self.objeto.proveedor.get_comisiones_pendientes_de_facturar()) + len(self.objeto.proveedor.get_transportes_pendientes_de_facturar()) != 0
+            prov = self.objeto.proveedor
+            pendiente = (len(prov.get_comisiones_pendientes_de_facturar()) 
+                         + len(prov.get_transportes_pendientes_de_facturar()) 
+                         != 0)
         self.wids['b_comisiones_y_transportes'].set_sensitive(pendiente)
 
     def abrir_pedido_o_albaran(self, tv, path, col):
@@ -832,7 +973,8 @@ class FacturasDeEntrada(Ventana):
 
     def rellenar_pedidos_y_albaranes(self):
         """
-        Rellena el TreeView con los pedidos y albaranes que contiene la factura.
+        Rellena el TreeView con los pedidos y albaranes que contiene la 
+        factura.
         """
         model = self.wids['tv_peds_y_albs'].get_model()
         model.clear()
@@ -847,7 +989,8 @@ class FacturasDeEntrada(Ventana):
                               utils.str_fecha(ldc.pedidoCompra.fecha), 
                               ldc.pedidoCompra.id))
                 peds.append(ldc.pedidoCompraID)
-            if ldc.albaranEntradaID != None and ldc.albaranEntradaID not in albs:
+            if (ldc.albaranEntradaID != None 
+                    and ldc.albaranEntradaID not in albs):
                 model.append(("Albarán ", 
                               ldc.albaranEntrada.numalbaran, 
                               utils.str_fecha(ldc.albaranEntrada.fecha), 
@@ -863,38 +1006,63 @@ class FacturasDeEntrada(Ventana):
         vto_bueno_auto = factura.vistoBuenoAutomatico
         self.wids['ch_visto_bueno_automatico'].set_active(vto_bueno_auto)
         if vto_bueno_auto:
-            factura.vistoBuenoComercial = factura.vistoBuenoTecnico = factura.vistoBuenoDirector = vto_bueno_auto
+            factura.vistoBuenoComercial \
+                    = factura.vistoBuenoTecnico \
+                    = factura.vistoBuenoDirector = vto_bueno_auto
             if not factura.fechaVistoBuenoComercial:
                 factura.fechaVistoBuenoComercial = mx.DateTime.localtime()
             if not factura.fechaVistoBuenoTecnico:
                 factura.fechaVistoBuenoTecnico = mx.DateTime.localtime()
             if not factura.fechaVistoBuenoDirector:
                 factura.fechaVistoBuenoDirector = mx.DateTime.localtime()
-            self.wids['e_motivo_vto_bueno'].modify_base(gtk.STATE_NORMAL, self.wids['e_numerocontrol'].get_colormap().alloc_color("YellowGreen"))
+            self.wids['e_motivo_vto_bueno'].modify_base(gtk.STATE_NORMAL, 
+                    self.wids['e_numerocontrol'].get_colormap().alloc_color(
+                        "YellowGreen"))
         else:
-            self.wids['e_motivo_vto_bueno'].modify_base(gtk.STATE_NORMAL, self.wids['e_numerocontrol'].get_colormap().alloc_color("OrangeRed"))
-        self.wids['e_motivo_vto_bueno'].set_text(pclases.FacturaCompra.codigos_no_validacion[factura.get_codigo_validacion_visto_bueno()])
-        if factura.vistoBuenoComercial and factura.vistoBuenoTecnico and factura.vistoBuenoDirector:
+            self.wids['e_motivo_vto_bueno'].modify_base(gtk.STATE_NORMAL, 
+                    self.wids['e_numerocontrol'].get_colormap().alloc_color(
+                        "OrangeRed"))
+        cod_vtob = factura.get_codigo_validacion_visto_bueno()
+        self.wids['e_motivo_vto_bueno'].set_text(
+                pclases.FacturaCompra.codigos_no_validacion[cod_vtob])
+        if (factura.vistoBuenoComercial and factura.vistoBuenoTecnico 
+                and factura.vistoBuenoDirector):
             self.wids['e_numerocontrol'].set_text(factura.numeroControl)
-            self.wids['e_numerocontrol'].modify_base(gtk.STATE_NORMAL, self.wids['e_numerocontrol'].get_colormap().alloc_color("LightBlue"))
+            self.wids['e_numerocontrol'].modify_base(gtk.STATE_NORMAL, 
+                    self.wids['e_numerocontrol'].get_colormap().alloc_color(
+                        "LightBlue"))
         else:
             self.wids['e_numerocontrol'].set_text("PENDIENTE")
-            self.wids['e_numerocontrol'].modify_base(gtk.STATE_NORMAL, self.wids['e_numerocontrol'].get_colormap().alloc_color("IndianRed"))
-        self.wids['ch_visto_bueno_comercial'].set_active(factura.vistoBuenoComercial)
-        self.wids['ch_visto_bueno_tecnico'].set_active(factura.vistoBuenoTecnico)
-        self.wids['ch_visto_bueno_director'].set_active(factura.vistoBuenoDirector)
+            self.wids['e_numerocontrol'].modify_base(gtk.STATE_NORMAL, 
+                    self.wids['e_numerocontrol'].get_colormap().alloc_color(
+                        "IndianRed"))
+        self.wids['ch_visto_bueno_comercial'].set_active(
+                factura.vistoBuenoComercial)
+        self.wids['ch_visto_bueno_tecnico'].set_active(
+                factura.vistoBuenoTecnico)
+        self.wids['ch_visto_bueno_director'].set_active(
+                factura.vistoBuenoDirector)
         self.wids['ch_visto_bueno_comercial'].set_sensitive(not vto_bueno_auto)
         self.wids['ch_visto_bueno_tecnico'].set_sensitive(not vto_bueno_auto)
         self.wids['ch_visto_bueno_director'].set_sensitive(not vto_bueno_auto)
-        self.wids['e_fecha_visto_bueno_comercial'].set_sensitive(not vto_bueno_auto)
-        self.wids['e_fecha_visto_bueno_tecnico'].set_sensitive(not vto_bueno_auto)
-        self.wids['e_fecha_visto_bueno_director'].set_sensitive(not vto_bueno_auto)
-        self.wids['b_fecha_visto_bueno_comercial'].set_sensitive(not vto_bueno_auto)
-        self.wids['b_fecha_visto_bueno_tecnico'].set_sensitive(not vto_bueno_auto)
-        self.wids['b_fecha_visto_bueno_director'].set_sensitive(not vto_bueno_auto)
-        self.wids['e_fecha_visto_bueno_comercial'].set_text(utils.str_fecha(factura.fechaVistoBuenoComercial))
-        self.wids['e_fecha_visto_bueno_tecnico'].set_text(utils.str_fecha(factura.fechaVistoBuenoTecnico))
-        self.wids['e_fecha_visto_bueno_director'].set_text(utils.str_fecha(factura.fechaVistoBuenoDirector))
+        self.wids['e_fecha_visto_bueno_comercial'].set_sensitive(
+                not vto_bueno_auto)
+        self.wids['e_fecha_visto_bueno_tecnico'].set_sensitive(
+                not vto_bueno_auto)
+        self.wids['e_fecha_visto_bueno_director'].set_sensitive(
+                not vto_bueno_auto)
+        self.wids['b_fecha_visto_bueno_comercial'].set_sensitive(
+                not vto_bueno_auto)
+        self.wids['b_fecha_visto_bueno_tecnico'].set_sensitive(
+                not vto_bueno_auto)
+        self.wids['b_fecha_visto_bueno_director'].set_sensitive(
+                not vto_bueno_auto)
+        self.wids['e_fecha_visto_bueno_comercial'].set_text(
+                utils.str_fecha(factura.fechaVistoBuenoComercial))
+        self.wids['e_fecha_visto_bueno_tecnico'].set_text(
+                utils.str_fecha(factura.fechaVistoBuenoTecnico))
+        self.wids['e_fecha_visto_bueno_director'].set_text(
+                utils.str_fecha(factura.fechaVistoBuenoDirector))
 
     def add_albaran(self, widget):
         """
@@ -912,7 +1080,7 @@ class FacturasDeEntrada(Ventana):
                 lineas = []
                 for albaran in albaranes:
                     lineas += list(pclases.LineaDeCompra.select(
-                        pclases.LineaDeCompra.q.albaranEntradaID == albaran.id))
+                        pclases.LineaDeCompra.q.albaranEntradaID==albaran.id))
                 filas = [(ldc.id, 
                           ldc.albaranEntrada.numalbaran, 
                           utils.float2str(ldc.cantidad), 
@@ -975,15 +1143,17 @@ class FacturasDeEntrada(Ventana):
         Devuelve True si la cantidad tecleada por el usuario coincide 
         con el total de la factura.
         """
-        cantidad = utils.dialogo_entrada(titulo = "INTRODUZCA TOTAL DE LA FACTURA", 
-                                         texto = "Introduzca el importe total de la factura para comprobar que coincide con el importe calculado:", 
-                                         padre = self.wids['ventana'])
+        cantidad = utils.dialogo_entrada(
+                titulo = "INTRODUZCA TOTAL DE LA FACTURA", 
+                texto = "Introduzca el importe total de la factura para "
+                        "comprobar que coincide con el importe calculado:", 
+                padre = self.wids['ventana'])
         try:
             cantidad = float(cantidad)
         except:
             utils.dialogo_info(titulo = "ERROR FORMATO", 
-                               texto = "El texto introducido (%s) no es un número" % (cantidad), 
-                               padre = self.wids['ventana'])
+                texto = "El texto introducido (%s) no es un número"%(cantidad),
+                padre = self.wids['ventana'])
             return self.importe_total_factura_coincide_con_usuario()
         try:
             e_total = utils.parse_euro(self.wids['e_total'].get_text())
@@ -1005,24 +1175,20 @@ class FacturasDeEntrada(Ventana):
                 albaran = lineadecompra.albaranEntrada
                 for l in albaran.lineasDeCompra:
                     l.facturaCompra = None
-                #self.objeto.vistoBuenoUsuario = self.objeto.vistoBuenoDirector = self.objeto.vistoBuenoTecnico = self.objeto.vistoBuenoComercial = False
-                #self.objeto.fechaVistoBuenoUsuario = self.objeto.fechaVistoBuenoDirector = self.objeto.fechaVistoBuenoTecnico = self.objeto.fechaVistoBuenoComercial = None
                 self.objeto.anular_vistos_buenos()
                 self.actualizar_ventana()
-                #if len(self.objeto.lineasDeCompra) > 0:
-                #    if self.importe_total_factura_coincide_con_usuario():
-                #        factura.vistoBuenoUsuario = True
-                #        factura.fechaVistoBuenoUsuario = mx.DateTime.localtime()
-                #    else:
-                #        factura.vistoBuenoUsuario = False
-                #        factura.fechaVistoBuenoUsuario = None
-                #    self.actualizar_ventana()
             else:
                 utils.dialogo_info(titulo = "ERROR", 
-                                   texto = "Ha seleccionado un servicio.\n Seleccione una línea de albarán para eliminar el albarán de la factura actual.", 
-                                   padre = self.wids['ventana'])
+                    texto = "Ha seleccionado un servicio.\n Seleccione una"
+                            " línea de albarán para eliminar el albarán de "
+                            "la factura actual.", 
+                    padre = self.wids['ventana'])
         else:
-            utils.dialogo_info('ERROR', 'Seleccione una línea de compra de la factura.\nSe eliminarán todas las líneas pertenecientes al albarán de dicha línea.', padre = self.wids['ventana'])
+            utils.dialogo_info('ERROR', 
+                    'Seleccione una línea de compra de la factura.\nSe '
+                    'eliminarán todas las líneas pertenecientes al albarán '
+                    'de dicha línea.', 
+                    padre = self.wids['ventana'])
 
     # --------------- Manejadores de eventos ----------------------------
     def crear_nueva_factura(self, widget):
@@ -1084,7 +1250,7 @@ class FacturasDeEntrada(Ventana):
                                         fechaVistoBuenoTecnico = None, 
                                         vistoBuenoDirector = False, 
                                         fechaVistoBuenoDirector = None, 
-                                        fechaEntrada = mx.DateTime.localtime(), 
+                                        fechaEntrada = mx.DateTime.localtime(),
                                         iva = iva, 
                                         vistoBuenoUsuario = None,
                                         fechaVistoBuenoUsuario = None, 
@@ -1167,7 +1333,8 @@ class FacturasDeEntrada(Ventana):
         self.objeto = factura
         self.actualizar_ventana()
 
-    def comprobar_numfactura_y_proveedor(self, numfactura = None, idproveedor = None):
+    def comprobar_numfactura_y_proveedor(self, numfactura = None, 
+                                         idproveedor = None):
         """
         Comprueba que el número de factura y el proveedor no 
         existan ya en la BD. Si no se recibe numfactira e 
@@ -1183,18 +1350,23 @@ class FacturasDeEntrada(Ventana):
                 proveedor = pclases.Proveedor.get(proveedor)
                 idproveedor = proveedor.id
 
-        facturas_existentes = pclases.FacturaCompra.select(pclases.AND(pclases.FacturaCompra.q.numfactura.contains(numfactura), 
-                                                                       pclases.FacturaCompra.q.proveedorID == idproveedor))
-        # Quito la factura actual para no contarme a mí misma como duplicada de mí misma:
-        facturas_existentes = [f for f in facturas_existentes if f != self.objeto and f.numfactura.upper() == numfactura.upper()]
+        facturas_existentes = pclases.FacturaCompra.select(pclases.AND(
+            pclases.FacturaCompra.q.numfactura.contains(numfactura), 
+            pclases.FacturaCompra.q.proveedorID == idproveedor))
+        # Quito la factura actual para no contarme a mí misma como duplicada 
+        # de mí misma:
+        facturas_existentes = [f for f in facturas_existentes 
+                if f != self.objeto 
+                   and f.numfactura.upper() == numfactura.upper()]
         if facturas_existentes != []:
             if proveedor == None:
                 nombreproveedor = ""
             else:
                 nombreproveedor = "del proveedor %s" % (proveedor.nombre)
             utils.dialogo_info(titulo = "ERROR: FACTURA DUPLICADA", 
-                               texto = "La factura %s %s ya existe.." % (numfactura, nombreproveedor), 
-                               padre = self.wids['ventana'])
+                texto = "La factura %s %s ya existe.." % (numfactura, 
+                                                          nombreproveedor), 
+                padre = self.wids['ventana'])
             return False
         else:
             return True
@@ -1233,13 +1405,18 @@ class FacturasDeEntrada(Ventana):
         try:
             iva = utils.parse_porcentaje(self.wids['e_iva'].get_text()) / 100.0
         except:
-            utils.dialogo_info(titulo = "ERROR FORMATO NUMÉRICO", texto = 'El iva debe ser un número', padre = self.wids['ventana'])
-            self.wids['e_iva'].set_text("%s %%" % (utils.float2str(factura.iva * 100, 0)))
+            utils.dialogo_info(titulo = "ERROR FORMATO NUMÉRICO", 
+                    texto = 'El iva debe ser un número', 
+                    padre = self.wids['ventana'])
+            self.wids['e_iva'].set_text("%s %%" % (
+                utils.float2str(factura.iva * 100, 0)))
             iva = factura.iva
         try:
             cargo = float(self.wids['e_cargo'].get_text())
         except:
-            utils.dialogo_info(titulo = "ERROR DE FORMATO", texto = 'El cargo debe ser un número', padre = self.wids['ventana'])
+            utils.dialogo_info(titulo = "ERROR DE FORMATO", 
+                    texto = 'El cargo debe ser un número', 
+                    padre = self.wids['ventana'])
             self.wids['e_cargo'].set_text(str(factura.cargo))
             cargo = factura.cargo
         texto_descuento = self.wids['e_descuento'].get_text()
@@ -1251,7 +1428,8 @@ class FacturasDeEntrada(Ventana):
                 utils.dialogo_info(titulo = "ERROR FORMATO NUMÉRICO", 
                                    texto = 'El descuento debe ser un número', 
                                    padre = self.wids['ventana'])
-                self.wids['e_descuento'].set_text("%s %%" % (utils.float2str(factura.descuento * 100, autodec = True)))
+                self.wids['e_descuento'].set_text("%s %%" % (
+                    utils.float2str(factura.descuento * 100, autodec = True)))
                 descuento = factura.descuento
         else:
             try:
@@ -1262,23 +1440,27 @@ class FacturasDeEntrada(Ventana):
                 descuento = porcentaje
             except:
                 utils.dialogo_info(titulo = "ERROR FORMATO NUMÉRICO", 
-                                   texto = '«%s» no es un número' % texto_descuento, 
-                                   padre = self.wids['ventana'])
-                self.wids['e_descuento'].set_text("%s %%" % (utils.float2str(factura.descuento * 100, autodec = True)))
+                    texto = '«%s» no es un número' % texto_descuento, 
+                    padre = self.wids['ventana'])
+                self.wids['e_descuento'].set_text("%s %%" % (
+                    utils.float2str(factura.descuento * 100, autodec = True)))
                 descuento = factura.descuento
         fecha = self.wids['e_fecha'].get_text()
         # Desactivo el notificador momentáneamente
         factura.notificador.set_func(lambda: None)
         # Actualizo los datos del objeto
         bounds = self.wids['txt_observaciones'].get_buffer().get_bounds()
-        factura.observaciones = self.wids['txt_observaciones'].get_buffer().get_text(bounds[0], bounds[1])
+        buf = self.wids['txt_observaciones'].get_buffer()
+        factura.observaciones = buf.get_text(bounds[0], bounds[1])
         factura.numfactura = numfactura
         factura.proveedor = proveedor 
-        if proveedor != None and not self.mismo_proveedor_en_factura_y_albaranes():
+        if (proveedor != None 
+                and not self.mismo_proveedor_en_factura_y_albaranes()):
             utils.dialogo_info(titulo = "PROVEEDOR DIFERENTE", 
-                               texto = "El proveedor de la factura difiere del de los albaranes.", 
-                               padre = self.wids['ventana'])
-        if (factura.iva != iva # El IVA ha cambiado, actualizo todas las líneas.
+                texto = "El proveedor de la factura difiere del de los "
+                        "albaranes.", 
+                padre = self.wids['ventana'])
+        if (factura.iva != iva # El IVA ha cambiado, actualizo todas las líneas
             and factura.iva_homogeneo):
             for linea in factura.lineasDeCompra + factura.serviciosTomados:
                 linea.iva = iva
@@ -1290,51 +1472,69 @@ class FacturasDeEntrada(Ventana):
         except Exception, e:
             factura.fecha = time.localtime()
         try:
-            factura.fechaEntrada = utils.parse_fecha(self.wids['e_fecha_entrada'].get_text())
+            factura.fechaEntrada = utils.parse_fecha(
+                    self.wids['e_fecha_entrada'].get_text())
         except:
             factura.fechaEntrada = time.localtime()
 
         # Si los vistos buenos no han cambiado, significa (ya que el botón 
         # guardar se ha habilitado) que lo que ha cambiado es algún campo de 
         # los demás, por lo tanto reseteo vistos buenos:
-        if factura.vistoBuenoDirector == self.wids['ch_visto_bueno_director'].get_active() and \
-           factura.vistoBuenoTecnico == self.wids['ch_visto_bueno_tecnico'].get_active() and \
-           factura.vistoBuenoComercial == self.wids['ch_visto_bueno_comercial'].get_active() and \
-           (factura.vistoBuenoDirector or factura.vistoBuenoTecnico or factura.vistoBuenoComercial):
+        if (factura.vistoBuenoDirector 
+                == self.wids['ch_visto_bueno_director'].get_active() and 
+           factura.vistoBuenoTecnico 
+                == self.wids['ch_visto_bueno_tecnico'].get_active() and 
+           factura.vistoBuenoComercial 
+                == self.wids['ch_visto_bueno_comercial'].get_active() and 
+           (factura.vistoBuenoDirector 
+               or factura.vistoBuenoTecnico 
+               or factura.vistoBuenoComercial)):
             # Pero antes aviso
             utils.dialogo_info(titulo = "CAMBIOS EN FACTURA YA FIRMADA", 
-                               texto = "Se van a guardar cambios en una factura ya autorizada.\nLos vistos buenos se reiniciarán debido a estos cambios.\nSerá necesario que se vuelva a firmar la factura antes de proceder al pago.", 
-                               padre = self.wids['ventana'])
-            # TODO: Quedaría un fleco: Las fechas de los vistos buenos. Si se enciende guardar por cambiar una de esas 
+                texto = "Se van a guardar cambios en una factura ya "
+                        "autorizada.\nLos vistos buenos se reiniciarán "
+                        "debido a estos cambios.\nSerá necesario que se "
+                        "vuelva a firmar la factura antes de proceder "
+                        "al pago.", 
+                padre = self.wids['ventana'])
+            # TODO: Quedaría un fleco: Las fechas de los vistos buenos. Si se 
+            #       enciende guardar por cambiar una de esas 
             #       fechas también anula los vistos buenos.
             self.objeto.anular_vistos_buenos()
         else:   # Y si no, los guardo.
             factura.bloqueada = self.wids['chk_bloqueada'].get_active()
-            factura.vistoBuenoDirector = self.wids['ch_visto_bueno_director'].get_active()
-            factura.vistoBuenoTecnico = self.wids['ch_visto_bueno_tecnico'].get_active()
-            factura.vistoBuenoComercial = self.wids['ch_visto_bueno_comercial'].get_active()
+            factura.vistoBuenoDirector = self.wids[
+                    'ch_visto_bueno_director'].get_active()
+            factura.vistoBuenoTecnico = self.wids[
+                    'ch_visto_bueno_tecnico'].get_active()
+            factura.vistoBuenoComercial = self.wids[
+                    'ch_visto_bueno_comercial'].get_active()
         if factura.vistoBuenoDirector:
             try:
-                factura.fechaVistoBuenoDirector = utils.parse_fecha(self.wids['e_fecha_visto_bueno_director'].get_text())
+                factura.fechaVistoBuenoDirector = utils.parse_fecha(
+                        self.wids['e_fecha_visto_bueno_director'].get_text())
             except:
                 factura.fechaVistoBuenoDirector = mx.DateTime.localtime()
         else:
             factura.fechaVistoBuenoDirector = None
         if factura.vistoBuenoTecnico:
             try:
-                factura.fechaVistoBuenoTecnico = utils.parse_fecha(self.wids['e_fecha_visto_bueno_tecnico'].get_text())
+                factura.fechaVistoBuenoTecnico = utils.parse_fecha(
+                        self.wids['e_fecha_visto_bueno_tecnico'].get_text())
             except:
                 factura.fechaVistoBuenoTecnico = mx.DateTime.localtime()
         else:
             factura.fechaVistoBuenoTecnico = None
         if factura.vistoBuenoComercial:
             try:
-                factura.fechaVistoBuenoComercial = utils.parse_fecha(self.wids['e_fecha_visto_bueno_comercial'].get_text())
+                factura.fechaVistoBuenoComercial = utils.parse_fecha(
+                        self.wids['e_fecha_visto_bueno_comercial'].get_text())
             except:
                 factura.fechaVistoBuenoComercial = mx.DateTime.localtime()
         else:
             factura.fechaVistoBuenoComercial = None
-        # Fuerzo la actualización de la BD y no espero a que SQLObject lo haga por mí:
+        # Fuerzo la actualización de la BD y no espero a que SQLObject lo 
+        # haga por mí:
         factura.syncUpdate()
         # Vuelvo a activar el notificador
         factura.notificador.set_func(self.aviso_actualizacion)
@@ -1342,23 +1542,35 @@ class FacturasDeEntrada(Ventana):
         self.wids['b_guardar'].set_sensitive(False)
 
     def cambiar_fecha_entrada(self, boton):
-        self.wids['e_fecha_entrada'].set_text(utils.str_fecha(utils.mostrar_calendario(self.objeto and self.objeto.fechaEntrada or None, padre = self.wids['ventana'])))
+        self.wids['e_fecha_entrada'].set_text(utils.str_fecha(
+            utils.mostrar_calendario(self.objeto 
+                                     and self.objeto.fechaEntrada or None, 
+                                     padre = self.wids['ventana'])))
         
     def buscar_fecha(self, boton):
-        self.wids['e_fecha'].set_text(utils.str_fecha(utils.mostrar_calendario(self.objeto and self.objeto.fecha or None, padre = self.wids['ventana'])))
+        self.wids['e_fecha'].set_text(utils.str_fecha(
+            utils.mostrar_calendario(self.objeto 
+                                     and self.objeto.fecha or None, 
+                                     padre = self.wids['ventana'])))
         
     def borrar_factura(self, boton):
         """
         Elimina la factura de la BD
         """
-        if not utils.dialogo('Se eliminará la factura actual y todas sus relaciones con ventas, pedidos, etc.\n¿Está seguro?', 'BORRAR FACTURA', padre = self.wids['ventana']): return
+        if not utils.dialogo('Se eliminará la factura actual y todas sus '
+                             'relaciones con ventas, pedidos, etc.\n'
+                             '¿Está seguro?', 
+                             'BORRAR FACTURA', 
+                             padre = self.wids['ventana']): 
+            return
         factura = self.objeto
         factura.notificador.set_func(lambda : None)
         try:
             factura.destroy(ventana = __file__)
         except:
-            # Si tiene relaciones desvinculo las LDC primero para que no se eliminen, ya que 
-            # deben seguir apareciendo en los albaranes de entrada.
+            # Si tiene relaciones desvinculo las LDC primero para que no se 
+            # eliminen, ya que  deben seguir apareciendo en los albaranes 
+            # de entrada.
             for l in factura.lineasDeCompra:
                 l.facturaCompra = None
                 if l.albaranEntradaID == None:
@@ -1367,7 +1579,8 @@ class FacturasDeEntrada(Ventana):
                 try:
                     s.destroy(ventana = __file__)
                 except:
-                    txt = "facturas_compra.py::borrar_factura -> No se pudo eliminar el servicioTomado ID %d" % (s.id)
+                    txt = "facturas_compra.py::borrar_factura -> No se "\
+                          "pudo eliminar el servicioTomado ID %d" % (s.id)
                     self.logger.error(txt)
                     print txt
             factura.destroy_en_cascada(ventana = __file__)
@@ -1384,7 +1597,8 @@ class FacturasDeEntrada(Ventana):
         factura = self.objeto
         estimado = False
         fecha = utils.mostrar_calendario(padre = self.wids['ventana'])
-        cantidad = self.objeto.calcular_importe_total() - sum([vto.importe for vto in self.objeto.vencimientosPago])
+        cantidad = self.objeto.calcular_importe_total() - sum(
+                [vto.importe for vto in self.objeto.vencimientosPago])
         cantidad = round(cantidad, 2)
         if not estimado:
             vto = pclases.VencimientoPago(facturaCompra = factura,
@@ -1442,7 +1656,8 @@ class FacturasDeEntrada(Ventana):
                                'la forma dia/mes/año.', 
                                padre = self.wids['ventana'])
             return
-        idvto = int(self.wids['tv_vencimientos'].get_model()[path][-1].split(',')[0])   # WTF?
+        model = self.wids['tv_vencimientos'].get_model()
+        idvto = int(model[path][-1].split(',')[0])   # WTF?
             # Al escribirlo no parecía tan lioso. Lo juro.
         if idvto > 0:   # Es -1 si no había.
             vto = pclases.VencimientoPago.get(idvto)
@@ -1474,14 +1689,19 @@ class FacturasDeEntrada(Ventana):
             anno, mes, dia = fecha[:3]
             fecha = mx.DateTime.DateFrom(day = dia, month = mes, year = anno)
         except ValueError:
-            utils.dialogo_info('ERROR EN FORMATO DE FECHA', 'Introduzca las fechas separadas por / y en la forma dia/mes/año.', padre = self.wids['ventana'])
+            utils.dialogo_info('ERROR EN FORMATO DE FECHA', 
+                    'Introduzca las fechas separadas por / y en la forma '
+                    'dia/mes/año.', 
+                    padre = self.wids['ventana'])
             return
-        idvto = int(self.wids['tv_vencimientos'].get_model()[path][-1].split(',')[1])
+        model = self.wids['tv_vencimientos'].get_model()
+        idvto = int(model[path][-1].split(',')[1])
             # Al escribirlo no parecía tan lioso. Lo juro.
         if idvto > 0:   # Es -1 si no había.
             vto = pclases.EstimacionPago.get(idvto)
             vto.fecha = fecha
-        elif idvto == -1:   # Para el resto de valores rebota-rebota y en tu culo explota.
+        elif idvto == -1:   # Para el resto de valores rebota-rebota y 
+                            # en tu culo explota.
             factura = self.objeto
             vto = pclases.EstimacionPago(fecha = fecha,
                                           facturaCompra = factura,
@@ -1630,9 +1850,14 @@ class FacturasDeEntrada(Ventana):
         try:
             cantidad = float(texto)
         except ValueError:
-            utils.dialogo_info('ERROR EN FORMATO', 'Introduzca el importe usando el punto (.) como separador decimal y sin símbolos de separación de millares ni monetarios.', padre = self.wids['ventana'])
+            utils.dialogo_info('ERROR EN FORMATO', 
+                    'Introduzca el importe usando el punto (.) como separador'
+                    ' decimal y sin símbolos de separación de millares ni '
+                    'monetarios.', 
+                    padre = self.wids['ventana'])
             return
-        idvto = int(self.wids['tv_vencimientos'].get_model()[path][-1].split(',')[0])
+        model = self.wids['tv_vencimientos'].get_model()
+        idvto = int(model[path][-1].split(',')[0])
             # Al escribirlo no parecía tan lioso. Lo juro.
         if idvto > 0:   # Es -1 si no había.
             vto = pclases.VencimientoPago.get(idvto)
@@ -1697,8 +1922,9 @@ class FacturasDeEntrada(Ventana):
                 ids += '%d' % vto[2].id
                 importe = vto[2].importe
                 if vto[2].pagarePago:
-                    pagare = "Pagaré con fecha %s y vencimiento %s" % (utils.str_fecha(vto[2].pagarePago.fechaEmision), 
-                                                                       utils.str_fecha(vto[2].pagarePago.fechaPago))
+                    pagare = "Pagaré con fecha %s y vencimiento %s" % (
+                            utils.str_fecha(vto[2].pagarePago.fechaEmision), 
+                            utils.str_fecha(vto[2].pagarePago.fechaPago))
                     if vto[2].pagarePago.pendiente:
                         pagare += " (pdte. de pago)"
                     vto[2].observaciones = pagare
@@ -1720,19 +1946,23 @@ class FacturasDeEntrada(Ventana):
                           pagare,
                           ids))
         pendiente = total_vtos - total_pagado
-        self.wids['e_total_vtos'].set_text("%s" % utils.float2str(total_vtos, 2)) 
-        self.wids['e_total_pagado'].set_text("%s" % utils.float2str(total_pagado, 2))
-        self.wids['e_total_vencido'].set_text("%s" % utils.float2str(total_vencido, 2))
+        self.wids['e_total_vtos'].set_text(
+                "%s" % utils.float2str(total_vtos, 2)) 
+        self.wids['e_total_pagado'].set_text(
+                "%s" % utils.float2str(total_pagado, 2))
+        self.wids['e_total_vencido'].set_text(
+                "%s" % utils.float2str(total_vencido, 2))
         self.wids['e_pendiente'].set_text("%s" % utils.float2str(pendiente, 2))
         if total_pagado < total_vencido:
             self.wids['e_total_pagado'].modify_base(gtk.STATE_NORMAL,
-                                                self.wids['e_total_pagado'].get_colormap().alloc_color("red"))
+                self.wids['e_total_pagado'].get_colormap().alloc_color("red"))
         elif total_pagado == total_vencido:
             self.wids['e_total_pagado'].modify_base(gtk.STATE_NORMAL,
-                                                self.wids['e_total_pagado'].get_colormap().alloc_color("white"))
+                self.wids['e_total_pagado'].get_colormap().alloc_color(
+                    "white"))
         else:
             self.wids['e_total_pagado'].modify_base(gtk.STATE_NORMAL,
-                                                self.wids['e_total_pagado'].get_colormap().alloc_color("blue"))
+                self.wids['e_total_pagado'].get_colormap().alloc_color("blue"))
    
 
     def preparar_vencimientos(self):
@@ -1749,7 +1979,8 @@ class FacturasDeEntrada(Ventana):
         fechas entre los tres grupos (vto., vto. estimado y
         pago) y no se tiene en cuenta ningún otro criterio.
         """
-        # PLAN: Se podría meter una columna "vencido/pagado hasta el momento" con el SUM{i=0→n}(cantidad[i]) siendo n la fila actual.
+        # PLAN: Se podría meter una columna "vencido/pagado hasta el momento" 
+        #       con el SUM{i=0→n}(cantidad[i]) siendo n la fila actual.
         factura = self.objeto
         # Joder... para esto de relaciones inyectivas entre
         # conjuntos debe haber un algoritmo más o menos eficiente
@@ -1760,7 +1991,9 @@ class FacturasDeEntrada(Ventana):
         ests = [v for v in factura.estimacionesPago]
         pags = factura.pagos
         # mas_larga = max(vtos, ests, pags)   # No rula y no sé por qué
-        mas_larga = [l for l in (vtos, ests, pags) if len(l)==max(len(vtos), len(ests), len(pags))][0]
+        mas_larga = [l for l in (vtos, ests, pags) if len(l)==max(len(vtos), 
+                     len(ests), 
+                     len(pags))][0]
         if len(mas_larga) == 0: return []
         for i in xrange(len(mas_larga)):
             res.append([None, None, None])
@@ -1812,7 +2045,8 @@ class FacturasDeEntrada(Ventana):
         Cambia la fecha del pago 
         por la nueva introducida por teclado.
         """
-        idpago = int(self.wids['tv_vencimientos'].get_model()[path][-1].split(',')[2])
+        model = self.wids['tv_vencimientos'].get_model()
+        idpago = int(model[path][-1].split(',')[2])
             # Al escribirlo no parecía tan lioso. Lo juro.
         if texto == "":
             # Texto vacío, borrar pago si lo había.
@@ -1826,12 +2060,16 @@ class FacturasDeEntrada(Ventana):
             anno, mes, dia = fecha[:3]
             fecha = mx.DateTime.DateFrom(day = dia, month = mes, year = anno)
         except ValueError:
-            utils.dialogo_info('ERROR EN FORMATO DE FECHA', 'Introduzca las fechas separadas por / y en la forma dia/mes/año.', padre = self.wids['ventana'])
+            utils.dialogo_info('ERROR EN FORMATO DE FECHA', 
+                    'Introduzca las fechas separadas por / y en la forma '
+                    'dia/mes/año.', 
+                    padre = self.wids['ventana'])
             return
         if idpago > 0:  # Es -1 si no había.
             pago = pclases.Pago.get(idpago)
             pago.fecha = fecha
-        elif idpago == -1:  # Para el resto de valores rebota-rebota y en tu culo explota.
+        elif idpago == -1:  # Para el resto de valores rebota-rebota y en 
+                            # tu culo explota.
             factura = self.objeto
             pago = pclases.Pago(fecha = fecha,
                                   facturaCompra = factura,
@@ -1840,7 +2078,8 @@ class FacturasDeEntrada(Ventana):
         self.rellenar_vencimientos()
 
     def cambiar_fecha_pago(self, cell, path, texto):
-        idpago = int(self.wids['tv_vencimientos'].get_model()[path][-1].split(',')[2])
+        model = self.wids['tv_vencimientos'].get_model()
+        idpago = int(model[path][-1].split(',')[2])
             # Al escribirlo no parecía tan lioso. Lo juro.
         if texto == "":
             # Texto vacío, borrar pago si lo había.
@@ -1852,22 +2091,27 @@ class FacturasDeEntrada(Ventana):
         try:
             fecha = utils.parse_fecha(texto) 
         except ValueError:
-            utils.dialogo_info('ERROR EN FORMATO', 'Introduzca la fecha en formato dd/mm/aaaa.', padre = self.wids['ventana'])
+            utils.dialogo_info('ERROR EN FORMATO', 
+                    'Introduzca la fecha en formato dd/mm/aaaa.', 
+                    padre = self.wids['ventana'])
             return
         if idpago > 0:  # Es -1 si no había.
             pago = pclases.Pago.get(idpago)
             pago.fecha = fecha
-        elif idpago == -1:  # Para el resto de valores rebota-rebota y en tu culo explota.
+        elif idpago == -1:  # Para el resto de valores rebota-rebota y en tu 
+                            # culo explota.
             factura = self.objeto
+            model = self.wids['tv_vencimientos'].get_model()
             pago = pclases.Pago(fecha = fecha,
-                                facturaCompra = factura,
-                                importe = utils._float(self.wids['tv_vencimientos'].get_model()[path][1]))
+                facturaCompra = factura,
+                importe = utils._float(model[path][1]))
             pclases.Auditoria.nuevo(pago, self.usuario, __file__)
         self.rellenar_vencimientos()
 
 
     def cambiar_importe_pago(self, cell, path, texto):
-        idpago = int(self.wids['tv_vencimientos'].get_model()[path][-1].split(',')[2])
+        model = self.wids['tv_vencimientos'].get_model()
+        idpago = int(model[path][-1].split(',')[2])
             # Al escribirlo no parecía tan lioso. Lo juro.
         if texto == "":
             # Texto vacío, borrar pago si lo había.
@@ -1879,12 +2123,15 @@ class FacturasDeEntrada(Ventana):
         try:
             importe = float(texto)
         except ValueError:
-            utils.dialogo_info('ERROR EN FORMATO NUMÉRICO', 'Introduzca un número sin símbolo de moneda.', padre = self.wids['ventana'])
+            utils.dialogo_info('ERROR EN FORMATO NUMÉRICO', 
+                    'Introduzca un número sin símbolo de moneda.', 
+                    padre = self.wids['ventana'])
             return
         if idpago > 0:  # Es -1 si no había.
             pago = pclases.Pago.get(idpago)
             pago.importe = importe
-        elif idpago == -1:  # Para el resto de valores rebota-rebota y en tu culo explota.
+        elif idpago == -1:  # Para el resto de valores rebota-rebota 
+                            # y en tu culo explota.
             factura = self.objeto
             pago = pclases.Pago(fecha = time.localtime(),
                                   facturaCompra = factura,
@@ -1913,7 +2160,11 @@ class FacturasDeEntrada(Ventana):
             pago.observaciones = texto
             model[path][-2] = pago.observaciones
         else:
-            utils.dialogo_info(titulo = "VENCIMIENTO NO PAGADO", texto = "El vencimiento está pendiente de pago.\nIntroduzca una fecha de pago y vuelva a intentarlo.", padre = self.wids['ventana'])
+            utils.dialogo_info(titulo = "VENCIMIENTO NO PAGADO", 
+                    texto = "El vencimiento está pendiente de pago.\n"
+                            "Introduzca una fecha de pago y vuelva a "
+                            "intentarlo.", 
+                    padre = self.wids['ventana'])
         # self.rellenar_vencimientos()
 
     def add_transporte_y_comisiones(self, boton):
@@ -1924,10 +2175,12 @@ class FacturasDeEntrada(Ventana):
         proveedor = self.objeto.proveedor
         if proveedor != None:
             filas = []
-            for transporte in proveedor.get_transportes_pendientes_de_facturar():
+            transps_pdtes = proveedor.get_transportes_pendientes_de_facturar()
+            for transporte in transps_pdtes:
                 filas.append(("T%d" % (transporte.id), 
                               "TRANSPORTE", 
-                              transporte.albaranSalida and transporte.albaranSalida.numalbaran or "", 
+                              transporte.albaranSalida 
+                                and transporte.albaranSalida.numalbaran or "", 
                               transporte.concepto, 
                               utils.float2str(transporte.precio), 
                               transporte.observaciones, 
@@ -1935,16 +2188,18 @@ class FacturasDeEntrada(Ventana):
             for comision in proveedor.get_comisiones_pendientes_de_facturar():
                 filas.append(("C%d" % (comision.id), 
                               "COMISIÓN", 
-                              comision.albaranSalida and comision.albaranSalida.numalbaran or "", 
+                              comision.albaranSalida 
+                                and comision.albaranSalida.numalbaran or "", 
                               comision.concepto, 
                               utils.float2str(comision.precio), 
                               comision.observaciones, 
                               utils.str_fecha(comision.fecha)))
             resultados = utils.dialogo_resultado(filas,
-                                                 titulo = 'SELECCIONE TRANSPORTES Y COMISIONES A FACTURAR',
-                                                 cabeceras = ('ID', "Tipo", 'Albarán', 'Concepto', 'Precio', 'Observaciones', 'Fecha'), 
-                                                 padre = self.wids['ventana'], 
-                                                 multi = True)
+                    titulo = 'SELECCIONE TRANSPORTES Y COMISIONES A FACTURAR',
+                    cabeceras = ('ID', "Tipo", 'Albarán', 'Concepto', 
+                                 'Precio', 'Observaciones', 'Fecha'), 
+                    padre = self.wids['ventana'], 
+                    multi = True)
             if resultados != [] and resultados[0] != -1:
                 for stuff in resultados:
                     if "C" in stuff:
@@ -1956,7 +2211,10 @@ class FacturasDeEntrada(Ventana):
                         transporte = pclases.TransporteACuenta.get(id)
                         transporte.facturar(self.objeto)
                     else:
-                        self.logger.error("facturas_compra::add_transporte_y_comisiones -> Valor devuelto no es transporte ni comisión: %s" % stuff)
+                        self.logger.error("facturas_compra::"
+                            "add_transporte_y_comisiones -> "
+                            "Valor devuelto no es transporte ni comisión: %s" 
+                                % stuff)
                 self.actualizar_ventana()
 
     def add_linea_de_compra(self, boton):
@@ -1983,7 +2241,8 @@ class FacturasDeEntrada(Ventana):
                                             # factura.
                                         entrega = '')
             pclases.Auditoria.nuevo(ldc, self.usuario, __file__)
-            self.objeto.vistoBuenoUsuario = True    # Si no lleva albaranes no necesita el visto bueno del usuario
+            self.objeto.vistoBuenoUsuario = True    # Si no lleva albaranes 
+                                    # no necesita el visto bueno del usuario
             self.objeto.fechaVistoBuenoUsuario = mx.DateTime.localtime()
             self.actualizar_ventana()
         else:
@@ -1993,21 +2252,24 @@ class FacturasDeEntrada(Ventana):
                 if texto_buscado == None:
                     texto_buscado = ""
                 concepto = utils.dialogo_entrada(titulo = "CONCEPTO", 
-                                                 texto = "Introduzca el concepto del servicio", 
-                                                 padre = self.wids['ventana'], 
-                                                 valor_por_defecto = texto_buscado)
+                                texto = "Introduzca el concepto del servicio", 
+                                padre = self.wids['ventana'], 
+                                valor_por_defecto = texto_buscado)
                 if concepto != None:
-                    servicio = pclases.ServicioTomado(facturaCompra = self.objeto, 
-                                                      precio = 0, 
-                                                      descuento = 0, 
-                                                      cantidad = 1, 
-                                                      concepto = concepto, 
-                                                      transporteACuenta = None, 
-                                                      comision = None, 
-                                                      iva = self.objeto.iva)
+                    servicio = pclases.ServicioTomado(
+                            facturaCompra = self.objeto, 
+                            precio = 0, 
+                            descuento = 0, 
+                            cantidad = 1, 
+                            concepto = concepto, 
+                            transporteACuenta = None, 
+                            comision = None, 
+                            iva = self.objeto.iva)
                     pclases.Auditoria.nuevo(servicio, self.usuario, __file__)
-                    self.objeto.vistoBuenoUsuario = True    # Si no lleva albaranes no necesita el visto bueno del usuario
-                    self.objeto.fechaVistoBuenoUsuario = mx.DateTime.localtime()
+                    self.objeto.vistoBuenoUsuario = True    
+                        # Si no lleva albaranes no necesita el visto bueno 
+                        # del usuario
+                    self.objeto.fechaVistoBuenoUsuario=mx.DateTime.localtime()
                     self.actualizar_ventana()
 
     def drop_linea_de_compra(self, boton):
@@ -2030,7 +2292,9 @@ class FacturasDeEntrada(Ventana):
                     try:
                         ldc.destroy(ventana = __file__)
                     except:
-                        self.logger.error("facturas_compra.py (drop_linea_de_compra): LDC ID %d no se pudo eliminar. Debe tener relaciones activas.")
+                        self.logger.error("facturas_compra.py "
+                                "(drop_linea_de_compra): LDC ID %d no se pudo"
+                                " eliminar. Debe tener relaciones activas.")
             elif idldc != -1 and model[iter].parent != None:
                 try:
                     s = pclases.ServicioTomado.get(idldc)
@@ -2045,9 +2309,16 @@ class FacturasDeEntrada(Ventana):
                         transporte.facturar(None)
                     if comision != None:
                         comision.facturar(None)
-            if len(self.objeto.lineasDeCompra) == 0 and len(self.objeto.serviciosTomados) == 0:
-                self.objeto.vistoBuenoUsuario = self.objeto.vistoBuenoDirector = self.objeto.vistoBuenoTecnico = self.objeto.vistoBuenoComercial = False
-                self.objeto.fechaVistoBuenoUsuario = self.objeto.fechaVistoBuenoDirector = self.objeto.fechaVistoBuenoTecnico = self.objeto.fechaVistoBuenoComercial = None
+            if (len(self.objeto.lineasDeCompra) == 0 
+                and len(self.objeto.serviciosTomados) == 0):
+                self.objeto.vistoBuenoUsuario \
+                        = self.objeto.vistoBuenoDirector \
+                        = self.objeto.vistoBuenoTecnico \
+                        = self.objeto.vistoBuenoComercial = False
+                self.objeto.fechaVistoBuenoUsuario \
+                        = self.objeto.fechaVistoBuenoDirector \
+                        = self.objeto.fechaVistoBuenoTecnico \
+                        = self.objeto.fechaVistoBuenoComercial = None
             self.actualizar_ventana()
 
     def verificar_si_vencimientos(self):
@@ -2060,7 +2331,8 @@ class FacturasDeEntrada(Ventana):
         """
         try:
             if self.usuario:
-                ventana = pclases.Ventana.selectBy(fichero = "facturas_compra.py")[0]
+                ventana = pclases.Ventana.selectBy(
+                        fichero = "facturas_compra.py")[0]
                 permiso = self.usuario.get_permiso(ventana)
                 if permiso == None:
                     return
@@ -2139,8 +2411,10 @@ class FacturasDeEntrada(Ventana):
                              defecto = False):
             if not self.crear_vencimientos_por_defecto(None):
                 utils.dialogo_info(titulo = "VENCIMIENTOS NO CREADOS", 
-                                   texto = "Los vencimientos de la factura %s no se pudieron crear. Debe hacerlo manualmente." % (self.objeto.numfactura), 
-                                   padre = self.wids['ventana'])
+                    texto = "Los vencimientos de la factura %s no se "
+                            "pudieron crear. Debe hacerlo manualmente." % (
+                                self.objeto.numfactura), 
+                    padre = self.wids['ventana'])
 
     def comprobar_fechas_vencimientos(self):
         """
@@ -2159,9 +2433,11 @@ class FacturasDeEntrada(Ventana):
             vtos = proveedor.get_vencimientos()
             if vtos != None:
                 if factura.fecha:
-                    fechas_vtos_por_defecto = proveedor.get_fechas_vtos_por_defecto(factura.fecha)
+                    fechas_vtos_por_defecto \
+                        = proveedor.get_fechas_vtos_por_defecto(factura.fecha)
                     if fechas_vtos_por_defecto:
-                        res = self.comparar_fechas_vencimientos(fechas_vtos_por_defecto)
+                        res = self.comparar_fechas_vencimientos(
+                                                    fechas_vtos_por_defecto)
                     else:
                         res = True
                 else:
@@ -2196,8 +2472,10 @@ class FacturasDeEntrada(Ventana):
         # Hacer lo que haya que hacer... 
         if self.objeto != None:
             self.verificar_si_vencimientos()
-        # ...y salir. OJO: Se va a ejecutar lo de arriba antes o después de la ventana de "¿desea salir?"
-        # dependiendo de si ha pulsado la X -después- o el botón "Salir" -se ejecuta antes de mostrar la ventana-.
+        # ...y salir. OJO: Se va a ejecutar lo de arriba antes o después de 
+        # la ventana de "¿desea salir?"
+        # dependiendo de si ha pulsado la X -después- o el botón "Salir" 
+        # -se ejecuta antes de mostrar la ventana-.
         self.salir(w, mostrar_ventana = event == None)
 
     def adjuntar(self, boton):  # XXX: Código para adjuntos
@@ -2215,8 +2493,8 @@ class FacturasDeEntrada(Ventana):
         """
         model, iter = self.wids['tv_adjuntos'].get_selection().get_selected()
         if iter != None and utils.dialogo(titulo = "BORRAR DOCUMENTO", 
-                                          texto = '¿Borrar documento adjunto seleccionado?', 
-                                          padre = self.wids['ventana']):
+                            texto = '¿Borrar documento adjunto seleccionado?', 
+                            padre = self.wids['ventana']):
             docid = model[iter][-1]
             documento = pclases.Documento.get(docid)
             utils.mover_a_tmp(documento.get_ruta_completa())
@@ -2232,19 +2510,25 @@ class FacturasDeEntrada(Ventana):
         if iter != None:
             docid = model[iter][-1]
             documento = pclases.Documento.get(docid)
-            self.wids['ventana'].window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+            self.wids['ventana'].window.set_cursor(
+                    gtk.gdk.Cursor(gtk.gdk.WATCH))
             while gtk.events_pending(): gtk.main_iteration(False)
             try:
                 if not mopen(documento.get_ruta_completa()):
                     utils.dialogo_info(titulo = "NO SOPORTADO", 
-                                       texto = "La aplicación no conoce cómo abrir el tipo de fichero.", 
-                                       padre = self.wids['ventana'])
+                        texto = "La aplicación no conoce cómo abrir el tipo "
+                                "de fichero.", 
+                        padre = self.wids['ventana'])
             except:
                 utils.dialogo_info(titulo = "ERROR", 
-                                   texto = "Se produjo un error al abrir el archivo.\nLa plataforma no está soportada, no se conoce el tipo de archivo o no hay un programa asociado al mismo.", 
-                                   padre = self.wids['ventana'])
+                    texto = "Se produjo un error al abrir el archivo.\nLa "
+                            "plataforma no está soportada, no se conoce el "
+                            "tipo de archivo o no hay un programa asociado "
+                            "al mismo.", 
+                    padre = self.wids['ventana'])
             import gobject
-            gobject.timeout_add(2000, lambda *args, **kw: self.wids['ventana'].window.set_cursor(None))
+            gobject.timeout_add(2000, 
+                lambda *args,**kw:self.wids['ventana'].window.set_cursor(None))
 
 def abrir_adjunto_from_tv(tv, path, col):   # XXX: Código para adjuntos.
     """
@@ -2258,7 +2542,8 @@ def abrir_adjunto_from_tv(tv, path, col):   # XXX: Código para adjuntos.
 
 
 if __name__=='__main__':
-    a = FacturasDeEntrada(usuario = pclases.Usuario.select(pclases.Usuario.q.usuario.contains("maril"))[0])
+    a = FacturasDeEntrada(usuario = pclases.Usuario.select(
+        pclases.Usuario.q.usuario.contains("maril"))[0])
     #a = FacturasDeEntrada()
 
 

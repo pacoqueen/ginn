@@ -485,13 +485,14 @@ class Presupuesto(Ventana, VentanaGenerica):
                 except (IndexError):
                     mes_importe = mx.DateTime.DateTimeFrom(fecha_actual.year,
                                                            mes_buscado, 1)
-                    mes_vencimiento = o.calcular_vencimiento(mes_importe)
-# PORASQUI: Es una lista de vencimientos. Si son varios, partir el ValorPresupuesto
-                    v = pclases.ValorPresupuestoAnual(
-                            conceptoPresupuestoAnual = o, 
-                            mes = mes_importe, 
-                            vencimiento = mes_vencimiento)
-                    pclases.Auditoria.nuevo(v, self.usuario, __file__)
+                    fechas_vencimientos = o.calcular_vencimientos(mes_importe)
+                    for fecha_vto in fechas_vencimientos:
+                        v = pclases.ValorPresupuestoAnual(
+                                conceptoPresupuestoAnual = o, 
+                                mes = mes_importe / len(fechas_vencimientos), 
+                                vencimiento = fecha_vto)
+                        pclases.Auditoria.nuevo(v, self.usuario, __file__)
+                    # PRINT: PORASQUI: Probar que se están creando bien los vencimientos. ¿Está bien crear dos valores de presupuesto? ¿No debería cambiar el atributo por una relación 1 a muchos entre ValorPres... y fechas de vto.?
                     if v < fecha_actual:
                         v.mes = v.mes + mx.DateTime.DateTimeFrom(
                                 year = v.mes.year + 1, 

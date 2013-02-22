@@ -19644,8 +19644,8 @@ class ServicioTomado(SQLObject, PRPCTOO):
         precio y en del mismo registro el texto recibido.
         Lo mismo con el transporte a cuenta.
         """
-        # Si el precio recibido en txt no es correcto, ya se encargará SQLObject de disparar la 
-        # excepción correspondiente.
+        # Si el precio recibido en txt no es correcto, ya se encargará 
+        # SQLObject de disparar la excepción correspondiente.
         self.precio = txt
         if self.comision != None:
             self.comision.precio = self.precio
@@ -19661,7 +19661,7 @@ class ServicioTomado(SQLObject, PRPCTOO):
         En otro caso, devuelve el descuento del registro.
         """
         if self.comision != None or self.transporteACuenta != None:
-            return 0    # Los transportes a cuenta y comisiones no tienen descuento. 
+            return 0 # Los transportes a cuenta y comisiones no tienen dto. 
         return self.descuento
 
     def _set_qdescuento(self, txt):
@@ -19671,12 +19671,21 @@ class ServicioTomado(SQLObject, PRPCTOO):
         de estas dos relaciones.
         """
         if not self.transporteACuenta and not self.comisionID:
-            self.descuento = txt    # Y si no es un valor válido, que SQLObject se encargue de lanzar la excepción.
+            self.descuento = txt    # Y si no es un valor válido, que 
+                        # SQLObject se encargue de lanzar la excepción.
 
-    qconcepto = property(_get_qconcepto, _set_qconcepto, doc = "Concepto del servicio, o del transporte o comisión relacionada si lo tuviera.")
-    qcantidad = property(_get_qcantidad, _set_qcantidad, doc = "Cantidad del servicio, o del transporte o comisión relacionada si lo tuviera.")
-    qprecio = property(_get_qprecio, _set_qprecio, doc = "Precio del servicio, o del transporte o comisión relacionada si lo tuviera.")
-    qdescuento = property(_get_qdescuento, _set_qdescuento, doc = "Descuento del servicio, o del transporte o comisión relacionada si lo tuviera.")
+    qconcepto = property(_get_qconcepto, _set_qconcepto, 
+            doc = "Concepto del servicio, o del transporte o comisión "
+                  "relacionada si lo tuviera.")
+    qcantidad = property(_get_qcantidad, _set_qcantidad, 
+            doc = "Cantidad del servicio, o del transporte o comisión "
+                  "relacionada si lo tuviera.")
+    qprecio = property(_get_qprecio, _set_qprecio, 
+            doc = "Precio del servicio, o del transporte o comisión "
+                  "relacionada si lo tuviera.")
+    qdescuento = property(_get_qdescuento, _set_qdescuento, 
+            doc = "Descuento del servicio, o del transporte o comisión "
+                  "relacionada si lo tuviera.")
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 

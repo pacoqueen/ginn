@@ -426,13 +426,15 @@ class DynConsulta(Ventana, VentanaGenerica):
         # aquí tienen que moverse a la fecha de la FDP que corresponda al 
         # concepto. 
         valores = pclases.ValorPresupuestoAnual.select(pclases.AND(
-            pclases.ValorPresupuestoAnual.q.mes >= self.fecha_mes_actual, 
-            pclases.ValorPresupuestoAnual.q.mes < self.fecha_mes_final)) 
+            pclases.ValorPresupuestoAnual.q.vencimiento 
+                >= self.fecha_mes_actual, 
+            pclases.ValorPresupuestoAnual.q.vencimiento 
+                < self.fecha_mes_final)) 
         valores_count = valores.count()
         for v in valores:
             v.sync()
             c = v.conceptoPresupuestoAnual
-            mes_offset = (v.mes.month - self.fecha_mes_actual.month) % (
+            mes_offset = (v.vencimiento.month-self.fecha_mes_actual.month) % (
                                                                 self.num_meses)
             filas[c][mes_offset] = v.importe
             vpro.set_valor(i / valores_count, 
@@ -803,8 +805,10 @@ def criterio_sustitucion(valor_presupuesto, importe_valor_real,
             if pclases.DEBUG:
                 print "-------->>>>", \
                     valor_presupuesto.conceptoPresupuestoAnual.descripcion, \
-                    valor_presupuesto.mes.month, "; presup.:", \
-                    valor_presupuesto.importe, "; real:", importe_valor_real, 
+                    "; mes presup.:", valor_presupuesto.mes.month, \
+                    "; mes vto.:", valor_presupuesto.vencimiento.month, \
+                    "; presup.:", valor_presupuesto.importe, \
+                    "; real:", importe_valor_real, 
     if pclases.DEBUG:
         print "sustituir_por_reales [", sustituir_por_reales, "]"
     return sustituir_por_reales

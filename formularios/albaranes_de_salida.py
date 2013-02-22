@@ -109,8 +109,8 @@ class AlbaranesDeSalida(Ventana):
         el que se muestra por defecto).
         """
         self.usuario = usuario
-        self.modificado = False # Para detectar si el albarán en pantalla se ha modificado
-                                # en la sesión actual. 
+        self.modificado = False # Para detectar si el albarán en pantalla 
+                                # se ha modificado en la sesión actual. 
         self.nuevo = False      # Para detectar si un albarán es nuevo.
         Ventana.__init__(self, 'albaranes_de_salida.glade', objeto, 
                          usuario = self.usuario)
@@ -1331,19 +1331,8 @@ class AlbaranesDeSalida(Ventana):
             else:
                 bultos = len(articulos)     # Bultos añadidos
             ldv = self.__ldvs[idldv]['ldv']
-            # XXX
-            # if ldv == None:
-            #     iterpadre = model.append(None, (bultos,
-            #                                     '¡SIN LDV!',
-            #                                     '¡SIN LDV!',
-            #                                     0,
-            #                                     0))
-            # else:
-            # XXX 
             cantidad = ldv.cantidad 
-            # cantidad_servida = self.cantidad_anadida(ldv.productoVenta)
             cantidad_servida = self.cantidad_anadida_a_ldv(ldv)
-            # cantidad_servida = self.cantidad_anadida(self.__ldvs[ldv.id][])
             iterpadre = model.append(None, (bultos, 
                                             ldv.producto.codigo, 
                                             ldv.producto.descripcion, 
@@ -3438,7 +3427,9 @@ class AlbaranesDeSalida(Ventana):
             model[path][4] = srv.precio * (1.0 - srv.descuento) * srv.cantidad
             self.modificado = True
         except:
-            utils.dialogo_info(titulo = "ERROR DE FORMATO", texto = 'Formato numérico incorrecto', padre = self.wids['ventana'])
+            utils.dialogo_info(titulo = "ERROR DE FORMATO", 
+                    texto = 'Formato numérico incorrecto', 
+                    padre = self.wids['ventana'])
 
     def cambiar_precio_srv(self, cell, path, texto):
         model = self.wids['tv_servicios'].get_model()
@@ -3620,14 +3611,20 @@ class AlbaranesDeSalida(Ventana):
             precio = utils._float(texto)
         except ValueError:
             utils.dialogo_info(titulo = "PRECIO INCORRECTO", 
-                               texto = "El texto introducido %s no es una cantidad correcta." % (texto), 
-                               padre = self.wids['ventana'])
+                texto = "El texto introducido %s no es una cantidad "\
+                        "correcta." % (texto), 
+                padre = self.wids['ventana'])
         else:
             model = self.wids['tv_transportesACuenta'].get_model()
             idtac = model[path][-1]
             #tac = pclases.TransporteACuenta.get(idtac)
             tac = pclases.getObjetoPUID(idtac)
             tac.precio = precio
+            tac.syncUpdate()
+            # BUGFIX: GINN-75
+            for st in tac.serviciosTomados:
+                st.precio = precio / len(tac.serviciosTomados)
+                st.syncUpdate()
             self.modificado = True
             model[path][1] = utils.float2str(tac.precio)
 
@@ -3637,6 +3634,7 @@ class AlbaranesDeSalida(Ventana):
         #tac = pclases.TransporteACuenta.get(idtac)
         tac = pclases.getObjetoPUID(idtac)
         tac.observaciones = texto
+        tac.syncUpdate()
         self.modificado = True
         model[path][3] = tac.observaciones
 
@@ -3653,6 +3651,7 @@ class AlbaranesDeSalida(Ventana):
                                padre = self.wids['ventana'])
         else:
             tac.fecha = fecha
+            tac.syncUpdate()
             self.modificado = True
             model[path][4] = utils.str_fecha(tac.fecha)
 
@@ -3668,6 +3667,7 @@ class AlbaranesDeSalida(Ventana):
             proveedor = buscar_proveedor(texto, self.wids['ventana'])
             if proveedor != None:
                 tac.proveedor = proveedor
+                tac.syncUpdate()
                 self.modificado = True
                 model[path][2] = tac.proveedor.nombre
             # else:
@@ -3716,7 +3716,7 @@ class AlbaranesDeSalida(Ventana):
                           utils.float2str(precio), 
                           comision.observaciones, 
                           cliente, 
-                          "%s %%" % (utils.float2str(100 * comision.porcentaje)),
+                          "%s %%" % (utils.float2str(100*comision.porcentaje)),
                           numfactura, 
                           comision.get_puid()))
     def cambiar_precio_comision(self, cell, path, texto):
