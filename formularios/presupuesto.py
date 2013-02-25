@@ -53,7 +53,7 @@ except ImportError:
 from utils import _float as float
 from ventana_progreso import VentanaProgreso, VentanaActividad
 from albaranes_de_salida import buscar_proveedor
-
+from dynconsulta import restar_mes
 
 class Presupuesto(Ventana, VentanaGenerica):
     def __init__(self, objeto = None, usuario = None, mes_actual = None):
@@ -125,6 +125,14 @@ class Presupuesto(Ventana, VentanaGenerica):
             mes = mx.DateTime.localtime().month
         else:
             mes = self.mes_actual
+        self.fecha_mes_actual = mx.DateTime.DateFrom(mx.DateTime.today().year,
+                                                    mes,
+                                                    1)
+        self.fecha_mes_final = mx.DateTime.DateFrom(
+                self.fecha_mes_actual.year + 1,
+                self.fecha_mes_actual.month,
+                1)
+        print self.fecha_mes_actual, self.fecha_mes_final
         for m in range(12):
             mescol = ((mes - 1 + m) % 12) + 1
             fechacol = mx.DateTime.DateTimeFrom(month = mescol, 
@@ -489,7 +497,8 @@ class Presupuesto(Ventana, VentanaGenerica):
                     for fecha_vto in fechas_vencimientos:
                         v = pclases.ValorPresupuestoAnual(
                                 conceptoPresupuestoAnual = o, 
-                                mes = mes_importe / len(fechas_vencimientos), 
+                                mes = mes_importe,
+                                importe = value / len(fechas_vencimientos),
                                 vencimiento = fecha_vto)
                         pclases.Auditoria.nuevo(v, self.usuario, __file__)
                     # PRINT: PORASQUI: Probar que se están creando bien los vencimientos. ¿Está bien crear dos valores de presupuesto? ¿No debería cambiar el atributo por una relación 1 a muchos entre ValorPres... y fechas de vto.?

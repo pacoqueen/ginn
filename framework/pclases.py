@@ -20991,18 +20991,45 @@ class ConceptoPresupuestoAnual(SQLObject, PRPCTOO):
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
-class ValorPresupuestoAnual(SQLObject, PRPCTOO):
+class VencimientoValorPresupuestoAnual(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
-    conceptoPresupuestoAnualID = ForeignKey("ConceptoPresupuestoAnual")
+    valorPresupuestoAnualID = ForeignKey("ValorPresupuestoAnual")
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
     def get_info(self):
+        return "(%s) Vto.: %s. Importe: %s" % (self.puid,
+                utils.str_fecha(self.fecha),
+                utils.float2str(self.importe))
+
+    @property
+    def importe(self):
+        valor = self.valorPresupuestoAnual.importe
+        importe = valor / len(
+                self.valorPresupuestoAnual.vencimientosValorPresupuestoAnual)
+        return importe
+
+class ValorPresupuestoAnual(SQLObject, PRPCTOO):
+    _connection = conn
+    _fromDatabase = True
+    conceptoPresupuestoAnualID = ForeignKey("ConceptoPresupuestoAnual")
+    vencimientosValorPresupuestoAnual = MultipleJoin(
+            "VencimientoValorPresupuestoAnual")
+
+    def _init(self, *args, **kw):
+        if not vencimientosValorPresupuestoAnual:
+            print "LOS TENGO QUE CREAR"
+        starter(self, *args, **kw)
+
+    def get_info(self):
         return "(%d) %s: %s. Mes presupuesto: %s. Fecha vencimiento: %s." % (
                 self.id, self.concepto, utils.float2str(self.importe), 
-                self.mes.strftime("%B '%y"), utils.str_fecha(self.vencimiento))
+                self.mes.strftime("%B '%y"),
+                ", ".join(["%s (%s)" % (utils.str_fecha(v.fecha),
+                                        utils.float2str(v.importe))
+                           for v in self.vencimientosValorPresupuestoAnual]))
 
     @classmethod
     ###########################################################################

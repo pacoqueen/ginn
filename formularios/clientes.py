@@ -1252,7 +1252,8 @@ class Clientes(Ventana):
                               r.nombre, 
                               r.cif, 
                               r.get_direccion_completa(),
-                              "; ".join([o.nombre for o in r.obras])
+                              "; ".join([o.nombre for o in r.obras]),
+                              r.observaciones
                              ))
         idcliente = utils.dialogo_resultado(filas_res,
                                             titulo = 'Seleccione Cliente',
@@ -1260,7 +1261,8 @@ class Clientes(Ventana):
                                                          'Nombre', 
                                                          'CIF', 
                                                          'Dirección', 
-                                                         "Obras"), 
+                                                         "Obras",
+                                                         "Observaciones"),
                                             padre = self.wids['ventana'])
         if idcliente < 0:
             return None
@@ -1634,8 +1636,10 @@ class Clientes(Ventana):
             padre = self.wids['ventana']) 
         if a_buscar != None:
             clientes_obras = buscar_clientes_obras(a_buscar)
-            criterio = pclases.OR(pclases.Cliente.q.nombre.contains(a_buscar),
-                                  pclases.Cliente.q.cif.contains(a_buscar))
+            criterio = pclases.OR(
+                            pclases.Cliente.q.nombre.contains(a_buscar),
+                            pclases.Cliente.q.cif.contains(a_buscar),
+                            pclases.Cliente.q.observaciones.contains(a_buscar))
             clientes_clientes = pclases.Cliente.select(criterio) 
             resultados = []
             for c in clientes_obras:
