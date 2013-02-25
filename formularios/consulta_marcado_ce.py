@@ -228,7 +228,7 @@ class ConsultaMarcadoCE(Ventana):
             tmp = []
             for p in partidas:
                 ffab = p.get_fecha_fabricacion()
-                if ffab != None and fechaini <= ffab <= fechafin:
+                if ffab and fechaini <= ffab <= fechafin:
                     tmp.append(p)
             partidas = tmp
             self.rellenar_tabla(partidas)
