@@ -114,6 +114,8 @@ GRANT ALL ON concepto_presupuesto_anual TO geotexan;
 GRANT ALL ON concepto_presupuesto_anual_id_seq TO geotexan;
 GRANT ALL ON valor_presupuesto_anual TO geotexan;
 GRANT ALL ON valor_presupuesto_anual_id_seq TO geotexan;
+GRANT ALL ON vencimiento_valor_presupuesto_anual TO geotexan;
+GRANT ALL ON vencimiento_valor_presupuesto_anual_id_seq TO geotexan;
 
 CREATE TABLE tipo_de_proveedor(
     id SERIAL PRIMARY KEY, 
