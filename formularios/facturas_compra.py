@@ -1584,7 +1584,8 @@ class FacturasDeEntrada(Ventana):
                     self.logger.error(txt)
                     print txt
             factura.destroy_en_cascada(ventana = __file__)
-        self.ir_a_primero()
+        else:
+            self.ir_a_primero()
         self.actualizar_ventana()
 
 

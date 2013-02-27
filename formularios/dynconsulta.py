@@ -47,8 +47,60 @@ from utils import _float as float
 from ventana_progreso import VentanaProgreso, VentanaActividad
 from albaranes_de_salida import buscar_proveedor
 from widgets import replace_widget
+import pprint, collections
 
 pclases.DEBUG = True
+
+class TransformedDict(collections.MutableMapping):
+    """
+    A dictionary which applies an arbitrary key-altering function before 
+    accessing the keys"""
+    # From: http://stackoverflow.com/questions/3387691/
+    #                                   python-how-to-perfectly-override-a-dict
+
+    def __init__(self, *args, **kwargs):
+        self.store = dict()
+        self.update(dict(*args, **kwargs)) # use the free update to set keys
+
+    def __getitem__(self, key):
+        return self.store[self.__keytransform__(key)]
+
+    def __setitem__(self, key, value):
+        self.store[self.__keytransform__(key)] = value
+
+    def __delitem__(self, key):
+        del self.store[self.__keytransform__(key)]
+
+    def __iter__(self):
+        return iter(self.store)
+
+    def __len__(self):
+        return len(self.store)
+
+    def __keytransform__(self, key):
+        return key
+
+    def __str__(self):
+        return pprint.pformat(self.store)
+
+    def __repr__(self):
+        return pprint.pformat(self.store)
+
+
+class MyMonthsDict(TransformedDict):
+    def __keytransform__(self, key):
+        try:
+            assert isinstance(key, type(mx.DateTime.today()))
+            key = primero_de_mes(key)
+        except AssertionError:
+            anno = mx.DateTime.today().year
+            mes = mx.DateTime.today().month
+            if key < mes:
+                anno += 1
+            return mx.DateTime.DateFrom(anno, key, 1)
+        else:
+            return key
+
 
 class DynConsulta(Ventana, VentanaGenerica):
     def __init__(self, objeto = None, usuario = None, mes_actual = None, 
@@ -65,7 +117,7 @@ class DynConsulta(Ventana, VentanaGenerica):
         self.update_mes_final()
         self.usuario = usuario
         self.clase = None
-        self.precalc = {}
+        self.precalc = MyMonthsDict()
         self.dic_campos = {}
         self.old_model = {}
         Ventana.__init__(self, 'dynconsulta.glade', objeto)
@@ -379,7 +431,6 @@ class DynConsulta(Ventana, VentanaGenerica):
                 # Si "me como" todo lo presupuestado, parto de cero para 
                 # mostrar el valor real completo. (Si no, acabará restando
                 # ese delta y falseará el resultado)
-# TODO: PORASQUI: Se supone que ya funciona. Pero quiero testearlo más a fondo. Lo que todavía no sé si funciona es cuando se juntan dos vencimientos del mismo proveedor en un mes procedentes de dos valores presupuestados con varios vencimientos que se solapan. 
                 valor_presup_restante = max(0, valor_presup_restante)
             else:
                 # Como voy a sustituirlo entero, el valor restante es 0.0 para 
@@ -631,7 +682,7 @@ def calcular_entradas_de_granza(vpro, fecha_ini, fecha_fin, usuario):
     vtos = buscar_vencimientos_compra(primes, finmes)
     # Filtro para quedarme con las de granza:
     vpro.mover()
-    res = {}
+    res = MyMonthsDict()
     clasificar_vencimientos_compra(vtos, granzas, usuario, res, vpro)
     vpro.mover()
     # Y ahora de los albaranes no facturados.
@@ -652,22 +703,35 @@ def clasificar_albaranes_de_entrada(albs, granzas, usuario, res, vpro):
                 # Si la línea no tiene cantidad de nada, paso. No quiero 
                 # guardar valores nulos que me coman tiempo de proceso o RAM.
                 # Piensa como si siguieras programando con 640 K, old boy.
-                if pclases.DEBUG:
+                if pclases.DEBUG: # and pclases.VERBOSE:
                     print __file__, a.get_info(), ldc.get_info()
                 concepto = buscar_concepto_proveedor_granza(ldc.proveedor, 
                                                             usuario)
-                fecha = primero_de_mes(ldc.albaranEntrada.fecha)
-                if fecha not in res:
-                    res[fecha] = {}
-                try:
-                    res[fecha][concepto]['importe'] += ldc.get_subtotal()
-                    res[fecha][concepto]['toneladas'] += ldc.cantidad
-                except KeyError:
-                    res[fecha][concepto] = {'importe': ldc.get_subtotal(), 
-                                            'toneladas': ldc.cantidad}
-            vpro.mover()
+                proveedor = ldc.albaranEntrada.proveedor
+                fechas_vto = proveedor.get_fechas_vtos_por_defecto(
+                                                    ldc.albaranEntrada.fecha)
+                if not fechas_vto:
+                    fechas_vto = [ldc.albaranEntrada.fecha]
+                numvtos = len(fechas_vto)
+                for fecha_vto in fechas_vto:
+                    fecha = primero_de_mes(fecha_vto)
+                    if fecha not in res:
+                        res[fecha] = {}
+                    cantidad_prorrateada = ldc.cantidad / numvtos
+                    try:
+                        res[fecha][concepto]['importe'] += ldc.get_subtotal(
+                                                            prorrateado = True)
+                        res[fecha][concepto]['toneladas']+=cantidad_prorrateada
+                    except KeyError:
+                        res[fecha][concepto] = {
+                            'importe': ldc.get_subtotal(prorrateado = True), 
+                            'toneladas': cantidad_prorrateada}
+                vpro.mover()
 
 def buscar_albaranes_de_entrada(primes, finmes):
+    # ¡OJO! Si el albarán es de otra fecha anterior a «primes», aunque entren 
+    # sus "teóricos" vencimientos en los meses del TreeView, se va a ignorar. 
+    # La consulta no lo encontrará.
     albs = pclases.AlbaranEntrada.select(pclases.AND(
         pclases.AlbaranEntrada.q.fecha >= primes, 
         pclases.AlbaranEntrada.q.fecha <= finmes))
@@ -688,22 +752,23 @@ def clasificar_vencimientos_compra(vtos, granzas, usuario, res, vpro):
             ldc.facturaCompra and ldc.facturaCompra.sync()
             ldc.albaranEntrada and ldc.albaranEntrada.sync()
             if ldc.productoCompra in granzas:
-                if pclases.DEBUG:
+                if pclases.DEBUG and pclases.VERBOSE:
                     print __file__, fra.get_info(), ldc.get_info()
                 concepto = buscar_concepto_proveedor_granza(ldc.proveedor, 
                                                             usuario)
                 fechas_mes_vto = buscar_mes_vto(ldc.facturaCompra)
-                importe = ldc.get_subtotal() / len(fechas_mes_vto)
+                importe = ldc.get_subtotal(prorrateado = True) 
                 cantidad = ldc.cantidad / len(fechas_mes_vto)
-                for fecha_mes_vto in fechas_mes_vto:
-                    if fecha_mes_vto not in res:
-                        res[fecha_mes_vto] = {}
-                    try:
-                        res[fecha_mes_vto][concepto]['importe'] += importe
-                        res[fecha_mes_vto][concepto]['toneladas'] += cantidad
-                    except KeyError:
-                        res[fecha_mes_vto][concepto] = {'importe': importe, 
-                                                        'toneladas': cantidad}
+                #for fecha_mes_vto in fechas_mes_vto:
+                fecha_mes_vto = v.fecha
+                if fecha_mes_vto not in res:
+                    res[fecha_mes_vto] = {}
+                try:
+                    res[fecha_mes_vto][concepto]['importe'] += importe
+                    res[fecha_mes_vto][concepto]['toneladas'] += cantidad
+                except KeyError:
+                    res[fecha_mes_vto][concepto] = {'importe': importe, 
+                                                    'toneladas': cantidad}
             vpro.mover()
 
 def buscar_mes_vto(fra_compra):
@@ -714,7 +779,7 @@ def buscar_mes_vto(fra_compra):
     de pago.
 
     :fra_compra: pclases.FacturaCompra
-    :returns: mx.DateTime.Date
+    :returns: mx.DateTime.Date(Time)
 
     """
     fechas = []
@@ -792,8 +857,6 @@ def bak_model(model):
 
 def criterio_sustitucion(vto_presupuesto, importe_valor_real, 
                          fecha_primera_col, fecha = None):
-    if pclases.DEBUG:
-        print __file__, 
     if not fecha:
         fecha = primero_de_mes(mx.DateTime.today())
     # Si ni siquiera hay valor presupuestado, está claro, ¿no? Mostrar el real:
@@ -833,7 +896,8 @@ def criterio_sustitucion(vto_presupuesto, importe_valor_real,
                     "; presup. en mes vto.:", vto_presupuesto.importe, \
                     "; real:", importe_valor_real, 
     if pclases.DEBUG:
-        print "sustituir_por_reales [", sustituir_por_reales, "]"
+        print __file__, importe_valor_real, "sustituir_por_reales [", \
+                sustituir_por_reales, "]"
     return sustituir_por_reales
 
 def buscar_vencimiento_presupuestado(fecha, concepto):

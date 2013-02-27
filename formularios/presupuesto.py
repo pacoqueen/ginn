@@ -433,6 +433,8 @@ class Presupuesto(Ventana, VentanaGenerica):
                 model[path][0] = o.descripcion
 
     def cambiar_importe(self, cell, path, value, mes_offset):
+        if not value:
+            value = 0
         try:
             # TODO: Permitir fórmulas y mostrar precio si es un proveedor de 
             #       granza.

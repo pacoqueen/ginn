@@ -2368,7 +2368,7 @@ class LineaDeCompra(SQLObject, PRPCTOO):
                 return False
         return True
 
-    def get_subtotal(self, iva = False, descuento = True):
+    def get_subtotal(self, iva = False, descuento = True, prorrateado = False):
         """
         Devuelve el subtotal con o sin IVA (según se indique) de 
         la línea de compra: precio * cantidad - descuento.
@@ -2377,6 +2377,9 @@ class LineaDeCompra(SQLObject, PRPCTOO):
         de la factura, pero a partir del subtotal neto de la factura 
         completa solo se permite trabajar con céntimos de euro como 
         fracción máxima (ver aeat.es).
+        Si «prorrateado» devuelve el importe dividido entre el número de 
+        vencimientos de la factura. Si no tiene vtos. todavía, lo hace según 
+        la forma de pago por defecto del proveedor.
         """
         res = self.cantidad * self.precio 
         if descuento:
@@ -2386,6 +2389,12 @@ class LineaDeCompra(SQLObject, PRPCTOO):
         # Las líneas ya tienen IVA propio, no se usa más el IVA del pedido.
         # if iva and self.pedidoCompraID: 
         #    res *= (1 + self.pedidoCompra.iva)
+        if prorrateado: 
+            try:
+                numvtos = max(1, len(self.proveedor.get_vencimientos()))
+            except (AttributeError, TypeError, ValueError):
+                numvtos = 1
+            res /= numvtos
         return res
 
 cont, tiempo = print_verbose(cont, total, tiempo)
@@ -7006,16 +7015,24 @@ class LineaDePedidoDeCompra(SQLObject, PRPCTOO):
         doc = "Cantidad pendiente de servir correspondiente a la línea de "
               "pedido de compra.")
         
-    def get_subtotal(self, iva = False, descuento = True):
+    def get_subtotal(self, iva = False, descuento = True, prorrateado = False):
         """
         Devuelve el subtotal con o sin IVA (según se indique) de 
         la línea de compra: precio * cantidad - descuento.
+        Si «prorrateado» es True, devuelve el importe dividido entre el número 
+        de vencimientos.
         """
         res = self.cantidad * self.precio 
         if descuento:
             res *= (1 - self.descuento)
         if iva and self.pedidoCompraID: 
             res *= (1 + self.pedidoCompra.iva)
+        if prorrateado: 
+            try:
+                numvtos = max(1, len(self.proveedor.get_vencimientos()))
+            except (AttributeError, TypeError, ValueError):
+                numvtos = 1
+            res /= numvtos
         return res
     
     def es_igual_salvo_cantidad(self, ldpc):
@@ -16527,7 +16544,8 @@ class Servicio(SQLObject, PRPCTOO, Venta):
 
     def get_subtotal(self, iva = False, descuento = True):
         """
-        Devuelve el subtotal del servicio. Con IVA (el IVA de la factura) si se le indica.
+        Devuelve el subtotal del servicio. Con IVA (el IVA de la factura) si 
+        se le indica.
         """
         # PLAN: Con un buen diagrama de clases podría haber tenido una clase 
         #       padre común para servicios, líneas de venta y demás con sus 
@@ -19580,10 +19598,12 @@ class ServicioTomado(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
-    def get_subtotal(self, iva = False, descuento = True):
+    def get_subtotal(self, iva = False, descuento = True, prorrateado = False):
         """
         Devuelve el subtotal con o sin IVA (según se indique) de 
         la línea de compra: precio * cantidad - descuento.
+        Si «prorrateado» es True, devuelve el importe entre el número de 
+        vencimientos.
         """
         res = self.cantidad * self.precio 
         if descuento:
@@ -19593,6 +19613,12 @@ class ServicioTomado(SQLObject, PRPCTOO):
         # Ahora el servicio tiene su propio IVA.
         #if iva and self.facturaCompraID: 
         #    res *= (1 + self.facturaCompra.iva)
+        if prorrateado: 
+            try:
+                numvtos = max(1, len(self.proveedor.get_vencimientos()))
+            except (AttributeError, TypeError, ValueError):
+                numvtos = 1
+            res /= numvtos
         return res
 
     def _get_qconcepto(self):
