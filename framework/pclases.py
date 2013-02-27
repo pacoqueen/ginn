@@ -8317,15 +8317,33 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
         """
         proveedores = []
         for pedido in self.get_pedidos():
-            if (pedido.proveedor
+            try:
+                pedido_tiene_proveedor = pedido.proveedor != None
+            except SQLObjectNotFound:
+                pedido_tiene_proveedor = False
+                pedido.proveedor = None
+                pedido.syncUpdate()
+            if (pedido_tiene_proveedor
                 and pedido.proveedor not in proveedores):
                 proveedores.append(pedido.proveedor)
         for albaran in self.get_albaranes():
-            if (albaran.proveedor
+            try:
+                albaran_tiene_proveedor = albaran.proveedor != None
+            except SQLObjectNotFound:
+                albaran_tiene_proveedor = False
+                albaran.proveedor = None
+                albaran.syncUpdate()
+            if (albaran_tiene_proveedor
                 and albaran.proveedor not in proveedores):
                 proveedores.append(albaran.proveedor)
         for factura in self.get_facturas():
-            if (factura.proveedor
+            try:
+                factura_tiene_proveedor = factura.proveedor != None
+            except SQLObjectNotFound:
+                factura_tiene_proveedor = False
+                factura.proveedor = None
+                factura.syncUpdate()
+            if (factura_tiene_proveedor
                 and factura.proveedor not in proveedores):
                 proveedores.append(factura.proveedor)
         return proveedores

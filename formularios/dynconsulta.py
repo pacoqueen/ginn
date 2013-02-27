@@ -544,10 +544,12 @@ def calcular_iva_real(res, vpro, fechaini, fechafin):
         importe_iva = soportado - repercutido
         if importe_iva:
             # Paso de guardar valores nulos. La RAM es un bien escaso!
+            if fecha not in res:
+                res[fecha] = {}
             try:
-                res[fecha][concepto]['importe'] = importe_iva 
+                res[fecha][concepto]['importe'] += importe_iva 
             except KeyError:
-                res[fecha] = {concepto: importe_iva}
+                res[fecha][concepto] = {'importe': importe_iva}
         fecha = restar_mes(fecha, -1)
     # FIXME: Devuelvo en negativo o positivo, pero el resto de cifras (ventas, 
     # compras, salarios, etc.) va en positivo aunque sean gastos. Preguntar en 
@@ -643,6 +645,7 @@ def calcular_entradas_de_granza(vpro, fecha_ini, fecha_fin, usuario):
 def clasificar_albaranes_de_entrada(albs, granzas, usuario, res, vpro):
     for a in albs:
         for ldc in a.lineasDeCompra:
+            ldc.sync()
             # Solo quiero lo no facturado.
             if (not ldc.facturaCompraID and ldc.productoCompra in granzas
                     and ldc.cantidad):
@@ -676,7 +679,7 @@ def clasificar_vencimientos_compra(vtos, granzas, usuario, res, vpro):
     # Me quedo solo con los vencimientos de fras. de compra de granza.
     fras = []
     for v in vtos:
-        if pclases.DEBUG:
+        if pclases.DEBUG and pclases.VERBOSE:
             print __file__, v.get_info(), v.fecha
         fra = v.facturaCompra
         for ldc in fra.lineasDeCompra:
