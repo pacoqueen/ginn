@@ -233,7 +233,9 @@ class DynConsulta(Ventana, VentanaGenerica):
         """
         Muestra de dónde vienen los datos precalculados.
         """
-        # TODO: PORASQUI: Esto va a ser complicado...
+        # TODO: PORASQUI: Esto va a ser complicado... Pero lo necesito ya. Me 
+        #                 está costando lo más grande comprobar valores y 
+        #                 depurar porque no sé bien de dónde vienen.
         indexcol = get_col_pos(tv, col)
         if indexcol > 0:
             mes = self.mes_actual + indexcol - 1
@@ -282,6 +284,14 @@ class DynConsulta(Ventana, VentanaGenerica):
         self.rellenar_tabla()
 
     def rellenar_tabla(self):
+        # Por si acaso, algo de mantenimiento por aquí. Al turrón: 
+        if pclases.DEBUG:
+            print __file__, "Eliminando posibles vencimientos de presupuesto"\
+                            " duplicados...", 
+            deleted = pclases.VencimientoValorPresupuestoAnual._remove_dupes()
+        if pclases.DEBUG:
+            print deleted
+        # Y ahora sí que sí. Al lío:  
         vpro = VentanaProgreso(padre = self.wids['ventana'])
         vpro.mostrar()
         model = self.wids['tv_datos'].get_model()
@@ -326,9 +336,10 @@ class DynConsulta(Ventana, VentanaGenerica):
                     # Solo los precálculos de granza tienen importe y Tm. El 
                     # resto solo importes.
                     importe_valor_real = datos_reales[concepto]
-                valor_presupuestado = buscar_valor_presupuestado(fechacol, 
-                                                                 concepto)
-                if criterio_sustitucion(valor_presupuestado, 
+                vto_presupuestado = buscar_vencimiento_presupuestado(
+                                                                    fechacol, 
+                                                                    concepto)
+                if criterio_sustitucion(vto_presupuestado, 
                                         importe_valor_real, 
                                         self.fecha_mes_actual, 
                                         fechacol):
@@ -336,9 +347,9 @@ class DynConsulta(Ventana, VentanaGenerica):
                     if pclases.DEBUG:
                         print __file__, "Cambio presupuesto por real:", \
                                 concepto.descripcion,\
-                                valor_presupuestado, importe_valor_real
+                                vto_presupuestado, importe_valor_real
                     diff = self.cambiar_valor_presupuestado(importe_valor_real, 
-                                                            valor_presupuestado,
+                                                            vto_presupuestado,
                                                             concepto, 
                                                             fechacol, 
                                                             mescol, 
@@ -358,7 +369,6 @@ class DynConsulta(Ventana, VentanaGenerica):
         para que se actualice el nodo padre únicamente sumando esa cantidad y 
         así evitar recalcular toda la "subcolumna".
         """
-# FIXME: PORASQUI: Mucho ojo, tengo que volcar el dato real en el mes del vencimiento pero retirar el consumo de granza del mes de la factura/albarán. Voy a cambiar todas las búsquedas de valores para tirar del nuevo campo "vencimiento" en lugar de "mes".
         if valor_presupuestado:
             valor_presupuestado_importe = valor_presupuestado.importe
             if valor_presupuestado.es_de_granza():
@@ -366,6 +376,11 @@ class DynConsulta(Ventana, VentanaGenerica):
                 valor_real_toneladas = precalc_concepto['toneladas']
                 valor_presup_restante = (valor_presupuestado.precio 
                     * (valor_presupuestado.toneladas - valor_real_toneladas))
+                # Si "me como" todo lo presupuestado, parto de cero para 
+                # mostrar el valor real completo. (Si no, acabará restando
+                # ese delta y falseará el resultado)
+# TODO: PORASQUI: Se supone que ya funciona. Pero quiero testearlo más a fondo. Lo que todavía no sé si funciona es cuando se juntan dos vencimientos del mismo proveedor en un mes procedentes de dos valores presupuestados con varios vencimientos que se solapan. 
+                valor_presup_restante = max(0, valor_presup_restante)
             else:
                 # Como voy a sustituirlo entero, el valor restante es 0.0 para 
                 # que solo se vea el valor real que le voy a sumar.
@@ -425,18 +440,22 @@ class DynConsulta(Ventana, VentanaGenerica):
         # Estos valores se metieron en la fecha y concepto que fueran, pero 
         # aquí tienen que moverse a la fecha de la FDP que corresponda al 
         # concepto. 
-        valores = pclases.ValorPresupuestoAnual.select(pclases.AND(
-            pclases.ValorPresupuestoAnual.q.vencimiento 
+        valores = pclases.VencimientoValorPresupuestoAnual.select(pclases.AND(
+            pclases.VencimientoValorPresupuestoAnual.q.fecha
                 >= self.fecha_mes_actual, 
-            pclases.ValorPresupuestoAnual.q.vencimiento 
+            pclases.VencimientoValorPresupuestoAnual.q.fecha
                 < self.fecha_mes_final)) 
         valores_count = valores.count()
         for v in valores:
             v.sync()
             c = v.conceptoPresupuestoAnual
-            mes_offset = (v.vencimiento.month-self.fecha_mes_actual.month) % (
+            mes_offset = (v.fecha.month - self.fecha_mes_actual.month) % (
                                                                 self.num_meses)
-            filas[c][mes_offset] = v.importe
+            try:
+                filas[c][mes_offset] += v.importe
+            except KeyError: # Que será lo normal. No debería haber dos vtos. 
+                             # en la misma fecha para un mismo concepto.
+                filas[c][mes_offset] = v.importe
             vpro.set_valor(i / valores_count, 
                            "Cargando valores de dynconsulta...") 
             i += 1
@@ -768,7 +787,7 @@ def bak_model(model):
                 res[fila[0]]['hijos'][sub_fila[0]].append(sub_fila[j])
     return res
 
-def criterio_sustitucion(valor_presupuesto, importe_valor_real, 
+def criterio_sustitucion(vto_presupuesto, importe_valor_real, 
                          fecha_primera_col, fecha = None):
     if pclases.DEBUG:
         print __file__, 
@@ -776,14 +795,14 @@ def criterio_sustitucion(valor_presupuesto, importe_valor_real,
         fecha = primero_de_mes(mx.DateTime.today())
     # Si ni siquiera hay valor presupuestado, está claro, ¿no? Mostrar el real:
     sustituir_por_reales = True
-    if valor_presupuesto:
+    if vto_presupuesto:
         # Para el mes actual SIEMPRE valores reales.
         if primero_de_mes(fecha) <= fecha_primera_col <= final_de_mes(fecha):
             sustituir_por_reales = True
         else:
             sustituir_por_reales = False
             ### Caso granza
-            if valor_presupuesto.es_de_granza():
+            if vto_presupuesto.es_de_granza():
                 # DONE: Principio de realidad: Siempre que 
                 # haya datos reales, se sustituyen las estimaciones por datos 
                 # reales. En granza además se puede hacer de forma 
@@ -794,8 +813,8 @@ def criterio_sustitucion(valor_presupuesto, importe_valor_real,
                 # toneladas sumadas al resto de estimado. 
                 sustituir_por_reales = True
             ### Caso IVA
-            if (valor_presupuesto.es_de_iva() 
-                    and importe_valor_real > valor_presupuesto.importe):
+            if (vto_presupuesto.es_de_iva() 
+                    and importe_valor_real > vto_presupuesto.importe):
                 # En el caso del IVA se muestra el importe calculado a partir 
                 # de datos reales cuando sea el mes corriente (primer "if" de 
                 # arriba) o cuando se supere la estimación.
@@ -804,26 +823,29 @@ def criterio_sustitucion(valor_presupuesto, importe_valor_real,
             # TODO
             if pclases.DEBUG:
                 print "-------->>>>", \
-                    valor_presupuesto.conceptoPresupuestoAnual.descripcion, \
-                    "; mes presup.:", valor_presupuesto.mes.month, \
-                    "; mes vto.:", valor_presupuesto.vencimiento.month, \
-                    "; presup.:", valor_presupuesto.importe, \
+                    vto_presupuesto.conceptoPresupuestoAnual.descripcion, \
+                    "; mes presup.:", \
+                        vto_presupuesto.valorPresupuestoAnual.fecha.month, \
+                    "; mes vto.:", vto_presupuesto.fecha.month, \
+                    "; presup. en mes vto.:", vto_presupuesto.importe, \
                     "; real:", importe_valor_real, 
     if pclases.DEBUG:
         print "sustituir_por_reales [", sustituir_por_reales, "]"
     return sustituir_por_reales
 
-def buscar_valor_presupuestado(fecha, concepto):
+def buscar_vencimiento_presupuestado(fecha, concepto):
     """
-    Devuelve el objeto valor del presupuesto para la fecha y concepto 
-    especificados.
+    Devuelve el objeto VencimientoValorPresupuesto del presupuesto para la 
+    fecha DE VENCIMIENTO y concepto especificados.
     """
     try:
-        return pclases.ValorPresupuestoAnual.select(pclases.AND(
-            pclases.ValorPresupuestoAnual.q.vencimiento>=primero_de_mes(fecha),
-            pclases.ValorPresupuestoAnual.q.vencimiento <= fin_de_mes(fecha), 
-            pclases.ValorPresupuestoAnual.q.conceptoPresupuestoAnualID 
-                == concepto.id))[0]
+        vtos = pclases.VencimientoValorPresupuestoAnual.select(pclases.AND(
+          pclases.VencimientoValorPresupuestoAnual.q.fecha 
+                >= primero_de_mes(fecha),
+          pclases.VencimientoValorPresupuestoAnual.q.fecha 
+                <= final_de_mes(fecha)))
+        vto = [v for v in vtos if v.conceptoPresupuestoAnual == concepto][0]
+        return vto
     except IndexError:
         return None
 

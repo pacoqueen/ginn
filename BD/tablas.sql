@@ -3146,8 +3146,8 @@ CREATE TABLE concepto_presupuesto_anual(
 CREATE TABLE vencimiento_valor_presupuesto_anual(
     id SERIAL PRIMARY KEY,
     valor_presupuesto_anual_id INT REFERENCES valor_presupuesto_anual,
-# PORASQUI: ME equivoqué en el sentido de la relación. Arreglar: patches, las bases de datos dev_ginn en nostromo, chuck-berry y pennyworth, pclases, dynconsulta y presupuesto.py
     fecha DATE NOT NULL
+    -- El importe será un campo calculado.
 );
 
 CREATE TABLE valor_presupuesto_anual(
@@ -3155,7 +3155,7 @@ CREATE TABLE valor_presupuesto_anual(
     concepto_presupuesto_anual_id INT REFERENCES concepto_presupuesto_anual NOT NULL, 
     mes DATE NOT NULL,  -- Me interesa mes y año nada más.
     importe FLOAT DEFAULT 0.0, 
-    precio FLOAT DEFAULT 1     -- Para estimaciones que sean del tipo
+    precio FLOAT DEFAULT 1      -- Para estimaciones que sean del tipo
                                 -- importe=precio*algo (toneladas para los 
                                 -- proveedores de granza, por ejemplo).
 );

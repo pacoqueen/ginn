@@ -74,6 +74,7 @@ class Presupuesto(Ventana, VentanaGenerica):
                        'b_actualizar/clicked': self.actualizar_ventana,
                        # 'b_guardar/clicked': self.guardar,
                        'b_buscar/clicked': self.buscar,
+                       # TODO: Tooltip para ver toneladas y precio presupuestado de un proveedor de granza. Ver set_tooltip_cell de TreeView
                       }  
         self.add_connections(connections)
         self.inicializar_ventana()
@@ -86,24 +87,7 @@ class Presupuesto(Ventana, VentanaGenerica):
         Devuelve True si algún valor en ventana difiere de 
         los del objeto.
         """
-        if self.objeto == None:
-            igual = True
-        else:
-            igual = self.objeto != None
-            for colname in self.dic_campos:
-                col = self.clase._SO_columnDict[colname]
-                try:
-                    valor_ventana = self.leer_valor(col, 
-                                                    self.dic_campos[colname])
-                except (ValueError, mx.DateTime.RangeError, TypeError):
-                    igual = False
-                valor_objeto = getattr(self.objeto, col.name)
-                if isinstance(col, pclases.SODateCol):
-                    valor_objeto = utils.abs_mxfecha(valor_objeto)
-                igual = igual and (valor_ventana == valor_objeto)
-                if not igual:
-                    break
-        return not igual
+        return False
     
     def inicializar_ventana(self):
         """
@@ -111,8 +95,6 @@ class Presupuesto(Ventana, VentanaGenerica):
         valores por defecto, deshabilitando los innecesarios,
         rellenando los combos, formateando el TreeView -si lo hay-...
         """
-        # Inicialmente no se muestra NADA. Sólo se le deja al
-        # usuario la opción de buscar o crear nuevo.
         self.activar_widgets(False)
         self.wids['b_actualizar'].set_sensitive(True)
         self.wids['b_guardar'].set_sensitive(False)
@@ -132,7 +114,8 @@ class Presupuesto(Ventana, VentanaGenerica):
                 self.fecha_mes_actual.year + 1,
                 self.fecha_mes_actual.month,
                 1)
-        print self.fecha_mes_actual, self.fecha_mes_final
+        if pclases.DEBUG:
+            print __file__, self.fecha_mes_actual, self.fecha_mes_final
         for m in range(12):
             mescol = ((mes - 1 + m) % 12) + 1
             fechacol = mx.DateTime.DateTimeFrom(month = mescol, 
@@ -146,8 +129,10 @@ class Presupuesto(Ventana, VentanaGenerica):
         cols += [('PUID', 'gobject.TYPE_STRING', False, False, False, None)]
         utils.preparar_treeview(self.wids['tv_datos'], cols)
         for n in range(1, 13):
-            col = self.wids['tv_datos'].get_column(n).get_cell_renderers()[0]\
-                    .set_property("xalign", 1)
+            col = self.wids['tv_datos'].get_column(n)
+            col.get_cell_renderers()[0].set_property("xalign", 1)
+        col = self.wids['tv_datos'].get_column(0)
+        col.set_expand(True)
 
     def activar_widgets(self, s, chequear_permisos = True):
         """
@@ -189,20 +174,51 @@ class Presupuesto(Ventana, VentanaGenerica):
         vpro.mostrar()
         model = self.wids['tv_datos'].get_model()
         model.clear()
-        vpro.set_valor(0, "Cargando conceptos de primer nivel...") 
-        padres = {}
-        pas = pclases.PresupuestoAnual.select()
-        pas_count = pas.count()
+        padres = self.cargar_conceptos(vpro, model)
+        mes_actual, mes_final, filas = self.cargar_subconceptos(vpro)
+        filas = self.cargar_valores(mes_actual, mes_final, filas, vpro)
+        self.volcar_a_tv(filas, vpro, padres, model)
+        # Ahora toca pasar el mes que se ha ido al final del año actual
+        self.ciclar_mes(vpro)
+        vpro.ocultar()
+
+    def volcar_a_tv(self, filas, vpro, padres, model):
         i = 0.0
-        for pa in pas:
-            fila = (pa.descripcion, 
-                    "", "", "", "", "", "", "", "", "", "", "", "", # 12 meses
-                    pa.puid)
-            nodo = model.append(None, fila) 
-            padres[pa] = nodo 
-            vpro.set_valor(i / pas_count, 
-                           "Cargando conceptos de primer nivel...") 
+        nodos_conceptos = {}
+        for concepto in filas:
+            vpro.set_valor(i / len(filas.keys()), 
+                           "Montando matriz...")
+            pa = concepto.presupuestoAnual
+            nodo_padre = padres[pa]
+            fila = [concepto.descripcion] + filas[concepto] + [concepto.puid]
+            nodos_conceptos[concepto] = model.append(nodo_padre, fila)
+            for mes_matriz in range(1, 13):
+                try:
+                    model[nodo_padre][mes_matriz] = utils.float2str(
+                            utils.parse_float(model[nodo_padre][mes_matriz]) 
+                            + fila[mes_matriz])
+                except (TypeError, ValueError):
+                    model[nodo_padre][mes_matriz] = utils.float2str(
+                            fila[mes_matriz])
             i += 1
+
+    def cargar_valores(self, mes_actual, mes_final, filas, vpro):
+        i = 0.0
+        valores = pclases.ValorPresupuestoAnual.select(
+            pclases.AND(
+                pclases.ValorPresupuestoAnual.q.mes >= mes_actual, 
+                pclases.ValorPresupuestoAnual.q.mes < mes_final)) 
+        valores_count = valores.count()
+        for valor in valores:
+            concepto = valor.conceptoPresupuestoAnual
+            mes_offset = (valor.mes.month - mes_actual.month) % 12
+            filas[concepto][mes_offset] = valor.importe
+            vpro.set_valor(i / valores_count, 
+                           "Cargando valores de presupuesto...") 
+            i += 1
+        return filas
+
+    def cargar_subconceptos(self, vpro):
         i = 0.0
         if not self.mes_actual:
             mes = mx.DateTime.localtime().month
@@ -214,79 +230,35 @@ class Presupuesto(Ventana, VentanaGenerica):
         mes_final = mx.DateTime.DateTimeFrom(mes_actual.year + 1, 
                                              mes_actual.month,
                                              1)
-        # Esto va en dynconsulta. No se utilizan valores reales aquí.
-        precalculo = []
         conceptos = pclases.ConceptoPresupuestoAnual.select()
         conceptos_count = conceptos.count()
         filas = {}
-        for c in conceptos:
-            filas[c] = [0, 0, 0, 0, 
-                        0, 0, 0, 0, 
-                        0, 0, 0, 0]
+        for concepto in conceptos:
+            filas[concepto] = []
+            for nummes in range(12):
+                filas[concepto].append(0)
             vpro.set_valor(i / conceptos_count, 
                            "Cargando conceptos de presupuesto...") 
             i += 1
+        return mes_actual, mes_final, filas
+
+    def cargar_conceptos(self, vpro, model):
+        vpro.set_valor(0, "Cargando conceptos de primer nivel...") 
+        padres = {}
+        pas = pclases.PresupuestoAnual.select()
+        pas_count = pas.count()
         i = 0.0
-        valores = pclases.ValorPresupuestoAnual.select(pclases.AND(
-            pclases.ValorPresupuestoAnual.q.mes >= mes_actual, 
-            pclases.ValorPresupuestoAnual.q.mes < mes_final)) 
-        valores_count = valores.count()
-        for v in valores:
-            c = v.conceptoPresupuestoAnual
-            mes_offset = (v.mes.month - mes_actual.month) % 12
-            if False:
-            # Esta funcionalidad es de dynconsulta. Aquí siempre datos manuales
-            #if (v.mes.month == mes_actual.month 
-            #        and c.presupuestoAnual.descripcion 
-            #                == "Proveedores granza"): # OJO: HARCODED
-                # Este valor no lo muestro. Tengo que tirar de datos reales.
-                try:
-                    filas[c][mes_offset] = precalculo[c]
-                except KeyError: # Se ha metido a mano. No hay datos reales.
-                    filas[c][mes_offset] = v.importe
-            else:
-                filas[c][mes_offset] = v.importe
-            vpro.set_valor(i / valores_count, 
-                           "Cargando valores de presupuesto...") 
+        for pa in pas:
+            fila = [pa.descripcion]
+            for nummes in range(12):
+                fila.append("")
+            fila.append(pa.puid)
+            nodo = model.append(None, fila) 
+            padres[pa] = nodo 
+            vpro.set_valor(i / pas_count, 
+                           "Cargando conceptos de primer nivel...") 
             i += 1
-        i = 0.0
-        nodos_conceptos = {}
-        for c in filas:
-            vpro.set_valor(i / len(filas.keys()), 
-                           "Montando matriz...")
-            pa = c.presupuestoAnual
-            nodo_padre = padres[pa]
-            fila = [c.descripcion] + filas[c] + [c.puid]
-            nodos_conceptos[c] = model.append(nodo_padre, fila)
-            for mes_matriz in range(1, 13):
-                try:
-                    model[nodo_padre][mes_matriz] = utils.float2str(
-                            utils.parse_float(model[nodo_padre][mes_matriz]) 
-                            + fila[mes_matriz])
-                except (TypeError, ValueError):
-                    model[nodo_padre][mes_matriz] = utils.float2str(
-                            fila[mes_matriz])
-            i += 1
-        # Vuelvo a volcar todos los valores precalculados. Puede que alguno 
-        # no se mostrara en el primer bucle por no haber valores antiguos de 
-        # ese mes y no entrara en la rama "if" (ver arriba).
-        i = 0.0
-        for c in precalculo:
-            vpro.set_valor(i / len(precalculo.keys()),
-                    "Aplicando sustitución por valores reales...")
-            pa = c.presupuestoAnual
-            nodo_padre = padres[pa]
-            nodo_concepto = nodos_conceptos[c]
-            model[nodo_concepto][1] = utils.float2str(precalculo[c])
-            try:
-                model[nodo_padre][1] = utils.float2str(
-                    utils.parse_float(model[nodo_padre][1]) + precalculo[c])
-            except (TypeError, ValueError):
-                model[nodo_padre][1] = utils.float2str(precalculo[c])
-            i += 1
-        # Ahora toca pasar el mes que se ha ido al final del año actual
-        self.ciclar_mes(vpro)
-        vpro.ocultar()
+        return padres
 
     def ciclar_mes(self, vpro):
         model = self.wids['tv_datos'].get_model()
@@ -464,9 +436,6 @@ class Presupuesto(Ventana, VentanaGenerica):
         try:
             # TODO: Permitir fórmulas y mostrar precio si es un proveedor de 
             #       granza.
-            # TODO: Si es un valor precalculado no debe dejar cambiarlo. 
-            #       Aunque realmente no se cambia, al refrescar se vuelve a 
-            #       machacar el valor tecleado.
             value = utils._float(value)
         except (TypeError, ValueError):
             utils.dialogo(titulo = "ERROR", 
@@ -493,20 +462,22 @@ class Presupuesto(Ventana, VentanaGenerica):
                 except (IndexError):
                     mes_importe = mx.DateTime.DateTimeFrom(fecha_actual.year,
                                                            mes_buscado, 1)
-                    fechas_vencimientos = o.calcular_vencimientos(mes_importe)
-                    for fecha_vto in fechas_vencimientos:
-                        v = pclases.ValorPresupuestoAnual(
-                                conceptoPresupuestoAnual = o, 
-                                mes = mes_importe,
-                                importe = value / len(fechas_vencimientos),
-                                vencimiento = fecha_vto)
-                        pclases.Auditoria.nuevo(v, self.usuario, __file__)
-                    # PRINT: PORASQUI: Probar que se están creando bien los vencimientos. ¿Está bien crear dos valores de presupuesto? ¿No debería cambiar el atributo por una relación 1 a muchos entre ValorPres... y fechas de vto.?
-                    if v < fecha_actual:
+                    v = pclases.ValorPresupuestoAnual(
+                            conceptoPresupuestoAnual = o, 
+                            mes = mes_importe,
+                            importe = value)
+                    pclases.Auditoria.nuevo(v, self.usuario, __file__)
+                    if v.mes < fecha_actual:
                         v.mes = v.mes + mx.DateTime.DateTimeFrom(
                                 year = v.mes.year + 1, 
                                 month = v.mes.month, 
                                 day = 1)
+                    fechas_vencimientos = o.calcular_vencimientos(mes_importe)
+                    for fecha_vto in fechas_vencimientos:
+                        vto = pclases.VencimientoValorPresupuestoAnual(
+                                valorPresupuestoAnual = v, 
+                                fecha = fecha_vto)
+                # OJO: HARCODED: Texto "Proveedores granza" para identificarlo.
                 if o.presupuestoAnual.descripcion == "Proveedores granza":
                     precio = utils.dialogo_entrada(titulo = "PRECIO TONELADA", 
                             texto = "Modifique el precio por tonelada estimado"
@@ -554,6 +525,9 @@ class Presupuesto(Ventana, VentanaGenerica):
                 delta = v.importe - valor_anterior
                 model[path_padre][mes_offset + 1] = utils._float(
                         model[path_padre][mes_offset + 1]) + delta 
+                if v.importe == 0:
+                    v.destroy_en_cascada(usuario = self.usuario, 
+                                         ventana = __file__)
 
 
 if __name__ == "__main__":

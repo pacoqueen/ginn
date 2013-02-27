@@ -20560,7 +20560,7 @@ class Auditoria(SQLObject, PRPCTOO):
             except IndexError:
                 ventana = None
         if not descripcion:
-            descripcion = objeto.get_info()
+            descripcion = objeto.get_info().replace("'", "`")
         if not usuario:
             usuario = logged_user
         Auditoria(usuario = usuario, 
@@ -21006,10 +21006,65 @@ class VencimientoValorPresupuestoAnual(SQLObject, PRPCTOO):
 
     @property
     def importe(self):
+        self.valorPresupuestoAnual.sync()
         valor = self.valorPresupuestoAnual.importe
         importe = valor / len(
                 self.valorPresupuestoAnual.vencimientosValorPresupuestoAnual)
         return importe
+
+    @property
+    def toneladas(self):
+        """
+        Si el valor es de un proveedor de granza, devuelve las toneladas 
+        calculadas como importe / precio por tonelada. Si no, lanza una 
+        excepción ValueError.
+        """
+        if self.valorPresupuestoAnual.es_de_granza():
+            return self.importe / self.precio
+        else:
+            raise ValueError
+
+    @property
+    def precio(self):
+        self.valorPresupuestoAnual.sync()
+        return self.valorPresupuestoAnual.precio
+
+    @property
+    def conceptoPresupuestoAnual(self):
+        return self.valorPresupuestoAnual.conceptoPresupuestoAnual
+
+    @property
+    def mes(self):
+        return self.fecha
+
+    @mes.setter
+    def mes(self, value):
+        self.fecha = value
+
+    def es_de_granza(self):
+        return self.valorPresupuestoAnual.es_de_granza()
+    
+    def es_de_iva(self):
+        return self.valorPresupuestoAnual.es_de_iva()
+
+    @classmethod
+    def _remove_dupes(classVVPA):
+        """
+        Comprueba y elimina cualquier vencimiento duplicado para el mismo 
+        concepto y fecha.
+        """
+        dupes = []
+        for vto in classVVPA.select():
+            if vto not in dupes:
+                for vto_dup in classVVPA.select(AND(classVVPA.q.id != vto.id, 
+                                        classVVPA.q.fecha == vto.fecha, 
+                                        classVVPA.q.valorPresupuestoAnualID
+                                            == vto.valorPresupuestoAnual.id)):
+                    dupes.append(vto_dup)
+        to_drop = len(dupes)
+        for vto in dupes:
+            vto.destroy()
+        return to_drop
 
 class ValorPresupuestoAnual(SQLObject, PRPCTOO):
     _connection = conn
@@ -21019,9 +21074,18 @@ class ValorPresupuestoAnual(SQLObject, PRPCTOO):
             "VencimientoValorPresupuestoAnual")
 
     def _init(self, *args, **kw):
-        if not vencimientosValorPresupuestoAnual:
-            print "LOS TENGO QUE CREAR"
         starter(self, *args, **kw)
+        if not self.vencimientosValorPresupuestoAnual:
+            concepto = self.conceptoPresupuestoAnual
+            vencimientos = concepto.calcular_vencimientos(self.mes)
+            for v in vencimientos:
+                vto = VencimientoValorPresupuestoAnual(
+                        valorPresupuestoAnual = self, 
+                        fecha = v)
+                Auditoria.nuevo(vto, None, __file__)
+                if DEBUG:
+                    print "ValorPresupuestoAnual::_init -> (%s) "\
+                            "Vto. %s creado." % (self.puid, vto.get_info())
 
     def get_info(self):
         return "(%d) %s: %s. Mes presupuesto: %s. Fecha vencimiento: %s." % (
@@ -21031,30 +21095,20 @@ class ValorPresupuestoAnual(SQLObject, PRPCTOO):
                                         utils.float2str(v.importe))
                            for v in self.vencimientosValorPresupuestoAnual]))
 
-    @classmethod
-    ###########################################################################
-    # Para actualizar los valores cuando "upgradee":
-    def _upgradear(classVPA):
-        # Only for upgrading purposes. DO NOT USE ON DEPLOY OR PRODUCTION.
-        for v in classVPA.select(): 
-            concepto = v.conceptoPresupuestoAnual
-            vencimientos = concepto.calcular_vencimientos(v.mes)
-            if len(vencimientos) == 1:
-                v.vencimiento = vencimientos[0]
-            else:
-                numvtos = len(vencimientos)
-                v.vencimiento = vencimientos.pop()
-                v.importe /= numvtos
-                while vencimientos:
-                    nv = v.clone(vencimiento = vencimientos.pop())
-    ###########################################################################
-
     @property
     def concepto(self):
         try:
             return self.conceptoPresupuestoAnual.descripcion
         except AttributeError:
             return ""
+
+    @property
+    def fecha(self):
+        return self.mes
+
+    @fecha.setter
+    def fecha(self, value):
+        self.mes = value
 
     def es_de_granza(self):
         """
