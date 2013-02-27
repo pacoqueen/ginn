@@ -8317,15 +8317,15 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
         """
         proveedores = []
         for pedido in self.get_pedidos():
-            if (pedido.proveedorID != None 
+            if (pedido.proveedor
                 and pedido.proveedor not in proveedores):
                 proveedores.append(pedido.proveedor)
         for albaran in self.get_albaranes():
-            if (albaran.proveedorID != None 
+            if (albaran.proveedor
                 and albaran.proveedor not in proveedores):
                 proveedores.append(albaran.proveedor)
         for factura in self.get_facturas():
-            if (factura.proveedorID != None 
+            if (factura.proveedor
                 and factura.proveedor not in proveedores):
                 proveedores.append(factura.proveedor)
         return proveedores

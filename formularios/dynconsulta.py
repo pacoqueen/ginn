@@ -822,7 +822,7 @@ def criterio_sustitucion(vto_presupuesto, importe_valor_real,
             ### Caso ventas.
             # TODO
             if pclases.DEBUG:
-                print "-------->>>>", \
+                print __file__, "-------->>>>", \
                     vto_presupuesto.conceptoPresupuestoAnual.descripcion, \
                     "; mes presup.:", \
                         vto_presupuesto.valorPresupuestoAnual.fecha.month, \

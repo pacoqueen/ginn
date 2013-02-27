@@ -156,6 +156,7 @@ class Presupuesto(Ventana, VentanaGenerica):
             self.check_permisos(nombre_fichero_ventana = "presupuesto.py")
 
     def actualizar_ventana(self, boton = None):
+        print __file__, "actualizar_ventana"
         self.rellenar_widgets()
 
     def rellenar_widgets(self):
@@ -179,7 +180,7 @@ class Presupuesto(Ventana, VentanaGenerica):
         filas = self.cargar_valores(mes_actual, mes_final, filas, vpro)
         self.volcar_a_tv(filas, vpro, padres, model)
         # Ahora toca pasar el mes que se ha ido al final del año actual
-        self.ciclar_mes(vpro)
+        #self.ciclar_mes(vpro)
         vpro.ocultar()
 
     def volcar_a_tv(self, filas, vpro, padres, model):
@@ -293,11 +294,11 @@ class Presupuesto(Ventana, VentanaGenerica):
             # para ver si está todo a cero.
             for fila in model:
                 if pclases.DEBUG:
-                    print fila[0], fila[-2] and utils._float(fila[-2])
+                    print __file__, fila[0], fila[-2] and utils._float(fila[-2])
                 if fila[-2] and utils._float(fila[-2]) != 0:
                     pasar_mes = False
                     break
-            if pclases.DEBUG: print "(1) >>> pasar_mes", pasar_mes
+            if pclases.DEBUG: print __file__, "(1) >>> pasar_mes", pasar_mes
             # Valores antiguos los busco en el año pasado.
             anno_pasado = restar_mes(ultimo_mes_en_tabla, 12)
             anno_pasado_mas_1_mes = restar_mes(anno_pasado, -1)
@@ -313,8 +314,8 @@ class Presupuesto(Ventana, VentanaGenerica):
             if pclases.DEBUG:
                 print __file__, valores_count
                 for v in valores_clonar:
-                    print v.get_info(), v.importe
-            if pclases.DEBUG: print "(2) >>> pasar_mes", pasar_mes
+                    print __file__, v.get_info(), v.importe
+            if pclases.DEBUG: print __file__, "(2) >>> pasar_mes", pasar_mes
             if pasar_mes:
                 # Copio a valores nuevos
                 i = 0.0
@@ -430,7 +431,6 @@ class Presupuesto(Ventana, VentanaGenerica):
                 o.descripcion = value
                 o.syncUpdate()
                 model[path][0] = o.descripcion
-                #self.actualizar_ventana(None)
 
     def cambiar_importe(self, cell, path, value, mes_offset):
         try:
