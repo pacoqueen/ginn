@@ -573,8 +573,7 @@ def precalcular(fecha_ini, fecha_fin, ventana_padre = None, usuario = None):
     # 3.- Ventas por tipo (internacionales, geotextiles, geocompuestos...)
     calcular_ventas(res, vpro, fecha_ini, fecha_fin)
     # 4.- Compras que no son de granza
-# TODO: PORASQUI: Aparte de esta función, también me falta un diálogo de progreso al volcar al TV. Tarda bastante y solo tengo progreso cuando busco al parecer.
-    #calcular_compras_no_granza(res, vpro, fecha_ini, fecha_fin)
+    calcular_compras_no_granza(res, vpro, fecha_ini, fecha_fin)
     if pclases.DEBUG:
         print __file__, res
     return res
@@ -648,7 +647,6 @@ def calcular_ventas(res, vpro, fechaini, fechafin):
     fin.
     """
     vpro.mover()
-    concepto = buscar_concepto_iva()
     fecha = fechaini
     while fecha <= fechafin:
         vpro.mover()
@@ -820,6 +818,198 @@ def buscar_concepto_ldv(cliente, producto = None):
                 proveedor = None)
     return concepto
 
+def calcular_compras_no_granza(res, vpro, fechaini, fechafin):
+    """
+    Calcula y clasifica las compras realizadas entre las fechas de inicio y 
+    fin.
+    """
+    vpro.mover()
+    fecha = fechaini
+    granzas = buscar_productos_granza()
+    while fecha <= fechafin:
+        vpro.mover()
+        ldc_vencimientos_compras, srv_vencimientos_compras \
+            = buscar_vencimientos_compras_no_granza(vpro, fecha, granzas)
+        vpro.mover()
+        lineas_no_facturadas, servicios_no_facturados \
+            = buscar_lineas_albaranes_compra_no_granza(vpro, fecha, granzas)
+        vpro.mover()
+        clasificar_compras(res, ldc_vencimientos_compras, 
+                          srv_vencimientos_compras, lineas_no_facturadas, 
+                          servicios_no_facturados, fecha, vpro)
+        fecha = restar_mes(fecha, -1)
+
+def buscar_vencimientos_compras_no_granza(vpro, fecha, granzas):
+    """
+    Devuelve líneas de compra y servicios correspondientes a vencimientos de 
+    facturas en el mes indicado por «fecha» que no sean de granza.
+    """
+    fini = primero_de_mes(fecha)
+    ffin = final_de_mes(fecha)
+    vtos_compra = pclases.VencimientoPago.select(pclases.AND(
+        pclases.VencimientoPago.q.fecha >= fini, 
+        pclases.VencimientoPago.q.fecha <= ffin))
+    ldcs = []
+    srvs = []
+    for v in vtos_compra:
+        vpro.mover()
+        f = v.facturaCompra
+        for ldc in f.lineasDeCompra:
+            if ldc.productoCompra not in granzas and ldc not in ldcs:
+                ldcs.append(ldc)
+            vpro.mover()
+        for srv in f.serviciosTomados:
+            if srv not in srvs:
+                srvs.append(srv)
+            vpro.mover()
+    return ldcs, srvs
+
+def buscar_lineas_albaranes_compra_no_granza(vpro, fecha, granzas):
+    """
+    Devuelve las líneas de compra correspondientes a albaranes no facturados 
+    del mes indicado por la fecha «fecha» que no sean de granza.
+    """
+    fini = primero_de_mes(fecha)
+    ffin = final_de_mes(fecha)
+    albs = pclases.AlbaranEntrada.select(pclases.AND(
+        pclases.AlbaranEntrada.q.fecha >= fini, 
+        pclases.AlbaranEntrada.q.fecha <= ffin))
+    # Filtro y me quedo con las líneas no facturadas y que no sean de granza.
+    ldcs = []
+    srvs = []
+    for a in albs:
+        vpro.mover()
+        for ldc in a.lineasDeCompra:
+            vpro.mover()
+            if not ldc.factura and ldc.productoCompra not in granzas:
+                ldcs.append(ldc)
+        for srv in a.servicios:
+            vpro.mover()
+            if not srv.factura:
+                srvs.append(srv)
+    return ldcs, srvs
+
+def clasificar_compras(res, ldc_facturadas, srv_facturados, ldc_no_facturadas, 
+                      srv_no_facturados, fecha, vpro):
+    """
+    De los dos grupos de líneas de compra recibidos determina su importe, fecha 
+    de vencimiento y concepto donde clasificarlas. Incrementa la celda* de la 
+    columna de fecha de vencimiento y fila del concepto en la cantidad del 
+    importe de la línea de venta. Si tiene varios vencimientos, prorratea la 
+    cantidad.
+    * En realidad el importe real en el diccionario de la celda que ocupará si 
+    supera el criterio de sustitución.
+    """
+    for ldc in ldc_facturadas:
+        vpro.mover()
+        importe_prorrateado_ldc = ldc.get_subtotal(prorrateado = True)
+        concepto = buscar_concepto_ldc(ldc.facturaCompra.proveedor, 
+                                       ldc.productoCompra)
+        if not fecha in res:
+            res[fecha] = {}
+        try:
+            res[fecha][concepto]['importe'] += importe_prorrateado_ldc
+        except KeyError:
+            res[fecha][concepto] = {'importe': importe_prorrateado_ldc}
+    for srv in srv_facturados:
+        vpro.mover()
+        importe_prorrateado_srv = srv.get_subtotal(prorrateado = True)
+        concepto = buscar_concepto_ldc(srv.facturaCompra.proveedor, None)
+        if not fecha in res:
+            res[fecha] = {}
+        try:
+            res[fecha][concepto]['importe'] += importe_prorrateado_srv
+        except KeyError:
+            res[fecha][concepto] = {'importe': importe_prorrateado_srv}
+    for ldc in ldc_no_facturadas:
+        # En este caso la fecha no es la fecha de vencimiento, sino la del 
+        # albarán. Así que necesito determinar cuándo vence según el 
+        # proveedor.
+        vpro.mover()
+        importe_prorrateado_ldc = ldc.get_subtotal(prorrateado = True)
+        concepto = buscar_concepto_ldc(ldc.albaranEntrada.proveedor, 
+                                       ldc.productoCompra)
+        fechas = ldc.albaranEntrada.proveedor.get_fechas_vtos_por_defecto(
+                                                    ldc.albaranEntrada.fecha)
+        if not fechas:
+            fechas = [fecha]    # Uso la del albarán porque el proveedor no 
+                                # tiene información suficiente.
+        for fecha in fechas:
+            if not fecha in res:
+                res[fecha] = {}
+            try:
+                res[fecha][concepto]['importe'] += importe_prorrateado_ldc
+            except KeyError:
+                res[fecha][concepto] = {'importe': importe_prorrateado_ldc}
+    for srv in srv_no_facturados:
+        # En este caso la fecha no es la fecha de vencimiento, sino la del 
+        # albarán. Así que necesito determinar cuándo vence según el 
+        # proveedor.
+        vpro.mover()
+        importe_prorrateado_srv = srv.get_subtotal(prorrateado = True)
+        concepto = buscar_concepto_ldc(srv.albaranEntrada.proveedor, None)
+        fechas = srv.albaranEntrada.proveedor.get_fechas_vtos_por_defecto(
+                                                    srv.albaranEntrada.fecha)
+        if not fechas:
+            fechas = [fecha]    # Uso la del albarán porque el proveedor no 
+                                # tiene información suficiente.
+        for fecha in fechas:
+            if not fecha in res:
+                res[fecha] = {}
+            try:
+                res[fecha][concepto]['importe'] += importe_prorrateado_srv
+            except KeyError:
+                res[fecha][concepto] = {'importe': importe_prorrateado_srv}
+
+def buscar_concepto_ldc(proveedor, producto = None):
+    """
+    Devuelve el concepto de presupuesto que corresponde al proveedor y 
+    producto recibido. Si no se recibe producto se considera que es un 
+    servicio y devuelve el tipo de concepto "General".
+    """
+    # Concepto por defecto, el del proveedor.
+    try:
+        proveedor.sync()
+        tdp = proveedor.tipoDeProveedor.descripcion
+    except AttributeError: # No está clasificado por los usuarios. Uso resto.
+        tdp = "Resto"
+    if tdp == "Granza":     # Si por la ldc no puedo sacar el tipo, entonces 
+        tdp = "Resto"       # lo clasifico como general. Porque todas las 
+                            # compras de granza ya se tratan en otro sitio. 
+    # Ahora afino en función del tipo de producto de la línea de venta. 
+    if producto:
+        producto.sync()
+        tdm = producto.tipoDeMaterial
+        # OJO: HARCODED. Tipos de material conocidos. Si se crearan nuevos, 
+        # caería en el tipo del proveedor.
+        iny = {'Materia Prima': None,   # Usaré el del proveedor. 
+               'Material adicional': 'Materiales', 
+               'Mantenimiento': 'Materiales', 
+               'Repuestos geotextiles': 'Repuestos', 
+               'Repuestos fibra': 'Repuestos', 
+               'Aceites y lubricantes': 'Materiales', 
+               'Mercancía inicial Valdemoro': 'Comercializados', 
+               'Productos comercializados': 'Comercializados', 
+               'Comercializados': 'Comercializados'}
+        try:
+            tdpiny = iny[tdm]
+        except KeyError:
+            pass    # Si no está o no tiene, uso el del proveedor.
+        else:
+            if tdpiny != None:
+                tdp = tdpiny
+    try:
+        concepto = pclases.ConceptoPresupuestoAnual.selectBy(
+                                                        descripcion = tdp)[0]
+    except IndexError:
+        # No existe el concepto. DEBERÍA. Lo creo.
+        concepto = pclases.ConceptoPresupuestoAnual(
+                descripcion = "%s - %s" % (nac, tdp), 
+                presupuestoAnual = pclases.PresupuestoAnual.selectBy(
+                    descripcion = "Proveedores")[0], 
+                proveedor = None)
+    return concepto
+
 def restar_mes(fecha = mx.DateTime.today(), meses = 1):
     if meses > 0:
         try:
@@ -869,6 +1059,7 @@ def calcular_entradas_de_granza(vpro, fecha_ini, fecha_fin, usuario):
     vpro.mover()
     # Filtro para quedarme con los de granza:
     clasificar_albaranes_de_entrada(albs, granzas, usuario, res, vpro)
+    vpro.mover()
     vpro.ocultar()
     return res
 

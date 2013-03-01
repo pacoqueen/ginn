@@ -91,7 +91,8 @@ CREATE TABLE concepto_presupuesto_anual(
     id SERIAL PRIMARY KEY, 
     presupuesto_anual_id INT REFERENCES presupuesto_anual NOT NULL, 
     descripcion TEXT DEFAULT '', 
-    proveedor_id INT REFERENCES proveedor DEFAULT NULL
+    proveedor_id INT REFERENCES proveedor DEFAULT NULL, 
+    inmutable BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE vencimiento_valor_presupuesto_anual(

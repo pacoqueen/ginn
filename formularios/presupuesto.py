@@ -419,6 +419,8 @@ class Presupuesto(Ventana, VentanaGenerica):
         puid = model[path][-1]
         o = pclases.getObjetoPUID(puid)
         if isinstance(o, pclases.ConceptoPresupuestoAnual): 
+            # FIXME: ¿Y si es un concepto de primer nivel creado por el 
+            # usuario? ¿No lo puede cambiar o qué?
             if o.proveedor:
                 utils.dialogo_info(titulo = "PROVEEDOR NO MODIFICABLE", 
                         texto = "El nombre del proveedor no se puede cambiar \n"
@@ -427,8 +429,15 @@ class Presupuesto(Ventana, VentanaGenerica):
                                 "elimine la línea e introduzca un nuevo \n"
                                 "proveedor en su lugar.", 
                         padre = self.wids['ventana'])
+            elif o.inmutable:
+                utils.dialogo_info(titulo = "CONCEPTO NO MODIFICABLE", 
+                        texto = "El concepto seleccionado no se puede \n"
+                                "modificar. Corresponde a cálculos \n"
+                                "predefinidos por la aplicación. \n"
+                                "Cree un nuevo concepto con el nuevo \n"
+                                "nombre si lo necesita.", 
+                        padre = self.wids['ventana'])
             else:
-                # PORASQUI: TODO: Tampoco puedo impedir que me hagan cambios en los conceptos prefijados de ventas o no funcionará la clasificación de dynconsulta.
                 o.descripcion = value
                 o.syncUpdate()
                 model[path][0] = o.descripcion

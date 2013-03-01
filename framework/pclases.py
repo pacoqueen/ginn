@@ -16314,7 +16314,7 @@ class FacturaVenta(SQLObject, PRPCTOO, SuperFacturaVenta):
             destinatarios.append("rodriguez.bogado@gmail.com")
             destinatarios.append("frbogado@novaweb.es")
         if destinatarios:
-            # TODO: Datos de cuenta de correo y servidor HARCODED.
+            # TODO: FIXME: Datos de correo HARCODED e incorrectos, para colmo.
             remitente = ("comercialgeotexan@gea21.es", 
                          "comercialgeotexan@gea21.es", "comgeo98")
             if asunto is None:
