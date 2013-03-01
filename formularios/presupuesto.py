@@ -428,6 +428,7 @@ class Presupuesto(Ventana, VentanaGenerica):
                                 "proveedor en su lugar.", 
                         padre = self.wids['ventana'])
             else:
+                # PORASQUI: TODO: Tampoco puedo impedir que me hagan cambios en los conceptos prefijados de ventas o no funcionará la clasificación de dynconsulta.
                 o.descripcion = value
                 o.syncUpdate()
                 model[path][0] = o.descripcion
