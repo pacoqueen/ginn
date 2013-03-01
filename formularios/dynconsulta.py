@@ -49,8 +49,6 @@ from albaranes_de_salida import buscar_proveedor
 from widgets import replace_widget
 import pprint, collections
 
-pclases.DEBUG = True
-
 class TransformedDict(collections.MutableMapping):
     """
     A dictionary which applies an arbitrary key-altering function before 
@@ -573,7 +571,10 @@ def precalcular(fecha_ini, fecha_fin, ventana_padre = None, usuario = None):
     # 2.- IVA (soportado - repercutido)
     calcular_iva_real(res, vpro, fecha_ini, fecha_fin)
     # 3.- Ventas por tipo (internacionales, geotextiles, geocompuestos...)
-    #calcular_ventas(res, vpro, fecha_ini, fecha_fin)
+    calcular_ventas(res, vpro, fecha_ini, fecha_fin)
+    # 4.- Compras que no son de granza
+# TODO: PORASQUI: Aparte de esta función, también me falta un diálogo de progreso al volcar al TV. Tarda bastante y solo tengo progreso cuando busco al parecer.
+    #calcular_compras_no_granza(res, vpro, fecha_ini, fecha_fin)
     if pclases.DEBUG:
         print __file__, res
     return res
@@ -603,8 +604,8 @@ def calcular_iva_real(res, vpro, fechaini, fechafin):
                 res[fecha][concepto] = {'importe': importe_iva}
         fecha = restar_mes(fecha, -1)
     # FIXME: Devuelvo en negativo o positivo, pero el resto de cifras (ventas, 
-    # compras, salarios, etc.) va en positivo aunque sean gastos. Preguntar en 
-    # la siguiente reunión.
+    # compras, salarios, etc.) va en positivo aunque sean gastos. Convertir a  
+    # negativo automáticamente aquí y en presupuesto si es de tipo gasto.
 
 def buscar_concepto_iva():
     # OJO: Harcoded
@@ -640,6 +641,184 @@ def calcular_repercutido(vpro, fecha):
         pclases.FacturaVenta.q.fecha <= ffin))
     iva = sum([f.calcular_total_iva() for f in frasventa])
     return iva
+
+def calcular_ventas(res, vpro, fechaini, fechafin):
+    """
+    Calcula y clasifica las ventas realizadas entre las fechas de inicio y 
+    fin.
+    """
+    vpro.mover()
+    concepto = buscar_concepto_iva()
+    fecha = fechaini
+    while fecha <= fechafin:
+        vpro.mover()
+        ldv_vencimientos_ventas, srv_vencimientos_ventas \
+                = buscar_vencimientos_ventas(vpro, fecha)
+        vpro.mover()
+        lineas_no_facturadas, servicios_no_facturados \
+                = buscar_lineas_albaranes_venta(vpro, fecha)
+        vpro.mover()
+        clasificar_ventas(res, ldv_vencimientos_ventas, 
+                          srv_vencimientos_ventas, lineas_no_facturadas, 
+                          servicios_no_facturados, fecha, vpro)
+        fecha = restar_mes(fecha, -1)
+
+def buscar_vencimientos_ventas(vpro, fecha):
+    """
+    Devuelve líneas de venta y servicios correspondientes a vencimientos de 
+    facturas en el mes indicado por «fecha».
+    """
+    fini = primero_de_mes(fecha)
+    ffin = final_de_mes(fecha)
+    vtos_venta = pclases.VencimientoCobro.select(pclases.AND(
+        pclases.VencimientoCobro.q.fecha >= fini, 
+        pclases.VencimientoCobro.q.fecha <= ffin))
+    ldvs = []
+    srvs = []
+    for v in vtos_venta:
+        vpro.mover()
+        f = v.factura
+        for ldv in f.lineasDeVenta:
+            if ldv not in ldvs:
+                ldvs.append(ldv)
+            vpro.mover()
+        for srv in f.servicios:
+            if srv not in srvs:
+                srvs.append(srv)
+            vpro.mover()
+    return ldvs, srvs
+
+def buscar_lineas_albaranes_venta(vpro, fecha):
+    """
+    Devuelve las líneas de venta correspondientes a albaranes no facturados 
+    del mes indicado por la fecha «fecha».
+    """
+    fini = primero_de_mes(fecha)
+    ffin = final_de_mes(fecha)
+    albs = pclases.AlbaranSalida.select(pclases.AND(
+        pclases.AlbaranSalida.q.fecha >= fini, 
+        pclases.AlbaranSalida.q.fecha <= ffin))
+    # Filtro y me quedo con las líneas no facturadas
+    ldvs = []
+    srvs = []
+    for a in albs:
+        vpro.mover()
+        for ldv in a.lineasDeVenta:
+            vpro.mover()
+            if not ldv.factura:
+                ldvs.append(ldv)
+        for srv in a.servicios:
+            vpro.mover()
+            if not srv.factura:
+                srvs.append(srv)
+    return ldvs, srvs
+
+def clasificar_ventas(res, ldv_facturadas, srv_facturados, ldv_no_facturadas, 
+                      srv_no_facturados, fecha, vpro):
+    """
+    De los dos grupos de líneas de venta recibidos determina su importe, fecha 
+    de vencimiento y concepto donde clasificarlas. Incrementa la celda* de la 
+    columna de fecha de vencimiento y fila del concepto en la cantidad del 
+    importe de la línea de venta. Si tiene varios vencimientos, prorratea la 
+    cantidad.
+    * En realidad el importe real en el diccionario de la celda que ocupará si 
+    supera el criterio de sustitución.
+    """
+    for ldv in ldv_facturadas:
+        vpro.mover()
+        importe_prorrateado_ldv = ldv.get_subtotal(prorrateado = True)
+        concepto = buscar_concepto_ldv(ldv.factura.cliente, ldv.producto)
+        if not fecha in res:
+            res[fecha] = {}
+        try:
+            res[fecha][concepto]['importe'] += importe_prorrateado_ldv
+        except KeyError:
+            res[fecha][concepto] = {'importe': importe_prorrateado_ldv}
+    for srv in srv_facturados:
+        vpro.mover()
+        importe_prorrateado_srv = srv.get_subtotal(prorrateado = True)
+        concepto = buscar_concepto_ldv(srv.factura.cliente, None)
+        if not fecha in res:
+            res[fecha] = {}
+        try:
+            res[fecha][concepto]['importe'] += importe_prorrateado_srv
+        except KeyError:
+            res[fecha][concepto] = {'importe': importe_prorrateado_srv}
+    for ldv in ldv_no_facturadas:
+        # En este caso la fecha no es la fecha de vencimiento, sino la del 
+        # albarán. Así que necesito determinar cuándo vence según el 
+        # cliente.
+        vpro.mover()
+        importe_prorrateado_ldv = ldv.get_subtotal(prorrateado = True)
+        concepto = buscar_concepto_ldv(ldv.albaranSalida.cliente, ldv.producto)
+        fechas = ldv.albaranSalida.cliente.get_fechas_vtos_por_defecto(
+                                                    ldv.albaranSalida.fecha)
+        if not fechas:
+            fechas = [fecha]    # Uso la del albarán porque el cliente no 
+                                # tiene información suficiente.
+        for fecha in fechas:
+            if not fecha in res:
+                res[fecha] = {}
+            try:
+                res[fecha][concepto]['importe'] += importe_prorrateado_ldv
+            except KeyError:
+                res[fecha][concepto] = {'importe': importe_prorrateado_ldv}
+    for srv in srv_no_facturados:
+        # En este caso la fecha no es la fecha de vencimiento, sino la del 
+        # albarán. Así que necesito determinar cuándo vence según el 
+        # cliente.
+        vpro.mover()
+        importe_prorrateado_srv = srv.get_subtotal(prorrateado = True)
+        concepto = buscar_concepto_ldv(srv.albaranSalida.cliente, None)
+        fechas = srv.albaranSalida.cliente.get_fechas_vtos_por_defecto(
+                                                    srv.albaranSalida.fecha)
+        if not fechas:
+            fechas = [fecha]    # Uso la del albarán porque el cliente no 
+                                # tiene información suficiente.
+        for fecha in fechas:
+            if not fecha in res:
+                res[fecha] = {}
+            try:
+                res[fecha][concepto]['importe'] += importe_prorrateado_srv
+            except KeyError:
+                res[fecha][concepto] = {'importe': importe_prorrateado_srv}
+
+def buscar_concepto_ldv(cliente, producto = None):
+    """
+    Devuelve el concepto de presupuesto que corresponde al cliente y 
+    producto recibido. Si no se recibe producto se considera que es un 
+    servicio y devuelve el tipo de concepto "General".
+    """
+    # Concepto por defecto, el del cliente.
+    if cliente.es_extranjero():
+        nac = "Internacionales"
+    else:
+        nac = "Nacionales"
+    try:
+        tdp = cliente.tipoDeCliente.descripcion
+    except AttributeError: # No está clasificado por los usuarios. Uso general.
+        tdp = "General"
+    # Ahora afino en función del tipo de producto de la línea de venta. 
+    try:
+        if producto.es_fibra():
+            tdp = "Fibra"
+        elif producto.es_bigbag() or producto.es_bolsa() or producto.es_caja():
+            tdp = "Geocem"
+        elif isinstance(producto, pclases.ProductoCompra):
+            tdp = "Comercializado"
+    except AttributeError:
+        pass
+    try:
+        concepto = pclases.ConceptoPresupuestoAnual.selectBy(
+                descripcion = "%s - %s" % (nac, tdp))[0]
+    except IndexError:
+        # No existe el concepto. DEBERÍA. Lo creo.
+        concepto = pclases.ConceptoPresupuestoAnual(
+                descripcion = "%s - %s" % (nac, tdp), 
+                presupuestoAnual = pclases.PresupuestoAnual.selectBy(
+                    descripcion = "Clientes")[0], 
+                proveedor = None)
+    return concepto
 
 def restar_mes(fecha = mx.DateTime.today(), meses = 1):
     if meses > 0:
@@ -886,7 +1065,15 @@ def criterio_sustitucion(vto_presupuesto, importe_valor_real,
                 # arriba) o cuando se supere la estimación.
                 sustituir_por_reales = True
             ### Caso ventas.
-            # TODO
+            if (vto_presupuesto.es_de_ventas()
+                    and importe_valor_real > vto_presupuesto.importe):
+                # Solo sustituyo cuando supere lo previsto.
+                sustituir_por_reales = True
+            ### Caso resto proveedores.
+            if (vto_presupuesto.es_de_compras() 
+                    and importe_valor_real > vto_presupuesto.importe):
+                # Solo sustituyo cuando supere lo previsto.
+                sustituir_por_reales = True
             if pclases.DEBUG:
                 print __file__, "-------->>>>", \
                     vto_presupuesto.conceptoPresupuestoAnual.descripcion, \

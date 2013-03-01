@@ -2590,6 +2590,10 @@ class VencimientoCobro(SQLObject, PRPCTOO):
         """
         return self.facturaVenta or self.prefactura
 
+    @property
+    def factura(self):
+        return self.get_factura_o_prefactura()
+
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 class PagarePago(SQLObject, PRPCTOO):
@@ -4615,7 +4619,7 @@ class Proveedor(SQLObject, PRPCTOO):
     def get_texto_forma_pago(self):
         """
         Devuelve un texto que representa la forma de pago del proveedor. 
-        Por ejemplo:  efectivo, pagaré 90 D.F.F., transferencia banco 1234-23-...
+        Por ejemplo:  efectivo, pagaré 90 D.F.F., transferencia banco 1423-...
         """
         formapago = ""
         if self.documentodepago != None and self.documentodepago.strip() != "" and self.documentodepago.strip() != "0":
@@ -4804,7 +4808,7 @@ class Proveedor(SQLObject, PRPCTOO):
                 try:
                     res = [int(i) for i in lista_vtos if i != '']
                 except TypeError, msg:
-                    print "ERROR: pclases::cliente.get_vencimientos()-> %s" % (
+                    print "ERROR: pclases::proveedor.get_vencimientos()-> %s"%(
                         msg)
         return res
 
@@ -6628,6 +6632,10 @@ class LineaDeVenta(SQLObject, PRPCTOO, Venta):
         """
         return self.facturaVenta or self.prefactura
 
+    @property
+    def factura(self):
+        return self.get_factura_o_prefactura()
+
     def get_producto(self):
         """
         Devuelve el objeto producto relacionado con la línea de venta, sea 
@@ -6859,10 +6867,14 @@ class LineaDeVenta(SQLObject, PRPCTOO, Venta):
     cantidad_albaraneada = property(get_cantidad_albaraneada)
     cantidad_total_solicitada_del_producto = property(get_cantidad_total_solicitada_del_producto)
 
-    def get_subtotal(self, iva = False, descuento = True, precision = None):
+    def get_subtotal(self, iva = False, descuento = True, precision = None, 
+                     prorrateado = False):
         """
         Devuelve el subtotal con o sin IVA (según se indique) de 
         la línea de compra: precio * cantidad - descuento.
+        Si prorrateado es True devuelve el importe correspondiente 
+        proporcional a un vencimiento de la factura o del proveedor si 
+        corresponde a un albarán no facturado.
         """
         asserterror = "Precision debe ser None o un número entero postivo."
         assert precision == None or (isinstance(precision, int) 
@@ -6882,6 +6894,17 @@ class LineaDeVenta(SQLObject, PRPCTOO, Venta):
                 res *= 1 + self.albaranSalida.cliente.iva
             elif self.ticketID != None:
                 res *= 1.21     # PVP siempre 21% de IVA.
+        if prorrateado:
+            try:
+                numvtos = len(self.facturaVenta.vencimientosCobro)
+            except AttributeError:
+                try:
+                    cliente = (self.pedidoVenta and self.pedidoVenta.cliente 
+                                or self.albaranSalida.cliente)
+                    numvtos = len(cliente.get_vencimientos) or 1
+                except AttributeError:
+                    numvtos = 1
+            res /= numvtos
         if precision != None:
             res = round(res, precision)
         return res
@@ -14448,6 +14471,46 @@ class Cliente(SQLObject, PRPCTOO):
             iva = 0.18  # IVA estándar oficial antes del 1 de sept. de 2.012
         return iva
 
+    def get_fechas_vtos_por_defecto(self, fecha):
+        """
+        Devuelve una lista ordenada de fechas de vencimientos a 
+        partir de los vencimientos, día de pago y tomando la 
+        fecha recibida como base.
+        En caso de que el proveedor no tenga la información necesaria 
+        devuelve una lista vacía.
+        """
+        res = []
+        vtos = self.get_vencimientos()
+        try:
+            diacobro = int(self.diadepago)
+        except (TypeError, ValueError):
+            diacobro = None
+        for incr in vtos:
+            res.append(fecha + incr)
+            if diacobro != None:
+                while True:
+                    try:
+                        res[-1] = mx.DateTime.DateTimeFrom(
+                                    day = diacobro, 
+                                    month = res[-1].month, 
+                                    year = res[-1].year)
+                        break
+                    except:
+                        diacobro -= 1
+                        if diacobro <= 0:
+                            diacobro = 31
+                if res[-1] < fecha + incr:
+                    mes = res[-1].month + 1; anno = res[-1].year
+                    if mes > 12:
+                        mes = 1; anno += 1
+                    res[-1] = mx.DateTime.DateTimeFrom(day = diacobro, 
+                                                       month = mes, 
+                                                       year = anno)
+                while res[-1].day_of_week >= 5:
+                    res[-1] += mx.DateTime.oneDay
+        res.sort()
+        return res
+ 
     def get_vencimientos(self, fecha_base = mx.DateTime.localtime()):
         """
         Devuelve una lista con los días naturales de los vencimientos
@@ -16542,7 +16605,11 @@ class Servicio(SQLObject, PRPCTOO, Venta):
         """
         return self.facturaVenta or self.prefactura
 
-    def get_subtotal(self, iva = False, descuento = True):
+    @property
+    def factura(self):
+        return self.get_factura_o_prefactura()
+
+    def get_subtotal(self, iva = False, descuento = True, prorrateado = False):
         """
         Devuelve el subtotal del servicio. Con IVA (el IVA de la factura) si 
         se le indica.
@@ -16563,6 +16630,11 @@ class Servicio(SQLObject, PRPCTOO, Venta):
             res *= (1 + self.facturaVenta.iva)
         elif iva and self.prefacturaID: 
             res *= (1 + self.prefactura.iva)
+        if prorrateado:
+            numvtos = len(self.factura.cliente.get_vencimientos())
+            if not numvtos:
+                numvtos = 1
+            res /= numvtos
         return res
 
     calcular_subtotal = get_subtotal
@@ -21091,6 +21163,51 @@ class VencimientoValorPresupuestoAnual(SQLObject, PRPCTOO):
     def es_de_iva(self):
         return self.valorPresupuestoAnual.es_de_iva()
 
+    def es_de_compras(self):
+        return self.valorPresupuestoAnual.es_de_compras()
+
+    def es_de_compras_comercializados(self):
+        return self.valorPresupuestoAnual.es_de_compras_comercializados()
+
+    def es_de_compras_transporte(self):
+        return self.valorPresupuestoAnual.es_de_compras_transporte()
+
+    def es_de_compras_resto(self):
+        return self.valorPresupuestoAnual.es_de_compras_resto()
+
+    def es_de_compras_repuestos(self):
+        return self.valorPresupuestoAnual.es_de_compras_repuestos()
+
+    def es_de_compras_suministros(self):
+        return self.valorPresupuestoAnual.es_de_compras_suministros()
+
+    def es_de_compras_materiales(self):
+        return self.valorPresupuestoAnual.es_de_compras_materiales()
+
+    def es_de_ventas(self):
+        return self.valorPresupuestoAnual.es_de_ventas()
+    
+    def es_de_ventas_nacionales(self):
+        return self.valorPresupuestoAnual.es_de_ventas_nacional()
+
+    def es_de_ventas_internacionales(self):
+        return self.valorPresupuestoAnual.es_de_ventas_internacional()
+
+    def es_de_ventas_comercializado(self):
+        return self.valorPresupuestoAnual.es_de_ventas_comercializado()
+
+    def es_de_ventas_fibra(self):
+        return self.valorPresupuestoAnual.es_de_ventas_fibra()
+
+    def es_de_ventas_general(self):
+        return self.valorPresupuestoAnual.es_de_ventas_general()
+
+    def es_de_ventas_geocem(self):
+        return self.valorPresupuestoAnual.es_de_ventas_geocem()
+
+    def es_de_ventas_industrial(self):
+        return self.valorPresupuestoAnual.es_de_ventas_industrial()
+
     @classmethod
     def _remove_dupes(classVVPA):
         """
@@ -21170,10 +21287,85 @@ class ValorPresupuestoAnual(SQLObject, PRPCTOO):
         """
         # OJO: HARCODED
         c = self.conceptoPresupuestoAnual
-        assert (c.descripcion != "IVA" or  
+        assert (c.descripcion != "IVA" or 
                 (c.descripcion == "IVA" 
                     and c.presupuestoAnual.descripcion == "Impuestos"))
         return c.descripcion == "IVA"
+
+    def es_de_compras(self):
+        """
+        True si es un valor presupuestado de compras que no sean materia prima
+        (granza específicamente).
+        """
+        # OJO: HARCODED
+        c = self.conceptoPresupuestoAnual
+        return c.presupuestoAnual.descripcion == "Resto proveedores"
+    
+    def es_de_compras_comercializados(self):
+        # OJO: HARCODED
+        return self.es_de_compras() and self.descripcion == "Comercializados"
+
+    def es_de_compras_transporte(self):
+        # OJO: HARCODED
+        return self.es_de_compras() and self.descripcion == "Transporte"
+
+    def es_de_compras_resto(self):
+        # OJO: HARCODED
+        return self.es_de_compras() and self.descripcion == "Resto"
+
+    def es_de_compras_repuestos(self):
+        # OJO: HARCODED
+        return self.es_de_compras() and self.descripcion == "Repuestos"
+
+    def es_de_compras_suministros(self):
+        # OJO: HARCODED
+        return self.es_de_compras() and self.descripcion == "Suministros"
+
+    def es_de_compras_materiales(self):
+        # OJO: HARCODED
+        return self.es_de_compras() and self.descripcion == "Materiales"
+
+    def es_de_ventas(self):
+        """
+        True si es un valor de presupuesto correspondiente a ventas.
+        """
+        # OJO: HARCODED
+        c = self.conceptoPresupuestoAnual
+        return c.presupuestoAnual.descripcion == "Clientes"
+
+    def es_de_ventas_nacionales(self):
+        # OJO: HARCODED
+        return self.es_de_ventas() and not self.es_de_ventas_nacionales()
+
+    def es_de_ventas_internacionales(self):
+        # OJO: HARCODED
+        return (self.es_de_ventas() 
+                and self.descripcion.startswith("Internacionales"))
+
+    def es_de_ventas_comercializado(self):
+        # OJO: HARCODED
+        return (self.es_de_ventas() 
+                and self.descripcion.endswith("Comercializado"))
+
+    def es_de_ventas_fibra(self):
+        # OJO: HARCODED
+        return (self.es_de_ventas() 
+                and self.descripcion.endswith("Fibra"))
+
+    def es_de_ventas_general(self):
+        # OJO: HARCODED
+        return (self.es_de_ventas() 
+                and self.descripcion.endswith("General"))
+
+    def es_de_ventas_geocem(self):
+        # OJO: HARCODED
+        return (self.es_de_ventas() 
+                and self.descripcion.endswith("Geocem"))
+
+    def es_de_ventas_industrial(self):
+        # OJO: HARCODED
+        return (self.es_de_ventas() 
+                and self.descripcion.endswith("Industrial"))
 
     @property
     def toneladas(self):
