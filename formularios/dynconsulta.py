@@ -285,7 +285,7 @@ class DynConsulta(Ventana, VentanaGenerica):
         """
         indexcol = get_col_pos(tv, col)
         if indexcol > 0:
-            mes = self.mes_actual + indexcol - 1
+            mes = (self.mes_actual + indexcol - 1) % self.num_meses
             model = tv.get_model()
             valor = model[path][indexcol]
             concepto = pclases.getObjetoPUID(model[path][-1])
@@ -578,7 +578,7 @@ def precalcular(fecha_ini, fecha_fin, ventana_padre = None, usuario = None):
     calcular_ventas(res, vpro, fecha_ini, fecha_fin)
     # 4.- Compras que no son de granza
     calcular_compras_no_granza(res, vpro, fecha_ini, fecha_fin)
-    if pclases.DEBUG:
+    if pclases.DEBUG and pclases.VERBOSE:
         print __file__, res
     vpro.ocultar()
     return res
@@ -600,8 +600,6 @@ def calcular_iva_real(res, vpro, fechaini, fechafin):
         importe_iva = soportado - repercutido
         if importe_iva:
             # Paso de guardar valores nulos. La RAM es un bien escaso!
-            if importe_iva > 0: # IVA a devolver se compensa el mes siguiente.
-                fecha = restar_mes(fecha, -1)
             if fecha not in res:
                 res[fecha] = {}
             try:
@@ -611,6 +609,25 @@ def calcular_iva_real(res, vpro, fechaini, fechafin):
             except KeyError:
                 res[fecha][concepto] = {'importe': importe_iva, 
                         'objetos': fras_soportadas + fras_repercutidas}
+        # IVA a devolver se compensa el mes siguiente.
+        try:
+            importe_este_mes = res[fecha][concepto]['importe']
+        except KeyError:
+            importe_este_mes = None
+        if importe_este_mes > 0 and restar_mes(fecha, -1) < fechafin: 
+            # El último mes ya no arrastro, no me quedan celdas donde acumular. 
+            fechanext = restar_mes(fecha, -1)
+            if fechanext not in res:
+                res[fechanext] = {}
+            try:
+                res[fechanext][concepto]['importe'] += importe_este_mes
+                res[fechanext][concepto]['objetos'] \
+                        = res[fecha][concepto]['objetos']
+            except KeyError:
+                res[fechanext][concepto] = {'importe': importe_este_mes, 
+                        'objetos': res[fecha][concepto]['objetos']} 
+            res[fecha][concepto]['importe'] -= importe_este_mes # = 0.0
+            res[fecha][concepto]['objetos'] = []
         fecha = restar_mes(fecha, -1)
     # FIXME: Devuelvo en negativo o positivo, pero el resto de cifras (ventas, 
     # compras, salarios, etc.) va en positivo aunque sean gastos. Convertir a  
