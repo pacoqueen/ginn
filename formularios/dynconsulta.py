@@ -283,18 +283,18 @@ class DynConsulta(Ventana, VentanaGenerica):
         """
         Muestra de dónde vienen los datos precalculados.
         """
-        # TODO: PORASQUI: Esto va a ser complicado... Pero lo necesito ya. Me 
-        #                 está costando lo más grande comprobar valores y 
-        #                 depurar porque no sé bien de dónde vienen.
         indexcol = get_col_pos(tv, col)
         if indexcol > 0:
             mes = self.mes_actual + indexcol - 1
             model = tv.get_model()
             valor = model[path][indexcol]
-            concepto = pclases.getObjetoPUID(model[path][-1]).descripcion
-            txt_inspect = "Aquí va una traza del valor %s (%s)"\
-                          " para el mes %s (%d)." % (
-                            valor, concepto, col.get_property("title"), mes)
+            concepto = pclases.getObjetoPUID(model[path][-1])
+            concepto_desc = concepto.descripcion
+            txt_inspect = "%s (%s): %s = \n" % (
+                            concepto_desc, col.get_property("title"), valor)
+            # PORASQUI: El get_info() no es buena idea. Demasiado "técnico". 
+            txt_inspect += "\n".join(
+                    [o.get_info() for o in self.tracking[mes][concepto]])
             utils.dialogo_info(
                     titulo = "INSPECCIONAR VALOR «%s»" % valor, 
                     texto = txt_inspect, 
@@ -334,6 +334,7 @@ class DynConsulta(Ventana, VentanaGenerica):
         self.rellenar_tabla()
 
     def rellenar_tabla(self):
+        self.tracking = {} # Aquí guardaré los objetos que componen cada valor.
         # Por si acaso, algo de mantenimiento por aquí. Al turrón: 
         if pclases.DEBUG:
             print __file__, "Eliminando posibles vencimientos de presupuesto"\
@@ -380,15 +381,10 @@ class DynConsulta(Ventana, VentanaGenerica):
                 # Si había un valor previo, tengo que retirar la estimación 
                 # y sumar lo real. En caso de granza, entonces la parte 
                 # proporcional de las Tm.
-                try:
-                    importe_valor_real = datos_reales[concepto]['importe']
-                except TypeError:
-                    # Solo los precálculos de granza tienen importe y Tm. El 
-                    # resto solo importes.
-                    importe_valor_real = datos_reales[concepto]
-                vto_presupuestado = buscar_vencimiento_presupuestado(
-                                                                    fechacol, 
-                                                                    concepto)
+                importe_valor_real = datos_reales[concepto]['importe']
+                objetos = datos_reales[concepto]['objetos']
+                vto_presupuestado = buscar_vencimiento_presupuestado(fechacol, 
+                                                                     concepto)
                 if criterio_sustitucion(vto_presupuestado, 
                                         importe_valor_real, 
                                         self.fecha_mes_actual, 
@@ -403,14 +399,15 @@ class DynConsulta(Ventana, VentanaGenerica):
                                                             concepto, 
                                                             fechacol, 
                                                             mescol, 
-                                                            nodos_conceptos)
+                                                            nodos_conceptos, 
+                                                            objetos)
                     self.actualizar_sumatorio_padre(mescol, concepto, padres, 
                                                     diff)
                 i += 1
 
     def cambiar_valor_presupuestado(self, importe_valor_real, 
                                     valor_presupuestado, concepto, fechacol, 
-                                    mescol, nodos_conceptos):
+                                    mescol, nodos_conceptos, objetos):
         """
         Si el valor presupuestado es de granza, quita el importe 
         correspondiente a las toneladas del valor real y suma este valor 
@@ -418,6 +415,7 @@ class DynConsulta(Ventana, VentanaGenerica):
         Devuelve la diferencia entre el nuevo valor y el que había antes 
         para que se actualice el nodo padre únicamente sumando esa cantidad y 
         así evitar recalcular toda la "subcolumna".
+        «objetos» es una lista de objetos de los que procede el valor real.
         """
         if valor_presupuestado:
             valor_presupuestado_importe = valor_presupuestado.importe
@@ -441,6 +439,9 @@ class DynConsulta(Ventana, VentanaGenerica):
         nodo_concepto = nodos_conceptos[concepto]
         model[nodo_concepto][mescol + 1] = utils.float2str(
                                     valor_presup_restante + importe_valor_real)
+        if not fechacol.month in self.tracking:
+            self.tracking[fechacol.month] = collections.defaultdict(list) 
+        self.tracking[fechacol.month][concepto] += objetos
         delta = ((valor_presup_restante + importe_valor_real) 
                 - valor_presupuestado_importe)
         if pclases.DEBUG:
@@ -505,6 +506,9 @@ class DynConsulta(Ventana, VentanaGenerica):
             except KeyError: # Que será lo normal. No debería haber dos vtos. 
                              # en la misma fecha para un mismo concepto.
                 filas[c][mes_offset] = v.importe
+            if not v.fecha.month in self.tracking:
+                self.tracking[v.fecha.month] = collections.defaultdict(list) 
+            self.tracking[v.fecha.month][c].append(v)
             vpro.set_valor(i / valores_count, 
                            "Cargando valores de dynconsulta...") 
             i += 1
@@ -576,6 +580,7 @@ def precalcular(fecha_ini, fecha_fin, ventana_padre = None, usuario = None):
     calcular_compras_no_granza(res, vpro, fecha_ini, fecha_fin)
     if pclases.DEBUG:
         print __file__, res
+    vpro.ocultar()
     return res
 
 def calcular_iva_real(res, vpro, fechaini, fechafin):
@@ -588,9 +593,9 @@ def calcular_iva_real(res, vpro, fechaini, fechafin):
     fecha = fechaini
     while fecha <= fechafin:
         vpro.mover()
-        soportado = calcular_soportado(vpro, fecha)
+        soportado, fras_soportadas = calcular_soportado(vpro, fecha)
         vpro.mover()
-        repercutido = calcular_repercutido(vpro, fecha)
+        repercutido, fras_repercutidas = calcular_repercutido(vpro, fecha)
         vpro.mover()
         importe_iva = soportado - repercutido
         if importe_iva:
@@ -599,8 +604,11 @@ def calcular_iva_real(res, vpro, fechaini, fechafin):
                 res[fecha] = {}
             try:
                 res[fecha][concepto]['importe'] += importe_iva 
+                res[fecha][concepto]['objetos'] += fras_soportadas 
+                res[fecha][concepto]['objetos'] += fras_repercutidas
             except KeyError:
-                res[fecha][concepto] = {'importe': importe_iva}
+                res[fecha][concepto] = {'importe': importe_iva, 
+                        'objetos': fras_soportadas + fras_repercutidas}
         fecha = restar_mes(fecha, -1)
     # FIXME: Devuelvo en negativo o positivo, pero el resto de cifras (ventas, 
     # compras, salarios, etc.) va en positivo aunque sean gastos. Convertir a  
@@ -628,7 +636,7 @@ def calcular_soportado(vpro, fecha):
         pclases.FacturaCompra.q.fecha >= fini, 
         pclases.FacturaCompra.q.fecha <= ffin))
     iva = sum([f.calcular_importe_iva() for f in frascompra])
-    return iva
+    return iva, pclases.SQLlist(frascompra)
 
 def calcular_repercutido(vpro, fecha):
     # Pago este mes el IVA del mes pasado. Ojo.
@@ -639,7 +647,7 @@ def calcular_repercutido(vpro, fecha):
         pclases.FacturaVenta.q.fecha >= fini, 
         pclases.FacturaVenta.q.fecha <= ffin))
     iva = sum([f.calcular_total_iva() for f in frasventa])
-    return iva
+    return iva, pclases.SQLlist(frasventa)
 
 def calcular_ventas(res, vpro, fechaini, fechafin):
     """
@@ -730,8 +738,10 @@ def clasificar_ventas(res, ldv_facturadas, srv_facturados, ldv_no_facturadas,
             res[fecha] = {}
         try:
             res[fecha][concepto]['importe'] += importe_prorrateado_ldv
+            res[fecha][concepto]['objetos'].append(ldv)
         except KeyError:
-            res[fecha][concepto] = {'importe': importe_prorrateado_ldv}
+            res[fecha][concepto] = {'importe': importe_prorrateado_ldv, 
+                                    'objetos': [ldv]}
     for srv in srv_facturados:
         vpro.mover()
         importe_prorrateado_srv = srv.get_subtotal(prorrateado = True)
@@ -740,8 +750,10 @@ def clasificar_ventas(res, ldv_facturadas, srv_facturados, ldv_no_facturadas,
             res[fecha] = {}
         try:
             res[fecha][concepto]['importe'] += importe_prorrateado_srv
+            res[fecha][concepto]['objetos'].append(srv)
         except KeyError:
-            res[fecha][concepto] = {'importe': importe_prorrateado_srv}
+            res[fecha][concepto] = {'importe': importe_prorrateado_srv, 
+                                    'objetos': [srv]}
     for ldv in ldv_no_facturadas:
         # En este caso la fecha no es la fecha de vencimiento, sino la del 
         # albarán. Así que necesito determinar cuándo vence según el 
@@ -759,8 +771,10 @@ def clasificar_ventas(res, ldv_facturadas, srv_facturados, ldv_no_facturadas,
                 res[fecha] = {}
             try:
                 res[fecha][concepto]['importe'] += importe_prorrateado_ldv
+                res[fecha][concepto]['objetos'].append(ldv)
             except KeyError:
-                res[fecha][concepto] = {'importe': importe_prorrateado_ldv}
+                res[fecha][concepto] = {'importe': importe_prorrateado_ldv, 
+                                        'objetos': [ldv]}
     for srv in srv_no_facturados:
         # En este caso la fecha no es la fecha de vencimiento, sino la del 
         # albarán. Así que necesito determinar cuándo vence según el 
@@ -778,8 +792,10 @@ def clasificar_ventas(res, ldv_facturadas, srv_facturados, ldv_no_facturadas,
                 res[fecha] = {}
             try:
                 res[fecha][concepto]['importe'] += importe_prorrateado_srv
+                res[fecha][concepto]['objetos'].append(srv)
             except KeyError:
-                res[fecha][concepto] = {'importe': importe_prorrateado_srv}
+                res[fecha][concepto] = {'importe': importe_prorrateado_srv, 
+                                        'objetos': [srv]}
 
 def buscar_concepto_ldv(cliente, producto = None):
     """
@@ -909,8 +925,10 @@ def clasificar_compras(res, ldc_facturadas, srv_facturados, ldc_no_facturadas,
             res[fecha] = {}
         try:
             res[fecha][concepto]['importe'] += importe_prorrateado_ldc
+            res[fecha][concepto]['objetos'].append(ldc)
         except KeyError:
-            res[fecha][concepto] = {'importe': importe_prorrateado_ldc}
+            res[fecha][concepto] = {'importe': importe_prorrateado_ldc, 
+                                    'objetos': [ldc]}
     for srv in srv_facturados:
         vpro.mover()
         importe_prorrateado_srv = srv.get_subtotal(prorrateado = True)
@@ -919,8 +937,10 @@ def clasificar_compras(res, ldc_facturadas, srv_facturados, ldc_no_facturadas,
             res[fecha] = {}
         try:
             res[fecha][concepto]['importe'] += importe_prorrateado_srv
+            res[fecha][concepto]['objetos'].append(srv)
         except KeyError:
-            res[fecha][concepto] = {'importe': importe_prorrateado_srv}
+            res[fecha][concepto] = {'importe': importe_prorrateado_srv, 
+                                    'objetos': [srv]}
     for ldc in ldc_no_facturadas:
         # En este caso la fecha no es la fecha de vencimiento, sino la del 
         # albarán. Así que necesito determinar cuándo vence según el 
@@ -939,8 +959,10 @@ def clasificar_compras(res, ldc_facturadas, srv_facturados, ldc_no_facturadas,
                 res[fecha] = {}
             try:
                 res[fecha][concepto]['importe'] += importe_prorrateado_ldc
+                res[fecha][concepto]['objetos'].append(ldc)
             except KeyError:
-                res[fecha][concepto] = {'importe': importe_prorrateado_ldc}
+                res[fecha][concepto] = {'importe': importe_prorrateado_ldc, 
+                                        'objetos': [ldc]}
     for srv in srv_no_facturados:
         # En este caso la fecha no es la fecha de vencimiento, sino la del 
         # albarán. Así que necesito determinar cuándo vence según el 
@@ -958,8 +980,10 @@ def clasificar_compras(res, ldc_facturadas, srv_facturados, ldc_no_facturadas,
                 res[fecha] = {}
             try:
                 res[fecha][concepto]['importe'] += importe_prorrateado_srv
+                res[fecha][concepto]['objetos'].append(srv)
             except KeyError:
-                res[fecha][concepto] = {'importe': importe_prorrateado_srv}
+                res[fecha][concepto] = {'importe': importe_prorrateado_srv, 
+                                        'objetos': [srv]}
 
 def buscar_concepto_ldc(proveedor, producto = None):
     """
@@ -1060,7 +1084,6 @@ def calcular_entradas_de_granza(vpro, fecha_ini, fecha_fin, usuario):
     # Filtro para quedarme con los de granza:
     clasificar_albaranes_de_entrada(albs, granzas, usuario, res, vpro)
     vpro.mover()
-    vpro.ocultar()
     return res
 
 def clasificar_albaranes_de_entrada(albs, granzas, usuario, res, vpro):
@@ -1092,10 +1115,12 @@ def clasificar_albaranes_de_entrada(albs, granzas, usuario, res, vpro):
                         res[fecha][concepto]['importe'] += ldc.get_subtotal(
                                                             prorrateado = True)
                         res[fecha][concepto]['toneladas']+=cantidad_prorrateada
+                        res[fecha][concepto]['objetos'].append(ldc)
                     except KeyError:
                         res[fecha][concepto] = {
                             'importe': ldc.get_subtotal(prorrateado = True), 
-                            'toneladas': cantidad_prorrateada}
+                            'toneladas': cantidad_prorrateada, 
+                            'objetos': [ldc]}
                 vpro.mover()
 
 def buscar_albaranes_de_entrada(primes, finmes):
@@ -1136,9 +1161,11 @@ def clasificar_vencimientos_compra(vtos, granzas, usuario, res, vpro):
                 try:
                     res[fecha_mes_vto][concepto]['importe'] += importe
                     res[fecha_mes_vto][concepto]['toneladas'] += cantidad
+                    res[fecha_mes_vto][concepto]['objetos'].append(ldc)
                 except KeyError:
                     res[fecha_mes_vto][concepto] = {'importe': importe, 
-                                                    'toneladas': cantidad}
+                                                    'toneladas': cantidad, 
+                                                    'objetos': [ldc]}
             vpro.mover()
 
 def buscar_mes_vto(fra_compra):
