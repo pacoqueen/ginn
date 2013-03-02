@@ -471,7 +471,7 @@ class DynConsulta(Ventana, VentanaGenerica):
             nodo_padre = padres[pa]
             fila = [c.descripcion # FIXME: .replace("&", "&amp;") # 
                                   #        Problemas con el tooltip.
-                    ] + filas[c] + [c.puid]
+                    ] + [utils.float2str(w) for w in filas[c]] + [c.puid]
             nodos_conceptos[c] = model.append(nodo_padre, fila)
             for mes_matriz in range(1, self.num_meses + 1):
                 # Actualizo totales de fila padre
