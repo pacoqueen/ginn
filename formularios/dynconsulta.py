@@ -600,6 +600,8 @@ def calcular_iva_real(res, vpro, fechaini, fechafin):
         importe_iva = soportado - repercutido
         if importe_iva:
             # Paso de guardar valores nulos. La RAM es un bien escaso!
+            if importe_iva > 0: # IVA a devolver se compensa el mes siguiente.
+                fecha = restar_mes(fecha, -1)
             if fecha not in res:
                 res[fecha] = {}
             try:
