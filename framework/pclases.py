@@ -1953,9 +1953,10 @@ class FacturaCompra(SQLObject, PRPCTOO):
 
     bloqueado = property(lambda self: self.bloqueada, lambda self, valor: setattr(self, "bloqueada", valor))
 
-    def calcular_importe_total(self):
+    def calcular_importe_total(self, iva = True):
         """
-        Calcula y devuelve el importe total, incluyendo IVA, de la factura.
+        Calcula y devuelve el importe total, incluyendo IVA (por defecto), 
+        de la factura.
         """
         total = 0
         for ldc in self.lineasDeCompra:
@@ -1969,7 +1970,8 @@ class FacturaCompra(SQLObject, PRPCTOO):
         # La ley dirá lo que quiera, pero menudos dolores de cabeza me está dando.
         #print "Con redondeo: %s. Sin redondeo: %s" % (utils.float2str(total + self.importeIva, 2), 
         #                                              utils.float2str(round(total, 2) + self.importeIva))
-        total += self.importeIva        # Este método ya tiene en cuenta los distintos tipos de IVA, por línea, etc.
+        if iva:
+            total += self.importeIva        # Este método ya tiene en cuenta los distintos tipos de IVA, por línea, etc.
         return total
 
     def calcular_importe_iva(self):
@@ -15496,7 +15498,7 @@ class SuperFacturaVenta:
                     pedidos.append(pedido)
         return pedidos
 
-    def calcular_total(self):
+    def calcular_total(self, iva = True):
         """
         Calcula el total de la factura, con descuentos, IVA y demás incluido.
         Devuelve un FixedPoint (a casi todos los efectos, se comporta como 
@@ -15506,14 +15508,18 @@ class SuperFacturaVenta:
         subtotal = self.calcular_subtotal() 
         tot_dto = self.calcular_total_descuento(subtotal) 
         abonos = sum([pa.importe for pa in self.pagosDeAbono])
-        tot_iva = self.calcular_total_iva(subtotal, tot_dto, self.cargo, abonos)
+        if iva:
+            tot_iva = self.calcular_total_iva(subtotal, tot_dto, self.cargo, abonos)
+        else:
+            tot_iva = 0.0
         irpf = self.irpf * subtotal
         total = subtotal+float(self.cargo)+tot_dto+tot_iva+abonos+irpf
         return total
     
-    def calcular_importe_total(self):
+    def calcular_importe_total(self, iva = True):
         """
-        Calcula y devuelve el importe total, incluyendo IVA, de la factura.
+        Calcula y devuelve el importe total, incluyendo IVA (por defecto), 
+        de la factura.
         """
         return self.calcular_total()
         # NOTA: Método "duplicado" por error. Funciona mejor el «calcular_total» porque no comete "errores" de redondeo.
