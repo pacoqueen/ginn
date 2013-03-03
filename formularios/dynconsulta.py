@@ -509,6 +509,7 @@ class DynConsulta(Ventana, VentanaGenerica):
                 trinfo = (o, importe_objeto, tm)
                 restar_en_traza_presupuesto(self.tracking, 
                                             fechacol.month, 
+                                            self.mes_actual, 
                                             concepto, 
                                             valor_presupuestado, 
                                             importe_objeto,
@@ -523,6 +524,7 @@ class DynConsulta(Ventana, VentanaGenerica):
                     trinfo = (o, importe_objeto, None)
                 restar_en_traza_presupuesto(self.tracking, 
                                             fechacol.month, 
+                                            self.mes_actual, 
                                             concepto, 
                                             valor_presupuestado, 
                                             importe_objeto)
@@ -1452,6 +1454,7 @@ def buscar_vencimiento_presupuestado(fecha, concepto, fecha_mes_actual):
 
 def restar_en_traza_presupuesto(dict_tracking, 
                                 mes, 
+                                mes_actual, 
                                 concepto, 
                                 valor_presupuestado, 
                                 valor_real_importe, 
@@ -1464,14 +1467,20 @@ def restar_en_traza_presupuesto(dict_tracking,
     for obj, importe, tm in dict_tracking[mes][concepto]:
         if obj == valor_presupuestado:
             dict_tracking[mes][concepto].remove((obj, importe, tm))
-            if valor_real_toneladas != None:
-                tm -= valor_real_toneladas
-                importe = obj.precio * tm
-            else:
-                importe -= valor_real_importe
-            dict_tracking[mes][concepto].append((obj, 
-                                                 importe, 
-                                                 tm))
+            # Para el mes actual nunca hay valores presupuestados. No lo 
+            # vuelvo a agregar y santas pascuas.
+            if mes != mes_actual:
+                if valor_real_toneladas != None:
+                    tm -= valor_real_toneladas
+                    importe = obj.precio * tm
+                else:
+                    importe -= valor_real_importe
+                # Quito también valores negativos. Ya no influyen. Se ha 
+                # sustituido por completo el valor presupuestado.
+                if importe > 0:
+                    dict_tracking[mes][concepto].append((obj, 
+                                                         importe, 
+                                                         tm))
             break
 
 

@@ -2289,7 +2289,8 @@ class LineaDeCompra(SQLObject, PRPCTOO):
     albaranEntradaID = ForeignKey('AlbaranEntrada')
     productoCompraID = ForeignKey('ProductoCompra')
     facturaCompraID = ForeignKey('FacturaCompra')
-    siloID = ForeignKey("Silo", default = None)     # Redundante, pero por compatibilidad.
+    siloID = ForeignKey("Silo", default = None)     # Redundante, pero por 
+                                                    # compatibilidad.
     cargaSiloID = ForeignKey('CargaSilo', default = None)
     lineasDePedidoDeCompra = RelatedJoin('LineaDePedidoDeCompra', 
                 joinColumn='linea_de_compra_id', 
@@ -2300,10 +2301,10 @@ class LineaDeCompra(SQLObject, PRPCTOO):
         starter(self, *args, **kw)
 
     def get_info(self):
-        return "%s; %f * %.2f = %.2f" % (self.productoCompra.descripcion, 
-                                           self.cantidad, 
-                                           self.precio * (1 - self.descuento), 
-                                           self.get_subtotal())
+        return "%s; %s * %s = %s" % (self.productoCompra.descripcion, 
+            utils.float2str(self.cantidad), 
+            utils.float2str(self.precio * (1 - self.descuento)), 
+            utils.float2str(self.get_subtotal(iva = True, prorrateado = True)))
 
     def get_fecha_albaran(self):
         """
@@ -19697,6 +19698,24 @@ class ServicioTomado(SQLObject, PRPCTOO):
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
+
+    def get_info(self):
+        """
+        Devuelve cadena con cantidad, descripción y subtotal del servicio (IVA 
+        no incluido).
+        """
+        precio_con_descuento = utils.float2str(
+            self.precio * (1.0 - self.descuento))
+        if self.descuento:
+            precio_con_descuento += " (%s%% dto. incl.)" % (
+                utils.float2str(self.descuento * 100))
+        total_srv = self.get_subtotal(iva = True, prorrateado = True)
+        res = "%s %s * %s = %s" % (
+            utils.float2str(self.cantidad), 
+            self.concepto, 
+            precio_con_descuento, 
+            utils.float2str(total_srv)) 
+        return res
 
     def get_subtotal(self, iva = False, descuento = True, prorrateado = False):
         """

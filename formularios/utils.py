@@ -751,11 +751,13 @@ def el_reparador_magico_de_representacion_de_flotantes_de_doraemon(filas):
         # OJO porque filas debe ser una lista, si no, no aceptará la asignación.
         for c in xrange(len(fila)):
             item = fila[c]
-            if isinstance(item, float):
-                fila[c] = str(round(item, 2))
-            if item == None:  # Voy a aprovechar el invento para quitarme los None 
-                              # de encima, que tampoco acaban de sentarle bien al TreeView.
+            if item == None:  
+                # Voy a aprovechar el invento para quitarme los None 
+                # de encima, que tampoco acaban de sentarle bien al TreeView.
                 fila[c] = ''
+            elif isinstance(item, float):
+                #fila[c] = str(round(item, 2))
+                fila[c] = float2str(item)
 
 def construir_modelo(filas, cabeceras = None):
     """
@@ -869,6 +871,16 @@ def construir_tabla(titulo, padre, filas, cabeceras):
         else:
             cells.append(gtk.CellRendererText())
             propiedad = "text"
+            hay_algun_numero_en_la_columna = False
+            for fila in filas:
+                if es_interpretable_como_numero(fila[i]):
+                    hay_algun_numero_en_la_columna = True
+                    break
+            if ((model.get_column_type(i) in (gobject.TYPE_FLOAT, 
+                                              gobject.TYPE_DOUBLE))
+                or isinstance(model.get_column_type(i), (int, float))
+                or hay_algun_numero_en_la_columna):
+                cells[-1].set_property("xalign", 1)
         columns[i].pack_start(cells[i], True)
         columns[i].add_attribute(cells[i], propiedad, i)
     ## ------------ Defino la columna de búsqueda:
@@ -1012,7 +1024,7 @@ def dialogo_resultado(filas,
     if not multi:
         # NOTA: Para preservar la compatibilidad con el interfaz que se ha
         # estado usando hasta ahora, si el TreeView no es de selección 
-        # múltiple se devuelve un únido id.
+        # múltiple se devuelve un único id.
         return res[0]
     else:
         # NOTA: Si es de selección múltiple devuelvo una lista de ids.
@@ -1300,7 +1312,7 @@ def preparar_treeview(tv, cols, multi = False):
             columns[i].set_cell_data_func(cell, 
                 redondear_flotante_en_cell_cuando_sea_posible, i)
             cell.set_property('xalign', 1.0)
-            if e and f!=None:
+            if e and f != None:
                 cell.connect("edited", f, *func_params)
             if o:
                 columns[i].set_sort_column_id(i)
