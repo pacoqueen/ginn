@@ -289,16 +289,70 @@ class DynConsulta(Ventana, VentanaGenerica):
             model = tv.get_model()
             valor = model[path][indexcol]
             concepto = pclases.getObjetoPUID(model[path][-1])
-            concepto_desc = concepto.descripcion
-            txt_inspect = "%s (%s): %s = \n" % (
+            if not isinstance(concepto, pclases.PresupuestoAnual):
+                # Los resúmenes no los muestro, que vayan al detalle. 
+                concepto_desc = concepto.descripcion
+                txt_inspect = "%s (%s): %s = \n" % (
                             concepto_desc, col.get_property("title"), valor)
-            # PORASQUI: El get_info() no es buena idea. Demasiado "técnico". 
-            txt_inspect += "\n".join(
-                    [o.get_info() for o in self.tracking[mes][concepto]])
-            utils.dialogo_info(
-                    titulo = "INSPECCIONAR VALOR «%s»" % valor, 
-                    texto = txt_inspect, 
-                    padre = self.wids['ventana'])
+                resultados = []
+                for o, importe, tm in self.tracking[mes][concepto]:
+                    resultados.append((o.puid, o.get_info(), importe, tm))
+                to_open = utils.dialogo_resultado(resultados, 
+                        titulo = "INSPECCIONAR VALOR «%s»" % valor, 
+                        padre = self.wids['ventana'], 
+                        cabeceras = ['Cód. interno', 'Descripción', 
+                                     'Importe', 'Toneladas'], 
+                        texto = txt_inspect)
+                if to_open > 0:
+                    objeto = pclases.getObjetoPUID(to_open)
+                    if isinstance(objeto, (pclases.ServicioTomado, 
+                                          pclases.LineaDeCompra)):
+                        if objeto.facturaCompra:
+                            import facturas_compra
+                            v = facturas_compra.FacturasDeEntrada(
+                                    objeto = objeto.facturaCompra, 
+                                    usuario = self.usuario)
+                        elif objeto.albaranEntrada:
+                            import albaranes_de_entrada
+                            v = albaranes_de_entrada.AlbaranesDeEntrada(
+                                    objeto = objeto.albaranEntrada, 
+                                    usuario = self.usuario)
+                    elif isinstance(objeto, (pclases.Servicio, 
+                                             pclases.LineaDeVenta)): 
+                        if objeto.facturaVenta:
+                            import facturas_venta
+                            v = facturas_venta.FacturasVenta(
+                                    objeto = objeto.facturaVenta, 
+                                    usuario = self.usuario)
+                        elif objeto.prefactura:
+                            import prefacturas
+                            v = prefacturas.Prefacturas(
+                                    objeto = objeto.prefactura, 
+                                    usuario = self.usuario)
+                        elif objeto.albaranSalida:
+                            import albaranes_de_salida
+                            v = albaranes_de_salida.AlbaranesDeSalida(
+                                    objeto = objeto.albaranSalida, 
+                                    usuario = self.usuario)
+                    elif isinstance(objeto, pclases.FacturaVenta):
+                        import facturas_venta
+                        v = facturas_venta.FacturasVenta(
+                                objeto = objeto, 
+                                usuario = self.usuario)
+                    elif isinstance(objeto, pclases.FacturaCompra):
+                        import facturas_compra
+                        v = facturas_compra.FacturasDeEntrada(
+                                objeto = objeto, 
+                                usuario = self.usuario)
+                    elif isinstance(objeto, 
+                            pclases.VencimientoValorPresupuestoAnual):
+                        import presupuesto
+                        v = presupuesto.Presupuesto(
+                                objeto = objeto, 
+                                usuario = self.usuario)
+                # PORASQUI: El get_info() no es buena idea. Demasiado "técnico"
+                # ¿Y algo para abrir el detalle en ventana nueva? 
+                # PORASQUI: Las fras. se calculan con IVA en el tracking. Hacer que con IVA en todos sitios, facturas, LDVs y todo.
 
     def activar_widgets(self, s, chequear_permisos = True):
         """
@@ -381,20 +435,21 @@ class DynConsulta(Ventana, VentanaGenerica):
                 # Si había un valor previo, tengo que retirar la estimación 
                 # y sumar lo real. En caso de granza, entonces la parte 
                 # proporcional de las Tm.
-                importe_valor_real = datos_reales[concepto]['importe']
+                valor_real_importe = datos_reales[concepto]['importe']
                 objetos = datos_reales[concepto]['objetos']
                 vto_presupuestado = buscar_vencimiento_presupuestado(fechacol, 
-                                                                     concepto)
+                                                        concepto,
+                                                        self.fecha_mes_actual)
                 if criterio_sustitucion(vto_presupuestado, 
-                                        importe_valor_real, 
+                                        valor_real_importe, 
                                         self.fecha_mes_actual, 
                                         fechacol):
                     # Y si no, dejo lo que estaba.
                     if pclases.DEBUG:
                         print __file__, "Cambio presupuesto por real:", \
                                 concepto.descripcion,\
-                                vto_presupuestado, importe_valor_real
-                    diff = self.cambiar_valor_presupuestado(importe_valor_real, 
+                                vto_presupuestado, valor_real_importe
+                    diff = self.cambiar_valor_presupuestado(valor_real_importe, 
                                                             vto_presupuestado,
                                                             concepto, 
                                                             fechacol, 
@@ -405,7 +460,7 @@ class DynConsulta(Ventana, VentanaGenerica):
                                                     diff)
                 i += 1
 
-    def cambiar_valor_presupuestado(self, importe_valor_real, 
+    def cambiar_valor_presupuestado(self, valor_real_importe, 
                                     valor_presupuestado, concepto, fechacol, 
                                     mescol, nodos_conceptos, objetos):
         """
@@ -417,6 +472,7 @@ class DynConsulta(Ventana, VentanaGenerica):
         así evitar recalcular toda la "subcolumna".
         «objetos» es una lista de objetos de los que procede el valor real.
         """
+        valor_real_toneladas = None
         if valor_presupuestado:
             valor_presupuestado_importe = valor_presupuestado.importe
             if valor_presupuestado.es_de_granza():
@@ -438,12 +494,41 @@ class DynConsulta(Ventana, VentanaGenerica):
         model = self.wids['tv_datos'].get_model()
         nodo_concepto = nodos_conceptos[concepto]
         model[nodo_concepto][mescol + 1] = utils.float2str(
-                                    valor_presup_restante + importe_valor_real)
+                                    valor_presup_restante + valor_real_importe)
         if not fechacol.month in self.tracking:
             self.tracking[fechacol.month] = collections.defaultdict(list) 
-        self.tracking[fechacol.month][concepto] += objetos
-        delta = ((valor_presup_restante + importe_valor_real) 
-                - valor_presupuestado_importe)
+        for o in objetos:
+            if (isinstance(o, pclases.LineaDeCompra) 
+                    and o.productoCompra in buscar_productos_granza()):
+                importe_objeto = o.get_subtotal(prorrateado=True)
+                try:
+                    numvtos = len(o.facturaCompra.vencimientosPago)
+                except AttributeError:
+                    numvtos = max(
+                        len(o.albaranEntrada.proveedor.get_vencimientos), 0)
+                tm = o.cantidad / numvtos
+                trinfo = (o, importe_objeto, tm)
+                restar_en_traza_presupuesto(self.tracking, 
+                                            fechacol.month, 
+                                            concepto, 
+                                            valor_presupuestado, 
+                                            importe_objeto,
+                                            tm)
+            else:
+                try:
+                    importe_objeto = o.get_subtotal(prorrateado = True)
+                    trinfo = (o, importe_objeto, None)
+                except AttributeError: # Es factura o algo así.
+                    importe_objeto = o.calcular_importe_total()
+                    trinfo = (o, importe_objeto, None)
+                restar_en_traza_presupuesto(self.tracking, 
+                                            fechacol.month, 
+                                            concepto, 
+                                            valor_presupuestado, 
+                                            importe_objeto)
+            self.tracking[fechacol.month][concepto].append(trinfo)
+        delta = ((valor_presup_restante + valor_real_importe) 
+                 - valor_presupuestado_importe)
         if pclases.DEBUG:
             print __file__, ">>> cambiar_valor_presupuestado >>> ð =", delta
         return delta
@@ -498,6 +583,12 @@ class DynConsulta(Ventana, VentanaGenerica):
         valores_count = valores.count()
         for v in valores:
             v.sync()
+            # Hay valores de meses anteriores al primero de la tabla cuyos 
+            # vencimientos caen ahora. Esos los quito. Si el mes en que se 
+            # presupuestaron ya se ha ido, sus vencimientos no valen.
+            vp = v.valorPresupuestoAnual
+            if vp.fecha < self.fecha_mes_actual:
+                continue
             c = v.conceptoPresupuestoAnual
             mes_offset = (v.fecha.month - self.fecha_mes_actual.month) % (
                                                                 self.num_meses)
@@ -508,7 +599,12 @@ class DynConsulta(Ventana, VentanaGenerica):
                 filas[c][mes_offset] = v.importe
             if not v.fecha.month in self.tracking:
                 self.tracking[v.fecha.month] = collections.defaultdict(list) 
-            self.tracking[v.fecha.month][c].append(v)
+            try:
+                tm = v.toneladas
+            except ValueError:
+                tm = None
+            self.tracking[v.fecha.month][c].append(
+                    (v, v.importe, tm))
             vpro.set_valor(i / valores_count, 
                            "Cargando valores de dynconsulta...") 
             i += 1
@@ -1271,7 +1367,7 @@ def bak_model(model):
                 res[fila[0]]['hijos'][sub_fila[0]].append(sub_fila[j])
     return res
 
-def criterio_sustitucion(vto_presupuesto, importe_valor_real, 
+def criterio_sustitucion(vto_presupuesto, valor_real_importe, 
                          fecha_primera_col, fecha = None):
     if not fecha:
         fecha = primero_de_mes(mx.DateTime.today())
@@ -1296,19 +1392,19 @@ def criterio_sustitucion(vto_presupuesto, importe_valor_real,
                 sustituir_por_reales = True
             ### Caso IVA
             if (vto_presupuesto.es_de_iva() 
-                    and importe_valor_real > vto_presupuesto.importe):
+                    and valor_real_importe > vto_presupuesto.importe):
                 # En el caso del IVA se muestra el importe calculado a partir 
                 # de datos reales cuando sea el mes corriente (primer "if" de 
                 # arriba) o cuando se supere la estimación.
                 sustituir_por_reales = True
             ### Caso ventas.
             if (vto_presupuesto.es_de_ventas()
-                    and importe_valor_real > vto_presupuesto.importe):
+                    and valor_real_importe > vto_presupuesto.importe):
                 # Solo sustituyo cuando supere lo previsto.
                 sustituir_por_reales = True
             ### Caso resto proveedores.
             if (vto_presupuesto.es_de_compras() 
-                    and importe_valor_real > vto_presupuesto.importe):
+                    and valor_real_importe > vto_presupuesto.importe):
                 # Solo sustituyo cuando supere lo previsto.
                 sustituir_por_reales = True
             if pclases.DEBUG:
@@ -1318,13 +1414,13 @@ def criterio_sustitucion(vto_presupuesto, importe_valor_real,
                         vto_presupuesto.valorPresupuestoAnual.fecha.month, \
                     "; mes vto.:", vto_presupuesto.fecha.month, \
                     "; presup. en mes vto.:", vto_presupuesto.importe, \
-                    "; real:", importe_valor_real, 
+                    "; real:", valor_real_importe, 
     if pclases.DEBUG:
-        print __file__, importe_valor_real, "sustituir_por_reales [", \
+        print __file__, valor_real_importe, "sustituir_por_reales [", \
                 sustituir_por_reales, "]"
     return sustituir_por_reales
 
-def buscar_vencimiento_presupuestado(fecha, concepto):
+def buscar_vencimiento_presupuestado(fecha, concepto, fecha_mes_actual):
     """
     Devuelve el objeto VencimientoValorPresupuesto del presupuesto para la 
     fecha DE VENCIMIENTO y concepto especificados.
@@ -1336,9 +1432,38 @@ def buscar_vencimiento_presupuestado(fecha, concepto):
           pclases.VencimientoValorPresupuestoAnual.q.fecha 
                 <= final_de_mes(fecha)))
         vto = [v for v in vtos if v.conceptoPresupuestoAnual == concepto][0]
+        vp = vto.valorPresupuestoAnual
+        # No interesan los vencimientos de valores presupuestados en el pasado.
+        if vp.fecha < fecha_mes_actual:
+            return None
         return vto
     except IndexError:
         return None
+
+def restar_en_traza_presupuesto(dict_tracking, 
+                                mes, 
+                                concepto, 
+                                valor_presupuestado, 
+                                valor_real_importe, 
+                                valor_real_toneladas = None):
+    """
+    Del diccionario de trazabilidad, extrae el objeto del valor presupuestado 
+    y lo sustituye de nuevo por él mismo pero con la cantidad que aporta al 
+    valor final decrementada en «valor_real_importe» y toneladas si es el caso.
+    """
+    for obj, importe, tm in dict_tracking[mes][concepto]:
+        if obj == valor_presupuestado:
+            dict_tracking[mes][concepto].remove((obj, importe, tm))
+            if valor_real_toneladas != None:
+                tm -= valor_real_toneladas
+                importe = obj.precio * tm
+            else:
+                importe -= valor_real_importe
+            dict_tracking[mes][concepto].append((obj, 
+                                                 importe, 
+                                                 tm))
+            break
+
 
 if __name__ == "__main__":
     """

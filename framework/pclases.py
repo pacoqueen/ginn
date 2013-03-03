@@ -6582,6 +6582,16 @@ class LineaDeVenta(SQLObject, PRPCTOO, Venta):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
+    def get_info(self):
+        res = "%s %s de %s a %s = %s" % (utils.float2str(self.cantidad), 
+            self.producto.unidad, self.producto.descripcion, 
+            utils.float2str(self.precio), utils.float2str(self.get_subtotal()))
+        if self.factura:
+            res += " (factura %s)" % self.factura.get_info()
+        elif self.albaranSalida:
+            res += " (albarán %s)" % self.albaranSalida.get_info()
+        return res
+
     def get_almacen(self):
         """
         Devuelve el almacén relacionado con la línea de devolución, que será 
@@ -16130,6 +16140,12 @@ class FacturaVenta(SQLObject, PRPCTOO, SuperFacturaVenta):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
+    def get_info(self):
+        res = "%s - %s; %s" % (self.numfactura, 
+                self.cliente and self.cliente.nombre or "", 
+                utils.str_fecha(self.fecha))
+        return res
+
     def old_get_str_estado(self):
         """
         Devuelve el estado de la factura como cadena: 
@@ -16457,6 +16473,12 @@ class Prefactura(SQLObject, PRPCTOO, SuperFacturaVenta):
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
+
+    def get_info(self):
+        res = "%s - %s; %s" % (self.numfactura, 
+                self.cliente and self.cliente.nombre or "", 
+                utils.str_fecha(self.fecha))
+        return res
 
     def DEPRECATED_get_str_estado(self):
         """
@@ -21086,6 +21108,7 @@ class ConceptoPresupuestoAnual(SQLObject, PRPCTOO):
         En función del tipo de concepto devuelve la fecha de vencimiento 
         para el importe presupuestado.
         """
+        # OJO: Todo HARCODED.
         if self.descripcion == "IVA":
             # Vence el 20 del mes siguiente a no ser que:
             # - Sea diciembre, que entonces se tiene hasta el 30 de enero en 
@@ -21101,9 +21124,67 @@ class ConceptoPresupuestoAnual(SQLObject, PRPCTOO):
         elif self.proveedor:
             # Cada proveedor vence en la fecha que diga su forma de pago.
             vto = self.proveedor.get_fechas_vtos_por_defecto(fecha)
+        elif self.presupuestoAnual.descripcion == "Clientes":
+            plazos_media_forma_pago = self.calcular_vencimiento_medio_clientes(
+                    *self.descripcion.split(" - "))
+            vto = []
+            for plazo in plazos_media_forma_pago:
+                vto.append(fecha + (mx.DateTime.oneDay * plazo))
+        elif self.presupuestoAnual.descripcion == "Resto proveedores":
+            plazos_media_forma_pago \
+                    = self.calcular_vencimiento_medio_proveedores(
+                        self.descripcion)
+            vto = []
+            for plazo in plazos_media_forma_pago:
+                vto.append(fecha + (mx.DateTime.oneDay * plazo))
         else:
             vto = [fecha]
         return vto
+
+    def calcular_vencimiento_medio_clientes(self, nacionalidad_as_str, 
+                                            tipo_as_str):
+        """
+        Devuelve una lista de días de media de vencimiento de los clientes
+        nacionales o extranjeros y del tipo especificado.
+        """
+        tipo = TipoDeCliente.selectBy(descripcion = tipo_as_str)[0]
+        clientes = Cliente.select(AND(
+            Cliente.q.tipoDeClienteID == tipo.id, 
+            Cliente.q.inhabilitado == False))
+        vtos = []
+        for c in clientes:
+            if nacionalidad_as_str == "Internacionales" and c.es_extranjero():
+                vtos.append(c.get_vencimientos())
+            elif nacionalidad_as_str == "Nacionales" and not c.es_extranjero():
+                vtos.append(c.get_vencimientos())
+        vtos_medio = self._calcular_media(vtos)
+        return vtos_medio
+
+    def calcular_vencimiento_medio_proveedores(self, tipo_as_str):
+        """
+        Devuelve una lista de días de media de vencimiento de los proveedores 
+        del tipo especificado.
+        """
+        tipo = TipoDeProveedor.selectBy(descripcion = tipo_as_str)[0]
+        proveedores = Proveedor.select(AND(
+            Proveedor.q.tipoDeProveedorID == tipo.id, 
+            Proveedor.q.inhabilitado == False))
+        vtos = []
+        for c in proveedores:
+            vtos.append(c.get_vencimientos())
+        vtos_medio = self._calcular_media(vtos)
+        return vtos_medio
+
+    def _calcular_media(self, vtos):
+        """
+        Recibe una lista de listas de enteros. Devuelve una lista de un 
+        entero media de todos los demás.
+        """
+        # FIXME: Aquí no se tienen en cuenta varios vencimientos. Se unifica 
+        # en uno solo. Por ejemplo, nunca devolvería [30, 60, 90]. 
+        nums = utils.aplanar(vtos)
+        res = utils.media(nums)
+        return [res]
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
@@ -21116,7 +21197,8 @@ class VencimientoValorPresupuestoAnual(SQLObject, PRPCTOO):
         starter(self, *args, **kw)
 
     def get_info(self):
-        return "(%s) Vto.: %s. Importe: %s" % (self.puid,
+        return "(%s) Vto.: %s. Importe: %s" % (
+                self.valorPresupuestoAnual.get_info(), 
                 utils.str_fecha(self.fecha),
                 utils.float2str(self.importe))
 
@@ -21249,8 +21331,13 @@ class ValorPresupuestoAnual(SQLObject, PRPCTOO):
                             "Vto. %s creado." % (self.puid, vto.get_info())
 
     def get_info(self):
-        return "(%d) %s: %s. Mes presupuesto: %s. Fecha vencimiento: %s." % (
+        try:
+            toneladas = ", %s tm" % utils.float2str(self.toneladas)
+        except ValueError:
+            toneladas = ""
+        return "(%d) %s: %s%s. Mes presupuesto: %s. Fecha vencimiento: %s." % (
                 self.id, self.concepto, utils.float2str(self.importe), 
+                toneladas, 
                 self.mes.strftime("%B '%y"),
                 ", ".join(["%s (%s)" % (utils.str_fecha(v.fecha),
                                         utils.float2str(v.importe))
