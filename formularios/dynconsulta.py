@@ -288,6 +288,8 @@ class DynConsulta(Ventana, VentanaGenerica):
             mes = (self.mes_actual + indexcol - 1) % self.num_meses
             model = tv.get_model()
             valor = model[path][indexcol]
+            if utils._float(valor) == 0:
+                return
             concepto = pclases.getObjetoPUID(model[path][-1])
             if not isinstance(concepto, pclases.PresupuestoAnual):
                 # Los resúmenes no los muestro, que vayan al detalle. 
