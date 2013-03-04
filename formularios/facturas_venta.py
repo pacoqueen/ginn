@@ -1099,10 +1099,10 @@ class FacturasVenta(Ventana):
 
     def borrar_vencimientos_y_estimaciones(self, factura):
         for vto in factura.vencimientosCobro:
-            vto.factura = None
+            vto.facturaVenta = None
             vto.destroy(usuario = self.usuario, ventana = __file__)
         for est in factura.estimacionesCobro:
-            est.factura = None
+            est.facturaVenta = None
             est.destroy(usuario = self.usuario, ventana = __file__)
 
     def get_numero_numfactura_from(self, numfactura, cliente):
