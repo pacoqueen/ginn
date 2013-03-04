@@ -1801,6 +1801,11 @@ class Clientes(Ventana):
             utils.dialogo_info(titulo = "ADVERTENCIA", 
                                texto = "El I.V.A. para los clientes extranjeros debería ser 0 %.", 
                                padre = self.wids['ventana'])
+        pclases.Auditoria.modificado(cliente, self.usuario, __file__, 
+                descripcion = "%s: Riesgo asegurado: %s; concedido: %s." % 
+                                                    (cliente.get_info(), 
+                                                     cliente.riesgoAsegurado, 
+                                                     cliente.riesgoConcedido))
 
     def borrar(self, widget):
         """
