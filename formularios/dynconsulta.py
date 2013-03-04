@@ -51,7 +51,7 @@ import pprint, collections
 from collections import defaultdict
 try:
     from collections import MutableMapping as transformedDictBase
-except AttributeError:
+except ImportError:
     transformedDictBase = object
 
 class TransformedDict(transformedDictBase):
