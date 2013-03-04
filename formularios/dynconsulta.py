@@ -1030,10 +1030,12 @@ def buscar_lineas_albaranes_compra_no_granza(vpro, fecha, granzas):
             vpro.mover()
             if not ldc.facturaCompra and ldc.productoCompra not in granzas:
                 ldcs.append(ldc)
-        for srv in a.serviciosTomados:
-            vpro.mover()
-            if not srv.factura:
-                srvs.append(srv)
+        #for srv in a.serviciosTomados:
+        #    vpro.mover()
+        #    if not srv.factura:
+        #        srvs.append(srv)
+        # Los albaranes de entrada no tienen servicios. Los servicios se 
+        # facturan directamente.
     return ldcs, srvs
 
 def clasificar_compras(res, ldc_facturadas, srv_facturados, ldc_no_facturadas, 
