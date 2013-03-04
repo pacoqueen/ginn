@@ -73,7 +73,7 @@ from configuracion import ConfigConexion
 
 import custom_widgets
 
-__version__ = '4.1.0 (beta)'
+__version__ = '4.1.1 (beta)'
 __version_info__ = tuple(
     [int(num) for num in __version__.split()[0].split('.')] + 
     [txt.replace("(", "").replace(")", "") for txt in __version__.split()[1:]]
