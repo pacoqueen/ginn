@@ -49,9 +49,12 @@ from albaranes_de_salida import buscar_proveedor
 from widgets import replace_widget
 import pprint, collections
 from collections import defaultdict
-from collections import MutableMapping
+try:
+    from collections import MutableMapping as transformedDictBase
+except AttributeError:
+    transformedDictBase = object
 
-class TransformedDict(MutableMapping):
+class TransformedDict(transformedDictBase):
     """
     A dictionary which applies an arbitrary key-altering function before 
     accessing the keys"""
