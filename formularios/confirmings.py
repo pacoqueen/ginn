@@ -1119,7 +1119,10 @@ class Confirmings(Ventana):
                 try:
                     for c in confirming.cobros:
                         c.destroy(usuario = self.usuario, ventana = __file__)
-                    confirming.destroy(usuario = self.usuario, ventana = __file__)
+                    for e in confirming.efectos:
+                        e.destroy(usuario = self.usuario, ventana = __file__)
+                    confirming.destroy(usuario = self.usuario, 
+                                       ventana = __file__)
                     self.ir_a_primero()
                 except:
                     txt = """
