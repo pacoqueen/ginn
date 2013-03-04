@@ -248,6 +248,10 @@ class DynConsulta(Ventana, VentanaGenerica):
         """
         def cell_func(col, cell, model, itr, numcol):
             valor = model[itr][numcol]
+            try:
+                valor_numerico = utils._float(valor)
+            except (TypeError, ValueError):
+                valor_numerico = None
             if not model.iter_parent(itr):  # Es concepto de primer nivel
                 padre = model[itr][0]
                 try:
@@ -263,7 +267,7 @@ class DynConsulta(Ventana, VentanaGenerica):
                     old_valor = None
             if self.old_model and old_valor != valor: 
                 # Valor puede ser None porque es la primera vez que se muestran
-                # toodos los datos y en ese caso no debe colorear.
+                # todos los datos y en ese caso no debe colorear.
                 cell.set_property("foreground", "dark green")
                 if not model.iter_parent(itr):
                     cell.set_property("weight", 4000)
@@ -273,11 +277,29 @@ class DynConsulta(Ventana, VentanaGenerica):
                     cell.set_property("background", "yellow")
             else:
                 if not model.iter_parent(itr):
-                    cell.set_property("foreground", "white")
+                    if valor_numerico != None:
+                        if valor_numerico == 0:
+                            color_valor = "white"
+                        elif valor_numerico < 0:
+                            color_valor = "red"
+                        else:
+                            color_valor = "blue"
+                    else:
+                        color_valor = "white"
+                    cell.set_property("foreground", color_valor)
                     cell.set_property("weight", 4000)
                     cell.set_property("background", "gray")
                 else:
-                    cell.set_property("foreground", None)
+                    if valor_numerico != None:
+                        if valor_numerico == 0:
+                            color_valor = None
+                        elif valor_numerico < 0:
+                            color_valor = "red"
+                        else:
+                            color_valor = "blue"
+                    else:
+                        color_valor = "white"
+                    cell.set_property("foreground", color_valor)
                     cell.set_property("weight", 400)
                     cell.set_property("background", None)
         cols = tv.get_columns()
