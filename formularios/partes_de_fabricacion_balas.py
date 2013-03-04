@@ -3749,7 +3749,7 @@ def crear_nueva_bala(numbala, codigo_bala, peso, ventana_parte):
                                 muestra = False, 
                                 claseb = False, 
                                 motivo = "")
-            pclases.Auditoria.nuevo(bala, self.usuario, __file__)
+            pclases.Auditoria.nuevo(bala, ventana_parte.usuario, __file__)
             parte = ventana_parte.objeto
             producto = ventana_parte.producto
             articulo = pclases.Articulo(bala = bala, 
@@ -3759,12 +3759,12 @@ def crear_nueva_bala(numbala, codigo_bala, peso, ventana_parte):
                             albaranSalida = None, 
                             productoVenta = producto, 
                             almacen = pclases.Almacen.get_almacen_principal())
-            pclases.Auditoria.nuevo(articulo, self.usuario, __file__)
+            pclases.Auditoria.nuevo(articulo, ventana_parte.usuario, __file__)
             ventana_parte.descontar_material_adicional(articulo)
             try:
                 imprimir_etiqueta(articulo, ventana_parte)
             except IOError, msg:
-                txt = "%spartes_de_fabricacion_balas::crear_nueva_bala -> IOError: %s" % (self.usuario and self.usuario.usuario + ": " or "", msg)
+                txt = "%spartes_de_fabricacion_balas::crear_nueva_bala -> IOError: %s" % (ventana_parte.usuario and ventana_parte.usuario.usuario + ": " or "", msg)
                 self.logger.error(txt)
                 txt = """
                 Se produjo un error al imprimir la etiqueta. 
