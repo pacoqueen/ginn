@@ -514,7 +514,7 @@ class DynConsulta(Ventana, VentanaGenerica):
                     numvtos = len(o.facturaCompra.vencimientosPago)
                 except AttributeError:
                     numvtos = max(
-                        len(o.albaranEntrada.proveedor.get_vencimientos), 0)
+                        len(o.albaranEntrada.proveedor.get_vencimientos()), 0)
                 tm = o.cantidad / numvtos
                 trinfo = (o, importe_objeto, tm)
                 restar_en_traza_presupuesto(self.tracking, 
