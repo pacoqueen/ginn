@@ -16657,7 +16657,10 @@ class Servicio(SQLObject, PRPCTOO, Venta):
         elif iva and self.prefacturaID: 
             res *= (1 + self.prefactura.iva)
         if prorrateado:
-            numvtos = len(self.factura.cliente.get_vencimientos())
+            try:
+                numvtos = len(self.factura.cliente.get_vencimientos())
+            except AttributeError:
+                numvtos = len(self.albaranSalida.cliente.get_vencimientos())
             if not numvtos:
                 numvtos = 1
             res /= numvtos
