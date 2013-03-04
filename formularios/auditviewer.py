@@ -151,7 +151,7 @@ dir()
             elif tipo == "drop":
                 color = "red"
             elif tipo == "update": 
-                color = "yellow4"
+                color = "light blue"
             else:
                 # Cualquier otra cosa 
                 color = None
