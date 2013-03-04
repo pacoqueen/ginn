@@ -521,7 +521,8 @@ class Confirmings(Ventana):
                                     cobrado = -1, 
                                     fechaRecepcion = mx.DateTime.localtime(), 
                                     fechaCobrado = None,
-                                    procesado = False)
+                                    procesado = False, 
+                                    banco = None)
         confirming = self.objeto
         pclases.Auditoria.nuevo(confirming, self.usuario, __file__)
         confirming.notificador.set_func(self.aviso_actualizacion)
