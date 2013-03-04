@@ -63,7 +63,10 @@ class TransformedDict(transformedDictBase):
 
     def __init__(self, *args, **kwargs):
         self.store = dict()
-        self.update(dict(*args, **kwargs)) # use the free update to set keys
+        try:
+            self.update(dict(*args, **kwargs)) #use the free update to set keys
+        except AttributeError:
+            self.store.update(*args, **kwargs)
 
     def __getitem__(self, key):
         return self.store[self.__keytransform__(key)]
