@@ -1030,7 +1030,7 @@ def buscar_lineas_albaranes_compra_no_granza(vpro, fecha, granzas):
             vpro.mover()
             if not ldc.facturaCompra and ldc.productoCompra not in granzas:
                 ldcs.append(ldc)
-        for srv in a.servicios:
+        for srv in a.serviciosTomados:
             vpro.mover()
             if not srv.factura:
                 srvs.append(srv)
