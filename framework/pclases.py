@@ -2323,7 +2323,8 @@ class LineaDeCompra(SQLObject, PRPCTOO):
         """
         return self.precio * (1 - self.descuento)
 
-    precioConDescuento = property(get_precio_con_descuento, doc = get_precio_con_descuento.__doc__)
+    precioConDescuento = property(get_precio_con_descuento, 
+                                  doc = get_precio_con_descuento.__doc__)
 
     def get_proveedor(self):
         return ((self.albaranEntrada and self.albaranEntrada.proveedor) 
