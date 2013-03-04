@@ -6910,7 +6910,7 @@ class LineaDeVenta(SQLObject, PRPCTOO, Venta):
                 try:
                     cliente = (self.pedidoVenta and self.pedidoVenta.cliente 
                                 or self.albaranSalida.cliente)
-                    numvtos = max(1, len(cliente.get_vencimientos))
+                    numvtos = max(1, len(cliente.get_vencimientos()))
                 except AttributeError:
                     numvtos = 1
             res /= numvtos
