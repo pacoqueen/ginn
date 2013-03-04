@@ -65,7 +65,8 @@ class PagaresCobros(Ventana):
         comenzar la ventana (en lugar del primero de la tabla, que es
         el que se muestra por defecto).
         """
-        Ventana.__init__(self, 'pagares_cobros.glade', objeto)
+        self.usuario = usuario
+        Ventana.__init__(self, 'pagares_cobros.glade', objeto, usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_nuevo/clicked': self.crear_nuevo,
                        'b_actualizar/clicked': self.actualizar_ventana,
@@ -494,7 +495,8 @@ class PagaresCobros(Ventana):
                                     cobrado = -1, 
                                     fechaRecepcion = mx.DateTime.localtime(), 
                                     fechaCobrado = None, 
-                                    procesado = False)
+                                    procesado = False, 
+                                    banco = None)
         pagare = self.objeto
         pclases.Auditoria.nuevo(pagare, self.usuario, __file__)
         pagare.notificador.set_func(self.aviso_actualizacion)
@@ -1065,6 +1067,8 @@ class PagaresCobros(Ventana):
                 try:
                     for c in pagare.cobros:
                         c.destroy(usuario = self.usuario, ventana = __file__)
+                    for e in pagare.efectos:
+                        e.destroy(usuario = self.usuario, ventana = __file__)
                     pagare.destroy(usuario = self.usuario, ventana = __file__)
                     self.ir_a_primero()
                 except:

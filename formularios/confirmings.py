@@ -69,7 +69,8 @@ class Confirmings(Ventana):
         comenzar la ventana (en lugar del primero de la tabla, que es
         el que se muestra por defecto).
         """
-        Ventana.__init__(self, 'confirmings.glade', objeto)
+        self.usuario = usuario
+        Ventana.__init__(self, 'confirmings.glade', objeto, usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_nuevo/clicked': self.crear_nuevo,
                        'b_actualizar/clicked': self.actualizar_ventana,
@@ -521,7 +522,8 @@ class Confirmings(Ventana):
                                     cobrado = -1, 
                                     fechaRecepcion = mx.DateTime.localtime(), 
                                     fechaCobrado = None,
-                                    procesado = False)
+                                    procesado = False, 
+                                    banco = None)
         confirming = self.objeto
         pclases.Auditoria.nuevo(confirming, self.usuario, __file__)
         confirming.notificador.set_func(self.aviso_actualizacion)
@@ -1117,7 +1119,10 @@ class Confirmings(Ventana):
                 try:
                     for c in confirming.cobros:
                         c.destroy(usuario = self.usuario, ventana = __file__)
-                    confirming.destroy(usuario = self.usuario, ventana = __file__)
+                    for e in confirming.efectos:
+                        e.destroy(usuario = self.usuario, ventana = __file__)
+                    confirming.destroy(usuario = self.usuario, 
+                                       ventana = __file__)
                     self.ir_a_primero()
                 except:
                     txt = """

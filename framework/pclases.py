@@ -2323,7 +2323,8 @@ class LineaDeCompra(SQLObject, PRPCTOO):
         """
         return self.precio * (1 - self.descuento)
 
-    precioConDescuento = property(get_precio_con_descuento, doc = get_precio_con_descuento.__doc__)
+    precioConDescuento = property(get_precio_con_descuento, 
+                                  doc = get_precio_con_descuento.__doc__)
 
     def get_proveedor(self):
         return ((self.albaranEntrada and self.albaranEntrada.proveedor) 
@@ -6910,7 +6911,7 @@ class LineaDeVenta(SQLObject, PRPCTOO, Venta):
                 try:
                     cliente = (self.pedidoVenta and self.pedidoVenta.cliente 
                                 or self.albaranSalida.cliente)
-                    numvtos = len(cliente.get_vencimientos) or 1
+                    numvtos = max(1, len(cliente.get_vencimientos()))
                 except AttributeError:
                     numvtos = 1
             res /= numvtos
@@ -16656,7 +16657,10 @@ class Servicio(SQLObject, PRPCTOO, Venta):
         elif iva and self.prefacturaID: 
             res *= (1 + self.prefactura.iva)
         if prorrateado:
-            numvtos = len(self.factura.cliente.get_vencimientos())
+            try:
+                numvtos = len(self.factura.cliente.get_vencimientos())
+            except AttributeError:
+                numvtos = len(self.albaranSalida.cliente.get_vencimientos())
             if not numvtos:
                 numvtos = 1
             res /= numvtos
@@ -20699,6 +20703,18 @@ class Auditoria(SQLObject, PRPCTOO):
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
+
+    def get_info(self):
+        res = "[%s] %s en %s (desde %s <%s>); %s sobre %s: %s" % (
+                utils.str_fechahoralarga(self.fechahora), 
+                self.usuario and self.usuario.usuario or "Desconocido", 
+                self.ventana and self.ventana.fichero or "Ventana desconocida",
+                self.hostname and self.hostname or "host desconocido", 
+                self.ip and self.ip or "IP desconocida", 
+                self.action, 
+                self.puid, 
+                self.descripcion)
+        return res
 
     @staticmethod
     def nuevo(objeto, usuario, ventana, descripcion = None):
