@@ -69,7 +69,8 @@ class Confirmings(Ventana):
         comenzar la ventana (en lugar del primero de la tabla, que es
         el que se muestra por defecto).
         """
-        Ventana.__init__(self, 'confirmings.glade', objeto)
+        self.usuario = usuario
+        Ventana.__init__(self, 'confirmings.glade', objeto, usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_nuevo/clicked': self.crear_nuevo,
                        'b_actualizar/clicked': self.actualizar_ventana,
