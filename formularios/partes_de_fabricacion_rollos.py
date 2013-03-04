@@ -3376,7 +3376,9 @@ def crear_articulo(numrollo,
                               densidad = densidad,
                               muestra = False, 
                               rollob = False) 
-        pclases.Auditoria.nuevo(rollo, self.usuario, __file__)
+        pclases.Auditoria.nuevo(rollo, 
+                objeto_ventana_parte and objeto_ventana_parte.usuario or None, 
+                __file__)
         rollod = None
     else:
         codigo = 'X%d' % (numrollo)  # NOTA: Cambiar aquí si al final el código será distinto al número de rollo.
@@ -3413,7 +3415,10 @@ def crear_articulo(numrollo,
                                                          metrosLineales = largo, 
                                                          ancho = ancho, 
                                                          pesoEmbalaje = pesoEmbalaje)
-                        pclases.Auditoria.nuevo(rollod, self.usuario, __file__)
+                        pclases.Auditoria.nuevo(rollod, 
+                                objeto_ventana_parte 
+                                and objeto_ventana_parte.usuario or None, 
+                                __file__)
                     except Exception, msg:
                         txt = "Rollo defectuoso %s no se pudo crear. Probablemente número duplicado. Mensaje de la excepción: %s" % (codigo, msg)
                         print txt
@@ -3425,7 +3430,9 @@ def crear_articulo(numrollo,
                             productoVenta = producto,
                             albaranSalida = None, 
                             almacen = pclases.Almacen.get_almacen_principal())
-        pclases.Auditoria.nuevo(articulo, self.usuario, __file__)
+        pclases.Auditoria.nuevo(articulo, 
+                objeto_ventana_parte and objeto_ventana_parte.usuario or None, 
+                __file__)
     else:
         articulo = None
     return articulo
