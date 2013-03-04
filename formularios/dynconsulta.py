@@ -48,8 +48,10 @@ from ventana_progreso import VentanaProgreso, VentanaActividad
 from albaranes_de_salida import buscar_proveedor
 from widgets import replace_widget
 import pprint, collections
+from collections import defaultdict
+from collections import MutableMapping
 
-class TransformedDict(collections.MutableMapping):
+class TransformedDict(MutableMapping):
     """
     A dictionary which applies an arbitrary key-altering function before 
     accessing the keys"""
@@ -497,7 +499,7 @@ class DynConsulta(Ventana, VentanaGenerica):
         model[nodo_concepto][mescol + 1] = utils.float2str(
                                     valor_presup_restante + valor_real_importe)
         if not fechacol.month in self.tracking:
-            self.tracking[fechacol.month] = collections.defaultdict(list) 
+            self.tracking[fechacol.month] = defaultdict(list) 
         for o in objetos:
             if (isinstance(o, pclases.LineaDeCompra) 
                     and o.productoCompra in buscar_productos_granza()):
@@ -602,7 +604,7 @@ class DynConsulta(Ventana, VentanaGenerica):
                              # en la misma fecha para un mismo concepto.
                 filas[c][mes_offset] = v.importe
             if not v.fecha.month in self.tracking:
-                self.tracking[v.fecha.month] = collections.defaultdict(list) 
+                self.tracking[v.fecha.month] = defaultdict(list) 
             try:
                 tm = v.toneladas
             except ValueError:
