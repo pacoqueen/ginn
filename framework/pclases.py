@@ -3001,7 +3001,6 @@ class PagareCobro(SQLObject, PRPCTOO):
         except (AttributeError, TypeError): # No efecto o efecto pero no remesa.
             return False
 
-    #@property
     def get_efecto(self):
         try:
             return self.efectos[0]
@@ -3011,7 +3010,6 @@ class PagareCobro(SQLObject, PRPCTOO):
                             cuentaBancariaCliente = None)
             return efecto 
     
-    #@efecto.setter
     def set_efecto(self, value_efecto):
         value_efecto.pagareCobro = self
         value_efecto.confirming = None
@@ -3146,7 +3144,6 @@ class Confirming(SQLObject, PRPCTOO):
         except (AttributeError, TypeError): # No efecto o efecto pero no remesa.
             return False
 
-    #@property
     def get_efecto(self):
         try:
             return self.efectos[0]
@@ -3156,7 +3153,6 @@ class Confirming(SQLObject, PRPCTOO):
                             cuentaBancariaCliente = None)
             return efecto
     
-    #@efecto.setter
     def set_efecto(self, value_efecto):
         value_efecto.pagareCobro = None
         value_efecto.confirming = self 
@@ -21256,13 +21252,13 @@ class VencimientoValorPresupuestoAnual(SQLObject, PRPCTOO):
     def conceptoPresupuestoAnual(self):
         return self.valorPresupuestoAnual.conceptoPresupuestoAnual
 
-    @property
-    def mes(self):
+    def get_mes(self):
         return self.fecha
 
-    @mes.setter
-    def mes(self, value):
+    def set_mes(self, value):
         self.fecha = value
+
+    mes = property(get_mes, set_mes)
 
     def es_de_granza(self):
         return self.valorPresupuestoAnual.es_de_granza()
@@ -21375,13 +21371,13 @@ class ValorPresupuestoAnual(SQLObject, PRPCTOO):
         except AttributeError:
             return ""
 
-    @property
-    def fecha(self):
+    def get_fecha(self):
         return self.mes
 
-    @fecha.setter
-    def fecha(self, value):
+    def set_fecha(self, value):
         self.mes = value
+
+    fecha = property(get_fecha, set_fecha)
 
     def es_de_granza(self):
         """
