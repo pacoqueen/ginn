@@ -954,8 +954,12 @@ def dialogo_resultado(filas,
     ## ----------- Si lleva texto aclaratorio:
     if texto:
         label = gtk.Label(texto)
-        de.get_content_area().pack_start(label, expand = False)
-        de.get_content_area().reorder_child(label, 0)
+        try:
+            ca = de.get_content_area()
+        except AttributeError: # PyGTK es menor a la versión 2.14
+            ca = de.vbox
+        ca.pack_start(label, expand = False)
+        ca.reorder_child(label, 0)
         label.show()
     ## ----------- Si el Tree debe ser de selcción múltiple:
     if multi:
