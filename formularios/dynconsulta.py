@@ -1073,8 +1073,9 @@ def clasificar_compras(res, ldc_facturadas, srv_facturados, ldc_no_facturadas,
     """
     for ldc in ldc_facturadas:
         vpro.mover()
-        importe_prorrateado_ldc = ldc.get_subtotal(iva = True, 
-                                                   prorrateado = True)
+        # Gasto. En negativo.
+        importe_prorrateado_ldc = -ldc.get_subtotal(iva = True, 
+                                                    prorrateado = True)
         concepto = buscar_concepto_ldc(ldc.facturaCompra.proveedor, 
                                        ldc.productoCompra)
         if not fecha in res:
@@ -1087,8 +1088,9 @@ def clasificar_compras(res, ldc_facturadas, srv_facturados, ldc_no_facturadas,
                                     'objetos': [ldc]}
     for srv in srv_facturados:
         vpro.mover()
-        importe_prorrateado_srv = srv.get_subtotal(iva = True, 
-                                                   prorrateado = True)
+        # Gasto. Negativo
+        importe_prorrateado_srv = -srv.get_subtotal(iva = True, 
+                                                    prorrateado = True)
         concepto = buscar_concepto_ldc(srv.facturaCompra.proveedor, None)
         if not fecha in res:
             res[fecha] = {}
@@ -1103,8 +1105,9 @@ def clasificar_compras(res, ldc_facturadas, srv_facturados, ldc_no_facturadas,
         # albarán. Así que necesito determinar cuándo vence según el 
         # proveedor.
         vpro.mover()
-        importe_prorrateado_ldc = ldc.get_subtotal(iva = True, 
-                                                   prorrateado = True)
+        # Gasto. En negativo
+        importe_prorrateado_ldc = -ldc.get_subtotal(iva = True, 
+                                                    prorrateado = True)
         concepto = buscar_concepto_ldc(ldc.albaranEntrada.proveedor, 
                                        ldc.productoCompra)
         fechas = ldc.albaranEntrada.proveedor.get_fechas_vtos_por_defecto(
@@ -1126,8 +1129,9 @@ def clasificar_compras(res, ldc_facturadas, srv_facturados, ldc_no_facturadas,
         # albarán. Así que necesito determinar cuándo vence según el 
         # proveedor.
         vpro.mover()
-        importe_prorrateado_srv = srv.get_subtotal(iva = True, 
-                                                   prorrateado = True)
+        # Gasto. En negativo
+        importe_prorrateado_srv = -srv.get_subtotal(iva = True, 
+                                                    prorrateado = True)
         concepto = buscar_concepto_ldc(srv.albaranEntrada.proveedor, None)
         fechas = srv.albaranEntrada.proveedor.get_fechas_vtos_por_defecto(
                                                     srv.albaranEntrada.fecha)
@@ -1271,15 +1275,17 @@ def clasificar_albaranes_de_entrada(albs, granzas, usuario, res, vpro):
                         res[fecha] = {}
                     cantidad_prorrateada = ldc.cantidad / numvtos
                     try:
-                        res[fecha][concepto]['importe'] += ldc.get_subtotal(
+                        # Gasto. En negativo
+                        res[fecha][concepto]['importe'] += -ldc.get_subtotal(
                                                             iva = True,
                                                             prorrateado = True)
                         res[fecha][concepto]['toneladas']+=cantidad_prorrateada
                         res[fecha][concepto]['objetos'].append(ldc)
                     except KeyError:
+                        # Gasto. En negativo
                         res[fecha][concepto] = {
-                            'importe': ldc.get_subtotal(iva = True, 
-                                                        prorrateado = True), 
+                            'importe': -ldc.get_subtotal(iva = True, 
+                                                         prorrateado = True), 
                             'toneladas': cantidad_prorrateada, 
                             'objetos': [ldc]}
                 vpro.mover()
@@ -1313,7 +1319,8 @@ def clasificar_vencimientos_compra(vtos, granzas, usuario, res, vpro):
                 concepto = buscar_concepto_proveedor_granza(ldc.proveedor, 
                                                             usuario)
                 fechas_mes_vto = buscar_mes_vto(ldc.facturaCompra)
-                importe = ldc.get_subtotal(iva = True, prorrateado = True) 
+                # Gasto. En negativo
+                importe = -ldc.get_subtotal(iva = True, prorrateado = True) 
                 cantidad = ldc.cantidad / len(fechas_mes_vto)
                 #for fecha_mes_vto in fechas_mes_vto:
                 fecha_mes_vto = v.fecha
