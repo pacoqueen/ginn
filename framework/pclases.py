@@ -20704,6 +20704,18 @@ class Auditoria(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
+    def get_info(self):
+        res = "[%s] %s en %s (desde %s <%s>); %s sobre %s: %s" % (
+                utils.str_fechahoralarga(self.fechahora), 
+                self.usuario and self.usuario.usuario or "Desconocido", 
+                self.ventana and self.ventana.fichero or "Ventana desconocida",
+                self.hostname and self.hostname or "host desconocido", 
+                self.ip and self.ip or "IP desconocida", 
+                self.action, 
+                self.puid, 
+                self.descripcion)
+        return res
+
     @staticmethod
     def nuevo(objeto, usuario, ventana, descripcion = None):
         """
