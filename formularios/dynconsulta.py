@@ -201,6 +201,15 @@ class DynConsulta(Ventana, VentanaGenerica):
         valores por defecto, deshabilitando los innecesarios,
         rellenando los combos, formateando el TreeView -si lo hay-...
         """
+        self.wids['e_costes'].modify_text(gtk.STATE_NORMAL, 
+                self.wids['e_costes'].get_colormap().alloc_color("red"))
+        self.wids['e_ingresos'].modify_text(gtk.STATE_NORMAL, 
+                self.wids['e_ingresos'].get_colormap().alloc_color("blue"))
+        self.wids['e_costes'].set_property("xalign", 0.9)
+        self.wids['e_ingresos'].set_property("xalign", 0.9)
+        self.wids['e_total'].set_property("xalign", 0.9)
+        self.costes = 0.0
+        self.ingresos = 0.0
         antiguo_tv_datos = self.wids['tv_datos']
         nuevo_tv_datos = gtk.TreeView()
         nuevo_tv_datos.show()
@@ -383,7 +392,6 @@ class DynConsulta(Ventana, VentanaGenerica):
                                 objeto = objeto, 
                                 usuario = self.usuario)
                 # PORASQUI: El get_info() no es buena idea. Demasiado "técnico"
-                # ¿Y algo para abrir el detalle en ventana nueva? 
 
     def activar_widgets(self, s, chequear_permisos = True):
         """
@@ -416,7 +424,37 @@ class DynConsulta(Ventana, VentanaGenerica):
     def rellenar_widgets(self):
         # Los únicos otros dos widgets son los de mes de inicio y ancho de 
         # tabla en meses, que ya se rellenan ellos solos.
-        self.rellenar_tabla()
+        padres = self.rellenar_tabla()
+        self.actualizar_totales(padres)
+        self.wids['e_costes'].set_text(utils.float2str(self.costes))
+        self.wids['e_ingresos'].set_text(utils.float2str(self.ingresos))
+        total = self.ingresos - self.costes
+        self.wids['e_total'].set_text(utils.float2str(total))
+        self.wids['e_total'].modify_text(gtk.STATE_NORMAL, 
+                self.wids['e_total'].get_colormap().alloc_color(
+                    total > 0 and "blue" 
+                    or total < 0 and "red" 
+                    or "green"))
+        import pango
+        self.wids['e_total'].modify_font(pango.FontDescription("bold"))
+
+    def actualizar_totales(self, padres):
+        """
+        Recorre los nodos de primer nivel y actualiza los totales en 
+        función del tipo de importe: gasto o ingreso.
+        """
+        # Solo hay un (concepto de) presupuesto anual de tipo ingreso: ventas.
+        for concepto in padres:
+            fila = self.wids['tv_datos'].get_model()[padres[concepto]]
+            for valor in fila:
+                try:
+                    valor_float = utils._float(valor)
+                except (ValueError, TypeError):     # Es el PUID o descripción.
+                    continue
+                if concepto.es_gasto():
+                    self.costes += valor_float
+                else:
+                    self.ingresos += valor_float
 
     def rellenar_tabla(self):
         self.tracking = {} # Aquí guardaré los objetos que componen cada valor.
@@ -446,6 +484,7 @@ class DynConsulta(Ventana, VentanaGenerica):
         # año anterior. Si también está a cero (nunca se ha presupuestado ese
         # mes en la historia del programa), desisto.
         vpro.ocultar()
+        return padres
 
     def mostrar_valores_reales_precalculados(self, 
                                              nodos_conceptos, 
@@ -644,23 +683,6 @@ class DynConsulta(Ventana, VentanaGenerica):
             i += 1
         return filas
 
-    def cargar_conceptos_segundo_nivel(self, vpro):
-        """
-        Solo carga los conceptos. Con todos los valores a cero.
-        """
-        i = 0.0
-        conceptos = pclases.ConceptoPresupuestoAnual.select()
-        conceptos_count = conceptos.count()
-        filas = {}
-        for c in conceptos:
-            filas[c] = []
-            for m in range(self.num_meses):
-                filas[c].append(0)
-            vpro.set_valor(i / conceptos_count, 
-                           "Cargando conceptos de dynconsulta...") 
-            i += 1
-        return filas
-
     def cargar_conceptos_primer_nivel(self, vpro):
         vpro.set_valor(0, "Cargando conceptos de primer nivel...") 
         model = self.wids['tv_datos'].get_model()
@@ -679,7 +701,24 @@ class DynConsulta(Ventana, VentanaGenerica):
                            "Cargando conceptos de primer nivel...") 
             i += 1
         return padres
-            
+
+    def cargar_conceptos_segundo_nivel(self, vpro):
+        """
+        Solo carga los conceptos. Con todos los valores a cero.
+        """
+        i = 0.0
+        conceptos = pclases.ConceptoPresupuestoAnual.select()
+        conceptos_count = conceptos.count()
+        filas = {}
+        for c in conceptos:
+            filas[c] = []
+            for m in range(self.num_meses):
+                filas[c].append(0)
+            vpro.set_valor(i / conceptos_count, 
+                           "Cargando conceptos de dynconsulta...") 
+            i += 1
+        return filas
+
     def buscar(self, widget):
         """
         Muestra una ventana de búsqueda y a continuación los

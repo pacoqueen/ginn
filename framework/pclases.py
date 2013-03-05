@@ -21084,6 +21084,15 @@ class PresupuestoAnual(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
+    def es_gasto(self):
+        """
+        True si no es un concepto de ingresos (ventas a clientes únicamente).
+        """
+        # OJO: HARCODED.
+        # PLAN: Tal vez hubiera sido mejor un atributo "gasto = bool" 
+        # en la tabla.
+        return self.descripcion != "Clientes"
+
     @staticmethod
     def check_defaults():
         """
