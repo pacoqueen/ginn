@@ -203,7 +203,7 @@ dir()
                         last_iter = self.agregar_linea(
                             self.wids['tv_datos'].get_model(), linea)
                     except (AttributeError, KeyError), e:
-                        self.auditger.error("auditviewer::check_audit -> "
+                        self.logger.error("auditviewer::check_audit -> "
                             "Error al obtener el modelo del TreeView. "
                             "Probablemente se produjo una entrada en el audit "
                             "justo cuando se cerraba la ventana: %s" % e)
