@@ -5708,7 +5708,10 @@ class Rollo(SQLObject, PRPCTOO):
         """
         Devuelve el producto relacionado con el rollo a través del artículo.
         """
-        return self.articulos[0].productoVenta
+        try:
+            return self.articulos[0].productoVenta
+        except IndexError:
+            return None
 
     productoVenta = property(get_productoVenta, set_productoVenta)
 
@@ -5744,7 +5747,8 @@ class Rollo(SQLObject, PRPCTOO):
         """
         Devuelve código de rollo y descripción del producto.
         """
-        cad = "Rollo %s (%s)" % (self.codigo, self.productoVenta and self.productoVenta.descripcion or "")
+        cad = "Rollo %s (%s)" % (self.codigo, 
+                self.productoVenta and self.productoVenta.descripcion or "")
         return cad
 
 cont, tiempo = print_verbose(cont, total, tiempo)
