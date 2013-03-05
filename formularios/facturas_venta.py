@@ -2804,12 +2804,16 @@ class FacturasVenta(Ventana):
             pedidos_ordenados.sort(key = lambda p: p != None 
                                                    and p.numpedido or "")
             for p in pedidos_ordenados:
-                if len(pedidos) > 1:  # No quiero desglose si solo hay un albarán.
-                    # Encabezado albarán: Número de albarán, fecha y pedidos que contiene.
+                if len(pedidos) > 1:    # No quiero desglose si solo hay un 
+                                        # albarán.
+                    # Encabezado albarán: Número de albarán, fecha y pedidos 
+                    # que contiene.
                     linea = {'codigo': "<formatolinea>cin</formatolinea>", 
                              'cantidad': "", 
-                             'descripcion': p and "Pedido: %s - Fecha: %s" % (p.numpedido, utils.str_fecha(p.fecha)) \
-                                              or "Ventas sin pedido", 
+                             'descripcion': 
+                                p and "Pedido: %s - Fecha: %s" % (
+                                        p.numpedido, utils.str_fecha(p.fecha)) 
+                                   or "Ventas sin pedido", 
                              'precio': "", 
                              'descuento': ""}
                     lineas.append(linea)
@@ -2823,15 +2827,20 @@ class FacturasVenta(Ventana):
                              'descuento': str(l.descuento), 
                              'unidad': l.producto.get_str_unidad_de_venta()}
                     if l.descripcionComplementaria:
-                        linea['descripcion'] += " (%s)" % l.descripcionComplementaria
+                        linea['descripcion'] += " (%s)" % (
+                                l.descripcionComplementaria)
                     lineas.append(linea)
-                if len(pedidos) > 1:  # No quiero desglose si solo hay un albarán.
+                if len(pedidos) > 1:  # No quiero desglose si solo hay un 
+                                      # albarán.
                     # Pie del albarán: Total del mismo sin IVA.
                     linea = {'codigo': "<formatolinea>di</formatolinea>", 
                              'cantidad': "", 
-                             'descripcion': "Subtotal %s(s/IVA)" % (p and "pedido %s " % (p.numpedido) or ""), 
-                             'precio': p and p.calcular_importe_total(iva = False) \
-                                         or sum([l.precio * l.cantidad * (1 - l.descuento) for l in pedidos[p]]), 
+                             'descripcion': "Subtotal %s(s/IVA)" % (
+                                 p and "pedido %s " % (p.numpedido) or ""), 
+                             'precio': p 
+                                and p.calcular_importe_total(iva = False) 
+                                 or sum([l.precio*l.cantidad*(1.0-l.descuento) 
+                                         for l in pedidos[p]]),
                              'descuento': ""}
                     lineas.append(linea)
         else:
@@ -2845,13 +2854,19 @@ class FacturasVenta(Ventana):
                          'descuento': str(l.descuento), 
                          'unidad': l.producto.get_str_unidad_de_venta()}
                 if l.descripcionComplementaria:
-                    linea['descripcion'] += " (%s)" % l.descripcionComplementaria
+                    linea['descripcion'] += " (%s)" % (
+                            l.descripcionComplementaria)
                 lineas.append(linea)
         if factura.cliente.es_extranjero() and factura.iva == 0:
-                # CWT: Doble comprobación. Debe ser extranjero y el IVA 0 (aunque una cosa implica la otra, la verdad).
-            arancel_lista = [ldv.productoVenta.arancel for ldv in factura.lineasDeVenta \
-                             if ldv.productoVentaID and ldv.productoVenta.arancel != "" and ldv.productoVenta.arancel != None]
-            # OJO: NOTA: El arancel es siempre el mismo. Muestro el del primer articulo que encuentre con arancel != "".
+                # CWT: Doble comprobación. Debe ser extranjero y el IVA 0 
+                # (aunque una cosa implica la otra, la verdad).
+            arancel_lista = [ldv.productoVenta.arancel 
+                             for ldv in factura.lineasDeVenta 
+                             if ldv.productoVentaID 
+                                and ldv.productoVenta.arancel != "" 
+                                and ldv.productoVenta.arancel != None]
+            # OJO: NOTA: El arancel es siempre el mismo. Muestro el del 
+            # primer articulo que encuentre con arancel != "".
             if arancel_lista != []:
                 arancel = arancel_lista[0]
             else:
@@ -2877,17 +2892,17 @@ class FacturasVenta(Ventana):
                      "descuento": "0", 
                      'unidad': ""}
             lineas.append(linea)
-        # fechasVencimiento = (', '.join([utils.str_fecha(v.fecha) for v in factura.vencimientosCobro]))
-        # documentos = ', '.join(["%s %s" % (v.observaciones, v.cuentaOrigen and "%s: %s" % (v.cuentaOrigen.banco, v.cuentaOrigen.ccc) or "") for v in factura.vencimientosCobro])
         fechasVencimiento = []
         documentosDePago = []
         for fila_vto in self.wids['tv_vencimientos'].get_model():
             idvto = int(fila_vto[-1].split(',')[0])
             if idvto > 0:
                 vto = pclases.VencimientoCobro.get(idvto)
-                fechasVencimiento.append("%s (%s €)" % (utils.str_fecha(vto.fecha), utils.float2str(vto.importe)))
+                fechasVencimiento.append("%s (%s €)" % (
+                    utils.str_fecha(vto.fecha), utils.float2str(vto.importe)))
                 if vto.cuentaOrigen:
-                    cuenta = "a %s %s" % (vto.cuentaOrigen.banco, vto.cuentaOrigen.ccc)
+                    cuenta = "a %s %s" % (vto.cuentaOrigen.banco, 
+                                          vto.cuentaOrigen.ccc)
                 else:
                     cuenta = ""
                 documentosDePago.append("%s %s" % (vto.observaciones, cuenta))
@@ -2900,7 +2915,8 @@ class FacturasVenta(Ventana):
         total = self.wids['e_total'].get_text()
         total = total.replace('€', '')
         total = total.replace(' ', '')
-        totalfra = utils._float(total)   # Si ya lo tengo aquí calculado... ¿para qué volver a hacerlo?
+        totalfra = utils._float(total)  # Si ya lo tengo aquí calculado... 
+                                        # ¿para qué volver a hacerlo?
         totales = {}
         totales['subtotal'] = self.wids['e_subtotal'].get_text()
         cargo = self.wids['e_cargo'].get_text()
@@ -2923,14 +2939,16 @@ class FacturasVenta(Ventana):
             totales['recargo_equivalencia'] = "5.2 %"
             base_imponible = self.objeto.calcular_base_imponible()
             totales['totaliva'] = "%s €" % utils.float2str(base_imponible*0.21)
-            totales['totrecargo_equivalencia'] = "%s €" % utils.float2str(base_imponible * 0.04)
+            totales['totrecargo_equivalencia'] = "%s €" % (
+                    utils.float2str(base_imponible * 0.04))
         else:
             totales['iva'] = self.wids['e_iva'].get_text()
             totales['totaliva'] = self.wids['e_total_iva'].get_text()
         totales['total'] = self.wids['e_total'].get_text()
         totales['irpf'] = self.wids['e_irpf'].get_text()
         totales['totirpf'] = self.wids['e_total_irpf'].get_text()
-        texto = numerals.numerals(totalfra, moneda = "euros", fraccion = "céntimos").upper()
+        texto = numerals.numerals(totalfra, moneda = "euros", 
+                                  fraccion = "céntimos").upper()
         if len(lineas) > 0:
             if pclases.config.get_multipagina() == 1:
                 try:
