@@ -227,8 +227,6 @@ class DynConsulta(Ventana, VentanaGenerica):
         self.wids['e_costes'].set_property("xalign", 0.9)
         self.wids['e_ingresos'].set_property("xalign", 0.9)
         self.wids['e_total'].set_property("xalign", 0.9)
-        self.costes = 0.0
-        self.ingresos = 0.0
         antiguo_tv_datos = self.wids['tv_datos']
         nuevo_tv_datos = gtk.TreeView()
         nuevo_tv_datos.show()
@@ -443,6 +441,8 @@ class DynConsulta(Ventana, VentanaGenerica):
     def rellenar_widgets(self):
         # Los únicos otros dos widgets son los de mes de inicio y ancho de 
         # tabla en meses, que ya se rellenan ellos solos.
+        self.costes = 0.0
+        self.ingresos = 0.0
         padres = self.rellenar_tabla()
         self.actualizar_totales(padres)
         self.wids['e_costes'].set_text(utils.float2str(self.costes))
