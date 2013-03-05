@@ -53,6 +53,23 @@ try:
     from collections import MutableMapping as transformedDictBase
 except ImportError:
     transformedDictBase = object
+try:
+    import geninformes
+except ImportError:
+    sys.path.append(os.path.join('..', 'informes'))
+    import geninformes
+try:
+    from treeview2pdf import treeview2pdf
+except ImportError:
+    sys.path.append(os.path.join("..", "informes"))
+    from treeview2pdf import treeview2pdf
+try:
+    from treeview2csv import treeview2csv
+except ImportError:
+    sys.path.append(os.path.join("..", "informes"))
+    from treeview2pdf import treeview2pdf
+from informes import abrir_pdf, abrir_csv
+import pango
 
 class TransformedDict(transformedDictBase):
     """
@@ -135,7 +152,9 @@ class DynConsulta(Ventana, VentanaGenerica):
                        'b_buscar/clicked': self.buscar,
                        'sp_mes_actual/value-changed': self.update_mes_actual, 
                        'sp_num_meses/value-changed': self.update_mes_final, 
-                       'tv_datos/query-tooltip': self.tooltip_query
+                       'tv_datos/query-tooltip': self.tooltip_query, 
+                       'b_exportar/clicked': self.exportar,  
+                       'b_imprimir/clicked': self.imprimir
                       }  
         self.wids['ch_datos_reales'].set_active(True)
         self.inicializar_ventana()
@@ -428,14 +447,13 @@ class DynConsulta(Ventana, VentanaGenerica):
         self.actualizar_totales(padres)
         self.wids['e_costes'].set_text(utils.float2str(self.costes))
         self.wids['e_ingresos'].set_text(utils.float2str(self.ingresos))
-        total = self.ingresos - self.costes
+        total = self.ingresos + self.costes
         self.wids['e_total'].set_text(utils.float2str(total))
         self.wids['e_total'].modify_text(gtk.STATE_NORMAL, 
                 self.wids['e_total'].get_colormap().alloc_color(
                     total > 0 and "blue" 
                     or total < 0 and "red" 
                     or "green"))
-        import pango
         self.wids['e_total'].modify_font(pango.FontDescription("bold"))
 
     def actualizar_totales(self, padres):
@@ -726,9 +744,44 @@ class DynConsulta(Ventana, VentanaGenerica):
         en la ventana a no ser que se pulse en Cancelar en
         la ventana de resultados.
         """
-        # TODO: Buscar dentro de todas las filas un texto tecleado y 
-        #       pasarle el foco o algo.
+        # TODO: Buscar dentro de todas las filas y tracking un texto tecleado 
+        #       y pasarle el foco o algo.
         pass
+
+    def imprimir(self, boton):
+        """
+        Prepara la vista preliminar para la impresión del informe.
+        """
+        resp = utils.dialogo(titulo = "¿IMPRIMIR DESGLOSE?", 
+                texto = "Puede imprimir un resumen o todo el contenido de "
+                        "la consulta\n¿Desea imprimir toda la información "
+                        "desglosada?", 
+                padre = self.wids['ventana'])
+        if resp:
+            tv = self.wids['tv_datos']
+            tv.expand_all()
+            while gtk.events_pending(): gtk.main_iteration(False)
+            cols_a_totalizar = []
+        else:
+            tv = self.wids['tv_datos']
+            tv.collapse_all()
+            while gtk.events_pending(): gtk.main_iteration(False)
+            from consulta_ventas_por_producto import convertir_a_listview
+            tv = convertir_a_listview(tv)
+            cols_a_totalizar = range(1, self.num_meses + 1)
+        strfecha = "De %s a %s" % (utils.str_fecha(self.fecha_mes_actual), 
+                utils.str_fecha(self.fecha_mes_final - mx.DateTime.oneDay))
+        abrir_pdf(
+                treeview2pdf(tv, titulo = "Informe resumen financiero", 
+                             fecha = strfecha, apaisado = True, 
+                             numcols_a_totalizar = cols_a_totalizar))
+
+    def exportar(self, boton):
+        """
+        Exporta el TreeView a CSV.
+        """
+        abrir_csv(treeview2csv(self.wids['tv_datos']))
+
 
 def precalcular(fecha_ini, fecha_fin, ventana_padre = None, usuario = None):
     """
