@@ -181,7 +181,7 @@ class ConsultaProducido(Ventana):
         fabricados y cantidad en los partes de producción.
         """
         PDP = pclases.ParteDeProduccion
-        if self.inicio == None:
+        if not self.inicio:
             pdps = PDP.select(PDP.q.fecha <= self.fin, orderBy = 'fecha')
         else:
             pdps = PDP.select(pclases.AND(PDP.q.fecha >= self.inicio, 

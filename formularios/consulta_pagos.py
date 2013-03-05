@@ -258,12 +258,12 @@ class ConsultaPagos(Ventana):
 
         
     def buscar(self,boton):
-        if self.inicio == None:
+        if not self.inicio:
             pagos = pclases.Pago.select(pclases.Pago.q.fecha <= self.fin, orderBy = 'fecha')
         else:
             pagos = pclases.Pago.select(sqlobject.AND(pclases.Pago.q.fecha >= self.inicio,
                                                       pclases.Pago.q.fecha <= self.fin), orderBy = 'fecha')
-        if self.inicio == None:
+        if not self.inicio:
             vencimientos = pclases.VencimientoPago.select(pclases.VencimientoPago.q.fecha <= self.fin, 
                                                           orderBy = 'fecha')
         else:

@@ -169,7 +169,7 @@ class ConsultaProductividad(Ventana):
         else:
             linea = "global."
         titulo = "Productividad %s" % (linea)
-        if self.inicio == None:
+        if not self.inicio:
             str_fecha = "Hasta %s" % ('/'.join(self.fin.split('/')[::-1]))
         else:
             str_fecha = "Del %s al %s" % ('/'.join(self.inicio.split('/')[::-1]), '/'.join(self.fin.split('/')[::-1]))
@@ -506,7 +506,7 @@ En ambos casos el límite inferior es flexible -por compensación-.)""")
         de dicho parte
         """
         solobalas = False
-        if self.inicio == None:
+        if not self.inicio:
             partes = pclases.ParteDeProduccion.select(
                         orderBy = ('fecha', 'horainicio'))
         else:

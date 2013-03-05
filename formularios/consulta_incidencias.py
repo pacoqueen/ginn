@@ -165,7 +165,7 @@ class ConsultaIncidencias(Ventana):
         """
         str2fecha = lambda s: mx.DateTime.DateTimeFrom(day = int(s.split("/")[2]), month = int(s.split("/")[1]), year = int(s.split("/")[0]))
         fechafin = str2fecha(self.fin)
-        if self.inicio == None:
+        if not self.inicio:
             partes = pclases.ParteDeProduccion.select(pclases.ParteDeProduccion.q.fecha <= fechafin, orderBy = 'fecha')
         else:
             fechainicio = str2fecha(self.inicio)

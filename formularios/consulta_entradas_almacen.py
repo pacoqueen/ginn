@@ -155,7 +155,7 @@ class ConsultaEntradasAlmacen(Ventana):
         # Filtro por fecha y proveedor:
         idproveedor = utils.combo_get_value(self.wids['cmbe_proveedor'])
         AE = pclases.AlbaranEntrada
-        if self.inicio == None:
+        if not self.inicio:
             if idproveedor == None: 
                 albaranes = AE.select(AE.q.fecha <= self.fin, orderBy = 'fecha')
             else:

@@ -242,7 +242,7 @@ class ConsultaVentasPrefacturas(Ventana):
         fechafin = mx.DateTime.DateTimeFrom(day = int(self.fin.split("/")[2]), 
                                             month = int(self.fin.split("/")[1]), 
                                             year = int(self.fin.split("/")[0]))
-        if self.inicio == None:
+        if not self.inicio:
             prefacturas = pclases.Prefactura.select(pclases.Prefactura.q.fecha <= fechafin, orderBy = 'fecha')
             vpro.set_valor(0.5, "Analizando prefacturas...")
         else:
@@ -274,7 +274,7 @@ class ConsultaVentasPrefacturas(Ventana):
                                             month = int(self.fin.split("/")[1]), 
                                             year = int(self.fin.split("/")[0]))
         strfecha = utils.str_fecha(fechafin)
-        if self.inicio != None:
+        if self.inicio:
             fechainicio = mx.DateTime.DateTimeFrom(day = int(self.inicio.split("/")[2]), 
                                                    month = int(self.inicio.split("/")[1]), 
                                                    year = int(self.inicio.split("/")[0]))

@@ -174,7 +174,7 @@ class ConsultaAlbaranesCliente(Ventana):
             # utils.dialogo_info(titulo = 'ERROR', texto = 'Seleccione un cliente', padre = self.wids['ventana'])
             # return
             # Selecciono los albaranes de todos los clientes.
-            if self.inicio == None:
+            if not self.inicio:
                 albaranes = pclases.AlbaranSalida.select(pclases.AlbaranSalida.q.fecha <= self.fin,
                                                          orderBy = 'fecha')
             else:
@@ -184,7 +184,7 @@ class ConsultaAlbaranesCliente(Ventana):
         else:
             self.cliente = pclases.Cliente.get(utils.combo_get_value(self.wids['cmbe_cliente']))
             cliente = self.cliente
-            if self.inicio == None:
+            if not self.inicio:
                 albaranes = pclases.AlbaranSalida.select(sqlobject.AND(pclases.AlbaranSalida.q.fecha <= self.fin,
                                                                        pclases.AlbaranSalida.q.clienteID == cliente.id), 
                                                          orderBy = 'fecha')

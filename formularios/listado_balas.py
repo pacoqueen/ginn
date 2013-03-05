@@ -193,7 +193,7 @@ class ListadoBalas(Ventana):
                       "Total fabricado:", 
                       self.wids['e_total_fabricado'].get_text(), "", "", "", 
                       "")) 
-        if self.inicio == None:
+        if not self.inicio:
             fechaInforme = 'Hasta: %s' % (utils.str_fecha(self.fin))
         else:
             fechaInforme = (utils.str_fecha(self.inicio) + ' - ' 
@@ -645,7 +645,7 @@ class ListadoBalas(Ventana):
                         WHERE fechahora < '%s' %s ) """ 
                     % (producto.id, 
                        self.get_unambiguous_fecha(self.fin+mx.DateTime.oneDay),
-                       self.inicio != None and and_fecha_inicio or ""))
+                       self.inicio and and_fecha_inicio or ""))
                 articulos_bigbag = None
                 lista_cajas = None
             elif producto.es_bigbag():
@@ -657,7 +657,7 @@ class ListadoBalas(Ventana):
                     """ % (producto.id, 
                            self.get_unambiguous_fecha(self.fin 
                                                       + mx.DateTime.oneDay), 
-                           self.inicio != None and and_fecha_inicio or ""))
+                           self.inicio and and_fecha_inicio or ""))
                 articulos_bala = None
                 lista_cajas = None
             elif producto.es_bala_cable():
@@ -669,7 +669,7 @@ class ListadoBalas(Ventana):
                     """ % (producto.id, 
                            self.get_unambiguous_fecha(
                                 self.fin + mx.DateTime.oneDay), 
-                           self.inicio != None and and_fecha_inicio or ""))
+                           self.inicio and and_fecha_inicio or ""))
                 articulos_bigbag = None
                 lista_cajas = None
             elif producto.es_bolsa():
