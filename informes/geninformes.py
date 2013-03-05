@@ -10217,7 +10217,7 @@ def carta_pago(pagare, cheque = True, textofijo = True):
                      escribe(fecha_vencimiento))
 
     ## Por último guardo y devuelvo el nombre del PDF generado (no hace falta
-    ## showPage, save lo hace por mí antes de escribir el PDF).
+    ## showPage, «save» lo hace por mí antes de escribir el PDF).
     c.save()
     return nomarchivo
 
