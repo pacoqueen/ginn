@@ -1681,6 +1681,8 @@ class Clientes(Ventana):
         de datos en el objeto y lo sincroniza con la BD.
         """
         cliente = self.objeto
+        asegurado_antes = cliente.riesgoAsegurado
+        concedido_antes = cliente.riesgoConcedido
         bakcif = cliente.cif
         # Si no tiene dirección de facturación se copia la postal.
         copiar = True
@@ -1802,10 +1804,13 @@ class Clientes(Ventana):
                                texto = "El I.V.A. para los clientes extranjeros debería ser 0 %.", 
                                padre = self.wids['ventana'])
         pclases.Auditoria.modificado(cliente, self.usuario, __file__, 
-                descripcion = "%s: Riesgo asegurado: %s; concedido: %s." % 
-                                                    (cliente.get_info(), 
-                                                     cliente.riesgoAsegurado, 
-                                                     cliente.riesgoConcedido))
+                descripcion = "%s: Riesgo asegurado: %s; concedido: %s."\
+                              "(Antes: asegurado: %s; concedido: %s)" % 
+                                    (cliente.get_info(), 
+                                     utils.float2str(cliente.riesgoAsegurado), 
+                                     utils.float2str(cliente.riesgoConcedido), 
+                                     utils.float2str(asegurado_antes), 
+                                     utils.float2str(concedido_antes)))
 
     def borrar(self, widget):
         """

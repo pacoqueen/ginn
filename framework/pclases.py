@@ -20739,7 +20739,11 @@ class Auditoria(SQLObject, PRPCTOO):
             except IndexError:
                 ventana = None
         if not descripcion:
-            descripcion = objeto.get_info().replace("'", "`")
+            try:
+                descripcion = objeto.get_info().replace("'", "`")
+            except Exception, msg:
+                descripcion = "Error al obtener información del objeto. "\
+                              "Excepción capturada: %s " % msg
         if not usuario:
             usuario = logged_user
         Auditoria(usuario = usuario, 
@@ -20771,6 +20775,9 @@ class Auditoria(SQLObject, PRPCTOO):
                 ventana = None
         if not usuario:
             usuario = logged_user
+        if not descripcion:
+            # No es muy útil la información por defecto. Pero menos es nada.
+            descripcion = "Objeto con PUID %s eliminado." % puid
         Auditoria(usuario = usuario, 
                   ventana = ventana, 
                   puid = puid, 
@@ -20799,7 +20806,11 @@ class Auditoria(SQLObject, PRPCTOO):
             except IndexError:
                 ventana = None
         if not descripcion:
-            descripcion = objeto.get_info()  # Nuevos valores. Mejor que nada.
+            try:
+                descripcion = objeto.get_info() #Nuevos valores. Mejor que nada
+            except Exception, msg:
+                descripcion = "Error al obtener información del objeto. "\
+                              "Excepción capturada: %s " % msg
         if not usuario:
             usuario = logged_user
         Auditoria(usuario = usuario, 
