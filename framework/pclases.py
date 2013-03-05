@@ -16042,7 +16042,11 @@ class SuperFacturaVenta:
         regexpr = re.compile("\d+")
         # De los vencimientos de la propia factura.
         for vto in self.vencimientosCobro:
-            for v in regexpr.findall(vto.observaciones):
+            forma_de_pago_en_observaciones = vto.observaciones
+            if ("CONTADO" in forma_de_pago_en_observaciones.upper() 
+                or "EFECTIVO" in forma_de_pago_en_observaciones.upper()):
+                forma_de_pago_en_observaciones += " 0"
+            for v in regexpr.findall(forma_de_pago_en_observaciones):
                 try:
                     v = int(v)
                     if not ((v % 15 == 0) and (0 <= v <= 365)):
