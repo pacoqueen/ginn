@@ -400,7 +400,7 @@ class ConsultaVencimientosCobros(Ventana):
             return 0
 
     def buscar(self,boton):
-        if self.inicio == None:
+        if not self.inicio:
             vencimientos = pclases.VencimientoCobro.select(
                 pclases.VencimientoCobro.q.fecha <= self.fin, 
                 orderBy = 'fecha')

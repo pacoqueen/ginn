@@ -196,7 +196,7 @@ class ConsultaLotesPorProducto(Ventana):
             )
         ) """ %(producto.id, 
                 self.get_unambiguous_fecha(self.fin), 
-                self.inicio != None and and_fecha_inicio or "")
+                self.inicio and and_fecha_inicio or "")
         else:
             parte_where_de_consulta = """
     lote.id IN 
@@ -214,7 +214,7 @@ class ConsultaLotesPorProducto(Ventana):
             )
         ) """ %(producto.id, 
                 self.get_unambiguous_fecha(self.fin), 
-                self.inicio != None and and_fecha_inicio or "")
+                self.inicio and and_fecha_inicio or "")
         lotes = pclases.Lote.select(parte_where_de_consulta, distinct = True)
         # Hasta aquí la consulta optimizada para obtener los lotes. Pasamos a recuperar los datos en sí:
         vpro = VentanaActividad(padre = self.wids['ventana'])
@@ -228,7 +228,7 @@ class ConsultaLotesPorProducto(Ventana):
         self.rellenar_tabla(self.resultado)
 
 
-        #if self.inicio == None:
+        #if not self.inicio:
         #    partes = pclases.ParteDeProduccion.select(pclases.ParteDeProduccion.q.fecha <= self.fin, orderBy = 'fecha')
         #else:
         #    partes = pclases.ParteDeProduccion.select(sqlobject.AND(pclases.ParteDeProduccion.q.fecha >= self.inicio,

@@ -192,7 +192,7 @@ class ConsultaPedidosCliente(Ventana):
             idcliente = utils.combo_get_value(self.wids['cmbe_cliente'])
             self.cliente = pclases.Cliente.get(idcliente)
             cliente = self.cliente
-            if self.inicio == None:
+            if not self.inicio:
                 pedidos = pclases.PedidoVenta.select(pclases.AND(
                                 pclases.PedidoVenta.q.fecha <= self.fin,
                                 pclases.PedidoVenta.q.clienteID == cliente.id),

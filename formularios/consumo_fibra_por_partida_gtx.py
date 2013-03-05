@@ -299,7 +299,7 @@ class ConsumoFibraPorPartidaGtx(Ventana):
         al haber una tabla de una relación muchos a muchos entre medio).
         """
         PDP = pclases.ParteDeProduccion
-        if self.inicio == None:
+        if not self.inicio:
             pdps = PDP.select(""" fecha <= '%s' AND observaciones NOT LIKE '%%;%%;%%;%%;%%;%%' """ % (self.fin.strftime('%Y-%m-%d')))
         else:
             pdps = PDP.select(""" fecha >= '%s' AND fecha <= '%s' AND observaciones NOT LIKE '%%;%%;%%;%%;%%;%%' """ % (self.inicio.strftime('%Y-%m-%d'), self.fin.strftime('%Y-%m-%d')))

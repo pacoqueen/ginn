@@ -329,7 +329,7 @@ class ConsultaVencimientosPagados(Ventana):
         """
         vpro = VentanaProgreso(padre = self.wids['ventana'])
         vpro.mostrar()
-        if self.inicio == None:
+        if not self.inicio:
             pagos = pclases.Pago.select(pclases.Pago.q.fecha <= self.fin, 
                                         orderBy = "fecha")
             pagares = pclases.PagarePago.select(

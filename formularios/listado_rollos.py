@@ -150,7 +150,7 @@ class ListadoRollos(Ventana):
                 datos.append((i[0], i[1], i[3], i[4], en_almacen, i[5]))
         datos.append(("---", ) * 6)
         datos.append(("Total almacén (no defectuosos):", self.wids['e_total_almacen'].get_text(), "Total fabricado (incluye defectuosos):", self.wids['e_total_fabricado'].get_text(), ""))
-        if self.inicio == None:
+        if not self.inicio:
             fechaInforme = 'Hasta: %s' % (utils.str_fecha(self.fin))
         else:
             fechaInforme = utils.str_fecha(self.inicio) + ' - ' + utils.str_fecha(self.fin)
@@ -465,7 +465,7 @@ class ListadoRollos(Ventana):
                     WHERE fechahora <= '%s' %s ) 
             """ % (producto.id, 
                    self.get_unambiguous_fecha(self.fin + mx.DateTime.oneDay), 
-                   self.inicio != None and and_fecha_inicio or ""))
+                   self.inicio and and_fecha_inicio or ""))
             self.rellenar_tabla(articulos_rollo, 
                                 articulos_defectuosos, 
                                 gtxcs, 

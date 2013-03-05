@@ -167,7 +167,7 @@ class ConsultaConsumo(Ventana):
         materia prima consumida en los partes de producción.
         """
         PDP = pclases.ParteDeProduccion
-        if self.inicio == None:
+        if not self.inicio:
             pdps = PDP.select(PDP.q.fecha <= self.fin, orderBy = 'fecha')
         else:
             pdps = PDP.select(sqlobject.AND(PDP.q.fecha >= self.inicio, PDP.q.fecha <= self.fin), orderBy='fecha')

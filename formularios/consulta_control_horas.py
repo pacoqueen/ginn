@@ -358,14 +358,14 @@ class ConsultaControlHoras(Ventana):
         CH = pclases.ControlHoras
         eid = utils.combo_get_value(self.wids['cbe_empleado'])
         if eid == 0:
-            if self.inicio == None:
+            if not self.inicio:
                 chs = CH.select(CH.q.fecha <= self.fin)
             else:
                 chs = CH.select(pclases.AND(
                     CH.q.fecha >= self.inicio, 
                     CH.q.fecha <= self.fin))
         else:
-            if self.inicio == None:
+            if not self.inicio:
                 chs = CH.select(pclases.AND(CH.q.fecha <= self.fin, 
                                             CH.q.empleadoID == eid))
             else:

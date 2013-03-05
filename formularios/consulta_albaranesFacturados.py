@@ -182,7 +182,7 @@ class ConsultaAlbaranesFacturados(Ventana):
         """
         self.resultado = []
         if self.wids['rb_entrada'].get_active():
-            if self.inicio == None:
+            if not self.inicio:
                 albaranes = pclases.AlbaranEntrada.select(pclases.AlbaranEntrada.q.fecha <= self.fin, orderBy = 'fecha')
             else:
                 albaranes = pclases.AlbaranEntrada.select(sqlobject.AND(pclases.AlbaranEntrada.q.fecha >= self.inicio,
@@ -190,7 +190,7 @@ class ConsultaAlbaranesFacturados(Ventana):
                                                          orderBy='fecha')
             self.cambiar_cabecera_columna("Proveedor")
         elif self.wids['rb_salida'].get_active():
-            if self.inicio == None:
+            if not self.inicio:
                 albaranes = pclases.AlbaranSalida.select(pclases.AlbaranSalida.q.fecha <= self.fin, orderBy = 'fecha')
             else:
                 albaranes = pclases.AlbaranSalida.select(sqlobject.AND(pclases.AlbaranSalida.q.fecha >= self.inicio,

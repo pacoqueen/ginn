@@ -185,7 +185,7 @@ class ConsultaProductosComprados(Ventana):
             idcliente = utils.combo_get_value(self.wids['cmbe_cliente'])
             self.cliente = pclases.Cliente.get(idcliente)
             cliente = self.cliente
-            if self.inicio == None:
+            if not self.inicio:
                 facturas = pclases.FacturaVenta.select(pclases.AND(
                                 pclases.FacturaVenta.q.clienteID == cliente.id, 
                                 pclases.FacturaVenta.q.fecha <= self.fin), 
@@ -221,7 +221,7 @@ class ConsultaProductosComprados(Ventana):
             idcliente = utils.combo_get_value(self.wids['cmbe_cliente'])
             self.cliente = pclases.Cliente.get(idcliente)
             cliente = self.cliente
-            if self.inicio == None:            
+            if not self.inicio:            
                 fechaInforme = 'Hasta ' + utils.str_fecha(time.strptime(self.fin, "%Y/%m/%d"))
             else:
                 fechaInforme = utils.str_fecha(time.strptime(self.inicio, "%Y/%m/%d")) + ' - ' + utils.str_fecha(time.strptime(self.fin, "%Y/%m/%d"))
