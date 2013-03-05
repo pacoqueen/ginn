@@ -43,6 +43,7 @@ except ImportError:
     sys.path.append(os.path.join('..', 'framework'))
     import pclases
     from seeker import VentanaGenerica 
+old_float = float
 from utils import _float as float
 from ventana_progreso import VentanaProgreso, VentanaActividad
 from albaranes_de_salida import buscar_proveedor
@@ -274,6 +275,13 @@ class DynConsulta(Ventana, VentanaGenerica):
         """
         def cell_func(col, cell, model, itr, numcol):
             valor = model[itr][numcol]
+            puid = model[itr][-1]
+            try:
+                delta = self.cave[puid][numcol]
+            except KeyError:
+                delta = 0   # Puro presupuesto. Nada de valor real.
+            print ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", delta
+            # PORASQUI: Colorear gradualmente con fixed / valor de self.cave
             try:
                 valor_numerico = utils._float(valor)
             except (TypeError, ValueError):
@@ -476,6 +484,7 @@ class DynConsulta(Ventana, VentanaGenerica):
 
     def rellenar_tabla(self):
         self.tracking = {} # Aquí guardaré los objetos que componen cada valor.
+        self.cave = {}
         # Por si acaso, algo de mantenimiento por aquí. Al turrón: 
         if pclases.DEBUG:
             print __file__, "Eliminando posibles vencimientos de presupuesto"\
@@ -544,6 +553,7 @@ class DynConsulta(Ventana, VentanaGenerica):
                                                             mescol, 
                                                             nodos_conceptos, 
                                                             objetos)
+                    self.cave[concepto.puid][mescol + 1] += diff
                     self.actualizar_sumatorio_padre(mescol, concepto, padres, 
                                                     diff)
                 i += 1
@@ -709,6 +719,7 @@ class DynConsulta(Ventana, VentanaGenerica):
         pas_count = pas.count()
         i = 0.0
         for pa in pas:
+            self.cave[pa.puid] = defaultdict(old_float)
             fila = [pa.descripcion] #FIXME: .replace("&", "&amp;")]
             for m in range(self.num_meses):
                 fila.append("")
@@ -729,6 +740,7 @@ class DynConsulta(Ventana, VentanaGenerica):
         conceptos_count = conceptos.count()
         filas = {}
         for c in conceptos:
+            self.cave[c.puid] = defaultdict(old_float)
             filas[c] = []
             for m in range(self.num_meses):
                 filas[c].append(0)
