@@ -5708,7 +5708,10 @@ class Rollo(SQLObject, PRPCTOO):
         """
         Devuelve el producto relacionado con el rollo a través del artículo.
         """
-        return self.articulos[0].productoVenta
+        try:
+            return self.articulos[0].productoVenta
+        except IndexError:
+            return None
 
     productoVenta = property(get_productoVenta, set_productoVenta)
 
@@ -5744,7 +5747,8 @@ class Rollo(SQLObject, PRPCTOO):
         """
         Devuelve código de rollo y descripción del producto.
         """
-        cad = "Rollo %s (%s)" % (self.codigo, self.productoVenta and self.productoVenta.descripcion or "")
+        cad = "Rollo %s (%s)" % (self.codigo, 
+                self.productoVenta and self.productoVenta.descripcion or "")
         return cad
 
 cont, tiempo = print_verbose(cont, total, tiempo)
@@ -20735,7 +20739,11 @@ class Auditoria(SQLObject, PRPCTOO):
             except IndexError:
                 ventana = None
         if not descripcion:
-            descripcion = objeto.get_info().replace("'", "`")
+            try:
+                descripcion = objeto.get_info().replace("'", "`")
+            except Exception, msg:
+                descripcion = "Error al obtener información del objeto. "\
+                              "Excepción capturada: %s " % msg
         if not usuario:
             usuario = logged_user
         Auditoria(usuario = usuario, 
@@ -20767,6 +20775,9 @@ class Auditoria(SQLObject, PRPCTOO):
                 ventana = None
         if not usuario:
             usuario = logged_user
+        if not descripcion:
+            # No es muy útil la información por defecto. Pero menos es nada.
+            descripcion = "Objeto con PUID %s eliminado." % puid
         Auditoria(usuario = usuario, 
                   ventana = ventana, 
                   puid = puid, 
@@ -20795,7 +20806,11 @@ class Auditoria(SQLObject, PRPCTOO):
             except IndexError:
                 ventana = None
         if not descripcion:
-            descripcion = objeto.get_info()  # Nuevos valores. Mejor que nada.
+            try:
+                descripcion = objeto.get_info() #Nuevos valores. Mejor que nada
+            except Exception, msg:
+                descripcion = "Error al obtener información del objeto. "\
+                              "Excepción capturada: %s " % msg
         if not usuario:
             usuario = logged_user
         Auditoria(usuario = usuario, 
