@@ -2327,10 +2327,10 @@ class FacturasVenta(Ventana):
                     vtos = cliente.get_vencimientos(factura.fecha)
                 except:
                     utils.dialogo_info('ERROR VENCIMIENTOS POR DEFECTO', 
-                        'Los vencimientos por defecto del cliente no se pudieron '
-                        'procesar correctamente.\nVerifique que están bien '
-                        'escritos y el formato es correcto en la ventana de '
-                        'clientes.', 
+                        'Los vencimientos por defecto del cliente no se '
+                        'pudieron procesar correctamente.\nVerifique que '
+                        'están bien escritos y el formato es correcto en '
+                        'la ventana de clientes.', 
                         padre = self.wids['ventana'])
                     return	# Los vencimientos no son válidos o no tiene.
         if vtos:
@@ -2353,7 +2353,8 @@ class FacturasVenta(Ventana):
                     pedido = factura.get_pedidos()[0]
                     str_formapago = pedido.formaDePago.toString()
                 except (AttributeError, IndexError):
-                    str_formapago = factura.cliente and factura.cliente.textoformacobro or ""
+                    str_formapago = (factura.cliente 
+                            and factura.cliente.textoformacobro or "")
             else:
                 # ¿Factura sin pedido?
                 str_formapago = factura.cliente.textoformacobro

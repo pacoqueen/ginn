@@ -1674,29 +1674,37 @@ class PartesDeFabricacionRollos(Ventana):
         de datos en el objeto y lo sincroniza con la BD.
         """
         partedeproduccion = self.objeto
-        ye_olde_fecha, ye_olde_horainicio, ye_olde_horafin = partedeproduccion.fecha, partedeproduccion.horainicio, partedeproduccion.horafin
+        ye_olde_fecha, ye_olde_horainicio, ye_olde_horafin \
+                = partedeproduccion.fecha, partedeproduccion.horainicio, \
+                  partedeproduccion.horafin
         ye_olde_horainicio = utils.str_hora_corta(partedeproduccion.horainicio) 
         ye_olde_horafin = utils.str_hora_corta(partedeproduccion.horafin)
             # Campos del objeto que hay que guardar:
-        # Fecha, horainicio, horafin, prodestandar y observaciones con el formateado especial.
+        # Fecha, horainicio, horafin, prodestandar y observaciones con el 
+        # formateado especial.
         fecha = self.wids['e_fecha'].get_text()
-        horainicio = self.wids['e_hora_ini'].get_text()
-        horafin = self.wids['e_hora_fin'].get_text()
+        horainicio = utils.str_hora_corta(
+                utils.parse_hora(self.wids['e_hora_ini'].get_text()))
+        horafin = utils.str_hora_corta(
+                utils.parse_hora(self.wids['e_hora_fin'].get_text()))
         prodestandar = self.wids['e_o11'].get_text()
         try:
             prodestandar = float(prodestandar)
         except:
             prodestandar = 0
-        if prodestandar != 0 and self.producto != None and self.producto.prodestandar == 0:
+        if (prodestandar != 0 and self.producto != None 
+                and self.producto.prodestandar == 0):
             self.producto.prodestandar = prodestandar
         bounds = self.wids['txt_observaciones'].get_buffer().get_bounds()
-        observaciones = self.wids['txt_observaciones'].get_buffer().get_text(bounds[0], bounds[1])
+        observaciones = self.wids['txt_observaciones'].get_buffer().get_text(
+                bounds[0], bounds[1])
         # Desactivo el notificador momentáneamente
         partedeproduccion.notificador.activar(lambda: None)
         # Actualizo los datos del objeto
         partedeproduccion.prodestandar = prodestandar
         partedeproduccion.observaciones = observaciones
-        partedeproduccion.fichaproduccion = self.wids['e_fichaproduccion'].get_text()
+        partedeproduccion.fichaproduccion \
+                = self.wids['e_fichaproduccion'].get_text()
         partedeproduccion.merma = self.wids['sp_merma'].get_value() / 100.0
         try:
             partedeproduccion.fecha = utils.parse_fecha(fecha)
