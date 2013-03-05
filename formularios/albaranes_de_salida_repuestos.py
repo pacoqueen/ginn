@@ -285,7 +285,7 @@ class AlbaranesDeSalidaRepuestos(Ventana):
                                padre = self.wids['ventana'])
             return
         if albaran != None: albaran.notificador.desactivar()
-        propia_empresa = Cliente.id_propia_empresa_cliente()
+        propia_empresa = pclases.Cliente.id_propia_empresa_cliente()
         almacenes = [(a.id, a.nombre) 
                      for a in pclases.Almacen.select(
                          pclases.Almacen.q.activo == True, 
