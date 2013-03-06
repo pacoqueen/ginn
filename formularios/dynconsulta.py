@@ -43,6 +43,7 @@ except ImportError:
     sys.path.append(os.path.join('..', 'framework'))
     import pclases
     from seeker import VentanaGenerica 
+old_float = float
 from utils import _float as float
 from ventana_progreso import VentanaProgreso, VentanaActividad
 from albaranes_de_salida import buscar_proveedor
@@ -156,7 +157,8 @@ class DynConsulta(Ventana, VentanaGenerica):
                        'b_exportar/clicked': self.exportar,  
                        'b_imprimir/clicked': self.imprimir
                       }  
-        self.wids['ch_datos_reales'].set_active(True)
+        self.wids['ch_datos_reales'].set_active(True) 
+        self.wids['ch_reales_mes0'].set_active(True) 
         self.inicializar_ventana()
         self.actualizar_ventana(None)
         self.wids['ventana'].resize(800, 600)
@@ -194,6 +196,7 @@ class DynConsulta(Ventana, VentanaGenerica):
         if glade_loaded:
             self.inicializar_ventana()
             self.actualizar_ventana(None)
+        return False    # GtkEntry - did not receive focus-out-event. If you connect a handler to this signal, it must return FALSE so the entry gets the event as well
     
     def update_mes_final(self, sp = None):
         try:
@@ -210,9 +213,15 @@ class DynConsulta(Ventana, VentanaGenerica):
         self.fecha_mes_final = mx.DateTime.DateFrom(anno_final, 
                                                     mes_final, 
                                                     1)
+        if self.fecha_mes_final < self.fecha_mes_actual:
+            self.fecha_mes_final = mx.DateTime.DateFrom(
+                    self.fecha_mes_final.year + 1, 
+                    self.fecha_mes_final.month, 
+                    self.fecha_mes_final.day)
         if glade_loaded:
             self.inicializar_ventana()
             self.actualizar_ventana(None)
+        return False    # GtkEntry - did not receive focus-out-event. If you connect a handler to this signal, it must return FALSE so the entry gets the event as well
 
     def inicializar_ventana(self):
         """
@@ -273,11 +282,30 @@ class DynConsulta(Ventana, VentanaGenerica):
         que se actualizó el model.
         """
         def cell_func(col, cell, model, itr, numcol):
+            # Extraigo valor numérico
             valor = model[itr][numcol]
             try:
                 valor_numerico = utils._float(valor)
             except (TypeError, ValueError):
                 valor_numerico = None
+            # Color gradual en función de datos reales / datos precalculados
+            puid = model[itr][-1]
+            try:
+                real = self.cave[puid][numcol]
+            except KeyError:    # Es defaultdict, pero por si acaso.
+                real = 0   # Puro presupuesto. Nada de valor real.
+            if valor_numerico and real:
+                try:
+                    proporcion = 1.0 - (abs(real) / abs(valor_numerico))
+                    grade = int(proporcion * 65535)
+                except ZeroDivisionError: # Por si acaso. XD
+                    grade = 0
+                bg_color = gtk.gdk.Color(red = int(65535*0.9 + grade*0.1), 
+                                         green = int(65535*0.7 + grade * 0.3), 
+                                         blue = int(65535*0.1 + grade*0.9))
+            else:
+                bg_color = None    # No hay valor o es otra cosa
+            # Extraigo valor anterior:
             if not model.iter_parent(itr):  # Es concepto de primer nivel
                 padre = model[itr][0]
                 try:
@@ -291,6 +319,7 @@ class DynConsulta(Ventana, VentanaGenerica):
                     old_valor = self.old_model[padre]['hijos'][hijo][numcol-1]
                 except (KeyError, IndexError):
                     old_valor = None
+            # Color de cambio de valores respecto a "iteración" anterior
             if self.old_model and old_valor != valor: 
                 # Valor puede ser None porque es la primera vez que se muestran
                 # todos los datos y en ese caso no debe colorear.
@@ -301,7 +330,7 @@ class DynConsulta(Ventana, VentanaGenerica):
                 else:
                     cell.set_property("weight", 400)
                     cell.set_property("background", "yellow")
-            else:
+            else: # Coloreado de valores +/-
                 if not model.iter_parent(itr):
                     if valor_numerico != None:
                         if valor_numerico == 0:
@@ -327,7 +356,9 @@ class DynConsulta(Ventana, VentanaGenerica):
                         color_valor = "white"
                     cell.set_property("foreground", color_valor)
                     cell.set_property("weight", 400)
-                    cell.set_property("background", None)
+                    # Si no ha cambiado y no es una fila "cabecera", entonces 
+                    # coloreo el fondo según la gradación de datos reales.
+                    cell.set_property("background", bg_color)
         cols = tv.get_columns()
         for i in xrange(1, len(cols)):
             column = cols[i]
@@ -341,7 +372,7 @@ class DynConsulta(Ventana, VentanaGenerica):
         """
         indexcol = get_col_pos(tv, col)
         if indexcol > 0:
-            mes = (self.mes_actual + indexcol - 1) % self.num_meses
+            mes = (self.mes_actual + indexcol - 1) % 12 #self.num_meses
             model = tv.get_model()
             valor = model[path][indexcol]
             if utils._float(valor) == 0:
@@ -432,9 +463,12 @@ class DynConsulta(Ventana, VentanaGenerica):
             self.check_permisos(nombre_fichero_ventana = "dynconsulta.py")
 
     def actualizar_ventana(self, boton = None):
-        self.precalc = precalcular(self.fecha_mes_actual, 
-                                   self.fecha_mes_final, 
-                                   self.wids['ventana'])
+        if self.wids['ch_datos_reales'].get_active():
+            self.precalc = precalcular(self.fecha_mes_actual, 
+                                       self.fecha_mes_final, 
+                                       self.wids['ventana'])
+        else:
+            self.precalc = MyMonthsDict()
         self.rellenar_widgets()
         self.wids['tv_datos'].expand_all()
 
@@ -476,6 +510,7 @@ class DynConsulta(Ventana, VentanaGenerica):
 
     def rellenar_tabla(self):
         self.tracking = {} # Aquí guardaré los objetos que componen cada valor.
+        self.cave = {}
         # Por si acaso, algo de mantenimiento por aquí. Al turrón: 
         if pclases.DEBUG:
             print __file__, "Eliminando posibles vencimientos de presupuesto"\
@@ -544,6 +579,11 @@ class DynConsulta(Ventana, VentanaGenerica):
                                                             mescol, 
                                                             nodos_conceptos, 
                                                             objetos)
+                    try:
+                        self.cave[concepto.puid][mescol+1]+=valor_real_importe
+                    except AttributeError:  # No valor real
+                        # self.cave[concepto.puid][mescol + 1] = 0
+                        pass
                     self.actualizar_sumatorio_padre(mescol, concepto, padres, 
                                                     diff)
                 i += 1
@@ -567,11 +607,14 @@ class DynConsulta(Ventana, VentanaGenerica):
                 precalc_concepto = self.precalc[fechacol][concepto]
                 valor_real_toneladas = precalc_concepto['toneladas']
                 valor_presup_restante = (valor_presupuestado.precio 
-                    * (valor_presupuestado.toneladas - valor_real_toneladas))
+                    #* (valor_presupuestado.toneladas - valor_real_toneladas))
+                    # Sumo porque las tm presupuestadas ya vienen en negativo. 
+                    * (valor_presupuestado.toneladas + valor_real_toneladas))
                 # Si "me como" todo lo presupuestado, parto de cero para 
                 # mostrar el valor real completo. (Si no, acabará restando
                 # ese delta y falseará el resultado)
-                valor_presup_restante = max(0, valor_presup_restante)
+                valor_presup_restante = min(0, valor_presup_restante)
+                # Uso min porque las toneladas vienen en negativo al ser gasto.
             else:
                 # Como voy a sustituirlo entero, el valor restante es 0.0 para 
                 # que solo se vea el valor real que le voy a sumar.
@@ -595,7 +638,10 @@ class DynConsulta(Ventana, VentanaGenerica):
                     numvtos = max(
                         len(o.albaranEntrada.proveedor.get_vencimientos()), 0)
                 tm = o.cantidad / numvtos
-                trinfo = (o, importe_objeto, tm)
+                if concepto.es_gasto():
+                    trinfo = (o, -importe_objeto, -tm)
+                else:
+                    trinfo = (o, importe_objeto, tm)
                 restar_en_traza_presupuesto(self.tracking, 
                                             fechacol.month, 
                                             self.mes_actual, 
@@ -607,10 +653,16 @@ class DynConsulta(Ventana, VentanaGenerica):
                 try:
                     importe_objeto = o.get_subtotal(iva = True, 
                                                     prorrateado = True)
-                    trinfo = (o, importe_objeto, None)
+                    if isinstance(o, (pclases.LineaDeCompra, 
+                                      pclases.ServicioTomado)):
+                        importe_objeto = -importe_objeto
                 except AttributeError: # Es factura o algo así.
                     importe_objeto = o.calcular_importe_total(iva = True)
-                    trinfo = (o, importe_objeto, None)
+                    if isinstance(o, pclases.FacturaCompra):
+                    # IVA es gasto, pero tiene fras de venta que deben ir en 
+                    # positivo. No puedo usar el criterio concepto.es_gasto().
+                        importe_objeto = -importe_objeto
+                trinfo = (o, importe_objeto, None)
                 restar_en_traza_presupuesto(self.tracking, 
                                             fechacol.month, 
                                             self.mes_actual, 
@@ -654,8 +706,8 @@ class DynConsulta(Ventana, VentanaGenerica):
                 try:
                     model[nodo_padre][mes_matriz] = utils.float2str(
                             utils.parse_float(model[nodo_padre][mes_matriz]) 
-                            + fila[mes_matriz])
-                except (TypeError, ValueError):
+                            + utils.parse_float(fila[mes_matriz]))
+                except (TypeError, ValueError), msg:
                     model[nodo_padre][mes_matriz] = utils.float2str(
                             fila[mes_matriz])
             i += 1
@@ -679,6 +731,11 @@ class DynConsulta(Ventana, VentanaGenerica):
             # presupuestaron ya se ha ido, sus vencimientos no valen.
             vp = v.valorPresupuestoAnual
             if vp.fecha < self.fecha_mes_actual:
+                continue
+            # CWT: En mes actual no valen valores presupuestados. Solo reales. 
+            if (self.wids['ch_reales_mes0'].get_active() and 
+                self.fecha_mes_actual 
+                    <= vp.fecha <= final_de_mes(self.fecha_mes_actual)):
                 continue
             c = v.conceptoPresupuestoAnual
             mes_offset = (v.fecha.month - self.fecha_mes_actual.month) % (
@@ -709,6 +766,7 @@ class DynConsulta(Ventana, VentanaGenerica):
         pas_count = pas.count()
         i = 0.0
         for pa in pas:
+            self.cave[pa.puid] = defaultdict(old_float)
             fila = [pa.descripcion] #FIXME: .replace("&", "&amp;")]
             for m in range(self.num_meses):
                 fila.append("")
@@ -729,6 +787,7 @@ class DynConsulta(Ventana, VentanaGenerica):
         conceptos_count = conceptos.count()
         filas = {}
         for c in conceptos:
+            self.cave[c.puid] = defaultdict(old_float)
             filas[c] = []
             for m in range(self.num_meses):
                 filas[c].append(0)
@@ -1486,9 +1545,9 @@ def buscar_concepto_proveedor_granza(proveedor, usuario = None):
                 descripcion = proveedor.nombre, 
                 presupuestoAnual = pclases.PresupuestoAnual.select(
                     pclases.PresupuestoAnual.q.descripcion 
-                        == "Proveedores granza")[0] # EXISTE. Hay un check al 
+                        == "Proveedores granza")[0],  # EXISTE. Hay un check al 
                                             # principio que se asegura de eso.
-                )
+                proveedor = proveedor)
         pclases.Auditoria.nuevo(concepto, usuario, __file__)
     return concepto
 
@@ -1537,7 +1596,7 @@ def criterio_sustitucion(vto_presupuesto, valor_real_importe,
                 sustituir_por_reales = True
             ### Caso IVA
             if (vto_presupuesto.es_de_iva() 
-                    and valor_real_importe > vto_presupuesto.importe):
+                    and abs(valor_real_importe)>abs(vto_presupuesto.importe)):
                 # En el caso del IVA se muestra el importe calculado a partir 
                 # de datos reales cuando sea el mes corriente (primer "if" de 
                 # arriba) o cuando se supere la estimación.
@@ -1549,7 +1608,7 @@ def criterio_sustitucion(vto_presupuesto, valor_real_importe,
                 sustituir_por_reales = True
             ### Caso resto proveedores.
             if (vto_presupuesto.es_de_compras() 
-                    and valor_real_importe > vto_presupuesto.importe):
+                    and abs(valor_real_importe)>abs(vto_presupuesto.importe)):
                 # Solo sustituyo cuando supere lo previsto.
                 sustituir_por_reales = True
             if pclases.DEBUG:
@@ -1604,13 +1663,14 @@ def restar_en_traza_presupuesto(dict_tracking,
             # vuelvo a agregar y santas pascuas.
             if mes != mes_actual:
                 if valor_real_toneladas != None:
-                    tm -= valor_real_toneladas
+                    tm -= -valor_real_toneladas # Real: +. En presup.: -
                     importe = obj.precio * tm
                 else:
                     importe -= valor_real_importe
                 # Quito también valores negativos. Ya no influyen. Se ha 
                 # sustituido por completo el valor presupuestado.
-                if importe > 0:
+                if ((not concepto.es_gasto() and importe > 0) or (
+                     concepto.es_gasto() and importe < 0)):
                     dict_tracking[mes][concepto].append((obj, 
                                                          importe, 
                                                          tm))
