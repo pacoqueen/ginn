@@ -75,7 +75,8 @@ def eliminar_temporales():
                 # Se acaba de abrir el menú principal. No puede haber 
                 # etiquetas recién creadas y no impresas. Y si las hay, 
                 # el visor de PDF ya las tiene en memoria y no pasa nada por 
-                # borrar el archivo.
+                # borrar el archivo... a no ser que esté en Winmerde y no 
+                # me deje. Exception powah!
             except (OSError, IOError):
                 pass    # Protegido, bloqueado... da igual. Sigo borrando.
 
@@ -95,14 +96,17 @@ class GestorMensajes:
 
         self.__usuario = usuario
         if self.__usuario == None:
-            print "ERROR: Intentando iniciar gestor de mensajes con usuario inválido."
+            print __file__, "ERROR: Intentando iniciar gestor de mensajes "\
+                    "con usuario inválido."
         else:
             self.__pendientes = self.comprobar_pendientes()
             if self.__pendientes:
                 self.run()
 
     def comprobar_pendientes(self):
-        no_entregados = pclases.Alerta.select(""" usuario_id = %d AND entregado = FALSE """ % (self.__usuario.id))
+        no_entregados = pclases.Alerta.select(
+                """ usuario_id = %d AND entregado = FALSE """ % (
+                    self.__usuario.id))
         return [a for a in no_entregados]
 
     def mostrar_alerta(self, a):
@@ -116,7 +120,7 @@ class GestorMensajes:
         """
         mensaje = a.mensaje
         fecha = a.fechahora.strftime("%d/%m/%Y a las %H:%M")
-        ventana = self.construir_ventana(fecha, mensaje, len(self.__pendientes))
+        ventana = self.construir_ventana(fecha,mensaje,len(self.__pendientes))
         a.entregado = self.mostrar_ventana(ventana, a)
         if a.entregado:
             self.__pendientes.remove(a)
@@ -143,9 +147,10 @@ class GestorMensajes:
     def cambiar_contador_pendientes(self, togglebutton, label_pendientes, res):
         if togglebutton.get_active():
             p = len(self.__pendientes) - 1
-            # La alerta actual está pendiente hasta que cierre la ventana. Así que resto
-            # uno al total de pendientes para que se muestre en el resto de pendientes el 
-            # mensaje actual como leído (aunque realmente no quede leído hasta que cierre).
+            # La alerta actual está pendiente hasta que cierre la ventana. 
+            # Así que resto uno al total de pendientes para que se muestre 
+            # en el resto de pendientes el mensaje actual como leído (aunque 
+            # realmente no quede leído hasta que cierre).
             res[0] = True
         else:
             p = len(self.__pendientes)
@@ -156,7 +161,8 @@ class GestorMensajes:
     def aceptar(self, boton, ventana, alerta):
         if ventana['ch_todos'].get_active():
             for a in [a for a in self.__pendientes if a != alerta]:
-                # La alerta original se eliminará después, por eso la respeto en este for.
+                # La alerta original se eliminará después, por eso la respeto 
+                # en este for.
                 a.entregado = True
                 self.__pendientes.remove(a)
         ventana['ventana'].destroy()
@@ -168,7 +174,8 @@ class GestorMensajes:
         """
         res = [True]
         ventana['b_aceptar'].connect("clicked", self.aceptar, ventana, alerta)
-        ventana['confirmado'].connect("toggled", self.cambiar_contador_pendientes, ventana['no_leidos'], res)
+        ventana['confirmado'].connect("toggled", 
+                self.cambiar_contador_pendientes, ventana['no_leidos'], res)
         ventana['ventana'].connect("destroy", gtk.main_quit)
         gtk.main()  # Saldrá de aquí con el main_quit
         return res[0]
@@ -190,7 +197,8 @@ class GestorMensajes:
                 break
 
 if __name__=='__main__':
-    gm = GestorMensajes(pclases.Usuario.select(pclases.Usuario.q.usuario=='admin')[0])
+    gm = GestorMensajes(
+            pclases.Usuario.select(pclases.Usuario.q.usuario=='admin')[0])
 #    gm.nueva_alerta('Esto es una alerta de prueba')
 #    gm.nueva_alerta('Esto es otra alerta')
 #    gm.nueva_alerta("""Oh! Otra alerta más. Y esta a demás tiene un montón de texto. Pero no un montón de eso que dices "bueno, es un montoncito", no. Esto es un montón pero un montón de verdad. Meet the new boss... same as the old boss. My name is Ivor, I'm an engine driver.

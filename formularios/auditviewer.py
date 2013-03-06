@@ -106,6 +106,8 @@ dir()
         self.wids['vbox1'].set_size_request(640, 480)
         self.wids['tv_datos'].set_size_request(-1, 350)
         self.wids['e_search'].grab_focus()
+        self.wids['e_search'].set_text("!Alerta:")
+        self.filtrar_tvaudit("!Alerta:")
         gobject.timeout_add(1000, self.check_audit)
         self.wids['ventana'].resize(800, 600)
         gtk.main()
@@ -255,7 +257,10 @@ dir()
             if linea != linea_anterior:
                 ver = False
                 for p in self.filtro:
-                    ver = ver or (p in linea.get_info().lower())
+                    if p.startswith("!"):
+                        ver = ver or (p[1:] not in linea.get_info().lower())
+                    else:
+                        ver = ver or (p in linea.get_info().lower())
                 if not ver:
                     continue
                 linea_anterior = linea
