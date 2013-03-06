@@ -2301,10 +2301,20 @@ class LineaDeCompra(SQLObject, PRPCTOO):
         starter(self, *args, **kw)
 
     def get_info(self):
-        return "%s; %s * %s = %s" % (self.productoCompra.descripcion, 
+        info_alb_fra = ""
+        if self.albaranEntrada or self.facturaCompra:
+            info_alb_fra = []
+            if self.albaranEntrada:
+                info_alb_fra.append("alb. %s" % self.albaranEntrada.numalbaran)
+            if self.facturaCompra:
+                info_alb_fra.append("fra. %s" % self.facturaCompra.numfactura)
+            info_alb_fra = "; ".join(info_alb_fra)
+            info_alb_fra = "(%s)" % info_alb_fra
+        return "%s; %s * %s = %s%s" % (self.productoCompra.descripcion, 
             utils.float2str(self.cantidad), 
             utils.float2str(self.precio * (1 - self.descuento)), 
-            utils.float2str(self.get_subtotal(iva = True, prorrateado = True)))
+            utils.float2str(self.get_subtotal(iva = True, prorrateado = True)),
+            info_alb_fra)
 
     def get_fecha_albaran(self):
         """
@@ -21188,6 +21198,7 @@ class ConceptoPresupuestoAnual(SQLObject, PRPCTOO):
                 vto = [mx.DateTime.DateFrom(fecha.year, fecha.month + 1, 20)]
         elif self.proveedor:
             # Cada proveedor vence en la fecha que diga su forma de pago.
+            self.proveedor.sync()
             vto = self.proveedor.get_fechas_vtos_por_defecto(fecha)
         elif self.presupuestoAnual.descripcion == "Clientes":
             plazos_media_forma_pago = self.calcular_vencimiento_medio_clientes(
@@ -21250,6 +21261,12 @@ class ConceptoPresupuestoAnual(SQLObject, PRPCTOO):
         nums = utils.aplanar(vtos)
         res = utils.media(nums)
         return [res]
+
+    def es_gasto(self):
+        """
+        Si mi "padre" es gasto, entonces yo también.
+        """
+        return self.presupuestoAnual.es_gasto()
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
