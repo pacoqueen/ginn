@@ -157,6 +157,7 @@ class DynConsulta(Ventana, VentanaGenerica):
                        'b_exportar/clicked': self.exportar,  
                        'b_imprimir/clicked': self.imprimir
                       }  
+        self.wids['ch_sin_presupuesto'].set_active(False) 
         self.wids['ch_datos_reales'].set_active(True) 
         self.wids['ch_reales_mes0'].set_active(True) 
         self.inicializar_ventana()
@@ -526,7 +527,8 @@ class DynConsulta(Ventana, VentanaGenerica):
         model.clear()
         padres = self.cargar_conceptos_primer_nivel(vpro)
         filas = self.cargar_conceptos_segundo_nivel(vpro)
-        filas = self.montar_filas(filas, vpro)
+        if not self.wids['ch_sin_presupuesto'].get_active():
+            filas = self.montar_filas(filas, vpro)
         nodos_conceptos = self.mostrar_matriz_en_treeview(filas, padres, vpro)
         if self.wids['ch_datos_reales'].get_active():
             self.mostrar_valores_reales_precalculados(nodos_conceptos, 
@@ -560,7 +562,11 @@ class DynConsulta(Ventana, VentanaGenerica):
                 # proporcional de las Tm.
                 valor_real_importe = datos_reales[concepto]['importe']
                 objetos = datos_reales[concepto]['objetos']
-                vto_presupuestado = buscar_vencimiento_presupuestado(fechacol, 
+                if self.wids['ch_sin_presupuesto'].get_active():
+                    vto_presupuestado = None
+                else:
+                    vto_presupuestado = buscar_vencimiento_presupuestado(
+                                                        fechacol, 
                                                         concepto,
                                                         self.fecha_mes_actual)
                 if criterio_sustitucion(vto_presupuestado, 
@@ -1261,8 +1267,12 @@ def clasificar_compras(res, ldc_facturadas, srv_facturados, ldc_no_facturadas,
                                                     prorrateado = True)
         concepto = buscar_concepto_ldc(ldc.albaranEntrada.proveedor, 
                                        ldc.productoCompra)
-        fechas = ldc.albaranEntrada.proveedor.get_fechas_vtos_por_defecto(
+        try:
+            fechas = ldc.albaranEntrada.proveedor.get_fechas_vtos_por_defecto(
                                                     ldc.albaranEntrada.fecha)
+        except AttributeError:  # No proveedor. Sí albarán. El objeto viene 
+                                # de una búsqueda de albaranes no facturados.
+            fechas = [] # fecha es similar a ldc.albaranEntrada.fecha
         if not fechas:
             fechas = [fecha]    # Uso la del albarán porque el proveedor no 
                                 # tiene información suficiente.
