@@ -100,7 +100,7 @@
                 </child>
                 <child>
                   <widget class="GtkCheckButton" id="ch_reales_mes0">
-                    <property name="label" translatable="yes">Solo datos reales en mes actual</property>
+                    <property name="label" translatable="yes">En mes actual usar solo datos reales</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
