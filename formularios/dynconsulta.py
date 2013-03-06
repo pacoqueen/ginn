@@ -274,18 +274,29 @@ class DynConsulta(Ventana, VentanaGenerica):
         que se actualizó el model.
         """
         def cell_func(col, cell, model, itr, numcol):
+            # Extraigo valor numérico
             valor = model[itr][numcol]
+            try:
+                valor_numerico = utils._float(valor)
+            except (TypeError, ValueError):
+                valor_numerico = None
+            # Color gradual en función de datos reales / datos precalculados
             puid = model[itr][-1]
             try:
                 delta = self.cave[puid][numcol]
             except KeyError:
                 delta = 0   # Puro presupuesto. Nada de valor real.
-            print ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", delta
-            # PORASQUI: Colorear gradualmente con fixed / valor de self.cave
-            try:
-                valor_numerico = utils._float(valor)
-            except (TypeError, ValueError):
-                valor_numerico = None
+            if valor_numerico and delta:
+                try:
+                    grade = int((delta / valor_numerico) * 65535)
+                except ZeroDivisionError: # Por si acaso. XD
+                    grade = 0
+                bg_color = gtk.gdk.Color(red = grade, 
+                                         green = grade, 
+                                         blue = grade)
+            else:
+                bg_color = None    # No hay valor o es otra cosa
+            # Extraigo valor anterior:
             if not model.iter_parent(itr):  # Es concepto de primer nivel
                 padre = model[itr][0]
                 try:
@@ -299,6 +310,7 @@ class DynConsulta(Ventana, VentanaGenerica):
                     old_valor = self.old_model[padre]['hijos'][hijo][numcol-1]
                 except (KeyError, IndexError):
                     old_valor = None
+            # Color de cambio de valores respecto a "iteración" anterior
             if self.old_model and old_valor != valor: 
                 # Valor puede ser None porque es la primera vez que se muestran
                 # todos los datos y en ese caso no debe colorear.
@@ -309,7 +321,7 @@ class DynConsulta(Ventana, VentanaGenerica):
                 else:
                     cell.set_property("weight", 400)
                     cell.set_property("background", "yellow")
-            else:
+            else: # Coloreado de valores +/-
                 if not model.iter_parent(itr):
                     if valor_numerico != None:
                         if valor_numerico == 0:
@@ -335,7 +347,9 @@ class DynConsulta(Ventana, VentanaGenerica):
                         color_valor = "white"
                     cell.set_property("foreground", color_valor)
                     cell.set_property("weight", 400)
-                    cell.set_property("background", None)
+                    # Si no ha cambiado y no es una fila "cabecera", entonces 
+                    # coloreo el fondo según la gradación de datos reales.
+                    cell.set_property("background", bg_color)
         cols = tv.get_columns()
         for i in xrange(1, len(cols)):
             column = cols[i]
@@ -554,6 +568,11 @@ class DynConsulta(Ventana, VentanaGenerica):
                                                             nodos_conceptos, 
                                                             objetos)
                     self.cave[concepto.puid][mescol + 1] += diff
+                    #try:
+                    #    self.max_delta = max(self.max_delta, 
+                    #            self.cave[concepto.puid][mescol + 1])
+                    #except UnboundLocalError:
+                    #    self.max_delta = self.cave[concepto.puid][mescol + 1]
                     self.actualizar_sumatorio_padre(mescol, concepto, padres, 
                                                     diff)
                 i += 1
