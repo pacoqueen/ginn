@@ -627,9 +627,9 @@ class FacturasDeEntrada(Ventana):
                                 = self.objeto.fechaVistoBuenoTecnico \
                                 = self.objeto.fechaVistoBuenoComercial \
                                 = mx.DateTime.localtime()
-        else:
-            s = pclases.ServicioTomado.get(idldc)
-            s.qprecio = precio
+            else:
+                s = pclases.ServicioTomado.get(idldc)
+                s.qprecio = precio
         self.rellenar_widgets()
 
     def cambiar_descripcion(self, cell, path, texto):
