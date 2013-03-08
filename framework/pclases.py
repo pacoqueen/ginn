@@ -19813,9 +19813,12 @@ class ServicioTomado(SQLObject, PRPCTOO):
         a cuenta.
         En otro caso, devuelve el precio del registro.
         """
+        self.sync()
         if self.comision != None:
+            self.comision.sync()
             return self.comision.precio
         if self.transporteACuenta != None:
+            self.transporteACuenta.sync()
             return self.transporteACuenta.precio
         return self.precio
 
@@ -19828,10 +19831,13 @@ class ServicioTomado(SQLObject, PRPCTOO):
         # Si el precio recibido en txt no es correcto, ya se encargará 
         # SQLObject de disparar la excepción correspondiente.
         self.precio = txt
+        self.syncUpdate()
         if self.comision != None:
             self.comision.precio = self.precio
+            self.comision.syncUpdate()
         if self.transporteACuenta != None:
             self.transporteACuenta.precio = self.precio
+            self.transporteACuenta.syncUpdate()
     
     def _get_qdescuento(self):
         """
