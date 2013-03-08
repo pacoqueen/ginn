@@ -3868,9 +3868,19 @@ def recv_serial(com, ventana, l_peso, ventana_parte, e_numbala, l_estable, l_pes
     A diferencia del de rollos, este simplemente actualiza el peso mostrado en pantalla.
     La bala se creará con el peso mediante el botón correspondiente.
     """
-    c = com.readline(eol = '\r')
-    com.flushInput()    # Evito que datos antiguos se queden en el buffer impidiendo nuevas lecturas.
-    com.flush()
+    try:
+        c = com.readline(eol = '\r')
+    except TypeError:   # Versión que no soporta especificar fin de línea.
+        import io
+        sio = io.TextIOWrapper(io.BufferedRWPair(com, com))
+        try:
+            c = sio.readline()
+        except ValueError:  # ¿Puerto cerrado?
+            com = utils.get_puerto_serie()
+            sio = io.TextIOWrapper(io.BufferedRWPair(com, com))
+            c = sio.readline()
+    com.flushInput()    # Evito que datos antiguos se queden en el 
+    com.flush()         # buffer impidiendo nuevas lecturas.
     if c.strip() != '':
         # Tratar
         try:
