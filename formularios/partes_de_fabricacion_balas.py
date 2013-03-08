@@ -3878,7 +3878,10 @@ def recv_serial(com, ventana, l_peso, ventana_parte, e_numbala, l_estable, l_pes
         except ValueError:  # ¿Puerto cerrado?
             com = utils.get_puerto_serie()
             sio = io.TextIOWrapper(io.BufferedRWPair(com, com))
-            c = sio.readline()
+            try:
+                c = sio.readline()
+            except UnicodeDecodeError:
+                c = "" # Basurilla. La lectura no es perfecta. Vuelvo a iterar.
         except UnicodeDecodeError:
             c = ""  # Ha leído mierda. Vuelvo a iterar.
     com.flushInput()    # Evito que datos antiguos se queden en el 
