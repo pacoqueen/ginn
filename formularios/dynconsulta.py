@@ -125,6 +125,8 @@ class MyMonthsDict(TransformedDict):
         else:
             return key
 
+def activate(ch, ch_destino):
+    ch_destino.set_sensitive(ch.get_active())
 
 class DynConsulta(Ventana, VentanaGenerica):
     def __init__(self, objeto = None, usuario = None, mes_actual = None, 
@@ -157,9 +159,13 @@ class DynConsulta(Ventana, VentanaGenerica):
                        'b_exportar/clicked': self.exportar,  
                        'b_imprimir/clicked': self.imprimir
                       }  
-        self.wids['ch_sin_presupuesto'].set_active(False) 
+        self.wids['ch_presupuesto'].set_active(True) 
         self.wids['ch_datos_reales'].set_active(True) 
         self.wids['ch_reales_mes0'].set_active(True) 
+        self.wids['ch_datos_pdtes'].set_active(True) 
+        self.wids['ch_datos_reales'].connect("toggled", 
+                lambda ch, chdest: chdest.set_sensitive(ch.get_active()),
+                self.wids['ch_datos_pdtes'])
         self.inicializar_ventana()
         self.actualizar_ventana(None)
         self.wids['ventana'].resize(800, 600)
@@ -527,7 +533,7 @@ class DynConsulta(Ventana, VentanaGenerica):
         model.clear()
         padres = self.cargar_conceptos_primer_nivel(vpro)
         filas = self.cargar_conceptos_segundo_nivel(vpro)
-        if not self.wids['ch_sin_presupuesto'].get_active():
+        if self.wids['ch_presupuesto'].get_active():
             filas = self.montar_filas(filas, vpro)
         nodos_conceptos = self.mostrar_matriz_en_treeview(filas, padres, vpro)
         if self.wids['ch_datos_reales'].get_active():
@@ -562,13 +568,13 @@ class DynConsulta(Ventana, VentanaGenerica):
                 # proporcional de las Tm.
                 valor_real_importe = datos_reales[concepto]['importe']
                 objetos = datos_reales[concepto]['objetos']
-                if self.wids['ch_sin_presupuesto'].get_active():
-                    vto_presupuestado = None
-                else:
+                if self.wids['ch_presupuesto'].get_active():
                     vto_presupuestado = buscar_vencimiento_presupuestado(
                                                         fechacol, 
                                                         concepto,
                                                         self.fecha_mes_actual)
+                else:
+                    vto_presupuestado = None
                 if criterio_sustitucion(vto_presupuestado, 
                                         valor_real_importe, 
                                         self.fecha_mes_actual, 
@@ -606,32 +612,27 @@ class DynConsulta(Ventana, VentanaGenerica):
         así evitar recalcular toda la "subcolumna".
         «objetos» es una lista de objetos de los que procede el valor real.
         """
-        valor_real_toneladas = None
-        if valor_presupuestado:
-            valor_presupuestado_importe = valor_presupuestado.importe
-            if valor_presupuestado.es_de_granza():
-                precalc_concepto = self.precalc[fechacol][concepto]
-                valor_real_toneladas = precalc_concepto['toneladas']
-                valor_presup_restante = (valor_presupuestado.precio 
-                    #* (valor_presupuestado.toneladas - valor_real_toneladas))
-                    # Sumo porque las tm presupuestadas ya vienen en negativo. 
-                    * (valor_presupuestado.toneladas + valor_real_toneladas))
-                # Si "me como" todo lo presupuestado, parto de cero para 
-                # mostrar el valor real completo. (Si no, acabará restando
-                # ese delta y falseará el resultado)
-                valor_presup_restante = min(0, valor_presup_restante)
-                # Uso min porque las toneladas vienen en negativo al ser gasto.
-            else:
-                # Como voy a sustituirlo entero, el valor restante es 0.0 para 
-                # que solo se vea el valor real que le voy a sumar.
-                valor_presup_restante = 0.0
-        else:
-            valor_presup_restante = 0.0
-            valor_presupuestado_importe = 0.0
+        (valor_presupuestado_restante, 
+         valor_presupuestado_importe) = self.calcular_presupuestado_restante(
+                                                        valor_presupuestado, 
+                                                        fechacol, 
+                                                        concepto)
         model = self.wids['tv_datos'].get_model()
         nodo_concepto = nodos_conceptos[concepto]
+        if self.wids['ch_datos_pdtes'].get_active():
+            pass    # PORASQUI
         model[nodo_concepto][mescol + 1] = utils.float2str(
-                                    valor_presup_restante + valor_real_importe)
+                                                valor_presupuestado_restante 
+                                                + valor_real_importe)
+        self.actualizar_traza(objetos, concepto, fechacol, valor_presupuestado)
+        delta = ((valor_presupuestado_restante + valor_real_importe) 
+                 - valor_presupuestado_importe)
+        if pclases.DEBUG:
+            print __file__, ">>> cambiar_valor_presupuestado >>> ð =", delta
+        return delta
+
+    def actualizar_traza(self, objetos, concepto, fechacol, 
+                         valor_presupuestado):
         if not fechacol.month in self.tracking:
             self.tracking[fechacol.month] = defaultdict(list) 
         for o in objetos:
@@ -642,7 +643,7 @@ class DynConsulta(Ventana, VentanaGenerica):
                     numvtos = len(o.facturaCompra.vencimientosPago)
                 except AttributeError:
                     numvtos = max(
-                        len(o.albaranEntrada.proveedor.get_vencimientos()), 0)
+                        len(o.albaranEntrada.proveedor.get_vencimientos()), 1)
                 tm = o.cantidad / numvtos
                 if concepto.es_gasto():
                     trinfo = (o, -importe_objeto, -tm)
@@ -676,11 +677,33 @@ class DynConsulta(Ventana, VentanaGenerica):
                                             valor_presupuestado, 
                                             importe_objeto)
             self.tracking[fechacol.month][concepto].append(trinfo)
-        delta = ((valor_presup_restante + valor_real_importe) 
-                 - valor_presupuestado_importe)
-        if pclases.DEBUG:
-            print __file__, ">>> cambiar_valor_presupuestado >>> ð =", delta
-        return delta
+
+    def calcular_presupuestado_restante(self, valor_presupuestado, fechacol, 
+                                        concepto):
+        valor_real_toneladas = None
+        if valor_presupuestado:
+            valor_presupuestado_importe = valor_presupuestado.importe
+            if valor_presupuestado.es_de_granza():
+                precalc_concepto = self.precalc[fechacol][concepto]
+                valor_real_toneladas = precalc_concepto['toneladas']
+                valor_presupuestado_restante = (valor_presupuestado.precio 
+                    #* (valor_presupuestado.toneladas - valor_real_toneladas))
+                    # Sumo porque las tm presupuestadas ya vienen en negativo. 
+                    * (valor_presupuestado.toneladas + valor_real_toneladas))
+                # Si "me como" todo lo presupuestado, parto de cero para 
+                # mostrar el valor real completo. (Si no, acabará restando
+                # ese delta y falseará el resultado)
+                # Uso min porque las toneladas vienen en negativo al ser gasto.
+                valor_presupuestado_restante = min(0, 
+                                                valor_presupuestado_restante)
+            else:
+                # Como voy a sustituirlo entero, el valor restante es 0.0 para 
+                # que solo se vea el valor real que le voy a sumar.
+                valor_presupuestado_restante = 0.0
+        else:
+            valor_presupuestado_restante = 0.0
+            valor_presupuestado_importe = 0.0
+        return valor_presupuestado_restante, valor_presupuestado_importe
 
     def actualizar_sumatorio_padre(self, mescol, concepto, padres, diff):
         # Thanks bicycle repair man!
@@ -732,16 +755,16 @@ class DynConsulta(Ventana, VentanaGenerica):
         valores_count = valores.count()
         for v in valores:
             v.sync()
+            # CWT: En mes actual no valen valores presupuestados. Solo reales. 
+            if (self.wids['ch_reales_mes0'].get_active() and 
+                self.fecha_mes_actual 
+                    <= v.fecha <= final_de_mes(self.fecha_mes_actual)):
+                continue
             # Hay valores de meses anteriores al primero de la tabla cuyos 
             # vencimientos caen ahora. Esos los quito. Si el mes en que se 
             # presupuestaron ya se ha ido, sus vencimientos no valen.
             vp = v.valorPresupuestoAnual
             if vp.fecha < self.fecha_mes_actual:
-                continue
-            # CWT: En mes actual no valen valores presupuestados. Solo reales. 
-            if (self.wids['ch_reales_mes0'].get_active() and 
-                self.fecha_mes_actual 
-                    <= vp.fecha <= final_de_mes(self.fecha_mes_actual)):
                 continue
             c = v.conceptoPresupuestoAnual
             mes_offset = (v.fecha.month - self.fecha_mes_actual.month) % (
@@ -853,6 +876,7 @@ def precalcular(fecha_ini, fecha_fin, ventana_padre = None, usuario = None):
     Devuelve un diccionario de conceptos del mes especificado con los valores
     que se puedan calcular a partir de datos reales.
     Si el concepto no existe, lo crea en la base de datos
+    cobrados / pagados).
     """
     vpro = VentanaActividad(ventana_padre, "Precalculando datos reales...")
     vpro.mostrar()

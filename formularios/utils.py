@@ -3011,7 +3011,8 @@ def get_puerto_serie(puerto = None):
             com = serial.Serial(puerto)
         except:
             com = None
-    if com != None:     # Configuración protocolo Eurobil. Misma configuración para los Symbol Phaser P360.
+    if com != None:     # Configuración protocolo Eurobil. Misma configuración 
+                        # para los Symbol Phaser P360.
         com.baudrate = 9600
         com.bytesize = 8
         com.parity = 'N'
