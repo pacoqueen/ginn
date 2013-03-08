@@ -137,6 +137,7 @@ Si la casilla «No usar datos del presupuesto» está activada, solo mostrará d
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
+                    <property name="tooltip" translatable="yes">Si está activa, descarta en los cálculos los datos confirmados.</property>
                     <property name="use_action_appearance">False</property>
                     <property name="draw_indicator">True</property>
                   </widget>

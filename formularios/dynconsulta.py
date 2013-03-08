@@ -162,7 +162,7 @@ class DynConsulta(Ventana, VentanaGenerica):
         self.wids['ch_presupuesto'].set_active(True) 
         self.wids['ch_datos_reales'].set_active(True) 
         self.wids['ch_reales_mes0'].set_active(True) 
-        self.wids['ch_datos_pdtes'].set_active(True) 
+        self.wids['ch_datos_pdtes'].set_active(False) 
         self.wids['ch_datos_reales'].connect("toggled", 
                 lambda ch, chdest: chdest.set_sensitive(ch.get_active()),
                 self.wids['ch_datos_pdtes'])
@@ -620,7 +620,23 @@ class DynConsulta(Ventana, VentanaGenerica):
         model = self.wids['tv_datos'].get_model()
         nodo_concepto = nodos_conceptos[concepto]
         if self.wids['ch_datos_pdtes'].get_active():
-            pass    # PORASQUI
+            # Si los valores confirmados los ignoro, simplemente no incremento 
+            # el valor total de la celda, pero sí que decremento el 
+            # presupuesto. El IVA no cuenta. Eso se paga estén o no las 
+            # facturas pendientes.
+            for objeto in objetos[:]:
+                if (not esta_pendiente(objeto) 
+                        and (valor_presupuestado 
+                             and not valor_presupuestado.es_de_iva())):
+                    try:
+                        importe_confirmado = objeto.get_subtotal(iva = True, 
+                                                            prorrateado = True)
+                    except AttributeError:  # Es factura o algo asín
+                        importe_confirmado = objeto.calcular_importe_total()
+                    if concepto.es_gasto:
+                        importe_confirmado *= -1
+                    valor_real_importe -= importe_confirmado
+                    objetos.remove(objeto)
         model[nodo_concepto][mescol + 1] = utils.float2str(
                                                 valor_presupuestado_restante 
                                                 + valor_real_importe)
@@ -1709,6 +1725,34 @@ def restar_en_traza_presupuesto(dict_tracking,
                                                          importe, 
                                                          tm))
             break
+
+def esta_pendiente(o):
+    """
+    Devuelve True si el objeto recibido está pendiente de cobro/pago. Ya sea 
+    factura, línea de factura o servicio.
+    Si no puede determinar la naturaleza, devuelve False por defecto.
+    En el caso de las líneas de venta/compra y servicios mira si están 
+    pendientes o no basándose en su factura **completa**.
+    """
+    o.sync()
+    try:
+        o = o.factura
+        o.sync()
+    except AttributeError:
+        pass
+    try:
+        o = o.facturaCompra
+        o.sync()
+    except AttributeError:
+        pass
+    try:
+        res = o.calcular_pendiente_cobro()
+    except AttributeError:
+        try:
+            res = o.get_importe_primer_vencimiento_pendiente()
+        except AttributeError:
+            res = False
+    return res
 
 
 if __name__ == "__main__":
