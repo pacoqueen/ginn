@@ -17164,6 +17164,50 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
+    def _es_del_mismo_tipo(self, pdp):
+        """
+        Devuelve True si el tipo del parte y el del parte recibido es el 
+        mismo.
+        """
+        assert (type(self) == type(pdp))
+        funcs_tipo = [f for f in dir(self) if f.startswith("es_de_")]
+        iguales = True
+        for f in funcs_tipo:
+            iguales = iguales and (getattr(self, f)() == getattr(pdp, f)())
+        return iguales
+
+    def siguiente(self):
+        """
+        Devuelve el siguiente parte (cronológicamente) del mismo tipo que el 
+        actual o None si no hay más.
+        """
+        # Se tiene que cumplir que:
+        # pdp.anterior().siguiente() == pdp == pdp.siguiente().anterior()
+        res = None
+        pdps = ParteDeProduccion.select(
+                ParteDeProduccion.q.fechahorainicio > self.fechahorainicio, 
+                orderBy = "fechahorainicio")
+        for pdp in pdps:
+            if self._es_del_mismo_tipo(pdp):
+                res = pdp
+                break
+        return res
+
+    def anterior(self):
+        """
+        Devuelve el anterior parte (cronológicamente) del mismo tipo que el 
+        actual o None si es el primero.
+        """
+        res = None
+        pdps = ParteDeProduccion.select(
+                ParteDeProduccion.q.fechahorainicio < self.fechahorainicio, 
+                orderBy = "-fechahorainicio")
+        for pdp in pdps:
+            if self._es_del_mismo_tipo(pdp):
+                res = pdp
+                break
+        return res
+
     def crear_albaran_interno(self):
         """
         Crea un albarán "interno" de salida (interno = cliente es la propia 
