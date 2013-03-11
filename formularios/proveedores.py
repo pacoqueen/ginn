@@ -94,6 +94,8 @@ class Proveedores(Ventana):
                        'b_borrar/clicked': self.borrar,
                        'b_buscar/clicked': self.buscar_proveedor, 
                        'b_listado/clicked': imprimir_listado, 
+                       'b_next/clicked':           self.siguiente, 
+                       'b_back/clicked':           self.anterior
                       }  
         self.add_connections(connections)
         self.inicializar_ventana()
@@ -102,6 +104,52 @@ class Proveedores(Ventana):
         else:
             self.ir_a(objeto)
         gtk.main()
+
+    def anterior(self, boton = None):
+        if self.objeto:
+            orden = utils.combo_get_value(self.wids['cb_orden'])
+            if orden == "Orden cronológico":
+                proveedores = pclases.Proveedor.select(
+                        pclases.Proveedor.q.id < self.objeto.id, 
+                        orderBy = "-id")
+            elif orden == "Orden alfabético": 
+                proveedores = pclases.Proveedor.select(
+                        pclases.Proveedor.q.nombre < self.objeto.nombre, 
+                        orderBy = "-nombre")
+            try:
+                anterior = proveedores[0]
+            except IndexError:
+                anterior = None
+            if anterior:
+                self.objeto = anterior
+                self.actualizar_ventana()
+            else:
+                utils.dialogo_info(titulo = "NO HAY MÁS PROVEEDORES", 
+                        texto = "No hay proveedores anteriores al actual.", 
+                        padre = self.wids['ventana'])
+
+    def siguiente(self, boton = None):
+        if self.objeto:
+            orden = utils.combo_get_value(self.wids['cb_orden'])
+            if orden == "Orden cronológico":
+                proveedores = pclases.Proveedor.select(
+                        pclases.Proveedor.q.id > self.objeto.id, 
+                        orderBy = "id")
+            elif orden == "Orden alfabético": 
+                proveedores = pclases.Proveedor.select(
+                        pclases.Proveedor.q.nombre > self.objeto.nombre, 
+                        orderBy = "nombre")
+            try:
+                siguiente = proveedores[0]
+            except IndexError:
+                siguiente = None
+            if siguiente:
+                self.objeto = siguiente
+                self.actualizar_ventana()
+            else:
+                utils.dialogo_info(titulo = "NO HAY MÁS PROVEEDORES", 
+                        texto = "No hay proveedores posteriores al actual.", 
+                        padre = self.wids['ventana'])
 
     # --------------- Funciones auxiliares ------------------------------
     def leer_valor(self, widget):
@@ -172,6 +220,8 @@ class Proveedores(Ventana):
         self.wids['b_guardar'].set_sensitive(False)
         self.wids['b_nuevo'].set_sensitive(True)
         self.wids['b_buscar'].set_sensitive(True)
+        utils.combo_set_from_db(self.wids['cb_orden'], 
+                                self.wids['cb_orden'].get_model()[0][0])
         cols = (('Nombre', 'gobject.TYPE_STRING', False, True, True, None),
                 ('Banco', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Swift', 'gobject.TYPE_STRING', False, True, False, None),

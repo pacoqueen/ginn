@@ -83,6 +83,8 @@ class ConsultaCartera(Ventana):
                     False, True, False, None),
                 ("En remesa en preparación", "gobject.TYPE_STRING", 
                     False, True, False, None), 
+                ("Observaciones", "gobject.TYPE_STRING", 
+                    False, True, False, None), 
                 ('puid', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_listview(self.wids['tv_datos'], cols)
         self.wids['tv_datos'].connect("row-activated", self.abrir_efecto)
@@ -103,12 +105,15 @@ class ConsultaCartera(Ventana):
         model = tv.get_model()
         puid = model[path][-1]
         objeto = pclases.getObjetoPUID(puid)
-        if isinstance(objeto, pclases.PagareCobro):
+        objeto_relacionado = objeto.confirming or objeto.pagareCobro
+        if isinstance(objeto_relacionado, pclases.PagareCobro):
             import pagares_cobros
-            v = pagares_cobros.PagaresCobros(objeto, usuario = self.usuario)
-        elif isinstance(objeto, pclases.Confirming):
+            v = pagares_cobros.PagaresCobros(objeto_relacionado, 
+                                             usuario = self.usuario)
+        elif isinstance(objeto_relacionado, pclases.Confirming):
             import confirmings
-            v = confirmings.Confirmings(objeto, usuario = self.usuario)
+            v = confirmings.Confirmings(objeto_relacionado, 
+                                        usuario = self.usuario)
 
     def marcar_remesar(self, cell, path):
         model = self.wids['tv_datos'].get_model()
@@ -270,7 +275,7 @@ class ConsultaCartera(Ventana):
         """        
     	model = self.wids['tv_datos'].get_model()
     	model.clear()
-        total = 0.0
+        total = total_obs = total_no_obs = 0.0
         vpro = VentanaProgreso(padre = self.wids['ventana'])
         vpro.mostrar()
         vpro.set_valor(0.0, "Filtrando efectos... (%d/%d)" 
@@ -303,10 +308,17 @@ class ConsultaCartera(Ventana):
                                       utils.str_fecha(efecto.fechaVencimiento), 
                                       ", ".join(["%s (%d)" % (r.codigo, r.id)
                                                  for r in efecto.remesas]),
+                                      efecto.observaciones, 
                                       efecto.puid))
                 total += efecto.cantidad
+                if efecto.observaciones:
+                    total_obs += efecto.cantidad
+                else:
+                    total_no_obs += efecto.cantidad
         vpro.ocultar()
         self.wids['e_total'].set_text(utils.float2str(total))
+        self.wids['e_total_obs'].set_text(utils.float2str(total_obs))
+        self.wids['e_total_no_obs'].set_text(utils.float2str(total_no_obs))
         
     def set_inicio(self, boton):
         temp = utils.mostrar_calendario(padre = self.wids['ventana'])
