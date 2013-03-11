@@ -20997,6 +20997,13 @@ class Efecto(SQLObject, PRPCTOO):
         starter(self, *args, **kw)
 
     @property
+    def observaciones(self):
+        try:
+            return self.confirming.observaciones
+        except AttributeError:
+            return self.pagareCobro.observaciones
+
+    @property
     def importe(self):
         try:
             return self.confirming.cantidad

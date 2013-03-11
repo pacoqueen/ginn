@@ -83,6 +83,8 @@ class ConsultaCartera(Ventana):
                     False, True, False, None),
                 ("En remesa en preparación", "gobject.TYPE_STRING", 
                     False, True, False, None), 
+                ("Observaciones", "gobject.TYPE_STRING", 
+                    False, True, False, None), 
                 ('puid', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_listview(self.wids['tv_datos'], cols)
         self.wids['tv_datos'].connect("row-activated", self.abrir_efecto)
@@ -103,12 +105,15 @@ class ConsultaCartera(Ventana):
         model = tv.get_model()
         puid = model[path][-1]
         objeto = pclases.getObjetoPUID(puid)
-        if isinstance(objeto, pclases.PagareCobro):
+        objeto_relacionado = objeto.confirming or objeto.pagareCobro
+        if isinstance(objeto_relacionado, pclases.PagareCobro):
             import pagares_cobros
-            v = pagares_cobros.PagaresCobros(objeto, usuario = self.usuario)
-        elif isinstance(objeto, pclases.Confirming):
+            v = pagares_cobros.PagaresCobros(objeto_relacionado, 
+                                             usuario = self.usuario)
+        elif isinstance(objeto_relacionado, pclases.Confirming):
             import confirmings
-            v = confirmings.Confirmings(objeto, usuario = self.usuario)
+            v = confirmings.Confirmings(objeto_relacionado, 
+                                        usuario = self.usuario)
 
     def marcar_remesar(self, cell, path):
         model = self.wids['tv_datos'].get_model()
@@ -303,6 +308,7 @@ class ConsultaCartera(Ventana):
                                       utils.str_fecha(efecto.fechaVencimiento), 
                                       ", ".join(["%s (%d)" % (r.codigo, r.id)
                                                  for r in efecto.remesas]),
+                                      efecto.observaciones, 
                                       efecto.puid))
                 total += efecto.cantidad
         vpro.ocultar()
