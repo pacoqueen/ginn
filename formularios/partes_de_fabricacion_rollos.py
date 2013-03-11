@@ -300,7 +300,9 @@ class PartesDeFabricacionRollos(Ventana):
                        'b_bascula/clicked': self.iniciar_pesaje_auto, 
                        'b_add_desecho/clicked': self.add_desecho, 
                        'b_drop_desecho/clicked': self.drop_desecho, 
-                       'b_add_consumo/clicked': self.consumir_manual
+                       'b_add_consumo/clicked': self.consumir_manual, 
+                       'b_next/clicked': self.siguiente, 
+                       'b_back/clicked': self.anterior
                       }  
         self.add_connections(connections)
         linea = pclases.LineaDeProduccion.select(
@@ -344,6 +346,28 @@ class PartesDeFabricacionRollos(Ventana):
         else:
             self.ir_a(objeto)
         gtk.main()
+
+    def anterior(self, boton = None):
+        if self.objeto:
+            siguiente = self.objeto.anterior()
+            if siguiente:
+                self.objeto = siguiente
+                self.actualizar_ventana()
+            else:
+                utils.dialogo_info(titulo = "NO MÁS PARTES", 
+                    texto="No hay partes de producción anteriores al actual",
+                    padre = self.wids['ventana'])
+
+    def siguiente(self, boton = None):
+        if self.objeto:
+            anterior = self.objeto.siguiente()
+            if anterior:
+                self.objeto = anterior
+                self.actualizar_ventana()
+            else:
+                utils.dialogo_info(titulo = "NO MÁS PARTES", 
+                    texto="No hay partes de producción posteriores al actual",
+                    padre = self.wids['ventana'])
 
     # --------------- Funciones auxiliares ------------------------------
     def es_diferente(self):

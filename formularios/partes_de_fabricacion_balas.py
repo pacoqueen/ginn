@@ -225,7 +225,6 @@ class PartesDeFabricacionBalas(Ventana):
                     texto="No hay partes de producción anteriores al actual",
                     padre = self.wids['ventana'])
 
-
     def siguiente(self, boton = None):
         if self.objeto:
             anterior = self.objeto.siguiente()

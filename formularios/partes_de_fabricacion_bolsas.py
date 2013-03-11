@@ -145,6 +145,8 @@ class PartesDeFabricacionBolsas(Ventana):
                        'b_add_pale/clicked': self.add_pale, 
                        'b_drop_pale/clicked': self.drop_pale, 
                        'b_etiquetar/clicked': self.etiquetar, 
+                       'b_next/clicked': self.siguiente, 
+                       'b_back/clicked': self.anterior
                       }  
         self.add_connections(connections)
         self.wids['e_fechaini'].connect("key-release-event", 
@@ -174,6 +176,28 @@ class PartesDeFabricacionBolsas(Ventana):
         else:
             self.ir_a(objeto)
         gtk.main()
+
+    def anterior(self, boton = None):
+        if self.objeto:
+            siguiente = self.objeto.anterior()
+            if siguiente:
+                self.objeto = siguiente
+                self.actualizar_ventana()
+            else:
+                utils.dialogo_info(titulo = "NO MÁS PARTES", 
+                    texto="No hay partes de producción anteriores al actual",
+                    padre = self.wids['ventana'])
+
+    def siguiente(self, boton = None):
+        if self.objeto:
+            anterior = self.objeto.siguiente()
+            if anterior:
+                self.objeto = anterior
+                self.actualizar_ventana()
+            else:
+                utils.dialogo_info(titulo = "NO MÁS PARTES", 
+                    texto="No hay partes de producción posteriores al actual",
+                    padre = self.wids['ventana'])
 
     # --------------- Funciones auxiliares ------------------------------
     def leer_valores_ventana(self):
