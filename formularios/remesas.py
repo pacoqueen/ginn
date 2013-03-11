@@ -140,10 +140,16 @@ class Remesas(Ventana, VentanaGenerica):
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
                 # La última columna (oculta en la Vista) siempre es el id.
         utils.preparar_listview(self.wids['tv_efectos'], cols)
+        col_confirmado = self.wids['tv_efectos'].get_column(0)
+        ch_todos = gtk.CheckButton("Todos")
+        ch_todos.connect("clicked", self.marcar_todos)
+        ch_todos.show()
+        col_confirmado.set_property("widget", ch_todos)
         cols = (('Porcentaje','gobject.TYPE_STRING', False, True, False, None),
                 ('Cliente', 'gobject.TYPE_STRING', False, True, True, None),
                 ('Importe', 'gobject.TYPE_STRING', False, True, False, None), 
-                ('PUID cliente', 'gobject.TYPE_STRING', False, False, False, None))
+                ('PUID cliente', 'gobject.TYPE_STRING', 
+                    False, False, False, None))
         utils.preparar_listview(self.wids['tv_concentracion'], cols)
         utils.rellenar_lista(self.wids['cb_banco'], 
                              [(p.id, p.nombre) for p in 
@@ -157,6 +163,12 @@ class Remesas(Ventana, VentanaGenerica):
                 self.objeto and not self.objeto.aceptada or False)
         self.wids['b_add_efecto'].set_sensitive(
                 self.objeto and not self.objeto.aceptada or False)
+
+    def marcar_todos(self, boton):
+        model = self.wids['tv_efectos'].get_model()
+        cell = self.wids['tv_efectos'].get_column(0).get_cell_renderers()[0]
+        for treemodelrow in model:
+            self.confirmar_efecto(cell, treemodelrow.path)
 
     def add_efecto(self, boton):
         """
