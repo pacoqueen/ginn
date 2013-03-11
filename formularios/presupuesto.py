@@ -133,6 +133,56 @@ class Presupuesto(Ventana, VentanaGenerica):
             col.get_cell_renderers()[0].set_property("xalign", 1)
         col = self.wids['tv_datos'].get_column(0)
         col.set_expand(True)
+        self.colorear(self.wids['tv_datos'])
+
+    def colorear(self, tv):
+        """
+        Pone en rojo los valores que han cambiado respecto a la última vez 
+        que se actualizó el model.
+        """
+        def cell_func(col, cell, model, itr, numcol):
+            # Extraigo valor numérico
+            valor = model[itr][numcol]
+            try:
+                valor_numerico = utils._float(valor)
+            except (TypeError, ValueError):
+                valor_numerico = None
+            if not model.iter_parent(itr):
+                cell.set_property("weight", 4000)
+                cell.set_property("background", "gray")
+            else:
+                cell.set_property("background", None)
+            if not model.iter_parent(itr):
+                if valor_numerico != None:
+                    if valor_numerico == 0:
+                        color_valor = "white"
+                    elif valor_numerico < 0:
+                        color_valor = "red"
+                    else:
+                        color_valor = "blue"
+                else:
+                    color_valor = "white"
+                cell.set_property("foreground", color_valor)
+                cell.set_property("weight", 4000)
+                cell.set_property("background", "gray")
+            else:
+                if valor_numerico != None:
+                    if valor_numerico == 0:
+                        color_valor = None
+                    elif valor_numerico < 0:
+                        color_valor = "red"
+                    else:
+                        color_valor = "blue"
+                else:
+                    color_valor = "white"
+                cell.set_property("foreground", color_valor)
+                cell.set_property("weight", 400)
+        cols = tv.get_columns()
+        for i in xrange(1, len(cols)):
+            column = cols[i]
+            cells = column.get_cell_renderers()
+            for cell in cells:
+                column.set_cell_data_func(cell, cell_func, i)
 
     def activar_widgets(self, s, chequear_permisos = True):
         """
