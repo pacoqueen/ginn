@@ -119,7 +119,9 @@ class Clientes(Ventana):
                                                    self.globalizar_contacto, 
                        'b_copiar_correspondencia/clicked': 
                                                    self.copiar_correspondencia,
-                       'b_copiar_fiscal/clicked':  self.copiar_fiscal
+                       'b_copiar_fiscal/clicked':  self.copiar_fiscal, 
+                       'b_next/clicked':           self.siguiente, 
+                       'b_back/clicked':           self.anterior
                       }  
         self.inicializar_ventana()
         if self.objeto == None:
@@ -128,6 +130,52 @@ class Clientes(Ventana):
             self.ir_a(objeto, deep_refresh = False)
         self.add_connections(connections)
         gtk.main()
+
+    def anterior(self, boton = None):
+        if self.objeto:
+            orden = utils.combo_get_value(self.wids['cb_orden'])
+            if orden == "Orden cronológico":
+                clientes = pclases.Cliente.select(
+                        pclases.Cliente.q.id < self.objeto.id, 
+                        orderBy = "-id")
+            elif orden == "Orden alfabético": 
+                clientes = pclases.Cliente.select(
+                        pclases.Cliente.q.nombre < self.objeto.nombre, 
+                        orderBy = "-nombre")
+            try:
+                anterior = clientes[0]
+            except IndexError:
+                anterior = None
+            if anterior:
+                self.objeto = anterior
+                self.actualizar_ventana()
+            else:
+                utils.dialogo_info(titulo = "NO HAY MÁS CLIENTES", 
+                        texto = "No hay clientes anteriores al actual.", 
+                        padre = self.wids['ventana'])
+
+    def siguiente(self, boton = None):
+        if self.objeto:
+            orden = utils.combo_get_value(self.wids['cb_orden'])
+            if orden == "Orden cronológico":
+                clientes = pclases.Cliente.select(
+                        pclases.Cliente.q.id > self.objeto.id, 
+                        orderBy = "id")
+            elif orden == "Orden alfabético": 
+                clientes = pclases.Cliente.select(
+                        pclases.Cliente.q.nombre > self.objeto.nombre, 
+                        orderBy = "nombre")
+            try:
+                siguiente = clientes[0]
+            except IndexError:
+                siguiente = None
+            if siguiente:
+                self.objeto = siguiente
+                self.actualizar_ventana()
+            else:
+                utils.dialogo_info(titulo = "NO HAY MÁS CLIENTES", 
+                        texto = "No hay clientes posteriores al actual.", 
+                        padre = self.wids['ventana'])
 
     def copiar_correspondencia(self, boton = None):
         """Copia al portapapeles la dirección de correspondencia del cliente
@@ -1060,6 +1108,8 @@ class Clientes(Ventana):
         self.wids['b_guardar'].set_sensitive(False)
         self.wids['b_nuevo'].set_sensitive(True)
         self.wids['b_buscar'].set_sensitive(True)
+        utils.combo_set_from_db(self.wids['cb_orden'], 
+                                self.wids['cb_orden'].get_model()[0][0])
         contadores = []
         if pclases.DEBUG:
             print "1.- clientes.py::inicializar_ventana ->", time.time() - antes
