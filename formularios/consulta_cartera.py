@@ -275,7 +275,7 @@ class ConsultaCartera(Ventana):
         """        
     	model = self.wids['tv_datos'].get_model()
     	model.clear()
-        total = 0.0
+        total = total_obs = total_no_obs = 0.0
         vpro = VentanaProgreso(padre = self.wids['ventana'])
         vpro.mostrar()
         vpro.set_valor(0.0, "Filtrando efectos... (%d/%d)" 
@@ -311,8 +311,14 @@ class ConsultaCartera(Ventana):
                                       efecto.observaciones, 
                                       efecto.puid))
                 total += efecto.cantidad
+                if efecto.observaciones:
+                    total_obs += efecto.cantidad
+                else:
+                    total_no_obs += efecto.cantidad
         vpro.ocultar()
         self.wids['e_total'].set_text(utils.float2str(total))
+        self.wids['e_total_obs'].set_text(utils.float2str(total_obs))
+        self.wids['e_total_no_obs'].set_text(utils.float2str(total_no_obs))
         
     def set_inicio(self, boton):
         temp = utils.mostrar_calendario(padre = self.wids['ventana'])
