@@ -322,6 +322,21 @@ class PartesDeFabricacionBalas(Ventana):
         valores por defecto, deshabilitando los innecesarios,
         rellenando los combos, formateando el TreeView -si lo hay-...
         """
+        # Compruebo que la última bala está bien creada para evitarme 
+        # problemas. He tenido un par de casos en los que se ha ido la luz y 
+        # deja el parte inusable a causa de esto.
+        max_a_comprobar = 2
+        i = 0
+        for bala in pclases.Bala.select(orderBy = "-id"):
+            try:
+                a = bala.articulo
+            except:
+                self.logger.warning("partes_de_fabricacion_balas::rellenar_widgets -> Elimino bala «huérfana» de artículo %s." % a.puid)
+                bala.destroy(ventana = __file__)
+            i += 1
+            if i >= max_a_comprobar:
+                break
+        # EOComprobación
         # CWT: No se debe poder editar la producción estándar desde el parte.
         # Siempre debe ser la del producto, so...
         self.wids['e_o80'].set_has_frame(False)
@@ -909,21 +924,6 @@ class PartesDeFabricacionBalas(Ventana):
         esta función en ese caso.
         """
         partedeproduccion = self.objeto
-        # Compruebo que la última bala está bien creada para evitarme 
-        # problemas. He tenido un par de casos en los que se ha ido la luz y 
-        # deja el parte inusable a causa de esto.
-        max_a_comprobar = 2
-        i = 0
-        for bala in pclases.Bala.select(orderBy = "-id"):
-            try:
-                a = bala.articulo
-            except:
-                self.logger.warning("partes_de_fabricacion_balas::rellenar_widgets -> Elimino bala «huérfana» de artículo %s." % a.puid)
-                bala.destroy(ventana = __file__)
-            i += 1
-            if i >= max_a_comprobar:
-                break
-        # EOComprobación
         self.wids['ch_bloqueado'].set_active(self.objeto.bloqueado)
         # Información global:
         strfecha = utils.str_fecha(partedeproduccion.fecha)
