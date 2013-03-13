@@ -3147,8 +3147,9 @@ CREATE TABLE concepto_presupuesto_anual(
 CREATE TABLE vencimiento_valor_presupuesto_anual(
     id SERIAL PRIMARY KEY,
     valor_presupuesto_anual_id INT REFERENCES valor_presupuesto_anual,
-    fecha DATE NOT NULL
+    fecha DATE NOT NULL, 
     -- El importe será un campo calculado.
+    documento_de_pago_id INT REFERENCES documento_de_pago
 );
 
 CREATE TABLE valor_presupuesto_anual(

@@ -239,6 +239,9 @@ class Proveedores(Ventana):
         utils.rellenar_lista(self.wids['cb_tipo_de_proveedor'], 
                 [(t.id, t.descripcion) 
                     for t in pclases.TipoDeProveedor.select(orderBy = "id")])
+        utils.rellenar_lista(self.wids['cbe_documentodepago'], 
+                [(d.id, d.documento) for d in 
+                    pclases.DocumentoDePago.select(orderBy = "id")])
 
     def activar_widgets(self, s, chequear_permisos = True):
         """
@@ -322,8 +325,10 @@ class Proveedores(Ventana):
         """
         proveedor = self.objeto
         if proveedor != None:
-            self.wids['ventana'].set_title("Proveedores - %s" % (proveedor.nombre))
-            # Aprovechando que todo son "text" y los "entry" se llaman casi igual:
+            self.wids['ventana'].set_title("Proveedores - %s" % (
+                proveedor.nombre))
+            # Aprovechando que todo son "text" y los "entry" se llaman casi 
+            # igual:
             for c in proveedor._SO_columns:
                 if c.name != "tipoDeProveedorID":
                     textobj = getattr(proveedor, c.name)
@@ -332,7 +337,8 @@ class Proveedores(Ventana):
                         proveedor.notificador.set_func(lambda : None)
                         textobj = ''
                         setattr(proveedor, c.name, textobj)
-                        proveedor.notificador.set_func(self.aviso_actualizacion)
+                        proveedor.notificador.set_func(
+                                self.aviso_actualizacion)
                     self.escribir_valor(self.wids['e_%s' % c.name], textobj) 
                 else:
                     utils.combo_set_from_db(self.wids['cb_tipo_de_proveedor'], 
@@ -340,6 +346,25 @@ class Proveedores(Ventana):
             self.rellenar_cuentas()
             self.rellenar_tipos_de_material()
             self.objeto.make_swap()
+            try:
+                doc_from_db = self.objeto.get_documentoDePago().documento
+            except AttributeError:
+                doc_from_db = None
+            if doc_from_db and doc_from_db != self.objeto.documentodepago:
+                if utils.dialogo(titulo = "CORREGIR DOCUMENTO DE PAGO", 
+                        texto = 
+                          "El cliente actual tiene como documento de pago:\n"
+                          "«%s». Se acoseja usar «%s».\n"
+                          "¿Corregirlo automáticamente?\n\n"
+                          "(Responda «No» si la forma de pago es correcta \n"
+                          "o prefiere corregirlo manualmente)" % (
+                                    self.objeto.documentodepago, 
+                                    doc_from_db), 
+                        padre = self.wids['ventana']):
+                    self.objeto.documentodepago = doc_from_db
+                    self.objeto.syncUpdate()
+                    self.wids['e_documentodepago'].set_text(
+                            self.objeto.documentodepago)
 
     def rellenar_cuentas(self):
         """

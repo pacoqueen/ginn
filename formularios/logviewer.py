@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2013  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -149,7 +149,10 @@ dir()
             """
             tipo = model[itr][2]
             texto = model[itr][4]
-            if "login" in texto.lower():
+            if tipo == "DEBUG": 
+                # Información de depuración.
+                color = "light grey"
+            elif "login" in texto.lower():
                 # LOGIN con éxito.
                 color = "orange"
             elif "Acceso err" in texto:
@@ -173,6 +176,9 @@ dir()
             elif tipo == "ERROR":
                 # ERROR.
                 color = "red"
+            elif tipo == "INFO":
+                # INFO que no entre en ningún caso anterior.
+                color = "light blue"
             else:
                 # Cualquier otra cosa (líneas de una entrada multilínea, etc...)
                 color = "white" 

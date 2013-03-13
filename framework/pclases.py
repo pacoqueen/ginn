@@ -570,6 +570,51 @@ class DocumentoDePago(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
     formasDePago = MultipleJoin("FormaDePago")
+    vencimientosValorPresupuestoAnual = MultipleJoin(
+            "VencimientoValorPresupuestoAnual")
+
+    CONTADO = "Contado"
+    TRANSFERENCIA = "Transferencia bancaria"
+    PAGARE = "Pagaré a la orden"
+    PAGARE_NO_A_LA_ORDEN = "Pagaré no a la orden"
+    CONFIRMING = "Confirming"
+    CHEQUE = "Cheque"
+    CARTA = "Carta de crédito"
+
+    @classmethod
+    def Contado(clase):
+        return clase._oblomov(clase.CONTADO)
+
+    @classmethod
+    def Transferencia(clase):
+        return clase._oblomov(clase.TRANSFERENCIA)
+
+    @classmethod
+    def Pagare(clase):
+        return clase._oblomov(clase.PAGARE)
+    
+    @classmethod
+    def NoALaOrden(clase):
+        return clase._oblomov(clase.PAGARE_NO_A_LA_ORDEN)
+    
+    @classmethod
+    def Confirming(clase):
+        return clase._oblomov(clase.CONFIRMING)
+    
+    @classmethod
+    def Cheque(clase):
+        return clase._oblomov(clase.CHEQUE)
+    
+    @classmethod
+    def Carta(clase):
+        return clase._oblomov(clase.CARTA)
+
+    @classmethod
+    def _oblomov(clase, strtipo):
+        try:
+            return clase.selectBy(documento = strtipo)[0]
+        except IndexError:
+            return clase(documento = strtipo)
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -2621,7 +2666,7 @@ class PagarePago(SQLObject, PRPCTOO):
 
     # Por compatibilidad con Pagarés de cobro y confirmings. (Por menos que 
     # esto he hecho superclases. Esta vez tengo prisa. Pero que sepas que 
-    # deberías tener un class DocumentoPago del que heredar).
+    # deberías tener un class DocumentoDePago del que heredar).
     def set_fechaPago(self, fecha):
         self.fechaPago = fecha
     fechaVencimiento = property(lambda self: self.fechaPago, set_fechaPago)
@@ -2825,7 +2870,7 @@ class Cobro(SQLObject, PRPCTOO):
         return res
 
     @staticmethod
-    def _parse_fdp(txt, force_create = False):
+    def _parse_fdp(txt, force_create = False, strict_mode = True):
         try:
             plazo = int(rex.findall(txt)[0])
         except (IndexError, TypeError, ValueError):
@@ -2836,7 +2881,7 @@ class Cobro(SQLObject, PRPCTOO):
         if not ((plazo % 15) == 0 and (0 <= plazo <= 365)):
             return None
         documento = txt.split(",")[0]
-        documento_de_pago = Cobro._parse_docpago(documento)
+        documento_de_pago = Cobro._parse_docpago(documento, strict_mode)
         if not documento_de_pago:
             return None
         try:
@@ -2855,38 +2900,50 @@ class Cobro(SQLObject, PRPCTOO):
         return fdp
 
     @staticmethod
-    def _parse_docpago(txt):
+    def _parse_docpago(txt, strict_mode = True):
+        """
+        "Parsea" una forma de pago y devuelve el registro estandarizado que 
+        le corresponde. Si strict_mode es True, el texto recibido debe 
+        ajustarse fielmente al objeto del documento de pago que devolverá.
+        Por ejemplo, solo devolverá "Pagaré a la orden" si el texto es 
+        "pagaré a la orden" o muy parecido. Pero con "pagaré" a secas, sin 
+        especificar el tipo, devolverá None.
+        Si es False habrá más posibilidades de que devuelva alguna forma de 
+        pago válida aunque el texto recibido sea algo impreciso.
+        """
         txt = txt.upper()
-        if ("PAGAR" in txt or "PGR" in txt) and "ORD" in txt:
-            # CWT: Si no se especifica si es a la orden o no a la orden, 
-            # entonces tengo que respetar lo que decía el vencimiento 
-            # textualmente.
-            if " NO ":
-                doc = DocumentoDePago.selectBy(
-                        documento = "Pagaré no a la orden")[0]
+        if ("PAGAR" in txt or "PGR" in txt):
+            if strict_mode:
+                if "ORD" in txt:
+                    # CWT: Si no se especifica si es a la orden o no a la 
+                    # orden entonces tengo que respetar lo que decía el 
+                    # vencimiento textualmente.
+                    if " NO " in txt:
+                        doc = DocumentoDePago.NoALaOrden()
+                    else:
+                        doc = DocumentoDePago.Pagare()
+                else:
+                    doc = None
             else:
-                doc = DocumentoDePago.selectBy(
-                        documento = "Pagaré a la orden")[0]
+                if " NO " in txt and "ORD" in txt:
+                    doc = DocumentoDePago.NoALaOrden()
+                else:
+                    doc = DocumentoDePago.Pagare()
         elif "CONFIRMING" in txt:
-            doc = DocumentoDePago.selectBy(
-                    documento = "Confirming")[0]
+            doc = DocumentoDePago.Confirming()
         elif "CONTADO" in txt or "EFECTIVO" in txt:
-            doc = DocumentoDePago.selectBy(
-                    documento = "Contado")[0]
+            doc = DocumentoDePago.Contado()
         elif "TRANSF" in txt:
-            doc = DocumentoDePago.selectBy(
-                    documento = "Transferencia bancaria")[0]
+            doc = DocumentoDePago.Transferencia()
         elif "NO A LA ORDEN" in txt:
-            doc = DocumentoDePago.selectBy(
-                    documento = "Pagaré no a la orden")[0]
+            doc = DocumentoDePago.NoALaOrden()
         elif "CHEQUE" in txt:
-            doc = DocumentoDePago.selectBy(
-                    documento = "Cheque")[0]
+            doc = DocumentoDePago.Cheque()
         elif "CARTA" in txt:
-            doc = DocumentoDePago.selectBy(
-                    documento = "Carta de crédito")[0]
-        # TODO: Falta recibo. Pero no me han dicho nada. Tampoco si cuando dice 
-        #       "PAGARÉ" es a la orden o no a la orden.
+            doc = DocumentoDePago.Carta()
+        # DONE: Falta recibo. Pero no me han dicho nada. Tampoco si cuando dice 
+        #       "PAGARÉ" es a la orden o no a la orden. [update] Si no se 
+        #       especifica, es a la orden. Del recibo, de momento, nada.
         else:
             doc = None
         return doc
@@ -4595,6 +4652,14 @@ class Proveedor(SQLObject, PRPCTOO):
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
+
+    def get_documentoDePago(self, strict_mode = False):
+        """
+        Devuelve un objeto DocumentoDePago que se relaciona unívocamente con 
+        el texto que tiene el cliente en el documento de pago.
+        None si no lo puede determinar.
+        """
+        return Cobro._parse_docpago(self.documentodepago, strict_mode)
 
     def get_tipos_de_proveedor_secundarios(self):
         """
@@ -14450,6 +14515,14 @@ class Cliente(SQLObject, PRPCTOO):
         cad = "%s (CIF %s)" % (self.nombre, self.cif)
         return cad
 
+    def get_documentoDePago(self, strict_mode = False):
+        """
+        Devuelve un objeto DocumentoDePago que se relaciona unívocamente con 
+        el texto que tiene el cliente en el documento de pago.
+        None si no lo puede determinar.
+        """
+        return Cobro._parse_docpago(self.documentodepago, strict_mode)
+
     def get_texto_forma_cobro(self):
         """
         Devuelve un texto que representa la forma de cobro del cliente. 
@@ -21286,12 +21359,33 @@ class ConceptoPresupuestoAnual(SQLObject, PRPCTOO):
             Cliente.q.inhabilitado == False))
         vtos = []
         for c in clientes:
-            if nacionalidad_as_str == "Internacionales" and c.es_extranjero():
-                vtos.append(c.get_vencimientos())
-            elif nacionalidad_as_str == "Nacionales" and not c.es_extranjero():
+            if ((nacionalidad_as_str == "Internacionales" 
+                    and c.es_extranjero())
+                or (nacionalidad_as_str == "Nacionales" 
+                    and not c.es_extranjero())):
                 vtos.append(c.get_vencimientos())
         vtos_medio = self._calcular_media(vtos)
         return vtos_medio
+
+    def calcular_documento_moda_clientes(self, nacionalidad_as_str, 
+                                         tipo_as_str):
+        """
+        De todos los documentos de pago de los clientes devuelve el más 
+        repetido (lo que es la moda de una variable discreta, vaya).
+        """
+        tipo = TipoDeCliente.selectBy(descripcion = tipo_as_str)[0]
+        clientes = Cliente.select(AND(
+            Cliente.q.tipoDeClienteID == tipo.id, 
+            Cliente.q.inhabilitado == False))
+        ddps = []
+        for c in clientes:
+            if ((nacionalidad_as_str == "Internacionales" 
+                    and c.es_extranjero())
+                or (nacionalidad_as_str == "Nacionales" 
+                    and not c.es_extranjero())):
+                ddps.append(c.get_documentoDePago(strict_mode = False))
+        vtos_moda = utils.moda(ddps)
+        return vtos_moda 
 
     def calcular_vencimiento_medio_proveedores(self, tipo_as_str):
         """
@@ -21307,6 +21401,21 @@ class ConceptoPresupuestoAnual(SQLObject, PRPCTOO):
             vtos.append(c.get_vencimientos())
         vtos_medio = self._calcular_media(vtos)
         return vtos_medio
+
+    def calcular_documento_moda_proveedores(self, tipo_as_str):
+        """
+        Devuelve una lista de días de media de vencimiento de los proveedores 
+        del tipo especificado.
+        """
+        tipo = TipoDeProveedor.selectBy(descripcion = tipo_as_str)[0]
+        proveedores = Proveedor.select(AND(
+            Proveedor.q.tipoDeProveedorID == tipo.id, 
+            Proveedor.q.inhabilitado == False))
+        ddps = []
+        for p in proveedores:
+            ddps.append(p.get_documentoDePago(strict_mode = False))
+        ddps_moda = utils.moda(ddps)
+        return ddps_moda
 
     def _calcular_media(self, vtos):
         """
@@ -21325,12 +21434,73 @@ class ConceptoPresupuestoAnual(SQLObject, PRPCTOO):
         """
         return self.presupuestoAnual.es_gasto()
 
+    @property
+    def documentoDePago(self):
+        """
+        Devuelve el documento de pago con el que se realizará el pago/cobro 
+        que representa este concepto en el presupuesto del módulo de tesorería.
+        """
+        # OJO: HARCODED
+        if self.descripcion == "IVA":
+            doc = DocumentoDePago.Transferencia()
+        elif self.proveedor:
+            # Cada proveedor vence en el documento que diga su forma de pago.
+            self.proveedor.sync()
+            doc = self.proveedor.get_documentoDePago(strict_mode = False)
+        elif self.presupuestoAnual.descripcion == "Clientes":
+            doc = self.calcular_documento_moda_clientes(
+                    *self.descripcion.split(" - "))
+        elif self.presupuestoAnual.descripcion == "Resto proveedores":
+            doc = self.calcular_documento_moda_proveedores(self.descripcion)
+        else:
+            doc = None
+        return doc
+
+    def calcular_total(self, fini = mx.DateTime.today(), ffin = None):
+        """
+        Devuelve el total de los importes de los valores presupuestados 
+        bajo este concepto entre las fechas indicadas. Ambas incluidas.
+        """
+        criterios = [
+                ValorPresupuestoAnual.q.conceptoPresupuestoAnualID == self.id]
+        if fini:
+            criterios.append(ValorPresupuestoAnual.q.mes >= fini)
+        if ffin:
+            criterios.append(ValorPresupuestoAnual.q.mes <= ffin)
+        valores = ValorPresupuestoAnual.select(AND(*criterios))
+        res = valores.sumFloat("importe")
+        return res
+
+    def calcular_total_vencimientos(self, fini = mx.DateTime.today(), 
+                                    ffin = None):
+        """
+        Devuelve el total de los importes de los valores presupuestados 
+        bajo este concepto cuyos vencimientos caigan entre las fechas 
+        indicadas. Ambas incluidas.
+        Más lento que el «calcular_total».
+        """
+        criterios = []
+        if fini:
+            criterios.append(VencimientoValorPresupuestoAnual.q.fecha >= fini)
+        if ffin:
+            criterios.append(VencimientoValorPresupuestoAnual.q.fecha <= ffin)
+        if criterios:
+            vtos = ValorPresupuestoAnual.select(AND(*criterios))
+        else:
+            vtos = ValorPresupuestoAnual.select()
+        res = 0.0
+        for v in vtos:
+            if v.conceptoPresupuestoAnual == self:
+                res += v.importe
+        return res
+
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 class VencimientoValorPresupuestoAnual(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
     valorPresupuestoAnualID = ForeignKey("ValorPresupuestoAnual")
+    documentoDePagoID = ForeignKey('DocumentoDePago')
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -21460,10 +21630,12 @@ class ValorPresupuestoAnual(SQLObject, PRPCTOO):
         if not self.vencimientosValorPresupuestoAnual:
             concepto = self.conceptoPresupuestoAnual
             vencimientos = concepto.calcular_vencimientos(self.mes)
+            doc_pago = concepto.documentoDePago
             for v in vencimientos:
                 vto = VencimientoValorPresupuestoAnual(
                         valorPresupuestoAnual = self, 
-                        fecha = v)
+                        fecha = v, 
+                        documentoDePago = doc_pago)
                 Auditoria.nuevo(vto, None, __file__)
                 if DEBUG:
                     print "ValorPresupuestoAnual::_init -> (%s) "\

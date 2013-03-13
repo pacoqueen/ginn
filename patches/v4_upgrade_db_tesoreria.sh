@@ -106,7 +106,8 @@ CREATE TABLE valor_presupuesto_anual(
 CREATE TABLE vencimiento_valor_presupuesto_anual(
     id SERIAL PRIMARY KEY,
     valor_presupuesto_anual_id INT REFERENCES valor_presupuesto_anual, 
-    fecha DATE NOT NULL
+    fecha DATE NOT NULL, 
+    documento_de_pago_id INT REFERENCES documento_de_pago
 );
 
 GRANT ALL ON presupuesto_anual TO geotexan;

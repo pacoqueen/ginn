@@ -68,6 +68,7 @@ try:
 except ImportError, msg:
     print "WARNING: No se pudo importar nftp. No se podrá usar FTP:\n%s" % (msg)
 from fixedpoint import FixedPoint as Ffloat
+from collections import defaultdict
 
 
 def str_fechahoralarga(datetime):
@@ -4300,6 +4301,21 @@ def media(valores):
     except ZeroDivisionError:
         mean = 0.0
     return mean
+
+def moda(lista_valores):
+    """
+    Devuelve la moda de los valores discretos recibidos en la lista. None si 
+    la lista está vacía.
+    """
+    conteo = defaultdict(int)
+    res = None
+    moda = 0
+    for i in lista_valores:
+        conteo[i] += 1 
+        if conteo[i] > moda:
+            res = i
+            moda = conteo[i]
+    return res
 
 def restar_datetime_time(t1, t2):
     """
