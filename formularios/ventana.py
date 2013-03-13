@@ -90,6 +90,10 @@ class Ventana:
         import logging
         from logging import handlers
         self.logger = logging.getLogger('GINN')
+        self.logger.DEBUG = 0
+        self.logger.ERROR = 1
+        self.logger.WARN = self.logger.WARNING = 2
+        self.logger.INFO = 3
         hdlr = logging.FileHandler('ginn.log', encoding = "utf-8")
         # El Rotating... peta en Windows cuando hay múltiples procesos 
         # accediendo al archivo. Lo cambio por una entrada en el crontab del 
@@ -105,7 +109,7 @@ class Ventana:
         hdlr.setFormatter(formatter)
         if not self.logger.handlers:    # Primera vez no hay handlers. Añado:
             self.logger.addHandler(hdlr)
-        # self.logger.setLevel(logging.INFO)
+        self.logger.setLevel(logging.DEBUG)
         self.wids = Widgets(glade)
         self.handlers_id = dict([(w, {}) for w in self.wids.keys()])
         for w in self.wids.keys():
@@ -400,14 +404,24 @@ class Ventana:
             # Al importar no hay que indicar extensión
             archivo = archivo[:archivo.rfind('.py')]
         if clase == 'gajim' and archivo == 'gajim':
-            utils.escribir_barra_estado(self.wids['barra_estado'], "Iniciar: gajim...", self.logger, self.__usuario.usuario)
+            utils.escribir_barra_estado(self.wids['barra_estado'], 
+                                        "Iniciar: gajim...", 
+                                        self.logger, 
+                                        self.__usuario.usuario)
             self.abrir_gajim()
         elif clase == 'acerca_de' and archivo == 'acerca_de':
-            utils.escribir_barra_estado(self.wids['barra_estado'], 'Abrir: "acerca de..."', self.logger, self.__usuario.usuario)
+            utils.escribir_barra_estado(self.wids['barra_estado'], 
+                                        'Abrir: "acerca de..."', 
+                                        self.logger, 
+                                        self.__usuario.usuario)
             self.acerca_de()
         elif 'usuario' in archivo:
-            self.wids['ventana'].window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
-            utils.escribir_barra_estado(self.wids['barra_estado'], "Cargar: %s.py" % archivo, self.logger, self.__usuario.usuario)
+            self.wids['ventana'].window.set_cursor(
+                                        gtk.gdk.Cursor(gtk.gdk.WATCH))
+            utils.escribir_barra_estado(self.wids['barra_estado'], 
+                                        "Cargar: %s.py" % archivo, 
+                                        self.logger, 
+                                        self.__usuario.usuario)
             exec "import %s" % archivo
             v = None 
             gobject.timeout_add(100, self.volver_a_cursor_original)
@@ -418,7 +432,10 @@ class Ventana:
         else:
             try:
                 self.wids['ventana'].window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
-                utils.escribir_barra_estado(self.wids['barra_estado'], "Cargar: %s.py" % archivo, self.logger, self.__usuario.usuario)
+                utils.escribir_barra_estado(self.wids['barra_estado'], 
+                                            "Cargar: %s.py" % archivo, 
+                                            self.logger, 
+                                            self.__usuario.usuario)
                 while gtk.events_pending(): gtk.main_iteration(False)
                 try:
                     exec "reload(%s)" % archivo
@@ -437,9 +454,12 @@ class Ventana:
                     v = eval('%s.%s' % (archivo, clase))
                     v(usuario = self.__usuario)
             except Exception, msg:
-                self.logger.error("ventana.py::_abrir -> Excepción importando fichero ventana: %s" % msg)
+                self.logger.error("ventana.py::_abrir -> "
+                        "Excepción importando fichero ventana: %s" % msg)
                 self.wids['ventana'].window.set_cursor(None)
-                utils.escribir_barra_estado(self.wids['barra_estado'], "Error detectado. Iniciando informe por correo.", self.logger, self.__usuario.usuario)
+                utils.escribir_barra_estado(self.wids['barra_estado'], 
+                        "Error detectado. Iniciando informe por correo.", 
+                        self.logger, self.__usuario.usuario)
                 print "Se ha detectado un error"
                 texto = ''
                 for e in sys.exc_info():
@@ -944,13 +964,19 @@ class Ventana:
         else:
             self.activar_widgets(True, chequear_permisos = False)
 
-    def to_log(self, texto, more_info = {}):
+    def to_log(self, texto, more_info = {}, nivel = 2):
         """
         Escribe en el log el texto recibido, intentando descubir el usuario 
         de la ventana y la clase.
+        Nivel es el nivel donde va a ir el texto. Por defecto es 2 (WARNING).
+        También se puede usar 0 (DEBUG), 3 (INFO) y 1 (ERROR)
         """
+        from pclases import logged_user
         txt2log = "%s%s -> " % (
-                    self.usuario and self.usuario.usuario + ": " or "", 
+                    (hasattr(self, "usuario") 
+                        and self.usuario and self.usuario.usuario + ": ") 
+                    or (logged_user and logged_user.usuario + ": ") 
+                    or "", 
                     hasattr(self, "__class__") and self.__class__.__name__ 
                         or "")
         txt2log += texto 
@@ -959,7 +985,14 @@ class Ventana:
                        "; ".join(["%s:=%s" % (k, more_info[k]) 
                                   for k in more_info]) + \
                        ")"
-        self.logger.warning(txt2log)
+        if nivel == 0:
+            self.logger.debug(txt2log)
+        elif nivel == 1:
+            self.logger.error(txt2log)
+        elif nivel == 3:
+            self.logger.info(txt2log)
+        else: # or nivel == 2
+            self.logger.warning(txt2log)
 
 
 def determine_ico_from_filename(archivo, clase):

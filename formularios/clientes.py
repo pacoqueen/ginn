@@ -1209,6 +1209,11 @@ class Clientes(Ventana):
             tv.connect("cursor-changed", self.seleccionar_en_tv_superior)
         if pclases.DEBUG:
             print "7.- clientes.py::inicializar_ventana ->", time.time() - antes
+        utils.rellenar_lista(self.wids['cbe_documentodepago'], 
+                [(d.id, d.documento) for d in 
+                    pclases.DocumentoDePago.select(orderBy = "id")])
+        if pclases.DEBUG:
+            print "8.- clientes.py::inicializar_ventana ->", time.time() - antes
 
     def seleccionar_en_tv_superior(self, tv):
         """
@@ -1505,6 +1510,26 @@ class Clientes(Ventana):
         self.objeto.make_swap()
         if pclases.DEBUG:
             print "8.- clientes.py::rellenar_widgets ->", time.time() - antes
+        try:
+            doc_from_db = self.objeto.get_documentoDePago().documento
+        except AttributeError:
+            doc_from_db = None
+        if doc_from_db and doc_from_db != self.objeto.documentodepago:
+            if utils.dialogo(titulo = "CORREGIR DOCUMENTO DE PAGO", 
+                    texto = "El cliente actual tiene como documento de pago:\n"
+                            "«%s». Se acoseja usar «%s».\n"
+                            "¿Corregirlo automáticamente?\n\n"
+                            "(Responda «No» si la forma de pago es correcta \n"
+                            "o prefiere corregirlo manualmente)" % (
+                                self.objeto.documentodepago, 
+                                doc_from_db), 
+                    padre = self.wids['ventana']):
+                self.objeto.documentodepago = doc_from_db
+                self.objeto.syncUpdate()
+                self.wids['e_documentodepago'].set_text(
+                        self.objeto.documentodepago)
+        if pclases.DEBUG:
+            print "9.- clientes.py::rellenar_widgets ->", time.time() - antes
 
     def rellenar_cuentas(self):
         """

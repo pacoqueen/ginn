@@ -61,6 +61,7 @@ import os, sys, traceback
 os.chdir(os.path.dirname(os.path.realpath(sys.argv[0])))
 #print os.getcwd()
 #print os.path.realpath(sys.argv[0])
+sys.path.append(".")
 
 import gtkexcepthook
 
@@ -73,7 +74,7 @@ from configuracion import ConfigConexion
 
 import custom_widgets
 
-__version__ = '4.1.5 (beta)'
+__version__ = '4.2.1 (beta)'
 __version_info__ = tuple(
     [int(num) for num in __version__.split()[0].split('.')] + 
     [txt.replace("(", "").replace(")", "") for txt in __version__.split()[1:]]

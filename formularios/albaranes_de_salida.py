@@ -2002,7 +2002,7 @@ class AlbaranesDeSalida(Ventana):
                          "albarán": self.objeto.numalbaran, 
                          "crédito disponible": 
                             self.objeto.cliente.calcular_credito_disponible()
-                        })
+                        }, nivel = self.logger.INFO) 
             return
         if self.comprobar_cliente_deudor():
             self.to_log("[add_pedido] Cliente deudor.", 
@@ -2069,7 +2069,7 @@ class AlbaranesDeSalida(Ventana):
                              "base": importe_pedido,
                              "pedido": pedido.numpedido, 
                              "¿continuar?": False
-                            })
+                            }, nivel = self.logger.INFO) 
                 return
             else:
                 self.to_log("[add_pedido] Cliente sin crédito.", 
@@ -2085,7 +2085,7 @@ class AlbaranesDeSalida(Ventana):
                              "base": importe_pedido,
                              "pedido": pedido.numpedido, 
                              "¿continuar?": True
-                            })
+                            }, nivel = self.logger.INFO) 
         if self.comprobar_cliente_deudor():
             self.to_log("[add_pedido] Cliente deudor.", 
                         {"cliente": self.objeto.cliente 
@@ -2576,7 +2576,7 @@ class AlbaranesDeSalida(Ventana):
                 txterror = "albaranes_de_salida::preparar_llamada_imprimir"\
                            " -> Excepción al contar cantidad añadida al "\
                            "imprimir el albarán: %s" % (msg)
-                self.logger.error(txterror)
+                self.logger.debug(txterror)
                 print txterror
                 cantidad_anadida = 0
             # Si la cantidad añadida en artículos servidos es 0 y el 
