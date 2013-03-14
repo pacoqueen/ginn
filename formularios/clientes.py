@@ -1528,6 +1528,7 @@ class Clientes(Ventana):
                 self.objeto.syncUpdate()
                 self.wids['e_documentodepago'].set_text(
                         self.objeto.documentodepago)
+                self.objeto.make_swap()
         if pclases.DEBUG:
             print "9.- clientes.py::rellenar_widgets ->", time.time() - antes
 
