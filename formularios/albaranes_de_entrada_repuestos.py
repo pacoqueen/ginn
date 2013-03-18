@@ -514,7 +514,8 @@ class AlbaranesDeEntradaRepuestos(Ventana):
         """
         albaran = self.objeto
         producto = utils.pedir_repuesto(self.wids['ventana'], 
-            proveedor_defecto = self.objeto.proveedor)
+            proveedor_defecto = self.objeto.proveedor, 
+            usuario = self.usuario)
         if producto == None:
             return
         cantidad = self.pedir_cantidad()
