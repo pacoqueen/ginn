@@ -3903,7 +3903,7 @@ def seleccionar_tipo_repuesto(ventana_padre = None):
     return res
 
 def seleccionar_repuesto(tipo, ventana_padre = None, dejar_crear = True, 
-                         proveedor_defecto = None):
+                         proveedor_defecto = None, usuario = None):
     """
     Muestra un dialogo_combo con los productos de compra de repuestos del 
     tipo "tipo". Si dejar_crear = True permite crear un producto no listado.
@@ -3953,14 +3953,12 @@ def seleccionar_repuesto(tipo, ventana_padre = None, dejar_crear = True,
                                             codigo = codigo, 
                                             obsoleto = False, 
                                             proveedor = proveedor_defecto)
-                if ventana_padre:
-                    usuario = ventana_padre.usuario
                 pclases.Auditoria.nuevo(pc, usuario, __file__)
                 res = pc
     return res
 
 def pedir_repuesto(ventana_padre = None, dejar_crear = True, 
-                   proveedor_defecto = None):
+                   proveedor_defecto = None, usuario = None):
     """
     Muestra un diálogo con los tipos de material considerados repuestos.
     A continuación muestra otro con los productos de compra dentro de ese 
@@ -3974,7 +3972,7 @@ def pedir_repuesto(ventana_padre = None, dejar_crear = True,
     tipo = seleccionar_tipo_repuesto(ventana_padre)
     if tipo != None:
         producto = seleccionar_repuesto(tipo, ventana_padre, dejar_crear, 
-                                        proveedor_defecto)
+                                        proveedor_defecto, usuario)
         res = producto
     return res
 
