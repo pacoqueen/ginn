@@ -448,7 +448,7 @@ class Proveedores(Ventana):
                                         email = '',
                                         formadepago = '120 D.F.F.',    
                                             # Campo obsoleto.
-                                        documentodepago = 'Pagaré',
+                                        documentodepago = 'Pagaré a la orden',
                                         vencimiento = '120 D.F.F.',
                                         diadepago = '25', 
                                         inhabilitado = False, 
@@ -514,14 +514,20 @@ class Proveedores(Ventana):
             self.wids['e_provinciafacturacion'].set_text(self.wids['e_provincia'].get_text())
             self.wids['e_email'].set_text(self.wids['e_correoe'].get_text())
         # Valores por defecto para forma de pago:
-        if self.wids['e_diadepago'].get_text().strip() == "":
-            self.wids['e_diadepago'].set_text("25")
+        # CWT:
+        # No se le paga a todos los proveedores por igual. Se debe dejar que
+        # este valor esté vacío para especificar que no hay día de pago
+        # concreto.
+        #if self.wids['e_diadepago'].get_text().strip() == "":
+        #    self.wids['e_diadepago'].set_text("25")
         if self.leer_valor(self.wids['e_vencimiento']).strip() == "": 
-            self.escribir_valor(self.wids['e_vencimiento'], "90 D.F.F.")
+            self.escribir_valor(self.wids['e_vencimiento'], "120 D.F.F.")
         if self.wids['e_documentodepago'].get_text().strip() == "":
-            self.wids['e_documentodepago'].set_text("Pagaré")
-        # campo formadepago DEPRECATED. Lo pongo igual que "vencimiento" por si acaso.
-        self.wids['e_formadepago'].set_text(self.leer_valor(self.wids['e_vencimiento'])) 
+            self.wids['e_documentodepago'].set_text("Pagaré a la orden")
+        # campo formadepago DEPRECATED. Lo pongo igual que "vencimiento"
+        # por si acaso.
+        self.wids['e_formadepago'].set_text(self.leer_valor(
+            self.wids['e_vencimiento']))
         # Desactivo el notificador momentáneamente
         proveedor.notificador.set_func(lambda: None)
         # Actualizo los datos del objeto
