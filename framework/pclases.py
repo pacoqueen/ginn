@@ -580,6 +580,7 @@ class DocumentoDePago(SQLObject, PRPCTOO):
     CONFIRMING = "Confirming"
     CHEQUE = "Cheque"
     CARTA = "Carta de crédito"
+    DOMICILIACION = "Domiciliación bancaria"
 
     @classmethod
     def Contado(clase):
@@ -608,6 +609,10 @@ class DocumentoDePago(SQLObject, PRPCTOO):
     @classmethod
     def Carta(clase):
         return clase._oblomov(clase.CARTA)
+
+    @classmethod
+    def Domiciliacion(clase):
+        return clase._oblomov(clase.DOMICILIACION)
 
     @classmethod
     def _oblomov(clase, strtipo):
@@ -2941,9 +2946,12 @@ class Cobro(SQLObject, PRPCTOO):
             doc = DocumentoDePago.Cheque()
         elif "CARTA" in txt:
             doc = DocumentoDePago.Carta()
+        elif "DOMICILIA" in txt or "RECIBO" in txt or "BANC" in txt:
+            doc = DocumentoDePago.Domiciliacion()
         # DONE: Falta recibo. Pero no me han dicho nada. Tampoco si cuando dice 
         #       "PAGARÉ" es a la orden o no a la orden. [update] Si no se 
         #       especifica, es a la orden. Del recibo, de momento, nada.
+        #       [update 20/03/2013] Ya me piden dar de alta la domiciliación.
         else:
             doc = None
         return doc
