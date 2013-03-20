@@ -515,8 +515,8 @@ class Proveedores(Ventana):
             self.wids['e_email'].set_text(self.wids['e_correoe'].get_text())
         # Valores por defecto para forma de pago:
         # CWT: 
-        # No se le paga a todos los proveedores por igual. Se debe dejar que
-        # este valor esté vacío para especificar que no hay día de pago
+        # No se le paga a todos los proveedores por igual. Se debe dejar que 
+        # este valor esté vacío para especificar que no hay día de pago 
         # concreto.
         #if self.wids['e_diadepago'].get_text().strip() == "":
         #    self.wids['e_diadepago'].set_text("25")
