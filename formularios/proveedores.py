@@ -561,8 +561,8 @@ class Proveedores(Ventana):
                     self.ir_a_primero()
                 except:
                     utils.dialogo_info(titulo = 'PROVEEDOR NO ELIMINADO', 
-                                       texto = 'El proveedor no se pudo eliminar.', 
-                                       padre = self.wids['ventana'])
+                        texto = 'El proveedor no se pudo eliminar.', 
+                        padre = self.wids['ventana'])
 
     def ver_pedidos(self, boton):
         """
