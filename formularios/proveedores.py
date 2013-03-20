@@ -524,10 +524,10 @@ class Proveedores(Ventana):
             self.escribir_valor(self.wids['e_vencimiento'], "120 D.F.F.")
         if self.wids['e_documentodepago'].get_text().strip() == "":
             self.wids['e_documentodepago'].set_text("Pagaré a la orden")
-        # campo formadepago DEPRECATED. Lo pongo igual que "vencimiento"
+        # campo formadepago DEPRECATED. Lo pongo igual que "vencimiento" 
         # por si acaso.
         self.wids['e_formadepago'].set_text(self.leer_valor(
-            self.wids['e_vencimiento']))
+            self.wids['e_vencimiento'])) 
         # Desactivo el notificador momentáneamente
         proveedor.notificador.set_func(lambda: None)
         # Actualizo los datos del objeto
