@@ -514,7 +514,7 @@ class Proveedores(Ventana):
             self.wids['e_provinciafacturacion'].set_text(self.wids['e_provincia'].get_text())
             self.wids['e_email'].set_text(self.wids['e_correoe'].get_text())
         # Valores por defecto para forma de pago:
-        # CWT:
+        # CWT: 
         # No se le paga a todos los proveedores por igual. Se debe dejar que
         # este valor esté vacío para especificar que no hay día de pago
         # concreto.
