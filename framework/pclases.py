@@ -74,7 +74,7 @@ if DEBUG or VERBOSE:
 
 logged_user = None
 
-import sys, os
+import sys, os, pprint
 #try:
 #    from sqlobject import *
 #except:
@@ -248,8 +248,23 @@ class PRPCTOO:
         # Antes del sync voy a copiar los datos a un swap temporal, para 
         # poder comparar:
         for campo in self._SO_columnDict:
-            self.swap[campo]=eval('self.%s' % campo)
+            self.swap[campo] = getattr(self, campo)
         
+    def diff(self):
+        """
+        Devuelve un diccionario de nombres de campos y valores que han 
+        cambiado respecto al "swap" (valores en memoria a la hora de 
+        presentar la ventana).
+        """
+        res = {}
+        self.sync()
+        for campo in self._SO_columnDict:
+            old = self.swap[campo]
+            new = getattr(self, campo)
+            if old != new:
+                res[campo] = (old, new)
+        return res
+
     def comparar_swap(self):
         """
         Lanza una excepción propia para indicar que algún valor ha cambiado 
@@ -20952,7 +20967,8 @@ class Auditoria(SQLObject, PRPCTOO):
                 ventana = None
         if not descripcion:
             try:
-                descripcion = objeto.get_info() #Nuevos valores. Mejor que nada
+                #descripcion = objeto.get_info() #Nuevos valores. Mejor que nada
+                descripcion = pprint.pformat(objeto.diff()).replace("'", '"')
             except Exception, msg:
                 descripcion = "Error al obtener información del objeto. "\
                               "Excepción capturada: %s " % msg

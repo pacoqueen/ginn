@@ -108,7 +108,7 @@ dir()
         self.wids['e_search'].grab_focus()
         self.wids['e_search'].set_text("!Alerta:")
         self.filtrar_tvaudit("!Alerta:")
-        gobject.timeout_add(1000, self.check_audit)
+        gobject.timeout_add(5000, self.check_audit)
         self.wids['ventana'].resize(800, 600)
         gtk.main()
     
@@ -213,7 +213,7 @@ dir()
                 try:
                     self.mover_a_ultima_fila(last_iter)
                 except UnboundLocalError:
-                    pass    # No ha habido cambios en el fichero.
+                    pass    # No ha habido cambios.
             except ValueError:
                 return False    # Fichero cerrado. "Descargo" la función.
         return True

@@ -1868,6 +1868,18 @@ class Clientes(Ventana):
         except (ValueError, TypeError):
             copias = 0
         cliente.copiasFactura = copias 
+        # Auditoría de cambios
+        pclases.Auditoria.modificado(cliente, self.usuario, __file__)
+        if (asegurado_antes != cliente.riesgoAsegurado 
+                or concedido_antes != cliente.riesgoConcedido):
+            pclases.Auditoria.modificado(cliente, self.usuario, __file__, 
+                descripcion = "%s: Riesgo asegurado: %s; concedido: %s."\
+                              "(Antes: asegurado: %s; concedido: %s)" % 
+                                    (cliente.get_info(), 
+                                     utils.float2str(cliente.riesgoAsegurado), 
+                                     utils.float2str(cliente.riesgoConcedido), 
+                                     utils.float2str(asegurado_antes), 
+                                     utils.float2str(concedido_antes)))
         # Fuerzo la actualización de la BD y no espero a que SQLObject lo 
         # haga por mí:
         cliente.syncUpdate()
@@ -1877,16 +1889,9 @@ class Clientes(Ventana):
         self.wids['b_guardar'].set_sensitive(False)
         if cliente.es_extranjero() and cliente.iva != 0:
             utils.dialogo_info(titulo = "ADVERTENCIA", 
-                               texto = "El I.V.A. para los clientes extranjeros debería ser 0 %.", 
+                               texto = "El I.V.A. para los clientes "
+                                       "extranjeros debería ser 0 %.", 
                                padre = self.wids['ventana'])
-        pclases.Auditoria.modificado(cliente, self.usuario, __file__, 
-                descripcion = "%s: Riesgo asegurado: %s; concedido: %s."\
-                              "(Antes: asegurado: %s; concedido: %s)" % 
-                                    (cliente.get_info(), 
-                                     utils.float2str(cliente.riesgoAsegurado), 
-                                     utils.float2str(cliente.riesgoConcedido), 
-                                     utils.float2str(asegurado_antes), 
-                                     utils.float2str(concedido_antes)))
 
     def borrar(self, widget):
         """

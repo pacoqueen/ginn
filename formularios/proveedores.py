@@ -542,6 +542,7 @@ class Proveedores(Ventana):
         # Fuerzo la actualización de la BD y no espero a que SQLObject lo 
         # haga por mí:
         proveedor.syncUpdate()
+        pclases.Auditoria.modificado(proveedor, self.usuario, __file__)
         # Vuelvo a activar el notificador
         proveedor.notificador.set_func(self.aviso_actualizacion)
         self.objeto = proveedor

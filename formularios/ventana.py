@@ -714,6 +714,7 @@ class Ventana:
                         print "4.- ventana.py::actualizar_ventana->", \
                               time.time() - antes
                     self.rellenar_widgets()
+                    self.objeto.make_swap()
                     if DEBUG:
                         print "5.- ventana.py::actualizar_ventana->", \
                               time.time() - antes
