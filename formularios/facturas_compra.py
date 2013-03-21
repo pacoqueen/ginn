@@ -1360,7 +1360,7 @@ class FacturasDeEntrada(Ventana):
                 idproveedor = proveedor.id
         if not fecha:
             try:
-                fecha = utils.parse_fecha(self.wids['e_fecha'])
+                fecha = utils.parse_fecha(self.wids['e_fecha'].get_text())
             except TypeError:
                 fecha = mx.DateTime.today()
         anno = fecha.year
@@ -1381,7 +1381,7 @@ class FacturasDeEntrada(Ventana):
             else:
                 nombreproveedor = "del proveedor %s" % (proveedor.nombre)
             utils.dialogo_info(titulo = "ERROR: FACTURA DUPLICADA", 
-                texto = "La factura %s %s ya existe.." % (numfactura, 
+                texto = "La factura %s %s ya existe." % (numfactura, 
                                                           nombreproveedor), 
                 padre = self.wids['ventana'])
             return False
@@ -1412,6 +1412,7 @@ class FacturasDeEntrada(Ventana):
             # Campos del objeto que hay que guardar:
         numfactura = self.wids['e_numfactura'].get_text()
         idproveedor = utils.combo_get_value(self.wids['cmbe_proveedor'])
+        fecha = self.wids['e_fecha'].get_text()
         if idproveedor != None:
             proveedor = pclases.Proveedor.get(idproveedor)
         else:
@@ -1419,6 +1420,7 @@ class FacturasDeEntrada(Ventana):
         if not self.comprobar_numfactura_y_proveedor():
             numfactura = factura.numfactura
             proveedor = factura.proveedor
+            fecha = factura.fecha
         try:
             iva = utils.parse_porcentaje(self.wids['e_iva'].get_text()) / 100.0
         except:
@@ -1462,7 +1464,6 @@ class FacturasDeEntrada(Ventana):
                 self.wids['e_descuento'].set_text("%s %%" % (
                     utils.float2str(factura.descuento * 100, autodec = True)))
                 descuento = factura.descuento
-        fecha = self.wids['e_fecha'].get_text()
         # Desactivo el notificador momentáneamente
         factura.notificador.set_func(lambda: None)
         # Actualizo los datos del objeto
