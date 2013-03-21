@@ -39,7 +39,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, gobject
+import gtk, gtk.glade, time, gobject, pango
 try:
     import pclases
 except ImportError:
@@ -166,6 +166,8 @@ dir()
             cells = column.get_cell_renderers()
             for cell in cells:
                 column.set_cell_data_func(cell, cell_func, i)
+                # Aprovecho para cambiar el tamaño de la fuente:
+                cell.set_property("font-desc", pango.FontDescription("sans 7"))
 
     def chequear_cambios(self):
         pass
