@@ -1222,7 +1222,12 @@ class FacturasDeEntrada(Ventana):
         proveedor = pclases.Proveedor.get(idproveedor)
         facturas_existentes = pclases.FacturaCompra.select(pclases.AND(
             pclases.FacturaCompra.q.numfactura.contains(numfactura), 
-            pclases.FacturaCompra.q.proveedorID == idproveedor))
+            pclases.FacturaCompra.q.proveedorID == idproveedor, 
+            pclases.FacturaCompra.q.fecha >= mx.DateTime.DateFrom(
+                mx.DateTime.today().year, 1, 1), 
+            pclases.FacturaCompra.q.fecha <= mx.DateTime.DateFrom(
+                mx.DateTime.today().year, 12, 31))
+        )
         facturas_existentes = [f for f in facturas_existentes 
                                if f.numfactura.upper() == numfactura.upper()]
         if facturas_existentes != []:
@@ -1337,11 +1342,12 @@ class FacturasDeEntrada(Ventana):
         self.actualizar_ventana()
 
     def comprobar_numfactura_y_proveedor(self, numfactura = None, 
-                                         idproveedor = None):
+                                         idproveedor = None, 
+                                         fecha = None):
         """
-        Comprueba que el número de factura y el proveedor no 
-        existan ya en la BD. Si no se recibe numfactira e 
-        idproveedor, toma los de la ventana.
+        Comprueba que el número de factura no exista para el proveedor y año 
+        ya en la BD. Si no se recibe numfactura, fecha o idproveedor, toma 
+        los de la ventana.
         """
         if numfactura == None:
             numfactura = self.wids['e_numfactura'].get_text()
@@ -1352,10 +1358,18 @@ class FacturasDeEntrada(Ventana):
             else:
                 proveedor = pclases.Proveedor.get(proveedor)
                 idproveedor = proveedor.id
-
+        if not fecha:
+            try:
+                fecha = utils.parse_fecha(self.wids['e_fecha'])
+            except TypeError:
+                fecha = mx.DateTime.today()
+        anno = fecha.year
         facturas_existentes = pclases.FacturaCompra.select(pclases.AND(
             pclases.FacturaCompra.q.numfactura.contains(numfactura), 
-            pclases.FacturaCompra.q.proveedorID == idproveedor))
+            pclases.FacturaCompra.q.proveedorID == idproveedor, 
+            pclases.FacturaCompra.q.fecha >= mx.DateTime.DateFrom(anno, 1, 1), 
+            pclases.FacturaCompra.q.fecha <= mx.DateTime.DateFrom(anno, 12, 31)
+        ))
         # Quito la factura actual para no contarme a mí misma como duplicada 
         # de mí misma:
         facturas_existentes = [f for f in facturas_existentes 
