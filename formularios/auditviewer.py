@@ -198,6 +198,7 @@ dir()
         Comprueba si ha cambiado el tamaño del audit y añade las 
         líneas nuevas.
         """
+        # PORASQUI: Incidencia en justinho. Buscar «auditviewer».
         lineas_auditoria = cargar_registros_auditoria() 
         if lineas_auditoria.count() > self.tamanno_audit:
             self.tamanno_audit = lineas_auditoria.count()
