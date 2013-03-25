@@ -52,6 +52,8 @@ def to_float(t, sensibilidad = 2):
     hay un cierto número de palabras (2 por defecto) entonces no convierte a 
     número flotante.
     """
+    if isinstance(t, (int, float)):
+        return float(t)
     from string import digits as numeros
     palabras = []
     for p in t.split():
