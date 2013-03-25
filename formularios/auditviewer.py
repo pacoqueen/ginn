@@ -185,6 +185,7 @@ dir()
         model.clear()
         last_iter = None
         lineas_auditoria = cargar_registros_auditoria()
+        self.lines_added = []
         for linea in self.filtrar_lineas(lineas_auditoria):
             last_iter = self.agregar_linea(model, linea)
         self.wids['tv_datos'].set_model(model)
@@ -198,7 +199,6 @@ dir()
         Comprueba si ha cambiado el tamaño del audit y añade las 
         líneas nuevas.
         """
-        # PORASQUI: Incidencia en justinho. Buscar «auditviewer».
         lineas_auditoria = cargar_registros_auditoria() 
         if lineas_auditoria.count() > self.tamanno_audit:
             self.tamanno_audit = lineas_auditoria.count()
@@ -213,10 +213,8 @@ dir()
                             "Probablemente se produjo una entrada en el audit "
                             "justo cuando se cerraba la ventana: %s" % e)
                         return False
-                try:
-                    self.mover_a_ultima_fila(last_iter)
-                except UnboundLocalError:
-                    pass    # No ha habido cambios.
+                    else:
+                        self.mover_a_ultima_fila(last_iter)
             except ValueError:
                 return False    # Fichero cerrado. "Descargo" la función.
         return True
@@ -227,18 +225,28 @@ dir()
         """
         # sel = self.wids['tv_datos'].get_selection()
         # sel.select_iter(last_iter)
-        model = self.wids['tv_datos'].get_model()
-        try:
-            self.wids['tv_datos'].scroll_to_cell(model.get_path(last_iter), 
-                                                 use_align = True)
-        except TypeError:   # last_iter no es un iter. Debe ser None.
-            pass
+        sel = self.wids['tv_datos'].get_selection()
+        model, selected = sel.get_selected()
+        # Me muevo al final si ya estaba en el final o si no estoy  
+        # investigando nada (no tengo nada seleccionado en el treeview).
+        vscroll=self.wids['tv_datos'].parent.get_vscrollbar().get_adjustment()
+        pos_scroll = vscroll.value
+        abajo = vscroll.upper - vscroll.page_size
+        if not selected or pos_scroll == abajo:
+            try:
+                self.wids['tv_datos'].scroll_to_cell(model.get_path(last_iter),
+                                                     use_align = True)
+            except TypeError:   # last_iter no es un iter. Debe ser None.
+                pass
 
     def agregar_linea(self, model, linea):
         """
         Inserta en el model la línea recibida.
         """
-        return model.append((linea.usuario and linea.usuario.usuario or "", 
+        lpuid = linea.get_puid()
+        if lpuid not in self.lines_added:
+            added = model.append(
+                            (linea.usuario and linea.usuario.usuario or "", 
                              linea.ventana and linea.ventana.fichero or "", 
                              linea.puid, 
                              linea.action, 
@@ -247,6 +255,8 @@ dir()
                              linea.fechahora.strftime("%Y%m%d %H%M%S"), 
                              linea.descripcion, 
                              linea.get_puid()))
+            self.lines_added.append(lpuid)
+            return added
 
     def filtrar_lineas(self, select_query):
         """
