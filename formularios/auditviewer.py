@@ -225,13 +225,19 @@ dir()
         """
         # sel = self.wids['tv_datos'].get_selection()
         # sel.select_iter(last_iter)
-        # PORASQUI: Incidencia en justinho. Buscar «auditviewer». Casi resuelta, pero quiero que no mueva a la última fila si tengo seleccionada alguna porque la estoy viendo con detenimiento o algo. Y que si no hay nada seleccionado o tengo la última seleccionada, entonces sí; que me desplace al final.
-        model = self.wids['tv_datos'].get_model()
-        try:
-            self.wids['tv_datos'].scroll_to_cell(model.get_path(last_iter), 
-                                                 use_align = True)
-        except TypeError:   # last_iter no es un iter. Debe ser None.
-            pass
+        sel = self.wids['tv_datos'].get_selection()
+        model, selected = sel.get_selected()
+        # Me muevo al final si ya estaba en el final o si no estoy  
+        # investigando nada (no tengo nada seleccionado en el treeview).
+        vscroll=self.wids['tv_datos'].parent.get_vscrollbar().get_adjustment()
+        pos_scroll = vscroll.value
+        abajo = vscroll.upper - vscroll.page_size
+        if not selected or pos_scroll == abajo:
+            try:
+                self.wids['tv_datos'].scroll_to_cell(model.get_path(last_iter),
+                                                     use_align = True)
+            except TypeError:   # last_iter no es un iter. Debe ser None.
+                pass
 
     def agregar_linea(self, model, linea):
         """
