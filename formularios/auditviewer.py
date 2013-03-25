@@ -47,6 +47,7 @@ except ImportError:
     sys.path.append(pathjoin("..", "framework"))
     import pclases
 import mx, mx.DateTime
+from consulta_existenciasBolsa import act_fecha
 
 class AuditViewer(Ventana):
     """
@@ -62,9 +63,17 @@ class AuditViewer(Ventana):
         except:     # Tal vez me estén llamando desde otro directorio
             Ventana.__init__(self, os.path.join('..', 'formularios', 
                              'trazabilidad.glade'), objeto, usuario)
-        connections = {'b_salir/clicked': self._salir}
+        connections = {'b_salir/clicked': self._salir, 
+                       'b_fechaini/clicked': self.set_fechaini, 
+                       'b_fechafin/clicked': self.set_fechafin, 
+                       'e_fechaini/focus-out-event': act_fecha, 
+                       'e_fechafin/focus-out-event': act_fecha, 
+                       'b_atras/clicked': None, 
+                       'b_adelante/clicked': None}
+        # PORASQUI: Permitir un filtro de un mes para que no tarde tanto en cargar los registros. Y con los botones adelante y atrás moverme un mes hacia hacia el pasado o el futuro.
         self.add_connections(connections)
         self.wids['hbox1'].set_property("visible", False)
+        self.wids['filtro_fecha'].set_visible(True)
         cols = (('Usuario', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Ventana', 'gobject.TYPE_STRING', False, True, False, None),
                 ('«puid»', 'gobject.TYPE_STRING', False, True, False, None), 
