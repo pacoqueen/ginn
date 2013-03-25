@@ -213,10 +213,9 @@ dir()
                             "Probablemente se produjo una entrada en el audit "
                             "justo cuando se cerraba la ventana: %s" % e)
                         return False
-                try:
-                    self.mover_a_ultima_fila(last_iter)
-                except UnboundLocalError:
-                    pass    # No ha habido cambios.
+                    else:
+                        #self.mover_a_ultima_fila(last_iter)
+                        pass
             except ValueError:
                 return False    # Fichero cerrado. "Descargo" la función.
         return True
@@ -230,7 +229,7 @@ dir()
         model = self.wids['tv_datos'].get_model()
         try:
             self.wids['tv_datos'].scroll_to_cell(model.get_path(last_iter), 
-                                                 use_align = True)
+                                                 use_align = False)
         except TypeError:   # last_iter no es un iter. Debe ser None.
             pass
 
