@@ -47,7 +47,8 @@ except ImportError:
     sys.path.append(pathjoin("..", "framework"))
     import pclases
 import mx, mx.DateTime
-from consulta_existenciasBolsa import act_fecha
+from consulta_existenciasBolsas import act_fecha 
+from dynconsulta import restar_mes
 
 class AuditViewer(Ventana):
     """
@@ -64,14 +65,16 @@ class AuditViewer(Ventana):
             Ventana.__init__(self, os.path.join('..', 'formularios', 
                              'trazabilidad.glade'), objeto, usuario)
         connections = {'b_salir/clicked': self._salir, 
-                       'b_fechaini/clicked': self.set_fechaini, 
-                       'b_fechafin/clicked': self.set_fechafin, 
+                       'b_fechaini/clicked': self.set_fecha, 
+                       'b_fechafin/clicked': self.set_fecha, 
                        'e_fechaini/focus-out-event': act_fecha, 
                        'e_fechafin/focus-out-event': act_fecha, 
-                       'b_atras/clicked': None, 
-                       'b_adelante/clicked': None}
-        # PORASQUI: Permitir un filtro de un mes para que no tarde tanto en cargar los registros. Y con los botones adelante y atrás moverme un mes hacia hacia el pasado o el futuro.
+                       'b_atras/clicked': self.move_fecha, 
+                       'b_adelante/clicked': self.move_fecha, 
+                       'b_actualizar/clicked': self.rellenar_widgets}
         self.add_connections(connections)
+        self.wids['e_fechaini'].set_text(utils.str_fecha(
+            restar_mes(mx.DateTime.today())))
         self.wids['hbox1'].set_property("visible", False)
         self.wids['filtro_fecha'].set_visible(True)
         cols = (('Usuario', 'gobject.TYPE_STRING', False, True, False, None),
@@ -121,6 +124,32 @@ dir()
         self.wids['ventana'].resize(800, 600)
         gtk.main()
     
+    def set_fecha(self, boton):
+        """
+        Cambia la fecha de los filtros.
+        """
+        w = self.wids[boton.name.replace("b_", "e_")]
+        try:
+            fechaentry = utils.parse_fecha(w.get_text())
+        except (TypeError, ValueError):
+            fechaentry = mx.DateTime.today()
+        w.set_text(utils.str_fecha(utils.mostrar_calendario(
+                                                fecha_defecto = fechaentry, 
+                                                padre = self.wids['ventana'])))
+
+    def move_fecha(self, boton):
+        for entry_name in ("e_fechaini", "e_fechafin"):
+            w = self.wids[entry_name]
+            try:
+                fechaentry = utils.parse_fecha(w.get_text())
+            except (TypeError, ValueError):
+                fechaentry = mx.DateTime.today()
+            if boton.name == "b_atras":
+                nueva_fecha = restar_mes(fechaentry) 
+            else:
+                nueva_fecha = restar_mes(fechaentry, -1)
+            w.set_text(utils.str_fecha(nueva_fecha))
+
     def mancatrlt2(self, entry):
         self.filtrar_tvaudit(entry.get_text())
 
@@ -184,7 +213,7 @@ dir()
     def es_diferente(self):
         return False
 
-    def rellenar_widgets(self):
+    def rellenar_widgets(self, boton = None):
         """
         Vuelca el contenido del audit en el model.
         """
@@ -193,7 +222,7 @@ dir()
         self.wids['tv_datos'].set_model(None)
         model.clear()
         last_iter = None
-        lineas_auditoria = cargar_registros_auditoria()
+        lineas_auditoria = self.cargar_registros_auditoria()
         self.lines_added = []
         for linea in self.filtrar_lineas(lineas_auditoria):
             last_iter = self.agregar_linea(model, linea)
@@ -208,7 +237,7 @@ dir()
         Comprueba si ha cambiado el tamaño del audit y añade las 
         líneas nuevas.
         """
-        lineas_auditoria = cargar_registros_auditoria() 
+        lineas_auditoria = self.cargar_registros_auditoria() 
         if lineas_auditoria.count() > self.tamanno_audit:
             self.tamanno_audit = lineas_auditoria.count()
             try:
@@ -289,9 +318,34 @@ dir()
                 yield linea
         raise StopIteration
 
+    def cargar_registros_auditoria(self):
+        try:
+            fechaini = utils.parse_fecha(self.wids['e_fechaini'].get_text())
+        except ValueError:
+            fechaini = None
+        try:
+            fechafin = (utils.parse_fecha(self.wids['e_fechafin'].get_text())
+                        + mx.DateTime.oneDay)
+        except ValueError:
+            fechafin = None
+        if fechaini and fechafin:
+            res = pclases.Auditoria.select(pclases.AND(
+                    pclases.Auditoria.q.fechahora >= fechaini, 
+                    pclases.Auditoria.q.fechahora < fechafin), 
+                orderBy = "id")
+        elif fechaini and not fechafin:
+            res = pclases.Auditoria.select(
+                pclases.Auditoria.q.fechahora >= fechaini, 
+                orderBy = "id")
+        elif not fechaini and fechafin:
+            res = pclases.Auditoria.select(
+                pclases.Auditoria.q.fechahora < fechafin, 
+                orderBy = "id")
+        else:
+            res = pclases.Auditoria.select(orderBy = "id")
+        return res
 
-def cargar_registros_auditoria():
-    return pclases.Auditoria.select(orderBy = "id")
+
 
 if __name__ == '__main__':
     t = AuditViewer()

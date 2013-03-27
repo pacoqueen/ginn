@@ -1,3 +1,5 @@
+last-session.txt
+*.lock
 *.py[co]
 
 # Packages
