@@ -1,5 +1,5 @@
 " ~/Geotexan/src/ginn/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 27 marzo 2013 at 17:56:02.
+" Created by session.vim 1.5 on 28 marzo 2013 at 00:03:56.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -28,40 +28,19 @@ badd +113 formularios/consulta_existenciasBolsas.py
 badd +1403 formularios/dynconsulta.py
 args formularios/auditviewer.py
 set lines=47 columns=80
-edit -MiniBufExplorer-
+edit formularios/consulta_existenciasBolsas.py
 set splitbelow splitright
 wincmd _ | wincmd |
 split
-wincmd _ | wincmd |
-split
-2wincmd k
-wincmd w
+1wincmd k
 wincmd w
 set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 1 + 23) / 47)
-exe '2resize ' . ((&lines * 7 + 23) / 47)
-exe '3resize ' . ((&lines * 35 + 23) / 47)
+exe '1resize ' . ((&lines * 22 + 23) / 47)
+exe '2resize ' . ((&lines * 22 + 23) / 47)
 argglobal
-setlocal fdm=indent
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=99
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-let s:l = 1 - ((0 * winheight(0) + 0) / 1)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-1
-normal! 0
-wincmd w
-argglobal
-edit formularios/consulta_existenciasBolsas.py
 setlocal fdm=indent
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -88,7 +67,7 @@ silent! normal zo
 silent! normal zo
 54
 silent! normal zo
-let s:l = 242 - ((1 * winheight(0) + 3) / 7)
+let s:l = 242 - ((0 * winheight(0) + 11) / 22)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -109,6 +88,12 @@ setlocal fen
 silent! normal zo
 58
 silent! normal zo
+58
+silent! normal zo
+58
+silent! normal zo
+58
+silent! normal zo
 68
 silent! normal zo
 68
@@ -124,6 +109,28 @@ silent! normal zo
 58
 silent! normal zo
 54
+silent! normal zo
+104
+silent! normal zo
+104
+silent! normal zo
+104
+silent! normal zo
+104
+silent! normal zo
+104
+silent! normal zo
+104
+silent! normal zo
+104
+silent! normal zo
+104
+silent! normal zo
+104
+silent! normal zo
+104
+silent! normal zo
+104
 silent! normal zo
 104
 silent! normal zo
@@ -185,25 +192,13 @@ silent! normal zo
 silent! normal zo
 146
 silent! normal zo
-142
-silent! normal zo
-141
-silent! normal zo
-104
-silent! normal zo
-147
-silent! normal zo
-147
-silent! normal zo
-147
-silent! normal zo
 148
 silent! normal zo
 150
 silent! normal zo
-147
+142
 silent! normal zo
-147
+141
 silent! normal zo
 164
 silent! normal zo
@@ -234,10 +229,6 @@ silent! normal zo
 308
 silent! normal zo
 300
-silent! normal zo
-147
-silent! normal zo
-321
 silent! normal zo
 322
 silent! normal zo
@@ -275,8 +266,6 @@ silent! normal zo
 silent! normal zo
 338
 silent! normal zo
-339
-silent! normal zo
 337
 silent! normal zo
 341
@@ -289,18 +278,17 @@ silent! normal zo
 silent! normal zo
 322
 silent! normal zo
-321
+104
 silent! normal zo
-let s:l = 337 - ((19 * winheight(0) + 17) / 35)
+let s:l = 337 - ((0 * winheight(0) + 11) / 22)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 337
 normal! 042l
 wincmd w
-exe '1resize ' . ((&lines * 1 + 23) / 47)
-exe '2resize ' . ((&lines * 7 + 23) / 47)
-exe '3resize ' . ((&lines * 35 + 23) / 47)
+exe '1resize ' . ((&lines * 22 + 23) / 47)
+exe '2resize ' . ((&lines * 22 + 23) / 47)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
