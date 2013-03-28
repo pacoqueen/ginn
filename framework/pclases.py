@@ -20869,7 +20869,7 @@ class Auditoria(SQLObject, PRPCTOO):
         starter(self, *args, **kw)
 
     def get_info(self):
-        res = "[%s] %s en %s (desde %s <%s>); %s sobre %s: %s" % (
+        res = "[%s] %s en %s (desde %s <%s>); %s en %s: %s" % (
                 utils.str_fechahoralarga(self.fechahora), 
                 self.usuario and self.usuario.usuario or "Desconocido", 
                 self.ventana and self.ventana.fichero or "Ventana desconocida",

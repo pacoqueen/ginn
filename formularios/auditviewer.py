@@ -231,6 +231,7 @@ dir()
         self.wids['tv_datos'].freeze_child_notify()
         self.wids['tv_datos'].set_model(None)
         model.clear()
+        self.mancatrlt2(self.wids['e_search'])
         last_iter = None
         if pclases.DEBUG: print __file__, "rellenar_widgets: 2" 
         try:
@@ -334,7 +335,7 @@ dir()
     def filtrar_lineas(self, select_query):
         """
         Iterador que devuelve una línea del audit cada vez en forma de 
-        objeto de pclases:
+        objeto de pclases.
         Filtra las duplicadas consecutivas para devolverlas una única vez.
         Tiene en cuenta también el filtro de búsqueda.
         """
