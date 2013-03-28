@@ -257,8 +257,10 @@ dir()
         if pclases.DEBUG: print __file__, "rellenar_widgets: 6" 
 
     def update_e_count(self):
-        self.wids['e_count'].set_text("%d/%d" % (
-            self.tamanno_audit, pclases.Auditoria.select().count()))
+        self.wids['e_count'].set_text("%d/%d/%d" % (
+            len(self.wids['tv_datos'].get_model()), 
+            self.tamanno_audit, 
+            pclases.Auditoria.select().count()))
     
     def check_audit(self):
         """
