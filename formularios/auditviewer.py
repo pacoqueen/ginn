@@ -50,6 +50,8 @@ import mx, mx.DateTime
 from consulta_existenciasBolsas import act_fecha 
 from dynconsulta import restar_mes
 
+pclases.DEBUG = True    # XXX
+
 class AuditViewer(Ventana):
     """
     Visor de la tabla de auditoría de la aplicación.
@@ -105,7 +107,7 @@ dir()
         self.wids['frame2'].set_property("visible", False)
         self.wids['ventana'].set_title("AuditViewer")
         self.wids['ventana'].set_position(gtk.WIN_POS_CENTER)
-        self.tamanno_audit = self.rellenar_widgets()
+        self.rellenar_widgets()
         try:
             self.wids['e_search'].set_property("primary-icon-stock", 
                 gtk.STOCK_FIND)
@@ -120,7 +122,7 @@ dir()
         self.wids['e_search'].grab_focus()
         self.wids['e_search'].set_text("!Alerta:")
         self.filtrar_tvaudit("!Alerta:")
-        gobject.timeout_add(5000, self.check_audit)
+        self.signal_check = gobject.timeout_add(5000, self.check_audit)
         self.wids['ventana'].resize(800, 600)
         gtk.main()
     
@@ -217,26 +219,45 @@ dir()
         """
         Vuelca el contenido del audit en el model.
         """
+        if pclases.DEBUG: print __file__, "rellenar_widgets: 0" 
+        try:
+            gobject.source_remove(self.signal_check)
+        except AttributeError:
+            timeout_unloaded = False
+        else:
+            timeout_unloaded = True
+        if pclases.DEBUG: print __file__, "rellenar_widgets: 1" 
         model = self.wids['tv_datos'].get_model()
         self.wids['tv_datos'].freeze_child_notify()
         self.wids['tv_datos'].set_model(None)
         model.clear()
         last_iter = None
+        if pclases.DEBUG: print __file__, "rellenar_widgets: 2" 
         lineas_auditoria = self.cargar_registros_auditoria()
+        if pclases.DEBUG: print __file__, "rellenar_widgets: 3" 
         self.lines_added = []
         for linea in self.filtrar_lineas(lineas_auditoria):
+            if pclases.DEBUG: print __file__, "rellenar_widgets: 31" 
             last_iter = self.agregar_linea(model, linea)
+            if pclases.DEBUG: print __file__, "rellenar_widgets: 32" 
         self.wids['tv_datos'].set_model(model)
         self.wids['tv_datos'].thaw_child_notify()
+        if pclases.DEBUG: print __file__, "rellenar_widgets: 4" 
         self.mover_a_ultima_fila(last_iter)
+        if pclases.DEBUG: print __file__, "rellenar_widgets: 5" 
         tamanno = lineas_auditoria.count()
-        return tamanno
+        self.tamanno_audit = tamanno
+        if timeout_unloaded: # Si la he descargado (usuario ha actualizado) 
+                             # vuelvo a cargarla.
+            self.signal_check = gobject.timeout_add(5000, self.check_audit)
+        if pclases.DEBUG: print __file__, "rellenar_widgets: 6" 
     
     def check_audit(self):
         """
         Comprueba si ha cambiado el tamaño del audit y añade las 
         líneas nuevas.
         """
+        gobject.source_remove(self.signal_check)
         lineas_auditoria = self.cargar_registros_auditoria() 
         if lineas_auditoria.count() > self.tamanno_audit:
             self.tamanno_audit = lineas_auditoria.count()
@@ -255,7 +276,7 @@ dir()
                         self.mover_a_ultima_fila(last_iter)
             except ValueError:
                 return False    # Fichero cerrado. "Descargo" la función.
-        return True
+        self.signal_check = gobject.timeout_add(5000, self.check_audit)
 
     def mover_a_ultima_fila(self, last_iter):
         """
@@ -319,6 +340,7 @@ dir()
         raise StopIteration
 
     def cargar_registros_auditoria(self):
+        if pclases.DEBUG: print __file__, "cargar_registros_auditoria: 0" 
         try:
             fechaini = utils.parse_fecha(self.wids['e_fechaini'].get_text())
         except ValueError:
@@ -328,6 +350,7 @@ dir()
                         + mx.DateTime.oneDay)
         except ValueError:
             fechafin = None
+        if pclases.DEBUG: print __file__, "cargar_registros_auditoria: 1" 
         if fechaini and fechafin:
             res = pclases.Auditoria.select(pclases.AND(
                     pclases.Auditoria.q.fechahora >= fechaini, 
@@ -343,6 +366,7 @@ dir()
                 orderBy = "id")
         else:
             res = pclases.Auditoria.select(orderBy = "id")
+        if pclases.DEBUG: print __file__, "cargar_registros_auditoria: 2" 
         return res
 
 
