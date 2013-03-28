@@ -48,7 +48,6 @@ except ImportError:
     import pclases
 import mx, mx.DateTime
 from consulta_existenciasBolsas import act_fecha 
-from dynconsulta import restar_mes
 
 pclases.DEBUG = True    # XXX
 
@@ -76,7 +75,7 @@ class AuditViewer(Ventana):
                        'b_actualizar/clicked': self.rellenar_widgets}
         self.add_connections(connections)
         self.wids['e_fechaini'].set_text(utils.str_fecha(
-            restar_mes(mx.DateTime.today())))
+            restar_semana(mx.DateTime.today())))
         self.wids['hbox1'].set_property("visible", False)
         self.wids['filtro_fecha'].set_visible(True)
         cols = (('Usuario', 'gobject.TYPE_STRING', False, True, False, None),
@@ -91,7 +90,6 @@ class AuditViewer(Ventana):
                     'gobject.TYPE_STRING', False, True, False, None), 
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_listview(self.wids['tv_datos'], cols)
-        self.colorear(self.wids['tv_datos'])
         import pyconsole
         vars_locales = locals()
         for k in locals_adicionales:
@@ -124,6 +122,7 @@ dir()
         self.filtrar_tvaudit("!Alerta:")
         self.signal_check = gobject.timeout_add(5000, self.check_audit)
         self.wids['ventana'].resize(800, 600)
+        self.colorear(self.wids['tv_datos'])
         gtk.main()
     
     def set_fecha(self, boton):
@@ -147,9 +146,9 @@ dir()
             except (TypeError, ValueError):
                 fechaentry = mx.DateTime.today()
             if boton.name == "b_atras":
-                nueva_fecha = restar_mes(fechaentry) 
+                nueva_fecha = restar_semana(fechaentry) 
             else:
-                nueva_fecha = restar_mes(fechaentry, -1)
+                nueva_fecha = restar_semana(fechaentry, -1)
             w.set_text(utils.str_fecha(nueva_fecha))
 
     def mancatrlt2(self, entry):
@@ -251,10 +250,15 @@ dir()
         if pclases.DEBUG: print __file__, "rellenar_widgets: 5" 
         tamanno = lineas_auditoria.count()
         self.tamanno_audit = tamanno
+        self.update_e_count()
         if timeout_unloaded: # Si la he descargado (usuario ha actualizado) 
                              # vuelvo a cargarla.
             self.signal_check = gobject.timeout_add(5000, self.check_audit)
         if pclases.DEBUG: print __file__, "rellenar_widgets: 6" 
+
+    def update_e_count(self):
+        self.wids['e_count'].set_text("%d/%d" % (
+            self.tamanno_audit, pclases.Auditoria.select().count()))
     
     def check_audit(self):
         """
@@ -268,6 +272,7 @@ dir()
             lineas_auditoria = pclases.SQLtuple([])
         if lineas_auditoria.count() > self.tamanno_audit:
             self.tamanno_audit = lineas_auditoria.count()
+            self.update_e_count()
             try:
                 for linea in self.filtrar_lineas(lineas_auditoria):
                     try:
@@ -376,6 +381,9 @@ dir()
         if pclases.DEBUG: print __file__, "cargar_registros_auditoria: 2" 
         return res
 
+
+def restar_semana(fecha, cantidad = 1):
+    return fecha - (mx.DateTime.oneDay * (cantidad * 7))
 
 
 if __name__ == '__main__':
