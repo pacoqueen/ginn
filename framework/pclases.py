@@ -19344,7 +19344,9 @@ class Usuario(SQLObject, PRPCTOO):
                                      Alerta.q.usuarioID == self.id))
         if not permitir_duplicado:
             for m in mensajes:
-                m.destroy()
+                #m.destroy()
+                m.destroySelf()     # No quiero guardar traza de esto. Son 
+                        # demasiados registros que voy a acabar ignorando.
         a = Alerta(usuario = self, mensaje = texto, entregado = False)
 
     def cambiar_password(self, nueva):

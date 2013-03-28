@@ -1,5 +1,5 @@
 " ~/Geotexan/src/ginn/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 28 marzo 2013 at 00:03:56.
+" Created by session.vim 1.5 on 28 marzo 2013 at 20:29:48.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -23,12 +23,17 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +1 formularios/auditviewer.py
-badd +113 formularios/consulta_existenciasBolsas.py
+badd +181 formularios/auditviewer.py
+badd +249 formularios/consulta_existenciasBolsas.py
 badd +1403 formularios/dynconsulta.py
+badd +19344 framework/pclases.py
+badd +168 formularios/gestor_mensajes.py
+badd +181 formularios/menu.py
+badd +85 formularios/autenticacion.py
+badd +1 formularios/dynconsulta.glade
 args formularios/auditviewer.py
-set lines=47 columns=80
-edit formularios/consulta_existenciasBolsas.py
+set lines=46 columns=80
+edit framework/pclases.py
 set splitbelow splitright
 wincmd _ | wincmd |
 split
@@ -38,8 +43,8 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 22 + 23) / 47)
-exe '2resize ' . ((&lines * 22 + 23) / 47)
+exe '1resize ' . ((&lines * 22 + 23) / 46)
+exe '2resize ' . ((&lines * 21 + 23) / 46)
 argglobal
 setlocal fdm=indent
 setlocal fde=0
@@ -49,33 +54,157 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-54
+210
 silent! normal zo
-55
+356
 silent! normal zo
-65
+365
 silent! normal zo
-65
+368
 silent! normal zo
-65
+368
 silent! normal zo
-65
+365
 silent! normal zo
-65
+356
 silent! normal zo
-55
+376
 silent! normal zo
-54
+379
 silent! normal zo
-let s:l = 242 - ((0 * winheight(0) + 11) / 22)
+380
+silent! normal zo
+379
+silent! normal zo
+384
+silent! normal zo
+392
+silent! normal zo
+376
+silent! normal zo
+210
+silent! normal zo
+818
+silent! normal zo
+827
+silent! normal zo
+827
+silent! normal zo
+818
+silent! normal zo
+2653
+silent! normal zo
+2664
+silent! normal zo
+2653
+silent! normal zo
+2729
+silent! normal zo
+2742
+silent! normal zo
+2729
+silent! normal zo
+3373
+silent! normal zo
+3382
+silent! normal zo
+3373
+silent! normal zo
+4661
+silent! normal zo
+4753
+silent! normal zo
+4753
+silent! normal zo
+4780
+silent! normal zo
+4780
+silent! normal zo
+4661
+silent! normal zo
+6314
+silent! normal zo
+6459
+silent! normal zo
+6480
+silent! normal zo
+6487
+silent! normal zo
+6492
+silent! normal zo
+6497
+silent! normal zo
+6492
+silent! normal zo
+6487
+silent! normal zo
+6480
+silent! normal zo
+6459
+silent! normal zo
+6314
+silent! normal zo
+6673
+silent! normal zo
+6739
+silent! normal zo
+6673
+silent! normal zo
+7375
+silent! normal zo
+7410
+silent! normal zo
+7410
+silent! normal zo
+7375
+silent! normal zo
+9983
+silent! normal zo
+9983
+silent! normal zo
+10181
+silent! normal zo
+10181
+silent! normal zo
+10238
+silent! normal zo
+10323
+silent! normal zo
+10323
+silent! normal zo
+10238
+silent! normal zo
+19303
+silent! normal zo
+19333
+silent! normal zo
+19346
+silent! normal zo
+19348
+silent! normal zo
+19346
+silent! normal zo
+19333
+silent! normal zo
+19303
+silent! normal zo
+20865
+silent! normal zo
+20874
+silent! normal zo
+20874
+silent! normal zo
+20865
+silent! normal zo
+let s:l = 19349 - ((16 * winheight(0) + 11) / 22)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-242
-normal! 04l
+19349
+normal! 023l
 wincmd w
 argglobal
-edit formularios/auditviewer.py
+edit formularios/dynconsulta.py
 setlocal fdm=indent
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -84,211 +213,16 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-54
-silent! normal zo
-58
-silent! normal zo
-58
-silent! normal zo
-58
-silent! normal zo
-58
-silent! normal zo
-68
-silent! normal zo
-68
-silent! normal zo
-68
-silent! normal zo
-68
-silent! normal zo
-68
-silent! normal zo
-77
-silent! normal zo
-58
-silent! normal zo
-54
-silent! normal zo
-104
-silent! normal zo
-104
-silent! normal zo
-104
-silent! normal zo
-104
-silent! normal zo
-104
-silent! normal zo
-104
-silent! normal zo
-104
-silent! normal zo
-104
-silent! normal zo
-104
-silent! normal zo
-104
-silent! normal zo
-104
-silent! normal zo
-104
-silent! normal zo
-104
-silent! normal zo
-104
-silent! normal zo
-128
-silent! normal zo
-133
-silent! normal zo
-135
-silent! normal zo
-137
-silent! normal zo
-137
-silent! normal zo
-137
-silent! normal zo
-137
-silent! normal zo
-137
-silent! normal zo
-137
-silent! normal zo
-137
-silent! normal zo
-137
-silent! normal zo
-137
-silent! normal zo
-137
-silent! normal zo
-137
-silent! normal zo
-137
-silent! normal zo
-137
-silent! normal zo
-137
-silent! normal zo
-137
-silent! normal zo
-137
-silent! normal zo
-137
-silent! normal zo
-137
-silent! normal zo
-137
-silent! normal zo
-128
-silent! normal zo
-141
-silent! normal zo
-142
-silent! normal zo
-144
-silent! normal zo
-146
-silent! normal zo
-148
-silent! normal zo
-150
-silent! normal zo
-142
-silent! normal zo
-141
-silent! normal zo
-164
-silent! normal zo
-169
-silent! normal zo
-171
-silent! normal zo
-171
-silent! normal zo
-164
-silent! normal zo
-217
-silent! normal zo
-217
-silent! normal zo
-236
-silent! normal zo
-236
-silent! normal zo
-300
-silent! normal zo
-308
-silent! normal zo
-309
-silent! normal zo
-309
-silent! normal zo
-308
-silent! normal zo
-300
-silent! normal zo
-322
-silent! normal zo
-323
-silent! normal zo
-325
-silent! normal zo
-327
-silent! normal zo
-328
-silent! normal zo
-328
-silent! normal zo
-328
-silent! normal zo
-328
-silent! normal zo
-328
-silent! normal zo
-327
-silent! normal zo
-330
-silent! normal zo
-332
-silent! normal zo
-333
-silent! normal zo
-333
-silent! normal zo
-333
-silent! normal zo
-332
-silent! normal zo
-337
-silent! normal zo
-338
-silent! normal zo
-337
-silent! normal zo
-341
-silent! normal zo
-342
-silent! normal zo
-341
-silent! normal zo
-345
-silent! normal zo
-322
-silent! normal zo
-104
-silent! normal zo
-let s:l = 337 - ((0 * winheight(0) + 11) / 22)
+let s:l = 1 - ((0 * winheight(0) + 10) / 21)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-337
-normal! 042l
+1
+normal! 0
 wincmd w
-exe '1resize ' . ((&lines * 22 + 23) / 47)
-exe '2resize ' . ((&lines * 22 + 23) / 47)
+2wincmd w
+exe '1resize ' . ((&lines * 22 + 23) / 46)
+exe '2resize ' . ((&lines * 21 + 23) / 46)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
@@ -303,6 +237,6 @@ let &so = s:so_save | let &siso = s:siso_save
 doautoall SessionLoadPost
 unlet SessionLoad
 tabnext 1
-1wincmd w
+2wincmd w
 
 " vim: ft=vim ro nowrap smc=128
