@@ -167,6 +167,7 @@ dir()
         if not texto:
             self.filtro = [""]
         else:
+            texto = texto.replace(",", " ").replace(";", " ")
             self.filtro = [isinstance(i, str) 
                             and i.strip().lower() 
                             or `i`.strip().lower() 
@@ -339,12 +340,14 @@ dir()
         linea_anterior = None
         for linea in select_query:
             if linea != linea_anterior:
-                ver = False
+                ver = True
                 for p in self.filtro:
                     if p.startswith("!"):
-                        ver = ver or (p[1:] not in linea.get_info().lower())
+                        if p[1:] in linea.get_info().lower():
+                            ver = False
                     else:
-                        ver = ver or (p in linea.get_info().lower())
+                        if p not in linea.get_info().lower():
+                            ver = False
                 if not ver:
                     continue
                 linea_anterior = linea
