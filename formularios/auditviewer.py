@@ -49,8 +49,6 @@ except ImportError:
 import mx, mx.DateTime
 from consulta_existenciasBolsas import act_fecha 
 
-pclases.DEBUG = True    # XXX
-
 class AuditViewer(Ventana):
     """
     Visor de la tabla de auditoría de la aplicación.
@@ -231,7 +229,6 @@ dir()
         self.wids['tv_datos'].freeze_child_notify()
         self.wids['tv_datos'].set_model(None)
         model.clear()
-        self.mancatrlt2(self.wids['e_search'])
         last_iter = None
         if pclases.DEBUG: print __file__, "rellenar_widgets: 2" 
         try:
