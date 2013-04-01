@@ -224,7 +224,7 @@ HIDDEN_ACTION = 0
 USER_ACTION = 1
 BACKSPACE_ACTION = 2
 
-#  Get these on the fly?
+# TODO: Get these on the fly?
 STANDARD_FOLDERS = [U_INBOX_SEARCH, U_STARRED_SEARCH,
                     U_ALL_SEARCH, U_DRAFTS_SEARCH,
                     U_SENT_SEARCH, U_SPAM_SEARCH]
