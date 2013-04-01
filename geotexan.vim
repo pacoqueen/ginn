@@ -1,5 +1,5 @@
 " ~/Geotexan/src/ginn/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 28 marzo 2013 at 20:29:48.
+" Created by session.vim 1.5 on 01 abril 2013 at 12:05:55.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -26,11 +26,12 @@ set shortmess=aoO
 badd +181 formularios/auditviewer.py
 badd +249 formularios/consulta_existenciasBolsas.py
 badd +1403 formularios/dynconsulta.py
-badd +19344 framework/pclases.py
+badd +1 framework/pclases.py
 badd +168 formularios/gestor_mensajes.py
 badd +181 formularios/menu.py
 badd +85 formularios/autenticacion.py
 badd +1 formularios/dynconsulta.glade
+badd +179 formularios/consulta_facturas_sin_doc_pago.py
 args formularios/auditviewer.py
 set lines=46 columns=80
 edit framework/pclases.py
@@ -43,8 +44,8 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 22 + 23) / 46)
-exe '2resize ' . ((&lines * 21 + 23) / 46)
+exe '1resize ' . ((&lines * 21 + 23) / 46)
+exe '2resize ' . ((&lines * 22 + 23) / 46)
 argglobal
 setlocal fdm=indent
 setlocal fde=0
@@ -103,6 +104,14 @@ silent! normal zo
 2742
 silent! normal zo
 2729
+silent! normal zo
+3213
+silent! normal zo
+3352
+silent! normal zo
+3352
+silent! normal zo
+3213
 silent! normal zo
 3373
 silent! normal zo
@@ -174,6 +183,42 @@ silent! normal zo
 silent! normal zo
 10238
 silent! normal zo
+15514
+silent! normal zo
+15953
+silent! normal zo
+15958
+silent! normal zo
+15958
+silent! normal zo
+15958
+silent! normal zo
+15967
+silent! normal zo
+15953
+silent! normal zo
+15514
+silent! normal zo
+16242
+silent! normal zo
+16268
+silent! normal zo
+16268
+silent! normal zo
+16242
+silent! normal zo
+18464
+silent! normal zo
+18520
+silent! normal zo
+18526
+silent! normal zo
+18526
+silent! normal zo
+18520
+silent! normal zo
+18464
+silent! normal zo
 19303
 silent! normal zo
 19333
@@ -196,12 +241,12 @@ silent! normal zo
 silent! normal zo
 20865
 silent! normal zo
-let s:l = 19349 - ((16 * winheight(0) + 11) / 22)
+let s:l = 19286 - ((17 * winheight(0) + 10) / 21)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-19349
-normal! 023l
+19286
+normal! 042l
 wincmd w
 argglobal
 edit formularios/dynconsulta.py
@@ -213,16 +258,16 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 1 - ((0 * winheight(0) + 10) / 21)
+let s:l = 23 - ((14 * winheight(0) + 11) / 22)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
-normal! 0
+23
+normal! 042l
 wincmd w
 2wincmd w
-exe '1resize ' . ((&lines * 22 + 23) / 46)
-exe '2resize ' . ((&lines * 21 + 23) / 46)
+exe '1resize ' . ((&lines * 21 + 23) / 46)
+exe '2resize ' . ((&lines * 22 + 23) / 46)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
