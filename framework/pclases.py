@@ -2753,7 +2753,7 @@ class Cobro(SQLObject, PRPCTOO):
     def get_numfactura(self):
         """
         Devuelve el número de la factura de venta o de la
-        factura de abono relacionada con el cobro actual.
+        factura de albaran relacionada con el cobro actual.
         Devuelve la cadena vacía si no tiene relación con 
         ninguna de las dos cosas.
         """
@@ -2775,7 +2775,7 @@ class Cobro(SQLObject, PRPCTOO):
             cliente = self.prefactura.cliente
         if (self.facturaDeAbonoID != None 
                 and self.facturaDeAbono.abonoID != None):
-            cliente = self.facturaDeAbono.abono.cliente
+            cliente = self.facturaDeAbono.albaran.cliente
         if self.clienteID != cliente:
             try:
                 self.clienteID = cliente.id
@@ -2786,7 +2786,7 @@ class Cobro(SQLObject, PRPCTOO):
     def set_cliente(self, cliente):
         """
         Hace que el cliente de la factura de venta o 
-        de abono relacionada(s) con el cobro tengan como
+        de albaran relacionada(s) con el cobro tengan como
         cliente el objeto cliente recibido.
         """
         if self.facturaVentaID != None:
@@ -2795,7 +2795,7 @@ class Cobro(SQLObject, PRPCTOO):
             self.prefactura.cliente = cliente
         if (self.facturaDeAbonoID != None 
                 and self.facturaDeAbono.abonoID != None):
-            self.facturaDeAbono.abono.cliente = cliente
+            self.facturaDeAbono.albaran.cliente = cliente
         self.clienteID = cliente.id
 
     # DONE: La tabla ya tiene un cliente_id. ¿Por qué esta property? 
@@ -9128,8 +9128,8 @@ class Articulo(SQLObject, PRPCTOO):
                         alb.almacenDestino))
         # Abonos:
         for ldd in self.lineasDeDevolucion:
-            abono = ldd.abono
-            fecha = abono.fecha
+            albaran = ldd.albaran
+            fecha = albaran.fecha
             # Primero los albaranes originales en los que estaba.
             try:
                 fechalbaran = ldd.albaranSalida.fecha
@@ -9138,10 +9138,10 @@ class Articulo(SQLObject, PRPCTOO):
             res.append((fechalbaran, 
                         ldd.albaranSalida, 
                         None))
-            # Y finalmente el abono, para que conste.
-            res.append((abono.fecha, 
-                        abono, 
-                        abono.almacen))
+            # Y finalmente el albaran, para que conste.
+            res.append((albaran.fecha, 
+                        albaran, 
+                        albaran.almacen))
         # Consumos de fibra
         if self.bala and self.bala.partidaCarga:   
             # Se consumió en una partida de carga
@@ -9481,7 +9481,7 @@ class Articulo(SQLObject, PRPCTOO):
         """
         Devuelve True si el artículo está correctamente abonado, o no abonado.
         Devuelve False si incumple esa condición estando a la vez en un 
-        albarán de entrada de abono y en el mismo albarán de salida devuelto.
+        albarán de entrada de albaran y en el mismo albarán de salida devuelto.
         """
         albaranes_salida_devueltos = []
         for ldd in self.lineasDeDevolucion:
@@ -11248,7 +11248,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         ## ## ## BALAS DEVUELTAS    # ## ## ## ## ## ## ##
         # Busco los abonos anteriores a esa fecha. Las balas de esos abonos 
         # estaban en el almacén ya en la fecha «hasta» si el almacén de 
-        # destino del abono es el indicado.
+        # destino del albaran es el indicado.
         A = Articulo
         B = Bala
         AB = Abono
@@ -12010,7 +12010,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         # 1.- Se fabricó en la fecha «hasta» o en una anterior.
         # 2.- No está en ningún albarán de salida cuyo almacén de origen 
         #     sea el almacén en cuestión.
-        # 3.- Está en algún abono con destino «almacén» con fecha posterior 
+        # 3.- Está en algún albaran con destino «almacén» con fecha posterior 
         #     a «hasta».
         # 4.- Está en un albarán de transferencia con almacén de destino 
         #     «almacen» en fecha posterior a «hasta».
@@ -15110,7 +15110,7 @@ class Cliente(SQLObject, PRPCTOO):
 
     def get_facturas_no_abonadas(self, cache = {}):
         """
-        Devielve las facturas de abono no pagadas ni descontadas en pedidos.
+        Devielve las facturas de albaran no pagadas ni descontadas en pedidos.
         """
         res = []
         for f in self.get_facturas_y_abonos():
@@ -15138,7 +15138,7 @@ class Cliente(SQLObject, PRPCTOO):
     def get_facturas_y_abonos(self):
         """
         Iterador que devuelve cada vez una factura, prefactura o factura de 
-        abono hasta agotar todas las del cliente.
+        albaran hasta agotar todas las del cliente.
         """
         for fra in self.facturasVenta:
             yield fra
@@ -15537,9 +15537,9 @@ class SuperFacturaVenta:
         [1] Cobrado o no, da igual.
         """
         if isinstance(self, FacturaDeAbono):
-            # Las facturas de abono no tienen vencimientos, solo "cobros" que 
+            # Las facturas de albaran no tienen vencimientos, solo "cobros" que 
             # se relacionan con otros efectos de cobro. "So", el importe habrá 
-            # vencido si la fecha es superior a la del abono.
+            # vencido si la fecha es superior a la del albaran.
             if self.fecha <= fecha_base:
                 vencido = self.importeTotal
             else:
@@ -15805,7 +15805,7 @@ class SuperFacturaVenta:
                                 *args, **kw):
         """
         Divide el resultado que devuelva la función «func_a_evaluar_en_lineas» 
-        aplicada a las líneas de venta, servicio, de abono, etc.
+        aplicada a las líneas de venta, servicio, de albaran, etc.
         """
         comerciales = {None: 0.0}   # Al menos siempre debe quedar None con 0
                                     # aunque no tenga eledeuves ni servicios.
@@ -15814,9 +15814,9 @@ class SuperFacturaVenta:
             lineas = self.lineasDeVenta + self.servicios
         elif isinstance(self, FacturaDeAbono):
             try:
-                lineas=self.abono.lineasDeAbono+self.abono.lineasDeDevolucion
+                lineas=self.albaran.lineasDeAbono+self.albaran.lineasDeDevolucion
             except AttributeError:
-                # ¿Factura de abono sin abono? Puede ser... Raro, pero posible.
+                # ¿Factura de albaran sin albaran? Puede ser... Raro, pero posible.
                 lineas = []
         else:
             raise TypeError
@@ -15842,7 +15842,7 @@ class SuperFacturaVenta:
                                 *args, **kw):
         """
         Divide el resultado que devuelva la función «func_a_evaluar_en_lineas» 
-        aplicada a las líneas de venta, servicio, de abono, etc.
+        aplicada a las líneas de venta, servicio, de albaran, etc.
         """
         proveedores = {None: 0.0}   # Al menos siempre debe quedar None con 0
                                     # aunque no tenga eledeuves ni servicios.
@@ -15851,9 +15851,9 @@ class SuperFacturaVenta:
             lineas = self.lineasDeVenta + self.servicios
         elif isinstance(self, FacturaDeAbono):
             try:
-                lineas=self.abono.lineasDeAbono+self.abono.lineasDeDevolucion
+                lineas=self.albaran.lineasDeAbono+self.albaran.lineasDeDevolucion
             except AttributeError:
-                # ¿Factura de abono sin abono? Puede ser... Raro, pero posible.
+                # ¿Factura de albaran sin albaran? Puede ser... Raro, pero posible.
                 lineas = []
         else:
             raise TypeError
@@ -15950,17 +15950,17 @@ class SuperFacturaVenta:
         except AttributeError:
             pass    # No es factura de compra.
         try:
-            abono = self.abono
-            for ldd in abono.lineasDeDevolucion:
+            albaran = self.albaran
+            for ldd in albaran.lineasDeDevolucion:
                 proveedor = ldd.producto.proveedor
                 if proveedor != None and proveedor not in proveedores:
                     proveedores.append(proveedor)
-            for lda in abono.lineasDeAbono:
+            for lda in albaran.lineasDeAbono:
                 proveedor = lda.producto.proveedor
                 if proveedor != None and proveedor not in proveedores:
                     proveedores.append(proveedor)
         except AttributeError:
-            pass    # No es factura de abono.
+            pass    # No es factura de albaran.
         return tuple(proveedores)
 
     def get_str_estado(self, cache = {}):
@@ -16237,7 +16237,7 @@ class SuperFacturaVenta:
         :returns: Devuelve una cadena con el número de días reales 
                   transcurridos hasta el vencimiento del cobro y el 
                   documento de cobro real entregado por el cliente.
-                  Si la factura/prefactura/abono no ha sido cobrada
+                  Si la factura/prefactura/albaran no ha sido cobrada
                   todavía, devuelve la cadena recibida en "default".
         """
         plazo = self.get_plazo_pagado()
@@ -18474,7 +18474,7 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Abono(SQLObject, PRPCTOO):
     """
     Abonos de devolución de clientes.
-    NOTA: Los números de abono _siempre_ deben cumplir el formato "Ayxxxx", 
+    NOTA: Los números de albaran _siempre_ deben cumplir el formato "Ayxxxx", 
     donde "y" es un solo dígito correspondiente al último número del año y 
     "xxxx" es un número entero secuencial. No deberíamos tener problemas 
     hasta el año 2016, lo cual tampoco me consuela demasiado, la verdad.
@@ -18493,12 +18493,12 @@ class Abono(SQLObject, PRPCTOO):
 
     def calcular_importe_sin_iva(self):
         """
-        Devuelve el importe total sin IVA del abono.
+        Devuelve el importe total sin IVA del albaran.
         """
         total = 0
         for ldd in self.lineasDeDevolucion:
             total -= ldd.precio     # OJO: NOTA: El precio va en positivo en 
-                        # el registro, pero al ser un abono, hay que restarlo.
+                        # el registro, pero al ser un albaran, hay que restarlo.
         for lda in self.lineasDeAbono:
             total += lda.diferencia * lda.cantidad
         return total
@@ -18509,8 +18509,8 @@ class Abono(SQLObject, PRPCTOO):
     def get_albaranes(self):
         """
         Devuelve una lista de albaranes de salida relacionados 
-        con el abono a través de sus líneas de devolución y de 
-        abono.
+        con el albaran a través de sus líneas de devolución y de 
+        albaran.
         """
         albs = []
         for ldd in self.lineasDeDevolucion:
@@ -18529,8 +18529,8 @@ class Abono(SQLObject, PRPCTOO):
 
     def get_albaranes_de_entrada_de_abono(self):
         """
-        Devuelve los albaranes de entrada de abono generados a 
-        partir del abono.
+        Devuelve los albaranes de entrada de albaran generados a 
+        partir del albaran.
         """
         albs = []
         for ldd in self.lineasDeDevolucion:
@@ -18541,7 +18541,7 @@ class Abono(SQLObject, PRPCTOO):
     def get_facturas(self):
         """
         Devuelve una lista de objetos FacturaVenta relacionados 
-        con el abono mediante sus líneas de ajuste y líneas de devolución.
+        con el albaran mediante sus líneas de ajuste y líneas de devolución.
         """
         fras = []
         for ldd in self.lineasDeDevolucion:
@@ -18570,8 +18570,8 @@ class Abono(SQLObject, PRPCTOO):
 
     def get_nuevo_numabono():
         """
-        Devuelve el siguiente número de abono libre. 
-        Siempre será el mayor número de abono más uno, 
+        Devuelve el siguiente número de albaran libre. 
+        Siempre será el mayor número de albaran más uno, 
         independientemente del orden en que éstos se 
         hayan introducido en la base de datos.
         El valor devuelto será un string Ayxxxx donde 
@@ -18583,12 +18583,12 @@ class Abono(SQLObject, PRPCTOO):
         digito_anno = `mx.DateTime.localtime().year`[-1]
         abonos_de_mi_serie = Abono.select(""" numabono LIKE 'A%s%%' """ % (digito_anno))
         numsabono = []
-        for abono in abonos_de_mi_serie:
-            numabono = abono.numabono.replace("A%s" % (digito_anno), "")
+        for albaran in abonos_de_mi_serie:
+            numabono = albaran.numabono.replace("A%s" % (digito_anno), "")
             try:
                 numabono = int(numabono)
             except ValueError:
-                print "pclases.py: get_nuevo_numabono: Ignoro número de abono %s (ID %d) por no cumplir el formato correcto." % (numabono, abono.id)
+                print "pclases.py: get_nuevo_numabono: Ignoro número de albaran %s (ID %d) por no cumplir el formato correcto." % (numabono, albaran.id)
             else:
                 numsabono.append(numabono)
         numsabono.sort()
@@ -18605,22 +18605,22 @@ class Abono(SQLObject, PRPCTOO):
 
     def get_numero_numabono(self):
         """
-        Devuelve el número del abono como entero, 
+        Devuelve el número del albaran como entero, 
         sin el prefijo «Ay» (donde "y" es el dígito 
-        correspondiente al año del abono).
+        correspondiente al año del albaran).
         """
         return int(self.numabono[2:])
 
     def set_numero_numabono(self, numero):
         """
-        Cambia el número del abono respetando el 
+        Cambia el número del albaran respetando el 
         prefijo «Ay» donde "y" es el último dígito 
-        del año del abono.
-        Si el abono no tiene fecha le pone la actual.
+        del año del albaran.
+        Si el albaran no tiene fecha le pone la actual.
         Si el número no satisface la restricción de 
         secuencialidad lanza una excepción (la fecha 
         se modificará en cualquier caso si estaba a 
-        None) y vuelve a dejar el número de abono 
+        None) y vuelve a dejar el número de albaran 
         anterior.
         """
         if not isinstance(numero, int):
@@ -18632,23 +18632,23 @@ class Abono(SQLObject, PRPCTOO):
         self.numabono = "A%s%04d" % (digito_anno, numero)
         if not self.numabono_correcto():
             self.numabono = numabono_anterior
-            raise ValueError, "El número %d no satisface restricción de secuencialidad para el abono ID %d" % (numero, self.id)
+            raise ValueError, "El número %d no satisface restricción de secuencialidad para el albaran ID %d" % (numero, self.id)
     
     numero_numabono = property(get_numero_numabono, set_numero_numabono)
 
     def get_abono_anterior(self):
         """
-        Devuelve el abono anterior al actual según 
+        Devuelve el albaran anterior al actual según 
         orden de fecha y numérico o None si es el 
         primero de su año.
         Si la fecha no coincide con el dígito del año 
-        del número del abono saltará un "assertion error".
+        del número del albaran saltará un "assertion error".
         """
         digito_anno = `self.fecha.year`[-1]
         assert digito_anno == self.numabono[1]
         # Esto puede ser un poco lento:
         abonos_de_mi_anno = [a for a in Abono.select(Abono.q.numabono.contains("A%s" % (digito_anno)), orderBy = "fecha")]
-        # Ordeno la lista por número de abono (esto puede ser un poco lento también):
+        # Ordeno la lista por número de albaran (esto puede ser un poco lento también):
         abonos_de_mi_anno.sort(lambda a1, a2: a1.numero_numabono - a2.numero_numabono)
         # Localizo mi número en la lista de números de mi año:
         i_yo = abonos_de_mi_anno.index(self)
@@ -18659,17 +18659,17 @@ class Abono(SQLObject, PRPCTOO):
 
     def get_abono_posterior(self):
         """
-        Devuelve el abono posterior al actual según 
+        Devuelve el albaran posterior al actual según 
         orden de fecha y numérico o None si es el 
         primero de su año.
         Si la fecha no coincide con el dígito del año 
-        del número del abono saltará un "assertion error".
+        del número del albaran saltará un "assertion error".
         """
         digito_anno = `self.fecha.year`[-1]
         assert digito_anno == self.numabono[1]
         # Esto puede ser un poco lento:
         abonos_de_mi_anno = [a for a in Abono.select(Abono.q.numabono.contains("A%s" % (digito_anno)), orderBy = "fecha")]
-        # Ordeno la lista por número de abono (esto puede ser un poco lento también):
+        # Ordeno la lista por número de albaran (esto puede ser un poco lento también):
         abonos_de_mi_anno.sort(lambda a1, a2: a1.numero_numabono - a2.numero_numabono)
         # Localizo mi número en la lista de números de mi año:
         i_yo = abonos_de_mi_anno.index(self)
@@ -18680,8 +18680,8 @@ class Abono(SQLObject, PRPCTOO):
 
     def numabono_correcto(self):
         """
-        Devuelve True si el número del abono actual es 
-        correcto. Para ello comprueba que el abono con 
+        Devuelve True si el número del albaran actual es 
+        correcto. Para ello comprueba que el albaran con 
         número anterior tenga también una fecha anterior 
         (o no exista) y que el número posterior tenga 
         una fecha posterior (o no exista).
@@ -18695,8 +18695,8 @@ class Abono(SQLObject, PRPCTOO):
     def get_str_cobro(self):
         """
         Devuelve una cadena con el texto de la manera en que se ha pagado 
-        el abono al cliente.
-        Para ello mira la factura de abono y la forma de pago de ésta: 
+        el albaran al cliente.
+        Para ello mira la factura de albaran y la forma de pago de ésta: 
         descontado de otra factura, o descontado en un pagaré.
         """
         fra = self.facturaDeAbono
@@ -18740,7 +18740,7 @@ class LineaDeAbono(SQLObject, PRPCTOO):
         Devuelve el almacén relacionado con la línea de devolución, que será 
         aquel al que se haya devuelto la mercancía.
         """
-        return self.abono and self.abono.almacen or None
+        return self.albaran and self.albaran.almacen or None
 
     # Algunas "properties" para hacerlas coherentes con las líneas de venta:
     albaranSalida = property(lambda self: self.lineaDeVentaID and self.lineaDeVenta.albaranSalida or None, doc = "Albarán de salida relacionado con la línea de ajuste a través de la línea de venta intermedia.")
@@ -18753,16 +18753,16 @@ class LineaDeAbono(SQLObject, PRPCTOO):
     producto = productoVenta
     pedidoVenta = property(lambda self: self.lineaDeVentaID and self.lineaDeVenta.pedidoVenta or None, doc = "Objeto pedido de venta relacionado con la línea de devolución.")
     pedidoVentaID = property(lambda self: self.lineaDeVentaID and self.lineaDeVenta.pedidoVentaID or None, doc = "ID del pedido de venta relacionado con la línea de devolución.")
-    facturaVenta = property(lambda self: self.abonoID and self.abono.facturaDeAbono or None, doc = "Factura DE ABONO relacionada con la línea de devolución. Para obtener las facturas de venta en sí, usar la relación LineaDeAbono-LineaDeVenta-FacturaVenta. El nombre viene por compatibilidad con las LDV.")
-    facturaVentaID = property(lambda self: self.abonoID and self.abono.facturaDeAbonoID or None, doc = "Factura DE ABONO relacionada con la línea de devolución. Para obtener las facturas de venta en sí, usar la relación LineaDeAbono-LineaDeVenta-FacturaVenta. El nombre viene por compatibilidad con las LDV.")
+    facturaVenta = property(lambda self: self.abonoID and self.albaran.facturaDeAbono or None, doc = "Factura DE ABONO relacionada con la línea de devolución. Para obtener las facturas de venta en sí, usar la relación LineaDeAbono-LineaDeVenta-FacturaVenta. El nombre viene por compatibilidad con las LDV.")
+    facturaVentaID = property(lambda self: self.abonoID and self.albaran.facturaDeAbonoID or None, doc = "Factura DE ABONO relacionada con la línea de devolución. Para obtener las facturas de venta en sí, usar la relación LineaDeAbono-LineaDeVenta-FacturaVenta. El nombre viene por compatibilidad con las LDV.")
 
     def calcular_subtotal(self, iva = False):
         res = self.cantidad * self.precio
         if iva:
             try:
-                res *= self.abono.facturaDeAbono.iva
+                res *= self.albaran.facturaDeAbono.iva
             except AttributeError:  # ¿Sin factura?
-                res *= self.abono.cliente.iva
+                res *= self.albaran.cliente.iva
         return res
 
     def calcular_beneficio(self):
@@ -18776,7 +18776,7 @@ class LineaDeAbono(SQLObject, PRPCTOO):
 
     def get_comercial(self):
         """
-        Devuelve el comercial relacionado con la línea de abono tirando de la 
+        Devuelve el comercial relacionado con la línea de albaran tirando de la 
         línea de venta o del servicio, y None si no lo tiene.
         """
         if self.servicio:
@@ -18804,9 +18804,9 @@ class LineaDeDevolucion(SQLObject, PRPCTOO):
         res = self.cantidad * self.precio
         if iva:
             try:
-                res *= self.abono.facturaDeAbono.iva
+                res *= self.albaran.facturaDeAbono.iva
             except AttributeError:  # ¿Sin factura?
-                res *= self.abono.cliente.iva
+                res *= self.albaran.cliente.iva
         return res
 
     def get_cantidad(self):
@@ -18847,7 +18847,7 @@ class LineaDeDevolucion(SQLObject, PRPCTOO):
 
     def get_tarifa(self):
         """
-        Devuelve la tarifa de la LDV relacionada con la LDD a través del abono.
+        Devuelve la tarifa de la LDV relacionada con la LDD a través del albaran.
         Para ello determina el producto de venta y precio que tienen en común.
         Devuelve None si ninguna LDV coincide.
         """
@@ -18889,8 +18889,8 @@ class LineaDeDevolucion(SQLObject, PRPCTOO):
     producto = productoVenta
     pedidoVenta = property(get_pedido_venta, doc = get_pedido_venta.__doc__)
     pedidoVentaID = property(lambda self: self.get_pedido_venta() and self.get_pedido_venta().id or None, doc = "ID del pedido de venta relacionado con la línea de devolución.")
-    facturaVenta = property(lambda self: self.abonoID and self.abono.facturaDeAbono or None, doc = "Factura DE ABONO relacionada con la línea de devolución. Para obtener las facturas de venta en sí, usar el atributo facturasVenta. El nombre viene por compatibilidad con las LDV.")
-    facturaVentaID = property(lambda self: self.abonoID and self.abono.facturaDeAbonoID or None, doc = "Factura DE ABONO relacionada con la línea de devolución. Para obtener las facturas de venta en sí, usar el atributo facturasVenta. El nombre viene por compatibilidad con las LDV.")
+    facturaVenta = property(lambda self: self.abonoID and self.albaran.facturaDeAbono or None, doc = "Factura DE ABONO relacionada con la línea de devolución. Para obtener las facturas de venta en sí, usar el atributo facturasVenta. El nombre viene por compatibilidad con las LDV.")
+    facturaVentaID = property(lambda self: self.abonoID and self.albaran.facturaDeAbonoID or None, doc = "Factura DE ABONO relacionada con la línea de devolución. Para obtener las facturas de venta en sí, usar el atributo facturasVenta. El nombre viene por compatibilidad con las LDV.")
 
     def calcular_beneficio(self):
         """
@@ -18956,7 +18956,7 @@ class LineaDeDevolucion(SQLObject, PRPCTOO):
         Devuelve el almacén relacionado con la línea de devolución, que será 
         aquel al que se haya devuelto la mercancía.
         """
-        return self.abono and self.abono.almacen or None
+        return self.albaran and self.albaran.almacen or None
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
@@ -18980,10 +18980,10 @@ class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
         # En realidad esta relación es 1 a 1.
     pagosDeAbono = MultipleJoin('PagoDeAbono')  # Por otro, si no se ha 
         # descontado de un pagaré; es decir, si la factura original
-        # ya se cobró; se puede devolver la cantidad del abono mediante 
-        # pagos de abono.
+        # ya se cobró; se puede devolver la cantidad del albaran mediante 
+        # pagos de albaran.
         # Habrá que tener un método que controle que no se pueda pagar un 
-        # abono ya descontado.
+        # albaran ya descontado.
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -18992,12 +18992,12 @@ class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
         # El resto de argumentos (*args, **kw) no me importa un carajo, pero 
         # los tomo para cumplir la interfaz.
         """
-        Devuelve los albaranes DE ENTRADA de abono relacionados con la 
-        factura de abono.
+        Devuelve los albaranes DE ENTRADA de albaran relacionados con la 
+        factura de albaran.
         """
         albaranes = []
-        abono = self.abono
-        for ldd in abono.lineasDeDevolucion:
+        albaran = self.albaran
+        for ldd in albaran.lineasDeDevolucion:
             if not incluir_nones:
                 if (ldd.albaranDeEntradaDeAbonoID 
                     and ldd.albaranDeEntradaDeAbono not in albaranes):
@@ -19016,7 +19016,7 @@ class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
     def get_abono(self):
         """
         Devuelve el primero de los abonos relacionados con la 
-        factura de abono o None si no tiene.
+        factura de albaran o None si no tiene.
         La relación en realidad es 1 a 1, por lo que se ignorará 
         el resto de los abonos si hubiera más de 1.
         """
@@ -19026,33 +19026,33 @@ class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
 
     def get_abono_id(self):
         """
-        Devuelve el ID del abono relacionado o None
-        si no tiene abono relacionado.
+        Devuelve el ID del albaran relacionado o None
+        si no tiene albaran relacionado.
         Al contrario que con los atributos (o propiedades) de los 
         "legacy" SQLObjects, aquí es más lento -un poco solo- 
         acceder al «otrocampoID» en lugar de a «otrocampo» directamente.
         """
-        abono = self.abono
-        if abono != None:
-            return abono.id
+        albaran = self.albaran
+        if albaran != None:
+            return albaran.id
         return None
 
-    abono = property(get_abono, doc = get_abono.__doc__)
+    albaran = property(get_abono, doc = get_abono.__doc__)
     abonoID = property(get_abono_id, doc = get_abono_id.__doc__)
     
     def get_obra(self):
         """
-        Devuelve la obra relacionada con la factura de abono a través del 
-        abono en sí.
+        Devuelve la obra relacionada con la factura de albaran a través del 
+        albaran en sí.
         """
-        return self.abono.obra
+        return self.albaran.obra
     
     def get_obra_id(self):
         """
-        Devuelve la obra relacionada con la factura de abono a través del 
-        abono en sí.
+        Devuelve la obra relacionada con la factura de albaran a través del 
+        albaran en sí.
         """
-        return self.abono.obraID
+        return self.albaran.obraID
 
     obra = property(get_obra, doc = get_obra.__doc__)
     obraID = property(get_obra_id, doc = get_obra_id.__doc__)
@@ -19060,20 +19060,20 @@ class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
     def get_numfactura(self):
         """
         Devuelve el número de factura que le correspondería 
-        a esta factura de abono. Es el mismo que el número 
-        del abono al que está relacionado.
+        a esta factura de albaran. Es el mismo que el número 
+        del albaran al que está relacionado.
         Devuelve la cadena vacía si no tiene relación con 
-        ningún abono.
+        ningún albaran.
         """
-        if self.abono != None:
-            return self.abono.numabono
+        if self.albaran != None:
+            return self.albaran.numabono
         return ""
 
     numfactura = property(get_numfactura, doc = get_numfactura.__doc__)
 
     def get_iva(self):
         """
-        Devuelve el IVA de la factura de abono.
+        Devuelve el IVA de la factura de albaran.
         Siempre será el IVA del cliente.
         En caso de error devuelve 0.21.
         """
@@ -19092,10 +19092,10 @@ class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
 
     def set_iva(self, iva):
         """
-        Hace que el IVA de la factura de abono sea el 
+        Hace que el IVA de la factura de albaran sea el 
         recibido como parámetro.
         OJO: Para ello cambia el IVA del cliente al que 
-        pertenecen los abonos de la factura de abono.
+        pertenecen los abonos de la factura de albaran.
         """
         iva = float(iva)
             # La excepción ValueError si el parámetro no se puede convertir a 
@@ -19104,23 +19104,23 @@ class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
             iva /= 100.0
         if iva < 0:
             iva *= -1
-        for abono in self.abonos:
-            if abono.clienteID != None:
-                abono.cliente.iva = iva # * 100.0
+        for albaran in self.abonos:
+            if albaran.clienteID != None:
+                albaran.cliente.iva = iva # * 100.0
                     # DONE: OJO: Esto es solo hasta que estandarice los 
                     # IVA y se guarden todos como fracción de la unidad.
                 break
 
-    iva = property(get_iva, set_iva, "IVA aplicado a la factura de abono")
+    iva = property(get_iva, set_iva, "IVA aplicado a la factura de albaran")
 
     def calcular_importe_total(self, iva_incluido = True):
         """
-        Calcula y devuelve el importe total de la factura de abono.
+        Calcula y devuelve el importe total de la factura de albaran.
         Incluye el IVA por defecto del cliente.
         """
         total = 0
-        for abono in self.abonos:
-            total += abono.importeSinIva
+        for albaran in self.abonos:
+            total += albaran.importeSinIva
         if iva_incluido:
             total *= (1 + self.iva)
         return total
@@ -19141,7 +19141,7 @@ class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
         return 0.0
 
     def calcular_total_iva(self, *args, **kw):
-        return sum([abono.importeSinIva for abono in self.abonos]) * self.iva
+        return sum([albaran.importeSinIva for albaran in self.abonos]) * self.iva
 
     def emparejar_vencimientos(self):
         """
@@ -19149,14 +19149,14 @@ class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
         Devuelve los cobros en un diccionario con el formato 
         del emparejar_vencimientos de FacturaVenta (ver __doc__
         de éste).
-        Como las facturas de abono no tienen vencimiento, se usará
+        Como las facturas de albaran no tienen vencimiento, se usará
         la fecha de la factura como fecha de vencimiento.
         """
         res = {}
         cbrs = self.cobros[:]
         cbrs.sort(utils.cmp_fecha_id)
         class FakeVto:
-            id = 0; facturaVentaID = self.id; facturaVenta = self; prefacturaID = None; prefactura = None; fecha = self.fecha; importe = self.importeTotal; observaciones = "Vencimiento ficticio de la factura de abono."
+            id = 0; facturaVentaID = self.id; facturaVenta = self; prefacturaID = None; prefactura = None; fecha = self.fecha; importe = self.importeTotal; observaciones = "Vencimiento ficticio de la factura de albaran."
             def get_factura_o_prefactura(self):
                 return self.facturaVenta
         vtos = [FakeVto()]
@@ -19182,18 +19182,18 @@ class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
         ha anulado con esta devolución o ajuste de precio.
         """
         res = 0.0
-        for ldd in self.abono.lineasDeDevolucion:
+        for ldd in self.albaran.lineasDeDevolucion:
             res += ldd.calcular_beneficio()
-        for lda in self.abono.lineasDeAbono:
+        for lda in self.albaran.lineasDeAbono:
             res += lda.calcular_beneficio()
         return res
 
     def get_cliente(self):
         """
-        Devuelve el cliente de la factura de abono, que lo 
-        extrae del abono al que pertenece.
+        Devuelve el cliente de la factura de albaran, que lo 
+        extrae del albaran al que pertenece.
         """
-        return self.abono and self.abono.cliente or None
+        return self.albaran and self.albaran.cliente or None
     
     def get_clienteID(self):
         cliente = self.get_cliente()
@@ -19205,7 +19205,7 @@ class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
     # 20100927: Nueva clasificación de facturas:
     def get_estado(self, fecha = mx.DateTime.today()):
         """
-        Devuelve el estado de la factura de abono:
+        Devuelve el estado de la factura de albaran:
         0: No documentada ni vencida: Ningún documento de pago relacionado.
         1: Documentada no vencida: Tiene documento de pago y éste todavía 
                                    no ha vencido. Se toma en cuenta la fecha 
@@ -19270,10 +19270,10 @@ class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
 
     def calcular_importe_pendiente_de_abonar(self):
         """
-        Devuelve el importe (c/IVA) pendiente de abonar de la factura de abono.
+        Devuelve el importe (c/IVA) pendiente de abonar de la factura de albaran.
         El importe abonado es la suma de los cobros relacionados con la 
-        factura de abono (viene en negativo por ser un "pago" en forma de 
-        descuento de un cobro) y de los pagos de abono asociados a nuevas 
+        factura de albaran (viene en negativo por ser un "pago" en forma de 
+        descuento de un cobro) y de los pagos de albaran asociados a nuevas 
         facturas del cliente. En cuyo caso el importe ya se ha descontado de 
         una venta, que puede o no haber sido cobrada ya, pero que en todo 
         caso no puedo permitir que vuelva a descontarse de otro cobro.

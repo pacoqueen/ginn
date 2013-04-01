@@ -2071,7 +2071,7 @@ class PedidosDeVenta(Ventana):
         for l in pedido.lineasDeVenta:
             for a in l.lineasDeAbono:
                 if a.abonoID != None:
-                    abonos.append(a.abono)
+                    abonos.append(a.albaran)
         if abonos != []:
             mensaje = 'Abonos asociados a este pedido de venta:\n\n'
         else:
