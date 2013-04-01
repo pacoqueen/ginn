@@ -170,8 +170,12 @@ class ConsultaFacturasSinDocumentoDePago(Ventana):
             for a in abonos:
                 if not a.abono:
                     continue # ¿Error de borrado de un abono? Mmm... mal rollo.
-                if a.abono.facturasVenta:
-                    continue
+                # Los abonos, por norma general, van a tener facturas de venta 
+                # relacionadas. Eso no debería excluirlos de la lista de 
+                # pendientes de documentar. Se comprobará cuando se filtren 
+                # más adelante.
+                #if a.abono.facturasVenta:
+                #    continue
                 if a.cobros or a.pagosDeAbono:    
                                 # Cada cobro de abono está relacionado 
                                 # con un pagaré (o con lo que sea en un 
