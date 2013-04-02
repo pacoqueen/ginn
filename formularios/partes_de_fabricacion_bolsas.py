@@ -48,7 +48,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time 
+import gtk, time 
 try:
     import pclases
 except ImportError:
@@ -56,7 +56,7 @@ except ImportError:
     from os.path import join as pathjoin
     sys.path.append(pathjoin("..", "framework"))
     import pclases
-import mx
+import mx.DateTime
 try:
     import geninformes
 except ImportError:
@@ -65,7 +65,6 @@ except ImportError:
     import geninformes
 from utils import _float as float
 from ventana_progreso import VentanaActividad, VentanaProgreso
-import re, os
 from partes_de_fabricacion_balas import verificar_solapamiento, \
                                         buscar_o_crear_albaran_interno, \
                                         entran_en_turno
@@ -158,7 +157,7 @@ class PartesDeFabricacionBolsas(Ventana):
                                        8)
         try:
             linea = pclases.LineaDeProduccion.select(
-                pclases.LineaDeProduccion.q.nombre.contains('de embolsado'))[0]
+                pclases.LineaDeProduccion.q.nombre.contains('de embolsado'))[0]  # @UndefinedVariable
         except IndexError:
             print "WARNING: La línea de embolsado no está correctamente dada "\
                   "a de alta. La creo sobre la marcha."
@@ -226,8 +225,8 @@ class PartesDeFabricacionBolsas(Ventana):
         res["prodestandar"] = 0 # No se usa
         res["merma"] = 0.0      # Tampoco se usa
         res["bloqueado"] = self.wids['ch_bloqueado'].get_active()
-        buffer = self.wids['txt_observaciones'].get_buffer()
-        txt = buffer.get_text(buffer.get_start_iter(), buffer.get_end_iter())
+        buff = self.wids['txt_observaciones'].get_buffer()
+        txt = buff.get_text(buff.get_start_iter(), buff.get_end_iter())
         res["observaciones"] = txt
         res["fechahorainicio"] = res["fecha"] + res["horainicio"]
         try:
@@ -370,8 +369,8 @@ class PartesDeFabricacionBolsas(Ventana):
                 newtext = ("0" * (4 - len(newtext))) + newtext
             newtext = "%s:%s" % (newtext[:-2], newtext[-2:])
         model = self.wids['tv_empleados'].get_model()
-        id = model[path][-1]
-        ht = pclases.HorasTrabajadas.get(id)
+        iid = model[path][-1]
+        ht = pclases.HorasTrabajadas.get(iid)
         try:
             try:
                 dtdelta = mx.DateTime.DateTimeDelta(0, 
@@ -386,8 +385,11 @@ class PartesDeFabricacionBolsas(Ventana):
             ht.horas = newtext 
             ht.sync(); ht.syncUpdate()
             model[path][3] = ht.horas.strftime('%H:%M')
-        except (ValueError, TypeError), msg:
-            utils.dialogo_info(titulo = "ERROR", texto = 'El texto "%s" no representa el formato horario.' % newtext, padre = self.wids['ventana'])
+        except (ValueError, TypeError):
+            utils.dialogo_info(titulo = "ERROR", 
+                texto = 'El texto "%s" no representa el formato horario.' % (
+                            newtext), 
+            padre = self.wids['ventana'])
 
     def activar_widgets(self, s):
         """
@@ -428,7 +430,7 @@ class PartesDeFabricacionBolsas(Ventana):
                     # Anulo el aviso de actualización del parte que deja de 
                     # ser activo.
                 partesdeproduccion = pclases.ParteDeProduccion.select(
-                    pclases.ParteDeProduccion.q.partidaCemID != None)
+                    pclases.ParteDeProduccion.q.partidaCemID != None)  # @UndefinedVariable
                 partesdeproduccion = partesdeproduccion.orderBy("-id")
                 partedeproduccion = partesdeproduccion[0]
                 partedeproduccion.notificador.activar(self.aviso_actualizacion)
@@ -470,9 +472,9 @@ class PartesDeFabricacionBolsas(Ventana):
             return idpartedeproduccion
 
     def mostrar_info_parte(self, tv):
-        model, iter = tv.get_selection().get_selected()
-        if iter!=None and model[iter][-2] == "CLIC PARA VER":
-            parte = pclases.ParteDeProduccion.get(model[iter][0])   # En los 
+        model, itr = tv.get_selection().get_selected()
+        if itr!=None and model[itr][-2] == "CLIC PARA VER":
+            parte = pclases.ParteDeProduccion.get(model[itr][0])   # En los 
                 # diálogos de resultado el ID va al revés.
             if parte.es_de_bolsas() and parte.articulos:
                 #partida = parte.articulos[0].bolsa.caja.pale.partidaCem.codigo
@@ -481,7 +483,7 @@ class PartesDeFabricacionBolsas(Ventana):
                 partida = 'VACIO'
             producto = (parte.articulos != [] 
                         and parte.articulos[0].productoVenta.nombre or 'VACÍO')
-            model[iter][-2] = "%s (%s)" % (partida, producto)
+            model[itr][-2] = "%s (%s)" % (partida, producto)
 
     def rellenar_widgets(self):
         """
@@ -616,7 +618,7 @@ class PartesDeFabricacionBolsas(Ventana):
             tv.set_model(None)
             model.clear()
             incidencias = pclases.Incidencia.select(
-                pclases.Incidencia.q.parteDeProduccionID == self.objeto.id, 
+                pclases.Incidencia.q.parteDeProduccionID == self.objeto.id,  # @UndefinedVariable
                 orderBy = "horainicio")
             for incidencia in incidencias:
                 model.append((incidencia.tipoDeIncidencia.descripcion, 
@@ -683,7 +685,7 @@ class PartesDeFabricacionBolsas(Ventana):
         #                           utils.orden_por_campo_o_id(x,y,"fechahora"))
         #detallesdeproduccion = self.objeto.articulos
         detallesdeproduccion = pclases.Articulo.select(
-            pclases.Articulo.q.parteDeProduccionID == self.objeto.id, 
+            pclases.Articulo.q.parteDeProduccionID == self.objeto.id,  # @UndefinedVariable
             orderBy = "id")
         # Filas del TreeView
         pales = {}  # Diccionarios de nodos padres (cajas) y abuelos (palés).
@@ -843,7 +845,6 @@ class PartesDeFabricacionBolsas(Ventana):
             icont = 0.0
             #numcajasdefecto = pclases.Pale.NUMCAJAS
             numcajasdefecto = productoVenta.camposEspecificosBala.cajasPale
-            tot = numbolsas * numcajasdefecto 
             # 1.- Creo el palé.
             numpale, codigo = pclases.Pale.get_next_numpale(numbolsas)
             pale = pclases.Pale(partidaCem = partidaCem, 
@@ -855,7 +856,7 @@ class PartesDeFabricacionBolsas(Ventana):
                     )
             pclases.Auditoria.nuevo(pale, self.usuario, __file__)
             # 2.- Creo las cajas.
-            for i in range(pale.numcajas):
+            for i in range(pale.numcajas):  # @UnusedVariable
                 numcaja, codigo = pclases.Caja.get_next_numcaja()
                 try:
                     gramos = productoVenta.camposEspecificosBala.gramosBolsa
@@ -869,25 +870,7 @@ class PartesDeFabricacionBolsas(Ventana):
                                     peso = peso, 
                                     numbolsas = numbolsas)
                 pclases.Auditoria.nuevo(caja, self.usuario, __file__)
-                # 3.- Creo los artículos.
-                #for j in range(pale.numbolsas):
-                #    vpro.set_valor(icont / tot, "Creando palé %s"%pale.codigo)
-                #    numbolsa, codigo = pclases.Bolsa.get_next_numbolsa()
-                #    ceb = self.producto.camposEspecificosBala
-                #    peso = (ceb.gramosBolsa / 1000.0)
-                #    #claseb = pclases.Pale.NUMBOLSAS != pale.numbolsas
-                #    bolsas_estandar = ceb.bolsasCaja
-                #    if not bolsas_estandar:
-                #        bolsas_estandar = pclases.Pale.NUMBOLSAS
-                #    claseb = pale.numbolsas < bolsas_estandar
-                #    bolsa = pclases.Bolsa(caja = caja, 
-                #                          numbolsa = numbolsa, 
-                #                          codigo = codigo, 
-                #                          fechahora = mx.DateTime.localtime(), 
-                #                          peso = peso, 
-                #                          claseb = claseb)
                 articulo = pclases.Articulo(parteDeProduccion=self.objeto, 
-                            #bolsa = bolsa, 
                             caja = caja, 
                             rolloDefectuoso = None, 
                             albaranSalida = None, 
@@ -948,7 +931,7 @@ class PartesDeFabricacionBolsas(Ventana):
             vpro.mostrar()
             if not self.linea:
                 linea = pclases.LineaDeProduccion.select(
-                  pclases.LineaDeProduccion.q.nombre.contains('de embolsado'))
+                  pclases.LineaDeProduccion.q.nombre.contains('de embolsado'))  # @UndefinedVariable
                 self.linea = linea 
             vpro.mover()
             if self.linea == None:
@@ -971,7 +954,7 @@ class PartesDeFabricacionBolsas(Ventana):
                         if ca.productoCompra.existencias < ca.productoCompra.minimo:
                             vpro.mover()
                             try:
-                                v = pclases.Ventana.select(pclases.Ventana.q.fichero == "pedidos_de_compra.py")[0]
+                                v = pclases.Ventana.select(pclases.Ventana.q.fichero == "pedidos_de_compra.py")[0]  # @UndefinedVariable
                             except IndexError:
                                 txt = "WARNING: ¡La ventana de pedidos de compra "\
                                       "SE HA PERDIDO!"
@@ -987,7 +970,7 @@ class PartesDeFabricacionBolsas(Ventana):
                         if ca.productoCompra.existencias < 0:
                             vpro.mover()
                             try:
-                                v = pclases.Ventana.select(pclases.Ventana.q.fichero == "pedidos_de_compra.py")[0]
+                                v = pclases.Ventana.select(pclases.Ventana.q.fichero == "pedidos_de_compra.py")[0]  # @UndefinedVariable
                             except IndexError:
                                 print "WARNING: ¡La ventana de pedidos de compra SE HA PERDIDO!"
                                 self.logger.error("partes_de_fabricacion_rollos: ¡La ventana de pedidos de compra SE HA PERDIDO!")
@@ -1005,8 +988,8 @@ class PartesDeFabricacionBolsas(Ventana):
         """
         model = self.wids['tv_produccion'].get_model()
         puid = model[path][-1]
-        clase, id = puid.split(":")
-        objeto = getattr(pclases, clase).get(int(id))
+        clase, aidi = puid.split(":")
+        objeto = getattr(pclases, clase).get(int(aidi))
         objeto.observaciones = newtext
         model[path][3] = newtext
 
@@ -1092,15 +1075,15 @@ class PartesDeFabricacionBolsas(Ventana):
                     else:
                         fecha = time.strptime(a_buscar, '%d/%m/%Y')
                     resultados = pclases.ParteDeProduccion.select(
-                        pclases.AND(pclases.ParteDeProduccion.q.fecha==fecha, 
-                            pclases.ParteDeProduccion.q.partidaCemID != None))
+                        pclases.AND(pclases.ParteDeProduccion.q.fecha==fecha,  # @UndefinedVariable
+                            pclases.ParteDeProduccion.q.partidaCemID != None))  # @UndefinedVariable
                 else:
                     resultados = pclases.ParteDeProduccion.select(
-                        pclases.ParteDeProduccion.q.partidaCemID != None)
+                        pclases.ParteDeProduccion.q.partidaCemID != None)  # @UndefinedVariable
             except:
                 producto = pclases.ProductoVenta.select(pclases.AND(
-                    pclases.ProductoVenta.q.nombre.contains(a_buscar), 
-                    pclases.ProductoVenta.q.camposEspecificosBalaID != None))
+                    pclases.ProductoVenta.q.nombre.contains(a_buscar),  # @UndefinedVariable
+                    pclases.ProductoVenta.q.camposEspecificosBalaID != None))  # @UndefinedVariable
                 producto = pclases.SQLtuple(
                                 [p for p in producto if p.es_bolsa()])
                 resultados = pclases.ParteDeProduccion.select()
@@ -1322,8 +1305,8 @@ class PartesDeFabricacionBolsas(Ventana):
         for path in paths:
             puid = model[path][-1]
             vpro.set_valor(icont / tot, "Eliminando %s..." % puid)
-            clase, id = puid.split(":")
-            objeto = getattr(pclases, clase).get(int(id))
+            clase, aidi = puid.split(":")
+            objeto = getattr(pclases, clase).get(int(aidi))
             if isinstance(objeto, pclases.Pale):
                 try:
                     articulo = objeto.cajas[0].articulo
@@ -1369,8 +1352,8 @@ class PartesDeFabricacionBolsas(Ventana):
                                  padre = self.wids['ventana']): 
                 return
             for path in paths:
-                id = model[path][-1]
-                incidencia = pclases.Incidencia.get(id)
+                aidi = model[path][-1]
+                incidencia = pclases.Incidencia.get(aidi)
                 incidencia.parteDeProduccion = None
                 try:
                     incidencia.destroy(ventana = __file__)
@@ -1383,8 +1366,8 @@ class PartesDeFabricacionBolsas(Ventana):
 
     def add_empleado(self, w):
         empleados = pclases.Empleado.select(pclases.AND(
-                            pclases.Empleado.q.activo == True, 
-                            pclases.Empleado.q.planta == True), 
+                            pclases.Empleado.q.activo == True,  # @UndefinedVariable
+                            pclases.Empleado.q.planta == True),  # @UndefinedVariable
                         orderBy = 'apellidos')
         empleados = [(e.id, e.nombre, e.apellidos) for e in empleados \
                      if e.planta and \
@@ -1400,14 +1383,14 @@ class PartesDeFabricacionBolsas(Ventana):
                                       padre = self.wids['ventana'])
         if ids == [-1]:
             return
-        for id in ids:
+        for ide in ids:
             try:
-                e = pclases.Empleado.get(id)
+                e = pclases.Empleado.get(ide)
                 self.objeto.addEmpleado(e)
             except:
                 utils.dialogo_info(titulo = 'NÚMERO INCORRECTO', 
                         texto = 'El empleado con código identificador %d no '\
-                                'existe o no se pudo agregar.' % id, 
+                                'existe o no se pudo agregar.' % ide, 
                         padre = self.wids['ventana'])
         self.rellenar_tabla_empleados()
 
@@ -1415,8 +1398,8 @@ class PartesDeFabricacionBolsas(Ventana):
         if self.wids['tv_empleados'].get_selection().count_selected_rows()==0:
             return
         model, path = self.wids['tv_empleados'].get_selection().get_selected()
-        id = model[path][0]     # El id del empleado es la columna 0
-        e = pclases.Empleado.get(id)
+        ide = model[path][0]     # El ide del empleado es la columna 0
+        e = pclases.Empleado.get(ide)
         self.objeto.removeEmpleado(e)
         self.rellenar_tabla_empleados()
 
@@ -1465,7 +1448,7 @@ class PartesDeFabricacionBolsas(Ventana):
             codigo = utils.parse_numero(codigo.upper().replace(
                 pclases.PREFIJO_PARTIDACEM, ""))
             partida = pclases.PartidaCem.select(
-                        pclases.PartidaCem.q.numpartida == codigo)[0]
+                        pclases.PartidaCem.q.numpartida == codigo)[0]  # @UndefinedVariable
             if (self.usuario and self.usuario.nivel > 1 
                 and partida.numpartida > ultima_partida):
                 utils.dialogo_info(titulo = "NÚMERO DE PARTIDA INCORRECTO", 
@@ -1529,8 +1512,8 @@ class PartesDeFabricacionBolsas(Ventana):
         numpartida = numpartida.upper().replace(pclases.PREFIJO_PARTIDACEM, "")
         numpartida = int(numpartida)
         return pclases.PartidaCem.select(
-            pclases.PartidaCem.q.numpartida == numpartida)[0]   # Debe existir 
-            # en la BD por fuerza, "óyenme", por fuerza.
+            pclases.PartidaCem.q.numpartida == numpartida)[0]   # @UndefinedVariable
+            # Debe existir en la BD por fuerza, "óyenme", por fuerza.
 
     def bloquear(self, ch, mostrar_alerta = True):
         # Si el parte tiene menos de un día y se encuentra bloqueado, dejo 
@@ -1699,7 +1682,7 @@ class PartesDeFabricacionBolsas(Ventana):
                             lineas_albaran[pv].append(ldv)
                     pv_bb = bb.articulo.productoVenta
                     if pv_bb not in lineas_albaran:
-                        lineas_albaran[pv_bb] = [pclases.LineaDeVenta(
+                        linea_albaran = pclases.LineaDeVenta(
                             ticket = None, 
                             pedidoVenta = None, 
                             facturaVenta = None, 
@@ -1712,8 +1695,9 @@ class PartesDeFabricacionBolsas(Ventana):
                             precio = pv_bb.precioDefecto, 
                             descuento = 0.0, 
                             notas = "", 
-                            descripcionComplementaria = "Reembolsado")]
-                        pclases.Auditoria.nuevo(lineas_albaran[pv_bb], 
+                            descripcionComplementaria = "Reembolsado")
+                        lineas_albaran[pv_bb] = [linea_albaran]
+                        pclases.Auditoria.nuevo(linea_albaran, 
                                                 self.usuario, __file__)
                     bb.articulo.albaranSalida = albint
                     lineas_albaran[pv_bb][-1].cantidad += bb.pesobigbag
@@ -1736,9 +1720,9 @@ class PartesDeFabricacionBolsas(Ventana):
                                  padre = self.wids['ventana']): 
                 return
             for path in paths:
-                id = model[path][-1]
-                if id > 0:  # Es consumo
-                    consumo = pclases.Consumo.get(id)
+                ide = model[path][-1]
+                if ide > 0:  # Es consumo
+                    consumo = pclases.Consumo.get(ide)
                     consumo.parteDeProduccion = None
                     try:
                         consumo.anular_consumo()
@@ -1748,9 +1732,9 @@ class PartesDeFabricacionBolsas(Ventana):
                                     texto = 'Ocurrió un error al intentar '\
                                             'eliminar la consumo.', 
                                     padre = self.wids['ventana'])
-                elif id < 0:    # Es bigbag
-                    id = -id
-                    bb = pclases.Bigbag.get(id)
+                elif ide < 0:    # Es bigbag
+                    ide = -ide
+                    bb = pclases.Bigbag.get(ide)
                     albint = self.objeto.get_albaran_interno()  # DEBE existir
                     assert albint == bb.articulo.albaranSalida
                     # Devuelvo al almacén
@@ -1797,7 +1781,7 @@ class PartesDeFabricacionBolsas(Ventana):
         se elimina antes de salir de la rutina.
         """
         # Pedir producto(s) a consumir.
-        producto, texto_buscado = utils.pedir_producto_compra(
+        producto, texto_buscado = utils.pedir_producto_compra(  # @UnusedVariable
             padre = self.wids['ventana'])
         # Pedir cantidad.
         if producto != None:
@@ -1894,9 +1878,9 @@ class PartesDeFabricacionBolsas(Ventana):
             ids = []
             for path in paths:
                 puid = model[path][-1]
-                clase, id = puid.split(":")
-                ids.append(id)
-            pales = [pclases.Pale.get(id) for id in ids]
+                clase, ide = puid.split(":")  # @UnusedVariable
+                ids.append(ide)
+            pales = [pclases.Pale.get(ide) for ide in ids]
             imprimir_etiquetas_pales(pales, self.wids['ventana'])
         
 
@@ -1923,7 +1907,7 @@ def imprimir_etiquetas_pales(pales, padre = None, mostrar_dialogo = True):
             valor_por_defecto = 1)
     if tipo != None:
         MEMENTO_MORI = tipo
-        from informes import mandar_a_imprimir_con_ghostscript, abrir_pdf
+        from informes import mandar_a_imprimir_con_ghostscript
         que_imprimir = utils.dialogo_radio(
             titulo = "SELECCIONAR TIPO IMPRESIÓN", 
             texto = "Seleccione qué imprimir:", 
@@ -1934,20 +1918,18 @@ def imprimir_etiquetas_pales(pales, padre = None, mostrar_dialogo = True):
             valor_por_defecto = 2)
         if que_imprimir == 0 or que_imprimir == 2:
             filetiqpale = geninformes.generar_etiqueta_pale(pales, tipo)
-            #abrir_pdf(filetiqpale)
             mandar_a_imprimir_con_ghostscript(filetiqpale) 
         if que_imprimir == 1 or que_imprimir ==2:
             cajas = []
             for p in pales:
                 cajas += p.cajas[:]
             filetiqcaja = geninformes.generar_etiqueta_caja(cajas, tipo)
-            #abrir_pdf(filetiqcaja)
             mandar_a_imprimir_con_ghostscript(filetiqcaja) 
 
 
 if __name__ == "__main__":
     pclases.DEBUG = True
     p = PartesDeFabricacionBolsas(usuario = pclases.Usuario.select(
-        pclases.Usuario.q.usuario == "cemento")[0])
+        pclases.Usuario.q.usuario == "cemento")[0])  # @UndefinedVariable
         #pclases.Usuario.q.usuario == "jagiles")[0])
 
