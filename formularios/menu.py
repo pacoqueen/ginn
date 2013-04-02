@@ -52,7 +52,7 @@
 
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, gobject
+import gtk, gobject
 
 import os, sys, traceback
 #os.environ['LANG'] = "es_ES"
@@ -66,7 +66,7 @@ sys.path.append(".")
 import gtkexcepthook
 
 import utils
-import mx, mx.DateTime
+import mx.DateTime
 path_framework = os.path.join("..", "framework")
 if path_framework not in sys.path:
     sys.path.append(path_framework)
@@ -74,7 +74,7 @@ from configuracion import ConfigConexion
 
 import custom_widgets
 
-__version__ = '4.2.1 (beta)'
+__version__ = '4.3.1 (beta)'
 __version_info__ = tuple(
     [int(num) for num in __version__.split()[0].split('.')] + 
     [txt.replace("(", "").replace(")", "") for txt in __version__.split()[1:]]
@@ -568,13 +568,13 @@ class Menu:
 
     def abrir_ventana_usuario(self, archivo):
         self.ventana.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
-        exec "import %s" % archivo
-        v = None 
-        gobject.timeout_add(100, self.volver_a_cursor_original)
         if archivo == "usuarios": 
-            v = usuarios.Usuarios(self.get_usuario())
+            import usuarios
+            usuarios.Usuarios(self.get_usuario())
         elif archivo == "ventana_usuario":
-            v = ventana_usuario.Usuarios(self.get_usuario())
+            import ventana_usuario
+            ventana_usuario.Usuarios(self.get_usuario())
+        gobject.timeout_add(100, self.volver_a_cursor_original)
 
     def abrir_ventana(self, archivo, clase):
         if archivo.endswith('.py'):  # Al importar no hay que indicar extensión
@@ -720,8 +720,8 @@ class Menu:
                 # Inexplicablemente -juraría que antes funcionaba- el spawnl 
                 # ya no rula.
                 os.system("cd .. && ./launch.sh >/dev/null &")
-            elif os.name == 'nt':
-                os.startfile("gajim.pyw")
+            elif os.name == 'nt':   # startfile solo exportado por os en MS-WIN
+                os.startfile("gajim.pyw")  # @UndefinedVariable
             else:
                 utils.dialogo_info(titulo = "PLATAFORMA NO SOPORTADA",
                     texto = "La ayuda on-line solo funciona en arquitecturas"
@@ -770,8 +770,8 @@ class Menu:
                       "../../fixes/salida_check_`date +%Y_%m_%d_%H_%M`.txt &"
             runapp.runapp(comando, printstdout)
             #os.system("./checklist_window.py 2>&1 | tee > salida_check_`date +%Y_%m_%d_%H_%M`.txt &")
-        elif os.name == 'nt':
-            os.startfile("checklist_window.py")
+        elif os.name == 'nt': # startfile solo exportado por os en MS-WIN
+            os.startfile("checklist_window.py")  # @UndefinedVariable
         else:
             utils.dialogo_info(titulo = "PLATAFORMA NO SOPORTADA",
                 texto = "Pruebas de coherencia solo funcionan en arquitecturas"
@@ -788,8 +788,8 @@ class Menu:
         # FIXME: De momento sólo funciona para NT-compatibles. Usar el nuevo multi_open.
         if tipo == 'email':
             if os.name == 'nt':
-                try:
-                    os.startfile('mailto:%s' % uri) # if pywin32 is installed we open
+                try:    # if pywin32 is installed we open
+                    os.startfile('mailto:%s' % uri) # @UndefinedVariable
                 except:
                     pass
             else:
@@ -798,8 +798,8 @@ class Menu:
                                    padre = self.ventana)
         elif tipo == 'web':
             if os.name == 'nt':
-                try:
-                    os.startfile(uri)
+                try:    # startfile solo si pywin32
+                    os.startfile(uri)  # @UndefinedVariable
                 except:
                     pass
             else:
@@ -826,22 +826,19 @@ class Menu:
         vacerca.set_website('http://ginn.sf.net')
         vacerca.set_artists(['Iconos gartoon por Kuswanto (a.k.a. Zeus) '
                              '<zeussama@gmail.com>'])
-        vacerca.set_copyright('Copyright 2005-2010  Francisco José Rodríguez'
+        vacerca.set_copyright('Copyright 2005-2013  Francisco José Rodríguez'
                               ' Bogado, Diego Muñoz Escalante.')
         vacerca.run()
         vacerca.destroy()
 
 
 def construir_y_enviar(w, ventana, remitente, observaciones, texto, usuario):
-    import ventana_progreso, sys, os
-    try:
-        import libgmail
-    except:
-        sys.path.insert(0, os.path.join('..', 'libgmail-0.1.3.3'))
-        import libgmail
+    import ventana_progreso
+    sys.path.insert(0, os.path.join('..', 'libgmail-0.1.11'))
+    import libgmail
     rte = remitente.get_text()
-    buffer = observaciones.get_buffer()
-    obs = buffer.get_text(buffer.get_start_iter(), buffer.get_end_iter()) 
+    buffer_obs = observaciones.get_buffer()
+    obs = buffer_obs.get_text(buffer_obs.get_start_iter(), buffer_obs.get_end_iter()) 
     if usuario == None:
         contra = ''
     else:
@@ -910,17 +907,17 @@ def mostrar_dialogo_y_guardar(txt):
         dialog.set_current_folder(os.path.join(home, 'tmp'))
     else:
         dialog.set_current_folder(home)
-    filter = gtk.FileFilter()
-    filter.set_name("Archivos de traza-depuración texto plano ginn")
-    filter.add_pattern("*.qdg")
-    filter.add_pattern("*.QDG")
-    filter.add_pattern("*.Qdg")
+    filtro = gtk.FileFilter()
+    filtro.set_name("Archivos de traza-depuración texto plano ginn")
+    filtro.add_pattern("*.qdg")
+    filtro.add_pattern("*.QDG")
+    filtro.add_pattern("*.Qdg")
 
-    dialog.add_filter(filter)
-    filter = gtk.FileFilter()
-    filter.set_name("Todos")
-    filter.add_pattern("*")
-    dialog.add_filter(filter)
+    dialog.add_filter(filtro)
+    filtro = gtk.FileFilter()
+    filtro.set_name("Todos")
+    filtro.add_pattern("*")
+    dialog.add_filter(filtro)
 
     dialog.set_current_name("%s.qdg" % (mx.DateTime.localtime().strftime("%d_%m_%Y")))
 
@@ -1035,7 +1032,6 @@ def _crear_ventana(titulo, texto, usuario):
     return ventana, boton, remitente, observaciones
 
 def enviar_correo(texto, usuario = None):
-    import sys, os
     ventana, boton, remitente, observaciones = crear_ventana(
         'ENVIAR INFORME DE ERROR', texto, usuario)
     ventana.connect('destroy', gtk.main_quit)
@@ -1097,8 +1093,8 @@ def main():
     GTKRC2 = ".gtkrc-2.0" # Depende de la versión...
     GTKRC = "gtkrc"
     gtk.rc_parse(os.path.join("..", GTKRC))
-    gtk.rc_parse(os.path.join("..", GTKRC2)) # Si no existe se ignora de 
-                                             # manera silenciosa.
+    gtk.rc_parse(os.path.join("..", GTKRC2))    # Si no existe se ignora de 
+                                                # manera silenciosa.
     if "HOME" in os.environ:
         gtk.rc_parse(os.path.join(os.environ["HOME"], GTKRC))
         gtk.rc_parse(os.path.join(os.environ["HOME"], GTKRC2))

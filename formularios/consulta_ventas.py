@@ -1156,8 +1156,8 @@ class ConsultaVentas(Ventana):
                     orderBy = 'fecha')
                 vpro.set_valor(0.1, "Analizando facturas y abonos...")
                 facturasDeAbono = [f for f in facturasDeAbono 
-                                    if f.abono 
-                                       and f.abono.clienteID == idcliente]
+                                    if f.albaran 
+                                       and f.albaran.clienteID == idcliente]
             else:
                 facturas = pclases.FacturaVenta.select(
                     pclases.FacturaVenta.q.fecha <= self.fin, 
@@ -1169,7 +1169,7 @@ class ConsultaVentas(Ventana):
                     pclases.FacturaDeAbono.q.fecha <= self.fin, 
                     orderBy = 'fecha')
                 vpro.set_valor(0.1, "Analizando facturas y abonos...")
-                facturasDeAbono = [f for f in facturasDeAbono if f.abono]
+                facturasDeAbono = [f for f in facturasDeAbono if f.albaran]
         else:
             if idcliente != None:
                 facturas = pclases.FacturaVenta.select(
@@ -1188,8 +1188,8 @@ class ConsultaVentas(Ventana):
                     orderBy = 'fecha')
                 vpro.set_valor(0.1, "Analizando facturas y abonos...")
                 facturasDeAbono = [f for f in facturasDeAbono 
-                                    if f.abono 
-                                       and f.abono.clienteID == idcliente]
+                                    if f.albaran 
+                                       and f.albaran.clienteID == idcliente]
             else:
                 facturas = pclases.FacturaVenta.select(
                     pclases.AND(pclases.FacturaVenta.q.fecha >= self.inicio,
@@ -1204,7 +1204,7 @@ class ConsultaVentas(Ventana):
                                 pclases.FacturaDeAbono.q.fecha >= self.inicio),
                     orderBy = 'fecha')
                 vpro.set_valor(0.1, "Analizando facturas y abonos...")
-                facturasDeAbono = [f for f in facturasDeAbono if f.abono]
+                facturasDeAbono = [f for f in facturasDeAbono if f.albaran]
         vpro.set_valor(0.3, "Analizando facturas y abonos...")
         facturas = list(facturas) + list(prefacturas)
         facturas.sort(self.por_fecha)
@@ -1218,13 +1218,13 @@ class ConsultaVentas(Ventana):
         facturasDeAbono.sort(self.por_fecha)
         vpro.set_valor(0.7, "Analizando facturas y abonos...")
         for f in facturasDeAbono:
-            abono = f.abono
-            for lda in abono.lineasDeAbono:
+            albaran = f.albaran
+            for lda in albaran.lineasDeAbono:
                 if (lda.lineaDeVenta != None 
                     and not self.wids['ch_servicios'].get_active()):
                     # Filtro las que son ajuste de precio de servicios.
                     self.resultado_abonos['lineasDeAbono'].append(lda)
-            for ldd in abono.lineasDeDevolucion:
+            for ldd in albaran.lineasDeDevolucion:
                 self.resultado_abonos['lineasDeDevolucion'].append(ldd)
         vpro.set_valor(0.9, "Analizando facturas y abonos...")
         vpro.ocultar()
@@ -1338,13 +1338,13 @@ class ConsultaVentas(Ventana):
         for lda in resultado_abonos['lineasDeAbono']:
             if not almacen or lda.get_almacen() == almacen:
                 comercial = lda.get_comercial()
-                factura = lda.facturaVenta    # De abono, en realidad
+                factura = lda.facturaVenta    # De albaran, en realidad
                 if comercial not in self.por_comercial:
                     self.por_comercial[comercial] = [factura]
         for ldd in resultado_abonos['lineasDeDevolucion']:
             if not almacen or ldd.get_almacen() == almacen:
                 comercial = ldd.comercial
-                factura = ldd.facturaVenta  # De abono, en realidad
+                factura = ldd.facturaVenta  # De albaran, en realidad
                 if comercial not in self.por_comercial:
                     self.por_comercial[comercial] = [factura]
         model = self.wids['tv_comercial'].get_model()
@@ -1417,13 +1417,13 @@ class ConsultaVentas(Ventana):
         for lda in resultado_abonos['lineasDeAbono']:
             if not almacen or lda.get_almacen() == almacen:
                 proveedor = lda.get_proveedor()
-                factura = lda.facturaVenta    # De abono, en realidad
+                factura = lda.facturaVenta    # De albaran, en realidad
                 if proveedor not in self.por_proveedor:
                     self.por_proveedor[proveedor] = [factura]
         for ldd in resultado_abonos['lineasDeDevolucion']:
             if not almacen or ldd.get_almacen() == almacen:
                 proveedor = ldd.proveedor
-                factura = ldd.facturaVenta  # De abono, en realidad
+                factura = ldd.facturaVenta  # De albaran, en realidad
                 if proveedor not in self.por_proveedor:
                     self.por_proveedor[proveedor] = [factura]
         model = self.wids['tv_proveedor'].get_model()

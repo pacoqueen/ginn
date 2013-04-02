@@ -40,7 +40,7 @@
 # + Dejar más espacio para cantidad en facturas y quitar de precio unitario.
 # 19 - VII - 2005
 # + DONE: Crear los PDF en el temporal del usuario (ver import tempfile)
-# + Hacer las facturas de abono con el mismo diseño que las facturas normales.
+# + Hacer las facturas de albaran con el mismo diseño que las facturas normales.
 # + Buscar función para poner título a los PDF que genero (todos tienen
 #   "untitled", que es el valor por defecto de ReportLab).
 ########################################################
@@ -4419,7 +4419,7 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
     return nomarchivo
 
 
-def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
+def albaran(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
           vencimiento, texto, totales, impuesto = 1.21,
           facturas_abonadas = None, 
           orden_ventanas = None):
@@ -4513,7 +4513,7 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
 
         linea = height-50
         c.setFont("Helvetica", 18)
-        c.drawCentredString(rm-inch, tm+1*inch, escribe('Factura de abono'))
+        c.drawCentredString(rm-inch, tm+1*inch, escribe('Factura de albaran'))
         c.drawCentredString(width/2, linea, escribe(datos_empresa.nombre))
         linea = sigLinea()
         c.setFont("Helvetica", 10)
@@ -7025,7 +7025,7 @@ def abono_old(cliente, factdata, lineasAbono, lineasDevolucion, texto):
     ** OBSOLETO **
     **************
 
-    Con los datos de entrada genera el abono.
+    Con los datos de entrada genera el albaran.
 
     @params
 
@@ -7082,7 +7082,7 @@ def abono_old(cliente, factdata, lineasAbono, lineasDevolucion, texto):
             c.drawCentredString(rm-inch, tm+1.40*inch, escribe('9000122-1035'))
         linea = height-50
         c.setFont("Helvetica-Bold", 18)
-        c.drawCentredString(rm-inch, tm+0.75*inch, escribe('Factura de abono'))
+        c.drawCentredString(rm-inch, tm+0.75*inch, escribe('Factura de albaran'))
         c.drawCentredString(width/2, linea, escribe('GEOTEXAN S.A.'))
         linea = sigLinea()
         c.setFont("Helvetica", 10)

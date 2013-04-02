@@ -1,3 +1,68 @@
+== Version 0.1.11 ==
+libgmail.py 
+   * Fixed bug that broke attachment support (SF bug #2034927)
+   * added .author_fullname field for messages
+   * Don't crash on threads with google chat log (Debian bug #502458)
+
+== Version 0.1.10 == 
+libgmail.py
+   * Use mechanize instead of ClientCookie [Patch #2014779]
+   * Very basic Unicode support [Patch #1926861]
+
+gmail_transport.py 
+   * New version that uses mechanize
+     (owing again to Jose Rodriguez)
+
+NOTE: libgmail now depends on mechanize, which
+can be downloaded from:
+  http://wwwsearch.sourceforge.net/mechanize/#download
+  (in Debian/Ubuntu as python-mechanize, and an easy_install
+   installer is also available)
+
+== Version 0.1.9 ==
+libgmail.py
+    * Fixed login that was broken for a bunch of new
+      gmail accounts, thanks to a patch by rhauer
+
+NOTE: libgmail now depends on ClientCookie, which
+can be downloaded from: 
+  http://wwwsearch.sourceforge.net/ClientCookie/#download
+
+== Version 0.1.8 ==
+libgmail.py
+    * Added 'search' method to contactLists that returns
+      an array of contacts who match a given search term
+      (at some point, the contacts API is long overdue
+       for a revamp, but for now, hey, why not)
+      This is a patch by Alex Chiang     --WD--
+    * libgmail now asks for the old Gmail interface,
+      so that it isn't broken by the new Gmail updates.
+      (Thanks to Aaron and Stu for work on this)
+      (Fixes SF bug #1822662)
+
+== Version 0.1.7 ==
+libgmail.py
+gmail_transport.py
+    * Applied patch that adds proxy support, both 
+      for passwordless and password-ful proxies 
+      (is that a word?), by Jose Rodriguez --WD+SZ--
+
+== Version 0.1.6.2 ==
+libgmail.py
+    * Bugfix for attachment problems --WD--
+      (SF Bug #1793026, Patch #1799605 by 'stephster')
+archive.py
+    * Protect messages with a "from" line in them --WD--
+      (SF Patch #1790809 by 'scop')
+
+== Version 0.1.6.1 == 
+libgmail.py
+    * Bugfix for login problems --WD--
+
+== Version 0.1.6 == 
+libgmail.py
+    * Added support for "Gmail Apps" aka "Gmail For Your Domain" --WD--
+
 == Version 0.1.5.1 ==
 libgmail.py
     * Minor bugfix release -- logging in with the wrong

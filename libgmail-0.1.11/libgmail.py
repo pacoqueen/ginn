@@ -5,25 +5,12 @@
 ## To get the version number of the available libgmail version.
 ## Reminder: add date before next release. This attribute is also
 ## used in the setup script.
-Version = '0.1.5.1' # (Aug 2006)
+Version = '0.1.11' # (August 2008)
 
-# Original author: follower@myrealbox.com
+# Original author: follower@rancidbacon.com
 # Maintainers: Waseem (wdaher@mit.edu) and Stas Z (stas@linux.isbeter.nl)
 #
-# Contacts support added by wdaher@mit.edu and Stas Z
-# (with massive initial help from 
-#  Adrian Holovaty's 'gmail.py' 
-#  and the Johnvey Gmail API)
-#
 # License: GPL 2.0
-#
-# Thanks:
-#   * Live HTTP Headers <http://livehttpheaders.mozdev.org/>
-#   * Gmail <http://gmail.google.com/>
-#   * Google Blogoscoped <http://blog.outer-court.com/>
-#   * ClientCookie <http://wwwsearch.sourceforge.net/ClientCookie/>
-#     (There when I needed it...)
-#   * The *first* big G. :-)
 #
 # NOTE:
 #   You should ensure you are permitted to use this script before using it
@@ -46,22 +33,26 @@ import urllib
 import urllib2
 import mimetypes
 import types
+import mechanize as ClientCookie
 from cPickle import load, dump
 
 from email.MIMEBase import MIMEBase
 from email.MIMEText import MIMEText
 from email.MIMEMultipart import MIMEMultipart
 
-URL_LOGIN = "https://www.google.com/accounts/ServiceLoginBoxAuth"
-URL_GMAIL = "https://mail.google.com/mail/"
+GMAIL_URL_LOGIN = "https://www.google.com/accounts/ServiceLoginBoxAuth"
+GMAIL_URL_GMAIL = "https://mail.google.com/mail/?ui=1&"
 
-#  Get these on the fly?
+#  Set to any value to use proxy.
+PROXY_URL = None  # e.g. libgmail.PROXY_URL = 'myproxy.org:3128'
+
+# TODO: Get these on the fly?
 STANDARD_FOLDERS = [U_INBOX_SEARCH, U_STARRED_SEARCH,
                     U_ALL_SEARCH, U_DRAFTS_SEARCH,
                     U_SENT_SEARCH, U_SPAM_SEARCH]
 
 # Constants with names not from the Gmail Javascript:
-#  Move to `lgconstants.py`?
+# TODO: Move to `lgconstants.py`?
 U_SAVEDRAFT_VIEW = "sd"
 
 D_DRAFTINFO = "di"
@@ -82,6 +73,11 @@ class GmailError(Exception):
     '''
     pass
 
+class GmailSendError(Exception):
+    '''
+    Exception to throw if we are unable to send a message
+    '''
+    pass
 
 def _parsePage(pageContent):
     """
@@ -92,6 +88,7 @@ def _parsePage(pageContent):
     lines = pageContent.splitlines()
     data = '\n'.join([x for x in lines if x and x[0] in ['D', ')', ',', ']']])
     #data = data.replace(',,',',').replace(',,',',')
+    data = re.sub(r'("(?:[^\\"]|\\.)*")', r'u\1', data)
     data = re.sub(',{2,}', ',', data)
     
     result = []
@@ -114,7 +111,7 @@ def _parsePage(pageContent):
             # This handles the case where a name key is used more than
             # once (e.g. mail items, mail body etc) and automatically
             # places the values into list.
-            #  Check this actually works properly, it's early... :-)
+            # TODO: Check this actually works properly, it's early... :-)
             
             if len(parsedValue) and type(parsedValue[0]) is types.ListType:
                     for item in parsedValue:
@@ -137,7 +134,7 @@ def _splitBunches(infoItems):# Is this still needed ?? Stas
     even if they were bunched on the page.
     """
     result= []
-    #  Decide if this is the best approach.
+    # TODO: Decide if this is the best approach.
     for group in infoItems:
         if type(group) == tuple:
             result.extend(group)
@@ -145,54 +142,27 @@ def _splitBunches(infoItems):# Is this still needed ?? Stas
             result.append(group)
     return result
 
-class CookieJar:
-    """
-    A rough cookie handler, intended to only refer to one domain.
+class SmartRedirectHandler(ClientCookie.HTTPRedirectHandler):
+    def __init__(self, cookiejar):
+        self.cookiejar = cookiejar
 
-    Does no expiry or anything like that.
-
-    (The only reason this is here is so I don't have to require
-    the `ClientCookie` package.)
-    
-    """
-
-    def __init__(self):
-        """
-        """
-        self._cookies = {}
-
-
-    def extractCookies(self, response, nameFilter = None):
-        """
-        """
-        #  Do this all more nicely?
-        for cookie in response.headers.getheaders('Set-Cookie'):
-            name, value = (cookie.split("=", 1) + [""])[:2]
-            if LG_DEBUG: print "Extracted cookie `%s`" % (name)
-            if not nameFilter or name in nameFilter:
-                self._cookies[name] = value.split(";")[0]
-                if LG_DEBUG: print "Stored cookie `%s` value `%s`" % (name, self._cookies[name])
-
-
-    def addCookie(self, name, value):
-        """
-        """
-        self._cookies[name] = value
-
-
-    def setCookies(self, request):
-        """
-        """
-        request.add_header('Cookie',
-                           ";".join(["%s=%s" % (k,v)
-                                     for k,v in self._cookies.items()]))
-
-        
+    def http_error_302(self, req, fp, code, msg, headers):
+        # The location redirect doesn't seem to change
+        # the hostname header appropriately, so we do
+        # by hand. (Is this a bug in urllib2?)
+        new_host = re.match(r'http[s]*://(.*?\.google\.com)',
+                            headers.getheader('Location'))
+        if new_host:
+            req.add_header("Host", new_host.groups()[0])
+        result = ClientCookie.HTTPRedirectHandler.http_error_302(
+            self, req, fp, code, msg, headers)              
+        return result
+       
     
 def _buildURL(**kwargs):
     """
     """
-    return "%s?%s" % (URL_GMAIL, urllib.urlencode(kwargs))
+    return "%s%s" % (URL_GMAIL, urllib.urlencode(kwargs))
 
 
 
@@ -205,7 +175,7 @@ def _paramsToMime(params, filenames, files):
         mimeItem = MIMEText(value)
         mimeItem.add_header("Content-Disposition", "form-data", name=name)
 
-        #  Handle this better...?
+        # TODO: Handle this better...?
         for hdr in ['Content-Type','MIME-Version','Content-Transfer-Encoding']:
             del mimeItem[hdr]
 
@@ -215,7 +185,7 @@ def _paramsToMime(params, filenames, files):
         filenames = filenames or []
         files = files or []
         for idx, item in enumerate(filenames + files):
-            #  This is messy, tidy it...
+            # TODO: This is messy, tidy it...
             if isinstance(item, str):
                 # We assume it's a file path...
                 filename = item
@@ -223,7 +193,7 @@ def _paramsToMime(params, filenames, files):
                 payload = open(filename, "rb").read()
             else:
                 # We assume it's an `email.Message.Message` instance...
-                #  Make more use of the pre-encoded information?
+                # TODO: Make more use of the pre-encoded information?
                 filename = item.get_filename()
                 contentType = item.get_content_type()
                 payload = item.get_payload(decode=True)
@@ -234,10 +204,10 @@ def _paramsToMime(params, filenames, files):
             mimeItem = MIMEBase(*contentType.split("/"))
             mimeItem.add_header("Content-Disposition", "form-data",
                                 name="file%s" % idx, filename=filename)
-            #  Encode the payload?
+            # TODO: Encode the payload?
             mimeItem.set_payload(payload)
 
-            #  Handle this better...?
+            # TODO: Handle this better...?
             for hdr in ['MIME-Version','Content-Transfer-Encoding']:
                 del mimeItem[hdr]
 
@@ -268,16 +238,39 @@ class GmailAccount:
     """
     """
 
-    def __init__(self, name = "", pw = "", state = None):
+    def __init__(self, name = "", pw = "", state = None, domain = None):
+        global URL_LOGIN, URL_GMAIL
         """
         """
-        #  Change how all this is handled?
+        self.domain = domain
+        if self.domain:
+            URL_LOGIN = "https://www.google.com/a/" + self.domain + "/LoginAction2"
+            URL_GMAIL = "http://mail.google.com/a/" + self.domain + "/?ui=1&"
+
+        else:
+            URL_LOGIN = GMAIL_URL_LOGIN
+            URL_GMAIL = GMAIL_URL_GMAIL
         if name and pw:
             self.name = name
             self._pw = pw
-            self._cookieJar = CookieJar()
+
+            self._cookieJar = ClientCookie.LWPCookieJar()
+            opener = ClientCookie.build_opener(ClientCookie.HTTPCookieProcessor(self._cookieJar))
+            ClientCookie.install_opener(opener)
+            
+            if PROXY_URL is not None:
+                import gmail_transport
+
+                self.opener = ClientCookie.build_opener(gmail_transport.ConnectHTTPHandler(proxy = PROXY_URL),
+                                  gmail_transport.ConnectHTTPSHandler(proxy = PROXY_URL),
+                                  SmartRedirectHandler(self._cookieJar))
+            else:
+                self.opener = ClientCookie.build_opener(
+                                ClientCookie.HTTPHandler(),
+                                ClientCookie.HTTPSHandler(),
+                                SmartRedirectHandler(self._cookieJar))
         elif state:
-            #  Check for stale state cookies?
+            # TODO: Check for stale state cookies?
             self.name, self._cookieJar = state.state
         else:
             raise ValueError("GmailAccount must be instantiated with " \
@@ -291,60 +284,78 @@ class GmailAccount:
     def login(self):
         """
         """
-        #  Throw exception if we were instantiated with state?
-        data = urllib.urlencode({'continue': URL_GMAIL,
-                                 'Email': self.name,
-                                 'Passwd': self._pw,
-                                 })
-    
+        # TODO: Throw exception if we were instantiated with state?
+        if self.domain:
+            data = urllib.urlencode({'continue': URL_GMAIL,
+                                     'at'      : 'null',
+                                     'service' : 'mail',
+                                     'Email': self.name,
+                                     'Passwd': self._pw,
+                                     })
+        else:
+            data = urllib.urlencode({'continue': URL_GMAIL,
+                                     'Email': self.name,
+                                     'Passwd': self._pw,
+                                     })
+                                           
         headers = {'Host': 'www.google.com',
-                   'User-Agent': 'User-Agent: Mozilla/5.0 (compatible;)'}
-        
-        req = urllib2.Request(URL_LOGIN, data=data, headers=headers)
+                   'User-Agent': 'Mozilla/5.0 (Compatible; libgmail-python)'}
+
+        req = ClientCookie.Request(URL_LOGIN, data=data, headers=headers)
         pageData = self._retrievePage(req)
         
-        #  Tidy this up?
-        # This requests the page that provides the required "GV" cookie.
-        RE_PAGE_REDIRECT = 'CheckCookie\?continue=([^"\']+)'
-
-
-        #  Catch more failure exceptions here...?
-        try:
-            link = re.search(RE_PAGE_REDIRECT, pageData).group(1)
-            redirectURL = urllib.unquote(link)
-            # By Queen: http://mail.python.org/pipermail/python-list/2007-August/454440.html
-            redirectURL = redirectURL.replace('\\x26','&')
-            
-        except AttributeError:
-            raise GmailLoginFailure("Login failed. (Wrong username/password?)")
-        # We aren't concerned with the actual content of this page,
-        # just the cookie that is returned with it.
-        pageData = self._retrievePage(redirectURL)
+        if not self.domain:
+        # The GV cookie no longer comes in this page for
+        # "Apps", so this bottom portion is unnecessary for it.
+            # This requests the page that provides the required "GV" cookie.
+            RE_PAGE_REDIRECT = 'CheckCookie\?continue=([^"\']+)' 
         
+            # TODO: Catch more failure exceptions here...?
+            try:
+                link = re.search(RE_PAGE_REDIRECT, pageData).group(1)
+                redirectURL = urllib2.unquote(link)
+                redirectURL = redirectURL.replace('\\x26', '&')
+            
+            except AttributeError:
+                raise GmailLoginFailure("Login failed. (Wrong username/password?)")
+            # We aren't concerned with the actual content of this page,
+            # just the cookie that is returned with it.
+            pageData = self._retrievePage(redirectURL)
+
+    def getCookie(self,cookiename):
+        # TODO: Is there a way to extract the value directly?
+        for index, cookie in enumerate(self._cookieJar):
+            if cookie.name == cookiename:
+                return cookie.value
+        return ""
 
     def _retrievePage(self, urlOrRequest):
         """
         """
+        if self.opener is None:
+            raise "Cannot find urlopener"
+        
+        # ClientCookieify it, if it hasn't been already
         if not isinstance(urlOrRequest, urllib2.Request):
-            req = urllib2.Request(urlOrRequest)
+            req = ClientCookie.Request(urlOrRequest)
         else:
             req = urlOrRequest
-            
-        self._cookieJar.setCookies(req)
+
+        req.add_header('User-Agent',
+                       'Mozilla/5.0 (Compatible; libgmail-python)')
+        
         try:
-            resp = urllib2.urlopen(req)
+            resp = self.opener.open(req)
         except urllib2.HTTPError,info:
             print info
             return None
         pageData = resp.read()
 
-        # Extract cookies here
-        self._cookieJar.extractCookies(resp)
+        # TODO: This, for some reason, is still necessary?
+        self._cookieJar.extract_cookies(resp, req)
 
-        #  Enable logging of page data for debugging purposes?
-
+        # TODO: Enable logging of page data for debugging purposes?
         return pageData
-
 
     def _parsePage(self, urlOrRequest):
         """
@@ -353,9 +364,9 @@ class GmailAccount:
         """
         items = _parsePage(self._retrievePage(urlOrRequest))
         # Automatically cache some things like quota usage.
-        #  Cache more?
-        #  Expire cached values?
-        #  Do this better.
+        # TODO: Cache more?
+        # TODO: Expire cached values?
+        # TODO: Do this better.
         try:
             self._cachedQuotaInfo = items[D_QUOTA]
         except KeyError:
@@ -384,7 +395,7 @@ class GmailAccount:
     def _parseThreadSearch(self, searchType, allPages = False, **kwargs):
         """
 
-        Only works for thread-based results at present. #  Change this?
+        Only works for thread-based results at present. # TODO: Change this?
         """
         start = 0
         tot = 0
@@ -394,7 +405,7 @@ class GmailAccount:
                                len(threadsInfo) < threadListSummary[TS_TOTAL]):
             
                 items = self._parseSearchResult(searchType, start, **kwargs)
-                # Handle single & zero result case better? Does this work?
+                #TODO: Handle single & zero result case better? Does this work?
                 try:
                     threads = items[D_THREAD]
                 except KeyError:
@@ -404,13 +415,13 @@ class GmailAccount:
                         if not type(th[0]) is types.ListType:
                             th = [th]
                         threadsInfo.append(th)
-                    #  Check if the total or per-page values have changed?
+                    # TODO: Check if the total or per-page values have changed?
                     threadListSummary = items[D_THREADLIST_SUMMARY][0]
                     threadsPerPage = threadListSummary[TS_NUM]
     
                     start += threadsPerPage
         
-        #  Record whether or not we retrieved all pages..?
+        # TODO: Record whether or not we retrieved all pages..?
         return GmailSearchResult(self, (searchType, kwargs), threadsInfo)
 
 
@@ -433,7 +444,7 @@ class GmailAccount:
 
         Returns a `GmailSearchResult` instance.
 
-        ***  Change all "getMessagesByX" to "getThreadsByX"? ***
+        *** TODO: Change all "getMessagesByX" to "getThreadsByX"? ***
         """
         return self._parseThreadSearch(folderName, allPages = allPages)
 
@@ -452,9 +463,9 @@ class GmailAccount:
 
         Return MB used, Total MB and percentage used.
         """
-        #  Change this to a property.
+        # TODO: Change this to a property.
         if not self._cachedQuotaInfo or refresh:
-            #  Handle this better...
+            # TODO: Handle this better...
             self.getMessagesByFolder(U_INBOX_SEARCH)
 
         return self._cachedQuotaInfo[0][:3]
@@ -463,9 +474,9 @@ class GmailAccount:
     def getLabelNames(self, refresh = False):
         """
         """
-        #  Change this to a property?
+        # TODO: Change this to a property?
         if not self._cachedLabelNames or refresh:
-            #  Handle this better...
+            # TODO: Handle this better...
             self.getMessagesByFolder(U_INBOX_SEARCH)
 
         return self._cachedLabelNames
@@ -509,10 +520,10 @@ class GmailAccount:
         """
         """
         try:
-            at = self._cookieJar._cookies[ACTION_TOKEN_COOKIE]
+            at = self.getCookie(ACTION_TOKEN_COOKIE)
         except KeyError:
             self.getLabelNames(True) 
-            at = self._cookieJar._cookies[ACTION_TOKEN_COOKIE]           
+            at = self.getCookie(ACTION_TOKEN_COOKIE)
 
         return at
 
@@ -531,7 +542,7 @@ class GmailAccount:
               `id` (and `_account`) fields on success or None on failure.
 
         """
-        #  Handle drafts separately?
+        # TODO: Handle drafts separately?
         params = {U_VIEW: [U_SENDMAIL_VIEW, U_SAVEDRAFT_VIEW][asDraft],
                   U_REFERENCED_MSG: "",
                   U_THREAD: "",
@@ -553,7 +564,7 @@ class GmailAccount:
         #  selm=mailman.1047080233.20095.python-list%40python.org>
         mimeMessage = _paramsToMime(params, msg.filenames, msg.files)
 
-        ####  Ughh, tidy all this up & do it better...
+        #### TODO: Ughh, tidy all this up & do it better...
         ## This horrible mess is here for two main reasons:
         ##  1. The `Content-Type` header (which also contains the boundary
         ##     marker) needs to be extracted from the MIME message so
@@ -589,11 +600,11 @@ class GmailAccount:
             data = data.replace(FMT_MARKER % k, v)
         ####
         
-        req = urllib2.Request(_buildURL(), data = data)
+        req = ClientCookie.Request(_buildURL(), data = data)
         req.add_header(*contentTypeHeader)
         items = self._parsePage(req)
 
-        #  Check composeid?
+        # TODO: Check composeid?
         # Sometimes we get the success message
         # but the id is 0 and no message is sent
         result = None
@@ -602,15 +613,16 @@ class GmailAccount:
         if resultInfo[SM_SUCCESS]:
             result = GmailMessageStub(id = resultInfo[SM_NEWTHREADID],
                                       _account = self)
-            
+        else:
+            raise GmailSendError, resultInfo[SM_MSG]
         return result
 
 
     def trashMessage(self, msg):
         """
         """
-        #  Decide if we should make this a method of `GmailMessage`.
-        #  Should we check we have been given a `GmailMessage` instance?
+        # TODO: Decide if we should make this a method of `GmailMessage`.
+        # TODO: Should we check we have been given a `GmailMessage` instance?
         params = {
             U_ACTION: U_DELETEMESSAGE_ACTION,
             U_ACTION_MESSAGE: msg.id,
@@ -619,17 +631,17 @@ class GmailAccount:
 
         items = self._parsePage(_buildURL(**params))
 
-        #  Mark as trashed on success?
+        # TODO: Mark as trashed on success?
         return (items[D_ACTION_RESULT][0][AR_SUCCESS] == 1)
 
 
     def _doThreadAction(self, actionId, thread):
         """
         """
-        #  Decide if we should make this a method of `GmailThread`.
-        #  Should we check we have been given a `GmailThread` instance?
+        # TODO: Decide if we should make this a method of `GmailThread`.
+        # TODO: Should we check we have been given a `GmailThread` instance?
         params = {
-            U_SEARCH: U_ALL_SEARCH, #  Check this search value always works.
+            U_SEARCH: U_ALL_SEARCH, #TODO:Check this search value always works.
             U_VIEW: U_UPDATE_VIEW,
             U_ACTION: actionId,
             U_ACTION_THREAD: thread.id,
@@ -644,12 +656,12 @@ class GmailAccount:
     def trashThread(self, thread):
         """
         """
-        #  Decide if we should make this a method of `GmailThread`.
-        #  Should we check we have been given a `GmailThread` instance?
+        # TODO: Decide if we should make this a method of `GmailThread`.
+        # TODO: Should we check we have been given a `GmailThread` instance?
 
         result = self._doThreadAction(U_MARKTRASH_ACTION, thread)
         
-        #  Mark as trashed on success?
+        # TODO: Mark as trashed on success?
         return result
 
 
@@ -671,13 +683,13 @@ class GmailAccount:
 
         #data.update(extraData)
 
-        req = urllib2.Request(_buildURL(**params),
+        req = ClientCookie.Request(_buildURL(**params),
                               data = urllib.urlencode(data))
 
         return req
 
 
-    #  Extract additional common code from handling of labels?
+    # TODO: Extract additional common code from handling of labels?
     def createLabel(self, labelName):
         """
         """
@@ -692,7 +704,7 @@ class GmailAccount:
     def deleteLabel(self, labelName):
         """
         """
-        #  Check labelName exits?
+        # TODO: Check labelName exits?
         req = self._createUpdateRequest(U_DELETECATEGORY_ACTION + labelName)
 
         # Note: Label name cache is updated by this call as well. (Handy!)
@@ -704,7 +716,7 @@ class GmailAccount:
     def renameLabel(self, oldLabelName, newLabelName):
         """
         """
-        #  Check oldLabelName exits?
+        # TODO: Check oldLabelName exits?
         req = self._createUpdateRequest("%s%s^%s" % (U_RENAMECATEGORY_ACTION,
                                                    oldLabelName, newLabelName))
 
@@ -716,8 +728,8 @@ class GmailAccount:
     def storeFile(self, filename, label = None):
         """
         """
-        #  Handle files larger than single attachment size.
-        #  Allow file data objects to be supplied?
+        # TODO: Handle files larger than single attachment size.
+        # TODO: Allow file data objects to be supplied?
         FILE_STORE_VERSION = "FSV_01"
         FILE_STORE_SUBJECT_TEMPLATE = "%s %s" % (FILE_STORE_VERSION, "%s")
 
@@ -786,7 +798,7 @@ class GmailAccount:
                 notes = ''
             myContact = GmailContact(-1, name, email, notes)
 
-        #  In the ideal world, we'd extract these specific
+        # TODO: In the ideal world, we'd extract these specific
         # constants into a nice constants file
         
         # This mostly comes from the Johnvey Gmail API,
@@ -794,7 +806,7 @@ class GmailAccount:
         myURL = _buildURL(view='up')        
 
         myDataList =  [ ('act','ec'),
-                        ('at', self._cookieJar._cookies['GMAIL_AT']), # Cookie data?
+                        ('at', self.getCookie(ACTION_TOKEN_COOKIE)),
                         ('ct_nm', myContact.getName()),
                         ('ct_em', myContact.getEmail()),
                         ('ct_id', -1 )
@@ -841,8 +853,8 @@ class GmailAccount:
                             myDataList.append( (subsectionenum, info[1]) )
 
         myData = urllib.urlencode(myDataList)
-        request = urllib2.Request(myURL,
-                                  data = myData)
+        request = ClientCookie.Request(myURL,
+                                       data = myData)
         pageData = self._retrievePage(request)
 
         if pageData.find("The contact was successfully added") == -1:
@@ -870,7 +882,7 @@ class GmailAccount:
         Don't call this method.
         You should be using removeContact instead.
         """
-        myURL = _buildURL(search='contacts', ct_id = id, c=id, act='dc', at=self._cookieJar._cookies['GMAIL_AT'], view='up')
+        myURL = _buildURL(search='contacts', ct_id = id, c=id, act='dc', at=self.getCookie(ACTION_TOKEN_COOKIE), view='up')
         pageData = self._retrievePage(myURL)
 
         if pageData.find("The contact has been deleted") == -1:
@@ -896,7 +908,7 @@ class GmailAccount:
         else:
             # We have a cache coherency problem -- someone
             # else now occupies this ID slot.
-            #  Perhaps signal this in some nice way
+            # TODO: Perhaps signal this in some nice way
             #       to the end user?
             
             print "Unable to delete."
@@ -1150,7 +1162,22 @@ class GmailContactList:
             if entry.getId() == myId:
                 idList.append(entry)
         return idList
-    
+    def search(self, searchTerm):
+       """
+       This function returns a LIST
+       of GmailContacts whose name or
+       email address matches the 'searchTerm'.
+
+       Returns an empty list if no matches
+       were found.
+       """
+       searchResults = []
+       for entry in self.contactList:
+           p = re.compile(searchTerm, re.IGNORECASE)
+           if p.search(entry.getName()) or p.search(entry.getEmail()):
+               searchResults.append(entry)
+       return searchResults
+   
 class GmailSearchResult:
     """
     """
@@ -1165,10 +1192,11 @@ class GmailSearchResult:
             if not type(threadsInfo[0]) is types.ListType:
                 threadsInfo = [threadsInfo]
         except IndexError:
-            print "No messages found"
+            # print "No messages found"
+            pass            
             
         self._account = account
-        self.search = search #  Turn into object + format nicely.
+        self.search = search # TODO: Turn into object + format nicely.
         self._threads = []
         
         for thread in threadsInfo:
@@ -1219,6 +1247,9 @@ class _LabelHandlerMixin(object):
     Note: Because a message id can be used as a thread id this works for
           messages as well as threads.
     """
+    def __init__(self):
+        self._labels = None
+        
     def _makeLabelList(self, labelList):
         self._labels = labelList
     
@@ -1230,7 +1261,7 @@ class _LabelHandlerMixin(object):
                                                self)
         if not self._labels:
             self._makeLabelList([])
-        #  Caching this seems a little dangerous; suppress duplicates maybe?
+        # TODO: Caching this seems a little dangerous; suppress duplicates maybe?
         self._labels.append(labelName)
         return result
 
@@ -1238,7 +1269,7 @@ class _LabelHandlerMixin(object):
     def removeLabel(self, labelName):
         """
         """
-        #  Check label is already attached?
+        # TODO: Check label is already attached?
         # Note: An error is not generated if the label is not already attached.
         result = \
                self._account._doThreadAction(U_REMOVECATEGORY_ACTION+labelName,
@@ -1271,25 +1302,26 @@ class GmailThread(_LabelHandlerMixin):
     def __init__(self, parent, threadsInfo):
         """
         """
+        _LabelHandlerMixin.__init__(self)
         
-        #  Handle this better?
+        # TODO Handle this better?
         self._parent = parent
         self._account = self._parent._account
         
-        self.id = threadsInfo[T_THREADID] #  Change when canonical updated?
+        self.id = threadsInfo[T_THREADID] # TODO: Change when canonical updated?
         self.subject = threadsInfo[T_SUBJECT_HTML]
 
         self.snippet = threadsInfo[T_SNIPPET_HTML]
-        #self.extraSummary = threadInfo[T_EXTRA_SNIPPET] # What is this?
+        #self.extraSummary = threadInfo[T_EXTRA_SNIPPET] #TODO: What is this?
 
-        #  Store other info?
+        # TODO: Store other info?
         # Extract number of messages in thread/conversation.
 
         self._authors = threadsInfo[T_AUTHORS_HTML]
         self.info = threadsInfo
     
         try:
-            #  Find out if this information can be found another way...
+            # TODO: Find out if this information can be found another way...
             #       (Without another page request.)
             self._length = int(re.search("\((\d+?)\)\Z",
                                          self._authors).group(1))
@@ -1297,7 +1329,7 @@ class GmailThread(_LabelHandlerMixin):
             # If there's no message count then the thread only has one message.
             self._length = 1
 
-        #  Store information known about the last message  (e.g. id)?
+        # TODO: Store information known about the last message  (e.g. id)?
         self._messages = []
 
         # Populate labels
@@ -1351,14 +1383,14 @@ class GmailThread(_LabelHandlerMixin):
     def _getMessages(self, thread):
         """
         """
-        #  Do this better.
-        #  Specify the query folder using our specific search?
+        # TODO: Do this better.
+        # TODO: Specify the query folder using our specific search?
         items = self._account._parseSearchResult(U_QUERY_SEARCH,
                                                  view = U_CONVERSATION_VIEW,
                                                  th = thread.id,
                                                  q = "in:anywhere")
         result = []
-        #  Handle this better?
+        # TODO: Handle this better?
         # Note: This handles both draft & non-draft messages in a thread...
         for key, isDraft in [(D_MSGINFO, False), (D_DRAFTINFO, True)]:
             try:
@@ -1367,13 +1399,12 @@ class GmailThread(_LabelHandlerMixin):
                 # No messages of this type (e.g. draft or non-draft)
                 continue
             else:
-                #  Handle special case of only 1 message in thread better?
+                # TODO: Handle special case of only 1 message in thread better?
                 if type(msgsInfo[0]) != types.ListType:
                     msgsInfo = [msgsInfo]
                 for msg in msgsInfo:
                     result += [GmailMessage(thread, msg, isDraft = isDraft)]
                            
-
         return result
 
 class GmailMessageStub(_LabelHandlerMixin):
@@ -1384,12 +1415,13 @@ class GmailMessageStub(_LabelHandlerMixin):
     NOTE: This may go away.
     """
 
-    #  Provide way to convert this to a full `GmailMessage` instance
+    # TODO: Provide way to convert this to a full `GmailMessage` instance
     #       or allow `GmailMessage` to be created without all info?
 
     def __init__(self, id = None, _account = None):
         """
         """
+        _LabelHandlerMixin.__init__(self)
         self.id = id
         self._account = _account
     
@@ -1404,26 +1436,33 @@ class GmailMessage(object):
 
         Note: `msgData` can be from either D_MSGINFO or D_DRAFTINFO.
         """
-        #  Automatically detect if it's a draft or not?
-        # Handle this better?
+        # TODO: Automatically detect if it's a draft or not?
+        # TODO Handle this better?
         self._parent = parent
         self._account = self._parent._account
         
-        self.author = msgData[MI_AUTHORFIRSTNAME]
+        self.author = msgData[MI_AUTHORFIRSTNAME].decode('utf-8')
+        self.author_fullname = msgData[MI_AUTHORNAME].decode('utf-8')
         self.id = msgData[MI_MSGID]
         self.number = msgData[MI_NUM]
-        self.subject = msgData[MI_SUBJECT]
-        self.to = msgData[MI_TO]
-        self.cc = msgData[MI_CC]
-        self.bcc = msgData[MI_BCC]
-        self.sender = msgData[MI_AUTHOREMAIL]
+        self.subject = msgData[MI_SUBJECT].decode('utf-8')
+        self.to = [x.decode('utf-8') for x in msgData[MI_TO]]
+        self.cc = [x.decode('utf-8') for x in msgData[MI_CC]]
+        self.bcc = [x.decode('utf-8') for x in msgData[MI_BCC]]
+        self.sender = msgData[MI_AUTHOREMAIL].decode('utf-8')
         
-        self.attachments = [GmailAttachment(self, attachmentInfo)
-                            for attachmentInfo in msgData[MI_ATTACHINFO]]
+        # Messages created by google chat (from reply with chat, etc.)
+        # don't have any attachments, so we need this check not to choke
+        # on them
+        try:
+            self.attachments = [GmailAttachment(self, attachmentInfo)
+                    for attachmentInfo in msgData[MI_ATTACHINFO]]
+        except TypeError:
+            self.attachments = []
 
-        #  Populate additional fields & cache...(?)
+        # TODO: Populate additional fields & cache...(?)
 
-        #  Handle body differently if it's from a draft?
+        # TODO: Handle body differently if it's from a draft?
         self.isDraft = isDraft
         
         self._source = None
@@ -1433,12 +1472,12 @@ class GmailMessage(object):
         """
         """
         if not self._source:
-            #  Do this more nicely...?
-            #  Strip initial white space & fix up last line ending
+            # TODO: Do this more nicely...?
+            # TODO: Strip initial white space & fix up last line ending
             #       to make it legal as per RFC?
             self._source = self._account.getRawMessage(self.id)
 
-        return self._source
+        return self._source.decode('utf-8')
 
     source = property(_getSource, doc = "")
         
@@ -1451,7 +1490,7 @@ class GmailAttachment:
     def __init__(self, parent, attachmentInfo):
         """
         """
-        # Handle this better?
+        # TODO Handle this better?
         self._parent = parent
         self._account = self._parent._account
 
@@ -1467,7 +1506,7 @@ class GmailAttachment:
         """
         """
         if not self._content:
-            #  Do this a more nicely...?
+            # TODO: Do this a more nicely...?
             self._content = self._account._retrievePage(
                 _buildURL(view=U_ATTACHMENT_VIEW, disp="attd",
                           attid=self.id, th=self._parent._parent.id))
@@ -1507,7 +1546,7 @@ class GmailComposedMessage:
                     `email.Message.Message` interface (`get_filename`,
                     `get_content_type`, `get_payload`). This is to
                     allow use of payloads from Message instances.
-                     Change this to be simpler class we define ourselves?
+                    TODO: Change this to be simpler class we define ourselves?
         """
         self.to = to
         self.subject = subject
@@ -1529,8 +1568,9 @@ if __name__ == "__main__":
         name = raw_input("Gmail account name: ")
         
     pw = getpass("Password: ")
+    domain = raw_input("Domain? [leave blank for Gmail]: ")
 
-    ga = GmailAccount(name, pw)
+    ga = GmailAccount(name, pw, domain=domain)
 
     print "\nPlease wait, logging in..."
 
@@ -1541,7 +1581,7 @@ if __name__ == "__main__":
     else:
         print "Login successful.\n"
 
-        #  Use properties instead?
+        # TODO: Use properties instead?
         quotaInfo = ga.getQuotaInfo()
         quotaMbUsed = quotaInfo[QU_SPACEUSED]
         quotaMbTotal = quotaInfo[QU_QUOTA]
