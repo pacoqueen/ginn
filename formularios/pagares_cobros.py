@@ -885,7 +885,7 @@ class PagaresCobros(Ventana):
     
     def add_abono(self, boton):
         """
-        Añade un "cobro" de una factura de abono (cobro con cantidad 
+        Añade un "cobro" de una factura de albaran (cobro con cantidad 
         negativa) al pagaré de cobro actual.
         """
         pagare = self.objeto
@@ -932,12 +932,12 @@ class PagaresCobros(Ventana):
 
     def buscar_factura_de_abono(self, cliente):
         """
-        Busca, a través de diálogos, facturas de abono del cliente 
+        Busca, a través de diálogos, facturas de albaran del cliente 
         recibido.
         """
         frabono = None
         numabono = utils.dialogo_entrada(titulo = "NÚMERO DE FACTURA DE ABONO",
-            texto = "Introduzca el número de la factura de abono que busca:", 
+            texto = "Introduzca el número de la factura de albaran que busca:", 
             padre = self.wids['ventana'])
         if numabono != None:
             try:
@@ -949,38 +949,38 @@ class PagaresCobros(Ventana):
                                 pclases.Abono.q.numabono.contains(numabono))
             if abonos.count() == 0:
                 utils.dialogo_info(titulo = "ABONO NO ENCONTRADO", 
-                    texto = "Factura con número de abono %s no encontrada." % (
+                    texto = "Factura con número de albaran %s no encontrada." % (
                                 numabono), 
                     padre = self.wids['ventana'])
             elif abonos.count() == 1:
-                abono = abonos[0]
-                frabono = abono.facturaDeAbono
+                albaran = abonos[0]
+                frabono = albaran.facturaDeAbono
                 if frabono == None:
                     utils.dialogo_info(titulo = "ABONO SIN FACTURAR", 
-                        texto = "El abono %s no ha generado factura de abono."
-                                "\n\n\n  Si el abono está completo, genere la"
+                        texto = "El albaran %s no ha generado factura de albaran."
+                                "\n\n\n  Si el albaran está completo, genere la"
                                 " factura desde la ventana de abonos y vuelva"
-                                " a intentarlo." % (abono.numabono), 
+                                " a intentarlo." % (albaran.numabono), 
                         padre = self.wids['ventana'])
             else:
-                abono = self.refinar_busqueda_abonos(abonos)
-                if abono != None:
-                    frabono = abono.facturaDeAbono
+                albaran = self.refinar_busqueda_abonos(abonos)
+                if albaran != None:
+                    frabono = albaran.facturaDeAbono
                     if frabono == None:
                         utils.dialogo_info(titulo = "ABONO SIN FACTURAR", 
-                            texto = "El abono %s no ha generado factura de "
-                                    "abono.\n\n\n  Si el abono está completo"
+                            texto = "El albaran %s no ha generado factura de "
+                                    "albaran.\n\n\n  Si el albaran está completo"
                                     ", genere la factura desde la ventana de"
                                     " abonos y vuelva a intentarlo." % (
-                                        abono.numabono), 
+                                        albaran.numabono), 
                             padre = self.wids['ventana'])
-        # i  9863: Compruebo que la factura de abono no se haya descontado 
+        # i  9863: Compruebo que la factura de albaran no se haya descontado 
         # ya de otro pagaré:
         if frabono:
             importe_pdte = frabono.calcular_importe_pendiente_de_abonar()
             if importe_pdte >= 0:   # Abono "pagado" o descontado por completo.
                 utils.dialogo_info(titulo = "IMPORTE ABONADO", 
-                    texto = "El abono %s ya ha sido descontado por completo.\n"
+                    texto = "El albaran %s ya ha sido descontado por completo.\n"
                             "No se le permite volver a abonar su importe." % (
                                 frabono.numfactura), 
                     padre = self.wids['ventana'])
@@ -991,9 +991,9 @@ class PagaresCobros(Ventana):
         """
         Recibe un SelectResults de abonos y muestra una ventana
         con la información de todos ellos.
-        Devuelve la factura del abono seleccionado o None si cancela.
+        Devuelve la factura del albaran seleccionado o None si cancela.
         """
-        abono = None
+        albaran = None
         filas = [(a.id, 
                   utils.str_fecha(a.fecha), 
                   a.clienteID and a.cliente.nombre or "", 
@@ -1010,12 +1010,12 @@ class PagaresCobros(Ventana):
                                  'Fecha', 
                                  'Cliente', 
                                  'Importe con IVA', 
-                                 'Factura de abono', 
+                                 'Factura de albaran', 
                                  'Pendiente de abonar'), 
                     padre = self.wids['ventana'])
         if idabono != None and idabono != -1:
-            abono = pclases.Abono.get(idabono)
-        return abono
+            albaran = pclases.Abono.get(idabono)
+        return albaran
  
     def drop_cobro(self, b):
         pagare = self.objeto

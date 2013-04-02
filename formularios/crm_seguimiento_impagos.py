@@ -733,8 +733,8 @@ class CRM_SeguimientoImpagos(Ventana):
         """
         model = tv.get_model()
         id = model[path][-1]
-        if model[path].parent:  # Es nodo hijo: abono, factura u obra.
-            if model[path].parent.parent: # Es abono o factura
+        if model[path].parent:  # Es nodo hijo: albaran, factura u obra.
+            if model[path].parent.parent: # Es albaran o factura
                 if id > 0:  # Si es negativo es un ID de cliente. No me interesa.
                     fra = pclases.FacturaVenta.get(id)
                     #import facturas_venta
@@ -756,7 +756,7 @@ class CRM_SeguimientoImpagos(Ventana):
                     model[path][5] = last_evento
                 elif id < 0:   # Ahora los id negativos son de abonos, no clientes.
                     fda = pclases.FacturaDeAbono.get(-id)
-                    a = fda.abono
+                    a = fda.albaran
                     import abonos_venta
                     v = abonos_venta.AbonosVenta(a, usuario = self.usuario)
             else:   # Es obra. Abro... ¿cliente?
@@ -808,7 +808,7 @@ class CRM_SeguimientoImpagos(Ventana):
                                         FV.q.fecha >= fechaini, 
                                         FV.q.fecha <= fechafin, 
                                         VC.q.facturaVentaID == FV.q.id))
-                # Busco los abonos (facturas de abono, en realidad, que no 
+                # Busco los abonos (facturas de albaran, en realidad, que no 
                 # tienen por qué tener la misma fecha) que no hayan sido 
                 # incluidos en facturas (porque si no el importe ya se habría 
                 # contado en la factura anterior) ni en pagarés (porque 
@@ -831,11 +831,11 @@ class CRM_SeguimientoImpagos(Ventana):
             # No me queda otra que filtrar así aunque sea lento:
             abonos_pendientes = []
             for a in abonos:
-                if not a.abono:
-                    continue # ¿Error de borrado de un abono? Mmm... mal rollo.
-                if a.abono.facturasVenta:
+                if not a.albaran:
+                    continue # ¿Error de borrado de un albaran? Mmm... mal rollo.
+                if a.albaran.facturasVenta:
                     continue
-                if a.cobros:    # Cada cobro de abono está relacionado 
+                if a.cobros:    # Cada cobro de albaran está relacionado 
                                 # con un pagaré (o con lo que sea en un 
                                 # posible futuro, el caso es que no 
                                 # estaría pendiente).
@@ -917,7 +917,7 @@ class CRM_SeguimientoImpagos(Ventana):
                     total += pendiente
                     vtos = utils.str_fecha(a.fecha)  # Tampoco tiene 
                     # vencimientos. La obligación nace desde el mismo día 
-                    # en que el abono se convierte en factura de abono.
+                    # en que el albaran se convierte en factura de albaran.
                     try:
                         cliente = a.cliente
                     except AttributeError:
@@ -948,7 +948,7 @@ class CRM_SeguimientoImpagos(Ventana):
                                   utils.str_fecha(a.fecha), 
                                   vtos, 
                                   utils.float2str(pendiente), 
-                                  "", #Facturas de abono no tienen anotaciones.
+                                  "", #Facturas de albaran no tienen anotaciones.
                                   -a.id)) # Para distinguirlo de las facturas. 
                     model[nodo_padre][4] = utils.float2str(
                         utils._float(model[nodo_padre][4]) + pendiente)
