@@ -74,7 +74,7 @@ from configuracion import ConfigConexion
 
 import custom_widgets
 
-__version__ = '4.2.1 (beta)'
+__version__ = '4.3.1 (beta)'
 __version_info__ = tuple(
     [int(num) for num in __version__.split()[0].split('.')] + 
     [txt.replace("(", "").replace(")", "") for txt in __version__.split()[1:]]
@@ -837,7 +837,7 @@ def construir_y_enviar(w, ventana, remitente, observaciones, texto, usuario):
     try:
         import libgmail
     except:
-        sys.path.insert(0, os.path.join('..', 'libgmail-0.1.3.3'))
+        sys.path.insert(0, os.path.join('..', 'libgmail-0.1.11'))
         import libgmail
     rte = remitente.get_text()
     buffer = observaciones.get_buffer()
