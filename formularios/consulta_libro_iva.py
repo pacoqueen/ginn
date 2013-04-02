@@ -117,7 +117,7 @@ class ConsultaLibroIVA(Ventana):
             import facturas_venta
             v = facturas_venta.FacturasVenta(fra, usuario = self.usuario)
         elif isinstance(fra. pclases.FacturaDeAbono):
-            a = fra.albaran
+            a = fra.abono
             import abonos_venta
             v = abonos_venta.AbonosVenta(a, usuario = self.usuario)
 
@@ -156,7 +156,7 @@ class ConsultaLibroIVA(Ventana):
                 facturas = FV.select(pclases.AND(
                                         FV.q.fecha >= fechaini, 
                                         FV.q.fecha <= fechafin))
-                # Busco los abonos (facturas de albaran, en realidad, que no 
+                # Busco los abonos (facturas de abono, en realidad, que no 
                 # tienen por qué tener la misma fecha) que no hayan sido 
                 # incluidos en facturas (porque si no el importe ya se habría 
                 # contado en la factura anterior) ni en pagarés (porque 

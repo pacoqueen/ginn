@@ -136,14 +136,14 @@ class ConsultaVencimientosCobros(Ventana):
         elif model[path][-1].startswith("A:"):
             idfrabono = model[path][-1].replace("A:", "")
             frabono = pclases.FacturaDeAbono.get(idfrabono)
-            albaran = frabono.albaran
-            if albaran:
+            abono = frabono.abono
+            if abono:
                 import abonos_venta
-                ventanabonos = abonos_venta.AbonosVenta(objeto = albaran, 
+                ventanabonos = abonos_venta.AbonosVenta(objeto = abono, 
                                                         usuario = self.usuario)
             else:
-                pass    # TODO: Algo debería hacer con las facturas de albaran 
-                        # sin albaran. Empezando por descubrir cómo coño han 
+                pass    # TODO: Algo debería hacer con las facturas de abono 
+                        # sin abono. Empezando por descubrir cómo coño han 
                         # podido sobrevivir. NO PUEDE HABER FACTURAS DE ABONO 
                         # SIN ABONOS. Cojones ya. El mileniarismo va a shegar.
         else:

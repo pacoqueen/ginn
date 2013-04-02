@@ -28,9 +28,9 @@
 
 from ventana import Ventana
 import utils
-import pygtk
+import pygtk, gobject, pango
 pygtk.require('2.0')
-import gtk, time
+import gtk, gtk.glade, time
 try:
     import pclases
 except ImportError:
@@ -39,6 +39,12 @@ except ImportError:
     sys.path.append(pathjoin("..", "framework"))
     import pclases
 import mx
+try:
+    import geninformes
+except ImportError:
+    import sys
+    sys.path.append('../informes')
+    import geninformes
 import ventana_progreso
     
 LINEASPRODUCCION = pclases.LineaDeProduccion.select(orderBy = "id")

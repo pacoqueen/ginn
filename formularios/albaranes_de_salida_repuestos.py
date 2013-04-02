@@ -34,14 +34,20 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
-import sys
+import gtk, gtk.glade, time, sqlobject
+import sys, os
 try:
     import pclases
 except ImportError:
     from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
     import pclases
-import mx.DateTime
+try:
+    import geninformes
+except ImportError:
+    sys.path.append('../informes')
+    import geninformes
+from utils import ffloat, _float as float
+import mx, mx.DateTime
 
 class AlbaranesDeSalidaRepuestos(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -173,7 +179,7 @@ class AlbaranesDeSalidaRepuestos(Ventana):
                 self.nuevo = False
                 # Activo la notificación:
                 albaran.notificador.activar(self.aviso_actualizacion) 
-        except Exception:
+        except Exception, msg:
             albaran = None  
         self.objeto = albaran
         self.actualizar_ventana()
@@ -209,11 +215,10 @@ class AlbaranesDeSalidaRepuestos(Ventana):
         model.clear()
         for ldv in self.objeto.lineasDeVenta:
             cantidad = ldv.cantidad 
-            iterpadre = model.append(None,  # @UnusedVariable
-                                     (ldv.producto.codigo, 
-                                      ldv.producto.descripcion, 
-                                      utils.float2str(cantidad),
-                                      ldv.id))
+            iterpadre = model.append(None, (ldv.producto.codigo, 
+                                            ldv.producto.descripcion, 
+                                            utils.float2str(cantidad),
+                                            ldv.id))
  
     def rellenar_widgets(self):
         """
@@ -488,9 +493,9 @@ class AlbaranesDeSalidaRepuestos(Ventana):
                          padre = self.wids['ventana'])):
             model, paths = self.wids['tv_ldvs'].get_selection().get_selected_rows()
             for path in paths:
-                itr = model.get_iter(path)
-                if model[itr].parent == None:  # Es una LDV
-                    idldv = model[itr][-1]
+                iter = model.get_iter(path)
+                if model[iter].parent == None:  # Es una LDV
+                    idldv = model[iter][-1]
                     try:
                         ldv = pclases.LineaDeVenta.get(idldv)
                     except pclases.SQLObjectNotFound:   # Ya se ha borrado.
@@ -536,7 +541,7 @@ class AlbaranesDeSalidaRepuestos(Ventana):
 
 if __name__=='__main__':
     try:
-        a = AlbaranesDeSalidaRepuestos(usuario = pclases.Usuario.select(pclases.Usuario.q.usuario.contains("rafa"))[0])
+        a = AlbaranesDeSalida(usuario = pclases.Usuario.select(pclases.Usuario.q.usuario.contains("rafa"))[0])
     except:
         a = AlbaranesDeSalidaRepuestos()
     #a = AlbaranesDeSalida()

@@ -269,8 +269,8 @@ class Clientes(Ventana):
                     pedido.obra = buena
                 for factura in mala.facturasVenta:
                     factura.obra = buena
-                for albaran in mala.abonos:
-                    albaran.obra = buena
+                for abono in mala.abonos:
+                    abono.obra = buena
                 mala.removeCliente(self.objeto)
                 try:
                     mala.destroy(ventana = __file__)
@@ -1247,7 +1247,7 @@ class Clientes(Ventana):
                                 usuario = self.usuario)
         elif isinstance(objeto, pclases.FacturaDeAbono):
             import abonos_venta 
-            ventanaabonos = abonos_venta.AbonosVenta(objeto.albaran, 
+            ventanaabonos = abonos_venta.AbonosVenta(objeto.abono, 
                                 usuario = self.usuario)
         self.wids['ventana'].window.set_cursor(None)
 

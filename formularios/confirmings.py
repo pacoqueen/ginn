@@ -957,7 +957,7 @@ class Confirmings(Ventana):
     
     def add_abono(self, boton):
         """
-        Añade un "cobro" de una factura de albaran (cobro con cantidad 
+        Añade un "cobro" de una factura de abono (cobro con cantidad 
         negativa) al confirming de cobro actual.
         """
         confirming = self.objeto
@@ -1005,14 +1005,14 @@ class Confirmings(Ventana):
 
     def buscar_factura_de_abono(self, cliente):
         """
-        Busca, a través de diálogos, facturas de albaran del cliente 
+        Busca, a través de diálogos, facturas de abono del cliente 
         recibido.
         PRECONDICIÓN: cliente no puede ser None.
         """
         frabono = None
         numabono = utils.dialogo_entrada(
                     titulo = "NÚMERO DE FACTURA DE ABONO", 
-                    texto = "Introduzca el número de la factura de albaran "
+                    texto = "Introduzca el número de la factura de abono "
                             "que busca:", 
                     padre = self.wids['ventana'])
         if numabono != None:
@@ -1020,30 +1020,30 @@ class Confirmings(Ventana):
                 pclases.Abono.q.numabono.contains(numabono))
             if abonos.count() == 0:
                 utils.dialogo_info(titulo = "ABONO NO ENCONTRADO", 
-                    texto = "Factura con número de albaran %s no encontrada." % (
+                    texto = "Factura con número de abono %s no encontrada." % (
                                 numabono), 
                     padre = self.wids['ventana'])
             elif abonos.count() == 1:
-                albaran = abonos[0]
-                frabono = albaran.facturaDeAbono
+                abono = abonos[0]
+                frabono = abono.facturaDeAbono
                 if frabono == None:
                     utils.dialogo_info(titulo = "ABONO SIN FACTURAR", 
-                        texto = "El albaran %s no ha generado factura de albaran"
-                                ".\n\n\n  Si el albaran está completo, genere "
+                        texto = "El abono %s no ha generado factura de abono"
+                                ".\n\n\n  Si el abono está completo, genere "
                                 "la factura desde la ventana de abonos y vue"
-                                "lva a intentarlo." % (albaran.numabono), 
+                                "lva a intentarlo." % (abono.numabono), 
                         padre = self.wids['ventana'])
             else:
-                albaran = self.refinar_busqueda_abonos(abonos)
-                if albaran != None:
-                    frabono = albaran.facturaDeAbono
+                abono = self.refinar_busqueda_abonos(abonos)
+                if abono != None:
+                    frabono = abono.facturaDeAbono
                     if frabono == None:
                         utils.dialogo_info(titulo = "ABONO SIN FACTURAR", 
-                            texto = "El albaran %s no ha generado factura de "
-                                    "albaran.\n\n\n  Si el albaran está complet"
+                            texto = "El abono %s no ha generado factura de "
+                                    "abono.\n\n\n  Si el abono está complet"
                                     "o, genere la factura desde la ventana "
                                     "de abonos y vuelva a intentarlo." % (
-                                        albaran.numabono), 
+                                        abono.numabono), 
                             padre = self.wids['ventana'])
         return frabono
 
@@ -1051,9 +1051,9 @@ class Confirmings(Ventana):
         """
         Recibe un SelectResults de abonos y muestra una ventana
         con la información de todos ellos.
-        Devuelve la factura del albaran seleccionado o None si cancela.
+        Devuelve la factura del abono seleccionado o None si cancela.
         """
-        albaran = None
+        abono = None
         filas = [(a.id, 
                   utils.str_fecha(a.fecha), 
                   a.clienteID and a.cliente.nombre or "", 
@@ -1065,11 +1065,11 @@ class Confirmings(Ventana):
                                                        'Fecha', 
                                                        'Cliente', 
                                                        'Importe sin IVA', 
-                                                       'Factura de albaran'), 
+                                                       'Factura de abono'), 
                                           padre = self.wids['ventana'])
         if idabono != None and idabono != -1:
-            albaran = pclases.Abono.get(idabono)
-        return albaran
+            abono = pclases.Abono.get(idabono)
+        return abono
  
     def drop_cobro(self, b):
         confirming = self.objeto

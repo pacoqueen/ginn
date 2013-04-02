@@ -135,9 +135,9 @@ class ConsultaVentasPorProducto(Ventana):
             elif tipo == "LDD": 
                 ldd = pclases.LineaDeDevolucion.get(id)
                 adeda = ldd.lbaranDeEntradaDeAbono
-                albaran = adeda.albaran
+                abono = adeda.abono
                 import abonos_venta
-                v = abonos_venta.AbonosVenta(albaran, usuario = self.usuario)
+                v = abonos_venta.AbonosVenta(abono, usuario = self.usuario)
 
     def chequear_cambios(self):
         pass
@@ -210,7 +210,7 @@ class ConsultaVentasPorProducto(Ventana):
             elif p.es_especial():
                 total_otros += cantidad * ldd.precio
             model.append(fila, ("", utils.float2str(cantidad), 
-                                    ldd.albaran.cliente and ldd.albaran.cliente.nombre or "", 
+                                    ldd.abono.cliente and ldd.abono.cliente.nombre or "", 
                                     utils.str_fecha(ldd.albaranDeEntradaDeAbono.fecha),
                                     ldd.albaranDeEntradaDeAbono.numalbaran, 
                                     "LDD:%d" % (ldd.id)))

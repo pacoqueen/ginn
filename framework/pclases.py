@@ -86,10 +86,6 @@ import sys, os, pprint
 # tabla ajena +'s' o +'es', así que importo el SQLObject 0.6.1 "oficial" (salvo
 # pequeñas modificaciones) incluido en nuestro propio repositorio directamente.
 sys.path.insert(0, os.path.join('..', 'SQLObject', 'SQLObject-0.6.1'))
-from sqlobject.main import SQLObjectNotFound, SQLObject
-from sqlobject.joins import MultipleJoin, RelatedJoin
-from sqlobject.col import ForeignKey, SOForeignKey, SODateCol, SODateTimeCol
-from sqlobject.sqlbuilder import AND, OR
 try:
     from sqlobject import *
 except ImportError, msg:
@@ -106,21 +102,21 @@ except ImportError, msg:
           ", saltará una excepción.\n%s" % (msg)
 
 try:
-    import notificacion  # @UnusedImport
+    import notificacion
 except:
     sys.path.append(os.path.join('..', 'formularios'))
     try:
-        import notificacion  # @Reimport @UnusedImport
+        import notificacion
     except:
         sys.path.append('.')
-        import notificacion  # @Reimport
+        import notificacion
   
 import threading#, psycopg
 from select import select
 
 from configuracion import ConfigConexion
 
-import mx.DateTime
+import mx, mx.DateTime
 from math import ceil
 
 # GET FUN !
@@ -287,7 +283,7 @@ class PRPCTOO:
                 if DEBUG and VERBOSE:
                     print "comparar_swap\n\tCampo: %s. Valor swap: %s. "\
                           "Valor registro: %s" % (
-                            campo, self.swap[campo], getattr(self, campo))
+                            campo, swap[campo], getattr(self, campo))
                 raise SQLObjectChanged(self)
 
     def cerrar_cursor(self):
@@ -481,8 +477,8 @@ class PRPCTOO:
         #pre = "".join([l for l in self.__class__.__name__ if l.isupper()])
         # Muncho mejore asina:
         pre = self.__class__.__name__
-        ide = self.id
-        puid = "%s:%d" % (pre, ide)
+        id = self.id
+        puid = "%s:%d" % (pre, id)
         return puid
 
     puid = property(get_puid)
@@ -499,9 +495,9 @@ def starter(objeto, *args, **kw):
     objeto.notificador = notificacion.Notificacion(objeto)
     SQLObject._init(objeto, *args, **kw)
     PRPCTOO.__init__(objeto, objeto._table)
-    objeto.make_swap()  # Al crear el objeto hago la primera caché de datos, 
-                        # por si acaso la ventana se demora mucho e intenta 
-                        # compararla antes de crearla.
+    objeto.make_swap()    # Al crear el objeto hago la primera caché de datos, 
+                          # por si acaso la ventana se demora mucho e intenta 
+                          # compararla antes de crearla.
 
     #objeto._cacheValues = False    # FIXME: Sospecho que tarde o temprano 
         # tendré que desactivar las cachés locales de SQLObject. 
@@ -655,7 +651,7 @@ class FormaDePago(SQLObject, PRPCTOO):
     def toString(self):
         return "%s, %d D. F. F." % (self.documentoDePago.documento, self.plazo)
 
-    def porDefecto(cls):
+    def porDefecto(clase):
         """
         Devuelve la forma de cobro por defecto.
         """
@@ -665,11 +661,11 @@ class FormaDePago(SQLObject, PRPCTOO):
         except IndexError:
             docdefecto = DocumentoDePago("Pagaré a la orden")
         try:
-            fdp = cls.select(AND(cls.q.plazo == 120, 
-                                   cls.q.documentoDePagoID == docdefecto.id
+            fdp = clase.select(AND(clase.q.plazo == 120, 
+                                   clase.q.documentoDePagoID == docdefecto.id
                                   ))[0]
         except IndexError:
-            fdp = cls(plazo = 120, documentoDePago = docdefecto)
+            fdp = clase(plazo = 120, documentoDePago = docdefecto)
         return fdp
 
     porDefecto = classmethod(porDefecto)
@@ -691,15 +687,13 @@ class Almacen(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
-    @staticmethod
-    def get_almacen_principal():
+    def _get_almacen_principal():
         ppal = Almacen.selectBy(principal = True)
         assert ppal.count() == 1
         ppal = ppal[0]
         return ppal
 
-    @staticmethod
-    def get_almacen_principal_or_none():
+    def _get_almacen_principal_or_none():
         """
         Para casos muy concretos en los que no puedo permitir que una 
         excepción no tratada cuelgue la aplicación (por ejemplo, con el 
@@ -711,8 +705,7 @@ class Almacen(SQLObject, PRPCTOO):
         except:
             return None
     
-    @staticmethod
-    def get_almacen_principal_id_or_none():
+    def _get_almacen_principal_id_or_none():
         """
         Para casos muy concretos en los que no puedo permitir que una 
         excepción no tratada cuelgue la aplicación (por ejemplo, con el 
@@ -723,6 +716,10 @@ class Almacen(SQLObject, PRPCTOO):
             return Almacen.get_almacen_principal().id
         except:
             return None
+
+    get_almacen_principal = staticmethod(_get_almacen_principal)
+    get_almacen_principal_or_none = staticmethod(_get_almacen_principal_or_none)
+    get_almacen_principal_id_or_none = staticmethod(_get_almacen_principal_id_or_none)
 
     def get_existencias(self, producto):
         """
@@ -774,7 +771,7 @@ class Almacen(SQLObject, PRPCTOO):
                                   existencias = existencias)
             sa.existencias = existencias
         else:
-            raise TypeError, "El parámetro debe ser un ProductoCompra."
+            raise TypeException, "El parámetro debe ser un ProductoCompra."
 
     def crear_almacen_principal():
         """
@@ -1001,37 +998,37 @@ class PruebaPiramidal(SQLObject, PRPCTOO):
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 class CacheExistencias:
-    def get_existencias(cls, producto, fecha, almacen):
+    def get_existencias(clase, producto, fecha, almacen):
         """
         Devuelve las existencias en bultos en la fecha dada y el almacén 
         especificado.
         Si no existe devuelve None.
         """
-        rec = cls.get_registro(producto, fecha, almacen)
+        rec = clase.get_registro(producto, fecha, almacen)
         if rec:
             return rec.bultos
         return None
         
-    def get_stock(cls, producto, fecha, almacen):
+    def get_stock(clase, producto, fecha, almacen):
         """
         Devuelve las existencias en las unidades del producto en la fecha dada 
         y el almacén especificado.
         Si no existe devuelve None.
         """
-        rec = cls.get_registro(producto, fecha, almacen)
+        rec = clase.get_registro(producto, fecha, almacen)
         if rec:
             return rec.cantidad
         return None
     
-    def get_registro(cls, producto, fecha, almacen):
+    def get_registro(clase, producto, fecha, almacen):
         """
         Devuelve el registro de caché relacionado con el producto en la fecha 
         dada y el almacén especificado.
         Si no existe devuelve None.
         """
-        recs = cls.select(AND(cls.q.productoVentaID == producto.id, 
-                                cls.q.fecha == fecha, 
-                                cls.q.almacenID == almacen.id))
+        recs = clase.select(AND(clase.q.productoVentaID == producto.id, 
+                                clase.q.fecha == fecha, 
+                                clase.q.almacenID == almacen.id))
         if recs.count() == 1:
             return recs[0]
         elif recs.count > 1:
@@ -1042,21 +1039,21 @@ class CacheExistencias:
         else:   # recs.count() == 0
             return None
    
-    def actualizar(cls, producto, bultos, cantidad, fecha, almacen):
+    def actualizar(clase, producto, bultos, cantidad, fecha, almacen):
         """
         Actualizar el registro de caché para el producto, fecha y almacén.
         Si existen varios elimina los que sobren. Si no existe lo crea. Y si 
         solo existe uno, lo actualiza y sincroniza.
         """
-        cache = cls.select(AND(cls.q.productoVentaID == producto.id, 
-                                 cls.q.fecha == fecha, 
-                                 cls.q.almacenID == almacen.id))
+        cache = clase.select(AND(clase.q.productoVentaID == producto.id, 
+                                 clase.q.fecha == fecha, 
+                                 clase.q.almacenID == almacen.id))
         if cache.count() == 1:
             cache = cache[0]
         else:   # cache.count() > 1 or cache.count() == 0:
             for c in cache:
                 c.destroySelf()
-            cache = cls(productoVenta = producto, 
+            cache = clase(productoVenta = producto, 
                           fecha = fecha, 
                           almacen = almacen, 
                           cantidad = 0, 
@@ -1065,19 +1062,19 @@ class CacheExistencias:
         cache.bultos = bultos
         cache.syncUpdate()
 
-    def get_fechas_cacheadas(cls, producto = None):
+    def get_fechas_cacheadas(clase, producto = None):
         """
         Devuelve una lista de fechas que ya han sido cacheadas. Si se 
         especifica producto, devuelve las fechas cacheadas solo para ese 
         producto.
         OJO: Solo va a mirar en los cachés del tipo de existencias por las 
-        que se pregunta dependiendo de la cls invocadora: totales, A, B o C.
+        que se pregunta dependiendo de la clase invocadora: totales, A, B o C.
         """
         fechas = []
         if producto:
-            rs = cls.select(cls.q.productoVentaID == producto.id)
+            rs = clase.select(clase.q.productoVentaID == producto.id)
         else:
-            rs = cls.select()
+            rs = clase.select()
         for r in rs:
             fecha = r.fecha
             if fecha not in fechas:
@@ -1794,7 +1791,7 @@ class Silo(SQLObject, PRPCTOO):
         """
         if not fecha:
             fecha = mx.DateTime.localtime()
-        carga_silo = CargaSilo(silo = self,  # @UnusedVariable
+        carga_silo = CargaSilo(silo = self, 
                                productoCompra = producto, 
                                fechaCarga = fecha,
                                cantidad = cantidad)
@@ -2544,7 +2541,7 @@ class VencimientoPago(SQLObject, PRPCTOO):
                 else:
                     importe_cobrado = sum([p.importe for p in pagos])
                     if importe_cobrado >= v.importe:
-                        v.procesado = True    # Marco para no volver a tratar.
+                        procesado = True    # Marco para no volver a tratar.
                         continue    # Ya está pagado aunque no haya sido 
                                     # procesado automáticamente.
             if mx.DateTime.today() >= v.fecha:
@@ -2716,12 +2713,12 @@ class PagarePago(SQLObject, PRPCTOO):
     pendiente = property(esta_pendiente, doc = "Valor booleano que devuelve si el pagaré está completamente pagado (False) o no -tiene algo o todo pendiente de pagar (True)-.")
     cantidad_pendiente = property(get_cantidad_pendiente, set_cantidad_pendiente, doc = "Cantidad pendiente de pagar del total del pagaré")
 
-    def actualizar_estado_cobro(cls):
+    def actualizar_estado_cobro(clase):
         """
         Marca por defecto como cobrados todos los pagarés vencidos, pero 
         respetando aquellos que ya se marcaron manualmente como pendientes.
         """
-        actualizar_estado_cobro_de(cls) 
+        actualizar_estado_cobro_de(clase) 
     
     actualizar_estado_cobro = classmethod(actualizar_estado_cobro)
 
@@ -2753,7 +2750,7 @@ class Cobro(SQLObject, PRPCTOO):
     def get_numfactura(self):
         """
         Devuelve el número de la factura de venta o de la
-        factura de albaran relacionada con el cobro actual.
+        factura de abono relacionada con el cobro actual.
         Devuelve la cadena vacía si no tiene relación con 
         ninguna de las dos cosas.
         """
@@ -2775,7 +2772,7 @@ class Cobro(SQLObject, PRPCTOO):
             cliente = self.prefactura.cliente
         if (self.facturaDeAbonoID != None 
                 and self.facturaDeAbono.abonoID != None):
-            cliente = self.facturaDeAbono.albaran.cliente
+            cliente = self.facturaDeAbono.abono.cliente
         if self.clienteID != cliente:
             try:
                 self.clienteID = cliente.id
@@ -2786,7 +2783,7 @@ class Cobro(SQLObject, PRPCTOO):
     def set_cliente(self, cliente):
         """
         Hace que el cliente de la factura de venta o 
-        de albaran relacionada(s) con el cobro tengan como
+        de abono relacionada(s) con el cobro tengan como
         cliente el objeto cliente recibido.
         """
         if self.facturaVentaID != None:
@@ -2795,7 +2792,7 @@ class Cobro(SQLObject, PRPCTOO):
             self.prefactura.cliente = cliente
         if (self.facturaDeAbonoID != None 
                 and self.facturaDeAbono.abonoID != None):
-            self.facturaDeAbono.albaran.cliente = cliente
+            self.facturaDeAbono.abono.cliente = cliente
         self.clienteID = cliente.id
 
     # DONE: La tabla ya tiene un cliente_id. ¿Por qué esta property? 
@@ -2894,8 +2891,6 @@ class Cobro(SQLObject, PRPCTOO):
 
     @staticmethod
     def _parse_fdp(txt, force_create = False, strict_mode = True):
-        import re
-        rex = re.compile("\d+")
         try:
             plazo = int(rex.findall(txt)[0])
         except (IndexError, TypeError, ValueError):
@@ -2984,6 +2979,7 @@ class Cobro(SQLObject, PRPCTOO):
                   en los vencimientos. Y si la factura no tiene vencimientos, 
                   entonces devuelve None (caso altamente improbable).
         """
+        doc = None
         vencimiento = None
         vtoscobros = self.facturaVenta.emparejar_vencimientos()
         doc = Cobro._parse_docpago(self.observaciones)
@@ -3147,12 +3143,12 @@ class PagareCobro(SQLObject, PRPCTOO):
     fechaVencimiento = property(get_fechaCobro, set_fechaCobro) # Por si 
     # alguien se lía con el nombre, que no queda muy claro a qué se refiere.
 
-    def actualizar_estado_cobro(cls):
+    def actualizar_estado_cobro(clase):
         """
         Marca por defecto como cobrados todos los pagarés vencidos, pero 
         respetando aquellos que ya se marcaron manualmente como pendientes.
         """
-        actualizar_estado_cobro_de(cls) 
+        actualizar_estado_cobro_de(clase) 
     
     actualizar_estado_cobro = classmethod(actualizar_estado_cobro)
 
@@ -3307,12 +3303,12 @@ class Confirming(SQLObject, PRPCTOO):
     fechaVencimiento = property(get_fechaCobro, set_fechaCobro) # Por si 
     # alguien se lía con el nombre, que no queda muy claro a qué se refiere.
     
-    def actualizar_estado_cobro(cls):
+    def actualizar_estado_cobro(clase):
         """
         Marca por defecto como cobrados todos los pagarés vencidos, pero 
         respetando aquellos que ya se marcaron manualmente como pendientes.
         """
-        actualizar_estado_cobro_de(cls) 
+        actualizar_estado_cobro_de(clase) 
     
     actualizar_estado_cobro = classmethod(actualizar_estado_cobro)
 
@@ -3802,15 +3798,15 @@ class Pale(SQLObject, PRPCTOO):
 
     claseb = property(es_clase_b)
 
-    def get_next_numpale(cls, numbolsas = None, numpale = None):
+    def get_next_numpale(clase, numbolsas = None, numpale = None):
         """
         Devuelve el entero correspondiente al siguiente número de palé y 
         su código de trazabilidad en función del número de bolsas.
         """
         if numbolsas is None:   # Debe ser None. Aceptaría cero.
-            numbolsas = cls.NUMBOLSAS
+            numbolsas = clase.NUMBOLSAS
         if numpale is None:
-            maxi = cls._connection.queryOne(
+            maxi = clase._connection.queryOne(
                                         "SELECT MAX(numpale) FROM pale;")[0]
             try:
                 res = maxi + 1
@@ -3905,10 +3901,9 @@ class Pale(SQLObject, PRPCTOO):
         """
         Crea un palé con todas las cajas y bolsas que contiene.
         """
-        from partes_de_fabricacion_balas \
-            import buscar_o_crear_albaran_interno
-        from partes_de_fabricacion_rollos \
-            import descontar_material_adicional
+        from partes_de_fabricacion_balas import verificar_solapamiento, \
+                                                buscar_o_crear_albaran_interno
+        from partes_de_fabricacion_rollos import descontar_material_adicional
         if not partidaCem:
             partidaCem = parteDeProduccion.partidaCem
             if not partidaCem:
@@ -3945,22 +3940,19 @@ class Pale(SQLObject, PRPCTOO):
                     numcajas = numcajasdefecto 
                     )
             # 2.- Creo las cajas.
-            for i in range(pale.numcajas):  # @UnusedVariable
-                caja = Caja.crear_caja(     # @UnusedVariable
-                                    parteDeProduccion, pale, numbolsas)
-            if pale.numcajas:
-                articulo = caja.articulo
-                # OJO: Le paso el último artículo porque la formulación de 
-                # esta línea será por PALÉS COMPLETOS.
-                class FakeVentanaPartes:
-                    def __init__(self, objeto):
-                        self.objeto = objeto
-                descontar_material_adicional(
-                    FakeVentanaPartes(parteDeProduccion), 
-                    articulo)
-                buscar_o_crear_albaran_interno(parteDeProduccion, 
-                    incluir_consumos_auto = True) # Normalmente no, pero 
-                    # aquí sí quiero que aparezcan en el alb. interno.
+            for i in range(pale.numcajas):
+                caja = pclases.Caja.crear_caja(parteDeProduccion, pale, 
+                                               numbolsas)
+            # OJO: Le paso el último artículo porque la formulación de esta 
+            # línea será por PALÉS COMPLETOS.
+            class FakeVentanaPartes:
+                def __init__(self, objeto):
+                    self.objeto = objeto
+            descontar_material_adicional(FakeVentanaPartes(parteDeProduccion), 
+                                         articulo)
+            buscar_o_crear_albaran_interno(parteDeProduccion, 
+                incluir_consumos_auto = True) # Normalmente no, pero 
+                # aquí sí quiero que aparezcan en el alb. interno.
         return pale
     crear_pale = staticmethod(crear_pale)
 
@@ -4034,12 +4026,12 @@ class Caja(SQLObject, PRPCTOO):
         # así. Si funciona bien, migraré todas las clases.
         return "Caja:%d" % self.id
 
-    def get_next_numcaja(cls):
+    def get_next_numcaja(clase):
         """
         Devuelve el entero correspondiente al siguiente número de caja y 
         su código de trazabilidad.
         """
-        maxi = cls._connection.queryOne("SELECT MAX(numcaja) FROM caja;")[0]
+        maxi = clase._connection.queryOne("SELECT MAX(numcaja) FROM caja;")[0]
         try:
             res = maxi + 1
         except TypeError:   # No hay cajas creadas:
@@ -4207,6 +4199,7 @@ class Caja(SQLObject, PRPCTOO):
         Devuelve un diccionario con los números de bolsas que se supone 
         van en la caja, así como sus códigos de trazabilidad y peso.
         """
+        res = {}
         primera, ultima = self.get_bounds_numbolsa()
         numsbolsas = range(primera, ultima + 1)
         databolsas = []
@@ -4331,8 +4324,7 @@ class Caja(SQLObject, PRPCTOO):
         #                          fechahora = mx.DateTime.localtime(), 
         #                          peso = peso, 
         #                          claseb = claseb)
-        articulo = Articulo(  # @UnusedVariable
-                            parteDeProduccion = parteDeProduccion, 
+        articulo = Articulo(parteDeProduccion = parteDeProduccion, 
                             caja = caja, 
                             rolloDefectuoso = None, 
                             albaranSalida = None, 
@@ -5663,10 +5655,10 @@ class Partida(SQLObject, PRPCTOO):
             else:
                 # Lo mínimo que deben tener analizado son las pruebas:
                 completamente_analizada = (self.pruebasCompresion 
-                               and self.pruebasResistenciaLongitudinal 
-                               and self.pruebasPerforacion 
-                               and self.pruebasPermeabilidad 
-                               and self.pruebasResistenciaTransversal) 
+                               and pruebasResistenciaLongitudinal 
+                               and pruebasPerforacion 
+                               and pruebasPermeabilidad 
+                               and pruebasResistenciaTransversal) 
                 if ("NT" in producto.descripcion
                     and ("155" in producto.descripcion
                          or "235" in producto.descripcion
@@ -6349,8 +6341,8 @@ class LineaDePedido(SQLObject, PRPCTOO):
         if descuento:
             subtotal *= (1.0 - self.descuento)
         if iva:
-            if self.pedidoVenta:
-                subtotal *= self.pedidoVenta.iva
+            if ldp.pedidoVenta:
+                subtotal *= ldp.pedidoVenta.iva
             else:
                 raise ValueError, "pclases::LineaDePedido::calcular_subtotal -> La LDP ID %s no tiene pedido del que obtener el IVA."
         return subtotal
@@ -7047,7 +7039,7 @@ class LineaDeVenta(SQLObject, PRPCTOO, Venta):
             porcentaje = tarifa.get_porcentaje(producto, fraccion = True)
         else:
             try:
-                porcentaje = (precio / producto.precioDefecto) - 1.0
+                porcentaje = (self.precio / producto.precioDefecto) - 1.0
             except ZeroDivisionError:
                 porcentaje = 1.0
         return producto.precioDefecto * porcentaje * cantidad
@@ -7742,8 +7734,8 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
                     caches_almacenes.append(cache)
                 res = sum(caches_almacenes)
         # --- 
-        if res == None:     # Aún no he encontrado las existencias, bien por 
-                            # no caché o bien porque hay que forzar.
+        if res == None:  # Aún no he encontrado las existencias, bien por 
+                         # no caché o bien porque hay que forzar.
             if almacen:
                 cache_mas_cercano = HEC.select(
                     AND(HEC.q.fecha < fecha, 
@@ -7776,7 +7768,7 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
                          - self.get_entradas_y_salidas_entre(fecha, 
                                                              fechafin = None, 
                                                              almacen=almacen))
-                nuevo_cache = HEC(productoCompraID = self.id, # @UnusedVariable
+                nuevo_cache = HEC(productoCompraID = self.id, 
                                   fecha = fecha, 
                                   cantidad = res, 
                                   observaciones = observaciones_historico, 
@@ -8722,10 +8714,10 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
         for h in self.historialesExistenciasCompra + d.historialesExistenciasCompra:
             h.destroySelf()
         for fecha in final:
-            h = HistorialExistenciasCompra(productoCompra = self, 
-                                           cantidad = final[fecha][0], 
-                                           observaciones = final[fecha][1], 
-                                           fecha = fecha)
+            h = pclases.HistorialExistenciasCompra(productoCompra = o, 
+                                            cantidad = final[fecha][0], 
+                                            observaciones = final[fecha][1], 
+                                            fecha = fecha)
 
     def unificar_productos_compra(bueno, malos):
         """
@@ -9128,8 +9120,8 @@ class Articulo(SQLObject, PRPCTOO):
                         alb.almacenDestino))
         # Abonos:
         for ldd in self.lineasDeDevolucion:
-            albaran = ldd.albaran
-            fecha = albaran.fecha
+            abono = ldd.abono
+            fecha = abono.fecha
             # Primero los albaranes originales en los que estaba.
             try:
                 fechalbaran = ldd.albaranSalida.fecha
@@ -9138,10 +9130,10 @@ class Articulo(SQLObject, PRPCTOO):
             res.append((fechalbaran, 
                         ldd.albaranSalida, 
                         None))
-            # Y finalmente el albaran, para que conste.
-            res.append((albaran.fecha, 
-                        albaran, 
-                        albaran.almacen))
+            # Y finalmente el abono, para que conste.
+            res.append((abono.fecha, 
+                        abono, 
+                        abono.almacen))
         # Consumos de fibra
         if self.bala and self.bala.partidaCarga:   
             # Se consumió en una partida de carga
@@ -9481,7 +9473,7 @@ class Articulo(SQLObject, PRPCTOO):
         """
         Devuelve True si el artículo está correctamente abonado, o no abonado.
         Devuelve False si incumple esa condición estando a la vez en un 
-        albarán de entrada de albaran y en el mismo albarán de salida devuelto.
+        albarán de entrada de abono y en el mismo albarán de salida devuelto.
         """
         albaranes_salida_devueltos = []
         for ldd in self.lineasDeDevolucion:
@@ -9615,8 +9607,7 @@ class PedidoVenta(SQLObject, PRPCTOO):
             total *= (1 + self.iva)
         return total
     
-    @classmethod
-    def ultimo_numpedido(cls):
+    def ultimo_numpedido(clase):
         """
         Devuelve un ENTERO con el último número de albarán sin letras o 0 si 
         no hay ninguno o los que hay tienen caracteres alfanuméricos y no se 
@@ -9626,11 +9617,11 @@ class PedidoVenta(SQLObject, PRPCTOO):
         ordenar a la inversa por ID y comenzar a buscar el primer número de 
         pedido convertible a entero. 
         """
-        # DONE: Además, esto debería ser un método de cls.
+        # DONE: Además, esto debería ser un método de clase.
         import re
         regexp = re.compile("[0-9]*")
         ultimo = 0
-        peds = cls.select(orderBy = '-id')
+        peds = clase.select(orderBy = '-id')
         for p in peds:
             try:
                 numpedido = p.numpedido
@@ -9644,8 +9635,7 @@ class PedidoVenta(SQLObject, PRPCTOO):
                 ultimo = 0
         return ultimo
     
-    @classmethod
-    def siguiente_numpedido(cls):
+    def siguiente_numpedido(clase):
         """
         Devuelve el siguiente número de pedido libre partiendo del último encontrado como entero.
         """
@@ -9654,8 +9644,8 @@ class PedidoVenta(SQLObject, PRPCTOO):
             ultimo += 1
         return ultimo + 1
 
-    get_ultimo_numero_numpedido = ultimo_numpedido
-    get_siguiente_numero_numpedido = siguiente_numpedido
+    get_ultimo_numero_numpedido = classmethod(ultimo_numpedido)
+    get_siguiente_numero_numpedido = classmethod(siguiente_numpedido)
 
     def es_de_fibra(self):
         """
@@ -10349,7 +10339,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
             # peso de un bulto del producto, es decir, una caja.
             ceb = self.camposEspecificosBala
             pesobolsa = ceb.gramosBolsa / 1000.0
-            pesocaja = pesobolsa * ceb.bolsasCaja
+            pesocaja = ceb.pesobolsa * ceb.bolsasCaja
             res = pesocaja  # El bulto es la caja.
         elif self.es_especial():    # El número que devolverá puede variar 
             # con el tiempo, porque depende exclusivamente de la información 
@@ -10597,7 +10587,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                       Articulo.q.productoVentaID == self.id)
         if almacen:
             try:
-                almacen_id = almacen.id
+                almacen_id = almacend.id
             except:
                 almacen_id = almacen
             clauses = AND(clauses, 
@@ -10835,7 +10825,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                articulos_de_rollos_anteriores_a_fecha, 
                articulos_de_balas_anteriores_a_fecha, 
                articulos_de_bigbags_anteriores_a_fecha, 
-               articulos_de_cajas_anteriores_a_fecha, 
+               articulos_de_caja_anteriores_a_fecha, 
                albaranes_antes_de_fecha, 
                clausula_defectuosos)
         articulos_en_almacen = Articulo.select(parte_where)
@@ -11248,7 +11238,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         ## ## ## BALAS DEVUELTAS    # ## ## ## ## ## ## ##
         # Busco los abonos anteriores a esa fecha. Las balas de esos abonos 
         # estaban en el almacén ya en la fecha «hasta» si el almacén de 
-        # destino del albaran es el indicado.
+        # destino del abono es el indicado.
         A = Articulo
         B = Bala
         AB = Abono
@@ -11260,7 +11250,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                             AB.q.fecha <= hasta, 
                             A.q.productoVentaID == self.id, 
                             AB.q.almacenID == almacen.id))
-        return balas + SQLlist(balas_devueltas)
+        return balas
 
     def _agregar_a_historico(self, fecha, cantidad = None, bultos = None, 
                              almacen = None):
@@ -11519,8 +11509,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
             clauses.append(A.q.rolloDefectuosoID == None)
         if (almacen and almacen != almacen_ppal):
             articulos_pdp = A.select(AND(A.q.id==-1, *clauses))  
-            # Siempre va a dar un SelectResult vacío porque no hay ID <= 0,
-            # que es justamente lo que queremos.
+              # Siempre va a dar un SelectResult vacío porque no hay ID <= 0,
+              # que es justamente lo que queremos.
         else:
             clauses.append(PDP.q.fechahorainicio >= desde)
             clauses.append(PDP.q.fechahorafin <= hasta)
@@ -11787,7 +11777,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                     else:
                         cantidad = 0.0
                 except Exception, msg:      # Lo que sea. Error psycopg, 
-                                            # interno de sqlobject, lo que sea.
+                                            # interno de sqlobjet, lo que sea.
                     print "pclases.py: get_stock: Error contando existencias en balas de productoVentaID %d: %s" % (self.id, msg)
                     cantidad = 0.0
             elif self.es_rollo():
@@ -11862,7 +11852,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                     else:
                         cantidad = 0.0
                 except:     # Lo que sea. Error psycopg, interno de 
-                            # sqlobject, lo que sea.
+                            # sqlobjet, lo que sea.
                     print "pclases.py: get_stock: Error contando existencias en bigbags de productoVentaID %d." % (self.id)
                     cantidad = 0.0
             elif self.es_caja():
@@ -11908,7 +11898,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                                  albaranes_de_salida_despues_de_fecha))
                     cantidad = sum([c.peso for c in cajas])
                 except:     # Lo que sea. Error psycopg, interno de 
-                            # sqlobject, lo que sea.
+                            # sqlobjet, lo que sea.
                     print "pclases.py: get_stock: Error contando existencias en bolsas de productoVentaID %d." % (self.id)
                     cantidad = 0.0
             elif self.es_bala_cable():
@@ -11948,7 +11938,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                     else:
                         cantidad = 0.0
                 except Exception, msg:      # Lo que sea. Error psycopg, 
-                                            # interno de sqlobject, lo que sea.
+                                            # interno de sqlobjet, lo que sea.
                     print "pclases.py: get_stock: Error contando existencias en balas de cable de productoVentaID %d. Excepción: %s" % (self.id, msg)
                     cantidad = 0.0
             elif self.es_rollo_c():
@@ -11988,7 +11978,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                     else:
                         cantidad = 0.0
                 except Exception, msg:      # Lo que sea. Error psycopg, 
-                                            # interno de sqlobject, lo que sea.
+                                            # interno de sqlobjet, lo que sea.
                     print "pclases.py: get_stock: Error contando existencias en balas de cable de productoVentaID %d. Excepción: %s" % (self.id, msg)
                     cantidad = 0.0
             elif self.es_especial():
@@ -12010,7 +12000,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         # 1.- Se fabricó en la fecha «hasta» o en una anterior.
         # 2.- No está en ningún albarán de salida cuyo almacén de origen 
         #     sea el almacén en cuestión.
-        # 3.- Está en algún albaran con destino «almacén» con fecha posterior 
+        # 3.- Está en algún abono con destino «almacén» con fecha posterior 
         #     a «hasta».
         # 4.- Está en un albarán de transferencia con almacén de destino 
         #     «almacen» en fecha posterior a «hasta».
@@ -12158,7 +12148,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                     else:
                         cantidad = 0.0
                 except Exception, msg:      # Lo que sea. Error psycopg, 
-                                            # interno de sqlobject, lo que sea.
+                                            # interno de sqlobjet, lo que sea.
                     print "pclases.py: get_stock: Error contando existencias "\
                           "en balas de productoVentaID %d: %s" % (self.id, msg)
                     cantidad = 0.0
@@ -12263,8 +12253,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         cantidad = bigbags.sumFloat('pesobigbag')
                     else:
                         cantidad = 0.0
-                except Exception, msg:  # Lo que sea. Error psycopg, interno  
-                                        # de sqlobject, lo que sea.
+                except Exception, msg: # Lo que sea. Error psycopg, interno de 
+                                       # sqlobjet, lo que sea.
                     print "pclases.py: get_stock: Error contando existencias en bigbags de productoVentaID %d: %s" % (self.id, msg)
                     cantidad = 0.0
             elif self.es_bala_cable():
@@ -12325,7 +12315,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                     else:
                         cantidad = 0.0
                 except Exception, msg:      # Lo que sea. Error psycopg, 
-                                            # interno de sqlobject, lo que sea.
+                                            # interno de sqlobjet, lo que sea.
                     print "pclases.py: get_stock: Error contando existencias en balas de cable de productoVentaID %d. Excepción: %s" % (self.id, msg)
                     cantidad = 0.0
             elif self.es_rollo_c():
@@ -12386,7 +12376,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                     else:
                         cantidad = 0.0
                 except Exception, msg:      # Lo que sea. Error psycopg, 
-                                            # interno de sqlobject, lo que sea.
+                                            # interno de sqlobjet, lo que sea.
                     print "pclases.py: get_stock: Error contando existencias "\
                           "en rollos_c de productoVentaID %d. Excepción: "\
                           "%s" % (self.id, msg)
@@ -12421,8 +12411,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         cantidad = sum([c.peso for c in cajas]) 
                     else:
                         cantidad = 0.0
-                except Exception, msg:  # Lo que sea. Error psycopg, interno  
-                                        # de sqlobject, lo que sea.
+                except Exception, msg: # Lo que sea. Error psycopg, interno de 
+                                       # sqlobjet, lo que sea.
                     print "pclases.py: get_stock: Error contando existencias en cajas de productoVentaID %d: %s" % (self.id, msg)
                     cantidad = 0.0
             else:
@@ -12727,7 +12717,6 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                 res = 0.0
         else:
             res = 0.0
-        return res
 
     def get_stock_B(self, hasta = None, forzar = False, actualizar = True, 
                     contar_defectuosos = False, almacen = None):
@@ -13877,8 +13866,8 @@ class AlbaranSalida(SQLObject, PRPCTOO):
         #for ldv in self.lineasDeVenta:
         #    subtotal += ldv.precio * ldv.cantidad * (1 - ldv.descuento)
         for ldv in self.lineasDeVenta:
-            if ldv.productoCompraID != None:    # No trazable. Cuento línea 
-                                                # del pedido.
+            if ldv.productoCompraID != None: # No trazable. Cuento línea 
+                                             # del pedido.
                 subtotal += ldv.precio * ldv.cantidad * (1 - ldv.descuento)
         if not segun_factura:
             for a in self.articulos:
@@ -13985,7 +13974,7 @@ class AlbaranSalida(SQLObject, PRPCTOO):
         en la llamada anterior y posterior a la modificación. 
         """
         if DEBUG:
-            import time  # @Reimport
+            import time
             antes = time.time()
             print "Soy agrupar artículos. T0 =", antes 
         # Creo un diccionario con todas las LDVs. Dentro del diccionario irá
@@ -14033,7 +14022,7 @@ class AlbaranSalida(SQLObject, PRPCTOO):
             d[idldv]['idsarticulos'].append(a.id)
             d[idldv]['cantidad'] += a.get_cantidad()
         if DEBUG:
-            import time  # @Reimport
+            import time
             print "Soy agrupar artículos. T1 - T0=", time.time() - antes 
         return d
 
@@ -14063,8 +14052,7 @@ class AlbaranSalida(SQLObject, PRPCTOO):
                 facturas.append(srv.prefactura)
         return facturas
     
-    @classmethod
-    def ultimo_numalbaran(cls):
+    def ultimo_numalbaran(clase):
         """
         Devuelve un ENTERO con el último número de albarán sin letras o 0 si 
         no hay ninguno o los que hay tienen caracteres alfanuméricos y no se 
@@ -14078,12 +14066,12 @@ class AlbaranSalida(SQLObject, PRPCTOO):
         OJO: Aquí los números son secuenciales y no se reinicia en cada año 
         (que es como se está haciendo ahora en facturas).
         """
-        # DONE: Además, esto debería ser un método de cls.
+        # DONE: Además, esto debería ser un método de clase.
         import re
         regexp = re.compile("[0-9]*")
         ultimo = 0
         # albs = AlbaranSalida.select(orderBy = '-numalbaran')       # No, porque A_AJUSTE se colocaría el primero a tratar.
-        albs = cls.select(orderBy = '-id')
+        albs = clase.select(orderBy = '-id')
         for a in albs:
             try:
                 numalbaran = a.numalbaran
@@ -14096,8 +14084,7 @@ class AlbaranSalida(SQLObject, PRPCTOO):
                 ultimo = 0
         return ultimo
 
-    @classmethod
-    def siguiente_numalbaran(cls):
+    def siguiente_numalbaran(clase):
         """
         Devuelve un ENTERO con el siguiente número de albarán sin letras o 0 
         si no hay ninguno o los que hay tienen caracteres alfanuméricos y no 
@@ -14118,8 +14105,7 @@ class AlbaranSalida(SQLObject, PRPCTOO):
         nums = rexp.findall(self.numalbaran)
         return int(nums[-1])
 
-    @classmethod
-    def siguiente_numalbaran_str(cls):
+    def siguiente_numalbaran_str(clase):
         """
         Devuelve el siguiente número de albarán libre como cadena intentando 
         respetar el formato del último numalbaran.
@@ -14127,7 +14113,7 @@ class AlbaranSalida(SQLObject, PRPCTOO):
         import re
         regexp = re.compile("[0-9]*")
         ultimo = None
-        albs = cls.select(orderBy = '-id')
+        albs = clase.select(orderBy = '-id')
         for a in albs:
             try:
                 numalbaran = a.numalbaran
@@ -14152,9 +14138,9 @@ class AlbaranSalida(SQLObject, PRPCTOO):
             res = str(res)
         return res
 
-    get_ultimo_numero_numalbaran = ultimo_numalbaran
-    get_siguiente_numero_numalbaran = siguiente_numalbaran
-    get_siguiente_numero_numalbaran_str = siguiente_numalbaran_str
+    get_ultimo_numero_numalbaran = classmethod(ultimo_numalbaran)
+    get_siguiente_numero_numalbaran = classmethod(siguiente_numalbaran)
+    get_siguiente_numero_numalbaran_str = classmethod(siguiente_numalbaran_str)
 
     def get_str_tipo(self):
         """
@@ -14303,10 +14289,10 @@ class ConsumoAdicional(SQLObject, PRPCTOO):
         regexp_porcentaje = re.compile("^-?\d+[\.,]?\d*\s*%$")
         regexp_fraccion = re.compile("-?\d+[\.,]?\d*\s*\w*\s*/\s*-?\d*[\.,]?\d*\s*\w+")
         if regexp_porcentaje.findall(txt) != []:
-            # cantidad = self.__parsear_porcentaje()
+            cantidad = self.__parsear_porcentaje()
             res = ConsumoAdicional.PORCENTAJE
         elif regexp_fraccion.findall(txt) != []:
-            # cantidad, unidad, cantidad_pv, unidad_pv = self.__parsear_fraccion()
+            cantidad, unidad, cantidad_pv, unidad_pv = self.__parsear_fraccion()
             res = ConsumoAdicional.FRACCION
         return res
             
@@ -14411,7 +14397,7 @@ class ConsumoAdicional(SQLObject, PRPCTOO):
             cantidad_a_consumir = self._calcular_cantidad_a_consumir(articulo)
         if cancelar:
             cantidad_a_consumir *= -1
-        consumo = Consumo(silo = silo,  # @UnusedVariable
+        consumo = Consumo(silo = silo, 
                           parteDeProduccion = articulo.parteDeProduccion, 
                           productoCompra = producto_a_consumir, 
                           actualizado = True, 
@@ -15110,7 +15096,7 @@ class Cliente(SQLObject, PRPCTOO):
 
     def get_facturas_no_abonadas(self, cache = {}):
         """
-        Devielve las facturas de albaran no pagadas ni descontadas en pedidos.
+        Devielve las facturas de abono no pagadas ni descontadas en pedidos.
         """
         res = []
         for f in self.get_facturas_y_abonos():
@@ -15138,7 +15124,7 @@ class Cliente(SQLObject, PRPCTOO):
     def get_facturas_y_abonos(self):
         """
         Iterador que devuelve cada vez una factura, prefactura o factura de 
-        albaran hasta agotar todas las del cliente.
+        abono hasta agotar todas las del cliente.
         """
         for fra in self.facturasVenta:
             yield fra
@@ -15537,10 +15523,10 @@ class SuperFacturaVenta:
         [1] Cobrado o no, da igual.
         """
         if isinstance(self, FacturaDeAbono):
-            # Las facturas de albaran no tienen vencimientos, solo "cobros" que 
+            # Las facturas de abono no tienen vencimientos, solo "cobros" que 
             # se relacionan con otros efectos de cobro. "So", el importe habrá 
-            # vencido si la fecha es superior a la del albaran.
-            if self.fecha <= fecha_base:
+            # vencido si la fecha es superior a la del abono.
+            if fda.fecha <= fecha_base:
                 vencido = self.importeTotal
             else:
                 vencido = 0.0
@@ -15805,7 +15791,7 @@ class SuperFacturaVenta:
                                 *args, **kw):
         """
         Divide el resultado que devuelva la función «func_a_evaluar_en_lineas» 
-        aplicada a las líneas de venta, servicio, de albaran, etc.
+        aplicada a las líneas de venta, servicio, de abono, etc.
         """
         comerciales = {None: 0.0}   # Al menos siempre debe quedar None con 0
                                     # aunque no tenga eledeuves ni servicios.
@@ -15814,9 +15800,9 @@ class SuperFacturaVenta:
             lineas = self.lineasDeVenta + self.servicios
         elif isinstance(self, FacturaDeAbono):
             try:
-                lineas=self.albaran.lineasDeAbono+self.albaran.lineasDeDevolucion
+                lineas=self.abono.lineasDeAbono+self.abono.lineasDeDevolucion
             except AttributeError:
-                # ¿Factura de albaran sin albaran? Puede ser... Raro, pero posible.
+                # ¿Factura de abono sin abono? Puede ser... Raro, pero posible.
                 lineas = []
         else:
             raise TypeError
@@ -15842,7 +15828,7 @@ class SuperFacturaVenta:
                                 *args, **kw):
         """
         Divide el resultado que devuelva la función «func_a_evaluar_en_lineas» 
-        aplicada a las líneas de venta, servicio, de albaran, etc.
+        aplicada a las líneas de venta, servicio, de abono, etc.
         """
         proveedores = {None: 0.0}   # Al menos siempre debe quedar None con 0
                                     # aunque no tenga eledeuves ni servicios.
@@ -15851,9 +15837,9 @@ class SuperFacturaVenta:
             lineas = self.lineasDeVenta + self.servicios
         elif isinstance(self, FacturaDeAbono):
             try:
-                lineas=self.albaran.lineasDeAbono+self.albaran.lineasDeDevolucion
+                lineas=self.abono.lineasDeAbono+self.abono.lineasDeDevolucion
             except AttributeError:
-                # ¿Factura de albaran sin albaran? Puede ser... Raro, pero posible.
+                # ¿Factura de abono sin abono? Puede ser... Raro, pero posible.
                 lineas = []
         else:
             raise TypeError
@@ -15950,17 +15936,17 @@ class SuperFacturaVenta:
         except AttributeError:
             pass    # No es factura de compra.
         try:
-            albaran = self.albaran
-            for ldd in albaran.lineasDeDevolucion:
+            abono = self.abono
+            for ldd in self.lineasDeDevolucion:
                 proveedor = ldd.producto.proveedor
                 if proveedor != None and proveedor not in proveedores:
                     proveedores.append(proveedor)
-            for lda in albaran.lineasDeAbono:
+            for lda in self.lineasDeAbono:
                 proveedor = lda.producto.proveedor
                 if proveedor != None and proveedor not in proveedores:
                     proveedores.append(proveedor)
         except AttributeError:
-            pass    # No es factura de albaran.
+            pass    # No es factura de abono.
         return tuple(proveedores)
 
     def get_str_estado(self, cache = {}):
@@ -16134,6 +16120,7 @@ class SuperFacturaVenta:
         for vto in dic_vtos:
             if (isinstance(vto, VencimientoCobro)
                 or (hasattr(vto, "id") and vto.id==0)): # FakeVto.id=0 siempre.
+                importe_cobrado_en_fecha = 0.0
                 for cobro in dic_vtos[vto]:
                     if cobro.confirmingID:
                         if (cobro.confirming.fechaRecepcion <= fecha 
@@ -16237,7 +16224,7 @@ class SuperFacturaVenta:
         :returns: Devuelve una cadena con el número de días reales 
                   transcurridos hasta el vencimiento del cobro y el 
                   documento de cobro real entregado por el cliente.
-                  Si la factura/prefactura/albaran no ha sido cobrada
+                  Si la factura/prefactura/abono no ha sido cobrada
                   todavía, devuelve la cadena recibida en "default".
         """
         plazo = self.get_plazo_pagado()
@@ -16478,7 +16465,7 @@ class FacturaVenta(SQLObject, PRPCTOO, SuperFacturaVenta):
                     remitente[1], 
                     remitente[2])
             if ok:
-                t = Tarea(facturaVenta = self,  # @UnusedVariable
+                t = Tarea(facturaVenta = self, 
                           categoria = 
                             Categoria.get_categoria_tareas_automaticas(), 
                           texto = "Factura emitida hace más de 45 días."
@@ -16647,10 +16634,10 @@ class Prefactura(SQLObject, PRPCTOO, SuperFacturaVenta):
         fras = Prefactura.select(Prefactura.q.fecha >= mx.DateTime.DateTimeFrom(day = 1, month = 1, year = anno))
         numfacturas = [fra.get_numero_numfactura() for fra in fras]
         try:
-            prox = max(numfacturas) + 1
+            next = max(numfacturas) + 1
         except ValueError:
-            prox = 1
-        return "%s/%s" % (anno, prox)
+            next = 1
+        return "%s/%s" % (anno, next)
 
     get_next_numfactura = staticmethod(get_next_numfactura)
 
@@ -18261,9 +18248,8 @@ class DescuentoDeMaterial(SQLObject, PRPCTOO):
     
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
-        
-    @classmethod
-    def desechar(cls, producto, cantidad, pdp = None, observaciones = ''):
+
+    def desechar(clase, producto, cantidad, pdp = None, observaciones = ''):
         """
         Crea un registro de descuento de material con la cantidad 
         recibida y se asegura de que el producto de venta quede 
@@ -18285,13 +18271,15 @@ class DescuentoDeMaterial(SQLObject, PRPCTOO):
             producto.existencias -= cantidad
         producto.syncUpdate()   # Aseguro que mis cambios pasen a la BD para evitar efectos colaterales.
         producto.sync()         # Y compruebo que no ha habido problemas de concurrencia.
-        descuentoDeMaterial = cls(productoCompra = producto, 
+        descuentoDeMaterial = clase(productoCompra = producto, 
                                     parteDeProduccion = pdp, 
                                     cantidad = cantidad, 
                                     fechahora = mx.DateTime.localtime(), 
                                     observaciones = observaciones)
         assert abs(producto.existencias - (existencias_antes - cantidad)) < 0.001, "pclases::desechar -> Error de concurrencia. Existencias antes: %f. Existencias después: %f. Cantidad desechada: %f." % (existencias_antes, producto.existencias, cantidad)
         return descuentoDeMaterial
+
+    desechar = classmethod(desechar)
 
     def cambiar_cantidad(self, cantidad, fechahora = mx.DateTime.localtime()):
         """
@@ -18304,6 +18292,7 @@ class DescuentoDeMaterial(SQLObject, PRPCTOO):
         """
         productoCompra = self.productoCompra
         productoCompra.sync()
+        antes = productoCompra.existencias
         cantidad_original = productoCompra.existencias + self.cantidad
         productoCompra.existencias = cantidad_original
         if cantidad > productoCompra.existencias:
@@ -18474,7 +18463,7 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Abono(SQLObject, PRPCTOO):
     """
     Abonos de devolución de clientes.
-    NOTA: Los números de albaran _siempre_ deben cumplir el formato "Ayxxxx", 
+    NOTA: Los números de abono _siempre_ deben cumplir el formato "Ayxxxx", 
     donde "y" es un solo dígito correspondiente al último número del año y 
     "xxxx" es un número entero secuencial. No deberíamos tener problemas 
     hasta el año 2016, lo cual tampoco me consuela demasiado, la verdad.
@@ -18493,12 +18482,12 @@ class Abono(SQLObject, PRPCTOO):
 
     def calcular_importe_sin_iva(self):
         """
-        Devuelve el importe total sin IVA del albaran.
+        Devuelve el importe total sin IVA del abono.
         """
         total = 0
         for ldd in self.lineasDeDevolucion:
             total -= ldd.precio     # OJO: NOTA: El precio va en positivo en 
-                        # el registro, pero al ser un albaran, hay que restarlo.
+                        # el registro, pero al ser un abono, hay que restarlo.
         for lda in self.lineasDeAbono:
             total += lda.diferencia * lda.cantidad
         return total
@@ -18509,8 +18498,8 @@ class Abono(SQLObject, PRPCTOO):
     def get_albaranes(self):
         """
         Devuelve una lista de albaranes de salida relacionados 
-        con el albaran a través de sus líneas de devolución y de 
-        albaran.
+        con el abono a través de sus líneas de devolución y de 
+        abono.
         """
         albs = []
         for ldd in self.lineasDeDevolucion:
@@ -18529,8 +18518,8 @@ class Abono(SQLObject, PRPCTOO):
 
     def get_albaranes_de_entrada_de_abono(self):
         """
-        Devuelve los albaranes de entrada de albaran generados a 
-        partir del albaran.
+        Devuelve los albaranes de entrada de abono generados a 
+        partir del abono.
         """
         albs = []
         for ldd in self.lineasDeDevolucion:
@@ -18541,7 +18530,7 @@ class Abono(SQLObject, PRPCTOO):
     def get_facturas(self):
         """
         Devuelve una lista de objetos FacturaVenta relacionados 
-        con el albaran mediante sus líneas de ajuste y líneas de devolución.
+        con el abono mediante sus líneas de ajuste y líneas de devolución.
         """
         fras = []
         for ldd in self.lineasDeDevolucion:
@@ -18570,8 +18559,8 @@ class Abono(SQLObject, PRPCTOO):
 
     def get_nuevo_numabono():
         """
-        Devuelve el siguiente número de albaran libre. 
-        Siempre será el mayor número de albaran más uno, 
+        Devuelve el siguiente número de abono libre. 
+        Siempre será el mayor número de abono más uno, 
         independientemente del orden en que éstos se 
         hayan introducido en la base de datos.
         El valor devuelto será un string Ayxxxx donde 
@@ -18583,12 +18572,12 @@ class Abono(SQLObject, PRPCTOO):
         digito_anno = `mx.DateTime.localtime().year`[-1]
         abonos_de_mi_serie = Abono.select(""" numabono LIKE 'A%s%%' """ % (digito_anno))
         numsabono = []
-        for albaran in abonos_de_mi_serie:
-            numabono = albaran.numabono.replace("A%s" % (digito_anno), "")
+        for abono in abonos_de_mi_serie:
+            numabono = abono.numabono.replace("A%s" % (digito_anno), "")
             try:
                 numabono = int(numabono)
             except ValueError:
-                print "pclases.py: get_nuevo_numabono: Ignoro número de albaran %s (ID %d) por no cumplir el formato correcto." % (numabono, albaran.id)
+                print "pclases.py: get_nuevo_numabono: Ignoro número de abono %s (ID %d) por no cumplir el formato correcto." % (numabono, abono.id)
             else:
                 numsabono.append(numabono)
         numsabono.sort()
@@ -18605,22 +18594,22 @@ class Abono(SQLObject, PRPCTOO):
 
     def get_numero_numabono(self):
         """
-        Devuelve el número del albaran como entero, 
+        Devuelve el número del abono como entero, 
         sin el prefijo «Ay» (donde "y" es el dígito 
-        correspondiente al año del albaran).
+        correspondiente al año del abono).
         """
         return int(self.numabono[2:])
 
     def set_numero_numabono(self, numero):
         """
-        Cambia el número del albaran respetando el 
+        Cambia el número del abono respetando el 
         prefijo «Ay» donde "y" es el último dígito 
-        del año del albaran.
-        Si el albaran no tiene fecha le pone la actual.
+        del año del abono.
+        Si el abono no tiene fecha le pone la actual.
         Si el número no satisface la restricción de 
         secuencialidad lanza una excepción (la fecha 
         se modificará en cualquier caso si estaba a 
-        None) y vuelve a dejar el número de albaran 
+        None) y vuelve a dejar el número de abono 
         anterior.
         """
         if not isinstance(numero, int):
@@ -18632,23 +18621,23 @@ class Abono(SQLObject, PRPCTOO):
         self.numabono = "A%s%04d" % (digito_anno, numero)
         if not self.numabono_correcto():
             self.numabono = numabono_anterior
-            raise ValueError, "El número %d no satisface restricción de secuencialidad para el albaran ID %d" % (numero, self.id)
+            raise ValueError, "El número %d no satisface restricción de secuencialidad para el abono ID %d" % (numero, self.id)
     
     numero_numabono = property(get_numero_numabono, set_numero_numabono)
 
     def get_abono_anterior(self):
         """
-        Devuelve el albaran anterior al actual según 
+        Devuelve el abono anterior al actual según 
         orden de fecha y numérico o None si es el 
         primero de su año.
         Si la fecha no coincide con el dígito del año 
-        del número del albaran saltará un "assertion error".
+        del número del abono saltará un "assertion error".
         """
         digito_anno = `self.fecha.year`[-1]
         assert digito_anno == self.numabono[1]
         # Esto puede ser un poco lento:
         abonos_de_mi_anno = [a for a in Abono.select(Abono.q.numabono.contains("A%s" % (digito_anno)), orderBy = "fecha")]
-        # Ordeno la lista por número de albaran (esto puede ser un poco lento también):
+        # Ordeno la lista por número de abono (esto puede ser un poco lento también):
         abonos_de_mi_anno.sort(lambda a1, a2: a1.numero_numabono - a2.numero_numabono)
         # Localizo mi número en la lista de números de mi año:
         i_yo = abonos_de_mi_anno.index(self)
@@ -18659,17 +18648,17 @@ class Abono(SQLObject, PRPCTOO):
 
     def get_abono_posterior(self):
         """
-        Devuelve el albaran posterior al actual según 
+        Devuelve el abono posterior al actual según 
         orden de fecha y numérico o None si es el 
         primero de su año.
         Si la fecha no coincide con el dígito del año 
-        del número del albaran saltará un "assertion error".
+        del número del abono saltará un "assertion error".
         """
         digito_anno = `self.fecha.year`[-1]
         assert digito_anno == self.numabono[1]
         # Esto puede ser un poco lento:
         abonos_de_mi_anno = [a for a in Abono.select(Abono.q.numabono.contains("A%s" % (digito_anno)), orderBy = "fecha")]
-        # Ordeno la lista por número de albaran (esto puede ser un poco lento también):
+        # Ordeno la lista por número de abono (esto puede ser un poco lento también):
         abonos_de_mi_anno.sort(lambda a1, a2: a1.numero_numabono - a2.numero_numabono)
         # Localizo mi número en la lista de números de mi año:
         i_yo = abonos_de_mi_anno.index(self)
@@ -18680,8 +18669,8 @@ class Abono(SQLObject, PRPCTOO):
 
     def numabono_correcto(self):
         """
-        Devuelve True si el número del albaran actual es 
-        correcto. Para ello comprueba que el albaran con 
+        Devuelve True si el número del abono actual es 
+        correcto. Para ello comprueba que el abono con 
         número anterior tenga también una fecha anterior 
         (o no exista) y que el número posterior tenga 
         una fecha posterior (o no exista).
@@ -18695,8 +18684,8 @@ class Abono(SQLObject, PRPCTOO):
     def get_str_cobro(self):
         """
         Devuelve una cadena con el texto de la manera en que se ha pagado 
-        el albaran al cliente.
-        Para ello mira la factura de albaran y la forma de pago de ésta: 
+        el abono al cliente.
+        Para ello mira la factura de abono y la forma de pago de ésta: 
         descontado de otra factura, o descontado en un pagaré.
         """
         fra = self.facturaDeAbono
@@ -18740,7 +18729,7 @@ class LineaDeAbono(SQLObject, PRPCTOO):
         Devuelve el almacén relacionado con la línea de devolución, que será 
         aquel al que se haya devuelto la mercancía.
         """
-        return self.albaran and self.albaran.almacen or None
+        return self.abono and self.abono.almacen or None
 
     # Algunas "properties" para hacerlas coherentes con las líneas de venta:
     albaranSalida = property(lambda self: self.lineaDeVentaID and self.lineaDeVenta.albaranSalida or None, doc = "Albarán de salida relacionado con la línea de ajuste a través de la línea de venta intermedia.")
@@ -18753,16 +18742,16 @@ class LineaDeAbono(SQLObject, PRPCTOO):
     producto = productoVenta
     pedidoVenta = property(lambda self: self.lineaDeVentaID and self.lineaDeVenta.pedidoVenta or None, doc = "Objeto pedido de venta relacionado con la línea de devolución.")
     pedidoVentaID = property(lambda self: self.lineaDeVentaID and self.lineaDeVenta.pedidoVentaID or None, doc = "ID del pedido de venta relacionado con la línea de devolución.")
-    facturaVenta = property(lambda self: self.abonoID and self.albaran.facturaDeAbono or None, doc = "Factura DE ABONO relacionada con la línea de devolución. Para obtener las facturas de venta en sí, usar la relación LineaDeAbono-LineaDeVenta-FacturaVenta. El nombre viene por compatibilidad con las LDV.")
-    facturaVentaID = property(lambda self: self.abonoID and self.albaran.facturaDeAbonoID or None, doc = "Factura DE ABONO relacionada con la línea de devolución. Para obtener las facturas de venta en sí, usar la relación LineaDeAbono-LineaDeVenta-FacturaVenta. El nombre viene por compatibilidad con las LDV.")
+    facturaVenta = property(lambda self: self.abonoID and self.abono.facturaDeAbono or None, doc = "Factura DE ABONO relacionada con la línea de devolución. Para obtener las facturas de venta en sí, usar la relación LineaDeAbono-LineaDeVenta-FacturaVenta. El nombre viene por compatibilidad con las LDV.")
+    facturaVentaID = property(lambda self: self.abonoID and self.abono.facturaDeAbonoID or None, doc = "Factura DE ABONO relacionada con la línea de devolución. Para obtener las facturas de venta en sí, usar la relación LineaDeAbono-LineaDeVenta-FacturaVenta. El nombre viene por compatibilidad con las LDV.")
 
     def calcular_subtotal(self, iva = False):
         res = self.cantidad * self.precio
         if iva:
             try:
-                res *= self.albaran.facturaDeAbono.iva
+                res *= self.abono.facturaDeAbono.iva
             except AttributeError:  # ¿Sin factura?
-                res *= self.albaran.cliente.iva
+                res *= self.abono.cliente.iva
         return res
 
     def calcular_beneficio(self):
@@ -18776,7 +18765,7 @@ class LineaDeAbono(SQLObject, PRPCTOO):
 
     def get_comercial(self):
         """
-        Devuelve el comercial relacionado con la línea de albaran tirando de la 
+        Devuelve el comercial relacionado con la línea de abono tirando de la 
         línea de venta o del servicio, y None si no lo tiene.
         """
         if self.servicio:
@@ -18804,9 +18793,9 @@ class LineaDeDevolucion(SQLObject, PRPCTOO):
         res = self.cantidad * self.precio
         if iva:
             try:
-                res *= self.albaran.facturaDeAbono.iva
+                res *= self.abono.facturaDeAbono.iva
             except AttributeError:  # ¿Sin factura?
-                res *= self.albaran.cliente.iva
+                res *= self.abono.cliente.iva
         return res
 
     def get_cantidad(self):
@@ -18847,7 +18836,7 @@ class LineaDeDevolucion(SQLObject, PRPCTOO):
 
     def get_tarifa(self):
         """
-        Devuelve la tarifa de la LDV relacionada con la LDD a través del albaran.
+        Devuelve la tarifa de la LDV relacionada con la LDD a través del abono.
         Para ello determina el producto de venta y precio que tienen en común.
         Devuelve None si ninguna LDV coincide.
         """
@@ -18889,8 +18878,8 @@ class LineaDeDevolucion(SQLObject, PRPCTOO):
     producto = productoVenta
     pedidoVenta = property(get_pedido_venta, doc = get_pedido_venta.__doc__)
     pedidoVentaID = property(lambda self: self.get_pedido_venta() and self.get_pedido_venta().id or None, doc = "ID del pedido de venta relacionado con la línea de devolución.")
-    facturaVenta = property(lambda self: self.abonoID and self.albaran.facturaDeAbono or None, doc = "Factura DE ABONO relacionada con la línea de devolución. Para obtener las facturas de venta en sí, usar el atributo facturasVenta. El nombre viene por compatibilidad con las LDV.")
-    facturaVentaID = property(lambda self: self.abonoID and self.albaran.facturaDeAbonoID or None, doc = "Factura DE ABONO relacionada con la línea de devolución. Para obtener las facturas de venta en sí, usar el atributo facturasVenta. El nombre viene por compatibilidad con las LDV.")
+    facturaVenta = property(lambda self: self.abonoID and self.abono.facturaDeAbono or None, doc = "Factura DE ABONO relacionada con la línea de devolución. Para obtener las facturas de venta en sí, usar el atributo facturasVenta. El nombre viene por compatibilidad con las LDV.")
+    facturaVentaID = property(lambda self: self.abonoID and self.abono.facturaDeAbonoID or None, doc = "Factura DE ABONO relacionada con la línea de devolución. Para obtener las facturas de venta en sí, usar el atributo facturasVenta. El nombre viene por compatibilidad con las LDV.")
 
     def calcular_beneficio(self):
         """
@@ -18908,7 +18897,7 @@ class LineaDeDevolucion(SQLObject, PRPCTOO):
             porcentaje = tarifa.get_porcentaje(producto, fraccion = True)
         else:
             try:
-                porcentaje = (precio / producto.precioDefecto) - 1.0
+                porcentaje = (self.precio / producto.precioDefecto) - 1.0
             except ZeroDivisionError:
                 porcentaje = 1.0
         return producto.precioDefecto * porcentaje * cantidad
@@ -18956,7 +18945,7 @@ class LineaDeDevolucion(SQLObject, PRPCTOO):
         Devuelve el almacén relacionado con la línea de devolución, que será 
         aquel al que se haya devuelto la mercancía.
         """
-        return self.albaran and self.albaran.almacen or None
+        return self.abono and self.abono.almacen or None
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
@@ -18980,10 +18969,10 @@ class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
         # En realidad esta relación es 1 a 1.
     pagosDeAbono = MultipleJoin('PagoDeAbono')  # Por otro, si no se ha 
         # descontado de un pagaré; es decir, si la factura original
-        # ya se cobró; se puede devolver la cantidad del albaran mediante 
-        # pagos de albaran.
+        # ya se cobró; se puede devolver la cantidad del abono mediante 
+        # pagos de abono.
         # Habrá que tener un método que controle que no se pueda pagar un 
-        # albaran ya descontado.
+        # abono ya descontado.
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -18992,12 +18981,12 @@ class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
         # El resto de argumentos (*args, **kw) no me importa un carajo, pero 
         # los tomo para cumplir la interfaz.
         """
-        Devuelve los albaranes DE ENTRADA de albaran relacionados con la 
-        factura de albaran.
+        Devuelve los albaranes DE ENTRADA de abono relacionados con la 
+        factura de abono.
         """
         albaranes = []
-        albaran = self.albaran
-        for ldd in albaran.lineasDeDevolucion:
+        abono = self.abono
+        for ldd in abono.lineasDeDevolucion:
             if not incluir_nones:
                 if (ldd.albaranDeEntradaDeAbonoID 
                     and ldd.albaranDeEntradaDeAbono not in albaranes):
@@ -19016,7 +19005,7 @@ class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
     def get_abono(self):
         """
         Devuelve el primero de los abonos relacionados con la 
-        factura de albaran o None si no tiene.
+        factura de abono o None si no tiene.
         La relación en realidad es 1 a 1, por lo que se ignorará 
         el resto de los abonos si hubiera más de 1.
         """
@@ -19026,33 +19015,33 @@ class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
 
     def get_abono_id(self):
         """
-        Devuelve el ID del albaran relacionado o None
-        si no tiene albaran relacionado.
+        Devuelve el ID del abono relacionado o None
+        si no tiene abono relacionado.
         Al contrario que con los atributos (o propiedades) de los 
         "legacy" SQLObjects, aquí es más lento -un poco solo- 
         acceder al «otrocampoID» en lugar de a «otrocampo» directamente.
         """
-        albaran = self.albaran
-        if albaran != None:
-            return albaran.id
+        abono = self.abono
+        if abono != None:
+            return abono.id
         return None
 
-    albaran = property(get_abono, doc = get_abono.__doc__)
+    abono = property(get_abono, doc = get_abono.__doc__)
     abonoID = property(get_abono_id, doc = get_abono_id.__doc__)
     
     def get_obra(self):
         """
-        Devuelve la obra relacionada con la factura de albaran a través del 
-        albaran en sí.
+        Devuelve la obra relacionada con la factura de abono a través del 
+        abono en sí.
         """
-        return self.albaran.obra
+        return self.abono.obra
     
     def get_obra_id(self):
         """
-        Devuelve la obra relacionada con la factura de albaran a través del 
-        albaran en sí.
+        Devuelve la obra relacionada con la factura de abono a través del 
+        abono en sí.
         """
-        return self.albaran.obraID
+        return self.abono.obraID
 
     obra = property(get_obra, doc = get_obra.__doc__)
     obraID = property(get_obra_id, doc = get_obra_id.__doc__)
@@ -19060,20 +19049,20 @@ class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
     def get_numfactura(self):
         """
         Devuelve el número de factura que le correspondería 
-        a esta factura de albaran. Es el mismo que el número 
-        del albaran al que está relacionado.
+        a esta factura de abono. Es el mismo que el número 
+        del abono al que está relacionado.
         Devuelve la cadena vacía si no tiene relación con 
-        ningún albaran.
+        ningún abono.
         """
-        if self.albaran != None:
-            return self.albaran.numabono
+        if self.abono != None:
+            return self.abono.numabono
         return ""
 
     numfactura = property(get_numfactura, doc = get_numfactura.__doc__)
 
     def get_iva(self):
         """
-        Devuelve el IVA de la factura de albaran.
+        Devuelve el IVA de la factura de abono.
         Siempre será el IVA del cliente.
         En caso de error devuelve 0.21.
         """
@@ -19092,10 +19081,10 @@ class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
 
     def set_iva(self, iva):
         """
-        Hace que el IVA de la factura de albaran sea el 
+        Hace que el IVA de la factura de abono sea el 
         recibido como parámetro.
         OJO: Para ello cambia el IVA del cliente al que 
-        pertenecen los abonos de la factura de albaran.
+        pertenecen los abonos de la factura de abono.
         """
         iva = float(iva)
             # La excepción ValueError si el parámetro no se puede convertir a 
@@ -19104,23 +19093,23 @@ class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
             iva /= 100.0
         if iva < 0:
             iva *= -1
-        for albaran in self.abonos:
-            if albaran.clienteID != None:
-                albaran.cliente.iva = iva # * 100.0
+        for abono in self.abonos:
+            if abono.clienteID != None:
+                abono.cliente.iva = iva # * 100.0
                     # DONE: OJO: Esto es solo hasta que estandarice los 
                     # IVA y se guarden todos como fracción de la unidad.
                 break
 
-    iva = property(get_iva, set_iva, "IVA aplicado a la factura de albaran")
+    iva = property(get_iva, set_iva, "IVA aplicado a la factura de abono")
 
     def calcular_importe_total(self, iva_incluido = True):
         """
-        Calcula y devuelve el importe total de la factura de albaran.
+        Calcula y devuelve el importe total de la factura de abono.
         Incluye el IVA por defecto del cliente.
         """
         total = 0
-        for albaran in self.abonos:
-            total += albaran.importeSinIva
+        for abono in self.abonos:
+            total += abono.importeSinIva
         if iva_incluido:
             total *= (1 + self.iva)
         return total
@@ -19141,7 +19130,7 @@ class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
         return 0.0
 
     def calcular_total_iva(self, *args, **kw):
-        return sum([albaran.importeSinIva for albaran in self.abonos]) * self.iva
+        return sum([abono.importeSinIva for abono in self.abonos]) * self.iva
 
     def emparejar_vencimientos(self):
         """
@@ -19149,14 +19138,14 @@ class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
         Devuelve los cobros en un diccionario con el formato 
         del emparejar_vencimientos de FacturaVenta (ver __doc__
         de éste).
-        Como las facturas de albaran no tienen vencimiento, se usará
+        Como las facturas de abono no tienen vencimiento, se usará
         la fecha de la factura como fecha de vencimiento.
         """
         res = {}
         cbrs = self.cobros[:]
         cbrs.sort(utils.cmp_fecha_id)
         class FakeVto:
-            id = 0; facturaVentaID = self.id; facturaVenta = self; prefacturaID = None; prefactura = None; fecha = self.fecha; importe = self.importeTotal; observaciones = "Vencimiento ficticio de la factura de albaran."
+            id = 0; facturaVentaID = self.id; facturaVenta = self; prefacturaID = None; prefactura = None; fecha = self.fecha; importe = self.importeTotal; observaciones = "Vencimiento ficticio de la factura de abono."
             def get_factura_o_prefactura(self):
                 return self.facturaVenta
         vtos = [FakeVto()]
@@ -19182,18 +19171,18 @@ class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
         ha anulado con esta devolución o ajuste de precio.
         """
         res = 0.0
-        for ldd in self.albaran.lineasDeDevolucion:
+        for ldd in self.abono.lineasDeDevolucion:
             res += ldd.calcular_beneficio()
-        for lda in self.albaran.lineasDeAbono:
+        for lda in self.abono.lineasDeAbono:
             res += lda.calcular_beneficio()
         return res
 
     def get_cliente(self):
         """
-        Devuelve el cliente de la factura de albaran, que lo 
-        extrae del albaran al que pertenece.
+        Devuelve el cliente de la factura de abono, que lo 
+        extrae del abono al que pertenece.
         """
-        return self.albaran and self.albaran.cliente or None
+        return self.abono and self.abono.cliente or None
     
     def get_clienteID(self):
         cliente = self.get_cliente()
@@ -19205,7 +19194,7 @@ class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
     # 20100927: Nueva clasificación de facturas:
     def get_estado(self, fecha = mx.DateTime.today()):
         """
-        Devuelve el estado de la factura de albaran:
+        Devuelve el estado de la factura de abono:
         0: No documentada ni vencida: Ningún documento de pago relacionado.
         1: Documentada no vencida: Tiene documento de pago y éste todavía 
                                    no ha vencido. Se toma en cuenta la fecha 
@@ -19270,10 +19259,10 @@ class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
 
     def calcular_importe_pendiente_de_abonar(self):
         """
-        Devuelve el importe (c/IVA) pendiente de abonar de la factura de albaran.
+        Devuelve el importe (c/IVA) pendiente de abonar de la factura de abono.
         El importe abonado es la suma de los cobros relacionados con la 
-        factura de albaran (viene en negativo por ser un "pago" en forma de 
-        descuento de un cobro) y de los pagos de albaran asociados a nuevas 
+        factura de abono (viene en negativo por ser un "pago" en forma de 
+        descuento de un cobro) y de los pagos de abono asociados a nuevas 
         facturas del cliente. En cuyo caso el importe ya se ha descontado de 
         una venta, que puede o no haber sido cobrada ya, pero que en todo 
         caso no puedo permitir que vuelva a descontarse de otro cobro.
@@ -19334,8 +19323,8 @@ class Usuario(SQLObject, PRPCTOO):
                     SELECT id FROM permiso 
                     WHERE ventana_id = %d AND usuario_id = %d;
                     """ % (ventana.id, self.id)
-            ide = self.__class__._connection.queryOne(query)[0]
-            permiso = Permiso.get(ide)
+            id = self.__class__._connection.queryOne(query)[0]
+            permiso = Permiso.get(id)
             return permiso
         except (IndexError, TypeError):
             return None
@@ -19358,7 +19347,7 @@ class Usuario(SQLObject, PRPCTOO):
                 #m.destroy()
                 m.destroySelf()     # No quiero guardar traza de esto. Son 
                         # demasiados registros que voy a acabar ignorando.
-        a = Alerta(usuario = self, mensaje = texto, entregado = False)  # @UnusedVariable
+        a = Alerta(usuario = self, mensaje = texto, entregado = False)
 
     def cambiar_password(self, nueva):
         """
@@ -19442,14 +19431,13 @@ class DatosDeLaEmpresa(SQLObject, PRPCTOO):
         im = os.path.join("..", "imagenes", self.logo)
         return os.path.abspath(im)
 
-    @classmethod
-    def get_propia_empresa_como_cliente(cls):
+    def get_propia_empresa_como_cliente(clase):
         """
         Devuelve el registro cliente de la BD que se corresponde 
         con la empresa atendiendo a los datos del registro DatosDeLaEmpresa
         o None si no se encuentra.
         """
-        nombre_propia_empresa = cls.select()[0].nombre
+        nombre_propia_empresa = clase.select()[0].nombre
         clientes = Cliente.select(Cliente.q.nombre == nombre_propia_empresa)
         if clientes.count() == 0:
             cliente = None
@@ -19460,14 +19448,13 @@ class DatosDeLaEmpresa(SQLObject, PRPCTOO):
             cliente = clientes[0]
         return cliente
 
-    @classmethod
-    def get_propia_empresa_como_proveedor(cls):
+    def get_propia_empresa_como_proveedor(clase):
         """
         Devuelve el registro proveedor que se corresponde con la 
         empresa atendiendo a los datos del registro DatosDeLaEmpresa 
         o None si no se encuentra.
         """
-        nombre_propia_empresa = cls.select()[0].nombre
+        nombre_propia_empresa = clase.select()[0].nombre
         proveedores = Proveedor.select(Proveedor.q.nombre == nombre_propia_empresa)
         if proveedores.count() == 0:
             proveedor = None
@@ -19478,8 +19465,8 @@ class DatosDeLaEmpresa(SQLObject, PRPCTOO):
             proveedor = proveedores[0]
         return proveedor
     
-    get_cliente = get_propia_empresa_como_cliente
-    get_proveedor = get_propia_empresa_como_proveedor
+    get_cliente = classmethod(get_propia_empresa_como_cliente)
+    get_proveedor = classmethod(get_propia_empresa_como_proveedor)
 
     def str_cif_o_nif(self):
         """
@@ -20069,18 +20056,19 @@ class Recibo(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
-    @classmethod
-    def get_next_numrecibo(cls, anno):
+    def get_next_numrecibo(clase_recibo, anno):
         """
         Devuelve el siguiente número de recibo disponible para 
         el ano «anno».
         """
         try:
-            ultimo_recibo = cls.select(cls.q.anno == anno, orderBy = "-numrecibo")[0]
+            ultimo_recibo = clase_recibo.select(clase_recibo.q.anno == anno, orderBy = "-numrecibo")[0]
         except IndexError:
             return 1
         else:
             return ultimo_recibo.numrecibo + 1
+
+    get_next_numrecibo = classmethod(get_next_numrecibo)
 
     def calcular_importe(self):
         """
@@ -20146,7 +20134,6 @@ class Documento(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
-    @staticmethod
     def get_ruta_base():
         """
         Devuelve la ruta del directorio que contiene los documentos adjuntos.
@@ -20163,7 +20150,7 @@ class Documento(SQLObject, PRPCTOO):
             os.mkdir(RUTA_BASE)
         return RUTA_BASE
     
-    ruta_base = get_ruta_base 
+    ruta_base = get_ruta_base = staticmethod(get_ruta_base)
 
     def get_ruta_completa(self):
         """
@@ -20607,10 +20594,10 @@ class ControlHoras(SQLObject, PRPCTOO):
         res = {}
         if actividad == "producción":
             por_linea = self._dividir_horas_produccion_por_linea()
-            rp, ep = self._dividir_horas_produccion_por_tipo()  # @UnusedVariable
+            rp, ep = self._dividir_horas_produccion_por_tipo()
         elif actividad == "mantenimiento":
             por_linea = self._dividir_horas_mantenimiento_por_linea()
-            rp, ep = self._dividir_horas_mantenimiento_por_tipo()  # @UnusedVariable
+            rp, ep = self._dividir_horas_mantenimiento_por_tipo()
         else:
             raise ValueError, "actividad debe ser producción o mantenimiento."
         for linea in por_linea:
@@ -20698,9 +20685,9 @@ class ControlHoras(SQLObject, PRPCTOO):
                 conceptos[ch.conceptoLibre] = 1
             else:
                 conceptos[ch.conceptoLibre] += 1
-        maxi, concepto = 0, ""
+        max, concepto = 0, ""
         for c in conceptos:
-            if conceptos[c] > maxi:
+            if conceptos[c] > max:
                 concepto = c
         return concepto
 
@@ -20739,21 +20726,20 @@ class OrdenEmpleados(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
-    @classmethod
-    def buscar_registros(cls, fecha):
+    def buscar_registros(clase, fecha):
         """
         Devuelve un registro por cada empleado, todos con la misma fecha 
         y siendo la más cercana a «fecha» y mayor que ésta.
         """
         try:
-            fecha_base = cls._connection.queryOne("""
+            fecha_base = clase._connection.queryOne("""
                             SELECT fecha FROM orden_empleados 
                              WHERE fecha <= '%s' ORDER BY fecha DESC
                             """ % fecha.strftime("%Y-%m-%d"))[0]
         except (TypeError, IndexError):
             res = []
         else:
-            rs = cls.select(cls.q.fecha == fecha_base, 
+            rs = clase.select(clase.q.fecha == fecha_base, 
                               orderBy = "orden")
             pos_tratadas = []
             ids_tratados = []
@@ -20763,15 +20749,16 @@ class OrdenEmpleados(SQLObject, PRPCTOO):
                     and r.empleadoID not in ids_tratados):
                     res.append(r)
         return res
+
+    buscar_registros = classmethod(buscar_registros) 
     
-    @classmethod
-    def buscar(cls, fecha):
-        regs = cls.buscar_registros(fecha)
+    def buscar(clase, fecha):
+        regs = clase.buscar_registros(fecha)
         return [r.empleadoID for r in regs]
-    
+
+    buscar = classmethod(buscar) 
 
 cont, tiempo = print_verbose(cont, total, tiempo)
-
 
 class ListaObjetosRecientes(SQLObject, PRPCTOO):
     _connection = conn
@@ -20795,7 +20782,7 @@ class ListaObjetosRecientes(SQLObject, PRPCTOO):
                 self.pop()
         else:
             self.pop(ide)
-        idr = IdReciente(listaObjetosRecientes = self, objetoID = ide)  # @UnusedVariable
+        idr = IdReciente(listaObjetosRecientes = self, objetoID = ide)
 
     def pop(self, ide = None):
         """
@@ -20827,8 +20814,7 @@ class ListaObjetosRecientes(SQLObject, PRPCTOO):
         idrs.sort(lambda r1, r2: int(r1.id - r2.id))
         return [r.objetoID for r in idrs]
 
-    @classmethod
-    def buscar(cls, ventana, usuario = None, crear = False):
+    def buscar(clase, ventana, usuario = None, crear = False):
         """
         Devuelve el registro que coincide con el usuario y ventana recibidos.
         None si no se encontró ninguno.
@@ -20848,8 +20834,8 @@ class ListaObjetosRecientes(SQLObject, PRPCTOO):
             uid = usuario.id
         else:
             uid = None
-        rs = cls.select(AND(cls.q.usuarioID == uid, 
-                              cls.q.ventanaID == ventana.id), 
+        rs = clase.select(AND(clase.q.usuarioID == uid, 
+                              clase.q.ventanaID == ventana.id), 
                           orderBy = "id")
         try:
             return rs[0]
@@ -20857,13 +20843,13 @@ class ListaObjetosRecientes(SQLObject, PRPCTOO):
             if not crear:
                 res = None
             else:
-                nuevo = cls(ventana = ventana, usuario = usuario)
+                nuevo = clase(ventana = ventana, usuario = usuario)
                 res = nuevo
         return res
 
+    buscar = classmethod(buscar)
 
 cont, tiempo = print_verbose(cont, total, tiempo)
-
 
 class IdReciente(SQLObject, PRPCTOO):
     _connection = conn
@@ -21270,8 +21256,8 @@ class Remesa(SQLObject, PRPCTOO):
         # Las rechazadas se borran directamente. No se guardan y por tanto no 
         # hay estado para ellas. 
         else:
-            return "En estudio"     # El banco me la está mirando y puede que 
-                                    # me confirme un efecto, todos o ninguno.
+            return "En estudio"    # El banco me la está mirando y puede que 
+                                   # me confirme un efecto, todos o ninguno.
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
@@ -21844,7 +21830,7 @@ def getObjetoPUID(puid):
                    "Pale": Pale, 
                    "PartidaCem": PartidaCem, 
                   }
-    tipo, aidi = puid.split(":")
+    tipo, id = puid.split(":")
     if tipo not in dict_clases:
         try:
             clase = eval(tipo)
@@ -21853,8 +21839,8 @@ def getObjetoPUID(puid):
                 ", ".join(dict_clases.keys()))
     else:
         clase = dict_clases[tipo]
-    aidi = int(aidi)
-    objeto = clase.get(aidi)
+    id = int(id)
+    objeto = clase.get(id)
     return objeto
 
 def func_orden_cargas_fecha(c1, c2):
@@ -21948,9 +21934,9 @@ def buscar_puids_sobre_fecha(fecha, nameclase, namecol):
     Devuelve una lista de PUIDs coincidentes.
     """
     colbusqueda = nameclase + ".q." + namecol
-    diasiguiente = fecha + mx.DateTime.oneDay  # @UnusedVariable
+    diasiguiente = fecha + mx.DateTime.oneDay
     consulta = nameclase + ".select(AND(%s >= fecha, %s < diasiguiente))" % (
-        colbusqueda, colbusqueda)
+        colbusqueda)
     if DEBUG:
         print "consulta (buscar_puids_sobre_fecha)", consulta
     consulta = eval(consulta)
@@ -21965,7 +21951,7 @@ def do_unittests():
         try:
             c = eval(clase)
             print "Buscando primer registro de %s... " % (clase),
-            reg = c.select(orderBy="id")[0]  # @UnusedVariable
+            reg = c.select(orderBy="id")[0]
             print "[OK]"
         except IndexError:
             print "[KO] - La clase %s no tiene registros" % (clase)

@@ -75,7 +75,7 @@
 ## NOTAS: 
 ## Atención a las líneas de devolución. Ahora se cuentan sus 
 ## artículos incluso después de haberlos desvinculado del albarán.
-## No hay problemas con volverlos a devolver en otro albaran, ya que
+## No hay problemas con volverlos a devolver en otro abono, ya que
 ## un mismo artículo soporta estar en varias líneas de devolución. 
 ###################################################################
 
@@ -83,7 +83,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
+import gtk, gtk.glade, time
 import sys, os
 try:
     import pclases
@@ -96,7 +96,7 @@ except ImportError:
     sys.path.append('../informes')
     import geninformes
 from utils import ffloat
-import mx.DateTime
+import mx, mx.DateTime
 from postomatic import attach_menu_notas
 from ventana_progreso import VentanaProgreso
 
@@ -577,8 +577,8 @@ class AlbaranesDeSalida(Ventana):
             or utils.dialogo(titulo = "ARTÍCULOS DE BAJA CALIDAD", 
                              texto = texto, 
                              padre = self.wids['ventana'])):
-            self.crear_ldv(articulos)       # En realidad no crea, asocia 
-                                            # artículos al albarán
+            self.crear_ldv(articulos)    # En realidad no crea, asocia 
+                                         # artículos al albarán
             self.objeto.calcular_comisiones()
             self.actualizar_ventana()
 
@@ -680,7 +680,7 @@ class AlbaranesDeSalida(Ventana):
             articulo = []
             for c in cajas:
                 # for b in c.bolsas:
-                articulo.append(c)
+                articulo.append(b)
         #elif tipocodigo == "K": # Una única bolsa de fibra de cemento
         #    articulo = pclases.Bolsa.select(
         #        pclases.Bolsa.q.codigo == "K%d" % codigo)
@@ -781,8 +781,8 @@ class AlbaranesDeSalida(Ventana):
         if pclases.DEBUG and not condicion: print "telefono", albaran.telefono
         condicion = condicion and self.wids['e_direccion'].get_text() == albaran.direccion
         if pclases.DEBUG and not condicion: print "direccion", albaran.direccion
-        buff = self.wids['tv_observaciones'].get_buffer()
-        condicion = condicion and buff.get_text(buff.get_start_iter(), buff.get_end_iter()) == albaran.observaciones 
+        buffer = self.wids['tv_observaciones'].get_buffer()
+        condicion = condicion and buffer.get_text(buffer.get_start_iter(), buffer.get_end_iter()) == albaran.observaciones 
         if pclases.DEBUG and not condicion: print "observaciones", albaran.observaciones
         condicion = condicion and utils.combo_get_value(self.wids['cbe_dni']) == albaran.transportistaID
         if pclases.DEBUG and not condicion: print "transportista", albaran.transportista
@@ -1410,7 +1410,7 @@ class AlbaranesDeSalida(Ventana):
         venta para llevar el control de bultos.
         """
         model = self.wids['tv_ldvs'].get_model()
-        # ids_articulos_added = tuple([a.aidi for a in self.objeto.articulos])
+        # ids_articulos_added = tuple([a.id for a in self.objeto.articulos])
         # Esto de arriba ya no es así. Ahora los artículos por LDV ya incluyen 
         # los de transferencia además de los devueltos, así que construyo esta 
         # lista de otra forma:
@@ -1423,14 +1423,14 @@ class AlbaranesDeSalida(Ventana):
         paths_productos = {}
         for row in model:
             ldv_id = row[-1]
-            #aidi = pclases.LineaDeVenta.get(ldv_id).productoVentaID
-            aidi = pclases.getObjetoPUID(ldv_id).productoVentaID
+            #id = pclases.LineaDeVenta.get(ldv_id).productoVentaID
+            id = pclases.getObjetoPUID(ldv_id).productoVentaID
             # Puede llegar a crear un paths_productos[None] -> [<path>]. Mejor.
             path = row.path
             try:
-                paths_productos[aidi].append(path)
+                paths_productos[id].append(path)
             except KeyError:
-                paths_productos[aidi] = [path]
+                paths_productos[id] = [path]
         for ldt in self.objeto.lineasDeMovimiento:
             a = articulo = ldt.articulo
             if articulo.id not in ids_articulos_added:
@@ -1507,8 +1507,8 @@ class AlbaranesDeSalida(Ventana):
             nuevo_destino = self.crear_nuevo_destino()
             albaran.destino = nuevo_destino
         self.mostrar_destino(albaran.destino)
-        buff = self.wids['tv_observaciones'].get_buffer()
-        buff.set_text(albaran.observaciones)
+        buffer = self.wids['tv_observaciones'].get_buffer()
+        buffer.set_text(albaran.observaciones)
         self.mostrar_transportista(albaran.transportista)
         self.wids['cbe_nom'].child.set_text(albaran.nombre)
         self.wids['e_cp'].set_text(albaran.cp)
@@ -1580,22 +1580,22 @@ class AlbaranesDeSalida(Ventana):
         model = self.wids['tv_abonado'].get_model()
         model.clear()
         ldds = albaran.lineasDeDevolucion
-        padres_abonos = {}      # albaran: {'iter': iter del treeView, 'productos': {producto: iter_del_producto}
+        padres_abonos = {}      # abono: {'iter': iter del treeView, 'productos': {producto: iter_del_producto}
         for ldd in ldds:
-            albaran = ldd.albaran
-            if albaran not in padres_abonos:
-                padres_abonos[albaran] = {
-                    'iter': model.append(None, (albaran.numabono, 
-                                                utils.str_fecha(albaran.fecha), 
+            abono = ldd.abono
+            if abono not in padres_abonos:
+                padres_abonos[abono] = {
+                    'iter': model.append(None, (abono.numabono, 
+                                                utils.str_fecha(abono.fecha), 
                                                 "", 
                                                 "", 
                                                 "", 
-                                                albaran.get_puid())), 
+                                                abono.get_puid())), 
                     'productos': {}}
             producto = ldd.articulo.productoVenta
-            if producto not in padres_abonos[albaran]['productos']:
-                padres_abonos[albaran]['productos'][producto] = model.append(
-                    padres_abonos[albaran]['iter'], 
+            if producto not in padres_abonos[abono]['productos']:
+                padres_abonos[abono]['productos'][producto] = model.append(
+                    padres_abonos[abono]['iter'], 
                     ("", 
                      "", 
                      producto.codigo, 
@@ -1604,7 +1604,7 @@ class AlbaranesDeSalida(Ventana):
                      producto.get_puid()
                     )
                    )
-            model.append(padres_abonos[albaran]['productos'][producto], 
+            model.append(padres_abonos[abono]['productos'][producto], 
                          ("", 
                           "", 
                           "", 
@@ -1942,8 +1942,8 @@ class AlbaranesDeSalida(Ventana):
         albaran.pais = self.wids['e_pais'].get_text()
         albaran.telefono = self.wids['e_telf'].get_text()
         albaran.direccion = self.wids['e_direccion'].get_text() 
-        buff = self.wids['tv_observaciones'].get_buffer()
-        albaran.observaciones = buff.get_text(buff.get_start_iter(), buff.get_end_iter())
+        buffer = self.wids['tv_observaciones'].get_buffer()
+        albaran.observaciones = buffer.get_text(buffer.get_start_iter(), buffer.get_end_iter())
         self.guardar_transportista(None)
         albaran.transportistaID = utils.combo_get_value(self.wids['cbe_dni'])
         self.guardar_destino(None)
@@ -2122,7 +2122,7 @@ class AlbaranesDeSalida(Ventana):
                     if (not ldp.albaraneada     # Queda algo por servir
                         or (ldp.cantidad < 0 
                             and ldp.cantidadPedida - ldp.cantidadServida != 0)):
-                            # CWT: O tiene cantidad negativa por un albaran made 
+                            # CWT: O tiene cantidad negativa por un abono made 
                             #      in BP y no se ha añadido ya a un albarán.
                         # Esto habría que refactorizarlo un día, mientras 
                         # tanto, resumen del estado hasta aquí:
@@ -2305,9 +2305,9 @@ class AlbaranesDeSalida(Ventana):
             return
         model, paths = self.wids['tv_ldvs'].get_selection().get_selected_rows()
         for path in paths:
-            itr = model.get_iter(path)
-            if model[itr].parent == None:  # Es una LDV
-                idldv = model[itr][-1]
+            iter = model.get_iter(path)
+            if model[iter].parent == None:  # Es una LDV
+                idldv = model[iter][-1]
                 try:
                     #ldv = pclases.LineaDeVenta.get(idldv)
                     ldv = pclases.getObjetoPUID(idldv)
@@ -2316,7 +2316,7 @@ class AlbaranesDeSalida(Ventana):
                 else:
                     self.desvincular_ldv_del_albaran(ldv)
             else:   # Es un artículo
-                idarticulo = model[itr][-1] 
+                idarticulo = model[iter][-1] 
                 #articulo = pclases.Articulo.get(idarticulo)
                 objeto = pclases.getObjetoPUID(idarticulo)
                 if isinstance(objeto, pclases.Pale):
@@ -2394,7 +2394,7 @@ class AlbaranesDeSalida(Ventana):
             if articulo.productoVenta == productoVenta and \
                len([ldv for ldv in albaran.lineasDeVenta 
                     if ldv.productoVenta == productoVenta]) == 1:    
-                #Si hay más líneas del mismo producto no elimino sus artículos
+               # Si hay más líneas del mismo producto no elimino sus artículos.
                 self.desvincular_articulo(articulo)
         ajustar_existencias(ldv, 2 * ldv.cantidad)
             # Le paso el doble como cantidad anterior para que al restar quede en positivo e incremente la cantidad
@@ -2515,23 +2515,23 @@ class AlbaranesDeSalida(Ventana):
                 #bultospales = []
                 #for ldv in prods[producto]:
                 #    bultospales += [a.bolsa.caja.pale 
-                #                    for a in self.__ldvs[ldv.ide]['articulos']]
+                #                    for a in self.__ldvs[ldv.id]['articulos']]
                 #bultospales = utils.unificar(bultospales)
                 #bultos = len(bultospales)
                 # OPTIMIZACIÓN
                 try:
                     idsarticulos = []
                     for ldv in prods[producto]:
-                        idsarticulos += [str(ide) 
-                            for ide in self.__ldvs[ldv.id]['idsarticulos']]
+                        idsarticulos += [str(id) 
+                            for id in self.__ldvs[ldv.id]['idsarticulos']]
                     idsarticulos = ", ".join(idsarticulos)
                     sql = """
                     -- SELECT COUNT(*) 
-                    SELECT COUNT(DISTINCT(pale.ide)) 
+                    SELECT COUNT(DISTINCT(pale.id)) 
                     FROM pale, caja, articulo 
-                    WHERE pale.ide = caja.pale_id 
-                      AND caja.ide = articulo.caja_id 
-                      AND articulo.ide IN (%s);
+                    WHERE pale.id = caja.pale_id 
+                      AND caja.id = articulo.caja_id 
+                      AND articulo.id IN (%s);
                     """ % idsarticulos
                     sqlpaleres = pclases.Pale._connection.queryOne(sql)
                     try:
@@ -2732,6 +2732,8 @@ class AlbaranesDeSalida(Ventana):
         Genera un albarán en PDF a partir de los datos
         del albarán actual.
         """
+        if pclases.DEBUG:
+            import time
         if pclases.DEBUG:
             print "Llamando a self.preguntar_si_redistribuir..."
             antes = time.time()

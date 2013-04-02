@@ -35,7 +35,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
+import gtk, gtk.glade, time, sqlobject
 try:
     import pclases
 except ImportError:
@@ -175,6 +175,32 @@ class AlbaranesDeEntradaCS21(Ventana):
                                    padre = self.wids['ventana'])
                 pedido = None
         return pedido
+
+    def pedir_transportista(self, widget):
+        """
+        Solicita un número de pedido, muestra una
+        ventana de resultados coincidentes con la 
+        búsqueda de ese número y devuelve un 
+        objeto pedido seleccionado de entre
+        los resultados o None si se cancela o 
+        no se encuentra.
+        """
+        global transportista
+        codigo = utils.dialogo_entrada(texto = 'Introduzca nombre del transportista', titulo = 'TRANSPORTISTA', padre = self.wids['ventana'])
+        if codigo != None:
+            trans = pclases.Transportista.select(pclases.Transportista.q.nombre.contains(codigo))
+            trans = [p for p in trans]
+            mens_error = 'No se encontró ningún transportista con ese nombre.'
+            if len(trans) > 1:
+                idtrans = refinar_busqueda_transportista(trans)
+                if idtrans != None:
+                    trans = [p for p in trans if p.id == idtrans]
+                else:
+                    return None
+            elif len(trans) < 1:
+                utils.dialogo_info('TRANSPORTISTA NO ENCONTRADO', mens_error, padre = self.wids['ventana'])
+                return None
+            transportista = trans[0]
         
     def refinar_busqueda_productos(self, resultados):
         filas_res = []
@@ -548,8 +574,8 @@ class AlbaranesDeEntradaCS21(Ventana):
         else:
             utils.combo_set_from_db(self.wids['cbe_almacenID'], 
                     albaran.almacenID, 
-                    forced_value = albaran.almacen 
-                                    and albaran.almacen.nombre
+                    forced_value = abono.almacen 
+                                    and abono.almacen.nombre
                                     or None)
         self.wids['e_facturas'].set_text(", ".join([f.numfactura for f in albaran.facturasCompra]))
         self.wids['e_pedidos'].set_text(", ".join([p.numpedido for p in albaran.pedidosCompra]))
@@ -601,27 +627,27 @@ class AlbaranesDeEntradaCS21(Ventana):
         ldc = linea
         tv = self.wids['tv_ldvs']
         model = tv.get_model()
-        itr = model.get_iter_first()
-        while itr:
-            if model[itr][-1] == ldc.id:
+        iter = model.get_iter_first()
+        while iter:
+            if model[iter][-1] == ldc.id:
                 sel = tv.get_selection()
-                sel.select_iter(itr)
-                tv.scroll_to_cell(model.get_path(itr))
+                sel.select_iter(iter)
+                tv.scroll_to_cell(model.get_path(iter))
                 col = tv.get_column(3)
                 cell = col.get_cell_renderers()[0]
-                tv.set_cursor_on_cell(model.get_path(itr), 
+                tv.set_cursor_on_cell(model.get_path(iter), 
                                       col, 
                                       cell, 
                                       start_editing = True)
                 break
             else:
-                itr = model.iter_next(itr)
+                iter = model.iter_next(iter)
 
     def drop_producto(self, widget):
         if self.wids['tv_ldvs'].get_selection().count_selected_rows() != 1: 
             return
-        model, itr = self.wids['tv_ldvs'].get_selection().get_selected()
-        idlinea = model[itr][-1]
+        model, iter = self.wids['tv_ldvs'].get_selection().get_selected()
+        idlinea = model[iter][-1]
         try:
             linea = pclases.LineaDeCompra.get(idlinea)
         except pclases.SQLObjectNotFound:
@@ -719,6 +745,8 @@ class AlbaranesDeEntradaCS21(Ventana):
         de campos que no se hayan pedido aquí.
         """
         albaran = self.objeto
+        global transportista
+        transportista = None
             # Datos a pedir:
         numalbaran = utils.dialogo_entrada(
                         texto = 'Introduzca un número para el albarán.', 

@@ -35,7 +35,7 @@
 ## 11 de febrero de 2006 -> Añadidos abonos a la facturación.
 ###################################################################
 ## DONE:
-## + Añadir abonos con factura de albaran generada y pendientes de 
+## + Añadir abonos con factura de abono generada y pendientes de 
 ##   descontar en una factura de venta o pagaré.
 ###################################################################
 
@@ -635,13 +635,13 @@ class FacturacionPorClienteYFechas(Ventana):
                                          FA.q.fecha <= fechafin), 
                              orderBy = "fecha")
         frabonos = [fa for fa in frabonos 
-                    if fa.albaran 
-                        and fa.albaran.clienteID == idcliente 
-                        and not fa.albaran.facturasVenta]
+                    if fa.abono 
+                        and fa.abono.clienteID == idcliente 
+                        and not fa.abono.facturasVenta]
                         #and not [pda.facturaVenta 
                         #         for pda in fa.pagosDeAbono
                         #         if pda.facturaVenta]]
-        # Si el albaran se ha descontado de una factura de venta, no lo 
+        # Si el abono se ha descontado de una factura de venta, no lo 
         # muestro porque ya forma parte del total de la factura de venta.
         for f in frabonos:
             total, pendiente, cobrado, \
@@ -751,11 +751,11 @@ class FacturacionPorClienteYFechas(Ventana):
         model = tv.get_model()
         idfactura = model[path][-1]
         if idfactura > 0 and model[path][0] != "":
-            if model[path][0].startswith("A"):    # Es una factura de albaran
+            if model[path][0].startswith("A"):    # Es una factura de abono
                 frabono = pclases.FacturaDeAbono.get(idfactura)
-                if frabono.albaran:
+                if frabono.abono:
                     import abonos_venta
-                    v = abonos_venta.AbonosVenta(albaran, usuario = self.usuario)
+                    v = abonos_venta.AbonosVenta(abono, usuario = self.usuario)
             elif model[path][0].startswith("*"):
                 fra = pclases.Prefactura.get(idfactura)
                 try:

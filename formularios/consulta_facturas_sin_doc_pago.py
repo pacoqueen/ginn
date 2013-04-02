@@ -107,7 +107,7 @@ class ConsultaFacturasSinDocumentoDePago(Ventana):
             v = facturas_venta.FacturasVenta(fra, usuario = self.usuario)
         elif id < 0:    # Ahora los id negativos son de abonos, no clientes.
             fda = pclases.FacturaDeAbono.get(-id)
-            a = fda.albaran
+            a = fda.abono
             import abonos_venta
             v = abonos_venta.AbonosVenta(a, usuario = self.usuario)
 
@@ -151,7 +151,7 @@ class ConsultaFacturasSinDocumentoDePago(Ventana):
                                         FV.q.fecha >= fechaini, 
                                         FV.q.fecha <= fechafin, 
                                         VC.q.facturaVentaID == FV.q.id))
-                # Busco los abonos (facturas de albaran, en realidad, que no 
+                # Busco los abonos (facturas de abono, en realidad, que no 
                 # tienen por qué tener la misma fecha) que no hayan sido 
                 # incluidos en facturas (porque si no el importe ya se habría 
                 # contado en la factura anterior) ni en pagarés (porque 
@@ -168,16 +168,16 @@ class ConsultaFacturasSinDocumentoDePago(Ventana):
             # No me queda otra que filtrar así aunque sea lento:
             abonos_pendientes = []
             for a in abonos:
-                if not a.albaran:
-                    continue # ¿Error de borrado de un albaran? Mmm... mal rollo.
+                if not a.abono:
+                    continue # ¿Error de borrado de un abono? Mmm... mal rollo.
                 # Los abonos, por norma general, van a tener facturas de venta 
                 # relacionadas. Eso no debería excluirlos de la lista de 
                 # pendientes de documentar. Se comprobará cuando se filtren 
                 # más adelante.
-                #if a.albaran.facturasVenta:
+                #if a.abono.facturasVenta:
                 #    continue
                 if a.cobros or a.pagosDeAbono:    
-                                # Cada cobro de albaran está relacionado 
+                                # Cada cobro de abono está relacionado 
                                 # con un pagaré (o con lo que sea en un 
                                 # posible futuro, el caso es que no 
                                 # estaría pendiente).
@@ -252,7 +252,7 @@ class ConsultaFacturasSinDocumentoDePago(Ventana):
                     total += pendiente
                     vtos = utils.str_fecha(a.fecha)  # Tampoco tiene 
                     # vencimientos. La obligación nace desde el mismo día 
-                    # en que el albaran se convierte en factura de albaran.
+                    # en que el abono se convierte en factura de abono.
                     nodo_padre = None
                     model.append(nodo_padre, 
                                  (a.cliente.nombre, 

@@ -38,7 +38,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
+import gtk, gtk.glade, time, sqlobject
 try:
     import pclases
 except ImportError:
@@ -174,6 +174,32 @@ class AlbaranesDeEntradaRepuestos(Ventana):
                                    padre = self.wids['ventana'])
                 pedido = None
         return pedido
+
+    def pedir_transportista(self, widget):
+        """
+        Solicita un número de pedido, muestra una
+        ventana de resultados coincidentes con la 
+        búsqueda de ese número y devuelve un 
+        objeto pedido seleccionado de entre
+        los resultados o None si se cancela o 
+        no se encuentra.
+        """
+        global transportista
+        codigo = utils.dialogo_entrada(texto = 'Introduzca nombre del transportista', titulo = 'TRANSPORTISTA', padre = self.wids['ventana'])
+        if codigo != None:
+            trans = pclases.Transportista.select(pclases.Transportista.q.nombre.contains(codigo))
+            trans = [p for p in trans]
+            mens_error = 'No se encontró ningún transportista con ese nombre.'
+            if len(trans) > 1:
+                idtrans = refinar_busqueda_transportista(trans)
+                if idtrans != None:
+                    trans = [p for p in trans if p.id == idtrans]
+                else:
+                    return None
+            elif len(trans) < 1:
+                utils.dialogo_info('TRANSPORTISTA NO ENCONTRADO', mens_error, padre = self.wids['ventana'])
+                return None
+            transportista = trans[0]
         
     def refinar_busqueda_productos(self, resultados):
         filas_res = []
@@ -522,8 +548,8 @@ class AlbaranesDeEntradaRepuestos(Ventana):
 
     def drop_producto(self, widget):
         if self.wids['tv_ldvs'].get_selection().count_selected_rows() != 1: return
-        model, itr = self.wids['tv_ldvs'].get_selection().get_selected()
-        idlinea = model[itr][-1]
+        model, iter = self.wids['tv_ldvs'].get_selection().get_selected()
+        idlinea = model[iter][-1]
         try:
             linea = pclases.LineaDeCompra.get(idlinea)
         except pclases.SQLObjectNotFound:

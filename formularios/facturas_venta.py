@@ -2883,12 +2883,12 @@ class FacturasVenta(Ventana):
                      'unidad': ""}
             lineas.append(linea)
         for pda in factura.pagosDeAbono:
-            albaran = pda.facturaDeAbono.albaran
-            linea = {"codigo": albaran.numabono, 
+            abono = pda.facturaDeAbono.abono
+            linea = {"codigo": abono.numabono, 
                      "cantidad": "", 
-                     "descripcion": "Abono %s de fecha %s" % (albaran.numabono, 
-                                            utils.str_fecha(albaran.fecha),),  
-                     "precio": albaran.calcular_importe_sin_iva(), 
+                     "descripcion": "Abono %s de fecha %s" % (abono.numabono, 
+                                            utils.str_fecha(abono.fecha),),  
+                     "precio": abono.calcular_importe_sin_iva(), 
                      "descuento": "0", 
                      'unidad': ""}
             lineas.append(linea)
@@ -3020,30 +3020,30 @@ class FacturasVenta(Ventana):
 
     def buscar_abonos(self, w):
         """
-        Busca facturas de albaran en la base de datos para que el usuario 
+        Busca facturas de abono en la base de datos para que el usuario 
         pueda agregar una o varias a la factura de venta actual.
-        Crea los pagos de albaran correspondientes que se muestran en 
+        Crea los pagos de abono correspondientes que se muestran en 
         la ventana.
         """
         cliente = self.objeto.cliente
         abonos = pclases.Abono.select(sqlobject.AND(pclases.Abono.q.clienteID == cliente.id,
                                                     pclases.Abono.q.facturaDeAbonoID != None))
-        # Si tienen pagos de albaran en la factura de albaran es que ya se ha usado en otra factura.
+        # Si tienen pagos de abono en la factura de abono es que ya se ha usado en otra factura.
         abonos = [a for a in abonos if a.facturaDeAbono.pagosDeAbono == []]
-        # NOTA: OJO: Una factura de albaran, un albaran.
+        # NOTA: OJO: Una factura de abono, un abono.
         filas = [(a.facturaDeAbono.id,
                   utils.str_fecha(a.facturaDeAbono.fecha),
                   a.numabono,
                   utils.str_fecha(a.fecha)) 
                  for a in abonos if a.facturaDeAbono != None]
         fas = utils.dialogo_resultado(filas, 'SELECCIONE UNA FACTURA DE ABONO DEL CLIENTE',
-                                      cabeceras = ('ID', 'Fecha de factura de albaran', 'Número de albaran', 'Fecha del albaran'),
+                                      cabeceras = ('ID', 'Fecha de factura de abono', 'Número de abono', 'Fecha del abono'),
                                       multi = True, 
                                       padre = self.wids['ventana'])
         if fas[0] > 0:
             for faid in fas:
                 fa = pclases.FacturaDeAbono.get(faid)
-                # NOTA: OJO: Una factura de albaran, un albaran.
+                # NOTA: OJO: Una factura de abono, un abono.
                 importe = fa.abonos[0].importeSinIva
                 pa = pclases.PagoDeAbono(facturaVenta = self.objeto,
                                          facturaDeAbono = fa,
@@ -3071,7 +3071,7 @@ class FacturasVenta(Ventana):
                 pa.destroy(usuario = self.usuario, ventana = __file__)
             except:
                 utils.dialogo_info(titulo = "ERROR AL ELIMINAR ABONO", 
-                    texto = "Se produjo un error al eliminar el pago de albaran."
+                    texto = "Se produjo un error al eliminar el pago de abono."
                             "\nConsulte al administrador de la aplicación o "
                             "inténtelo de nuevo después de cerrar y volver a "
                             "abrir la ventana.", 

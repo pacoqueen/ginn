@@ -1851,18 +1851,18 @@ def _buscar_ventas(fecha_ini, fecha_fin):
                             pclases.FacturaDeAbono.q.fecha <= fecha_fin, 
                             pclases.FacturaDeAbono.q.fecha >= fecha_ini), 
                         orderBy = 'fecha')
-    facturasDeAbono = [f for f in facturasDeAbono if f.albaran]
+    facturasDeAbono = [f for f in facturasDeAbono if f.abono]
     facturas = list(facturas)
     for f in facturas:
         for linea in f.lineasDeVenta:
             procesar_ldv(linea, ventas_gtx, ventas_fibra, ventas_bolsas)
     for f in facturasDeAbono:
-        albaran = f.albaran
-        for lda in albaran.lineasDeAbono:
+        abono = f.abono
+        for lda in abono.lineasDeAbono:
             # Filtro las que son ajuste de precio de servicios.
             if lda.lineaDeVenta != None: 
                 procesar_lda(lda, ventas_gtx, ventas_fibra, ventas_bolsas)
-        for ldd in albaran.lineasDeDevolucion:
+        for ldd in abono.lineasDeDevolucion:
             procesar_ldd(ldd, ventas_gtx, ventas_fibra, ventas_bolsas)
     return ventas_gtx, ventas_fibra, ventas_bolsas
 
@@ -2089,16 +2089,16 @@ def ejecutar_consultas_ventas_fibra_por_color(fechaini, fechafin):
          FROM linea_de_abono, 
               factura_de_abono, 
               cliente, 
-              albaran, 
+              abono, 
               linea_de_venta, 
               fibra_balas_con_campos_especificos_temp
-         WHERE linea_de_abono.abono_id = albaran.id
+         WHERE linea_de_abono.abono_id = abono.id
                AND linea_de_abono.linea_de_venta_id = linea_de_venta.id
                AND linea_de_venta.producto_venta_id = fibra_balas_con_campos_especificos_temp.producto_venta_id
                AND factura_de_abono.fecha >= '%s'
                AND factura_de_abono.fecha <= '%s'
-               AND cliente.id = albaran.cliente_id
-               AND factura_de_abono.id = albaran.factura_de_abono_id
+               AND cliente.id = abono.cliente_id
+               AND factura_de_abono.id = abono.factura_de_abono_id
         GROUP BY cliente.pais, fibra_balas_con_campos_especificos_temp.color; 
     """ % (sql_fechaini, sql_fechafin)
     frabonos = """
@@ -2111,14 +2111,14 @@ def ejecutar_consultas_ventas_fibra_por_color(fechaini, fechafin):
          FROM linea_de_devolucion, 
               factura_de_abono, 
               cliente, 
-              albaran, 
+              abono, 
               articulo, 
               fibra_balas_con_campos_especificos_temp
-         WHERE linea_de_devolucion.abono_id = albaran.id
-           AND factura_de_abono.id = albaran.factura_de_abono_id
+         WHERE linea_de_devolucion.abono_id = abono.id
+           AND factura_de_abono.id = abono.factura_de_abono_id
            AND factura_de_abono.fecha >= '%s'
            AND factura_de_abono.fecha <= '%s'
-           AND cliente.id = albaran.cliente_id
+           AND cliente.id = abono.cliente_id
            AND linea_de_devolucion.albaran_de_entrada_de_abono_id IS NOT NULL
            AND articulo.id = linea_de_devolucion.articulo_id
            AND articulo.producto_venta_id = fibra_balas_con_campos_especificos_temp.producto_venta_id; 
@@ -2194,21 +2194,21 @@ def ejecutar_consultas_ventas_bigbags(fechaini, fechafin):
     kilos_euros_lda = """
         SELECT 0.0 AS kilos, 
                COALESCE(SUM(linea_de_abono.cantidad * linea_de_abono.diferencia), 0.0) AS euros 
-         FROM linea_de_abono, factura_de_abono, albaran, linea_de_venta, fibra_bigbags
-         WHERE linea_de_abono.abono_id = albaran.id
+         FROM linea_de_abono, factura_de_abono, abono, linea_de_venta, fibra_bigbags
+         WHERE linea_de_abono.abono_id = abono.id
                AND linea_de_abono.linea_de_venta_id = linea_de_venta.id
                AND linea_de_venta.producto_venta_id = fibra_bigbags.producto_venta_id
                AND factura_de_abono.fecha >= '%s'
                AND factura_de_abono.fecha <= '%s'
-               AND factura_de_abono.id = albaran.factura_de_abono_id
+               AND factura_de_abono.id = abono.factura_de_abono_id
          ;
     """ % (sql_fechaini, sql_fechafin)
     frabonos = """
         SELECT linea_de_devolucion.id, linea_de_devolucion.articulo_id, linea_de_devolucion.precio
          INTO TEMP facturas_de_abono_temp
-         FROM linea_de_devolucion, factura_de_abono, albaran, articulo, fibra_bigbags
-         WHERE linea_de_devolucion.abono_id = albaran.id
-           AND factura_de_abono.id = albaran.factura_de_abono_id
+         FROM linea_de_devolucion, factura_de_abono, abono, articulo, fibra_bigbags
+         WHERE linea_de_devolucion.abono_id = abono.id
+           AND factura_de_abono.id = abono.factura_de_abono_id
            AND factura_de_abono.fecha >= '%s'
            AND factura_de_abono.fecha <= '%s'
            AND linea_de_devolucion.albaran_de_entrada_de_abono_id IS NOT NULL

@@ -36,9 +36,9 @@
 ##
 ###################################################################
 ## TODO:
-## Bloquear albarán si se genera factura de albaran o algo así para 
+## Bloquear albarán si se genera factura de abono o algo así para 
 ## evitar que se descuente en una factura y después se machaque 
-## con otra factura de albaran nueva al regenerarla después de 
+## con otra factura de abono nueva al regenerarla después de 
 ## haber modificado el albarán original que ya ha sido facturado.
 ###################################################################
 
@@ -46,7 +46,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
+import gtk, gtk.glade, time, sqlobject
 import sys, os
 sys.path.insert(0, os.path.join('..', 'SQLObject', 'SQLObject-0.6.1'))
 try:
@@ -102,16 +102,16 @@ class AbonosVenta(Ventana):
         Devuelve True si la información en pantalla es distinta a la
         del objeto en memoria.
         """
-        albaran = self.objeto
-        if albaran == None: return False	# Si no hay albaran activo, devuelvo que 
+        abono = self.objeto
+        if abono == None: return False	# Si no hay abono activo, devuelvo que 
                                         # no hay cambio respecto a la ventana
-        condicion = self.wids['e_numabono'].get_text() == albaran.numabono
+        condicion = self.wids['e_numabono'].get_text() == abono.numabono
         condicion = (condicion 
-         and (utils.str_fecha(albaran.fecha) == self.wids['e_fecha'].get_text()))
+         and (utils.str_fecha(abono.fecha) == self.wids['e_fecha'].get_text()))
         condicion = (condicion 
-         and albaran.observaciones == self.wids['e_observaciones'].get_text())
+         and abono.observaciones == self.wids['e_observaciones'].get_text())
         condicion = (condicion 
-         and albaran.almacenID==utils.combo_get_value(self.wids['cbe_almacen']))
+         and abono.almacenID==utils.combo_get_value(self.wids['cbe_almacen']))
         return not condicion	# Condición verifica que sea igual
 
     def aviso_actualizacion(self):
@@ -120,7 +120,7 @@ class AbonosVenta(Ventana):
         actualizado.
         """
         utils.dialogo_info('ACTUALIZAR',
-            'El albaran ha sido modificado remotamente.\nDebe actualizar la inf'
+            'El abono ha sido modificado remotamente.\nDebe actualizar la inf'
             'ormación mostrada en pantalla.\nPulse el botón «Actualizar»', 
             padre = self.wids['ventana'])
         self.wids['b_actualizar'].set_sensitive(True)
@@ -163,7 +163,7 @@ class AbonosVenta(Ventana):
                     False, True, False, None),
                 ('Albarán de procedencia', 'gobject.TYPE_STRING', 
                     False, True, False, None),
-                ('Albarán albaran', 'gobject.TYPE_STRING', 
+                ('Albarán abono', 'gobject.TYPE_STRING', 
                     False, True, False, None),
                 ('Importe', 'gobject.TYPE_FLOAT', 
                     True, False, False, self.cambiar_importe_devolucion),
@@ -196,7 +196,7 @@ class AbonosVenta(Ventana):
             = self.wids['b_albaran_abono'].get_property("sensitive")
         s = s and (self.usuario == None or self.usuario.nivel <= 1)
         if self.usuario and self.usuario.nivel > 1:
-            self.wids['b_nuevo'].set_sensitive(False)
+             self.wids['b_nuevo'].set_sensitive(False)
             # PLAN: Cambiar por permisos lectura/escritura/nuevo en lugar de 
             # hacerlo en base al nivel de privilegios del usuario.
         ws = ('hbox1', 'hbox5', 'vbox2', 'hbox6', 'b_albaran_abono', 
@@ -221,17 +221,17 @@ class AbonosVenta(Ventana):
         Hace que el primer registro -si lo hay- de la tabla implicada
         en el objeto del formulario sea el objeto activo.
         """
-        albaran = self.objeto
+        abono = self.objeto
         try:
             # Anulo el aviso de actualización del envío que deja de ser activo.
-            if albaran != None: albaran.notificador.set_func(lambda : None)
-            albaran = pclases.Abono.select(orderBy = "-id")[0]	# Selecciono 
+            if abono != None: abono.notificador.set_func(lambda : None)
+            abono = pclases.Abono.select(orderBy = "-id")[0]	# Selecciono 
                                 # todos y me quedo con el primero de la lista
-            albaran.notificador.set_func(self.aviso_actualizacion)    # Activo 
+            abono.notificador.set_func(self.aviso_actualizacion)    # Activo 
                                                             # la notificación
         except:
-            albaran = None 	
-        self.objeto = albaran
+            abono = None 	
+        self.objeto = abono
         self.actualizar_ventana()
 
     def refinar_resultados_busqueda(self, resultados):
@@ -249,12 +249,12 @@ class AbonosVenta(Ventana):
             filas_res.append((r.id, r.numabono, utils.str_fecha(r.fecha), 
                               nombrecliente, tienefactura))
         idabono = utils.dialogo_resultado(filas_res,
-                                          titulo = 'Seleccione albaran',
+                                          titulo = 'Seleccione abono',
                                           cabeceras = ('ID', 
-                                                       'Número de albaran', 
+                                                       'Número de abono', 
                                                        'Fecha', 
                                                        'Cliente', 
-                                                       'Factura de albaran'), 
+                                                       'Factura de abono'), 
                                           padre = self.wids['ventana'])
         if idabono < 0:
             return None
@@ -264,17 +264,17 @@ class AbonosVenta(Ventana):
 
     def rellenar_widgets(self):
         """
-        Introduce la información del albaran actual
+        Introduce la información del abono actual
         en los widgets.
         No se chequea que sea != None, así que
         hay que tener cuidado de no llamar a 
         esta función en ese caso.
         """
-        albaran = self.objeto
-        self.wids['e_numabono'].set_text(albaran.numabono)
-        self.wids['e_fecha'].set_text(utils.str_fecha(albaran.fecha))
-        self.wids['e_observaciones'].set_text(albaran.observaciones)
-        cliente = albaran.cliente
+        abono = self.objeto
+        self.wids['e_numabono'].set_text(abono.numabono)
+        self.wids['e_fecha'].set_text(utils.str_fecha(abono.fecha))
+        self.wids['e_observaciones'].set_text(abono.observaciones)
+        cliente = abono.cliente
         self.wids['hbox5'].set_sensitive(cliente != None)
         self.wids['vbox2'].set_sensitive(cliente != None)
         self.wids['hbox6'].set_sensitive(cliente != None)
@@ -294,45 +294,45 @@ class AbonosVenta(Ventana):
         self.wids['b_albaran_abono'].set_sensitive(len([l for l 
             in self.objeto.lineasDeDevolucion 
             if l.albaranDeEntradaDeAbono == None]) >= 1)
-        if albaran.facturaDeAbono:
-            self.wids['e_fra_abono'].set_text(albaran.numabono)
+        if abono.facturaDeAbono:
+            self.wids['e_fra_abono'].set_text(abono.numabono)
             hijos = self.wids['b_fra_abono'].child.child.get_children()
             try:
-                hijos[1].set_label("Eliminar\n factura \nde albaran")
+                hijos[1].set_label("Eliminar\n factura \nde abono")
             except AttributeError:      # Si no es el 1 será el 0. Más no hay 
                                         # en el botón.
-                hijos[0].set_label("Eliminar\n factura \nde albaran")
+                hijos[0].set_label("Eliminar\n factura \nde abono")
             self.wids['b_imprimir'].set_sensitive(True)
         else:
             self.wids['e_fra_abono'].set_text("NO GENERADA")
             hijos = self.wids['b_fra_abono'].child.child.get_children()
             try:
-                hijos[1].set_label("Generar\n factura \nde albaran")
+                hijos[1].set_label("Generar\n factura \nde abono")
             except AttributeError:
-                hijos[0].set_label("Generar\n factura \nde albaran")
+                hijos[0].set_label("Generar\n factura \nde abono")
             self.wids['b_imprimir'].set_sensitive(False)
         self.wids['e_facturas'].set_text(", ".join([f.numfactura 
-            for f in albaran.facturasVenta]))
+            for f in abono.facturasVenta]))
         self.wids['e_albaranes'].set_text(", ".join([a.numalbaran 
-            for a in albaran.albaranesSalida]))
+            for a in abono.albaranesSalida]))
         utils.combo_set_from_db(self.wids['cbe_almacen'], 
-                                albaran.almacenID, 
-                                forced_value = albaran.almacen 
-                                                and albaran.almacen.nombre
+                                abono.almacenID, 
+                                forced_value = abono.almacen 
+                                                and abono.almacen.nombre
                                                 or None)
         self.wids['e_cobro'].set_text(self.objeto.get_str_cobro())
         self.objeto.make_swap()
 
     def rellenar_ajustes(self):
         """
-        Introduce las líneas de ajuste de precios del albaran en el 
+        Introduce las líneas de ajuste de precios del abono en el 
         listview y devuelve la suma de las diferencias de precios.
         """
-        albaran = self.objeto
+        abono = self.objeto
         model = self.wids['tv_precios'].get_model()
         model.clear()
         total = 0
-        ldas = albaran.lineasDeAbono[:]
+        ldas = abono.lineasDeAbono[:]
         try:
             ldas.sort(lambda x, y: int(x.id - y.id))
         except:     # ¿No tiene ID? Bua, pues no lo ordeno y punto.
@@ -359,11 +359,11 @@ class AbonosVenta(Ventana):
             if difcant < 0:
                 utils.dialogo_info(titulo = 'ABONO INCOHERENTE', texto = \
                 """
-                En el albaran consta que se facturó %.2f de %s. Sin 
+                En el abono consta que se facturó %.2f de %s. Sin 
                 embargo intenta abonar %.2f, que es superior a lo 
                 facturado. Tal vez quiera crear una nueva factura           
                 a cargar al con la diferencia (%.2f) en 
-                lugar de un albaran.                                          
+                lugar de un abono.                                          
                 """ % (lda.lineaDeVenta.cantidad, 
                        lda.lineaDeVenta.producto.descripcion, 
                        lda.cantidad, abs(difcant)))
@@ -372,11 +372,11 @@ class AbonosVenta(Ventana):
                     utils.dialogo_info(titulo = 'ABONO INCOHERENTE', texto = \
                     """
                     Si la cantidad de producto facturado difiere de la del     
-                    albaran significa que se ha producido también una devolución 
-                    de mercancía. Debe, por tanto, incluir en el albaran las     
+                    abono significa que se ha producido también una devolución 
+                    de mercancía. Debe, por tanto, incluir en el abono las     
                     líneas de devolución correspondientes a esta diferencia    
                     entre material facturado y abonado por ajuste de precio.   
-                    ¡Cree la devolución del material en el albaran actual para   
+                    ¡Cree la devolución del material en el abono actual para   
                     no volver a ver este mensaje de error!                     
                     """)
         except AttributeError:  # No tiene LDV sino Servicio
@@ -395,11 +395,11 @@ class AbonosVenta(Ventana):
             if difcant < 0:
                 utils.dialogo_info(titulo = 'ABONO INCOHERENTE', texto = \
                 """
-                En el albaran consta que se facturó %.2f de %s. Sin 
+                En el abono consta que se facturó %.2f de %s. Sin 
                 embargo intenta abonar %.2f, que es superior a lo 
                 facturado. Tal vez quiera crear una nueva factura           
                 a cargar al con la diferencia (%.2f) en 
-                lugar de un albaran.                                          
+                lugar de un abono.                                          
                 """ % (lda.servicio.cantidad, lda.servicio.concepto, 
                        lda.cantidad, difcant))
             elif difcant > 0:
@@ -407,23 +407,23 @@ class AbonosVenta(Ventana):
                     utils.dialogo_info(titulo = 'ABONO INCOHERENTE', texto = \
                     """
                     Si la cantidad de producto facturado difiere de la del     
-                    albaran significa que se ha producido también una devolución 
-                    de mercancía. Debe, por tanto, incluir en el albaran las     
+                    abono significa que se ha producido también una devolución 
+                    de mercancía. Debe, por tanto, incluir en el abono las     
                     líneas de devolución correspondientes a esta diferencia    
                     entre material facturado y abonado por ajuste de precio.   
-                    ¡Cree la devolución del material en el albaran actual para   
+                    ¡Cree la devolución del material en el abono actual para   
                     no volver a ver este mensaje de error!                     
                     """)
         return total
 
     def rellenar_devoluciones(self):
         """
-        Introduce las devoluciones del albaran en el treeview y 
+        Introduce las devoluciones del abono en el treeview y 
         devuelve el total de los importes de los artículos 
-        devueltos según el precio de la factura/albaran del que 
+        devueltos según el precio de la factura/abono del que 
         procedan
         """
-        albaran = self.objeto
+        abono = self.objeto
         model = self.wids['tv_devoluciones'].get_model()
         model.clear()
         total = 0
@@ -431,7 +431,7 @@ class AbonosVenta(Ventana):
         kilos = 0
         bultos = 0
         padres = {}
-        for ldd in albaran.lineasDeDevolucion:
+        for ldd in abono.lineasDeDevolucion:
             if ldd.articulo.productoVenta.id not in padres:
                 padres[ldd.articulo.productoVenta.id] = []
             padres[ldd.articulo.productoVenta.id].append(ldd)
@@ -592,11 +592,11 @@ class AbonosVenta(Ventana):
         """
         Desvincula los artículos* de sus albaranes de salida originales.
         A su vez, relaciona esos albaranes con la LDD y crea un nuevo
-        albarán de entrada de albaran que contiene todos esos artículos.
-        * Los que no estén ya relacionados con albaranes de albaran, se entiende.
+        albarán de entrada de abono que contiene todos esos artículos.
+        * Los que no estén ya relacionados con albaranes de abono, se entiende.
         """
         numalbaran = utils.dialogo_entrada(
-            'Introduzca un número para el albarán de albaran de entrada.\nPued'
+            'Introduzca un número para el albarán de abono de entrada.\nPued'
             'e dejarlo en blanco si lo desea.',
             'NÚMERO DE ALBARÁN DE ENTRADA POR ABONO', 
             padre = self.wids['ventana'], 
@@ -619,7 +619,7 @@ class AbonosVenta(Ventana):
             ldd.albaranSalida = ldd.articulo.albaranSalida
             ldd.articulo.albaranSalida = None
             ldd.albaranDeEntradaDeAbono = adeda
-            # Y el paso final, devolverlo al almacén del albaran:
+            # Y el paso final, devolverlo al almacén del abono:
             # OJO: Hasta que no se genera el albarán de entrada, el artículo 
             # no pasa al almacén.
             ldd.articulo.almacen = self.objeto.almacen
@@ -640,7 +640,7 @@ class AbonosVenta(Ventana):
             pclases.Prefactura.q.clienteID == cliente.id)
         if facturas.count() + prefacturas.count() == 0:
             utils.dialogo_info(titulo = 'NO HAY FACTURAS', 
-                texto = 'No se han facturado ventas al cliente del albaran.', 
+                texto = 'No se han facturado ventas al cliente del abono.', 
                 padre = self.wids['ventana'])
         else:
             fra = utils.buscar_factura(self.wids['ventana'], cliente = cliente)
@@ -653,13 +653,13 @@ class AbonosVenta(Ventana):
                         self.crear_ldd(self.objeto, articulo, ldv)
                     self.actualizar_ventana()
     
-    def crear_ldd(self, albaran, articulo, ldv):
+    def crear_ldd(self, abono, articulo, ldv):
         """
         Crea una LDD.
         """
         # elimina del albarán de salida el artículo y asocia la
         # LDD con ese albarán de salida. --> Aún no, eso se hace al generar el 
-        # albarán de entrada de albaran.
+        # albarán de entrada de abono.
         articulo = pclases.Articulo.get(articulo)
         if articulo.es_rollo():
             precio = (ldv.precio 
@@ -674,7 +674,7 @@ class AbonosVenta(Ventana):
         elif articulo.es_caja():
             precio = ldv.precio * articulo.peso
         ldd = pclases.LineaDeDevolucion(articulo = articulo, 
-                                        albaran = albaran, 
+                                        abono = abono, 
                                         albaranDeEntradaDeAbono = None, 
                                         albaranSalida = None,
                                         precio = precio)
@@ -683,7 +683,7 @@ class AbonosVenta(Ventana):
     def seleccionar_articulos(self, ldv):
         """
         Muestra los artículos relacionados con el producto de venta
-        y el albaran relacionados a su vez con la LDV.
+        y el abono relacionados a su vez con la LDV.
         Devuelve una lista de LDVs seleccionadas.
         """
         albaran = ldv.albaranSalida
@@ -715,16 +715,16 @@ class AbonosVenta(Ventana):
             return idsa
 
     def drop_devolucion(self, w):
-        model,itr = self.wids['tv_devoluciones'].get_selection().get_selected()
-        if itr == None:
+        model,iter=self.wids['tv_devoluciones'].get_selection().get_selected()
+        if iter == None:
             utils.dialogo_info(titulo = 'ERROR', 
                                texto = 'No ha seleccionado ninguna línea', 
                                padre = self.wids['ventana'])
             return
 
-        if model[itr].parent == None:
+        if model[iter].parent == None:
             return
-        idldd = model[itr][-1]
+        idldd = model[iter][-1]
         ldd = pclases.LineaDeDevolucion.get(idldd)
         try:
             if ldd.albaranSalida:
@@ -741,14 +741,14 @@ class AbonosVenta(Ventana):
                 padre = self.wids['ventana'])
      
     def cambiar_cliente(self, w):
-        albaran = self.objeto
-        if albaran.lineasDeAbono or albaran.lineasDeDevolucion:
+        abono = self.objeto
+        if abono.lineasDeAbono or abono.lineasDeDevolucion:
             txt = """
-            No puede cambiar el cliente si el albaran ya          
+            No puede cambiar el cliente si el abono ya          
             contiene devoluciones o ajustes de precio.          
-            Elimine primero el contenido del albaran si           
+            Elimine primero el contenido del abono si           
             quiere cambiar el cliente o cree un nuevo           
-            albaran.                                              
+            abono.                                              
             """
             utils.dialogo_info(titulo = 'NO PUEDE CAMBIAR EL CLIENTE',
                                texto = txt)
@@ -765,7 +765,7 @@ class AbonosVenta(Ventana):
                 cliente = pclases.Cliente.get(idcliente)
             except:
                 return  # El cliente no existe o canceló.
-            albaran.cliente = cliente
+            abono.cliente = cliente
             self.actualizar_ventana()
     
     def add_ajuste(self, w):
@@ -773,11 +773,11 @@ class AbonosVenta(Ventana):
         El usuario busca entre las facturas del cliente una 
         línea de venta sobre la que realizar la corrección
         de precio.
-        Una vez seleccionada se crea una línea de albaran
-        relacionada con la LDV y el albaran actual con los
+        Una vez seleccionada se crea una línea de abono
+        relacionada con la LDV y el abono actual con los
         datos por defecto.
         Posteriormente el usuario podrá cambiar el precio
-        final o la diferencia en el albaran.
+        final o la diferencia en el abono.
         """
         cliente = self.objeto.cliente
         libre = utils.dialogo(titulo = "¿AÑADIR CONCEPTO LIBRE?", 
@@ -810,7 +810,7 @@ class AbonosVenta(Ventana):
                                                descuento = 0.0)
                         pclases.Auditoria.nuevo(srv, self.usuario, __file__)
                         lda = pclases.LineaDeAbono(lineaDeVenta = None, 
-                                albaran = self.objeto, 
+                                abono = self.objeto, 
                                 servicio = srv, 
                                 diferencia = -precio, 
                                 cantidad = 1.0, 
@@ -826,7 +826,7 @@ class AbonosVenta(Ventana):
             facturas = (fras.count() + prefras.count())
             if facturas == 0:
                 utils.dialogo_info(titulo = 'NO HAY FACTURAS', 
-                  texto = 'No se han facturado ventas al cliente del albaran.', 
+                  texto = 'No se han facturado ventas al cliente del abono.', 
                   padre = self.wids['ventana'])
             else:
                 fra = utils.buscar_factura(self.wids['ventana'], 
@@ -841,15 +841,15 @@ class AbonosVenta(Ventana):
                         self.crear_lda(self.objeto, None, serv)
                     self.actualizar_ventana()
     
-    def crear_lda(self, albaran, ldv = None, serv = None):
+    def crear_lda(self, abono, ldv = None, serv = None):
         if ldv != None:
-            lda = pclases.LineaDeAbono(albaran = albaran, 
+            lda = pclases.LineaDeAbono(abono = abono, 
                                        lineaDeVenta = ldv, 
                                        cantidad = ldv.cantidad, 
                                        servicio = None)
             pclases.Auditoria.nuevo(lda, self.usuario, __file__)
         if serv != None:
-            lda = pclases.LineaDeAbono(albaran = albaran, 
+            lda = pclases.LineaDeAbono(abono = abono, 
                                        lineaDeVenta = None,
                                        cantidad = serv.cantidad,
                                        servicio = serv)
@@ -881,8 +881,8 @@ class AbonosVenta(Ventana):
         if ids[0] == -1:
             return [], []
         else:
-            idldvs=[int(jd.replace("LDV_", "")) for jd in ids if "LDV_" in jd]
-            idservs = [int(jd.replace("S_", "")) for jd in ids if "S_" in jd]
+            idldvs=[int(id.replace("LDV_", "")) for id in ids if "LDV_" in id]
+            idservs = [int(id.replace("S_", "")) for id in ids if "S_" in id]
             return idldvs, idservs
     
     def seleccionar_ldv_de_factura(self, factura):
@@ -924,13 +924,13 @@ class AbonosVenta(Ventana):
             return idsldv
             
     def drop_ajuste(self, w):
-        model, itr = self.wids['tv_precios'].get_selection().get_selected()
-        if itr == None:
+        model, iter = self.wids['tv_precios'].get_selection().get_selected()
+        if iter == None:
             utils.dialogo_info(titulo = 'ERROR', 
                                texto = 'No ha seleccionado ninguna línea', 
                                padre = self.wids['ventana'])
             return
-        idlda = model[itr][-1]
+        idlda = model[iter][-1]
         lda = pclases.LineaDeAbono.get(idlda)
         try:
             lda.destroy(usuario = self.usuario, ventana = __file__)
@@ -949,12 +949,12 @@ class AbonosVenta(Ventana):
         en la ventana para que puedan ser editados el resto
         de campos que no se hayan pedido aquí.
         """
-        albaran = self.objeto
-            # Datos a pedir: Cliente y número de albaran.
+        abono = self.objeto
+            # Datos a pedir: Cliente y número de abono.
         numdefecto = pclases.Abono.get_nuevo_numabono()
         txt = """
                                                                 
-        Introduzca un número de albaran.                          
+        Introduzca un número de abono.                          
                                                                 
         Si no está seguro, use el número sugerido: %s           
                                                                 
@@ -974,17 +974,17 @@ class AbonosVenta(Ventana):
             cliente = pclases.Cliente.get(idcliente)
         except:
             return  # El cliente no existe o canceló.
-        if albaran != None:
-            albaran.notificador.desactivar()
-        albaran = pclases.Abono(fecha = time.localtime(), 
+        if abono != None:
+            abono.notificador.desactivar()
+        abono = pclases.Abono(fecha = time.localtime(), 
                             facturaDeAbono = None,
                             numabono = numabono,
                             cliente = cliente, 
                             almacen = pclases.Almacen.get_almacen_principal())
-        pclases.Auditoria.nuevo(albaran, self.usuario, __file__)
-        self.objeto = albaran
+        pclases.Auditoria.nuevo(abono, self.usuario, __file__)
+        self.objeto = abono
         self.actualizar_ventana()
-        albaran.notificador.set_func(self.aviso_actualizacion)
+        abono.notificador.set_func(self.aviso_actualizacion)
 
     def buscar_abono(self, widget):
         """
@@ -993,9 +993,9 @@ class AbonosVenta(Ventana):
         en la ventana a no ser que se pulse en Cancelar en
         la ventana de resultados.
         """
-        albaran = self.objeto
+        abono = self.objeto
         a_buscar = utils.dialogo_entrada(
-                    "Introduzca número de albaran o nombre del cliente:", 
+                    "Introduzca número de abono o nombre del cliente:", 
                     padre = self.wids['ventana']) 
         if a_buscar != None:
             criterio = pclases.Abono.q.numabono.contains(a_buscar)
@@ -1043,13 +1043,13 @@ class AbonosVenta(Ventana):
                 return
             ## Un único resultado
             # Primero anulo la función de actualización
-            if albaran != None:
-                albaran.notificador.set_func(lambda : None)
+            if abono != None:
+                abono.notificador.set_func(lambda : None)
             # Pongo el objeto como actual
-            albaran = resultados[0]
+            abono = resultados[0]
             # Y activo la función de notificación:
-            albaran.notificador.set_func(self.aviso_actualizacion)
-            self.objeto = albaran
+            abono.notificador.set_func(self.aviso_actualizacion)
+            self.objeto = abono
             self.actualizar_ventana()
 
     def guardar(self, widget):
@@ -1057,30 +1057,30 @@ class AbonosVenta(Ventana):
         Guarda el contenido de los entry y demás widgets de entrada
         de datos en el objeto y lo sincroniza con la BD.
         """
-        albaran = self.objeto
+        abono = self.objeto
         # Desactivo el notificador momentáneamente
-        albaran.notificador.set_func(lambda: None)
+        abono.notificador.set_func(lambda: None)
         # Campos del objeto que hay que guardar: Fecha y numabono.
-        fecha_anterior = albaran.fecha
-        numabono_anterior = albaran.numabono
+        fecha_anterior = abono.fecha
+        numabono_anterior = abono.numabono
         fecha = utils.parse_fecha(self.wids['e_fecha'].get_text())
         numabono = self.wids['e_numabono'].get_text()
         # Actualizo los datos del objeto
-        albaran.observaciones = self.wids['e_observaciones'].get_text()
-        albaran.fecha = fecha
-        albaran.numabono = numabono
-        if not albaran.numabono_correcto():
-            albaran.fecha = fecha_anterior
-            albaran.numabono = numabono_anterior
+        abono.observaciones = self.wids['e_observaciones'].get_text()
+        abono.fecha = fecha
+        abono.numabono = numabono
+        if not abono.numabono_correcto():
+            abono.fecha = fecha_anterior
+            abono.numabono = numabono_anterior
             utils.dialogo_info(titulo = "ERROR SECUENCIALIDAD", 
-                texto = "La fecha y número de albaran no cumplen criterios de "
+                texto = "La fecha y número de abono no cumplen criterios de "
                         "secuencialidad.", 
                 padre = self.wids['ventana'])
         # Fuerzo la actualización de la BD y no espero a que SQLObject lo haga 
         # por mí:
-        albaran.syncUpdate()
+        abono.syncUpdate()
         # Vuelvo a activar el notificador
-        albaran.notificador.set_func(self.aviso_actualizacion)
+        abono.notificador.set_func(self.aviso_actualizacion)
         self.actualizar_ventana()
         self.wids['b_guardar'].set_sensitive(False)
 
@@ -1094,17 +1094,17 @@ class AbonosVenta(Ventana):
 
     def borrar_abono(self, boton):
         """
-        Elimina el albaran de la BD y anula la relación entre
+        Elimina el abono de la BD y anula la relación entre
         él y sus LDVs.
         """
-        if not utils.dialogo('Se eliminará el albaran actual y todo su contenid'
+        if not utils.dialogo('Se eliminará el abono actual y todo su contenid'
                              'o.\n¿Está seguro?', 'BORRAR ABONO'): return
-        albaran = self.objeto
-        albaran.notificador.set_func(lambda : None)
-        for ldd in albaran.lineasDeDevolucion + albaran.lineasDeAbono:
-            ldd.albaran = None
+        abono = self.objeto
+        abono.notificador.set_func(lambda : None)
+        for ldd in abono.lineasDeDevolucion + abono.lineasDeAbono:
+            ldd.abono = None
             ldd.destroy(usuario = self.usuario, ventana = __file__)
-        albaran.destroy(usuario = self.usuario, ventana = __file__)
+        abono.destroy(usuario = self.usuario, ventana = __file__)
         self.ir_a_primero()
         
     def imprimir(self,boton):
@@ -1112,32 +1112,32 @@ class AbonosVenta(Ventana):
         Prepara los datos para llamar al generador de informes
         """
         self.guardar(None)  # Si se ha olvidado guardar, guardo yo.
-        albaran = self.objeto
-        if albaran == None:
+        abono = self.objeto
+        if abono == None:
             return
         # Se debe abonar con el IVA de la fecha de la factura abonada. Si hay 
         # varias, me quedo con la más reciente.
         try:
-            fecha_fra = max([f.fecha for f in albaran.get_facturas()])
-            iva = albaran.cliente.get_iva_norm(fecha = fecha_fra)
+            fecha_fra = max([f.fecha for f in abono.get_facturas()])
+            iva = abono.cliente.get_iva_norm(fecha = fecha_fra)
         except ValueError:
-            iva = albaran.cliente.get_iva_norm(fecha = albaran.fecha)
-        cliente = {'numcli': str(albaran.cliente.id),
-                   'nombre': albaran.cliente.nombre,
-                   'nombref': albaran.cliente.nombref,
-                   'cif': albaran.cliente.cif,
-                   'direccion': albaran.cliente.direccion,
-                   'cp': albaran.cliente.cp,
-                   'localidad': albaran.cliente.ciudad,
-                   'provincia': albaran.cliente.provincia,
-                   'pais': albaran.cliente.pais,
-                   'telf': albaran.cliente.telefono,
+            iva = abono.cliente.get_iva_norm(fecha = abono.fecha)
+        cliente = {'numcli': str(abono.cliente.id),
+                   'nombre': abono.cliente.nombre,
+                   'nombref': abono.cliente.nombref,
+                   'cif': abono.cliente.cif,
+                   'direccion': abono.cliente.direccion,
+                   'cp': abono.cliente.cp,
+                   'localidad': abono.cliente.ciudad,
+                   'provincia': abono.cliente.provincia,
+                   'pais': abono.cliente.pais,
+                   'telf': abono.cliente.telefono,
                    'fax': '',
-                   'direccionf': albaran.cliente.direccionfacturacion,
-                   'cpf': albaran.cliente.cpfacturacion,
-                   'localidadf': albaran.cliente.ciudadfacturacion,
-                   'provinciaf': albaran.cliente.provinciafacturacion,
-                   'paisf': albaran.cliente.paisfacturacion} 
+                   'direccionf': abono.cliente.direccionfacturacion,
+                   'cpf': abono.cliente.cpfacturacion,
+                   'localidadf': abono.cliente.ciudadfacturacion,
+                   'provinciaf': abono.cliente.provinciafacturacion,
+                   'paisf': abono.cliente.paisfacturacion} 
         lineasAbono = []
         model = self.wids['tv_precios'].get_model()
         for i in range(len(model)):
@@ -1157,8 +1157,8 @@ class AbonosVenta(Ventana):
         total_bultos = 0
         for i in range(len(model)):
             if model[i].parent != None:
-                continue    # Salto las líneas de los artículos. Las trataré 
-                        # recorriendo los hijos de las líneas de los totales.
+                continue  # Salto las líneas de los artículos. Las trataré 
+                          # recorriendo los hijos de las líneas de los totales.
             cantidad = 0
             bultos = 0
             for devolucion in model[i].iterchildren():
@@ -1197,8 +1197,8 @@ class AbonosVenta(Ventana):
                      'total': utils.float2str(model[i][5] ) #/ (1 + iva))
                     }
             lineasDevolucion.append(linea)
-        if total_bultos > 0:    # Si hay devoluciones, pongo los bultos en las 
-                                # observaciones:
+        if total_bultos > 0:  # Si hay devoluciones, pongo los bultos en las 
+                              # bservaciones:
             observaciones_abono = "%d bultos devueltos en total." % (
                 total_bultos)
         else:
@@ -1206,8 +1206,8 @@ class AbonosVenta(Ventana):
         if (self.objeto.observaciones != None 
             and self.objeto.observaciones.strip() != ""):
             observaciones_abono += "\n%s" % (self.objeto.observaciones)
-        facdata = {'facnum':albaran.numabono,
-                   'fecha':utils.str_fecha(albaran.fecha), 
+        facdata = {'facnum':abono.numabono,
+                   'fecha':utils.str_fecha(abono.fecha), 
                    'observaciones': observaciones_abono
                   }
         try:
@@ -1224,8 +1224,8 @@ class AbonosVenta(Ventana):
         from numerals import numerals as convertir_numero_a_texto
         texto = convertir_numero_a_texto(totales['total'], moneda = "euros", 
                                          fraccion = "céntimos").upper()
-        vencimiento = {'fecha': utils.str_fecha(  # @UnusedVariable
-                                    albaran.fecha + mx.DateTime.oneDay * 90),
+        vencimiento = {'fecha': utils.str_fecha(
+                                    abono.fecha + mx.DateTime.oneDay * 90),
                        'pago': "vencimiento['pago']", 
                        'documento': "vencimiento['documento']" 
                       }
@@ -1235,7 +1235,7 @@ class AbonosVenta(Ventana):
                             # la empresa llegue a pagar realmente nada. 
                             # REPITO: De momento, ya se sabe, hasta que surja 
                             # un nuevo... ¡CWT!
-        if albaran.cliente.extranjero:
+        if abono.cliente.extranjero:
             arancel = ""    # Si arancel != None, esto se escribirá delante 
                             # del texto legal.
         else:
@@ -1243,7 +1243,7 @@ class AbonosVenta(Ventana):
                             # None para "no arancel".
         facturas_abonadas = self.wids['e_facturas'].get_text()
         import informes
-        informes.abrir_pdf(geninformes.albaran(cliente, 
+        informes.abrir_pdf(geninformes.abono(cliente, 
                                              facdata, 
                                              lineasAbono, 
                                              lineasDevolucion, 
@@ -1262,11 +1262,11 @@ class AbonosVenta(Ventana):
         también soporta geotextiles, geocompuestos y fibra de cemento.
         """
         pl = []
-        albaran = self.objeto
+        abono = self.objeto
         model = self.wids['tv_devoluciones'].get_model()
         for i in range(len(model)):
             producto = model[i][2]
-            fecha = utils.str_fecha(albaran.fecha)
+            fecha = utils.str_fecha(abono.fecha)
             try:
                 datos_empresa = pclases.DatosDeLaEmpresa.select()[0]
                 linea0 = datos_empresa.nombre.upper()
@@ -1289,11 +1289,11 @@ class AbonosVenta(Ventana):
                                         "depuración:\n%s" % msg, 
                                 padre = self.wids['ventana'])
                 return
-            nombre = albaran.cliente.nombre
-            direccion = albaran.cliente.direccion
-            ciudad = albaran.cliente.ciudad
-            cp = albaran.cliente.cp
-            pais = albaran.cliente.pais
+            nombre = abono.cliente.nombre
+            direccion = abono.cliente.direccion
+            ciudad = abono.cliente.ciudad
+            cp = abono.cliente.cp
+            pais = abono.cliente.pais
             lotes = []
             balas = []
             tipo = ""
@@ -1390,7 +1390,7 @@ class AbonosVenta(Ventana):
         func_packinglist = geninformes._packingListBalas
         for i in xrange(len(packing_lists)):
             nomarchivo = func_packinglist(packing_lists[i], i+1, 
-                            titulo = "Packing list de albaran %s" % (
+                            titulo = "Packing list de abono %s" % (
                                 self.objeto.numabono))
             if abrir_pdf:
                 abrir_archivo_pdf(nomarchivo)
@@ -1410,8 +1410,8 @@ class AbonosVenta(Ventana):
             utils.dialogo_info(titulo = 'FACTURA GENERADA',
                                padre = self.wids['ventana'], 
                                texto = """
-            Factura de albaran generada.                                         
-            Puede descontar el albaran de la siguiente factura de venta del 
+            Factura de abono generada.                                         
+            Puede descontar el abono de la siguiente factura de venta del 
             cliente o imprimirla junto con el albarán mediante el botón 
             correspondiente. 
             """)
@@ -1419,12 +1419,12 @@ class AbonosVenta(Ventana):
             if self.objeto.facturaDeAbono.pagosDeAbono != []:
                 utils.dialogo_info(titulo = 'ABONO CON FACTURA',
                                    texto = """
-                El albaran ya ha generado una factura de albaran                  
+                El abono ya ha generado una factura de abono                  
                 que cuenta con pagos realizados.
-                No es posible relacionar el mismo albaran con 
+                No es posible relacionar el mismo abono con 
                 una nueva factura si este ya tiene importes 
                 abonados.
-                Cree un nuevo albaran o anule los pagos.
+                Cree un nuevo abono o anule los pagos.
                 """, 
                                    padre = self.wids['ventana'])
             else:
@@ -1440,7 +1440,7 @@ class AbonosVenta(Ventana):
                     fa.destroy(usuario = self.usuario, ventana = __file__)
                     utils.dialogo_info(titulo = 'CREAR NUEVA FACTURA',
                                        texto = "Ahora puede crear una nueva f"
-                                               "actura con el albaran", 
+                                               "actura con el abono", 
                                        padre = self.wids['ventana'])
         self.actualizar_ventana()
 
