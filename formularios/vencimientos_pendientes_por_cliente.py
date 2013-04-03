@@ -336,7 +336,7 @@ class VencimientosPendientesPorCliente(Ventana):
                     ventanafacturas = facturas_venta.FacturasVenta(fra)
                 elif isinstance(fra, pclases.Prefactura):
                     import prefacturas
-                    ventanafacturas = prefacturas.Prefactura(fra)
+                    ventanafacturas = prefacturas.Prefacturas(fra)
 
 def buscar_facturas_de_abono_sin_pagar(cliente, 
                                        fechaini = None, 

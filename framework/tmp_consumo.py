@@ -34,9 +34,9 @@ def descontar_material_adicional_balas(pdp, articulo, restar = True):
             if "%" in ca.unidad:
                 peso = articulo.bala.pesobala
                 cantidad = (cantidad * peso) / 100
-                antes = ca.productoCompra.existencias
+                #antes = ca.productoCompra.existencias
 #                ca.productoCompra.existencias += cantidad
-                consumo = pclases.Consumo(parteDeProduccion = pdp,
+                consumo = pclases.Consumo(parteDeProduccion = pdp,  # @UnusedVariable
                                           productoCompra = ca.productoCompra,
                                           actualizado = True,
                                           antes = -2,
@@ -44,9 +44,9 @@ def descontar_material_adicional_balas(pdp, articulo, restar = True):
                                           despues = -2,
                                           cantidad = -cantidad)
             else: 
-                antes = ca.productoCompra.existencias
+                #antes = ca.productoCompra.existencias
 #                ca.productoCompra.existencias += cantidad 
-                consumo = pclases.Consumo(parteDeProduccion = pdp,
+                consumo = pclases.Consumo(parteDeProduccion = pdp,  # @UnusedVariable
                                           productoCompra = ca.productoCompra,
                                           actualizado = True,
                                           antes = -2,
@@ -86,7 +86,7 @@ def descontar_material_adicional_rollos(pdp, articulo, restar = True):
                     cantidad *= ancho/5.5
                 antes = plastico.existencias
                 plastico.existencias += cantidad
-                consumo_plastico = pclases.Consumo(parteDeProduccion = pdp,
+                consumo_plastico = pclases.Consumo(parteDeProduccion = pdp,  # @UnusedVariable
                                                    productoCompra = plastico,
                                                    actualizado = True,
                                                    antes = antes,
@@ -107,7 +107,7 @@ def descontar_material_adicional_rollos(pdp, articulo, restar = True):
                 cantidad = (cantidad * peso) / 100
                 antes = ca.productoCompra.existencias
 #                ca.productoCompra.existencias += cantidad
-                consumo = pclases.Consumo(parteDeProduccion = pdp,
+                consumo = pclases.Consumo(parteDeProduccion = pdp,  # @UnusedVariable
                                           productoCompra = ca.productoCompra,
                                           actualizado = True,
                                           antes = antes,
@@ -122,7 +122,7 @@ def descontar_material_adicional_rollos(pdp, articulo, restar = True):
                 cantidad *= ancho/5.5
                 antes = ca.productoCompra.existencias
 #                ca.productoCompra.existencias += cantidad
-                consumo = pclases.Consumo(parteDeProduccion = pdp,
+                consumo = pclases.Consumo(parteDeProduccion = pdp,  # @UnusedVariable
                                           productoCompra = ca.productoCompra,
                                           actualizado = True,
                                           antes = antes,
@@ -138,7 +138,7 @@ def descontar_material_adicional_rollos(pdp, articulo, restar = True):
                 cantidad *= ancho/5.5
                 antes = ca.productoCompra.existencias
 #                ca.productoCompra.existencias += cantidad
-                consumo = pclases.Consumo(parteDeProduccion = pdp,
+                consumo = pclases.Consumo(parteDeProduccion = pdp,  # @UnusedVariable
                                           productoCompra = ca.productoCompra,
                                           actualizado = True,
                                           antes = antes,
@@ -147,7 +147,7 @@ def descontar_material_adicional_rollos(pdp, articulo, restar = True):
             else: 
                 antes = ca.productoCompra.existencias
 #                ca.productoCompra.existencias += cantidad 
-                consumo = pclases.Consumo(parteDeProduccion = pdp,
+                consumo = pclases.Consumo(parteDeProduccion = pdp,  # @UnusedVariable
                                           productoCompra = ca.productoCompra,
                                           actualizado = True,
                                           antes = antes,
