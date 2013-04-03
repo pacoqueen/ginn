@@ -52,7 +52,6 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib.units import inch, cm
 import gobject
-import mx
 import mx.DateTime
 
 import sys, os

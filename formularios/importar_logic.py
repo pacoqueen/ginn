@@ -63,7 +63,6 @@ except ImportError:
     from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
     import pclases
     from configuracion import ConfigConexion
-import mx
 import mx.DateTime
 import os, time, tempfile
 sys.path.append('.')

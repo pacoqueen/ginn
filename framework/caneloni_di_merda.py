@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys, os, pclases, mx
+import sys, os, pclases, mx.DateTime
 sys.path.append(os.path.join("..", "formularios"))
-import utils
+import utils  # @UnresolvedImport
 
 def buscar_rollos_existencias(fecha):
     """
@@ -80,7 +80,7 @@ def main():
     Devuelve un diccionario con los listados de rollos 
     en existencias, fabricados y salidos en cada periodo.
     """
-    ini_enero = mx.DateTime.DateTimeFrom(day = 1, month = 1, year = 2006)
+    ini_enero = mx.DateTime.DateTimeFrom(day = 1, month = 1, year = 2006)  # @UnusedVariable
     fin_enero = mx.DateTime.DateTimeFrom(day = -1, month = 1, year = 2006)
     ini_febrero = mx.DateTime.DateTimeFrom(day = 1, month = 2, year = 2006)
     fin_febrero = mx.DateTime.DateTimeFrom(day = -1, month = 2, year = 2006)

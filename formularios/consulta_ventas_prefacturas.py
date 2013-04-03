@@ -38,21 +38,14 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time
+import gtk, time
 try:
     import pclases
 except ImportError:
     import sys
     from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
     import pclases
-import mx
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
-import pango 
+import mx.DateTime
 
 class ConsultaVentasPrefacturas(Ventana):
     inicio = None
@@ -134,14 +127,14 @@ class ConsultaVentasPrefacturas(Ventana):
         pass
 
     def rellenar_tabla(self, items):
-    	"""
+        """
         Rellena el model con los items de la consulta
         """ 
-    	model = self.wids['tv_datos'].get_model()
-    	model.clear()
+        model = self.wids['tv_datos'].get_model()
+        model.clear()
         total = totben = totpdte = 0.0
         clientes = {}
-    	for f in items:
+        for f in items:
             cliente = f.cliente
             if cliente not in clientes:
                 clientes[cliente] = model.append(None, (cliente and cliente.nombre or "Sin cliente", 
@@ -179,7 +172,7 @@ class ConsultaVentasPrefacturas(Ventana):
                      ["Beneficio", totben], 
                      ["Pendiente", totpdte]]
         try:
-            import gtk, gobject, cairo, copy, math
+            import gtk, gobject, cairo, copy, math  # @UnusedImport
         except ImportError:
             return      # No se pueden dibujar gráficas. # TODO: Temporal.
         try:

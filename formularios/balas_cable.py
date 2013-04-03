@@ -47,14 +47,14 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk
 try:
     import pclases
 except ImportError:
     import sys
     from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
     import pclases
-import mx
+import mx.DateTime
 try:
     import geninformes
 except ImportError:
@@ -239,8 +239,6 @@ class BalasCable(Ventana):
         Inicia la consulta para el año indicado en el widget y 
         rellena las tablas con la información obtenida.
         """
-        #import time
-        #antes = time.time()
         cuantas = int(self.wids['sp_ver'].get_value())
         balas = []
         n = 0
@@ -266,7 +264,6 @@ class BalasCable(Ventana):
                 break
         vpro.set_valor(1, 'Actualizando ventana...')
         vpro.ocultar()
-        #print time.time() - antes
         return balas
 
     def rellenar_tabla(self, balas):

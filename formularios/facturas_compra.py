@@ -67,7 +67,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, mx
+import gtk, time
 try:
     import pclases
 except ImportError:
@@ -76,6 +76,7 @@ except ImportError:
     sys.path.append(pathjoin("..", "framework"))
     import pclases
 from utils import _float as float
+import mx.DateTime
 
 class FacturasDeEntrada(Ventana):
     def __init__(self, objeto = None, usuario = None):

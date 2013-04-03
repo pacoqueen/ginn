@@ -187,8 +187,8 @@ class EanBarCode:
             # devuelvo un PIL con el contenido de ese archivo. OJO: Necesita ghostView para que PIL pueda
             # leer EPS.
             # DEPRECATED. El code39.py que solía usar ya no es el code39.py fusilado de ReportLab que uso ahora.
-            import code39
-            codbar = code39.Code39()
+            import _code39
+            codbar = _code39.Code39()
             value = value.upper()
             f = open(value+'.eps', 'wb')
             codbar.generate(value, f, 'eps')

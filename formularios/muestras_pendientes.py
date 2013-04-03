@@ -55,7 +55,6 @@ except ImportError:
     import sys
     sys.path.append('../informes')
     import geninformes
-import mx
 import mx.DateTime
 
 

@@ -3482,7 +3482,7 @@ class AlbaranesDeSalida(Ventana):
             if precio != None:
                 try:
                     precio = utils._float(precio)
-                    pclases.Servicio(facturaVenta = None,
+                    servicio = pclases.Servicio(facturaVenta = None,
                                      albaranSalida = self.objeto,
                                      concepto = concepto,
                                      precio = precio,

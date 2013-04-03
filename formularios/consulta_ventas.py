@@ -51,7 +51,7 @@ except ImportError:
     from os.path import join as pathjoin
     sys.path.append(pathjoin("..", "framework"))
     import pclases
-import mx
+import mx.DateTime
 try:
     import geninformes
 except ImportError:

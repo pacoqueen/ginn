@@ -57,7 +57,7 @@ pygtk.require('2.0')
 import gtk, gtk.glade
 import sys, os, pclases
 sys.path.append(os.path.join("..", "formularios"))
-import utils, mx
+import utils, mx.DateTime
 from ventana import Ventana
 
 class Resultado:

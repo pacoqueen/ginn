@@ -37,14 +37,14 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk, time
 import sys, os
 try:
     import pclases
 except ImportError:
     from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
     import pclases
-import mx
+import mx.DateTime
 try:
     import geninformes
 except ImportError:
@@ -139,13 +139,13 @@ class HistoricoExistencias(Ventana):
         Dibuja el gráfico a partir del diccionario de datos recibido.
         """
         if len(datos) > 0:
-            theme.use_color = True
-            theme.reinitialize()
+            theme.use_color = True  # @UndefinedVariable
+            theme.reinitialize()  # @UndefinedVariable
             tempdir = gettempdir()
             formato = "png"   # NECESITA ghostscript
             nomarchivo = "%s.%s" % (mx.DateTime.localtime().strftime("ghistoricoe_%Y_%m_%d_%H_%M_%S"), formato)
             nombregraph = os.path.join(tempdir, "%s") % (nomarchivo)
-            can = canvas.init(fname = nombregraph, format = formato)
+            can = canvas.init(fname = nombregraph, format = formato)  # @UndefinedVariable
             data = [(datos[d][1], datos[d][0]) for d in datos]
             def cmp_data(d1, d2):
                 return d1[0] - d2[0]
@@ -154,10 +154,10 @@ class HistoricoExistencias(Ventana):
             max_y *= 1.1    # Un 10% más, para que quede bonita la gráfica.
             max_y = max(1, max_y)   # Para evitar que quede 0 como máximo.
 
-            xaxis=axis.X(label="Fecha", tic_interval = 1)
-            yaxis=axis.Y(label="Existencias", tic_interval=int(max_y) / 10)
-            ar = area.T(x_range=(-13, 0), y_range=(0, int(max_y)), x_axis=xaxis, y_axis=yaxis, size = (640, 480))
-            ar.add_plot(line_plot.T(label = "existencias", data = data, data_label_format="/8{}%d"))
+            xaxis=axis.X(label="Fecha", tic_interval = 1)  # @UndefinedVariable
+            yaxis=axis.Y(label="Existencias", tic_interval=int(max_y) / 10)  # @UndefinedVariable
+            ar = area.T(x_range=(-13, 0), y_range=(0, int(max_y)), x_axis=xaxis, y_axis=yaxis, size = (640, 480))  # @UndefinedVariable
+            ar.add_plot(line_plot.T(label = "existencias", data = data, data_label_format="/8{}%d"))  # @UndefinedVariable
             ar.draw()
 
             try:

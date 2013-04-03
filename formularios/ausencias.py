@@ -43,7 +43,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk, time
 try:
     import pclases
 except ImportError:
@@ -56,8 +56,7 @@ except ImportError:
     import sys
     sys.path.append('../informes')
     import geninformes
-from utils import _float as float
-import mx
+import mx.DateTime
 
 
 class Ausencias(Ventana):
@@ -256,9 +255,9 @@ class Ausencias(Ventana):
             # Es lento, pero no encuentro otra cosa:
             idct = None
             for i in xrange(len(model_combo)):
-                texto, id = model_combo[i]
+                texto, ide = model_combo[i]
                 if texto == text:
-                    idct = id
+                    idct = ide
                     break
             if idct == None:
                 utils.dialogo_info(titulo = "ERROR MOTIVO", texto = "Ocurrió un error inesperado guardando motivo de ausencia.\n\nContacte con los desarrolladores de la aplicación\n(Vea el diálogo «Acerca de...» desde el menú de la aplicación.)", padre = self.wids['ventana'])
@@ -274,13 +273,13 @@ class Ausencias(Ventana):
 
     def cambiar_seleccion_empleado(self, cb):
         anterior = self.objeto
-        iter = cb.get_active_iter()
-        if iter == None:
+        itr = cb.get_active_iter()
+        if itr == None:
             self.objeto = None
         else:
             model = cb.get_model()
-            id = model[iter][0]
-            self.objeto = pclases.Empleado.get(id)
+            ide = model[itr][0]
+            self.objeto = pclases.Empleado.get(ide)
         self.actualizar_ventana(objeto_anterior = anterior)
 
     def activar_widgets(self, s):
@@ -432,10 +431,10 @@ class Ausencias(Ventana):
                                    padre = self.wids['ventana'])
 
     def drop_ausencia(self, b):
-        model, iter = self.wids['tv_ausencias'].get_selection().get_selected()
-        if iter != None:
-            id = model[iter][-1]
-            ausencia = pclases.Ausencia.get(id)
+        model, itr = self.wids['tv_ausencias'].get_selection().get_selected()
+        if itr != None:
+            ide = model[itr][-1]
+            ausencia = pclases.Ausencia.get(ide)
             ausencia.destroy(ventana = __file__)
             self.actualizar_ventana()
         else:
@@ -471,10 +470,10 @@ class Ausencias(Ventana):
         self.actualizar_ventana()
 
     def drop_baja(self, boton):
-        model, iter = self.wids['tv_bajas'].get_selection().get_selected()
-        if iter != None:
-            id = model[iter][-1]
-            baja = pclases.Baja.get(id)
+        model, itr = self.wids['tv_bajas'].get_selection().get_selected()
+        if itr != None:
+            ide = model[itr][-1]
+            baja = pclases.Baja.get(ide)
             baja.destroy(ventana = __file__)
             self.actualizar_ventana()
         else:
@@ -484,10 +483,10 @@ class Ausencias(Ventana):
 
     def imprimir_ausencia(self, b):
         import informes
-        model, iter = self.wids['tv_ausencias'].get_selection().get_selected()
-        if iter != None:
-            id = model[iter][-1]
-            ausencia = pclases.Ausencia.get(id)
+        model, itr = self.wids['tv_ausencias'].get_selection().get_selected()
+        if itr != None:
+            ide = model[itr][-1]
+            ausencia = pclases.Ausencia.get(ide)
             empleado = ausencia.empleado.nombre + ' ' +ausencia.empleado.apellidos
             centro = ausencia.empleado.centroTrabajo
             if centro != None:

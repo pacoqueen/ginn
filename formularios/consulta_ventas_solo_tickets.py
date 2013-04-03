@@ -39,19 +39,14 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk
 import sys, os
 try:
     import pclases
 except ImportError:
     sys.path.append(os.path.join('..', 'framework'))
     import pclases
-import mx
-try:
-    import geninformes
-except ImportError:
-    sys.path.append(os.path.join('..', 'informes'))
-    import geninformes
+import mx.DateTime
 try:
     from treeview2pdf import treeview2pdf
 except ImportError:
@@ -61,7 +56,7 @@ try:
     from treeview2csv import treeview2csv
 except ImportError:
     sys.path.append(os.path.join("..", "informes"))
-    from treeview2pdf import treeview2pdf
+    from treeview2csv import treeview2csv
 from informes import abrir_pdf, abrir_csv
 import ventana_progreso
 

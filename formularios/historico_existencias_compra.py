@@ -40,7 +40,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk, time
 import sys, os
 try:
     import pclases
@@ -48,7 +48,7 @@ except ImportError:
     from os.path import join as pathjoin
     sys.path.append(pathjoin("..", "framework"))
     import pclases
-import mx
+import mx.DateTime
 try:
     import geninformes
 except ImportError:
@@ -207,15 +207,15 @@ class HistoricoExistenciasCompra(Ventana):
         """
         Dibuja un plot con una línea por cada producto.
         """
-        theme.get_options()
-        theme.use_color = True
-        theme.reinitialize()
+        theme.get_options()  # @UndefinedVariable
+        theme.use_color = True  # @UndefinedVariable
+        theme.reinitialize()  # @UndefinedVariable
         tempdir = gettempdir()
         formato = "png"   # NECESITA ghostscript
         nomarchivo = "%s.%s" % (mx.DateTime.localtime().strftime(
             "ghistoricoprodcompra_%Y_%m_%d_%H_%M_%S"), formato)
         nombregraph = os.path.join(tempdir, "%s") % (nomarchivo)
-        can = canvas.init(fname = nombregraph, format = formato)
+        can = canvas.init(fname = nombregraph, format = formato)  # @UndefinedVariable
 
         # Máximos y mínimos:
         min_global = 0
@@ -237,9 +237,9 @@ class HistoricoExistenciasCompra(Ventana):
                                             # un valor positivo como mínimo.
             max_global = max(1, max_y, max_global)
 
-        xaxis = axis.X(label="Fecha")
-        yaxis = axis.Y(label="Existencias", tic_interval=int(max_y) / 10)
-        ar = area.T(x_coord = category_coord.T(data, 0), x_range=(-13, 0), 
+        xaxis = axis.X(label="Fecha")  # @UndefinedVariable
+        yaxis = axis.Y(label="Existencias", tic_interval=int(max_y) / 10)  # @UndefinedVariable
+        ar = area.T(x_coord = category_coord.T(data, 0), x_range=(-13, 0),  # @UndefinedVariable
                     y_range=(int(min_global), int(max_global)), 
                     x_axis = xaxis, y_axis = yaxis, size = (640, 480))
 
@@ -253,7 +253,7 @@ class HistoricoExistenciasCompra(Ventana):
             data.sort(cmp_data)
             data = [[i[1], i[2]] for i in data]
 
-            ar.add_plot(line_plot.T(
+            ar.add_plot(line_plot.T(  # @UndefinedVariable
                 label = producto.descripcion.replace("/", "//")[:30], 
                 data = data))
 
@@ -282,9 +282,9 @@ class HistoricoExistenciasCompra(Ventana):
         if datos_por_producto != {}:
             self.dibujar_grafica_multiple(datos_por_producto) 
         elif len(datos) > 0:
-            theme.get_options()
-            theme.use_color = True
-            theme.reinitialize()
+            theme.get_options()  # @UndefinedVariable
+            theme.use_color = True  # @UndefinedVariable
+            theme.reinitialize()  # @UndefinedVariable
             tempdir = gettempdir()
             formato = "png"   # NECESITA ghostscript
             nomarchivo = "%s.%s" % (
@@ -292,7 +292,7 @@ class HistoricoExistenciasCompra(Ventana):
                     "ghistoricoprodcompra_%Y_%m_%d_%H_%M_%S"), 
                 formato)
             nombregraph = os.path.join(tempdir, "%s") % (nomarchivo)
-            can = canvas.init(fname = nombregraph, format = formato)
+            can = canvas.init(fname = nombregraph, format = formato)  # @UndefinedVariable
             data = [[datos[d][1], d.replace("/","//"), datos[d][0]] 
                     for d in datos]
             def cmp_data(d1, d2):
@@ -311,17 +311,17 @@ class HistoricoExistenciasCompra(Ventana):
             min_y *= 1.1
             min_y = min(0, min_y)   # Para evitar que quede un valor positivo 
                                     # como mínimo.
-            xaxis = axis.X(label="Fecha")
-            yaxis = axis.Y(label="Existencias", tic_interval=int(max_y) / 10)
-            ar = area.T(x_coord = category_coord.T(data, 0), 
+            xaxis = axis.X(label="Fecha")  # @UndefinedVariable
+            yaxis = axis.Y(label="Existencias", tic_interval=int(max_y) / 10)  # @UndefinedVariable
+            ar = area.T(x_coord = category_coord.T(data, 0),  # @UndefinedVariable
                         x_range=(-13, 0), 
                         y_range=(int(min_y), 
                         int(max_y)), 
                         x_axis = xaxis, 
                         y_axis = yaxis, 
                         size = (640, 480)) 
-            ar.add_plot(line_plot.T(label="existencias", data=data, ycol=1), 
-                        line_plot.T(label = "mínimo", data = data, ycol=2))
+            ar.add_plot(line_plot.T(label="existencias", data=data, ycol=1),  # @UndefinedVariable
+                        line_plot.T(label = "mínimo", data = data, ycol=2))  # @UndefinedVariable
             ar.draw()
 
             try:

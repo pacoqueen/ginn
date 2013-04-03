@@ -79,7 +79,7 @@ except ImportError:
     import sys
     from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
     import pclases
-import mx
+import mx.DateTime
 try:
     import geninformes
 except ImportError:
@@ -3330,7 +3330,7 @@ def descontar_material_adicional(ventana_parte, articulo, restar = True):
     ventana_parte.objeto.unificar_consumos()
     actualizar_albaran_interno_con_tubos(ventana_parte.objeto)
 
-def _calcular_peso_densidad(peso, producto):
+def _calcular_peso_densidad(peso, producto, ventana_parte = None):
     """
     Calcula el peso y la "densidad" del artículo en base al 
     peso y producto recibido.
@@ -3519,7 +3519,6 @@ def get_puerto_serie():
                            texto = "Debe instalar el módulo pyserial.", 
                            padre = None)
         return None
-    import os
     if os.name == "posix":
         for numpuerto in range(16):
             try:

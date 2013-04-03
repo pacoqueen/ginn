@@ -108,11 +108,11 @@ except ImportError, msg:
           ", saltará una excepción.\n%s" % (msg)
 
 try:
-    import notificacion  # @UnusedImport
+    import notificacion
 except:
     sys.path.append(os.path.join('..', 'formularios'))
     try:
-        import notificacion  # @Reimport @UnusedImport
+        import notificacion  # @Reimport 
     except:
         sys.path.append('.')
         import notificacion  # @Reimport

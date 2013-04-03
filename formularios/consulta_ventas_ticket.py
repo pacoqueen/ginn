@@ -52,7 +52,7 @@ try:
 except ImportError:
     sys.path.append(os.path.join('..', 'framework'))
     import pclases
-import mx
+import mx.DateTime
 try:
     import geninformes
 except ImportError:

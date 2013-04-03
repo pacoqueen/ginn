@@ -56,7 +56,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject, mx
+import gtk, time, mx.DateTime
 import sys
 try:
     import pclases
