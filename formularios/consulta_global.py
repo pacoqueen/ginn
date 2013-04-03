@@ -71,14 +71,14 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk, time
 try:
     import pclases
 except ImportError:
     import sys
     from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
     import pclases
-import mx
+import mx.DateTime
 try:
     import geninformes
 except ImportError:
@@ -120,7 +120,7 @@ class ConsultaGlobal(Ventana):
         self.wids['b_guardar'].set_sensitive(False)
         gtk.main()
 
-    def activar_widgets(*args, **kw):
+    def activar_widgets(self, *args, **kw):
         pass
 
     def append_meses(self):

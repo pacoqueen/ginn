@@ -1197,8 +1197,8 @@ class AbonosVenta(Ventana):
                      'total': utils.float2str(model[i][5] ) #/ (1 + iva))
                     }
             lineasDevolucion.append(linea)
-        if total_bultos > 0:  # Si hay devoluciones, pongo los bultos en las 
-                              # bservaciones:
+        if total_bultos > 0:    # Si hay devoluciones, pongo los bultos en las 
+                                # observaciones:
             observaciones_abono = "%d bultos devueltos en total." % (
                 total_bultos)
         else:

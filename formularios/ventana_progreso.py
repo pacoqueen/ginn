@@ -193,13 +193,14 @@ class VentanaProgreso:
             pass
         return restante
         
-    def media(valores = None):
+    def media(self, valores = None):
         if not valores:
             valores = self.__memento
         # La excepción que la capture la invocadora.
         media = (sum(self.__memento) / len(self.__memento))
+        return media
 
-    def moda(valores = None):
+    def moda(self, valores = None):
         if not valores:
             valores = self.__memento
         moda = (0, None)
@@ -315,7 +316,6 @@ class VentanaActividad:
 
 
 if __name__ == '__main__':
-    import time
     def ejemplo():
         cosas = ['a', 'b', 'c', 'd', 'e']*50
         i = 0.0
@@ -334,7 +334,7 @@ if __name__ == '__main__':
         cosas = ['a', 'b', 'c', 'd', 'e']*50
         vpro = VentanaActividad()
         vpro.mostrar()
-        for cosa in cosas:
+        for cosa in cosas:  # @UnusedVariable
             vpro.mover()
             time.sleep(0.03)
         vpro.ocultar()
@@ -345,7 +345,7 @@ if __name__ == '__main__':
         cosas = ['a', 'b', 'c', 'd', 'e']*50
         vpro = VentanaActividad(texto = 'Procesando...')
         vpro.mostrar()
-        for cosa in cosas:
+        for cosa in cosas:  # @UnusedVariable
             vpro.mover()
             time.sleep(0.03)
         vpro.ocultar()

@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
-#                          Diego Muñoz Escalante.                             #
+# Copyright (C) 2005-2008  Francisco Josï¿½ Rodrï¿½guez Bogado,                   #
+#                          Diego Muï¿½oz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
@@ -25,7 +25,7 @@
 
 
 ###################################################################
-## utils_almacen.py - Utilidades del módulo almacén. 
+## utils_almacen.py - Utilidades del mï¿½dulo almacï¿½n. 
 ###################################################################
 ## NOTAS:
 ## 
@@ -38,11 +38,9 @@
 ###################################################################
 
 import sys
-import time
 sys.path.append('../framework')
 
-
-import pclases, sqlobject, time
+import pclases, sqlobject
 
 def id_propia_empresa_proveedor():
     """
@@ -56,7 +54,7 @@ def id_propia_empresa_proveedor():
     try:
         empresa = pclases.Proveedor.select(pclases.Proveedor.q.nombre==empresa.nombre)[0]
     except:  #IndexError? SQLObjectNotFound?
-        print "ERROR: La empresa no está en la tabla de de proveedores."
+        print "ERROR: La empresa no estÃ¡ en la tabla de de proveedores."
         return 0
     return empresa.id
   
@@ -72,26 +70,25 @@ def id_propia_empresa():
     try:
         empresa = pclases.Cliente.select(pclases.Cliente.q.nombre==empresa.nombre)[0]
     except:  #IndexError? SQLObjectNotFound?
-        print "ERROR: La empresa no está en la tabla de clientes."
+        print "ERROR: La empresa no estÃ¡ en la tabla de clientes."
         return 0
     return empresa.id
 
 def ultimo_pedido_de_compra_mas_uno():
     """
-    Devuelve el último número de pedido de compra válido 
+    Devuelve el Ãºltimo nÃºmero de pedido de compra vÃ¡lido 
     0 si no hay pedidos de compra. 
-    Devuelve el número de pedido como numérico (aunque en
+    Devuelve el nÃºmero de pedido como numÃ©rico (aunque en
     realidad sea un str en la BD). 
-    No tiene en cuenta aquellos pedidos cuyo número de 
-    pedido no se puede interpretar como número y solo 
-    tiene en cuenta los pedidos del año corriente. 
-    El criterio para averiguar el último número de 
+    No tiene en cuenta aquellos pedidos cuyo nÃºmero de 
+    pedido no se puede interpretar como nÃºmero y solo 
+    tiene en cuenta los pedidos del aÃ±o corriente. 
+    El criterio para averiguar el Ãºltimo nÃºmero de 
     pedido es la fecha.
-    Si el número siguiente al del último pedido por fecha 
-    está ocupado (no debería), sigue sumando 1 hasta que 
-    llegue a un número de pedido libre.
+    Si el nÃºmero siguiente al del Ãºltimo pedido por fecha 
+    estÃ¡ ocupado (no deberÃ­a), sigue sumando 1 hasta que 
+    llegue a un nÃºmero de pedido libre.
     """
-    import mx
     from mx.DateTime import localtime as ahora
     strnumspedido = pclases.PedidoCompra._connection.queryAll("SELECT numpedido FROM pedido_compra  WHERE date_part('year', fecha) = %d ORDER BY fecha, numpedido;" % (ahora().year))
     intnumspedido = []
@@ -110,13 +107,16 @@ def ultimo_pedido_de_compra_mas_uno():
 
 def ultimo_numalbaran(venta, interno):
     """
-    Devuelve el último número de albarán que cumpla
+    Devuelve el Ãºltimo nÃºmero de albarÃ¡n que cumpla
     las condiciones venta==True/False e interno==True/False
     o 0 si no hay ninguno.
     """
-    albs = pclases.Albaran.select(sqlobject.AND(pclases.Albaran.q.venta == venta, 
-                            pclases.Albaran.q.interno == interno),
-                      orderBy="-numalbaran")
+    if venta:
+        albs = pclases.AlbaranSalida.select(orderBy = "-numalbaran")
+        if interno:
+            albs = [a for a in albs if a.es_interno()]
+    else:
+        albs = pclases.AlbaranEntrada.select(orderBy = "-numalbaran")
     if albs.count() == 0:
         return 0
     return albs[0].numalbaran
@@ -124,9 +124,13 @@ def ultimo_numalbaran(venta, interno):
 def productosConFicha():
     """
     Devuelve una lista de identificadores de productos que tienen ficha de
-    producción.
+    producciÃ³n.
     """
-    fichas = pclases.FichaDeProduccion.select()
-    return [f.idproducto.id for f in fichas]
-
-  
+    cer = pclases.CamposEspecificosRollo.select(pclases.AND(
+            pclases.CamposEspecificosRollo.q.fichaFabricacion != "", 
+            pclases.CamposEspecificosRollo.q.fichaFabricacion != None))
+    productos = []
+    for c in cer:
+        for p in c.productosVenta:
+            productos.append(p.id)
+    return productos

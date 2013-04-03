@@ -33,7 +33,6 @@ except:
     raise SystemExit
 
 
-import pygtk
 if gtk.pygtk_version < (2, 0):
     print "Se necesita PyGtk 2.0 o posterior."
     raise SystemExit
@@ -205,10 +204,10 @@ class Velocimetro(gtk.Widget):
         # Si es un "hint", entonces cojamos toda la información necesaria.
         # Si no, es todo lo que necesitamos.
         if event.is_hint:
-            x, y, state = event.window.get_pointer()
+            x, y, state = event.window.get_pointer()  # @UnusedVariable
         else:
-            x = event.x
-            y = event.y
+            x = event.x  # @UnusedVariable
+            y = event.y  # @UnusedVariable
             state = event.state
 
         if (state & gtk.gdk.BUTTON1_MASK):

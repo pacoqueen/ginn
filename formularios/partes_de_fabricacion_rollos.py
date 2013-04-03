@@ -1576,26 +1576,6 @@ class PartesDeFabricacionRollos(Ventana):
         self.objeto.notificador.activar(self.aviso_actualizacion)
         verificar_solapamiento(partedeproduccion, self.wids['ventana'])
 
-    def refinar_resultados_busqueda_producto(self, resultados):
-        """
-        Muestra en una ventana de resultados todos los
-        registros de "resultados".
-        Devuelve el id (primera columna de la ventana
-        de resultados) de la fila seleccionada o None
-        si se canceló.
-        """
-        filas_res = []
-        for r in resultados:
-            filas_res.append((r.id, r.codigo, r.nombre, r.descripcion))
-        idproducto = utils.dialogo_resultado(filas_res,
-                                             titulo = 'Seleccione producto',
-                                             cabeceras = ('ID Interno', 'Código','Nombre', 'Descripción'), 
-                                             padre = self.wids['ventana'])
-        if idproducto < 0:
-            return None
-        else:
-            return idproducto
-
     def buscar_partedeproduccion(self, widget):
         """
         Muestra una ventana de búsqueda y a continuación los

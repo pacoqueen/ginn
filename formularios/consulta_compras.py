@@ -190,7 +190,7 @@ class ConsultaCompras(Ventana):
             else:
                 try:
                     ventana = pclases.Ventana.selectBy(
-                        fichero = NewW.__module__)[0]
+                        fichero = NewW.__module__)[0]  # @UndefinedVariable
                 except IndexError:#¿Ventana no está dada de alta en el sistema?
                     self.wids['ventana'].window.set_cursor(None)
                     v = NewW(objeto = o, usuario = self.usuario)

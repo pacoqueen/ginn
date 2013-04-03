@@ -68,10 +68,10 @@ def ultimo_pedido_de_venta():
     import pclases
     # Los pedidos de compra son aquellos que tienen como proveedor a 
     # la propia empresa:
-    idproveedor = id_propia_empresa_proveedor()
+    idcliente = id_propia_empresa_cliente()
     try:
-        ultimopedido = pclases.Pedido.select(
-                pclases.Pedido.q.idproveedorID==idproveedor,
+        ultimopedido = pclases.PedidoVenta.select(
+                pclases.PedidoVenta.q.clienteID == idcliente,
                 orderBy="-numpedido")[0]
         ultimonumpedido = ultimopedido.numpedido
     except IndexError:
@@ -79,27 +79,13 @@ def ultimo_pedido_de_venta():
         ultimonumpedido = 0
     return ultimonumpedido
 
-def ultimo_numalbaran(venta, interno):
-    """
-    Devuelve el último número de albarán que cumpla
-    las condiciones venta==True/False e interno==True/False
-    o 0 si no hay ninguno.
-    """
-    import pclases
-    albs = pclases.Albaran.select(pclases.AND(pclases.Albaran.q.venta == venta,
-                                  pclases.Albaran.q.interno == interno),
-                                  orderBy="-numalbaran")
-    if albs.count() == 0:
-        return 0
-    return albs[0].numalbaran
-
 def ultimo_numfactura():
     """
     Devuelve el mayor número de factura.
     """
     import pclases
     try:
-        fact = pclases.Factura.select(orderBy = "-numfactura")[0]
+        fact = pclases.FacturaVenta.select(orderBy = "-numfactura")[0]
     except IndexError:
         return 0
     return fact.numfactura

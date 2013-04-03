@@ -39,9 +39,9 @@ def get_puid(prod_o_servicio):
     """
     res = ""
     if prod_o_servicio:
-        if isinstance(prod_o_servicio, pclases.Servicio):
+        if isinstance(prod_o_servicio, pclases.Servicio):  # @UndefinedVariable
             res = "SP:%d" % prod_o_servicio.id
-        elif isinstance(prod_o_servicio, pclases.ServicioTomado):
+        elif isinstance(prod_o_servicio, pclases.ServicioTomado):  # @UndefinedVariable
             res = "ST:%d" % prod_o_servicio.id
         else:
             res = prod_o_servicio.get_puid()

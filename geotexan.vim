@@ -1,5 +1,5 @@
 " ~/Geotexan/src/ginn/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 01 abril 2013 at 12:05:55.
+" Created by session.vim 1.5 on 03 abril 2013 at 05:58:10.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -32,6 +32,7 @@ badd +181 formularios/menu.py
 badd +85 formularios/autenticacion.py
 badd +1 formularios/dynconsulta.glade
 badd +179 formularios/consulta_facturas_sin_doc_pago.py
+badd +73 formularios/utils_almacen.py
 args formularios/auditviewer.py
 set lines=46 columns=80
 edit framework/pclases.py
@@ -241,7 +242,7 @@ silent! normal zo
 silent! normal zo
 20865
 silent! normal zo
-let s:l = 19286 - ((17 * winheight(0) + 10) / 21)
+let s:l = 19286 - ((0 * winheight(0) + 10) / 21)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -258,12 +259,12 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 23 - ((14 * winheight(0) + 11) / 22)
+let s:l = 289 - ((4 * winheight(0) + 11) / 22)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-23
-normal! 042l
+289
+normal! 034l
 wincmd w
 2wincmd w
 exe '1resize ' . ((&lines * 21 + 23) / 46)

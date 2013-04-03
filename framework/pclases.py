@@ -74,7 +74,6 @@ if DEBUG or VERBOSE:
 
 logged_user = None
 
-import sys, os, pprint
 #try:
 #    from sqlobject import *
 #except:
@@ -85,13 +84,20 @@ import sys, os, pprint
 # con los MultipleJoin e ignora el nombre definido para poner el de la 
 # tabla ajena +'s' o +'es', así que importo el SQLObject 0.6.1 "oficial" (salvo
 # pequeñas modificaciones) incluido en nuestro propio repositorio directamente.
+import sys, os
+from configuracion import ConfigConexion
+from math import ceil
+from select import select
 sys.path.insert(0, os.path.join('..', 'SQLObject', 'SQLObject-0.6.1'))
-try:
-    from sqlobject import *
-except ImportError, msg:
-    print "Error importando SQLObject: %s" % (msg)
-    sys.exit(1)
-
+from sqlobject.col import ForeignKey, SOForeignKey, SODateCol, SODateTimeCol
+from sqlobject.joins import MultipleJoin, RelatedJoin
+from sqlobject.main import SQLObjectNotFound, SQLObject
+from sqlobject.sqlbuilder import AND, OR
+import mx.DateTime
+import pprint
+import re
+import threading #, psycopg
+import time
 sys.path.append(os.path.join('..', 'formularios'))
 try:
     import utils
@@ -102,25 +108,17 @@ except ImportError, msg:
           ", saltará una excepción.\n%s" % (msg)
 
 try:
-    import notificacion
+    import notificacion  # @UnusedImport
 except:
     sys.path.append(os.path.join('..', 'formularios'))
     try:
-        import notificacion
+        import notificacion  # @Reimport @UnusedImport
     except:
         sys.path.append('.')
-        import notificacion
-  
-import threading#, psycopg
-from select import select
-
-from configuracion import ConfigConexion
-
-import mx, mx.DateTime
-from math import ceil
+        import notificacion  # @Reimport
 
 # GET FUN !
-
+          
 config = ConfigConexion()
 
 #conn = '%s://%s:%s@%s/%s' % (config.get_tipobd(), 
@@ -283,7 +281,7 @@ class PRPCTOO:
                 if DEBUG and VERBOSE:
                     print "comparar_swap\n\tCampo: %s. Valor swap: %s. "\
                           "Valor registro: %s" % (
-                            campo, swap[campo], getattr(self, campo))
+                            campo, self.swap[campo], getattr(self, campo))
                 raise SQLObjectChanged(self)
 
     def cerrar_cursor(self):
@@ -477,8 +475,8 @@ class PRPCTOO:
         #pre = "".join([l for l in self.__class__.__name__ if l.isupper()])
         # Muncho mejore asina:
         pre = self.__class__.__name__
-        id = self.id
-        puid = "%s:%d" % (pre, id)
+        ide = self.id
+        puid = "%s:%d" % (pre, ide)
         return puid
 
     puid = property(get_puid)
@@ -495,9 +493,9 @@ def starter(objeto, *args, **kw):
     objeto.notificador = notificacion.Notificacion(objeto)
     SQLObject._init(objeto, *args, **kw)
     PRPCTOO.__init__(objeto, objeto._table)
-    objeto.make_swap()    # Al crear el objeto hago la primera caché de datos, 
-                          # por si acaso la ventana se demora mucho e intenta 
-                          # compararla antes de crearla.
+    objeto.make_swap()  # Al crear el objeto hago la primera caché de datos, 
+                        # por si acaso la ventana se demora mucho e intenta 
+                        # compararla antes de crearla.
 
     #objeto._cacheValues = False    # FIXME: Sospecho que tarde o temprano 
         # tendré que desactivar las cachés locales de SQLObject. 
@@ -565,7 +563,6 @@ GESTION, CARTERA, DESCONTADO, IMPAGADO, COBRADO = range(5)
 total = 160 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
             # Más bien grep print_verbose pclases.py | wc -l
 cont = 0
-import time
 tiempo = time.time()
 
 def print_verbose(cont, total, antes):
@@ -651,7 +648,7 @@ class FormaDePago(SQLObject, PRPCTOO):
     def toString(self):
         return "%s, %d D. F. F." % (self.documentoDePago.documento, self.plazo)
 
-    def porDefecto(clase):
+    def porDefecto(cls):
         """
         Devuelve la forma de cobro por defecto.
         """
@@ -661,11 +658,11 @@ class FormaDePago(SQLObject, PRPCTOO):
         except IndexError:
             docdefecto = DocumentoDePago("Pagaré a la orden")
         try:
-            fdp = clase.select(AND(clase.q.plazo == 120, 
-                                   clase.q.documentoDePagoID == docdefecto.id
+            fdp = cls.select(AND(cls.q.plazo == 120, 
+                                   cls.q.documentoDePagoID == docdefecto.id
                                   ))[0]
         except IndexError:
-            fdp = clase(plazo = 120, documentoDePago = docdefecto)
+            fdp = cls(plazo = 120, documentoDePago = docdefecto)
         return fdp
 
     porDefecto = classmethod(porDefecto)
@@ -686,14 +683,16 @@ class Almacen(SQLObject, PRPCTOO):
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
-
-    def _get_almacen_principal():
+        
+    @staticmethod
+    def get_almacen_principal():
         ppal = Almacen.selectBy(principal = True)
         assert ppal.count() == 1
         ppal = ppal[0]
         return ppal
 
-    def _get_almacen_principal_or_none():
+    @staticmethod
+    def get_almacen_principal_or_none():
         """
         Para casos muy concretos en los que no puedo permitir que una 
         excepción no tratada cuelgue la aplicación (por ejemplo, con el 
@@ -705,7 +704,8 @@ class Almacen(SQLObject, PRPCTOO):
         except:
             return None
     
-    def _get_almacen_principal_id_or_none():
+    @staticmethod
+    def get_almacen_principal_id_or_none():
         """
         Para casos muy concretos en los que no puedo permitir que una 
         excepción no tratada cuelgue la aplicación (por ejemplo, con el 
@@ -716,10 +716,6 @@ class Almacen(SQLObject, PRPCTOO):
             return Almacen.get_almacen_principal().id
         except:
             return None
-
-    get_almacen_principal = staticmethod(_get_almacen_principal)
-    get_almacen_principal_or_none = staticmethod(_get_almacen_principal_or_none)
-    get_almacen_principal_id_or_none = staticmethod(_get_almacen_principal_id_or_none)
 
     def get_existencias(self, producto):
         """
@@ -771,7 +767,7 @@ class Almacen(SQLObject, PRPCTOO):
                                   existencias = existencias)
             sa.existencias = existencias
         else:
-            raise TypeException, "El parámetro debe ser un ProductoCompra."
+            raise TypeError, "El parámetro debe ser un ProductoCompra."
 
     def crear_almacen_principal():
         """
@@ -998,37 +994,37 @@ class PruebaPiramidal(SQLObject, PRPCTOO):
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 class CacheExistencias:
-    def get_existencias(clase, producto, fecha, almacen):
+    def get_existencias(cls, producto, fecha, almacen):
         """
         Devuelve las existencias en bultos en la fecha dada y el almacén 
         especificado.
         Si no existe devuelve None.
         """
-        rec = clase.get_registro(producto, fecha, almacen)
+        rec = cls.get_registro(producto, fecha, almacen)
         if rec:
             return rec.bultos
         return None
         
-    def get_stock(clase, producto, fecha, almacen):
+    def get_stock(cls, producto, fecha, almacen):
         """
         Devuelve las existencias en las unidades del producto en la fecha dada 
         y el almacén especificado.
         Si no existe devuelve None.
         """
-        rec = clase.get_registro(producto, fecha, almacen)
+        rec = cls.get_registro(producto, fecha, almacen)
         if rec:
             return rec.cantidad
         return None
     
-    def get_registro(clase, producto, fecha, almacen):
+    def get_registro(cls, producto, fecha, almacen):
         """
         Devuelve el registro de caché relacionado con el producto en la fecha 
         dada y el almacén especificado.
         Si no existe devuelve None.
         """
-        recs = clase.select(AND(clase.q.productoVentaID == producto.id, 
-                                clase.q.fecha == fecha, 
-                                clase.q.almacenID == almacen.id))
+        recs = cls.select(AND(cls.q.productoVentaID == producto.id, 
+                                cls.q.fecha == fecha, 
+                                cls.q.almacenID == almacen.id))
         if recs.count() == 1:
             return recs[0]
         elif recs.count > 1:
@@ -1039,21 +1035,21 @@ class CacheExistencias:
         else:   # recs.count() == 0
             return None
    
-    def actualizar(clase, producto, bultos, cantidad, fecha, almacen):
+    def actualizar(cls, producto, bultos, cantidad, fecha, almacen):
         """
         Actualizar el registro de caché para el producto, fecha y almacén.
         Si existen varios elimina los que sobren. Si no existe lo crea. Y si 
         solo existe uno, lo actualiza y sincroniza.
         """
-        cache = clase.select(AND(clase.q.productoVentaID == producto.id, 
-                                 clase.q.fecha == fecha, 
-                                 clase.q.almacenID == almacen.id))
+        cache = cls.select(AND(cls.q.productoVentaID == producto.id, 
+                                 cls.q.fecha == fecha, 
+                                 cls.q.almacenID == almacen.id))
         if cache.count() == 1:
             cache = cache[0]
         else:   # cache.count() > 1 or cache.count() == 0:
             for c in cache:
                 c.destroySelf()
-            cache = clase(productoVenta = producto, 
+            cache = cls(productoVenta = producto, 
                           fecha = fecha, 
                           almacen = almacen, 
                           cantidad = 0, 
@@ -1062,19 +1058,19 @@ class CacheExistencias:
         cache.bultos = bultos
         cache.syncUpdate()
 
-    def get_fechas_cacheadas(clase, producto = None):
+    def get_fechas_cacheadas(cls, producto = None):
         """
         Devuelve una lista de fechas que ya han sido cacheadas. Si se 
         especifica producto, devuelve las fechas cacheadas solo para ese 
         producto.
         OJO: Solo va a mirar en los cachés del tipo de existencias por las 
-        que se pregunta dependiendo de la clase invocadora: totales, A, B o C.
+        que se pregunta dependiendo de la cls invocadora: totales, A, B o C.
         """
         fechas = []
         if producto:
-            rs = clase.select(clase.q.productoVentaID == producto.id)
+            rs = cls.select(cls.q.productoVentaID == producto.id)
         else:
-            rs = clase.select()
+            rs = cls.select()
         for r in rs:
             fecha = r.fecha
             if fecha not in fechas:
@@ -1791,7 +1787,7 @@ class Silo(SQLObject, PRPCTOO):
         """
         if not fecha:
             fecha = mx.DateTime.localtime()
-        carga_silo = CargaSilo(silo = self, 
+        carga_silo = CargaSilo(silo = self,  # @UnusedVariable
                                productoCompra = producto, 
                                fechaCarga = fecha,
                                cantidad = cantidad)
@@ -2541,7 +2537,7 @@ class VencimientoPago(SQLObject, PRPCTOO):
                 else:
                     importe_cobrado = sum([p.importe for p in pagos])
                     if importe_cobrado >= v.importe:
-                        procesado = True    # Marco para no volver a tratar.
+                        v.procesado = True    # Marco para no volver a tratar.
                         continue    # Ya está pagado aunque no haya sido 
                                     # procesado automáticamente.
             if mx.DateTime.today() >= v.fecha:
@@ -2713,12 +2709,12 @@ class PagarePago(SQLObject, PRPCTOO):
     pendiente = property(esta_pendiente, doc = "Valor booleano que devuelve si el pagaré está completamente pagado (False) o no -tiene algo o todo pendiente de pagar (True)-.")
     cantidad_pendiente = property(get_cantidad_pendiente, set_cantidad_pendiente, doc = "Cantidad pendiente de pagar del total del pagaré")
 
-    def actualizar_estado_cobro(clase):
+    def actualizar_estado_cobro(cls):
         """
         Marca por defecto como cobrados todos los pagarés vencidos, pero 
         respetando aquellos que ya se marcaron manualmente como pendientes.
         """
-        actualizar_estado_cobro_de(clase) 
+        actualizar_estado_cobro_de(cls) 
     
     actualizar_estado_cobro = classmethod(actualizar_estado_cobro)
 
@@ -2891,6 +2887,7 @@ class Cobro(SQLObject, PRPCTOO):
 
     @staticmethod
     def _parse_fdp(txt, force_create = False, strict_mode = True):
+        rex = re.compile("\d+")
         try:
             plazo = int(rex.findall(txt)[0])
         except (IndexError, TypeError, ValueError):
@@ -2979,7 +2976,6 @@ class Cobro(SQLObject, PRPCTOO):
                   en los vencimientos. Y si la factura no tiene vencimientos, 
                   entonces devuelve None (caso altamente improbable).
         """
-        doc = None
         vencimiento = None
         vtoscobros = self.facturaVenta.emparejar_vencimientos()
         doc = Cobro._parse_docpago(self.observaciones)
@@ -3143,12 +3139,12 @@ class PagareCobro(SQLObject, PRPCTOO):
     fechaVencimiento = property(get_fechaCobro, set_fechaCobro) # Por si 
     # alguien se lía con el nombre, que no queda muy claro a qué se refiere.
 
-    def actualizar_estado_cobro(clase):
+    def actualizar_estado_cobro(cls):
         """
         Marca por defecto como cobrados todos los pagarés vencidos, pero 
         respetando aquellos que ya se marcaron manualmente como pendientes.
         """
-        actualizar_estado_cobro_de(clase) 
+        actualizar_estado_cobro_de(cls) 
     
     actualizar_estado_cobro = classmethod(actualizar_estado_cobro)
 
@@ -3303,12 +3299,12 @@ class Confirming(SQLObject, PRPCTOO):
     fechaVencimiento = property(get_fechaCobro, set_fechaCobro) # Por si 
     # alguien se lía con el nombre, que no queda muy claro a qué se refiere.
     
-    def actualizar_estado_cobro(clase):
+    def actualizar_estado_cobro(cls):
         """
         Marca por defecto como cobrados todos los pagarés vencidos, pero 
         respetando aquellos que ya se marcaron manualmente como pendientes.
         """
-        actualizar_estado_cobro_de(clase) 
+        actualizar_estado_cobro_de(cls) 
     
     actualizar_estado_cobro = classmethod(actualizar_estado_cobro)
 
@@ -3798,15 +3794,15 @@ class Pale(SQLObject, PRPCTOO):
 
     claseb = property(es_clase_b)
 
-    def get_next_numpale(clase, numbolsas = None, numpale = None):
+    def get_next_numpale(cls, numbolsas = None, numpale = None):
         """
         Devuelve el entero correspondiente al siguiente número de palé y 
         su código de trazabilidad en función del número de bolsas.
         """
         if numbolsas is None:   # Debe ser None. Aceptaría cero.
-            numbolsas = clase.NUMBOLSAS
+            numbolsas = cls.NUMBOLSAS
         if numpale is None:
-            maxi = clase._connection.queryOne(
+            maxi = cls._connection.queryOne(
                                         "SELECT MAX(numpale) FROM pale;")[0]
             try:
                 res = maxi + 1
@@ -3901,8 +3897,7 @@ class Pale(SQLObject, PRPCTOO):
         """
         Crea un palé con todas las cajas y bolsas que contiene.
         """
-        from partes_de_fabricacion_balas import verificar_solapamiento, \
-                                                buscar_o_crear_albaran_interno
+        from partes_de_fabricacion_balas import buscar_o_crear_albaran_interno
         from partes_de_fabricacion_rollos import descontar_material_adicional
         if not partidaCem:
             partidaCem = parteDeProduccion.partidaCem
@@ -3941,18 +3936,22 @@ class Pale(SQLObject, PRPCTOO):
                     )
             # 2.- Creo las cajas.
             for i in range(pale.numcajas):
-                caja = pclases.Caja.crear_caja(parteDeProduccion, pale, 
-                                               numbolsas)
+                caja = Caja.crear_caja(parteDeProduccion, pale, 
+                                       numbolsas)
             # OJO: Le paso el último artículo porque la formulación de esta 
             # línea será por PALÉS COMPLETOS.
             class FakeVentanaPartes:
                 def __init__(self, objeto):
                     self.objeto = objeto
-            descontar_material_adicional(FakeVentanaPartes(parteDeProduccion), 
-                                         articulo)
-            buscar_o_crear_albaran_interno(parteDeProduccion, 
-                incluir_consumos_auto = True) # Normalmente no, pero 
-                # aquí sí quiero que aparezcan en el alb. interno.
+            try:
+                descontar_material_adicional(
+                                        FakeVentanaPartes(parteDeProduccion), 
+                                        caja.articulo)
+                buscar_o_crear_albaran_interno(parteDeProduccion, 
+                    incluir_consumos_auto = True) # Normalmente no, pero 
+                    # aquí sí quiero que aparezcan en el alb. interno.
+            except (UnboundLocalError, NameError):
+                pass # No se ha creado ninguna caja.
         return pale
     crear_pale = staticmethod(crear_pale)
 
@@ -4026,12 +4025,12 @@ class Caja(SQLObject, PRPCTOO):
         # así. Si funciona bien, migraré todas las clases.
         return "Caja:%d" % self.id
 
-    def get_next_numcaja(clase):
+    def get_next_numcaja(cls):
         """
         Devuelve el entero correspondiente al siguiente número de caja y 
         su código de trazabilidad.
         """
-        maxi = clase._connection.queryOne("SELECT MAX(numcaja) FROM caja;")[0]
+        maxi = cls._connection.queryOne("SELECT MAX(numcaja) FROM caja;")[0]
         try:
             res = maxi + 1
         except TypeError:   # No hay cajas creadas:
@@ -4199,7 +4198,6 @@ class Caja(SQLObject, PRPCTOO):
         Devuelve un diccionario con los números de bolsas que se supone 
         van en la caja, así como sus códigos de trazabilidad y peso.
         """
-        res = {}
         primera, ultima = self.get_bounds_numbolsa()
         numsbolsas = range(primera, ultima + 1)
         databolsas = []
@@ -4324,7 +4322,7 @@ class Caja(SQLObject, PRPCTOO):
         #                          fechahora = mx.DateTime.localtime(), 
         #                          peso = peso, 
         #                          claseb = claseb)
-        articulo = Articulo(parteDeProduccion = parteDeProduccion, 
+        articulo = Articulo(parteDeProduccion = parteDeProduccion,  # @UnusedVariable
                             caja = caja, 
                             rolloDefectuoso = None, 
                             albaranSalida = None, 
@@ -4900,7 +4898,6 @@ class Proveedor(SQLObject, PRPCTOO):
             if "contado" in self.vencimiento.lower():
                 res = [0]
             else:
-                import re
                 regexpr = re.compile("\d*")
                 lista_vtos = regexpr.findall(self.vencimiento)
                 try:
@@ -5655,10 +5652,10 @@ class Partida(SQLObject, PRPCTOO):
             else:
                 # Lo mínimo que deben tener analizado son las pruebas:
                 completamente_analizada = (self.pruebasCompresion 
-                               and pruebasResistenciaLongitudinal 
-                               and pruebasPerforacion 
-                               and pruebasPermeabilidad 
-                               and pruebasResistenciaTransversal) 
+                               and self.pruebasResistenciaLongitudinal 
+                               and self.pruebasPerforacion 
+                               and self.pruebasPermeabilidad 
+                               and self.pruebasResistenciaTransversal) 
                 if ("NT" in producto.descripcion
                     and ("155" in producto.descripcion
                          or "235" in producto.descripcion
@@ -6341,8 +6338,8 @@ class LineaDePedido(SQLObject, PRPCTOO):
         if descuento:
             subtotal *= (1.0 - self.descuento)
         if iva:
-            if ldp.pedidoVenta:
-                subtotal *= ldp.pedidoVenta.iva
+            if self.pedidoVenta:
+                subtotal *= self.pedidoVenta.iva
             else:
                 raise ValueError, "pclases::LineaDePedido::calcular_subtotal -> La LDP ID %s no tiene pedido del que obtener el IVA."
         return subtotal
@@ -7039,7 +7036,7 @@ class LineaDeVenta(SQLObject, PRPCTOO, Venta):
             porcentaje = tarifa.get_porcentaje(producto, fraccion = True)
         else:
             try:
-                porcentaje = (self.precio / producto.precioDefecto) - 1.0
+                porcentaje = (precio / producto.precioDefecto) - 1.0
             except ZeroDivisionError:
                 porcentaje = 1.0
         return producto.precioDefecto * porcentaje * cantidad
@@ -8714,10 +8711,10 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
         for h in self.historialesExistenciasCompra + d.historialesExistenciasCompra:
             h.destroySelf()
         for fecha in final:
-            h = pclases.HistorialExistenciasCompra(productoCompra = o, 
-                                            cantidad = final[fecha][0], 
-                                            observaciones = final[fecha][1], 
-                                            fecha = fecha)
+            h = HistorialExistenciasCompra(productoCompra = self, 
+                                           cantidad = final[fecha][0], 
+                                           observaciones = final[fecha][1], 
+                                           fecha = fecha)
 
     def unificar_productos_compra(bueno, malos):
         """
@@ -9607,7 +9604,8 @@ class PedidoVenta(SQLObject, PRPCTOO):
             total *= (1 + self.iva)
         return total
     
-    def ultimo_numpedido(clase):
+    @classmethod
+    def ultimo_numpedido(cls):
         """
         Devuelve un ENTERO con el último número de albarán sin letras o 0 si 
         no hay ninguno o los que hay tienen caracteres alfanuméricos y no se 
@@ -9617,11 +9615,10 @@ class PedidoVenta(SQLObject, PRPCTOO):
         ordenar a la inversa por ID y comenzar a buscar el primer número de 
         pedido convertible a entero. 
         """
-        # DONE: Además, esto debería ser un método de clase.
-        import re
+        # DONE: Además, esto debería ser un método de cls.
         regexp = re.compile("[0-9]*")
         ultimo = 0
-        peds = clase.select(orderBy = '-id')
+        peds = cls.select(orderBy = '-id')
         for p in peds:
             try:
                 numpedido = p.numpedido
@@ -9635,7 +9632,8 @@ class PedidoVenta(SQLObject, PRPCTOO):
                 ultimo = 0
         return ultimo
     
-    def siguiente_numpedido(clase):
+    @classmethod
+    def siguiente_numpedido(cls):
         """
         Devuelve el siguiente número de pedido libre partiendo del último encontrado como entero.
         """
@@ -9644,8 +9642,8 @@ class PedidoVenta(SQLObject, PRPCTOO):
             ultimo += 1
         return ultimo + 1
 
-    get_ultimo_numero_numpedido = classmethod(ultimo_numpedido)
-    get_siguiente_numero_numpedido = classmethod(siguiente_numpedido)
+    get_ultimo_numero_numpedido = ultimo_numpedido
+    get_siguiente_numero_numpedido = siguiente_numpedido
 
     def es_de_fibra(self):
         """
@@ -10587,7 +10585,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                       Articulo.q.productoVentaID == self.id)
         if almacen:
             try:
-                almacen_id = almacend.id
+                almacen_id = almacen.id
             except:
                 almacen_id = almacen
             clauses = AND(clauses, 
@@ -10825,7 +10823,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                articulos_de_rollos_anteriores_a_fecha, 
                articulos_de_balas_anteriores_a_fecha, 
                articulos_de_bigbags_anteriores_a_fecha, 
-               articulos_de_caja_anteriores_a_fecha, 
+               articulos_de_cajas_anteriores_a_fecha, 
                albaranes_antes_de_fecha, 
                clausula_defectuosos)
         articulos_en_almacen = Articulo.select(parte_where)
@@ -14052,7 +14050,8 @@ class AlbaranSalida(SQLObject, PRPCTOO):
                 facturas.append(srv.prefactura)
         return facturas
     
-    def ultimo_numalbaran(clase):
+    @classmethod
+    def ultimo_numalbaran(cls):
         """
         Devuelve un ENTERO con el último número de albarán sin letras o 0 si 
         no hay ninguno o los que hay tienen caracteres alfanuméricos y no se 
@@ -14066,12 +14065,11 @@ class AlbaranSalida(SQLObject, PRPCTOO):
         OJO: Aquí los números son secuenciales y no se reinicia en cada año 
         (que es como se está haciendo ahora en facturas).
         """
-        # DONE: Además, esto debería ser un método de clase.
-        import re
+        # DONE: Además, esto debería ser un método de cls.
         regexp = re.compile("[0-9]*")
         ultimo = 0
         # albs = AlbaranSalida.select(orderBy = '-numalbaran')       # No, porque A_AJUSTE se colocaría el primero a tratar.
-        albs = clase.select(orderBy = '-id')
+        albs = cls.select(orderBy = '-id')
         for a in albs:
             try:
                 numalbaran = a.numalbaran
@@ -14084,7 +14082,8 @@ class AlbaranSalida(SQLObject, PRPCTOO):
                 ultimo = 0
         return ultimo
 
-    def siguiente_numalbaran(clase):
+    @classmethod
+    def siguiente_numalbaran(cls):
         """
         Devuelve un ENTERO con el siguiente número de albarán sin letras o 0 
         si no hay ninguno o los que hay tienen caracteres alfanuméricos y no 
@@ -14100,20 +14099,19 @@ class AlbaranSalida(SQLObject, PRPCTOO):
         Hasta ahora se han usado números solo o año y número, por lo que 
         el número en sí será el último entero encontrado.
         """
-        import re
         rexp = re.compile("\d+")
         nums = rexp.findall(self.numalbaran)
         return int(nums[-1])
 
-    def siguiente_numalbaran_str(clase):
+    @classmethod
+    def siguiente_numalbaran_str(cls):
         """
         Devuelve el siguiente número de albarán libre como cadena intentando 
         respetar el formato del último numalbaran.
         """
-        import re
         regexp = re.compile("[0-9]*")
         ultimo = None
-        albs = clase.select(orderBy = '-id')
+        albs = cls.select(orderBy = '-id')
         for a in albs:
             try:
                 numalbaran = a.numalbaran
@@ -14138,9 +14136,9 @@ class AlbaranSalida(SQLObject, PRPCTOO):
             res = str(res)
         return res
 
-    get_ultimo_numero_numalbaran = classmethod(ultimo_numalbaran)
-    get_siguiente_numero_numalbaran = classmethod(siguiente_numalbaran)
-    get_siguiente_numero_numalbaran_str = classmethod(siguiente_numalbaran_str)
+    get_ultimo_numero_numalbaran = ultimo_numalbaran
+    get_siguiente_numero_numalbaran = siguiente_numalbaran
+    get_siguiente_numero_numalbaran_str = siguiente_numalbaran_str
 
     def get_str_tipo(self):
         """
@@ -14234,7 +14232,6 @@ class ConsumoAdicional(SQLObject, PRPCTOO):
         """
         Devuelve la cantidad del porcentaje como fracción de 1.
         """
-        import re
         txt = "%s %s" % (self.cantidad, self.unidad)
         regexp_float = re.compile("^-?\d+[\.,]?\d*")
         num = regexp_float.findall(txt)[0]
@@ -14248,7 +14245,6 @@ class ConsumoAdicional(SQLObject, PRPCTOO):
         Es necesario que venga la cantidadpc aunque en el registro, en el campo 
         "unidad" no aparece.
         """
-        import re
         txt = "%s %s" % (self.cantidad, self.unidad)
         regexp_float = re.compile("-?\d+[\.,]?\d*")
         regexp_unidad = re.compile("\w+")
@@ -14285,7 +14281,6 @@ class ConsumoAdicional(SQLObject, PRPCTOO):
         txt = txt.strip()
         # TODO: De momento lo hago así porque no sé de qué modo 
         #       ni dónde guardarlo:
-        import re
         regexp_porcentaje = re.compile("^-?\d+[\.,]?\d*\s*%$")
         regexp_fraccion = re.compile("-?\d+[\.,]?\d*\s*\w*\s*/\s*-?\d*[\.,]?\d*\s*\w+")
         if regexp_porcentaje.findall(txt) != []:
@@ -14655,7 +14650,6 @@ class Cliente(SQLObject, PRPCTOO):
             if "contado" in self.vencimientos.lower():
                 res = [0]
             else:
-                import re
                 regexpcars = re.compile("\w")
                 cadena = "".join(regexpcars.findall(self.vencimientos)).upper()
                 regexpr = re.compile("\d*")
@@ -14687,7 +14681,6 @@ class Cliente(SQLObject, PRPCTOO):
         """
         res = []
         if self.diadepago != None:
-            import re
             regexpr = re.compile("\d*")
             lista_dias = regexpr.findall(self.diadepago)
             try:
@@ -15526,7 +15519,7 @@ class SuperFacturaVenta:
             # Las facturas de abono no tienen vencimientos, solo "cobros" que 
             # se relacionan con otros efectos de cobro. "So", el importe habrá 
             # vencido si la fecha es superior a la del abono.
-            if fda.fecha <= fecha_base:
+            if self.fecha <= fecha_base:
                 vencido = self.importeTotal
             else:
                 vencido = 0.0
@@ -16144,7 +16137,6 @@ class SuperFacturaVenta:
                   forma de pago. O valor indicado en "default".
         """
         res = []
-        import re
         regexpr = re.compile("\d+")
         # De los vencimientos de la propia factura.
         for vto in self.vencimientosCobro:
@@ -16368,7 +16360,6 @@ class FacturaVenta(SQLObject, PRPCTOO, SuperFacturaVenta):
         try:
             numero = int(numero)
         except ValueError:
-            import re
             expr_entero = re.compile('[0-9]+')
             try:
                 numero = int(expr_entero.findall(numero)[-1])
@@ -18249,7 +18240,7 @@ class DescuentoDeMaterial(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
-    def desechar(clase, producto, cantidad, pdp = None, observaciones = ''):
+    def desechar(cls, producto, cantidad, pdp = None, observaciones = ''):
         """
         Crea un registro de descuento de material con la cantidad 
         recibida y se asegura de que el producto de venta quede 
@@ -18271,7 +18262,7 @@ class DescuentoDeMaterial(SQLObject, PRPCTOO):
             producto.existencias -= cantidad
         producto.syncUpdate()   # Aseguro que mis cambios pasen a la BD para evitar efectos colaterales.
         producto.sync()         # Y compruebo que no ha habido problemas de concurrencia.
-        descuentoDeMaterial = clase(productoCompra = producto, 
+        descuentoDeMaterial = cls(productoCompra = producto, 
                                     parteDeProduccion = pdp, 
                                     cantidad = cantidad, 
                                     fechahora = mx.DateTime.localtime(), 
@@ -19431,13 +19422,14 @@ class DatosDeLaEmpresa(SQLObject, PRPCTOO):
         im = os.path.join("..", "imagenes", self.logo)
         return os.path.abspath(im)
 
-    def get_propia_empresa_como_cliente(clase):
+    @classmethod
+    def get_propia_empresa_como_cliente(cls):
         """
         Devuelve el registro cliente de la BD que se corresponde 
         con la empresa atendiendo a los datos del registro DatosDeLaEmpresa
         o None si no se encuentra.
         """
-        nombre_propia_empresa = clase.select()[0].nombre
+        nombre_propia_empresa = cls.select()[0].nombre
         clientes = Cliente.select(Cliente.q.nombre == nombre_propia_empresa)
         if clientes.count() == 0:
             cliente = None
@@ -19448,13 +19440,14 @@ class DatosDeLaEmpresa(SQLObject, PRPCTOO):
             cliente = clientes[0]
         return cliente
 
-    def get_propia_empresa_como_proveedor(clase):
+    @classmethod
+    def get_propia_empresa_como_proveedor(cls):
         """
         Devuelve el registro proveedor que se corresponde con la 
         empresa atendiendo a los datos del registro DatosDeLaEmpresa 
         o None si no se encuentra.
         """
-        nombre_propia_empresa = clase.select()[0].nombre
+        nombre_propia_empresa = cls.select()[0].nombre
         proveedores = Proveedor.select(Proveedor.q.nombre == nombre_propia_empresa)
         if proveedores.count() == 0:
             proveedor = None
@@ -19465,8 +19458,8 @@ class DatosDeLaEmpresa(SQLObject, PRPCTOO):
             proveedor = proveedores[0]
         return proveedor
     
-    get_cliente = classmethod(get_propia_empresa_como_cliente)
-    get_proveedor = classmethod(get_propia_empresa_como_proveedor)
+    get_cliente = get_propia_empresa_como_cliente
+    get_proveedor = get_propia_empresa_como_proveedor
 
     def str_cif_o_nif(self):
         """
@@ -20056,13 +20049,13 @@ class Recibo(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
-    def get_next_numrecibo(clase_recibo, anno):
+    def get_next_numrecibo(cls, anno):
         """
         Devuelve el siguiente número de recibo disponible para 
         el ano «anno».
         """
         try:
-            ultimo_recibo = clase_recibo.select(clase_recibo.q.anno == anno, orderBy = "-numrecibo")[0]
+            ultimo_recibo = cls.select(cls.q.anno == anno, orderBy = "-numrecibo")[0]
         except IndexError:
             return 1
         else:
@@ -20134,6 +20127,7 @@ class Documento(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
+    @staticmethod
     def get_ruta_base():
         """
         Devuelve la ruta del directorio que contiene los documentos adjuntos.
@@ -20150,7 +20144,7 @@ class Documento(SQLObject, PRPCTOO):
             os.mkdir(RUTA_BASE)
         return RUTA_BASE
     
-    ruta_base = get_ruta_base = staticmethod(get_ruta_base)
+    ruta_base = get_ruta_base
 
     def get_ruta_completa(self):
         """
@@ -20726,20 +20720,20 @@ class OrdenEmpleados(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
-    def buscar_registros(clase, fecha):
+    def buscar_registros(cls, fecha):
         """
         Devuelve un registro por cada empleado, todos con la misma fecha 
         y siendo la más cercana a «fecha» y mayor que ésta.
         """
         try:
-            fecha_base = clase._connection.queryOne("""
+            fecha_base = cls._connection.queryOne("""
                             SELECT fecha FROM orden_empleados 
                              WHERE fecha <= '%s' ORDER BY fecha DESC
                             """ % fecha.strftime("%Y-%m-%d"))[0]
         except (TypeError, IndexError):
             res = []
         else:
-            rs = clase.select(clase.q.fecha == fecha_base, 
+            rs = cls.select(cls.q.fecha == fecha_base, 
                               orderBy = "orden")
             pos_tratadas = []
             ids_tratados = []
@@ -20752,8 +20746,8 @@ class OrdenEmpleados(SQLObject, PRPCTOO):
 
     buscar_registros = classmethod(buscar_registros) 
     
-    def buscar(clase, fecha):
-        regs = clase.buscar_registros(fecha)
+    def buscar(cls, fecha):
+        regs = cls.buscar_registros(fecha)
         return [r.empleadoID for r in regs]
 
     buscar = classmethod(buscar) 
@@ -20814,7 +20808,7 @@ class ListaObjetosRecientes(SQLObject, PRPCTOO):
         idrs.sort(lambda r1, r2: int(r1.id - r2.id))
         return [r.objetoID for r in idrs]
 
-    def buscar(clase, ventana, usuario = None, crear = False):
+    def buscar(cls, ventana, usuario = None, crear = False):
         """
         Devuelve el registro que coincide con el usuario y ventana recibidos.
         None si no se encontró ninguno.
@@ -20834,8 +20828,8 @@ class ListaObjetosRecientes(SQLObject, PRPCTOO):
             uid = usuario.id
         else:
             uid = None
-        rs = clase.select(AND(clase.q.usuarioID == uid, 
-                              clase.q.ventanaID == ventana.id), 
+        rs = cls.select(AND(cls.q.usuarioID == uid, 
+                              cls.q.ventanaID == ventana.id), 
                           orderBy = "id")
         try:
             return rs[0]
@@ -20843,7 +20837,7 @@ class ListaObjetosRecientes(SQLObject, PRPCTOO):
             if not crear:
                 res = None
             else:
-                nuevo = clase(ventana = ventana, usuario = usuario)
+                nuevo = cls(ventana = ventana, usuario = usuario)
                 res = nuevo
         return res
 
@@ -21962,4 +21956,3 @@ if __name__ == '__main__':
     do_unittests()
     #r = Rollo.select()[0]
     #r.destroy_en_cascada()
-
