@@ -43,11 +43,11 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk, time
+import sys, os
 try:
     import pclases
 except ImportError:
-    import sys
     from os.path import join as pathjoin
     sys.path.append(pathjoin("..", "framework"))
     import pclases
@@ -55,7 +55,6 @@ import mx, mx.DateTime
 try:
     import geninformes
 except ImportError:
-    import sys
     sys.path.append('../informes')
     import geninformes
 from utils import _float as float

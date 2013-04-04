@@ -1391,6 +1391,10 @@ def buscar_concepto_ldc(proveedor, producto = None):
                                                         descripcion = tdp)[0]
     except IndexError:
         # No existe el concepto. DEBERÍA. Lo creo.
+        if proveedor.es_extranjero():
+            nac = "Internacionales"
+        else:
+            nac = "Nacionales"        
         concepto = pclases.ConceptoPresupuestoAnual(
                 descripcion = "%s - %s" % (nac, tdp), 
                 presupuestoAnual = pclases.PresupuestoAnual.selectBy(

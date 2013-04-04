@@ -45,6 +45,7 @@
 ##   de clientes equivalente para seguir el mismo criterio). No. No
 ##   sobra nada. Cada campo es para una cosa diferente.
 ###################################################################
+import os
 from ventana import Ventana
 import utils
 import pygtk

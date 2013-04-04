@@ -54,7 +54,7 @@ except ImportError:
     import pclases
     from seeker import VentanaGenerica 
 from utils import _float as float
-
+import mx.DateTime
 
 class CuentasOrigen(Ventana, VentanaGenerica):
     def __init__(self, objeto = None, usuario = None):

@@ -747,7 +747,7 @@ class Confirmings(Ventana):
                 cabeceras = ('ID', 'Número de factura', 'Fecha', 'Cliente'), 
                 padre = self.wids['ventana'], 
                 multi = True)
-        if idsfactura < 0 or idfactura == [-1]:
+        if idsfactura < 0 or idsfactura == [-1]:
             return None
         else:
             return idsfactura

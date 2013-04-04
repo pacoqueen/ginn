@@ -1002,7 +1002,7 @@ class FacturasVenta(Ventana):
             utils.combo_set_from_db(self.wids['cbe_obra'], obra.id)
             self.objeto.obra = obra
             if self.objeto.cliente not in obra.clientes:
-                o.addCliente(self.objeto.cliente)
+                obra.addCliente(self.objeto.cliente)
             self.objeto.syncUpdate()
         for ldv in [l for l in albaran.lineasDeVenta if l.facturaVenta == None and l.prefactura == None]:
             ldv.facturaVenta = factura

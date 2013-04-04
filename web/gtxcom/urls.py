@@ -1,3 +1,5 @@
+#@PydevCodeAnalysisIgnore
+
 from django.conf.urls.defaults import *
 
 from comerciales.views import * 

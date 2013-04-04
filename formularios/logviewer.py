@@ -126,7 +126,7 @@ dir()
         else:
             self.filtro = [isinstance(i, str) 
                             and i.strip().lower() 
-                            or `i`.strip().lower() 
+                            or str(i).strip().lower() 
                            for i in texto.split()]
         self.rellenar_widgets()
     
