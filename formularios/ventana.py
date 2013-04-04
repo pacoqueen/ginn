@@ -491,7 +491,7 @@ class Ventana:
             if os.name == 'posix':
                 os.system("cd .. && ./launch.sh >/dev/null &")
             elif os.name == 'nt':
-                os.startfile("gajim.pyw")
+                os.startfile("gajim.pyw")  # @UndefinedVariable
             else:
                 utils.dialogo_info(titulo = "PLATAFORMA NO SOPORTADA",
                                    texto = "La ayuda on-line solo funciona en arquitecturas con plataformas POSIX o NT\n(GNU/Linux, MS-Windows, *BSD...).",

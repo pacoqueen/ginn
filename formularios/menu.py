@@ -721,7 +721,7 @@ class Menu:
                 # ya no rula.
                 os.system("cd .. && ./launch.sh >/dev/null &")
             elif os.name == 'nt':
-                os.startfile("gajim.pyw")
+                os.startfile("gajim.pyw")  # @UndefinedVariable
             else:
                 utils.dialogo_info(titulo = "PLATAFORMA NO SOPORTADA",
                     texto = "La ayuda on-line solo funciona en arquitecturas"
@@ -771,7 +771,7 @@ class Menu:
             runapp.runapp(comando, printstdout)
             #os.system("./checklist_window.py 2>&1 | tee > salida_check_`date +%Y_%m_%d_%H_%M`.txt &")
         elif os.name == 'nt':
-            os.startfile("checklist_window.py")
+            os.startfile("checklist_window.py")  # @UndefinedVariable
         else:
             utils.dialogo_info(titulo = "PLATAFORMA NO SOPORTADA",
                 texto = "Pruebas de coherencia solo funcionan en arquitecturas"
@@ -789,7 +789,7 @@ class Menu:
         if tipo == 'email':
             if os.name == 'nt':
                 try:
-                    os.startfile('mailto:%s' % uri) # if pywin32 is installed we open
+                    os.startfile('mailto:%s' % uri) # if pywin32 is installed we open @UndefinedVariable
                 except:
                     pass
             else:
@@ -799,7 +799,7 @@ class Menu:
         elif tipo == 'web':
             if os.name == 'nt':
                 try:
-                    os.startfile(uri)
+                    os.startfile(uri)  # @UndefinedVariable
                 except:
                     pass
             else:

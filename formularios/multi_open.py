@@ -104,8 +104,8 @@ if sys.platform[:3] == 'win':
 
         def open(self, filename):
             try:
-                os.startfile(filename)
-            except WindowsError:
+                os.startfile(filename)  # @UndefinedVariable
+            except WindowsError:  # @UndefinedVariable
                 # [Error 22] No application is associated with the specified
                 # file for this operation: '<URL>'
                 return False

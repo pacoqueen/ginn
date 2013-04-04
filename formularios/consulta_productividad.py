@@ -203,29 +203,28 @@ class ConsultaProductividad(Ventana):
             parte = pclases.ParteDeProduccion.get(idparte)
             if parte.es_de_balas():
                 import partes_de_fabricacion_balas
-                ventana_parteb = partes_de_fabricacion_balas.PartesDeFabricacionBalas(parte)
+                ventana_parteb = partes_de_fabricacion_balas.PartesDeFabricacionBalas(parte)  # @UnusedVariable
             elif parte.es_de_geotextiles():
                 import partes_de_fabricacion_rollos
-                ventana_parteb = partes_de_fabricacion_rollos.PartesDeFabricacionRollos(parte)
+                ventana_parteb = partes_de_fabricacion_rollos.PartesDeFabricacionRollos(parte)  # @UnusedVariable
             elif parte.es_de_bolsas():
                 import partes_de_fabricacion_bolsas
-                ventana_parteb = partes_de_fabricacion_bolsas.PartesDeFabricacionBolsas(parte)
+                ventana_parteb = partes_de_fabricacion_bolsas.PartesDeFabricacionBolsas(parte)  # @UnusedVariable
 
     def chequear_cambios(self):
         pass
 
     def rellenar_tabla(self, partes, solobalas):
-    	"""
+        """
         Rellena el model con los tipos de material existentes
         """        
         from ventana_progreso import VentanaProgreso
         vpro = VentanaProgreso(padre = self.wids['ventana'])
-    	model = self.wids['tv_datos'].get_model()
-    	model.clear()
+        model = self.wids['tv_datos'].get_model()
+        model.clear()
         total = 0
         kilosproducidos = 0
         kilosgranza = 0
-        personasturno = 0
         vector = []
         tot = len(partes)
         i = 0.0
@@ -252,7 +251,11 @@ class ConsultaProductividad(Ventana):
             # todos los partes, así evito contar la misma dos veces si en dos 
             # partes se ha usado la misma partida o dos partidas de la misma 
             # partida de carga.
-    	for p in partes:
+        padre = None # En una de las iteraciones se espera que padre se haya 
+            # instanciado en el final de la anterior. Inicializo para evitar 
+            # errores y errores en análisis sintáctico de algunos IDE en la 
+            # línea 342.
+        for p in partes:
             if p.se_solapa():
                 self.logger.warning("%sconsulta_productividad::rellenar_tabla"
                     " -> El parte ID %d se solapa con otros de la misma línea"
@@ -304,7 +307,7 @@ class ConsultaProductividad(Ventana):
                     metrosproducidos += sum(superficies_defectuosos)
                     rollos = [a.rollo for a in p.articulos if a.rollo != None]
                     if len(rollos) > 0:     # Para que no intente hacer el 
-                          # cálculo con partes que tengan balas y/o no rollos.
+                        # cálculo con partes que tengan balas y/o no rollos.
                         metrosproducidos += len(rollos) * p.articulos[0].productoVenta.camposEspecificosRollo.ancho * p.articulos[0].productoVenta.camposEspecificosRollo.metrosLineales
                         if p.articulos[0].es_rollo():
                             partida = p.articulos[0].rollo.partida

@@ -104,7 +104,7 @@ def abrir_csv(csv, ventana_padre = None):
                                    padre = ventana_padre) 
     else:
         # OJO: Esto no es independiente de la plataforma:
-        os.startfile(csv)
+        os.startfile(csv)  # @UndefinedVariable
 
 def mandar_a_imprimir_con_ghostscript(fichero):
     """
