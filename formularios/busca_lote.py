@@ -37,7 +37,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk, time
 try:
     import pclases
 except ImportError:
@@ -115,10 +115,10 @@ class BuscaLote(Ventana):
                                    padre = self.wids['ventana'])
                 return
             # Optimizacion de la búsqueda
-            articulos = pclases.Articulo.select(sqlobject.AND(pclases.Articulo.q.albaranSalidaID == None,
+            articulos = pclases.Articulo.select(pclases.AND(pclases.Articulo.q.albaranSalidaID == None,
                                                               pclases.Articulo.q.productoVentaID == idproducto))
         else:
-            articulos = pclases.Articulo.select(sqlobject.AND(pclases.Articulo.q.albaranSalidaID == None, 
+            articulos = pclases.Articulo.select(pclases.AND(pclases.Articulo.q.albaranSalidaID == None, 
                                                               pclases.Articulo.q.balaID != None))
         # TODO: Creo que se pueden mejorar las consultas un poco más.
         loteids = []
@@ -136,9 +136,9 @@ class BuscaLote(Ventana):
         criterio = True
         
         if self.wids['chk_tenacidad'].get_active():
-            criterio = sqlobject.AND(criterio,pclases.Lote.q.tenacidad == self.wids['e_tenacidad'].get_text())
+            criterio = pclases.AND(criterio,pclases.Lote.q.tenacidad == self.wids['e_tenacidad'].get_text())
         if self.wids['chk_elongacion'].get_active():
-            criterio = sqlobject.AND(criterio,pclases.Lote.q.elongacion == self.wids['e_elongacion'].get_text())
+            criterio = pclases.AND(criterio,pclases.Lote.q.elongacion == self.wids['e_elongacion'].get_text())
         if self.wids['chk_rizo'].get_active():
             rizo = self.wids['e_rizo'].get_text()
             if '-' in rizo:
@@ -153,12 +153,12 @@ class BuscaLote(Ventana):
                                        padre = self.wids['ventana'])
                     return
                 for i in range(a,b):
-                    criterioRizo = sqlobject.OR(criterioRizo,pclases.Lote.q.rizo == str(i)) 
-                criterio = sqlobject.AND(criterio, criterioRizo)
+                    criterioRizo = pclases.OR(criterioRizo,pclases.Lote.q.rizo == str(i)) 
+                criterio = pclases.AND(criterio, criterioRizo)
             else:
-                criterio = sqlobject.AND(criterio,pclases.Lote.q.rizo == self.wids['e_rizo'].get_text())
+                criterio = pclases.AND(criterio,pclases.Lote.q.rizo == self.wids['e_rizo'].get_text())
         if self.wids['chk_encogimiento'].get_active():
-            criterio = sqlobject.AND(criterio,pclases.Lote.q.encogimiento == self.wids['e_encogimiento'].get_text())
+            criterio = pclases.AND(criterio,pclases.Lote.q.encogimiento == self.wids['e_encogimiento'].get_text())
         lotes = pclases.Lote.select(criterio)
 
         resultado = [l for l in lotes if l.id in loteids]

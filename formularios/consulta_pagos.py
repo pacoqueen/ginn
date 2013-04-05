@@ -37,7 +37,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk, time
 import sys
 try:
     import pclases
@@ -261,14 +261,14 @@ class ConsultaPagos(Ventana):
         if not self.inicio:
             pagos = pclases.Pago.select(pclases.Pago.q.fecha <= self.fin, orderBy = 'fecha')
         else:
-            pagos = pclases.Pago.select(sqlobject.AND(pclases.Pago.q.fecha >= self.inicio,
+            pagos = pclases.Pago.select(pclases.AND(pclases.Pago.q.fecha >= self.inicio,
                                                       pclases.Pago.q.fecha <= self.fin), orderBy = 'fecha')
         if not self.inicio:
             vencimientos = pclases.VencimientoPago.select(pclases.VencimientoPago.q.fecha <= self.fin, 
                                                           orderBy = 'fecha')
         else:
             vencimientos = pclases.VencimientoPago.select(
-                                sqlobject.AND(pclases.VencimientoPago.q.fecha >= self.inicio,
+                                pclases.AND(pclases.VencimientoPago.q.fecha >= self.inicio,
                                               pclases.VencimientoPago.q.fecha <= self.fin), orderBy = 'fecha')
         elementos = {}
         for item in pagos:

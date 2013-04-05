@@ -1,3 +1,5 @@
+#@PydevCodeAnalysisIgnore
+
 # This isn't a full example...
 
 ## Snippet "person_magicmethod"
