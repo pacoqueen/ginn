@@ -125,7 +125,7 @@ class ConsultaVentasPorProducto(Ventana):
                     v = productos_de_venta_especial.ProductosDeVentaEspecial(pv, usuario = self.usuario)
             elif tipo == "PC": 
                 pc = pclases.ProductoCompra.get(id)
-                import productos_de_compra
+                import productos_compra
                 v = productos_compra.ProductosCompra(pc, usuario = self.usuario)
             elif tipo == "LDV":
                 ldv = pclases.LineaDeVenta.get(id)

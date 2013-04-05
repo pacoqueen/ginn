@@ -504,6 +504,11 @@ class Nominas(Ventana):
         i = 0.0
         for ht in partes:
             vpro.set_valor(i/tot, "Analizando partes de trabajo...")
+            ht_horas = ht.horas
+            if isinstance(ht_horas, datetime.time):
+                ht_horas = mx.DateTime.DateTimeDeltaFrom(
+                    hours = ht_horas.hour, 
+                    minutes = ht_horas.minute)            
             if ht.empleado.id not in aux:
                 aux[ht.empleado.id] = {'pos': len(res), 'fechas': {}}
                 res.append({'nombre': "%s, %s (R)" % (ht.empleado.apellidos, ht.empleado.nombre),

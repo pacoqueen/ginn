@@ -16,7 +16,7 @@ except ImportError:
     import pclases
 
 def get_dbname():
-    dsn = pclases.ProductoCompra._connection.dsn
+    dsn = pclases.ProductoCompra._connection.dsn  # @UndefinedVariable
     dsndict = dict([(k, v) for k, v in [i.split("=") for i in dsn.split()]])
     return dsndict['dbname']
 

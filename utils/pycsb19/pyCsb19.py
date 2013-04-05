@@ -9,7 +9,7 @@ import remesas
 import ordenante
 import presentador
 import importar
-import sqlite
+import sqlite3 as sqlite
 
 
 

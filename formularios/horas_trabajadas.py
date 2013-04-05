@@ -157,7 +157,7 @@ class HorasTrabajadas(Ventana):
                             v = partes_de_fabricacion_rollos.PartesDeFabricacionRollos(objeto = parte, usuario = self.usuario)
                         elif parte.es_de_fibra():
                             import partes_de_fabricacion_balas
-                            v = partes_de_fabricacion_balas.PartesDeFabricacionBalas(objeto = parte, usuario = sef.usuario)
+                            v = partes_de_fabricacion_balas.PartesDeFabricacionBalas(objeto = parte, usuario = self.usuario)
                     elif tipo == "PDT": 
                         parte = pclases.ParteDeTrabajo.get(id)
                         import partes_de_trabajo

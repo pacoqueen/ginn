@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+#@PydevCodeAnalysisIgnore
 
 ###############################################################################
 # Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #

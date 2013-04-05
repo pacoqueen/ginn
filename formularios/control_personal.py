@@ -671,7 +671,7 @@ class ControlPersonal(Ventana, VentanaGenerica):
         try:
             fecha = utils.parse_fecha(self.wids['e_fecha'].get_text())
         except:
-            fecha = utils.parse_fecha(str_fecha(mx.DateTime.localtime()))
+            fecha = utils.parse_fecha(utils.str_fecha(mx.DateTime.localtime()))
         if joy_division and fecha == joy_division[0].fecha:
             # Modifico los registros existentes
             for i in range(len(new_order)):

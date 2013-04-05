@@ -12,7 +12,7 @@ import gobject
 import gtk
 import pango
 
-hirek_be="[R88] A RÁDIÓ 88 AKTUÁLIS HÍREI: [R88]  Vesztegetés miatt 4 rendõrt és egy határõrt tartóztattott le a Csongrád Megyei Fõügyészség Nyomozóhivatala, azzal gyanúsítják õket, hogy már hosszabb ideje csúszópénzt fogadtak el. [R88]  Ünnepélyesen átadták a magyar-szerb határon a Horgosi Határátkelõt, ez a röszkei határ szerb oldala. A  felújítás, és az oda vezetõ autópályák építése már évekkel ezelõtt elkezdõdött. [R88] Újra megnyitotta kapuit az újszegedi Ligetfürdõ, miután a múlt héten hétfõn bezárták a SZUE medencéjét, és a fürdõt, mert elérkezett a sátorállítás ideje. [R88]  A hidegebbre fordult idõben eddig két hajléktalan halt meg kihûlés miatt a fõvárosban. A hûvös éjszakák sokszor nagyobb veszélyt jelentenek az utcán lévõknek, mint a kemény fagyok, ilyenkor ugyanis az emberek még nincsenek felkészülve a hidegre. [R88] Ma nyújtja be a kormány a parlamentnek a második egészségügyi reformcsomagot, köztük a vizitdíj bevezetésérõl szóló javaslatot, ebben az is le van írva, hogy az orvosok pénzügyi retorzióra számíthatnak, ha nem szedik be a betegektõl a vizitdíjat.[R88] Egy 20 éves férfi elismerte, hogy õ rakta fel az internetre azt a hamis fenyegetést, amely szerint terrortámadások készülnek az amerikai futball stadionok ellen nyolc városban.  [R88] Észak-Korea legfõbb vezetõje egy kínai delegáció elõtt megbánta a kísérleti atomrobbantást, és közölte, hogy hajlandó visszatérni a tárgyalásokhoz, amennyiben Washington felhagy országa gazdasági elszigetelésével. [R88] 61 ország filmjei versenyeznek idén a legjobb külföldi filmnek járó Oscar-díjért, ez pedig rekord. Magyarország Hajdú Szabolcs Fehér Tenyér címû filmjét indítja a megmérettetésen. [R88] RÉSZLETEK A RÁDIÓ 88 ADÁSÁBAN AZ FM 95.4-EN. [R88]  Õszi Kultúrális Fesztivál 2006. október 1-31. www.u-szeged.hu/okf"
+hirek_be="[R88] A Rï¿½DIï¿½ 88 AKTUï¿½LIS Hï¿½REI: [R88]  Vesztegetï¿½s miatt 4 rendï¿½rt ï¿½s egy hatï¿½rï¿½rt tartï¿½ztattott le a Csongrï¿½d Megyei Fï¿½ï¿½gyï¿½szsï¿½g Nyomozï¿½hivatala, azzal gyanï¿½sï¿½tjï¿½k ï¿½ket, hogy mï¿½r hosszabb ideje csï¿½szï¿½pï¿½nzt fogadtak el. [R88]  ï¿½nnepï¿½lyesen ï¿½tadtï¿½k a magyar-szerb hatï¿½ron a Horgosi Hatï¿½rï¿½tkelï¿½t, ez a rï¿½szkei hatï¿½r szerb oldala. A  felï¿½jï¿½tï¿½s, ï¿½s az oda vezetï¿½ autï¿½pï¿½lyï¿½k ï¿½pï¿½tï¿½se mï¿½r ï¿½vekkel ezelï¿½tt elkezdï¿½dï¿½tt. [R88] ï¿½jra megnyitotta kapuit az ï¿½jszegedi Ligetfï¿½rdï¿½, miutï¿½n a mï¿½lt hï¿½ten hï¿½tfï¿½n bezï¿½rtï¿½k a SZUE medencï¿½jï¿½t, ï¿½s a fï¿½rdï¿½t, mert elï¿½rkezett a sï¿½torï¿½llï¿½tï¿½s ideje. [R88]  A hidegebbre fordult idï¿½ben eddig kï¿½t hajlï¿½ktalan halt meg kihï¿½lï¿½s miatt a fï¿½vï¿½rosban. A hï¿½vï¿½s ï¿½jszakï¿½k sokszor nagyobb veszï¿½lyt jelentenek az utcï¿½n lï¿½vï¿½knek, mint a kemï¿½ny fagyok, ilyenkor ugyanis az emberek mï¿½g nincsenek felkï¿½szï¿½lve a hidegre. [R88] Ma nyï¿½jtja be a kormï¿½ny a parlamentnek a mï¿½sodik egï¿½szsï¿½gï¿½gyi reformcsomagot, kï¿½ztï¿½k a vizitdï¿½j bevezetï¿½sï¿½rï¿½l szï¿½lï¿½ javaslatot, ebben az is le van ï¿½rva, hogy az orvosok pï¿½nzï¿½gyi retorziï¿½ra szï¿½mï¿½thatnak, ha nem szedik be a betegektï¿½l a vizitdï¿½jat.[R88] Egy 20 ï¿½ves fï¿½rfi elismerte, hogy ï¿½ rakta fel az internetre azt a hamis fenyegetï¿½st, amely szerint terrortï¿½madï¿½sok kï¿½szï¿½lnek az amerikai futball stadionok ellen nyolc vï¿½rosban.  [R88] ï¿½szak-Korea legfï¿½bb vezetï¿½je egy kï¿½nai delegï¿½ciï¿½ elï¿½tt megbï¿½nta a kï¿½sï¿½rleti atomrobbantï¿½st, ï¿½s kï¿½zï¿½lte, hogy hajlandï¿½ visszatï¿½rni a tï¿½rgyalï¿½sokhoz, amennyiben Washington felhagy orszï¿½ga gazdasï¿½gi elszigetelï¿½sï¿½vel. [R88] 61 orszï¿½g filmjei versenyeznek idï¿½n a legjobb kï¿½lfï¿½ldi filmnek jï¿½rï¿½ Oscar-dï¿½jï¿½rt, ez pedig rekord. Magyarorszï¿½g Hajdï¿½ Szabolcs Fehï¿½r Tenyï¿½r cï¿½mï¿½ filmjï¿½t indï¿½tja a megmï¿½rettetï¿½sen. [R88] Rï¿½SZLETEK A Rï¿½DIï¿½ 88 ADï¿½Sï¿½BAN AZ FM 95.4-EN. [R88]  ï¿½szi Kultï¿½rï¿½lis Fesztivï¿½l 2006. oktï¿½ber 1-31. www.u-szeged.hu/okf"
 
 i = 0
 j = 0
@@ -83,7 +83,8 @@ class PixbufsDemo(gtk.Window):
         self.parse_geometry("+8+410")
 
         if not self.load_pixbufs():
-                sys.exit(1)
+            import sys
+            sys.exit(1)
         else:
 
             self.frame = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8,
@@ -202,7 +203,7 @@ class PixbufsDemo(gtk.Window):
                     self.frame,
                     dest.x, dest.y, dest.width, dest.height,
 #                        xpos, ypos, # hova
-#                        iw, ih, # mekkorában
+#                        iw, ih, # mekkorï¿½ban
                         xpos, ypos,
                         1.0, 1.0,
                         gtk.gdk.INTERP_BILINEAR, 255)

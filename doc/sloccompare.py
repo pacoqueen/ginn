@@ -1,3 +1,5 @@
+#@PydevCodeAnalysisIgnore
+
 #!/usr/bin/env python
 # SLOC Compare
 # A tool for visual processing of sloccount(1) output, based on pygame

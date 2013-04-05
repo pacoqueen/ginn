@@ -5,7 +5,7 @@ import os
 import gtk
 import gtk.glade
 import gobject
-import sqlite
+import sqlite3 as sqlite
 
 # Mismo que en ../../formularios/utils.py. Prefiero este:
 def cccCRC(cTexto):

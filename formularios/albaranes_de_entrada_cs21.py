@@ -574,8 +574,8 @@ class AlbaranesDeEntradaCS21(Ventana):
         else:
             utils.combo_set_from_db(self.wids['cbe_almacenID'], 
                     albaran.almacenID, 
-                    forced_value = abono.almacen 
-                                    and abono.almacen.nombre
+                    forced_value = albaran.almacen 
+                                    and albaran.almacen.nombre
                                     or None)
         self.wids['e_facturas'].set_text(", ".join([f.numfactura for f in albaran.facturasCompra]))
         self.wids['e_pedidos'].set_text(", ".join([p.numpedido for p in albaran.pedidosCompra]))

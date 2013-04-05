@@ -631,7 +631,7 @@ class ProductosDeVentaBalas(Ventana):
         producto.prodestandar = prodestandar
         try:
             producto.codigo = codigo
-        except pclases.psycopg_ProgrammingError:
+        except psycopg_ProgrammingError:
             try:
                 producto_asignado = pclases.ProductoVenta.select(
                     pclases.ProductoVenta.q.codigo == codigo)[0]

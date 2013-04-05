@@ -327,11 +327,12 @@ class FormulacionBolsaCemento(Ventana):
                         nuevonombre = nombre + " %d cajas/palé" % ceb.cajasPale
                         try:
                             nca = pclases.ConsumoAdicional.select(pclases.AND(
-                                pclases.ConsumoAdicional.nombre == nuevonombre, 
-                                pclases.ConsumoAdicional.unidad == unidad, 
-                                pclases.ConsumoAdicional.formulacionID 
+                              pclases.ConsumoAdicional.q.nombre == nuevonombre, 
+                              pclases.ConsumoAdicional.q.unidad == unidad, 
+                              pclases.ConsumoAdicional.q.formulacionID 
                                                             == self.objeto.id, 
-                                pclases.ProductoCompraID == None))[0]
+                              pclases.ConsumoAdicional.q.ProductoCompraID 
+                                                            == None))[0]
                         except IndexError:
                             nca = ca.clone(cantidad = ceb.cajasPale, 
                                            nombre = nuevonombre)
@@ -483,10 +484,12 @@ class FormulacionBolsaCemento(Ventana):
                         for p in consumo_adicional_por_producto.productosVenta:
                             consumo_adicional_por_producto.removeProductoVenta(p)
                         consumo_adicional_por_producto.destroy(ventana = __file__)
-                    except pclases.psycopg_ProgrammingError, msg:
+                    except psycopg_ProgrammingError, msg:
                         utils.dialogo_info(titulo = "ERROR: INFORME A LOS DESARROLLADORES", 
-                                           texto = "Ocurrió un error al eliminar el consumo.\nDEBUG: Traza de la excepción:\n%s" % (msg), 
-                                           padre = self.wids['ventana'])
+                            texto = "Ocurrió un error al eliminar el consumo."
+                                    "\nDEBUG: Traza de la excepción:\n%s" % (
+                                        msg), 
+                            padre = self.wids['ventana'])
                 else:
                     id_consumo = model[path].parent[-1]
                     idproductov = model[path][-1]

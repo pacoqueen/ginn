@@ -92,7 +92,7 @@ sys.path.insert(0, os.path.join('..', 'SQLObject', 'SQLObject-0.6.1'))
 from sqlobject.col import ForeignKey, SOForeignKey, SODateCol, SODateTimeCol
 from sqlobject.joins import MultipleJoin, RelatedJoin
 from sqlobject.main import SQLObjectNotFound, SQLObject
-from sqlobject.sqlbuilder import AND, OR
+from sqlobject.sqlbuilder import AND, OR, NOT
 import mx.DateTime
 import pprint
 import re

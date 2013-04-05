@@ -3790,7 +3790,7 @@ def abrir_prefactura(id, num, usuario = None):
                 from sys import path
                 path.insert(0, pathjoin("..", "formularios"))
                 import prefacturas
-            ventana = prefacutras.Prefacutras(fra, usuario)
+            ventana = prefacturas.Prefacturas(fra, usuario)
         else:
             res = False
     return res

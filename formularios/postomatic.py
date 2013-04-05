@@ -209,7 +209,7 @@ class Postomatic(Ventana):
 
     def guardar(self, menuitem):
         if self.fileabierto == None:
-            guardar_como(None)
+            self.guardar_como(None)
         else:
             f = open(self.fileabierto, 'w')
             widget = self.wids['tv_texto']
@@ -571,6 +571,7 @@ def abrir_notas(algo, tv, clase, usuario):
     try:
         objeto = clase.get(id)
     except ValueError:  # Es un PUID
+        import pclases
         objeto = pclases.getObjetoPUID(id)
     ventana = Postomatic(objeto, usuario)
 

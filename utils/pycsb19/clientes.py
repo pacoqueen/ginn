@@ -5,7 +5,7 @@ import os, sys
 import gtk
 import gtk.glade
 import gobject
-import sqlite
+import sqlite3 as sqlite
 
 class Cliente:
     def __init__(self):

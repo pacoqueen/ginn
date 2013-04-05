@@ -358,7 +358,7 @@ dir()
                             except Exception, int_e:
                                 raise inner_e
                     model[path][2] = getattr(objeto, campo)
-                except Excepcion, e:
+                except Exception, e:
                     utils.dialogo_info(titulo = "ERROR", 
                         texto = "Valor incorrecto para este campo."
                                 "\n\n{0}".format(e), 

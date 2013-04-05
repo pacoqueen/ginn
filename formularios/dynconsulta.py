@@ -35,7 +35,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, mx, mx.DateTime
+import gtk, time, mx.DateTime
 try:
     import pclases
     from seeker import VentanaGenerica 
@@ -442,8 +442,8 @@ class DynConsulta(Ventana, VentanaGenerica):
                                 usuario = self.usuario)
                     elif isinstance(objeto, 
                             pclases.VencimientoValorPresupuestoAnual):
-                        import presupuesto
-                        v = presupuesto.Presupuesto(
+                        import presupuestos
+                        v = presupuestos.Presupuestos(
                                 objeto = objeto, 
                                 usuario = self.usuario)
                 # PORASQUI: El get_info() no es buena idea. Demasiado "técnico"

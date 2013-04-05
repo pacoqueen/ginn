@@ -1080,8 +1080,9 @@ class FacturasVenta(Ventana):
                                          'BUSCAR ARTÍCULO', 
                                          padre = self.wids['ventana'])
         # Tengo que buscar entre balas, rollos y productos para obtener una lista de artículos.
-        productos = pclases.Producto.select(sqlobject.OR(pclases.Producto.q.codigo.contains(a_buscar), 
-                                                         pclases.Producto.q.descripcion.contains(a_buscar)))
+        productos = pclases.ProductoVenta.select(pclases.OR(
+            pclases.ProductoVenta.q.codigo.contains(a_buscar), 
+            pclases.ProductoVenta.q.descripcion.contains(a_buscar)))
         rollos = pclases.Rollo.select(pclases.Rollo.q.codigo.contains(a_buscar))
         balas = pclases.Bala.select(pclases.Bala.q.codigo.contains(a_buscar))
         articulos = []
@@ -1894,7 +1895,7 @@ class FacturasVenta(Ventana):
                                        precio = precio, 
                                        descuento = 0)
             pclases.Auditoria.nuevo(ldv, self.usuario, __file__)
-            descontar_existencias(ldv, nueva = True)
+            descontar_existencias(ldv, nueva = True, self.usuario)
             nueva_ldv = ldv
         self.actualizar_ventana()
         return nueva_ldv
@@ -3266,7 +3267,7 @@ def generar_recibo(factura, usuario=None, logger=None, ventana_padre=None):
                                     nombreLibrado = "", 
                                     direccionLibrado = "", 
                                     cuentaBancariaCliente = cuenta_cliente)
-            pclases.Auditoria.nuevo(recibo, self.usuario, __file__)
+            pclases.Auditoria.nuevo(recibo, usuario, __file__)
             observaciones = "Recibo bancario número %d con fecha de emisión %s." % (recibo.numrecibo, utils.str_fecha(recibo.fechaLibramiento))
             vto.observaciones += observaciones
             vto.recibo = recibo
@@ -3276,7 +3277,7 @@ def generar_recibo(factura, usuario=None, logger=None, ventana_padre=None):
                         "Vuelva a intentarlo y reinice la aplicación si "
                         "fuera necesario.", 
                 padre = ventana_padre)
-            txt = "%sfacturas_venta::nuevo -> Error al crear nuevo recibo. Mensaje de la excepción: %s" % (self.usuario and self.usuario.usuario or "", msg)
+            txt = "%sfacturas_venta::nuevo -> Error al crear nuevo recibo. Mensaje de la excepción: %s" % (usuario and usuario.usuario or "", msg)
             if logger:
                 logger.error(txt)
             print txt

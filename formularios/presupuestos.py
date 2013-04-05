@@ -373,7 +373,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 #import presupuesto
                 exec "import %s as presupuesto" % modulo
             from informes import abrir_pdf
-            abrir_pdf(presupuesto.go_from_presupuesto(self.objeto))
+            abrir_pdf(presupuesto.go_from_presupuesto(self.objeto))  # @UndefinedVariable
 
     def es_diferente(self):
         """

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sqlite
+import sqlite3 as sqlite
 conn = sqlite.connect(db="./dbCsb19/db", mode=077)
 cursor = conn.cursor()
 

@@ -7,7 +7,7 @@ import gtk.glade
 import gobject
 import ordenante
 import presentador
-import sqlite
+import sqlite3 as sqlite
 
 
 class Importar:
@@ -440,7 +440,7 @@ class Importar:
                     for a in range(7,23):
                         n[a]=self.CompruebaLongitud(n[a],40,"TEXT")
                        
-                    conceptos=n[7]+"Ç"+n[8]+"Ç"+n[9]+"Ç"+n[10]+"Ç"+n[11]+"Ç"+n[12]+"Ç"+n[13]+"Ç"+n[14]+"Ç"+n[15]+"Ç"+n[16]+"Ç"+n[17]+"Ç"+n[18]+"Ç"+n[19]+"Ç"+n[20]+"Ç"+n[21]+"Ç"+n[22]
+                    conceptos=n[7]+"ï¿½"+n[8]+"ï¿½"+n[9]+"ï¿½"+n[10]+"ï¿½"+n[11]+"ï¿½"+n[12]+"ï¿½"+n[13]+"ï¿½"+n[14]+"ï¿½"+n[15]+"ï¿½"+n[16]+"ï¿½"+n[17]+"ï¿½"+n[18]+"ï¿½"+n[19]+"ï¿½"+n[20]+"ï¿½"+n[21]+"ï¿½"+n[22]
                     sql="INSERT INTO det_remesas (codigo, indice, cliente, importe, conceptos) VALUES ("+str(CodRem)+","+str(indice)+",'"+n[0]+"',"+str(importe)+",'"+conceptos+"')"
                     #print sql
                     c.execute(sql)

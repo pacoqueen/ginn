@@ -874,27 +874,29 @@ class Prefacturas(Ventana):
             utils.dialogo_info('VENTA FACTURADA', 'La venta ya ha sido facturada en la factura número %d.' % (ldv.facturaVenta and ldv.facturaVenta.numfactura or ldv.prefactura.numfactura), 
                                padre = self.wids['ventana'])
 
-    def buscar_articulos(self):
-        a_buscar = utils.dialogo_entrada('Introduzca código de producto, código interno o descripción', 
-                                         'BUSCAR ARTÍCULO', 
-                                         padre = self.wids['ventana'])
-        # Tengo que buscar entre balas, rollos y productos para obtener una lista de artículos.
-        productos = pclases.Producto.select(sqlobject.OR(pclases.Producto.q.codigo.contains(a_buscar), 
-                                                         pclases.Producto.q.descripcion.contains(a_buscar)))
-        rollos = pclases.Rollo.select(pclases.Rollo.q.codigo.contains(a_buscar))
-        balas = pclases.Bala.select(pclases.Bala.q.codigo.contains(a_buscar))
-        articulos = []
-        for p in productos:
-            for a in p.articulos:
-                if not a in articulos:
-                    articulos.append(a)
-        for r in rollos:
-            if r.idarticulo != None and not r.idarticulo in articulos:
-                articulos.append(r.idarticulo)
-        for b in balas:
-            if b.idarticulo != None and not b.idarticulo in articulos:
-                articulos.append(b.idarticulo)
-        return articulos
+    #===========================================================================
+    # def buscar_articulos(self):
+    #     a_buscar = utils.dialogo_entrada('Introduzca código de producto, código interno o descripción', 
+    #                                      'BUSCAR ARTÍCULO', 
+    #                                      padre = self.wids['ventana'])
+    #     # Tengo que buscar entre balas, rollos y productos para obtener una lista de artículos.
+    #     productos = pclases.Producto.select(sqlobject.OR(pclases.Producto.q.codigo.contains(a_buscar), 
+    #                                                      pclases.Producto.q.descripcion.contains(a_buscar)))
+    #     rollos = pclases.Rollo.select(pclases.Rollo.q.codigo.contains(a_buscar))
+    #     balas = pclases.Bala.select(pclases.Bala.q.codigo.contains(a_buscar))
+    #     articulos = []
+    #     for p in productos:
+    #         for a in p.articulos:
+    #             if not a in articulos:
+    #                 articulos.append(a)
+    #     for r in rollos:
+    #         if r.idarticulo != None and not r.idarticulo in articulos:
+    #             articulos.append(r.idarticulo)
+    #     for b in balas:
+    #         if b.idarticulo != None and not b.idarticulo in articulos:
+    #             articulos.append(b.idarticulo)
+    #     return articulos
+    #===========================================================================
 
     def borrar_vencimientos_y_estimaciones(self, factura):
         for vto in factura.vencimientosCobro:
@@ -1104,21 +1106,21 @@ class Prefacturas(Ventana):
             self.objeto.make_swap()
             self.wids['e_fecha'].set_text(utils.str_fecha(self.objeto.fecha))
             self.objeto.notificador.activar(self.aviso_actualizacion)
-        else:
-            utils.dialogo_info(titulo = "ERROR EN FECHA",
-                               texto = """
-            No puede asignar una fecha anterior a la de la factura inmediatamente           
-            anterior ni posterior a la de la siguiente factura en su serie.                 
-            Factura anterior:
-                - Nº factura %s.
-                - Fecha %s.
-            Factura posterior:
-                - Nº factura %s.
-                - Fecha %s.
-            """ % (factura_anterior and factura_anterior.numfactura or "-",
-                   factura_anterior and utils.str_fecha(factura_anterior.fecha) or "-",
-                   factura_posterior and factura_posterior.numfactura or "-",
-                   factura_posterior and utils.str_fecha(factura_posterior.fecha) or "-"))
+        #else:
+        #    utils.dialogo_info(titulo = "ERROR EN FECHA",
+        #                       texto = """
+        #    No puede asignar una fecha anterior a la de la factura inmediatamente           
+        #    anterior ni posterior a la de la siguiente factura en su serie.                 
+        #    Factura anterior:
+        #        - Nº factura %s.
+        #        - Fecha %s.
+        #    Factura posterior:
+        #        - Nº factura %s.
+        #        - Fecha %s.
+        #    """ % (factura_anterior and factura_anterior.numfactura or "-",
+        #           factura_anterior and utils.str_fecha(factura_anterior.fecha) or "-",
+        #           factura_posterior and factura_posterior.numfactura or "-",
+        #           factura_posterior and utils.str_fecha(factura_posterior.fecha) or "-"))
 
     def chequear_cambio_fecha(self, factura, fecha):
         """ UNUSED -ByTheMoment(R)- """
@@ -1256,9 +1258,9 @@ class Prefacturas(Ventana):
         Elimina de la factura la LDV seleccionada en
         la tabla "tv_ldvs".
         """
-        model, iter = self.wids['tv_ldvs'].get_selection().get_selected()
-        if iter == None: return
-        idldv = model[iter][-1]
+        model, itr = self.wids['tv_ldvs'].get_selection().get_selected()
+        if itr == None: return
+        idldv = model[itr][-1]
         ldv = pclases.LineaDeVenta.get(idldv)
         ldv.prefactura = None
         if ldv.albaranSalidaID == None:     # Si no tiene ni factura ni albarán, la intento eliminar
@@ -1380,7 +1382,7 @@ class Prefacturas(Ventana):
                     descuento = 0)
                     #almacenOrigen = pclases.Almacen.get_almacen_principal())
             pclases.Auditoria.nuevo(ldv, self.usuario, __file__)
-            descontar_existencias(ldv, nueva = True)
+            descontar_existencias(ldv, nueva = True, usuario = self.usuario)
         self.actualizar_ventana()
 
     def crear_servicio(self):
@@ -2271,7 +2273,7 @@ def desglosar_ldvs_por_albaran(ldvs):
             res[alb] += (ldv, )
     return res
 
-def descontar_existencias(ldv, nueva = False):
+def descontar_existencias(ldv, nueva = False, usuario = None):
     """
     Usado al crear o actualizar una LDV manualmente.
     Si el producto es un producto de venta no «especial», o se 
@@ -2326,7 +2328,7 @@ def descontar_existencias(ldv, nueva = False):
                                             facturable = True, 
                                             motivo ="", 
                                             bloqueado = False)
-                pclases.Auditoria.nuevo(alb, self.usuario, __file__)
+                pclases.Auditoria.nuevo(alb, usuario, __file__)
             except Exception, msg:
                 texto = """
                 No se pudo crear albarán de salida número %s.

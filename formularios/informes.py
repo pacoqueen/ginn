@@ -80,7 +80,7 @@ def abrir_pdf(pdf):
                                texto = "No se encontró evince, acroread ni xpdf en el sistema.\nNo fue posible mostrar el archivo %s." % (pdf))
     else:
         # OJO: Esto no es independiente de la plataforma:
-        os.startfile(pdf)
+        os.startfile(pdf)  # @UndefinedVariable
 
 def abrir_csv(csv, ventana_padre = None):
     """
@@ -234,9 +234,9 @@ if __name__=='__main__':
 
     informe = ' '.join(sys.argv[1:])
     if informe == 'Clientes y consumo': 
-        nombrepdf = geninformes.pedidosClientes()
+        nombrepdf = geninformes.pedidosCliente()
     elif informe == 'Albaranes por cliente': 
-        nombrepdf = geninformes.albaranesClientes()
+        nombrepdf = geninformes.albaranesCliente()
     elif informe == 'Compras': 
         nombrepdf = geninformes.compras()
     elif informe == 'Ventas': 
@@ -249,10 +249,12 @@ if __name__=='__main__':
         utils.dialogo_info('FUNCIONALIDAD NO IMPLEMENTADA', 'Este informe aún no se puede generar.')
         sys.exit(0)
     #   nombrepdf = geninformes.()
-    elif informe == 'Productos bajo mínimo': 
-        nombrepdf = geninformes.productosBajoMinimos()
-    elif informe == 'Albaranes por facturar': 
-        nombrepdf = geninformes.albaranesPorFacturar()
+    #===========================================================================
+    # elif informe == 'Productos bajo mínimo': 
+    #     nombrepdf = geninformes.productosBajoMinimos()
+    # elif informe == 'Albaranes por facturar': 
+    #     nombrepdf = geninformes.albaranesPorFacturar()
+    #===========================================================================
     elif informe == 'Albaranes facturados': 
         nombrepdf = geninformes.albaranesFacturados()
     elif informe == 'Existencias': 

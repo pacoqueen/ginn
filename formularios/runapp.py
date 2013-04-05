@@ -7,82 +7,84 @@ import subprocess
 import threading
 import re
 
+# -- clases auxiliares --
+class readpipe(threading.Thread):
+    """ Thread para lectura del pipe """
+    lck = threading.Lock()
+
+    def __init__(self, pipe, callback=None):
+        threading.Thread.__init__(self)
+        self.pipe = pipe
+        self.callback = callback
+
+    def run(self):
+        while 1:
+            msg = self.pipe.readline()
+            if not msg:
+                break
+
+            if self.callback:
+                # bloquear, ejecutar funcion y desbloquear
+                readpipe.lck.acquire()
+                self.callback(msg)
+                readpipe.lck.release()
+
+
 def runapp(app, cbkStdOut = None, cbkStdErr = None, sh=False):
-     """
-     Ejecuta una aplicacion en segundo plano capturando su salida en tiempo real
+    """
+    Ejecuta una aplicacion en segundo plano capturando su salida en tiempo real
 
-     Parametros:
-         app = string con la aplicacion y parametros
-         cbkStdOut = funcion para captura de salida estandar en tiempo real
-         cbkStdErr = funcion para captura de salida error en tiempo real,
-                     si no se provee es redirigido a stdout
-         sh =    Ejecutar en shell del sistema,
-                 necesario cuando los parametros de la aplicación incluyen wildcards (*, ?)
+    Parametros:
+        app = string con la aplicacion y parametros
+        cbkStdOut = funcion para captura de salida estandar en tiempo real
+        cbkStdErr = funcion para captura de salida error en tiempo real,
+                    si no se provee es redirigido a stdout
+        sh =    Ejecutar en shell del sistema,
+                necesario cuando los parametros de la aplicación incluyen wildcards (*, ?)
 
-     Devuelve el codigo de salida de la aplicación o la excepcion producida si no se puede ejecutar
+    Devuelve el codigo de salida de la aplicación o la excepcion producida si no se puede ejecutar
 
-     Licencia: MIT
-     """
-     # -- clases auxiliares --
-     class readpipe(threading.Thread):
-         """ Thread para lectura del pipe """
-         lck = threading.Lock()
+    Licencia: MIT
+    """
 
-         def __init__(self, pipe, callback=None):
-             threading.Thread.__init__(self)
-             self.pipe = pipe
-             self.callback = callback
+    # -- inicio --
+    if not cbkStdErr:
+        cbkStdErr = cbkStdOut
 
-         def run(self):
-             while 1:
-                 msg = self.pipe.readline()
-                 if not msg:
-                     break
+    if not sh:
+        # la ejecucion CON shell precisa que app sea un str con el comando mas todos sus parametros
+        # la ejecucion SIN shell precisa que app sea una lista [comando, parametro, parametro, ...]
+        app = [p for p in re.split(" |(\".*?\")|(\'.*?\')", app) if p]
 
-                 if self.callback:
-                     # bloquear, ejecutar funcion y desbloquear
-                     readpipe.lck.acquire()
-                     self.callback(msg)
-                     readpipe.lck.release()
+    try:
+        pr = subprocess.Popen(app,
+                              bufsize = 0,
+                              stdout = subprocess.PIPE,
+                              stderr = subprocess.PIPE,
+                              shell = sh)
 
-     # -- inicio --
-     if not cbkStdErr:
-         cbkStdErr = cbkStdOut
+    except  Exception, e:
+        # fallo al ejecutar, comando incorrecto, ....
+        raise
 
-     if not sh:
-         # la ejecucion CON shell precisa que app sea un str con el comando mas todos sus parametros
-         # la ejecucion SIN shell precisa que app sea una lista [comando, parametro, parametro, ...]
-         app = [p for p in re.split(" |(\".*?\")|(\'.*?\')", app) if p]
+    # lanzar treads de captura
+    tout = readpipe(pr.stdout, cbkStdOut)
+    terr = readpipe(pr.stderr, cbkStdErr)
+    tout.start()
+    terr.start()
 
-     try:
-         pr = subprocess.Popen(app,
-                                 bufsize = 0,
-                                 stdout = subprocess.PIPE,
-                                 stderr = subprocess.PIPE,
-                                 shell = sh)
+    # esperar que finalice
+    pr.wait()
 
-     except  Exception, e:
-         # fallo al ejecutar, comando incorrecto, ....
-         raise
+    # esperar que finalizen los threads,
+    # en algunos casos se da el proceso por terminado pero todavia no se han cerrado
+    # los pipes y quedan datos en los buffers, hay que esperar que los threads
+    # terminen de capturar los datos
+    while tout.isAlive() or terr.isAlive():
+        pass
 
-     # lanzar treads de captura
-     tout = readpipe(pr.stdout, cbkStdOut)
-     terr = readpipe(pr.stderr, cbkStdErr)
-     tout.start()
-     terr.start()
-
-     # esperar que finalice
-     pr.wait()
-
-     # esperar que finalizen los threads,
-     # en algunos casos se da el proceso por terminado pero todavia no se han cerrado
-     # los pipes y quedan datos en los buffers, hay que esperar que los threads
-     # terminen de capturar los datos
-     while tout.isAlive() or terr.isAlive():
-         pass
-
-     # devolver codigo de salida de la aplicacion
-     return pr.poll()
+    # devolver codigo de salida de la aplicacion
+    return pr.poll()
 
 ##############################
 # test, ejemplos
@@ -138,4 +140,3 @@ if __name__ == "__main__":
          print "OOPS, dominio.que.no.responde.com ¡¡Si responde!!"
      else:
          print "dominio.que.no.responde.com, no responde"
-

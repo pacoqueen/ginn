@@ -426,9 +426,9 @@ class Ventana:
             v = None 
             gobject.timeout_add(100, self.volver_a_cursor_original)
             if archivo == "usuarios": 
-                v = usuarios.Usuarios(self.__usuario)
+                v = usuarios.Usuarios(self.__usuario)  # @UndefinedVariable
             elif archivo == "ventana_usuario":
-                v = ventana_usuario.Usuarios(self.__usuario)
+                v = ventana_usuario.Usuarios(self.__usuario)  # @UndefinedVariable
         else:
             try:
                 self.wids['ventana'].window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
@@ -506,7 +506,7 @@ class Ventana:
                 texto += "%s\n" % e
             tb = sys.exc_info()[2]
             texto += "Línea %s\n" % tb.tb_lineno
-            from menu import Metaf, enviar_correo
+            from menu import Metaf, enviar_correo  # @UnresolvedImport
             info = Metaf() 
             import traceback
             traceback.print_tb(tb, file = info)
@@ -837,7 +837,7 @@ class Ventana:
                         'actualizar la información mostrada en pantalla.\nP'
                         'ulse el botón «Actualizar»',
                 padre = self.wids['ventana'])
-        except Exception, msg:
+        except Exception:
             pass
             # DEBUG: print """WARNING: Botón «Actualizar» o "self.wids['ventana'] no encontrado. Excepción: %s""" % (msg)
         
@@ -907,12 +907,12 @@ class Ventana:
             except KeyError:
                 self.handlers_id[wid][con] = [h_id]
 
-    def add_connections(self, dict):
+    def add_connections(self, dicc):
         """
         Recorre el diccionario y crea las conexiones con 
         los callbacks.
         """
-        for wid_con, func in dict.iteritems():
+        for wid_con, func in dicc.iteritems():
             wid,con = wid_con.split('/')
             h_id = self.wids[wid].connect(con,func)
             try:

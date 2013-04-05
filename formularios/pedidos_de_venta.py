@@ -1372,8 +1372,7 @@ class PedidosDeVenta(Ventana):
                         return
                 try:
                     srv.precio = precio
-                except (ValueError, TypeError, 
-                        pclases.include.validators.InvalidField):
+                except:
                     return
                 self.actualizar_ventana()
     
@@ -2270,7 +2269,7 @@ class PedidosDeVenta(Ventana):
                 padre = self.wids['ventana'])
         else:
             # 1.- Creo el albarán de salida.
-            alb_salida = crear_nuevo_albaran_salida(self.objeto)
+            alb_salida = crear_nuevo_albaran_salida(self.objeto, logger = self.logger, usuario = self.usuario)
             # 2.- Asocio los servicios al albarán de salida.
             for srv in servicios:
                 srv.albaranSalida = alb_salida
@@ -2409,7 +2408,7 @@ def ldps_iguales(ldp1, ldp2):
         res = res and atributos_iguales(getattr(ldp1, c), getattr(ldp2, c))
     return res
 
-def crear_nuevo_albaran_salida(pedido):
+def crear_nuevo_albaran_salida(pedido, logger = None, usuario = None):
     """
     Crea un nuevo albarán de salida con los datos por defecto obtenidos del 
     pedido de venta.
@@ -2418,11 +2417,11 @@ def crear_nuevo_albaran_salida(pedido):
     """
     numalbaran = pclases.AlbaranSalida.get_siguiente_numero_numalbaran_str() 
     almacen = pclases.Almacen.get_almacen_principal_id_or_none()
-    if not almacen:
-        self.logger.error("%spedidos_de_venta.py::crear_nuevo_albaran_salida"
+    if not almacen and logger:
+        logger.error("%spedidos_de_venta.py::crear_nuevo_albaran_salida"
                           " -> ¡No hay almacén principal! No se descontarán"
                           " existencias por almacén, solo globales." % (
-                          self.usuario and self.usuario.usuario + ": " or ""))
+                          usuario and usuario.usuario + ": " or ""))
     albaran = pclases.AlbaranSalida(numalbaran = numalbaran, 
                                     transportista = None, 
                                     cliente = pedido.cliente, 

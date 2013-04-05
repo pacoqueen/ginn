@@ -477,7 +477,7 @@ class TarifasDePrecios(Ventana):
             self.wids['cb_nombre_tarifa'].child.set_text('')
             self.wids['cb_nombre_tarifa'].set_active(-1)
             self.wids['cb_nombre_tarifa'].set_active(index)
-        except SQLObjectNotFound:
+        except pclases.SQLObjectNotFound:
             utils.dialogo_info('Tarifa borrada.', 'La tarifa no existe o ha sido eliminada.')
             tarifa = self.rellenar_tarifas(self.wids['cb_nombre_tarifa'])
         # Y finalmente, deshabilito el botón (puesto que presumiblemente no deberá usarlo

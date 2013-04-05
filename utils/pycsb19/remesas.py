@@ -7,7 +7,7 @@ import gtk.glade
 import gobject
 import recibo
 import ordenante
-import sqlite
+import sqlite3 as sqlite
 import time
 
 class Remesas:
@@ -316,7 +316,7 @@ class Remesas:
                         cursor.execute(sql)
                         indice=str(int(cursor.fetchall()[0][0])+1)
                     
-                    #Añadimos los datos del recibo
+                    #Aï¿½adimos los datos del recibo
                     #sql="insert into det_remesas (codigo,indice, cliente, importe, conceptos) values (?,?,?,?,?)"
                     #cursor.execute(sql, (str(self.CodRemesa),indice , self.VenRecibos.CodCliente, str(self.VenRecibos.Importe), self.VenRecibos.Conceptos))
                     sql="insert into det_remesas (codigo, indice, cliente, importe, conceptos) values ("+str(self.CodRemesa)+","+str(indice)+",'"+self.VenRecibos.CodCliente+"',"+str(self.VenRecibos.Importe)+",'"+self.VenRecibos.Conceptos+"')"
@@ -399,7 +399,7 @@ class Remesas:
             cDetalle = self.conexion.cursor()
             sql="SELECT codigo, cliente, importe, conceptos FROM det_remesas WHERE codigo="+self.CodRemesa+" AND indice="+store[self.tvRecibos.get_cursor()[0][0]][0]
             cDetalle.execute(sql)
-            n=cDetalle.fetchone()[3].split("Ç")
+            n=cDetalle.fetchone()[3].split("ï¿½")
             self.VenRecibos.tConcepto1.set_text(n[0])
             self.VenRecibos.tConcepto2.set_text(n[1])
             self.VenRecibos.tConcepto3.set_text(n[2])
@@ -487,7 +487,7 @@ class Remesas:
         oficina=Linea[4]
         dc=Linea[5]
         cuenta=Linea[6]
-        #año, mes, dia
+        #aï¿½o, mes, dia
         dia=str(time.localtime()[2])
         if len(dia)<2:
             dia="0"+dia
@@ -545,7 +545,7 @@ class Remesas:
                 Importe=self.Ceros(10-len(Importe))+Importe
 
             Conceptos=[]
-            for n in remesa[3].split("Ç"):
+            for n in remesa[3].split("ï¿½"):
                 if len(n)==0:
                     dato=""
                 elif len(n)<40:
