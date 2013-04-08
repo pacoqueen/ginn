@@ -89,10 +89,12 @@ from configuracion import ConfigConexion
 from math import ceil
 from select import select
 sys.path.insert(0, os.path.join('..', 'SQLObject', 'SQLObject-0.6.1'))
-from sqlobject.col import ForeignKey, SOForeignKey, SODateCol, SODateTimeCol
+from sqlobject.col import ForeignKey, SOForeignKey, SODateCol, SODateTimeCol, \
+                          SOBoolCol, SOCol, SOFloatCol, SOIntCol, SOStringCol  # @UnusedImport
 from sqlobject.joins import MultipleJoin, RelatedJoin
 from sqlobject.main import SQLObjectNotFound, SQLObject
-from sqlobject.sqlbuilder import AND, OR, NOT
+from sqlobject.sqlbuilder import AND, OR, \
+                                 NOT  # @UnusedImport
 import mx.DateTime
 import pprint
 import re

@@ -1334,7 +1334,7 @@ def consultar_horas_reales_gtx(fechaini, fechafin):
                 AND partida_cem_id IS NULL); 
     """ % (fechaini.strftime("%Y-%m-%d"), fechafin.strftime("%Y-%m-%d"))
     try:
-        horas_sql = pclases.ParteDeProduccion._connection.queryAll(sql)[0][0]
+        horas_sql = pclases.ParteDeProduccion._connection.queryAll(sql)[0][0]  # @UndefinedVariable
         try:
             horas = horas_sql.hours
         except AttributeError:  # Es un datetime.timedelta
@@ -1356,7 +1356,7 @@ def consultar_horas_reales_bolsas(fechaini, fechafin):
                 AND partida_cem_id IS NOT NULL); 
     """ % (fechaini.strftime("%Y-%m-%d"), fechafin.strftime("%Y-%m-%d"))
     try:
-        horas_sql = pclases.ParteDeProduccion._connection.queryAll(sql)[0][0]
+        horas_sql = pclases.ParteDeProduccion._connection.queryAll(sql)[0][0]  # @UndefinedVariable
         try:
             horas = horas_sql.hours
         except AttributeError:  # Es un datetime.timedelta
@@ -1441,7 +1441,7 @@ def consultar_dias_gtx(fechaini, fechafin):
                 AND partida_cem_id IS NULL); 
     """ % (fechaini.strftime("%Y-%m-%d"), fechafin.strftime("%Y-%m-%d"))
     try:
-        dias = pclases.ParteDeProduccion._connection.queryAll(sql)[0][0]
+        dias = pclases.ParteDeProduccion._connection.queryAll(sql)[0][0]  # @UndefinedVariable
     except IndexError:
         dias = 0
     return dias
@@ -1482,7 +1482,7 @@ def consultar_empleados_por_dia_bolsas(fechaini, fechafin):
     WHERE partes.id = parte_de_produccion_empleado.partedeproduccionid 
     GROUP BY fecha, empleadoid ORDER BY fecha; """ % (
         fechaini.strftime("%Y-%m-%d"), fechafin.strftime("%Y-%m-%d"))
-    filas_fecha_idempleado=pclases.ParteDeProduccion._connection.queryAll(sql)
+    filas_fecha_idempleado=pclases.ParteDeProduccion._connection.queryAll(sql)  # @UndefinedVariable
     # Y ahora sumo (lo sé, se podría hacer directamente en la consulta, pero 
     # prefiero dejarla así porque creo que me hará falta en un futuro tenerlo 
     # desglosado).
@@ -1512,7 +1512,7 @@ def consultar_empleados_por_dia_gtx(fechaini, fechafin):
                                           AND observaciones NOT LIKE '%%;%%;%%;%%;%%;%%' AND partida_cem_id IS NULL) AS partes 
     WHERE partes.id = parte_de_produccion_empleado.partedeproduccionid GROUP BY fecha, empleadoid ORDER BY fecha; """ % (
         fechaini.strftime("%Y-%m-%d"), fechafin.strftime("%Y-%m-%d"))
-    filas_fecha_idempleado = pclases.ParteDeProduccion._connection.queryAll(sql)
+    filas_fecha_idempleado = pclases.ParteDeProduccion._connection.queryAll(sql)  # @UndefinedVariable
     # Y ahora sumo (lo sé, se podría hacer directamente en la consulta, pero 
     # prefiero dejarla así porque creo que me hará falta en un futuro tenerlo desglosado).
     fechas = []
@@ -3017,7 +3017,7 @@ def consultar_horas_reales_fibra(fechaini, fechafin):
                 AND partida_cem_id IS NULL); 
     """ % (fechaini.strftime("%Y-%m-%d"), fechafin.strftime("%Y-%m-%d"))
     try:
-        horas_sql = pclases.ParteDeProduccion._connection.queryAll(sql)[0][0]
+        horas_sql = pclases.ParteDeProduccion._connection.queryAll(sql)[0][0]  # @UndefinedVariable
         try:
             horas = horas_sql.hours
         except AttributeError:  # Es un datetime.timedelta
@@ -3073,7 +3073,7 @@ def consultar_dias_fibra(fechaini, fechafin):
                 AND partida_cem_id IS NULL); 
     """ % (fechaini.strftime("%Y-%m-%d"), fechafin.strftime("%Y-%m-%d"))
     try:
-        dias = pclases.ParteDeProduccion._connection.queryAll(sql)[0][0]
+        dias = pclases.ParteDeProduccion._connection.queryAll(sql)[0][0]  # @UndefinedVariable
     except IndexError:
         dias = 0
     return dias
@@ -3092,7 +3092,7 @@ def consultar_dias_bolsas(fechaini, fechafin):
                 AND partida_cem_id IS NOT NULL); 
     """ % (fechaini.strftime("%Y-%m-%d"), fechafin.strftime("%Y-%m-%d"))
     try:
-        dias = pclases.ParteDeProduccion._connection.queryAll(sql)[0][0]
+        dias = pclases.ParteDeProduccion._connection.queryAll(sql)[0][0]  # @UndefinedVariable
     except IndexError:
         dias = 0
     return dias
@@ -3312,7 +3312,7 @@ def consultar_empleados_por_dia_fibra(fechaini, fechafin):
     WHERE partes.id = parte_de_produccion_empleado.partedeproduccionid 
     GROUP BY fecha, empleadoid ORDER BY fecha; """ % (
         fechaini.strftime("%Y-%m-%d"), fechafin.strftime("%Y-%m-%d"))
-    filas_fecha_idempleado = pclases.ParteDeProduccion._connection.queryAll(sql)
+    filas_fecha_idempleado = pclases.ParteDeProduccion._connection.queryAll(sql)  # @UndefinedVariable
     # Y ahora sumo (lo sé, se podría hacer directamente en la consulta, pero 
     # prefiero dejarla así porque creo que me hará falta en un futuro tenerlo 
     # desglosado).

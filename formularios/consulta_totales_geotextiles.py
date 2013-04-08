@@ -91,7 +91,8 @@ def get_produccion(fecha_ini, fecha_fin, incluir_sin_parte = False):
         articulos_de_rollos_sin_parte_de_produccion_y_entre_fechas = pclases.Articulo.select("""
         rollo_id IN (SELECT id FROM rollo WHERE fechahora >= '%s' AND fechahora < '%s') AND parte_de_produccion_id IS NULL
         """ % (fechasqlini, fechasqlfin))
-        dimensiones = pclases.CamposEspecificosRollo._connection.queryAll("""
+        dimensiones = pclases.CamposEspecificosRollo._connection.queryAll(  # @UndefinedVariable
+        """
             SELECT ancho*metros_lineales, ancho*metros_lineales*gramos, producto_venta.id FROM campos_especificos_rollo, producto_venta
             WHERE campos_especificos_rollo.id=producto_venta.campos_especificos_rollo_id
         """)
@@ -135,7 +136,8 @@ def get_salidas_reales(fecha_ini, fecha_fin):
     salidas = {}
     albaranes = pclases.AlbaranSalida.select(pclases.AND(pclases.AlbaranSalida.q.fecha >= fecha_ini, 
                                                          pclases.AlbaranSalida.q.fecha <= fecha_fin))
-    dimensiones = pclases.CamposEspecificosRollo._connection.queryAll("""
+    dimensiones = pclases.CamposEspecificosRollo._connection.queryAll(  # @UndefinedVariable
+    """
         SELECT ancho*metros_lineales, ancho*metros_lineales*gramos, producto_venta.id FROM campos_especificos_rollo, producto_venta
         WHERE campos_especificos_rollo.id=producto_venta.campos_especificos_rollo_id
     """)
