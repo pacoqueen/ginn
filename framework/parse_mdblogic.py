@@ -68,7 +68,6 @@
 
 import SocketServer, BaseHTTPServer
 import xmlrpclib, sys, tempfile, os, time, csv, mx.DateTime
-sys.path.append('.')
 import pclases
 
 class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):

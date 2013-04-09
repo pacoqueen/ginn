@@ -40,7 +40,6 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import sys, os
-sys.path.insert(0, os.path.join('..', 'SQLObject', 'SQLObject-0.6.1'))
 import sqlobject
 import gtk, gtk.glade, time
 try:

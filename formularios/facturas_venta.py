@@ -85,7 +85,6 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import sys, os
-sys.path.insert(0, os.path.join('..', 'SQLObject', 'SQLObject-0.6.1'))
 import gtk, gtk.glade, time, sqlobject
 try:
     import pclases
@@ -1895,7 +1894,7 @@ class FacturasVenta(Ventana):
                                        precio = precio, 
                                        descuento = 0)
             pclases.Auditoria.nuevo(ldv, self.usuario, __file__)
-            descontar_existencias(ldv, nueva = True, self.usuario)
+            descontar_existencias(ldv, nueva = True, usuario = self.usuario)
             nueva_ldv = ldv
         self.actualizar_ventana()
         return nueva_ldv

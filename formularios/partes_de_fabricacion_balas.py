@@ -73,46 +73,7 @@ from ventana_progreso import VentanaActividad, VentanaProgreso
 import pango
 import re
 import informes
-
-
-def buscar_o_crear_albaran_interno(pdp, incluir_consumos_auto = False):
-    """
-    Busca un albarán interno con los consumos del parte de producción 
-    PDP. Si no existe lo crea.
-    Se asegura de que los consumos del parte queden reflejados en el 
-    albarán interno, aunque quede vacío porque se hayan eliminado los 
-    consumos del parte. No se elimina un albarán interno vacío para 
-    evitar huecos en la numeración al eliminarse después de haberse 
-    creado otro con posterioridad.
-    """
-    albint = pdp.albaranInterno
-    if albint == None:
-        albint = pdp.crear_albaran_interno()
-    if albint != None:
-        # 1.- Elimino las LDVs del albarán para volcarlas de nuevo
-        for ldv in albint.lineasDeVenta:
-            ldv.destroy(ventana = __file__)
-        # 2.- Agrego los consumos QUE NO SEAN AUTOMÁTICOS NI DE GRANZA como 
-        # nuevas LDVs del albarán interno, a no ser que se indique lo 
-        # contrario por parámetro.
-        for c in pdp.consumos:
-            es_de_granza = c.silo != None
-            es_automatico = len(c.productoCompra.consumosAdicionales) != 0
-            if pclases.DEBUG:
-                print "es_de_granza",es_de_granza,"es_automatico",es_automatico
-            if not es_de_granza:
-                if not incluir_consumos_auto and es_automatico:
-                    continue
-                ldv = pclases.LineaDeVenta(productoCompra = c.productoCompra, 
-                                    cantidad = c.cantidad, 
-                                    precio = c.productoCompra.precioDefecto, 
-                                    albaranSalida = albint, 
-                                    pedidoVenta = None, 
-                                    facturaVenta = None, 
-                                    productoVenta = None)
-                pclases.Auditoria.nuevo(ldv, None, __file__)
-    return albint
-        
+       
 def verificar_solapamiento(partedeproduccion, padre = None, 
                            fecha_anterior = None, horaini_anterior = None, 
                            horafin_anterior = None):
@@ -3642,7 +3603,7 @@ class PartesDeFabricacionBalas(Ventana):
                                                      msg))
                     self.rellenar_tabla_consumos()
                     # Buscar y crear (si no existe) el albarán interno de consumos.
-                    buscar_o_crear_albaran_interno(self.objeto)
+                    self.objeto.buscar_o_crear_albaran_interno()
 
     def add_desecho(self, boton):
         """

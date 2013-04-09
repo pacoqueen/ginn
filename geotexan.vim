@@ -1,5 +1,5 @@
 " ~/Geotexan/src/ginn/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 03 abril 2013 at 05:58:10.
+" Created by session.vim 1.5 on 08 abril 2013 at 11:58:07.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -34,7 +34,7 @@ badd +1 formularios/dynconsulta.glade
 badd +179 formularios/consulta_facturas_sin_doc_pago.py
 badd +73 formularios/utils_almacen.py
 args formularios/auditviewer.py
-set lines=46 columns=80
+set lines=47 columns=80
 edit framework/pclases.py
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -45,8 +45,8 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 21 + 23) / 46)
-exe '2resize ' . ((&lines * 22 + 23) / 46)
+exe '1resize ' . ((&lines * 21 + 23) / 47)
+exe '2resize ' . ((&lines * 23 + 23) / 47)
 argglobal
 setlocal fdm=indent
 setlocal fde=0
@@ -86,39 +86,43 @@ silent! normal zo
 silent! normal zo
 210
 silent! normal zo
-818
+816
 silent! normal zo
-827
+825
 silent! normal zo
-827
+825
 silent! normal zo
-818
+816
 silent! normal zo
-2653
+2651
 silent! normal zo
-2664
+2662
 silent! normal zo
-2653
+2651
 silent! normal zo
-2729
+2727
 silent! normal zo
-2742
+2740
 silent! normal zo
-2729
+2727
 silent! normal zo
-3213
+3211
+silent! normal zo
+3350
 silent! normal zo
 3352
 silent! normal zo
 3352
 silent! normal zo
-3213
+3350
 silent! normal zo
-3373
+3211
 silent! normal zo
-3382
+3371
 silent! normal zo
-3373
+3380
+silent! normal zo
+3371
 silent! normal zo
 4661
 silent! normal zo
@@ -132,41 +136,53 @@ silent! normal zo
 silent! normal zo
 4661
 silent! normal zo
-6314
+6313
 silent! normal zo
-6459
+6458
 silent! normal zo
-6480
-silent! normal zo
-6487
-silent! normal zo
-6492
-silent! normal zo
-6497
-silent! normal zo
-6492
-silent! normal zo
-6487
+6479
 silent! normal zo
 6480
 silent! normal zo
-6459
+6480
 silent! normal zo
-6314
+6480
 silent! normal zo
-6673
+6480
 silent! normal zo
-6739
+6486
 silent! normal zo
-6673
+6487
 silent! normal zo
-7375
+6491
 silent! normal zo
-7410
+6492
 silent! normal zo
-7410
+6496
 silent! normal zo
-7375
+6491
+silent! normal zo
+6486
+silent! normal zo
+6479
+silent! normal zo
+6458
+silent! normal zo
+6313
+silent! normal zo
+6672
+silent! normal zo
+6738
+silent! normal zo
+6672
+silent! normal zo
+7374
+silent! normal zo
+7409
+silent! normal zo
+7409
+silent! normal zo
+7374
 silent! normal zo
 9983
 silent! normal zo
@@ -184,7 +200,17 @@ silent! normal zo
 silent! normal zo
 10238
 silent! normal zo
+15509
+silent! normal zo
 15514
+silent! normal zo
+15514
+silent! normal zo
+15948
+silent! normal zo
+15953
+silent! normal zo
+15953
 silent! normal zo
 15953
 silent! normal zo
@@ -192,62 +218,66 @@ silent! normal zo
 silent! normal zo
 15958
 silent! normal zo
-15958
+15948
 silent! normal zo
-15967
+15509
 silent! normal zo
-15953
+16236
 silent! normal zo
-15514
+16262
 silent! normal zo
-16242
+16262
 silent! normal zo
-16268
+16236
 silent! normal zo
-16268
+18457
 silent! normal zo
-16242
+18513
 silent! normal zo
-18464
-silent! normal zo
-18520
-silent! normal zo
-18526
-silent! normal zo
-18526
+18519
 silent! normal zo
 18520
 silent! normal zo
-18464
+18519
 silent! normal zo
-19303
+18513
 silent! normal zo
-19333
+18524
+silent! normal zo
+18524
+silent! normal zo
+18457
+silent! normal zo
+19296
+silent! normal zo
+19326
+silent! normal zo
+19326
 silent! normal zo
 19346
 silent! normal zo
-19348
+19296
 silent! normal zo
-19346
+20861
 silent! normal zo
-19333
+20870
 silent! normal zo
-19303
+20871
 silent! normal zo
-20865
+20871
 silent! normal zo
-20874
+20871
 silent! normal zo
-20874
+20870
 silent! normal zo
-20865
+20861
 silent! normal zo
-let s:l = 19286 - ((0 * winheight(0) + 10) / 21)
+let s:l = 19294 - ((8 * winheight(0) + 10) / 21)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-19286
-normal! 042l
+19294
+normal! 0
 wincmd w
 argglobal
 edit formularios/dynconsulta.py
@@ -259,16 +289,16 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 289 - ((4 * winheight(0) + 11) / 22)
+let s:l = 294 - ((9 * winheight(0) + 11) / 23)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-289
-normal! 034l
+294
+normal! 015l
 wincmd w
 2wincmd w
-exe '1resize ' . ((&lines * 21 + 23) / 46)
-exe '2resize ' . ((&lines * 22 + 23) / 46)
+exe '1resize ' . ((&lines * 21 + 23) / 47)
+exe '2resize ' . ((&lines * 23 + 23) / 47)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf

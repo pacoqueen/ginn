@@ -55,8 +55,6 @@ import gobject
 import mx.DateTime
 
 import sys, os
-sys.path.insert(0, os.path.join('..', 'SQLObject', 'SQLObject-0.6.1'))
-import sqlobject
 try:
     import pclases
 except ImportError:

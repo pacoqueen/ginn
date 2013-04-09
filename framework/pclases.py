@@ -88,13 +88,13 @@ import sys, os
 from configuracion import ConfigConexion
 from math import ceil
 from select import select
-sys.path.insert(0, os.path.join('..', 'SQLObject', 'SQLObject-0.6.1'))
 from sqlobject.col import ForeignKey, SOForeignKey, SODateCol, SODateTimeCol, \
                           SOBoolCol, SOCol, SOFloatCol, SOIntCol, SOStringCol  # @UnusedImport
 from sqlobject.joins import MultipleJoin, RelatedJoin
 from sqlobject.main import SQLObjectNotFound, SQLObject
 from sqlobject.sqlbuilder import AND, OR, \
                                  NOT  # @UnusedImport
+from sqlobject import connectionForURI, sqlhub
 import mx.DateTime
 import pprint
 import re
@@ -109,34 +109,34 @@ except ImportError, msg:
           "el envío de correos electrónicos -de facturas, por ejemplo-"\
           ", saltará una excepción.\n%s" % (msg)
 
-try:
-    import notificacion
-except:
-    sys.path.append(os.path.join('..', 'formularios'))
-    try:
-        import notificacion  # @Reimport 
-    except:
-        sys.path.append('.')
-        import notificacion  # @Reimport
+import notificacion
 
 # GET FUN !
           
 config = ConfigConexion()
 
 #conn = '%s://%s:%s@%s/%s' % (config.get_tipobd(), 
-#                             config.get_user(), 
-#                             config.get_pass(), 
-#                             config.get_host(), 
-#                             config.get_dbname())
+conn = '%s://%s:%s@%s/%s?autoCommit=False' % (config.get_tipobd(), 
+                             config.get_user(), 
+                             config.get_pass(), 
+                             config.get_host(), 
+                             config.get_dbname())
 
 # HACK: No reconoce el puerto en el URI y lo toma como parte del host. Lo 
 # añado detrás y colará en el dsn cuando lo parsee. 
-conn = '%s://%s:%s@%s/%s port=%s' % (config.get_tipobd(), 
-                                     config.get_user(), 
-                                     config.get_pass(), 
-                                     config.get_host(), 
-                                     config.get_dbname(), 
-                                     config.get_puerto()) 
+#conn = '%s://%s:%s@%s/%s port=%s' % (config.get_tipobd(), 
+#                                     config.get_user(), 
+#                                     config.get_pass(), 
+#                                     config.get_host(), 
+#                                     config.get_dbname(), 
+#                                     config.get_puerto()) 
+sqlhub.processConnection = connectionForURI(conn)
+
+if DEBUG:
+    conndebug = connectionForURI(conn)
+    #conndebug.autoCommit = False
+    conndebug.debug = True
+
 
 class SQLtuple(tuple):
     """
@@ -206,6 +206,7 @@ class SQLObjectChanged(Exception):
     def __str__(self):
         return repr(self.value)
 
+    
 class PRPCTOO:
     """ 
     Clase base para heredar y no repetir código.
@@ -491,6 +492,12 @@ def starter(objeto, *args, **kw):
     Inicializa el hilo y la conexión secundaria para IPC, 
     así como llama al constructor de la clase padre SQLObject.
     """
+    # XXX: Compatibilidad hacia atrás con SQLObject 0.6.1
+    if not hasattr(objeto, "_table"):
+        objeto._table = objeto.sqlmeta.table
+        objeto._SO_columnDict = objeto.sqlmeta.columns
+        objeto._connection = sqlhub.getConnection()
+    # XXX
     objeto.continuar_hilo = False
     objeto.notificador = notificacion.Notificacion(objeto)
     SQLObject._init(objeto, *args, **kw)
@@ -583,9 +590,14 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class DocumentoDePago(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     formasDePago = MultipleJoin("FormaDePago")
     vencimientosValorPresupuestoAnual = MultipleJoin(
             "VencimientoValorPresupuestoAnual")
+
+    def _init(self, *args, **kw):
+        starter(self, *args, **kw)
 
     CONTADO = "Contado"
     TRANSFERENCIA = "Transferencia bancaria"
@@ -634,13 +646,13 @@ class DocumentoDePago(SQLObject, PRPCTOO):
             return clase.selectBy(documento = strtipo)[0]
         except IndexError:
             return clase(documento = strtipo)
-
-    def _init(self, *args, **kw):
-        starter(self, *args, **kw)
+        
 
 class FormaDePago(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     documentoDePagoID = ForeignKey('DocumentoDePago')
     pedidosVenta = MultipleJoin('PedidoVenta')
 
@@ -673,6 +685,8 @@ class FormaDePago(SQLObject, PRPCTOO):
 class Almacen(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     albaranesSalidaServidos = MultipleJoin('AlbaranSalida', 
                                    joinColumn = "almacen_origen_id")
     albaranesSalidaRecibidos = MultipleJoin('AlbaranSalida', 
@@ -798,6 +812,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class PruebaTenacidad(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     loteID = ForeignKey('Lote')
     loteCemID = ForeignKey('Lote', default = None)
 
@@ -815,6 +831,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class PruebaElongacion(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     loteID = ForeignKey('Lote')
     loteCemID = ForeignKey('Lote', default = None)
 
@@ -835,6 +853,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class PruebaRizo(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     loteID = ForeignKey('Lote')
 
     def _init(self, *args, **kw):
@@ -845,6 +865,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class PruebaEncogimiento(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     loteID = ForeignKey('Lote')
     loteCemID = ForeignKey('Lote', default = None)
 
@@ -856,6 +878,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class PruebaGrasa(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     loteID = ForeignKey('Lote')
     loteCemID = ForeignKey('Lote', default = None)
 
@@ -867,6 +891,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class PruebaTitulo(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     loteID = ForeignKey('Lote')
     loteCemID = ForeignKey('Lote', default = None)
 
@@ -878,6 +904,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class PruebaHumedad(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     loteCemID = ForeignKey('Lote')
 
     def _init(self, *args, **kw):
@@ -888,6 +916,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class PruebaGramaje(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     partidaID = ForeignKey('Partida')
 
     def _init(self, *args, **kw):
@@ -898,6 +928,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class PruebaLongitudinal(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     partidaID = ForeignKey('Partida')
 
     def _init(self, *args, **kw):
@@ -908,6 +940,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class PruebaAlargamientoLongitudinal(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     partidaID = ForeignKey('Partida')
 
     def _init(self, *args, **kw):
@@ -918,6 +952,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class PruebaTransversal(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     partidaID = ForeignKey('Partida')
 
     def _init(self, *args, **kw):
@@ -928,6 +964,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class PruebaAlargamientoTransversal(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     partidaID = ForeignKey('Partida')
 
     def _init(self, *args, **kw):
@@ -938,6 +976,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class PruebaCompresion(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     partidaID = ForeignKey('Partida')
 
     def _init(self, *args, **kw):
@@ -948,6 +988,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class PruebaPerforacion(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     partidaID = ForeignKey('Partida')
 
     def _init(self, *args, **kw):
@@ -958,6 +1000,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class PruebaEspesor(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     partidaID = ForeignKey('Partida')
 
     def _init(self, *args, **kw):
@@ -968,6 +1012,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class PruebaPermeabilidad(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     partidaID = ForeignKey('Partida')
 
     def _init(self, *args, **kw):
@@ -978,6 +1024,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class PruebaPoros(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     partidaID = ForeignKey('Partida')
 
     def _init(self, *args, **kw):
@@ -988,6 +1036,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class PruebaPiramidal(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     partidaID = ForeignKey('Partida')
 
     def _init(self, *args, **kw):
@@ -1090,6 +1140,8 @@ class CacheExistencias:
 class HistorialExistencias(SQLObject, PRPCTOO, CacheExistencias):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     productoVentaID = ForeignKey('ProductoVenta')
     almacenID = ForeignKey("Almacen")
 
@@ -1199,6 +1251,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class HistorialExistenciasA(SQLObject, PRPCTOO, CacheExistencias):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     productoVentaID = ForeignKey('ProductoVenta')
     almacenID = ForeignKey("Almacen")
 
@@ -1308,6 +1362,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class HistorialExistenciasB(SQLObject, PRPCTOO, CacheExistencias):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     productoVentaID = ForeignKey('ProductoVenta')
     almacenID = ForeignKey("Almacen")
 
@@ -1417,6 +1473,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class HistorialExistenciasC(SQLObject, PRPCTOO, CacheExistencias):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     productoVentaID = ForeignKey('ProductoVenta')
     almacenID = ForeignKey("Almacen")
 
@@ -1526,6 +1584,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Silo(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     cargasSilo = MultipleJoin('CargaSilo')
     lineasDeCompra = MultipleJoin('LineaDeCompra')
     consumos = MultipleJoin('Consumo')
@@ -1888,6 +1948,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class CargaSilo(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     productoCompraID = ForeignKey('ProductoCompra')
     siloID = ForeignKey('Silo')
     lineasDeCompra = MultipleJoin('LineaDeCompra')
@@ -1960,6 +2022,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class PruebaGranza(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     productoCompraID = ForeignKey('ProductoCompra')
 
     def _init(self, *args, **kw):
@@ -1970,6 +2034,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class FacturaCompra(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     proveedorID = ForeignKey('Proveedor')
     lineasDeCompra = MultipleJoin('LineaDeCompra')
     vencimientosPago = MultipleJoin('VencimientoPago')
@@ -2348,6 +2414,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class LineaDeCompra(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     pedidoCompraID = ForeignKey('PedidoCompra')
     albaranEntradaID = ForeignKey('AlbaranEntrada')
     productoCompraID = ForeignKey('ProductoCompra')
@@ -2479,6 +2547,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class VencimientoPago(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     facturaCompraID = ForeignKey('FacturaCompra')
 
     def _init(self, *args, **kw):
@@ -2588,6 +2658,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Pago(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     facturaCompraID = ForeignKey('FacturaCompra')
     pagarePagoID = ForeignKey('PagarePago', default = None)
     logicMovimientosID = ForeignKey('LogicMovimientos', default = None)
@@ -2640,6 +2712,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class EstimacionPago(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     facturaCompraID = ForeignKey('FacturaCompra')
 
     def _init(self, *args, **kw):
@@ -2650,6 +2724,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class VencimientoCobro(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     facturaVentaID = ForeignKey('FacturaVenta')
     prefacturaID = ForeignKey('Prefactura', default = None)
     cuentaOrigenID = ForeignKey('CuentaOrigen', default = None)
@@ -2676,6 +2752,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class PagarePago(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     pagos = MultipleJoin('Pago')
     # fechaCobro = ... default=None.     NOTA: No lo pilla por defecto de la 
     #   BD. En la creación de objetos en las ventanas habrá que decirle 
@@ -2726,6 +2804,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Cobro(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     facturaVentaID = ForeignKey('FacturaVenta')
     prefacturaID = ForeignKey('Prefactura', default = None)
     facturaDeAbonoID = ForeignKey('FacturaDeAbono')
@@ -3059,6 +3139,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class PagareCobro(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     cobros = MultipleJoin('Cobro')
     # fechaCobro = ... default=None.     NOTA: No lo pilla por defecto de la BD. En la creación de objetos en las 
     #                                    ventanas habrá que decirle explícitamente que será None.    
@@ -3210,6 +3292,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Confirming(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     cobros = MultipleJoin('Cobro')
     documentos = MultipleJoin('Documento')
     bancoID = ForeignKey('Banco')
@@ -3370,6 +3454,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class EstimacionCobro(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     facturaVentaID = ForeignKey('FacturaVenta')
     prefacturaID = ForeignKey('Prefactura', default = None)
 
@@ -3390,6 +3476,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class TipoMaterialBala(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -3399,6 +3487,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Bigbag(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     loteCemID = ForeignKey('LoteCem')
     articulos = MultipleJoin('Articulo')
     parteDeProduccionID = ForeignKey("ParteDeProduccion", default = None) 
@@ -3621,6 +3711,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class LoteCem(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     bigbags = MultipleJoin('Bigbag')
     muestras = MultipleJoin('Muestra')
     pruebasTenacidad = MultipleJoin('PruebaTenacidad')
@@ -3707,6 +3799,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Pale(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     partidaCemID = ForeignKey('PartidaCem')
     cajas = MultipleJoin('Caja')
 
@@ -3899,8 +3993,7 @@ class Pale(SQLObject, PRPCTOO):
         """
         Crea un palé con todas las cajas y bolsas que contiene.
         """
-        from partes_de_fabricacion_balas import buscar_o_crear_albaran_interno
-        from partes_de_fabricacion_rollos import descontar_material_adicional
+        from formularios import partes_de_fabricacion_rollos 
         if not partidaCem:
             partidaCem = parteDeProduccion.partidaCem
             if not partidaCem:
@@ -3946,10 +4039,10 @@ class Pale(SQLObject, PRPCTOO):
                 def __init__(self, objeto):
                     self.objeto = objeto
             try:
-                descontar_material_adicional(
+                partes_de_fabricacion_rollos.descontar_material_adicional(
                                         FakeVentanaPartes(parteDeProduccion), 
                                         caja.articulo)
-                buscar_o_crear_albaran_interno(parteDeProduccion, 
+                parteDeProduccion.buscar_o_crear_albaran_interno(
                     incluir_consumos_auto = True) # Normalmente no, pero 
                     # aquí sí quiero que aparezcan en el alb. interno.
             except (UnboundLocalError, NameError):
@@ -3963,6 +4056,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Caja(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     paleID = ForeignKey('Pale')
     #bolsas = MultipleJoin('Bolsa')  
     articulos = MultipleJoin("Articulo")
@@ -4343,6 +4438,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class PartidaCem(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     partesDeProduccion = MultipleJoin('ParteDeProduccion')
     pales = MultipleJoin('Pale')
 
@@ -4435,6 +4532,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Bala(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     loteID = ForeignKey('Lote')
     # partidaID = ForeignKey('Partida')
     articulos = MultipleJoin('Articulo')
@@ -4580,6 +4679,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class TipoDeMaterial(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     productosCompra = MultipleJoin('ProductoCompra')
 
     def _init(self, *args, **kw):
@@ -4590,6 +4691,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class CuentaDestino(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     proveedorID = ForeignKey('Proveedor', default = None)
     pagos = MultipleJoin('Pago')
 
@@ -4604,6 +4707,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class CuentaOrigen(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     pagos = MultipleJoin('Pago')
     vencimientosCobro = MultipleJoin('VencimientoCobro')
     clientes = MultipleJoin('Cliente')
@@ -4620,6 +4725,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class TipoDeProveedor(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     proveedores = MultipleJoin("Proveedor")
 
     def _init(self, *args, **kw):
@@ -4660,6 +4767,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Proveedor(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     pedidosCompra = MultipleJoin('PedidoCompra')
     albaranesEntrada = MultipleJoin('AlbaranEntrada')
     facturasCompra = MultipleJoin('FacturaCompra')
@@ -4972,6 +5081,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class PartidaCarga(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     balas = MultipleJoin('Bala')
     partidas = MultipleJoin('Partida')
 
@@ -5205,6 +5316,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Partida(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     # balas = MultipleJoin('Bala')
     partidaCargaID = ForeignKey('PartidaCarga')
     rollos = MultipleJoin('Rollo')
@@ -5675,6 +5788,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Muestra(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     loteID = ForeignKey('Lote')
     partidaID = ForeignKey('Partida')
     loteCemID = ForeignKey('LoteCem', default = None)
@@ -5687,9 +5802,11 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Rollo(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     partidaID = ForeignKey('Partida')
     articulos = MultipleJoin('Articulo')
-    
+
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
@@ -5864,9 +5981,11 @@ class RolloDefectuoso(SQLObject, PRPCTOO):
     """
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     partidaID = ForeignKey('Partida')
     articulos = MultipleJoin('Articulo')
-    
+
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
@@ -6003,8 +6122,10 @@ class BalaCable(SQLObject, PRPCTOO):
     """
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     articulos = MultipleJoin('Articulo')
-    
+
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
@@ -6161,8 +6282,10 @@ class RolloC(SQLObject, PRPCTOO):
     """
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     articulos = MultipleJoin('Articulo')
-    
+
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
@@ -6312,6 +6435,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class LineaDePedido(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     productoVentaID = ForeignKey('ProductoVenta')
     pedidoVentaID = ForeignKey('PedidoVenta')
     productoCompraID = ForeignKey('ProductoCompra', default = None)
@@ -6573,6 +6698,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Ticket(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     lineasDeVenta = MultipleJoin('LineaDeVenta')
 
     def _init(self, *args, **kw):
@@ -6671,6 +6798,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class LineaDeVenta(SQLObject, PRPCTOO, Venta):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     productoVentaID = ForeignKey('ProductoVenta')
     productoCompraID = ForeignKey('ProductoCompra', default = None)
     pedidoVentaID = ForeignKey('PedidoVenta')
@@ -7065,6 +7194,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class LineaDePedidoDeCompra(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     productoCompraID = ForeignKey('ProductoCompra')
     pedidoCompraID = ForeignKey('PedidoCompra')
     lineasDeCompra = RelatedJoin('LineaDeCompra', 
@@ -7199,6 +7330,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class PedidoCompra(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     proveedorID = ForeignKey('Proveedor')
     lineasDeCompra = MultipleJoin('LineaDeCompra')
     lineasDePedidoDeCompra = MultipleJoin('LineaDePedidoDeCompra')
@@ -7373,6 +7506,8 @@ class Producto:
 class ProductoCompra(SQLObject, PRPCTOO, Producto):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     tipoDeMaterialID = ForeignKey('TipoDeMaterial')
     lineasDeCompra = MultipleJoin('LineaDeCompra')
     lineasDeVenta = MultipleJoin('LineaDeVenta')
@@ -8775,6 +8910,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class CamposEspecificosBala(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     productosVenta = MultipleJoin('ProductoVenta')
     tipoMaterialBalaID = ForeignKey('TipoMaterialBala')
 
@@ -8786,6 +8923,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class AlbaranEntrada(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     proveedorID = ForeignKey('Proveedor')
     lineasDeCompra = MultipleJoin('LineaDeCompra')
     documentos = MultipleJoin('Documento')
@@ -8839,6 +8978,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Articulo(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     balaID = ForeignKey('Bala')
     rolloID = ForeignKey('Rollo')
     productoVentaID = ForeignKey('ProductoVenta')
@@ -9533,6 +9674,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class PedidoVenta(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     clienteID = ForeignKey('Cliente')
     lineasDeVenta = MultipleJoin('LineaDeVenta')
     lineasDePedido = MultipleJoin('LineaDePedido')
@@ -9775,6 +9918,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Presupuesto(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     clienteID = ForeignKey('Cliente')
     lineasDePedido = MultipleJoin('LineaDePedido')
     servicios = MultipleJoin('Servicio')
@@ -9912,6 +10057,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Comercial(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     empleadoID = ForeignKey("Empleado")
     presupuestos = MultipleJoin("Presupuesto")
     pedidosVenta = MultipleJoin('PedidoVenta')
@@ -9930,6 +10077,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class CamposEspecificos(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     productoVentaID = ForeignKey('ProductoVenta')
 
     def _init(self, *args, **kw):
@@ -9940,8 +10089,10 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class ModeloEtiqueta(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     camposEspecificosRollo = MultipleJoin("CamposEspecificosRollo")
-    
+
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
@@ -9982,6 +10133,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class CamposEspecificosRollo(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     productosVenta = MultipleJoin('ProductoVenta')
     marcadosCe = MultipleJoin("MarcadoCe")
     modeloEtiquetaID = ForeignKey("ModeloEtiqueta")
@@ -10180,6 +10333,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class MarcadoCe(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     camposEspecificosRolloID = ForeignKey('CamposEspecificosRollo')
 
     def _init(self, *args, **kw):
@@ -10237,6 +10392,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
     #       consultado y buscar ahí primero para no recalcular.
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     lineaDeProduccionID = ForeignKey('LineaDeProduccion')
     camposEspecificosBalaID = ForeignKey('CamposEspecificosBala')
     camposEspecificosRolloID = ForeignKey('CamposEspecificosRollo')
@@ -13450,6 +13607,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class StockAlmacen(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     almacenID = ForeignKey("Almacen")
     productoCompraID = ForeignKey("ProductoCompra")
 
@@ -13461,6 +13620,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class StockEspecial(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     almacenID = ForeignKey("Almacen")
     camposEspecificosEspecialID = ForeignKey("CamposEspecificosEspecial")
 
@@ -13472,6 +13633,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class LineaDeMovimiento(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     albaranSalidaID = ForeignKey("AlbaranSalida")
     articuloID = ForeignKey("Articulo")
 
@@ -13491,6 +13654,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class AlbaranSalida(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     transportistaID = ForeignKey('Transportista')
     lineasDeVenta = MultipleJoin('LineaDeVenta')
     articulos = MultipleJoin('Articulo')
@@ -14191,6 +14356,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class LineaDeProduccion(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     productosVenta = MultipleJoin('ProductoVenta')
     formulacionID = ForeignKey('Formulacion')
     calendariosLaborales = MultipleJoin('CalendarioLaboral')
@@ -14206,6 +14373,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Formulacion(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     lineasDeProduccion = MultipleJoin('LineaDeProduccion')
     consumosAdicionales = MultipleJoin('ConsumoAdicional')
 
@@ -14217,6 +14386,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class ConsumoAdicional(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     formulacionID = ForeignKey('Formulacion')
     productoCompraID = ForeignKey('ProductoCompra')
     productosVenta = RelatedJoin('ProductoVenta', 
@@ -14466,6 +14637,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class TipoDeCliente(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     clientes = MultipleJoin("Cliente")
 
     def _init(self, *args, **kw):
@@ -14505,6 +14678,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Cliente(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     pedidosVenta = MultipleJoin('PedidoVenta')
     albaranesSalida = MultipleJoin('AlbaranSalida')
     facturasVenta = MultipleJoin('FacturaVenta')
@@ -15165,6 +15340,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Contador(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     clientes = MultipleJoin('Cliente')
 
     def _init(self, *args, **kw):
@@ -15247,6 +15424,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Obra(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     facturasVenta = MultipleJoin('FacturaVenta')
     contactos = RelatedJoin("Contacto", 
                             joinColumn = "obra_id", 
@@ -15297,6 +15476,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Contacto(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     obras = RelatedJoin("Obra", 
                         joinColumn = "contacto_id", 
                         otherColumn = "obra_id", 
@@ -15332,6 +15513,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Nota(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     facturaVentaID = ForeignKey('FacturaVenta')
 
     def _init(self, *args, **kw):
@@ -15355,6 +15538,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Alarma(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     facturaVentaID = ForeignKey('FacturaVenta')
     estadoID = ForeignKey("Estado")
 
@@ -15417,6 +15602,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Tarea(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     facturaVentaID = ForeignKey('FacturaVenta')
     categoriaID = ForeignKey("Categoria")
 
@@ -15436,6 +15623,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Categoria(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     tareas = MultipleJoin('Tarea')
 
     def _init(self, *args, **kw):
@@ -15480,6 +15669,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Estado(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     alarmas = MultipleJoin('Estado')
 
     def _init(self, *args, **kw):
@@ -16235,6 +16426,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class FacturaVenta(SQLObject, PRPCTOO, SuperFacturaVenta):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     clienteID = ForeignKey('Cliente')
     servicios = MultipleJoin('Servicio')
     lineasDeVenta = MultipleJoin('LineaDeVenta')
@@ -16572,6 +16765,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Prefactura(SQLObject, PRPCTOO, SuperFacturaVenta):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     clienteID = ForeignKey('Cliente')
     servicios = MultipleJoin('Servicio')
     lineasDeVenta = MultipleJoin('LineaDeVenta')
@@ -16693,6 +16888,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Servicio(SQLObject, PRPCTOO, Venta):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     facturaVentaID = ForeignKey('FacturaVenta')
     prefacturaID = ForeignKey('Prefactura', default = None)
     albaranSalidaID = ForeignKey('AlbaranSalida', default = None)
@@ -16805,6 +17002,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Lote(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     balas = MultipleJoin('Bala')
     pruebasTenacidad = MultipleJoin('PruebaTenacidad')
     pruebasElongacion = MultipleJoin('PruebaElongacion')
@@ -16924,6 +17123,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Destino(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     albaranesSalida = MultipleJoin('AlbaranSalida')
 
     def _init(self, *args, **kw):
@@ -16940,6 +17141,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Transportista(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     albaranesEntrada = MultipleJoin('AlbaranEntrada')
     albaranesSalida = MultipleJoin('AlbaranSalida')
 
@@ -16979,6 +17182,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Tarifa(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     precios = MultipleJoin('Precio')
     clientes = MultipleJoin('Cliente')
     pedidosVenta = MultipleJoin('PedidoVenta')
@@ -17205,10 +17410,12 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Precio(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     productoVentaID = ForeignKey('ProductoVenta', default = None)
     tarifaID = ForeignKey('Tarifa')
     productoCompraID = ForeignKey('ProductoCompra', default = None)
-    
+
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
@@ -17241,6 +17448,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class ParteDeProduccion(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     articulos = MultipleJoin('Articulo')
     # empleados = RelatedJoin('Empleado', joinColumn = 'parteDeProduccionID', otherColumn = 'empleadoID', intermediateTable = 'parte_de_produccion_empleado')
     horasTrabajadas = MultipleJoin('HorasTrabajadas', joinColumn = 'partedeproduccionid') # Ver BUG de la clase HorasTrabajadas
@@ -17249,7 +17458,7 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
     descuentosDeMaterial = MultipleJoin('DescuentoDeMaterial')
     partidaCemID = ForeignKey('PartidaCem', default = None)
     bigbags = MultipleJoin("Bigbag")
-    
+
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
@@ -17297,6 +17506,44 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
                 break
         return res
 
+    def buscar_o_crear_albaran_interno(self, incluir_consumos_auto = False):
+        """
+        Busca un albarán interno con los consumos del parte de producción 
+        PDP. Si no existe lo crea.
+        Se asegura de que los consumos del parte queden reflejados en el 
+        albarán interno, aunque quede vacío porque se hayan eliminado los 
+        consumos del parte. No se elimina un albarán interno vacío para 
+        evitar huecos en la numeración al eliminarse después de haberse 
+        creado otro con posterioridad.
+        """
+        albint = self.albaranInterno
+        if albint == None:
+            albint = self.crear_albaran_interno()
+        if albint != None:
+            # 1.- Elimino las LDVs del albarán para volcarlas de nuevo
+            for ldv in albint.lineasDeVenta:
+                ldv.destroy(ventana = __file__)
+            # 2.- Agrego los consumos QUE NO SEAN AUTOMÁTICOS NI DE GRANZA como 
+            # nuevas LDVs del albarán interno, a no ser que se indique lo 
+            # contrario por parámetro.
+            for c in self.consumos:
+                es_de_granza = c.silo != None
+                es_automatico = len(c.productoCompra.consumosAdicionales) != 0
+                if DEBUG:
+                    print "es_de_granza",es_de_granza,"es_automatico",es_automatico
+                if not es_de_granza:
+                    if not incluir_consumos_auto and es_automatico:
+                        continue
+                    ldv = LineaDeVenta(productoCompra = c.productoCompra, 
+                                       cantidad = c.cantidad, 
+                                       precio = c.productoCompra.precioDefecto, 
+                                       albaranSalida = albint, 
+                                       pedidoVenta = None, 
+                                       facturaVenta = None, 
+                                       productoVenta = None)
+                    Auditoria.nuevo(ldv, None, __file__)
+        return albint
+ 
     def crear_albaran_interno(self):
         """
         Crea un albarán "interno" de salida (interno = cliente es la propia 
@@ -17943,10 +18190,12 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class CentroTrabajo(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     empleados = MultipleJoin('Empleado')
     partesDeTrabajo = MultipleJoin('ParteDeTrabajo')
     almacenID = ForeignKey("Almacen", default = None)
-    
+
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
@@ -17956,6 +18205,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Empleado(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     # partesDeProduccion = RelatedJoin('ParteDeProduccion', joinColumn = 'empleadoID', otherColumn = 'parteDeProduccionID', intermediateTable = 'parte_de_produccion_empleado')
     horasTrabajadas = MultipleJoin('HorasTrabajadas', joinColumn = 'empleadoid')    # Ver BUG en la clase HorasTrabajadas.
     centroTrabajoID = ForeignKey('CentroTrabajo')
@@ -17973,7 +18224,7 @@ class Empleado(SQLObject, PRPCTOO):
     ordenesEmpleados = MultipleJoin("OrdenEmpleados")
     comerciales = MultipleJoin("Comercial") # En realidad es relación 1 a 1.
     usuarioID = ForeignKey("Usuario", default = None)
-    
+
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
@@ -18134,10 +18385,13 @@ class HorasTrabajadas(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
     _table = 'parte_de_produccion_empleado'
+    class sqlmeta:
+        table = "parte_de_produccion_empleado"
+        fromDatabase = True
     
-    empleadoid = ForeignKey('Empleado', dbName = 'empleadoid')
-    partedeproduccionid = ForeignKey('ParteDeProduccion', 
-                                     dbName = 'partedeproduccionid')
+    #empleadoid = ForeignKey('Empleado', dbName = 'empleadoid')
+    #partedeproduccionid = ForeignKey('ParteDeProduccion', 
+    #                                 dbName = 'partedeproduccionid')
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -18192,6 +18446,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Nomina(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     empleadoID = ForeignKey('Empleado')
 
     def _init(self, *args, **kw):
@@ -18236,9 +18492,11 @@ class DescuentoDeMaterial(SQLObject, PRPCTOO):
     """
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     productoCompraID = ForeignKey('ProductoCompra')
     parteDeProduccionID = ForeignKey('ParteDeProduccion')
-    
+
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
@@ -18310,10 +18568,12 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Consumo(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     productoCompraID = ForeignKey('ProductoCompra')
     parteDeProduccionID = ForeignKey('ParteDeProduccion')
     siloID = ForeignKey('Silo')
-    
+
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
@@ -18406,6 +18666,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class TipoDeIncidencia(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     incidencias = MultipleJoin('Incidencia')
 
     def _init(self, *args, **kw):
@@ -18416,9 +18678,11 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Incidencia(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     parteDeProduccionID = ForeignKey('ParteDeProduccion')
     tipoDeIncidenciaID = ForeignKey('TipoDeIncidencia')
-    
+
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
     
@@ -18463,6 +18727,8 @@ class Abono(SQLObject, PRPCTOO):
     """
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     clienteID = ForeignKey('Cliente')
     facturaDeAbonoID = ForeignKey('FacturaDeAbono')
     lineasDeDevolucion = MultipleJoin('LineaDeDevolucion')
@@ -18708,6 +18974,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class LineaDeAbono(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     lineaDeVentaID = ForeignKey('LineaDeVenta')
     abonoID = ForeignKey('Abono')
     servicioID = ForeignKey('Servicio', default = None)
@@ -18773,6 +19041,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class LineaDeDevolucion(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     abonoID = ForeignKey('Abono')
     articuloID = ForeignKey('Articulo')
     albaranDeEntradaDeAbonoID = ForeignKey('AlbaranDeEntradaDeAbono')
@@ -18945,6 +19215,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class AlbaranDeEntradaDeAbono(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     
     lineasDeDevolucion = MultipleJoin('LineaDeDevolucion')
 
@@ -18956,6 +19228,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     abonos = MultipleJoin('Abono')
     cobros = MultipleJoin('Cobro')      # Por un lado se puede descontar de un 
         # pagaré en forma de cobro con cantidad negativa.  
@@ -19274,6 +19548,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class PagoDeAbono(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     facturaDeAbonoID = ForeignKey('FacturaDeAbono')
     facturaVentaID = ForeignKey('FacturaVenta')
     prefacturaID = ForeignKey('Prefactura', default = None)
@@ -19295,6 +19571,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Usuario(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     permisos = MultipleJoin('Permiso')
     alertas = MultipleJoin('Alerta')
     estadisticas = MultipleJoin('Estadistica')
@@ -19367,6 +19645,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Modulo(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     ventanas = MultipleJoin('Ventana')
 
     def _init(self, *args, **kw):
@@ -19377,6 +19657,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Ventana(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     moduloID = ForeignKey('Modulo')
     permisos = MultipleJoin('Permiso')
     estadisticas = MultipleJoin('Estadistica')
@@ -19391,6 +19673,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Permiso(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     usuarioID = ForeignKey('Usuario')
     ventanaID = ForeignKey('Ventana')
 
@@ -19402,6 +19686,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Alerta(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     usuarioID = ForeignKey('Usuario')
 
     def _init(self, *args, **kw):
@@ -19412,6 +19698,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class DatosDeLaEmpresa(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -19479,6 +19767,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class LogicMovimientos(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     pagos = MultipleJoin('Pago')
 
     def _init(self, *args, **kw):
@@ -19496,6 +19786,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class ParteDeTrabajo(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
 
     empleadoID = ForeignKey('Empleado')
     centroTrabajoID = ForeignKey('CentroTrabajo')
@@ -19546,6 +19838,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class CategoriaLaboral(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     lineaDeProduccionID = ForeignKey('LineaDeProduccion')
     empleados = MultipleJoin('Empleado')
 
@@ -19557,6 +19851,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Motivo(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     ausencias = MultipleJoin('Ausencia')
 
     def _init(self, *args, **kw):
@@ -19567,6 +19863,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class ObservacionesNominas(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -19576,6 +19874,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Ausencia(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     motivoID = ForeignKey('Motivo')
     empleadoID = ForeignKey('Empleado')
 
@@ -19587,6 +19887,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Baja(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     empleadoID = ForeignKey('Empleado')
 
     def _init(self, *args, **kw):
@@ -19607,6 +19909,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class CalendarioLaboral(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     lineaDeProduccionID = ForeignKey('LineaDeProduccion')
     laborables = MultipleJoin('Laborable')
     vacaciones = MultipleJoin('Vacaciones')
@@ -19635,6 +19939,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Festivo(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     calendarioLaboralID = ForeignKey('CalendarioLaboral')
 
     def _init(self, *args, **kw):
@@ -19645,6 +19951,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class FestivoGenerico(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -19654,6 +19962,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Vacaciones(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     calendarioLaboralID = ForeignKey('CalendarioLaboral')
 
     def _init(self, *args, **kw):
@@ -19664,6 +19974,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Turno(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     laborables = MultipleJoin('Laborable')
 
     def _init(self, *args, **kw):
@@ -19674,6 +19986,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Grupo(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     jefeturnoID = ForeignKey('Empleado')
     operario1ID = ForeignKey('Empleado')
     operario2ID = ForeignKey('Empleado')    # Máximo 3 por grupo. Restricción de requisitos del cliente.
@@ -19688,6 +20002,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Laborable(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     turnoID = ForeignKey('Turno')
     grupoID = ForeignKey('Grupo')
     calendarioLaboralID = ForeignKey('CalendarioLaboral')
@@ -19722,6 +20038,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class TransporteACuenta(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     serviciosTomados = MultipleJoin('ServicioTomado')
     albaranSalidaID = ForeignKey('AlbaranSalida', default = None)
     proveedorID = ForeignKey('Proveedor', default = None)
@@ -19775,6 +20093,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Comision(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     clienteID = ForeignKey('Cliente')
     facturaVentaID = ForeignKey('FacturaVenta', default = None)
     prefacturaID = ForeignKey('Prefactura', default = None)
@@ -19847,6 +20167,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class ServicioTomado(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     facturaCompraID = ForeignKey('FacturaCompra')
     comisionID = ForeignKey('Comision', default = None)
     transporteACuentaID = ForeignKey('TransporteACuenta', default = None)
@@ -20016,6 +20338,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class CamposEspecificosEspecial(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     productosVenta = MultipleJoin('ProductoVenta')
     stocksEspecial = MultipleJoin("StockEspecial")
 
@@ -20027,6 +20351,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class HistorialExistenciasCompra(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     productoCompraID = ForeignKey('ProductoCompra')
     almacenID = ForeignKey("Almacen")
 
@@ -20043,6 +20369,8 @@ class Recibo(SQLObject, PRPCTOO):
     """
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
 
     cuentaOrigenID = ForeignKey('CuentaOrigen', default = None)
     vencimientosCobro = MultipleJoin('VencimientoCobro')
@@ -20100,6 +20428,8 @@ class CuentaBancariaCliente(SQLObject, PRPCTOO):
     """
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     clienteID = ForeignKey('Cliente')
     recibos = MultipleJoin("Recibo")
     efectos = MultipleJoin("Efecto")
@@ -20112,6 +20442,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Documento(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     pedidoVentaID = ForeignKey('PedidoVenta', default = None)
     albaranSalidaID = ForeignKey('AlbaranSalida', default = None)
     facturaVentaID = ForeignKey('FacturaVenta', default = None)
@@ -20249,6 +20581,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Estadistica(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     usuarioID = ForeignKey('Usuario')
     ventanaID = ForeignKey('Ventana')
 
@@ -20294,6 +20628,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class ControlHoras(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     grupoID = ForeignKey('Grupo')
     empleadoID = ForeignKey('Empleado')
     controlesHorasProduccion = MultipleJoin('ControlHorasProduccion')
@@ -20695,6 +21031,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class ControlHorasProduccion(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     controlHorasID = ForeignKey('ControlHoras')
     lineaDeProduccionID = ForeignKey('LineaDeProduccion') 
 
@@ -20706,6 +21044,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class ControlHorasMantenimiento(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     controlHorasID = ForeignKey('ControlHoras')
     lineaDeProduccionID = ForeignKey('LineaDeProduccion') 
 
@@ -20717,6 +21057,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class OrdenEmpleados(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     empleadoID = ForeignKey('Empleado')
 
     def _init(self, *args, **kw):
@@ -20759,6 +21101,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class ListaObjetosRecientes(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     usuarioID = ForeignKey('Usuario')
     ventanaID = ForeignKey('Ventana')
     idsRecientes = MultipleJoin("IdReciente")
@@ -20850,6 +21194,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class IdReciente(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     listaObjetosRecientesID = ForeignKey('ListaObjetosRecientes')
 
     def _init(self, *args, **kw):
@@ -20860,6 +21206,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Auditoria(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     usuarioID = ForeignKey('Usuario')
     ventanaID = ForeignKey("Ventana")
 
@@ -20884,9 +21232,9 @@ class Auditoria(SQLObject, PRPCTOO):
         Nuevo registro en la base de datos. Creo un objeto auditoría 
         con el usuario recibido y determino IP y nombre de la máquina.
         """
-        from autenticacion import get_IPLocal
+        from formularios import autenticacion
         from socket import gethostname
-        ip = get_IPLocal() 
+        ip = autenticacion.get_IPLocal() 
         host = gethostname()
         if isinstance(ventana, str):
             if ventana.endswith(".pyc"):
@@ -20919,9 +21267,9 @@ class Auditoria(SQLObject, PRPCTOO):
         una breve descripción del registro eliminado, usuario y ventana desde 
         la que se ha hecho. Determino IP y nombre de la máquina aquí.
         """
-        from autenticacion import get_IPLocal
+        from formularios import autenticacion
         from socket import gethostname
-        ip = get_IPLocal() 
+        ip = autenticacion.get_IPLocal() 
         host = gethostname()
         if isinstance(ventana, str):
             if ventana.endswith(".pyc"):
@@ -20951,9 +21299,9 @@ class Auditoria(SQLObject, PRPCTOO):
         una breve descripción del registro cambiado, usuario y ventana desde 
         la que se ha hecho. Determino IP y nombre de la máquina aquí.
         """
-        from autenticacion import get_IPLocal
+        from formularios import autenticacion 
         from socket import gethostname
-        ip = get_IPLocal() 
+        ip = autenticacion.get_IPLocal() 
         host = gethostname()
         if isinstance(ventana, str):
             if ventana.endswith(".pyc"):
@@ -20985,6 +21333,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class ConcentracionRemesa(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     bancoID = ForeignKey("Banco")
     clienteID = ForeignKey("Cliente")
 
@@ -20996,6 +21346,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Banco(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     pagaresCobro = MultipleJoin('PagareCobro')
     confirmings = MultipleJoin("Confirming")
     remesas = MultipleJoin("Remesa")
@@ -21080,6 +21432,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Efecto(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     pagareCobroID = ForeignKey("PagareCobro")
     confirmingID = ForeignKey("Confirming")
     cuentaBancariaClienteID = ForeignKey("CuentaBancariaCliente")
@@ -21166,6 +21520,8 @@ class Efecto(SQLObject, PRPCTOO):
 class Remesa(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     bancoID = ForeignKey("Banco")
     efectos = RelatedJoin('Efecto', 
                 joinColumn = 'remesa_id', 
@@ -21260,6 +21616,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class PresupuestoAnual(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     conceptosPresupuestoAnual = MultipleJoin("ConceptoPresupuestoAnual")
 
     def _init(self, *args, **kw):
@@ -21323,6 +21681,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class ConceptoPresupuestoAnual(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     presupuestoAnualID = ForeignKey("PresupuestoAnual")
     proveedorID = ForeignKey("Proveedor", default = None)
     valoresPresupuestoAnual = MultipleJoin("ValorPresupuestoAnual")
@@ -21521,6 +21881,8 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class VencimientoValorPresupuestoAnual(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     valorPresupuestoAnualID = ForeignKey("ValorPresupuestoAnual")
     documentoDePagoID = ForeignKey('DocumentoDePago')
 
@@ -21643,6 +22005,8 @@ class VencimientoValorPresupuestoAnual(SQLObject, PRPCTOO):
 class ValorPresupuestoAnual(SQLObject, PRPCTOO):
     _connection = conn
     _fromDatabase = True
+    class sqlmeta:
+        fromDatabase = True
     conceptoPresupuestoAnualID = ForeignKey("ConceptoPresupuestoAnual")
     vencimientosValorPresupuestoAnual = MultipleJoin(
             "VencimientoValorPresupuestoAnual")
