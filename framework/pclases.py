@@ -21254,7 +21254,7 @@ class Auditoria(SQLObject, PRPCTOO):
             usuario = logged_user
         Auditoria(usuario = usuario, 
                   ventana = ventana, 
-                  puid = objeto.puid, 
+                  dbpuid = objeto.puid, 
                   action = "create", 
                   ip = ip, 
                   hostname = host, 
@@ -21286,7 +21286,7 @@ class Auditoria(SQLObject, PRPCTOO):
             descripcion = "Objeto con PUID %s eliminado." % puid
         Auditoria(usuario = usuario, 
                   ventana = ventana, 
-                  puid = puid, 
+                  dbpuid = puid, 
                   action = "drop", 
                   ip = ip, 
                   hostname = host, 
@@ -21322,7 +21322,7 @@ class Auditoria(SQLObject, PRPCTOO):
             usuario = logged_user
         Auditoria(usuario = usuario, 
                   ventana = ventana, 
-                  puid = objeto.puid, 
+                  dbpuid = objeto.puid, 
                   action = "update", 
                   ip = ip, 
                   hostname = host, 
