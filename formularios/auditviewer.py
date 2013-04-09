@@ -78,7 +78,7 @@ class AuditViewer(Ventana):
         self.wids['filtro_fecha'].set_visible(True)
         cols = (('Usuario', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Ventana', 'gobject.TYPE_STRING', False, True, False, None),
-                ('«puid»', 'gobject.TYPE_STRING', False, True, False, None), 
+                ('«dbpuid»', 'gobject.TYPE_STRING', False, True, False, None), 
                 ('Acción', 'gobject.TYPE_STRING', False, True, False, None), 
                 ('IP', 'gobject.TYPE_STRING', False, True, False, None), 
                 ('«hostname»', 
@@ -320,7 +320,7 @@ dir()
             added = model.append(
                             (linea.usuario and linea.usuario.usuario or "", 
                              linea.ventana and linea.ventana.fichero or "", 
-                             linea.puid, 
+                             linea.dbpuid, 
                              linea.action, 
                              linea.ip, 
                              linea.hostname, 
