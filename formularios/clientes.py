@@ -1679,7 +1679,7 @@ class Clientes(Ventana):
                                           email = '',
                                           contacto = '',
                                           observaciones = '',
-                                          documentodepago = 'PAGARÉ A LA ORDEN',
+                                          documentodepago = 'Pagaré a la orden',
                                           diadepago = '25',
                                           formadepago = '180 D.F.F.',
                                           inhabilitado = False, 
