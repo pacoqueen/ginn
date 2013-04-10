@@ -184,9 +184,10 @@ class MDBParser(RequestHandler):
         Los campos índice (o al menos creo que UNIQUE) en la tabla
         Movimientos de Logic Control.
         """
-        consulta = pclases.LogicMovimientos.select(pclases.AND(pclases.LogicMovimientos.q.asiento == asiento,
-                                                               pclases.LogicMovimientos.q.orden == orden,
-                                                               pclases.LogicMovimientos.q.codigoCuenta == codigoCuenta))
+        consulta = pclases.LogicMovimientos.select(pclases.AND(
+                    pclases.LogicMovimientos.q.asiento == asiento,
+                    pclases.LogicMovimientos.q.orden == orden,
+                    pclases.LogicMovimientos.q.codigoCuenta == codigoCuenta))
         return consulta.count() > 0
         
     

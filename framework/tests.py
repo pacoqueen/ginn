@@ -86,9 +86,10 @@ def comprobar_fibra_consumida_antes_de_fecha_de_fabricacion(
     Devuelve False si el alguna no se cumple esa condición.
     """
     res = True
-    articulos = pclases.Articulo.select(pclases.AND(pclases.Bala.q.partidaCargaID != None, 
-                                                    pclases.Articulo.q.balaID == pclases.Bala.q.id), 
-                                        orderBy = "-id")
+    articulos = pclases.Articulo.select(
+            pclases.AND(pclases.Bala.q.partidaCargaID != None, 
+                        pclases.Articulo.q.balaID == pclases.Bala.q.id), 
+            orderBy = "-id")
         # Empiezo por las últimas por si alguna falla, que falle cuanto antes (las más antiguas se 
         # suponen que ya han sido comprobadas anteriormente y es menos probable que sean erróneas).
     for a in articulos:
