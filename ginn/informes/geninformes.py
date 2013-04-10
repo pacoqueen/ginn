@@ -96,8 +96,8 @@ MAXLINAB = 28
 tm, bm, lm, rm = (680, 56.69, 28.35, 566.92)
 
 def apaisar(apaisar = True):
-    global width, height, rm, tm, MAXLINEAS  # ¿Por qué globales? ¡¿POR QUÉ?!
-                                             # Repito: ¡¡¡¡¡¡ POR QUÉ !!!!!!!
+    global width, height, rm, tm, MAXLINEAS # ¿Por qué globales? ¡¿POR QUÉ?!
+                                            # Repito: ¡¡¡¡¡¡ POR QUÉ !!!!!!!
     if apaisar:
         width, height = landscape(A4)
         rm = width - 0.5 * cm
@@ -109,8 +109,8 @@ def apaisar(apaisar = True):
         width, height = A4
         rm = 566.92
         tm = 680
-        MAXLINEAS = 47 # Por poner algo, pero que sepas que esto
-                       # NO ES CORRECTO. El número de líneas no es fijo.
+        MAXLINEAS = 47  # Por poner algo, pero que sepas que esto
+                        # NO ES CORRECTO. El número de líneas no es fijo.
     return rm, tm, width, height, MAXLINEAS
 
 def cursiva(c,              # Canvas
@@ -177,7 +177,7 @@ def escribe(cadena_original, limite = None):
     # del VirtualBox en la Debian de nostromo.
     try:
         canvas_tmp = canvas.Canvas(os.path.join(gettempdir(), "tmp.pdf"))
-        ancho = canvas_tmp.stringWidth(cadena, "Helvetica", 10)
+        ancho = canvas_tmp.stringWidth(cadena, "Helvetica", 10)  # @UnusedVariable
     except UnicodeDecodeError:
         cadena = cadena_original
     return cadena
@@ -286,18 +286,10 @@ def existencias_no_nulas(hasta = None, exportar_a_csv_a = None,
     modal hijo de la ventana "padre_dialogo".
     """
     if ventana_padre:
-        try:
-            from ventana_progreso import VentanaProgreso
-        except ImportError:
-            sys.path.append(os.path.join("..", "formularios"))
-        try:
-            from ventana_progreso import VentanaProgreso
-        except ImportError:
-            ventana_padre = None
-        else:
-            vpro = VentanaProgreso(padre = ventana_padre)
-            vpro.mostrar()
-            vpro.set_valor(0.0, "Inicializando...")
+        from formularios.ventana_progreso import VentanaProgreso
+        vpro = VentanaProgreso(padre = ventana_padre)
+        vpro.mostrar()
+        vpro.set_valor(0.0, "Inicializando...")
     if hasta == None:
         nomarchivo = os.path.join(gettempdir(),
                         "existencias_no_nulas_%s.pdf"%give_me_the_name_baby())
@@ -987,7 +979,7 @@ def _existencias(hasta = None):
     """
 
     global linea, tm, lm, rm, bm
-    x, y = lm, tm
+    x, y = lm, tm  # @UnusedVariable
 
     # Creo la hoja
     if hasta == None:
@@ -1022,7 +1014,7 @@ def _existencias(hasta = None):
     # 41 es el número máximo de líneas en el área de impresión
     paginas = (productos.count() / MAXLINEAS) +1
     x = lm
-    y = linea
+    y = linea  # @UnusedVariable
     # contLinea se va incrementando con cada elemento y llegado al tope de
     # líneas provoca la creación de una nueva página
     contLinea = 0
@@ -1054,7 +1046,7 @@ def _existencias(hasta = None):
                 cabecera(c, 'Inventario de materiales%s' % (fecha_limite))
                 linea = tm + inch
                 # El cuerpo
-                x, y = lm, tm + inch
+                x, y = lm, tm + inch  # @UnusedVariable
                 c.setFont("Helvetica-Bold", 10)
                 c.drawString(x, linea, escribe('Codigo'))
                 c.drawString(25*5, linea, escribe('Descripción'))
@@ -1063,11 +1055,11 @@ def _existencias(hasta = None):
                 c.line(lm, linea-2, rm, linea-2)
                 c.setFont("Helvetica", 10)
                 x = lm
-                y = tm + inch
+                y = tm + inch  # @UnusedVariable
                 linea = sigLinea()
             else:
                 linea = sigLinea()
-                y = linea
+                y = linea  # @UnusedVariable
                 x = lm
 
     # Ponemos el pie
@@ -1192,7 +1184,6 @@ def existencias_productos(informe, fecha, hasta = None, almacen = None,
                 RD = pclases.RolloDefectuoso
                 PDP = pclases.ParteDeProduccion
                 A = pclases.Articulo
-                AS = pclases.AlbaranSalida
                 if hasta:
                     rdefs = RD.select(pclases.AND(
                                     A.q.rolloDefectuosoID == RD.q.id,
@@ -1448,7 +1439,7 @@ def albaran(composan, cliente, envio, general, lineas, observaciones, destino,
     # TODO: No se ha dado todavía el caso, pero si el albarán tiene más de una
     #       página, falla estrepitosamente y se mete todo en la misma página.
     global linea, tm, lm, rm, bm
-    x, y = lm, tm
+    x, y = lm, tm  # @UnusedVariable
     global linea
 
     # Creo la hoja
@@ -1579,7 +1570,7 @@ def albaran(composan, cliente, envio, general, lineas, observaciones, destino,
         #c.drawString(xcliente, linea, escribe(cliente['nombre']))
         lineas_agregadas = agregarFila(xcliente, linea, (width/2+3) - 0.8*cm,
             escribe(cliente["nombre"]), c, "Helvetica", 10)
-        for linea_agregada in range(lineas_agregadas):
+        for linea_agregada in range(lineas_agregadas):  # @UnusedVariable
             linea = sigLinea()
         el_encogedor_de_fuentes_de_doraemon(c, "Helvetica", 10, xcliente,
             (width/2+3) - 0.8*cm, linea, cliente['direccion'])
@@ -1601,7 +1592,7 @@ def albaran(composan, cliente, envio, general, lineas, observaciones, destino,
         lineas_agregadas = agregarFila(width/2+3, linea, width - 0.8 * cm,
                                        escribe(envio["nombre"]),
                                        c, "Helvetica", 10)
-        for linea_agregada in range(lineas_agregadas):
+        for linea_agregada in range(lineas_agregadas):  # @UnusedVariable
             linea = sigLinea()
         #c.drawString(width/2+3, linea, escribe(envio['nombre']))
         #linea = sigLinea()
@@ -1685,7 +1676,7 @@ def albaran(composan, cliente, envio, general, lineas, observaciones, destino,
     xcodigo = lm+1.8*inch+4
     xdescripcion = lm+2.4*inch+3
     xcantidad = rm-inch-4
-    xpedido = rm-0.5*inch
+    xpedido = rm-0.5*inch  # @UnusedVariable
     if lineas != None:
         for l in lineas:
             c.drawRightString(xbulto, linea,
@@ -1695,7 +1686,7 @@ def albaran(composan, cliente, envio, general, lineas, observaciones, destino,
             lineas_agregadas = agregarFila(xdescripcion, linea,
                 xdescripcion + 8 * cm, escribe(l['descripcion']), c,
                 "Helvetica", 10)
-            for i in range(lineas_agregadas - 1):
+            for i in range(lineas_agregadas - 1):  # @UnusedVariable
                 linea = sigLinea(10)
             #c.drawRightString(xcantidad, linea,
             #                  escribe("%s %s" % (
@@ -1877,7 +1868,7 @@ def albaranValorado(cliente,
     # TODO: No se ha dado todavía el caso, pero si el albarán tiene más de una
     # página, falla estrepitosamente y se mete todo en la misma página.
     global linea, tm, lm, rm, bm
-    x, y = lm, tm
+    x, y = lm, tm  # @UnusedVariable
     global linea
     # Creo la hoja
     nomarchivo = os.path.join(gettempdir(),
@@ -2002,7 +1993,7 @@ def albaranValorado(cliente,
                                        c,
                                        "Helvetica",
                                        10)
-        for linea_agregada in range(lineas_agregadas):
+        for linea_agregada in range(lineas_agregadas):  # @UnusedVariable
             linea = sigLinea()
         el_encogedor_de_fuentes_de_doraemon(c,
                                             "Helvetica",
@@ -2035,7 +2026,7 @@ def albaranValorado(cliente,
                                        c,
                                        "Helvetica",
                                        10)
-        for linea_agregada in range(lineas_agregadas):
+        for linea_agregada in range(lineas_agregadas):  # @UnusedVariable
             linea = sigLinea()
         el_encogedor_de_fuentes_de_doraemon(c,
                                             "Helvetica",
@@ -2206,7 +2197,7 @@ def albaranValorado(cliente,
                                            c,
                                            "Helvetica",
                                            10)
-            for i in range(lineas_agregadas - 1):
+            for i in range(lineas_agregadas - 1):  # @UnusedVariable
                 linea = sigLinea(10)
             precio_u = l['precio unitario']
             if not valorar_con_iva:
@@ -2328,7 +2319,7 @@ def albaranEntrada(general, lineas, observaciones):
     datos_empresa = pclases.DatosDeLaEmpresa.select()[0]
 
     global linea, tm, lm, rm, bm
-    x, y = lm, tm
+    x, y = lm, tm  # @UnusedVariable
     global linea
 
     # Creo la hoja
@@ -2451,7 +2442,7 @@ def albaranEntrada(general, lineas, observaciones):
                                  l['descripcion'], c, fuente, tamano)
             c.drawRightString(xcantidad, linea, escribe(l['cantidad']))
             c.drawCentredString(xpedido, linea, escribe(l['numped']))
-            for i in range(saltos):
+            for i in range(saltos):  # @UnusedVariable
                 linea = sigLinea()
 
     # -- Observaciones
@@ -2514,7 +2505,7 @@ def pedidoCompra(general, proveedor, lineas, entregas, observaciones,
     datos_empresa = pclases.DatosDeLaEmpresa.select()[0]
 
     global linea, tm, lm, rm, bm
-    x, y = lm, tm
+    x, y = lm, tm  # @UnusedVariable
     global linea
 
     # Creo la hoja
@@ -3010,13 +3001,13 @@ def factura(cliente,
         try:
             orden_ventanas = pclases.config.get_orden_ventanas()
         except:
-            orden_ventanas == "cf"  # Orden por defecto.
+            orden_ventanas = "cf"  # Orden por defecto.
 
     datos_empresa = pclases.DatosDeLaEmpresa.select()[0]
 
     global linea#, tm, lm, rm, bm
-    tmbak, bmbak, lmbak, rmbak = tm, bm, lm, rm = (680, 56.69, 05.35, 566.92)
-    x, y = lm, tm
+    tmbak, bmbak, lmbak, rmbak = tm, bm, lm, rm = (680, 56.69, 05.35, 566.92)  # @UnusedVariable
+    x, y = lm, tm  # @UnusedVariable
     # Creo la hoja
     nombre_chachi = cliente['nombre'].replace(" ", "_")
     nombre_chachi = abreviar(nombre_chachi, 10)
@@ -3052,15 +3043,15 @@ def factura(cliente,
     numpagina = 0
     from math import ceil
     paginastotales = ceil(len(lineas) / float(MAXLINEAS))
-    buffer_texto = texto
-    buffer = lineas[MAXLINEAS:]
+    buffer_texto = texto  # @UnusedVariable
+    buff = lineas[MAXLINEAS:]
     lineas = lineas[:MAXLINEAS]
     while (lineas != []):
         bm, tm = bmbak, tmbak
         numpagina += 1
         # La marca de agua:
         if es_copia:
-           marca_de_agua(c, " COPIA ", fontsize = 56)
+            marca_de_agua(c, " COPIA ", fontsize = 56)
         # La cabecera
         if datos_empresa.logo:
             ruta_logo = os.path.join('..', 'imagenes', datos_empresa.logo)
@@ -3351,7 +3342,6 @@ def factura(cliente,
             textoPedidos = factdata['pedido']
             longitud = c.stringWidth(textoPedidos, fuente, tamanno)
             longitudLimite = rm - origen
-            lineasSumadas = 1
             if longitud < longitudLimite:
                 c.drawString(origen, linea, escribe(textoPedidos))
             else:
@@ -3359,7 +3349,7 @@ def factura(cliente,
                 renglones = int(renglones) + 1
                 corte = int(len(textoPedidos)/renglones)
                 memcorte = corte
-                for i in range(renglones):
+                for i in range(renglones):  # @UnusedVariable
                     while (len(textoPedidos) > corte
                            and textoPedidos[corte-1] != ', '
                            and corte < 2*memcorte):
@@ -3476,7 +3466,6 @@ def factura(cliente,
                 # --------- 8< ----------
                 longitud = c.stringWidth(descripcion, fuente, tamanno)
                 longitudLimite = limite - origen
-                lineasSumadas = 1
                 if longitud < longitudLimite:
                     if alineacion_descripcion < 0:
                         c.drawString(origen, linea, escribe(descripcion))
@@ -3569,7 +3558,7 @@ def factura(cliente,
                 linea = sigLinea(20)
             # END OF for l in lineas:
 
-        if buffer == []:    # Si no va a haber segunda página, escribo los
+        if buff == []:    # Si no va a haber segunda página, escribo los
                             # cuadros de los totales.
             # -- Cuadro final
             c.setFont('Times-Roman', 8)
@@ -3584,7 +3573,7 @@ def factura(cliente,
                 c.setFont('Helvetica', 10)
                 lineas_agregadas = agregarFila(origen, linea, rm - 2.2*inch,
                     escribe(texto), c, "Helvetica", 10)
-                for i in xrange(lineas_agregadas):
+                for i in xrange(lineas_agregadas):  # @UnusedVariable
                     linea = sigLinea()
             c.saveState()
             c.setFont('Times-Roman', 8)
@@ -3634,7 +3623,6 @@ def factura(cliente,
             if arancel != None and arancel.strip() != "":
                 rectangulo(c, (lm+0.5*inch, bm+inch+21), (rm, bm+inch+7),
                            'ARANCEL:')
-                impuesto = 0
                 c.drawString(lm+1.4*inch, bm+inch+11,
                     escribe(arancel+'  Exención del I.V.A. Art. 25 1.a Ley 3'\
                                     '7/1992 de 29 de Diciembre del I.V.A.'))
@@ -3710,7 +3698,7 @@ def factura(cliente,
                     renglones = int(renglones) + 1
                     corte = int(len(textoDocumento)/renglones)
                     memcorte = corte
-                    for i in range(renglones):
+                    for i in range(renglones):  # @UnusedVariable
                         while (len(textoDocumento) > corte
                                and textoDocumento[corte-1] != ' '
                                and corte < 2*memcorte):
@@ -3725,7 +3713,7 @@ def factura(cliente,
 
         else:
             textopaginas = "Página %d de %d" % (numpagina, paginastotales)
-            anchotextopaginas = c.stringWidth(texto, "Helvetica", 10)
+            anchotextopaginas = c.stringWidth(texto, "Helvetica", 10)  # @UnusedVariable
             c.drawRightString(rm - 0.1 * cm, bm + 0.8 * inch, textopaginas)
 
 
@@ -3770,8 +3758,8 @@ def factura(cliente,
 
         # Salvamos la página
         c.showPage()
-        lineas = buffer[:MAXLINEAS]
-        buffer = buffer[MAXLINEAS:]
+        lineas = buff[:MAXLINEAS]
+        buff = buff[MAXLINEAS:]
 
     # Salvamos el documento
     c.save()
@@ -3862,13 +3850,13 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
         try:
             orden_ventanas = pclases.config.get_orden_ventanas()
         except:
-            orden_ventanas == "cf"  # Orden por defecto.
+            orden_ventanas = "cf"  # Orden por defecto.
 
     datos_empresa = pclases.DatosDeLaEmpresa.select()[0]
 
     global linea#, tm, lm, rm, bm
-    tmbak, bmbak, lmbak, rmbak = tm, bm, lm, rm = (680, 56.69, 05.35, 566.92)
-    x, y = lm, tm
+    tmbak, bmbak, lmbak, rmbak = tm, bm, lm, rm = (680, 56.69, 05.35, 566.92)  # @UnusedVariable
+    x, y = lm, tm  # @UnusedVariable
     # Creo la hoja
     nomarchivo = os.path.join(gettempdir(),
                               "factura_%s.pdf" % give_me_the_name_baby())
@@ -3889,8 +3877,8 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
     numpagina = 0
     from math import ceil
     paginastotales = ceil(len(lineas) / float(MAXLINEAS))
-    buffer_texto = texto
-    buffer = lineas[MAXLINEAS:]
+    buffer_texto = texto  # @UnusedVariable
+    buff = lineas[MAXLINEAS:]
     lineas = lineas[:MAXLINEAS]
     while (lineas != []):
         bm, tm = bmbak, tmbak
@@ -4093,7 +4081,6 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
             textoPedidos = factdata['pedido']
             longitud = c.stringWidth(textoPedidos, 'Helvetica', 10)
             longitudLimite = rm - origen
-            lineasSumadas = 1
             if longitud < longitudLimite:
                 c.drawString(origen, linea, escribe(textoPedidos))
             else:
@@ -4101,7 +4088,7 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
                 renglones = int(renglones) + 1
                 corte = int(len(textoPedidos)/renglones)
                 memcorte = corte
-                for i in range(renglones):
+                for i in range(renglones):  # @UnusedVariable
                     while (len(textoPedidos) > corte
                            and textoPedidos[corte-1] != ', '
                            and corte < 2*memcorte):
@@ -4203,7 +4190,6 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
                 # --------- 8< ----------
                 longitud = c.stringWidth(descripcion, fuente, tamanno)
                 longitudLimite = limite - origen
-                lineasSumadas = 1
                 if longitud < longitudLimite:
                     if alineacion_descripcion < 0:
                         c.drawString(origen, linea, escribe(descripcion))
@@ -4277,7 +4263,7 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
                 linea = sigLinea(20)
             # END OF for l in lineas:
 
-        if buffer == []:    # Si no va a haber segunda página, escribo los
+        if buff == []:    # Si no va a haber segunda página, escribo los
                             # cuadros de los totales.
             # -- Cuadro final
             c.setFont('Times-Roman', 8)
@@ -4293,7 +4279,7 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
                 lineas_agregadas = agregarFila(origen, linea, rm - 2.2*inch,
                                                escribe(texto), c, "Helvetica",
                                                10)
-                for i in xrange(lineas_agregadas):
+                for i in xrange(lineas_agregadas):  # @UnusedVariable
                     linea = sigLinea()
             c.saveState()
             c.setFont('Times-Roman', 8)
@@ -4310,7 +4296,6 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
             if arancel != None and arancel.strip() != "":
                 rectangulo(c, (lm+0.5*inch, bm+inch+21), (rm, bm+inch+7),
                            'ARANCEL:')
-                impuesto = 0
                 c.drawString(lm+1.4*inch, bm+inch+11,
                              escribe(arancel+'  Exención del I.V.A. Art. 25 '\
                              '1.a Ley 37/1992 de 29 de Diciembre del I.V.A.'))
@@ -4375,7 +4360,7 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
                     renglones = int(renglones) + 1
                     corte = int(len(textoDocumento)/renglones)
                     memcorte = corte
-                    for i in range(renglones):
+                    for i in range(renglones):  # @UnusedVariable
                         while (len(textoDocumento) > corte
                                and textoDocumento[corte-1] != ' '
                                and corte < 2*memcorte):
@@ -4390,7 +4375,6 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
 
         else:
             textopaginas = "Página %d de %d" % (numpagina, paginastotales)
-            anchotextopaginas = c.stringWidth(texto, "Helvetica", 10)
             c.drawRightString(rm - 0.1 * cm, bm + 0.8 * inch, textopaginas)
 
 
@@ -4398,8 +4382,8 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
 
         # Salvamos la página
         c.showPage()
-        lineas = buffer[:11]
-        buffer = buffer[11:]
+        lineas = buff[:11]
+        buff = buff[11:]
 
     # Salvamos el documento
     c.save()
@@ -4468,12 +4452,12 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
         try:
             orden_ventanas = pclases.config.get_orden_ventanas()
         except:
-            orden_ventanas == "cf"  # Orden por defecto.
+            orden_ventanas = "cf"  # Orden por defecto.
 
     global linea#, tm, lm, rm, bm
     tm, bm, lm, rm = (680, 56.69, 05.35, 566.92)
-    tmbak, bmbak, lmbak, rmbak = tm, bm, lm, rm = (680, 56.69, 05.35, 566.92)
-    x, y = lm, tm
+    tmbak, bmbak, lmbak, rmbak = tm, bm, lm, rm = (680, 56.69, 05.35, 566.92)  # @UnusedVariable
+    x, y = lm, tm  # @UnusedVariable
     # Creo la hoja
     nomarchivo = os.path.join(gettempdir(),
                               "factura_abono_%s.pdf" % give_me_the_name_baby())
@@ -4486,7 +4470,7 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
     from math import ceil
     paginastotales = ceil(len(lineas) / 11.0)
     buffer_texto = texto
-    buffer = lineas[11:]
+    buff = lineas[11:]
     lineas = lineas[:11]
     while (lineas != []):
         bm, tm = bmbak, tmbak
@@ -4823,7 +4807,7 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
                                       escribe(utils.float2str(desctotal)))
                 linea = sigLinea(20)
 
-        if buffer == []:    # Si no va a haber segunda página, escribo los
+        if buff == []:    # Si no va a haber segunda página, escribo los
                             # cuadros de los totales.
             # -- Cuadro final
             c.saveState()
@@ -4978,8 +4962,8 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
 
         # Salvamos la página
         c.showPage()
-        lineas = buffer[:11]
-        buffer = buffer[11:]
+        lineas = buff[:11]
+        buff = buff[11:]
 
     # Salvamos el documento
     c.save()
@@ -6117,7 +6101,7 @@ def exportar_a_csv(ruta, cabecera, datos):
     ruta_form = os.path.join("..", "formularios")
     if ruta_form not in sys.path:
         sys.path.append(ruta_form)
-    from formularios.informes import abrir_csv
+    from formularios.reports import abrir_csv
     datos_iso = []
     for fila in datos:
         fila_iso = []
@@ -6300,7 +6284,7 @@ def imprimir2(archivo,
 
     hoja.setTitle(titulo)
 
-    x, y = lm, tm + inch
+    x, y = lm, tm + inch  # @UnusedVariable
 
     texto = hoja.beginText()
     # Ponemos la cabecera
@@ -6378,8 +6362,8 @@ def imprimir2(archivo,
     hoja.setFont(fuente, tamanno)
     # 41 es el número máximo de líneas en el área de impresión
     paginas = int(len(datos) / MAXLINEAS) +1
-    x = lm
-    y = linea
+    x = lm  # @UnusedVariable
+    y = linea  # @UnusedVariable
     # contLinea se va incrementando con cada elemento y llegado al tope de
     # líneas provoca la creación de una nueva página.
     contLinea = 0
@@ -6472,7 +6456,7 @@ def imprimir2(archivo,
                         fuente = old_fuente
                     if tamanno == None:
                         tamanno = old_tamanno
-                except TypeError, msg:      # Se nos ha colado un entero,
+                except TypeError, msg:      # Se nos ha colado un entero, @UnusedVariable
                                             # probablemente.
                     # print msg, type(d[i]), d[i]
                     pass
@@ -6502,7 +6486,7 @@ def imprimir2(archivo,
             cabecera(hoja, titulo, fecha, apaisado = apaisado)
             linea = yCabecera
             # El cuerpo
-            x, y = lm, tm
+            x, y = lm, tm  # @UnusedVariable
             yCabecera = tm + inch
             hoja.setFont("Helvetica-Bold", 9)
             #hoja.setFont("Helvetica-Bold", 10)
@@ -6545,12 +6529,12 @@ def imprimir2(archivo,
                         xcampo[i], rm, yCabecera, campos[i][0], alineacion = 0)
             hoja.line(lm, yCabecera-2, rm, yCabecera-2)
             hoja.setFont(fuente, tamanno)
-            x = lm
+            x = lm  # @UnusedVariable
             linea = sigLinea()
         else:
             for i in range(max(lineasASaltar)):
                 linea = sigLinea()
-            x = lm
+            x = lm  # @UnusedVariable
     hoja.drawText(texto)
     # AQUÍ LOS GRÁFICOS.
     for imagen in graficos:
@@ -6667,7 +6651,7 @@ def etiquetasRollos(rollos, mostrar_marcado):
     4 por folio (A4).
     """
     global linea, tm, lm, rm, bm
-    x, y = lm, tm
+    x, y = lm, tm  # @UnusedVariable
     global linea
     MAXLINEAS = 40
 
@@ -6743,7 +6727,7 @@ def etiquetasRollos(rollos, mostrar_marcado):
     yCuartaLinea = (yCuartaLinea1, yCuartaLinea1, width/2 + yCuartaLinea1,
                     width/2 + yCuartaLinea1)
 
-    for j in range(len(rollos)/4+1):
+    for j in range(len(rollos)/4+1):  # @UnusedVariable
         temp = rollos[:4]
         if temp == []:
             break
@@ -6813,7 +6797,7 @@ def etiquetasBalas(balas):
     4 por folio (A4)
     """
     global linea, tm, lm, rm, bm
-    x, y = lm, tm
+    x, y = lm, tm  # @UnusedVariable
     global linea
     MAXLINEAS = 40
 
@@ -7046,7 +7030,7 @@ def abono_old(cliente, factdata, lineasAbono, lineasDevolucion, texto):
 
     global linea
     tm, bm, lm, rm = (680, 56.69, 05.35, 566.92)
-    x, y = lm, tm
+    x, y = lm, tm  # @UnusedVariable
     global linea
     # Creo la hoja
     nomarchivo = os.path.join(gettempdir(),

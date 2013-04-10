@@ -48,8 +48,8 @@ import pygtk
 pygtk.require('2.0')
 import gtk, time
 from framework import pclases
-from informes import geninformes
 from formularios import reports
+from informes import geninformes
 import mx.DateTime 
 from formularios.utils import _float as float
 

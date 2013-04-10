@@ -43,7 +43,6 @@ import pygtk
 pygtk.require('2.0')
 import os
 import sys
-from informes import geninformes
 from formularios import utils
 
 def abrir_pdf(pdf):
@@ -170,7 +169,7 @@ def imprimir_con_gs(fichero, impresora = None, blanco_y_negro = False):
         abrir_pdf(fichero)
     else:
         # Anoto aquí las impresoras que hay rulando, aunque no se use.
-        impresoras = {'oficina': ("RICOH Aficio 1224C PCL 5c", "OFICINA"),  
+        impresoras = {'oficina': ("RICOH Aficio 1224C PCL 5c", "OFICINA"),  # @UnusedVariable
                       'etiquetas': ("CAB", "CAB MACH 4 200DPI", "GEMINI2")}
         # XXX 
         ruta_a_gs = get_ruta_ghostscript()
@@ -222,6 +221,7 @@ if __name__=='__main__':
         print "ERROR: No se pasó el nombre de ningún informe"
         sys.exit(0)
 
+    from informes import geninformes
     informe = ' '.join(sys.argv[1:])
     if informe == 'Clientes y consumo': 
         nombrepdf = geninformes.pedidosCliente()
