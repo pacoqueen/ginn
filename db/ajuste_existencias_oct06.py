@@ -24,10 +24,8 @@ Para ello:
 """
 
 import sys, os
-sys.path.append('../framework')
-
-import pclases
-import mx, mx.DateTime
+from framework import pclases
+import mx.DateTime
 
 
 def build_inventario(drollos, dbalas):

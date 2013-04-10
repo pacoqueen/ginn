@@ -57,11 +57,11 @@ pygtk.require('2.0')
 import gtk, gtk.glade, time, sqlobject
 import sys
 try:
-    import pclases
+    from framework import pclases
     from configuracion import ConfigConexion
 except ImportError:
     from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    import pclases
+    from framework import pclases
     from configuracion import ConfigConexion
 import mx.DateTime
 import os, time, tempfile

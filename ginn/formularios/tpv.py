@@ -48,10 +48,10 @@ import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, time
 try:
-    import pclases
+    from framework import pclases
 except ImportError:
     from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    import pclases
+    from framework import pclases
 import mx.DateTime
 try:
     import geninformes
@@ -1764,7 +1764,7 @@ def buscar_producto(padre = None, tarifa = None, texto_defecto = ""):
     búsqueda en las tablas de producto_compra y producto_venta.
     """
     sys.path.append(os.path.join("..", "framework"))
-    import pclases
+    from framework import pclases
     res = None 
     a_buscar = utils.dialogo_entrada(titulo = "BUSCAR PRODUCTO", 
                                      texto = "Introduzca código o descripción del producto:", 

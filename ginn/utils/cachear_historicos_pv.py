@@ -38,8 +38,8 @@ if diractual == "fixes":
     os.chdir(path_to_f)
 sys.path.insert(0, os.path.join("..", "framework"))
 sys.path.insert(1, os.path.join("..", "formularios"))
-import pclases
-import utils
+from framework import pclases
+from formularios import utils
 import gc
 import psycopg2
 import psycopg2.extras

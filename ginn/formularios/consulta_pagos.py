@@ -39,12 +39,8 @@ import pygtk
 pygtk.require('2.0')
 import gtk, time
 import sys
-try:
-    import pclases
-except ImportError:
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    import pclases
-import mx, mx.DateTime
+from framework import pclases
+import mx.DateTime
 try:
     import geninformes
 except ImportError:

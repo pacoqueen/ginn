@@ -40,7 +40,7 @@
 import sys
 sys.path.append('../framework')
 
-import pclases, sqlobject
+from framework import pclases, sqlobject
 
 def id_propia_empresa_proveedor():
     """

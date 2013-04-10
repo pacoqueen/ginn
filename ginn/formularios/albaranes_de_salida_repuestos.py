@@ -36,18 +36,10 @@ import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, time, sqlobject
 import sys, os
-try:
-    import pclases
-except ImportError:
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    import pclases
-try:
-    import geninformes
-except ImportError:
-    sys.path.append('../informes')
-    import geninformes
-from utils import ffloat, _float as float
-import mx, mx.DateTime
+from framework import pclases
+from informes import geninformes
+from formularios.utils import ffloat, _float as float
+import mx.DateTime
 
 class AlbaranesDeSalidaRepuestos(Ventana):
     def __init__(self, objeto = None, usuario = None):

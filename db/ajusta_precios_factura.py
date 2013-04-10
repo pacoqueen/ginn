@@ -12,7 +12,7 @@
 #################################################################
 import sys, os
 sys.path.append(os.path.join('..', 'framework'))
-import pclases
+from framework import pclases
 
 # Lista de pares (idldv, preciounidad):
 ldvs = ((69, 0.39169906),

@@ -47,11 +47,11 @@ import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, time, sqlobject
 try:
-    import pclases
+    from framework import pclases
 except ImportError:
     import sys
     from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    import pclases
+    from framework import pclases
 import mx, mx.DateTime
 
 class LineasDeVentaSinPedido(Ventana):

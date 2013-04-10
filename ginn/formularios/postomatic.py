@@ -571,7 +571,7 @@ def abrir_notas(algo, tv, clase, usuario):
     try:
         objeto = clase.get(id)
     except ValueError:  # Es un PUID
-        import pclases
+        from framework import pclases
         objeto = pclases.getObjetoPUID(id)
     ventana = Postomatic(objeto, usuario)
 

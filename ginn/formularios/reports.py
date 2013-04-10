@@ -41,20 +41,10 @@
 
 import pygtk
 pygtk.require('2.0')
-import gtk
-import gtk.glade
 import os
 import sys
-
-from widgets import Widgets
-
-try:
-  import geninformes
-except ImportError:
-  sys.path.append('../informes')
-  import geninformes
-
-import utils
+from informes import geninformes
+from formularios import utils
 
 def abrir_pdf(pdf):
     """

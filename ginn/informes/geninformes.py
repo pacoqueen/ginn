@@ -47,24 +47,14 @@
 
 
 
-import reportlab
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib.units import inch, cm
-import gobject
 import mx.DateTime
 
 import sys, os
-try:
-    import pclases
-except ImportError:
-    sys.path.append(os.path.join('..', 'framework'))
-    import pclases
-try:
-    import utils
-except ImportError:
-    sys.path.append(os.path.join('..', 'formularios'))
-    import utils
+from framework import pclases
+from formularios import utils
 import time
 from tempfile import gettempdir
 import Image
@@ -6127,7 +6117,7 @@ def exportar_a_csv(ruta, cabecera, datos):
     ruta_form = os.path.join("..", "formularios")
     if ruta_form not in sys.path:
         sys.path.append(ruta_form)
-    from informes import abrir_csv
+    from formularios.informes import abrir_csv
     datos_iso = []
     for fila in datos:
         fila_iso = []

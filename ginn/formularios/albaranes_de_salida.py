@@ -85,20 +85,12 @@ import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, time
 import sys, os
-try:
-    import pclases
-except ImportError:
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    import pclases
-try:
-    import geninformes
-except ImportError:
-    sys.path.append('../informes')
-    import geninformes
-from utils import ffloat
-import mx, mx.DateTime
-from postomatic import attach_menu_notas
-from ventana_progreso import VentanaProgreso
+from framework import pclases
+from informes import geninformes
+from formularios.utils import ffloat
+import mx.DateTime
+from formularios.postomatic import attach_menu_notas
+from formularios.ventana_progreso import VentanaProgreso
 
 
 class AlbaranesDeSalida(Ventana):

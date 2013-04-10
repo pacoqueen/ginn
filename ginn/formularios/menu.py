@@ -52,27 +52,24 @@
 
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, gobject
-
+import gtk, gobject
 import os, sys, traceback
+from framework import pclases
 #os.environ['LANG'] = "es_ES"
 #os.environ['LANGUAGE'] = 'es_ES'
 #print os.environ
-os.chdir(os.path.dirname(os.path.realpath(sys.argv[0])))
+#os.chdir(os.path.dirname(os.path.realpath(sys.argv[0])))
 #print os.getcwd()
 #print os.path.realpath(sys.argv[0])
-sys.path.append(".")
+#sys.path.append(".")
 
-import gtkexcepthook
+from formularios import gtkexcepthook
 
-import utils
-import mx, mx.DateTime
-path_framework = os.path.join("..", "framework")
-if path_framework not in sys.path:
-    sys.path.append(path_framework)
-from configuracion import ConfigConexion
+from formularios import utils
+import mx.DateTime
+from framework.configuracion import ConfigConexion
 
-import custom_widgets
+from formularios import custom_widgets
 
 __version__ = '5.0.1 (alpha)'
 __version_info__ = tuple(
@@ -151,22 +148,6 @@ class MetaF:
         return len(self.t) == 0
 
 
-def import_pclases():
-    """
-    Importa y devuelve el módulo pclases.
-    """
-    ############################################################
-    # Importo pclases. No lo hago directamente en la cabecera 
-    # para esperar a ver si se ha pasado al main un fichero de 
-    # configuración diferente.
-    try:
-        import pclases
-    except ImportError:
-        sys.path.insert(0, os.path.join('..', 'framework'))
-        import pclases
-    ############################################################
-    return pclases
-
 class Menu:
     def __init__(self, user = None, passwd = None):
         """
@@ -179,7 +160,6 @@ class Menu:
         """
         import gestor_mensajes, autenticacion
         login = autenticacion.Autenticacion(user, passwd)
-        pclases = import_pclases()
         self.logger = login.logger
         if not login.loginvalido():
             sys.exit(1)
@@ -258,7 +238,9 @@ class Menu:
         self.ventana.set_position(gtk.WIN_POS_CENTER)
         self.ventana.resize(800, 600)
         self.ventana.set_title('Menú GINN')
-        self.ventana.set_icon(gtk.gdk.pixbuf_new_from_file('logo_w.xpm'))
+        self.ventana.set_icon(gtk.gdk.pixbuf_new_from_file(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+                         "..", "imagenes", 'logo_w.xpm')))
         self.ventana.set_border_width(10)
         self.ventana.connect("delete_event", self.salir, True, self.ventana)
         self.caja = gtk.VBox()
@@ -268,7 +250,8 @@ class Menu:
         imagen = gtk.Image()
         config = ConfigConexion()
         pixbuf_logo = gtk.gdk.pixbuf_new_from_file(
-            os.path.join('..', 'imagenes', config.get_logo()))
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+                         '..', 'imagenes', config.get_logo()))
         pixbuf_logo = escalar_a(300, 200, pixbuf_logo)
         imagen.set_from_pixbuf(pixbuf_logo)
         self.cabecera.pack_start(imagen, fill=True, expand=False)
@@ -313,7 +296,6 @@ class Menu:
         self.caja.pack_start(self.statusbar, False, True)
 
     def create_menu(self):
-        pclases = import_pclases()
         model = gtk.ListStore(str, gtk.gdk.Pixbuf)
         modulos = {}
         usuario = self.get_usuario()
@@ -352,12 +334,16 @@ class Menu:
         modulos_sorted.sort(fsortalfabeticamente)
         for modulo in modulos_sorted:
             if modulos[modulo]:
-                fichicono = os.path.join('..', 'imagenes', modulo.icono)
+                fichicono = os.path.join(
+                    os.path.dirname(os.path.realpath(__file__)), 
+                    '..', 'imagenes', modulo.icono)
                 pixbuf = gtk.gdk.pixbuf_new_from_file(fichicono)
                 model.append([modulo.nombre, pixbuf])
         # Módulo favoritos
         pixbuf = gtk.gdk.pixbuf_new_from_file(
-            os.path.join('..', 'imagenes', "favoritos.png"))
+            os.path.join(
+                os.path.dirname(os.path.realpath(__file__)), 
+                '..', 'imagenes', "favoritos.png"))
         iterfav = model.append(("Favoritos", pixbuf))
         
         contenedor = gtk.ScrolledWindow()
@@ -386,7 +372,6 @@ class Menu:
         return self.content_box 
  
     def on_select(self, icon_view, model=None):
-        pclases = import_pclases()
         selected = icon_view.get_selected_items()
         if len(selected) == 0: return
         i = selected[0][0]
@@ -414,7 +399,6 @@ class Menu:
                              if p.permiso and p.ventana.modulo == modulo]))
         else:
             frame = gtk.Frame("Ventanas más usadas")
-            pclases = import_pclases()
             usuario = self.get_usuario()
             stats = pclases.Estadistica.select(
              pclases.Estadistica.q.usuarioID == usuario.id, orderBy = "-veces")
@@ -480,11 +464,15 @@ class Menu:
         for ventana in ventanas:
             try:
                 pixbuf = gtk.gdk.pixbuf_new_from_file(
-                    os.path.join('..', 'imagenes', ventana.icono))
+                    os.path.join(
+                                 os.path.dirname(os.path.realpath(__file__)), 
+                                 '..', 'imagenes', ventana.icono))
             except (gobject.GError, AttributeError, TypeError):  
                 # Icono es "" o None (NULL en la tabla).
                 pixbuf = gtk.gdk.pixbuf_new_from_file(
-                    os.path.join('..', 'imagenes', 'dorsia.png'))
+                    os.path.join(
+                                 os.path.dirname(os.path.realpath(__file__)), 
+                                 '..', 'imagenes', 'dorsia.png'))
             model.append((self.cutmaister(ventana.descripcion), 
                           pixbuf, ventana.fichero, ventana.clase))
             # El model tiene: nombre (descripción), icono, archivo, clase, 
@@ -562,7 +550,6 @@ class Menu:
     def abrir(self, iview, path, model):
         clase = model[path][3]
         archivo = model[path][2]
-        pclases = import_pclases()
         pclases.Estadistica.incrementar(self.usuario, archivo)
         self.abrir_ventana(archivo, clase)
 
@@ -572,8 +559,10 @@ class Menu:
         v = None 
         gobject.timeout_add(100, self.volver_a_cursor_original)
         if archivo == "usuarios": 
+            import usuarios
             v = usuarios.Usuarios(self.get_usuario())
         elif archivo == "ventana_usuario":
+            import ventana_usuario
             v = ventana_usuario.Usuarios(self.get_usuario())
 
     def abrir_ventana(self, archivo, clase):
@@ -819,7 +808,9 @@ class Menu:
                              'Diego Muñoz Escalante <escalant3@gmail.com>'])
         config = ConfigConexion()
         logo = gtk.gdk.pixbuf_new_from_file(
-            os.path.join('..', 'imagenes', config.get_logo()))
+            os.path.join(
+                         os.path.dirname(os.path.realpath(__file__)), 
+                         '..', 'imagenes', config.get_logo()))
         logo = escalar_a(300, 200, logo)
         vacerca.set_logo(logo)
         vacerca.set_license(open(os.path.join('..', 'gpl.txt')).read())
@@ -833,12 +824,13 @@ class Menu:
 
 
 def construir_y_enviar(w, ventana, remitente, observaciones, texto, usuario):
+    # FIXME: Esto hay que cambiarlo.
     import ventana_progreso, sys, os
     try:
-        import libgmail
+        import libgmail  # @UnresolvedImport
     except:
         sys.path.insert(0, os.path.join('..', 'libgmail-0.1.11'))
-        import libgmail
+        import libgmail  # @UnresolvedImport
     rte = remitente.get_text()
     buffer = observaciones.get_buffer()
     obs = buffer.get_text(buffer.get_start_iter(), buffer.get_end_iter()) 
@@ -972,7 +964,9 @@ def crear_ventana(titulo, texto, usuario):
     ventana.set_position(gtk.WIN_POS_CENTER_ALWAYS)
     tabla = gtk.Table(5, 2)
     imagen = gtk.Image()
-    imagen.set_from_file(os.path.join("..", 'imagenes', 'emblem-mail.png'))
+    imagen.set_from_file(os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), 
+        "..", 'imagenes', 'emblem-mail.png'))
     info = gtk.Label('Se produjo un error mientras usaba la aplicación\n'
         'Es recomendable enviar un informe a los desarrolladores.\nDebe '
         'contar con una cuenta de correo electrónico para poder hacerlo.')
@@ -1008,7 +1002,9 @@ def _crear_ventana(titulo, texto, usuario):
     ventana.set_position(gtk.WIN_POS_CENTER_ALWAYS)
     tabla = gtk.Table(5, 2)
     imagen = gtk.Image()
-    imagen.set_from_file(os.path.join('..', 'imagenes', 'emblem-mail.png'))
+    imagen.set_from_file(os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), 
+        '..', 'imagenes', 'emblem-mail.png'))
     info = gtk.Label('Se produjo un error mientras usaba la aplicación\nEs '
                      'recomendable enviar un informe a los desarrolladores.\n'
                      'Debe contar con una cuenta de correo gmail para poder '
@@ -1096,9 +1092,11 @@ def main():
     # de por ese orden.
     GTKRC2 = ".gtkrc-2.0" # Depende de la versión...
     GTKRC = "gtkrc"
-    gtk.rc_parse(os.path.join("..", GTKRC))
-    gtk.rc_parse(os.path.join("..", GTKRC2)) # Si no existe se ignora de 
-                                             # manera silenciosa.
+    gtk.rc_parse(os.path.join(
+        os.path.dirname(__file__), "..", GTKRC))
+    gtk.rc_parse(os.path.join(
+        os.path.dirname(__file__),"..", GTKRC2))    # Si no existe se ignora  
+                                                    # de manera silenciosa.
     if "HOME" in os.environ:
         gtk.rc_parse(os.path.join(os.environ["HOME"], GTKRC))
         gtk.rc_parse(os.path.join(os.environ["HOME"], GTKRC2))
@@ -1150,10 +1148,8 @@ def main():
     #sys.stdout = salida
     errores = MetaF()
     sys.stderr = errores
-
     m = Menu(user, passwd)
     m.mostrar()
-
     if not errores.vacio():
         print "Se han detectado algunos errores en segundo plano durante "\
               "la ejecución."

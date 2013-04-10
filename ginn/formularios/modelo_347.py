@@ -41,10 +41,10 @@ pygtk.require('2.0')
 import gtk, gtk.glade, time, sqlobject
 import sys, os
 try:
-    import pclases
+    from framework import pclases
 except ImportError:
     sys.path.append(os.path.join('..', 'framework'))
-    import pclases
+    from framework import pclases
 import mx.DateTime
 try:
     import geninformes

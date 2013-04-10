@@ -44,11 +44,11 @@ import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, time
 try:
-    import pclases
+    from framework import pclases
 except ImportError:
     import sys
     from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    import pclases
+    from framework import pclases
 import mx.DateTime
 import os 
 import cmdgtk
@@ -82,7 +82,7 @@ class Trazabilidad(Ventana):
                                            banner = "Consola python de depuración GINN", 
                                            script_inicio = """import sys, os, pygtk, gtk, gtk.glade, utils
 sys.path.append(os.path.join("..", "framework"))
-import pclases, mx, mx.DateTime
+from framework import pclases, mx, mx.DateTime
 from seeker import VentanaGenerica as Ver
 dir()
 #Ver(self.objeto)

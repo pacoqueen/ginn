@@ -47,12 +47,12 @@ pygtk.require('2.0')
 import gtk, gtk.glade, time
 import sys, os
 try:
-    import pclases
+    from framework import pclases
     from seeker import VentanaGenerica
 except ImportError:
     from os.path import join as pathjoin
     sys.path.append(pathjoin("..", "framework"))
-    import pclases
+    from framework import pclases
     from seeker import VentanaGenerica
 try:
     import geninformes

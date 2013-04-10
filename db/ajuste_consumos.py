@@ -7,11 +7,9 @@ en adelante.
 """
 
 import sys
-sys.path.append("../framework")
-sys.path.append("../formularios")
-import pclases
-import utils
-import mx, mx.DateTime
+from framework import pclases
+from formularios import utils
+import mx.DateTime
 
 UNO_OCT = mx.DateTime.DateTimeFrom(day = 1, month = 10, year = 2006)
 

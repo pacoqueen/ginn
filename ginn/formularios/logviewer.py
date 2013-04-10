@@ -46,10 +46,10 @@ import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, time, gobject
 try:
-    import pclases
+    from framework import pclases
 except ImportError:
     from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    import pclases
+    from framework import pclases
 import mx, mx.DateTime
 
 class LogViewer(Ventana):
@@ -84,7 +84,7 @@ class LogViewer(Ventana):
                                 banner = "Consola python de depuración GINN", 
                                 script_inicio = """import sys, os, pygtk, gtk, gtk.glade, utils
 sys.path.append(os.path.join("..", "framework"))
-import pclases, mx, mx.DateTime
+from framework import pclases, mx, mx.DateTime
 dir()
 """, 
                                 locals = vars_locales)

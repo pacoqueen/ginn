@@ -46,10 +46,10 @@ import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, time
 try:
-    import pclases
+    from framework import pclases
 except ImportError:
     from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    import pclases
+    from framework import pclases
 from utils import _float as float
 sys.path.append(os.path.join('..', 'informes'))
 from barcode.EANBarCode import EanBarCode

@@ -54,7 +54,7 @@ def test():
         sys.path.insert(0, os.path.join('..', 'SQLObject', 'SQLObject-0.6.1'))
         sys.path.insert(0, os.path.join("..", "framework"))
         sys.path.insert(0, os.path.join("..", "formularios"))
-    import pclases
+    from framework import pclases
     albss = pclases.AlbaranSalida.select()[-5:-1]  # @UndefinedVariable
     albss.append(pclases.AlbaranSalida.get(3862))  # @UndefinedVariable
     albaransalida.exportar_a(albss, "/tmp/albaranes_salida.csv")

@@ -3,10 +3,10 @@
 
 import os, sys
 sys.path.insert(0, (os.path.join(os.path.abspath(os.path.dirname(__file__)), 
-                    "..", "framework")))
+                    "..", "ginn")))
 os.chdir(os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", 
-                      "framework"))
-import pclases
+                      "ginn"))
+from framework import pclases
 
 fventanas = (("consulta_cartera.py", 
                 "Consultar efectos en cartera", 

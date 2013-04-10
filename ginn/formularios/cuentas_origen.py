@@ -47,11 +47,11 @@ import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, time, sqlobject
 try:
-    import pclases
+    from framework import pclases
     from seeker import VentanaGenerica 
 except ImportError:
     sys.path.append(os.path.join('..', 'framework'))
-    import pclases
+    from framework import pclases
     from seeker import VentanaGenerica 
 from utils import _float as float
 import mx.DateTime

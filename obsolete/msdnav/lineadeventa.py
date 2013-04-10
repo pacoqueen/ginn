@@ -26,10 +26,7 @@
 import csv
 import sys, os
 #print os.path.abspath(os.path.curdir)
-sys.path.insert(0, os.path.join('SQLObject', 'SQLObject-0.6.1'))
-sys.path.insert(0, "framework")
-sys.path.insert(0, "formularios")
-import pclases
+from framework import pclases
 
 def get_puid(prod_o_servicio):
     """

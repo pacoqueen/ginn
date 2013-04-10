@@ -46,17 +46,12 @@
 ## cuando se accede a un widget que no existe, en lugar de devolver
 ## None. Opino. <-- Esto ya está hecho.
 ###################################################################
-import utils
 import pygtk
 pygtk.require('2.0')
-import sys, os
-import gtk, gtk.glade, time, sqlobject
-try:
-    import pclases
-except ImportError:
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    import pclases
-from widgets import Widgets
+import os
+import gtk
+from framework import pclases
+from formularios.widgets import Widgets
 
 def eliminar_temporales():
     """

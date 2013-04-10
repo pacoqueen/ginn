@@ -82,7 +82,7 @@ class Ventana:
         otro icono soportado por Pixbuf.
         """
         if isinstance(usuario, int):
-            import pclases
+            from framework import pclases
             usuario = pclases.Usuario.get(usuario)
         self.__usuario = usuario
         self._is_fullscreen = False
@@ -289,7 +289,7 @@ class Ventana:
         PRECONDICION: self.__usuario debe ser un objeto usuario.
         """
         res = ""
-        import pclases
+        from framework import pclases
         for modulo in [m for m in pclases.Modulo.select(orderBy = "nombre") \
                        if len([p.ventana for p in self.__usuario.permisos if p.permiso and p.ventana.modulo == m]) > 0]: 
             res += """<menu name="%s" action="M%d">""" % (modulo.nombre, modulo.id)
@@ -352,7 +352,7 @@ class Ventana:
         Construye una lista de acciones de menú compatible 
         con UIManager.
         """
-        import pclases
+        from framework import pclases
         acciones = []
         for modulo in [m for m in pclases.Modulo.select(orderBy = "nombre") 
                        if len([p.ventana 
@@ -394,7 +394,7 @@ class Ventana:
         """
         Abre la ventana de la entrada de menú recibida.
         """
-        import pclases, utils
+        from framework import pclases, utils
         idventana = int(action.get_name().replace("V", ""))
         ventana = pclases.Ventana.get(idventana)
         clase = ventana.clase
@@ -926,7 +926,7 @@ class Ventana:
         """
         VENTANA = nombre_fichero_ventana
         if self.usuario != None and self.usuario.nivel > 0:
-            import pclases
+            from framework import pclases
             ventanas = pclases.Ventana.selectBy(fichero = VENTANA)
             if ventanas.count() == 1:   # Siempre debería ser 1.
                 permiso = self.usuario.get_permiso(ventanas[0])

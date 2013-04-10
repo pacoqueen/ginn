@@ -59,10 +59,10 @@ pygtk.require('2.0')
 import gtk, time, mx.DateTime
 import sys
 try:
-    import pclases
+    from framework import pclases
 except ImportError:
     from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    import pclases
+    from framework import pclases
 try:
     import geninformes
 except ImportError:

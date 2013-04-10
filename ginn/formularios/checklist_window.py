@@ -57,13 +57,8 @@ from threading import Thread, Semaphore
 from ventana_progreso import VentanaActividad
 vpro = VentanaActividad(texto = "Generando excepciones a ignorar...")
 vpro.mostrar()
-
-path_framework = os.path.join("..", "framework")
-if path_framework not in sys.path:
-    sys.path.append(path_framework)
-
 vpro.mover()
-import pclases
+from framework import pclases
 vpro.mover()
 dde = pclases.DatosDeLaEmpresa.select()[0]
 vpro.mover()

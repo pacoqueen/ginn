@@ -65,7 +65,7 @@ def ultimo_pedido_de_venta():
     Devuelve el último número de pedido de venta válido 
     para el año en curso o 0 si no hay pedidos de venta. 
     """
-    import pclases
+    from framework import pclases
     # Los pedidos de compra son aquellos que tienen como proveedor a 
     # la propia empresa:
     idcliente = id_propia_empresa_cliente()
@@ -83,7 +83,7 @@ def ultimo_numfactura():
     """
     Devuelve el mayor número de factura.
     """
-    import pclases
+    from framework import pclases
     try:
         fact = pclases.FacturaVenta.select(orderBy = "-numfactura")[0]
     except IndexError:

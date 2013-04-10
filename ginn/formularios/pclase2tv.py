@@ -10,12 +10,12 @@ de datos de la columna y todo, todo, todo.
 """
 
 try:
-    import pclases
+    from framework import pclases
 except ImportError:
     import sys
     from os.path import join as pathjoin
     sys.path.append(pathjoin("..", "framework"))
-    import pclases
+    from framework import pclases
 import mx, mx.DateTime
 import utils
 import ventana_progreso

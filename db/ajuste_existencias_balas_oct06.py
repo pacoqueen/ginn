@@ -24,12 +24,9 @@ Para ello:
 """
 
 import sys, os
-sys.path.append('../framework')
-
-import pclases
+from framework import pclases
 import mx, mx.DateTime
-sys.path.append('../formularios')
-import utils
+from formularios import utils
 
 uno_octubre = mx.DateTime.DateTimeFrom(day = 1, month = 10, year = 2006)
 

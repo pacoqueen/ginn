@@ -8,8 +8,7 @@
 # 
 #################################################################
 import sys, os
-sys.path.append(os.path.join('..', 'framework'))
-import pclases
+from framework import pclases
 import mx.DateTime
 
 lineafibra = pclases.LineaDeProduccion.select(pclases.LineaDeProduccion.q.nombre.contains('ibra'))[0]

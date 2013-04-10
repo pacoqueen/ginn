@@ -56,13 +56,7 @@ import pygtk
 import gobject
 pygtk.require('2.0')
 import gtk, gtk.glade, time
-try:
-    import pclases
-except ImportError:
-    import sys
-    from os.path import join as pathjoin
-    sys.path.append(pathjoin("..", "framework"))
-    import pclases
+from framework import pclases
 try:
     import geninformes
 except ImportError:

@@ -28,16 +28,8 @@
 
 import mx, mx.DateTime, os, sys
 
-try:
-    import pclases
-except ImportError:
-    sys.path.append(os.path.join('..', 'framework'))
-    import pclases
-try:
-    import utils
-except ImportError:
-    sys.path.append(os.path.join('..', 'formularios'))
-    import utils
+from framework import pclases
+from formularios import utils
 
 
 import csv

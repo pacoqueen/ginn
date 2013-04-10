@@ -36,19 +36,9 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, time, sqlobject
-try:
-    import pclases
-except ImportError:
-    import sys
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    import pclases
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
-from utils import _float as float
+from framework import pclases
+from informes import geninformes
+from formularios.utils import _float as float
 
 
 class AlbaranesDeEntradaCS21(Ventana):

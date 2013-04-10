@@ -9,11 +9,7 @@ a la 2.9:
 
 import sys, os
 
-try:
-    import pclases
-except ImportError:
-    sys.path.append(os.path.join("..", "framework"))
-    import pclases
+from framework import pclases
 
 def get_dbname():
     dsn = pclases.ProductoCompra._connection.dsn  # @UndefinedVariable

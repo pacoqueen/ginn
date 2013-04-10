@@ -675,7 +675,7 @@ def _make_window():
 
     return console
 
-def attach_console(contenedor, banner = "Hola holita", script_inicio = "import pclases\n", locals = None):
+def attach_console(contenedor, banner = "Hola holita", script_inicio = "from framework import pclases\n", locals = None):
     """
     Inserta un TextView con la consola interactiva en 
     el contenedor recibido.

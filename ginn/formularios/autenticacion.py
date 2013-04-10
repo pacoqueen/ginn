@@ -37,15 +37,15 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk, time
 import sys, os
 try:
     from hashlib import md5
 except ImportError:
     import md5 
+from framework.pclases import Usuario
 
 def get_IPLocal():
     """
@@ -90,7 +90,9 @@ class Autenticacion(Ventana):
         self.add_connections(connections)
         self.wids['e_usuario'].grab_focus()
         self.wids['image1'].set_from_file(
-            os.path.join('..', 'imagenes', 'llave.png'))
+            os.path.join(
+            os.path.abspath(os.path.dirname(os.path.realpath(__file__))), 
+            "..", 'imagenes', 'llave.png'))
         self.contador = 0   # Contador de intentos fallidos
         self.__success = False
         self.__usuario = None
@@ -161,12 +163,6 @@ class Autenticacion(Ventana):
         que hablaban los frikazos de «Juegos de guerra» con el usuario 
         indicado sin comprobar la contraseña.
         """
-        try:
-            from pclases import Usuario
-        except ImportError:
-            import sys
-            from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-            from pclases import usuario
         try:
             md5passwd = md5.new(passwd).hexdigest()
         except AttributeError:  # Es el md5 de hashlib

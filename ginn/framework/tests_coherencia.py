@@ -33,7 +33,8 @@
 #       por número de factura según su serie (contador) son consecutivas.
 ###############################################################################
 
-import pclases, mx, mx.DateTime, utils, time, sys
+from framework import pclases
+import mx.DateTime, utils, time, sys
 
 """
 Test de coherencia de datos para realizar periódicamente.

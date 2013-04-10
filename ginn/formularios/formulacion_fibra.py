@@ -46,11 +46,11 @@ import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, time
 try:
-    import pclases
+    from framework import pclases
 except ImportError:
     import sys
     from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    import pclases
+    from framework import pclases
 from utils import _float as float
 try:
     from psycopg import ProgrammingError as psycopg_ProgrammingError

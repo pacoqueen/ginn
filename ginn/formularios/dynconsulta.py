@@ -37,11 +37,11 @@ import pygtk
 pygtk.require('2.0')
 import gtk, time, mx.DateTime
 try:
-    import pclases
+    from framework import pclases
     from seeker import VentanaGenerica 
 except ImportError:
     sys.path.append(os.path.join('..', 'framework'))
-    import pclases
+    from framework import pclases
     from seeker import VentanaGenerica 
 old_float = float
 from utils import _float as float

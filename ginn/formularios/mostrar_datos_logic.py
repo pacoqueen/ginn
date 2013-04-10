@@ -43,10 +43,10 @@ import sys, os
 import sqlobject
 import gtk, gtk.glade, time
 try:
-    import pclases
+    from framework import pclases
 except ImportError:
     from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    import pclases
+    from framework import pclases
 import mx.DateTime
 import csv
 import time

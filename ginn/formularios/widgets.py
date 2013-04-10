@@ -23,7 +23,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA  #
 ###############################################################################
 
-
+import os
 import pygtk
 pygtk.require('2.0')
 import gtk
@@ -36,6 +36,10 @@ BUILDER = False  # Flag para ver si trabajamos con libglade o con gtkBuilder.
 
 class Widgets:
     def __init__(self, uifile):
+        if not os.path.exists(uifile):
+            uifile = os.path.join(
+                os.path.abspath(os.path.dirname(os.path.realpath(__file__))), 
+                uifile)
         try:
             self.widgets = gtk.glade.XML(uifile)
         except RuntimeError:

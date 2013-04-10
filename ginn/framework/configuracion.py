@@ -87,6 +87,9 @@ class ConfigConexion:
         """
         self.__fileconf = fileconf
         if not os.path.exists(self.__fileconf):
+            self.__fileconf = os.path.join(
+                os.path.dirname(os.path.realpath(__file__)), fileconf)
+        if not os.path.exists(self.__fileconf):
             self.__fileconf = os.path.join('framework', fileconf)
         if not os.path.exists(self.__fileconf):
             self.__fileconf = os.path.join('..', 'framework', fileconf)
@@ -97,9 +100,11 @@ class ConfigConexion:
         try:
             self.__fileconf = open(self.__fileconf)
         except IOError:
+            print "ERROR: configuracion::__set_conf -> Fichero de "\
+                  "configuración %s no encontrado (%s)." % (fileconf, 
+                                                            self.__fileconf)
             self.__fileconf = None
             self.__conf = {}
-            print "ERROR: configuracion::__set_conf -> Fichero de configuración %s no encontrado." % (fileconf)
         else:
             self.__conf = self.__parse()
             self.__fileconf.close()

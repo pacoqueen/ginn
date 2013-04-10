@@ -39,16 +39,11 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, time, mx, mx.DateTime
-try:
-    import pclases
-    from seeker import VentanaGenerica 
-except ImportError:
-    sys.path.append(os.path.join('..', 'framework'))
-    import pclases
-    from seeker import VentanaGenerica 
-from utils import _float as float
-from trazabilidad_articulos import escribir as txt_write, \
-                                   borrar_texto as txt_clear
+from framework import pclases
+from frameowrk.seeker import VentanaGenerica 
+from formularios.utils import _float as float
+from formularios.trazabilidad_articulos import escribir as txt_write, \
+                                               borrar_texto as txt_clear
 
 class CertificadoCalidad(Ventana, VentanaGenerica):
     def __init__(self, objeto = None, usuario = None):

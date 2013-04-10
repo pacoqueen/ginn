@@ -905,7 +905,7 @@ asegurar_fecha_positiva	utils.py	/^def asegurar_fecha_positiva(fecha):$/;"	f
 asignar_obra	crm_seguimiento_impagos.py	/^    def asignar_obra(self, boton):$/;"	m	class:CRM_SeguimientoImpagos
 asignar_tarifa	clientes.py	/^    def asignar_tarifa(self,wid):$/;"	m	class:Clientes
 atributos_iguales	pedidos_de_venta.py	/^    def atributos_iguales(at1, at2):$/;"	f	function:ldps_iguales
-attach_console	pyconsole.py	/^def attach_console(contenedor, banner = "Hola holita", script_inicio = "import pclases\\n", locals = None):$/;"	f
+attach_console	pyconsole.py	/^def attach_console(contenedor, banner = "Hola holita", script_inicio = "from framework import pclases\\n", locals = None):$/;"	f
 attach_menu_notas	postomatic.py	/^def attach_menu_notas(tv, clase, usuario, col = None):$/;"	f
 attach_to	cmdgtk.py	/^    def attach_to(self, contenedor):$/;"	m	class:CmdGTK
 avanzar	tpv.py	/^    def avanzar(self, n = 1):$/;"	m	class:LPT

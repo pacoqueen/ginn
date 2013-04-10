@@ -46,20 +46,12 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
-import sys, os
-try:
-    import pclases
-except ImportError:
-    sys.path.insert(0, os.path.join('..', 'framework'))
-    import pclases
-try:
-    import geninformes
-except ImportError:
-    sys.path.append('../informes')
-    import geninformes
+import gtk, time
+from framework import pclases
+from informes import geninformes
+from formularios import reports
 import mx.DateTime 
-from utils import _float as float
+from formularios.utils import _float as float
 
 class AbonosVenta(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -195,7 +187,7 @@ class AbonosVenta(Ventana):
             = self.wids['b_albaran_abono'].get_property("sensitive")
         s = s and (self.usuario == None or self.usuario.nivel <= 1)
         if self.usuario and self.usuario.nivel > 1:
-             self.wids['b_nuevo'].set_sensitive(False)
+            self.wids['b_nuevo'].set_sensitive(False)
             # PLAN: Cambiar por permisos lectura/escritura/nuevo en lugar de 
             # hacerlo en base al nivel de privilegios del usuario.
         ws = ('hbox1', 'hbox5', 'vbox2', 'hbox6', 'b_albaran_abono', 
@@ -714,16 +706,16 @@ class AbonosVenta(Ventana):
             return idsa
 
     def drop_devolucion(self, w):
-        model,iter=self.wids['tv_devoluciones'].get_selection().get_selected()
-        if iter == None:
+        model,itr=self.wids['tv_devoluciones'].get_selection().get_selected()
+        if itr == None:
             utils.dialogo_info(titulo = 'ERROR', 
                                texto = 'No ha seleccionado ninguna línea', 
                                padre = self.wids['ventana'])
             return
 
-        if model[iter].parent == None:
+        if model[itr].parent == None:
             return
-        idldd = model[iter][-1]
+        idldd = model[itr][-1]
         ldd = pclases.LineaDeDevolucion.get(idldd)
         try:
             if ldd.albaranSalida:
@@ -880,8 +872,8 @@ class AbonosVenta(Ventana):
         if ids[0] == -1:
             return [], []
         else:
-            idldvs=[int(id.replace("LDV_", "")) for id in ids if "LDV_" in id]
-            idservs = [int(id.replace("S_", "")) for id in ids if "S_" in id]
+            idldvs=[int(ide.replace("LDV_", "")) for ide in ids if "LDV_" in ide]
+            idservs = [int(ide.replace("S_", "")) for ide in ids if "S_" in ide]
             return idldvs, idservs
     
     def seleccionar_ldv_de_factura(self, factura):
@@ -923,13 +915,13 @@ class AbonosVenta(Ventana):
             return idsldv
             
     def drop_ajuste(self, w):
-        model, iter = self.wids['tv_precios'].get_selection().get_selected()
-        if iter == None:
+        model, itr = self.wids['tv_precios'].get_selection().get_selected()
+        if itr == None:
             utils.dialogo_info(titulo = 'ERROR', 
                                texto = 'No ha seleccionado ninguna línea', 
                                padre = self.wids['ventana'])
             return
-        idlda = model[iter][-1]
+        idlda = model[itr][-1]
         lda = pclases.LineaDeAbono.get(idlda)
         try:
             lda.destroy(usuario = self.usuario, ventana = __file__)
@@ -1156,8 +1148,8 @@ class AbonosVenta(Ventana):
         total_bultos = 0
         for i in range(len(model)):
             if model[i].parent != None:
-                continue  # Salto las líneas de los artículos. Las trataré 
-                          # recorriendo los hijos de las líneas de los totales.
+                continue    # Salto las líneas de los artículos. Las trataré 
+                        # recorriendo los hijos de las líneas de los totales.
             cantidad = 0
             bultos = 0
             for devolucion in model[i].iterchildren():
@@ -1241,17 +1233,16 @@ class AbonosVenta(Ventana):
             arancel = None  # La interfaz de los abonos en geninformes es así: 
                             # None para "no arancel".
         facturas_abonadas = self.wids['e_facturas'].get_text()
-        import informes
-        informes.abrir_pdf(geninformes.abono(cliente, 
-                                             facdata, 
-                                             lineasAbono, 
-                                             lineasDevolucion, 
-                                             arancel, 
-                                             vencimiento, 
-                                             texto, 
-                                             totales, 
-                                             1 + iva, 
-                                             facturas_abonadas))
+        reports.abrir_pdf(geninformes.abono(cliente, 
+                                            facdata, 
+                                            lineasAbono, 
+                                            lineasDevolucion, 
+                                            arancel, 
+                                            vencimiento, 
+                                            texto, 
+                                            totales, 
+                                            1 + iva, 
+                                            facturas_abonadas))
         self.packinglist()
 
     def packinglist(self, abrir_pdf = True):
@@ -1383,7 +1374,7 @@ class AbonosVenta(Ventana):
         return self.imprimir_packing_list(tuple(pl), abrir_pdf)
     
     def imprimir_packing_list(self, packing_lists, abrir_pdf = True):
-        from informes import abrir_pdf as abrir_archivo_pdf
+        from formularios.reports import abrir_pdf as abrir_archivo_pdf
         self.guardar(None)  # Si se ha olvidado guardar, guardo yo.
         packings_generados = []
         func_packinglist = geninformes._packingListBalas

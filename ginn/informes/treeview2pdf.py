@@ -33,11 +33,7 @@ except ImportError:
     import utils
     from trazabilidad import Trazabilidad
 import mx, mx.DateTime
-try:
-    import pclases
-except ImportError:
-    sys.path.append(os.path.join('..', 'framework'))
-    import pclases
+from framework import pclases
 from informes import abrir_pdf
 from tempfile import gettempdir
 from gtk import TreeStore
