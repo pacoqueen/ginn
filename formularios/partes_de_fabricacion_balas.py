@@ -355,7 +355,7 @@ class PartesDeFabricacionBalas(Ventana):
             try:
                 a = bala.articulo
             except:
-                self.logger.warning("partes_de_fabricacion_balas::rellenar_widgets -> Elimino bala «huérfana» de artículo %s." % a.puid)
+                self.logger.warning("partes_de_fabricacion_balas::rellenar_widgets -> Elimino bala «huérfana» de artículo %s." % bala.puid)
                 bala.destroy(ventana = __file__)
             i += 1
             if i >= max_a_comprobar:
