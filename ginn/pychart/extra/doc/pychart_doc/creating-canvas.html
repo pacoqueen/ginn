@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head><style type="text/css">
+pre {background-color: #e0e0e0}
+</style>
+
+<link rel="STYLESHEET" href="pychart.css" type='text/css' />
+<link rel="first" href="pychart.html" title='PyChart' />
+<link rel='index' href='genindex.html' title='Index' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="drawing-graph-canvas.html" />
+<link rel="prev" href="module-canvas.html" />
+<link rel="parent" href="module-canvas.html" />
+<link rel="next" href="drawing-graph-canvas.html" />
+<meta name='aesop' content='information' />
+<title>21.1 Creating a canvas</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="21 canvas - Controlling"
+  href="module-canvas.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="21 canvas - Controlling"
+  href="module-canvas.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="21.2 Drawing plots on"
+  href="drawing-graph-canvas.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="module-canvas.html">21 canvas - Controlling</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="module-canvas.html">21 canvas - Controlling</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="drawing-graph-canvas.html">21.2 Drawing plots on</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION0002110000000000000000"></A><A NAME="creating-canvas"></A><a id='l2h-346' xml:id='l2h-346'></a>
+<BR>
+21.1 Creating a canvas
+</H2>
+<a id='l2h-347' xml:id='l2h-347'></a><a id='l2h-350' xml:id='l2h-350'></a>
+
+<P>
+A new canvas is created by calling the class static method
+<code>canvas.init</code>. It is closed by
+calling the <code>close()</code> method of the canvas object.
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-348' xml:id='l2h-348' class="function">init</tt></b>(</nobr></td>
+  <td><var>fname=None format=None</var>)</td></tr></table></dt>
+<dd>
+This is a "factory" procedure that creates a new canvas.T object.
+    Both parameters, <var>fname</var> and
+    <var>format</var>, are optional. Parameter <var>fname</var> specifies either the output
+    file name or a file object. Parameter <var>format</var>, if specified, defines the
+    file's format. Its value must be one of "ps", "pdf", "svg", "x11", or
+    "png".
+
+<P>
+When <var>fname</var> is omitted or is None, the output is sent to standard
+    output. When <var>format</var> is omitted, it is guessed from the <var>fname</var>'s
+    suffix; failing that, "ps" is selected.
+
+<P>
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-349' xml:id='l2h-349' class="method">close</tt></b>(</nobr></td>
+  <td><var></var>)</td></tr></table></dt>
+<dd>
+This method closes the canvas and writes contents to the
+        associated file.  Calling this procedure is optional, because
+        Pychart calls this procedure for every open canvas on normal
+        exit.
+
+<P>
+</dl>
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="21 canvas - Controlling"
+  href="module-canvas.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="21 canvas - Controlling"
+  href="module-canvas.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="21.2 Drawing plots on"
+  href="drawing-graph-canvas.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="module-canvas.html">21 canvas - Controlling</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="module-canvas.html">21 canvas - Controlling</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="drawing-graph-canvas.html">21.2 Drawing plots on</A>
+</div>
+</div>
+<hr />
+<span class="release-info">Documentation released on July 2, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

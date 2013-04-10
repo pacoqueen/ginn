@@ -1,0 +1,426 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head><style type="text/css">
+pre {background-color: #e0e0e0}
+</style>
+
+<link rel="STYLESHEET" href="pychart.css" type='text/css' />
+<link rel="first" href="pychart.html" title='PyChart' />
+<link rel='index' href='genindex.html' title='Index' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="module-bar-plot.html" />
+<link rel="prev" href="module-chart-data.html" />
+<link rel="parent" href="pychart.html" />
+<link rel="next" href="module-coord.html" />
+<meta name='aesop' content='information' />
+<title>6 Area</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="5 Reading CSV files"
+  href="module-chart-data.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="PyChart"
+  href="pychart.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="6.1 Specifying the coordinate"
+  href="module-coord.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="module-chart-data.html">5 Reading CSV files</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="pychart.html">PyChart</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="module-coord.html">6.1 Specifying the coordinate</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000600000000000000000"></A><a id='l2h-24' xml:id='l2h-24'></a>
+<BR>
+6 Area
+</H1>
+<A NAME="module-area"></A>
+<P>
+<dl><dt><b><span class="typelabel">class</span>&nbsp;<tt id='l2h-26' xml:id='l2h-26' class="class">area.T</tt></b>
+<dd>
+Class <code>area.T</code> defines the location and size of a chart. It also
+defines the coordinate system (linear, log, or enumeration) of the X and
+Y axes.
+
+<P>
+<a id='l2h-27' xml:id='l2h-27'></a><a id='l2h-28' xml:id='l2h-28'></a>
+The X (or Y) coordinate system is defined by attribute
+<code>x_coord</code> (or <code>y_coord</code>), which takes an object
+of type <code>coord.T</code>. Class <code>coord.T</code> defines how an X (or a Y)
+value is mapped to a display (canvas) location.  PyChart provides
+three standard coordinate systems: <code>linear_coord.T</code> (for linear
+mapping; this is the default), <code>log_coord.T</code> (for logarithmic
+mapping), and <code>category_coord.T</code> (enumeration of values). Most
+charts will do ok by instantiating one of these pre-defined coordinate
+classes, but you can also define your own wacky coordinate system.
+
+<P>
+<div class="seealso">
+  <p class="heading">See Also:</p>
+
+ See Section&nbsp;<A href="module-coord.html#module-coord">6.1</A> for more about the coordinate system.
+</div>
+
+<P>
+For log and linear coordinate systems, the minimum and maximum
+displayable values in the area are computed automatically from the plots
+unless they are defined explicitly via attribute <code>x_range</code>.
+In the next example, the X axis is drawn with a
+logarithmic scale. The minimum value
+will be 10, and the maximum value will be computed from the values given
+to plots.
+
+<P>
+<div class="verbatim"><pre>
+ar = <a href="module-area.html">area.T</a>(x_coord = <a href="module-coord.html">log_coord.T</a>(), x_range = (10, None), ...)
+</pre></div>
+
+<P>
+In the below example of a category coordinate system,
+the X axis will list three strings,
+``apple'', ``orange'', and ``blueberry''.
+
+<P>
+<div class="verbatim"><pre>
+samples = [("apple", 10), ("orange", 30), ("blueberry", 20)],
+ar = <a href="module-area.html">area.T</a>(x_coord = category_coord(samples, 0))
+ar.add_plot(<a href="module-bar-plot.html">bar_plot.T</a>(data = samples))
+</pre></div>
+</dl>
+
+<P>
+We now list the attributes understood by an <code>area.T</code> object.
+
+<P>
+<dl><dt><b><tt id='l2h-29' xml:id='l2h-29' class="member">bg_style</tt></b></dt>
+<dd>
+<b>Type:</b> fill_style.T
+( see Section&nbsp;<A href="module-fill-style.html#module-fill-style">16</A>)
+<b>Default:</b> None. 
+
+<P>
+Background fill-pattern.
+</dl>
+<dl><dt><b><tt id='l2h-30' xml:id='l2h-30' class="member">border_line_style</tt></b></dt>
+<dd>
+<b>Type:</b> line_style.T
+( see Section&nbsp;<A href="module-line-style.html#module-line-style">14</A>)
+<b>Default:</b> None. 
+
+<P>
+Line style of the outer frame of the chart.
+</dl>
+<dl><dt><b><tt id='l2h-31' xml:id='l2h-31' class="member">legend</tt></b></dt>
+<dd>
+<b>Type:</b> legend.T
+( see Section&nbsp;<A href="module-legend.html#module-legend">6.3</A>)
+<b>Default:</b> a legend is by default displayed
+               in the right-center of the chart. If you don't want to draw
+               a legend, you should explicitly set None to this attribute.. 
+
+<P>
+The legend of the chart.
+</dl>
+<dl><dt><b><tt id='l2h-32' xml:id='l2h-32' class="member">loc</tt></b></dt>
+<dd>
+<b>Type:</b> (x,y) or None
+<b>Default:</b> (0, 0). 
+
+<P>
+The location of the bottom-left corner of the chart.
+             None means to use the default value.
+
+<P>
+</dl>
+<dl><dt><b><tt id='l2h-33' xml:id='l2h-33' class="member">size</tt></b></dt>
+<dd>
+<b>Type:</b> (x,y) or None
+<b>Default:</b> (120, 110). 
+
+<P>
+The size of the chart-drawing area, excluding axis labels,
+              legends, tick marks, etc. None means to use the default value.
+
+<P>
+</dl>
+<dl><dt><b><tt id='l2h-34' xml:id='l2h-34' class="member">x_axis</tt></b></dt>
+<dd>
+<b>Type:</b> axis.X
+<b>Default:</b> None. 
+
+<P>
+The X axis.  See Section&nbsp;<A href="module-axis.html#module-axis">6.2</A>.
+</dl>
+<dl><dt><b><tt id='l2h-35' xml:id='l2h-35' class="member">x_axis2</tt></b></dt>
+<dd>
+<b>Type:</b> axis.X
+<b>Default:</b> None. 
+
+<P>
+The second X axis. This axis should be non-None either when you want to display plots with two distinct domains or when
+    you just want to display two axes at the top and bottom of the chart.
+     See Section&nbsp;<A href="module-axis.html#module-axis">6.2</A>
+</dl>
+<dl><dt><b><tt id='l2h-36' xml:id='l2h-36' class="member">x_coord</tt></b></dt>
+<dd>
+<b>Type:</b> coord.T
+(see Section&nbsp;<A href="module-coord.html#module-coord">6.1</A>)
+<b>Default:</b> A linear coordinate system.. 
+
+<P>
+Set the X coordinate system.
+</dl>
+<dl><dt><b><tt id='l2h-37' xml:id='l2h-37' class="member">x_grid_interval</tt></b></dt>
+<dd>
+<b>Type:</b> number or function
+<b>Default:</b> None. 
+
+<P>
+The horizontal grid-line interval.
+                        A numeric value
+                        specifies the interval at which
+                        lines are drawn. If value is a function, it
+                        takes two arguments, (MIN, MAX), that tells
+                        the minimum and maximum values found in the
+                        sample data. The function should return a list
+                        of values at which lines are drawn.
+</dl>
+<dl><dt><b><tt id='l2h-38' xml:id='l2h-38' class="member">x_grid_over_plot</tt></b></dt>
+<dd>
+<b>Type:</b> bool
+<b>Default:</b> False. 
+
+<P>
+If True, grid lines are drawn over plots. Otherwise, plots are drawn over grid lines.
+</dl>
+<dl><dt><b><tt id='l2h-39' xml:id='l2h-39' class="member">x_grid_style</tt></b></dt>
+<dd>
+<b>Type:</b> line_style.T
+( see Section&nbsp;<A href="module-line-style.html#module-line-style">14</A>)
+<b>Default:</b> None. 
+
+<P>
+The style of horizontal grid lines.
+
+</dl>
+<dl><dt><b><tt id='l2h-40' xml:id='l2h-40' class="member">x_range</tt></b></dt>
+<dd>
+<b>Type:</b> (x,y) or None
+<b>Default:</b> None. 
+
+<P>
+Specifies the range of X values that are displayed in the
+    chart. IF the value is None, both the values are computed
+    automatically from the samples.  Otherwise, the value must be a
+    tuple of format (MIN, MAX). MIN and MAX must be either None or a
+    number. If None, the value is computed automatically from the
+    samples. For example, if x_range = (None,5), then the minimum X
+    value is computed automatically, but the maximum X value is fixed
+    at 5.
+</dl>
+<dl><dt><b><tt id='l2h-41' xml:id='l2h-41' class="member">y_axis</tt></b></dt>
+<dd>
+<b>Type:</b> axis.Y
+<b>Default:</b> None. 
+
+<P>
+The Y axis.  See Section&nbsp;<A href="module-axis.html#module-axis">6.2</A>.
+</dl>
+<dl><dt><b><tt id='l2h-42' xml:id='l2h-42' class="member">y_axis2</tt></b></dt>
+<dd>
+<b>Type:</b> axis.Y
+<b>Default:</b> None. 
+
+<P>
+The second Y axis. This axis should be non-None either when you want to display plots with two distinct ranges or when
+                you just want to display two axes at the left and right of the chart.  See Section&nbsp;<A href="module-axis.html#module-axis">6.2</A>
+</dl>
+<dl><dt><b><tt id='l2h-43' xml:id='l2h-43' class="member">y_coord</tt></b></dt>
+<dd>
+<b>Type:</b> coord.T
+(see Section&nbsp;<A href="module-coord.html#module-coord">6.1</A>)
+<b>Default:</b> A linear coordinate system.. 
+
+<P>
+Set the Y coordinate system.
+</dl>
+<dl><dt><b><tt id='l2h-44' xml:id='l2h-44' class="member">y_grid_interval</tt></b></dt>
+<dd>
+<b>Type:</b> number or function
+<b>Default:</b> None. 
+
+<P>
+The vertical grid-line interval. See also x_grid_interval
+</dl>
+<dl><dt><b><tt id='l2h-45' xml:id='l2h-45' class="member">y_grid_over_plot</tt></b></dt>
+<dd>
+<b>Type:</b> int
+<b>Default:</b> False. 
+
+<P>
+See x_grid_over_plot.
+</dl>
+<dl><dt><b><tt id='l2h-46' xml:id='l2h-46' class="member">y_grid_style</tt></b></dt>
+<dd>
+<b>Type:</b> line_style.T
+( see Section&nbsp;<A href="module-line-style.html#module-line-style">14</A>)
+<b>Default:</b> line_style.gray70_dash3. 
+
+<P>
+The style of vertical grid lines.
+</dl>
+<dl><dt><b><tt id='l2h-47' xml:id='l2h-47' class="member">y_range</tt></b></dt>
+<dd>
+<b>Type:</b> (x,y) or None
+<b>Default:</b> None. 
+
+<P>
+Specifies the range of Y values that are displayed in the
+    chart. IF the value is None, both the values are computed
+    automatically from the samples.  Otherwise, the value must be a
+    tuple of format (MIN, MAX). MIN and MAX must be either None or a
+    number. If None, the value is computed automatically from the
+    samples. For example, if y_range = (None,5), then the minimum Y
+    value is computed automatically, but the maximum Y value is fixed
+    at 5.
+</dl>
+
+<P>
+An object of <code>area.T</code> also provides several methods:
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-48' xml:id='l2h-48' class="method">add_plot</tt></b>(</nobr></td>
+  <td><var>plot, ...</var>)</td></tr></table></dt>
+<dd>
+Add plots to the area. Each <var>plot</var> must be a plot object.
+ See Section&nbsp;<A href="module-line-plot.html#module-line-plot">9</A>, Section&nbsp;<A href="module-bar-plot.html#module-bar-plot">7</A>,
+Section&nbsp;<A href="module-pie-plot.html#module-pie-plot">11</A>, Section&nbsp;<A href="module-range-plot.html#module-range-plot">10</A>.
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-49' xml:id='l2h-49' class="method">draw</tt></b>(</nobr></td>
+  <td><var>canvas = None</var>)</td></tr></table></dt>
+<dd>
+Draw plots, axes, and the legend. This procedure must be called at the
+end of every  PyChart application.
+Parameter <var>canvas</var> is an optional parameter that specifies the output.
+If omitted, the default canvas is used.
+<div class="seealso">
+  <p class="heading">See Also:</p>
+
+Section&nbsp;<A href="module-canvas.html#module-canvas">21</A> for more about canvas.
+</div>
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-50' xml:id='l2h-50' class="method">x_pos</tt></b>(</nobr></td>
+  <td><var>xval</var>)</td></tr></table></dt>
+<dd>
+Converts <var>xval</var> to a coordinate on the canvas ( see Section&nbsp;<A href="module-canvas.html#module-canvas">21</A>).
+See Section&nbsp;<A href="unit.html#unit">4</A>.
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-51' xml:id='l2h-51' class="method">y_pos</tt></b>(</nobr></td>
+  <td><var>yval</var>)</td></tr></table></dt>
+<dd>
+Converts <var>yval</var> to a coordinate on the canvas ( see Section&nbsp;<A href="module-canvas.html#module-canvas">21</A>).
+See Section&nbsp;<A href="unit.html#unit">4</A>.
+</dl>
+
+<P>
+<div class="verbatim"><pre>
+ar = <a href="module-area.html">area.T</a>(loc=(50, 50), size=(100, 100),
+            xrange=(0,200), yrange=(0, 1000))
+px = ar.x_pos(50)
+py = ar.y_pos(100)
+</pre></div>
+
+<P>
+In the above example, the chart is drawn in the area defined by
+rectangle (50, 50) - (150, 150).  The point (<code>px, py</code>) will
+be at (75, 60), which is the screen location at which the point
+(50, 100) would be drawn (i.e., 50 + 100 * 50/200 = 75,
+50 + 100 * 100 / 1000 = 60).
+
+<P>
+
+<P>
+
+<p><br /></p><hr class='online-navigation' />
+<div class='online-navigation'>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></a>
+
+<UL CLASS="ChildLinks">
+<LI><A href="module-coord.html">6.1 Specifying the coordinate system</a>
+<LI><A href="module-axis.html">6.2 Axes</a>
+<LI><A href="module-legend.html">6.3 Legends</a>
+</ul>
+<!--End of Table of Child-Links-->
+</div>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="5 Reading CSV files"
+  href="module-chart-data.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="PyChart"
+  href="pychart.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="6.1 Specifying the coordinate"
+  href="module-coord.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="module-chart-data.html">5 Reading CSV files</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="pychart.html">PyChart</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="module-coord.html">6.1 Specifying the coordinate</A>
+</div>
+</div>
+<hr />
+<span class="release-info">Documentation released on July 2, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

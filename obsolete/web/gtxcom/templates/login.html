@@ -1,0 +1,24 @@
+{% extends "base2.html" %}
+
+{% block datos %}
+
+  {% if form.errors %}
+    <p class="error">Lo siento, usuario o contraseña incorrectos.</p>
+  {% endif %}
+
+  <form action='.' method='post'>
+    <label for="username">Usuario:</label>
+    <input type="text" name="username" value="" id="username">
+    <label for="password">Contraseña:</label>
+    <input type="password" name="password" value="" id="password">
+
+    <input type="submit" value="login" />
+    {% if next %}
+        <input type="hidden" name="next" value="{{ next|escape }}" />
+    {% else %}
+        <input type="hidden" name="next" value="/" />
+    {% endif %}
+  <form action='.' method='post'>
+
+{% endblock %}
+

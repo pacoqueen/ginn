@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head><style type="text/css">
+pre {background-color: #e0e0e0}
+</style>
+
+<link rel="STYLESHEET" href="pychart.css" type='text/css' />
+<link rel="first" href="pychart.html" title='PyChart' />
+<link rel='index' href='genindex.html' title='Index' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="module-error-bar.html" />
+<link rel="prev" href="module-line-plot.html" />
+<link rel="parent" href="module-line-plot.html" />
+<link rel="next" href="module-error-bar.html" />
+<meta name='aesop' content='information' />
+<title>9.1 Tick marks</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="9 Line and scatter"
+  href="module-line-plot.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="9 Line and scatter"
+  href="module-line-plot.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="9.2 Error bars"
+  href="module-error-bar.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="module-line-plot.html">9 Line and scatter</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="module-line-plot.html">9 Line and scatter</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="module-error-bar.html">9.2 Error bars</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION000910000000000000000">
+9.1 Tick marks</A>
+</H2>
+<A NAME="module-tick-mark"></A>
+<P>
+<dl><dt><b><span class="typelabel">class</span>&nbsp;<tt id='l2h-158' xml:id='l2h-158' class="class">tick_mark.T</tt></b>
+<dd>
+Tick marks are used in conjunction with line plots ( see Section&nbsp;<A href="module-line-plot.html#module-line-plot">9</A>)
+to show where sample points are.
+Class <code>tick_mark.T</code> is an abstract base class, from which
+several built-in tick mark classes are derived. They are described later.
+</dl>
+
+<P>
+Class <code>tick_mark.T</code> supports the following set of attributes.
+
+<P>
+<dl><dt><b><tt id='l2h-159' xml:id='l2h-159' class="member">fill_style</tt></b></dt>
+<dd>
+<b>Type:</b> fill_style.T
+( see Section&nbsp;<A href="module-fill-style.html#module-fill-style">16</A>)
+<b>Default:</b> fill_style.white. 
+
+<P>
+The fill style.
+</dl>
+<dl><dt><b><tt id='l2h-160' xml:id='l2h-160' class="member">line_style</tt></b></dt>
+<dd>
+<b>Type:</b> line_style.T
+( see Section&nbsp;<A href="module-line-style.html#module-line-style">14</A>)
+<b>Default:</b> line_style.black. 
+
+<P>
+The line style of the tick mark.
+</dl>
+<dl><dt><b><tt id='l2h-161' xml:id='l2h-161' class="member">size</tt></b></dt>
+<dd>
+<b>Type:</b> length in points ( See Section&nbsp;<A href="unit.html#unit">4</A>)
+<b>Default:</b> 5. 
+
+<P>
+Size of the tick mark.
+</dl>
+
+<P>
+Several types of tick marks are offered by  PyChart as subclasses of
+<code>tick_mark.T</code>.  They include: tick_mark.Circle,
+tick_mark.Square, tick_mark.Triangle, tick_mark.DownTriangle,
+tick_mark.X, tick_mark.Plus, tick_mark.Diamond, tick_mark.Star,
+tick_mark.Null.  Specific instance of these classes are also defined for
+your convenience.  Below is the list of such standard tick marks.  They
+are referred to by as "<code>tick_mark.</code><var>name</var>", where <var>name</var> is
+the labels below them.
+
+<P>
+<IMG
+  WIDTH="831" HEIGHT="634" ALIGN="BOTTOM" BORDER="0"
+ SRC="./tickmarks.png"
+ ALT="Image tickmarks">
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="9 Line and scatter"
+  href="module-line-plot.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="9 Line and scatter"
+  href="module-line-plot.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="9.2 Error bars"
+  href="module-error-bar.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="module-line-plot.html">9 Line and scatter</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="module-line-plot.html">9 Line and scatter</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="module-error-bar.html">9.2 Error bars</A>
+</div>
+</div>
+<hr />
+<span class="release-info">Documentation released on July 2, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

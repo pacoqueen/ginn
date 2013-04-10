@@ -1,0 +1,332 @@
+== Version 0.1.11 ==
+libgmail.py 
+   * Fixed bug that broke attachment support (SF bug #2034927)
+   * added .author_fullname field for messages
+   * Don't crash on threads with google chat log (Debian bug #502458)
+
+== Version 0.1.10 == 
+libgmail.py
+   * Use mechanize instead of ClientCookie [Patch #2014779]
+   * Very basic Unicode support [Patch #1926861]
+
+gmail_transport.py 
+   * New version that uses mechanize
+     (owing again to Jose Rodriguez)
+
+NOTE: libgmail now depends on mechanize, which
+can be downloaded from:
+  http://wwwsearch.sourceforge.net/mechanize/#download
+  (in Debian/Ubuntu as python-mechanize, and an easy_install
+   installer is also available)
+
+== Version 0.1.9 ==
+libgmail.py
+    * Fixed login that was broken for a bunch of new
+      gmail accounts, thanks to a patch by rhauer
+
+NOTE: libgmail now depends on ClientCookie, which
+can be downloaded from: 
+  http://wwwsearch.sourceforge.net/ClientCookie/#download
+
+== Version 0.1.8 ==
+libgmail.py
+    * Added 'search' method to contactLists that returns
+      an array of contacts who match a given search term
+      (at some point, the contacts API is long overdue
+       for a revamp, but for now, hey, why not)
+      This is a patch by Alex Chiang     --WD--
+    * libgmail now asks for the old Gmail interface,
+      so that it isn't broken by the new Gmail updates.
+      (Thanks to Aaron and Stu for work on this)
+      (Fixes SF bug #1822662)
+
+== Version 0.1.7 ==
+libgmail.py
+gmail_transport.py
+    * Applied patch that adds proxy support, both 
+      for passwordless and password-ful proxies 
+      (is that a word?), by Jose Rodriguez --WD+SZ--
+
+== Version 0.1.6.2 ==
+libgmail.py
+    * Bugfix for attachment problems --WD--
+      (SF Bug #1793026, Patch #1799605 by 'stephster')
+archive.py
+    * Protect messages with a "from" line in them --WD--
+      (SF Patch #1790809 by 'scop')
+
+== Version 0.1.6.1 == 
+libgmail.py
+    * Bugfix for login problems --WD--
+
+== Version 0.1.6 == 
+libgmail.py
+    * Added support for "Gmail Apps" aka "Gmail For Your Domain" --WD--
+
+== Version 0.1.5.1 ==
+libgmail.py
+    * Minor bugfix release -- logging in with the wrong
+      username and password caused a crash instead of
+      the appropriate thrown exception --WD--
+
+== Version 0.1.5 ==
+libgmail.py
+    * Fixed exception in the testcode (SF bug #1486703) --SZ--
+    * Fixed broken login caused by slight format change
+      (SF Bug #1534275 - Thanks, anonymous tipster!) --WD--
+    * Added another attribute to the message class: to
+      (SF Bug #1528766) --WD--
+    * Fixed problems caused by repeated commas
+      (SF Bug #1512361) --SZ--
+
+== Version 0.1.4 ==
+libgmail.py
+    * Started new contacts code. --SZ--
+    * Bugfix involving 404 error raised when trying to send
+      an email (SF bug #1398323) --WD--
+    * Bugfix for broken len() iterator in GmailSearchResult
+      (SF bug #1365166) --WD--
+    * Bugfix for improper marking of messages as read
+      (SF bug #1365188) --WD--
+
+    NOTE: Expect an improved Contacts API in the next release.
+          We will strive for backwards-compatibility where
+          possible, but be prepared for possible changes.
+          Please feel free to contact us if you have
+          questions/comments/concerns about this.
+ 
+== Version 0.1.3.3 ==
+libgmail.py
+    * Fixed some bugs in the return values of the label methods. --SZ--
+
+== Version 0.1.3.2 ==
+libgmail.py
+ * Added some attributes to the message class: cc, bcc, sender. --SZ--
+ * Fixed the value returnt by a __len__ call to the threads. --SZ--
+ * Fixed bug in the sendmessage result --SZ--
+ * Added a exception catch to the getUnreadMsgCount method. --SZ--
+ * Added a method to only retrieve the unread messages from the inbox. --SZ--
+ 
+== Version 0.1.3.1 ==
+libgmail.py
+ * Fixed the problem that not all the messages from a thread were
+    returnt. --SZ--
+ * Added a exception catch for a "500 server error" --SZ--
+
+== Version 0.1.3 ==
+ libgmail.py
+ * Fixed bugs that crashes libgmail when accessing an empty account --SZ--
+ * Fixed returning not all the messages in large accounts. --SZ-- 
+
+== Version 0.1.2 ==
+libgmail.py
+ * Added a \r to the line endings in the VCard export function. This is done
+   to comply with rfc2425 section 5.8.1 --SZ--
+ * Fixed a security bug in the page parser. --SZ--
+
+ 
+== Version: 0.1.1 ==
+All
+ * Renamed the shabang to use the 'env' program in all executables. --SZ--
+ * Fixed the redirect bug caused by the changed Gmail login pages. --WD--
+
+== Version: 0.1.0 ==
+libgmail.py
+ * Added contacts support. --WD--
+ * Added contacts test suite. --WD--
+ * Added finer-grained debugging control --WD--
+ * Applied patch that handles login redirect URL properly now
+   Login now works. --WD--
+ * Removed fork message. It was a left over from the initial forking. --SZ--
+
+constants.py
+ * Renamed to lgconstants.py to avoid name conflicts --WD--
+
+== Version: 0.0.8 (23 August 2004) ==
+libgmail.py
+ *  Fixed login to work again after it was broken by a Gmail change.
+    Centralised cookie extraction. Added debug-level logging of cookie
+    extraction & storage.
+
+ *  Add trash/delete message thread functionality to account object.
+
+constants.py, libgmail.py, mkconstants.py
+ *  Add trash/delete single message functionality to account object.
+
+demos/gmailpopd.py
+ *  Initial rough POP3 proxy server demo. Works with Mail.app when I
+    tried it... :-) Sometimes causes items to be downloaded even when
+    they don't *really* need to be. Causes some items to be marked as
+    read even if the client doesn't actually request them.
+
+ *  Refactored message retrieval from account snapshot to allow
+    partial message retrieval (for TOP functionality).
+
+ *  Added POP3 TOP command functionality which is required by Mozilla as it
+    (wrongly) doesn't work with the absolute minimum command set
+    specified by the RFC and requires TOP.
+
+ *  Fixed copy/paste error to change 'ftp_QUIT' to 'pop_QUIT'.
+
+ *  Moved byte-stuffing and message massaging into separate functions.
+
+libgmail.py, demos/archive.py, demos/gmailftpd.py, demos/gmailpopd.py, demos/gmailsmtp.py, demos/sendmsg.py
+ *  Added `GmailLoginFailure` exception to enable tidier handling of
+    login failures (which could be bad username/password or a Gmail
+    change).
+
+ *  Updated demos to catch `GmailLoginFailure` exception.
+
+ *  Removed non-supported "LOGIN" authentication method in SMTP demo
+    that was included in the server capability response in error.
+
+ANNOUNCE
+ *  Minor typo fix.
+
+
+== Version: 0.0.7 (03 August 2004) ==
+
+constants.py, mkconstants.py
+ *  Added attachment related constants. 
+
+libgmail.py, demos/gmailsmtp.py
+ *  Allow file data to be specified directly (rather than via an on-
+    disk file) when specifying attachments (this allows using existing
+    Message instance payloads mostly directly). Modify SMTP Proxy demo
+    to handle sending attachments.
+
+demos/gmailftpd.py
+ *  Initial import of Gmail attachments FTP Proxy! 
+
+libgmail.py
+ *  Corrected version info for previous release. 
+
+ *  Added 'getMessagesByQuery' function. Added initial attachment
+    retrieval handling. Clean up handling of references to parent
+    objects & account objects. Version info update.
+
+ *  Handle sending attachments. Works, but implementation is extremely
+    *cough* sub-optimal...
+
+ *  Don't try to attach files if there are none. 
+
+
+== Version: 0.0.6 (15 July 2004) ==
+
+demos/gmailsmtp.py
+ *  That was too easy, there oughta be a law! Thanks to Python's
+    undocumented SMTP server module we can now send mail with a
+    standard mail client via (E)SMTP. Extended standard SMTP class to
+    handle ESMTP EHLO & AUTH PLAIN commands.
+
+libgmail.py
+ *  Added utility function '_retrieveJavascript' to 'GmailAccount' to
+    help developers who want to look at it. (In theory also so you can
+    regenerate 'constants.py' but the Javascript Gmail now uses isn't
+    actually useful for that anymore...) (Added by request.)
+
+
+== Version: 0.0.5 (11 July 2004) ==
+
+libgmail.py, demos/sendmsg.py
+ *  Added functionality to enable message sending. Modified automatic
+    cookie handling. Added command line example to send a message.
+    Enabled page requests to be either a URL or a Request instance.
+
+constants.py, mkconstants.py
+ *  Added more useful constants.
+
+
+== Version: 0.0.4 (11 July 2004) ==
+
+constants.py, mkconstants.py
+ *  Include standard folder/search name constants. 
+
+ *  Add more useful constants. 
+
+constants.py, libgmail.py, mkconstants.py
+ *  Added category name retrieval. 
+
+mkconstants.py
+ *  'mkconstants' isn't really useful anymore with the new JS version.
+
+libgmail.py
+ *  Add ability to get number of unread messages. 
+
+ *  Handle items that might be 'bunched' such as thread lists better. 
+
+ *  Only warn about mismatched Javascript versions once module import.
+    (Note: This may mean the Javascript version may change more than
+    once in a session and the second change won't be warned, but that
+    shouldn't be much of an issue...)
+
+ *  Refactor URL construction. Refactor query/search operation in
+    preparation for adding searches.
+
+ *  More refactoring. Made thread search query more generic to allow
+    use by (to come) label searches etc. Threads now belong to
+    'GmailSearchResult' instances rather than folders. Threads now
+    retrieve their own messages rather than relying on their parent to
+    do so.
+
+ *  We now refer to categories as labels, as the UI does. Enable
+    retrieval by label.
+
+libgmail.py, demos/archive.py
+ *  Allow all pages of results to be returned for a 'getFolder'
+    request. (Not tested much.)
+
+ *  Provide easy access to standard folder names. Added length
+    property to folders. Examples now handle empty folders gracefully.
+
+ *  Now uses 'getMessagesByXXXXX' style method names for folders &
+    labels. Now refer to original message source as 'source' & not
+    'body'. Enable demos to search by folder name or label name.
+
+
+
+== Version: 0.0.3 (8 July 2004) ==
+
+libgmail.py
+ * Allow username to be specified on the command line instead of prompting.
+ * Rough special case handling of when more than one set of thread information data is present on a page (seemed to occur when using 'all' search after a certain number of items). TODO: Make this fix work at the page parsing level, but splitting all tuples into individual items.
+ * Add cookie handling code to enable us to remove requirement for ClientCookie package. (Especially for Adrian... :-) )
+
+demos/archive.py
+ * *Extremely* rough mbox creation--turns out the mails retrieved had '\r' characters at the end of the headers. The mbox file appears to be successfully imported by OS X's Mail.app client.
+ * Allow username to be specified on the command line instead of prompting.
+
+
+== Version: 0.0.2a (~6 July 2004) ==
+
+* No code change, renamed to try to avoid SourceForge mirroring problems.
+
+
+== Version: 0.0.2 (5 July 2004) ==
+
+constants.py
+ * Useful constants from the Gmail Javascript code as Python module.
+ * Update to match current live Javascript.
+ * Fudge some enumerations that we need to start at 0.
+
+libgmail.py
+ * Refactor to make use of Folder/Thread/Message model. Standardised some naming. Make use of imported Gmail constants. Centralise page retrieval & parsing.
+ * Calculate number of messages in thread.
+ * Refactor & reorganise code. Minor style edits. Refine design of folder, thread & message classes. Modify folders, threads & messages to be as lazy as possible when it comes to retrieving data from the net. Enable message instances to retrieve their original mail text. Add Gmail implementation notes. Hide password entry. Demo now displays threads & messages.
+ * Version date change.
+
+mkconstants.py
+ * Tool to make useful constants from the Gmail Javascript code available via a Python module.
+ * Fudge some enumerations that we need to start at 0.
+
+demos/archive.py
+ * Initial rough demo to archive all messages into text files.
+
+CHANGELOG
+ * Added.
+
+
+== Version: 0.0.1 (2 July 2004) ==
+
+libgmail.py
+ * Initial import of version 0.0.1 (as posted in comp.lang.python).

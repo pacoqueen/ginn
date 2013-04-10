@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: libgmail
+Version: 0.1.11
+Summary: python bindings to access Gmail
+Home-page: http://libgmail.sourceforge.net/
+Author: wdaher@mit.edu,stas@linux.isbeter.nl,follower@myrealbox.com
+Author-email: libgmail-developer@lists.sf.net
+License: GPL
+Description: UNKNOWN
+Platform: UNKNOWN

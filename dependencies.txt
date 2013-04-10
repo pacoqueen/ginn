@@ -1,2 +1,0 @@
-sudo apt-get install python-sqlobject
-sudo apt-get install python-psycopg2

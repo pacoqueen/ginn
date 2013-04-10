@@ -1,0 +1,325 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head><style type="text/css">
+pre {background-color: #e0e0e0}
+</style>
+
+<link rel="STYLESHEET" href="pychart.css" type='text/css' />
+<link rel="first" href="pychart.html" title='PyChart' />
+<link rel='index' href='genindex.html' title='Index' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="module-line-plot.html" />
+<link rel="prev" href="module-bar-plot.html" />
+<link rel="parent" href="pychart.html" />
+<link rel="next" href="module-line-plot.html" />
+<meta name='aesop' content='information' />
+<title>8 Interval bar plots</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="7 Bar plots"
+  href="module-bar-plot.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="PyChart"
+  href="pychart.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="9 Line and scatter"
+  href="module-line-plot.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="module-bar-plot.html">7 Bar plots</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="pychart.html">PyChart</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="module-line-plot.html">9 Line and scatter</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000800000000000000000"></A><a id='l2h-125' xml:id='l2h-125'></a>
+<BR>
+8 Interval bar plots
+</H1>
+<A NAME="module-interval-bar-plot"></A>
+<P>
+<dl><dt><b><span class="typelabel">class</span>&nbsp;<tt id='l2h-127' xml:id='l2h-127' class="class">interval_bar_plot.T</tt></b>
+<dd>
+An interval bar plot is a special kind of bar plot that draws
+an alternating sequence of bars.
+<IMG
+  WIDTH="331" HEIGHT="285" ALIGN="BOTTOM" BORDER="0"
+ SRC="./intvlbartestv.png"
+ ALT="Image intvlbartestv">
+
+<P>
+<b>  Sample interval bar chart </b>
+
+<P>
+Below is the source code that produces the above chart.
+../demos/intvlbartestv.py
+
+<P>
+<div class="verbatim"><pre>
+from pychart import *
+<a href="options.html"><a href="options.html">theme.</a>get_options</a>()
+
+data = [("Foo", (10, 7, 10, 5, 5, 12, 13, 5, 10, 3),
+         (7,10,8,16,9,3)),
+        ("Bar", (5, 10, 12, 10, 9, 3),
+         (10,10,13,6,9,13),)]
+
+ar = <a href="module-area.html">area.T</a>(y_coord = <a href="module-coord.html">category_coord.T</a>(data, 0),
+            x_grid_style=<a href="module-line-style.html">line_style.</a>gray50_dash1,
+            x_grid_interval=20, x_range = (0,100),
+            x_axis=<a href="module-axis.html">axis.</a>X(label="X label"),
+            y_axis=<a href="module-axis.html">axis.</a>Y(label="Y label"),
+            legend = <a href="module-legend.html">legend.</a>T(loc=(80, 40)))
+
+chart_object.set_defaults(<a href="module-interval-bar-plot.html">interval_<a href="module-bar-plot.html">bar_plot.T</a></a>, direction="horizontal",
+                          width=3, cluster_sep = 5, data=data)
+ar.add_plot(<a href="module-interval-bar-plot.html">interval_<a href="module-bar-plot.html">bar_plot.T</a></a>(line_styles = [<a href="module-line-style.html">line_style.</a>default, None],
+                                fill_styles = [<a href="module-fill-style.html">fill_style.</a>red, None],
+                                label="foo", cluster=(0,2)),
+            <a href="module-interval-bar-plot.html">interval_<a href="module-bar-plot.html">bar_plot.T</a></a>(line_styles = [<a href="module-line-style.html">line_style.</a>default, None],
+                                fill_styles = [<a href="module-fill-style.html">fill_style.</a>blue, None],
+                                label="bar", hcol=2, cluster=(1,2)))
+
+can = <a href="module-canvas.html">canvas.</a>default_canvas()
+can.set_title("Interval bar test")
+can.set_author("John Doe")
+ar.draw()
+</pre></div>
+</dl>
+
+<P>
+The list the attributes understood by an <code>interval_bar_plot.T</code> object:
+
+<P>
+<dl><dt><b><tt id='l2h-128' xml:id='l2h-128' class="member">bcol</tt></b></dt>
+<dd>
+<b>Type:</b> int
+<b>Default:</b> 0. 
+
+<P>
+Specifies the column from which base values (i.e., X values when attribute "direction" is "vertical", Y values otherwise) are extracted.
+The
+              combination of "data", "bcol", and "hcol" attributes defines
+              the set of boxes drawn by this chart.
+              See also the descriptions of the 'bcol' and 'data' attributes.
+
+<P>
+</dl>
+<dl><dt><b><tt id='l2h-129' xml:id='l2h-129' class="member">cluster</tt></b></dt>
+<dd>
+<b>Type:</b> tuple
+<b>Default:</b> (0, 1). 
+
+<P>
+This attribute is used to
+    cluster multiple bar plots side by side in a single chart.
+    The value should be a tuple of two integers. The second value should be equal to the total number of bar plots in the chart. The first value should be the relative position of this chart; 0 places this chart the leftmost, and N-1
+    (where N is the 2nd value of this attribute) places this chart the rightmost. Consider the below example:
+
+<P>
+<div class="verbatim"><pre>
+    a = <a href="module-area.html">area.T</a>(...)
+    p1 = <a href="module-interval-bar-plot.html">interval_<a href="module-bar-plot.html">bar_plot.T</a></a>(data = [[1, [20,10]][2,[30,5]]], cluster=(0,2))
+    p2 = <a href="module-interval-bar-plot.html">interval_<a href="module-bar-plot.html">bar_plot.T</a></a>(data = [[1,[25,11,2]],[2,[10,5,3]]], cluster=(1,2))
+    a.add_plot(p1, p2)
+    a.draw()
+</pre></div>
+
+<P>
+In this example, one group of bars will be drawn side-by-side at
+    position x=1.
+    Other two bars will be drawn side by side at position x=2.
+    See also the description of attribute "cluster" for bar_plot.T.
+
+<P>
+</dl>
+<dl><dt><b><tt id='l2h-130' xml:id='l2h-130' class="member">cluster_sep</tt></b></dt>
+<dd>
+<b>Type:</b> length in points ( See Section&nbsp;<A href="unit.html#unit">4</A>)
+<b>Default:</b> 0. 
+
+<P>
+The separation between
+    clustered boxes. The unit is points.
+</dl>
+<dl><dt><b><tt id='l2h-131' xml:id='l2h-131' class="member">data</tt></b></dt>
+<dd>
+<b>Type:</b> any
+<b>Default:</b> None. 
+
+<P>
+Specifes data points. Unlike other types
+    of charts, the "hcol"th column of the data must be a sequence of
+    numbers, not just a single number. See also the description of
+    "hcol".
+</dl>
+<dl><dt><b><tt id='l2h-132' xml:id='l2h-132' class="member">data_label_format</tt></b></dt>
+<dd>
+<b>Type:</b> printf format string
+<b>Default:</b> None. 
+
+<P>
+The
+                          format string for the label displayed besides each
+                          bar.  It can be a `printf' style format
+                          string, or a two-parameter function that
+                          takes (x,y) values and returns a string. The appearance of the string produced here can be
+controlled using escape sequences.  See Section&nbsp;<A href="module-font.html#module-font">17</A>
+</dl>
+<dl><dt><b><tt id='l2h-133' xml:id='l2h-133' class="member">data_label_offset</tt></b></dt>
+<dd>
+<b>Type:</b> (x,y) or None
+<b>Default:</b> (0, 5). 
+
+<P>
+The location of data labels relative to the sample point. See also attribute data_label_format.
+</dl>
+<dl><dt><b><tt id='l2h-134' xml:id='l2h-134' class="member">direction</tt></b></dt>
+<dd>
+<b>Type:</b> str
+<b>Default:</b> "vertical". 
+
+<P>
+The direction the growth of the bars. The value is either 'horizontal'
+                   or 'vertical'.
+</dl>
+<dl><dt><b><tt id='l2h-135' xml:id='l2h-135' class="member">fill_styles</tt></b></dt>
+<dd>
+<b>Type:</b> list
+<b>Default:</b> ['<var>function &lt;lambda</var> at 0x403cd534&gt;', 'None']. 
+
+<P>
+List of fill styles for bars.
+                    The style of each bar is chosen in a round-robin fashion, if the
+                    number of elements in "line_styles" is smaller than
+                    actual number of boxes.
+                    If this attribute is omitted,
+                    a style is picked from standard styles round-robin.  See Section&nbsp;<A href="module-fill-style.html#module-fill-style">16</A>.
+</dl>
+<dl><dt><b><tt id='l2h-136' xml:id='l2h-136' class="member">hcol</tt></b></dt>
+<dd>
+<b>Type:</b> int
+<b>Default:</b> 1. 
+
+<P>
+The column from which the base and height of
+             bars are extracted. See the below example:
+
+<P>
+<div class="verbatim"><pre>
+              d = [[5,[10,15,22]], [7,[22,23,5,10]], [8,[25,3]]]
+              p = <a href="module-interval-bar-plot.html">interval_<a href="module-bar-plot.html">bar_plot.T</a></a>(data = d, bcol = 0, hcol = 1)
+</pre></div>
+
+<P>
+Here, three sequence of bars will be drawn.
+              The X locations of the bars
+              will be 5, 7, and 8. For example, at location X=7,
+              three bars are drawn,
+              one corresponding to Y values of 22 to 45 (=22+23),
+              and the second one for values 45 to 50, and the third one
+              for values 50 to 60. The line and fill styles of the bars
+              are picked in a round-robin fashion
+              from attributes "line_styles" and
+              "fill_styles".
+
+<P>
+</dl>
+<dl><dt><b><tt id='l2h-137' xml:id='l2h-137' class="member">label</tt></b></dt>
+<dd>
+<b>Type:</b> str
+<b>Default:</b> "???". 
+
+<P>
+The label to be displayed in the legend.  See Section&nbsp;<A href="module-legend.html#module-legend">6.3</A>, See Section&nbsp;<A href="module-font.html#module-font">17</A>
+</dl>
+<dl><dt><b><tt id='l2h-138' xml:id='l2h-138' class="member">line_styles</tt></b></dt>
+<dd>
+<b>Type:</b> list
+<b>Default:</b> ['line_style.black', 'None']. 
+
+<P>
+The list of line styles for bars.
+                    The style of each bar is chosen in a round-robin fashion, if the
+                    number of elements in "line_styles" is smaller than
+                    actual number of boxes.
+</dl>
+<dl><dt><b><tt id='l2h-139' xml:id='l2h-139' class="member">stack_on</tt></b></dt>
+<dd>
+<b>Type:</b> any
+<b>Default:</b> None. 
+
+<P>
+The value must be either None or bar_plot.T. If not None, bars of this plot are stacked on top of another bar plot.
+</dl>
+<dl><dt><b><tt id='l2h-140' xml:id='l2h-140' class="member">width</tt></b></dt>
+<dd>
+<b>Type:</b> length in points ( See Section&nbsp;<A href="unit.html#unit">4</A>)
+<b>Default:</b> 5. 
+
+<P>
+Width of each box. The unit is in points.
+
+<P>
+</dl>
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="7 Bar plots"
+  href="module-bar-plot.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="PyChart"
+  href="pychart.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="9 Line and scatter"
+  href="module-line-plot.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="module-bar-plot.html">7 Bar plots</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="pychart.html">PyChart</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="module-line-plot.html">9 Line and scatter</A>
+</div>
+</div>
+<hr />
+<span class="release-info">Documentation released on July 2, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

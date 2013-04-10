@@ -1,0 +1,10 @@
+{% include 'includes/header.html' %}
+<head>
+	<title>{% block titulo %}{% endblock %}</title>
+	<link rel="stylesheet" type="text/css" href="/media/css/estilos.css" />
+</head>
+<body>
+	<h1>{% block encabezado %}{% endblock %}</h1>
+	<p>{% block datos %}{% endblock %}</p>
+</body>
+{% include 'includes/footer.html' %}

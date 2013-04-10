@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head><style type="text/css">
+pre {background-color: #e0e0e0}
+</style>
+
+<link rel="STYLESHEET" href="pychart.css" type='text/css' />
+<link rel="first" href="pychart.html" title='PyChart' />
+<link rel='index' href='genindex.html' title='Index' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="drawing-canvas.html" />
+<link rel="prev" href="creating-canvas.html" />
+<link rel="parent" href="module-canvas.html" />
+<link rel="next" href="drawing-canvas.html" />
+<meta name='aesop' content='information' />
+<title>21.2 Drawing plots on canvas</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="21.1 Creating a canvas"
+  href="creating-canvas.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="21 canvas - Controlling"
+  href="module-canvas.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="21.3 Drawing other objects"
+  href="drawing-canvas.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="creating-canvas.html">21.1 Creating a canvas</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="module-canvas.html">21 canvas - Controlling</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="drawing-canvas.html">21.3 Drawing other objects</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION0002120000000000000000"></A><A NAME="drawing-graph-canvas"></A><a id='l2h-351' xml:id='l2h-351'></a>
+<BR>
+21.2 Drawing plots on canvas
+</H2>
+PyChart creates a new canvas object when "<code>area.T.draw()</code>"
+(see Section&nbsp;<A href="module-area.html#module-area">6</A>) is called for the first time, and no canvas is yet
+created at that moment.  You can thus use you own canvas by creating a
+canvas <em>before</em> calling the first <code>area.T.draw()</code>, like below:
+
+<P>
+<div class="verbatim"><pre>
+can = <a href="module-canvas.html">canvas.</a>init("foo.pdf")
+...
+ar = <a href="module-area.html">area.T</a>(...)
+ar.draw()
+</pre></div>
+
+<P>
+You can also achieve the same effect by passing the canvas object to the
+<code>area.T.draw()</code> method explicitly:
+
+<P>
+<div class="verbatim"><pre>
+can = <a href="module-canvas.html">canvas.</a>init("foo.pdf")
+...
+ar = <a href="module-area.html">area.T</a>(...)
+ar.draw(can)
+</pre></div>
+
+<P>
+You can also pass a file object (or file-like object, such as
+<code>StringIO</code>) to canvas.init. In this case, you need
+to define the output format via the second argument.
+<a id='l2h-353' xml:id='l2h-353'></a>
+
+<P>
+<a id='l2h-354' xml:id='l2h-354'></a>
+<a id='l2h-352' xml:id='l2h-352'></a><div class="verbatim"><pre>
+fd = file("foo.pdf", "w")
+can = <a href="module-canvas.html">canvas.</a>init(fd, "pdf")
+...
+ar.draw(can)
+</pre></div>
+
+<P>
+<a id='l2h-355' xml:id='l2h-355'></a>
+
+<P>
+Naturally, you can write to multiple files by passing multiple
+<code>canvas</code> objects to different <code>area.T.draw()</code>.  For example,
+the below example draws the first chart to <span class="file">graph1.pdf</span> and the next
+chart to <span class="file">graph2.pdf</span>.
+
+<P>
+../demos/twographs.py
+
+<P>
+<div class="verbatim"><pre>
+from pychart import *
+
+can = <a href="module-canvas.html">canvas.</a>init("graph1.pdf")
+data = <a href="module-chart-data.html">chart_data.</a>read_csv("lines.csv")
+ar = <a href="module-area.html">area.T</a>(x_range = (0,100), y_range = (0,100),
+            x_axis = <a href="module-axis.html">axis.</a>X(label="X", tic_interval=10),
+            y_axis = <a href="module-axis.html">axis.</a>Y(label="Y", tic_interval=10))
+eb = <a href="module-error-bar.html">error_bar.</a>error_bar2(tic_len=5, hline_style=<a href="module-line-style.html">line_style.</a>gray50)
+ar.add_plot(<a href="module-line-plot.html">line_plot.T</a>(label="foo", data=data, error_bar=eb, y_error_minus_col=3),
+            <a href="module-line-plot.html">line_plot.T</a>(label="bar", data=data, ycol=2, error_bar=eb, y_error_minus_col=3))
+ar.draw(can)
+tb = <a href="module-text-box.html">text_box.T</a>(loc=(40, 130), text="This is\nimportant!", line_style=None)
+tb.add_arrow((ar.x_pos(data[6][0]), ar.y_pos(data[6][1])), "cb")
+tb.draw(can)
+
+can = <a href="module-canvas.html">canvas.</a>init("graph2.pdf")
+ar = <a href="module-area.html">area.T</a>(loc=(200, 0), x_range=(0,100), y_range=(0,100),
+            x_axis = <a href="module-axis.html">axis.</a>X(label="X", tic_interval=10),
+            y_axis = <a href="module-axis.html">axis.</a>Y(label="Y", tic_interval=10))
+ar.add_plot(<a href="module-line-plot.html">line_plot.T</a>(label="foo", data=data, data_label_format="/8{}%d"),
+            <a href="module-line-plot.html">line_plot.T</a>(label="bar", data=data, ycol=2))
+ar.draw(can)
+
+# Note: can.close() is called automatically for every open <a href="module-canvas.html">canvas.</a>
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="21.1 Creating a canvas"
+  href="creating-canvas.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="21 canvas - Controlling"
+  href="module-canvas.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="21.3 Drawing other objects"
+  href="drawing-canvas.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="creating-canvas.html">21.1 Creating a canvas</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="module-canvas.html">21 canvas - Controlling</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="drawing-canvas.html">21.3 Drawing other objects</A>
+</div>
+</div>
+<hr />
+<span class="release-info">Documentation released on July 2, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

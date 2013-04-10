@@ -1,0 +1,198 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head><style type="text/css">
+pre {background-color: #e0e0e0}
+</style>
+
+<link rel="STYLESHEET" href="pychart.css" type='text/css' />
+<link rel="first" href="pychart.html" title='PyChart' />
+<link rel='index' href='genindex.html' title='Index' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="property-canvas.html" />
+<link rel="prev" href="drawing-canvas.html" />
+<link rel="parent" href="module-canvas.html" />
+<link rel="next" href="property-canvas.html" />
+<meta name='aesop' content='information' />
+<title>21.4 Clipping</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="21.3 Drawing other objects"
+  href="drawing-canvas.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="21 canvas - Controlling"
+  href="module-canvas.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="21.5 Setting canvas properties"
+  href="property-canvas.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="drawing-canvas.html">21.3 Drawing other objects</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="module-canvas.html">21 canvas - Controlling</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="property-canvas.html">21.5 Setting canvas properties</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION0002140000000000000000"></A><A NAME="clipping-canvas"></A><a id='l2h-369' xml:id='l2h-369'></a>
+<BR>
+21.4 Clipping
+</H2>
+
+<P>
+A rectangle, polygon, or ellipsis can be used to define a clipping
+region.  Any drawing commands ( see Section&nbsp;<A href="module-canvas.html#module-canvas">21</A>) issued afterward are
+confined in the region. You can even nest multiple clipping regions,
+in which case, drawings will be clipped to the intersection of the
+regions.  <code>canvas.endclip()</code> ends the clipping. Clipping commands
+and <code>endclip()</code> must nest properly.
+
+<P>
+<IMG
+  WIDTH="428" HEIGHT="321" ALIGN="BOTTOM" BORDER="0"
+ SRC="./cliptest.png"
+ ALT="Image cliptest">
+
+<P>
+<b>  Clipping test </b>
+
+<P>
+Below is the source code that produces the above chart.
+../demos/cliptest.py
+
+<P>
+<div class="verbatim"><pre>
+from pychart import *
+
+can = <a href="module-canvas.html">canvas.</a>default_canvas()
+
+data = [(10, 20), (20, 65), (30, 55), (40, 45)]
+
+# tic_angle is the angle X values are displayed below the <a href="module-axis.html">axis.</a>
+xaxis = <a href="module-axis.html">axis.</a>X(label="Stuff")
+yaxis = <a href="module-axis.html">axis.</a>Y(label="Value")
+
+ar = <a href="module-area.html">area.T</a>(x_axis=xaxis, y_axis=yaxis)
+
+plot = <a href="module-line-plot.html">line_plot.T</a>(label="foo", data=data, xcol=0, ycol=1,
+                   tick_mark=<a href="module-tick-mark.html">tick_mark.</a>star)
+
+ar.add_plot(plot)
+can.ellipsis(<a href="module-line-style.html">line_style.</a>T(width=1.5,dash=(4,4)), None, 30, 20, 80, 0.8)
+can.clip_ellipsis(30, 20, 80, 0.8)
+ar.draw(can)
+can.endclip()
+</pre></div>
+
+<P>
+The following <code>canvas.T</code> methods are used to control clipping:
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-370' xml:id='l2h-370' class="method">clip</tt></b>(</nobr></td>
+  <td><var>x1, y1, x2, y2</var>)</td></tr></table></dt>
+<dd>
+Activate a rectangular clip region, (X1, Y1) - (X2, Y2).
+        You must call endclip() after you completed drawing.
+
+<P>
+<div class="verbatim"><pre>
+<a href="module-canvas.html">canvas.</a>clip(x,y,x2,y2)
+draw something ...
+<a href="module-canvas.html">canvas.</a>endclip()
+</pre></div>
+
+<P>
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-371' xml:id='l2h-371' class="method">clip_ellipsis</tt></b>(</nobr></td>
+  <td><var>x, y, radius, y_elongation</var>)</td></tr></table></dt>
+<dd>
+Create an elliptical clip region. You must call endclip() after
+        you completed drawing. See also the ellipsis method.
+
+<P>
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-372' xml:id='l2h-372' class="method">clip_polygon</tt></b>(</nobr></td>
+  <td><var>[(x1,y2),(x2,y2), ..., (xn, yn)]</var>)</td></tr></table></dt>
+<dd>
+Create a polygonal clip region. You must call endclip() after
+        you completed drawing. See also the polygon method.
+
+<P>
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-373' xml:id='l2h-373' class="method">endclip</tt></b>(</nobr></td>
+  <td><var></var>)</td></tr></table></dt>
+<dd>
+End the current clip region. When clip calls are nested, it
+        ends the most recently created crip region.
+
+<P>
+</dl>
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="21.3 Drawing other objects"
+  href="drawing-canvas.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="21 canvas - Controlling"
+  href="module-canvas.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="21.5 Setting canvas properties"
+  href="property-canvas.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="drawing-canvas.html">21.3 Drawing other objects</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="module-canvas.html">21 canvas - Controlling</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="property-canvas.html">21.5 Setting canvas properties</A>
+</div>
+</div>
+<hr />
+<span class="release-info">Documentation released on July 2, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

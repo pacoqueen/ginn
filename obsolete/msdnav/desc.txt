@@ -1,0 +1,132 @@
+Todos los archivos van codificados en Unicode (UTF-8). 
+Delimitador de campos ";".
+Delimitador de fin de línea "\n".
+
+albaranes_salida.csv: Cabeceras de albaranes. Campos:
+    ID: Clave primaria. Entero.
+    Número de albarán: Texto.
+    Nombre del cliente: Texto.
+    CIF/NIF del cliente: Texto.
+    Dirección del cliente: Texto.
+    Código postal del cliente: Texto.
+    Ciudad del cliente: Texto.
+    Provincia del cliente: Texto.
+    País del cliente: Texto.
+    Fecha: dd/mm/aaaa.
+    Nombre dirección de envío: Texto.
+    Dirección de envío: Texto.
+    Código postal de dirección de envío: Texto.
+    Ciudad de envío: Texto.
+    Teléfono de contacto dirección de envío: Texto.
+    País de envío: Texto.
+    Facturable: Booleano (1 = True; 0 = False).
+    Motivo -si lo hubiera- por el que no debería generar factura: Texto.
+    Bloqueado: Booleano (1 = True; 0 = False).
+    Interno: Indica si es un albarán interno entre líneas de producción. Booleano (1 = True; 0 = False).
+    Repuestos: Indica si el albarán es de repuestos de maquinaria. Booleano (1 = True; 0 = False).
+
+ldvs_albaranes_salida.csv: Líneas de venta de albaranes de salida. Campos:
+    ID Clave primaria. Entero.
+    ID albarán de salida: Clave ajena. Entero. Puede ser nulo (cadena vacía).
+    ID factura de venta: Clave ajena. Entero. Puede ser nulo (cadena vacía).
+    PUID producto: Texto. Formato "%s:%d". Texto identificativo del tipo de producto e identificador -clave ajena- del mismo separados por ":". Es único y se puede usar como código en caso de que el producto no lo tuviera o la línea se corresponda con un servicio.
+    Código: Texto. Generalmente EAN-13.
+    Descripción: Descripción o concepto del servicio.
+    Total de línea: Flotante. Punto como separador decimal. Total de línea sin IVA.
+
+facturas_venta.csv: Cabeceras de facturas de venta. Campos:
+    ID: Clave primaria.
+    Número de factura: Texto.
+    Nombre cliente: Texto. 
+    CIF/NIF del cliente: Texto.
+    Dirección de envío: Texto. 
+    CP: Texto.
+    Ciudad: Texto.
+    Provincia: Texto.
+    País: Texto.
+    Dirección de facturación: Texto.
+    Código postal de la dirección de facturación: Texto.
+    Ciudad facturación: Texto.
+    Provincia facturación: Texto.
+    País de la dirección fiscal: Texto.
+    Fecha: dd/mm/aaaa
+    Descuento: Descuento global. Flotante. Punto como separador decimal. Porcentaje en fracción de 1 (por ejemplo, 0.2 = 20%).
+    IVA: Flotante. Punto como separador decimal. Porcentaje en fracción de 1 (16% = 0.16).
+    Bloqueada: Boolean. 0 si es Falso, 1 Verdadero.
+
+ldvs_facturas_venta.csv: Líneas de facturas de venta. Campos:
+    ID Clave primaria. Entero.
+    ID albarán de salida: Clave ajena. Entero. Puede ser nulo (cadena vacía).
+    ID factura de venta: Clave ajena. Entero. Puede ser nulo (cadena vacía).
+    PUID producto: Texto. Formato "%s:%d". Texto identificativo del tipo de producto e identificador -clave ajena- del mismo separados por ":". Es único y se puede usar como código en caso de que el producto no lo tuviera o la línea se corresponda con un servicio.
+    Código: Texto. Generalmente EAN-13.
+    Descripción: Descripción o concepto del servicio.
+    Total de línea: Flotante. Punto como separador decimal. Total de línea sin IVA.
+    
+abonos.csv: Abonos sobre facturas de venta. Campos:
+    ID: Clave primaria. Entero.
+    Número de abono: Texto.
+    Nombre del cliente: Texto.
+    CIF/NIF: Texto.
+    Dirección: Texto.
+    CP: Texto.
+    Ciudad: Texto.
+    Provincia: Texto.
+    País: Texto.
+    Fecha: dd/mm/aaaa.
+
+lineas_abono.csv: Líneas que componen los abonos. Pueden ser ajustes de precio o devoluciones de mercancía. Campos:
+    ID: Clave primaria. Entero.
+    Identificador de abono: Clave ajena. Entero.
+    PUID producto: Texto. Formato "%s:%d". Texto identificativo del tipo de producto e identificador -clave ajena- del mismo separados por ":". Es único y se puede usar como código en caso de que el producto no lo tuviera o la línea se corresponda con un servicio.
+    Código de producto: Texto.
+    Descripción del producto o concepto: Texto.
+    Subtotal: Flotante. Punto como separador decimal.
+
+albaranes_entrada.csv: Albaranes de entrada de material. Campos:
+    ID: Clave primaria. Texto.
+    Número de albarán: Texto. 
+    Nombre del proveedor: Texto.
+    CIF/NIF del proveedor: Texto. 
+    Dirección del proveedor: Texto. 
+    Código postal: Texto. 
+    Ciudad: Texto.
+    Provincia: Texto. 
+    País: Texto.
+    Fecha: dd/mm/aaaa.
+    Bloqueado: Boolean (0 = Falso).
+    Repuestos: Indica si es un albarán de repuestos de línea de producción. Boolean (0 = Falso).
+
+ldcs_albaranes_entrada.csv: Líneas de los albaranes de entrada. Campos:
+    ID: Clave primaria. Entero.
+    PUID producto: Texto. Formato "%s:%d". Texto identificativo del tipo de producto e identificador -clave ajena- del mismo separados por ":". Es único y se puede usar como código en caso de que el producto no lo tuviera o la línea se corresponda con un servicio.
+    Código del producto: Texto.
+    Descripción: Texto. 
+    Subtotal: Total de línea sin IVA. Flotante. Punto como separador decimal.
+    IVA: IVA de la línea. Flotante. Punto como separador decimal. En fracción de 1 (0.16 = 16%).
+
+facturas_compra.csv: Facturas de compra. Campos:
+    ID: Clave primaria. Texto.
+    Número de factura: Texto. 
+    Nombre del proveedor: Texto.
+    CIF/NIF del proveedor: Texto. 
+    Dirección del proveedor: Texto. 
+    Código postal: Texto. 
+    Ciudad: Texto.
+    Provincia: Texto. 
+    País: Texto.
+    Fecha: dd/mm/aaaa.
+    Descuento: Descuento global. Flotante con punto como separador decimal. Fracción de 1.
+    Cargo adicional: Cantidad que se suma al total de la factura tras aplicar IVA. Flotante con punto como separador decimal.
+    IVA: Tipo de IVA de la factura. Flotante con punto como separador decimal. En fracción de 1 (0.16 = 16%).
+    Bloqueada: Boolean (0 = Falso).
+
+ldcs_facturas_compra.csv: Líneas de las facturas de compra. Campos:
+    ID: Clave primaria. Entero.
+    PUID producto: Texto. Formato "%s:%d". Texto identificativo del tipo de producto e identificador -clave ajena- del mismo separados por ":". Es único y se puede usar como código en caso de que el producto no lo tuviera o la línea se corresponda con un servicio.
+    Código del producto: Texto.
+    Descripción: Texto. 
+    Subtotal: Total de línea sin IVA. Flotante. Punto como separador decimal.
+    IVA: IVA de la línea. Flotante. Punto como separador decimal. En fracción de 1 (0.16 = 16%).
+
+

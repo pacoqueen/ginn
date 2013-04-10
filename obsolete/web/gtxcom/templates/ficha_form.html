@@ -1,0 +1,20 @@
+{% extends "base2.html" %}
+
+{% block titulo %}Geotexan - Fichas{% endblock %}
+
+{% block encabezado %}Formulario fichas{% endblock %}
+{% block datos %}
+    <form method="POST" action="">
+        {{ formempresa }}
+        {{ formset.management_form }}
+        <table>
+            {{ formset }}
+        </table>
+        {{ formsetvisita.management_form }}
+        <table>
+            {{ formsetvisita }}
+        </table>
+        <p><input type="submit" value="Guardar"></p>
+    </form>
+{% endblock %}
+
