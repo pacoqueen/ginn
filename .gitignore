@@ -34,10 +34,10 @@ pip-log.txt
 # Log, backups y demás información sensible e inútil para el desarrollo
 ginn.log
 *.backup
-BD/ginn.?.dump
-BD/baks_sql
-adjuntos/*
-framework/*ginn*.conf*
+db/ginn.?.dump
+db/baks_sql
+ginn/adjuntos/*
+ginn/framework/*ginn*.conf*
 
 # Control de versiones CVS
 CVS
