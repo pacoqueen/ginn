@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head><style type="text/css">
+pre {background-color: #e0e0e0}
+</style>
+
+<link rel="STYLESHEET" href="pychart.css" type='text/css' />
+<link rel="first" href="pychart.html" title='PyChart' />
+<link rel='index' href='genindex.html' title='Index' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="module-color.html" />
+<link rel="prev" href="options.html" />
+<link rel="parent" href="pychart.html" />
+<link rel="next" href="module-color.html" />
+<meta name='aesop' content='information' />
+<title>14 Line styles</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="13.3 Changing the default"
+  href="PYCHART-OPTIONS.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="PyChart"
+  href="pychart.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="15 Colors"
+  href="module-color.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="PYCHART-OPTIONS.html">13.3 Changing the default</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="pychart.html">PyChart</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="module-color.html">15 Colors</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION0001400000000000000000">
+14 Line styles</A>
+</H1>
+
+<P>
+<A NAME="module-line-style"></A>
+<P>
+<dl><dt><b><span class="typelabel">class</span>&nbsp;<tt id='l2h-260' xml:id='l2h-260' class="class">line_style.T</tt></b>
+<dd>
+This class defines the looks of line segments.
+This class supports the following attributes:
+</dl>
+
+<P>
+<dl><dt><b><tt id='l2h-261' xml:id='l2h-261' class="member">cap_style</tt></b></dt>
+<dd>
+<b>Type:</b> int
+<b>Default:</b> 0. 
+
+<P>
+Defines the style of the tip of the line segment.
+                  0: butt cap (square cutoff, with no projection beyond),
+                  1: round cap (arc), 2: projecting square cap
+                  (square cutoff, but the line extends half the line width).
+                  See also Postscript/PDF reference manual.
+</dl>
+<dl><dt><b><tt id='l2h-262' xml:id='l2h-262' class="member">color</tt></b></dt>
+<dd>
+<b>Type:</b> color.T
+( see Section&nbsp;<A href="module-color.html#module-color">15</A>)
+<b>Default:</b> color.black. 
+
+<P>
+The color of the line.
+</dl>
+<dl><dt><b><tt id='l2h-263' xml:id='l2h-263' class="member">dash</tt></b></dt>
+<dd>
+<b>Type:</b> tuple
+<b>Default:</b> None. 
+
+<P>
+The value
+              of None will draw a solid line. Otherwise, this
+              attribute specifies the style of dashed lines. 
+              The 2N'th value specifies the length of the line (in points), 
+              and 2N+1'th value specifies the length of the blank.
+
+<P>
+For example, the dash style of (3,2,4,1) draws a dashed line that
+              looks like <code>-&#45;-__-&#45;-&#45;_-&#45;-__-&#45;-&#45;_...</code>.
+
+<P>
+</dl>
+<dl><dt><b><tt id='l2h-264' xml:id='l2h-264' class="member">join_style</tt></b></dt>
+<dd>
+<b>Type:</b> int
+<b>Default:</b> 0. 
+
+<P>
+Join style. 0: Miter join (sharp, pointed corners),
+                   1: round join (rounded corners),
+                   2: bevel join (flattened corners).
+                   See also Postscript/PDF reference manual.
+</dl>
+<dl><dt><b><tt id='l2h-265' xml:id='l2h-265' class="member">width</tt></b></dt>
+<dd>
+<b>Type:</b> length in points ( See Section&nbsp;<A href="unit.html#unit">4</A>)
+<b>Default:</b> 0.4. 
+
+<P>
+Width of the line, in points.
+</dl>
+
+<P>
+The below picture show standard line styles.
+These styles are referred to by names
+<code>line_style.</code><var>name</var>, where <var>name</var> is the label below each item.
+
+<P>
+<IMG
+  WIDTH="816" HEIGHT="248" ALIGN="BOTTOM" BORDER="0"
+ SRC="./linestyles.png"
+ ALT="Image linestyles">
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="13.3 Changing the default"
+  href="PYCHART-OPTIONS.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="PyChart"
+  href="pychart.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="15 Colors"
+  href="module-color.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="PYCHART-OPTIONS.html">13.3 Changing the default</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="pychart.html">PyChart</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="module-color.html">15 Colors</A>
+</div>
+</div>
+<hr />
+<span class="release-info">Documentation released on July 2, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

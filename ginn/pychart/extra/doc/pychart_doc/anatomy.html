@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head><style type="text/css">
+pre {background-color: #e0e0e0}
+</style>
+
+<link rel="STYLESHEET" href="pychart.css" type='text/css' />
+<link rel="first" href="pychart.html" title='PyChart' />
+<link rel='index' href='genindex.html' title='Index' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="module-chart-object.html" />
+<link rel="prev" href="introduction.html" />
+<link rel="parent" href="pychart.html" />
+<link rel="next" href="module-chart-object.html" />
+<meta name='aesop' content='information' />
+<title>2 Anatomy of a chart</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="1.2 Bar plot"
+  href="node3.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="PyChart"
+  href="pychart.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="3 Attributes"
+  href="module-chart-object.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="node3.html">1.2 Bar plot</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="pychart.html">PyChart</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="module-chart-object.html">3 Attributes</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000200000000000000000"></A><A NAME="anatomy"></A>
+<BR>
+2 Anatomy of a chart
+</H1>
+
+<P>
+A chart comprises a set of <i class="dfn">components</i>. Each component belongs to a
+certain class, from which an instance tailored for a particular chart is
+generated. The below picture shows example of a chart and its components.
+
+<P>
+<IMG
+  WIDTH="774" HEIGHT="498" ALIGN="BOTTOM" BORDER="0"
+ SRC="./failureannot.png"
+ ALT="Image failureannot">
+
+<P>
+The standard set of component classes follow:
+
+<P>
+<DL>
+<DT><STRONG><code>area.T</code>:</STRONG></DT>
+<DD><P>
+This class defines the size, the location, and the coordinate
+system (linear, logarithmic, etc) of a chart ( see Section&nbsp;<A href="module-area.html#module-area">6</A>).  It also
+contains axes, plots, and legends, as described below.  At least one
+Area must be created in any chart.
+
+<P>
+</DD>
+<DT><STRONG><code>axis.X</code>:</STRONG></DT>
+<DD>
+</DD>
+<DT><STRONG><code>axis.Y</code>:</STRONG></DT>
+<DD>The axis class defines the look of an axis. You can specify, for
+example, the interval and the style of tick marks and grid lines
+( see Section&nbsp;<A href="module-axis.html#module-axis">6.2</A>). PyChart provides two types of axes, <code>axis.X</code> and
+<code>axis.Y</code>, corresponding to horizontal and vertical axes.
+
+<P>
+</DD>
+<DT><STRONG><code>bar_plot.T</code>:</STRONG></DT>
+<DD>
+</DD>
+<DT><STRONG><code>line_plot.T</code>:</STRONG></DT>
+<DD>
+</DD>
+<DT><STRONG><code>pie_plot.T</code>:</STRONG></DT>
+<DD>
+</DD>
+<DT><STRONG><code>range_plot.T</code>:</STRONG></DT>
+<DD>
+</DD>
+<DT><STRONG><code>interval_plot.T</code>:</STRONG></DT>
+<DD>
+</DD>
+<DT><STRONG><code>rose_plot.T</code>:</STRONG></DT>
+<DD>These classes actually plot a chart.  You can draw multiple plots in a
+single chart, and most of the times you can even mix different types of
+plots, e.g., line plots and bar plots.
+
+<P>
+</DD>
+<DT><STRONG><code>legend.T</code>:</STRONG></DT>
+<DD>The class draws an optional rectangular box that describes what each plot
+means ( see Section&nbsp;<A href="module-legend.html#module-legend">6.3</A>).
+
+<P>
+</DD>
+<DT><STRONG><code>text_box.T</code>:</STRONG></DT>
+<DD>This class draws an optional rectangular box that contains arbitrary
+text.  It can also contain arrows ( see Section&nbsp;<A href="module-text-box.html#module-text-box">18</A>).
+
+<P>
+</DD>
+<DT><STRONG><code>canvas.T</code>:</STRONG></DT>
+<DD>The <code>canvas</code> is a "virtual paper" that defines graph-drawing
+primitives, such as lines, rectangles, and texts. One canvas corresponds
+to one output file. Canvas is used by other components in the graph and
+is usually not manipulated by users directly.  It's handy, however, if
+you want to draw a line/circle/text/etc, directly on the PostScript or
+PDF file.  See Section&nbsp;<A href="module-canvas.html#module-canvas">21</A>.
+
+<P>
+</DD>
+</DL>
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="1.2 Bar plot"
+  href="node3.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="PyChart"
+  href="pychart.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="3 Attributes"
+  href="module-chart-object.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="node3.html">1.2 Bar plot</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="pychart.html">PyChart</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="module-chart-object.html">3 Attributes</A>
+</div>
+</div>
+<hr />
+<span class="release-info">Documentation released on July 2, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

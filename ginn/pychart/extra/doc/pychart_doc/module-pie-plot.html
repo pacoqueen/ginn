@@ -1,0 +1,279 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head><style type="text/css">
+pre {background-color: #e0e0e0}
+</style>
+
+<link rel="STYLESHEET" href="pychart.css" type='text/css' />
+<link rel="first" href="pychart.html" title='PyChart' />
+<link rel='index' href='genindex.html' title='Index' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="module-rose-plot.html" />
+<link rel="prev" href="module-range-plot.html" />
+<link rel="parent" href="pychart.html" />
+<link rel="next" href="module-rose-plot.html" />
+<meta name='aesop' content='information' />
+<title>11 Pie plots</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="10 Range plots"
+  href="module-range-plot.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="PyChart"
+  href="pychart.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="12 Rose plots"
+  href="module-rose-plot.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="module-range-plot.html">10 Range plots</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="pychart.html">PyChart</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="module-rose-plot.html">12 Rose plots</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION0001100000000000000000">
+11 Pie plots</A>
+</H1>
+<A NAME="module-pie-plot"></A>
+<P>
+<dl><dt><b><span class="typelabel">class</span>&nbsp;<tt id='l2h-195' xml:id='l2h-195' class="class">pie_plot.T</tt></b>
+<dd>
+Pie plots.
+<IMG
+  WIDTH="404" HEIGHT="318" ALIGN="BOTTOM" BORDER="0"
+ SRC="./pietest.png"
+ ALT="Image pietest">
+
+<P>
+<b>  Sample pie chart </b>
+
+<P>
+Below is the source code that produces the above chart.
+../demos/pietest.py
+
+<P>
+<div class="verbatim"><pre>
+from pychart import *
+import sys
+
+data = [("foo", 10),("bar", 20), ("baz", 30), ("ao", 40)]
+
+ar = <a href="module-area.html">area.T</a>(size=(150,150), legend=<a href="module-legend.html">legend.</a>T(),
+            x_grid_style = None, y_grid_style = None)
+
+plot = <a href="module-pie-plot.html">pie_plot.T</a>(data=data, arc_offsets=[0,10,0,10],
+                  shadow = (2, -2, <a href="module-fill-style.html">fill_style.</a>gray50),
+                  label_offset = 25,
+                  arrow_style = arrow.a3)
+ar.add_plot(plot)
+ar.draw()
+</pre></div>
+</dl>
+
+<P>
+This class supports the following attributes:
+
+<P>
+<dl><dt><b><tt id='l2h-196' xml:id='l2h-196' class="member">arc_offsets</tt></b></dt>
+<dd>
+<b>Type:</b> list
+<b>Default:</b> None. 
+
+<P>
+You can draw each pie "slice" shifted off-center.
+                         This attribute, if non-None,
+                         must be a number sequence whose length is equal to
+                         the number of pie slices. The Nth value in arc_offsets
+                         specify the amount of offset
+                         (from the center of the circle)
+                         for the Nth slice.
+                         The value of None will draw all the slices
+                         anchored at the center. 
+
+<P>
+</dl>
+<dl><dt><b><tt id='l2h-197' xml:id='l2h-197' class="member">arrow_style</tt></b></dt>
+<dd>
+<b>Type:</b> arrow.T
+( see Section&nbsp;<A href="module-arrow.html#module-arrow">19</A>)
+<b>Default:</b> None. 
+
+<P>
+The style of arrow that connects a label
+                        to the corresponding "pie".
+</dl>
+<dl><dt><b><tt id='l2h-198' xml:id='l2h-198' class="member">center</tt></b></dt>
+<dd>
+<b>Type:</b> (x,y) or None
+<b>Default:</b> None. 
+
+<P>
+The location of the center of the pie.
+</dl>
+<dl><dt><b><tt id='l2h-199' xml:id='l2h-199' class="member">data</tt></b></dt>
+<dd>
+<b>Type:</b> any
+<b>Default:</b> None. 
+
+<P>
+Specifies the data points.  See Section&nbsp;<A href="module-chart-data.html#module-chart-data">5</A>
+</dl>
+<dl><dt><b><tt id='l2h-200' xml:id='l2h-200' class="member">data_col</tt></b></dt>
+<dd>
+<b>Type:</b> int
+<b>Default:</b> 1. 
+
+<P>
+The column, within "data", from which the data values are retrieved.
+</dl>
+<dl><dt><b><tt id='l2h-201' xml:id='l2h-201' class="member">fill_styles</tt></b></dt>
+<dd>
+<b>Type:</b> list
+<b>Default:</b> ['fill_style.black', 'fill_style.gray70', 'fill_style.diag', 'fill_style.gray50', 'fill_style.white', 'fill_style.rdiag', 'fill_style.vert', 'fill_style.gray30', 'fill_style.gray20', 'fill_style.gray10', 'fill_style.diag2', 'fill_style.rdiag2', 'fill_style.diag3', 'fill_style.horiz', 'fill_style.gray90', 'fill_style.rdiag3', 'fill_style.wave', 'fill_style.vwave', 'fill_style.stitch', 'fill_style.lines', 'fill_style.diag_fine', 'fill_style.diag2_fine', 'fill_style.diag3_fine', 'fill_style.rdiag_fine', 'fill_style.rdiag2_fine', 'fill_style.rdiag3_fine', 'fill_style.horiz_fine', 'fill_style.vert_fine']. 
+
+<P>
+The fill style of each item. The length of the
+                         list should be equal to the length of the data. 
+
+<P>
+</dl>
+<dl><dt><b><tt id='l2h-202' xml:id='l2h-202' class="member">label_col</tt></b></dt>
+<dd>
+<b>Type:</b> int
+<b>Default:</b> 0. 
+
+<P>
+The column, within "data", from which the labels of items are retrieved.
+</dl>
+<dl><dt><b><tt id='l2h-203' xml:id='l2h-203' class="member">label_fill_style</tt></b></dt>
+<dd>
+<b>Type:</b> fill_style.T
+( see Section&nbsp;<A href="module-fill-style.html#module-fill-style">16</A>)
+<b>Default:</b> fill_style.default. 
+
+<P>
+The fill style of the frame surrounding each label.
+</dl>
+<dl><dt><b><tt id='l2h-204' xml:id='l2h-204' class="member">label_format</tt></b></dt>
+<dd>
+<b>Type:</b> printf format string
+<b>Default:</b> "%s". 
+
+<P>
+Format string of the label
+</dl>
+<dl><dt><b><tt id='l2h-205' xml:id='l2h-205' class="member">label_line_style</tt></b></dt>
+<dd>
+<b>Type:</b> line_style.T
+( see Section&nbsp;<A href="module-line-style.html#module-line-style">14</A>)
+<b>Default:</b> None. 
+
+<P>
+The style of the frame surrounding each label.
+</dl>
+<dl><dt><b><tt id='l2h-206' xml:id='l2h-206' class="member">label_offset</tt></b></dt>
+<dd>
+<b>Type:</b> length in points ( See Section&nbsp;<A href="unit.html#unit">4</A>)
+<b>Default:</b> None. 
+
+<P>
+The distance from the center of each label.
+</dl>
+<dl><dt><b><tt id='l2h-207' xml:id='l2h-207' class="member">line_style</tt></b></dt>
+<dd>
+<b>Type:</b> line_style.T
+( see Section&nbsp;<A href="module-line-style.html#module-line-style">14</A>)
+<b>Default:</b> line_style.black. 
+
+<P>
+The style of the outer edge of each pie slice.
+</dl>
+<dl><dt><b><tt id='l2h-208' xml:id='l2h-208' class="member">radius</tt></b></dt>
+<dd>
+<b>Type:</b> length in points ( See Section&nbsp;<A href="unit.html#unit">4</A>)
+<b>Default:</b> None. 
+
+<P>
+The radius of the pie.
+</dl>
+<dl><dt><b><tt id='l2h-209' xml:id='l2h-209' class="member">shadow</tt></b></dt>
+<dd>
+<b>Type:</b> (xoff,yoff,fill)
+<b>Default:</b> None. 
+
+<P>
+The value is either None or a tuple. When non-None,
+a drop-shadow is drawn beneath the object. X-off, and y-off specifies the
+offset of the shadow relative to the object, and fill specifies the
+style of the shadow ( see Section&nbsp;<A href="module-fill-style.html#module-fill-style">16</A>).
+</dl>
+<dl><dt><b><tt id='l2h-210' xml:id='l2h-210' class="member">start_angle</tt></b></dt>
+<dd>
+<b>Type:</b> number
+<b>Default:</b> 90. 
+
+<P>
+The angle at which the first item is drawn.
+</dl>
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="10 Range plots"
+  href="module-range-plot.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="PyChart"
+  href="pychart.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="12 Rose plots"
+  href="module-rose-plot.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="module-range-plot.html">10 Range plots</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="pychart.html">PyChart</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="module-rose-plot.html">12 Rose plots</A>
+</div>
+</div>
+<hr />
+<span class="release-info">Documentation released on July 2, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

@@ -1,4 +1,0 @@
-style "mystyle" {
-	font_name = "arial 8"
-}
-class "*" style "mystyle"

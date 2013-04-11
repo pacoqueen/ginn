@@ -1,0 +1,423 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head><style type="text/css">
+pre {background-color: #e0e0e0}
+</style>
+
+<link rel="STYLESHEET" href="pychart.css" type='text/css' />
+<link rel="first" href="pychart.html" title='PyChart' />
+<link rel='index' href='genindex.html' title='Index' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="module-area.html" />
+<link rel="prev" href="unit.html" />
+<link rel="parent" href="pychart.html" />
+<link rel="next" href="module-area.html" />
+<meta name='aesop' content='information' />
+<title>5 Reading CSV files and transforming data</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="4 Unit of length"
+  href="unit.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="PyChart"
+  href="pychart.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="6 Area"
+  href="module-area.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="unit.html">4 Unit of length</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="pychart.html">PyChart</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="module-area.html">6 Area</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000500000000000000000"></A><a id='l2h-6' xml:id='l2h-6'></a>
+<BR>
+5 Reading CSV files and transforming data
+</H1>
+
+<P>
+<A NAME="module-chart-data"></A>
+
+<P>
+The basic function of  PyChart is to plot sample data in a variety of
+ways.  Sample data are simply a <em>sequence</em> of <em>sequences</em>,
+where the term "sequence" is a Python jargon for either a tuple
+(comma-separated numbers or strings enclosed in parenthesis, e.g.,
+<code>(5, 10, 15)</code>) or a list
+(comma-separated numbers or strings enclosed in square brackets, e.g.,
+<code>[5, 10, 15]</code>). Data
+are given to plots through the "<code>data</code>" attribute of a plot object:
+
+<P>
+<div class="verbatim"><pre>
+l = <a href="module-line-plot.html">line_plot.T</a>(data=[(10,20), (11,38), (12,29)], xcol=0, ycol=1)
+</pre></div>
+
+<P>
+In the above example, three sample points will be drawn along with line
+segments that connect them: (10, 20) - (11, 38) - (12, 29).
+Attribute <code>xcol</code> tells the locations of X values within data (the
+first column of each sample in <code>data</code>), and <code>ycol</code> similarly
+tell the locations of Y values (the last column of each sample in
+<code>data</code>).  A sample point can contain None, in which case
+it is ignored.
+
+<P>
+<div class="verbatim"><pre>
+data = [(10, 20, 21), (11, 38, 22), (13, None, 15), (12, 29, 30)]
+l1 = <a href="module-line-plot.html">line_plot.T</a>(data=data, xcol=0, ycol=1)
+l2 = <a href="module-line-plot.html">line_plot.T</a>(data=data, xcol=0, ycol=2)
+</pre></div>
+
+<P>
+The above example is equivalent to:
+
+<P>
+<div class="verbatim"><pre>
+l1 = <a href="module-line-plot.html">line_plot.T</a>(data=[(10, 20), (11, 38), (12, 29)], xcol=0, ycol=1)
+l2 = <a href="module-line-plot.html">line_plot.T</a>(data=[(10, 21), (11, 22), (13, 15), (12, 30)], xcol=0, ycol=1)
+</pre></div>
+
+<P>
+Module <code>chart_data</code> provides several functions for generating,
+reading, or transforming samples.
+
+<P>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-8' xml:id='l2h-8' class="function">read_csv</tt></b>(</nobr></td>
+  <td><var>path, delim = ','</var>)</td></tr></table></dt>
+<dd>
+
+This function reads comma-separated values from a
+    file. Parameter <var>path</var> is either a pathname or a file-like object
+    that supports the <code>readline()</code> method.
+
+<P>
+Empty lines and lines
+    beginning with "#" are ignored.  Parameter <var>delim</var> specifies how
+    a line is separated into values. If it does not contain the
+    letter "%", then <var>delim</var> marks the end of a value.
+    Otherwise, this function acts like scanf in C:
+
+<P>
+<div class="verbatim"><pre>
+<a href="module-chart-data.html">chart_data.</a>read_csv('file', '%d,%s:%d')
+</pre></div>
+    Paramter <var>delim</var> currently supports
+    only three conversion format specifiers:
+    "d"(int), "f"(double), and "s"(string).
+
+<P>
+<a id='l2h-9' xml:id='l2h-9'></a></dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-10' xml:id='l2h-10' class="function">read_str</tt></b>(</nobr></td>
+  <td><var>delim, lines</var>)</td></tr></table></dt>
+<dd>
+This function is similar to read_csv, but it reads data from the
+    list of <var>lines</var>.
+
+<P>
+<div class="verbatim"><pre>
+fd = open("foo", "r")
+data = <a href="module-chart-data.html">chart_data.</a>read_str(",", fd.readlines())
+</pre></div>
+
+<P>
+
+<a id='l2h-11' xml:id='l2h-11'></a></dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-12' xml:id='l2h-12' class="function">write_csv</tt></b>(</nobr></td>
+  <td><var>path, data</var>)</td></tr></table></dt>
+<dd>
+This function writes comma-separated <var>data</var> to
+    <var>path</var>. Parameter <var>path</var> is either a pathname or a file-like
+    object that supports the <code>write()</code> method.
+
+<P>
+<a id='l2h-13' xml:id='l2h-13'></a></dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-14' xml:id='l2h-14' class="function">func</tt></b>(</nobr></td>
+  <td><var>f, from, to, step</var>)</td></tr></table></dt>
+<dd>
+Create sample points from function <var>f</var>, which must be a
+    single-parameter function that returns a number (e.g., math.sin).
+    Parameters <var>xmin</var> and <var>xmax</var> specify the first and last X values, and
+    <var>step</var> specifies the sampling interval.
+
+<P>
+<div class="verbatim"><pre>
+&gt;&gt;&gt; <a href="module-chart-data.html">chart_data.</a>func(math.sin, 0, math.pi * 4, math.pi / 2)
+[(0, 0.0), (1.5707963267948966, 1.0), (3.1415926535897931, 1.2246063538223773e-16), (4.7123889803846897, -1.0), (6.2831853071795862, -2.4492127076447545e-16), (7.8539816339744828, 1.0), (9.4247779607693793, 3.6738190614671318e-16), (10.995574287564276, -1.0)]
+</pre></div>
+
+<P>
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-15' xml:id='l2h-15' class="function">filter</tt></b>(</nobr></td>
+  <td><var>f, data</var>)</td></tr></table></dt>
+<dd>
+Parameter <var>func</var> must be a single-argument
+    function that takes a sequence (i.e.,
+a sample point) and returns a boolean. This procedure calls <var>func</var> on
+each element in <var>data</var> and returns a list comprising elements for
+which <var>func</var> returns True.
+
+<P>
+<div class="verbatim"><pre>
+&gt;&gt;&gt; data = [[1,5], [2,10], [3,13], [4,16]]
+... <a href="module-chart-data.html">chart_data.</a>filter(lambda x: x[1] % 2 == 0, data)
+[[2,10], [4,16]].
+</pre></div>
+
+<P>
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-16' xml:id='l2h-16' class="function">extract_rows</tt></b>(</nobr></td>
+  <td><var>data, rows...</var>)</td></tr></table></dt>
+<dd>
+Extract rows specified in the argument list.
+
+<P>
+<div class="verbatim"><pre>
+&gt;&gt;&gt; <a href="module-chart-data.html">chart_data.</a>extract_rows([[10,20], [30,40], [50,60]], 1, 2)
+[[30,40],[50,60]]
+</pre></div>
+
+<P>
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-17' xml:id='l2h-17' class="function">extract_columns</tt></b>(</nobr></td>
+  <td><var>data, cols...</var>)</td></tr></table></dt>
+<dd>
+Extract columns specified in the argument list.
+
+<P>
+<div class="verbatim"><pre>
+&gt;&gt;&gt; <a href="module-chart-data.html">chart_data.</a>extract_columns([[10,20], [30,40], [50,60]], 0)
+[[10],[30],[50]]
+</pre></div>
+
+<P>
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-18' xml:id='l2h-18' class="function">moving_average</tt></b>(</nobr></td>
+  <td><var>data, xcol, ycol, width</var>)</td></tr></table></dt>
+<dd>
+
+Compute the moving average of  YCOL'th column of each sample point
+in  DATA. In particular, for each element  I in  DATA,
+this function extracts up to  WIDTH*2+1 elements, consisting of
+ I itself,  WIDTH elements before  I, and  WIDTH
+elements after  I. It then computes the mean of the  YCOL'th
+column of these elements, and it composes a two-element sample
+consisting of  XCOL'th element and the mean.
+
+<P>
+<div class="verbatim"><pre>
+&gt;&gt;&gt; data = [[10,20], [20,30], [30,50], [40,70], [50,5]]
+... <a href="module-chart-data.html">chart_data.</a>moving_average(data, 0, 1, 1)
+[(10, 25.0), (20, 33.333333333333336), (30, 50.0), (40, 41.666666666666664), (50, 37.5)]
+</pre></div>
+  The above value actually represents:
+
+<P>
+<div class="verbatim"><pre>
+[(10, (20+30)/2), (20, (20+30+50)/3), (30, (30+50+70)/3), 
+  (40, (50+70+5)/3), (50, (70+5)/2)]
+</pre></div>
+
+<P>
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-19' xml:id='l2h-19' class="function">median</tt></b>(</nobr></td>
+  <td><var>data, freq_col=1</var>)</td></tr></table></dt>
+<dd>
+Compute the median of the <var>freq_col</var>'th column of the values is <var>data</var>.
+
+<P>
+<div class="verbatim"><pre>
+&gt;&gt;&gt; <a href="module-chart-data.html">chart_data.</a>median([(10,20), (20,4), (30,5)], 0)
+20
+&gt;&gt;&gt; <a href="module-chart-data.html">chart_data.</a>median([(10,20), (20,4), (30,5)], 1)
+5.
+</pre></div>
+
+<P>
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-20' xml:id='l2h-20' class="function">mean_samples</tt></b>(</nobr></td>
+  <td><var>data, xcol, ycollist</var>)</td></tr></table></dt>
+<dd>
+Create a sample list that contains
+    the mean of the original list.
+
+<P>
+<div class="verbatim"><pre>
+&gt;&gt;&gt; <a href="module-chart-data.html">chart_data.</a>mean_samples([ [1, 10, 15], [2, 5, 10], [3, 8, 33] ], 0, (1, 2))
+[(1, 12.5), (2, 7.5), (3, 20.5)]
+</pre></div>
+
+<P>
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-21' xml:id='l2h-21' class="function">stddev_samples</tt></b>(</nobr></td>
+  <td><var>data, xcol, ycollist, delta</var>)</td></tr></table></dt>
+<dd>
+
+Create a sample list that contains the mean and standard deviation of the original list. Each element in the returned list contains following values: [MEAN, STDDEV, MEAN - STDDEV*delta, MEAN + STDDEV*delta].
+
+<P>
+<div class="verbatim"><pre>
+&gt;&gt;&gt; <a href="module-chart-data.html">chart_data.</a>stddev_samples([ [1, 10, 15, 12, 15], [2, 5, 10, 5, 10], [3, 32, 33, 35, 36], [4,16,66, 67, 68] ], 0, range(1,5))
+[(1, 13.0, 2.1213203435596424, 10.878679656440358, 15.121320343559642), (2, 7.5, 2.5, 5.0, 10.0), (3, 34.0, 1.5811388300841898, 32.418861169915807, 35.581138830084193), (4, 54.25, 22.094965489902897, 32.155034510097103, 76.344965489902904)]
+</pre></div>
+
+<P>
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-22' xml:id='l2h-22' class="function">transform</tt></b>(</nobr></td>
+  <td><var>func, data</var>)</td></tr></table></dt>
+<dd>
+Apply <var>func</var> on each element in <var>data</var> and return the list
+consisting of the return values from <var>func</var>.
+
+<P>
+<div class="verbatim"><pre>
+&gt;&gt;&gt; data = [[10,20], [30,40], [50,60]]
+... <a href="module-chart-data.html">chart_data.</a>transform(lambda x: [x[0], x[1]+1], data)
+[[10, 21], [30, 41], [50, 61]]
+</pre></div>
+
+<P>
+</dl>
+
+<P>
+One of the frequent uses of <code>transform</code> is to convert a date string
+to number and back to some other string for display. The next example
+does this: it takes the input for date in the format of "10/5/1983", and
+displays the graph in the format of "Oct 5, 1983".
+
+<P>
+<a id='l2h-23' xml:id='l2h-23'></a>
+
+<P>
+../demos/date.py
+
+<P>
+<div class="verbatim"><pre>
+import sys
+import datetime
+from pychart import *
+
+def date_to_ordinal(s):
+    month, day, year = map(int, s.split("/"))
+    return datetime.date(year, month, day).toordinal()
+
+def format_date(ordinal):
+    d = datetime.date.fromordinal(int(ordinal))
+    return "/a60{}" + d.strftime("%b %d, %y")
+
+data = [["10/5/1983", 10], ["3/5/1984", 15],
+        ["11/10/1984", 16], ["2/22/1985", 20]]
+data = <a href="module-chart-data.html">chart_data.</a>transform(lambda x: [date_to_ordinal(x[0]), x[1]], data)
+
+ar = <a href="module-area.html">area.T</a>(x_coord = <a href="module-coord.html">category_coord.T</a>(data, 0),
+            y_range = (0, None),
+            x_axis = <a href="module-axis.html">axis.</a>X(label = "Date", format = format_date),
+            y_axis = <a href="module-axis.html">axis.</a>Y(label = "Value"))
+ar.add_plot(<a href="module-bar-plot.html">bar_plot.T</a>(data = data))
+ar.draw()
+</pre></div>
+
+<P>
+<IMG
+  WIDTH="407" HEIGHT="351" ALIGN="BOTTOM" BORDER="0"
+ SRC="./date.png"
+ ALT="Image date">
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="4 Unit of length"
+  href="unit.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="PyChart"
+  href="pychart.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="6 Area"
+  href="module-area.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="unit.html">4 Unit of length</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="pychart.html">PyChart</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="module-area.html">6 Area</A>
+</div>
+</div>
+<hr />
+<span class="release-info">Documentation released on July 2, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

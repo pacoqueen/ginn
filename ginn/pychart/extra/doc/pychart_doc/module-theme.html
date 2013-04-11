@@ -1,0 +1,380 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head><style type="text/css">
+pre {background-color: #e0e0e0}
+</style>
+
+<link rel="STYLESHEET" href="pychart.css" type='text/css' />
+<link rel="first" href="pychart.html" title='PyChart' />
+<link rel='index' href='genindex.html' title='Index' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="command-line-options.html" />
+<link rel="prev" href="options.html" />
+<link rel="parent" href="options.html" />
+<link rel="next" href="command-line-options.html" />
+<meta name='aesop' content='information' />
+<title>13.1 theme - Defining the default behaviour of PyChart</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="13 PyChart options"
+  href="options.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="13 PyChart options"
+  href="options.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="13.2 Changing the default"
+  href="command-line-options.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="options.html">13 PyChart options</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="options.html">13 PyChart options</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="command-line-options.html">13.2 Changing the default</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION0001310000000000000000"></A><a id='l2h-229' xml:id='l2h-229'></a>
+<BR>
+13.1 <tt class="module">theme</tt> - Defining the default behaviour of PyChart
+</H2>
+<A NAME="module-theme"></A>
+<P>
+You can change  PyChart's behavior by setting variables in the module
+<code>theme</code>. After setting values, you <em>must</em> call
+<code>theme.reinitialize()</code> to reflect the changes to other parts of
+PyChart.
+Notice that these variables are meaningful only before the first call to
+area.T.draw() (see Section&nbsp;<A href="module-area.html#module-area">6</A>).
+
+<P>
+<div class="verbatim"><pre>
+<a href="options.html">theme.</a>scale_factor = 3
+<a href="options.html">theme.</a>reinitialize()
+</pre></div>
+
+<P>
+The below are the list of variables in the <tt class="module">theme</tt>
+module that you can
+modify.
+
+<P>
+
+<dl><dt><b><tt id='l2h-231' xml:id='l2h-231'>scale_factor</tt></b></dt>
+<dd>
+This variable defines the scaling factor.
+The default value is 1.0, meaning that
+one point in  PyChart actually means one PostScript point.
+Setting this value to
+3.0, for example, makes PyChart draw everything three times larger.
+
+<P>
+<div class="seealso">
+  <p class="heading">See Also:</p>
+
+   See Section&nbsp;<A href="unit.html#unit">4</A> for how the length and the coordinate system
+  are defined in PyChart.
+</div>
+</dd></dl>
+
+<P>
+<dl><dt><b><tt id='l2h-232' xml:id='l2h-232'>output_format</tt></b></dt>
+<dd>
+<a id='l2h-233' xml:id='l2h-233'></a>This variable sets the encoding of the data produced by  PyChart.
+The value of this variable must be one of the following strings.
+
+<P>
+<DL>
+<DT><STRONG><code>ps</code>:</STRONG></DT>
+<DD>
+</DD>
+<DT><STRONG><code>eps</code>:</STRONG></DT>
+<DD><a id='l2h-250' xml:id='l2h-250'></a>
+Encapsulated PostScript. This is the default.
+
+<P>
+</DD>
+<DT><STRONG><code>pdf</code>:</STRONG></DT>
+<DD>Adobe Page Description Format, or PDF.
+
+<P>
+</DD>
+<DT><STRONG><code>pdf-uncompressed</code>:</STRONG></DT>
+<DD>PDF without compression.
+This option should be used for a debugging purpose only.
+
+<P>
+</DD>
+<DT><STRONG><code>png</code>:</STRONG></DT>
+<DD>PNG graphics.  You need to have ghostscript (<code>gs</code>) installed to use
+this option, because  PyChart internally calls ghostscript to convert
+PostScript to PNG.
+
+<P>
+<div class="seealso">
+  <p class="heading">See Also:</p>
+
+<dl compact="compact" class="seeurl">
+    <dt><a href="http://www.ghostscript.com/"
+        class="url">http://www.ghostscript.com/</a></dt>
+    <dd>See this web page for more information about Ghostscript.</dd>
+  </dl>
+</div>
+
+<P>
+</DD>
+<DT><STRONG><code>svg</code>:</STRONG></DT>
+<DD>Scalable vector graphics.
+
+<P>
+<div class="seealso">
+  <p class="heading">See Also:</p>
+
+<dl compact="compact" class="seeurl">
+    <dt><a href="http://www.w3.org/Graphics/SVG/"
+        class="url">http://www.w3.org/Graphics/SVG/</a></dt>
+    <dd>See this web page for more information about SVG.</dd>
+  </dl>
+</div>
+
+<P>
+</DD>
+<DT><STRONG><code>x11</code>:</STRONG></DT>
+<DD>Interactive display on in X window. This format works on UNIX-based
+systems, but not on Windows. You need to have ghostscript installed to
+use this option.
+
+<P>
+</DD>
+</DL>
+
+<P>
+When this variable is not set (or is set to <code>None</code>),
+ PyChart guesses the format from the file name
+(<code>theme.output_file</code>; see below).
+Failing that, PyChart will generate
+an encapsulated PostScript file.
+
+<P>
+</dd></dl>
+
+<P>
+<dl><dt><b><tt id='l2h-234' xml:id='l2h-234'>output_file</tt></b></dt>
+<dd>
+<a id='l2h-235' xml:id='l2h-235'></a>
+Sets the output file name. Without this option,  PyChart sends code
+to the standard output.
+If you want to produce multiple charts from a single Python source file,
+use <code>canvas.init(<var>file</var>)</code> (see Section&nbsp;<A href="module-canvas.html#module-canvas">21</A>).
+</dd></dl>
+
+<P>
+<dl><dt><b><tt id='l2h-236' xml:id='l2h-236'>use_color</tt></b></dt>
+<dd>
+
+The default value of this variable is <code>False</code>.
+If the value is <code>True</code>,
+ PyChart colorizes some of the default objects.
+If the value is <code>False</code>, PyChart uses gray scale for the color of
+these objects.
+In particular:
+
+<P>
+
+<UL>
+<LI>The standard color list (<code>colors.standards</code>) will include all
+the colors listed in X's RGB file. So you can use something like
+"<code>color.slate_blue</code>"<A NAME="tex2html1"
+  HREF="#foot1529"><SUP>1</SUP></A>.
+ See Section&nbsp;<A href="module-color.html#module-color">15</A> for more about colors.
+
+<P>
+</LI>
+<LI>The standard fill style list (<code>fill_style.standards</code>) will
+be colorized.  Thus, if you create a bar plot without explicitly
+specifying its fill style, you will see colored bars on the canvas.
+ See Section&nbsp;<A href="module-fill-style.html#module-fill-style">16</A> for more about fill styles.
+
+<P>
+</LI>
+<LI>The standard line style list (<code>line_style.standards</code>) will be colorized.
+ See Section&nbsp;<A href="module-line-style.html#module-line-style">14</A> for more about line styles.
+
+</LI>
+</UL>
+
+<P>
+</dd></dl>
+
+<P>
+<dl><dt><b><tt id='l2h-237' xml:id='l2h-237'>default_font_family</tt></b></dt>
+<dd>
+This variable sets the default font family used when
+drawing texts.  The default is Helvetica.
+ See Section&nbsp;<A href="escape-sequence.html#escape-sequence">17.1</A>.
+
+</dd></dl>
+
+<P>
+<dl><dt><b><tt id='l2h-238' xml:id='l2h-238'>default_font_size</tt></b></dt>
+<dd>
+This variable sets the font size used when
+drawing texts.  The default is 9 points.
+ See Section&nbsp;<A href="escape-sequence.html#escape-sequence">17.1</A>.
+<a id='l2h-239' xml:id='l2h-239'></a></dd></dl>
+
+<P>
+<dl><dt><b><tt id='l2h-240' xml:id='l2h-240'>default_halign</tt></b></dt>
+<dd>
+Sets the default horizontal alignment of texts (Default value: <code>/h</code>).
+ See Section&nbsp;<A href="escape-sequence.html#escape-sequence">17.1</A>.
+</dd></dl>
+
+<P>
+<dl><dt><b><tt id='l2h-241' xml:id='l2h-241'>default_valign</tt></b></dt>
+<dd>
+Sets the default vertical alignment of texts (Default value: <code>/v</code>).
+ See Section&nbsp;<A href="escape-sequence.html#escape-sequence">17.1</A>.
+</dd></dl>
+
+<P>
+<dl><dt><b><tt id='l2h-242' xml:id='l2h-242'>default_angle</tt></b></dt>
+<dd>
+Default text-drawing angle (Default value: 0).
+ See Section&nbsp;<A href="escape-sequence.html#escape-sequence">17.1</A>.
+</dd></dl>
+
+<P>
+<dl><dt><b><tt id='l2h-243' xml:id='l2h-243'>default_line_height</tt></b></dt>
+<dd>
+Defines the separation between two text lines.
+ See Section&nbsp;<A href="escape-sequence.html#escape-sequence">17.1</A>.
+
+</dd></dl>
+
+<P>
+<dl><dt><b><tt id='l2h-244' xml:id='l2h-244'>default_line_width</tt></b></dt>
+<dd>
+<a id='l2h-245' xml:id='l2h-245'></a>Set the default line width, in points ( see Section&nbsp;<A href="unit.html#unit">4</A>). (Default value: 0.4)
+See Section&nbsp;<A href="module-line-style.html#module-line-style">14</A>.
+</dd></dl>
+
+<P>
+<dl><dt><b><tt id='l2h-246' xml:id='l2h-246'>debug_level</tt></b></dt>
+<dd>
+This variable controls the verbosity of messages from  PyChart. The
+default value is 1, meaning that PyChart only displays error
+messages. The larger the value, the more verbose PyChart becomes.
+</dd></dl>
+
+<P>
+<dl><dt><b><tt id='l2h-247' xml:id='l2h-247'>bounding_box</tt></b></dt>
+<dd>
+This variable, if set, manually sets the bounding box of the
+chart(s) produced by  PyChart. It is a four-tuple of numbers, i.e.,
+(<var>xmin, ymin, xmax, ymax</var>).
+PyChart usually calculates
+the bounding box of a chart
+automatically. Thus, you set this variable only
+when you want to override the
+calculation by PyChart, or PyChart screws the calculation.  The latter
+situation happens especially when you use really thick lines for
+drawing. See also <code>delta_bounding_box</code>, described next.
+</dd></dl>
+
+<P>
+<dl><dt><b><tt id='l2h-248' xml:id='l2h-248'>delta_bounding_box</tt></b></dt>
+<dd>
+This variable, if set, adjusts the size of the bounding box of
+the chart(s).
+It is a four-tuple of numbers (<var>xmin</var>, <var>ymin</var>, <var>xmax</var>, <var>ymax</var>). Each of the number is added to the bounding box computed by
+ PyChart.
+
+<P>
+If both <code>bounding_box</code> and <code>delta_bounding_box</code> are
+set, then <code>delta_bounding_box</code> is ignored.
+</dd></dl>
+
+<P>
+After changing any of the variables described so far, you <em>must</em>
+call the <code>reinitialize</code> function to reflect the change to
+the rest of  PyChart:
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-249' xml:id='l2h-249' class="function">reinitialize</tt></b>(</nobr></td>
+  <td><var></var>)</td></tr></table></dt>
+<dd>
+This procedure must be called after setting variables in
+    the <code>theme</code> module. This procedure propagates the new values of
+    the theme variables to other modules that depend on their values.
+
+<P>
+</dl>
+
+<P>
+<BR><HR><H4>Footnotes</H4>
+<DL>
+<DT><A NAME="foot1529">...color.slate_blue"</A><A
+ href="module-theme.html#tex2html1"><SUP>1</SUP></A></DT>
+<DD>In fact, you can use these color names
+in gray-scale mode as well. They will appear in some gray color though.
+
+</DD>
+</DL>
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="13 PyChart options"
+  href="options.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="13 PyChart options"
+  href="options.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="13.2 Changing the default"
+  href="command-line-options.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="options.html">13 PyChart options</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="options.html">13 PyChart options</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="command-line-options.html">13.2 Changing the default</A>
+</div>
+</div>
+<hr />
+<span class="release-info">Documentation released on July 2, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

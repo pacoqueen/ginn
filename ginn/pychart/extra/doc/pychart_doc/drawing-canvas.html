@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head><style type="text/css">
+pre {background-color: #e0e0e0}
+</style>
+
+<link rel="STYLESHEET" href="pychart.css" type='text/css' />
+<link rel="first" href="pychart.html" title='PyChart' />
+<link rel='index' href='genindex.html' title='Index' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="clipping-canvas.html" />
+<link rel="prev" href="drawing-graph-canvas.html" />
+<link rel="parent" href="module-canvas.html" />
+<link rel="next" href="clipping-canvas.html" />
+<meta name='aesop' content='information' />
+<title>21.3 Drawing other objects on canvas</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="21.2 Drawing plots on"
+  href="drawing-graph-canvas.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="21 canvas - Controlling"
+  href="module-canvas.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="21.4 Clipping"
+  href="clipping-canvas.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="drawing-graph-canvas.html">21.2 Drawing plots on</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="module-canvas.html">21 canvas - Controlling</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="clipping-canvas.html">21.4 Clipping</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION0002130000000000000000"></A><A NAME="drawing-canvas"></A><a id='l2h-356' xml:id='l2h-356'></a>
+<BR>
+21.3 Drawing other objects on canvas
+</H2>
+
+<P>
+The objects of <code>canvas.T</code> class and its subclasses provides
+several methods that can be invoked manually to draw variety of things
+if you desire so. These methods take Postscript points
+as the unit of X and Y
+coordinates, as described in  Section&nbsp;<A href="unit.html#unit">4</A>.
+(These methods obey the scaling-factor specifications).
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-357' xml:id='l2h-357' class="method">line</tt></b>(</nobr></td>
+  <td><var>linestyle, x1, y1, x2, y2</var>)</td></tr></table></dt>
+<dd>
+
+<P>
+<div class="verbatim"><pre>
+# draw a line segment from (10,20) to (100, 200)
+can.line(<a href="module-line-style.html">line_style.</a>blackdash1, 10, 20, 100, 200)
+</pre></div>
+<a id='l2h-365' xml:id='l2h-365'></a>
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-358' xml:id='l2h-358' class="method">polygon</tt></b>(</nobr></td>
+  <td><var>linestyle, fillstyle, [(x1,y1), ..., (xn, yn)], shadow = None</var>)</td></tr></table></dt>
+<dd>
+
+<P>
+Draw a polygon <var>points</var>, with <var>linestyle</var>
+( see Section&nbsp;<A href="module-line-style.html#module-line-style">14</A>), and fill with
+<var>fillstyle</var>
+(see Section&nbsp;<A href="module-fill-style.html#module-fill-style">16</A>). Parameter <var>points</var>
+is a list of
+coordinates, e.g., ((10,10), (15,5), (20,8)).
+Value of <var>linestyle</var> can be None, in which case
+no line is drawn on the perimeter.  Value of <var>fillstyle</var> can also be
+None, in which the internal of the polygon are left undrawn.
+Parameter <var>shadow</var> is either None or tuple (<var>xdelta, ydelta, shadowstyle</var>). If non-None, a shadow of <var>shadowstyle</var> (see Section&nbsp;<A href="module-fill-style.html#module-fill-style">16</A>) is drawn beneath the polygon at the offset (<var>xdelta, ydelta</var>).
+
+<P>
+<div class="verbatim"><pre>
+can.polygon(<a href="module-line-style.html">line_style.</a>default, <a href="module-fill-style.html">fill_style.</a>default,
+               [(10, 20), (100, 200), (300,300)])
+</pre></div>
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-359' xml:id='l2h-359' class="method">rectangle</tt></b>(</nobr></td>
+  <td><var>linestyle, fillstyle, x1, y1, x2, y2, shadow=None</var>)</td></tr></table></dt>
+<dd>
+
+<P>
+Parameter <var>shadow</var> is either None or tuple (<var>xdelta, ydelta, shadowstyle</var>). If non-None, a shadow of <var>shadowstyle</var> ( see Section&nbsp;<A href="module-fill-style.html#module-fill-style">16</A>) is drawn beneath the polygon at the offset (<var>xdelta, ydelta</var>).
+
+<P>
+<div class="verbatim"><pre>
+can.rectangle(<a href="module-line-style.html">line_style.</a>default, <a href="module-fill-style.html">fill_style.</a>default, 10, 20, 300, 300)
+</pre></div>
+</dl>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-360' xml:id='l2h-360' class="method">ellipsis</tt></b>(</nobr></td>
+  <td><var>linestyle, fillstyle, x, y, radius, y_elongation=1, start=0, end=360, shadow=None</var>)</td></tr></table></dt>
+<dd>
+
+<P>
+The start and end angles are specified in degrees; i.e., between 0 and
+360.
+Parameter <var>shadow</var> is either None or tuple (<var>xdelta, ydelta, shadowstyle</var>). If non-None, a shadow of <var>shadowstyle</var> ( see Section&nbsp;<A href="module-fill-style.html#module-fill-style">16</A>) is drawn beneath the polygon at the offset (<var>xdelta, ydelta</var>).
+
+<P>
+</dl>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-361' xml:id='l2h-361' class="method">round_rectangle</tt></b>(</nobr></td>
+  <td><var>linestyle, fillstyle, x1, y2, x2, y2, radius, shadow=None</var>)</td></tr></table></dt>
+<dd>
+<a id='l2h-366' xml:id='l2h-366'></a>
+Draw a rectangle with rounded four corners. Parameter <var>radius</var> specifies the radius of each corner.
+
+<P>
+Parameter <var>shadow</var> is either None or tuple (<var>xdelta, ydelta, shadowstyle</var>). If non-None, a shadow of <var>shadowstyle</var> ( see Section&nbsp;<A href="module-fill-style.html#module-fill-style">16</A>) is drawn beneath the polygon at the offset (<var>xdelta, ydelta</var>).
+</dl>
+
+<P>
+<a id='l2h-367' xml:id='l2h-367'></a>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-362' xml:id='l2h-362' class="method">curve</tt></b>(</nobr></td>
+  <td><var>linestyle, [(x1,y2), ..., (xn, yn)]</var>)</td></tr></table></dt>
+<dd>
+Draw a Bezier curve.
+</dl>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-363' xml:id='l2h-363' class="method">show</tt></b>(</nobr></td>
+  <td><var>x, y, text</var>)</td></tr></table></dt>
+<dd>
+Draw a <var>text</var> on the canvas at location (<var>x, y</var>).
+Parameter <var>text</var> supports font manipulation, as
+described in  See Section&nbsp;<A href="module-font.html#module-font">17</A>.
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-364' xml:id='l2h-364' class="method">verbatim</tt></b>(</nobr></td>
+  <td><var>string</var>)</td></tr></table></dt>
+<dd>
+This procedure outputs an arbitrary <var>string</var> to the output file.
+<a id='l2h-368' xml:id='l2h-368'></a>
+</dl>
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="21.2 Drawing plots on"
+  href="drawing-graph-canvas.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="21 canvas - Controlling"
+  href="module-canvas.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="21.4 Clipping"
+  href="clipping-canvas.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="drawing-graph-canvas.html">21.2 Drawing plots on</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="module-canvas.html">21 canvas - Controlling</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="clipping-canvas.html">21.4 Clipping</A>
+</div>
+</div>
+<hr />
+<span class="release-info">Documentation released on July 2, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

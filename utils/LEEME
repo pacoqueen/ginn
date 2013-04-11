@@ -1,8 +1,0 @@
-Los binarios mdb-* contenidos en este directorio proceden de la compilación de la versión CVS 0.6pre1 de mdbtools.
-
-Se distribuyen con licencia GPL y los fuentes pueden obtenerse de http://mdbtools.sourceforge.net (Copyright (C) 2000 Brian Bruns).
-
-Los correspondientes a Putty se distribuyen con licencia MIT (compatible con GPL) y su código fuente se puede descargar de aquí: http://www.chiark.greenend.org.uk/~sgtatham/putty/ (PuTTY is copyright 1997-2006 Simon Tatham.)
-
-El resto de scripts usan licencia GPL a no ser que se indique otra cosa en sus cabeceras.
-

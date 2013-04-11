@@ -1,0 +1,306 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head><style type="text/css">
+pre {background-color: #e0e0e0}
+</style>
+
+<link rel="STYLESHEET" href="pychart.css" type='text/css' />
+<link rel="first" href="pychart.html" title='PyChart' />
+<link rel='index' href='genindex.html' title='Index' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="node29.html" />
+<link rel="prev" href="module-font.html" />
+<link rel="parent" href="module-font.html" />
+<link rel="next" href="node29.html" />
+<meta name='aesop' content='information' />
+<title>17.1 Escape sequences</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="17 Drawing texts"
+  href="module-font.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="17 Drawing texts"
+  href="module-font.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="17.2 Procedures provided in"
+  href="node29.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="module-font.html">17 Drawing texts</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="module-font.html">17 Drawing texts</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="node29.html">17.2 Procedures provided in</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION0001710000000000000000"></A><A NAME="escape-sequence"></A><a id='l2h-290' xml:id='l2h-290'></a>
+<BR>
+17.1 Escape sequences
+</H2>
+
+<P>
+A text string may contain escape characters that control its
+appearance.  The escape sequences all start with the letter
+``<code>/</code>''. Thus, to display ``<code>/</code>'' itself, you must write
+``<code>//</code>''.
+
+<P>
+<BLOCKQUOTE>
+<b>Restrictions</b>: <code>/h</code>, <code>/v</code>, and <code>/a</code> <em>must</em>
+appear in the beginning of a string.
+
+</BLOCKQUOTE>
+
+<P>
+<a id='l2h-293' xml:id='l2h-293'></a>
+
+<P>
+<a id='l2h-294' xml:id='l2h-294'></a>
+
+<P>
+<DL>
+<DT><STRONG><code>/a<var>dd</var></code></STRONG></DT>
+<DD>Specifies the angle of the text.  Parameter <var>dd</var> is a number
+between -360 to 360.  Value 0 means left-to-right text, 90 means
+bottom-to-up, etc.
+If you want to print numbers right after an angle specification, put
+<code>{</code> between the angle and the number. For example, the below
+code shows string "<code>"100"</code>" at a 60-degree angle.
+
+<P>
+<div class="verbatim"><pre>
+"/a60{}100"
+</pre></div>
+<a id='l2h-295' xml:id='l2h-295'></a>
+
+<P>
+</DD>
+<DT><STRONG><code>/h</code><var>A</var>:</STRONG></DT>
+<DD>Specifies horizontal alignment of the text.  <var>A</var> is one of
+"<code>L</code>" (left alignment), "<code>R</code>" (right alignment), or "<code>C</code>"
+(center alignment).
+
+<P>
+</DD>
+<DT><STRONG><code>/v</code><var>A</var>:</STRONG></DT>
+<DD>Specifies vertical alignment of the text.  <var>A</var> is one of "<code>B</code>"
+(bottom), "<code>T</code>" (top), or "<code>M</code>" (middle).
+
+<P>
+</DD>
+<DT><STRONG><code>/T</code></STRONG></DT>
+<DD>:
+Switch to Times font family.
+<a id='l2h-296' xml:id='l2h-296'></a>
+
+<P>
+</DD>
+<DT><STRONG><code>/H</code>:</STRONG></DT>
+<DD>Switch to Helvetica font family.
+<a id='l2h-297' xml:id='l2h-297'></a>
+</DD>
+<DT><STRONG><code>/C</code>:</STRONG></DT>
+<DD>Switch to Courier font family.
+<a id='l2h-298' xml:id='l2h-298'></a>
+</DD>
+<DT><STRONG><code>/B</code>:</STRONG></DT>
+<DD>Switch to Bookman-Demi font family.
+<a id='l2h-299' xml:id='l2h-299'></a>
+</DD>
+<DT><STRONG><code>/A</code>:</STRONG></DT>
+<DD>Switch to AvantGarde-Book font family.
+<a id='l2h-300' xml:id='l2h-300'></a>
+</DD>
+<DT><STRONG><code>/P</code>:</STRONG></DT>
+<DD>Switch to Palatino font family.
+<a id='l2h-301' xml:id='l2h-301'></a>
+</DD>
+<DT><STRONG><code>/S</code>:</STRONG></DT>
+<DD>Switch to Symbol font family.
+<a id='l2h-302' xml:id='l2h-302'></a>
+</DD>
+<DT><STRONG><code>/F{<var>family</var>}</code>:</STRONG></DT>
+<DD>Switch to <var>family</var> font family.
+The below example draws string "Funny" using ZapfDingbat font
+(which produces some meaningless output).
+<a id='l2h-303' xml:id='l2h-303'></a>
+
+<P>
+<div class="verbatim"><pre>
+<a href="module-canvas.html">canvas.</a>show(100, 200, "/F{ZapfDingbat}Funny")
+</pre></div>
+
+<P>
+The list of available fonts are the following:
+
+<P>
+<BLOCKQUOTE>
+Bookman-Demi Bookman-Light Courier AvantGarde-Book AvantGarde-Demi
+Helvetica Helvetica-Narrow Palatino NewCenturySchlbk Times
+Symbol ZapfChancery-MediumItalic ZapfChancery-Medium-Italic ZapfDingbats
+
+</BLOCKQUOTE>
+
+<P>
+</DD>
+<DT><STRONG><code>/b</code>:</STRONG></DT>
+<DD>Switch to bold typeface.
+<a id='l2h-304' xml:id='l2h-304'></a>
+</DD>
+<DT><STRONG><code>/i</code>:</STRONG></DT>
+<DD>Switch to italic typeface.
+<a id='l2h-305' xml:id='l2h-305'></a>
+</DD>
+<DT><STRONG><code>/o</code>:</STRONG></DT>
+<DD>Switch to oblique typeface.
+<a id='l2h-306' xml:id='l2h-306'></a>
+</DD>
+<DT><STRONG><code>/</code><var>dd</var>:</STRONG></DT>
+<DD>Set font size to <var>dd</var> points.
+<a id='l2h-291' xml:id='l2h-291'></a><a id='l2h-307' xml:id='l2h-307'></a>
+
+<P>
+<div class="verbatim"><pre>
+"/20{}2001 space odyssey!"
+</pre></div>
+
+<P>
+</DD>
+<DT><STRONG><code>/c</code><var>dd</var>:</STRONG></DT>
+<DD>Set gray-scale to 0.<var>dd</var>.
+Gray-scale of 0 means black, 1 means white.
+<a id='l2h-292' xml:id='l2h-292'></a>
+<P>
+</DD>
+<DT><STRONG><code>//</code>, <code>/{</code>, <code>/}</code>:</STRONG></DT>
+<DD>Display `/', `}', or `{'.
+</DD>
+<DT><STRONG><code>{ ... }</code>:</STRONG></DT>
+<DD>Limit the scope of escape sequences. For example,
+<code>"{/10{/20Big text} and small text}"</code>
+will display <code>"Big Text"</code> using
+a 20-point font, and <code>"and small text"</code> using a 10-point font.
+<a id='l2h-308' xml:id='l2h-308'></a>
+
+<P>
+</DD>
+<DT><STRONG><code><SPAN CLASS="MATH"><IMG
+ WIDTH="12" HEIGHT="32" ALIGN="MIDDLE" BORDER="0"
+ SRC="img1.png"
+ ALT="$\backslash$"></SPAN>n</code>:</STRONG></DT>
+<DD>Break the line.
+<a id='l2h-309' xml:id='l2h-309'></a>
+</DD>
+</DL>
+
+<P>
+<IMG
+  WIDTH="944" HEIGHT="614" ALIGN="BOTTOM" BORDER="0"
+ SRC="./fonttest.png"
+ ALT="Image fonttest">
+
+<P>
+<b>  Font usage example </b>
+
+<P>
+Below is the source code that produces the above chart.
+../demos/fonttest.py
+
+<P>
+<div class="verbatim"><pre>
+from pychart import *
+can = <a href="module-canvas.html">canvas.</a>default_canvas()
+x, y = (100, 500)
+
+def show_text(str):
+    global x, y
+    can.show(x, y, str)
+    can.show(x + 200, y, "/12/C" + font.quotemeta(str))
+    y -= 20
+
+show_text("/12/hLLeft align")
+show_text("/12/hRRight align")
+show_text("/12/hCCenter align")
+show_text("/a20/12/hRAngled text")
+
+def show_textv(str):
+    global x, y
+    can.show(x, y, str)
+    x += 150
+
+y -= 40
+x = 100
+show_textv("/12/vT//12//vTTop align")
+show_textv("/12/vM//12//vT/12Middle align")
+show_textv("/12/vB//12//vT/12Bottom align")
+
+y -= 40
+x = 100
+show_text("/16/HHelvetica")
+show_text("/12/CCourier")
+show_text("/12/NHelvetica-Narrow")
+show_text("/12/PPalatino-Roman")
+show_text("/12/AAvantgarde")
+show_text("/12/T/iTimes-Italic")
+show_text("/12/F{ZapfDingbats}ZapfDingbats")
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="17 Drawing texts"
+  href="module-font.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="17 Drawing texts"
+  href="module-font.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="17.2 Procedures provided in"
+  href="node29.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="module-font.html">17 Drawing texts</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="module-font.html">17 Drawing texts</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="node29.html">17.2 Procedures provided in</A>
+</div>
+</div>
+<hr />
+<span class="release-info">Documentation released on July 2, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head><style type="text/css">
+pre {background-color: #e0e0e0}
+</style>
+
+<link rel="STYLESHEET" href="pychart.css" type='text/css' />
+<link rel="first" href="pychart.html" title='PyChart' />
+<link rel='index' href='genindex.html' title='Index' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="module-canvas.html" />
+<link rel="prev" href="module-arrow.html" />
+<link rel="parent" href="pychart.html" />
+<link rel="next" href="module-canvas.html" />
+<meta name='aesop' content='information' />
+<title>20 Zap marks</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="19 Arrows"
+  href="module-arrow.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="PyChart"
+  href="pychart.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="21 canvas - Controlling"
+  href="module-canvas.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="module-arrow.html">19 Arrows</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="pychart.html">PyChart</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="module-canvas.html">21 canvas - Controlling</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION0002000000000000000000">
+20 Zap marks</A>
+</H1>
+<A NAME="module-zap"></A>
+<P>
+A zapping symbol is a zig-zag symbol that indicates that a certain
+region of a plot is cut out due to space constraints. It's usually used
+in conjunction with non-linear/non-logarithmic coordinate system.
+ See Section&nbsp;<A href="module-coord.html#module-coord">6.1</A>, for an sample of zap symbols.
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-340' xml:id='l2h-340' class="function">zap.zap_horizontally</tt></b>(</nobr></td>
+  <td><var>canvas, style, fill_style, x1, y1, x2, y2, xsize, ysize</var>)</td></tr></table></dt>
+<dd>
+Draw a horizontal "zapping" symbol on the canvas that shows
+    that a graph is ripped in the middle.
+
+<P>
+Parameter <var>fill_style</var> specifies the style for the zig-zag lines.
+    PAT specifies the pattern with which the area is filled.
+    The symbol is drawn in the rectangle (<var>x1</var>, <var>y1</var>) - (<var>x2</var>, <var>y2</var>).
+    Each "zigzag" has the width <var>xsize</var>, height <var>ysize</var>.
+
+<P>
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-341' xml:id='l2h-341' class="function">zap.zap_vertically</tt></b>(</nobr></td>
+  <td><var>canvas, style, fill_style, x1, y1, x2, y2, xsize, ysize</var>)</td></tr></table></dt>
+<dd>
+Draw a vertical "zapping" symbol on the canvas that shows
+    that a graph is ripped in the middle.
+
+<P>
+Parameter <var>fill_style</var> specifies the style for the zig-zag lines.
+    PAT specifies the pattern with which the area is filled.
+    The symbol is drawn in the rectangle (<var>x1</var>, <var>y1</var>) - (<var>x2</var>, <var>y2</var>).
+    Each "zigzag" has the width <var>xsize</var>, height <var>ysize</var>.
+
+<P>
+</dl>
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="19 Arrows"
+  href="module-arrow.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="PyChart"
+  href="pychart.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="21 canvas - Controlling"
+  href="module-canvas.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="module-arrow.html">19 Arrows</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="pychart.html">PyChart</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="module-canvas.html">21 canvas - Controlling</A>
+</div>
+</div>
+<hr />
+<span class="release-info">Documentation released on July 2, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

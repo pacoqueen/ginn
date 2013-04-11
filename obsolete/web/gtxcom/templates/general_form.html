@@ -1,0 +1,148 @@
+{% extends "base2.html" %}
+
+{% block titulo %}Geotexan S.A. - Control de visitas{% endblock %}
+
+{% block encabezado %}Control de visitas{% endblock %}
+
+<script type="text/javascript" src="../../../jsi18n/"></script>
+<script type="text/javascript" src="/media/js/core.js"></script>
+<script type="text/javascript" src="/media/js/admin/RelatedObjectLookups.js"></script>
+<script type="text/javascript" src="/media/js/calendar.js"></script>
+<script type="text/javascript" src="/media/js/admin/DateTimeShortcuts.js"></script>
+
+{% block datos %}
+    <p><strong>Empresa:</strong> 
+      <select name="lista_empresas" 
+       onchange="location = this.options[this.selectedIndex].value;">
+       <option value="/general/"> -- Crear nueva empresa -- </option>
+        {% for empresa in empresas %}
+          <option value="/general/?eid={{empresa.id}}"
+          {%ifequal empresa.id formempresa.instance.id%}
+            selected="selected"
+          {%endifequal%}
+          >{{ empresa }}</option>
+        {%endfor%}
+      </select>
+    </p>
+    <form method="POST" action="">
+        <table>
+            {{ formempresa.as_table }}
+        </table>
+
+        <h2>Personas de contacto</h2>
+        {{ fscontactos.management_form }}
+        <table>
+            {% for form in fscontactos.forms %}
+                {{ form }}
+                <tr>
+                    <td><div id="miniseparador"><hr></div></td>
+                    <td><div id="miniseparador"><hr></div></td>
+                </tr>
+            {% endfor %}
+        </table>
+        <hr>
+
+        <h2>Referencias y proyectos</h2>
+            <h3>Referencias</h3>
+            {{ fsreferencias.management_form }}
+            <table>
+                {% for form in fsreferencias.forms %}
+                    {{ form }}
+                    <tr>
+                        <td><div id="miniseparador"><hr></div></td>
+                        <td><div id="miniseparador"><hr></div></td>
+                    </tr>
+                {% endfor %}
+            </table>
+    
+            <h3>Proyectos</h3>
+            {{ fsproyectos.management_form }}
+            <table>
+                {% for form in fsproyectos.forms %}
+                    {{ form }}
+                    <tr>
+                        <td><div id="miniseparador"><hr></div></td>
+                        <td><div id="miniseparador"><hr></div></td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <hr>
+
+        <h2>Precios</h2>
+        {{ fsprecios.management_form }}
+        <table>
+            {% for form in fsprecios.forms %}
+                {{ form }}
+                <tr>
+                    <td><div id="miniseparador"><hr></div></td>
+                    <td><div id="miniseparador"><hr></div></td>
+                </tr>
+            {% endfor %}
+        </table>
+        <hr>
+
+        <h2>Control de entrega de documentación</h2>
+            <h3>Fichas técnicas</h3>
+            {{ fsfichas.management_form }}
+            <table>
+                {% for form in fsfichas.forms %}
+                    {{ form }}
+                    <tr>
+                        <td><div id="miniseparador"><hr></div></td>
+                        <td><div id="miniseparador"><hr></div></td>
+                    </tr>
+                {% endfor %}
+            </table>
+
+            <h3>Catálogos</h3>
+            {{ fscatalogos.management_form }}
+            <table>
+                {% for form in fscatalogos.forms %}
+                    {{ form }}
+                    <tr>
+                        <td><div id="miniseparador"><hr></div></td>
+                        <td><div id="miniseparador"><hr></div></td>
+                    </tr>
+                {% endfor %}
+            </table>
+
+            <h3>Muestras</h3>
+            {{ fsmuestras.management_form }}
+            <table>
+                {% for form in fsmuestras.forms %}
+                    {{ form }}
+                    <tr>
+                        <td><div id="miniseparador"><hr></div></td>
+                        <td><div id="miniseparador"><hr></div></td>
+                    </tr>
+                {% endfor %}
+            </table>
+        <hr>
+
+        <h2>Primera visita</h2>
+        <table>
+            {{ fsprimeravisita }}
+        </table>
+        <hr>
+
+        <h2>Siguientes visitas</h2>
+        {{ fsvisitas.management_form }}
+        <table>
+            {% for form in fsvisitas.forms %}
+                {{ form }}
+                <tr>
+                    <td><div id="miniseparador"><hr></div></td>
+                    <td><div id="miniseparador"><hr></div></td>
+                </tr>
+            {% endfor %}
+        </table>
+        <hr>
+
+        <p><input type="submit" value="Guardar"></p>
+    </form>
+    <ul>
+    <li><a href="delegados/nuevo/">Crear nuevo delegado.</a></li>
+    <li><a href="sectores/nuevo/">Crear nuevo sector de actividad.</a></li>
+    </ul>
+{% endblock %}
+

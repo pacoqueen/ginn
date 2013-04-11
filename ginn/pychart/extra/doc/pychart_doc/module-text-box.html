@@ -1,0 +1,269 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head><style type="text/css">
+pre {background-color: #e0e0e0}
+</style>
+
+<link rel="STYLESHEET" href="pychart.css" type='text/css' />
+<link rel="first" href="pychart.html" title='PyChart' />
+<link rel='index' href='genindex.html' title='Index' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="module-arrow.html" />
+<link rel="prev" href="module-font.html" />
+<link rel="parent" href="pychart.html" />
+<link rel="next" href="module-arrow.html" />
+<meta name='aesop' content='information' />
+<title>18 Annotation</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="17.3 Displaying Unicode strings"
+  href="node30.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="PyChart"
+  href="pychart.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="19 Arrows"
+  href="module-arrow.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="node30.html">17.3 Displaying Unicode strings</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="pychart.html">PyChart</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="module-arrow.html">19 Arrows</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION0001800000000000000000"></A>
+<a id='l2h-317' xml:id='l2h-317'></a>
+<BR>
+18 Annotation
+</H1>
+<A NAME="module-text-box"></A>
+<P>
+<dl><dt><b><span class="typelabel">class</span>&nbsp;<tt id='l2h-319' xml:id='l2h-319' class="class">text_box.T</tt></b>
+<dd>
+A text box is an optional element that adds a text box and arrows to a
+chart.  This class supports the following attributes:
+</dl>
+
+<P>
+<dl><dt><b><tt id='l2h-320' xml:id='l2h-320' class="member">bottom_fudge</tt></b></dt>
+<dd>
+<b>Type:</b> length in points ( See Section&nbsp;<A href="unit.html#unit">4</A>)
+<b>Default:</b> 5. 
+
+<P>
+The amount of space below the last line
+</dl>
+<dl><dt><b><tt id='l2h-321' xml:id='l2h-321' class="member">fill_style</tt></b></dt>
+<dd>
+<b>Type:</b> fill_style.T
+( see Section&nbsp;<A href="module-fill-style.html#module-fill-style">16</A>)
+<b>Default:</b> fill_style.white. 
+
+<P>
+Specifies the fill style of the text box.
+</dl>
+<dl><dt><b><tt id='l2h-322' xml:id='l2h-322' class="member">left_fudge</tt></b></dt>
+<dd>
+<b>Type:</b> length in points ( See Section&nbsp;<A href="unit.html#unit">4</A>)
+<b>Default:</b> 5. 
+
+<P>
+The amount of space left of the box
+</dl>
+<dl><dt><b><tt id='l2h-323' xml:id='l2h-323' class="member">line_style</tt></b></dt>
+<dd>
+<b>Type:</b> line_style.T
+( see Section&nbsp;<A href="module-line-style.html#module-line-style">14</A>)
+<b>Default:</b> line_style.black. 
+
+<P>
+The line style of the surrounding frame.
+</dl>
+<dl><dt><b><tt id='l2h-324' xml:id='l2h-324' class="member">loc</tt></b></dt>
+<dd>
+<b>Type:</b> tuple
+<b>Default:</b> (0, 0). 
+
+<P>
+The location of the text box.
+</dl>
+<dl><dt><b><tt id='l2h-325' xml:id='l2h-325' class="member">radius</tt></b></dt>
+<dd>
+<b>Type:</b> length in points ( See Section&nbsp;<A href="unit.html#unit">4</A>)
+<b>Default:</b> 0. 
+
+<P>
+Radius of the four corners of the rectangle.
+                       If the value is zero, a sharp-cornered
+                       rectangle is drawn.
+</dl>
+<dl><dt><b><tt id='l2h-326' xml:id='l2h-326' class="member">right_fudge</tt></b></dt>
+<dd>
+<b>Type:</b> length in points ( See Section&nbsp;<A href="unit.html#unit">4</A>)
+<b>Default:</b> 5. 
+
+<P>
+The amount of space right of the box
+</dl>
+<dl><dt><b><tt id='l2h-327' xml:id='l2h-327' class="member">shadow</tt></b></dt>
+<dd>
+<b>Type:</b> (xoff,yoff,fill)
+<b>Default:</b> None. 
+
+<P>
+The value is either None or a tuple. When non-None,
+a drop-shadow is drawn beneath the object. X-off, and y-off specifies the
+offset of the shadow relative to the object, and fill specifies the
+style of the shadow ( see Section&nbsp;<A href="module-fill-style.html#module-fill-style">16</A>).
+</dl>
+<dl><dt><b><tt id='l2h-328' xml:id='l2h-328' class="member">text</tt></b></dt>
+<dd>
+<b>Type:</b> str
+<b>Default:</b> "???". 
+
+<P>
+Text body.  See Section&nbsp;<A href="module-font.html#module-font">17</A>
+</dl>
+<dl><dt><b><tt id='l2h-329' xml:id='l2h-329' class="member">top_fudge</tt></b></dt>
+<dd>
+<b>Type:</b> length in points (See Section&nbsp;<A href="unit.html#unit">4</A>)
+<b>Default:</b> 0. 
+
+<P>
+The amount of space (in points) above the first line
+</dl>
+
+<P>
+In addition to the above attributes, this class
+provides the following methods.
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-330' xml:id='l2h-330' class="method">add_arrow</tt></b>(</nobr></td>
+  <td><var>tip, tail=None, arrow=arrow.default</var>)</td></tr></table></dt>
+<dd>
+This method adds a straight arrow that points to <var>tip</var>, which is
+a tuple of integers. Parameter <var>tail</var>
+specifies the starting point of the
+arrow. It is either None or a string consisting of the following
+letters:
+<BLOCKQUOTE>
+'l', 'c', 'r', 't', 'm,', 'b'
+
+</BLOCKQUOTE>
+
+<P>
+Letters 'l', 'c', or 'r'
+means to start the arrow from the left, center, or right of the text
+box, respectively. Letters 't', 'm', or 'b' means to start the arrow
+from the top, middle or bottom of the text box.  For example, when
+<code>tail = 'tc'</code> then arrow is drawn from top-center point of the text
+box. Parameter <var>arrow</var> specifies the style of the arrow.
+
+<P>
+<div class="seealso">
+  <p class="heading">See Also:</p>
+
+Section&nbsp;<A href="module-arrow.html#module-arrow">19</A> for arrows.
+</div>
+</dl>
+
+<P>
+<IMG
+  WIDTH="494" HEIGHT="272" ALIGN="BOTTOM" BORDER="0"
+ SRC="./annotations.png"
+ ALT="Image annotations">
+
+<P>
+<b>  Annotations example </b>
+
+<P>
+Below is the source code that produces the above chart.
+../demos/annotations.py
+
+<P>
+<div class="verbatim"><pre>
+from pychart import *
+
+tb = <a href="module-text-box.html">text_box.T</a>(loc=(100,100), text="Without frame")
+tb.add_arrow((50, 100))
+tb.add_arrow((180, 100))
+tb.draw()
+
+tb = <a href="module-text-box.html">text_box.T</a>(loc=(100,130), text="/hCMulti\n/bLine")
+tb.add_arrow((50, 120))
+tb.add_arrow((180, 100))
+tb.draw()
+
+tb = <a href="module-text-box.html">text_box.T</a>(loc=(100,160), text="Fat arrow", line_style=None)
+tb.add_arrow((180, 140), tail='rm', arrow = arrow.fat1)
+tb.draw()
+
+<a href="module-text-box.html">text_box.T</a>(loc=(180, 100), text="/a90Funny background",
+           fill_style = <a href="module-fill-style.html">fill_style.</a>gray70).draw()
+
+<a href="module-text-box.html">text_box.T</a>(loc=(180, 140), text="/hL/20Big/oText\n/24/bHuge/oText",
+           fill_style = None).draw()
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="17.3 Displaying Unicode strings"
+  href="node30.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="PyChart"
+  href="pychart.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="19 Arrows"
+  href="module-arrow.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="node30.html">17.3 Displaying Unicode strings</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="pychart.html">PyChart</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="module-arrow.html">19 Arrows</A>
+</div>
+</div>
+<hr />
+<span class="release-info">Documentation released on July 2, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

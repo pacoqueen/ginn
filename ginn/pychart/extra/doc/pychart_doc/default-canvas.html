@@ -1,0 +1,212 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head><style type="text/css">
+pre {background-color: #e0e0e0}
+</style>
+
+<link rel="STYLESHEET" href="pychart.css" type='text/css' />
+<link rel="first" href="pychart.html" title='PyChart' />
+<link rel='index' href='genindex.html' title='Index' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="prev" href="property-canvas.html" />
+<link rel="parent" href="module-canvas.html" />
+<link rel="next" href="genindex.html" />
+<meta name='aesop' content='information' />
+<title>21.6 Shortcut functions for the default canvas</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="21.5 Setting canvas properties"
+  href="property-canvas.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="21 canvas - Controlling"
+  href="module-canvas.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="Index"
+  href="genindex.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="property-canvas.html">21.5 Setting canvas properties</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="module-canvas.html">21 canvas - Controlling</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="genindex.html">Index</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION0002160000000000000000"></A><A NAME="default-canvas"></A>
+<BR>
+21.6 Shortcut functions for the default canvas
+</H2>
+
+<P>
+For the default canvas ( see Section&nbsp;<A href="drawing-canvas.html#drawing-canvas">21.3</A>), you can call the
+following functions provided in the <code>canvas</code> module directly:
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-382' xml:id='l2h-382' class="function">line</tt></b>(</nobr></td>
+  <td><var>linestyle, x1, y1, x2, y2</var>)</td></tr></table></dt>
+<dd>
+Calls the method with the same name on the default canvas object.
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-383' xml:id='l2h-383' class="function">polygon</tt></b>(</nobr></td>
+  <td><var>linestyle, fillstyle, [(x1,y1), ..., (xn, yn)]</var>)</td></tr></table></dt>
+<dd>
+Calls the method with the same name on the default canvas object.
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-384' xml:id='l2h-384' class="function">rectangle</tt></b>(</nobr></td>
+  <td><var>linestyle, fillstyle, x1, y1, x2, y2, shadow=None</var>)</td></tr></table></dt>
+<dd>
+Calls the method with the same name on the default canvas object.
+Parameter <var>shadow</var> is either None or tuple (<var>xdelta, ydelta, shadowstyle</var>). If non-None, a shadow of <var>shadowstyle</var> ( see Section&nbsp;<A href="module-fill-style.html#module-fill-style">16</A>) is drawn beneath the polygon at the offset (<var>xdelta, ydelta</var>).
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-385' xml:id='l2h-385' class="function">ellipsis</tt></b>(</nobr></td>
+  <td><var>linestyle, fillstyle, x, y, radius, y_elongation=1, start=0, end=360, shadow=None</var>)</td></tr></table></dt>
+<dd>
+Calls the method with the same name on the default canvas object.
+Parameter <var>shadow</var> is either None or tuple (<var>xdelta, ydelta, shadowstyle</var>). If non-None, a shadow of <var>shadowstyle</var> ( see Section&nbsp;<A href="module-fill-style.html#module-fill-style">16</A>) is drawn beneath the polygon at the offset (<var>xdelta, ydelta</var>).
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-386' xml:id='l2h-386' class="function">round_rectangle</tt></b>(</nobr></td>
+  <td><var>linestyle, fillstyle, x1, y2, x2, y2,radius, shadow=None</var>)</td></tr></table></dt>
+<dd>
+Calls the method with the same name on the default canvas object.
+Parameter <var>shadow</var> is either None or tuple (<var>xdelta, ydelta, shadowstyle</var>). If non-None, a shadow of <var>shadowstyle</var> ( see Section&nbsp;<A href="module-fill-style.html#module-fill-style">16</A>) is drawn beneath the polygon at the offset (<var>xdelta, ydelta</var>).
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-387' xml:id='l2h-387' class="function">curve</tt></b>(</nobr></td>
+  <td><var>linestyle, [(x1,y2), ..., (xn, yn)]</var>)</td></tr></table></dt>
+<dd>
+Calls the method with the same name on the default canvas object.
+</dl>
+
+<P>
+<a id='l2h-395' xml:id='l2h-395'></a>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-388' xml:id='l2h-388' class="function">show</tt></b>(</nobr></td>
+  <td><var>x, y, text</var>)</td></tr></table></dt>
+<dd>
+Calls the method with the same name on the default canvas object.
+</dl>
+
+<P>
+<a id='l2h-396' xml:id='l2h-396'></a>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-389' xml:id='l2h-389' class="function">verbatim</tt></b>(</nobr></td>
+  <td><var>str</var>)</td></tr></table></dt>
+<dd>
+Calls the method with the same name on the default canvas object.
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-390' xml:id='l2h-390' class="function">default_canvas</tt></b>(</nobr></td>
+  <td><var></var>)</td></tr></table></dt>
+<dd>
+  Return the default canvas.
+</dl>
+<a id='l2h-397' xml:id='l2h-397'></a>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-391' xml:id='l2h-391' class="function">clip</tt></b>(</nobr></td>
+  <td><var>x1, y1, x2, y2</var>)</td></tr></table></dt>
+<dd>
+Calls the method with the same name on the default canvas object.
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-392' xml:id='l2h-392' class="function">clip_ellipsis</tt></b>(</nobr></td>
+  <td><var>x, y, radius, y_elongation</var>)</td></tr></table></dt>
+<dd>
+Calls the method with the same name on the default canvas object.
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-393' xml:id='l2h-393' class="function">clip_polygon</tt></b>(</nobr></td>
+  <td><var>[(x1,y2),(x2,y2), ..., (xn, yn)]</var>)</td></tr></table></dt>
+<dd>
+Calls the method with the same name on the default canvas object.
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-394' xml:id='l2h-394' class="function">endclip</tt></b>(</nobr></td>
+  <td><var></var>)</td></tr></table></dt>
+<dd>
+Calls the method with the same name on the default canvas object.
+</dl>
+
+<P>
+ 
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="21.5 Setting canvas properties"
+  href="property-canvas.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="21 canvas - Controlling"
+  href="module-canvas.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="Index"
+  href="genindex.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">PyChart</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><a rel="index" title="Index"
+  href="genindex.html"><img src='index.png'
+  border='0' height='32'  alt='Index' width='32' /></A></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="property-canvas.html">21.5 Setting canvas properties</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="module-canvas.html">21 canvas - Controlling</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="genindex.html">Index</A>
+</div>
+</div>
+<hr />
+<span class="release-info">Documentation released on July 2, 2005.</span>
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>
