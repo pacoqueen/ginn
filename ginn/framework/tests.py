@@ -33,7 +33,9 @@
 #       por número de factura según su serie (contador) son consecutivas.
 ###############################################################################
 
-import pclases, mx.DateTime, utils, time, sys
+from ginn.framework import pclases
+import mx.DateTime, time, sys
+from ginn.formularios import utils
 
 """
 Test de coherencia de datos para realizar periódicamente.

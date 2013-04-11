@@ -515,7 +515,7 @@ class PendientesServir(Ventana):
         """
         Imprime la información en dos documentos: fibra y geotextiles.
         """
-        import informes
+        from ginn.formularios import reports as informes
         idcliente = utils.combo_get_value(self.wids['cbe_cliente'])
         if idcliente > 0:
             nombrecliente = pclases.Cliente.get(idcliente).nombre

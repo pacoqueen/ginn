@@ -794,7 +794,7 @@ class FacturacionPorClienteYFechas(Ventana):
         #utils.dialogo_info(titulo = "NO IMPLEMENTADO", 
         #                   texto = "Computer says no. Atjo.", 
         #                   padre = self.wids['ventana'])
-        import informes
+        from ginn.formularios import reports as informes
         if self.wids['notebook1'].get_current_page() == 0:
             tv = self.wids['tv_facturas']
         elif self.wids['notebook1'].get_current_page() == 1:

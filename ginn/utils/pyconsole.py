@@ -150,14 +150,14 @@ class _ReadLine(object):
         else:
             self.ps = ''
 
-        iter = self.buffer.get_iter_at_mark(self.buffer.get_insert())
+        itr = self.buffer.get_iter_at_mark(self.buffer.get_insert())
 
         if ps:
             self.freeze_undo()
-            self.buffer.insert(iter, self.ps)
+            self.buffer.insert(itr, self.ps)
             self.thaw_undo()
 
-        self.__move_cursor_to(iter)
+        self.__move_cursor_to(itr)
         self.scroll_to_mark(self.cursor, 0.2)
 
         self.in_raw_input = True
@@ -182,7 +182,7 @@ class _ReadLine(object):
         self.buffer.insert(iter, text)
         self.do_insert = False
 
-    def on_buf_insert(self, buf, iter, text, len):
+    def on_buf_insert(self, buf, itr, text, len):
         if not self.in_raw_input or self.do_insert or not len:
             return
         buf.stop_emission("insert-text")
@@ -191,17 +191,17 @@ class _ReadLine(object):
         for l in lines:
             if need_eol:
                 self._commit()
-                iter = self.__get_cursor()
+                itr = self.__get_cursor()
             else:
                 cursor = self.__get_cursor()
-                if iter.compare(self.__get_start()) < 0:
-                    iter = cursor
-                elif iter.compare(self.__get_end()) > 0:
-                    iter = cursor
+                if itr.compare(self.__get_start()) < 0:
+                    itr = cursor
+                elif itr.compare(self.__get_end()) > 0:
+                    itr = cursor
                 else:
-                    self.__move_cursor_to(iter)
+                    self.__move_cursor_to(itr)
             need_eol = True
-            self.__insert(iter, l)
+            self.__insert(itr, l)
         self.__move_cursor(0)
 
     def __delete(self, start, end):
@@ -316,29 +316,29 @@ class _ReadLine(object):
         self.buffer.move_mark_by_name("cursor", iter)
 
     def __move_cursor(self, howmany):
-        iter = self.__get_cursor()
+        itr = self.__get_cursor()
         end = self.__get_cursor()
         if not end.ends_line():
             end.forward_to_line_end()
         line_len = end.get_line_offset()
-        move_to = iter.get_line_offset() + howmany
+        move_to = itr.get_line_offset() + howmany
         move_to = min(max(move_to, len(self.ps)), line_len)
-        iter.set_line_offset(move_to)
-        self.__move_cursor_to(iter)
+        itr.set_line_offset(move_to)
+        self.__move_cursor_to(itr)
 
     def __delete_at_cursor(self, howmany):
-        iter = self.__get_cursor()
+        itr = self.__get_cursor()
         end = self.__get_cursor()
         if not end.ends_line():
             end.forward_to_line_end()
         line_len = end.get_line_offset()
-        erase_to = iter.get_line_offset() + howmany
+        erase_to = itr.get_line_offset() + howmany
         if erase_to > line_len:
             erase_to = line_len
         elif erase_to < len(self.ps):
             erase_to = len(self.ps)
         end.set_line_offset(erase_to)
-        self.__delete(iter, end)
+        self.__delete(itr, end)
 
     def __get_width(self):
         if not (self.flags() & gtk.REALIZED):
@@ -352,9 +352,9 @@ class _ReadLine(object):
     def __print_completions(self, completions):
         line_start = self.__get_text(self.__get_start(), self.__get_cursor())
         line_end = self.__get_text(self.__get_cursor(), self.__get_end())
-        iter = self.buffer.get_end_iter()
-        self.__move_cursor_to(iter)
-        self.__insert(iter, "\n")
+        itr = self.buffer.get_end_iter()
+        self.__move_cursor_to(itr)
+        self.__insert(itr, "\n")
 
         width = max(self.__get_width(), 4)
         max_width = max([len(s) for s in completions])
@@ -378,12 +378,12 @@ class _ReadLine(object):
                         n_spaces = 0
                     else:
                         n_spaces = col_width - len(completions[ind])
-                    self.__insert(iter, completions[ind] + " " * n_spaces)
-            self.__insert(iter, "\n")
+                    self.__insert(itr, completions[ind] + " " * n_spaces)
+            self.__insert(itr, "\n")
 
-        self.__insert(iter, "%s%s%s" % (self.ps, line_start, line_end))
-        iter.set_line_offset(len(self.ps) + len(line_start))
-        self.__move_cursor_to(iter)
+        self.__insert(itr, "%s%s%s" % (self.ps, line_start, line_end))
+        itr.set_line_offset(len(self.ps) + len(line_start))
+        self.__move_cursor_to(itr)
         self.scroll_to_mark(self.cursor, 0.2)
 
     def __complete(self):
@@ -478,10 +478,10 @@ class _Console(_ReadLine, code.InteractiveInterpreter):
         self.buffer.set_text("")
 
         if self.banner:
-            iter = self.buffer.get_start_iter()
-            self.buffer.insert_with_tags_by_name(iter, self.banner, "stdout")
-            if not iter.starts_line():
-                self.buffer.insert(iter, "\n")
+            itr = self.buffer.get_start_iter()
+            self.buffer.insert_with_tags_by_name(itr, self.banner, "stdout")
+            if not itr.starts_line():
+                self.buffer.insert(itr, "\n")
 
     def clear(self, start_script=None):
         if start_script is None:

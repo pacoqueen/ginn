@@ -535,15 +535,15 @@ class Clientes(Ventana):
             if not iters:
                 model = self.wids['tv_obras'].get_model()
                 iters = []
-                iter = model.get_iter_first()
-                while iter:
-                    iters.append(iter)
-                    iter = model.iter_next(iter)
+                itr = model.get_iter_first()
+                while itr:
+                    iters.append(itr)
+                    itr = model.iter_next(itr)
             obras = []
             contactos_ya_puestos = []
             primera_obra = True
-            for iter in iters:
-                idobra = model[iter][-1]
+            for itr in iters:
+                idobra = model[itr][-1]
                 obra = pclases.Obra.get(idobra)
                 obras.append(obra)
                 self.tvcontactos.rellenar_tabla(
@@ -910,10 +910,10 @@ class Clientes(Ventana):
         """
         Abre una ventana con el pedido marcado en el TreeView recibido.
         """
-        model, iter = tv.get_selection().get_selected()
-        if iter != None:
-            id = model[iter][0]
-            pedido = pclases.PedidoVenta.get(id)
+        model, itr = tv.get_selection().get_selected()
+        if itr != None:
+            ide = model[itr][0]
+            pedido = pclases.PedidoVenta.get(ide)
             import pedidos_de_venta
             ventana = pedidos_de_venta.PedidosDeVenta(objeto = pedido, 
                                                       usuario = self.usuario)
@@ -1214,20 +1214,20 @@ class Clientes(Ventana):
         Selecciona en el TreeView de todas las facturas la fila de la 
         factura seleccionada en el TreeView que recibe la señal.
         """
-        model, iter = tv.get_selection().get_selected()
-        if not iter:
+        model, itr = tv.get_selection().get_selected()
+        if not itr:
             return
-        puid = model[iter][-1]
+        puid = model[itr][-1]
         model_superior = self.wids['tv_facturas'].get_model()
-        iter = model_superior.get_iter_first()
-        while iter:
-            if model_superior[iter][-1] == puid:
+        itr = model_superior.get_iter_first()
+        while itr:
+            if model_superior[itr][-1] == puid:
                 sel = self.wids['tv_facturas'].get_selection()
-                sel.select_iter(iter)
+                sel.select_iter(itr)
                 self.wids['tv_facturas'].scroll_to_cell(
-                    model_superior.get_path(iter), use_align = True)
+                    model_superior.get_path(itr), use_align = True)
                 break
-            iter = model_superior.iter_next(iter)
+            itr = model_superior.iter_next(itr)
 
     def abrir_factura_puid(self, tv, path, view_column):
         self.wids['ventana'].window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))

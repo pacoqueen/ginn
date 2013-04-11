@@ -477,7 +477,7 @@ class Ausencias(Ventana):
                                padre = self.wids['ventana'])
 
     def imprimir_ausencia(self, b):
-        import informes
+        from ginn.formularios import reports as informes
         model, itr = self.wids['tv_ausencias'].get_selection().get_selected()
         if itr != None:
             ide = model[itr][-1]

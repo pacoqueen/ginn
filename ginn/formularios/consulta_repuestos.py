@@ -56,7 +56,7 @@ class ConsultaRepuestos(Ventana):
         comenzar la ventana (en lugar del primero de la tabla, que es
         el que se muestra por defecto).
         """
-        import informes, tempfile
+        from ginn.formularios import reports as informes, tempfile
 
         exportar_a_csv_a = None
 

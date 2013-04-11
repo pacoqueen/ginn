@@ -211,7 +211,7 @@ class HistoricoExistencias(Ventana):
         vpro._ventana.realize()
         vpro._ventana.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
         while gtk.events_pending(): gtk.main_iteration(False)
-        import informes
+        from ginn.formularios import reports as informes
         try:
             vpro.set_valor(act/tot, msgtexto)
             informes.abrir_pdf(geninformes.existencias_productos('rollos', 

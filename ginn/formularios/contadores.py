@@ -126,9 +126,9 @@ class Contadores(Ventana):
         """
         Cambia un contador por otro en todos los clientes que lo tuvieran.
         """
-        model, iter = self.wids['tv_tipos'].get_selection().get_selected()
-        if iter != None:
-            idcontador = model[iter][-1]
+        model, itr = self.wids['tv_tipos'].get_selection().get_selected()
+        if itr != None:
+            idcontador = model[itr][-1]
             viejo_contador = pclases.Contador.get(idcontador)
             contadores = [(c.id, c.get_info()) for c in pclases.Contador.select() if c != viejo_contador]
             idcontador = utils.dialogo_combo(titulo = "SELECCIONE CONTADOR", 
@@ -169,9 +169,9 @@ class Contadores(Ventana):
     
     
     def eliminar_contador(self,widget):
-        model, iter = self.wids['tv_tipos'].get_selection().get_selected()
-        if iter != None:
-            idtipo = model[iter][-1]
+        model, itr = self.wids['tv_tipos'].get_selection().get_selected()
+        if itr != None:
+            idtipo = model[itr][-1]
             contador = pclases.Contador.get(idtipo)
         else:        
             utils.dialogo_info('ERROR','Seleccione contador a eliminar')
@@ -183,9 +183,9 @@ class Contadores(Ventana):
         self.rellenar_tabla()
     
     def modificar_contador(self, widget):
-        model, iter = self.wids['tv_tipos'].get_selection().get_selected()
-        if iter != None:
-            idtipo = model[iter][-1]
+        model, itr = self.wids['tv_tipos'].get_selection().get_selected()
+        if itr != None:
+            idtipo = model[itr][-1]
             contador = pclases.Contador.get(idtipo)
         else:
             utils.dialogo_info('ERROR','Seleccione contador a modificar')

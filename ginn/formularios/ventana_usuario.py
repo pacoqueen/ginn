@@ -252,9 +252,9 @@ class Usuarios(Ventana):
         self.rellenar_alertas()
     
     def borrar_mensaje(self, b):
-        model, iter = self.wids['tv_mensajes'].get_selection().get_selected()
-        if iter != None:
-            aid = model[iter][-1]
+        model, itr = self.wids['tv_mensajes'].get_selection().get_selected()
+        if itr != None:
+            aid = model[itr][-1]
             alerta = pclases.Alerta.get(aid)
             if not alerta.entregado:
                 utils.dialogo_info(titulo = "ALERTA PENDIENTE", texto = "La alerta seleccionada aún no ha sido leída por el usuario.\nMárquela como leída si realmente quiere borrarla.")
@@ -349,7 +349,7 @@ class Usuarios(Ventana):
                 idusuario = self.refinar_resultados_busqueda(resultados)
                 if idusuario == None:
                     return
-                resultados = [pclases.Uduario.get(idusuario)]
+                resultados = [pclases.Usuario.get(idusuario)]
             elif resultados.count() < 1:
                 ## Sin resultados de búsqueda
                 utils.dialogo_info('SIN RESULTADOS', 'La búsqueda no produjo resultados.\nPruebe a cambiar el texto buscado o déjelo en blanco para ver una lista completa.\n(Atención: Ver la lista completa puede resultar lento si el número de elementos es muy alto)')

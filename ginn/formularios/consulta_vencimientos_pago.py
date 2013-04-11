@@ -171,16 +171,16 @@ class ConsultaVencimientosPagos(Ventana):
             widget = ui.get_widget("/Popup")
             model, paths = self.wids['tv_datos'].get_selection().get_selected_rows()
             if len(paths) > 0:
-                iter = model.get_iter(paths[0])
-                if iter != None:
-                    tiene_factura = model[iter][0] != "LOGIC"
+                itr = model.get_iter(paths[0])
+                if itr != None:
+                    tiene_factura = model[itr][0] != "LOGIC"
                 else:
                     tiene_factura = False
                 single_selection = len(paths) == 1
                 menuitem = ui.get_widget("/Popup/Factura")
                 menuitem.set_sensitive(tiene_factura and single_selection)
                 menuitem = ui.get_widget("/Popup/Pagare")
-                menuitem.set_sensitive(iter != None)
+                menuitem.set_sensitive(itr != None)
                 menuitem = ui.get_widget("/Popup/Transferencia")
                 menuitem.set_sensitive(pclases.CuentaOrigen.select().count() > 0 and single_selection)
                 widget.popup(None, None, None, event.button, event.time)
@@ -204,10 +204,10 @@ class ConsultaVencimientosPagos(Ventana):
                                     fechaCobrado = None)
         pclases.Auditoria.nuevo(pagare, self.usuario, __file__)
         for path in paths:
-            iter = model.get_iter(path)
-            id = model[iter][-1]
-            if model[iter][0] == "LOGIC":
-                logic = pclases.LogicMovimientos.get(id)
+            itr = model.get_iter(path)
+            ide = model[itr][-1]
+            if model[itr][0] == "LOGIC":
+                logic = pclases.LogicMovimientos.get(ide)
                 fechavto = self.get_fecha_vto_logic(logic)
                 importe = logic.importe
                 factura = None
@@ -215,7 +215,7 @@ class ConsultaVencimientosPagos(Ventana):
                 proveedor = None
                 vencimiento = None
             else:
-                vencimiento = pclases.VencimientoPago.get(id)
+                vencimiento = pclases.VencimientoPago.get(ide)
                 fechavto = vencimiento.fecha
                 #importe = vencimiento.importe
                 importe = vencimiento.calcular_importe_pdte()
@@ -251,10 +251,10 @@ class ConsultaVencimientosPagos(Ventana):
         """
         model, paths = self.wids['tv_datos'].get_selection().get_selected_rows()
         for path in paths:
-            iter = model.get_iter(path)
-            id = model[iter][-1]
-            if model[iter][0] == "LOGIC":
-                logic = pclases.LogicMovimientos.get(id)
+            itr = model.get_iter(path)
+            ide = model[itr][-1]
+            if model[itr][0] == "LOGIC":
+                logic = pclases.LogicMovimientos.get(ide)
                 fechavto = self.get_fecha_vto_logic(logic)
                 importe = logic.importe
                 factura = None
@@ -262,7 +262,7 @@ class ConsultaVencimientosPagos(Ventana):
                 proveedor = None
                 vencimiento = None
             else:
-                vencimiento = pclases.VencimientoPago.get(id)
+                vencimiento = pclases.VencimientoPago.get(ide)
                 fechavto = vencimiento.fecha
                 importe = vencimiento.calcular_importe_pdte()
                 #importe = vencimiento.importe
@@ -278,7 +278,7 @@ class ConsultaVencimientosPagos(Ventana):
                                 importe = importe, 
                                 observaciones = "Transferencia a %s por pago de %s." % (proveedor and proveedor.nombre or "?", 
                                                                                         (factura and factura.numfactura) or observaciones), 
-                                cuentaOrigen = pclases.CuentaOrigen.select(orderBy = "-id")[0], 
+                                cuentaOrigen = pclases.CuentaOrigen.select(orderBy = "-ide")[0], 
                                 cuentaDestino = proveedor and proveedor.cuentasDestino and proveedor.cuentasDestino[0] or None)
             pclases.Auditoria.nuevo(pago, self.usuario, __file__)
             import transferencias
@@ -292,10 +292,10 @@ class ConsultaVencimientosPagos(Ventana):
         """
         model, paths = self.wids['tv_datos'].get_selection().get_selected_rows()
         for path in paths:
-            iter = model.get_iter(path)
-            id = model[iter][-1]
-            if model[iter][0] != "LOGIC":
-                vencimiento = pclases.VencimientoPago.get(id)
+            itr = model.get_iter(path)
+            ide = model[itr][-1]
+            if model[itr][0] != "LOGIC":
+                vencimiento = pclases.VencimientoPago.get(ide)
                 fecha = mx.DateTime.localtime() 
                 #importe = vencimiento.importe
                 importe = vencimiento.calcular_importe_pdte()
@@ -682,7 +682,7 @@ class ConsultaVencimientosPagos(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        import informes
+        from ginn.formularios import reports as informes
         datos = []
         for i in self.resultado:
             if not i[2]:    # i[2] = False cuando es vencimiento normal de la BD

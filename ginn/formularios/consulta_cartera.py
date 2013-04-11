@@ -121,11 +121,11 @@ class ConsultaCartera(Ventana):
     def remesar(self, boton):
         model = self.wids['tv_datos'].get_model()
         a_remesar = []
-        iter = model.get_iter_first()
-        while iter:
-            if model[iter][0]:
-                a_remesar.append(pclases.getObjetoPUID(model[iter][-1]))
-            iter = model.iter_next(iter)
+        itr = model.get_iter_first()
+        while itr:
+            if model[itr][0]:
+                a_remesar.append(pclases.getObjetoPUID(model[itr][-1]))
+            itr = model.iter_next(itr)
         todas_mismo_tipo = True
         if a_remesar:
             adan = a_remesar[0]

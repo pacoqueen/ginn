@@ -6,7 +6,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.units import cm
 import sys, os
 from tempfile import gettempdir
-import utils
+from ginn.formularios import utils
 import Image
 import datetime
 
@@ -345,11 +345,11 @@ def extract_texto(texto, fuente, tamanno, rollo):
 
 
 if __name__ == "__main__":
-    from informes import abrir_pdf
+    from ginn.formularios.reports import abrir_pdf
     sys.path.append("../framework")
     sys.path.append("../formularios")
-    import pclases
-    from partes_de_fabricacion_rollos import build_etiqueta
+    from ginn.framework import pclases
+    from ginn.formularios.partes_de_fabricacion_rollos import build_etiqueta
     rollos = []
     for pv in pclases.ProductoVenta.select(
             pclases.ProductoVenta.q.nombre.contains("PINEMA")):

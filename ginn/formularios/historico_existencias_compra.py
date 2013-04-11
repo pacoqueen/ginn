@@ -346,7 +346,7 @@ class HistoricoExistenciasCompra(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        import informes
+        from ginn.formularios import reports as informes
         fechastr = self.wids['e_fecha'].get_text()
         fecha = utils.parse_fecha(fechastr)
         informes.abrir_pdf(

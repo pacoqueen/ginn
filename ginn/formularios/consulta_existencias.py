@@ -56,7 +56,7 @@ class ConsultaExistencias(Ventana):
         comenzar la ventana (en lugar del primero de la tabla, que es
         el que se muestra por defecto).
         """
-        import informes, tempfile
+        from ginn.formularios import reports as informes, tempfile
 
         ventana = gtk.Window()  # Es solo para poder mostrar el diálogo de 
                                 # progreso.

@@ -102,13 +102,13 @@ class LineasDeVentaSinPedido(Ventana):
                    t.id]
             if pclases.Ticket.select().count():
                 row.insert(-2, t.ticket and t.ticket.numticket or "-")
-    		model.append(row)
+            model.append(row)
     
     
     def eliminar_linea_sin_pedido(self,widget):
-        model, iter = self.wids['tv_tipos'].get_selection().get_selected()
-        if iter != None:
-            idtipo = model[iter][-1]
+        model, itr = self.wids['tv_tipos'].get_selection().get_selected()
+        if itr != None:
+            idtipo = model[itr][-1]
             linea_sin_pedido = pclases.LineaDeVenta.get(idtipo)
         else:        
             utils.dialogo_info('ERROR','Seleccione linea a eliminar')
@@ -122,9 +122,9 @@ class LineasDeVentaSinPedido(Ventana):
         """
         Asigna la linea sin pedido a un pedido ya creado
         """
-    	model, iter = self.wids['tv_tipos'].get_selection().get_selected()
-    	if iter != None:
-    	    idtipo = model[iter][-1]
+        model, itr = self.wids['tv_tipos'].get_selection().get_selected()
+        if itr != None:
+            idtipo = model[itr][-1]
             linea_sin_pedido = pclases.LineaDeVenta.get(idtipo)
         else:
             utils.dialogo_info('ERROR','Seleccione una línea para asignarla al pedido')
@@ -147,18 +147,18 @@ class LineasDeVentaSinPedido(Ventana):
                                     fechaEntrega = None, 
                                     textoEntrega='')
         pclases.Auditoria.nuevo(ldc, self.usuario, __file__)
-    	self.rellenar_tabla()
+        self.rellenar_tabla()
         import pedidos_de_venta
         pedidos_de_venta.PedidosDeVenta(objeto = pedido, usuario = self.usuario)
     
     
     def crear_nuevo_pedido(self, widget):
-    	"""
+        """
         Asigna la linea sin pedido a un pedido a crear
         """
-    	model, iter = self.wids['tv_tipos'].get_selection().get_selected()
-    	if iter != None:
-    	    idtipo = model[iter][-1]
+        model, itr = self.wids['tv_tipos'].get_selection().get_selected()
+        if itr != None:
+            idtipo = model[itr][-1]
             linea_sin_pedido = pclases.LineaDeVenta.get(idtipo)
         else:
             utils.dialogo_info('ERROR','Seleccione una línea para asignarla al pedido', padre = self.wids['ventana'])

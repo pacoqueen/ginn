@@ -59,17 +59,17 @@ def callback(treeview, allocation, column, cell):
     cell.props.wrap_width = newWidth
     store = treeview.get_model()
     if store:
-        iter = store.get_iter_first()
-        while iter and store.iter_is_valid(iter):
-            store.row_changed(store.get_path(iter), iter)
-            iter = store.iter_next(iter)
+        itr = store.get_iter_first()
+        while itr and store.iter_is_valid(itr):
+            store.row_changed(store.get_path(itr), itr)
+            itr = store.iter_next(itr)
             treeview.set_size_request(0,-1)
 
 def colorear_tv_alarmas(tv):
     def cell_func(column, cell, model, itr):
         color = None
-        id = model[itr][-1]
-        alarma = pclases.Alarma.get(id)
+        ide = model[itr][-1]
+        alarma = pclases.Alarma.get(ide)
         if alarma.fechahoraAlarma <= mx.DateTime.localtime():
             if alarma.estado.pendiente:
                 color = "red"
@@ -204,11 +204,11 @@ class CRM_DetallesFactura(Ventana):
         Elimina el documento de pago seleccionado.
         """
         sel = self.wids["tv_documentos_pago"].get_selection()
-        model, iter = sel.get_selected()
-        if iter:
-            objeto = pclases.getObjetoPUID(model[iter][-1])
+        model, itr = sel.get_selected()
+        if itr:
+            objeto = pclases.getObjetoPUID(model[itr][-1])
             objeto.destroy_en_cascada(ventana = __file__)
-            model.remove(iter)
+            model.remove(itr)
 
     def add_docpago(self, boton):
         """
@@ -418,11 +418,11 @@ class CRM_DetallesFactura(Ventana):
         Elimina el elemento seleccionado.
         """
         import shutil
-        model, iter = self.wids['tv_adjuntos'].get_selection().get_selected()
-        if iter != None and utils.dialogo(titulo = "BORRAR DOCUMENTO", 
+        model, itr = self.wids['tv_adjuntos'].get_selection().get_selected()
+        if itr != None and utils.dialogo(titulo = "BORRAR DOCUMENTO", 
                             texto = '¿Borrar documento adjunto seleccionado?', 
                             padre = self.wids['ventana']):
-            docid = model[iter][-1]
+            docid = model[itr][-1]
             documento = pclases.Documento.get(docid)
             try:
                 utils.mover_a_tmp(documento.get_ruta_completa())
@@ -441,9 +441,9 @@ class CRM_DetallesFactura(Ventana):
         Intenta abrir el adjunto seleccionado.
         """
         from multi_open import open as mopen
-        model, iter = self.wids['tv_adjuntos'].get_selection().get_selected()
-        if iter != None:
-            docid = model[iter][-1]
+        model, itr = self.wids['tv_adjuntos'].get_selection().get_selected()
+        if itr != None:
+            docid = model[itr][-1]
             documento = pclases.Documento.get(docid)
             self.wids['ventana'].window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
             while gtk.events_pending(): gtk.main_iteration(False)
@@ -501,10 +501,10 @@ class CRM_DetallesFactura(Ventana):
                  'tv_alertas': pclases.Alarma, 
                  'tv_vencimientos': pclases.VencimientoCobro,  
                  }[tv_name]
-        model, iter = self.wids[tv_name].get_selection().get_selected()
-        if iter:
-            id = model[iter][-1]
-            objeto = clase.get(id)
+        model, itr = self.wids[tv_name].get_selection().get_selected()
+        if itr:
+            ide = model[itr][-1]
+            objeto = clase.get(ide)
             try:
                 if isinstance(objeto, pclases.Contacto):
                     objeto.removeObra(self.objeto.obra) # Si hay contactos en 
@@ -517,7 +517,7 @@ class CRM_DetallesFactura(Ventana):
                             "\n%s" % msg, 
                     padre = self.wids['ventana'])
             else:
-                model.remove(iter)
+                model.remove(itr)
 
     def add_tvitem(self, boton):
         """
@@ -725,9 +725,9 @@ class CRM_DetallesFactura(Ventana):
         """
         Ofrece al usuario una ventana para guardar el adjunto seleccionado.
         """
-        model, iter = self.wids['tv_adjuntos'].get_selection().get_selected()
-        if iter != None:
-            docid = model[iter][-1]
+        model, itr = self.wids['tv_adjuntos'].get_selection().get_selected()
+        if itr != None:
+            docid = model[itr][-1]
             documento = pclases.Documento.get(docid)
             utils.dialogo_guardar_adjunto(documento)
 
@@ -735,7 +735,7 @@ class CRM_DetallesFactura(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe.
         """
-        from informes import abrir_pdf
+        from ginn.formularios.reports import abrir_pdf
         abrir_pdf(geninformes.crm_generar_pdf_detalles_factura(self.objeto))
 
 def abrir_adjunto_from_tv(tv, path, col):
@@ -743,8 +743,8 @@ def abrir_adjunto_from_tv(tv, path, col):
     Abre el adjunto con el programa asociado al mime-type del mismo.
     """
     model = tv.get_model()
-    id = model[path][-1]
-    documento = pclases.Documento.get(id)
+    ide = model[path][-1]
+    documento = pclases.Documento.get(ide)
     from multi_open import open as mopen
     mopen(documento.get_ruta_completa())
 

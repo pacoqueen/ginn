@@ -160,7 +160,7 @@ class ConsultaProductividad(Ventana):
         Prepara los datos para enviar a geninformes.
         """
         sys.path.append(os.path.join("..", "informes"))
-        import informes, geninformes
+        from ginn.formularios import reports as informes, geninformes
         if self.wids['r_rollos'].get_active():
             linea = "de línea de geotextiles."
         elif self.wids['r_balas'].get_active():
@@ -550,13 +550,13 @@ En ambos casos el límite inferior es flexible -por compensación-.)""")
     def enviar_a_laboratorio(self, parametro):
         # NOTA: Ni idea de qué es lo que traerá el parámetro, sólo me interesa
         # el parte que está seleccionado en el treeview.
-        model, iter = self.wids['tv_datos'].get_selection().get_selected()
-        if iter == None:
+        model, itr = self.wids['tv_datos'].get_selection().get_selected()
+        if itr == None:
             utils.dialogo_info(titulo = "PARTE NO SELECCIONADO", 
                                texto = "Seleccione un parte para enviar una muestra de su\nlote o partida al laboratorio.", 
                                padre = self.wids['ventana'])
         else:
-            idparte = model[iter][-1]
+            idparte = model[itr][-1]
             if idparte > 0:
                 parte = pclases.ParteDeProduccion.get(idparte)
                 if not parte.articulos:

@@ -154,14 +154,14 @@ class PagaresPagos(Ventana):
         utils.preparar_listview(self.wids['tv_pagos'], cols)
         self.wids['tv_pagos'].connect("row-activated", self.abrir_factura)
         utils.rellenar_lista(self.wids['cbe_proveedor'], [(c.id, c.nombre) for c in pclases.Proveedor.select(orderBy="nombre")])
-        def iter_proveedor_seleccionado(completion, model, iter = None):
-            if iter == None:    # Si me ha llamado el changed, el iter habrá cambiado JUSTO AHORA.
+        def iter_proveedor_seleccionado(completion, model, itr = None):
+            if itr == None:    # Si me ha llamado el changed, el iter habrá cambiado JUSTO AHORA.
                 try:
-                    iter = completion.get_active_iter()
+                    itr = completion.get_active_iter()
                 except AttributeError:
-                    iter = None
-            if iter != None:
-                idproveedor = model[iter][0]
+                    itr = None
+            if itr != None:
+                idproveedor = model[itr][0]
                 utils.combo_set_from_db(self.wids['cbe_proveedor'], idproveedor)
                 for p in [p for p in self.objeto.pagos if p.proveedor == None]:
                     p.proveedorID = idproveedor
@@ -884,7 +884,7 @@ class PagaresPagos(Ventana):
         self.guardar()
         
     def imprimir_cheque_monte(self, boton):
-        import informes
+        from ginn.formularios import reports as informes
         import numerals
         pagare = self.objeto
         cantidad = pagare.cantidad
@@ -903,7 +903,7 @@ class PagaresPagos(Ventana):
             self.add_impr_observaciones("cheque El Monte")
 
     def imprimir_pagare_monte(self, boton):
-        import informes
+        from ginn.formularios import reports as informes
         import numerals
         pagare = self.objeto
         fechaPago = pagare.fechaPago
@@ -923,7 +923,7 @@ class PagaresPagos(Ventana):
             self.add_impr_observaciones("pagaré El Monte")
 
     def imprimir_pagare_caixa(self, boton):
-        import informes
+        from ginn.formularios import reports as informes
         import numerals
         pagare = self.objeto
         fechaPago = pagare.fechaPago
@@ -949,7 +949,7 @@ class PagaresPagos(Ventana):
             self.add_impr_observaciones("pagaré La Caixa")
 
     def imprimir_cheque_caixa(self, boton):
-        import informes
+        from ginn.formularios import reports as informes
         import numerals
         pagare = self.objeto
         cantidad = pagare.cantidad
@@ -1005,7 +1005,7 @@ class PagaresPagos(Ventana):
             self.imprimir_pagare_bankinter()
 
     def imprimir_pagare_bankinter(self):
-        import informes
+        from ginn.formularios import reports as informes
         import numerals
         pagare = self.objeto
         fechaPago = pagare.fechaPago
@@ -1030,7 +1030,7 @@ class PagaresPagos(Ventana):
             self.add_impr_observaciones("pagaré Bankinter")
 
     def imprimir_cheque_bankinter(self):
-        import informes
+        from ginn.formularios import reports as informes
         import numerals
         pagare = self.objeto
         cantidad = pagare.cantidad

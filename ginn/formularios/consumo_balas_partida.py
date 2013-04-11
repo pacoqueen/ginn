@@ -54,7 +54,7 @@ except ImportError:
     sys.path.append('../informes')
     import geninformes
 from ventana_progreso import VentanaProgreso
-import informes 
+from ginn.formularios import reports as informes 
 
 class ConsumoBalasPartida(Ventana):
         

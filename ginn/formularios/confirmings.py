@@ -239,14 +239,14 @@ class Confirmings(Ventana):
         utils.combo_set_from_db(self.wids['cbe_cliente'], -1)   # Esto 
                                 # quitará el elemento activo del combo.
         self.wids['cbe_cliente'].child.set_text("")
-        def iter_cliente_seleccionado(completion, model, iter = None):
-            if iter == None:    # Si me ha llamado el changed, el iter 
+        def iter_cliente_seleccionado(completion, model, itr = None):
+            if itr == None:    # Si me ha llamado el changed, el iter 
                                 # habrá cambiado JUSTO AHORA.
                 try:
-                    iter = completion.get_active_iter()
+                    itr = completion.get_active_iter()
                 except AttributeError:
-                    iter = None
-            if iter != None:
+                    itr = None
+            if itr != None:
                 idcliente = model[iter][0]
                 utils.combo_set_from_db(self.wids['cbe_cliente'], idcliente)
                 for p in [p for p in self.objeto.cobros if p.cliente == None]:

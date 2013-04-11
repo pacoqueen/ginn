@@ -33,8 +33,9 @@
 #       por número de factura según su serie (contador) son consecutivas.
 ###############################################################################
 
-from framework import pclases
-import mx.DateTime, utils, time, sys
+from ginn.framework import pclases
+import mx.DateTime, time, sys
+from ginn.formularios import utils
 
 """
 Test de coherencia de datos para realizar periódicamente.
@@ -195,7 +196,7 @@ def comprobar_articulos_con_enlaces_incorrectos(report_mode = False):
         # Cambio de estrategia. Evito recorrer los artículos que 
         # sé seguro que están bien:
     A = pclases.Articulo
-    from pclases import AND, NOT, OR
+    from ginn.framework.pclases import AND, NOT, OR
     rs = AND(A.q.rolloID != None, A.q.rolloDefectuosoID == None, A.q.balaID == None, A.q.balaCableID == None, A.q.bigbagID == None)
     rsd = AND(A.q.rolloID == None, A.q.rolloDefectuosoID != None, A.q.balaID == None, A.q.balaCableID == None, A.q.bigbagID == None)
     bs = AND(A.q.rolloID == None, A.q.rolloDefectuosoID == None, A.q.balaID != None, A.q.balaCableID == None, A.q.bigbagID == None)
@@ -715,8 +716,8 @@ def comprobar_numeracion_articulos(report_mode = False,
                            (rds, "RolloDefectuoso"), 
                            (bbs, "Bigbag")):
         last_num = None
-        for id, num in conjunto:
-            if id in _ignore_list[tipo]:
+        for ide, num in conjunto:
+            if ide in _ignore_list[tipo]:
                 continue
             if last_num != None and num - last_num != 1:
                 print >> sys.stderr, "%s ID %d (número %d) no es consecutivo con el anterior (%d)." % (tipo, id, num, last_num)
@@ -966,7 +967,7 @@ def comprobar_consumos_entre_fechas(report_mode = False, n = None):
     if n == None or not isinstance(n, int):
         n = random.randint(1, 3)
     pvfs = [pv for pv in pclases.ProductoVenta.select() if pv.es_bala()]
-    for i in range(n):
+    for i in range(n):  # @UnusedVariable
         fecha0 = mx.DateTime.localtime() - mx.DateTime.oneDay * random.randint(0, 365)
         fecha1 = mx.DateTime.localtime() - mx.DateTime.oneDay * random.randint(0, 365)
         if fecha0 > fecha1:

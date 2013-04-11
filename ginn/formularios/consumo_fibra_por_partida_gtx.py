@@ -443,7 +443,7 @@ class ConsumoFibraPorPartidaGtx(Ventana):
                 print txt
                 return
             partidas_carga = self.partidas_carga
-            import informes
+            from ginn.formularios import reports as informes
             datos = []
             total_kilos_consumidos = 0.0
             total_kilos_producidos = 0.0

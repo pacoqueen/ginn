@@ -952,7 +952,7 @@ class ResultadosGeotextiles(Ventana):
         """
         Imprime la información en pantalla.
         """
-        import informes, geninformes
+        from ginn.formularios import reports as informes, geninformes
         txt = "PARTIDA: %s\n" % (self.wids['e_numpartida'].get_text())
         txt += "PRODUCTO: %s\n\n" % (self.wids['e_nombre'].get_text())
         txt += "Lote y materia prima consumida:\n"

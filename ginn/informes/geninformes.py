@@ -53,8 +53,8 @@ from reportlab.lib.units import inch, cm
 import mx.DateTime
 
 import sys, os
-from framework import pclases
-from formularios import utils
+from ginn.framework import pclases
+from ginn.formularios import utils
 import time
 from tempfile import gettempdir
 import Image

@@ -46,18 +46,9 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time
-try:
-    from framework import pclases
-except ImportError:
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
+import gtk, time
+from ginn.framework import pclases
 import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    sys.path.append('../informes')
-    import geninformes
 import pango
 import gobject
 from facturas_venta import debe_generar_recibo, generar_recibo
@@ -88,7 +79,7 @@ def intentar_imprimir_ticket(ticket):
                                    "impresora de tickets.\nEl ticket se "
                                    "mostrará como fichero de texto plano.\n\n"
                                    "Información de depuración:\n%s" % msg)
-        import tempfile, os
+        import tempfile
         fdest = os.path.join(tempfile.gettempdir(), 
                              "ticket_%d.txt" % ticket.numticket)
         dest = file(fdest, "w")
@@ -107,7 +98,7 @@ def volcar_texto_ticket(ticket, dest):
         print "tpv::imprimir_ticket -> No se encontraron los datos de la empresa. Abortando impresión..."
     else:
         ANCHO = pclases.config.get_anchoticket()
-        linea0 = (" ", "RS")
+        linea0 = (" ", "RS")  # @UnusedVariable
         linea1 = (dde.nombre.center(ANCHO), "RSC")
         modo = "RC"
         if pclases.config.get_mostrarcontactoenticket():
@@ -353,7 +344,7 @@ class TPV(Ventana):
                 "descuento a las líneas seleccionadas o al ticket completo.")
             self.wids['e_descuento'].connect("icon-press", 
                                              self.__aplicar_descuento)
-        except Exception, e: # Versión pygtk < 2.16
+        except Exception: # Versión pygtk < 2.16
             self._add_buttons_dto()
         self.wids['e_descuento'].set_range(0, 100)
         self.wids['e_descuento'].set_increments(1, 10)
@@ -394,15 +385,15 @@ class TPV(Ventana):
                              padre = self.wids['ventana']):
                 model, paths = self.wids['tv_ventas'].get_selection().get_selected_rows()
                 for path in paths:
-                    iter = model.get_iter(path)
-                    if model[iter].parent == None:  # Es un ticket
-                        idticket = model[iter][-1]
+                    itr = model.get_iter(path)
+                    if model[itr].parent == None:  # Es un ticket
+                        idticket = model[itr][-1]
                         ticket = pclases.Ticket.get(idticket)
                         for ldv in ticket.lineasDeVenta:
                             if ldv not in ldvs:
                                 ldvs.append(ldv)
                     else:   # Es una LDV
-                        idldv = model[iter][-1] 
+                        idldv = model[itr][-1] 
                         ldv = pclases.LineaDeVenta.get(idldv)
                         if ldv not in ldvs:
                             ldvs.append(ldv)
@@ -682,7 +673,6 @@ class TPV(Ventana):
     def actualizar_ventana(self, boton=None, machacar_precio_producto=True):
         # XXX
         if pclases.DEBUG:
-            import time
             inicio = time.time()
         # XXX
         self.comprobar_boton_facturar()
@@ -783,7 +773,6 @@ class TPV(Ventana):
         indique DIAS_TREEVIEW.
         """
         if pclases.DEBUG:
-            import time
             inicio = time.time()
             print "    --> _rellenar_ultimas_ventas"
         tickets = pclases.Ticket.select(
@@ -894,8 +883,8 @@ class TPV(Ventana):
                         "SELECT COUNT(id) "
                         "FROM linea_de_venta "
                         "WHERE ticket_id = %d" % ticket.id)[0]
-                    iter = model.get_iter(fila)
-                    en_model = model.iter_n_children(iter)
+                    itr = model.get_iter(fila)
+                    en_model = model.iter_n_children(itr)
                     if ldvs == en_model:
                         fila += 1
                         # Si el ID es el mismo, el total también y el número 
@@ -972,12 +961,6 @@ class TPV(Ventana):
         Busca un producto por descripción e introduce el código, descripción, 
         precio, etc. en los entries correspondientes
         """
-        idtarifa = utils.combo_get_value(self.wids['cbe_tarifa'])
-        if idtarifa != None:
-            tarifa = pclases.Tarifa.get(idtarifa)
-        else:
-            tarifa = None
-        # self.producto = buscar_producto(padre = self.wids['ventana'], tarifa = tarifa, texto_defecto = self.wids['e_codigo'].get_text())
         productos = utils.buscar_producto_general(padre = self.wids['ventana'], 
                             mostrar_precios = True, 
                             texto_defecto = self.wids['e_codigo'].get_text(), 
@@ -1058,7 +1041,6 @@ class TPV(Ventana):
         siguiente y pone la cantidad al valor por defecto (1).
         """
         if pclases.DEBUG:
-            import time
             inicio = time.time()
         if self.producto != None:
             # XXX
@@ -1298,13 +1280,13 @@ class TPV(Ventana):
                              padre = self.wids['ventana']):
                 model, paths = self.wids['tv_ventas'].get_selection().get_selected_rows()
                 for path in paths:
-                    iter = model.get_iter(path)
-                    if model[iter].parent == None:  # Es un ticket
-                        idticket = model[iter][-1]
+                    itr = model.get_iter(path)
+                    if model[itr].parent == None:  # Es un ticket
+                        idticket = model[itr][-1]
                         ticket = pclases.Ticket.get(idticket)
                         tickets_a_imprimir.append(ticket)
                     else:   # Es una LDV
-                        idldv = model[iter][-1] 
+                        idldv = model[itr][-1] 
                         ldv = pclases.LineaDeVenta.get(idldv)
                         ticket = ldv.ticket
                         if ticket != None and ticket not in tickets_a_imprimir:
@@ -1389,9 +1371,9 @@ class TPV(Ventana):
                               padre = self.wids['ventana'])):
             model, paths = self.wids['tv_ventas'].get_selection().get_selected_rows()
             for path in paths:
-                iter = model.get_iter(path)
-                if model[iter].parent == None:  # Es un ticket
-                    idticket = model[iter][-1]
+                itr = model.get_iter(path)
+                if model[itr].parent == None:  # Es un ticket
+                    idticket = model[itr][-1]
                     ticket = pclases.Ticket.get(idticket)
                     facturas_ticket = ticket.get_facturas()
                     if facturas_ticket != []:
@@ -1405,7 +1387,7 @@ class TPV(Ventana):
                             self.mostrar_info_ticket()
                         ticket.destroy_en_cascada(__file__)
                 else:   # Es una LDV
-                    idldv = model[iter][-1]
+                    idldv = model[itr][-1]
                     try: 
                         ldv = pclases.LineaDeVenta.get(idldv)
                     except:  # Es posible que ya se haya borrado
@@ -1594,18 +1576,19 @@ class TPV(Ventana):
                                 defecto = True, 
                                 tiempo = 10):
                             idcliente = crear_nuevo_cliente(nombrecliente, 
-                                                        self.wids['ventana'])
+                                                        self.wids['ventana'], 
+                                                        self.usuario)
             if idcliente != None:
                 cliente = pclases.Cliente.get(idcliente)
-                factura = crear_factura(cliente, padre = self.wids['ventana'])
+                factura = crear_factura(cliente, padre = self.wids['ventana'], self.usuario)
                 if factura != None:
                     sel = self.wids['tv_ventas'].get_selection()
                     model, paths = sel.get_selected_rows()
                     ldvs_facturadas = []
                     for path in paths:
-                        iter = model.get_iter(path)
-                        if model[iter].parent == None:  # Es un ticket
-                            idticket = model[iter][-1]
+                        itr = model.get_iter(path)
+                        if model[itr].parent == None:  # Es un ticket
+                            idticket = model[itr][-1]
                             ticket = pclases.Ticket.get(idticket)
                             for ldv in ticket.lineasDeVenta:
                                 if ldv.get_factura_o_prefactura() == None:
@@ -1622,7 +1605,7 @@ class TPV(Ventana):
                                     print txt
                                     self.logger.warning(txt)
                         else:   # Es una LDV
-                            idldv = model[iter][-1] 
+                            idldv = model[itr][-1] 
                             ldv = pclases.LineaDeVenta.get(idldv)
                             if ldv.get_factura_o_prefactura() == None:
                                 ldv.facturaVenta = factura
@@ -1638,7 +1621,7 @@ class TPV(Ventana):
                             utils.dialogo_info(titulo = "FACTURA CREADA", 
                                                texto = "Se creó con éxito la factura %s.\n\nA continuación se abrirá en una nueva ventana.\nVerifique todos los datos y cree los vencimientos antes de imprimir y bloquear la factura." % (factura.numfactura), 
                                                padre = self.wids['ventana'])
-                            ventana = facturas_venta.FacturasVenta(objeto = factura, usuario = self.usuario)
+                            ventana = facturas_venta.FacturasVenta(objeto = factura, usuario = self.usuario)  # @UnusedVariable
                         else:
                             if utils.dialogo(titulo = "¿COBRAR FACTURA DE %s?" 
                                                 % factura.cliente.get_info(), 
@@ -1664,7 +1647,7 @@ class TPV(Ventana):
                                                self.logger, 
                                                self.wids['ventana'])
                             factura.bloqueada = True
-                            from informes import mandar_a_imprimir_con_foxit
+                            from ginn.formularios.reports import mandar_a_imprimir_con_foxit
                             from albaranes_de_salida import imprimir_factura
                             mandar_a_imprimir_con_foxit(
                                 imprimir_factura(factura, self.usuario, False))
@@ -1713,7 +1696,7 @@ class TPV(Ventana):
         #           utils.float2str(t.calcular_total()))
         imprimir_arqueo(tickets)
 
-def crear_factura(cliente, padre = None):
+def crear_factura(cliente, padre = None, usuario = None):
     """
     Crea una factura vacía para el cliente recibido.
     Devuelve None si la factura no se pudo crear.
@@ -1743,7 +1726,7 @@ def crear_factura(cliente, padre = None):
                         iva = 0.21, 
                         bloqueada = False, 
                         irpf = irpf)
-            pclases.Auditoria.nuevo(factura, self.usuario, __file__)
+            pclases.Auditoria.nuevo(factura, usuario, __file__)
         except Exception, msg:
             factura = None
             print "tpv::crear_factura -> No se pudo crear la factura. "\
@@ -1763,8 +1746,6 @@ def buscar_producto(padre = None, tarifa = None, texto_defecto = ""):
     Composan, descripción completa o nombre y realiza la 
     búsqueda en las tablas de producto_compra y producto_venta.
     """
-    sys.path.append(os.path.join("..", "framework"))
-    from framework import pclases
     res = None 
     a_buscar = utils.dialogo_entrada(titulo = "BUSCAR PRODUCTO", 
                                      texto = "Introduzca código o descripción del producto:", 
@@ -1799,15 +1780,15 @@ def buscar_producto(padre = None, tarifa = None, texto_defecto = ""):
                                                           "P.V.P.", 
                                                           "Existencias"))
         if idproducto > 0:
-            tipo, id = idproducto.split(":")
+            tipo, ide = idproducto.split(":")
             try:
-                id = int(id)
+                ide = int(ide)
             except ValueError:
                 res = None
             if tipo == "PC":
-                res = pclases.ProductoCompra.get(id)
+                res = pclases.ProductoCompra.get(ide)
             elif tipo == "PV":
-                res = pclases.ProductoVenta.get(id)
+                res = pclases.ProductoVenta.get(ide)
         elif idproducto != -1:
             utils.dialogo_info(titulo = "NO ENCONTRADO", 
                                texto = "No se econtraron productos con la búsqueda %s." % (a_buscar),
@@ -1840,7 +1821,7 @@ def crear_str_existencias(producto):
         if isinstance(producto, pclases.ProductoCompra):
             res = "%s %s" % (utils.float2str(producto.existencias), producto.unidad)
         else:
-            if hasattr(producto, existencias):
+            if hasattr(producto, "existencias"):
                 res = utils.float2str(producto.existencias)
             else:
                 print "No sé cómo acceder a las existencias del producto %s" % (producto)
@@ -1900,7 +1881,7 @@ def imprimir_ticket(ticket):
             ticketera = LPT(puerto_lpt)
         try:
             ticketera.abrir(set_codepage = pclases.config.get_codepageticket())
-            linea0 = (" ", "RS")
+            linea0 = (" ", "RS")  # @UnusedVariable
             linea1 = (dde.nombre.center(ANCHO), "RSC")
             if isinstance(ticketera, LPTOKI):
                 modo = ""
@@ -1922,12 +1903,12 @@ def imprimir_ticket(ticket):
                            "SI"))
             for ldv in ticket.lineasDeVenta:
                 lineas += split_descuento(ldv, ANCHO)
-                 # lineas.append((cortar_linea_ticket(ldv, ANCHO), ">"))
+                # lineas.append((cortar_linea_ticket(ldv, ANCHO), ">"))
             lineas.append((total_ticket(ticket, ANCHO), "A"))
             lineas.append(("\nIVA incluido - Gracias por su visita", ""))
             for linea, modo in lineas:
                 ticketera.escribir(linea, modo)
-            for lineas_blanco in range(pclases.config.get_largoticket()):
+            for lineas_blanco in range(pclases.config.get_largoticket()):  # @UnusedVariable
                 ticketera.escribir("", "")
             ticketera.cortar()
         finally:
@@ -1962,7 +1943,6 @@ def imprimir_arqueo(tickets):
         ticketera = LPT(puerto_lpt)
     if pclases.DEBUG:
         from tempfile import gettempdir
-        import os
         ticketera = LPT(os.path.join(gettempdir(), "salida_tpv.txt"))
     try:
         try:
@@ -1997,7 +1977,7 @@ def imprimir_arqueo(tickets):
             linea, modo = utils.float2str(total_totaloso), "CANS"
             ticketera.escribir(linea, modo)
             if pclases.DEBUG: print linea, modo
-        for lineas_blanco in range(pclases.config.get_largoticket()):
+        for lineas_blanco in range(pclases.config.get_largoticket()):  # @UnusedVariable
             ticketera.escribir("", "")
         ticketera.cortar()
     finally:
@@ -2097,7 +2077,7 @@ class LPT:
             del(s)
 
     def retroceder(self, n = 1):
-        for i in xrange(n):
+        for i in xrange(n):  # @UnusedVariable
             texto = chr(0x1B) + chr(0x65) + chr(4)
             self.__f.write(texto)
             self.__f.write("\n")
@@ -2112,7 +2092,7 @@ class LPT:
         self.__f.flush()
 
     def avanzar(self, n = 1):
-        for i in xrange(n):
+        for i in xrange(n):  # @UnusedVariable
             texto = chr(0x1B) + chr(0x64) + chr(1)
             self.__f.write(texto)
             self.__f.write("\n")
@@ -2241,7 +2221,7 @@ class LPTOKI(LPT):
         self.__f.flush()
 
     def avanzar(self, n = 1):
-        for i in xrange(n):
+        for i in xrange(n):  # @UnusedVariable
             texto = chr(0x1B) + chr(0x64) + chr(1)
             self.__f.write(texto)
             self.__f.write("\n")
@@ -2405,7 +2385,7 @@ def dialogo_nuevo_cliente(nombre, padre = None):
         return None
     return res[::-1]
 
-def crear_nuevo_cliente(nombre, padre = None):
+def crear_nuevo_cliente(nombre, padre = None, usuario = None):
     """
     Recibe un nombre y pide el resto de datos para 
     crear un nuevo cliente.
@@ -2472,7 +2452,7 @@ def crear_nuevo_cliente(nombre, padre = None):
                                               fax = '', 
                                               riesgoAsegurado = -1, 
                                               riesgoConcedido = -1)
-                    pclases.Auditoria.nuevo(cliente, self.usuario, __file__)
+                    pclases.Auditoria.nuevo(cliente, usuario, __file__)
                     idcliente = cliente.id
                 except Exception, msg: # CIF duplicado o cualquier historia así.
                     utils.dialogo_info(titulo = "ERROR", 

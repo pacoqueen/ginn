@@ -23,18 +23,13 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA  #
 ###############################################################################
 
-import sys, os
+import os
 import geninformes
-try:
-    import utils
-    from trazabilidad import Trazabilidad
-except ImportError:
-    sys.path.append(os.path.join('..', 'formularios'))
-    import utils
-    from trazabilidad import Trazabilidad
-import mx, mx.DateTime
-from framework import pclases
-from informes import abrir_pdf
+from ginn.formularios import utils
+from ginn.formularios.trazabilidad import Trazabilidad
+import mx.DateTime
+from ginn.framework import pclases
+from ginn.formularios.reports import abrir_pdf
 from tempfile import gettempdir
 from gtk import TreeStore
 

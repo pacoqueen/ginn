@@ -768,7 +768,7 @@ class Recibos(Ventana, VentanaGenerica):
         """
         Genera y muestra el PDF del recibo bancario.
         """
-        import informes
+        from ginn.formularios import reports as informes
         numrecibo = self.wids['e_numrecibo'].get_text()
         lugar_libramiento = self.wids['e_lugar_libramiento'].get_text()
         importe = self.wids['e_importe'].get_text()

@@ -276,10 +276,10 @@ class MostrarDatosLogic(Ventana):
 
     def aceptar(self, boton):
         res = None
-        model, iter = self.wids['tv_logic'].get_selection().get_selected()
-        if iter != None:
-            id = model[iter][-1]
-            res = pclases.LogicMovimientos.get(id)
+        model, itr = self.wids['tv_logic'].get_selection().get_selected()
+        if itr != None:
+            ide = model[itr][-1]
+            res = pclases.LogicMovimientos.get(ide)
             self.wids['ventana'].destroy()
         else:
             utils.dialogo(titulo = "¿CERRAR?", 

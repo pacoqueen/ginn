@@ -106,10 +106,8 @@ class ListadoRollosDefectuosos(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        import sys, os
-        sys.path.append(os.path.join("..", "informes"))
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from ginn.informes.treeview2csv import treeview2csv
+        from ginn.formularios.reports import abrir_csv
         tv = self.wids['tv_rollos']
         abrir_csv(treeview2csv(tv))
 
@@ -118,9 +116,9 @@ class ListadoRollosDefectuosos(Ventana):
         Muestra el rollo en la ventana de trazabilidad.
         """
         if tv.get_model()[path].parent != None:
-            id = tv.get_model()[path][-1]
-            if id != None and id > 0:
-                rollo = pclases.Articulo.get(id).rolloDefectuoso
+            ide = tv.get_model()[path][-1]
+            if ide != None and ide > 0:
+                rollo = pclases.Articulo.get(ide).rolloDefectuoso
                 import trazabilidad_articulos
                 trazabilidad_articulos.TrazabilidadArticulos(
                     usuario = self.usuario, 
@@ -130,10 +128,8 @@ class ListadoRollosDefectuosos(Ventana):
         """
         Crea un PDF con el contenido del TreeView.
         """
-        import sys, os
-        sys.path.append(os.path.join("..", "informes"))
-        from treeview2pdf import treeview2pdf
-        from informes import abrir_pdf
+        from ginn.informes.treeview2pdf import treeview2pdf
+        from ginn.formularios.reports import abrir_pdf
         tv = self.wids['tv_rollos']
         model = tv.get_model()
         model.append(None, ("===", "===", "===", "===", "===", "===", 0))
@@ -160,13 +156,13 @@ class ListadoRollosDefectuosos(Ventana):
         """
         model, paths = tv.get_selection().get_selected_rows()
         for path in paths:
-            iter = model.get_iter(path)
-            if iter != None and model[iter][2] == "CLIC PARA VER":
-                articulo = pclases.Articulo.get(model[iter][-1])
+            itr = model.get_iter(path)
+            if itr != None and model[itr][2] == "CLIC PARA VER":
+                articulo = pclases.Articulo.get(model[itr][-1])
                 if articulo.parteDeProduccionID != None:
-                    model[iter][2] = utils.str_fecha(articulo.parteDeProduccion.fecha)
+                    model[itr][2] = utils.str_fecha(articulo.parteDeProduccion.fecha)
                 else:
-                    model[iter][2] = "¡Sin parte de producción!"
+                    model[itr][2] = "¡Sin parte de producción!"
     
     def set_inicio(self,boton):
         temp = utils.mostrar_calendario(padre = self.wids['ventana'])
@@ -204,13 +200,13 @@ class ListadoRollosDefectuosos(Ventana):
         pass
 
     def rellenar_tabla(self, rollos_por_producto):
-    	"""
+        """
         Rellena el model con el listado de rollos correspondiente.
         """
         from ventana_progreso import VentanaProgreso
         vpro = VentanaProgreso(padre = self.wids['ventana'])
-    	model = self.wids['tv_rollos'].get_model()
-    	model.clear()
+        model = self.wids['tv_rollos'].get_model()
+        model.clear()
         metros_almacen = 0
         rollos_almacen = 0
         metros_fabricados = 0
@@ -379,7 +375,7 @@ class ListadoRollosDefectuosos(Ventana):
                 rollos_defecto.append(model[path][0])
                 rollos_defecto.sort()
             rollos_defecto = ', '.join(rollos_defecto)
-            import informes
+            from ginn.formularios import reports as informes
             entrada, mostrar_marcado = self._dialogo_entrada(titulo='ETIQUETAS', 
                                                              texto="Introduzca los números de rollo, separados por coma, que desea etiquetar:",
                                                              valor_por_defecto = rollos_defecto,

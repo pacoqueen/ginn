@@ -33,20 +33,16 @@
 ## 
 ###################################################################
 
-from ventana import Ventana
+import sys, os
+from ginn.formularios.ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk, time
 from framework import pclases
 import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
-import ventana_progreso
+from ginn.formularios import ventana_progreso
+from ginn.informes import geninformes
     
 
 class ConsultaConsumo(Ventana):
@@ -88,10 +84,9 @@ class ConsultaConsumo(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        import sys, os
         sys.path.append(os.path.join("..", "informes"))
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from ginn.informes.treeview2csv import treeview2csv
+        from ginn.formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
 
@@ -99,17 +94,17 @@ class ConsultaConsumo(Ventana):
         pass
 
     def rellenar_tabla(self, items):
-    	"""
+        """
         Rellena el model con los items de la consulta.
         "items" es una lista de 5 elementos: Nombre producto, cantidad, ID, X y media diaria.
         En la última columna del model (la oculta) se guarda un string "ID:X" donde X
         es C si es un producto de compra o V si es de venta (fibra fabricada usada
         como materia prima).
         """        
-    	model = self.wids['tv_datos'].get_model()
-    	model.clear()
-    	for item in items:
-            iter = model.append(None, (item[0],
+        model = self.wids['tv_datos'].get_model()
+        model.clear()
+        for item in items:
+            itr = model.append(None, (item[0],  # @UnusedVariable
                                        item[1],
                                        item[4], 
                                        "%d:%s" % (item[2], item[3])))
@@ -165,7 +160,7 @@ class ConsultaConsumo(Ventana):
         if not self.inicio:
             pdps = PDP.select(PDP.q.fecha <= self.fin, orderBy = 'fecha')
         else:
-            pdps = PDP.select(sqlobject.AND(PDP.q.fecha >= self.inicio, PDP.q.fecha <= self.fin), orderBy='fecha')
+            pdps = PDP.select(pclases.AND(PDP.q.fecha >= self.inicio, PDP.q.fecha <= self.fin), orderBy='fecha')
         fechainicio = mx.DateTime.DateTimeFrom(day = int(self.inicio.split("/")[2]), 
                                                month = int(self.inicio.split("/")[1]), 
                                                year = int(self.inicio.split("/")[0])) 
@@ -177,7 +172,7 @@ class ConsultaConsumo(Ventana):
         tot = pdps.count()
         i = 0.0
         vpro.mostrar()
-        linea_gtx, linea_fib = self.get_lineas_produccion()
+        linea_gtx, linea_fib = self.get_lineas_produccion()  # @UnusedVariable
         cons_balas = {}
         cons_rollos = {}
         partidas_contadas = []
@@ -242,7 +237,7 @@ class ConsultaConsumo(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        import informes
+        from ginn.formularios import reports as informes
         datos = []
         model = self.wids['tv_datos'].get_model()
         for i in xrange(len(model)):

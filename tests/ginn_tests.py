@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from nose.tools import * 
-import ginn
+from nose.tools import *  # @UnusedWildImport
+import ginn  # @UnusedImport
 
 def setup():
     print "SETUP!"

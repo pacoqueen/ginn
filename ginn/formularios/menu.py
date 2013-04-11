@@ -832,8 +832,8 @@ def construir_y_enviar(w, ventana, remitente, observaciones, texto, usuario):
         sys.path.insert(0, os.path.join('..', 'libgmail-0.1.11'))
         import libgmail  # @UnresolvedImport
     rte = remitente.get_text()
-    buffer = observaciones.get_buffer()
-    obs = buffer.get_text(buffer.get_start_iter(), buffer.get_end_iter()) 
+    buff = observaciones.get_buffer()
+    obs = buff.get_text(buff.get_start_iter(), buff.get_end_iter()) 
     if usuario == None:
         contra = ''
     else:

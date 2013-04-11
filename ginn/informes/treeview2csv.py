@@ -23,18 +23,12 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA  #
 ###############################################################################
 
-import sys, os
+import os
 import geninformes
-try:
-    import utils
-    from trazabilidad import Trazabilidad
-except ImportError:
-    sys.path.append(os.path.join('..', 'formularios'))
-    import utils
-    from trazabilidad import Trazabilidad
-import mx, mx.DateTime
+from ginn.formularios import utils
+from ginn.formularios.trazabilidad import Trazabilidad
 from framework import pclases
-from informes import abrir_csv
+from formularios.reports import abrir_csv
 from tempfile import gettempdir
 import csv
 
@@ -221,7 +215,7 @@ def probar():
     """
     Test
     """
-    esto_habria_que_annadirlo_al_scrip_inicial = "abrir_csv(treeview2csv(self.wids['tv_datos']))"
+    esto_habria_que_annadirlo_al_scrip_inicial = "abrir_csv(treeview2csv(self.wids['tv_datos']))"  # @UnusedVariable
     Trazabilidad(pclases.Rollo.select(orderBy = "-id")[0], locals_adicionales = {'treeview2csv': treeview2csv, 'abrir_csv': abrir_csv})
 
 if __name__ == "__main__":

@@ -174,10 +174,10 @@ class LabResultadosLote(Ventana):
         """
         Elimina un valor de tenacidad de la lista
         """
-        model, iter = self.wids['tv_tenacidad'].get_selection().get_selected()
-        if iter != None:
-            dato, id = model[iter]
-            self.tenacidad.remove((dato,id))
+        model, itr = self.wids['tv_tenacidad'].get_selection().get_selected()
+        if itr != None:
+            dato, ide = model[itr]
+            self.tenacidad.remove((dato,ide))
             self.rellenar_tablas()
         else:
             utils.dialogo_info(titulo = 'ERROR', texto = 'No se ha seleccionado ningún elemento a borrar')
@@ -202,10 +202,10 @@ class LabResultadosLote(Ventana):
         """
         Elimina un valor de elongacion de la lista
         """
-        model, iter = self.wids['tv_elongacion'].get_selection().get_selected()
-        if iter != None:
-            dato, id = model[iter]
-            self.elongacion.remove((dato,id))
+        model, itr = self.wids['tv_elongacion'].get_selection().get_selected()
+        if itr != None:
+            dato, ide = model[itr]
+            self.elongacion.remove((dato, ide))
             self.rellenar_tablas()
         else:
             utils.dialogo_info(titulo = 'ERROR', texto = 'No se ha seleccionado ningún elemento a borrar')

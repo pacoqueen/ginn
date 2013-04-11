@@ -392,7 +392,7 @@ class ConsultaVencimientosPagados(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        import informes
+        from ginn.formularios import reports as informes
         datos = []
         for pago in self.resultado:
             datos.append((pago.facturaCompra.numfactura,

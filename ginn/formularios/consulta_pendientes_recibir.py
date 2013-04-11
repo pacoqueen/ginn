@@ -68,7 +68,7 @@ class PendientesRecibir(Ventana):
         else:
             ruta_csv = None
 
-        import informes
+        from ginn.formularios import reports as informes
         informes.abrir_pdf(
             geninformes.pendiente_recibir(exportar_a_csv_a = ruta_csv))
 

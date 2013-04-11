@@ -68,7 +68,7 @@ class ConsultaExistencias(Ventana):
         else:
             csv = False
             ruta_csv = None
-        import informes
+        from ginn.formularios import reports as informes
         informes.abrir_pdf(geninformes.existencias_productos(
             'balas', 
             "%s, %s" % (utils.str_fecha(time.localtime()), 

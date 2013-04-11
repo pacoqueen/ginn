@@ -245,7 +245,7 @@ class ConsultaBajoMinimos(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        import informes
+        from ginn.formularios import reports as informes
         if self.resultado != []:
             datos = []
             if isinstance(self.resultado[0],tuple):

@@ -1171,10 +1171,10 @@ class FacturasDeEntrada(Ventana):
         pertenece la linea de compra seleccionada
         """
         factura = self.objeto
-        model, iter = self.wids['tv_ldvs'].get_selection().get_selected()
-        if iter != None:
-            idldc = model[iter][-1]
-            if model[iter].parent == None and model[iter][-1] != -1:
+        model, itr = self.wids['tv_ldvs'].get_selection().get_selected()
+        if itr != None:
+            idldc = model[itr][-1]
+            if model[itr].parent == None and model[itr][-1] != -1:
                 lineadecompra = pclases.LineaDeCompra.get(idldc)
                 albaran = lineadecompra.albaranEntrada
                 for l in albaran.lineasDeCompra:
@@ -1647,9 +1647,9 @@ class FacturasDeEntrada(Ventana):
         Me cargo los vencimientos (estimado y no) que estén
         en la línea seleccionada. El pago no lo toco.
         """
-        model,iter=self.wids['tv_vencimientos'].get_selection().get_selected()
-        if iter == None: return
-        ids = model[iter][-1]
+        model,itr=self.wids['tv_vencimientos'].get_selection().get_selected()
+        if itr == None: return
+        ids = model[itr][-1]
         ids = [int(i) for i in ids.split(',')]
         idvto = ids[0]
         idest = ids[1]
@@ -2299,10 +2299,10 @@ class FacturasDeEntrada(Ventana):
         tiene más enlaces con albaranes o pedidos, la elimina 
         también de la base de datos.
         """
-        model, iter = self.wids['tv_ldvs'].get_selection().get_selected()
-        if iter != None:
-            idldc = model[iter][-1]
-            if idldc != -1 and model[iter].parent == None:
+        model, itr = self.wids['tv_ldvs'].get_selection().get_selected()
+        if itr != None:
+            idldc = model[itr][-1]
+            if idldc != -1 and model[itr].parent == None:
                 try:
                     ldc = pclases.LineaDeCompra.get(idldc)
                 except:
@@ -2315,7 +2315,7 @@ class FacturasDeEntrada(Ventana):
                         self.logger.error("facturas_compra.py "
                                 "(drop_linea_de_compra): LDC ID %d no se pudo"
                                 " eliminar. Debe tener relaciones activas.")
-            elif idldc != -1 and model[iter].parent != None:
+            elif idldc != -1 and model[itr].parent != None:
                 try:
                     s = pclases.ServicioTomado.get(idldc)
                 except:
@@ -2511,11 +2511,11 @@ class FacturasDeEntrada(Ventana):
         """
         Elimina el adjunto seleccionado.
         """
-        model, iter = self.wids['tv_adjuntos'].get_selection().get_selected()
-        if iter != None and utils.dialogo(titulo = "BORRAR DOCUMENTO", 
+        model, itr = self.wids['tv_adjuntos'].get_selection().get_selected()
+        if itr != None and utils.dialogo(titulo = "BORRAR DOCUMENTO", 
                             texto = '¿Borrar documento adjunto seleccionado?', 
                             padre = self.wids['ventana']):
-            docid = model[iter][-1]
+            docid = model[itr][-1]
             documento = pclases.Documento.get(docid)
             utils.mover_a_tmp(documento.get_ruta_completa())
             documento.destroy(ventana = __file__)
@@ -2526,9 +2526,9 @@ class FacturasDeEntrada(Ventana):
         Intenta abrir el adjunto seleccionado.
         """
         from multi_open import open as mopen
-        model, iter = self.wids['tv_adjuntos'].get_selection().get_selected()
-        if iter != None:
-            docid = model[iter][-1]
+        model, itr = self.wids['tv_adjuntos'].get_selection().get_selected()
+        if itr != None:
+            docid = model[itr][-1]
             documento = pclases.Documento.get(docid)
             self.wids['ventana'].window.set_cursor(
                     gtk.gdk.Cursor(gtk.gdk.WATCH))

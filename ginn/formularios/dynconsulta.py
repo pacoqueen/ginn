@@ -35,7 +35,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time, mx.DateTime
+import gtk, mx.DateTime
 try:
     from framework import pclases
     from seeker import VentanaGenerica 
@@ -54,22 +54,10 @@ try:
     from collections import MutableMapping as transformedDictBase
 except ImportError:
     transformedDictBase = object
-try:
-    import geninformes
-except ImportError:
-    sys.path.append(os.path.join('..', 'informes'))
-    import geninformes
-try:
-    from treeview2pdf import treeview2pdf
-except ImportError:
-    sys.path.append(os.path.join("..", "informes"))
-    from treeview2pdf import treeview2pdf
-try:
-    from treeview2csv import treeview2csv
-except ImportError:
-    sys.path.append(os.path.join("..", "informes"))
-    from treeview2pdf import treeview2pdf
-from informes import abrir_pdf, abrir_csv
+from ginn.informes import geninformes
+from ginn.informes.treeview2pdf import treeview2pdf
+from ginn.informes.treeview2csv import treeview2csv
+from ginn.formularios.reports import abrir_pdf, abrir_csv
 import pango
 
 class TransformedDict(transformedDictBase):
@@ -175,10 +163,10 @@ class DynConsulta(Ventana, VentanaGenerica):
     def tooltip_query(self, treeview, x, y, mode, tooltip):
         path = treeview.get_path_at_pos(x, y)
         if path:
-            treepath, column = path[:2]
+            treepath, column = path[:2]  # @UnusedVariable
             model = treeview.get_model()
-            iter = model.get_iter(treepath)
-            texto = model[iter][0].replace("&", "&amp;")
+            itr = model.get_iter(treepath)
+            texto = model[itr][0].replace("&", "&amp;")
             tooltip.set_text(texto)
         return False
 

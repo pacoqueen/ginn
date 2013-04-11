@@ -725,7 +725,7 @@ class ResultadosFibra(Ventana):
         """
         Imprime la información en pantalla.
         """
-        import informes, geninformes
+        from ginn.formularios import reports as informes, geninformes
         txt = "LOTE: %s\n" % (self.wids['e_codigo'].get_text())
         txt += "PRODUCTO: %s\n\n" % (self.wids['e_nombre'].get_text())
         txt += "\nCaracterísticas del lote:\n"

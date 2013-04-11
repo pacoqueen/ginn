@@ -257,7 +257,7 @@ class ConsultaPartidasPorProducto(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        import informes
+        from ginn.formularios import reports as informes
         datos = []
         lista = self.resultado
       	for elem in lista:

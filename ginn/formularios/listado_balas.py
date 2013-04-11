@@ -122,7 +122,7 @@ class ListadoBalas(Ventana):
                 balas_defecto.append(model[path][0])
                 balas_defecto.sort()
             balas_defecto = ', '.join(balas_defecto)
-            import informes
+            from ginn.formularios import reports as informes
             entrada = utils.dialogo_entrada(titulo='ETIQUETAS', 
                         texto="Introduzca los números de bala o bigbags que "
                               "desea etiquetar separados por coma o espacio."
@@ -201,7 +201,7 @@ class ListadoBalas(Ventana):
             desc_producto = self.wids['e_descripcion'].get_text()
             listado_pdf = geninformes.listado_balas(datos, desc_producto, 
                                                     fechaInforme)
-            import informes
+            from ginn.formularios import reports as informes
             informes.abrir_pdf(listado_pdf)
 
     def set_inicio(self,boton):

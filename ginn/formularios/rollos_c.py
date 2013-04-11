@@ -146,7 +146,7 @@ class RollosC(Ventana):
         from listado_rollos import preparar_datos_etiquetas_rollos_c
         data = preparar_datos_etiquetas_rollos_c(rollos)
         if data:
-            import informes
+            from ginn.formularios import reports as informes
             informes.abrir_pdf(geninformes.etiquetasRollosCEtiquetadora(data))
 
     def borrar_rollos(self, rollos):

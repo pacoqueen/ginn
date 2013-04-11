@@ -43,7 +43,7 @@ import pygtk
 pygtk.require('2.0')
 import os
 import sys
-from formularios import utils
+from ginn.formularios import utils
 
 def abrir_pdf(pdf):
     """

@@ -41,17 +41,13 @@
 ## forma de pago del cliente.
 ###################################################################
 
-from ventana import Ventana
-import utils
+from ginn.formularios.ventana import Ventana
+from ginn.formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk, time
 import sys
-try:
-    from framework import pclases
-except ImportError:
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
+from ginn.framework import pclases
 import mx.DateTime
 try:
     import geninformes
@@ -61,7 +57,6 @@ except ImportError:
 import re
 sys.path.append('.')
 import ventana_progreso
-from utils import _float as float
 from vencimientos_pendientes_por_cliente import buscar_facturas_de_abono_sin_pagar
 
 class ConsultaVencimientosCobros(Ventana):
@@ -118,10 +113,8 @@ class ConsultaVencimientosCobros(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        import sys, os
-        sys.path.append(os.path.join("..", "informes"))
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from ginn.informes.treeview2csv import treeview2csv
+        from ginn.formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
         tv = self.wids['tv_totales']
@@ -131,15 +124,15 @@ class ConsultaVencimientosCobros(Ventana):
         model = tv.get_model()
         if model[path][0] == "LOGIC":
             idlogic = model[path][-1].replace("L:", "")
-            import mostrar_datos_logic
-            ventanalogic = mostrar_datos_logic.MostrarDatosLogic(usuario = self.usuario, padre = self.wids['ventana'], consulta = " id == %d " % (idlogic))
+            from ginn.formularios import mostrar_datos_logic
+            ventanalogic = mostrar_datos_logic.MostrarDatosLogic(usuario = self.usuario, padre = self.wids['ventana'], consulta = " id == %d " % (idlogic))  # @UnusedVariable
         elif model[path][-1].startswith("A:"):
             idfrabono = model[path][-1].replace("A:", "")
             frabono = pclases.FacturaDeAbono.get(idfrabono)
             abono = frabono.abono
             if abono:
-                import abonos_venta
-                ventanabonos = abonos_venta.AbonosVenta(objeto = abono, 
+                from ginn.formularios import abonos_venta
+                ventanabonos = abonos_venta.AbonosVenta(objeto = abono,  # @UnusedVariable
                                                         usuario = self.usuario)
             else:
                 pass    # TODO: Algo debería hacer con las facturas de abono 
@@ -150,27 +143,27 @@ class ConsultaVencimientosCobros(Ventana):
             idvto = model[path][-1].replace("V:", "")
             vto = pclases.VencimientoCobro.get(idvto)
             if vto.facturaVenta != None:
-                import facturas_venta           
-                ventanafacturas = facturas_venta.FacturasVenta(
+                from ginn.formularios import facturas_venta           
+                ventanafacturas = facturas_venta.FacturasVenta(  # @UnusedVariable
                                     vto.facturaVenta, 
                                     usuario = self.usuario)
             elif vto.prefactura != None:
                 import prefacturas
-                ventanafacturas = prefacturas.Prefacturas(vto.prefactura, 
+                ventanafacturas = prefacturas.Prefacturas(vto.prefactura,  # @UnusedVariable
                                                         usuario = self.usuario)
 
-    def button_clicked(self, list, event):
-        model, iter = self.wids['tv_datos'].get_selection().get_selected()
-        # DONE: URGENTE: La selección no devuelve el iter correcto 
+    def button_clicked(self, lista, event):
+        model, itr = self.wids['tv_datos'].get_selection().get_selected()
+        # DONE: URGENTE: La selección no devuelve el itr correcto 
         # hasta DESPUÉS de procesar el button_clicked, por tanto, la 
         # primera vez devuelve None y en sucesivas veces es posible que 
         # devuelva la selección anterior. Sólo rula bien cuando se selecciona 
         # primero con el izquierdo y después se saca el menú con el derecho. 
         # ARREGLADO HACIENDO QUE LA SELECCIÓN SIGA EL CURSOR CON LA PROPIEDAD
         # hover-selection DEL TREEVIEW.
-        if iter == None: return
-        id = model[iter][-1]
-        if event.button == 3 and not id.startswith("A:"):
+        if itr == None: return
+        ide = model[itr][-1]
+        if event.button == 3 and not ide.startswith("A:"):
             ui_string = """<ui>
                             <popup name='Popup'>
                                 <menuitem name='Pagare' action='Crear pagaré'/>
@@ -189,14 +182,14 @@ class ConsultaVencimientosCobros(Ventana):
             ui.insert_action_group(ag, 0)
             ui.add_ui_from_string(ui_string)
             widget = ui.get_widget("/Popup")
-            if iter != None:
-                tiene_factura = model[iter][0] != "LOGIC"
+            if itr != None:
+                tiene_factura = model[itr][0] != "LOGIC"
             else:
                 tiene_factura = False
             menuitem = ui.get_widget("/Popup/Factura")
             menuitem.set_sensitive(tiene_factura)
             menuitem = ui.get_widget("/Popup/Pagare")
-            menuitem.set_sensitive(iter != None)
+            menuitem.set_sensitive(itr != None)
             widget.popup(None, None, None, event.button, event.time)
  
     def crear_pagare(self, something_But_i_dont_know):
@@ -204,10 +197,10 @@ class ConsultaVencimientosCobros(Ventana):
         Crea un nuevo pagaré con el apunte seleccionado y abre la
         ventana de pagarés con ese nuevo objeto.
         """
-        model, iter = self.wids['tv_datos'].get_selection().get_selected()
-        id = model[iter][-1][model[iter][-1].index(":")+1:]
-        if model[iter][0] == "LOGIC":
-            logic = pclases.LogicMovimientos.get(id)
+        model, itr = self.wids['tv_datos'].get_selection().get_selected()
+        ide = model[itr][-1][model[itr][-1].index(":")+1:]
+        if model[itr][0] == "LOGIC":
+            logic = pclases.LogicMovimientos.get(ide)
             fechavto = self.get_fecha_vto_logic(logic)
             importe = logic.importe
             factura = None
@@ -215,7 +208,7 @@ class ConsultaVencimientosCobros(Ventana):
             cliente = None
             vencimiento = None
         else:
-            vencimiento = pclases.VencimientoCobro.get(id)
+            vencimiento = pclases.VencimientoCobro.get(ide)
             fechavto = vencimiento.fecha
             importe = vencimiento.importe
             factura = vencimiento.facturaVenta or vencimiento.prefactura
@@ -244,7 +237,7 @@ class ConsultaVencimientosCobros(Ventana):
                               facturaDeAbono = None)
         pclases.Auditoria.nuevo(cobro, self.usuario, __file__)
         import pagares_cobros
-        pp = pagares_cobros.PagaresCobros(pagare)
+        pp = pagares_cobros.PagaresCobros(pagare)  # @UnusedVariable
         self.buscar(None)   # Para recargar.
 
     def pagar_en_factura(self, requiem_for_syd_barret): 
@@ -252,10 +245,10 @@ class ConsultaVencimientosCobros(Ventana):
         Abre la factura correspondiente al vencimiento y con el 
         cobro ya añadido.
         """
-        model, iter = self.wids['tv_datos'].get_selection().get_selected()
-        id = model[iter][-1][model[iter][-1].index(":")+1:]
-        if model[iter][0] != "LOGIC":
-            vencimiento = pclases.VencimientoCobro.get(id)
+        model, itr = self.wids['tv_datos'].get_selection().get_selected()
+        ide = model[itr][-1][model[itr][-1].index(":")+1:]
+        if model[itr][0] != "LOGIC":
+            vencimiento = pclases.VencimientoCobro.get(ide)
             fecha = mx.DateTime.localtime() 
             importe = vencimiento.importe
             factura = vencimiento.facturaVenta or vencimiento.prefactura
@@ -275,7 +268,7 @@ class ConsultaVencimientosCobros(Ventana):
                                   facturaDeAbono = None)
             pclases.Auditoria.nuevo(cobro, self.usuario, __file__)
             import facturas_venta
-            fc = facturas_venta.FacturasVenta(factura)
+            fc = facturas_venta.FacturasVenta(factura)  # @UnusedVariable
             self.buscar(None)   # Para recargar.
      
     def colorear(self, tv):
@@ -299,16 +292,16 @@ class ConsultaVencimientosCobros(Ventana):
         pass
 
     def rellenar_tabla(self, items):
-    	"""
+        """
         Rellena el model con los items de la consulta
         """        
-    	model = self.wids['tv_datos'].get_model()
-    	model.clear()
+        model = self.wids['tv_datos'].get_model()
+        model.clear()
         total = 0
         vencido = 0
         hoy = mx.DateTime.localtime()
         por_fecha = {}
-    	for i in items:
+        for i in items:
             if not i[2]:  # i[2] = False cuando es vencimiento normal de la BD
                 if isinstance(i[1], pclases.FacturaDeAbono):
                     importe = i[1].calcular_importe_total()
@@ -572,7 +565,7 @@ class ConsultaVencimientosCobros(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        import informes
+        from ginn.formularios import reports as informes
         datos = []
         for i in self.resultado:
             if not i[2]:    # i[2] = False cuando es vencimiento normal de la BD

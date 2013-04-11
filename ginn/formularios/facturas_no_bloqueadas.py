@@ -188,17 +188,17 @@ class FacturasNoBloqueadas(Ventana):
         self.rellenar_albaranes_no_facturados()
 
     def abrir_factura(self, b):
-        model, iter = self.wids['tv_facturas'].get_selection().get_selected()
-        if iter != None:
-            self.abrir_factura_tv(self.wids['tv_facturas'], model.get_path(iter), None)
+        model, itr = self.wids['tv_facturas'].get_selection().get_selected()
+        if itr != None:
+            self.abrir_factura_tv(self.wids['tv_facturas'], model.get_path(itr), None)
 
     def abrir_albaran_tv(self, treeview, path, view_column):
         """
         Abre el albarán seleccionado con doble clic.
         """
         model = treeview.get_model()
-        iter = model.get_iter(path)
-        padre = model[iter].parent
+        itr = model.get_iter(path)
+        padre = model[itr].parent
         if padre != None:
             idalbaran = padre[-1]
         else:

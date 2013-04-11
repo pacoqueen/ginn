@@ -248,7 +248,7 @@ class ConsultaEntradasAlmacen(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        import informes
+        from ginn.formularios import reports as informes
         datos = []
         total = 0
         self.resultados.sort(self.por_fecha_ldc)

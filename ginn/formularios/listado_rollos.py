@@ -156,7 +156,7 @@ class ListadoRollos(Ventana):
         if datos != []:
             desc_producto = self.wids['e_descripcion'].get_text()
             listado_pdf = geninformes.listado_rollos(datos, desc_producto, fechaInforme)
-            import informes
+            from ginn.formularios import reports as informes
             informes.abrir_pdf(listado_pdf)
 
     def mostrar_hora_parte(self, tv):
@@ -166,17 +166,17 @@ class ListadoRollos(Ventana):
         """
         model, paths = tv.get_selection().get_selected_rows()
         for path in paths:
-            iter = model.get_iter(path)
-            if iter != None and model[iter][2] == "CLIC PARA VER":
-                articulo = pclases.Articulo.get(model[iter][-1])
+            itr = model.get_iter(path)
+            if itr != None and model[itr][2] == "CLIC PARA VER":
+                articulo = pclases.Articulo.get(model[itr][-1])
                 if articulo.parteDeProduccionID != None:
-                    model[iter][2] = utils.str_fecha(
+                    model[itr][2] = utils.str_fecha(
                         articulo.parteDeProduccion.fecha)
                 elif articulo.es_rolloC():
-                    model[iter][2] = utils.str_fechahora(
+                    model[itr][2] = utils.str_fechahora(
                         articulo.rolloC.fechahora)
                 else:
-                    model[iter][2] = "¡Sin parte de producción!"
+                    model[itr][2] = "¡Sin parte de producción!"
     
     def set_inicio(self,boton):
         temp = utils.mostrar_calendario(padre = self.wids['ventana'])
@@ -385,8 +385,8 @@ class ListadoRollos(Ventana):
                 utils.dialogo_info(titulo = 'NÚMERO DE ROLLO NO CAMBIADO',
                                 texto = 'Número no cambiado. Verifique que no existe ya un rollo con el número %d.' % numrollo)
             else:
-                iter = model.get_iter(path)
-                model.set_value(iter, 0, nuevo_numrollo)
+                itr = model.get_iter(path)
+                model.set_value(itr, 0, nuevo_numrollo)
 
     def refinar_resultados_busqueda(self, resultados):
         """
@@ -559,7 +559,7 @@ class ListadoRollos(Ventana):
                 rollos_defecto.append(model[path][0])
                 rollos_defecto.sort()
             rollos_defecto = ', '.join(rollos_defecto)
-            import informes
+            from ginn.formularios import reports as informes
             entrada, mostrar_marcado = self._dialogo_entrada(
                                         titulo = 'ETIQUETAS', 
                                         texto = "Introduzca los números de rollo, separados por coma, que desea etiquetar:",

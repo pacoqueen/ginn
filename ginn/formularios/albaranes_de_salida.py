@@ -2297,9 +2297,9 @@ class AlbaranesDeSalida(Ventana):
             return
         model, paths = self.wids['tv_ldvs'].get_selection().get_selected_rows()
         for path in paths:
-            iter = model.get_iter(path)
-            if model[iter].parent == None:  # Es una LDV
-                idldv = model[iter][-1]
+            itr = model.get_iter(path)
+            if model[itr].parent == None:  # Es una LDV
+                idldv = model[itr][-1]
                 try:
                     #ldv = pclases.LineaDeVenta.get(idldv)
                     ldv = pclases.getObjetoPUID(idldv)
@@ -2308,7 +2308,7 @@ class AlbaranesDeSalida(Ventana):
                 else:
                     self.desvincular_ldv_del_albaran(ldv)
             else:   # Es un artículo
-                idarticulo = model[iter][-1] 
+                idarticulo = model[itr][-1] 
                 #articulo = pclases.Articulo.get(idarticulo)
                 objeto = pclases.getObjetoPUID(idarticulo)
                 if isinstance(objeto, pclases.Pale):
@@ -2386,7 +2386,7 @@ class AlbaranesDeSalida(Ventana):
             if articulo.productoVenta == productoVenta and \
                len([ldv for ldv in albaran.lineasDeVenta 
                     if ldv.productoVenta == productoVenta]) == 1:    
-               # Si hay más líneas del mismo producto no elimino sus artículos.
+                #Si hay más líneas del mismo producto no elimino sus artículos.
                 self.desvincular_articulo(articulo)
         ajustar_existencias(ldv, 2 * ldv.cantidad)
             # Le paso el doble como cantidad anterior para que al restar quede en positivo e incremente la cantidad
@@ -3096,7 +3096,7 @@ class AlbaranesDeSalida(Ventana):
         composan indica si hay que abrir también el de Composan.
         NOTA: La variable "composan" actualmente se ignora.
         """
-        import informes
+        from ginn.formularios import reports as informes
         informes.abrir_pdf(nomarchivo)
 
     def preguntar_si_redistribuir(self):
@@ -3125,12 +3125,12 @@ class AlbaranesDeSalida(Ventana):
                         #       que termine de definir cómo voy a almacenar 
                         #       este tipo de productos de venta en la BD.
                         model = self.wids['tv_ldvs'].get_model()
-                        iter = model.get_iter_first()
-                        self.redistribuir_ldv(model.get_path(iter))
-                        iter = model.iter_next(iter)
-                        while iter != None:
-                            self.redistribuir_ldv(model.get_path(iter))
-                            iter = model.iter_next(iter)
+                        itr = model.get_iter_first()
+                        self.redistribuir_ldv(model.get_path(itr))
+                        itr = model.iter_next(itr)
+                        while itr != None:
+                            self.redistribuir_ldv(model.get_path(itr))
+                            itr = model.iter_next(itr)
                         self.actualizar_ventana()
                     break
 
@@ -3550,8 +3550,8 @@ class AlbaranesDeSalida(Ventana):
     
     def drop_srv(self, boton):
         if self.wids['tv_servicios'].get_selection().count_selected_rows() != 0:
-            model, iter = self.wids['tv_servicios'].get_selection().get_selected()
-            idservicio = model[iter][-1]
+            model, itr = self.wids['tv_servicios'].get_selection().get_selected()
+            idservicio = model[itr][-1]
             servicio = pclases.getObjetoPUID(idservicio)
             servicio.albaranSalida = None
             if (servicio.facturaVenta == None 
@@ -4372,7 +4372,7 @@ def imprimir_factura(factura, usuario = None, abrir = True, es_copia = False,
                                          totales, 
                                          es_copia = es_copia)
     if abrir:
-        import informes
+        from ginn.formularios import reports as informes
         informes.abrir_pdf(nomarchivo)
     return nomarchivo
     

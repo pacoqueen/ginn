@@ -78,7 +78,7 @@ class TrazabilidadArticulos(Ventana):
         """
         Vuelca toda la información de pantalla en bruto a un PDF.
         """
-        import informes, geninformes
+        from ginn.formularios import reports as informes, geninformes
         datos = "Código de trazabilidad: %s\n\n"%self.wids['e_num'].get_text()
         for desc, txt in (("Producto:\n", self.wids['txt_producto']), 
                           ("Lote/Partida:\n", self.wids['txt_lp']), 

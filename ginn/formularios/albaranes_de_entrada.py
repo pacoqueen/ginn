@@ -41,9 +41,9 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
-from framework import pclases
-from informes import geninformes
+import gtk, time
+from ginn.framework import pclases
+from ginn.informes import geninformes
 from formularios.utils import _float as float
 
 
@@ -655,27 +655,27 @@ class AlbaranesDeEntrada(Ventana):
         ldc = linea
         tv = self.wids['tv_ldvs']
         model = tv.get_model()
-        iter = model.get_iter_first()
-        while iter:
-            if model[iter][-1] == ldc.id:
+        itr = model.get_iter_first()
+        while itr:
+            if model[itr][-1] == ldc.id:
                 sel = tv.get_selection()
-                sel.select_iter(iter)
-                tv.scroll_to_cell(model.get_path(iter))
+                sel.select_iter(itr)
+                tv.scroll_to_cell(model.get_path(itr))
                 col = tv.get_column(3)
                 cell = col.get_cell_renderers()[0]
-                tv.set_cursor_on_cell(model.get_path(iter), 
+                tv.set_cursor_on_cell(model.get_path(itr), 
                                       col, 
                                       cell, 
                                       start_editing = True)
                 break
             else:
-                iter = model.iter_next(iter)
+                itr = model.iter_next(itr)
 
     def drop_producto(self, widget):
         if self.wids['tv_ldvs'].get_selection().count_selected_rows() != 1: 
             return
-        model, iter = self.wids['tv_ldvs'].get_selection().get_selected()
-        idlinea = model[iter][-1]
+        model, itr = self.wids['tv_ldvs'].get_selection().get_selected()
+        idlinea = model[itr][-1]
         try:
             linea = pclases.LineaDeCompra.get(idlinea)
         except pclases.SQLObjectNotFound:
@@ -964,7 +964,7 @@ class AlbaranesDeEntrada(Ventana):
         Crea un impreso del albarán
         """
         self.guardar(None)  # Si se ha olvidado guardar, guardo yo.
-        import informes
+        from ginn.formularios import reports
         albaran = self.objeto
         if albaran.proveedor != None:
             proveedor = albaran.proveedor.nombre
@@ -990,7 +990,7 @@ class AlbaranesDeEntrada(Ventana):
                                               padre = self.wids['ventana'])
         if observaciones == None:
             return
-        informes.abrir_pdf(geninformes.albaranEntrada(general, lineas, observaciones))
+        reports.abrir_pdf(geninformes.albaranEntrada(general, lineas, observaciones))
 
 
 if __name__=='__main__':

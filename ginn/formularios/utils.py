@@ -519,7 +519,7 @@ def dialogo_combo(titulo='Seleccione una opción',
         else:                                                           #
             res[0] = False                                              #
     #-------------------------------------------------------------------#
-    def pasar_foco(completion, model, iter):                            #
+    def pasar_foco(completion, model, itr):                            #
         de.action_area.get_children()[1].grab_focus()                   #
     #-------------------------------------------------------------------#
     de.connect("response", respuesta_ok_cancel_combo, res)
@@ -528,13 +528,13 @@ def dialogo_combo(titulo='Seleccione una opción',
     rellenar_lista(combo, ops)
     if valor_por_defecto != None and isinstance(valor_por_defecto, int) and valor_por_defecto in [o[0] for o in ops]:
         model = combo.get_model()
-        iter = model.get_iter_first()
-        while (iter != None and 
-               model[model.get_path(iter)][0] != valor_por_defecto):
-            iter = model.iter_next(iter)
-        combo.set_active_iter(iter)
-    input = combo.child.get_completion()
-    input.connect("match_selected", pasar_foco)
+        itr = model.get_iter_first()
+        while (itr != None and 
+               model[model.get_path(itr)][0] != valor_por_defecto):
+            itr = model.iter_next(itr)
+        combo.set_active_iter(itr)
+    input_combo = combo.child.get_completion()
+    input_combo.connect("match_selected", pasar_foco)
     hbox = gtk.HBox(spacing = 5)
     icono = gtk.Image()
     icono.set_from_stock(gtk.STOCK_DIALOG_QUESTION, gtk.ICON_SIZE_DIALOG)
@@ -648,7 +648,7 @@ def dialogo_entrada_combo(titulo='Seleccione una opción',
             res[0] = False
             res[1] = None
     #-------------------------------------------------------------------#
-    def pasar_foco(completion, model, iter):                            #
+    def pasar_foco(completion, model, itr):                            #
         de.action_area.get_children()[1].grab_focus()                   #
     #-------------------------------------------------------------------#
     de.connect("response", respuesta_ok_cancel_combo, res)
@@ -659,11 +659,11 @@ def dialogo_entrada_combo(titulo='Seleccione una opción',
        and isinstance(valor_por_defecto, int) \
        and valor_por_defecto in [o[0] for o in ops]:
         model = combo.get_model()
-        iter = model.get_iter_first()
-        while iter != None \
-              and model[model.get_path(iter)][0] != valor_por_defecto:
-            iter = model.iter_next()
-        combo.set_active_iter(iter)
+        itr = model.get_iter_first()
+        while itr != None \
+              and model[model.get_path(itr)][0] != valor_por_defecto:
+            itr = model.iter_next()
+        combo.set_active_iter(itr)
     input = combo.child.get_completion()
     input.connect("match_selected", pasar_foco)
     hbox = gtk.HBox(spacing = 5)
@@ -997,19 +997,19 @@ def dialogo_resultado(filas,
         # De otra forma se queda con el tamaño mínimo posible de la ventana al 
         # intentar maximizar.
     if not defecto:
-        iter = tabla.get_model().get_iter_first()
-        if iter:
-            tabla.get_selection().select_iter(iter)
+        itr = tabla.get_model().get_iter_first()
+        if itr:
+            tabla.get_selection().select_iter(itr)
             #tabla.grab_focus()
     else:
         model = tabla.get_model()
         for indice_fila in defecto[::-1]:
             try:
-                iter = model[indice_fila].iter
+                itr = model[indice_fila].iter
             except:
-                iter = None
-            if iter:
-                tabla.get_selection().select_iter(iter)
+                itr = None
+            if itr:
+                tabla.get_selection().select_iter(itr)
     de.get_children()[-1].get_children()[-1].get_children()[1].grab_focus()
     ## ------------ Ejecuto el diálogo, lo destruyo y devuelvo el resultado:
     response = de.run()
@@ -1180,10 +1180,10 @@ def combo_set_from_db(combo_widget, db_item, forced_value = None):
     encuentre el db_item en el model. 
     """
     list_model = combo_widget.get_model()
-    iter = list_model.get_iter_first()
-    while iter != None and list_model.get_value(iter, 0) != db_item:
-        iter = list_model.iter_next(iter)
-    if iter == None: # No estaba el db_item en el model.
+    itr = list_model.get_iter_first()
+    while itr != None and list_model.get_value(itr, 0) != db_item:
+        itr = list_model.iter_next(itr)
+    if itr == None: # No estaba el db_item en el model.
         if not forced_value:
             combo_widget.set_active(-1)     # Por si es un comboBoxEntry
             try:
@@ -1198,7 +1198,7 @@ def combo_set_from_db(combo_widget, db_item, forced_value = None):
             except AttributeError:  # No es un comboBoxEntry
                 pass
     else:
-        combo_widget.set_active_iter(iter)
+        combo_widget.set_active_iter(itr)
 
 def combo_get_value(widget):
     """
@@ -1209,10 +1209,10 @@ def combo_get_value(widget):
     activo, devuelve None.
     """
     list_model = widget.get_model()
-    iter = widget.get_active_iter()
+    itr = widget.get_active_iter()
     try:
-        return list_model.get_value(iter, 0)
-    except TypeError:  # iter es None en vez de un GtkTreeIter
+        return list_model.get_value(itr, 0)
+    except TypeError:  # itr es None en vez de un GtkTreeIter
         return None
 
 def buscar_indice_texto(combo, texto):
@@ -1226,26 +1226,26 @@ def buscar_indice_texto(combo, texto):
     de ellos.
     """
     m = combo.get_model()
-    iter = m.get_iter_first()
+    itr = m.get_iter_first()
     i=0
-    while iter!=None and m[i][1]!=texto:
+    while itr!=None and m[i][1]!=texto:
         i+=1
-        iter = m.iter_next(iter)
-    if iter==None: return -1
+        itr = m.iter_next(itr)
+    if itr==None: return -1
     else: return i
 
-#def redondear_flotante_en_cell_cuando_sea_posible(column, cell, model, iter, i, numdecimales = 2):
+#def redondear_flotante_en_cell_cuando_sea_posible(column, cell, model, itr, i, numdecimales = 2):
 def redondear_flotante_en_cell_cuando_sea_posible(column, 
                                                   cell, 
                                                   model, 
-                                                  iter, 
+                                                  itr, 
                                                   data):
     if isinstance(data, int):
         i = data
         numdecimales = 3
     else:
         i, numdecimales = data
-    contenido = model[iter][i]
+    contenido = model[itr][i]
     if isinstance(contenido, float):
         expresion = "%%.%df" % numdecimales
         numredondo = float2str(expresion % contenido, numdecimales)
@@ -1828,7 +1828,7 @@ def verificar_source(nombre_archivo):
     nuevo md5.
     """
     if not md5_iguales(nombre_archivo):
-        descargar(source)
+        descargar(nombre_archivo)
 
 def ejecutar_interprete(source, *arguments, **keywords):
     """
@@ -2483,7 +2483,7 @@ def enviar_correoe(remitente,
         try:
             if usuario and password:
                 smtp.login(usuario, password)
-            response = smtp.sendmail(remitente, destinos, msg.as_string())
+            response = smtp.sendmail(remitente, destinos, msg.as_string())  # @UnusedVariable
             ok = True
         except smtplib.SMTPAuthenticationError, msg:
             dialogo_info(titulo = "ERROR AUTENTICACIÓN", 
@@ -2899,7 +2899,6 @@ def buscar_producto_general(padre = None,
             if res == []:
                 try:
                     sys.path.append(os.path.join("..", "utils"))
-                    import spelling
                     res = sugerir_alternativa(a_buscar, 
                                               padre, 
                                               mostrar_precios, 
@@ -2928,7 +2927,7 @@ def sugerir_alternativa(txt, padre, mostrar_precios, incluir_sin_iva):
     Devuelve un producto, si se optó por la alternativa; una lista vacía si 
     se rechazó y None si no se encontró nada parecido.
     """
-    import spelling
+    from ginn.utils import spelling
     palabras = []
     try:
         from framework import pclases
@@ -4242,9 +4241,9 @@ def cambiar_por_combo(tv, numcol, opts, clase, campo, ventana_padre = None):
     «ventana_padre» servirá como ventana padre para la ventana modal de los 
     posibles avisos de error al guardar los valores seleccionados en el combo.
     """
-    import sys, os
+    import sys
     sys.path.append(os.path.join("..", "framework"))
-    from pclases import getObjetoPUID, SQLObjectNotFound
+    from ginn.framework.pclases import getObjetoPUID, SQLObjectNotFound
     # Elimino columna actual
     column = tv.get_column(numcol)
     column.clear()
@@ -4263,12 +4262,12 @@ def cambiar_por_combo(tv, numcol, opts, clase, campo, ventana_padre = None):
         # Es lento, pero no encuentro otra cosa:
         idct = None
         for i in xrange(len(model_combo)):
-            texto, id = model_combo[i]
+            texto, ide = model_combo[i]
             if texto == text:
-                idct = id
+                idct = ide
                 break
         if idct == None:
-            utils.dialogo_info(titulo = "ERROR COMBO", 
+            dialogo_info(titulo = "ERROR COMBO", 
                 texto = "Ocurrió un error inesperado guardando el valor.\n\n"
                         "Contacte con los desarrolladores de la aplicación\n"
                         "(Vea el diálogo «Acerca de...» desde el menú "

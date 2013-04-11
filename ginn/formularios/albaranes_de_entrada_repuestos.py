@@ -540,8 +540,8 @@ class AlbaranesDeEntradaRepuestos(Ventana):
 
     def drop_producto(self, widget):
         if self.wids['tv_ldvs'].get_selection().count_selected_rows() != 1: return
-        model, iter = self.wids['tv_ldvs'].get_selection().get_selected()
-        idlinea = model[iter][-1]
+        model, itr = self.wids['tv_ldvs'].get_selection().get_selected()
+        idlinea = model[itr][-1]
         try:
             linea = pclases.LineaDeCompra.get(idlinea)
         except pclases.SQLObjectNotFound:
@@ -835,7 +835,7 @@ class AlbaranesDeEntradaRepuestos(Ventana):
         Crea un impreso del albarán
         """
         self.guardar(None)  # Si se ha olvidado guardar, guardo yo.
-        import informes
+        from ginn.formularios import reports as informes
         albaran = self.objeto
         if albaran.proveedor != None:
             proveedor = albaran.proveedor.nombre

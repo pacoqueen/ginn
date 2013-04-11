@@ -1167,7 +1167,7 @@ class PedidosDeCompra(Ventana):
         OJO: Sólo imprime aquellas líneas pendientes de recibir.
         """
         self.guardar(None)  # Si se ha olvidado guardar, guardo yo.
-        import informes
+        from ginn.formularios import reports as informes
         pedido = self.objeto
         pednum = pedido.numpedido
         if pedido.proveedor == None:

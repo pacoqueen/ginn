@@ -110,7 +110,7 @@ class BalasCable(Ventana):
         from listado_balas import preparar_datos_etiquetas_balas_cable
         data = preparar_datos_etiquetas_balas_cable(balas)
         if data:
-            import informes
+            from ginn.formularios import reports as informes
             informes.abrir_pdf(geninformes.etiquetasBalasCableEtiquetadora(data))
 
     def borrar_balas(self, balas):

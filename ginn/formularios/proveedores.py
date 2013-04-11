@@ -46,24 +46,14 @@
 ##   sobra nada. Cada campo es para una cosa diferente.
 ###################################################################
 import os
-from ventana import Ventana
-import utils
+from ginn.formularios.ventana import Ventana
+from ginn.formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
-try:
-    from framework import pclases
-except ImportError:
-    import sys
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
-from informes import abrir_pdf
+import gtk
+from ginn.framework import pclases
+from ginn.informes import geninformes
+from ginn.formularios.reports import abrir_pdf
 
 
 def imprimir_listado(boton):
@@ -172,9 +162,9 @@ class Proveedores(Ventana):
                     except ValueError:
                         res = 0.21
         except AttributeError:
-            buffer = widget.get_buffer()
-            res = buffer.get_text(buffer.get_start_iter(), 
-                                  buffer.get_end_iter())
+            buff = widget.get_buffer()
+            res = buff.get_text(buff.get_start_iter(), 
+                                  buff.get_end_iter())
         return res
 
     def es_diferente(self):
@@ -474,7 +464,7 @@ class Proveedores(Ventana):
                                          texto = "Introduzca nombre o CIF del proveedor:", 
                                          padre = self.wids['ventana']) 
         if a_buscar != None:
-            criterio = sqlobject.OR(pclases.Proveedor.q.nombre.contains(a_buscar),
+            criterio = pclases.OR(pclases.Proveedor.q.nombre.contains(a_buscar),
             pclases.Proveedor.q.cif.contains(a_buscar))
             resultados = pclases.Proveedor.select(criterio) 
             if resultados.count() > 1:
@@ -631,7 +621,7 @@ class Proveedores(Ventana):
         if tipo == 'email':
             if os.name == 'nt':
                 try:
-                    os.startfile('mailto:%s' % uri) # if pywin32 is installed we open
+                    os.startfile('mailto:%s' % uri) # if pywin32 is installed we open @UndefinedVariable
                 except:
                     pass
             else:
@@ -639,9 +629,9 @@ class Proveedores(Ventana):
                                    'Funcionalidad no implementada.\nDebe lanzar manualmente su cliente de correo.\nCorreo-e seleccionado: %s' % (uri), 
                                    padre = self.wids['ventana'])
         elif tipo == 'web':
-            if os.name == 'nt':
-                try:
-                    os.startfile(uri)
+            if os.name == 'nt': 
+                try:    # startfile solo disponible para MS-Windows.
+                    os.startfile(uri)  # @UndefinedVariable
                 except:
                     pass
             else:

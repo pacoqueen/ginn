@@ -352,14 +352,14 @@ class FacturasVenta(Ventana):
                 # Me muevo y selecciono la última LDV introducida.
                 tv = self.wids['tv_ldvs']
                 model = tv.get_model()
-                iter = model.get_iter_first()
-                while iter:
-                    if model[iter][-1] == ldv.id:
-                        tv.scroll_to_cell(model.get_path(iter))
+                itr = model.get_iter_first()
+                while itr:
+                    if model[itr][-1] == ldv.id:
+                        tv.scroll_to_cell(model.get_path(itr))
                         break
                     else:
-                        iter = model.iter_next(iter)
-                tv.get_selection().select_iter(iter)
+                        itr = model.iter_next(itr)
+                tv.get_selection().select_iter(itr)
 
     def cambiar_columna_busqueda(self, treeviewcolumn): 
         cols = self.wids['tv_srcs'].get_columns()
@@ -1742,9 +1742,9 @@ class FacturasVenta(Ventana):
         Elimina de la factura la LDV seleccionada en
         la tabla "tv_ldvs".
         """
-        model, iter = self.wids['tv_ldvs'].get_selection().get_selected()
-        if iter == None: return
-        idldv = model[iter][-1]
+        model, itr = self.wids['tv_ldvs'].get_selection().get_selected()
+        if itr == None: return
+        idldv = model[itr][-1]
         ldv = pclases.LineaDeVenta.get(idldv)
         ldv.facturaVenta = None
         if ldv.albaranSalidaID == None:
@@ -1768,13 +1768,13 @@ class FacturasVenta(Ventana):
         if ldv != None:
             tv = self.wids['tv_ldvs']
             model = tv.get_model()
-            iter = model.get_iter_first()
-            while iter:
-                if model[iter][-1] == ldv.id:
-                    tv.scroll_to_cell(model.get_path(iter))
+            itr = model.get_iter_first()
+            while itr:
+                if model[itr][-1] == ldv.id:
+                    tv.scroll_to_cell(model.get_path(itr))
                     break
                 else:
-                    iter = model.iter_next(iter)
+                    itr = model.iter_next(itr)
 
     def seleccionar_cantidad(self, producto):
         """
@@ -2041,8 +2041,8 @@ class FacturasVenta(Ventana):
         
     def drop_srv(self, boton):
         if self.wids['tv_servicios'].get_selection().count_selected_rows() != 0:
-            model, iter = self.wids['tv_servicios'].get_selection().get_selected()
-            idservicio = model[iter][-1]
+            model, itr = self.wids['tv_servicios'].get_selection().get_selected()
+            idservicio = model[itr][-1]
             servicio = pclases.Servicio.get(idservicio)
             servicio.facturaVenta = None
             if servicio.albaranSalida == None:
@@ -2089,9 +2089,9 @@ class FacturasVenta(Ventana):
         Me cargo los vencimientos (estimado y no) que estén
         en la línea seleccionada. El pago no lo toco.
         """
-        model, iter = self.wids['tv_vencimientos'].get_selection().get_selected()
-        if iter == None: return
-        ids = model[iter][-1]
+        model, itr = self.wids['tv_vencimientos'].get_selection().get_selected()
+        if itr == None: return
+        ids = model[itr][-1]
         ids = [int(i) for i in ids.split(',')]
         idvto = ids[0]
         idest = ids[1]
@@ -3015,7 +3015,7 @@ class FacturasVenta(Ventana):
         """
         Muestra la factura generada en PDF.
         """
-        import informes
+        from ginn.formularios import reports as informes
         informes.abrir_pdf(nomarchivo)
 
     def buscar_abonos(self, w):
@@ -3063,9 +3063,9 @@ class FacturasVenta(Ventana):
         self.rellenar_totales()
 
     def drop_abono(self, b):
-        model, iter = self.wids['tv_abonos'].get_selection().get_selected()
-        if iter != None:
-            idpa = model[iter][-1]
+        model, itr = self.wids['tv_abonos'].get_selection().get_selected()
+        if itr != None:
+            idpa = model[itr][-1]
             pa = pclases.PagoDeAbono.get(idpa)
             try:
                 pa.destroy(usuario = self.usuario, ventana = __file__)

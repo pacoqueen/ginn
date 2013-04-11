@@ -44,16 +44,10 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk, time 
 from framework import pclases
-import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
-    
+import sys
+
 
 class ConsultaAlbaranesPorFacturar(Ventana):
     inicio = None
@@ -110,10 +104,8 @@ class ConsultaAlbaranesPorFacturar(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        import sys, os
-        sys.path.append(os.path.join("..", "informes"))
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from ginn.informes.treeview2csv import treeview2csv
+        from ginn.formularios.reports import abrir_csv
         if boton.name == "b_exportar_as": 
             tv = "tv_salida"
         elif boton.name == "b_exportar_ae": 
@@ -132,45 +124,45 @@ class ConsultaAlbaranesPorFacturar(Ventana):
         self.wids['ventana'].window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
         while gtk.events_pending(): gtk.main_iteration(False)
         model = tv.get_model()
-        id = model[path][-1]
-        tipo, id = id.split(":")
-        id = int(id)
+        ide = model[path][-1]
+        tipo, ide = ide.split(":")
+        ide = int(ide)
         if tipo == "AE":
-            albaran = pclases.AlbaranEntrada.get(id)
-            import albaranes_de_entrada
+            albaran = pclases.AlbaranEntrada.get(ide)
+            from ginn.formularios import albaranes_de_entrada
             v = albaranes_de_entrada.AlbaranesDeEntrada(albaran, 
                                                         usuario = self.usuario)
         elif tipo == "C":
-            comision = pclases.Comision.get(id)
+            comision = pclases.Comision.get(ide)
             albaran = comision.albaranSalida
             if albaran != None:
-                import albaranes_de_salida
+                from ginn.formularios import albaranes_de_salida
                 v = albaranes_de_salida.AlbaranesDeSalida(albaran, 
                                                           usuario=self.usuario)
         elif tipo == "T":
-            transporte = pclases.Transporte.get(id)
+            transporte = pclases.TransporteACuenta.get(ide)
             albaran = transporte.albaranSalida
             if albaran != None:
-                import albaranes_de_salida
+                from ginn.formularios import albaranes_de_salida
                 v = albaranes_de_salida.AlbaranesDeSalida(albaran, 
                                                           usuario=self.usuario)
         elif tipo == "LDC":
-            ldc = pclases.LineaDeCompra.get(id)
+            ldc = pclases.LineaDeCompra.get(ide)
             albaran = ldc.albaranEntrada
             if albaran != None:
-                import albaranes_de_entrada
+                from ginn.formularios import albaranes_de_entrada
                 v = albaranes_de_entrada.AlbaranesDeEntrada(albaran, 
                                                         usuario = self.usuario)
         elif tipo == "AS":
-            albaran = pclases.AlbaranSalida.get(id)
-            import albaranes_de_salida
+            albaran = pclases.AlbaranSalida.get(ide)
+            from ginn.formularios import albaranes_de_salida
             v = albaranes_de_salida.AlbaranesDeSalida(albaran, 
                                                       usuario = self.usuario)
         elif tipo == "LDV": 
-            ldv = pclases.LineaDeVenta.get(id)
+            ldv = pclases.LineaDeVenta.get(ide)
             albaran = ldv.albaranSalida
             if albaran != None:
-                import albaranes_de_salida
+                from ginn.formularios import albaranes_de_salida
                 v = albaranes_de_salida.AlbaranesDeSalida(albaran, 
                                                           usuario=self.usuario)
         self.wids['ventana'].window.set_cursor(None)
@@ -179,21 +171,21 @@ class ConsultaAlbaranesPorFacturar(Ventana):
         pass
 
     def rellenar_tabla(self, items, comisiones, transportes):
-    	"""
+        """
         Rellena el model con los items de la consulta
         """        
-    	models = self.wids['tv_salida'].get_model()
-    	models.clear()
-    	modele = self.wids['tv_entrada'].get_model()
-    	modele.clear()
-    	modelp = self.wids['tv_producto'].get_model()
-    	modelp.clear()
+        models = self.wids['tv_salida'].get_model()
+        models.clear()
+        modele = self.wids['tv_entrada'].get_model()
+        modele.clear()
+        modelp = self.wids['tv_producto'].get_model()
+        modelp.clear()
         total_entrada = total_salida = 0.0
         euros_entrada = euros_salida = 0.0
         por_producto = {}   
             # Diccionario de productos cuyos valores son 
             # una lista [entradas, salidas]
-    	for i in items:
+        for i in items:
             try:
                 if i.cliente == None:
                     cliente = '-'
@@ -333,7 +325,7 @@ class ConsultaAlbaranesPorFacturar(Ventana):
         if not selfinicio:
             albaranesentrada = pclases.AlbaranEntrada.select(pclases.AlbaranEntrada.q.fecha <= selffin, orderBy = 'fecha')
         else:
-            albaranesentrada = pclases.AlbaranEntrada.select(sqlobject.AND(pclases.AlbaranEntrada.q.fecha >= selfinicio,
+            albaranesentrada = pclases.AlbaranEntrada.select(pclases.AND(pclases.AlbaranEntrada.q.fecha >= selfinicio,
                                                                    pclases.AlbaranEntrada.q.fecha <= selffin), 
                                                      orderBy='fecha')
         for proveedor in pclases.Proveedor.select():
@@ -354,7 +346,7 @@ class ConsultaAlbaranesPorFacturar(Ventana):
                                                                  pclases.AlbaranSalida.q.facturable == True), 
                                                      orderBy = 'fecha')
         else:
-            albaranessalida = pclases.AlbaranSalida.select(sqlobject.AND(pclases.AlbaranSalida.q.fecha >= selfinicio,
+            albaranessalida = pclases.AlbaranSalida.select(pclases.AND(pclases.AlbaranSalida.q.fecha >= selfinicio,
                                                                    pclases.AlbaranSalida.q.fecha <= selffin, 
                                                                    pclases.AlbaranSalida.q.facturable == True), 
                                                      orderBy='fecha')
@@ -376,10 +368,8 @@ class ConsultaAlbaranesPorFacturar(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        import sys, os
-        sys.path.append(os.path.join("..", "informes"))
-        from treeview2pdf import treeview2pdf
-        from informes import abrir_pdf
+        from ginn.informes.treeview2pdf import treeview2pdf
+        from ginn.formularios.reports import abrir_pdf
         if not self.inicio:
             fechaInforme = 'Hasta '+utils.str_fecha(time.strptime(self.fin,"%Y/%m/%d"))
         else:

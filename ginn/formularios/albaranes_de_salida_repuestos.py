@@ -485,9 +485,9 @@ class AlbaranesDeSalidaRepuestos(Ventana):
                          padre = self.wids['ventana'])):
             model, paths = self.wids['tv_ldvs'].get_selection().get_selected_rows()
             for path in paths:
-                iter = model.get_iter(path)
-                if model[iter].parent == None:  # Es una LDV
-                    idldv = model[iter][-1]
+                itr = model.get_iter(path)
+                if model[itr].parent == None:  # Es una LDV
+                    idldv = model[itr][-1]
                     try:
                         ldv = pclases.LineaDeVenta.get(idldv)
                     except pclases.SQLObjectNotFound:   # Ya se ha borrado.

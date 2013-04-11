@@ -140,7 +140,7 @@ class TarifasDePrecios(Ventana):
         """
         Imprime la tarifa en pantalla.
         """
-        import informes
+        from ginn.formularios import reports as informes
         datos = []
         model = self.wids['tabla_productos'].get_model()
         for iter in model: 

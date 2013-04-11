@@ -623,7 +623,7 @@ class Empleados(Ventana):
         Muestra la vista previa de un pdf con el listado de empleados
         junto al código asociado a cada uno
         """
-        import informes
+        from ginn.formularios import reports as informes
         informes.abrir_pdf(geninformes.empleados())
 
     def abrir_ausencias(self, boton):

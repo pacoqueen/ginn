@@ -2181,7 +2181,7 @@ class Prefacturas(Ventana):
         """
         Muestra la factura generada en PDF.
         """
-        import informes
+        from ginn.formularios import reports as informes
         informes.abrir_pdf(nomarchivo)
 
     def buscar_abonos(self, w):

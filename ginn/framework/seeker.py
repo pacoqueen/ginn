@@ -54,11 +54,12 @@ I won't get to get what I'm after
 
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade
+import gtk
 import sys, os, pclases
 sys.path.append(os.path.join("..", "formularios"))
-import utils, mx.DateTime
-from ventana import Ventana
+from ginn.formularios import utils
+import mx.DateTime
+from ginn.formularios.ventana import Ventana
 
 class Resultado:
     """
@@ -339,8 +340,8 @@ class VentanaGenerica(Ventana):
             try:
                 valor = widget.get_text()
             except AttributeError:      # Puede ser un TextView
-                buffer = widget.get_buffer()
-                valor = buffer.get_text(buffer.get_start_iter(), buffer.get_end_iter())
+                buff = widget.get_buffer()
+                valor = buff.get_text(buff.get_start_iter(), buff.get_end_iter())
         elif isinstance(col, pclases.SOIntCol):
             if isinstance(widget, gtk.SpinButton):
                 valor = widget.get_value()

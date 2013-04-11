@@ -830,14 +830,14 @@ class Usuarios(Ventana):
                 padre = self.wids['ventana'])
 
     def add_ventana_a_modulo(self, b):
-        model, iter = self.wids['tv_modulos'].get_selection().get_selected()
-        if iter == None or model[iter].parent != None:
+        model, itr = self.wids['tv_modulos'].get_selection().get_selected()
+        if itr == None or model[itr].parent != None:
             utils.dialogo_info(titulo = 'SELECCIONE MÓDULO', texto = 'Debe seleccionar un módulo al que añadir la ventana.')
             return
         idventana = utils.combo_get_value(self.wids['cb_add_ventana'])
         if idventana == None:
             utils.dialogo_info(titulo = 'SELECCIONE VENTANA', texto = 'Debe seleccionar una ventana para añadir al módulo.')
-        idmodulo = model[iter][-1]
+        idmodulo = model[itr][-1]
         modulo = pclases.Modulo.get(idmodulo)
         ventana = pclases.Ventana.get(idventana)
         ventana.modulo = modulo
@@ -854,16 +854,16 @@ class Usuarios(Ventana):
             self.rellenar_tab_modulos()
         
     def drop_modulo(self, b):
-        model, iter = self.wids['tv_modulos'].get_selection().get_selected()
-        if iter != None:
-            if model[iter].parent == None:
-                idmodulo = model[iter][-1]
+        model, itr = self.wids['tv_modulos'].get_selection().get_selected()
+        if itr != None:
+            if model[itr].parent == None:
+                idmodulo = model[itr][-1]
                 modulo = pclases.Modulo.get(idmodulo)
                 for v in modulo.ventanas:
                     v.modulo = None
                 modulo.destroy(ventana = __file__)
             else:
-                idventana = model[iter][-1]
+                idventana = model[itr][-1]
                 ventana = pclases.Ventana.get(idventana)
                 ventana.modulo = None
             self.rellenar_tab_modulos()
@@ -880,9 +880,9 @@ class Usuarios(Ventana):
             self.rellenar_tab_modulos()
         
     def drop_ventana(self, b):
-        model, iter = self.wids['tv_ventanas'].get_selection().get_selected()
-        if iter != None:
-            idventana = model[iter][-1]
+        model, itr = self.wids['tv_ventanas'].get_selection().get_selected()
+        if itr != None:
+            idventana = model[itr][-1]
             ventana = pclases.Ventana.get(idventana)
             ventana.modulo = None
             for p in ventana.permisos:

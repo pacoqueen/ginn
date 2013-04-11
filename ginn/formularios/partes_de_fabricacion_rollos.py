@@ -195,7 +195,7 @@ def imprimir_etiqueta_de_rollo_defectuoso(rollo):
     Imprime una etiqueta de rollo defectuoso correspondiente 
     al objeto rollo/rolloDefectuoso recibido.
     """
-    import informes
+    from ginn.formularios import reports as informes
     producto = rollo.productoVenta
     if isinstance(rollo, pclases.RolloDefectuoso):
         elemento = {'descripcion': producto.nombre,
@@ -2757,7 +2757,7 @@ class PartesDeFabricacionRollos(Ventana):
     
     def imprimir(self, boton):
         self.guardar(None)
-        import informes
+        from ginn.formularios import reports as informes
         parte = self.objeto
         ws = ('e_fecha', 'e_grsm2', 'sp_merma', 'e_partida', 'e_articulo', 
               'e_ancho', 'e_long_rollo', 'e_hora_ini', 'e_hora_fin', 
@@ -2849,7 +2849,7 @@ class PartesDeFabricacionRollos(Ventana):
             rollos_defecto.append(model[path][1])
             rollos_defecto.sort()
         rollos_defecto = ', '.join(rollos_defecto)
-        import informes
+        from ginn.formularios import reports as informes
         entrada, mostrar_marcado = self._dialogo_entrada(
             titulo = 'ETIQUETAS', 
             texto = "Introduzca el número de rollo o el rango (usando '-') "
@@ -3563,7 +3563,7 @@ def imprimir_etiqueta(articulo, marcado_ce, ventana_parte, defectuoso = False):
     else:
         if (articulo.rollo.numrollo > ventana_parte.ultima_etiqueta 
             or ventana_parte.ultima_etiqueta == None):
-            import informes
+            from ginn.formularios import reports as informes
             rollos = []
             producto = articulo.productoVenta
             try:
