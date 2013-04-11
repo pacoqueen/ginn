@@ -521,10 +521,8 @@ class ResultadosFluidez(Ventana):
         """
         "Vuerca-vuerca" el TreeView en un PDF.
         """
-        import sys, os, mx, mx.DateTime
-        sys.path.append(os.path.join("..", "informes"))
-        from treeview2pdf import treeview2pdf
-        from informes import abrir_pdf
+        from ginn.informes.treeview2pdf import treeview2pdf
+        from ginn.formularios.reports import abrir_pdf
         strfecha = utils.str_fecha(mx.DateTime.localtime())
         tv = self.wids['tv_pruebas']
         desc_prod = self.wids['e_nombre'].get_text()
@@ -537,10 +535,8 @@ class ResultadosFluidez(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        import sys, os
-        sys.path.append(os.path.join("..", "informes"))
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from ginn.informes.treeview2csv import treeview2csv
+        from ginn.formularios.reports import abrir_csv
         tv = self.wids['tv_pruebas']
         abrir_csv(treeview2csv(tv))
 

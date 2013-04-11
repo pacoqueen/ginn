@@ -39,12 +39,8 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, time, sqlobject, os
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append(os.path.join('..','informes'))
-    import geninformes
+import geninformes
+
 
 class PendientesRecibir(Ventana):
     

@@ -91,10 +91,8 @@ class ConsultaVentasPorProducto(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        import sys, os
-        sys.path.append(os.path.join("..", "informes"))
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from ginn.informes.treeview2csv import treeview2csv
+        from ginn.formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
 
@@ -281,8 +279,8 @@ class ConsultaVentasPorProducto(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe.
         """
-        from treeview2pdf import treeview2pdf
-        from informes import abrir_pdf
+        from ginn.informes.treeview2pdf import treeview2pdf
+        from ginn.formularios.reports import abrir_pdf
         strfecha = "%s - %s" % (self.wids['e_fechainicio'].get_text(), self.wids['e_fechafin'].get_text())
         resp = utils.dialogo(titulo = "¿IMPRIMIR DESGLOSE?", 
                              texto = "Puede imprimir únicamente los productos o toda la información de la ventana.\n¿Desea imprimir toda la información desglosada?", 

@@ -41,12 +41,7 @@ pygtk.require('2.0')
 import gtk, gtk.glade, time
 from framework import pclases
 import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
+import geninformes
 from consulta_ventas_por_producto import convertir_a_listview    
 
 class ConsultaCompras(Ventana):
@@ -135,44 +130,44 @@ class ConsultaCompras(Ventana):
         puid = tv.get_model()[path][-1]
         o = pclases.getObjetoPUID(puid)
         if isinstance(o, pclases.FacturaCompra):
-            from facturas_compra import FacturasDeEntrada as NewW
+            from ginn.formularios.facturas_compra import FacturasDeEntrada as NewW
         elif isinstance(o, pclases.Proveedor):
-            from proveedores import Proveedores as NewW
+            from ginn.formularios.proveedores import Proveedores as NewW
         elif isinstance(o, pclases.AlbaranEntrada):
-            from albaranes_de_entrada import AlbaranesDeEntrada as NewW
+            from ginn.formularios.albaranes_de_entrada import AlbaranesDeEntrada as NewW
         elif isinstance(o, pclases.LineaDeCompra):
             if o.facturaCompra:
-                from facturas_compra import FacturasDeEntrada as NewW
+                from ginn.formularios.facturas_compra import FacturasDeEntrada as NewW
                 o = o.facturaCompra
             elif o.albaranEntrada:
-                from albaranes_de_entrada import AlbaranesDeEntrada as NewW
+                from ginn.formularios.albaranes_de_entrada import AlbaranesDeEntrada as NewW
                 o = o.albaranEntrada
             else:
                 o = None
         elif isinstance(o, pclases.TransporteACuenta):
             if o.proveedor:
-                from proveedores import Proveedor as NewW
+                from ginn.formularios.proveedores import Proveedores as NewW
                 o = o.proveedor
             else:
-                from albaranes_de_salida import AlbaranesDeSalida as NewW
+                from ginn.formularios.albaranes_de_salida import AlbaranesDeSalida as NewW
                 o = o.albaranSalida
         elif isinstance(o, pclases.ServicioTomado):
             if o.facturaCompra:
-                from facturas_compra import FacturasDeEntrada as NewW
+                from ginn.formularios.facturas_compra import FacturasDeEntrada as NewW
                 o = o.facturaCompra
             elif o.comision:
                 if o.comision.facturaVenta:
-                    from facturas_venta import FacturasVenta as NewW
+                    from ginn.formularios.facturas_venta import FacturasVenta as NewW
                     o = o.comision.facturaVenta
                 elif o.comision.albaranSalida:
-                    from albaranes_de_salida import AlbaranesDeSalida as NewW
+                    from ginn.formularios.albaranes_de_salida import AlbaranesDeSalida as NewW
                     o = o.comision.albaranSalida
                 else:
                     o = None
             else:
                 o = None
         elif isinstance(o, pclases.AlbaranSalida):
-            from albaranes_de_salida import AlbaranesDeSalida as NewW
+            from ginn.formularios.albaranes_de_salida import AlbaranesDeSalida as NewW
         else:
             o = None
         if o:
@@ -203,10 +198,8 @@ class ConsultaCompras(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        import sys, os
-        sys.path.append(os.path.join("..", "informes"))
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from ginn.informes.treeview2csv import treeview2csv
+        from ginn.formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
         tv = self.wids['tv_proveedor']
@@ -219,13 +212,13 @@ class ConsultaCompras(Ventana):
                        albaranes, 
                        sin_albaran_por_proveedor, 
                        albaranesSalida):
-    	"""
+        """
         Rellena el model con los items de la consulta
         """        
-    	model = self.wids['tv_datos'].get_model()
-    	model.clear()
+        model = self.wids['tv_datos'].get_model()
+        model.clear()
         total = 0
-    	for albaran in albaranes:
+        for albaran in albaranes:
             padre = model.append(None, (
                 utils.str_fecha(albaran.fecha), 
                 albaran.numalbaran,
@@ -574,8 +567,8 @@ class ConsultaCompras(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from treeview2pdf import treeview2pdf
-        from informes import abrir_pdf
+        from ginn.informes.treeview2pdf import treeview2pdf
+        from ginn.formularios.reports import abrir_pdf
         strfecha = "%s - %s" % (self.wids['e_fechainicio'].get_text(), self.wids['e_fechafin'].get_text())
         resp = utils.dialogo(titulo = "¿IMPRIMIR DESGLOSE?", 
             texto = "Puede imprimir únicamente los albaranes o toda la "

@@ -48,7 +48,6 @@ import mx.DateTime
 try:
     import geninformes
 except ImportError:
-    sys.path.append('../informes')
     import geninformes
 sys.path.append('.')
 import ventana_progreso

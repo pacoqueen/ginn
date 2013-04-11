@@ -786,10 +786,8 @@ class Nominas(Ventana):
         """
         Imprime el TreeView de la ventana.
         """
-        import sys, os
-        sys.path.append(os.path.join("..", "informes"))
-        from treeview2pdf import treeview2pdf
-        from informes import abrir_pdf
+        from ginn.informes.treeview2pdf import treeview2pdf
+        from ginn.formularios.reports import abrir_pdf
         mes = utils.combo_get_value(self.wids['cb_mes'])
         anno = int(self.wids['sp_anno'].get_value())
         strfecha = "%s de %s (%s a %s)" % (mes, anno, self.wids['e_fechaini'].get_text(), self.wids['e_fechafin'].get_text())
@@ -800,10 +798,8 @@ class Nominas(Ventana):
         """
         Exporta el contenido del TreeView a MS-Exel/OOoCalc.
         """
-        import sys, os
-        sys.path.append(os.path.join("..", "informes"))
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from ginn.informes.treeview2csv import treeview2csv
+        from ginn.formularios.reports import abrir_csv
         tv = self.crear_fake_treeview(self.wids['tv_nominas'], catlaboral = True) 
         abrir_csv(treeview2csv(tv))
 

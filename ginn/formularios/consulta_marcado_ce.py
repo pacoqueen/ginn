@@ -41,19 +41,12 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk
 import sys
 from framework import pclases
 import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    sys.path.append('../informes')
-    import geninformes
-sys.path.append('.')
-import ventana_progreso
-import re
-from utils import _float as float
+from ginn.informes import geninformes
+from ginn.formularios.reports import abrir_pdf
 
 class ConsultaMarcadoCE(Ventana):
     inicio = None
@@ -270,7 +263,6 @@ class ConsultaMarcadoCE(Ventana):
                     model, paths = sel.get_selected_rows()
                     partidas = [pclases.Partida.get(model[path][-1]) 
                                 for path in paths]
-                    from informes import abrir_pdf
                     abrir_pdf(
                       geninformes.informe_marcado_ce(producto, 
                         partidas, 
@@ -282,7 +274,6 @@ class ConsultaMarcadoCE(Ventana):
                 model, paths = sel.get_selected_rows()
                 partidas = [pclases.Partida.get(model[path][-1]) 
                             for path in paths]
-                from informes import abrir_pdf
                 # Agrupo por productos y saco un informe de cada uno (porque 
                 # si no los datos estadísticos se mezclarían y saldrían 
                 # falseados).

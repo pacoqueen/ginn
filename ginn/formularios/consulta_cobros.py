@@ -42,12 +42,7 @@ import gtk, gtk.glade, time, sqlobject
 import sys
 from framework import pclases
 import mx, mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    sys.path.append('../informes')
-    import geninformes
-sys.path.append('.')
+import geninformes
 import ventana_progreso
 import re
 from utils import _float as float
@@ -101,10 +96,8 @@ class ConsultaCobros(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        import sys, os
-        sys.path.append(os.path.join("..", "informes"))
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from ginn.informes.treeview2csv import treeview2csv
+        from ginn.formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
 
@@ -389,10 +382,8 @@ class ConsultaCobros(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        import sys, os
-        sys.path.append(os.path.join("..", "informes"))
-        from treeview2pdf import treeview2pdf
-        from informes import abrir_pdf
+        from ginn.informes.treeview2pdf import treeview2pdf
+        from ginn.formularios.reports import abrir_pdf
         strdiaini = self.wids['e_fechainicio'].get_text()
         strdiafin = self.wids['e_fechafin'].get_text()
         abrir_pdf(treeview2pdf(self.wids['tv_datos'], titulo = "Vencimientos y cobros por fecha", fecha = "Del %s al %s" % (strdiaini, strdiafin)))

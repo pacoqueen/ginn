@@ -35,23 +35,12 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject, os
-try:
-    from framework import pclases
-except ImportError:
-    import sys
-    from os.path import join as pathjoin
-    sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
-import mx, mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append(os.path.join('..','informes'))
-    import geninformes
-from utils import _float as float
-from crm_seguimiento_impagos import show_fecha
+import gtk
+import mx.DateTime
+from ginn.framework import pclases
+from ginn.informes import geninformes
+from ginn.formularios.utils import _float as float
+from ginn.formularios.crm_seguimiento_impagos import show_fecha
 
 def buscar_pendiente_servir(cliente = None, fini = None, ffin = None, 
                             padre = None, wids = None):

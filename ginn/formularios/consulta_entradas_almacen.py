@@ -41,13 +41,8 @@ import gtk, gtk.glade, time, sqlobject
 import sys
 from framework import pclases
 import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    sys.path.append('../informes')
-    import geninformes
+import geninformes
 import re
-sys.path.append('.')
 import ventana_progreso
 from utils import _float as float
 

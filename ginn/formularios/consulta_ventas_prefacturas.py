@@ -259,10 +259,8 @@ class ConsultaVentasPrefacturas(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        import sys, os, mx, mx.DateTime
-        sys.path.append(os.path.join("..", "informes"))
-        from treeview2pdf import treeview2pdf
-        from informes import abrir_pdf
+        from ginn.informes.treeview2pdf import treeview2pdf
+        from ginn.formularios.reports import abrir_pdf
         fechafin = mx.DateTime.DateTimeFrom(day = int(self.fin.split("/")[2]), 
                                             month = int(self.fin.split("/")[1]), 
                                             year = int(self.fin.split("/")[0]))

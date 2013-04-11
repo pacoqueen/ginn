@@ -57,12 +57,7 @@ import gobject
 pygtk.require('2.0')
 import gtk, gtk.glade, time
 from framework import pclases
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
+import geninformes
 from utils import _float as float
 from informes import abrir_pdf
 from ventana_progreso import VentanaActividad

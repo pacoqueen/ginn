@@ -38,20 +38,8 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
-try:
-    from framework import pclases
-except ImportError:
-    import sys
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
-import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
+import gtk, time
+from ginn.framework import pclases
 
 
 class ConsultaProductosComprados(Ventana):
@@ -102,8 +90,8 @@ class ConsultaProductosComprados(Ventana):
         """
         import sys, os
         sys.path.append(os.path.join("..", "informes"))
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from ginn.informes.treeview2csv import treeview2csv
+        from ginn.formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
 
@@ -208,10 +196,8 @@ class ConsultaProductosComprados(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        import sys, os
-        sys.path.append(os.path.join("..", "informes"))
-        from treeview2pdf import treeview2pdf
-        from informes import abrir_pdf
+        from ginn.informes.treeview2pdf import treeview2pdf
+        from ginn.formularios.reports import abrir_pdf
         idcliente = utils.combo_get_value(self.wids['cmbe_cliente'])
         if idcliente == None:
             utils.dialogo_info(titulo = 'ERROR',

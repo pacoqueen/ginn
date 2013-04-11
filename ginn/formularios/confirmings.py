@@ -47,12 +47,7 @@ import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, time
 from framework import pclases
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
+import geninformes
 from utils import _float as float
 import mx, mx.DateTime
 

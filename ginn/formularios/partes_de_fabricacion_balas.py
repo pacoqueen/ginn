@@ -3511,7 +3511,7 @@ class PartesDeFabricacionBalas(Ventana):
                             "silo del que consumir granza!", 
                     padre = self.wids['ventana'])
         if silo_marcado:
-            ventana_pesaje = crear_ventana_pesaje(self, 
+            ventana_pesaje = crear_ventana_pesaje(self,  # @UnusedVariable
                                 padre = self.wids['ventana'])
     
     def consumir_manual(self, boton):
@@ -3523,7 +3523,7 @@ class PartesDeFabricacionBalas(Ventana):
         se elimina antes de salir de la rutina.
         """
         # Pedir producto(s) a consumir.
-        producto, texto_buscado = utils.pedir_producto_compra(
+        producto, texto_buscado = utils.pedir_producto_compra(  # @UnusedVariable
                                                 padre = self.wids['ventana'])
         # Pedir cantidad.
         if producto != None:
@@ -3751,7 +3751,7 @@ def crear_nueva_bala(numbala, codigo_bala, peso, ventana_parte):
                 imprimir_etiqueta(articulo, ventana_parte)
             except IOError, msg:
                 txt = "%spartes_de_fabricacion_balas::crear_nueva_bala -> IOError: %s" % (ventana_parte.usuario and ventana_parte.usuario.usuario + ": " or "", msg)
-                self.logger.error(txt)
+                ventana_parte.logger.error(txt)
                 txt = """
                 Se produjo un error al imprimir la etiqueta. 
                 Compruebe que queda espacio en la unidad y elimine los       
@@ -3762,7 +3762,7 @@ def crear_nueva_bala(numbala, codigo_bala, peso, ventana_parte):
                 """ % txt
                 utils.dialogo_info(titulo = "ERROR DE IMPRESIÓN", 
                                    texto = txt, 
-                                   padre = self.wids['ventana'])
+                                   padre = ventana_parte.wids['ventana'])
             ventana_parte.actualizar_ventana()
     return bala
 
@@ -3942,7 +3942,7 @@ def imprimir_etiquetas_bigbags(lista_bbs_defecto = [], ventana_parte = None):
                     bigbags.append(bb)
             else:
                 try:
-                    bb = pclases.Bigbag.select(pclases.Bigbag.q.numbigbag == numbigbag)[0]
+                    bb = pclases.Bigbag.select(pclases.Bigbag.q.numbigbag == codigo)[0]
                 except (ValueError, IndexError):
                     no_encontrados.append(codigo)
                     continue

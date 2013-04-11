@@ -83,8 +83,8 @@ class ListadoProductos(Ventana):
         Exporta el contenido del TreeView a un fichero csv.
         """
         sys.path.append(os.path.join("..", "informes"))
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from ginn.informes.treeview2csv import treeview2csv
+        from ginn.formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
 
@@ -168,10 +168,7 @@ class ListadoProductos(Ventana):
         """
         Intenta sugerir productos según el corrector Norving.
         """
-        dirutils = os.path.join("..", "utils")
-        if dirutils not in sys.path:
-            sys.path.append(dirutils)
-        import spelling
+        from ginn.utils import spelling
         palabras = []
         for pc in pclases.ProductoCompra.select():
             palabras.append(pc.codigo.lower())
@@ -207,9 +204,8 @@ class ListadoProductos(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        sys.path.append(os.path.join("..", "informes"))
-        from treeview2pdf import treeview2pdf
-        from informes import abrir_pdf
+        from ginn.informes.treeview2pdf import treeview2pdf
+        from ginn.formularios.reports import abrir_pdf
         strfecha = utils.str_fecha(mx.DateTime.localtime())
         informe = treeview2pdf(self.wids['tv_datos'], 
                         titulo="Listado de productos con PVP (IVA incluido)", 

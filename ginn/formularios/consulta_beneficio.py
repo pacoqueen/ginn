@@ -41,22 +41,10 @@ import gtk, gtk.glade, time, sqlobject
 import sys, os
 from framework import pclases
 import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    sys.path.append(os.path.join('..', 'informes'))
-    import geninformes
-try:
-    from treeview2pdf import treeview2pdf
-except ImportError:
-    sys.path.append(os.path.join("..", "informes"))
-    from treeview2pdf import treeview2pdf
-try:
-    from treeview2csv import treeview2csv
-except ImportError:
-    sys.path.append(os.path.join("..", "informes"))
-    from treeview2pdf import treeview2pdf
-from informes import abrir_pdf, abrir_csv
+import geninformes
+from treeview2pdf import treeview2pdf
+from treeview2csv import treeview2csv
+from ginn.formularios.reports import abrir_csv, abrir_pdf
 import ventana_progreso
 
 class ConsultaBeneficio(Ventana):

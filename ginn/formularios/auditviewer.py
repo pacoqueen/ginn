@@ -44,7 +44,6 @@ try:
     from framework import pclases
 except ImportError:
     from os.path import join as pathjoin
-    sys.path.append(pathjoin("..", "framework"))
     from framework import pclases
 import mx, mx.DateTime
 from consulta_existenciasBolsas import act_fecha 
@@ -95,8 +94,7 @@ class AuditViewer(Ventana):
         consola = pyconsole.attach_console(self.wids['contenedor_consola'], 
                                 banner = "Consola python de depuración GINN", 
                                 script_inicio = """import sys, os, pygtk, gtk, gtk.glade, utils
-sys.path.append(os.path.join("..", "framework"))
-from framework import pclases
+from ginn.framework import pclases
 import mx.DateTime
 dir()
 """, 

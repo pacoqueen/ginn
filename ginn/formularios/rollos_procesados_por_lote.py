@@ -39,18 +39,11 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk
 import sys, os 
-try:
-    from framework import pclases
-except ImportError:
-    sys.path.append(os.path.join('..', 'framework'))
-    from framework import pclases
-import mx, mx.DateTime
+from ginn.framework import pclases
+import mx.DateTime
 sys.path.append(os.path.join('..', 'informes'))
-from barcode import code39
-from barcode.EANBarCode import EanBarCode
-from reportlab.lib.units import cm
 
 class RollosProcesadosPorLote(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -119,10 +112,8 @@ class RollosProcesadosPorLote(Ventana):
         """
         "Vuerca-vuerca" el TreeView en un PDF.
         """
-        import sys, os, mx, mx.DateTime
-        sys.path.append(os.path.join("..", "informes"))
-        from treeview2pdf import treeview2pdf
-        from informes import abrir_pdf
+        from ginn.informes.treeview2pdf import treeview2pdf
+        from ginn.formularios.reports import abrir_pdf
         strfecha = utils.str_fecha(mx.DateTime.localtime())
         tv = self.wids['tv_datos']
         abrir_pdf(treeview2pdf(tv, 
@@ -134,10 +125,8 @@ class RollosProcesadosPorLote(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        import sys, os
-        sys.path.append(os.path.join("..", "informes"))
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from ginn.informes.treeview2csv import treeview2csv
+        from ginn.formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
 

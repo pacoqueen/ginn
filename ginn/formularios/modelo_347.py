@@ -38,30 +38,11 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
-import sys, os
-try:
-    from framework import pclases
-except ImportError:
-    sys.path.append(os.path.join('..', 'framework'))
-    from framework import pclases
+import gtk
+from ginn.framework import pclases
 import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    sys.path.append(os.path.join('..', 'informes'))
-    import geninformes
-try:
-    from treeview2pdf import treeview2pdf
-except ImportError:
-    sys.path.append(os.path.join("..", "informes"))
-    from treeview2pdf import treeview2pdf
-try:
-    from treeview2csv import treeview2csv
-except ImportError:
-    sys.path.append(os.path.join("..", "informes"))
-    from treeview2pdf import treeview2pdf
-from informes import abrir_pdf, abrir_csv
+from ginn.formularios.reports import abrir_csv
+from ginn.informes.treeview2csv import treeview2csv
 import ventana_progreso
 
 class Modelo347(Ventana):

@@ -40,12 +40,7 @@ pygtk.require('2.0')
 import gtk, gtk.glade, time, sqlobject
 from framework import pclases
 import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
+import geninformes
 from ventana_progreso import VentanaProgreso, VentanaActividad
     
 

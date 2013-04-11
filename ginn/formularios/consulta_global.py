@@ -74,12 +74,7 @@ pygtk.require('2.0')
 import gtk, time
 from framework import pclases
 import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
+import geninformes
 from ventana_progreso import VentanaProgreso
 
 
@@ -2370,7 +2365,7 @@ def buscar_ventas_cable(anno, vpro = None, rango = None):
                                        AS.q.fecha >= fechaini, 
                                        AS.q.fecha <= fechafin))
         if balasc.count() > 0:
-            kilos = balasc.sumFloat("peso")
+            kilos = balasc.sum("peso")
         else:
             kilos = 0.0
 
@@ -3499,7 +3494,7 @@ def consultar_gtxc(fechaini, fechafin):
     rollosc = pclases.RolloC.select(pclases.AND(
                 pclases.RolloC.q.fechahora >= fini, 
                 pclases.RolloC.q.fechahora < ffin))
-    return rollosc.sumFloat("peso")
+    return rollosc.sum("peso")
 
 if __name__ == '__main__':
     try:

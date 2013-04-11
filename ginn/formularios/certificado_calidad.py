@@ -38,10 +38,9 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, mx, mx.DateTime
-from framework import pclases
-from frameowrk.seeker import VentanaGenerica 
-from formularios.utils import _float as float
+import gtk
+from ginn.framework import pclases
+from ginn.framework.seeker import VentanaGenerica 
 from formularios.trazabilidad_articulos import escribir as txt_write, \
                                                borrar_texto as txt_clear
 
@@ -220,8 +219,8 @@ class CertificadoCalidad(Ventana, VentanaGenerica):
                 referencias[producto] = {
                     "Media título": [ceb.dtex, 
                                      ceb.dtex, 
-                                     ceb.dtex]}   # Es el único valor que se 
-                                                  # puede comparar.
+                                     ceb.dtex]}     # Es el único valor que se 
+                                                    # puede comparar.
         # Calculo medias.
         valores = {}
         for p in productos:
@@ -388,10 +387,10 @@ class CertificadoCalidad(Ventana, VentanaGenerica):
             resultados = pclases.AlbaranSalida.select(criterio)
             if resultados.count() > 1:
                 ## Refinar los resultados
-                id = self.refinar_resultados_busqueda(resultados)
-                if id == None:
+                ide = self.refinar_resultados_busqueda(resultados)
+                if ide == None:
                     return
-                resultados = [pclases.AlbaranSalida.get(id)]
+                resultados = [pclases.AlbaranSalida.get(ide)]
             elif resultados.count() < 1:
                 ## Sin resultados de búsqueda
                 utils.dialogo_info('SIN RESULTADOS', 
@@ -471,7 +470,7 @@ class CertificadoCalidad(Ventana, VentanaGenerica):
             return
         #tv = self.wids['tv_datos']
         #from treeview2pdf import treeview2pdf
-        from informes import abrir_pdf
+        from ginn.formularios.reports import abrir_pdf
         #strfecha = "%s - %s" % (utils.str_fecha(mx.DateTime.localtime()), 
         #                        utils.str_hora(mx.DateTime.localtime()))
         #abrir_pdf(treeview2pdf(tv, 
@@ -479,11 +478,8 @@ class CertificadoCalidad(Ventana, VentanaGenerica):
         #        self.objeto.numalbaran),
         #    fecha = strfecha, 
         #    apaisado = False))
-        path_informes = os.path.join("..", "informes")
-        if path_informes not in sys.path:
-            sys.path.append(path_informes)
-        import informe_certificado_calidad
-        from geninformes import give_me_the_name_baby
+        from ginn.informes import informe_certificado_calidad
+        from ginn.informes.geninformes import give_me_the_name_baby
         from time import sleep
         dic_productos = {}
         model = self.wids['tv_datos'].get_model()
@@ -526,8 +522,8 @@ class CertificadoCalidad(Ventana, VentanaGenerica):
         if not self.objeto:
             return
         tv = self.wids['tv_datos']
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from ginn.informes.treeview2csv import treeview2csv
+        from ginn.formularios.reports import abrir_csv
         nomarchivocsv = treeview2csv(tv)
         abrir_csv(nomarchivocsv)
 

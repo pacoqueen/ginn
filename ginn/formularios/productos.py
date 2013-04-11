@@ -283,10 +283,9 @@ class Productos(Ventana):
         """
         "Vuerca-vuerca" el TreeView en un PDF.
         """
-        import sys, os, mx, mx.DateTime
-        sys.path.append(os.path.join("..", "informes"))
-        from treeview2pdf import treeview2pdf
-        from informes import abrir_pdf
+        from ginn.informes.treeview2pdf import treeview2pdf
+        from ginn.formularios.reports import abrir_pdf
+        import mx.DateTime
         strfecha = utils.str_fecha(mx.DateTime.localtime())
         tv = self.wids['tv_datos']
         abrir_pdf(treeview2pdf(tv, titulo = "Productos", fecha = strfecha, apaisado = True))
@@ -295,10 +294,8 @@ class Productos(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        import sys, os
-        sys.path.append(os.path.join("..", "informes"))
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from ginn.informes.treeview2csv import treeview2csv
+        from ginn.formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
 
@@ -307,9 +304,9 @@ class Productos(Ventana):
         Abre el producto al que se le ha hecho doble clic en una ventana nueva.
         """
         model = tv.get_model()
-        id = model[path][-1]
+        ide = model[path][-1]
         if "PV" in model[path][0]:
-            producto = pclases.ProductoVenta.get(id)
+            producto = pclases.ProductoVenta.get(ide)
             if producto.es_rollo():
                 import productos_de_venta_rollos
                 ventana_producto = productos_de_venta_rollos.ProductosDeVentaRollos(producto, usuario = self.usuario)
@@ -317,7 +314,7 @@ class Productos(Ventana):
                 import productos_de_venta_balas
                 ventana_producto = productos_de_venta_balas.ProductosDeVentaBalas(producto, usuario = self.usuario)
         elif "PC" in model[path][0]:
-            producto = pclases.ProductoCompra.get(id)
+            producto = pclases.ProductoCompra.get(ide)
             import productos_compra
             ventana_producto = productos_compra.ProductosCompra(producto, usuario = self.usuario)
 

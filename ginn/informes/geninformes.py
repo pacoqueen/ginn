@@ -1206,8 +1206,8 @@ def existencias_productos(informe, fecha, hasta = None, almacen = None,
                             A.q.albaranSalidaID == None,
                         ))
                     if rdefs.count() > 0:
-                        peso_gtxb = rdefs.sumFloat("peso")
-                        metros2 = rdefs.sumFloat("ancho * metros_lineales")
+                        peso_gtxb = rdefs.sum("peso")
+                        metros2 = rdefs.sum("ancho * metros_lineales")
                         bultos = rdefs.count()
                     else:
                         peso_gtxb = 0.0

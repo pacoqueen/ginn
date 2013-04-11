@@ -48,8 +48,6 @@ from framework import pclases
 try:
     import geninformes
 except ImportError:
-    import sys
-    sys.path.append('../informes')
     import geninformes
 import mx.DateTime
 

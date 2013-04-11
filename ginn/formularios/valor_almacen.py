@@ -205,7 +205,7 @@ def valorar_a_precio_defecto():
                 pclases.ProductoCompra.q.existencias != 0, 
                 pclases.ProductoCompra.q.obsoleto == False,
                 pclases.ProductoCompra.q.controlExistencias == True)
-            ).sumFloat("existencias * precio_defecto")
+            ).sum("existencias * precio_defecto")
     return suma
 
 def valorar_a_precio_valoracion(tv):

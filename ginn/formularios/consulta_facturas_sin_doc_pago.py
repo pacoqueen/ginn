@@ -36,15 +36,9 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade
+import gtk
 from framework import pclases
-import mx, mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
+import mx.DateTime
 
 class ConsultaFacturasSinDocumentoDePago(Ventana):
 
@@ -265,15 +259,14 @@ class ConsultaFacturasSinDocumentoDePago(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe.
         """
-        tv = self.wids['tv_datos']
-        titulo = "Pendientes de cobro"
-        from treeview2pdf import treeview2pdf
-        from informes import abrir_pdf
+        from ginn.informes.treeview2pdf import treeview2pdf
+        from ginn.formularios.reports import abrir_pdf
         strfecha = "%s - %s" % (
             self.wids['e_fechaini'].get_text(), 
             self.wids['e_fechafin'].get_text())
+        tv = self.wids['tv_datos']
         nomarchivo = treeview2pdf(tv, 
-            titulo = titulo,
+            titulo = "Facturas sin documento de pago",
             fecha = strfecha, 
             apaisado = False)
         abrir_pdf(nomarchivo)
@@ -282,10 +275,8 @@ class ConsultaFacturasSinDocumentoDePago(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        import sys, os
-        sys.path.append(os.path.join("..", "informes"))
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from ginn.informes.treeview2csv import treeview2csv
+        from ginn.formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
 

@@ -41,11 +41,7 @@ import gtk, gtk.glade, time, sqlobject
 import sys, os
 from framework import pclases
 import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    sys.path.append(os.path.join('..', 'informes'))
-    import geninformes
+import geninformes
 
 
 class ConsultaAlbaranesFacturados(Ventana):

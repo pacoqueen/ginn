@@ -2791,7 +2791,6 @@ class AlbaranesDeSalida(Ventana):
                 import albaran_multipag
             except ImportError:
                 import sys
-                sys.path.append(os.path.join("..", "informes"))
                 import albaran_multipag
             from informes import abrir_pdf
             alb_mp = albaran_multipag.go_from_albaranSalida(self.objeto) 
@@ -2826,7 +2825,6 @@ class AlbaranesDeSalida(Ventana):
                 import albaran_porte
             except ImportError:
                 import sys
-                sys.path.append(os.path.join("..", "informes"))
                 import albaran_porte
             from informes import abrir_pdf
             try:
@@ -4359,7 +4357,6 @@ def imprimir_factura(factura, usuario = None, abrir = True, es_copia = False,
         try:
             import factura_multipag
         except ImportError:
-            sys.path.append(os.path.join("..", "informes"))
             import factura_multipag
         nomarchivo = factura_multipag.go_from_facturaVenta(factura)
     else:

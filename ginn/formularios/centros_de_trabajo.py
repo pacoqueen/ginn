@@ -47,11 +47,7 @@ pygtk.require('2.0')
 import gtk, gtk.glade, time, sqlobject
 import sys
 from framework import pclases
-try:
-    import geninformes
-except ImportError:
-    sys.path.append('../informes')
-    import geninformes
+import geninformes
 from utils import _float as float
 try:
     from psycopg import ProgrammingError as psycopg_ProgrammingError

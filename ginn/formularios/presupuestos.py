@@ -355,7 +355,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 import sys
                 sys.path.append(os.path.join("..", "informes"))
                 import geninformes
-            from informes import abrir_pdf
+            from ginn.formularios.reports import abrir_pdf
             abrir_pdf(geninformes.generar_pdf_presupuesto(self.objeto))
 
     def imprimir_presupuesto(self, boton):
@@ -372,7 +372,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 sys.path.append(os.path.join("..", "informes"))
                 #import presupuesto
                 exec "import %s as presupuesto" % modulo
-            from informes import abrir_pdf
+            from ginn.formularios.reports import abrir_pdf
             abrir_pdf(presupuesto.go_from_presupuesto(self.objeto))  # @UndefinedVariable
 
     def es_diferente(self):

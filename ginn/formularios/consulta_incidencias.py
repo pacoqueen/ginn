@@ -41,13 +41,8 @@ import gtk, gtk.glade, time
 import sys, os
 from framework import pclases
 import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    sys.path.append('../informes')
-    import geninformes
+import geninformes
 import ventana_progreso
-sys.path.insert(0, os.path.join("..", "PyChart-1.39"))
 from pychart import *   # No me gusta, pero no queda otra
 from tempfile import gettempdir
 
@@ -96,8 +91,6 @@ class ConsultaIncidencias(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        import sys, os
-        sys.path.append(os.path.join("..", "informes"))
         from treeview2csv import treeview2csv
         from informes import abrir_csv
         tv = self.wids['tv_datos']

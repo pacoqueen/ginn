@@ -519,10 +519,8 @@ class HorasTrabajadas(Ventana):
         """
         Imprime el TreeView de la ventana.
         """
-        import sys, os
-        sys.path.append(os.path.join("..", "informes"))
-        from treeview2pdf import treeview2pdf
-        from informes import abrir_pdf
+        from ginn.informes.treeview2pdf import treeview2pdf
+        from ginn.formularios.reports import abrir_pdf
         strdiaini = self.wids['e_fecha_ini'].get_text()
         strdiafin = self.wids['e_fecha_fin'].get_text()
         abrir_pdf(treeview2pdf(self.wids['tv_horas'], titulo = "Horas trabajadas", fecha = "Del %s al %s" % (strdiaini, strdiafin)))
@@ -531,10 +529,8 @@ class HorasTrabajadas(Ventana):
         """
         Exporta el contenido del TreeView a MS-Exel/OOoCalc.
         """
-        import sys, os
-        sys.path.append(os.path.join("..", "informes"))
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from ginn.informes.treeview2csv import treeview2csv
+        from ginn.formularios.reports import abrir_csv
         abrir_csv(treeview2csv(self.wids['tv_horas']))
 
 if __name__ == '__main__':

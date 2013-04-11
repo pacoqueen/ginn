@@ -137,13 +137,11 @@ class SQLtuple(tuple):
     #    tuple.__new__(*args, **kw)
     def count(self):
         return len(self)
-    def sumFloat(self, campo):
+    def sum(self, campo):
         res = 0.0
         for item in self.elbicho:
             res += getattr(item, campo)
         return res
-    def sum(self, campo):
-        return self.sumFloat(campo)
 
 class SQLlist(list):
     """
@@ -160,13 +158,11 @@ class SQLlist(list):
     def count(self):
         return len(self.rocio)
     # DISCLAIMER: Paso de otra clase base para solo 2 funciones que se repiten.
-    def sumFloat(self, campo):
+    def sum(self, campo):
         res = 0.0
         for item in self.rocio:
             res += getattr(item, campo)
         return res
-    def sum(self, campo):
-        return self.sumFloat(campo)
     def append(self, *args, **kw):
         raise TypeError, "No se pueden añadir elementos a un SelectResults"
     def extend(self, *args, **kw):
@@ -1549,12 +1545,12 @@ class Silo(SQLObject, PRPCTOO):
         # 3.- Devolver la diferencia.
         cargas = CargaSilo.select(CargaSilo.q.siloID == self.id)
         if cargas.count():
-            cantidad_cargada = cargas.sumFloat("cantidad")
+            cantidad_cargada = cargas.sum("cantidad")
         else:
             cantidad_cargada = 0
         consumos = Consumo.select(Consumo.q.siloID == self.id)
         if consumos.count():
-            cantidad_consumida = consumos.sumFloat("cantidad")
+            cantidad_consumida = consumos.sum("cantidad")
         else:
             cantidad_consumida = 0
         # assert cantidad_cargada - cantidad_consumida <= self.capacidad
@@ -1751,11 +1747,11 @@ class Silo(SQLObject, PRPCTOO):
         cargas = CargaSilo.select(CargaSilo.q.siloID == self.id, orderBy = "-fechaCarga")
         consumos = Consumo.select(Consumo.q.siloID == self.id)
         if cargas.count() > 0:
-            cantidad_cargada = cargas.sumFloat("cantidad") 
+            cantidad_cargada = cargas.sum("cantidad") 
         else:
             cantidad_cargada = 0
         if consumos.count() > 0:
-            cantidad_consumida = consumos.sumFloat("cantidad")
+            cantidad_consumida = consumos.sum("cantidad")
         else:
             cantidad_consumida = 0
         cargado = cantidad_cargada - cantidad_consumida
@@ -1810,12 +1806,12 @@ class Silo(SQLObject, PRPCTOO):
         cargas = CargaSilo.select(""" silo_id = %d ORDER BY fecha_carga DESC, id DESC """ % (self.id))
         cantidad_cargada = CargaSilo.select(CargaSilo.q.siloID == self.id)
         if cantidad_cargada.count() > 0:
-            cantidad_cargada = cantidad_cargada.sumFloat("cantidad")
+            cantidad_cargada = cantidad_cargada.sum("cantidad")
         else:
             cantidad_cargada = 0
         consumos = Consumo.select(Consumo.q.siloID == self.id)
         if consumos.count() > 0:
-            cantidad_consumida = consumos.sumFloat("cantidad")
+            cantidad_consumida = consumos.sum("cantidad")
         else:
             cantidad_consumida = 0
         cantidad_restante = cantidad_cargada - cantidad_consumida
@@ -1907,13 +1903,13 @@ class CargaSilo(SQLObject, PRPCTOO):
         consumos = Consumo.select(AND(Consumo.q.siloID == self.siloID, 
                                       Consumo.q.productoCompraID == self.productoCompraID))
         if consumos.count() > 0:
-            cantidad_consumida = consumos.sumFloat("cantidad")
+            cantidad_consumida = consumos.sum("cantidad")
         else:
             cantidad_consumida = 0
         cantidad_cargada = CargaSilo.select(AND(CargaSilo.q.siloID == self.siloID, 
                                                 CargaSilo.q.productoCompraID == self.productoCompraID))
         if cantidad_cargada.count() > 0:
-            cantidad_cargada = cantidad_cargada.sumFloat("cantidad")
+            cantidad_cargada = cantidad_cargada.sum("cantidad")
         else:
             cantidad_cargada = 0
         assert cantidad_cargada >= cantidad_consumida, "La cantidad cargada en el silo debe ser mayor o igual que la consumida del mismo."
@@ -6105,8 +6101,8 @@ class BalaCable(SQLObject, PRPCTOO):
         Devuelve el total del peso de todas las balas de cable menos 
         el embalaje.
         """
-        peso = BalaCable.select().sumFloat("peso")
-        emba = BalaCable.select().sumFloat("peso_embalaje")
+        peso = BalaCable.select().sum("peso")
+        emba = BalaCable.select().sum("peso_embalaje")
         res = peso - emba 
         return res
     calcular_acumulado_peso_sin = staticmethod(calcular_acumulado_peso_sin)
@@ -6127,8 +6123,8 @@ class BalaCable(SQLObject, PRPCTOO):
         primero_mes_sig += mx.DateTime.oneDay
         balas = BalaCable.select(AND(BalaCable.q.fechahora >= primero_mes, 
                                      BalaCable.q.fechahora < primero_mes_sig))
-        peso = balas.sumFloat("peso")
-        emba = balas.sumFloat("peso_embalaje")
+        peso = balas.sum("peso")
+        emba = balas.sum("peso_embalaje")
         res = peso - emba 
         return res
 
@@ -6266,8 +6262,8 @@ class RolloC(SQLObject, PRPCTOO):
         Devuelve el total del peso de todas las balas de cable menos 
         el embalaje.
         """
-        peso = RolloC.select().sumFloat("peso")
-        emba = RolloC.select().sumFloat("peso_embalaje")
+        peso = RolloC.select().sum("peso")
+        emba = RolloC.select().sum("peso_embalaje")
         res = peso - emba 
         return res
 
@@ -6289,8 +6285,8 @@ class RolloC(SQLObject, PRPCTOO):
         primero_mes_sig += mx.DateTime.oneDay
         rollosc = RolloC.select(AND(RolloC.q.fechahora >= primero_mes, 
                                     RolloC.q.fechahora < primero_mes_sig))
-        peso = rollosc.sumFloat("peso")
-        emba = rollosc.sumFloat("peso_embalaje")
+        peso = rollosc.sum("peso")
+        emba = rollosc.sum("peso_embalaje")
         res = peso - emba 
         return res
 
@@ -8027,15 +8023,15 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
                 = self.__get_consultas_entradas_y_salidas_desde(sqlfechaini, 
                                                                 almacen)
         if entradas.count() > 0:
-            qin += entradas.sumFloat("cantidad")
+            qin += entradas.sum("cantidad")
             if DEBUG:
                 print "get_entradas_y_salidas_desde; qin:", qin
         if salidas_consumos.count() > 0:
-            qout += salidas_consumos.sumFloat("cantidad")
+            qout += salidas_consumos.sum("cantidad")
             if DEBUG:
                 print "get_entradas_y_salidas_desde; qout:", qout
         if salidas_albaranes.count() > 0:
-            qout += salidas_albaranes.sumFloat("cantidad")
+            qout += salidas_albaranes.sum("cantidad")
             if DEBUG:
                 print "get_entradas_y_salidas_desde; qout:", qout
         return qin - qout
@@ -10423,7 +10419,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                                     PDP.q.fecha >= fecha0, 
                                     PDP.q.fecha <= fecha1))
             if balas.count() > 0:
-                res = balas.sumFloat("pesobala")
+                res = balas.sum("pesobala")
             else:
                 res = 0.0
             # Y ahora los "magic_bultos" (TM), que son los artículos sin 
@@ -10443,7 +10439,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                             PDP.q.fecha >= fecha0, 
                             PDP.q.fecha <= fecha1))
             if bigbags.count() > 0:
-                res = bigbags.sumFloat("pesobigbag")
+                res = bigbags.sum("pesobigbag")
             else:
                 res = 0.0
             # Y ahora los "magic_bultos" (TM), que son los artículos sin parte 
@@ -10500,7 +10496,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                 # 1/1/07 23:59 > 1/1/07 00:00 debo comparar con la 
                 # fecha 2/2/07 00:00
             if balas_cable.count():
-                res = balas_cable.sumFloat("peso")
+                res = balas_cable.sum("peso")
             else:
                 res = 0.0
         elif pv.es_rollo_c():
@@ -10515,7 +10511,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                 # 1/1/07 23:59 > 1/1/07 00:00 debo comparar con la 
                 # fecha 2/2/07 00:00
             if balas_cable.count():
-                res = balas_cable.sumFloat("peso")
+                res = balas_cable.sum("peso")
             else:
                 res = 0.0
         else:
@@ -10551,7 +10547,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         """
         consumos = self.buscar_consumos_balas(fecha0, fecha1)
         if consumos.count() > 0:
-            return consumos.sumFloat('pesobala')
+            return consumos.sum('pesobala')
         else:
             return 0.0
 
@@ -11764,7 +11760,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                     else:
                         balas = self.__get_balas_hasta(hasta)
                     if balas.count() > 0:
-                        cantidad = balas.sumFloat('pesobala')
+                        cantidad = balas.sum('pesobala')
                     else:
                         cantidad = 0.0
                 except Exception, msg:      # Lo que sea. Error psycopg, 
@@ -11839,7 +11835,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                                  condicion_no_parte_y_fecha_fab_antes_de_fecha, 
                                  albaranes_de_salida_despues_de_fecha))
                     if bigbags.count() > 0:
-                        cantidad = bigbags.sumFloat('pesobigbag')
+                        cantidad = bigbags.sum('pesobigbag')
                     else:
                         cantidad = 0.0
                 except:     # Lo que sea. Error psycopg, interno de 
@@ -11925,7 +11921,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                                albaranes_de_salida_despues_de_fecha, 
                                fecha_limite_para_comparaciones_con_fechahoras))
                     if bala_cables.count() > 0:
-                        cantidad = bala_cables.sumFloat('peso')
+                        cantidad = bala_cables.sum('peso')
                     else:
                         cantidad = 0.0
                 except Exception, msg:      # Lo que sea. Error psycopg, 
@@ -11965,7 +11961,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                                albaranes_de_salida_despues_de_fecha, 
                                fecha_limite_para_comparaciones_con_fechahoras))
                     if rollos_c.count() > 0:
-                        cantidad = rollos_c.sumFloat('peso')
+                        cantidad = rollos_c.sum('peso')
                     else:
                         cantidad = 0.0
                 except Exception, msg:      # Lo que sea. Error psycopg, 
@@ -12135,7 +12131,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                     else:
                         balas=self.__get_balas_hasta(hasta, almacen = almacen)
                     if balas.count() > 0:
-                        cantidad = balas.sumFloat('pesobala')
+                        cantidad = balas.sum('pesobala')
                     else:
                         cantidad = 0.0
                 except Exception, msg:      # Lo que sea. Error psycopg, 
@@ -12241,11 +12237,11 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         #         condicion_no_parte_y_fecha_fab_antes_de_fecha, 
                         #         albaranes_de_salida_despues_de_fecha))
                     if bigbags.count() > 0:
-                        cantidad = bigbags.sumFloat('pesobigbag')
+                        cantidad = bigbags.sum('pesobigbag')
                     else:
                         cantidad = 0.0
-                except Exception, msg: # Lo que sea. Error psycopg, interno de 
-                                       # sqlobjet, lo que sea.
+                except Exception, msg:  # Lo que sea. Error psycopg, interno  
+                                        # de sqlobjet, lo que sea.
                     print "pclases.py: get_stock: Error contando existencias en bigbags de productoVentaID %d: %s" % (self.id, msg)
                     cantidad = 0.0
             elif self.es_bala_cable():
@@ -12302,7 +12298,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         #       albaranes_de_salida_despues_de_fecha, 
                         #       fecha_limite_para_comparaciones_con_fechahoras))
                     if bala_cables.count() > 0:
-                        cantidad = bala_cables.sumFloat('peso')
+                        cantidad = bala_cables.sum('peso')
                     else:
                         cantidad = 0.0
                 except Exception, msg:      # Lo que sea. Error psycopg, 
@@ -12363,7 +12359,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         #       albaranes_de_salida_despues_de_fecha, 
                         #       fecha_limite_para_comparaciones_con_fechahoras))
                     if rollos_c.count() > 0:
-                        cantidad = rollos_c.sumFloat('peso')
+                        cantidad = rollos_c.sum('peso')
                     else:
                         cantidad = 0.0
                 except Exception, msg:      # Lo que sea. Error psycopg, 
@@ -12459,8 +12455,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                                WHERE producto_venta_id = %d 
                                 AND almacen_id IS NOT NULL)
                             AND claseb = FALSE 
-                        """ % (self.id)).sumFloat("pesobala")
-            except TypeError:   # No pudo hacer el sumFloat porque no 
+                        """ % (self.id)).sum("pesobala")
+            except TypeError:   # No pudo hacer el sum porque no 
                                 # había registros.
                 res = 0.0
         elif self.es_rollo():
@@ -12479,8 +12475,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                                WHERE producto_venta_id = %d 
                                 AND almacen_id IS NOT NULL)
                             AND claseb = FALSE 
-                        """ % (self.id)).sumFloat("pesobigbag")
-            except TypeError:       # No pudo hacer el sumFloat porque
+                        """ % (self.id)).sum("pesobigbag")
+            except TypeError:       # No pudo hacer el sum porque
                                     # no había registros.
                 res = 0.0
         elif self.es_caja():
@@ -12491,9 +12487,9 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                                WHERE producto_venta_id = %d 
                                 AND almacen_id IS NOT NULL)
                             AND NOT caja_es_clase_b(id) 
-                        """ % (self.id)).sumFloat("peso")
+                        """ % (self.id)).sum("peso")
                 #res = sum([c.peso for c in res if not c.claseb])
-            except TypeError:       # No pudo hacer el sumFloat porque no 
+            except TypeError:       # No pudo hacer el sum porque no 
                                     # había registros.
                 res = 0.0
         else:
@@ -12509,8 +12505,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                                WHERE producto_venta_id = %d 
                                 AND almacen_id = %d)
                             AND claseb = FALSE 
-                        """%(self.id, almacen.id)).sumFloat("pesobala")
-            except TypeError:   # No pudo hacer el sumFloat porque no 
+                        """%(self.id, almacen.id)).sum("pesobala")
+            except TypeError:   # No pudo hacer el sum porque no 
                                 # había registros.
                 res = 0.0
         elif self.es_rollo():
@@ -12530,8 +12526,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                                WHERE producto_venta_id = %d 
                                 AND almacen_id  = %d)
                             AND claseb = FALSE 
-                        """%(self.id,almacen.id)).sumFloat("pesobigbag")
-            except TypeError:       # No pudo hacer el sumFloat porque no 
+                        """%(self.id,almacen.id)).sum("pesobigbag")
+            except TypeError:       # No pudo hacer el sum porque no 
                                     # había registros.
                 res = 0.0
         elif self.es_caja():
@@ -12542,10 +12538,10 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                                WHERE producto_venta_id = %d 
                                 AND almacen_id  = %d)
                             AND NOT caja_es_clase_b(id) 
-                        """ % (self.id, almacen.id)).sumFloat("peso")
+                        """ % (self.id, almacen.id)).sum("peso")
                 #res = sum([c.peso for c in res if not c.claseb])
-                        #""" % (self.id, almacen.id)).sumFloat("peso")
-            except TypeError:       # No pudo hacer el sumFloat porque no 
+                        #""" % (self.id, almacen.id)).sum("peso")
+            except TypeError:       # No pudo hacer el sum porque no 
                                     # había registros.
                 res = 0.0
         else:
@@ -12620,8 +12616,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                                 AND almacen_id IS NOT NULL)
                             AND partida_carga_id IS NULL 
                             AND claseb = TRUE 
-                        """ % (self.id)).sumFloat("pesobala")
-            except TypeError:   # No pudo hacer el sumFloat porque no 
+                        """ % (self.id)).sum("pesobala")
+            except TypeError:   # No pudo hacer el sum porque no 
                                 # había registros.
                 res = 0.0
         elif self.es_rollo():
@@ -12640,8 +12636,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                                WHERE producto_venta_id = %d 
                                 AND almacen_id IS NOT NULL)
                             AND claseb = TRUE 
-                        """ % (self.id)).sumFloat("pesobigbag")
-            except TypeError:       # No pudo hacer el sumFloat porque no 
+                        """ % (self.id)).sum("pesobigbag")
+            except TypeError:       # No pudo hacer el sum porque no 
                                     # había registros.
                 res = 0.0
         elif self.es_caja():
@@ -12652,8 +12648,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                                WHERE producto_venta_id = %d 
                                 AND almacen_id IS NOT NULL)
                             AND caja_es_clase_b(id)
-                        """ % (self.id)).sumFloat("peso")
-            except TypeError:       # No pudo hacer el sumFloat porque no 
+                        """ % (self.id)).sum("peso")
+            except TypeError:       # No pudo hacer el sum porque no 
                                     # había registros.
                 res = 0.0
         else:
@@ -12670,8 +12666,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                                 AND almacen_id = %d)
                             AND partida_carga_id IS NULL 
                             AND claseb = TRUE 
-                        """ % (self.id, almacen.id)).sumFloat("pesobala")
-            except TypeError:       # No pudo hacer el sumFloat porque no 
+                        """ % (self.id, almacen.id)).sum("pesobala")
+            except TypeError:       # No pudo hacer el sum porque no 
                                     # había registros.
                 res = 0.0
         elif self.es_rollo():
@@ -12690,8 +12686,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                                WHERE producto_venta_id = %d 
                                  AND almacen_id = %d)
                             AND claseb = TRUE 
-                        """ % (self.id, almacen.id)).sumFloat("pesobigbag")
-            except TypeError:       # No pudo hacer el sumFloat porque no 
+                        """ % (self.id, almacen.id)).sum("pesobigbag")
+            except TypeError:       # No pudo hacer el sum porque no 
                                     # había registros.
                 res = 0.0
         elif self.es_caja():
@@ -12702,8 +12698,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                                WHERE producto_venta_id = %d 
                                  AND almacen_id = %d)
                             AND caja_es_clase_b(id)
-                        """ % (self.id, almacen.id)).sumFloat("peso")
-            except TypeError:       # No pudo hacer el sumFloat porque no 
+                        """ % (self.id, almacen.id)).sum("peso")
+            except TypeError:       # No pudo hacer el sum porque no 
                                     # había registros.
                 res = 0.0
         else:
@@ -12786,8 +12782,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                                FROM articulo 
                                WHERE producto_venta_id = %d 
                                 AND almacen_id IS NOT NULL)
-                        """ % (self.id)).sumFloat("peso")
-            except TypeError:   # No pudo hacer el sumFloat porque no 
+                        """ % (self.id)).sum("peso")
+            except TypeError:   # No pudo hacer el sum porque no 
                                 # había registros.
                 res = 0.0
         elif self.es_rollo_c():
@@ -12797,8 +12793,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                                FROM articulo 
                                WHERE producto_venta_id = %d 
                                 AND almacen_id IS NOT NULL)
-                        """ % (self.id)).sumFloat("peso")
-            except TypeError:       # No pudo hacer el sumFloat porque
+                        """ % (self.id)).sum("peso")
+            except TypeError:       # No pudo hacer el sum porque
                                     # no había registros.
                 res = 0.0
         else:
@@ -12813,8 +12809,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                                FROM articulo 
                                WHERE producto_venta_id = %d 
                                 AND almacen_id = %d)
-                    """ % (self.id, almacen.id)).sumFloat("peso")
-            except TypeError:   # No pudo hacer el sumFloat porque no 
+                    """ % (self.id, almacen.id)).sum("peso")
+            except TypeError:   # No pudo hacer el sum porque no 
                                 # había registros.
                 res = 0.0
         elif self.es_rollo_c():
@@ -12824,8 +12820,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                                FROM articulo 
                                WHERE producto_venta_id = %d 
                                 AND almacen_id = %d)
-                        """ % (self.id, almacen.id)).sumFloat("peso")
-            except TypeError:       # No pudo hacer el sumFloat porque
+                        """ % (self.id, almacen.id)).sum("peso")
+            except TypeError:       # No pudo hacer el sum porque
                                     # no había registros.
                 res = 0.0
         else:
@@ -21519,7 +21515,7 @@ class ConceptoPresupuestoAnual(SQLObject, PRPCTOO):
         if ffin:
             criterios.append(ValorPresupuestoAnual.q.mes <= ffin)
         valores = ValorPresupuestoAnual.select(AND(*criterios))
-        res = valores.sumFloat("importe")
+        res = valores.sum("importe")
         return res
 
     def calcular_total_vencimientos(self, fini = mx.DateTime.today(), 

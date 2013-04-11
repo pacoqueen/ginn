@@ -548,9 +548,6 @@ def tarea1():
     return res
 
 def pruebas_periodicas():
-    path_framework = os.path.join("..", "framework")
-    if path_framework not in sys.path:
-        sys.path.append(path_framework)
     from framework.configuracion import ConfigConexion
     from framework import tests
 

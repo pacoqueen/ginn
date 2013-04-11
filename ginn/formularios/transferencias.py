@@ -97,9 +97,8 @@ class Transferencias(Ventana, VentanaGenerica):
         Solicita un firmante al usuario. El resto de los datos 
         se obtienen de la BD.
         """
-        sys.path.append(os.path.join("..", "informes"))
-        from geninformes import fax_transferencia
-        from informes import abrir_pdf
+        from ginn.informes.geninformes import fax_transferencia
+        from ginn.formularios.reports import abrir_pdf
         firmantes = {1: "Otro (texto libre)", 
                      2: "D. Enrique Román Corzo", 
                      3: "D. Enrique Figueroa Yáñez", 

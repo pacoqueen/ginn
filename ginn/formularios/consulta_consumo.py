@@ -84,7 +84,6 @@ class ConsultaConsumo(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        sys.path.append(os.path.join("..", "informes"))
         from ginn.informes.treeview2csv import treeview2csv
         from ginn.formularios.reports import abrir_csv
         tv = self.wids['tv_datos']

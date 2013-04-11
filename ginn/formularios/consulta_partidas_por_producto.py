@@ -41,12 +41,7 @@ pygtk.require('2.0')
 import gtk, gtk.glade, time, sqlobject
 from framework import pclases
 import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
+import geninformes
 from ventana_progreso import VentanaProgreso, VentanaActividad
     
 
@@ -93,8 +88,6 @@ class ConsultaPartidasPorProducto(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        import sys, os
-        sys.path.append(os.path.join("..", "informes"))
         from treeview2csv import treeview2csv
         from informes import abrir_csv
         tv = self.wids['tv_datos']

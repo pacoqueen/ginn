@@ -33,16 +33,11 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade
+import gtk
 import sys, os
 from framework import pclases
 import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    sys.path.append('../informes')
-    import geninformes
-from ventana_progreso import VentanaProgreso
+from ginn.formularios.ventana_progreso import VentanaProgreso
 
 class ConsultaExistenciasBolsas(Ventana):
 
@@ -118,9 +113,8 @@ class ConsultaExistenciasBolsas(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        sys.path.append(os.path.join("..", "informes"))
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from ginn.informes.treeview2csv import treeview2csv
+        from ginn.formularios.reports import abrir_csv
         npag = self.wids['nb_almacenes'].get_current_page()
         tv = self.tvs[npag][0]
         abrir_csv(treeview2csv(tv))
@@ -135,11 +129,11 @@ class ConsultaExistenciasBolsas(Ventana):
         if producto.es_rollo():
             import productos_de_venta_rollos
             V = productos_de_venta_rollos.ProductosDeVentaRollos
-            ventana_producto = V(producto, usuario = self.usuario)
+            ventana_producto = V(producto, usuario = self.usuario)  # @UnusedVariable
         elif producto.es_bala() or producto.es_bigbag() or producto.es_bolsa():
             import productos_de_venta_balas
             V = productos_de_venta_balas.ProductosDeVentaBalas
-            ventana_producto = V(producto, usuario = self.usuario)
+            ventana_producto = V(producto, usuario = self.usuario)  # @UnusedVariable
 
     def chequear_cambios(self):
         pass
@@ -213,9 +207,8 @@ class ConsultaExistenciasBolsas(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        sys.path.append(os.path.join("..", "informes"))
-        from treeview2pdf import treeview2pdf
-        from informes import abrir_pdf
+        from ginn.informes.treeview2pdf import treeview2pdf
+        from ginn.formularios.reports import abrir_pdf
         npag = self.wids['nb_almacenes'].get_current_page()
         tv, ekg, ebultos = self.tvs[npag][0:3]
         kg = ekg.get_text()

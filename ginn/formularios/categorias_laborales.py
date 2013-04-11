@@ -47,7 +47,6 @@ from framework import pclases
 try:
     import geninformes
 except ImportError:
-    sys.path.append('../informes')
     import geninformes
 from utils import _float as float
 try:

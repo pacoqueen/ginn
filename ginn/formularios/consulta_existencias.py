@@ -35,18 +35,13 @@
 ## 16 de marzo de 2006 -> Inicio
 ###################################################################
 
-from ventana import Ventana
-import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, time, sqlobject, os
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append(os.path.join('..','informes'))
-    import geninformes
-import mx, mx.DateTime
+import geninformes
+import mx.DateTime
+from ventana import Ventana
+from ginn.formularios import utils
 
 class ConsultaExistencias(Ventana):
     

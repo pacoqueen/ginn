@@ -41,19 +41,10 @@ import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, time, sqlobject
 import sys
-try:
-    from framework import pclases
-except ImportError:
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
+from ginn.framework import pclases
 import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    sys.path.append('../informes')
-    import geninformes
+import geninformes
 import re
-sys.path.append('.')
 import ventana_progreso
 from utils import _float as float
 

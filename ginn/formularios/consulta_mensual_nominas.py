@@ -28,18 +28,12 @@
 
 from ventana import Ventana
 import utils
-import pygtk, gobject, pango
+import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time
+import gtk, time
 from framework import pclases
 import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
-import ventana_progreso
+from ginn.formularios import ventana_progreso
     
 LINEASPRODUCCION = pclases.LineaDeProduccion.select(orderBy = "id")
 #RESTOCENTROS = ("Almacén", "Varios")
@@ -463,10 +457,8 @@ class ConsultaMensualNominas(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        import sys, os
-        sys.path.append(os.path.join("..", "informes"))
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from ginn.informes.treeview2csv import treeview2csv
+        from ginn.formularios.reports import abrir_csv
         for tvnombre in ("tv_plus", "tv_resumen"):
             tv = self.wids[tvnombre]
             if tvnombre == "tv_resumen":
@@ -476,10 +468,8 @@ class ConsultaMensualNominas(Ventana):
             abrir_csv(treeview2csv(tv, filtro_ceros = filtro_ceros))
 
     def imprimir(self, boton):
-        import sys, os
-        sys.path.append(os.path.join("..", "informes"))
-        from treeview2pdf import treeview2pdf
-        from informes import abrir_pdf
+        from ginn.informes.treeview2pdf import treeview2pdf
+        from ginn.formularios.reports import abrir_pdf
         for tvnombre, titulo, tvresumen, fake_cols in (
                 ("tv_plus", "Consulta nóminas: plus salarial", 
                  "tv_totales_plus", 2), 
