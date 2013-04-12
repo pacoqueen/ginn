@@ -42,7 +42,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time
+import gtk, time
 from framework import pclases
 from informes import geninformes
 from utils import _float as float
@@ -752,7 +752,7 @@ class Recibos(Ventana, VentanaGenerica):
         """
         Genera y muestra el PDF del recibo bancario.
         """
-        from formularios import reports as informes
+        from formularios import reports
         numrecibo = self.wids['e_numrecibo'].get_text()
         lugar_libramiento = self.wids['e_lugar_libramiento'].get_text()
         importe = self.wids['e_importe'].get_text()
@@ -780,7 +780,7 @@ class Recibos(Ventana, VentanaGenerica):
                                  cuenta_pago, 
                                  nombre_librado, 
                                  direccion_librado)        
-        informes.abrir_pdf(pdf)
+        reports.abrir_pdf(pdf)
 
     def activar_widgets(self, s, chequear_permisos = True):
         if self.objeto == None:

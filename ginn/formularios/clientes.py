@@ -55,11 +55,11 @@ import utils
 import pygtk
 import gobject
 pygtk.require('2.0')
-import gtk, gtk.glade, time
+import gtk, time
 from framework import pclases
-import geninformes
+from informes import geninformes
 from utils import _float as float
-from informes import abrir_pdf
+from formularios.reports import abrir_pdf
 from ventana_progreso import VentanaActividad
 import pclase2tv
 

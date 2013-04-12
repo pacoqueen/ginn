@@ -37,8 +37,8 @@
 
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, os
-import geninformes
+import gtk, time, os
+from informes import geninformes
 import mx.DateTime
 from ventana import Ventana
 from formularios import utils
@@ -51,7 +51,7 @@ class ConsultaExistencias(Ventana):
         comenzar la ventana (en lugar del primero de la tabla, que es
         el que se muestra por defecto).
         """
-        from formularios import reports as informes, tempfile
+        from formularios import reports, tempfile
 
         ventana = gtk.Window()  # Es solo para poder mostrar el diálogo de 
                                 # progreso.
@@ -83,7 +83,7 @@ class ConsultaExistencias(Ventana):
         pdfgenerado = func_informe(exportar_a_csv_a = exportar_a_csv_a, 
                                    ventana_padre = ventana)
         ventana.destroy()
-        informes.abrir_pdf(pdfgenerado)
+        reports.abrir_pdf(pdfgenerado)
 
 if __name__ == '__main__':
     t = ConsultaExistencias()

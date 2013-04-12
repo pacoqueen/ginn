@@ -43,12 +43,10 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time
-import sys, os 
+import gtk
 from framework import pclases
-import mx, mx.DateTime
-from barcode import code39
-from barcode.EANBarCode import EanBarCode
+from informes.barcode import code39
+from informes.barcode.EANBarCode import EanBarCode
 from reportlab.lib.units import cm
 
 class TrazabilidadArticulos(Ventana):
@@ -73,21 +71,22 @@ class TrazabilidadArticulos(Ventana):
         """
         Vuelca toda la información de pantalla en bruto a un PDF.
         """
-        from formularios import reports as informes, geninformes
+        from formularios import reports
+        from informes import geninformes
         datos = "Código de trazabilidad: %s\n\n"%self.wids['e_num'].get_text()
         for desc, txt in (("Producto:\n", self.wids['txt_producto']), 
                           ("Lote/Partida:\n", self.wids['txt_lp']), 
                           ("Albarán de salida:\n", self.wids['txt_albaran']), 
                           ("Producción:\n", self.wids['txt_produccion'])):
-            buffer = txt.get_buffer()
-            texto = buffer.get_text(buffer.get_start_iter(), 
-                                    buffer.get_end_iter())
+            buff = txt.get_buffer()
+            texto = buff.get_text(buff.get_start_iter(), 
+                                    buff.get_end_iter())
             datos += desc + texto + "\n\n"
-        informes.abrir_pdf(geninformes.trazabilidad(datos))
+        reports.abrir_pdf(geninformes.trazabilidad(datos))
 
     def pasar_foco(self, widget, event):
-      if event.keyval == 65293 or event.keyval == 65421:
-        self.wids['b_buscar'].grab_focus()
+        if event.keyval == 65293 or event.keyval == 65421:
+            self.wids['b_buscar'].grab_focus()
 
     def chequear_cambios(self):
         pass
@@ -718,7 +717,7 @@ class TrazabilidadArticulos(Ventana):
                                        utils.str_hora_corta(parte.horainicio), 
                                        utils.str_hora_corta(parte.horafin)))
         escribir(txtvw, "\n\nConsumos:\n", ("rojo, negrita"))
-        import geninformes
+        from informes import geninformes
         escribir(txtvw, geninformes.consumoPartida(objeto), ("rojo"))
 
     def mostrar_produccion_lote_cemento(self, objeto, txtvw):

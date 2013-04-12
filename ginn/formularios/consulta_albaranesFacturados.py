@@ -33,15 +33,14 @@
 ## 
 ###################################################################
 
-from ventana import Ventana
-import utils
-import pygtk
-pygtk.require('2.0')
-import gtk, gtk.glade, time
-import sys, os
 from framework import pclases
-import mx.DateTime
-import geninformes
+from informes import geninformes
+from ventana import Ventana
+import gtk
+import time
+import pygtk
+import utils
+pygtk.require('2.0')
 
 
 class ConsultaAlbaranesFacturados(Ventana):
@@ -82,8 +81,8 @@ class ConsultaAlbaranesFacturados(Ventana):
         Exporta el contenido del TreeView a un fichero csv.
         """
         import sys, os
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
 
@@ -201,7 +200,7 @@ class ConsultaAlbaranesFacturados(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe.
         """
-        from formularios import reports as informes 
+        from formularios import reports 
         datos = []
         model = self.wids['tv_datos'].get_model()
         for i in model:
@@ -213,9 +212,9 @@ class ConsultaAlbaranesFacturados(Ventana):
 
         if datos != []:
             if self.wids['rb_entrada'].get_active():
-                informes.abrir_pdf(geninformes.albaranesFacturados(datos, fechaInforme, clienteproveedor = "Proveedor"))
+                reports.abrir_pdf(geninformes.albaranesFacturados(datos, fechaInforme, clienteproveedor = "Proveedor"))
             else:   # Si no son de entrada son de salida y por defecto en la cabecera del informe pondrá Cliente.
-                informes.abrir_pdf(geninformes.albaranesFacturados(datos,fechaInforme))
+                reports.abrir_pdf(geninformes.albaranesFacturados(datos,fechaInforme))
 
 
 

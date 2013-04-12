@@ -38,7 +38,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time
+import gtk, time
 from framework import pclases
 from informes import geninformes
 from formularios.utils import _float as float
@@ -835,7 +835,7 @@ class AlbaranesDeEntradaRepuestos(Ventana):
         Crea un impreso del albarán
         """
         self.guardar(None)  # Si se ha olvidado guardar, guardo yo.
-        from formularios import reports as informes
+        from formularios import reports
         albaran = self.objeto
         if albaran.proveedor != None:
             proveedor = albaran.proveedor.nombre
@@ -861,7 +861,7 @@ class AlbaranesDeEntradaRepuestos(Ventana):
                                               padre = self.wids['ventana'])
         if observaciones == None:
             return
-        informes.abrir_pdf(geninformes.albaranEntrada(general, lineas, observaciones))
+        reports.abrir_pdf(geninformes.albaranEntrada(general, lineas, observaciones))
 
 
 if __name__=='__main__':

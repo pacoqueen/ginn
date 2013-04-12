@@ -35,16 +35,19 @@
 ## 4 de abril de 2006 -> Inicio
 ## 17 de julio de 2006 -> Puesta a punto.
 ###################################################################
-from ventana import Ventana
-import utils
-import pygtk
-pygtk.require('2.0')
-import gtk, gtk.glade, time
-import sys
 from framework import pclases
 from informes import geninformes
-import ventana_progreso
 from utils import _float as float
+from ventana import Ventana
+import gtk
+import time
+import mx.DateTime
+import pygtk
+import re
+import sys
+import utils
+import ventana_progreso
+pygtk.require('2.0')
 
 
 class ConsultaVencimientosPagos(Ventana):
@@ -671,7 +674,7 @@ class ConsultaVencimientosPagos(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from formularios import reports as informes
+        from formularios import reports
         datos = []
         for i in self.resultado:
             if not i[2]:    # i[2] = False cuando es vencimiento normal de la BD
@@ -707,15 +710,15 @@ class ConsultaVencimientosPagos(Ventana):
                           self.wids['e_total'].get_text(), 
                           "Vencido a la fecha", 
                           self.wids['e_vencido'].get_text()))
-            informes.abrir_pdf(geninformes.vencimientosPago(datos,fechaInforme))
+            reports.abrir_pdf(geninformes.vencimientosPago(datos,fechaInforme))
 
     def exportar(self, boton):
         """
         Vuelva el contenido de todos los TreeViews en un solo ".csv".
         """
         tv = self.wids['tv_datos']
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         nomarchivocsv = treeview2csv(tv)
         abrir_csv(nomarchivocsv)
         nomarchivocsv = treeview2csv(self.wids['tv_totales'])

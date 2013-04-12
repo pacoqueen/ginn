@@ -34,7 +34,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, mx, mx.DateTime
+import gtk, time, mx, mx.DateTime
 from framework import pclases
 from framework.seeker import VentanaGenerica 
 from utils import _float as float
@@ -67,8 +67,8 @@ class ValorAlmacen(Ventana):
         Exporta el TreeView de detalle a CSV.
         """
         tv = self.wids['tv_detalle']
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         nomarchivocsv = treeview2csv(tv)
         abrir_csv(nomarchivocsv)
 
@@ -77,8 +77,8 @@ class ValorAlmacen(Ventana):
         Exporta a PDF el TreeView de detalle.
         """
         tv = self.wids['tv_detalle']
-        from treeview2pdf import treeview2pdf
-        from informes import abrir_pdf
+        from informes.treeview2pdf import treeview2pdf
+        from formularios.reports import abrir_pdf
         strfecha = "%s - %s" % (utils.str_fecha(mx.DateTime.localtime()), 
                                 utils.str_hora(mx.DateTime.localtime()))
         abrir_pdf(treeview2pdf(tv, 
@@ -92,8 +92,8 @@ class ValorAlmacen(Ventana):
         Exporta a PDF el TreeView de detalle.
         """
         tv = self.wids['tv_datos']
-        from treeview2pdf import treeview2pdf
-        from informes import abrir_pdf
+        from informes.treeview2pdf import treeview2pdf
+        from formularios.reports import abrir_pdf
         strfecha = "%s - %s" % (utils.str_fecha(mx.DateTime.localtime()), utils.str_hora(mx.DateTime.localtime()))
         abrir_pdf(treeview2pdf(tv, 
             titulo = "Valoración de productos de compra en almacén. TOTALES.",

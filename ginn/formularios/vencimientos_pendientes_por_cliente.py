@@ -39,7 +39,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time
+import gtk, time
 from framework import pclases
 import mx, mx.DateTime
 from informes import geninformes
@@ -67,8 +67,8 @@ class VencimientosPendientesPorCliente(Ventana):
         Exporta el contenido del TreeView a un fichero csv.
         """
         import sys, os
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         tv = self.wids['tv_cobros']
         abrir_csv(treeview2csv(tv))
 

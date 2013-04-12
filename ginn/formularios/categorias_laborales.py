@@ -41,10 +41,9 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time
-import sys
+import gtk
 from framework import pclases
-from informes import geninformes
+import sqlobject
 try:
     from psycopg import ProgrammingError as psycopg_ProgrammingError
 except ImportError:
@@ -370,11 +369,11 @@ class CategoriasLaborales(Ventana):
         res = gtk.Label('ERROR: N/A')
         if isinstance(tipocampo, pclases.SOStringCol):  # Cadena: el widget es un entry
             res = gtk.Entry()
-            if tipocampo.default != None and tipocampo.default != pclases.sqlbuilder.NoDefault:
+            if tipocampo.default != None and tipocampo.default != sqlobject.sqlbuilder.NoDefault:
                 res.set_text("%s" % (tipocampo.default))
         elif isinstance(tipocampo, pclases.SOIntCol):   # Entero: el widget es un entry
             res = gtk.Entry()
-            if tipocampo.default != None and tipocampo.default != pclases.sqlbuilder.NoDefault:
+            if tipocampo.default != None and tipocampo.default != sqlobject.sqlbuilder.NoDefault:
                 res.set_text("%s" % (tipocampo.default))
         elif isinstance(tipocampo, pclases.SOBoolCol):  # Boolean: el widget es un checkbox
             label = self.build_label(nombrecampo)
@@ -390,7 +389,7 @@ class CategoriasLaborales(Ventana):
             utils.rellenar_lista(res, contenido)
         elif isinstance(tipocampo, pclases.SOCol):      # Clase base, casi seguro Float: el widget es un entry
             res = gtk.Entry()
-            if tipocampo.default != None and tipocampo.default != pclases.sqlbuilder.NoDefault:
+            if tipocampo.default != None and tipocampo.default != sqlobject.sqlbuilder.NoDefault:
                 res.set_text(utils.float2str("%s" % tipocampo.default, 3, autodec = True))
         else:
             txt = "categorias_laborales.py: No se pudo construir el widget para %s." % nombrecampo

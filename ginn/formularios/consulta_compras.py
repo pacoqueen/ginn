@@ -38,10 +38,10 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time
+import gtk, time
 from framework import pclases
 import mx.DateTime
-import geninformes
+from informes import geninformes
 from consulta_ventas_por_producto import convertir_a_listview    
 
 class ConsultaCompras(Ventana):

@@ -740,7 +740,7 @@ class FacturacionPorClienteYFechas(Ventana):
                 frabono = pclases.FacturaDeAbono.get(idfactura)
                 if frabono.abono:
                     import abonos_venta
-                    v = abonos_venta.AbonosVenta(abono, usuario = self.usuario)
+                    v = abonos_venta.AbonosVenta(frabono.abono, usuario = self.usuario)
             elif model[path][0].startswith("*"):
                 fra = pclases.Prefactura.get(idfactura)
                 try:
@@ -780,7 +780,7 @@ class FacturacionPorClienteYFechas(Ventana):
         #utils.dialogo_info(titulo = "NO IMPLEMENTADO", 
         #                   texto = "Computer says no. Atjo.", 
         #                   padre = self.wids['ventana'])
-        from formularios import reports as informes
+        from formularios import reports
         if self.wids['notebook1'].get_current_page() == 0:
             tv = self.wids['tv_facturas']
         elif self.wids['notebook1'].get_current_page() == 1:
@@ -811,7 +811,7 @@ class FacturacionPorClienteYFechas(Ventana):
         datos.append(("    Pendiente:", self.wids['e_pendiente_otros'].get_text(), "", "", "", "", "", "", ""))
         datos.append(("    Cobrado:", self.wids['e_cobrado_otros'].get_text(), "", "", "", "", "", "", ""))
         cliente = self.wids['cbe_cliente'].child.get_text()
-        informes.abrir_pdf(geninformes.facturacion_por_cliente_y_fechas("Facturación %s" % cliente, self.wids['e_fechaini'].get_text(), self.wids['e_fechafin'].get_text(), datos))
+        reports.abrir_pdf(geninformes.facturacion_por_cliente_y_fechas("Facturación %s" % cliente, self.wids['e_fechaini'].get_text(), self.wids['e_fechafin'].get_text(), datos))
 
     def exportar_a_csv(self, boton):
         """

@@ -469,7 +469,7 @@ class CertificadoCalidad(Ventana, VentanaGenerica):
         if not self.objeto:
             return
         #tv = self.wids['tv_datos']
-        #from treeview2pdf import treeview2pdf
+        #from informes.treeview2pdf import treeview2pdf
         from formularios.reports import abrir_pdf
         #strfecha = "%s - %s" % (utils.str_fecha(mx.DateTime.localtime()), 
         #                        utils.str_hora(mx.DateTime.localtime()))

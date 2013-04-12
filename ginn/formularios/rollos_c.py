@@ -38,7 +38,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time
+import gtk, time
 from framework import pclases
 import mx.DateTime
 from informes import geninformes
@@ -136,8 +136,8 @@ class RollosC(Ventana):
         from listado_rollos import preparar_datos_etiquetas_rollos_c
         data = preparar_datos_etiquetas_rollos_c(rollos)
         if data:
-            from formularios import reports as informes
-            informes.abrir_pdf(geninformes.etiquetasRollosCEtiquetadora(data))
+            from formularios import reports
+            reports.abrir_pdf(geninformes.etiquetasRollosCEtiquetadora(data))
 
     def borrar_rollos(self, rollos):
         """

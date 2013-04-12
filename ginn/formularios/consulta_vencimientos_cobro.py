@@ -41,17 +41,20 @@
 ## forma de pago del cliente.
 ###################################################################
 
-from formularios.ventana import Ventana
 from formularios import utils
-import pygtk
-pygtk.require('2.0')
-import gtk, time
-import sys
+from formularios.ventana import Ventana
 from framework import pclases
-import mx.DateTime
 from informes import geninformes
+from vencimientos_pendientes_por_cliente import \
+    buscar_facturas_de_abono_sin_pagar
+import gtk
+import time
+import mx.DateTime
+import pygtk
+import re
+import sys
 import ventana_progreso
-from vencimientos_pendientes_por_cliente import buscar_facturas_de_abono_sin_pagar
+pygtk.require('2.0')
 
 class ConsultaVencimientosCobros(Ventana):
     inicio = None
@@ -559,7 +562,7 @@ class ConsultaVencimientosCobros(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from formularios import reports as informes
+        from formularios import reports
         datos = []
         for i in self.resultado:
             if not i[2]:    # i[2] = False cuando es vencimiento normal de la BD
@@ -604,7 +607,7 @@ class ConsultaVencimientosCobros(Ventana):
                           self.wids['e_total'].get_text(), 
                           "Vencido a la fecha", 
                           self.wids['e_vencido'].get_text()))
-            informes.abrir_pdf(geninformes.vencimientosCobro(datos,fechaInforme))
+            reports.abrir_pdf(geninformes.vencimientosCobro(datos,fechaInforme))
 
 if __name__ == '__main__':
     t = ConsultaVencimientosCobros()

@@ -43,14 +43,15 @@
 ## NOTAS: 
 ## 
 ###################################################################
-from ventana import Ventana
-import utils
-import pygtk
-pygtk.require('2.0')
-import gtk
+from formularios.ventana_progreso import VentanaProgreso
 from framework import pclases
-import mx.DateTime
 from informes import geninformes
+from ventana import Ventana
+import gtk
+import mx.DateTime
+import pygtk
+import utils
+pygtk.require('2.0')
 
 
 class BalasCable(Ventana):
@@ -104,8 +105,8 @@ class BalasCable(Ventana):
         from listado_balas import preparar_datos_etiquetas_balas_cable
         data = preparar_datos_etiquetas_balas_cable(balas)
         if data:
-            from formularios import reports as informes
-            informes.abrir_pdf(geninformes.etiquetasBalasCableEtiquetadora(data))
+            from formularios import reports
+            reports.abrir_pdf(geninformes.etiquetasBalasCableEtiquetadora(data))
 
     def borrar_balas(self, balas):
         """

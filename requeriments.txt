@@ -1,6 +1,8 @@
 sudo apt-get install python-sqlobject
 sudo apt-get install python-psycopg2
 (¿Esto de arriba es así? ¿Sólo eso? ¡¿SEGURO?!)
+([update] Algunos más que recuerdo)
+sudo apt-get install python-pychart python-reportlab python-egenix-mxdatetime
 
 # Para el desarrollo:
 pip from http://pypi.python.org/pypi/pip

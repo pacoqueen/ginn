@@ -49,7 +49,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time
+import gtk, time
 import sys, os
 from framework import pclases
 from informes import geninformes
@@ -794,7 +794,8 @@ class PagaresPagos(Ventana):
         if idproveedor > 0:
             proveedor = pclases.Proveedor.get(idproveedor)
             consulta = self.acotar_busqueda(consulta, proveedor.nombre)
-        ventanalogic = BusquedaLogic(consulta = consulta, padre = self.wids['ventana'])
+        from mostrar_datos_logic import MostrarDatosLogic
+        ventanalogic = MostrarDatosLogic(consulta = consulta, padre = self.wids['ventana'])
         apuntelogic = ventanalogic.get_objeto()
         if apuntelogic != None:
             # 1º Intentar localizar el proveedor.
@@ -874,7 +875,7 @@ class PagaresPagos(Ventana):
         self.guardar()
         
     def imprimir_cheque_monte(self, boton):
-        from formularios import reports as informes
+        from formularios import reports
         import numerals
         pagare = self.objeto
         cantidad = pagare.cantidad
@@ -889,11 +890,11 @@ class PagaresPagos(Ventana):
             if self.wids['ch_lpt'].get_active():
                 london_kills_me(cantidad, receptor, euros, fechaEmision, fechaEmision, pagare = False, entidad = MONTE)
             else:
-                informes.abrir_pdf(geninformes.chequeMonte(cantidad,receptor,euros,fechaEmision))
+                reports.abrir_pdf(geninformes.chequeMonte(cantidad,receptor,euros,fechaEmision))
             self.add_impr_observaciones("cheque El Monte")
 
     def imprimir_pagare_monte(self, boton):
-        from formularios import reports as informes
+        from formularios import reports
         import numerals
         pagare = self.objeto
         fechaPago = pagare.fechaPago
@@ -909,11 +910,11 @@ class PagaresPagos(Ventana):
             if self.wids['ch_lpt'].get_active():
                 london_kills_me(cantidad, receptor, euros, fechaPago, fechaEmision, pagare = True, entidad = MONTE)
             else:
-                informes.abrir_pdf(geninformes.pagareMonte(fechaPago,cantidad,receptor,euros,fechaEmision))
+                reports.abrir_pdf(geninformes.pagareMonte(fechaPago,cantidad,receptor,euros,fechaEmision))
             self.add_impr_observaciones("pagaré El Monte")
 
     def imprimir_pagare_caixa(self, boton):
-        from formularios import reports as informes
+        from formularios import reports
         import numerals
         pagare = self.objeto
         fechaPago = pagare.fechaPago
@@ -932,14 +933,14 @@ class PagaresPagos(Ventana):
                 london_kills_me(cantidad, receptor, euros, fechaEmision, 
                                 fechaPago, pagare = True, entidad = CAIXA)
             else:
-                #informes.abrir_pdf(geninformes.pagareCaixa(fechaPago,cantidad,receptor,euros,fechaEmision))
-                informes.abrir_pdf(geninformes.carta_pago(self.objeto, 
+                #reports.abrir_pdf(geninformes.pagareCaixa(fechaPago,cantidad,receptor,euros,fechaEmision))
+                reports.abrir_pdf(geninformes.carta_pago(self.objeto, 
                     cheque = False, 
                     textofijo = self.wids['ch_imprenta'].get_active()))
             self.add_impr_observaciones("pagaré La Caixa")
 
     def imprimir_cheque_caixa(self, boton):
-        from formularios import reports as informes
+        from formularios import reports
         import numerals
         pagare = self.objeto
         cantidad = pagare.cantidad
@@ -954,8 +955,8 @@ class PagaresPagos(Ventana):
                 fechaEmision = pagare.fechaEmision
                 london_kills_me(cantidad, receptor, euros, fechaEmision, fechaEmision, pagare = False, entidad = CAIXA)
             else:
-                #informes.abrir_pdf(geninformes.chequeCaixa(cantidad,receptor,euros,fechaEmision))
-                informes.abrir_pdf(geninformes.carta_pago(self.objeto, textofijo = self.wids['ch_imprenta'].get_active()))
+                #reports.abrir_pdf(geninformes.chequeCaixa(cantidad,receptor,euros,fechaEmision))
+                reports.abrir_pdf(geninformes.carta_pago(self.objeto, textofijo = self.wids['ch_imprenta'].get_active()))
             self.add_impr_observaciones("cheque La Caixa")
 
     def imprimir_monte(self, boton):
@@ -995,7 +996,7 @@ class PagaresPagos(Ventana):
             self.imprimir_pagare_bankinter()
 
     def imprimir_pagare_bankinter(self):
-        from formularios import reports as informes
+        from formularios import reports
         import numerals
         pagare = self.objeto
         fechaPago = pagare.fechaPago
@@ -1014,13 +1015,13 @@ class PagaresPagos(Ventana):
                 london_kills_me(cantidad, receptor, euros, fechaEmision, 
                                 fechaPago, pagare = True, entidad = BANKINTER)
             else:
-                informes.abrir_pdf(geninformes.carta_pago(self.objeto, 
+                reports.abrir_pdf(geninformes.carta_pago(self.objeto, 
                     cheque = False, 
                     textofijo = self.wids['ch_imprenta'].get_active()))
             self.add_impr_observaciones("pagaré Bankinter")
 
     def imprimir_cheque_bankinter(self):
-        from formularios import reports as informes
+        from formularios import reports
         import numerals
         pagare = self.objeto
         cantidad = pagare.cantidad
@@ -1035,7 +1036,7 @@ class PagaresPagos(Ventana):
                 fechaEmision = pagare.fechaEmision
                 london_kills_me(cantidad, receptor, euros, fechaEmision, fechaEmision, pagare = False, entidad = BANKINTER)
             else:
-                informes.abrir_pdf(geninformes.carta_pago(self.objeto, textofijo = self.wids['ch_imprenta'].get_active()))
+                reports.abrir_pdf(geninformes.carta_pago(self.objeto, textofijo = self.wids['ch_imprenta'].get_active()))
             self.add_impr_observaciones("cheque Bankinter")
 
 

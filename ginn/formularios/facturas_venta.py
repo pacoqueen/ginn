@@ -80,22 +80,22 @@
 ##    creado correctamente.
 ###################################################################
 
-from ventana import Ventana
-import utils
-import pygtk
-pygtk.require('2.0')
-import sys, os
-import gtk, gtk.glade, time
+from albaranes_de_salida import ajustar_existencias
 from framework import pclases
 from informes import geninformes
+from prefacturas import bloquear_albaranes, descontar_existencias, \
+    desglosar_ldvs_por_pedido, desglosar_ldvs_por_albaran, buscar_cuentaOrigen
 from utils import ffloat, _float as float
+from ventana import Ventana
+import gtk
+import time
+import mx.DateTime
 import postomatic
-from albaranes_de_salida import ajustar_existencias
-from prefacturas import bloquear_albaranes, \
-                        descontar_existencias, \
-                        desglosar_ldvs_por_pedido, \
-                        desglosar_ldvs_por_albaran, \
-                        buscar_cuentaOrigen
+import pygtk
+import sys
+import os
+import utils
+pygtk.require('2.0')
 try:
     from psycopg import ProgrammingError as psycopg_ProgrammingError
 except ImportError:
@@ -3001,8 +3001,8 @@ class FacturasVenta(Ventana):
         """
         Muestra la factura generada en PDF.
         """
-        from formularios import reports as informes
-        informes.abrir_pdf(nomarchivo)
+        from formularios import reports
+        reports.abrir_pdf(nomarchivo)
 
     def buscar_abonos(self, w):
         """

@@ -61,8 +61,8 @@ class ConsultaExistencias(Ventana):
         else:
             csv = False
             ruta_csv = None
-        from formularios import reports as informes
-        informes.abrir_pdf(geninformes.existencias_productos(
+        from formularios import reports
+        reports.abrir_pdf(geninformes.existencias_productos(
             'rollos', 
             "%s, %s" % (utils.str_fecha(time.localtime()), 
                         time.strftime("%H:%M")), 
@@ -73,7 +73,7 @@ class ConsultaExistencias(Ventana):
                     ruta_csv = tempfile.NamedTemporaryFile(
                         suffix = "_%s.csv" % a.nombre, 
                         delete = False).name
-                informes.abrir_pdf(
+                reports.abrir_pdf(
                     geninformes.existencias_productos('rollos', "%s, %s" % (
                             utils.str_fecha(time.localtime()), 
                             time.strftime("%H:%M")), 

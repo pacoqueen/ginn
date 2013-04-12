@@ -1,12 +1,8 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os, sys
 import gtk
-import gtk.glade
-import gobject
-import clientes
-import sqlite
+from formularios import clientes
 
 
 class Recibo:
@@ -74,7 +70,7 @@ class Recibo:
 
 
     def Buscar(self,widget):
-        self.w=clientes.Cliente()
+        self.w=clientes.Clientes()
         self.w.Llamada="Recibos"
         #self.w.ventana.set_modal(True)
         self.w.CodCliente="x"

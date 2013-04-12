@@ -236,7 +236,7 @@ class ConsultaConsumo(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from formularios import reports as informes
+        from formularios import reports
         datos = []
         model = self.wids['tv_datos'].get_model()
         for i in xrange(len(model)):
@@ -246,7 +246,7 @@ class ConsultaConsumo(Ventana):
         else:
             fechaInforme = utils.str_fecha(time.strptime(self.inicio, "%Y/%m/%d"))+' - '+utils.str_fecha(time.strptime(self.fin, "%Y/%m/%d"))
         if datos != []:
-            informes.abrir_pdf(geninformes.consumo_produccion(datos, fechaInforme))
+            reports.abrir_pdf(geninformes.consumo_produccion(datos, fechaInforme))
 
 
 if __name__ == '__main__':

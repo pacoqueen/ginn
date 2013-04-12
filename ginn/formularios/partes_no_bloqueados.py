@@ -39,14 +39,16 @@
 ## aparecería en la lista).
 ###################################################################
 
-from ventana import Ventana
-import utils
-import pygtk
-pygtk.require('2.0')
-import gtk, gtk.glade, time
 from framework import pclases
+from ventana import Ventana
+import gtk
+import time
 import mx.DateTime
-import ventana_progreso    
+import pygtk
+import sys
+import utils
+import ventana_progreso
+pygtk.require('2.0')
 
 class PartesNoBloqueados(Ventana):
     def __init__(self, objeto = None, usuario = None):

@@ -38,14 +38,16 @@
 ## 24 de julio de 2006 -> Modificado para generarse dinámicamente.
 ###################################################################
 
-from ventana import Ventana
-import utils
-import pygtk
-pygtk.require('2.0')
-import gtk, gtk.glade, time
-import sys
 from framework import pclases
 from informes import geninformes
+from ventana import Ventana
+import gtk
+import time
+import pygtk
+import sqlobject
+import sys
+import utils
+pygtk.require('2.0')
 try:
     from psycopg import ProgrammingError as psycopg_ProgrammingError
 except ImportError:

@@ -81,7 +81,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, gobject
+import gtk, time, gobject
 import sys, os
 from framework import pclases
 from informes import geninformes
@@ -130,7 +130,7 @@ class TarifasDePrecios(Ventana):
         """
         Imprime la tarifa en pantalla.
         """
-        from formularios import reports as informes
+        from formularios import reports
         datos = []
         model = self.wids['tabla_productos'].get_model()
         for iter in model: 
@@ -151,7 +151,7 @@ class TarifasDePrecios(Ventana):
         datos.sort(cmp_func)
         if datos != []:
             nombre_tarifa = self.wids['cb_nombre_tarifa'].child.get_text()
-            informes.abrir_pdf(geninformes.imprimir_tarifa(datos, nombre_tarifa, utils.str_fecha(mx.DateTime.localtime())))
+            reports.abrir_pdf(geninformes.imprimir_tarifa(datos, nombre_tarifa, utils.str_fecha(mx.DateTime.localtime())))
 
     def act(self):
 #        utils.dialogo_info('ACTUALIZAR', 'El objeto ha sido modificado remotamente.\nDebe actualizar la información mostrada en pantalla. Pulse el botón «Actualizar».', padre = self.wids['ventana'])

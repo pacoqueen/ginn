@@ -504,20 +504,20 @@ class PendientesServir(Ventana):
         """
         Imprime la información en dos documentos: fibra y geotextiles.
         """
-        from formularios import reports as informes
+        from formularios import reports
         idcliente = utils.combo_get_value(self.wids['cbe_cliente'])
         if idcliente > 0:
             nombrecliente = pclases.Cliente.get(idcliente).nombre
         else:
             nombrecliente = ""
         if self.gpped != None and self.gpped != []:
-            informes.abrir_pdf(geninformes.pendiente_servir("geotextiles", 
+            reports.abrir_pdf(geninformes.pendiente_servir("geotextiles", 
                                self.gpped, self.gppro, nombrecliente))
         if self.fpped != None and self.fpped != []:
-            informes.abrir_pdf(geninformes.pendiente_servir("fibra", 
+            reports.abrir_pdf(geninformes.pendiente_servir("fibra", 
                                self.fpped, self.fppro, nombrecliente))
         if self.opped != None and self.opped != []:
-            informes.abrir_pdf(geninformes.pendiente_servir("otros", 
+            reports.abrir_pdf(geninformes.pendiente_servir("otros", 
                                self.opped, self.oppro, nombrecliente))
 
 

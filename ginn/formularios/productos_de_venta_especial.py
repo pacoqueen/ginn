@@ -37,15 +37,14 @@
 ## 
 ###################################################################
 
-import sys, os
 from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time 
+import gtk
 from framework import pclases
 from utils import _float as float
-from barcode.EANBarCode import EanBarCode
+from informes.barcode.EANBarCode import EanBarCode
 try:
     from psycopg import ProgrammingError as psycopg_ProgrammingError
 except ImportError:

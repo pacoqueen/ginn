@@ -41,10 +41,9 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import sys, os 
+import gtk
 from framework import pclases
 import mx.DateTime
-import gobject
 import md5
 
 class Usuarios(Ventana):

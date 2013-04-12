@@ -532,6 +532,7 @@ def existencias(hasta = None, exportar_a_csv_a = None, ventana_padre = None):
         i = 0.0
         tot = productos.count()
     if ventana_padre:
+        from formularios.ventana_progreso import VentanaProgreso
         vpro = VentanaProgreso(padre = ventana_padre)
         vpro.mostrar()
         vpro.set_valor(0.0, "Procesando...")
@@ -7741,7 +7742,7 @@ def prueba():
 def prueba2():
     from barcode.EANBarCode import EanBarCode
     bar = EanBarCode()
-    import pclases
+    from framework import pclases
     p = pclases.ProductoVenta.select()[0]
     # nombrefich = bar.makeFakeCode(p.codigo)
     # El makeFakeCode no genera códigos correctos. Hay que usar:
@@ -9549,7 +9550,7 @@ def existencias_fibra_por_lote(fecha = None):
     """
     Imprime las existencias de fibra en almacén desglosadas por lote.
     """
-    from ventana_progreso import VentanaProgreso
+    from formularios.ventana_progreso import VentanaProgreso
     vpro = VentanaProgreso()
     vpro.mostrar()
     balas = pclases.Bala.select("""
@@ -10205,7 +10206,7 @@ def get_lineas_euros(cantidad, n = 80, mayusculas = False):
     dos líneas si el número de caracteres de la misma es
     superior a "n".
     """
-    from numerals import numerals
+    from formularios.numerals import numerals
     euros = numerals(cantidad, moneda = "euros", fraccion = "céntimos",
                      autoomitir = True)
     if mayusculas:
@@ -10609,7 +10610,7 @@ def generar_pdf_presupuesto(presupuesto):
         if presupuesto.validez == 1:
             mes = "UN MES"
         else:
-            from numerals import numerals
+            from formularios.numerals import numerals
             txt_meses = numerals(presupuesto.validez,
                                  moneda = "",
                                  fraccion = "",
@@ -11170,7 +11171,7 @@ def recibo(numrecibo, lugar_libramiento, importe, fecha_libramiento,
     tm, bm, lm, rm = (29*cm, 1.0*cm, 1.5*cm, 20*cm)    # "Top", "bottom",
         # "left" y "right margin"
     xoffset, yoffset = lm, tm - medidas['recibo'][3]
-    from numerals import numerals
+    from formularios.numerals import numerals
     try:
         importe_letras = numerals(utils.parse_euro(importe), moneda = "",
                                   fraccion = "", autoomitir = True).upper()
@@ -11957,7 +11958,7 @@ def pruebines():
     vencimiento = {'fecha':fechasVencimiento,
                    'pago':_factura.cliente.vencimientos,
                    'documento':_factura.cliente.documentodepago}
-    import numerals
+    from formularios import numerals
     total = "1.234.567,89 €"
     total = total.replace('€', '')
     total = total.replace(' ', '')
@@ -11984,20 +11985,18 @@ def pruebines():
     nomarchivo = factura(cliente, factdata, lineas, arancel, vencimiento,
                          texto, totales)
     import sys, os
-    from informes import abrir_pdf
+    from formularios.reports import abrir_pdf
     abrir_pdf(nomarchivo)
 
 def pruebines_bibales():
-    import sys, os
-    import pclases
-    from informes import abrir_pdf
+    from framework import pclases
+    from formularios.reports import abrir_pdf
     abrir_pdf(etiquetasBigbags(pclases.Bigbag.select()[:2]))
     return
 
 def pruebines2():
-    import sys, os
-    import pclases
-    from informes import abrir_pdf
+    from framework import pclases
+    from formularios.reports import abrir_pdf
     producto = pclases.ProductoVenta.select(
         pclases.ProductoVenta.q.camposEspecificosRolloID != None)[-2]
     campos = producto.camposEspecificosRollo
@@ -12019,9 +12018,8 @@ def pruebines2():
     abrir_pdf(nomarchivo)
 
 def pruebines3():
-    import sys, os
-    import pclases
-    from informes import abrir_pdf
+    from framework import pclases
+    from formularios.reports import abrir_pdf
     from time import sleep
 
     abrir_pdf(carta_pago(pclases.PagarePago.select()[-1]))
@@ -12034,9 +12032,8 @@ def pruebines3():
               textofijo = False))
 
 def pruebines5():
-    import sys, os
-    import pclases
-    from informes import abrir_pdf
+    from framework import pclases
+    from formularios.reports import abrir_pdf
 
     #abrir_pdf(trazabilidad("Texto de trazabilidad de prueba."))
     abrir_pdf(generar_pdf_presupuesto(pclases.Presupuesto.select()[-1]))
@@ -12048,8 +12045,7 @@ def probar_fuentes_disponibles():
     Crea y abre un PDF con las fuentes disponibles en la
     instalación de ReportLab local.
     """
-    import sys, os
-    from informes import abrir_pdf
+    from formularios.reports import abrir_pdf
 
     y = A4[1] - 3 * cm
     nomarchivo = os.path.join(gettempdir(), "muestrafuentes.pdf")
@@ -12068,9 +12064,7 @@ def probar_fuentes_disponibles():
     abrir_pdf(nomarchivo)
 
 def pruebines4():
-    import sys, os
-    import pclases
-    from informes import abrir_pdf
+    from formularios.reports import abrir_pdf
 
     pclases.PagarePago.select()[-1]
     empresa = "Quadrophenia"
@@ -12106,9 +12100,7 @@ def pruebines4():
                                 firmado))
 
 def pruebines6():
-    import sys, os
-    import pclases
-    from informes import abrir_pdf
+    from formularios.reports import abrir_pdf
 
     #abrir_pdf(trazabilidad("Texto de trazabilidad de prueba."))
     #abrir_pdf(generar_pdf_presupuesto(pclases.Presupuesto.select()[0]))
@@ -12119,15 +12111,12 @@ def pruebines6():
                      "C/ Goser el destructor"))
 
 def pruebines_nuevas_etiquetas_domenech():
-    from listado_balas import preparar_datos_etiquetas_balas
-    import random
-    #balas = [pclases.Bala.select(orderBy = "-id")[random.randrange(0, 
-    #    pclases.Bala.select().count())] for n in range(5)]
+    from formularios.listado_balas import preparar_datos_etiquetas_balas
     balas = [pclases.Bala.select(orderBy = "-id")[0]]
     balas = preparar_datos_etiquetas_balas(
         #pclases.Bala.select(orderBy = "-id")[:2])
         balas)
-    from informes import abrir_pdf
+    from formularios.reports import abrir_pdf
     #import time
     #abrir_pdf(domenech_v_etiquetasBalasEtiquetadora(balas, "4", "2158"))
     #time.sleep(1)
@@ -12137,11 +12126,11 @@ def pruebines_nuevas_etiquetas_domenech():
     abrir_pdf(domenech_h_etiquetasBalasEtiquetadora(balas))
 
 def prueba_cmr():
-    from informes import abrir_pdf
+    from formularios.reports import abrir_pdf
     abrir_pdf(cmr(pclases.AlbaranSalida.get(2216)))
 
 def pruebines_pales_guaje():
-    from informes import mandar_a_imprimir_con_ghostscript, abrir_pdf
+    from formularios.reports import mandar_a_imprimir_con_ghostscript, abrir_pdf
     pale = pclases.Pale.select(orderBy = "-id")[0]
     pale = [pale, pclases.Pale.select(orderBy = "id")[0]]
     for i in range(3):
@@ -12150,7 +12139,7 @@ def pruebines_pales_guaje():
         #mandar_a_imprimir_con_ghostscript(filetiqpale)
 
 def pruebines_cajas_guaje():
-    from informes import mandar_a_imprimir_con_ghostscript, abrir_pdf
+    from formularios.reports import mandar_a_imprimir_con_ghostscript, abrir_pdf
     caja = pclases.Caja.select(orderBy = "-id")[0]
     caja = [caja, pclases.Caja.select(orderBy = "id")[0]]
     for i in range(3):

@@ -39,15 +39,14 @@
 ## 23 de enero de 2006 -> Portado a clase.
 ###################################################################
 
-import sys, os
 from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time
+import gtk
 from framework import pclases
-from barcode.EANBarCode import EanBarCode
-import mx, mx.DateTime
+from informes.barcode.EANBarCode import EanBarCode
+import mx.DateTime
 try:
     from psycopg import ProgrammingError as psycopg_ProgrammingError
 except ImportError:

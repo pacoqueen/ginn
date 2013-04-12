@@ -38,8 +38,8 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, os
-import geninformes
+import gtk, time, os
+from informes import geninformes
 
 
 class PendientesRecibir(Ventana):
@@ -64,8 +64,8 @@ class PendientesRecibir(Ventana):
         else:
             ruta_csv = None
 
-        from formularios import reports as informes
-        informes.abrir_pdf(
+        from formularios import reports
+        reports.abrir_pdf(
             geninformes.pendiente_recibir(exportar_a_csv_a = ruta_csv))
 
 

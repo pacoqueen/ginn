@@ -55,7 +55,6 @@ from informes import geninformes
 from utils import _float as float
 from ventana_progreso import VentanaActividad, VentanaProgreso
 from partes_de_fabricacion_balas import verificar_solapamiento, \
-                                        buscar_o_crear_albaran_interno, \
                                         entran_en_turno
 from partes_de_fabricacion_rollos import descontar_material_adicional
 
@@ -877,7 +876,7 @@ class PartesDeFabricacionBolsas(Ventana):
             pales_a_etiquetar.append(pale)
             vpro.ocultar()
             descontar_material_adicional(self, articulo)
-            buscar_o_crear_albaran_interno(self.objeto, 
+            self.objeto.buscar_o_crear_albaran_interno( 
                 incluir_consumos_auto = True) # Normalmente no, pero 
                 # aquí sí quiero que aparezcan en el alb. interno.
         imprimir_etiquetas_pales(pales_a_etiquetar, self.wids['ventana'], 
@@ -1647,7 +1646,7 @@ class PartesDeFabricacionBolsas(Ventana):
                     texto = "El código %s no se encontró." % codigo, 
                     padre = self.wids['ventana'])
             else:
-                albint = buscar_o_crear_albaran_interno(self.objeto, 
+                albint = self.objeto.buscar_o_crear_albaran_interno(
                         incluir_consumos_auto = True) # Normalmente no, pero 
                         # aquí sí quiero que aparezcan en el alb. interno.
                 bb.articulo.sync()
@@ -1739,7 +1738,7 @@ class PartesDeFabricacionBolsas(Ventana):
                     ldv.cantidad -= bb.pesobigbag
                     ldv.syncUpdate()
             #self.actualizar_ventana()
-            buscar_o_crear_albaran_interno(self.objeto, 
+            self.objeto.buscar_o_crear_albaran_interno( 
             incluir_consumos_auto = True) # Normalmente no, pero 
                 # aquí sí quiero que aparezcan en el alb. interno.
             self.rellenar_tabla_consumos()
@@ -1841,7 +1840,7 @@ class PartesDeFabricacionBolsas(Ventana):
                     self.rellenar_tabla_consumos()
                     # Buscar y crear (si no existe) el albarán interno de 
                     # consumos.
-                    buscar_o_crear_albaran_interno(self.objeto, 
+                    self.objeto.buscar_o_crear_albaran_interno(
                         incluir_consumos_auto = True) # Normalmente no, pero 
                             # aquí sí quiero que aparezcan en el alb. interno.
 
@@ -1896,7 +1895,7 @@ def imprimir_etiquetas_pales(pales, padre = None, mostrar_dialogo = True):
             valor_por_defecto = 1)
     if tipo != None:
         MEMENTO_MORI = tipo
-        from informes import mandar_a_imprimir_con_ghostscript
+        from formularios.reports import mandar_a_imprimir_con_ghostscript
         que_imprimir = utils.dialogo_radio(
             titulo = "SELECCIONAR TIPO IMPRESIÓN", 
             texto = "Seleccione qué imprimir:", 

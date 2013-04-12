@@ -50,7 +50,7 @@ import pygtk
 pygtk.require('2.0')
 import sys, os 
 from framework import pclases
-import gtk, gtk.glade, time
+import gtk, time
 import mx.DateTime
 import gobject
 try:

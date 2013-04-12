@@ -44,7 +44,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, gobject
+import gtk, time, gobject
 from framework import pclases
 import mx, mx.DateTime
 

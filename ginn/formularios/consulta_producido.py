@@ -33,17 +33,19 @@
 ## 
 ###################################################################
 
-from ventana import Ventana
-import utils
-import pygtk
-pygtk.require('2.0')
-import gtk, gtk.glade, time
-import sys, os
+from formularios import ventana_progreso
 from framework import pclases
-import mx.DateTime
 from informes import geninformes
-from pychart import *   # No me gusta, pero no queda otra
+from pychart import * # No me gusta, pero no queda otra
 from tempfile import gettempdir
+from ventana import Ventana
+import gtk
+import time
+import mx.DateTime
+import pygtk
+import os
+import utils
+pygtk.require('2.0')
     
 
 class ConsultaProducido(Ventana):
@@ -96,8 +98,8 @@ class ConsultaProducido(Ventana):
         Exporta el contenido del TreeView a un fichero csv.
         """
         import sys, os
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
 
@@ -486,7 +488,7 @@ class ConsultaProducido(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from formularios import reports as informes
+        from formularios import reports
         datos = []
         model = self.wids['tv_datos'].get_model()
         for i in model:
@@ -508,7 +510,7 @@ class ConsultaProducido(Ventana):
         else:
             fechaInforme = utils.str_fecha(time.strptime(self.inicio,"%Y/%m/%d"))+' - '+utils.str_fecha(time.strptime(self.fin,"%Y/%m/%d"))
         if datos != []:
-            informes.abrir_pdf(geninformes.producido_produccion(datos, fechaInforme, self.grafico))
+            reports.abrir_pdf(geninformes.producido_produccion(datos, fechaInforme, self.grafico))
 
 
 if __name__ == '__main__':

@@ -38,12 +38,11 @@
 from ventana import Ventana
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, utils
-import sys, os
+import gtk, utils
 from framework import pclases
 import mx.DateTime
 from informes import geninformes
-
+from math import ceil
 import ventana_progreso
 
 def buscar_annos_ini_fin():
@@ -441,8 +440,8 @@ class ConsultaTotalesGeotextiles(Ventana):
         Exporta el contenido del TreeView a un fichero csv.
         """
         import sys, os
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
 
@@ -591,7 +590,7 @@ class ConsultaTotalesGeotextiles(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from formularios import reports as informes
+        from formularios import reports
         datos = []
         model = self.wids['tv_datos'].get_model()
         for iter in model:
@@ -602,7 +601,7 @@ class ConsultaTotalesGeotextiles(Ventana):
         datos.insert(-1, ("---", )*25)  # La línea horizontal antes del TOTAL
         if datos != []:
             anno = self.wids['cbe_year'].child.get_text()
-            informes.abrir_pdf(geninformes.resumen_totales_geotextiles(datos, utils.str_fecha(mx.DateTime.localtime()), anno))
+            reports.abrir_pdf(geninformes.resumen_totales_geotextiles(datos, utils.str_fecha(mx.DateTime.localtime()), anno))
 
 
 if __name__ == '__main__':

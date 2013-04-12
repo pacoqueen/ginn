@@ -39,7 +39,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, os
+import gtk, time, os
 from informes import geninformes
 import mx, mx.DateTime
 
@@ -51,7 +51,7 @@ class ConsultaRepuestos(Ventana):
         comenzar la ventana (en lugar del primero de la tabla, que es
         el que se muestra por defecto).
         """
-        from formularios import reports as informes, tempfile
+        from formularios import reports, tempfile
 
         exportar_a_csv_a = None
 
@@ -71,7 +71,7 @@ class ConsultaRepuestos(Ventana):
                                     mx.DateTime.localtime().strftime("%Y%m%d")))
         pdfs = func_informe(exportar_a_csv_a = exportar_a_csv_a)
         for pdf in pdfs:
-            informes.abrir_pdf(pdf)
+            reports.abrir_pdf(pdf)
 
 if __name__ == '__main__':
     t = ConsultaRepuestos()

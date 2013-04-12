@@ -39,7 +39,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, gobject, pango
+import gtk, time, gobject, pango
 from framework import pclases
 import mx, mx.DateTime
 from consulta_existenciasBolsas import act_fecha 

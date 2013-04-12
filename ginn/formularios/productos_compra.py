@@ -44,7 +44,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time
+import gtk, time
 import sys, os
 from framework import pclases
 from framework.seeker import VentanaGenerica
@@ -918,8 +918,8 @@ class ProductosCompra(Ventana, VentanaGenerica):
         Lanzará un ImportError si no se puede cargar el módulo corrector.
         Devuelve False si no se 
         """
-        import spelling     # Antes de hacer nada más, para no perder tiempo
-                            # en caso de error.
+        from utils import spelling      # Antes de hacer nada más, para no 
+                                        # perder tiempo en caso de error.
         txtbase = []
         for pc in pclases.ProductoCompra.select():
             txtbase.append(pc.codigo.lower())

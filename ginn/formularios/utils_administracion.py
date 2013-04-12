@@ -39,14 +39,13 @@
 
 raise ImportError, "Este módulo está obsoleto."
 
-import sys
 
 
 def id_propia_empresa_proveedor():
     """
     Devuelve el id de la propia empresa en la tabla proveedores.
     """
-    from pclases import DatosDeLaEmpresa, Proveedor
+    from framework.pclases import DatosDeLaEmpresa, Proveedor
     try:
         empresa = DatosDeLaEmpresa.select()[0]
     except:
@@ -93,7 +92,7 @@ def id_propia_empresa_cliente():
     """
     Devuelve el id de la propia empresa en la tabla clientes.
     """
-    from pclases import DatosDeLaEmpresa, Cliente, Auditoria
+    from framework.pclases import DatosDeLaEmpresa, Cliente, Auditoria
     try:
         empresa = DatosDeLaEmpresa.select()[0]
     except:

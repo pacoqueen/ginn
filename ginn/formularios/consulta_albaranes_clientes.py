@@ -39,10 +39,9 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time
+import gtk, time
 from framework import pclases
-import mx.DateTime
-import geninformes
+from informes import geninformes
     
 
 class ConsultaAlbaranesCliente(Ventana):
@@ -86,8 +85,8 @@ class ConsultaAlbaranesCliente(Ventana):
         Exporta el contenido del TreeView a un fichero csv.
         """
         import sys, os
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
 
@@ -191,7 +190,7 @@ class ConsultaAlbaranesCliente(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from formularios import reports as informes
+        from formularios import reports
         datos = []
         # for i in self.resultado:
         #     datos.append((i.cliente.nombre,
@@ -207,7 +206,7 @@ class ConsultaAlbaranesCliente(Ventana):
             fechaInforme = utils.str_fecha(time.strptime(self.inicio,"%Y/%m/%d"))+' - '+utils.str_fecha(time.strptime(self.fin,"%Y/%m/%d"))
             
         if datos != []:
-            informes.abrir_pdf(geninformes.albaranesCliente(datos, self.cliente and self.cliente.nombre or "", fechaInforme))
+            reports.abrir_pdf(geninformes.albaranesCliente(datos, self.cliente and self.cliente.nombre or "", fechaInforme))
 
 
 if __name__ == '__main__':

@@ -71,7 +71,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time 
+import gtk, time 
 from framework import pclases
 import mx.DateTime
 from informes import geninformes
@@ -82,9 +82,8 @@ except ImportError:
     import psycopg2 as psycopg
 from ventana_progreso import VentanaActividad, VentanaProgreso
 import re, os
-from partes_de_fabricacion_balas import verificar_solapamiento, \
-                                        buscar_o_crear_albaran_interno, \
-                                        entran_en_turno
+from formularios.partes_de_fabricacion_balas import verificar_solapamiento, \
+                                                    entran_en_turno
 try:
     from psycopg import ProgrammingError as psycopg_ProgrammingError
 except ImportError:
@@ -184,7 +183,7 @@ def imprimir_etiqueta_de_rollo_defectuoso(rollo):
     Imprime una etiqueta de rollo defectuoso correspondiente 
     al objeto rollo/rolloDefectuoso recibido.
     """
-    from formularios import reports as informes
+    from formularios import reports
     producto = rollo.productoVenta
     if isinstance(rollo, pclases.RolloDefectuoso):
         elemento = {'descripcion': producto.nombre,
@@ -222,7 +221,7 @@ def imprimir_etiqueta_de_rollo_defectuoso(rollo):
                         # imprimir su etiqueta.
     else:
         return
-    informes.abrir_pdf(geninformes.etiquetasRollosEtiquetadora([elemento], 
+    reports.abrir_pdf(geninformes.etiquetasRollosEtiquetadora([elemento], 
                                                                False))
     
 
@@ -2746,7 +2745,7 @@ class PartesDeFabricacionRollos(Ventana):
     
     def imprimir(self, boton):
         self.guardar(None)
-        from formularios import reports as informes
+        from formularios import reports
         parte = self.objeto
         ws = ('e_fecha', 'e_grsm2', 'sp_merma', 'e_partida', 'e_articulo', 
               'e_ancho', 'e_long_rollo', 'e_hora_ini', 'e_hora_fin', 
@@ -2777,7 +2776,7 @@ class PartesDeFabricacionRollos(Ventana):
                            self.horafin(detalle),
                            self.duracion(detalle),
                            obs))
-        informes.abrir_pdf(geninformes.parteRollos(datos, lineas))
+        reports.abrir_pdf(geninformes.parteRollos(datos, lineas))
         
     def _dialogo_entrada(self, texto= '', titulo = 'ENTRADA DE DATOS', valor_por_defecto = '', padre=None, pwd = False):
         """
@@ -2838,7 +2837,7 @@ class PartesDeFabricacionRollos(Ventana):
             rollos_defecto.append(model[path][1])
             rollos_defecto.sort()
         rollos_defecto = ', '.join(rollos_defecto)
-        from formularios import reports as informes
+        from formularios import reports
         entrada, mostrar_marcado = self._dialogo_entrada(
             titulo = 'ETIQUETAS', 
             texto = "Introduzca el número de rollo o el rango (usando '-') "
@@ -2912,11 +2911,11 @@ class PartesDeFabricacionRollos(Ventana):
                 elemento, fetiqueta = build_etiqueta(r)
                 rollos.append(elemento)
             if boton.name == "b_etiquetas":
-                informes.abrir_pdf(
+                reports.abrir_pdf(
                     geninformes.etiquetasRollos(rollos, mostrar_marcado))
                     # Antiguas, 4 etiquetas por folio A4.
             elif boton.name == "b_etiq_peq":
-                informes.abrir_pdf(
+                reports.abrir_pdf(
                     geninformes.etiquetasRollosEtiquetadora(rollos, 
                                                             mostrar_marcado, 
                                                             fetiqueta))
@@ -3212,7 +3211,7 @@ class PartesDeFabricacionRollos(Ventana):
                                                      msg))
                     self.rellenar_tabla_consumos()
                     # Buscar y crear (si no existe) el albarán interno de consumos.
-                    buscar_o_crear_albaran_interno(self.objeto)
+                    self.objeto.buscar_o_crear_albaran_interno()
                     actualizar_albaran_interno_con_tubos(self.objeto)
 
     def add_desecho(self, boton):
@@ -3552,7 +3551,7 @@ def imprimir_etiqueta(articulo, marcado_ce, ventana_parte, defectuoso = False):
     else:
         if (articulo.rollo.numrollo > ventana_parte.ultima_etiqueta 
             or ventana_parte.ultima_etiqueta == None):
-            from formularios import reports as informes
+            from formularios import reports
             rollos = []
             producto = articulo.productoVenta
             try:
@@ -3614,7 +3613,7 @@ def imprimir_etiqueta(articulo, marcado_ce, ventana_parte, defectuoso = False):
                 rollos.append(elemento)
             # informes.mandar_a_imprimir_con_ghostscript(geninformes.etiquetasRollosEtiquetadora(rollos, marcado_ce))
             ventana_parte.ultima_etiqueta = ultima
-            informes.abrir_pdf(geninformes.etiquetasRollosEtiquetadora(rollos, 
+            reports.abrir_pdf(geninformes.etiquetasRollosEtiquetadora(rollos, 
                                                                 marcado_ce, 
                                                                 fetiqueta))
 
@@ -3750,7 +3749,7 @@ def actualizar_albaran_interno_con_tubos(pdp):
             except KeyError:
                 cons_tubos[c.productoCompra] = c.cantidad
     if not pdp.albaranInterno:
-        buscar_o_crear_albaran_interno(pdp)
+        pdp.buscar_o_crear_albaran_interno()
         actualizar_albaran_interno_con_tubos(pdp)
     for ldv in pdp.albaranInterno.lineasDeVenta:
         if ldv.productoCompra in cons_tubos:

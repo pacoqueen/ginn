@@ -34,15 +34,17 @@
 ##
 ###################################################################
 
-from ventana import Ventana
-import utils
-import pygtk
-pygtk.require('2.0')
-import gtk, gtk.glade, time
-import sys
 from framework import pclases
-from partes_de_fabricacion_rollos import build_etiqueta
 from informes import geninformes
+from partes_de_fabricacion_rollos import build_etiqueta
+from ventana import Ventana
+import gtk
+import time
+import mx.DateTime
+import pygtk
+import sys
+import utils
+pygtk.require('2.0')
 
 class ListadoRollosDefectuosos(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -365,7 +367,7 @@ class ListadoRollosDefectuosos(Ventana):
                 rollos_defecto.append(model[path][0])
                 rollos_defecto.sort()
             rollos_defecto = ', '.join(rollos_defecto)
-            from formularios import reports as informes
+            from formularios import reports
             entrada, mostrar_marcado = self._dialogo_entrada(titulo='ETIQUETAS', 
                                                              texto="Introduzca los números de rollo, separados por coma, que desea etiquetar:",
                                                              valor_por_defecto = rollos_defecto,
@@ -391,7 +393,7 @@ class ListadoRollosDefectuosos(Ventana):
                 for r in temp:
                     elemento, fetiqueta = build_etiqueta(r)
                     rollos.append(elemento)
-                informes.abrir_pdf(geninformes.etiquetasRollosEtiquetadora(
+                reports.abrir_pdf(geninformes.etiquetasRollosEtiquetadora(
                     rollos, mostrar_marcado, hook = fetiqueta))    
                     # Etiquetas térmicas pequeñas.
         else:

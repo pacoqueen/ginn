@@ -34,11 +34,11 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time
+import gtk, time
 import sys
 from framework import pclases
 import mx.DateTime
-import geninformes
+from informes import geninformes
 import re
 import ventana_progreso
 from utils import _float as float
@@ -387,7 +387,7 @@ class ConsultaVencimientosPagados(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from formularios import reports as informes
+        from formularios import reports
         datos = []
         for pago in self.resultado:
             datos.append((pago.facturaCompra.numfactura,
@@ -417,15 +417,15 @@ class ConsultaVencimientosPagados(Ventana):
                           self.wids['e_total'].get_text(), 
                           "", 
                           ""))
-            informes.abrir_pdf(geninformes.vencimientosPago(datos,fechaInforme))
+            reports.abrir_pdf(geninformes.vencimientosPago(datos,fechaInforme))
 
     def exportar(self, boton):
         """
         Vuelva el contenido de todos los TreeViews en un solo ".csv".
         """
         tv = self.wids['tv_datos']
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         nomarchivocsv = treeview2csv(tv)
         abrir_csv(nomarchivocsv)
         nomarchivocsv = treeview2csv(self.wids['tv_totales'])

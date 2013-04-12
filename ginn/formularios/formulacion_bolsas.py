@@ -34,7 +34,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time
+import gtk
 from framework import pclases
 from utils import _float as float
 try:
@@ -127,16 +127,16 @@ class FormulacionBolsaCemento(Ventana):
         consumo y el de venta si es un "contenido" de consumo.
         """
         model = tv.get_model()
-        id = model[path][-1]
+        ide = model[path][-1]
         if model[path].parent == None:
             import productos_compra
-            consumo = pclases.ConsumoAdicional.get(id)
+            consumo = pclases.ConsumoAdicional.get(ide)
             producto_compra = consumo.productoCompra
-            v = productos_compra.ProductosCompra(producto_compra)
+            v = productos_compra.ProductosCompra(producto_compra)  # @UnusedVariable
         else:
             import productos_de_venta_balas
-            v = productos_de_venta_balas.ProductosDeVentaBalas(
-                pclases.ProductoVenta.get(id))
+            v = productos_de_venta_balas.ProductosDeVentaBalas(  # @UnusedVariable
+                pclases.ProductoVenta.get(ide))
 
     def guardar(self, b):
         """
@@ -303,11 +303,11 @@ class FormulacionBolsaCemento(Ventana):
         productos_embolsado = [p for p in productos_embolsado if p.es_bolsa()]
         for nombre in nombres_ca:
             if nombre not in nombres_ca_existentes:
-                cantidad_defecto = nombres_ca[nombre][0]
+                cantidad_defecto, unidad_defecto = nombres_ca[nombre]
                 ca = pclases.ConsumoAdicional(nombre = nombre,
                                               #cantidad = nombres_ca[nombre][0],
                                               cantidad = cantidad_defecto,
-                                              unidad = nombres_ca[nombre][1],
+                                              unidad = unidad_defecto,
                                               formulacionID = self.objeto.id,
                                               productoCompraID = None)
                 pclases.Auditoria.nuevo(ca, self.usuario, __file__)
@@ -321,6 +321,7 @@ class FormulacionBolsaCemento(Ventana):
                         print "Creando nuevo."
                         nuevonombre = nombre + " %d cajas/palé" % ceb.cajasPale
                         try:
+                            unidad = "ud / ud"
                             nca = pclases.ConsumoAdicional.select(pclases.AND(
                               pclases.ConsumoAdicional.q.nombre == nuevonombre, 
                               pclases.ConsumoAdicional.q.unidad == unidad, 
@@ -366,7 +367,6 @@ class FormulacionBolsaCemento(Ventana):
         la ventana de resultados, en cuyo caso se deveulve
         None.
         """
-        producto = self.objeto
         a_buscar = utils.dialogo_entrada(
             "Introduzca código o descripción de producto:", 
             titulo = "BUSCAR PRODUCTO", 
@@ -565,7 +565,7 @@ class FormulacionBolsaCemento(Ventana):
                                               cabeceras = ("ID", "Código", "Descripción"), 
                                               multi = True)
         if idsproducto and idsproducto!= [-1]:
-            return [pclases.ProductoVenta.get(id) for id in idsproducto]
+            return [pclases.ProductoVenta.get(ide) for ide in idsproducto]
         
     def pedir_producto_compra(self):
         """
@@ -699,10 +699,10 @@ def comprobar_unidad(txt, cantidadpc = 1.0):
     regexp_porcentaje = re.compile("^-?\d+[\.,]?\d*\s*%$")
     regexp_fraccion = re.compile("-?\d+[\.,]?\d*\s*\w*\s*/\s*-?\d*[\.,]?\d*\s*\w+")
     if regexp_porcentaje.findall(txt) != []:
-        cantidad = parsear_porcentaje(txt)
+        cantidad = parsear_porcentaje(txt)  # @UnusedVariable
         res = True
     elif regexp_fraccion.findall(txt) != []:
-        cantidad, unidad, cantidad_pv, unidad_pv = parsear_fraccion(txt)
+        cantidad, unidad, cantidad_pv, unidad_pv = parsear_fraccion(txt)  # @UnusedVariable
         res = True
     return res
 

@@ -39,9 +39,9 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, os
+import gtk, time, os
 from framework import pclases
-import geninformes
+from informes import geninformes
 import tempfile 
 
 class ConsultaExistencias(Ventana):
@@ -62,8 +62,8 @@ class ConsultaExistencias(Ventana):
         else:
             csv = False
             ruta_csv = None
-        from formularios import reports as informes
-        informes.abrir_pdf(geninformes.existencias_productos(
+        from formularios import reports
+        reports.abrir_pdf(geninformes.existencias_productos(
             'balas', 
             "%s, %s" % (utils.str_fecha(time.localtime()), 
                         time.strftime("%H:%M")), 
@@ -74,7 +74,7 @@ class ConsultaExistencias(Ventana):
                     ruta_csv = tempfile.NamedTemporaryFile(
                         suffix = "_%s.csv" % a.nombre, 
                         delete = False).name
-                informes.abrir_pdf(
+                reports.abrir_pdf(
                     geninformes.existencias_productos(
                         'balas', 
                         "%s, %s" % (
@@ -87,7 +87,7 @@ class ConsultaExistencias(Ventana):
                                  " fibra en almacén?      \n\nNOTA: Puede "
                                  "tardar algún tiempo.", 
                          defecto = "No"):
-            informes.abrir_pdf(
+            reports.abrir_pdf(
                 geninformes.existencias_fibra_por_lote("%s, %s" % (
                     utils.str_fecha(time.localtime()), 
                     time.strftime("%H:%M"))))

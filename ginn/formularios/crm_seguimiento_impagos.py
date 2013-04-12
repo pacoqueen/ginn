@@ -1092,8 +1092,8 @@ class CRM_SeguimientoImpagos(Ventana):
         """
         tv = self.wids['tv_datos']
         titulo = "Pendientes de cobro"
-        from treeview2pdf import treeview2pdf
-        from informes import abrir_pdf
+        from informes.treeview2pdf import treeview2pdf
+        from formularios.reports import abrir_pdf
         strfecha = "%s - %s" % (
             self.wids['e_fechaini'].get_text(), 
             self.wids['e_fechafin'].get_text())

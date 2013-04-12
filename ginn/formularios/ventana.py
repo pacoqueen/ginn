@@ -31,7 +31,7 @@
 ###################################################################
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, gobject, utils, pango
+import gtk, gobject, utils, pango
 import sys, os
 from widgets import Widgets
 
@@ -54,7 +54,7 @@ def refrescar_cache_sqlobject():
             try:
                 objeto.sync()
                 # oks += 1
-            except Exception, e:
+            except Exception, e:  # @UnusedVariable
                 # print "Objeto %s no se pudo actualizar:\n%s" % (objeto, e)
                 # raise e
                 pass
@@ -143,7 +143,7 @@ class Ventana:
                 self.wids['barra_estado'], False)
             self.wids['contenedor_exterior'].show()
             self.wids['barra_estado'].show()
-            from configuracion import ConfigConexion
+            from framework.configuracion import ConfigConexion
             config = ConfigConexion()
             info_conexion = "%s://%s:xxxxxxxx@%s:%s/%s" % (config.get_tipobd(), 
                                                            config.get_user(), 
@@ -390,7 +390,8 @@ class Ventana:
         """
         Abre la ventana de la entrada de menú recibida.
         """
-        from framework import pclases, utils
+        from framework import pclases
+        from formularios import utils
         idventana = int(action.get_name().replace("V", ""))
         ventana = pclases.Ventana.get(idventana)
         clase = ventana.clase
@@ -568,7 +569,7 @@ class Ventana:
                     " -> No se pudo forzar la actualización completa.")
 
     def ir_a(self, objeto, deep_refresh = True):
-        from pclases import DEBUG
+        from framework.pclases import DEBUG
         if DEBUG:
             import time
             antes = time.time()
@@ -664,7 +665,7 @@ class Ventana:
         caso, solo se sincronizarán los atributos directos del objeto (campos 
         de su tabla, vamos, nada de registros relacionados por claves ajenas).
         """
-        from pclases import DEBUG
+        from framework.pclases import DEBUG, SQLObjectNotFound
         if DEBUG:
             import time
             antes = time.time()
@@ -712,7 +713,7 @@ class Ventana:
                     if DEBUG:
                         print "5.- ventana.py::actualizar_ventana->", \
                               time.time() - antes
-                except pclases.SQLObjectNotFound:
+                except SQLObjectNotFound:
                     utils.dialogo_info(titulo = 'REGISTRO ELIMINADO', 
                       texto = 'El registro ha sido borrado desde otro puesto.', 
                       padre = self.wids['ventana'])
@@ -966,7 +967,7 @@ class Ventana:
         Nivel es el nivel donde va a ir el texto. Por defecto es 2 (WARNING).
         También se puede usar 0 (DEBUG), 3 (INFO) y 1 (ERROR)
         """
-        from pclases import logged_user
+        from framework.pclases import logged_user
         txt2log = "%s%s -> " % (
                     (hasattr(self, "usuario") 
                         and self.usuario and self.usuario.usuario + ": ") 
@@ -1001,8 +1002,7 @@ def determine_ico_from_filename(archivo, clase):
     :returns: string
 
     """
-    from menu import import_pclases
-    pclases = import_pclases()
+    from framework import pclases
     try:
         v = pclases.Ventana.select(pclases.AND(
                                     pclases.Ventana.q.fichero == archivo, 

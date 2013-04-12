@@ -63,7 +63,7 @@ from utils import _float as float
 from ventana_progreso import VentanaActividad, VentanaProgreso
 import pango
 import re
-from formularios import reports as informes
+from formularios import reports
        
 def verificar_solapamiento(partedeproduccion, padre = None, 
                            fecha_anterior = None, horaini_anterior = None, 
@@ -3018,8 +3018,8 @@ class PartesDeFabricacionBalas(Ventana):
                            self.duracion(detalle),
                            obs,
                            self.claseb(detalle)))
-        # informes.abrir_pdf(geninformes.parteBalas(datos, lineas))
-        informes.imprimir_con_gs(geninformes.parteBalas(datos, lineas), 
+        # reports.abrir_pdf(geninformes.parteBalas(datos, lineas))
+        reports.imprimir_con_gs(geninformes.parteBalas(datos, lineas), 
                                  impresora = "OFICINA", 
                                  blanco_y_negro = True)
 
@@ -3214,7 +3214,7 @@ class PartesDeFabricacionBalas(Ventana):
                             'acabado':acabado,
                             'codigoBarra':producto.codigo}
                 balas.append(elemento)
-            informes.abrir_pdf(geninformes.etiquetasBalas(balas))
+            reports.abrir_pdf(geninformes.etiquetasBalas(balas))
    
     def etiquetasPeq(self, boton):
         """
@@ -3317,7 +3317,7 @@ class PartesDeFabricacionBalas(Ventana):
                                 'codigoBarra':producto.codigo}
                     balas.append(elemento)
                 try:
-                    informes.abrir_pdf(
+                    reports.abrir_pdf(
                         geninformes.etiquetasBalasEtiquetadora(balas))
                 except (IOError, OSError), msg:
                     txt = "%spartes_de_fabricacion_balas::etiquetasPeq -> "\
@@ -3792,8 +3792,8 @@ def imprimir_etiqueta(articulo, ventana_parte):
                 'acabado': acabado,
                 'codigoBarra': producto.codigo}
     balas = [elemento]
-    # informes.abrir_pdf(geninformes.etiquetasBalasEtiquetadora(balas))
-    informes.mandar_a_imprimir_con_ghostscript(
+    # reports.abrir_pdf(geninformes.etiquetasBalasEtiquetadora(balas))
+    reports.mandar_a_imprimir_con_ghostscript(
         geninformes.etiquetasBalasEtiquetadora(balas))
 
 def build_ventana(padre):
@@ -3948,7 +3948,7 @@ def imprimir_etiquetas_bigbags(lista_bbs_defecto = [], ventana_parte = None):
                     continue
                 else:
                     bigbags.append(bb)
-        informes.abrir_pdf(geninformes.etiquetasBigbags(bigbags))
+        reports.abrir_pdf(geninformes.etiquetasBigbags(bigbags))
 
 def mostrar_carga_silo(label, silo):
     """

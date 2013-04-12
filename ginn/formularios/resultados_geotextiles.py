@@ -49,7 +49,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time
+import gtk, time
 from framework import pclases
 from informes import geninformes
 from utils import _float as float
@@ -942,7 +942,7 @@ class ResultadosGeotextiles(Ventana):
         """
         Imprime la información en pantalla.
         """
-        from formularios import reports as informes
+        from formularios import reports
         txt = "PARTIDA: %s\n" % (self.wids['e_numpartida'].get_text())
         txt += "PRODUCTO: %s\n\n" % (self.wids['e_nombre'].get_text())
         txt += "Lote y materia prima consumida:\n"
@@ -988,7 +988,7 @@ class ResultadosGeotextiles(Ventana):
         buffer = self.wids['txt_observaciones'].get_buffer()
         txt += "\nObervaciones: %s\n" % buffer.get_text(
             buffer.get_start_iter(), buffer.get_end_iter())
-        informes.abrir_pdf(geninformes.texto_libre(txt, 
+        reports.abrir_pdf(geninformes.texto_libre(txt, 
             "Resultados de laboratorio: %s" % (
                 self.objeto and self.objeto.codigo or "")))
         

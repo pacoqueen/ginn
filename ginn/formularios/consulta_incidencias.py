@@ -37,11 +37,11 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time
+import gtk, time
 import sys, os
 from framework import pclases
 import mx.DateTime
-import geninformes
+from informes import geninformes
 import ventana_progreso
 from pychart import *   # No me gusta, pero no queda otra
 from tempfile import gettempdir
@@ -91,8 +91,8 @@ class ConsultaIncidencias(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
 
@@ -270,7 +270,7 @@ class ConsultaIncidencias(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from formularios import reports as informes
+        from formularios import reports
         datos = []
         for i in self.resultado:
 #            if len(i.observaciones) > 35:
@@ -291,7 +291,7 @@ class ConsultaIncidencias(Ventana):
             fechaInforme = utils.str_fecha(time.strptime(self.inicio,"%Y/%m/%d"))+' - '+utils.str_fecha(time.strptime(self.fin,"%Y/%m/%d"))
 
         if datos != []:
-            informes.abrir_pdf(geninformes.incidencias(datos,fechaInforme))
+            reports.abrir_pdf(geninformes.incidencias(datos,fechaInforme))
 
 
 

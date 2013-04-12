@@ -68,7 +68,7 @@
 from ventana import Ventana
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, gobject
+import gtk, time, gobject
 import utils, utils_almacen
 from framework import pclases
 from informes import geninformes
@@ -1157,7 +1157,7 @@ class PedidosDeCompra(Ventana):
         OJO: Sólo imprime aquellas líneas pendientes de recibir.
         """
         self.guardar(None)  # Si se ha olvidado guardar, guardo yo.
-        from formularios import reports as informes
+        from formularios import reports
         pedido = self.objeto
         pednum = pedido.numpedido
         if pedido.proveedor == None:
@@ -1214,8 +1214,8 @@ class PedidosDeCompra(Ventana):
             entregas = txtEntregas.split('\n')
             observaciones = pedido.observaciones
             forma_pago = pedido.formaDePago
-            #informes.abrir_pdf(geninformes.pedidoCompra(general, proveedor, lineas, entregas, observaciones, forma_pago))
-            informes.abrir_pdf(geninformes.pedidoCompra(general, 
+            #reports.abrir_pdf(geninformes.pedidoCompra(general, proveedor, lineas, entregas, observaciones, forma_pago))
+            reports.abrir_pdf(geninformes.pedidoCompra(general, 
               proveedor, 
               lineas, 
               entregas, 

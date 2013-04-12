@@ -250,7 +250,7 @@ def build_validez(validez):
     if validez == 1:
         mes = "UN MES"
     else:
-        from numerals import numerals
+        from formularios.numerals import numerals
         txt_meses = numerals(validez, 
                              moneda = "", 
                              fraccion = "", 

@@ -38,14 +38,15 @@
 ##       pertenece (y eso aquí no se tiene en cuenta).
 ###################################################################
 
-from ventana import Ventana
-import utils
-import pygtk
-pygtk.require('2.0')
-import gtk, gtk.glade, time
-import sys, os
-from framework import pclases
 from formularios.utils import _float as float
+from framework import pclases
+from ventana import Ventana
+import gtk
+import time
+import mx.DateTime
+import pygtk
+import utils
+pygtk.require('2.0')
 
 
 class ConsultaProductividad(Ventana):
@@ -115,9 +116,8 @@ class ConsultaProductividad(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        import sys, os
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
 
@@ -153,7 +153,8 @@ class ConsultaProductividad(Ventana):
         """
         Prepara los datos para enviar a geninformes.
         """
-        from formularios import reports as informes, geninformes
+        from formularios import reports
+        from informes import geninformes
         if self.wids['r_rollos'].get_active():
             linea = "de línea de geotextiles."
         elif self.wids['r_balas'].get_active():
@@ -186,7 +187,7 @@ class ConsultaProductividad(Ventana):
                       self.wids['e_total'].get_text(), ""))
         datos.append(("", "Personas/turno:", 
                       self.wids['e_personasturno'].get_text(), ""))
-        informes.abrir_pdf(
+        reports.abrir_pdf(
             geninformes.consulta_productividad(titulo, str_fecha, datos))
 
     def abrir_parte(self, treeview, path, view_column):
@@ -521,7 +522,7 @@ En ambos casos el límite inferior es flexible -por compensación-.)""")
             partes = list(partes)
         self.rellenar_tabla(partes, solobalas)
 
-    def button_clicked(self, list, event):
+    def button_clicked(self, lista, event):
         if event.button == 3:
             # menu = gtk.Menu()
             ui_string = """<ui>

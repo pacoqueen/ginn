@@ -40,14 +40,16 @@
 ## TODO:
 ## Al causar baja, eliminar de los grupos y tal. 
 ###################################################################
-from ventana import Ventana
-import utils
-import pygtk
-pygtk.require('2.0')
-import gtk, gtk.glade, time
-import sys
 from framework import pclases
 from informes import geninformes
+from ventana import Ventana
+import gtk
+import time
+import pygtk
+import sqlobject
+import sys
+import utils
+pygtk.require('2.0')
 try:
     from psycopg import ProgrammingError as psycopg_ProgrammingError
 except ImportError:
@@ -614,8 +616,8 @@ class Empleados(Ventana):
         Muestra la vista previa de un pdf con el listado de empleados
         junto al código asociado a cada uno
         """
-        from formularios import reports as informes
-        informes.abrir_pdf(geninformes.empleados())
+        from formularios import reports
+        reports.abrir_pdf(geninformes.empleados())
 
     def abrir_ausencias(self, boton):
         import ausencias

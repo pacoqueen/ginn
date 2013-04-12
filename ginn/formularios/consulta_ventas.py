@@ -43,7 +43,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time
+import gtk, time
 from framework import pclases
 import mx.DateTime
 from informes import geninformes
@@ -200,8 +200,8 @@ class ConsultaVentas(Ventana):
         Exporta el contenido del TreeView a un fichero csv.
         """
         import sys, os
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         if self.wids['notebook1'].get_current_page() == 0:
             tv = self.wids['tv_datos']
         elif self.wids['notebook1'].get_current_page() == 1:
@@ -266,12 +266,12 @@ class ConsultaVentas(Ventana):
         elif id != "" and model[path].parent != None: # Es factura.
             factura = pclases.getObjetoPUID(id)
             if isinstance(factura, pclases.FacturaVenta):
-                import facturas_venta
+                from formularios import facturas_venta
                 v = facturas_venta.FacturasVenta(factura, 
                                                  usuario = self.usuario)
             elif isinstance(factura, pclases.FacturaDeAbono):
-                import abonos
-                v = abonos.Abonos(factura, usuario = self.usuario)
+                from formularios import abonos_venta
+                v = abonos_venta.AbonosVenta(factura, usuario = self.usuario)
 
     def abrir_factura_o_proveedor(self, tv, path, view_column):
         """
@@ -281,17 +281,17 @@ class ConsultaVentas(Ventana):
         id = model[path][-1]
         if id > 0 and id != '0' and model[path].parent == None: # Es proveedor.
             proveedor = pclases.Proveedor.get(id)
-            import proveedores
+            from formularios import proveedores
             v = proveedores.Proveedores(proveedor)
         elif id != "" and model[path].parent != None: # Es factura.
             factura = pclases.getObjetoPUID(id)
             if isinstance(factura, pclases.FacturaVenta):
-                import facturas_venta
+                from formularios import facturas_venta
                 v = facturas_venta.FacturasVenta(factura, 
                                                  usuario = self.usuario)
             elif isinstance(factura, pclases.FacturaDeAbono):
-                import abonos
-                v = abonos.Abonos(factura, usuario = self.usuario)
+                from formularios import abonos_venta
+                v = abonos_venta.AbonosVenta(factura, usuario = self.usuario)
 
     def abrir_producto_o_tarifa(self, tv, path, view_column):
         """
@@ -1491,7 +1491,7 @@ class ConsultaVentas(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from formularios import reports as informes
+        from formularios import reports
         datos = []
         model = self.wids['tv_datos'].get_model()
         for iter in model:
@@ -1529,23 +1529,23 @@ class ConsultaVentas(Ventana):
                 time.strptime(self.inicio, "%Y/%m/%d")) + ' - ' 
                 + utils.str_fecha(time.strptime(self.fin, "%Y/%m/%d")))
         if datos != []:
-            informes.abrir_pdf(geninformes.ventas(datos, fechaInforme))
-        from treeview2pdf import treeview2pdf
+            reports.abrir_pdf(geninformes.ventas(datos, fechaInforme))
+        from informes.treeview2pdf import treeview2pdf
         if self.wids['notebook1'].get_current_page() == 0:
             self.wids['notebook1'].next_page()
             self.wids['notebook1'].realize()
             while gtk.events_pending(): gtk.main_iteration(False)
             self.wids['notebook1'].prev_page()
-        informes.abrir_pdf(treeview2pdf(self.wids['tv_producto'], 
+        reports.abrir_pdf(treeview2pdf(self.wids['tv_producto'], 
                                         titulo = "Ventas por producto", 
                                         fecha = fechaInforme))
-        informes.abrir_pdf(treeview2pdf(self.wids['tv_cliente'], 
+        reports.abrir_pdf(treeview2pdf(self.wids['tv_cliente'], 
                                         titulo = "Facturas por cliente", 
                                         fecha = fechaInforme))
-        informes.abrir_pdf(treeview2pdf(self.wids['tv_comercial'], 
+        reports.abrir_pdf(treeview2pdf(self.wids['tv_comercial'], 
                                     titulo = "Ventas facturadas por comercial",
                                     fecha = fechaInforme))
-        informes.abrir_pdf(treeview2pdf(self.wids['tv_proveedor'], 
+        reports.abrir_pdf(treeview2pdf(self.wids['tv_proveedor'], 
                         titulo = "Ventas facturadas según proveedor de origen",
                         fecha = fechaInforme))
 

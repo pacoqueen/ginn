@@ -34,15 +34,17 @@
 ##
 ###################################################################
 
-from ventana import Ventana
-import utils
-import pygtk
-pygtk.require('2.0')
-import gtk, gtk.glade, time
-import sys
 from framework import pclases
-from partes_de_fabricacion_rollos import build_etiqueta
 from informes import geninformes
+from partes_de_fabricacion_rollos import build_etiqueta
+from ventana import Ventana
+import gtk
+import time
+import mx.DateTime
+import pygtk
+import sys
+import utils
+pygtk.require('2.0')
 
 class ListadoRollos(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -88,8 +90,8 @@ class ListadoRollos(Ventana):
         Exporta el contenido del TreeView a un fichero csv.
         """
         import sys, os
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         tv = self.wids['tv_rollos']
         abrir_csv(treeview2csv(tv))
 
@@ -140,8 +142,8 @@ class ListadoRollos(Ventana):
         if datos != []:
             desc_producto = self.wids['e_descripcion'].get_text()
             listado_pdf = geninformes.listado_rollos(datos, desc_producto, fechaInforme)
-            from formularios import reports as informes
-            informes.abrir_pdf(listado_pdf)
+            from formularios import reports
+            reports.abrir_pdf(listado_pdf)
 
     def mostrar_hora_parte(self, tv):
         """
@@ -543,7 +545,7 @@ class ListadoRollos(Ventana):
                 rollos_defecto.append(model[path][0])
                 rollos_defecto.sort()
             rollos_defecto = ', '.join(rollos_defecto)
-            from formularios import reports as informes
+            from formularios import reports
             entrada, mostrar_marcado = self._dialogo_entrada(
                                         titulo = 'ETIQUETAS', 
                                         texto = "Introduzca los números de rollo, separados por coma, que desea etiquetar:",
@@ -588,7 +590,7 @@ class ListadoRollos(Ventana):
                         elemento, fetiqueta = build_etiqueta(r)
                         rollos.append(elemento)
                     if rollos:
-                        informes.abrir_pdf(
+                        reports.abrir_pdf(
                             geninformes.etiquetasRollosEtiquetadora(
                                 rollos, 
                                 mostrar_marcado, 
@@ -596,7 +598,7 @@ class ListadoRollos(Ventana):
                     if rollosc:
                         data = preparar_datos_etiquetas_rollos_c(rollosc)
                         if data:
-                            informes.abrir_pdf(
+                            reports.abrir_pdf(
                                 geninformes.etiquetasRollosCEtiquetadora(data))
         else:
             utils.dialogo_info(titulo = "USUARIO SIN PRIVILEGIOS", 

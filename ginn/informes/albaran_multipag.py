@@ -22,18 +22,23 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA  #
 ###############################################################################
 
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, XPreformatted, Preformatted, PageBreak, KeepTogether, CondPageBreak
+from factura_multipag import Linea, TablaFija
+from formularios import utils
+from framework import pclases
+from informes.geninformes import give_me_the_name_baby, escribe, rectangulo, \
+    el_encogedor_de_fuentes_de_doraemon, agregarFila
+from reportlab.lib import colors, enums
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+from reportlab.lib.units import cm
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, \
+    TableStyle, Image, XPreformatted, Preformatted, PageBreak, KeepTogether, \
+    CondPageBreak
 from reportlab.platypus.flowables import Flowable
 from reportlab.rl_config import defaultPageSize
-from reportlab.lib import colors, enums
-from reportlab.lib.units import cm
-from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet 
-from factura_multipag import Linea, TablaFija
-
-from framework import pclases
-from formularios import utils
-from informes.geninformes import give_me_the_name_baby, escribe, rectangulo, el_encogedor_de_fuentes_de_doraemon, agregarFila
 from tempfile import gettempdir
+import os
+import sys
+
 
 PAGE_HEIGHT = defaultPageSize[1]; PAGE_WIDTH = defaultPageSize[0]
 estilos = getSampleStyleSheet()

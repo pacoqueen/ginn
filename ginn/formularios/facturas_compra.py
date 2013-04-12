@@ -878,12 +878,13 @@ class FacturasDeEntrada(Ventana):
             utils.float2str(factura.iva * 100, 0)))
         self.wids['e_iva'].set_sensitive(iva_homogeneo)
         self.wids['label16'].set_sensitive(iva_homogeneo)
+        subtotal = self.rellenar_tabla(self.wids['tv_ldvs'])
         try: 
             totiva = factura.importeIva
         except AssertionError, msg:
             self.logger.error('facturas_compra::rellenar_widgets -> Disparada'
                               ' "assertion" de totales: %s' % msg)
-            totiva = subtotal * factura.iva     # Pongo el iva que en teoría 
+            totiva = subtotal * (1-factura.descuento) * factura.iva     # Pongo el iva que en teoría 
                 # debería salir en total y ya veré en el log qué ha pasado.
         self.wids['e_totiva'].set_text("%s €" % (utils.float2str(totiva)))
         try:
@@ -899,7 +900,6 @@ class FacturasDeEntrada(Ventana):
         self.wids['e_descuento'].set_text("%s %%" % (
             utils.float2str(factura.descuento * 100, autodec = True)))
         self.wids['chk_bloqueada'].set_active(factura.bloqueada)
-        subtotal = self.rellenar_tabla(self.wids['tv_ldvs'])
         self.wids['e_subtotal'].set_text("%s €" % (utils.float2str(subtotal)))
         subtotal *= (1 - factura.descuento)
         self.wids['e_totdescuento'].set_text("%s €" % (
@@ -2380,7 +2380,7 @@ class FacturasDeEntrada(Ventana):
                         utils.dialogo_info(titulo = "VENCIMIENTOS NO CREADOS", 
                             texto = "Los vencimientos de la factura %s no se "
                                     "pudieron crear. Debe hacerlo manualmente"
-                                    "." % (factura.numfactura), 
+                                    "." % (self.objeto.numfactura), 
                             padre = self.wids['ventana']) 
             # Compruebo que las fechas de los vencimientos son correctas, y 
             # si no, aviso.
@@ -2408,7 +2408,7 @@ class FacturasDeEntrada(Ventana):
                                 titulo = "VENCIMIENTOS NO CREADOS", 
                                 texto = "Los vencimientos de la factura %s no"
                                         " se pudieron crear. Debe hacerlo man"
-                                        "ualmente." % (factura.numfactura), 
+                                        "ualmente." % (self.objeto.numfactura), 
                                 padre = self.wids['ventana'])
         # Compruebo que existen vencimientos.
         txt = "La factura %s (%s) no tiene vencimientos.\n¿Desea que se inte"\

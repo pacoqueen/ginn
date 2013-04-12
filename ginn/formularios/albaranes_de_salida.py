@@ -83,7 +83,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time
+import gtk, time
 import sys, os
 from framework import pclases
 from informes import geninformes
@@ -2818,7 +2818,7 @@ class AlbaranesDeSalida(Ventana):
             antes = time.time()
         if pclases.config.get_carta_portes():
             from formularios import albaran_porte
-            from informes import abrir_pdf
+            from formularios.reports import abrir_pdf
             try:
                 kilos = sum([ldv.producto.calcular_kilos() * ldv.cantidad  
                              for ldv in self.objeto.lineasDeVenta])
@@ -2941,7 +2941,7 @@ class AlbaranesDeSalida(Ventana):
             if transportista != None:
                 porteadores = utils.dialogo_entrada(titulo = "CMR", texto = "Porteadores:", padre = self.wids['ventana'], textview = True)
                 if porteadores != None:
-                    from informes import abrir_pdf
+                    from formularios.reports import abrir_pdf
                     abrir_pdf(geninformes.cmr(self.objeto, lugar_entrega, transportista, porteadores))
     
     def enviar_por_correo(self, email, fichero_albaran = None, fichero_factura = None, fichero_packing_list = None):
@@ -3086,8 +3086,8 @@ class AlbaranesDeSalida(Ventana):
         composan indica si hay que abrir también el de Composan.
         NOTA: La variable "composan" actualmente se ignora.
         """
-        from formularios import reports as informes
-        informes.abrir_pdf(nomarchivo)
+        from formularios import reports
+        reports.abrir_pdf(nomarchivo)
 
     def preguntar_si_redistribuir(self):
         """
@@ -4358,8 +4358,8 @@ def imprimir_factura(factura, usuario = None, abrir = True, es_copia = False,
                                          totales, 
                                          es_copia = es_copia)
     if abrir:
-        from formularios import reports as informes
-        informes.abrir_pdf(nomarchivo)
+        from formularios import reports
+        reports.abrir_pdf(nomarchivo)
     return nomarchivo
     
 def buscar_proveedor(nombre, ventana_padre = None, 

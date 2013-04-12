@@ -34,15 +34,18 @@
 ##
 ###################################################################
 
-from ventana import Ventana
-import utils
-import pygtk
-pygtk.require('2.0')
-import gtk, gtk.glade, time, datetime
 from framework import pclases
-import mx.DateTime
 from informes import geninformes
+from ventana import Ventana
+import gtk
+import time
+import datetime
+import mx.DateTime
+import pygtk
 import re
+import sys
+import utils
+pygtk.require('2.0')
 
 rexpcajas = re.compile("\([\d]+/[\d]+\)")
 
@@ -88,8 +91,8 @@ class ListadoBalas(Ventana):
         Exporta el contenido del TreeView a un fichero csv.
         """
         import sys, os
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         tv = self.wids['tv_balas']
         abrir_csv(treeview2csv(tv))
 
@@ -111,7 +114,7 @@ class ListadoBalas(Ventana):
                 balas_defecto.append(model[path][0])
                 balas_defecto.sort()
             balas_defecto = ', '.join(balas_defecto)
-            from formularios import reports as informes
+            from formularios import reports
             entrada = utils.dialogo_entrada(titulo='ETIQUETAS', 
                         texto="Introduzca los números de bala o bigbags que "
                               "desea etiquetar separados por coma o espacio."
@@ -126,14 +129,14 @@ class ListadoBalas(Ventana):
                 etiqsbalascable = preparar_datos_etiquetas_balas_cable(balas_cable)
                 if etiqsbalas:
                     etpdf = geninformes.etiquetasBalasEtiquetadora(etiqsbalas)
-                    informes.abrir_pdf(etpdf)
+                    reports.abrir_pdf(etpdf)
                 if bigbags:
                     etpdf = geninformes.etiquetasBigbags(bigbags)
-                    informes.abrir_pdf(etpdf)
+                    reports.abrir_pdf(etpdf)
                 if balas_cable:
                     etpdf = geninformes.etiquetasBalasCableEtiquetadora(
                                 etiqsbalascable)
-                    informes.abrir_pdf(etpdf)
+                    reports.abrir_pdf(etpdf)
                 if pales:
                     from partes_de_fabricacion_bolsas import imprimir_etiquetas_pales
                     imprimir_etiquetas_pales(pales, self.wids['ventana'], mostrar_dialogo = True)
@@ -189,8 +192,8 @@ class ListadoBalas(Ventana):
             desc_producto = self.wids['e_descripcion'].get_text()
             listado_pdf = geninformes.listado_balas(datos, desc_producto, 
                                                     fechaInforme)
-            from formularios import reports as informes
-            informes.abrir_pdf(listado_pdf)
+            from formularios import reports
+            reports.abrir_pdf(listado_pdf)
 
     def set_inicio(self,boton):
         try:

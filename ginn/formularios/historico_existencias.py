@@ -33,17 +33,20 @@
 ## 7 de noviembre de 2006 -> Inicio
 ###################################################################
 
-from ventana import Ventana
-import utils
-import pygtk
-pygtk.require('2.0')
-import gtk, time
-import sys, os
+from formularios import ventana_progreso
 from framework import pclases
-import mx.DateTime
 from informes import geninformes
-from pychart import *   # No me gusta, pero no queda otra
+from pychart import * # No me gusta, pero no queda otra
 from tempfile import gettempdir
+from ventana import Ventana
+import gtk
+import time
+import mx.DateTime
+import pygtk
+import sys
+import os
+import utils
+pygtk.require('2.0')
     
 
 class HistoricoExistencias(Ventana):
@@ -89,8 +92,8 @@ class HistoricoExistencias(Ventana):
         Cambia el gráfico del histórico por el de la opción seleccionada en el 
         combobox.
         """
-        id = utils.combo_get_value(self.wids['cbe_grafico'])
-        if id == None:
+        ide = utils.combo_get_value(self.wids['cbe_grafico'])
+        if ide == None:
             return
         datos = {}
         fechas = get_fechas()
@@ -99,11 +102,11 @@ class HistoricoExistencias(Ventana):
         act = 0.0
         tot = 13.0
         vpro.mostrar()
-        if id < 0:
+        if ide < 0:
             # Mostrar todos los geotextiles o toda la fibra.
-            if id == -1:    # Geotextiles
+            if ide == -1:    # Geotextiles
                 productos = pclases.ProductoVenta.select(pclases.ProductoVenta.q.camposEspecificosRolloID != None)
-            elif id == -2:  # Fibra
+            elif ide == -2:  # Fibra
                 productos = pclases.ProductoVenta.select(pclases.OR(pclases.ProductoVenta.q.camposEspecificosBalaID != None)) 
             for fecha in fechas:
                 vpro.set_valor(act/tot, 'Contando existencias a %s...' % (utils.str_fecha(fecha)))
@@ -112,8 +115,8 @@ class HistoricoExistencias(Ventana):
                 for producto in productos:
                     datos[utils.str_fecha(fecha)][0] += producto.get_stock(hasta = fecha)
                 act += 1
-        elif id > 0:
-            producto = pclases.ProductoVenta.get(id)
+        elif ide > 0:
+            producto = pclases.ProductoVenta.get(ide)
             for fecha in fechas:
                 vpro.set_valor(act/tot, 'Contando existencias a %s...' % (utils.str_fecha(fecha)))
                 i += 1
@@ -201,24 +204,24 @@ class HistoricoExistencias(Ventana):
         vpro._ventana.realize()
         vpro._ventana.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
         while gtk.events_pending(): gtk.main_iteration(False)
-        from formularios import reports as informes
+        from formularios import reports
         try:
             vpro.set_valor(act/tot, msgtexto)
-            informes.abrir_pdf(geninformes.existencias_productos('rollos', 
+            reports.abrir_pdf(geninformes.existencias_productos('rollos', 
                                fechastr, hasta = fecha))
             act += 1
             vpro.set_valor(act/tot, msgtexto)
-            informes.abrir_pdf(geninformes.existencias_productos('balas', 
+            reports.abrir_pdf(geninformes.existencias_productos('balas', 
                                fechastr, hasta = fecha))
             act += 1
             vpro.set_valor(act/tot, msgtexto)
             for a in pclases.Almacen.select(pclases.Almacen.q.activo == True, 
                                             orderBy = "id"):
-                informes.abrir_pdf(geninformes.existencias_productos('rollos', 
+                reports.abrir_pdf(geninformes.existencias_productos('rollos', 
                                    fechastr, hasta = fecha, almacen = a))
                 act += 1
                 vpro.set_valor(act/tot, msgtexto)
-                informes.abrir_pdf(geninformes.existencias_productos('balas', 
+                reports.abrir_pdf(geninformes.existencias_productos('balas', 
                                    fechastr, hasta = fecha, almacen = a))
                 act += 1
                 vpro.set_valor(act/tot, msgtexto)

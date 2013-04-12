@@ -36,18 +36,19 @@
 ## producto cuando elija una gráfica de un solo producto.
 ###################################################################
 
-from ventana import Ventana
-import utils
-import pygtk
-pygtk.require('2.0')
-import gtk, time
-import sys, os
+from formularios import ventana_progreso
 from framework import pclases
-import mx.DateTime
 from informes import geninformes
-from pychart import *   # No me gusta, pero no queda otra
+from math import log10 as log
+from pychart import * # No me gusta, pero no queda otra
 from tempfile import gettempdir
-from math import log10 as log 
+from ventana import Ventana
+import gtk
+import mx.DateTime
+import os
+import pygtk
+import utils
+pygtk.require('2.0')
 
 class HistoricoExistenciasCompra(Ventana):
         
@@ -98,8 +99,8 @@ class HistoricoExistenciasCompra(Ventana):
         Cambia el gráfico del histórico por el de la opción seleccionada en el 
         combobox.
         """
-        id = utils.combo_get_value(self.wids['cbe_grafico'])
-        if id == None:
+        ide = utils.combo_get_value(self.wids['cbe_grafico'])
+        if ide == None:
             return
         datos = {}
         datos_por_producto = {}
@@ -109,22 +110,22 @@ class HistoricoExistenciasCompra(Ventana):
         act = 0.0
         tot = 13.0
         vpro.mostrar()
-        if id < 0:
+        if ide < 0:
             # Mostrar todos o toda la materia prima.
-            if id == -1:    # Todos.
+            if ide == -1:    # Todos.
                 productos = pclases.ProductoCompra.select(pclases.AND(
                         pclases.ProductoCompra.q.existencias >0, 
                         pclases.ProductoCompra.q.controlExistencias == True, 
                         pclases.ProductoCompra.q.obsoleto == False), 
                     orderBy = "descripcion")    # Es que todos, todos... no se 
                                                 # ve nada.
-            elif id == -2:  # Toda la granza.
+            elif ide == -2:  # Toda la granza.
                 productos = pclases.ProductoCompra.select(pclases.AND(
                       pclases.ProductoCompra.q.descripcion.contains("GRANZA"), 
                       pclases.ProductoCompra.q.controlExistencias == True, 
                       pclases.ProductoCompra.q.obsoleto == False), 
                     orderBy = "descripcion")
-            elif id == -3:  # Toda la MP.
+            elif ide == -3:  # Toda la MP.
                 try:
                     matprima = pclases.TipoDeMaterial.select(
                          pclases.TipoDeMaterial.q.descripcion.contains("prima")
@@ -151,7 +152,7 @@ class HistoricoExistenciasCompra(Ventana):
                     utils.str_fecha(fecha)))
                 i += 1
                 for producto in productos:
-                    if id == -1:
+                    if ide == -1:
                         if producto not in datos_por_producto:
                             datos_por_producto[producto] = {}
                         strfecha = utils.str_fecha(fecha)
@@ -174,8 +175,8 @@ class HistoricoExistenciasCompra(Ventana):
                             datos[utils.str_fecha(fecha)][0] \
                                 += producto.existencias
                 act += 1
-        elif id > 0:
-            producto = pclases.ProductoCompra.get(id)
+        elif ide > 0:
+            producto = pclases.ProductoCompra.get(ide)
             for fecha in fechas:
                 vpro.set_valor(act/tot, 'Contando existencias a %s...' % (
                     utils.str_fecha(fecha)))
@@ -335,10 +336,10 @@ class HistoricoExistenciasCompra(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from formularios import reports as informes
+        from formularios import reports
         fechastr = self.wids['e_fecha'].get_text()
         fecha = utils.parse_fecha(fechastr)
-        informes.abrir_pdf(
+        reports.abrir_pdf(
             geninformes.existencias(hasta = fecha, 
                                     ventana_padre = self.wids['ventana']))
 

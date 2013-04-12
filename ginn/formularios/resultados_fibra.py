@@ -44,7 +44,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time
+import gtk, time
 from framework import pclases
 from informes import geninformes
 from utils import _float as float
@@ -715,7 +715,8 @@ class ResultadosFibra(Ventana):
         """
         Imprime la información en pantalla.
         """
-        from formularios import reports as informes, geninformes
+        from formularios import reports
+        from informes import geninformes
         txt = "LOTE: %s\n" % (self.wids['e_codigo'].get_text())
         txt += "PRODUCTO: %s\n\n" % (self.wids['e_nombre'].get_text())
         txt += "\nCaracterísticas del lote:\n"
@@ -760,9 +761,9 @@ class ResultadosFibra(Ventana):
             txt += "        Grasa (%%): %s\n" % (fila[4])
             txt += "        Encogimiento (%%): %s\n" % (fila[5])
             txt += "        Humedad (%%): %s\n" % (fila[6])
-        buffer = self.wids['txt_observaciones'].get_buffer()
-        txt += "\nObervaciones: %s\n" % buffer.get_text(buffer.get_start_iter(), buffer.get_end_iter())
-        informes.abrir_pdf(geninformes.texto_libre(txt, "Resultados de laboratorio: %s" % (self.objeto and self.objeto.codigo or "")))
+        buff = self.wids['txt_observaciones'].get_buffer()
+        txt += "\nObervaciones: %s\n" % buff.get_text(buff.get_start_iter(), buff.get_end_iter())
+        reports.abrir_pdf(geninformes.texto_libre(txt, "Resultados de laboratorio: %s" % (self.objeto and self.objeto.codigo or "")))
         
 def comprobar_y_preguntar_si_guardar(ventana_padre):
     """

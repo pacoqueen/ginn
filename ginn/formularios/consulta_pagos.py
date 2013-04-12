@@ -41,7 +41,7 @@ import gtk, time
 import sys
 from framework import pclases
 import mx.DateTime
-import geninformes
+from informes import geninformes
 import ventana_progreso
 import re
 from utils import _float as float
@@ -90,8 +90,8 @@ class ConsultaPagos(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
 

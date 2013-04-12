@@ -38,10 +38,10 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time
+import gtk, time
 from framework import pclases
 import mx.DateTime
-import geninformes
+from informes import geninformes
 from ventana_progreso import VentanaProgreso, VentanaActividad
     
 
@@ -88,8 +88,8 @@ class ConsultaPartidasPorProducto(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        from treeview2csv import treeview2csv
-        from informes import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
 
@@ -250,7 +250,7 @@ class ConsultaPartidasPorProducto(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from formularios import reports as informes
+        from formularios import reports
         datos = []
         lista = self.resultado
       	for elem in lista:
@@ -269,7 +269,7 @@ class ConsultaPartidasPorProducto(Ventana):
             fechaInforme = (utils.str_fecha(self.inicio) + ' - ' + 
                             utils.str_fecha(self.fin))
         if datos != []:
-            informes.abrir_pdf(geninformes.laboratorioPartidas(datos, 
+            reports.abrir_pdf(geninformes.laboratorioPartidas(datos, 
                                                                fechaInforme))
 
 

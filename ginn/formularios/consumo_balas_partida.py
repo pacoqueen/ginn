@@ -39,12 +39,12 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time
+import gtk, time
 from framework import pclases
 import mx.DateTime
 from informes import geninformes
 from ventana_progreso import VentanaProgreso
-from formularios import reports as informes 
+from formularios import reports 
 
 class ConsumoBalasPartida(Ventana):
         
@@ -593,7 +593,7 @@ Sin embalaje.</i></small>""" % (merma))
             datos['balas'].append(("%d balas (%s kg)." % (iter[0], utils.float2str(iter[1], 1)), 
                                    "Lote %s." % (iter[2]),
                                    iter[3]))
-        informes.abrir_pdf(geninformes.consumo_fibra_partida(datos, utils.str_fecha(mx.DateTime.localtime()), cols_a_derecha=(0, 1, )))
+        reports.abrir_pdf(geninformes.consumo_fibra_partida(datos, utils.str_fecha(mx.DateTime.localtime()), cols_a_derecha=(0, 1, )))
     
     def add_balas(self, boton):
         """

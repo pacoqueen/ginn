@@ -24,7 +24,7 @@
 ###############################################################################
 
 import os
-import geninformes
+from informes import geninformes
 from formularios import utils
 from formularios.trazabilidad import Trazabilidad
 import mx.DateTime

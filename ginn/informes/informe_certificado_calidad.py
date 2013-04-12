@@ -384,7 +384,7 @@ def go_from_albaranSalida(albaranSalida):
     Abre la ventana del certificado de calidad con el albarán recibido.
     """
     os.chdir("../formularios")
-    import certificado_calidad
+    from formularios import certificado_calidad
     v = certificado_calidad.CertificadoCalidad(albaranSalida)
 
 if __name__ == "__main__":

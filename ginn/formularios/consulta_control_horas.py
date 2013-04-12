@@ -30,10 +30,10 @@ from ventana import Ventana
 import utils
 import pygtk, gobject, pango
 pygtk.require('2.0')
-import gtk, gtk.glade, time
+import gtk, time
 from framework import pclases
 import mx.DateTime
-import geninformes
+from informes import geninformes
 import ventana_progreso
     
 

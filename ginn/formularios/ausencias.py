@@ -46,7 +46,7 @@ pygtk.require('2.0')
 import gtk, time
 from framework import pclases
 from informes import geninformes
-
+import mx.DateTime
 
 class Ausencias(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -471,7 +471,7 @@ class Ausencias(Ventana):
                                padre = self.wids['ventana'])
 
     def imprimir_ausencia(self, b):
-        from formularios import reports as informes
+        from formularios import reports
         model, itr = self.wids['tv_ausencias'].get_selection().get_selected()
         if itr != None:
             ide = model[itr][-1]
@@ -491,7 +491,7 @@ class Ausencias(Ventana):
                         turno = l.turno.nombre
             motivo = ausencia.motivo
             motivos = pclases.Motivo.select()
-            informes.abrir_pdf(geninformes.ausencia(empleado,centro,fecha,turno,motivo,motivos))
+            reports.abrir_pdf(geninformes.ausencia(empleado,centro,fecha,turno,motivo,motivos))
         else:
             utils.dialogo_info(titulo = "SELECCIONE AUSENCIA", 
                                texto = "Seleccione la ausencia a imprimir.", 
