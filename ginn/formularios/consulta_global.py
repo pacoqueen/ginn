@@ -1323,7 +1323,7 @@ def consultar_horas_reales_gtx(fechaini, fechafin):
                 AND partida_cem_id IS NULL); 
     """ % (fechaini.strftime("%Y-%m-%d"), fechafin.strftime("%Y-%m-%d"))
     try:
-        horas_sql = pclases.ParteDeProduccion._connection.queryAll(sql)[0][0]  # @UndefinedVariable
+        horas_sql = pclases.ParteDeProduccion._queryAll(sql)[0][0]  # @UndefinedVariable
         try:
             horas = horas_sql.hours
         except AttributeError:  # Es un datetime.timedelta
@@ -1345,7 +1345,7 @@ def consultar_horas_reales_bolsas(fechaini, fechafin):
                 AND partida_cem_id IS NOT NULL); 
     """ % (fechaini.strftime("%Y-%m-%d"), fechafin.strftime("%Y-%m-%d"))
     try:
-        horas_sql = pclases.ParteDeProduccion._connection.queryAll(sql)[0][0]  # @UndefinedVariable
+        horas_sql = pclases.ParteDeProduccion._queryAll(sql)[0][0]  # @UndefinedVariable
         try:
             horas = horas_sql.hours
         except AttributeError:  # Es un datetime.timedelta
@@ -1430,7 +1430,7 @@ def consultar_dias_gtx(fechaini, fechafin):
                 AND partida_cem_id IS NULL); 
     """ % (fechaini.strftime("%Y-%m-%d"), fechafin.strftime("%Y-%m-%d"))
     try:
-        dias = pclases.ParteDeProduccion._connection.queryAll(sql)[0][0]  # @UndefinedVariable
+        dias = pclases.ParteDeProduccion._queryAll(sql)[0][0]  # @UndefinedVariable
     except IndexError:
         dias = 0
     return dias
@@ -1471,7 +1471,7 @@ def consultar_empleados_por_dia_bolsas(fechaini, fechafin):
     WHERE partes.id = parte_de_produccion_empleado.partedeproduccionid 
     GROUP BY fecha, empleadoid ORDER BY fecha; """ % (
         fechaini.strftime("%Y-%m-%d"), fechafin.strftime("%Y-%m-%d"))
-    filas_fecha_idempleado=pclases.ParteDeProduccion._connection.queryAll(sql)  # @UndefinedVariable
+    filas_fecha_idempleado=pclases.ParteDeProduccion._queryAll(sql)  # @UndefinedVariable
     # Y ahora sumo (lo sé, se podría hacer directamente en la consulta, pero 
     # prefiero dejarla así porque creo que me hará falta en un futuro tenerlo 
     # desglosado).
@@ -1501,7 +1501,7 @@ def consultar_empleados_por_dia_gtx(fechaini, fechafin):
                                           AND observaciones NOT LIKE '%%;%%;%%;%%;%%;%%' AND partida_cem_id IS NULL) AS partes 
     WHERE partes.id = parte_de_produccion_empleado.partedeproduccionid GROUP BY fecha, empleadoid ORDER BY fecha; """ % (
         fechaini.strftime("%Y-%m-%d"), fechafin.strftime("%Y-%m-%d"))
-    filas_fecha_idempleado = pclases.ParteDeProduccion._connection.queryAll(sql)  # @UndefinedVariable
+    filas_fecha_idempleado = pclases.ParteDeProduccion._queryAll(sql)  # @UndefinedVariable
     # Y ahora sumo (lo sé, se podría hacer directamente en la consulta, pero 
     # prefiero dejarla así porque creo que me hará falta en un futuro tenerlo desglosado).
     fechas = []
@@ -1526,7 +1526,7 @@ def buscar_kilos_reales_gtx_producidos_sin_embalaje(fechaini, fechafin):
     sqlfechaini = fechaini.strftime("%Y-%m-%d")
     sqlfechafin = fechafin.strftime("%Y-%m-%d")
     PDP = pclases.ParteDeProduccion
-    peso_sin_rollos = PDP._connection.queryOne("""SELECT SUM(rollo.peso - campos_especificos_rollo.peso_embalaje) 
+    peso_sin_rollos = PDP._queryOne("""SELECT SUM(rollo.peso - campos_especificos_rollo.peso_embalaje) 
                                                   FROM rollo, articulo, producto_venta, campos_especificos_rollo, parte_de_produccion 
                                                   WHERE articulo.producto_venta_id = producto_venta.id
                                                     AND producto_venta.campos_especificos_rollo_id = campos_especificos_rollo.id 
@@ -1538,7 +1538,7 @@ def buscar_kilos_reales_gtx_producidos_sin_embalaje(fechaini, fechafin):
     total_peso_sin_rollos = peso_sin_rollos[0]
     if total_peso_sin_rollos != None:
         res += total_peso_sin_rollos
-    peso_sin_rollos_d = PDP._connection.queryOne("""
+    peso_sin_rollos_d = PDP._queryOne("""
         SELECT SUM(rollo_defectuoso.peso - rollo_defectuoso.peso_embalaje) 
           FROM rollo_defectuoso, articulo, parte_de_produccion 
          WHERE articulo.rollo_defectuoso_id = rollo_defectuoso.id 
@@ -1550,7 +1550,7 @@ def buscar_kilos_reales_gtx_producidos_sin_embalaje(fechaini, fechafin):
     if total_peso_sin_rollos_d != None:
         res += total_peso_sin_rollos_d
     # Ahora los que no tienen parte de producción (a partir del 2007 -aprox.- no debería haber ninguno):
-    peso_sin_rollos = PDP._connection.queryOne("""
+    peso_sin_rollos = PDP._queryOne("""
         SELECT SUM(rollo.peso - campos_especificos_rollo.peso_embalaje) 
           FROM rollo, articulo, producto_venta, campos_especificos_rollo 
          WHERE articulo.producto_venta_id = producto_venta.id
@@ -1563,7 +1563,7 @@ def buscar_kilos_reales_gtx_producidos_sin_embalaje(fechaini, fechafin):
     total_peso_sin_rollos = peso_sin_rollos[0]
     if total_peso_sin_rollos != None:
         res += total_peso_sin_rollos
-    peso_sin_rollos_d = PDP._connection.queryOne("""
+    peso_sin_rollos_d = PDP._queryOne("""
         SELECT SUM(rollo_defectuoso.peso - rollo_defectuoso.peso_embalaje) 
           FROM rollo_defectuoso, articulo 
          WHERE articulo.rollo_defectuoso_id = rollo_defectuoso.id 
@@ -3006,7 +3006,7 @@ def consultar_horas_reales_fibra(fechaini, fechafin):
                 AND partida_cem_id IS NULL); 
     """ % (fechaini.strftime("%Y-%m-%d"), fechafin.strftime("%Y-%m-%d"))
     try:
-        horas_sql = pclases.ParteDeProduccion._connection.queryAll(sql)[0][0]  # @UndefinedVariable
+        horas_sql = pclases.ParteDeProduccion._queryAll(sql)[0][0]  # @UndefinedVariable
         try:
             horas = horas_sql.hours
         except AttributeError:  # Es un datetime.timedelta
@@ -3062,7 +3062,7 @@ def consultar_dias_fibra(fechaini, fechafin):
                 AND partida_cem_id IS NULL); 
     """ % (fechaini.strftime("%Y-%m-%d"), fechafin.strftime("%Y-%m-%d"))
     try:
-        dias = pclases.ParteDeProduccion._connection.queryAll(sql)[0][0]  # @UndefinedVariable
+        dias = pclases.ParteDeProduccion._queryAll(sql)[0][0]  # @UndefinedVariable
     except IndexError:
         dias = 0
     return dias
@@ -3081,7 +3081,7 @@ def consultar_dias_bolsas(fechaini, fechafin):
                 AND partida_cem_id IS NOT NULL); 
     """ % (fechaini.strftime("%Y-%m-%d"), fechafin.strftime("%Y-%m-%d"))
     try:
-        dias = pclases.ParteDeProduccion._connection.queryAll(sql)[0][0]  # @UndefinedVariable
+        dias = pclases.ParteDeProduccion._queryAll(sql)[0][0]  # @UndefinedVariable
     except IndexError:
         dias = 0
     return dias
@@ -3301,7 +3301,7 @@ def consultar_empleados_por_dia_fibra(fechaini, fechafin):
     WHERE partes.id = parte_de_produccion_empleado.partedeproduccionid 
     GROUP BY fecha, empleadoid ORDER BY fecha; """ % (
         fechaini.strftime("%Y-%m-%d"), fechafin.strftime("%Y-%m-%d"))
-    filas_fecha_idempleado = pclases.ParteDeProduccion._connection.queryAll(sql)  # @UndefinedVariable
+    filas_fecha_idempleado = pclases.ParteDeProduccion._queryAll(sql)  # @UndefinedVariable
     # Y ahora sumo (lo sé, se podría hacer directamente en la consulta, pero 
     # prefiero dejarla así porque creo que me hará falta en un futuro tenerlo 
     # desglosado).

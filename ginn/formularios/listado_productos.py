@@ -35,8 +35,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade
-import sys, os
+import gtk
 from framework import pclases
 import mx.DateTime
 
@@ -162,7 +161,7 @@ class ListadoProductos(Ventana):
         """
         Intenta sugerir productos según el corrector Norving.
         """
-        from utils import spelling
+        from lib import spelling
         palabras = []
         for pc in pclases.ProductoCompra.select():
             palabras.append(pc.codigo.lower())

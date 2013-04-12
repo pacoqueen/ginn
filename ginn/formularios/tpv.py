@@ -879,7 +879,7 @@ class TPV(Ventana):
                 totalticket = ticket.calcular_total()
                 if "%s €" % utils.float2str(totalticket) == actual_en_model[5]:
                     #ldvs = len(ticket.lineasDeVenta)
-                    ldvs = ticket._connection.queryOne(
+                    ldvs = ticket._queryOne(
                         "SELECT COUNT(id) "
                         "FROM linea_de_venta "
                         "WHERE ticket_id = %d" % ticket.id)[0]

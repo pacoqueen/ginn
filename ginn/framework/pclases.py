@@ -461,8 +461,14 @@ class PRPCTOO:
         return puid
 
     puid = property(get_puid)
-
-
+    
+    def _queryAll(self, *args, **kw):
+        return self._connection.queryAll(*args, **kw)
+    
+    def _queryOne(self, *args, **kw):
+        return self._connection.queryOne(*args, **kw)
+    
+    
 def starter(objeto, *args, **kw):
     """
     Método que se ejecutará en el constructor de todas las 
@@ -470,18 +476,18 @@ def starter(objeto, *args, **kw):
     Inicializa el hilo y la conexión secundaria para IPC, 
     así como llama al constructor de la clase padre SQLObject.
     """
+    objeto.continuar_hilo = False
+    objeto.notificador = notificacion.Notificacion(objeto)
+    SQLObject._init(objeto, *args, **kw)
+    PRPCTOO.__init__(objeto, objeto.sqlmeta.table)
     # XXX: Compatibilidad hacia atrás con SQLObject 0.6.1
     if not hasattr(objeto, "_table"):
         objeto._table = objeto.sqlmeta.table
     if not hasattr(objeto, "_SO_columnDict"):
         objeto._SO_columnDict = objeto.sqlmeta.columns
-    if not hasattr(objeto, "_connection"):
-        objeto._connection = sqlhub.getConnection()
+    #if not hasattr(objeto, "_connection"):
+    #    objeto._connection = sqlhub.getConnection()
     # XXX
-    objeto.continuar_hilo = False
-    objeto.notificador = notificacion.Notificacion(objeto)
-    SQLObject._init(objeto, *args, **kw)
-    PRPCTOO.__init__(objeto, objeto._table)
     objeto.make_swap()  # Al crear el objeto hago la primera caché de datos, 
                         # por si acaso la ventana se demora mucho e intenta 
                         # compararla antes de crearla.

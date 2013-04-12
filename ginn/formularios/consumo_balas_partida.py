@@ -543,7 +543,7 @@ Sin embalaje.</i></small>""" % (merma))
         Hace activa una partida seleccionada para agregarle balas, imprimir su consumo, etc...
         """
         try:
-            max_partida = pclases.PartidaCarga._connection.queryOne("SELECT MAX(numpartida) FROM partida_carga")[0]
+            max_partida = pclases.PartidaCarga._queryOne("SELECT MAX(numpartida) FROM partida_carga")[0]
             max_partida = "%d" % (max_partida + 1)
         except:
             max_partida = ""

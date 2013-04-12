@@ -532,7 +532,7 @@ class PartesDeFabricacionBolsas(Ventana):
         partedeproduccion = self.objeto
         # Estadísticas:
         #numbolsas = len(self.objeto.articulos)
-        #numbolsas = pclases.ParteDeProduccion._connection.queryOne("""
+        #numbolsas = pclases.ParteDeProduccion._queryOne("""
         #    SELECT COUNT(id) 
         #    FROM articulo 
         #    WHERE articulo.parte_de_produccion_id = %d""" % self.objeto.id)[0] 

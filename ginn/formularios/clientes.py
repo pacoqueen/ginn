@@ -308,7 +308,7 @@ class Clientes(Ventana):
         encuentra lo sugiere y devuelve el objeto contacto. En caso contrario 
         devuelve None.
         """
-        from utils import spelling
+        from lib import spelling
         nombres_bd = []
         apellidos_bd = []
         for c in pclases.Contacto.select():

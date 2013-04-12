@@ -407,7 +407,7 @@ class ConsultaProducido(Ventana):
         """
         dic = {}
         if not fechaini:
-            fechaini = pclases.ParteDeProduccion._connection.queryOne(
+            fechaini = pclases.ParteDeProduccion._queryOne(
                 "SELECT MIN(fecha) FROM parte_de_produccion")[0]
         fechahorainicio = fechaini + mx.DateTime.oneHour * 6
         delta = mx.DateTime.oneHour * 8

@@ -305,7 +305,7 @@ class RollosAlmacen(Ventana):
         WHERE rollo.id = articulo.rollo_id 
                 AND albaran_salida.id = articulo.albaran_salida_id 
                 AND rollo.partida_id = partida.id """
-        rs = pclases.Rollo._connection.queryAll("""%s AND date_part('year', rollo.fechahora) = %d %s %s ORDER BY rollo.numrollo""" \
+        rs = pclases.Rollo._queryAll("""%s AND date_part('year', rollo.fechahora) = %d %s %s ORDER BY rollo.numrollo""" \
                                                 % (queryBase, anno, parte_mes, parte_producto))
         # Separo en la lista los servidos primero y a continuación los que siguen en almacén. 
         queryBase = """
@@ -318,7 +318,7 @@ class RollosAlmacen(Ventana):
         WHERE rollo.id = articulo.rollo_id 
                 AND albaran_salida_id IS NULL 
                 AND rollo.partida_id = partida.id """
-        rs_almacen = pclases.Rollo._connection.queryAll("""%s AND date_part('year', rollo.fechahora) = %d %s %s ORDER BY rollo.numrollo""" \
+        rs_almacen = pclases.Rollo._queryAll("""%s AND date_part('year', rollo.fechahora) = %d %s %s ORDER BY rollo.numrollo""" \
                                                 % (queryBase, anno, parte_mes, parte_producto))
         #DEBUG: print len(rs), len(rs_almacen)
         rs = rs + rs_almacen

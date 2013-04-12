@@ -1022,7 +1022,7 @@ class AlbaranesDeSalida(Ventana):
         if isinstance(producto, pclases.ProductoVenta):
             albaran = self.objeto
             if producto.es_caja():
-                #queryres_ids = pclases.Caja._connection.queryAll("""
+                #queryres_ids = pclases.Caja._queryAll("""
                 #    SELECT caja.id FROM caja, bolsa, articulo 
                 #    WHERE bolsa.id = articulo.bolsa_id 
                 #      AND caja.id = bolsa.caja_id 
@@ -1030,7 +1030,7 @@ class AlbaranesDeSalida(Ventana):
                 #      AND articulo.producto_venta_id = %d 
                 #    GROUP BY caja.id 
                 #    -- ORDER BY caja.id;""" % (albaran.id, producto.id))
-                queryres_ids = pclases.Caja._connection.queryAll(  # @UndefinedVariable
+                queryres_ids = pclases.Caja._queryAll(  # @UndefinedVariable
                     """SELECT caja.id FROM caja, articulo 
                     WHERE caja.id = articulo.caja_id 
                       AND articulo.albaran_salida_id = %d 
@@ -2525,7 +2525,7 @@ class AlbaranesDeSalida(Ventana):
                       AND caja.id = articulo.caja_id 
                       AND articulo.id IN (%s);
                     """ % idsarticulos
-                    sqlpaleres = pclases.Pale._connection.queryOne(sql)
+                    sqlpaleres = pclases.Pale._queryOne(sql)
                     try:
                         bultos = sqlpaleres[0][0] 
                                             # It MUST to work. Si no, prefiero 

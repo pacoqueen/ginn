@@ -1987,7 +1987,7 @@ class PartesDeFabricacionRollos(Ventana):
         había una "X" en el rango y hay que crearlos como 
         rollos defectuosos.
         """
-        ultimo_mas_uno = pclases.Rollo._connection.queryOne("""SELECT ultimo_codigo_rollo_mas_uno(); """)[0]
+        ultimo_mas_uno = pclases.Rollo._queryOne("""SELECT ultimo_codigo_rollo_mas_uno(); """)[0]
         rango = utils.dialogo_entrada(titulo = 'INTRODUZCA RANGO',
                                       texto = 'Rango de números de rollos o el código indovidual.\nEscriba el rango de códigos de la forma "xxxx-yyyy", ambos inclusive.',
                                       padre = self.wids['ventana'],
@@ -3484,11 +3484,11 @@ def cambiar_marcado_ce(ch_defectuoso, ch_marcado, e_numrollo):
     """
     if ch_defectuoso.get_active():
         ch_marcado.set_active(False)
-        codigo_proximo_rollo_defectuoso = pclases.RolloDefectuoso._connection.queryOne("SELECT ultimo_codigo_rollo_defectuoso_mas_uno();")[0]
+        codigo_proximo_rollo_defectuoso = pclases.RolloDefectuoso._queryOne("SELECT ultimo_codigo_rollo_defectuoso_mas_uno();")[0]
         e_numrollo.set_text(codigo_proximo_rollo_defectuoso)
     else:
         ch_marcado.set_active(True)
-        codigo_proximo_rollo = pclases.Rollo._connection.queryOne("SELECT ultimo_codigo_rollo_mas_uno();")[0]
+        codigo_proximo_rollo = pclases.Rollo._queryOne("SELECT ultimo_codigo_rollo_mas_uno();")[0]
         e_numrollo.set_text(codigo_proximo_rollo)
 
 def get_puerto_serie():
@@ -3684,11 +3684,11 @@ def get_proximo_codigo_a_crear(e_numrollo):
     """
     codigo_actual = e_numrollo.get_text()
     if codigo_actual.startswith("R"): 
-        codigo_proximo_rollo = pclases.Rollo._connection.queryOne("SELECT ultimo_codigo_rollo_mas_uno();")[0]
+        codigo_proximo_rollo = pclases.Rollo._queryOne("SELECT ultimo_codigo_rollo_mas_uno();")[0]
     elif codigo_actual.startswith("X"):
-        codigo_proximo_rollo = pclases.RolloDefectuoso._connection.queryOne("SELECT ultimo_codigo_rollo_defectuoso_mas_uno();")[0]
+        codigo_proximo_rollo = pclases.RolloDefectuoso._queryOne("SELECT ultimo_codigo_rollo_defectuoso_mas_uno();")[0]
     else:
-        codigo_proximo_rollo = pclases.Rollo._connection.queryOne("SELECT ultimo_codigo_rollo_mas_uno();")[0]
+        codigo_proximo_rollo = pclases.Rollo._queryOne("SELECT ultimo_codigo_rollo_mas_uno();")[0]
         print 'partes_de_fabricacion_rollos::get_proximo_codigo_a_crear -> No se pudo determinar el tipo de rollo a crear. Creo uno "normal": %s.' % (codigo_proximo_rollo)
     return codigo_proximo_rollo
 
@@ -3718,7 +3718,7 @@ def crear_ventana_pesaje(ventana_parte, padre = None, rollo = None, objeto_venta
                             src_id)
         ventana.connect("destroy", cerrar_ventana_bascula, ventana, com, src_id)
         if rollo == None:
-            ultimo_mas_uno = pclases.Rollo._connection.queryOne(
+            ultimo_mas_uno = pclases.Rollo._queryOne(
                                 """SELECT ultimo_codigo_rollo_mas_uno();""")
             proximo_codrollo = ultimo_mas_uno[0]
         else:

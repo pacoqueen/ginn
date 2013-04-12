@@ -207,7 +207,7 @@ def comprobar_articulos_con_enlaces_incorrectos(report_mode = False):
     if A.select(rs).count() != pclases.Rollo.select().count():
         print >> sys.stderr, "Número de rollos (%d) y artículos rollo (%d) no coincide. Dado que no se pueden violar claves ajenas -integridad referencial asegurada por el motor de la BD-, lo más probable es que haya un registro rollo relacionado con dos o más artículos." % (
             A.select(rs).count(), pclases.Rollo.select().count())
-        chungaletas = A._connection.queryAll("""SELECT rollo_id 
+        chungaletas = A._queryAll("""SELECT rollo_id 
                                                 FROM articulo, rollo 
                                                 WHERE rollo_id = rollo.id 
                                                 GROUP BY rollo_id 
@@ -218,7 +218,7 @@ def comprobar_articulos_con_enlaces_incorrectos(report_mode = False):
     if A.select(rsd).count() != pclases.RolloDefectuoso.select().count():
         print >> sys.stderr, "Número de rollos defectuosos (%d) y artículos rollo defectuoso (%d) no coincide." % (
             A.select(rsd).count(), pclases.RolloDefectuoso.select().count())
-        chungaletas = A._connection.queryAll("""SELECT rollo_defectuoso_id 
+        chungaletas = A._queryAll("""SELECT rollo_defectuoso_id 
                                                 FROM articulo, rollo_defectuoso 
                                                 WHERE rollo_defectuoso_id = rollo_defectuoso.id 
                                                 GROUP BY rollo_defectuoso_id 
@@ -229,7 +229,7 @@ def comprobar_articulos_con_enlaces_incorrectos(report_mode = False):
     if A.select(bs).count() != pclases.Bala.select().count():
         print >> sys.stderr, "Número de balas (%d) y artículos bala (%d) no coincide." % (
             A.select(bs).count(), pclases.Bala.select().count())
-        chungaletas = A._connection.queryAll("""SELECT bala_id 
+        chungaletas = A._queryAll("""SELECT bala_id 
                                                 FROM articulo, bala 
                                                 WHERE bala_id = bala.id 
                                                 GROUP BY bala_id 
@@ -240,7 +240,7 @@ def comprobar_articulos_con_enlaces_incorrectos(report_mode = False):
     if A.select(bsc).count() != pclases.BalaCable.select().count():
         print >> sys.stderr, "Número de balas de cable (%d) y artículos bala de cable (%d) no coincide." % (
             A.select(bsc).count(), pclases.BalaCable.select().count())
-        chungaletas = A._connection.queryAll("""SELECT bala_cable_id 
+        chungaletas = A._queryAll("""SELECT bala_cable_id 
                                                 FROM articulo, bala_cable 
                                                 WHERE bala_cable_id = bala_cable.id 
                                                 GROUP BY bala_cable_id 
@@ -251,7 +251,7 @@ def comprobar_articulos_con_enlaces_incorrectos(report_mode = False):
     if A.select(bbs).count() != pclases.Bigbag.select().count():
         print >> sys.stderr, "Número de bigbags (%d) y artículos bigbag (%d) no coincide." % (
             A.select(bbs).count(), pclases.Bigbag.select().count())
-        chungaletas = A._connection.queryAll("""SELECT bigbag_id 
+        chungaletas = A._queryAll("""SELECT bigbag_id 
                                                 FROM articulo, bigbag 
                                                 WHERE bigbag_id = bigbag.id 
                                                 GROUP BY bigbag_id 
@@ -681,18 +681,18 @@ def comprobar_numeracion_articulos(report_mode = False,
     «ignore_list» es una lista de balas, rollos, etc. que se ignorarán.
     """
     res = True
-    bs = pclases.Bala._connection.queryAll(
+    bs = pclases.Bala._queryAll(
       "SELECT id, numbala FROM bala WHERE numbala > 0 ORDER BY numbala;")
-    bcs = pclases.BalaCable._connection.queryAll(
+    bcs = pclases.BalaCable._queryAll(
       "SELECT id, numbala FROM bala_cable WHERE numbala > 0 ORDER BY numbala;")
-    rs = pclases.Rollo._connection.queryAll(
+    rs = pclases.Rollo._queryAll(
       "SELECT id, numrollo FROM rollo WHERE numrollo > 0 ORDER BY numrollo;")
-    rds = pclases.RolloDefectuoso._connection.queryAll(
+    rds = pclases.RolloDefectuoso._queryAll(
       """SELECT id, numrollo 
          FROM rollo_defectuoso 
          WHERE numrollo > 0 
          ORDER BY numrollo;""")
-    bbs = pclases.Bigbag._connection.queryAll(
+    bbs = pclases.Bigbag._queryAll(
       "SELECT id,numbigbag FROM bigbag WHERE numbigbag > 0 ORDER BY numbigbag;")
     _ignore_list = {"Bala": [], 
                     "BalaCable": [], 
@@ -1050,7 +1050,7 @@ def comprobar_partidas_con_mas_de_un_producto(
     else:
         partidas = pclases.Partida.select(orderBy = "-id")
     for partida in partidas:
-        productos = pclases.ProductoVenta._connection.queryAll(""" 
+        productos = pclases.ProductoVenta._queryAll(""" 
             SELECT producto_venta.id 
             FROM producto_venta, articulo, rollo 
             WHERE producto_venta.id = articulo.producto_venta_id 

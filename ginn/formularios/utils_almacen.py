@@ -89,7 +89,7 @@ def ultimo_pedido_de_compra_mas_uno():
     llegue a un número de pedido libre.
     """
     from mx.DateTime import localtime as ahora
-    strnumspedido = pclases.PedidoCompra._connection.queryAll("SELECT numpedido FROM pedido_compra  WHERE date_part('year', fecha) = %d ORDER BY fecha, numpedido;" % (ahora().year))
+    strnumspedido = pclases.PedidoCompra._queryAll("SELECT numpedido FROM pedido_compra  WHERE date_part('year', fecha) = %d ORDER BY fecha, numpedido;" % (ahora().year))
     intnumspedido = []
     for numpedido in strnumspedido:
         try:

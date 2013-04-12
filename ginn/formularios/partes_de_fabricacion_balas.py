@@ -3666,7 +3666,7 @@ def crear_ventana_pesaje(ventana_parte, padre = None):
         b_cancelar.connect("clicked", cerrar_ventana_bascula, ventana, com, src_id)
         ventana.connect("destroy", cerrar_ventana_bascula, ventana, com, src_id)
         b_aceptar.connect("clicked", leer_nueva_bala, l_peso, l_estable, e_numbala, ventana_parte, l_peso2)
-        ultimo_mas_uno = pclases.Bala._connection.queryOne("""SELECT COALESCE(MAX(numbala), 0)+1 FROM bala""")
+        ultimo_mas_uno = pclases.Bala._queryOne("""SELECT COALESCE(MAX(numbala), 0)+1 FROM bala""")
         proximo_numbala = `int(ultimo_mas_uno[0])`
         e_numbala.set_text("B%s" % (proximo_numbala))
         ventana.show_all()
@@ -3707,7 +3707,7 @@ def leer_nueva_bala(boton, l_peso, l_estable, e_numbala, ventana_parte,
                 nueva_bala = crear_nueva_bala(numbala, codigo_bala, peso, 
                                               ventana_parte)
                 if nueva_bala != None:
-                    ultimo_mas_uno = pclases.Bala._connection.queryOne("""
+                    ultimo_mas_uno = pclases.Bala._queryOne("""
                         SELECT COALESCE(MAX(numbala), 0)+1 FROM bala""")
                     proximo_numbala = `int(ultimo_mas_uno[0])`
                     e_numbala.set_text("B%s" % (proximo_numbala))

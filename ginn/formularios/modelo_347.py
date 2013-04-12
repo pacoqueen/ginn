@@ -55,16 +55,16 @@ class Modelo347(Ventana):
                        'b_exportar/clicked': self.exportar}
         self.add_connections(connections)
         try:
-            primer_anno_compra = pclases.FacturaCompra._connection.queryOne(
+            primer_anno_compra = pclases.FacturaCompra._queryOne(
                 "SELECT MIN(date_part('year', fecha)) "
                 "FROM factura_compra;")[0]
-            primer_anno_venta = pclases.FacturaVenta._connection.queryOne(
+            primer_anno_venta = pclases.FacturaVenta._queryOne(
                 "SELECT MIN(date_part('year', fecha)) "
                 "FROM factura_venta;")[0]
-            ultimo_anno_compra = pclases.FacturaCompra._connection.queryOne(
+            ultimo_anno_compra = pclases.FacturaCompra._queryOne(
                 "SELECT MAX(date_part('year', fecha)) "
                 "FROM factura_compra;")[0]
-            ultimo_anno_venta = pclases.FacturaVenta._connection.queryOne(
+            ultimo_anno_venta = pclases.FacturaVenta._queryOne(
                 "SELECT MAX(date_part('year', fecha)) "
                 "FROM factura_venta;")[0]
             primer_anno = min(primer_anno_compra, primer_anno_venta)
