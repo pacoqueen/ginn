@@ -2922,7 +2922,7 @@ def sugerir_alternativa(txt, padre, mostrar_precios, incluir_sin_iva):
     Devuelve un producto, si se optó por la alternativa; una lista vacía si 
     se rechazó y None si no se encontró nada parecido.
     """
-    from utils import spelling
+    from lib import spelling
     palabras = []
     from framework import pclases
     for pc in pclases.ProductoCompra.select():

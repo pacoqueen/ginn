@@ -51,7 +51,8 @@ class ConsultaRepuestos(Ventana):
         comenzar la ventana (en lugar del primero de la tabla, que es
         el que se muestra por defecto).
         """
-        from formularios import reports, tempfile
+        from formularios import reports
+        import tempfile
 
         exportar_a_csv_a = None
 

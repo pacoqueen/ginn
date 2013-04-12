@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import gtk
+import gtk, gtk.glade  # No es verdad, pero PyDev lo quiere así: @UnusedImport
 from formularios import clientes
 
 

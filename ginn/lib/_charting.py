@@ -1,4 +1,5 @@
 # - coding: utf-8 -
+#@PydevCodeAnalysisIgnore 
 
 # Copyright (C) 2008 Toms Bauģis <toms.baugis at gmail.com>
 

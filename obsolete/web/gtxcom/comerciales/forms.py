@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+#@PydevCodeAnalysisIgnore
 
 from django.forms import ModelForm
 from models import *

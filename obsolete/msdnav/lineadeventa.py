@@ -24,8 +24,6 @@
 
 
 import csv
-import sys, os
-#print os.path.abspath(os.path.curdir)
 from framework import pclases
 
 def get_puid(prod_o_servicio):

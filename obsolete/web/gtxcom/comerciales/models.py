@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#@PydevCodeAnalysisIgnore
 
 from django.db import models
 from django.contrib import admin 

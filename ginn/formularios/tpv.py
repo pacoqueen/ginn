@@ -2467,7 +2467,7 @@ def buscar_clientes_parecidos(nombre, ventana_padre = None):
     """
     Busca clientes con nombre parecido al recibido y devuelve un ResultSelect.
     """
-    from utils import spelling
+    from lib import spelling
     nombres = ""
     for cliente in pclases.Cliente.selectBy(inhabilitado = False):
         nombres += cliente.nombre + "\n"

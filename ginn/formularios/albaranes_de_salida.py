@@ -2787,7 +2787,7 @@ class AlbaranesDeSalida(Ventana):
             print "Comprobando configuración de albarán multipágina..."
             antes = time.time()
         if pclases.config.get_multipagina():
-            from formularios import albaran_multipag
+            from informes import albaran_multipag
             from formularios.reports import abrir_pdf
             alb_mp = albaran_multipag.go_from_albaranSalida(self.objeto) 
             abrir_pdf(alb_mp)
@@ -2817,7 +2817,7 @@ class AlbaranesDeSalida(Ventana):
                   "generación de factura y demás. No me interesa."
             antes = time.time()
         if pclases.config.get_carta_portes():
-            from formularios import albaran_porte
+            from informes import albaran_porte
             from formularios.reports import abrir_pdf
             try:
                 kilos = sum([ldv.producto.calcular_kilos() * ldv.cantidad  
@@ -4346,7 +4346,7 @@ def imprimir_factura(factura, usuario = None, abrir = True, es_copia = False,
     texto = numerals.numerals(totalfra, moneda = "euros", 
                               fraccion = "céntimos").upper()
     if pclases.config.get_multipagina() == 1:
-        from formularios import factura_multipag
+        from informes import factura_multipag
         nomarchivo = factura_multipag.go_from_facturaVenta(factura)
     else:
         nomarchivo = geninformes.factura(cliente,

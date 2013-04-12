@@ -918,8 +918,8 @@ class ProductosCompra(Ventana, VentanaGenerica):
         Lanzará un ImportError si no se puede cargar el módulo corrector.
         Devuelve False si no se 
         """
-        from utils import spelling      # Antes de hacer nada más, para no 
-                                        # perder tiempo en caso de error.
+        from lib import spelling    # Antes de hacer nada más, para no 
+                                    # perder tiempo en caso de error.
         txtbase = []
         for pc in pclases.ProductoCompra.select():
             txtbase.append(pc.codigo.lower())
