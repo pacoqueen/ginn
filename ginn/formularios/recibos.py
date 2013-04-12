@@ -37,16 +37,14 @@
 ## 
 ###################################################################
 
-import os
 from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
+import gtk
 from framework import pclases
 from informes import geninformes
-from utils import _float as float
-import mx, mx.DateTime
+import mx.DateTime
 from framework.seeker import VentanaGenerica 
 from numerals import numerals
 
@@ -155,12 +153,12 @@ class Recibos(Ventana, VentanaGenerica):
             ops = [(v.id, "%s: %s € (%s))" % (v.get_factura_o_prefactura() and v.get_factura_o_prefactura().numfactura or "?", 
                                               utils.float2str(v.importe), 
                                               utils.str_fecha(v.fecha))) for v in self.objeto.vencimientosCobro]
-            id = utils.dialogo_combo(titulo = "QUITAR FACTURA", 
+            ide = utils.dialogo_combo(titulo = "QUITAR FACTURA", 
                                      texto = "Seleccione un vencimiento a eliminar del recibo.", 
                                      padre = self.wids['ventana'], 
                                      ops = ops)
-            if id != None:
-                vto = pclases.VencimientoCobro.get(id)
+            if ide != None:
+                vto = pclases.VencimientoCobro.get(ide)
                 vto.recibo = None
                 txtrcbo = "Recibo bancario número %d con fecha de emisión %s." % (self.objeto.numrecibo, 
                                                                                       utils.str_fecha(self.objeto.fechaLibramiento))
@@ -226,9 +224,9 @@ class Recibos(Ventana, VentanaGenerica):
         if a_buscar != None:
             try:
                 numrecibo = int(a_buscar)
-                nombrecliente = None
+                nombrecliente = None  # @UnusedVariable
             except ValueError:
-                nombrecliente = a_buscar
+                nombrecliente = a_buscar  # @UnusedVariable
                 numrecibo = None
             if numrecibo != None:
                 criterio = pclases.Recibo.q.numrecibo == numrecibo
@@ -375,8 +373,8 @@ class Recibos(Ventana, VentanaGenerica):
                 idsfra = []
             fras = []
             if len(idsfra) > 0 and idsfra[0] != -1 and idsfra[0] != -2:
-                for tipo, id in [e.split(":") for e in idsfra]:
-                    idfra = int(id)
+                for tipo, ide in [e.split(":") for e in idsfra]:
+                    idfra = int(ide)
                     if tipo == "FV":
                         fras.append(pclases.FacturaVenta.get(idfra))
                     elif tipo == "PF":
@@ -405,9 +403,9 @@ class Recibos(Ventana, VentanaGenerica):
         pags = factura.cobros
         mas_larga = [l for l in (vtos, ests, pags) if len(l)==max(len(vtos), len(ests), len(pags))][0]
         if len(mas_larga) == 0: return []
-        for i in xrange(len(mas_larga)):
+        for i in xrange(len(mas_larga)):  # @UnusedVariable
             res.append([None, None, None])
-        def cmp(v1, v2):
+        def comp(v1, v2):
             if v1.fecha < v2.fecha: return -1
             if v1.fecha > v2.fecha: return 1
             return 0
@@ -422,14 +420,14 @@ class Recibos(Ventana, VentanaGenerica):
                 return 2
         resto = [vtos, ests, pags]
         resto.remove(mas_larga)
-        mas_larga.sort(cmp)
+        mas_larga.sort(comp)
         pos = 0
         for item in mas_larga:
             res [pos][lugar(item)] = item
             pos += 1
         for lista in resto:
             mlc = mas_larga[:]
-            lista.sort(cmp)
+            lista.sort(comp)
             while lista:
                 item2 = lista.pop()
                 mindist = distancia(item2, mlc[0])

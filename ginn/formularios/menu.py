@@ -555,14 +555,13 @@ class Menu:
     def abrir_ventana_usuario(self, archivo):
         self.ventana.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
         exec "import %s" % archivo
-        v = None 
         gobject.timeout_add(100, self.volver_a_cursor_original)
         if archivo == "usuarios": 
             import usuarios
-            v = usuarios.Usuarios(self.get_usuario())
+            v = usuarios.Usuarios(self.get_usuario())  # @UnusedVariable
         elif archivo == "ventana_usuario":
             import ventana_usuario
-            v = ventana_usuario.Usuarios(self.get_usuario())
+            v = ventana_usuario.Usuarios(self.get_usuario())  # @UnusedVariable
 
     def abrir_ventana(self, archivo, clase):
         if archivo.endswith('.py'):  # Al importar no hay que indicar extensión
@@ -823,7 +822,7 @@ class Menu:
 
 def construir_y_enviar(w, ventana, remitente, observaciones, texto, usuario):
     # FIXME: Esto hay que cambiarlo.
-    import ventana_progreso, sys, os
+    import ventana_progreso
     try:
         import libgmail  # @UnresolvedImport
     except:
@@ -899,17 +898,17 @@ def mostrar_dialogo_y_guardar(txt):
         dialog.set_current_folder(os.path.join(home, 'tmp'))
     else:
         dialog.set_current_folder(home)
-    filter = gtk.FileFilter()
-    filter.set_name("Archivos de traza-depuración texto plano ginn")
-    filter.add_pattern("*.qdg")
-    filter.add_pattern("*.QDG")
-    filter.add_pattern("*.Qdg")
+    filtro = gtk.FileFilter()
+    filtro.set_name("Archivos de traza-depuración texto plano ginn")
+    filtro.add_pattern("*.qdg")
+    filtro.add_pattern("*.QDG")
+    filtro.add_pattern("*.Qdg")
 
-    dialog.add_filter(filter)
-    filter = gtk.FileFilter()
-    filter.set_name("Todos")
-    filter.add_pattern("*")
-    dialog.add_filter(filter)
+    dialog.add_filter(filtro)
+    filtro = gtk.FileFilter()
+    filtro.set_name("Todos")
+    filtro.add_pattern("*")
+    dialog.add_filter(filtro)
 
     dialog.set_current_name("%s.qdg" % (mx.DateTime.localtime().strftime("%d_%m_%Y")))
 
@@ -1028,7 +1027,6 @@ def _crear_ventana(titulo, texto, usuario):
     return ventana, boton, remitente, observaciones
 
 def enviar_correo(texto, usuario = None):
-    import sys, os
     ventana, boton, remitente, observaciones = crear_ventana(
         'ENVIAR INFORME DE ERROR', texto, usuario)
     ventana.connect('destroy', gtk.main_quit)

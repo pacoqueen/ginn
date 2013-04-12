@@ -149,7 +149,7 @@ class ResultadosFibra(Ventana):
                                    padre = self.wids['ventana'])
             else:
                 filas = [("", p.descripcion, "%s %s" % (utils.float2str(consumos[p], 3, autodec = True), p.unidad)) for p in consumos]
-                nada = utils.dialogo_resultado(filas, 
+                nada = utils.dialogo_resultado(filas,  # @UnusedVariable
                                                titulo = 'CONSUMOS DEL LOTE %s EN PARTES DE PRODUCCIÓN' % (self.lote.codigo),
                                                cabeceras = ('', 'Producto', 'Cantidad consumida'), 
                                                padre = self.wids['ventana'])
@@ -330,9 +330,9 @@ class ResultadosFibra(Ventana):
 
     def calcular_tenacidad(self):
         lote = self.lote
-         # La elongación depende del tipo de producto:
+        # La elongación depende del tipo de producto:
         try:
-            dtex = lote.balas[0].articulos[0].productoVenta.camposEspecificosBala.dtex
+            dtex = lote.balas[0].articulos[0].productoVenta.camposEspecificosBala.dtex  # @UnusedVariable
         except:
             utils.dialogo_info(titulo = 'ERROR', 
                                texto = 'Ocurrió un error buscando el tipo de fibra', 
@@ -353,9 +353,9 @@ class ResultadosFibra(Ventana):
 
     def calcular_grasa(self):
         lote = self.lote
-         # La elongación depende del tipo de producto:
+        # La elongación depende del tipo de producto:
         try:
-            dtex = lote.balas[0].articulos[0].productoVenta.camposEspecificosBala.dtex
+            dtex = lote.balas[0].articulos[0].productoVenta.camposEspecificosBala.dtex  # @UnusedVariable
         except:
             utils.dialogo_info(titulo = 'ERROR', 
                                texto = 'Ocurrió un error buscando el tipo de fibra', 
@@ -373,9 +373,9 @@ class ResultadosFibra(Ventana):
  
     def calcular_encogimiento(self):
         lote = self.lote
-         # La elongación depende del tipo de producto:
+        # La elongación depende del tipo de producto:
         try:
-            dtex = lote.balas[0].articulos[0].productoVenta.camposEspecificosBala.dtex
+            dtex = lote.balas[0].articulos[0].productoVenta.camposEspecificosBala.dtex  # @UnusedVariable
         except:
             utils.dialogo_info(titulo = 'ERROR', 
                                texto = 'Ocurrió un error buscando el tipo de fibra', 
@@ -400,9 +400,9 @@ class ResultadosFibra(Ventana):
     
     def calcular_rizo(self):
         lote = self.lote
-         # La elongación depende del tipo de producto:
+        # La elongación depende del tipo de producto:
         try:
-            dtex = lote.balas[0].articulos[0].productoVenta.camposEspecificosBala.dtex
+            dtex = lote.balas[0].articulos[0].productoVenta.camposEspecificosBala.dtex  # @UnusedVariable
         except:
             utils.dialogo_info(titulo = 'ERROR', 
                                texto = 'Ocurrió un error buscando el tipo de fibra', 
@@ -489,8 +489,8 @@ class ResultadosFibra(Ventana):
         Guarda el contenido del TextView en el atributo observaciones.
         """
         if self.objeto != None:
-            buffer = self.wids['txt_observaciones'].get_buffer()
-            self.objeto.observaciones = buffer.get_text(buffer.get_start_iter(), buffer.get_end_iter())
+            buff = self.wids['txt_observaciones'].get_buffer()
+            self.objeto.observaciones = buff.get_text(buff.get_start_iter(), buff.get_end_iter())
             self.wids['b_guardar_obs'].set_sensitive(False)
 
     def add(self, w):
@@ -505,14 +505,14 @@ class ResultadosFibra(Ventana):
         """
         Borra una línea completa de resultados.
         """
-        model, iter = self.wids['tv_pruebas'].get_selection().get_selected()
-        if iter != None and utils.dialogo(titulo = 'BORRAR PRUEBA', texto = '¿Está seguro?', padre = self.wids['ventana']):
-            ids = map(int, model[iter][-1].split(','))
+        model, itr = self.wids['tv_pruebas'].get_selection().get_selected()
+        if itr != None and utils.dialogo(titulo = 'BORRAR PRUEBA', texto = '¿Está seguro?', padre = self.wids['ventana']):
+            ids = map(int, model[itr][-1].split(','))
             for columnaid in range(len(ids)):
-                id = ids[columnaid]
-                if id != 0:
+                ide = ids[columnaid]
+                if ide != 0:
                     clase = self.get_clase(columnaid+1)
-                    prueba = clase.get(id)
+                    prueba = clase.get(ide)
                     prueba.destroy(ventana = __file__)
             self.rellenar_pruebas()
 
@@ -639,8 +639,8 @@ class ResultadosFibra(Ventana):
         if clase != None:
             model = self.wids['tv_pruebas'].get_model()
             ids = map(int, model[path][-1].split(','))
-            id = ids[columnaid]
-            if id == 0:
+            ide = ids[columnaid]
+            if ide == 0:
                 if texto != "":
                     fecha = time.strptime(model[path][0], '%d/%m/%Y') 
                     prueba = clase(fecha = fecha, 
@@ -653,7 +653,7 @@ class ResultadosFibra(Ventana):
                     else:
                         model[path][columna] = "%d" % resultado
             else:
-                prueba = clase.get(int(id))
+                prueba = clase.get(int(ide))
                 if texto == "": 
                     try:
                         prueba.destroy(ventana = __file__)
@@ -716,7 +716,6 @@ class ResultadosFibra(Ventana):
         Imprime la información en pantalla.
         """
         from formularios import reports
-        from informes import geninformes
         txt = "LOTE: %s\n" % (self.wids['e_codigo'].get_text())
         txt += "PRODUCTO: %s\n\n" % (self.wids['e_nombre'].get_text())
         txt += "\nCaracterísticas del lote:\n"

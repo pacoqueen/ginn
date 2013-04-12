@@ -33,7 +33,6 @@
 ## 
 ###################################################################
 
-import sys, os
 from ventana import Ventana
 import utils
 import pygtk

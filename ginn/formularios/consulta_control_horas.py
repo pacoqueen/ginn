@@ -28,12 +28,11 @@
 
 from ventana import Ventana
 import utils
-import pygtk, gobject, pango
+import pygtk, pango
 pygtk.require('2.0')
 import gtk, time
 from framework import pclases
 import mx.DateTime
-from informes import geninformes
 import ventana_progreso
     
 
@@ -100,7 +99,7 @@ class ConsultaControlHoras(Ventana):
             for cell in columna.get_cell_renderers():
                 cell.set_property("xalign", 1)
         # Fechas iniciales de la ventana:
-        temp = time.localtime()
+        temp = time.localtime()  # @UnusedVariable
         self.inicio = mx.DateTime.localtime() - (7*mx.DateTime.oneDay)
         self.fin = mx.DateTime.localtime()
         self.wids['e_fechafin'].set_text(utils.str_fecha(self.fin))
@@ -123,23 +122,23 @@ class ConsultaControlHoras(Ventana):
         Si ha sido en una fecha, abre la ventana de control de horas.
         """
         model = tv.get_model()
-        tipo, id = model[path][-1].split(":")
+        tipo, ide = model[path][-1].split(":")
         if tipo == "ch":
             try:
-                ch = pclases.ControlHoras.get(int(id))
+                ch = pclases.ControlHoras.get(int(ide))
             except:
                 pass
             else:
                 import control_personal
-                v = control_personal.ControlPersonal(ch, self.usuario)
+                v = control_personal.ControlPersonal(ch, self.usuario)  # @UnusedVariable
         elif tipo == "e":
             try:
-                e = pclases.Empleado.get(int(id))
+                e = pclases.Empleado.get(int(ide))
             except:
                 pass
             else:
                 import empleados
-                v = empleados.Empleados(e, self.usuario)
+                v = empleados.Empleados(e, self.usuario)  # @UnusedVariable
 
     def colorear(self):
         """
@@ -208,27 +207,27 @@ class ConsultaControlHoras(Ventana):
 
     def rellenar_tabla(self, empleados, por_tipo, por_hora, por_actividad, 
                        por_centro):
-    	"""
+        """
         «empleados» es un diccionario que contiene por cada empleado una lista 
         de fechas (ordenada) y otro diccionario con las horas por fecha.
         Las horas están en una tupla con el orden: horas regulares, regulares 
         noche, extra y extra noche.
         """ 
         # Tablas de totales:
-        for wid, dict, evchart in zip(('tv_tipo', 'tv_hora', 'tv_actividad'), 
+        for wid, dicc, evchart in zip(('tv_tipo', 'tv_hora', 'tv_actividad'), 
                                        #'tv_centro'), 
                                       (por_tipo, por_hora, por_actividad, 
                                        por_centro), 
                                       ('eventbox_chart_tipo', 
                                        'eventbox_chart_hora', 
                                        'eventbox_chart_actividad')): 
-                                       #'eventbox_chart_centro')):
+                                        #'eventbox_chart_centro')):
             model = self.wids[wid].get_model()
             model.clear()
             datachart = []
             # Relleno model
-            for k in dict:
-                fila = (k, dict[k])
+            for k in dicc:
+                fila = (k, dicc[k])
                 datachart.append(fila)
                 model.append((fila[0], utils.float2str(fila[1]), ""))
             # Y actualizo gráfica (esto pide refactorización a gritos):
@@ -259,10 +258,10 @@ class ConsultaControlHoras(Ventana):
         datachart.append(tuple(fila_varios))
         graficar(self.wids['eventbox_chart_centro'], datachart, self.logger)
         # Tabla principal:
-    	model = self.wids['tv_datos'].get_model()
-    	model.clear()
+        model = self.wids['tv_datos'].get_model()
+        model.clear()
         tothrd = tothrn = tothed = tothen = 0.0
-    	for empleado in empleados:
+        for empleado in empleados:
             padre = model.append(None, 
                 (empleado.apellidos + ", " + empleado.nombre,
                  utils.float2str(0.0), 
@@ -438,11 +437,11 @@ class ConsultaControlHoras(Ventana):
 
 
 def actualizar_dicts(ch, por_tipo, por_hora, por_actividad, por_centro):
-    for func, dict in zip((ch.get_por_tipo, ch.get_por_hora, 
+    for func, dicc in zip((ch.get_por_tipo, ch.get_por_hora, 
                            ch.get_por_actividad, 
                            ch.get_por_centro_de_trabajo), 
                           (por_tipo, por_hora, por_actividad, por_centro)): 
-        act_dict(func(), dict)
+        act_dict(func(), dicc)
 
 def act_dict(d1, d2):
     """
@@ -455,15 +454,7 @@ def act_dict(d1, d2):
             d2[k] = d1[k]
 
 def graficar(widevchart, datachart, logger = None, *resto_params, **resto_kwp):
-    try:
-        import gtk, gobject, cairo, copy, math
-    except ImportError:
-        return      # No se pueden dibujar gráficas.    # TODO: Temporal.
-    try:
-        import charting
-    except ImportError:
-        import sys, os
-        import charting
+    from lib import charting
     try:
         oldchart = widevchart.get_child()
         if oldchart != None:

@@ -112,9 +112,9 @@ class ConsultaVentasPrefacturas(Ventana):
         un producto, abre el producto.
         """
         model = tv.get_model()
-        id = model[path][-1]
-        if id > 0 and model[path].parent != None: # Es prefactura
-            prefactura = pclases.Prefactura.get(id)
+        ide = model[path][-1]
+        if ide > 0 and model[path].parent != None: # Es prefactura
+            prefactura = pclases.Prefactura.get(ide)
             import prefacturas
             v = prefacturas.Prefacturas(prefactura)
 

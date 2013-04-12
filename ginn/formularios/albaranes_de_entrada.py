@@ -325,9 +325,9 @@ class AlbaranesDeEntrada(Ventana):
                 # abriéndolo y cerrándolo sin parar
                 text = "Sin carga en silo"
             for i in xrange(len(model_combo)):
-                texto, id = model_combo[i]
+                texto, ide = model_combo[i]
                 if texto == text:
-                    idsilo = id
+                    idsilo = ide
                     break
             if idsilo == None:
                 utils.dialogo_info(titulo = "ERROR SILO", 

@@ -333,7 +333,7 @@ class ProductosCompra(Ventana, VentanaGenerica):
         """
         if self.usuario != None and self.usuario.nivel > 0:
             return
-        id = tv.get_model()[path][-1]
+        ide = tv.get_model()[path][-1]
         h = pclases.HistorialExistenciasCompra.get(id)
         fecha = h.fecha
         producto = h.productoCompra
@@ -352,7 +352,7 @@ class ProductosCompra(Ventana, VentanaGenerica):
         # NOTA: El único usuario que lo va a poder hacer es el administrador. 
         #       Que ya está bien la cosa.
         model = self.wids['tv_hist'].get_model()
-        id = model[path][-1]
+        ide = model[path][-1]
         try:
             cantidad = float(texto)
         except ValueError:
@@ -367,7 +367,7 @@ class ProductosCompra(Ventana, VentanaGenerica):
         Cambia las observaciones del registro historial.
         """
         model = self.wids['tv_hist'].get_model()
-        id = model[path][-1]
+        ide = model[path][-1]
         h = pclases.HistorialExistenciasCompra.get(id)
         h.observaciones = texto
         model[path][2] = h.observaciones

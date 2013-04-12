@@ -380,7 +380,7 @@ class Chart(gtk.DrawingArea):
         graph_y = rect.y
         graph_height = graph_y - rect.x + rect.height - 15
         
-        max_size = graph_height - 15
+        max_size = graph_height - 15  # @UnusedVariable
 
         context.set_line_width(1)
         
@@ -573,7 +573,7 @@ class Chart(gtk.DrawingArea):
         max_size = graph_width - 15
 
 
-        ellipsize_label = lambda(text): 3
+        ellipsize_label = lambda(text): 3  # @UnusedVariable
 
         #now let's put the labels and align them right
         set_color(context, dark[8])
@@ -695,7 +695,7 @@ class Chart(gtk.DrawingArea):
         graph_y = rect.y
         graph_height = graph_y - rect.x + rect.height - 15
         
-        max_size = graph_height - 15
+        max_size = graph_height - 15  # @UnusedVariable
 
 
 

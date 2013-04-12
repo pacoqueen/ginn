@@ -39,14 +39,13 @@
 ## 
 ###################################################################
 
-import sys, os 
+import os 
 from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time, gobject
-from framework import pclases
-import mx, mx.DateTime
+import gtk, gobject
+import mx.DateTime
 
 class LogViewer(Ventana):
     """
@@ -76,13 +75,13 @@ class LogViewer(Ventana):
         vars_locales = locals()
         for k in locals_adicionales:
             vars_locales[k] = locals_adicionales[k] 
-        consola = pyconsole.attach_console(self.wids['contenedor_consola'], 
+        consola = pyconsole.attach_console(self.wids['contenedor_consola'],  # @UnusedVariable
                                 banner = "Consola python de depuración GINN", 
                                 script_inicio = """import sys, os, pygtk, gtk, gtk.glade, utils
-from framework import pclases, mx, mx.DateTime
+from framework import pclases, mx.DateTime
 dir()
 """, 
-                                locals = vars_locales)
+                                locales = vars_locales)
         self.wids['frame2'].set_property("visible", False)
         self.wids['ventana'].set_title("LogViewer")
         self.wids['ventana'].resize(800, 600)
@@ -373,7 +372,7 @@ dir()
             hora_str = linea.split()[1]
             horas, minutos = map(int, hora_str.split(":")[:2])
             segundos = hora_str.split(":")[2]
-            segundos, centesimas = map(int, segundos.split(","))
+            segundos, centesimas = map(int, segundos.split(","))  # @UnusedVariable
             dia = fecha.day
             mes = fecha.month
             anno = fecha.year
@@ -410,7 +409,6 @@ dir()
         MAX_SIZE = 2 * 1024 * 1024  
         # Dos megas de info es mucha info (menos de una semana en realidad en 
         # las máquinas de producción).
-        import os
         try:
             f = open(self.fichero_log, "r")
             if os.path.getsize(self.fichero_log) > MAX_SIZE:

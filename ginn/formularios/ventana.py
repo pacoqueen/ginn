@@ -30,8 +30,9 @@
 ## 
 ###################################################################
 import pygtk
+from formularios import utils
 pygtk.require('2.0')
-import gtk, gobject, utils, pango
+import gtk, gobject, pango
 import sys, os
 from widgets import Widgets
 
@@ -83,7 +84,7 @@ class Ventana:
         self.__usuario = usuario
         self._is_fullscreen = False
         import logging
-        from logging import handlers
+        #from logging import handlers
         self.logger = logging.getLogger('GINN')
         self.logger.DEBUG = 0
         self.logger.ERROR = 1
@@ -189,14 +190,14 @@ class Ventana:
                         and event.state & gtk.gdk.MOD1_MASK:
                     # print "CONTROL+ALT+q"
                     import trazabilidad
-                    t = trazabilidad.Trazabilidad(self.objeto, 
+                    t = trazabilidad.Trazabilidad(self.objeto,  # @UnusedVariable
                                                   ventana_padre = self)
                 elif event.keyval == gtk.gdk.keyval_from_name(tecla_fullscreen):
                     self._full_unfull()
                 elif event.keyval == gtk.gdk.keyval_from_name("Escape"):
                     # Very ugly dirty hack: Si es ventana de TPV, no cierro.
                     try:
-                        boton_cajon = self.wids['b_cajon']
+                        boton_cajon = self.wids['b_cajon']  # @UnusedVariable
                     except KeyError:
                         self.salir(None, mostrar_ventana = False)
                         # NAV plagiarism one more time!
@@ -391,7 +392,6 @@ class Ventana:
         Abre la ventana de la entrada de menú recibida.
         """
         from framework import pclases
-        from formularios import utils
         idventana = int(action.get_name().replace("V", ""))
         ventana = pclases.Ventana.get(idventana)
         clase = ventana.clase

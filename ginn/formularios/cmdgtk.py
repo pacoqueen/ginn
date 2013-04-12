@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import time
 import os
 
 from threading import Thread
@@ -36,24 +35,24 @@ class CmdGTK:
             gtk.gdk.threads_init()  # _DEBE_ llamarse _ANTES_ del gtk.main por temas del GIL.
                                     # (http://www.pygtk.org/docs/pygtk/gdk-functions.html#function-gdk--threads-init).
 
-    def handle_output(self, buffer, view, job, line):
+    def handle_output(self, buff, view, job, line):
         gtk.gdk.threads_enter()
-        buffer.insert(buffer.get_end_iter(), line)
-        view.scroll_to_iter(buffer.get_end_iter(), 0)
+        buff.insert(buff.get_end_iter(), line)
+        view.scroll_to_iter(buff.get_end_iter(), 0)
         gtk.gdk.threads_leave()
 
 
-    def execute(self, command, buffer, view):
+    def execute(self, command, buff, view):
         job = ShellCommandJob()
         job.connect("output", lambda job, line:
-                self.handle_output(buffer, view, job, line))
+                self.handle_output(buff, view, job, line))
         job.execute(command)
 
     def attach_to(self, contenedor):
         """
         Agrega el emuldor de terminal al contenedor recibido.
         """
-        buffer = gtk.TextBuffer()
+        buff = gtk.TextBuffer()
 
         scrollwin = gtk.ScrolledWindow()
         scrollwin.set_shadow_type(gtk.SHADOW_IN)
@@ -61,7 +60,7 @@ class CmdGTK:
         contenedor.add(scrollwin)
         scrollwin.show()
         
-        view = gtk.TextView(buffer)
+        view = gtk.TextView(buff)
         scrollwin.add(view)
         view.show()
 
@@ -78,9 +77,9 @@ class CmdGTK:
         hbox.pack_start(button, False, False, 0)
         button.show()
 
-        ejecutar = lambda boton, entry, buffer, view: self.execute(entry.get_text(), buffer, view)
+        ejecutar = lambda boton, entry, buff, view: self.execute(entry.get_text(), buff, view)
 
-        button.connect("clicked", ejecutar, entry, buffer, view)
+        button.connect("clicked", ejecutar, entry, buff, view)
         #-----------------------------------------------------------#
         def pasar_foco(widget, event, button):                      #
             if event.keyval == 65293 or event.keyval == 65421:      #

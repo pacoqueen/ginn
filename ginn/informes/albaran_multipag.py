@@ -26,13 +26,13 @@ from factura_multipag import Linea, TablaFija
 from formularios import utils
 from framework import pclases
 from informes.geninformes import give_me_the_name_baby, escribe, rectangulo, \
-    el_encogedor_de_fuentes_de_doraemon, agregarFila
+    el_encogedor_de_fuentes_de_doraemon
 from reportlab.lib import colors, enums
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, \
-    TableStyle, Image, XPreformatted, Preformatted, PageBreak, KeepTogether, \
-    CondPageBreak
+    TableStyle, Image, Preformatted, \
+    KeepTogether, CondPageBreak  # @UnusedImport
 from reportlab.platypus.flowables import Flowable
 from reportlab.rl_config import defaultPageSize
 from tempfile import gettempdir
@@ -430,7 +430,6 @@ def build_logo_y_empresa_por_separado(dde):
     if len(lineas_empresa) <= 3:
         while len(lineas_empresa) < 3:
             lineas_empresa.append("")
-        empresa = lineas_empresa
     else:
         texto_empresa = lineas_empresa[0] + "\n" 
             #+ ". ".join(lineas_empresa[1:])
@@ -554,7 +553,7 @@ def go_from_albaranSalida(albaranSalida):
         if dde.email:
             datos_de_la_empresa.append(dde.email)
     except IndexError:
-        lineas_empresa = [None]
+        pass 
     nomarchivo = os.path.join(gettempdir(), 
                               "albaranSalida_%s.pdf" % give_me_the_name_baby())
     return go("Albaran de salida %s (%s)" % (

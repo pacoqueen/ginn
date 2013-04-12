@@ -38,13 +38,10 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
-import sys
 from framework import pclases
 import mx.DateTime
 from informes import geninformes
-import re
 import ventana_progreso
-from utils import _float as float
 
 
 class ConsultaEntradasAlmacen(Ventana):
@@ -92,11 +89,11 @@ class ConsultaEntradasAlmacen(Ventana):
         pass
 
     def rellenar_tabla(self, items):
-    	"""
+        """
         Rellena el model con los items de la consulta (objetos LDC).
         """        
-    	model = self.wids['tv_datos'].get_model()
-    	model.clear()
+        model = self.wids['tv_datos'].get_model()
+        model.clear()
         self.wids['tv_datos'].freeze_child_notify()
         self.wids['tv_datos'].set_model(None)
         vpro = ventana_progreso.VentanaProgreso(padre = self.wids['ventana'])
@@ -108,7 +105,7 @@ class ConsultaEntradasAlmacen(Ventana):
             tot = items.count()
         total = 0
         # Albarán tienen todas las LDC porque las LDC se han obtenido a partir de albaranes.
-    	for ldc in items:
+        for ldc in items:
             i+=1
             vpro.set_valor(i/tot, 'Mostrando %d...' % (ldc.id))
             subtotal = ldc.cantidad * ldc.precio

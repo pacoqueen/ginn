@@ -157,7 +157,6 @@ class CategoriasLaborales(Ventana):
         return res
 
     def comparar_ajena(self, col):
-        res = None
         try:
             valor_ventana = utils.combo_get_value(self.wids[col])
         except KeyError:
@@ -176,7 +175,6 @@ class CategoriasLaborales(Ventana):
         return res
 
     def comparar_bool(self, col):
-        res = False
         try:
             valor_ventana = self.wids[col].get_active()
         except KeyError:
@@ -195,7 +193,6 @@ class CategoriasLaborales(Ventana):
         return res
 
     def comparar_int(self, col):
-        res = False
         try:
             valor_ventana = self.wids[col].get_text()
         except KeyError:
@@ -221,7 +218,6 @@ class CategoriasLaborales(Ventana):
         return res
 
     def comparar_string(self, col):
-        res = False
         try:
             valor_ventana = self.wids[col].get_text()
         except KeyError:

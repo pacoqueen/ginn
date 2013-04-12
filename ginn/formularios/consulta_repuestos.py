@@ -41,7 +41,7 @@ import pygtk
 pygtk.require('2.0')
 import gtk, time, os
 from informes import geninformes
-import mx, mx.DateTime
+import mx.DateTime
 
 class ConsultaRepuestos(Ventana):
     

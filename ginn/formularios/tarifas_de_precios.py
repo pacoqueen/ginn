@@ -81,11 +81,10 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time, gobject
-import sys, os
+import gtk, gobject
 from framework import pclases
 from informes import geninformes
-import mx, mx.DateTime
+import mx.DateTime
 
 class TarifasDePrecios(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -133,11 +132,11 @@ class TarifasDePrecios(Ventana):
         from formularios import reports
         datos = []
         model = self.wids['tabla_productos'].get_model()
-        for iter in model: 
-            datos.append((iter[0], 
-                          iter[1], 
-                          "%s €" % (utils.float2str(iter[2], 3)), 
-                          "%s €" % (utils.float2str(iter[3], 3))
+        for itr in model: 
+            datos.append((itr[0], 
+                          itr[1], 
+                          "%s €" % (utils.float2str(itr[2], 3)), 
+                          "%s €" % (utils.float2str(itr[3], 3))
                         ))
         def cmp_func(x, y):
             """
@@ -240,14 +239,14 @@ class TarifasDePrecios(Ventana):
      
     def borrar_tarifa_de_lista(self, tarifa):
         m = self.wids['cb_nombre_tarifa'].get_model()
-        iter = m.get_iter_first()
-        while iter != None:
-            if m.get(iter, 0)[0] == tarifa.id:
+        itr = m.get_iter_first()
+        while itr != None:
+            if m.get(itr, 0)[0] == tarifa.id:
                 # model.get devuelve una tupla de valores de columnas.
-                m.remove(iter)
+                m.remove(itr)
                 break 	# No sigo recorriendo. Sólo elimino el primero y 
                         # me ahorro el resto del recorrido.
-            iter = m.iter_next(iter)
+            itr = m.iter_next(itr)
 
     def buscar_indice_texto(self, combo, texto):
         """ No tengo mucho tiempo que perder. Hasta que encuentre
@@ -262,12 +261,12 @@ class TarifasDePrecios(Ventana):
         le ocurra poner el mismo nombre a dos tarifas se caga la perra.
         """
         m = combo.get_model()
-        iter = m.get_iter_first()
+        itr = m.get_iter_first()
         i=0
-        while iter!=None and m[i][1]!=texto:
+        while itr!=None and m[i][1]!=texto:
             i+=1
-            iter = m.iter_next(iter)
-        if iter==None: return -1
+            itr = m.iter_next(itr)
+        if itr==None: return -1
         else: return i
 
     def actualizar_ventana(self):
@@ -425,8 +424,8 @@ class TarifasDePrecios(Ventana):
         
         # Guardo cambios:
         ## Por tanto, sólo hay que guardar los cambios en la descripción:
-        buffer = self.wids['tv_descripcion_tarifa'].get_buffer()
-        texto=buffer.get_text(buffer.get_bounds()[0], buffer.get_bounds()[1])
+        buff = self.wids['tv_descripcion_tarifa'].get_buffer()
+        texto=buff.get_text(buff.get_bounds()[0], buff.get_bounds()[1])
         tarifa.observaciones=texto
         try:
             periodoValidezIni = utils.parse_fecha(self.wids['e_periodo_validez_ini'].get_text())
@@ -486,7 +485,7 @@ class TarifasDePrecios(Ventana):
         precio = pclases.Precio.get(idprecio)
         producto = precio.producto
         tarifa = self.objeto
-          # OJO: No se debería devolver ni más ni menos de un producto.
+            # OJO: No se debería devolver ni más ni menos de un producto.
         try:
             porcentaje = utils.parse_porcentaje(nuevotexto, True)
         except ValueError:
@@ -514,7 +513,7 @@ class TarifasDePrecios(Ventana):
         precio = pclases.Precio.get(idprecio)
         producto = precio.producto
         tarifa = self.objeto
-          # OJO: No se debería devolver ni más ni menos de un producto.
+            # OJO: No se debería devolver ni más ni menos de un producto.
         try:
             tarifa.asignarTarifa(producto, float(nuevotexto))
         except ValueError:
@@ -539,13 +538,13 @@ class TarifasDePrecios(Ventana):
             pos=combo.get_active()
         if pos>=0:	# Tenemos una tarifa válida en el combo:
             # Obtengo el identificador a partir del model
-            id = combo.get_model()[pos][0]	# La columna 0 es el id.
+            ide = combo.get_model()[pos][0]	# La columna 0 es el ide.
             # Y finalmente la tarifa actual:
             tarifa = self.objeto
             try:
                 if tarifa != None:
                     tarifa.notificador.set_func(lambda : None)
-                tarifa=pclases.Tarifa.get(id)
+                tarifa=pclases.Tarifa.get(ide)
                 # Por si acaso ya estaba en memoria (devuelve entonces el mismo
                 # objeto sin volver a pedir datos a la BD), sincronizo y me 
                 # aseguro que trae información actualizada:
@@ -553,7 +552,7 @@ class TarifasDePrecios(Ventana):
                 # Y activo la función de notificación:
                 tarifa.notificador.set_func(self.act)
             except:
-                print "ERROR: Ocurrió un error al cargar la tarifa. ¿Existe el id %d?" %id
+                print "ERROR: Ocurrió un error al cargar la tarifa. ¿Existe el ide %d?" %ide
             self.objeto = tarifa
             self.rellenar_widgets()
 
@@ -607,7 +606,7 @@ class TarifasDePrecios(Ventana):
 
     def annadir_producto_a_tarifa(self, event):
         """ 
-        Solicita un producto mediante su código, id o descripción.
+        Solicita un producto mediante su código, ide o descripción.
         Una vez seleccionado el producto, se asocia el objeto que
         lo representa con la tarifa actual mostrada en pantalla y 
         se actualiza la información de la ventana.
@@ -644,12 +643,12 @@ class TarifasDePrecios(Ventana):
                     # No ha cancelado.
                     productos = []
                     for tipo_id in idsproducto:
-                        tipo, id = tipo_id.split(":")
-                        id = int(id)
+                        tipo, ide = tipo_id.split(":")
+                        ide = int(ide)
                         if tipo == "PC":
-                            productos.append(pclases.ProductoCompra.get(id))
+                            productos.append(pclases.ProductoCompra.get(ide))
                         elif tipo == "PV": 
-                            productos.append(pclases.ProductoVenta.get(id))
+                            productos.append(pclases.ProductoVenta.get(ide))
                 else:
                     productos = []
             elif numresultados == 1:
@@ -683,8 +682,8 @@ class TarifasDePrecios(Ventana):
         ## En el caso de las tarifas es sólo la descripción.
         tarifa = self.objeto
         if tarifa == None: return False
-        buffer = self.wids['tv_descripcion_tarifa'].get_buffer()
-        texto=buffer.get_text(buffer.get_bounds()[0], buffer.get_bounds()[1])
+        buff = self.wids['tv_descripcion_tarifa'].get_buffer()
+        texto=buff.get_text(buff.get_bounds()[0], buff.get_bounds()[1])
         condicion = tarifa.observaciones == texto
         condicion = condicion and utils.str_fecha(tarifa.periodoValidezIni) == self.wids['e_periodo_validez_ini'].get_text()
         condicion = condicion and utils.str_fecha(tarifa.periodoValidezFin) == self.wids['e_periodo_validez_fin'].get_text()

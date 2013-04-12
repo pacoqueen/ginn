@@ -270,8 +270,8 @@ class IVA(Ventana):
         Abre la factura a la que se le ha hecho doble clic en el TreeView.
         """
         tid = tv.get_model()[path][-1]
-        tipo, id = tid.split(":")
-        id = int(id)
+        tipo, ide = tid.split(":")
+        ide = int(ide)
         if tipo == "FV":
             import facturas_venta
             v = facturas_venta.FacturasVenta(pclases.FacturaVenta.get(id), usuario = self.usuario)

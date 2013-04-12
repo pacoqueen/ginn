@@ -128,7 +128,7 @@ class ConsultaVencimientosPagos(Ventana):
             ventanalogic = mostrar_datos_logic.MostrarDatosLogic(
                             usuario = self.usuario, 
                             padre = self.wids['ventana'], 
-                            consulta = " id = %s " % (idlogic))
+                            consulta = " ide = %s " % (idlogic))
         else:
             idvto = model[path][-1]
             vto = pclases.VencimientoPago.get(idvto)

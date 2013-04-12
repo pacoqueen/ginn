@@ -22,7 +22,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA  #
 ###############################################################################
 
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, XPreformatted, Preformatted, PageBreak, KeepTogether, CondPageBreak
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, XPreformatted, Preformatted, PageBreak, KeepTogether, CondPageBreak  # @UnusedImport
 from reportlab.platypus.flowables import Flowable
 from reportlab.rl_config import defaultPageSize
 from reportlab.lib import colors, enums
@@ -448,7 +448,6 @@ def build_logo_y_empresa_por_separado(dde):
     if len(lineas_empresa) <= 3:
         while len(lineas_empresa) < 3:
             lineas_empresa.append("")
-        empresa = lineas_empresa
     else:
         texto_empresa = lineas_empresa[0] + "\n" 
             #+ ". ".join(lineas_empresa[1:])
@@ -630,16 +629,16 @@ def go(titulo,
              Spacer(1, 0.15 * cm), 
              totales, 
              lastPageNumberFlowable(PAGE_WIDTH - 1.5*cm, 12.7*cm)] 
-             #Spacer(1, 0.15 * cm), 
-             # Línea doble.
-             #KeepTogether([LineaHorizontal(0.9 * PAGE_WIDTH), 
-             #              Spacer(1, 0.05 * cm), 
-             #              LineaHorizontal(0.9 * PAGE_WIDTH)]), 
-             #Spacer(1, 0.15 * cm), 
-             #CondPageBreak(13*cm), 
-             #logo_y_empresa, 
-             #Spacer(1, 0.25 * cm), 
-             #texto]
+            #Spacer(1, 0.15 * cm), 
+            # Línea doble.
+            #KeepTogether([LineaHorizontal(0.9 * PAGE_WIDTH), 
+            #              Spacer(1, 0.05 * cm), 
+            #              LineaHorizontal(0.9 * PAGE_WIDTH)]), 
+            #Spacer(1, 0.15 * cm), 
+            #CondPageBreak(13*cm), 
+            #logo_y_empresa, 
+            #Spacer(1, 0.25 * cm), 
+            #texto]
     story = utils.aplanar([i for i in story if i])
     _cabecera_y_cliente = lambda c, d: cabecera_y_cliente(c, 
                                                           d, 

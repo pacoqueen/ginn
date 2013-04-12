@@ -45,7 +45,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time, mx, mx.DateTime
+import gtk, time, mx.DateTime
 try:
     from framework import pclases
     from framework.seeker import VentanaGenerica 
@@ -163,7 +163,7 @@ class XXXSkel(Ventana, VentanaGenerica):
         filas_res = []
         for r in resultados:
             filas_res.append((r.id, r.XXXcampo1, r.XXXcampo2))
-        id = utils.dialogo_resultado(filas_res,
+        ide = utils.dialogo_resultado(filas_res,
                                      titulo = 'SELECCIONE XXXLO_QUE_SEA',
                                      cabeceras = ('ID', 'XXXCampo1', 'XXXCampo2'), 
                                      padre = self.wids['ventana'])
@@ -242,7 +242,7 @@ class XXXSkel(Ventana, VentanaGenerica):
             resultados = self.clase.select(criterio)
             if resultados.count() > 1:
                 ## Refinar los resultados
-                id = self.refinar_resultados_busqueda(resultados)
+                ide = self.refinar_resultados_busqueda(resultados)
                 if id == None:
                     return
                 resultados = [self.clase.get(id)]

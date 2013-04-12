@@ -38,12 +38,12 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
-import sys, os
+import os
 from framework import pclases
 import mx.DateTime
 from informes import geninformes
 import ventana_progreso
-from pychart import *   # No me gusta, pero no queda otra
+from pychart import *   # No me gusta, pero no queda otra @UnusedWildImport
 from tempfile import gettempdir
 
 class ConsultaIncidencias(Ventana):
@@ -100,15 +100,15 @@ class ConsultaIncidencias(Ventana):
         pass
 
     def rellenar_tabla(self, items):
-    	"""
+        """
         Rellena el model con los items de la consulta
         """        
-    	model = self.wids['tv_datos'].get_model()
-    	model.clear()
+        model = self.wids['tv_datos'].get_model()
+        model.clear()
         self.wids['tv_datos'].freeze_child_notify()
         self.wids['tv_datos'].set_model(None)
         total = 0
-    	for i in items:            
+        for i in items:            
             total += 1
             model.append((i.tipoDeIncidencia.descripcion,
                           utils.str_hora_corta(i.horainicio),

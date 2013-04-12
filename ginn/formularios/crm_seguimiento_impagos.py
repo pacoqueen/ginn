@@ -33,19 +33,17 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade
+import gtk
 from framework import pclases
-import mx, mx.DateTime
-from informes import geninformes
-import pclase2tv
+import mx.DateTime
 
 # from crm_detalles_factura import colorear_tv_alarmas # CWT: Solo blanco/rojo
 def colorear_tv_alarmas(tv):
     def cell_func(column, cell, model, itr):
         color = None
-        id = model[itr][-1]
+        ide = model[itr][-1]
         try:
-            alarma = pclases.Alarma.get(id)
+            alarma = pclases.Alarma.get(ide)
         except pclases.SQLObjectNotFound:
             #model.remove(itr) <- Da muchos problemas. Ya se actualizará 
                             # la ventana después.
@@ -79,8 +77,8 @@ def colorear_tv_facturas(tv):
                 # DONE: ¿Debería colorear los clientes y obras en función de 
                 # sus hijos? CWT: No.
             else:
-                id = model[itr][-1]
-                factura = pclases.FacturaVenta.get(id)
+                ide = model[itr][-1]
+                factura = pclases.FacturaVenta.get(ide)
                 last_evento = factura.get_last_evento()
                 # CWT: Solo dos colores: verde/rojo
                 #ayer = mx.DateTime.localtime() - mx.DateTime.oneDay
@@ -101,9 +99,9 @@ def colorear_tv_tareas(tv):
     Colorea el TreeView de facturas en función de la fecha del último evento.
     """
     def cell_func(column, cell, model, itr):
-        id = model[itr][-1]
+        ide = model[itr][-1]
         try:
-            tarea = pclases.Tarea.get(id)
+            tarea = pclases.Tarea.get(ide)
         except:
             pass    # Es posible que la tarea se esté eliminando a la vez que 
                     # estoy intentando colorearla.
@@ -212,13 +210,6 @@ class CRM_SeguimientoImpagos(Ventana):
                                 pclases.Alarma, 
                                 "estado", 
                                 self.wids['ventana'])
-        #self.tvalertas = pclase2tv.Pclase2tv(pclases.Alarma, 
-        #                                self.wids['tv_alarmas'], 
-        #                                self.objeto, 
-        #                                cols_a_ignorar = [
-        #            "facturaVentaID", "objetoRelacionado", "estadoID"], 
-        #            nombres_col = ["Fecha y hora", "Texto", 
-        #                           "Fecha y hora de alarma", "Observaciones"])
         colorear_tv_alarmas(self.wids['tv_alarmas'])
         #self.wids['ventana'].maximize()
         self.wids['e_fechaini'].set_text("")
@@ -243,8 +234,8 @@ class CRM_SeguimientoImpagos(Ventana):
         Cambia el texto de la alarma por el texto recibido.
         """
         model = self.wids['tv_alarmas'].get_model()
-        id = model[path][-1]
-        alarma = pclases.Alarma.get(id)
+        ide = model[path][-1]
+        alarma = pclases.Alarma.get(ide)
         alarma.texto = newtext
         alarma.syncUpdate()
         model[path][4] = alarma.texto
@@ -254,8 +245,8 @@ class CRM_SeguimientoImpagos(Ventana):
         Cambia las observaciones de la alarma por el texto recibido.
         """
         model = self.wids['tv_alarmas'].get_model()
-        id = model[path][-1]
-        alarma = pclases.Alarma.get(id)
+        ide = model[path][-1]
+        alarma = pclases.Alarma.get(ide)
         alarma.observaciones = newtext
         alarma.syncUpdate()
         model[path][6] = alarma.observaciones
@@ -265,8 +256,8 @@ class CRM_SeguimientoImpagos(Ventana):
         Cambia la tarea de pendiente a terminada.
         """
         model = self.wids['tv_todos'].get_model()
-        id = model[path][-1]
-        tarea = pclases.Tarea.get(id)
+        ide = model[path][-1]
+        tarea = pclases.Tarea.get(ide)
         tarea.pendiente = model[path][0]
         if tarea.pendiente:
             tarea.fechadone = None
@@ -309,8 +300,8 @@ class CRM_SeguimientoImpagos(Ventana):
         Cambia el texto de la tarea por el que se ha escrito en ventana.
         """
         model = self.wids['tv_todos'].get_model()
-        id = model[path][-1]
-        tarea = pclases.Tarea.get(id)
+        ide = model[path][-1]
+        tarea = pclases.Tarea.get(ide)
         tarea.texto = newtext
         tarea.syncUpdate()
         model[path][1] = tarea.texto
@@ -327,8 +318,8 @@ class CRM_SeguimientoImpagos(Ventana):
                     padre = self.wids['ventana'])
         else:
             model = self.wids['tv_todos'].get_model()
-            id = model[path][-1]
-            tarea = pclases.Tarea.get(id)
+            ide = model[path][-1]
+            tarea = pclases.Tarea.get(ide)
             tarea.fecha = fecha
             tarea.syncUpdate()
             model[path][2] = utils.str_fecha(tarea.fecha)
@@ -346,22 +337,22 @@ class CRM_SeguimientoImpagos(Ventana):
                 padre = self.wids['ventana'])
         else:
             idfras = []
-            for iter in iters:
-                if not model[iter].parent:          # Es cliente
-                    for iterhijo in model[iter].iterchildren():
+            for itr in iters:
+                if not model[itr].parent:          # Es cliente
+                    for iterhijo in model[itr].iterchildren():
                         for iternieto in model[iterhijo.iter].iterchildren():
-                            id = model[iternieto.iter][-1]
-                            idfras.append(id)
-                elif not model[iter].parent.parent: # Es obra
-                    for iterhijo in model[iter].iterchildren():
-                        id = model[iterhijo.iter][-1]
-                        idfras.append(id)
+                            ide = model[iternieto.iter][-1]
+                            idfras.append(ide)
+                elif not model[itr].parent.parent: # Es obra
+                    for iterhijo in model[itr].iterchildren():
+                        ide = model[iterhijo.iter][-1]
+                        idfras.append(ide)
                 else:                               # Es factura
-                    idfras.append(model[iter][-1])
+                    idfras.append(model[itr][-1])
             obra = self.elegir_o_crear_obra()
             if obra:
-                for id in idfras:
-                    fra = pclases.FacturaVenta.get(id)
+                for ide in idfras:
+                    fra = pclases.FacturaVenta.get(ide)
                     cliente = fra.cliente
                     if obra not in cliente.obras:
                         cliente.addObra(obra)
@@ -391,22 +382,22 @@ class CRM_SeguimientoImpagos(Ventana):
                                  padre = self.wids['ventana']):
                 return 
             idfras = []
-            for iter in iters:
-                if not model[iter].parent:          # Es cliente
-                    for iterhijo in model[iter].iterchildren():
+            for itr in iters:
+                if not model[itr].parent:          # Es cliente
+                    for iterhijo in model[itr].iterchildren():
                         for iternieto in model[iterhijo.iter].iterchildren():
-                            id = model[iternieto.iter][-1]
-                            idfras.append(id)
-                elif not model[iter].parent.parent: # Es obra
-                    for iterhijo in model[iter].iterchildren():
-                        id = model[iterhijo.iter][-1]
-                        idfras.append(id)
+                            ide = model[iternieto.iter][-1]
+                            idfras.append(ide)
+                elif not model[itr].parent.parent: # Es obra
+                    for iterhijo in model[itr].iterchildren():
+                        ide = model[iterhijo.iter][-1]
+                        idfras.append(ide)
                 else:                               # Es factura
-                    idfras.append(model[iter][-1])
+                    idfras.append(model[itr][-1])
             cliente = self.elegir_cliente()
             if cliente:
-                for id in idfras:
-                    fra = pclases.FacturaVenta.get(id)
+                for ide in idfras:
+                    fra = pclases.FacturaVenta.get(ide)
                     fra.cliente = cliente
                     obra = self.elegir_o_crear_obra()
                     if obra:
@@ -505,18 +496,18 @@ class CRM_SeguimientoImpagos(Ventana):
                 padre = self.wids['ventana'])
         else:
             idfras = []
-            for iter in iters:
-                if not model[iter].parent:          # Es cliente
-                    for iterhijo in model[iter].iterchildren():
+            for itr in iters:
+                if not model[itr].parent:          # Es cliente
+                    for iterhijo in model[itr].iterchildren():
                         for iternieto in model[iterhijo.iter].iterchildren():
-                            id = model[iternieto.iter][-1]
-                            idfras.append(id)
-                elif not model[iter].parent.parent: # Es obra
-                    for iterhijo in model[iter].iterchildren():
-                        id = model[iterhijo.iter][-1]
-                        idfras.append(id)
+                            ide = model[iternieto.iter][-1]
+                            idfras.append(ide)
+                elif not model[itr].parent.parent: # Es obra
+                    for iterhijo in model[itr].iterchildren():
+                        ide = model[iterhijo.iter][-1]
+                        idfras.append(ide)
                 else:                               # Es factura
-                    idfras.append(model[iter][-1])
+                    idfras.append(model[itr][-1])
             funcion_add(idfras)
 
     def nuevo_todo(self, idfras):
@@ -534,8 +525,8 @@ class CRM_SeguimientoImpagos(Ventana):
                                 for c in pclases.Categoria.select(
                                     orderBy="prioridad")])
             if idcat and idcat[0] != None:
-                for id in idfras:
-                    tarea = pclases.Tarea(facturaVentaID = id, 
+                for ide in idfras:
+                    tarea = pclases.Tarea(facturaVentaID = ide, 
                                           categoriaID = idcat[0], 
                                           texto = texto, 
                                           pendiente = True, 
@@ -549,8 +540,8 @@ class CRM_SeguimientoImpagos(Ventana):
             texto = "Introduzca el texto de la nota:", 
             padre = self.wids['ventana'])
         if texto:
-            for id in idfras:
-                tarea = pclases.Nota(facturaVentaID = id, 
+            for ide in idfras:
+                tarea = pclases.Nota(facturaVentaID = ide, 
                                      texto = texto, 
                                      fechahora = mx.DateTime.localtime()) 
                 pclases.Auditoria.nuevo(tarea, self.usuario, __file__)
@@ -603,8 +594,8 @@ class CRM_SeguimientoImpagos(Ventana):
                     except:
                         estado = None
                     #print idfras
-                    for id in idfras:
-                        tarea = pclases.Alarma(facturaVentaID = id, 
+                    for ide in idfras:
+                        tarea = pclases.Alarma(facturaVentaID = ide, 
                                            texto = texto,  
                                            fechahora = mx.DateTime.localtime(),
                                            estado = estado, 
@@ -631,13 +622,13 @@ class CRM_SeguimientoImpagos(Ventana):
             return
         model, iters = tv.get_selection().get_selected_rows()
         to_remove = []
-        for iter in iters: 
-            id = model[iter][-1]
-            tarea = clase.get(id)
+        for itr in iters: 
+            ide = model[itr][-1]
+            tarea = clase.get(ide)
             tarea.destroy(ventana = __file__)
-            to_remove.append(model.get_iter(iter))
-        for iter in to_remove:
-            model.remove(iter)
+            to_remove.append(model.get_iter(itr))
+        for itr in to_remove:
+            model.remove(itr)
 
     def cambiar_filtro(self, widget, *arg, **kw):
         """
@@ -661,8 +652,8 @@ class CRM_SeguimientoImpagos(Ventana):
         el cursor en ella.
         """
         model = tv.get_model()
-        id = model[path][-1]
-        tarea = pclases.Tarea.get(id)
+        ide = model[path][-1]
+        tarea = pclases.Tarea.get(ide)
         model = self.wids['tv_datos'].get_model()
         for fila in model:
             #print fila
@@ -678,9 +669,9 @@ class CRM_SeguimientoImpagos(Ventana):
         Abre la factura a la que pertenece la alarma en la ventana de detalles.
         """
         model = tv.get_model()
-        id = model[path][-1]
+        ide = model[path][-1]
         try:
-            a = pclases.Alarma.get(id)
+            a = pclases.Alarma.get(ide)
         except pclases.SQLObjectNotFound:   # Fue eliminado de la BD.
             utils.dialogo_info(titulo = "ALARMA ELIMINADA", 
                 texto = "La alarma de %s perteneciente a la factura \n"
@@ -690,7 +681,7 @@ class CRM_SeguimientoImpagos(Ventana):
         else:
             fra = a.facturaVenta
             import crm_detalles_factura
-            v = crm_detalles_factura.CRM_DetallesFactura(fra, 
+            v = crm_detalles_factura.CRM_DetallesFactura(fra,  # @UnusedVariable
                                                          usuario = self.usuario)
             # Actualizo último evento porque probablemente lo haya cambiado
             # en la ventana recién abierta. El resto de datos de la 
@@ -711,7 +702,7 @@ class CRM_SeguimientoImpagos(Ventana):
 
     def abrir_facturas_seleccionadas(self, boton):
         sel = self.wids['tv_datos'].get_selection()
-        model, paths = sel.get_selected_rows()
+        model, paths = sel.get_selected_rows()  # @UnusedVariable
         for path in paths:
             self.abrir_factura(self.wids['tv_datos'], path, None)
 
@@ -721,15 +712,15 @@ class CRM_SeguimientoImpagos(Ventana):
         hecho doble clic.
         """
         model = tv.get_model()
-        id = model[path][-1]
+        ide = model[path][-1]
         if model[path].parent:  # Es nodo hijo: abono, factura u obra.
             if model[path].parent.parent: # Es abono o factura
-                if id > 0:  # Si es negativo es un ID de cliente. No me interesa.
-                    fra = pclases.FacturaVenta.get(id)
+                if ide > 0:  # Si es negativo es un ID de cliente. No me interesa.
+                    fra = pclases.FacturaVenta.get(ide)
                     #import facturas_venta
                     #v = facturas_venta.FacturasVenta(fra, usuario = self.usuario)
-                    import crm_detalles_factura
-                    v = crm_detalles_factura.CRM_DetallesFactura(fra, 
+                    from formularios import crm_detalles_factura
+                    v = crm_detalles_factura.CRM_DetallesFactura(fra,  # @UnusedVariable
                                                             usuario = self.usuario)
                     # Actualizo último evento porque probablemente lo haya cambiado
                     # en la ventana recién abierta. El resto de datos de la 
@@ -743,20 +734,20 @@ class CRM_SeguimientoImpagos(Ventana):
                     else:
                         last_evento = ""
                     model[path][5] = last_evento
-                elif id < 0:   # Ahora los id negativos son de abonos, no clientes.
-                    fda = pclases.FacturaDeAbono.get(-id)
+                elif ide < 0:   # Ahora los ide negativos son de abonos, no clientes.
+                    fda = pclases.FacturaDeAbono.get(-ide)
                     a = fda.abono
-                    import abonos_venta
-                    v = abonos_venta.AbonosVenta(a, usuario = self.usuario)
+                    from formularios import abonos_venta
+                    v = abonos_venta.AbonosVenta(a, usuario = self.usuario)  # @UnusedVariable
             else:   # Es obra. Abro... ¿cliente?
                 idcliente = model[path].parent[-1]
                 cliente = pclases.Cliente.get(idcliente)
-                import clientes
-                v = clientes.Clientes(cliente, usuario = self.usuario)
+                from formularios import clientes
+                v = clientes.Clientes(cliente, usuario = self.usuario)  # @UnusedVariable
         else:
-            cliente = pclases.Cliente.get(id)
-            import clientes
-            v = clientes.Clientes(cliente, usuario = self.usuario)
+            cliente = pclases.Cliente.get(ide)
+            from formularios import clientes  # @Reimport
+            v = clientes.Clientes(cliente, usuario = self.usuario)  # @UnusedVariable
 
     def chequear_cambios(self):
         pass
@@ -789,9 +780,9 @@ class CRM_SeguimientoImpagos(Ventana):
             FV = pclases.FacturaVenta
             VC = pclases.VencimientoCobro   # Para asegurarme de 
                                             # que tiene vencimientos.
-            FDA = pclases.FacturaDeAbono
-            C = pclases.Cobro
-            T = pclases.Tarea
+            FDA = pclases.FacturaDeAbono  # @UnusedVariable
+            C = pclases.Cobro  # @UnusedVariable
+            T = pclases.Tarea  # @UnusedVariable
             if fechaini:
                 facturas = FV.select(pclases.AND(
                                         FV.q.fecha >= fechaini, 
@@ -957,17 +948,17 @@ class CRM_SeguimientoImpagos(Ventana):
         if self.wids['tg_filtrar'].get_active():    # Filtrar por seleccionada.
             sel = self.wids['tv_datos'].get_selection()
             model, iters = sel.get_selected_rows()
-            for iter in iters:
-                id = model[iter][-1]
-                if not model[iter].parent:          # Es cliente
-                    for iterhijo in model[iter].iterchildren():
+            for itr in iters:
+                ide = model[itr][-1]
+                if not model[itr].parent:          # Es cliente
+                    for iterhijo in model[itr].iterchildren():
                         for iternieto in model[iterhijo.iter].iterchildren():
                             idfras.append(model[iternieto.iter][-1])
-                elif not model[iter].parent.parent: # Es obra
-                    for iterhijo in model[iter].iterchildren():
+                elif not model[itr].parent.parent: # Es obra
+                    for iterhijo in model[itr].iterchildren():
                         idfras.append(model[iterhijo.iter][-1])
                 else:                               # Es factura
-                    idfras.append(id)
+                    idfras.append(ide)
         else:
             model = self.wids['tv_datos'].get_model()
             idfras = []
@@ -977,9 +968,9 @@ class CRM_SeguimientoImpagos(Ventana):
                         idfras.append(model[nieto.iter][-1])
         model = self.wids['tv_notas'].get_model()
         model.clear()
-        for id in idfras:
-            if id > 0:
-                fra = pclases.FacturaVenta.get(id)
+        for ide in idfras:
+            if ide > 0:
+                fra = pclases.FacturaVenta.get(ide)
                 for n in fra.notas:
                     try:
                         nombre_cliente = n.facturaVenta.cliente.nombre
@@ -997,17 +988,17 @@ class CRM_SeguimientoImpagos(Ventana):
         if self.wids['tg_filtrar'].get_active():    # Filtrar por seleccionada.
             sel = self.wids['tv_datos'].get_selection()
             model, iters = sel.get_selected_rows()
-            for iter in iters:
-                id = model[iter][-1]
-                if not model[iter].parent:          # Es cliente
-                    for iterhijo in model[iter].iterchildren():
+            for itr in iters:
+                ide = model[itr][-1]
+                if not model[itr].parent:          # Es cliente
+                    for iterhijo in model[itr].iterchildren():
                         for iternieto in model[iterhijo.iter].iterchildren():
                             idfras.append(model[iternieto.iter][-1])
-                elif not model[iter].parent.parent: # Es obra
-                    for iterhijo in model[iter].iterchildren():
+                elif not model[itr].parent.parent: # Es obra
+                    for iterhijo in model[itr].iterchildren():
                         idfras.append(model[iterhijo.iter][-1])
                 else:                               # Es factura
-                    idfras.append(id)
+                    idfras.append(ide)
         else:
             model = self.wids['tv_datos'].get_model()
             idfras = []
@@ -1018,9 +1009,9 @@ class CRM_SeguimientoImpagos(Ventana):
         model = self.wids['tv_alarmas'].get_model()
         model.clear()
         hoy = mx.DateTime.today()
-        for id in idfras:
-            if id > 0:
-                fra = pclases.FacturaVenta.get(id)
+        for ide in idfras:
+            if ide > 0:
+                fra = pclases.FacturaVenta.get(ide)
                 for a in fra.alarmas:
                     if (a.fechahoraAlarma >= hoy + mx.DateTime.oneDay
                         or not a.estado.pendiente):
@@ -1047,17 +1038,17 @@ class CRM_SeguimientoImpagos(Ventana):
         if self.wids['tg_filtrar'].get_active():    # Filtrar por seleccionada.
             sel = self.wids['tv_datos'].get_selection()
             model, iters = sel.get_selected_rows()
-            for iter in iters:
-                id = model[iter][-1]
-                if not model[iter].parent:          # Es cliente
-                    for iterhijo in model[iter].iterchildren():
+            for itr in iters:
+                ide = model[itr][-1]
+                if not model[itr].parent:          # Es cliente
+                    for iterhijo in model[itr].iterchildren():
                         for iternieto in model[iterhijo.iter].iterchildren():
                             idfras.append(model[iternieto.iter][-1])
-                elif not model[iter].parent.parent: # Es obra
-                    for iterhijo in model[iter].iterchildren():
+                elif not model[itr].parent.parent: # Es obra
+                    for iterhijo in model[itr].iterchildren():
                         idfras.append(model[iterhijo.iter][-1])
                 else:                               # Es factura
-                    idfras.append(id)
+                    idfras.append(ide)
         else:
             model = self.wids['tv_datos'].get_model()
             idfras = []
@@ -1067,9 +1058,9 @@ class CRM_SeguimientoImpagos(Ventana):
                         idfras.append(model[nieto.iter][-1])
         model = self.wids['tv_todos'].get_model()
         model.clear()
-        for id in idfras:
-            if id > 0:
-                fra = pclases.FacturaVenta.get(id)
+        for ide in idfras:
+            if ide > 0:
+                fra = pclases.FacturaVenta.get(ide)
                 for todo in fra.tareas:
                     if (todo.pendiente or 
                         mx.DateTime.localtime() - todo.fechadone 

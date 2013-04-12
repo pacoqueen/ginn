@@ -131,7 +131,7 @@ def build_datos_por_producto(por_producto):
         bultos_B = hasattr(p, "get_existencias_B") and p.get_existencias_B() or 0.0
         pendiente = utils.float2str(por_producto[p])
         total_por_producto_pendiente += por_producto[p]
-        id = p.id
+        ide = p.id
         if not hasattr(p, "controlExistencias") or p.controlExistencias:
             if por_producto[p] > kilos_A:
                 producto = "-> %s" % (producto)
@@ -220,7 +220,7 @@ def build_datos_por_pedido(fibra_o_gtx):
                         if pendiente > producto.get_stock():
                             str_producto = "-" + str_producto
                     str_existencias = producto.get_str_stock()
-                    id = pedido.id
+                    ide = pedido.id
                     try:
                         fdp = pedido.formaDePago.toString()
                     except AttributeError:

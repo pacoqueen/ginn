@@ -61,7 +61,7 @@ import Image
 import re
 
 # Un par de fuentes TrueType con soporte casi completo para UTF-8.
-import reportlab.rl_config
+import reportlab.rl_config  # @UnusedImport
 reportlab.rl_config.warnOnMissingFontGlyphs = 0
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont, TTFError
@@ -4741,7 +4741,7 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
                 # --------- 8< ----------
                 longitud = c.stringWidth(descripcion, 'Helvetica', 10)
                 longitudLimite = limite - origen
-                lineasSumadas = 1
+                lineasSumadas = 1  # @UnusedVariable
                 if longitud < longitudLimite:
                     c.drawString(origen, linea, escribe(descripcion))
                 else:
@@ -4815,7 +4815,7 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
             if texto != None:
                 longitud = c.stringWidth(texto, 'Helvetica', 10)
                 longitudLimite = (rm - 2.2*inch) - origen
-                lineasSumadas = 1
+                lineasSumadas = 1  # @UnusedVariable
                 if longitud < longitudLimite:
                     c.drawString(origen, linea, escribe(texto))
                 else:
@@ -4824,7 +4824,7 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
                     renglones = int(renglones) + 1
                     corte = int(len(texto)/renglones)
                     memcorte = corte
-                    for i in range(renglones):
+                    for i in range(renglones):  # @UnusedVariable
                         while (len(texto) > corte and texto[corte-1] != ' '
                                and corte < 2*memcorte):
                             corte += 1
@@ -4852,7 +4852,7 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
             if arancel != None and arancel.strip() != "":
                 rectangulo(c, (lm+0.5*inch, bm+inch+21), (rm, bm+inch+7),
                            'ARANCEL:')
-                impuesto = 0
+                impuesto = 0  # @UnusedVariable
                 c.drawString(lm+1.4*inch, bm+inch+11,
                     escribe(arancel+'  Exención del I.V.A. Art. 25 1.a '\
                             'Ley 37/1992 de 29 de Diciembre del I.V.A.'))
@@ -4907,7 +4907,7 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
                     renglones = int(renglones) + 1
                     corte = int(len(textoDocumento)/renglones)
                     memcorte = corte
-                    for i in range(renglones):
+                    for i in range(renglones):  # @UnusedVariable
                         while (len(textoDocumento) > corte
                                and textoDocumento[corte-1] != ' '
                                and corte < 2*memcorte):
@@ -4921,7 +4921,7 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
                         corte = memcorte
         else:
             textopaginas = "Página %d de %d" % (numpagina, paginastotales)
-            anchotextopaginas = c.stringWidth(texto, "Helvetica", 10)
+            anchotextopaginas = c.stringWidth(texto, "Helvetica", 10)  # @UnusedVariable
             c.drawRightString(rm - 0.1 * cm, bm + 0.8 * inch, textopaginas)
 
         bm, tm = bmbak, tmbak
@@ -5234,8 +5234,8 @@ def listado_clientes_solo_riesgos(clientes):
               ('Riesgo concedido', 10)]
     datos = []
     fechafin = mx.DateTime.localtime()
-    fechaini = mx.DateTime.DateTimeFrom(day=1, month=1, year=fechafin.year)
-    total_comprado = total_pagado = total_pendiente = 0
+    fechaini = mx.DateTime.DateTimeFrom(day=1, month=1, year=fechafin.year)  # @UnusedVariable
+    total_comprado = total_pagado = total_pendiente = 0  # @UnusedVariable
     #dibujar_linea_divisoria = False
     for cli in clientes:
         #if dibujar_linea_divisoria:
@@ -5644,7 +5644,7 @@ def parteBalas(datos, lineas):
     un parte de la línea de fibra
     """
     global linea, tm, lm, rm, bm
-    x, y = lm, tm
+    x, y = lm, tm  # @UnusedVariable
     global linea
     MAXLINEAS = 40
 
@@ -5759,7 +5759,7 @@ def parteRollos(datos, lineas):
     un parte de la línea de geotextil
     """
     global linea, tm, lm, rm, bm
-    x, y = lm, tm
+    x, y = lm, tm  # @UnusedVariable
     global linea
     MAXLINEAS = 40
 
@@ -6850,7 +6850,7 @@ def etiquetasBalas(balas):
     yCodigo1 = 1.1+inch
     yCodigo = (yCodigo1, yCodigo1, width/2 + yCodigo1, width/2 + yCodigo1)
 
-    for j in range(len(balas)/4+1):
+    for j in range(len(balas)/4+1):  # @UnusedVariable
         temp = balas[:4]
         if temp == []:
             break
@@ -6961,7 +6961,6 @@ def etiquetasBigbags(bigbags):
         c.drawString(xnumbb, ynumbb, escribe("BIGBAG %s" % bigbag.codigo))
         bar = EanBarCode()
         nombreficheroean13 = bar.getImage(bigbag.articulo.productoVenta.codigo)
-        import Image
         ean13rotado = Image.open(nombreficheroean13)
         ean13rotado = ean13rotado.rotate(90)
         ean13rotado.save(nombreficheroean13)
@@ -7025,12 +7024,12 @@ def abono_old(cliente, factdata, lineasAbono, lineasDevolucion, texto):
     nomarchivo = os.path.join(gettempdir(),
                               "abono_%s.pdf" % give_me_the_name_baby())
     c = canvas.Canvas(nomarchivo)
-    suma = 0.0
+    suma = 0.0  # @UnusedVariable
     # Caben 11 líneas por página. Tenemos que cortar de 11 en 11 para las
     # distintas páginas que pudiera haber
     buffer_texto = texto
     lineas = lineasAbono + ['marca'] + lineasDevolucion
-    buffer = lineas[MAXLINAB:]
+    buff = lineas[MAXLINAB:]
     lineas = lineas[:MAXLINAB]
     while (lineas != []):
         # La cabecera
@@ -7200,7 +7199,7 @@ def abono_old(cliente, factdata, lineasAbono, lineasDevolucion, texto):
         ximporte = x3-4
         xcantidad = x4-4
         xtotal = x5-4
-        xobservaciones = x5+4
+        xobservaciones = x5+4  # @UnusedVariable
         TOTAL = 0.0
         if lineas != None:
             for l in lineas:
@@ -7228,7 +7227,7 @@ def abono_old(cliente, factdata, lineasAbono, lineasDevolucion, texto):
         if texto != None:
             longitud = c.stringWidth(texto, 'Helvetica-Bold', 10)
             longitudLimite = (rm - 2.2*inch) - origen
-            lineasSumadas = 1
+            lineasSumadas = 1  # @UnusedVariable
             if longitud < longitudLimite:
                 c.drawString(origen, linea, escribe(texto))
             else:
@@ -7236,7 +7235,7 @@ def abono_old(cliente, factdata, lineasAbono, lineasDevolucion, texto):
                 renglones = int(renglones) + 1
                 corte = int(len(texto)/renglones)
                 memcorte = corte
-                for i in range(renglones):
+                for i in range(renglones):  # @UnusedVariable
                     while (len(texto) > corte
                            and texto[corte-1] != ' '
                            and corte < 2*memcorte):
@@ -7273,8 +7272,8 @@ def abono_old(cliente, factdata, lineasAbono, lineasDevolucion, texto):
 
         # Salvamos la página
         c.showPage()
-        lineas = buffer[:MAXLINAB]
-        buffer = buffer[MAXLINAB:]
+        lineas = buff[:MAXLINAB]
+        buff = buff[MAXLINAB:]
 
     # Salvamos el documento
     c.save()
@@ -7311,9 +7310,9 @@ def consumoPartida(partida, salida = "txt"):
             productos[consumo.productoCompra.id][1] += consumo.cantidad
     if salida.lower() == "txt":
         res = "CONSUMO DE MATERIALES:\n"
-        for id in productos:
-            res += "\t%s\t%.2f\t%s\n" % (productos[id][0].descripcion,
-                                         productos[id][1], productos[id][2])
+        for ide in productos:
+            res += "\t%s\t%.2f\t%s\n" % (productos[ide][0].descripcion,
+                                         productos[ide][1], productos[ide][2])
         res += "\nCONSUMO DE MATERIA PRIMA DE LA CARGA DE CUARTOS "\
                "COMPLETA%s:\n" % (partida.partidaCarga
                                   and " " + partida.partidaCarga.codigo or "")
@@ -7742,11 +7741,10 @@ def prueba():
 def prueba2():
     from barcode.EANBarCode import EanBarCode
     bar = EanBarCode()
-    from framework import pclases
     p = pclases.ProductoVenta.select()[0]
     # nombrefich = bar.makeFakeCode(p.codigo)
     # El makeFakeCode no genera códigos correctos. Hay que usar:
-    nombrefich = bar.getImage(p.codigo)
+    nombrefich = bar.getImage(p.codigo)  # @UnusedVariable
     # Antiguamente mostraba el código de barras en la ventana con:
     # self.wids['i_codigoarticulo'].set_from_file(nombrefich)
     # Finalmente, si no interesa que ocupe espacio en disco y ya se ha
@@ -7890,19 +7888,19 @@ def pagareCaixa(fechaPago, cantidad, proveedor, euros, fechaEmision):
 
     xEuros = 3.3*CM
     yEuros = alto - 3.5*CM
-    yEuros2 = alto - 3.9*CM
+    yEuros2 = alto - 3.9*CM  # @UnusedVariable
 
     xFecha = 4.5*CM
     yFecha = alto - 4.3*CM
 
     vencimiento = corregir_nombres_fecha(fechaPago.strftime("%d de %B de %Y"))
 
-    euros2 = ''
+    euros2 = ''  # @UnusedVariable
     if len(euros) > 95:
         indice = 95
         while euros[indice] != ' ':
             indice -= 1
-        euros2 = euros[indice:]
+        euros2 = euros[indice:]  # @UnusedVariable
         euros = euros[:indice]
 
     fecha = corregir_nombres_fecha(fechaEmision.strftime("%A, %d de %B de %Y"))
@@ -8286,7 +8284,7 @@ def _DEPRECATED_etiquetasBalasEtiquetadora(balas):
     Una por etiqueta del tamaño estándar de la impresora CAB: 12.55 x 8.4.
     """
     global linea, tm, lm, rm, bm
-    x, y = lm, tm
+    x, y = lm, tm  # @UnusedVariable
     global linea
     MAXLINEAS = 40
     width= 12.55 * cm
@@ -8317,7 +8315,7 @@ def _DEPRECATED_etiquetasBalasEtiquetadora(balas):
     xCodigo = xDerecha + 2.6 * cm
     yCodigo = arriba - 3.75 * cm
 
-    for j in range(len(balas)):
+    for j in range(len(balas)):  # @UnusedVariable
         temp = balas[0]
         if temp == []:
             break
@@ -8356,7 +8354,6 @@ def _DEPRECATED_etiquetasBalasEtiquetadora(balas):
         from barcode.EANBarCode import EanBarCode
         bar = EanBarCode()
         nombreficheroean13 = bar.getImage(temp['codigoBarra'])
-        import Image
         ean13rotado = Image.open(nombreficheroean13)
         ean13rotado = ean13rotado.rotate(90)
         ean13rotado.save(nombreficheroean13)
@@ -8416,7 +8413,7 @@ def tmp_domenech_etiquetasBalasEtiquetadora(balas):
     # OJO: Incluye 7 dígitos antes del código de Domenech por requisito del
     # cliente. No instalar hasta que confirme Nicolás.
     global linea, tm, lm, rm, bm
-    x, y = lm, tm
+    x, y = lm, tm  # @UnusedVariable
     global linea
     MAXLINEAS = 40
     width= 12.55 * cm
@@ -8447,7 +8444,7 @@ def tmp_domenech_etiquetasBalasEtiquetadora(balas):
     xCodigo = xDerecha + 2.6 * cm
     yCodigo = arriba - 3.75 * cm
 
-    for j in range(len(balas)):
+    for j in range(len(balas)):  # @UnusedVariable
         temp = balas[0]
         if temp == []:
             break
@@ -8486,7 +8483,6 @@ def tmp_domenech_etiquetasBalasEtiquetadora(balas):
         from barcode.EANBarCode import EanBarCode
         bar = EanBarCode()
         nombreficheroean13 = bar.getImage(temp['codigoBarra'])
-        import Image
         ean13rotado = Image.open(nombreficheroean13)
         ean13rotado = ean13rotado.rotate(90)
         ean13rotado.save(nombreficheroean13)
@@ -8611,7 +8607,7 @@ def domenech_v_etiquetasBalasEtiquetadora(balas, seriep = None, numped = None):
     0040021580007337000000066000000000005739428650
     """
     global linea, tm, lm, rm, bm
-    x, y = lm, tm
+    x, y = lm, tm  # @UnusedVariable
     global linea
     MAXLINEAS = 40
     width= 12.55 * cm
@@ -8639,7 +8635,7 @@ def domenech_v_etiquetasBalasEtiquetadora(balas, seriep = None, numped = None):
     yQuintaLinea = yCuartaLinea - 0.35*inch
     xCodigo = xDerecha + 2.6 * cm
     yCodigo = arriba - 3.75 * cm
-    for j in range(len(balas)):
+    for j in range(len(balas)):  # @UnusedVariable
         temp = balas[0]
         if temp == []:
             break
@@ -8685,7 +8681,6 @@ def domenech_v_etiquetasBalasEtiquetadora(balas, seriep = None, numped = None):
         from barcode.EANBarCode import EanBarCode
         bar = EanBarCode()
         nombreficheroean13 = bar.getImage(temp['codigoBarra'])
-        import Image
         ean13rotado = Image.open(nombreficheroean13)
         ean13rotado = ean13rotado.rotate(90)
         ean13rotado.save(nombreficheroean13)
@@ -8755,7 +8750,7 @@ def domenech_h_etiquetasBalasEtiquetadora(balas, seriep = None, numped = None):
     007337000000066000000000005739428650 Si no lleva serie ni pedido.
     """
     global linea, tm, lm, rm, bm
-    x, y = lm, tm
+    x, y = lm, tm  # @UnusedVariable
     global linea
     MAXLINEAS = 40
     width= 12.55 * cm
@@ -8785,7 +8780,7 @@ def domenech_h_etiquetasBalasEtiquetadora(balas, seriep = None, numped = None):
     yQuintaLinea = yCuartaLinea - 0.31*inch
     xCodigo = xDerecha + 3.50 * cm
     yCodigo = arriba - 3.75 * cm
-    for j in range(len(balas)):
+    for j in range(len(balas)):  # @UnusedVariable
         temp = balas[0]
         if temp == []:
             break
@@ -8828,7 +8823,6 @@ def domenech_h_etiquetasBalasEtiquetadora(balas, seriep = None, numped = None):
         from barcode.EANBarCode import EanBarCode
         bar = EanBarCode()
         nombreficheroean13 = bar.getImage(temp['codigoBarra'])
-        import Image
         ean13rotado = Image.open(nombreficheroean13)
         ean13rotado = ean13rotado.rotate(90)
         ean13rotado.save(nombreficheroean13)
@@ -8970,7 +8964,7 @@ def etiquetasBalasCableEtiquetadora(balas):
     Una por etiqueta del tamaño estándar de la impresora CAB: 12.55 x 8.4.
     """
     global linea, tm, lm, rm, bm
-    x, y = lm, tm
+    x, y = lm, tm  # @UnusedVariable
     global linea
     MAXLINEAS = 40
     width= 12.55 * cm
@@ -8997,11 +8991,11 @@ def etiquetasBalasCableEtiquetadora(balas):
     ySegundaLinea = yPrimeraLinea - 0.35*inch
     yTerceraLinea = ySegundaLinea - 0.35*inch
     yCuartaLinea = yTerceraLinea - 0.35*inch
-    yQuintaLinea = yCuartaLinea - 0.35*inch
+    yQuintaLinea = yCuartaLinea - 0.35*inch  # @UnusedVariable
     xCodigo = xDerecha + 3.0 * cm
     yCodigo = arriba - 4.00 * cm
 
-    for j in range(len(balas)):
+    for j in range(len(balas)):  # @UnusedVariable
         temp = balas[0]
         if temp == []:
             break
@@ -9024,7 +9018,6 @@ def etiquetasBalasCableEtiquetadora(balas):
         from barcode.EANBarCode import EanBarCode
         bar = EanBarCode()
         nombreficheroean13 = bar.getImage(temp['codigoBarra'])
-        import Image
         ean13rotado = Image.open(nombreficheroean13)
         ean13rotado = ean13rotado.rotate(90)
         ean13rotado.save(nombreficheroean13)
@@ -9049,7 +9042,7 @@ def etiquetasRollosCEtiquetadora(rollos):
     Una por etiqueta del tamaño estándar de la impresora CAB: 12.55 x 8.4.
     """
     global linea, tm, lm, rm, bm
-    x, y = lm, tm
+    x, y = lm, tm  # @UnusedVariable
     global linea
     MAXLINEAS = 40
     width= 12.55 * cm
@@ -9076,11 +9069,11 @@ def etiquetasRollosCEtiquetadora(rollos):
     ySegundaLinea = yPrimeraLinea - 0.35*inch
     yTerceraLinea = ySegundaLinea - 0.35*inch
     yCuartaLinea = yTerceraLinea - 0.35*inch
-    yQuintaLinea = yCuartaLinea - 0.35*inch
+    yQuintaLinea = yCuartaLinea - 0.35*inch  # @UnusedVariable
     xCodigo = xDerecha + 3.0 * cm
     yCodigo = arriba - 4.00 * cm
 
-    for j in range(len(rollos)):
+    for j in range(len(rollos)):  # @UnusedVariable
         temp = rollos[0]
         if temp == []:
             break
@@ -9111,7 +9104,6 @@ def etiquetasRollosCEtiquetadora(rollos):
         from barcode.EANBarCode import EanBarCode
         bar = EanBarCode()
         nombreficheroean13 = bar.getImage(temp['codigoBarra'])
-        import Image
         ean13rotado = Image.open(nombreficheroean13)
         ean13rotado = ean13rotado.rotate(90)
         ean13rotado.save(nombreficheroean13)
@@ -9136,7 +9128,7 @@ def _etiquetasRollosEtiquetadora(rollos, mostrar_marcado):
     un parte de la línea de geotextil
     """
     global linea, tm, lm, rm, bm
-    x, y = lm, tm
+    x, y = lm, tm  # @UnusedVariable
     global linea
     MAXLINEAS = 40
 
@@ -9173,7 +9165,7 @@ def _etiquetasRollosEtiquetadora(rollos, mostrar_marcado):
     yTerceraLinea = ySegundaLinea + 0.2*inch
     yCuartaLinea = yTerceraLinea + 0.4*inch
 
-    for j in range(len(rollos)):
+    for j in range(len(rollos)):  # @UnusedVariable
         temp = rollos[0]
         if temp == []:
             break
@@ -9301,7 +9293,7 @@ def ausencia(empleado, centro, fecha, turno, motivo, motivos):
         saltos = agregarFila(xMotivo1, linea, xMotivo2,
             escribe("%s%s" % (m.descripcion, m.penaliza and " (*)" or "")), c,
             "Helvetica", 10, a_derecha = False, altura_linea = 12)
-        for i in xrange(saltos - 1):
+        for i in xrange(saltos - 1):  # @UnusedVariable
             linea = sigLinea(12)
         c.setFont("Helvetica", 8)
         c.drawString(xMotivo2, linea, escribe(m.descripcionDias))
@@ -9788,7 +9780,7 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
         # Voy a tratar de reescribir esto regla en mano a ver si consigo 
         # uadrarlo bien en la etiquetadora GEMINI.
         global linea, tm, lm, rm, bm
-        x, y = lm, tm
+        x, y = lm, tm  # @UnusedVariable
         global linea
         MAXLINEAS = 40
         width = 12.55 * cm
@@ -9898,7 +9890,6 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
                 bar = EanBarCode()
                 #c.drawImage(bar.getImage(rollo['codigo']), 8.0 * cm, 0.5 * cm,
                 #            width = 4.1 * cm)
-                import Image
                 nombreficheroean13 = bar.getImage(rollo['codigo'], height = 50)
                 ean13rotado = Image.open(nombreficheroean13)
                 ean13rotado = ean13rotado.rotate(90)
@@ -9933,7 +9924,7 @@ def _dibujare_simbolitor_en_la_etiquetar(c, x, y, ancho):
     from reportlab.graphics.shapes import Drawing, Line
     from reportlab.graphics.widgets import signsandsymbols
     from reportlab.graphics import renderPDF
-    from reportlab.lib.colors import black, Color, red
+    from reportlab.lib.colors import black, Color, red  # @UnusedImport
 
     d = Drawing(ancho, ancho)
     signoprohibido = signsandsymbols.NotAllowed()
@@ -9985,7 +9976,7 @@ def calcular_medidas(cheque):
         medidas[key][0] += incx
         medidas[key][1] += incy
     medidas['tope_ventana_sobre'] = [19.1*cm, 21.7*cm]  # Esquina inferior
-                                         # derecha de la ventana del sobre.
+                                            # derecha de la ventana del sobre.
     # Las medidas del texto fijo (logos, texto, etc.)
     L = -0.75*cm     # Alto de una línea
     l = L * 10   # Línea "contador"
@@ -10323,7 +10314,7 @@ def fax_transferencia(empresa,      # Banco a través del que se hace la
     Recibe los datos a imprimir en el fax *como cadenas*.
     """
     ## Tamaños que usaré
-    una_linea = -16
+    una_linea = -16  # @UnusedVariable
     medidas = calcular_medidas_fax()
 
     ## Preparo el archivo y el canvas
@@ -10940,7 +10931,7 @@ def informe_marcado_ce(producto,
                 if len(getattr(partida, dic_pruebas[prueba])) == 0:
                     valor = None
                 fecha_partida = partida.get_fecha_fabricacion()
-                dif, evaluacion = cer.comparar_con_marcado(valor,
+                dif, evaluacion = cer.comparar_con_marcado(valor,  # @UnusedVariable
                                                            prueba,
                                                            fecha_partida)
                 if valor == None:
@@ -11149,7 +11140,7 @@ def recibo(numrecibo, lugar_libramiento, importe, fecha_libramiento,
     Recibe los datos a imprimir en el recibo *como cadenas*.
     """
     ## Tamaños que usaré
-    una_linea = -16
+    una_linea = -16  # @UnusedVariable
     medidas = calcular_medidas_recibo()
 
     ## Preparo el archivo y el canvas
@@ -11634,7 +11625,7 @@ def cmr_transp(c, m, f, transportista):
                alinTxtX = None, alinTxtY = 'arriba', doble = False)
     offset = 0.5*cm
     c.line(m[0][0], m[0][1] - offset, m[1][0], m[0][1] - offset)
-    lineas = transportista.split("\n")
+    lineas = transportista.split("\n")  # @UnusedVariable
 
 def cmr_fdest(c, m, f):
     rectangulo(c, m[0], m[1], texto = 'Firma y sello Empresa destinataria',
@@ -11831,7 +11822,7 @@ def cmr(albaran, lugar = "", transportista = "", porteadores = "",
     (En realidad es la carta de portes, pero ya se le ha
     quedado el nombre de CMR).
     """
-    una_linea = -17
+    una_linea = -17  # @UnusedVariable
     medidas = calcular_medidas_cmr()
 
     ## Preparo el archivo y el canvas
@@ -11962,8 +11953,8 @@ def pruebines():
     total = "1.234.567,89 €"
     total = total.replace('€', '')
     total = total.replace(' ', '')
-    totalfra = utils._float(total)   # Si ya lo tengo aquí calculado... ¿para
-                                     # qué volver a hacerlo?
+    totalfra = utils._float(total)  # Si ya lo tengo aquí calculado... ¿para
+                                    # qué volver a hacerlo?
     totales = {}
     totales['subtotal'] = "123.456,78 €"
     cargo = "123 €"
@@ -11981,21 +11972,18 @@ def pruebines():
     totales['total'] = "12.345.678,09 €"
     texto = numerals.numerals(totalfra, moneda = "euros",
                               fraccion = "céntimos").upper()
-    impuesto = None
+    impuesto = None  # @UnusedVariable
     nomarchivo = factura(cliente, factdata, lineas, arancel, vencimiento,
                          texto, totales)
-    import sys, os
     from formularios.reports import abrir_pdf
     abrir_pdf(nomarchivo)
 
 def pruebines_bibales():
-    from framework import pclases
     from formularios.reports import abrir_pdf
     abrir_pdf(etiquetasBigbags(pclases.Bigbag.select()[:2]))
     return
 
 def pruebines2():
-    from framework import pclases
     from formularios.reports import abrir_pdf
     producto = pclases.ProductoVenta.select(
         pclases.ProductoVenta.q.camposEspecificosRolloID != None)[-2]
@@ -12018,7 +12006,6 @@ def pruebines2():
     abrir_pdf(nomarchivo)
 
 def pruebines3():
-    from framework import pclases
     from formularios.reports import abrir_pdf
     from time import sleep
 
@@ -12032,7 +12019,6 @@ def pruebines3():
               textofijo = False))
 
 def pruebines5():
-    from framework import pclases
     from formularios.reports import abrir_pdf
 
     #abrir_pdf(trazabilidad("Texto de trazabilidad de prueba."))
@@ -12130,7 +12116,7 @@ def prueba_cmr():
     abrir_pdf(cmr(pclases.AlbaranSalida.get(2216)))
 
 def pruebines_pales_guaje():
-    from formularios.reports import mandar_a_imprimir_con_ghostscript, abrir_pdf
+    from formularios.reports import mandar_a_imprimir_con_ghostscript, abrir_pdf  # @UnusedImport
     pale = pclases.Pale.select(orderBy = "-id")[0]
     pale = [pale, pclases.Pale.select(orderBy = "id")[0]]
     for i in range(3):
@@ -12139,7 +12125,7 @@ def pruebines_pales_guaje():
         #mandar_a_imprimir_con_ghostscript(filetiqpale)
 
 def pruebines_cajas_guaje():
-    from formularios.reports import mandar_a_imprimir_con_ghostscript, abrir_pdf
+    from formularios.reports import mandar_a_imprimir_con_ghostscript, abrir_pdf  # @UnusedImport
     caja = pclases.Caja.select(orderBy = "-id")[0]
     caja = [caja, pclases.Caja.select(orderBy = "id")[0]]
     for i in range(3):

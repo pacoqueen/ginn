@@ -62,7 +62,7 @@ try:
     import gobject
 except (ImportError, RuntimeError), msg:
     print "WARNING: No se pudo importar GTK/pyGTK. No se podrán usar funciones gráficas:\n%s" % (msg)
-import mx, mx.DateTime, os, time, datetime
+import mx.DateTime, os, time, datetime
 try:
     import nftp
 except ImportError, msg:
@@ -460,22 +460,22 @@ def dialogo_entrada(texto= '',
     de.vbox.pack_end(vboxopciones)
     hbox.show_all()
     if not textview:
-        input = gtk.Entry()
-        input.set_visibility(not pwd)
+        inpute = gtk.Entry()
+        inpute.set_visibility(not pwd)
         #-----------------------------------------------------------#
         def pasar_foco(widget, event):                              #
             if event.keyval == 65293 or event.keyval == 65421:      #
                 de.action_area.get_children()[1].grab_focus()       #
         #-----------------------------------------------------------#
-        input.connect("key_press_event", pasar_foco)
+        inpute.connect("key_press_event", pasar_foco)
     else:
-        input = gtk.TextView()
-    de.vbox.pack_start(input)
-    input.show()
+        inpute = gtk.TextView()
+    de.vbox.pack_start(inpute)
+    inpute.show()
     if not textview:
-        input.set_text(valor_por_defecto)
+        inpute.set_text(valor_por_defecto)
     else:
-        input.get_buffer().set_text(valor_por_defecto)
+        inpute.get_buffer().set_text(valor_por_defecto)
     if len(titulo)<20:
         width = 100
     elif len(titulo)<60:
@@ -485,7 +485,7 @@ def dialogo_entrada(texto= '',
     de.resize(width, 80)
     de.set_transient_for(padre)
     de.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
-    input.set_property("visible", not hide_entry)
+    inpute.set_property("visible", not hide_entry)
     de.run()
     de.destroy()
     if res[0]==False:
@@ -664,8 +664,8 @@ def dialogo_entrada_combo(titulo='Seleccione una opción',
               and model[model.get_path(itr)][0] != valor_por_defecto:
             itr = model.iter_next()
         combo.set_active_iter(itr)
-    input = combo.child.get_completion()
-    input.connect("match_selected", pasar_foco)
+    inpute = combo.child.get_completion()
+    inpute.connect("match_selected", pasar_foco)
     hbox = gtk.HBox(spacing = 5)
     icono = gtk.Image()
     icono.set_from_stock(gtk.STOCK_DIALOG_QUESTION, gtk.ICON_SIZE_DIALOG)
@@ -964,7 +964,7 @@ def dialogo_resultado(filas,
         label.show()
     ## ----------- Si el Tree debe ser de selcción múltiple:
     if multi:
-          tabla.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
+        tabla.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
     ## ----------- Asocio el evento "row-activated" (doble clic sobre una fila)
     #---------------------------------------------------------------#
     def obtener_id_fila(treeview, path, columna, res):              #
@@ -1014,7 +1014,7 @@ def dialogo_resultado(filas,
     ## ------------ Ejecuto el diálogo, lo destruyo y devuelvo el resultado:
     response = de.run()
     if response == gtk.RESPONSE_CANCEL:
-          res[0] = -1     # -1 es Cancelar. Ver la docstring de la función. 
+        res[0] = -1     # -1 es Cancelar. Ver la docstring de la función. 
     elif response == gtk.RESPONSE_ACCEPT:
         model, paths = tabla.get_selection().get_selected_rows()
         # paths es la lista de rutas. Recorro la lista de rutas 
@@ -1125,9 +1125,9 @@ def rellenar_lista(wid, textos):
         #-------------------------------------------------------#
         # Assumes that the func_data is set to the number of    #
         # the text column in the model.                         #
-        def match_func(completion, key, iter, (column, entry)): #
+        def match_func(completion, key, itr, (column, entry)): #
             model = completion.get_model()                      #
-            text = model.get_value(iter, column)                #
+            text = model.get_value(itr, column)                #
             # if text.startswith(key):                          #
             #     return True                                   #
             # return False                                      #
@@ -1155,8 +1155,8 @@ def rellenar_lista(wid, textos):
         # completion.set_minimum_key_length(2)
         # completion.set_inline_completion(True)
         #---------------------------------------------------#
-        def iter_seleccionado(completion, model, iter):     #
-            combo_set_from_db(wid, model[iter][0])          #
+        def iter_seleccionado(completion, model, itr):    #
+            combo_set_from_db(wid, model[itr][0])           #
         #---------------------------------------------------#
         completion.connect('match-selected', iter_seleccionado)
     elif type(cb) is gtk.ComboBox:
@@ -1707,9 +1707,9 @@ def prepara_hora(hora):
     if len(lista) > 3:
         lista = lista[:3]
     else:
-        long = len(lista)
-        long = 3 - long
-        for i in range(long):
+        longit = len(lista)
+        longit = 3 - longit
+        for i in range(longit):
             lista.append('00')
     try:
         for i in range(3):
@@ -1748,7 +1748,6 @@ def get_configuracion_ftp():
         f = open('nftp.conf')
     except:
         try:
-            import os
             f = open(os.path.join('..', 'framework', 'nftp.conf'))
         except:
             return None
@@ -2085,7 +2084,7 @@ def float2str(n, precision = 2, autodec = False, separador_decimales = ","):
         else:
             try:
                 res = float2str(float(n), precision)
-            except Exception, e:
+            except Exception:
                 raise ValueError, \
                       "El valor %s no se pudo convertir a cadena." % n
     if autodec:
@@ -2168,14 +2167,14 @@ def check_num(num):
             num = num.replace(',', '.')
     return num
 
-def recortar(txt, max = 30):
+def recortar(txt, maxim = 30):
     """
     Recorta una cadena al máximo de caracteres si es más 
     larga que éste. Añade puntos suspensivos en ese caso.
     """
     res = txt
-    if len(txt) > max:
-        res = txt[:max-3]+"..."
+    if len(txt) > maxim:
+        res = txt[:maxim-3]+"..."
     return res
 
 #_float = lambda x: isinstance(x, str) and (("," in x and [float(x.replace(".","").replace(",","."))]) or [float(x)])[0] or float(x)
@@ -2422,7 +2421,6 @@ def enviar_correoe(remitente,
     #print "usuario", usuario
     #print "password", password
     import smtplib
-    import os
     from email.MIMEMultipart import MIMEMultipart
     from email.MIMEBase import MIMEBase
     from email.MIMEText import MIMEText
@@ -2455,13 +2453,13 @@ def enviar_correoe(remitente,
 
     msg.attach(MIMEText(texto))
 
-    for file in adjuntos:
-        #print file
+    for fich in adjuntos:
+        #print fich
         part = MIMEBase('application', "octet-stream")
-        part.set_payload(open(file,"rb").read())
+        part.set_payload(open(fich,"rb").read())
         Encoders.encode_base64(part)
         part.add_header('Content-Disposition', 
-                        'attachment; filename="%s"' % os.path.basename(file))
+                        'attachment; filename="%s"' % os.path.basename(fich))
         msg.attach(part)
         #print part
     try:
@@ -2531,7 +2529,6 @@ def pedir_producto_compra(padre = None, proveedor = None):
     proveedor -> Si es != None, sólo buscará entre los productos de ese 
     proveedor.
     """
-    import sys, os
     from framework import pclases
     producto = None
     codigo_o_descripcion = dialogo_entrada(titulo = "BUSCAR PRODUCTO", 
@@ -2688,7 +2685,6 @@ def buscar_productos_compra(a_buscar, incluir_obsoletos = False):
     # >>> c = pcs.count()
     # >>> pcs[0].obsoleto = True
     # >>> assert pcs.count() == c - 1
-    import sys, os
     from framework import pclases
     PC = pclases.ProductoCompra
     _a_buscar = " ".join([acortar_palabra_con_tilde(w) 
@@ -2708,10 +2704,10 @@ def buscar_productos_compra(a_buscar, incluir_obsoletos = False):
     else:
         crit_descripcion = PC.q.descripcion.contains(a_buscar)
     try:
-        id = int(a_buscar)
+        ide = int(a_buscar)
     except (ValueError, TypeError):
-        id = -1
-    crit_id = PC.q.id == id
+        ide = -1
+    crit_id = PC.q.id == ide
     #pcs = PC.select(pclases.OR(crit_codigo, 
     #                           crit_descripcion, 
     #                           crit_id), 
@@ -2737,7 +2733,6 @@ def buscar_productos_venta(a_buscar):
     "codigoComposan" de la tabla campos_especificos_rollo.
     Devuelve una lista de objetos productoVenta.
     """
-    import sys, os
     from framework import pclases
     criterio = pclases.OR(pclases.ProductoVenta.q.codigo.contains(a_buscar),
                         pclases.ProductoVenta.q.nombre.contains(a_buscar),
@@ -2771,7 +2766,6 @@ def buscar_producto_general(padre = None,
     # FIXME: Esta función está como el culo de tanto parchearla. Tengo que 
     # definir un contrato en condiciones para ella y hacer que los parámetros 
     # sean coherentes entre sí.
-    import sys, os
     from framework import pclases
     res = []
     if not saltar_dialogo:
@@ -2883,15 +2877,15 @@ def buscar_producto_general(padre = None,
             idsproducto = []
         if idsproducto != [-1]:
             for tipo_id in idsproducto:
-                tipo, id = tipo_id.split(":")
+                tipo, ide = tipo_id.split(":")
                 try:
-                    id = int(id)
+                    ide = int(ide)
                 except ValueError:
                     continue
                 if tipo == "PC":
-                    res.append(pclases.ProductoCompra.get(id))
+                    res.append(pclases.ProductoCompra.get(ide))
                 elif tipo == "PV":
-                    res.append(pclases.ProductoVenta.get(id))
+                    res.append(pclases.ProductoVenta.get(ide))
             if res == []:
                 try:
                     res = sugerir_alternativa(a_buscar, 
@@ -3020,7 +3014,6 @@ def buscar_puerto_serie():
                      texto = "Debe instalar el módulo pyserial.", 
                      padre = None)
         return None
-    import os
     if os.name == "posix":
         try:
             com = serial.Serial("/dev/ttyS0")
@@ -3095,7 +3088,6 @@ def descargar_phaser(logger = None, datos = None):
     lista_articulos = []    # Lista de rollos, bigbags y balas leídos.
     dic_articulos = {}      # Diccionario organizado por albaranes o partidas de carga, si fuera necesario.
     if datos != []:
-        import sys, os
         from framework import pclases
         clave = None
         for codigo in datos:
@@ -3158,7 +3150,6 @@ def procesar_albaran(codigo, logger = None):
     Busca un albarán con número `codigo.replace("A", "")` y devuelve 
     el objeto encontrado o None si no se encontró.
     """
-    import sys, os
     from framework import pclases
     numalbaran = codigo.replace("A", "")
     albaranes = pclases.AlbaranSalida.select(pclases.AlbaranSalida.q.numalbaran == numalbaran)
@@ -3180,7 +3171,6 @@ def procesar_rollo(codigo, logger = None):
     Busca un rollo con el código recibido y devuelve 
     el objeto encontrado o None si no se encontró.
     """
-    import sys, os
     from framework import pclases
     rollos = pclases.Rollo.select(pclases.Rollo.q.codigo == codigo)
     if rollos.count() == 0:
@@ -3208,7 +3198,6 @@ def procesar_bala(codigo, logger = None):
     Busca un bala con el código recibido y devuelve 
     el objeto encontrado o None si no se encontró.
     """
-    import sys, os
     from framework import pclases
     balas = pclases.Bala.select(pclases.Bala.q.codigo == codigo)
     if balas.count() == 0:
@@ -3236,7 +3225,6 @@ def procesar_bigbag(codigo, logger = None):
     Busca un bigbag con el código recibido y devuelve 
     el objeto encontrado o None si no se encontró.
     """
-    import sys, os
     from framework import pclases
     bigbags = pclases.Bigbag.select(pclases.Bigbag.q.codigo == codigo)
     if bigbags.count() == 0:
@@ -3264,7 +3252,6 @@ def procesar_gtxc(codigo, logger = None):
     Busca un geotextil C con el código recibido y devuelve 
     el objeto encontrado o None si no se encontró.
     """
-    import sys, os
     from framework import pclases
     gtxcs = pclases.RolloC.select(pclases.RolloC.q.codigo == codigo)
     if gtxcs.count() == 0:
@@ -3292,7 +3279,6 @@ def procesar_partida_carga(codigo, logger = None):
     Busca una partida carga con número `codigo.replace("PC", "")` y devuelve 
     el objeto encontrado o None si no se encontró.
     """
-    import sys, os
     from framework import pclases
     #numpartida_carga = codigo.replace("PC", "")
     #partidas_carga = pclases.PartidaCarga.select(pclases.PartidaCarga.q.codigo == numpartida_carga)
@@ -3321,16 +3307,16 @@ def unir_fecha_y_hora(mxfecha, mxhora):
                                               hour = hora, minute = minuto, second = segundo)
     return fecha_mas_hora
 
-def parse_numero(str, invertir = False):
+def parse_numero(cad, invertir = False):
     """
     Devuelve el primero de los números que se pueda extraer 
-    de la cadena str o None si no contiene ninguna cifra.
+    de la cadena cad o None si no contiene ninguna cifra.
     Si invertir == True, devuelve el primer número encontrado por el final.
     """
     import re
     regexp = re.compile("[0-9]*")
     try:
-        ultimo = [int(item) for item in regexp.findall(str) if item!='']
+        ultimo = [int(item) for item in regexp.findall(cad) if item!='']
         if not invertir:
             ultimo = ultimo[0]
         else:
@@ -3529,7 +3515,7 @@ def update_preview_image(filechooser, preview_image):
 def dialogo_abrir(titulo = "ABRIR FICHERO", 
                   filtro_imagenes = False, 
                   padre = None, 
-                  dir = None):
+                  directorio = None):
     """
     Muestra un diálogo de abrir y devuelve el archivo seleccionado 
     o None.
@@ -3543,19 +3529,19 @@ def dialogo_abrir(titulo = "ABRIR FICHERO",
                                                  gtk.RESPONSE_CANCEL,
                                                  gtk.STOCK_OPEN,
                                                  gtk.RESPONSE_OK))
-    if dir != None:
-        file_open.set_current_folder(dir)
+    if directorio != None:
+        file_open.set_current_folder(directorio)
     if filtro_imagenes:
         """Crear y añadir el filtro de imágenes"""
-        filter = gtk.FileFilter()
-        filter.set_name("Imágenes")
-        filter.add_mime_type("image/png")
-        filter.add_mime_type("image/jpeg")
-        filter.add_mime_type("image/gif")
-        filter.add_pattern("*.png")
-        filter.add_pattern("*.jpg")
-        filter.add_pattern("*.gif")
-        file_open.add_filter(filter)
+        filtro = gtk.FileFilter()
+        filtro.set_name("Imágenes")
+        filtro.add_mime_type("image/png")
+        filtro.add_mime_type("image/jpeg")
+        filtro.add_mime_type("image/gif")
+        filtro.add_pattern("*.png")
+        filtro.add_pattern("*.jpg")
+        filtro.add_pattern("*.gif")
+        file_open.add_filter(filtro)
         # Añadir preview de imágenes.
         browse_preview_image = gtk.Image()
         browse_preview_image.set_size_request(120, -1)
@@ -3564,10 +3550,10 @@ def dialogo_abrir(titulo = "ABRIR FICHERO",
                                             browse_preview_image)
 
     """Crear y añadir el filtro de "todos los archivos"."""
-    filter = gtk.FileFilter()
-    filter.set_name("Todos los ficheros")
-    filter.add_pattern("*")
-    file_open.add_filter(filter)
+    filtro = gtk.FileFilter()
+    filtro.set_name("Todos los ficheros")
+    filtro.add_pattern("*")
+    file_open.add_filter(filtro)
     """Valor devuelto"""
     result = None
     if file_open.run() == gtk.RESPONSE_OK:
@@ -3617,7 +3603,7 @@ def dialogo_adjuntar(titulo, objeto, padre = None):
     from os import getenv
     fichero = dialogo_abrir(titulo, 
                             padre = padre, 
-                            dir = getenv("HOME", 
+                            directorio = getenv("HOME", 
                             os.getenv("SystemDrive")))
     if fichero:
         nombre = dialogo_entrada(titulo = "NOMBRE DOCUMENTO", 
@@ -3698,18 +3684,17 @@ def buscar_factura(ventana_padre = None, multi = False, filtrar = False, cliente
             res = pclases.Prefactura.get(int(idfactura.split(":")[1]))
     return res
 
-def abrir_factura_venta(id, num, usuario = None):
+def abrir_factura_venta(ide, num, usuario = None):
     """
-    Intenta abrir la factura de venta con clave primaria "id" 
+    Intenta abrir la factura de venta con clave primaria "ide" 
     y número de factura "num". Si no coincide el num con la 
     factura id es porque no es una factura de venta y 
     devuelve False.
     En otro caso abre la ventana y devuelve True.
     """
     from framework import pclases
-    print id, num
     try:
-        fra = pclases.FacturaVenta.get(id)
+        fra = pclases.FacturaVenta.get(ide)
         print fra
     except pclases.SQLObjectNotFound:
         res = False
@@ -3718,14 +3703,14 @@ def abrir_factura_venta(id, num, usuario = None):
         if fra.numfactura == num:
             res = True
             from formularios import facturas_venta
-            ventana = facturas_venta.FacturasVenta(fra, usuario)
+            ventana = facturas_venta.FacturasVenta(fra, usuario)  # @UnusedVariable
         else:
             res = False
     return res
 
-def abrir_prefactura(id, num, usuario = None):
+def abrir_prefactura(ide, num, usuario = None):
     """
-    Intenta abrir la factura proforma con clave primaria "id" 
+    Intenta abrir la factura proforma con clave primaria "ide" 
     y número de factura "num". Si no coincide el num con la 
     factura id es porque no es una prefactura y 
     devuelve False.
@@ -3733,14 +3718,14 @@ def abrir_prefactura(id, num, usuario = None):
     """
     from framework import pclases
     try:
-        fra = pclases.Prefactura.get(id)
+        fra = pclases.Prefactura.get(ide)
     except pclases.SQLObjectNotFound:
         res = False
     else:
         if fra.numfactura == num:
             res = True
             from formularios import prefacturas
-            ventana = prefacturas.Prefacturas(fra, usuario)
+            ventana = prefacturas.Prefacturas(fra, usuario)  # @UnusedVariable
         else:
             res = False
     return res
@@ -3776,10 +3761,10 @@ def image2pixbuf(image):
     #import gtk
     import StringIO
     #import Image
-    file = StringIO.StringIO()
-    image.save(file, 'ppm')
-    contents = file.getvalue()
-    file.close()
+    fich = StringIO.StringIO()
+    image.save(fich, 'ppm')
+    contents = fich.getvalue()
+    fich.close()
     loader = gtk.gdk.PixbufLoader('pnm')
     loader.write(contents, len (contents))
     pixbuf = loader.get_pixbuf()
@@ -3830,7 +3815,6 @@ def seleccionar_tipo_repuesto(ventana_padre = None):
     """
     Muestra un diálogo con un combo para seleccionar un tipo de repuesto.
     """
-    import sys, os
     from framework import pclases
     res = None
     tipos = pclases.TipoDeMaterial.select(pclases.OR(
@@ -3857,7 +3841,6 @@ def seleccionar_repuesto(tipo, ventana_padre = None, dejar_crear = True,
     Muestra un dialogo_combo con los productos de compra de repuestos del 
     tipo "tipo". Si dejar_crear = True permite crear un producto no listado.
     """
-    import sys, os
     from framework import pclases
     res = None
     idtipo = tipo.id
@@ -4190,7 +4173,6 @@ def cambiar_por_combo(tv, numcol, opts, clase, campo, ventana_padre = None):
     «ventana_padre» servirá como ventana padre para la ventana modal de los 
     posibles avisos de error al guardar los valores seleccionados en el combo.
     """
-    import sys
     from framework.pclases import getObjetoPUID, SQLObjectNotFound
     # Elimino columna actual
     column = tv.get_column(numcol)
@@ -4316,7 +4298,7 @@ def sanitize(cad):
     return cad
 
 if __name__=="__main__":
-    import sys, os
+    import sys
     print dialogo_radio(titulo='Seleccione una opción', 
                 texto='Selecciona una opción del radiobutton y tal y cual.', 
                 ops=[(0, 'Sin opciones'), (1, "Una opción"), (2, "Y otra"), 
@@ -4345,7 +4327,6 @@ if __name__=="__main__":
     #print corregir_mayusculas_despues_de_punto(" Love Reign o'er me. ")
     #print corregir_mayusculas_despues_de_punto("   ")
     #print corregir_mayusculas_despues_de_punto("")
-    import time
     ahora = time.time()
     buscar_producto_general(mostrar_precios = True)
     print (time.time() - ahora) / 60.0

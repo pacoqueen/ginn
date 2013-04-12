@@ -403,7 +403,7 @@ class PartesDeFabricacionRollos(Ventana):
                 if numcol == 2:
                     cell.set_property("text", "%.1f" % model[itr][2])
                 # Marco el color de fondo para las muestras:
-                id = model[itr][-1]
+                ide = model[itr][-1]
                 try:
                     articulo = pclases.Articulo.get(id)
                     if articulo.es_rollo():
@@ -568,7 +568,7 @@ class PartesDeFabricacionRollos(Ventana):
         Cambia las observaciones del registro.
         """
         model = self.wids['tv_desecho'].get_model()
-        id = model[path][-1]
+        ide = model[path][-1]
         desecho = pclases.DescuentoDeMaterial.get(id)
         desecho.observaciones = newtext
         desecho.fechahora = mx.DateTime.localtime()     # Actualizo la fecha y hora.
@@ -582,7 +582,7 @@ class PartesDeFabricacionRollos(Ventana):
         anterior y resta la nueva).
         """
         model = self.wids['tv_desecho'].get_model()
-        id = model[path][-1]
+        ide = model[path][-1]
         desecho = pclases.DescuentoDeMaterial.get(id)
         try:
             newtext=newtext.replace(desecho.productoCompra.unidad, "").strip()
@@ -728,7 +728,7 @@ class PartesDeFabricacionRollos(Ventana):
                 newtext = ("0" * (4 - len(newtext))) + newtext
             newtext = "%s:%s" % (newtext[:-2], newtext[-2:])
         model = self.wids['tv_empleados'].get_model()
-        id = model[path][-1]
+        ide = model[path][-1]
         ht = pclases.HorasTrabajadas.get(id)
         try:
             try:
@@ -1413,7 +1413,7 @@ class PartesDeFabricacionRollos(Ventana):
         model = self.wids['tv_rollos'].get_model()
         if model[path][1] == '':	# Nº rollo, no tiene, no es un rollo.
             return
-        id = model[path][-1]
+        ide = model[path][-1]
         articulo = pclases.Articulo.get(id)
         if articulo.es_rollo():
             rollo = articulo.rollo
@@ -1452,7 +1452,7 @@ class PartesDeFabricacionRollos(Ventana):
 
     def cambiar_observaciones(self, cell, path, newtext):
         model = self.wids['tv_rollos'].get_model()
-        id = model[path][-1]
+        ide = model[path][-1]
         if model[path][1] != '':	# Nº rollo, tiene, no es una incidencia.
             articulo = pclases.Articulo.get(id)
             if articulo.es_rollo():
@@ -1469,7 +1469,7 @@ class PartesDeFabricacionRollos(Ventana):
         model = self.wids['tv_rollos'].get_model()
         if model[path][1] != '':	# Nº rollo, tiene, no es una incidencia.
             return
-        id = model[path][-1]
+        ide = model[path][-1]
         incidencia = pclases.Incidencia.get(id)
         try:
             incidencia.horainicio = mx.DateTime.DateTimeFrom(
@@ -1499,7 +1499,7 @@ class PartesDeFabricacionRollos(Ventana):
         model = self.wids['tv_rollos'].get_model()
         if model[path][1] != '':	# Nº rollo, tiene, no es una incidencia.
             return
-        id = model[path][-1]
+        ide = model[path][-1]
         incidencia = pclases.Incidencia.get(id)
         try:
             incidencia.horafin = mx.DateTime.DateTimeFrom(
@@ -2032,7 +2032,7 @@ class PartesDeFabricacionRollos(Ventana):
                              padre = self.wids['ventana']): 
             return
         for path in paths:
-            id = model[path][-1]
+            ide = model[path][-1]
             if (model[path][1] == 0 or model[path][1] == "" 
                 or model[path][1] == " "): 	# El número de rollo está vacío
                 utils.dialogo_info('ROLLO NO SELECCIONADO', 
@@ -2164,7 +2164,7 @@ class PartesDeFabricacionRollos(Ventana):
                                  padre = self.wids['ventana']): 
                 return
             for path in paths:
-                id = model[path][-1]
+                ide = model[path][-1]
                 if model[path][1] != '': 	# El número de rollo NO está vacío
                     utils.dialogo_info('ROLLO SELECCIONADO', 
                                        'Ha seleccionado una rollo en lugar de una incidencia.\nUse «Quitar rollo» para eliminarla.', 
@@ -2215,7 +2215,7 @@ class PartesDeFabricacionRollos(Ventana):
         if self.wids['tv_empleados'].get_selection().count_selected_rows() == 0:
             return
         model, path = self.wids['tv_empleados'].get_selection().get_selected()
-        id = model[path][0]     # El id del empleado es la columna 0
+        ide = model[path][0]     # El id del empleado es la columna 0
         e = pclases.Empleado.get(id)
         self.objeto.removeEmpleado(e)
         self.rellenar_tabla_empleados()
@@ -2529,7 +2529,7 @@ class PartesDeFabricacionRollos(Ventana):
             mostrar_muestra = mostrar_defectuoso = True; mostrar_limpiar = False
             for path in paths:
                 if model[path][1] != '':	# Nº rollo, tiene, no es una incidencia.
-                    id = model[path][-1]
+                    ide = model[path][-1]
                     articulo = pclases.Articulo.get(id)
                     if articulo.es_rollo():
                         rollo = articulo.rollo
@@ -2560,7 +2560,7 @@ class PartesDeFabricacionRollos(Ventana):
             model, paths = self.wids['tv_rollos'].get_selection().get_selected_rows()
             for path in paths:
                 if model[path][1] != '':	# Nº rollo, tiene, no es una incidencia.
-                    id = model[path][-1]
+                    ide = model[path][-1]
                     rollo = pclases.Articulo.get(id).rollo
                     if rollo != None:
                         rollo.rollob = False
@@ -2586,7 +2586,7 @@ class PartesDeFabricacionRollos(Ventana):
             model, paths = sel.get_selected_rows()
             for path in paths:
                 if model[path][1] != '': # Nº rollo, tiene, no es incidencia.
-                    id = model[path][-1]
+                    ide = model[path][-1]
                     rollo = pclases.Articulo.get(id).rollo
                     motivo = utils.dialogo_entrada(titulo = "MOTIVO", 
                                                    texto = "Introduzca el motivo por el cual el rollo %s se considera defectuoso:" % (rollo.codigo), 
@@ -2652,7 +2652,7 @@ class PartesDeFabricacionRollos(Ventana):
                 for path in paths:
                     if model[path][1] != '':    # Nº rollo, tiene, 
                                                 # no es una incidencia.
-                        id = model[path][-1]
+                        ide = model[path][-1]
                         rollo = pclases.Articulo.get(id).rollo
                         if rollo != None:
                             rollo.muestra = True

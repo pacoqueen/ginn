@@ -33,16 +33,16 @@
 ## 
 ###################################################################
 
-import sys, os
-from formularios.ventana import Ventana
-import utils
-import pygtk
-pygtk.require('2.0')
-import gtk, time
-from framework import pclases
-import mx.DateTime
 from formularios import ventana_progreso
+from formularios.ventana import Ventana
+from framework import pclases
 from informes import geninformes
+import gtk
+import time
+import mx.DateTime
+import pygtk
+import utils
+pygtk.require('2.0')
     
 
 class ConsultaConsumo(Ventana):

@@ -683,18 +683,18 @@ def comprobar_numeracion_articulos(report_mode = False,
     """
     res = True
     bs = pclases.Bala._queryAll(
-      "SELECT id, numbala FROM bala WHERE numbala > 0 ORDER BY numbala;")
+      "SELECT ide, numbala FROM bala WHERE numbala > 0 ORDER BY numbala;")
     bcs = pclases.BalaCable._queryAll(
-      "SELECT id, numbala FROM bala_cable WHERE numbala > 0 ORDER BY numbala;")
+      "SELECT ide, numbala FROM bala_cable WHERE numbala > 0 ORDER BY numbala;")
     rs = pclases.Rollo._queryAll(
-      "SELECT id, numrollo FROM rollo WHERE numrollo > 0 ORDER BY numrollo;")
+      "SELECT ide, numrollo FROM rollo WHERE numrollo > 0 ORDER BY numrollo;")
     rds = pclases.RolloDefectuoso._queryAll(
-      """SELECT id, numrollo 
+      """SELECT ide, numrollo 
          FROM rollo_defectuoso 
          WHERE numrollo > 0 
          ORDER BY numrollo;""")
     bbs = pclases.Bigbag._queryAll(
-      "SELECT id,numbigbag FROM bigbag WHERE numbigbag > 0 ORDER BY numbigbag;")
+      "SELECT ide,numbigbag FROM bigbag WHERE numbigbag > 0 ORDER BY numbigbag;")
     _ignore_list = {"Bala": [], 
                     "BalaCable": [], 
                     "Rollo": [], 
@@ -717,11 +717,11 @@ def comprobar_numeracion_articulos(report_mode = False,
                            (rds, "RolloDefectuoso"), 
                            (bbs, "Bigbag")):
         last_num = None
-        for id, num in conjunto:
-            if id in _ignore_list[tipo]:
+        for ide, num in conjunto:
+            if ide in _ignore_list[tipo]:
                 continue
             if last_num != None and num - last_num != 1:
-                print >> sys.stderr, "%s ID %d (número %d) no es consecutivo con el anterior (%d)." % (tipo, id, num, last_num)
+                print >> sys.stderr, "%s ID %d (número %d) no es consecutivo con el anterior (%d)." % (tipo, ide, num, last_num)
                 res = False
                 if not report_mode:
                     break
@@ -957,7 +957,7 @@ def comprobar_consumos_entre_fechas(report_mode = False, n = None):
     if n == None or not isinstance(n, int):
         n = random.randint(1, 3)
     pvfs = [pv for pv in pclases.ProductoVenta.select() if pv.es_bala()]
-    for i in range(n):
+    for i in range(n):  # @UnusedVariable
         fecha0 = mx.DateTime.localtime() - mx.DateTime.oneDay * random.randint(0, 365)
         fecha1 = mx.DateTime.localtime() - mx.DateTime.oneDay * random.randint(0, 365)
         if fecha0 > fecha1:

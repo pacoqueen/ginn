@@ -73,7 +73,7 @@ import utils, utils_almacen
 from framework import pclases
 from informes import geninformes
 from utils import _float as float
-import re, mx, mx.DateTime
+import re, mx.DateTime
 import postomatic
 
 class PedidosDeCompra(Ventana):

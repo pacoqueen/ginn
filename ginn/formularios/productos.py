@@ -137,7 +137,7 @@ class Productos(Ventana):
                 return
 
         model = self.wids['tv_datos'].get_model()
-        id = model[path][-1]
+        ide = model[path][-1]
         try:
             existencias = utils._float(texto)
         except ValueError:
@@ -171,7 +171,7 @@ class Productos(Ventana):
                                    padre = self.wids['ventana'])
                 return
         model = self.wids['tv_datos'].get_model()
-        id = model[path][-1]
+        ide = model[path][-1]
         if "PC" in model[path][0]:
             producto = pclases.ProductoCompra.get(id)
         elif "PV" in model[path][0]:
@@ -200,7 +200,7 @@ class Productos(Ventana):
                 return
 
         model = self.wids['tv_datos'].get_model()
-        id = model[path][-1]
+        ide = model[path][-1]
         try:
             precio = utils._float(texto)
         except ValueError:
@@ -245,7 +245,7 @@ class Productos(Ventana):
                 return
 
         model = self.wids['tv_datos'].get_model()
-        id = model[path][-1]
+        ide = model[path][-1]
         if "PC" in model[path][0]:
             producto = pclases.ProductoCompra.get(id)
         elif "PV" in model[path][0]:

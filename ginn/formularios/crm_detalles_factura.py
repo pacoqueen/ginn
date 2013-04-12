@@ -33,9 +33,9 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, pango
+import gtk, pango
 from framework import pclases
-import mx, mx.DateTime
+import mx.DateTime
 from informes import geninformes
 import pclase2tv
 
@@ -176,17 +176,17 @@ class CRM_DetallesFactura(Ventana):
         ventana nueva.
         """
         model = tv.get_model()
-        tipo, id = model[path][-1].split(":")
+        tipo, ide = model[path][-1].split(":")
         if tipo == "PAGC":
             clase = pclases.PagareCobro
-            from pagares_cobros import PagaresCobros as ventana
+            from pagares_cobros import PagaresCobros as ventana  # @UnusedImport
         elif tipo == "C": 
             clase = pclases.Confirming
-            from confirmings import Confirmings as ventana
+            from confirmings import Confirmings as ventana  # @Reimport
         else:
             return
-        documento_pago = clase.get(id)
-        v = ventana(usuario = self.usuario, objeto = documento_pago)
+        documento_pago = clase.get(ide)
+        v = ventana(usuario = self.usuario, objeto = documento_pago)  # @UnusedVariable
 
     def drop_docpago(self, boton):
         """
@@ -213,7 +213,7 @@ class CRM_DetallesFactura(Ventana):
             pagares = []
             confirmings = []
             resto = []
-            for v, estimacion, cobros in vtos_sin_cobro:
+            for v, estimacion, cobros in vtos_sin_cobro:  # @UnusedVariable
                 if ("PAGARE" in v.observaciones.upper() 
                     or "PAGARÉ" in v.observaciones.upper()
                     or "PAGARé" in v.observaciones.upper()):
@@ -347,7 +347,7 @@ class CRM_DetallesFactura(Ventana):
         Abre el cliente de la factura en pantalla.
         """
         import clientes
-        v = clientes.Clientes(self.objeto.cliente, self.usuario)
+        v = clientes.Clientes(self.objeto.cliente, self.usuario)  # @UnusedVariable
 
     def rellenar_widgets(self):
         self.wids['e_numfactura'].set_text(self.objeto.numfactura)
@@ -477,7 +477,7 @@ class CRM_DetallesFactura(Ventana):
         Abre la factura en una ventana nueva.
         """
         import facturas_venta
-        v = facturas_venta.FacturasVenta(objeto = self.objeto, 
+        v = facturas_venta.FacturasVenta(objeto = self.objeto,  # @UnusedVariable
                                          usuario = self.usuario)
 
     def drop_tvitem(self, boton):
@@ -588,10 +588,10 @@ class CRM_DetallesFactura(Ventana):
                                     {"facturaVenta": self.objeto}), 
                 }[tv_name]
             params = {}
-            for dict in valores_defecto, params_relacion:
-                for k in dict:
-                    params[k] = dict[k]
-            objeto = clase(**params)
+            for dicc in valores_defecto, params_relacion:
+                for k in dicc:
+                    params[k] = dicc[k]
+            objeto = clase(**params)  # @UnusedVariable
             self.actualizar_ventana()
 
     def elegir_o_crear_obra(self):
@@ -657,8 +657,8 @@ class CRM_DetallesFactura(Ventana):
         """
         # print "Pintinho"
         model = tv.get_model()
-        id = model[path][-1]
-        tarea = pclases.Tarea.get(id)
+        ide = model[path][-1]
+        tarea = pclases.Tarea.get(ide)
         model = self.wids['tv_datos'].get_model()
         for fila in model:
             #print fila

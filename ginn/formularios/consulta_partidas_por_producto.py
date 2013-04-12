@@ -42,7 +42,7 @@ import gtk, time
 from framework import pclases
 import mx.DateTime
 from informes import geninformes
-from ventana_progreso import VentanaProgreso, VentanaActividad
+from ventana_progreso import VentanaActividad
     
 
 class ConsultaPartidasPorProducto(Ventana):
@@ -97,16 +97,16 @@ class ConsultaPartidasPorProducto(Ventana):
         pass
 
     def rellenar_tabla(self,lista = []):
-    	"""
+        """
         Rellena el model con los resultados de la búsqueda almacenados
         en una lista de partidas.
         """        
         model = self.wids['tv_datos'].get_model()
         self.wids['tv_datos'].freeze_child_notify()
         self.wids['tv_datos'].set_model(None)
-    	model.clear()
-    	for elem in lista:
-    		model.append((elem.numpartida,
+        model.clear()
+        for elem in lista:
+            model.append((elem.numpartida,
                           elem.codigo,
                           # Fecha de fabricación del primero de los artículos del lote
                           elem.rollos[0].articulos[0].parteDeProduccion and \
@@ -121,9 +121,9 @@ class ConsultaPartidasPorProducto(Ventana):
                           "%.2f" % elem.espesor,
                           "%.2f" % elem.piramidal,
                           elem.id))
-                          # elem.rollos[0].articulos[0].parteDeProduccion and \
-                          # elem.rollos[0].articulos[0].parteDeProduccion.id or \
-                          # -1))
+                            # elem.rollos[0].articulos[0].parteDeProduccion and \
+                            # elem.rollos[0].articulos[0].parteDeProduccion.id or \
+                            # -1))
         self.wids['tv_datos'].set_model(model)
         self.wids['tv_datos'].thaw_child_notify()
 
@@ -240,10 +240,10 @@ class ConsultaPartidasPorProducto(Ventana):
             print "No se encontró el parte: %s", e
         if parte.es_de_balas():
             import partes_de_fabricacion_balas
-            ventana_parteb = partes_de_fabricacion_balas.PartesDeFabricacionBalas(parte)
+            ventana_parteb = partes_de_fabricacion_balas.PartesDeFabricacionBalas(parte)  # @UnusedVariable
         else:
             import partes_de_fabricacion_rollos
-            ventana_parteb = partes_de_fabricacion_rollos.PartesDeFabricacionRollos(parte)
+            ventana_parteb = partes_de_fabricacion_rollos.PartesDeFabricacionRollos(parte)  # @UnusedVariable
 
 
     def imprimir(self,boton):
@@ -253,8 +253,8 @@ class ConsultaPartidasPorProducto(Ventana):
         from formularios import reports
         datos = []
         lista = self.resultado
-      	for elem in lista:
-    		datos.append((elem.numpartida,
+        for elem in lista:
+            datos.append((elem.numpartida,
                     "%.2f" % elem.longitudinal,
                     "%.2f" % elem.transversal,
                     "%.2f" % elem.compresion,

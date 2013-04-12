@@ -49,13 +49,12 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
-import sys, os
+import gtk
+import os
 from framework import pclases
 from informes import geninformes
 import re
-import mx, mx.DateTime
-from formularios.utils import _float as float
+import mx.DateTime
 
 # Modelos de cheques y pagarés:
 MONTE, CAIXA, BANKINTER = (0, 1, 2)
@@ -106,8 +105,8 @@ class PagaresPagos(Ventana):
         pagare = self.objeto
         if pagare == None: return False	# Si no hay pagare activo, devuelvo que no hay cambio respecto a la ventana
         condicion = self.wids['e_fechae'].get_text() == pagare.fechaEmision.strftime('%d/%m/%Y')
-        buffer = self.wids['txt_observaciones'].get_buffer()
-        condicion = condicion and (buffer.get_text(buffer.get_start_iter(), buffer.get_end_iter()) == pagare.observaciones)
+        buff = self.wids['txt_observaciones'].get_buffer()
+        condicion = condicion and (buff.get_text(buff.get_start_iter(), buff.get_end_iter()) == pagare.observaciones)
         condicion = condicion and ((self.wids['e_fechav'].get_text() == pagare.fechaPago.strftime('%d/%m/%Y')) 
                                     or self.wids['e_fechav'].get_text() == "" and not pagare.fechaPago)
         condicion = condicion and ((self.wids['e_fechae'].get_text() == pagare.fechaEmision.strftime('%d/%m/%Y')) 
@@ -168,7 +167,7 @@ class PagaresPagos(Ventana):
         fra = pago.facturaCompra
         if fra != None: 
             import facturas_compra
-            ventanafacturas = facturas_compra.FacturasDeEntrada(fra)
+            ventanafacturas = facturas_compra.FacturasDeEntrada(fra)  # @UnusedVariable
 
     def activar_widgets(self, s):
         """
@@ -263,8 +262,8 @@ class PagaresPagos(Ventana):
         try:
             res = widget.get_text()
         except AttributeError:
-            buffer = widget.get_buffer()
-            res = buffer.get_text(buffer.get_bounds()[0], buffer.get_bounds()[1])
+            buff = widget.get_buffer()
+            res = buff.get_text(buff.get_bounds()[0], buff.get_bounds()[1])
         return res
 
     def rellenar_widgets(self):
@@ -413,8 +412,8 @@ class PagaresPagos(Ventana):
         except:
             utils.dialogo_info(titulo = "ERROR EN FORMATO DE FECHA", texto = "El texto %s no es correcto o no representa una fecha" % self.wids['e_fechae'].get_text(), padre = self.wids['ventana'])
             fechav = self.objeto.fechaPago
-        buffer = self.wids['txt_observaciones'].get_buffer()
-        observaciones = buffer.get_text(buffer.get_start_iter(), buffer.get_end_iter())
+        buff = self.wids['txt_observaciones'].get_buffer()
+        observaciones = buff.get_text(buff.get_start_iter(), buff.get_end_iter())
         try:
             cantidad = utils.parse_euro(self.wids['e_cantidad'].get_text())
         except:
@@ -559,9 +558,9 @@ class PagaresPagos(Ventana):
         pags = factura.pagos
         mas_larga = [l for l in (vtos, ests, pags) if len(l)==max(len(vtos), len(ests), len(pags))][0]
         if len(mas_larga) == 0: return []
-        for i in xrange(len(mas_larga)):
+        for i in xrange(len(mas_larga)):  # @UnusedVariable
             res.append([None, None, None])
-        def cmp(v1, v2):
+        def comp(v1, v2):
             if v1.fecha < v2.fecha: return -1
             if v1.fecha > v2.fecha: return 1
             return 0
@@ -576,14 +575,14 @@ class PagaresPagos(Ventana):
                 return 2
         resto = [vtos, ests, pags]
         resto.remove(mas_larga)
-        mas_larga.sort(cmp)
+        mas_larga.sort(comp)
         pos = 0
         for item in mas_larga:
             res [pos][lugar(item)] = item
             pos += 1
         for lista in resto:
             mlc = mas_larga[:]
-            lista.sort(cmp)
+            lista.sort(comp)
             while lista:
                 item2 = lista.pop()
                 mindist = distancia(item2, mlc[0])
@@ -753,7 +752,6 @@ class PagaresPagos(Ventana):
         Añade cláusulas OR en una AND para la búsqueda de asientos de LOGIC
         con las palabras completas de más 2 letras del nombre del proveedor.
         """
-        import re
         Logic = pclases.LogicMovimientos
         expre = re.compile('[a-zA-Z|ñÑ][a-zA-Z|ñÑ]+')
         listapalabras = expre.findall(nombreproveedor)
@@ -870,8 +868,8 @@ class PagaresPagos(Ventana):
     def add_impr_observaciones(self, docimpreso):
         txt = "\nPagado mediante %s. Imprimido el %s." % \
             (docimpreso, utils.corregir_nombres_fecha(mx.DateTime.localtime().strftime("%d de %B de %Y")))
-        buffer = self.wids['txt_observaciones'].get_buffer()
-        buffer.insert_at_cursor(txt)
+        buff = self.wids['txt_observaciones'].get_buffer()
+        buff.insert_at_cursor(txt)
         self.guardar()
         
     def imprimir_cheque_monte(self, boton):
@@ -1046,7 +1044,6 @@ def abrir_paralelo(test = False):
     de la plataforma windows o linux.
     """
     test = False
-    import os
     if os.name == 'posix':
         try:
             if not test:

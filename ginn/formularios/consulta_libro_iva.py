@@ -41,9 +41,9 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade
+import gtk
 from framework import pclases
-import mx, mx.DateTime
+import mx.DateTime
 
 class ConsultaLibroIVA(Ventana):
 
@@ -103,11 +103,11 @@ class ConsultaLibroIVA(Ventana):
         fra = pclases.getObjetoPUID(puid)
         if isinstance(fra, pclases.FacturaVenta):
             import facturas_venta
-            v = facturas_venta.FacturasVenta(fra, usuario = self.usuario)
+            v = facturas_venta.FacturasVenta(fra, usuario = self.usuario)  # @UnusedVariable
         elif isinstance(fra. pclases.FacturaDeAbono):
             a = fra.abono
             import abonos_venta
-            v = abonos_venta.AbonosVenta(a, usuario = self.usuario)
+            v = abonos_venta.AbonosVenta(a, usuario = self.usuario)  # @UnusedVariable
 
     def chequear_cambios(self):
         pass

@@ -46,7 +46,7 @@ import gtk, time
 from framework import pclases
 from informes import geninformes
 from utils import _float as float
-import mx, mx.DateTime
+import mx.DateTime
 
 class ResultadosFluidez(Ventana):
     def __init__(self, objeto = None, usuario = None):

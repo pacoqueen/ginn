@@ -35,13 +35,9 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
-import sys
 from framework import pclases
 import mx.DateTime
 from informes import geninformes
-import re
-import ventana_progreso
-from utils import _float as float
 from ventana_progreso import VentanaProgreso, VentanaActividad
 
 COLORES = {'otras': 'gray', 
@@ -174,7 +170,7 @@ class ConsultaVencimientosPagados(Ventana):
         pago = pclases.Pago.get(idpago)
         if pago.facturaCompra:
             import facturas_compra          
-            ventanafacturas = facturas_compra.FacturasDeEntrada(
+            ventanafacturas = facturas_compra.FacturasDeEntrada(  # @UnusedVariable
                                 pago.facturaCompra, 
                                 usuario = self.usuario)
         else:   # ¿Cómo han metido este pago? ¿Es de LOGIC o algo?
@@ -184,11 +180,11 @@ class ConsultaVencimientosPagados(Ventana):
  
     def colorear(self, tv):
         def cell_func_vto_bueno(col, cell, model, itr):
-            id = model[itr][-1]
+            ide = model[itr][-1]
             try:
-                tipo = self.tipo_pago[id]
+                tipo = self.tipo_pago[ide]
             except KeyError:
-                tipo = guess_keyformapago(pclases.Pago.get(id))
+                tipo = guess_keyformapago(pclases.Pago.get(ide))
             color = COLORES[tipo]
             cell.set_property("cell-background", color)
         col = tv.get_column(4)
@@ -200,25 +196,25 @@ class ConsultaVencimientosPagados(Ventana):
         pass
 
     def rellenar_tabla(self, items):
-    	"""
+        """
         Rellena el model con los items de la consulta
         """        
         numpagos = len(items)
         vpro = VentanaActividad(padre = self.wids['ventana'], 
                 texto = "Mostrando datos de %d pagos realizados..." % numpagos)
         vpro.mostrar()
-    	model = self.wids['tv_datos'].get_model()
-    	model.clear()
+        model = self.wids['tv_datos'].get_model()
+        model.clear()
         total = 0
-        vencido = 0
-        hoy = mx.DateTime.localtime()
+        vencido = 0  # @UnusedVariable
+        hoy = mx.DateTime.localtime()  # @UnusedVariable
         por_fecha = {}
         por_formapago = {'en_pagares': 0.0, 
                          'en_transf': 0.0, 
                          'en_recibos': 0.0, 
                          'otras': 0.0}
         self.tipo_pago = {}
-    	for pago in items:
+        for pago in items:
             vpro.mover()
             importe = pago.importe
             anno = pago.fecha.year
@@ -372,8 +368,8 @@ class ConsultaVencimientosPagados(Ventana):
                         and pago.facturaCompra.proveedor == proveedor)):
                     try:
                         txtformapago = self.formaspago[formapago][1]
-                    except TypeError: # formapago es None. No se está filtrando
-                                      # por forma de pago.
+                    except TypeError:   # formapago es None. No se está 
+                                        # filtrando por forma de pago.
                         filtrar_por_formapago = False
                         self.wids['ch_formapago'].set_active(False)
                     if (not filtrar_por_formapago or 

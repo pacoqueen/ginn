@@ -53,7 +53,7 @@ class PendientesRecibir(Ventana):
         """
         from tempfile import gettempdir
         import os
-        import mx, mx.DateTime
+        import mx.DateTime
 
         if utils.dialogo(titulo = "EXPORTAR A CSV", 
                          texto="¿Desea exportar una versión CSV del informe?",

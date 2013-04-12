@@ -82,7 +82,7 @@ def treeview2pdf(tv, titulo = None, fecha = None, apaisado = None,
             fila[0] = "TOTALES"
         for total in totales:
             fila[total] = utils.float2str(totales[total])
-                                          #, precision = 2, autodec = True)
+                                            #, precision = 2, autodec = True)
         datos.append(fila)
     if extra_data and not isinstance(extra_data[0], (tuple, list)):
         extra_data = [extra_data]
@@ -261,7 +261,7 @@ def probar():
     Test
     """
     #abrir_pdf(treeview2pdf(tv, titulo, fecha))
-    esto_habria_que_annadirlo_al_scrip_inicial = "abrir_pdf(treeview2pdf(self.wids['tv_datos']))"
+    esto_habria_que_annadirlo_al_scrip_inicial = "abrir_pdf(treeview2pdf(self.wids['tv_datos']))"  # @UnusedVariable
     Trazabilidad(pclases.Rollo.select(orderBy = "-id")[0], locals_adicionales = {'treeview2pdf': treeview2pdf, 'abrir_pdf': abrir_pdf})
 
 if __name__ == "__main__":

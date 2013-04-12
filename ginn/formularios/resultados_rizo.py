@@ -193,7 +193,7 @@ class ResultadosRizo(Ventana):
     def drop(self, w):
         model, iter = self.wids['tv_pruebas'].get_selection().get_selected()
         if iter != None and utils.dialogo(titulo = 'BORRAR PRUEBA', texto = '¿Está seguro?'):
-            id = model[iter][-1]
+            ide = model[iter][-1]
             prueba = pclases.PruebaRizo.get(id)
             prueba.destroy(ventana = __file__)
             self.rellenar_pruebas()

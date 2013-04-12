@@ -293,21 +293,21 @@ class Code128(MultiWidthBarcode):
 #        print `l`
 
         # encode into numbers
-        start, set, shset = setmap[l[0]]
+        start, sete, shset = setmap[l[0]]
         e = [start]
         
         l = l[1:-1]
         while l:
             c = l[0]
             if c == 'SHIFT':
-                e = e + [set[c], shset[l[1]]]
+                e = e + [sete[c], shset[l[1]]]
                 l = l[2:]
             elif c in tos:
-                e.append(set[c])
-                set, shset = setmap[c]
+                e.append(sete[c])
+                sete, shset = setmap[c]
                 l = l[1:]
             else:
-                e.append(set[c])
+                e.append(sete[c])
                 l = l[1:]
 
         c = e[0]

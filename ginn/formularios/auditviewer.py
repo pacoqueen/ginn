@@ -34,14 +34,14 @@
 ## 
 ###################################################################
 
-import sys, os 
+import os 
 from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time, gobject, pango
+import gtk, gobject, pango
 from framework import pclases
-import mx, mx.DateTime
+import mx.DateTime
 from consulta_existenciasBolsas import act_fecha 
 
 class AuditViewer(Ventana):
@@ -87,14 +87,14 @@ class AuditViewer(Ventana):
         vars_locales = locals()
         for k in locals_adicionales:
             vars_locales[k] = locals_adicionales[k] 
-        consola = pyconsole.attach_console(self.wids['contenedor_consola'], 
+        consola = pyconsole.attach_console(self.wids['contenedor_consola'],  # @UnusedVariable
                                 banner = "Consola python de depuración GINN", 
                                 script_inicio = """import sys, os, pygtk, gtk, gtk.glade, utils
 from framework import pclases
 import mx.DateTime
 dir()
 """, 
-                                locals = vars_locales)
+                                locales = vars_locales)
         self.wids['frame2'].set_property("visible", False)
         self.wids['ventana'].set_title("AuditViewer")
         self.wids['ventana'].set_position(gtk.WIN_POS_CENTER)
@@ -245,8 +245,8 @@ dir()
         tamanno = lineas_auditoria.count()
         self.tamanno_audit = tamanno
         self.update_e_count()
-        if timeout_unloaded: # Si la he descargado (usuario ha actualizado) 
-                             # vuelvo a cargarla.
+        if timeout_unloaded:    # Si la he descargado (usuario ha actualizado) 
+                                # vuelvo a cargarla.
             self.signal_check = gobject.timeout_add(5000, self.check_audit)
         if pclases.DEBUG: print __file__, "rellenar_widgets: 6" 
 

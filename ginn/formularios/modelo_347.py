@@ -95,7 +95,7 @@ class Modelo347(Ventana):
         y las fechas correspondientes al año de la ventana.
         """
         model = tv.get_model()
-        id = model[path][-1]
+        ide = model[path][-1]
         cliente = pclases.Cliente.get(id) 
         anno = self.wids['sp_anno'].get_value_as_int()
         fini = mx.DateTime.DateTimeFrom(day = 1, 

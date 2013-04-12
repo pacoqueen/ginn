@@ -85,7 +85,7 @@ class Barcode(Flowable):
             import time, os
             from tempfile import gettempdir
             nombrearchivo = os.path.join(gettempdir(), "barcode39_%s.eps" % ('_'.join(map(str, time.localtime()[:6]))))
-        from reportlab.graphics.shapes import Drawing, String
+        from reportlab.graphics.shapes import Drawing, String  # @UnusedImport
         from reportlab.lib.units import cm
         tamcanvas = (self.width + 2, self.height + 10 + 0.4 * cm)
         dw = Drawing(width = tamcanvas[0], height = tamcanvas[1])
@@ -739,7 +739,7 @@ class Codabar(Barcode):
 
         if self.checksum:
             v = 0
-            for c in s:
+            for c in s:  # @UnusedVariable
                 v = v + self.values[v]
             v = 16 - (v % 16)
             s = s + self.chars[v]

@@ -44,11 +44,11 @@
 import pygtk
 pygtk.require('2.0')
 
-import sys, os
+import sys
 import time
 import gtk, pango
 
-import mx, mx.DateTime
+import mx.DateTime
 
 import utils
 
@@ -320,8 +320,8 @@ class Tarea(Thread):
         # print len(self.active_threads)
         # Y me salgo de la lista de procesos activos.
         self.active_threads.remove(self.struct_tarea)
-        if len(self.active_threads) == 0: # self.active_threads y ventana_padre.active_threads apuntan a la misma posición de memoria. 
-                                          # Puedo usar una u otra variable indistintamente, pero así es más claro. 
+        if len(self.active_threads) == 0:   # self.active_threads y ventana_padre.active_threads apuntan a la misma posición de memoria. 
+                                            # Puedo usar una u otra variable indistintamente, pero así es más claro. 
             self.ventana_padre.startstop.set_sensitive(True)
             time_elapsed = time.time() - self.ventana_padre.tiempo_inicio
             str_time_elapsed = "%d horas, %d minutos, %d segundos" % (time_elapsed / 60 / 60, (time_elapsed / 60) % 60, time_elapsed % 60)

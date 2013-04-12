@@ -29,17 +29,13 @@
 ## 
 ###################################################################
 
-import sys, os
 from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time, mx, mx.DateTime
+import gtk, mx.DateTime
 from framework import pclases
-from framework.seeker import VentanaGenerica 
-from utils import _float as float
 import ventana_progreso
-from informes import geninformes
 
 class ValorAlmacen(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -163,19 +159,19 @@ class ValorAlmacen(Ventana):
                 filas.append((t.nombre + " + 21% IVA", 0))
         model = self.wids['tv_datos'].get_model()
         model.clear()
-        for concepto, id in filas:
-            if id == -1:
+        for concepto, ide in filas:
+            if ide == -1:
                 vpro.set_valor(0.4, 'Valorando a precio defecto...')
                 valoracion = valorar_a_precio_defecto()
-            elif id == -2:
+            elif ide == -2:
                 vpro.set_valor(0.6, 'Valorando a precio valoración...')
                 valoracion=valorar_a_precio_valoracion(self.wids['tv_detalle'])
-            elif id == -3:  # HACK
+            elif ide == -3:  # HACK
                 valoracion *= 1 + iva_empresa
                 # El valoración de la iteración anterior, es decir, según la 
                 # función de valoración de cada producto.
-            elif id > 0:
-                tarifa = pclases.Tarifa.get(id)
+            elif ide > 0:
+                tarifa = pclases.Tarifa.get(ide)
                 vpro.set_valor(0.6, 'Valorando a tarifa %s...' % tarifa.nombre)
                 valoracion = valorar_segun_tarifa(tarifa)
             else:           # HACK

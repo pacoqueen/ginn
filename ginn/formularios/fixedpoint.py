@@ -80,7 +80,7 @@ expected ways:
             and r is a FixedPoint equal to x - q * y; no information
             is lost.  Note that q has the sign of y, and abs(r) < abs(y).
     unary -
-    == != < > <= >=  cmp
+    == != < > <= >=  comp
     min  max
     float  int  long    (int and long truncate)
     abs
@@ -153,7 +153,7 @@ def bankersRounding(self, dividend, divisor, quotient, remainder):
          the remainder is more than half of the divisor
       or the remainder is exactly half the divisor and the quotient is odd
     """
-    c = cmp(remainder << 1, divisor)
+    c = comp(remainder << 1, divisor)
     # c < 0 <-> remainder < divisor/2, etc
     if c > 0 or (c == 0 and (quotient & 1) == 1):
         quotient += 1
@@ -166,7 +166,7 @@ def addHalfAndChop(self, dividend, divisor, quotient, remainder):
          the remainder is greater than half of the divisor
       or the remainder is exactly half the divisor and the quotient is >= 0
     """
-    c = cmp(remainder << 1, divisor)
+    c = comp(remainder << 1, divisor)
     # c < 0 <-> remainder < divisor/2, etc
     if c > 0 or (c == 0 and quotient >= 0):
         quotient += 1
@@ -345,7 +345,7 @@ class FixedPoint(object):
             xn, yn, p = _norm(self, other, FixedPoint=type(self))
         except TypeError:    # Seguramente sea None, un string o algo que no puedo convertir a FP para comparar
             return False
-        return cmp(xn, yn)
+        return comp(xn, yn)
 
     def __hash__(self):
         """ Caution!  == values must have equal hashes, and a FixedPoint

@@ -142,7 +142,7 @@ class ConsultaMensualNominas(Ventana):
         #    for col in self.wids[tv].get_columns():
         #        col.set_reorderable(False)
         # Fechas iniciales de la ventana:
-        temp = time.localtime()
+        temp = time.localtime()  # @UnusedVariable
         self.inicio = mx.DateTime.localtime() - (7*mx.DateTime.oneDay)
         self.fin = mx.DateTime.localtime()
         self.wids['e_fechafin'].set_text(utils.str_fecha(self.fin))
@@ -194,16 +194,16 @@ class ConsultaMensualNominas(Ventana):
                 padre = self.wids['ventana'])
             return
         model = self.wids['tv_plus'].get_model()
-        id = model[path][-1]
-        if not isinstance(id, int):
+        ide = model[path][-1]
+        if not isinstance(ide, int):
             try:
-                id = int(utils._float(id))
+                ide = int(utils._float(ide))
             except:
                 txt = ("Identificador %s no se pudo convertir a entero. An" + 
-                       "ulo edición de absentismo" % id)
+                       "ulo edición de absentismo" % ide)
                 self.logger.error("%consulta_mensual_nominas.py::cambiar_absentismo -> %s" % (self.usuario and self.usuario.usuario + ": " or "", txt))
                 return
-        empleado = pclases.Empleado.get(id)
+        empleado = pclases.Empleado.get(ide)
         f1 = self.inicio
         f2 = self.fin
         fecha = mx.DateTime.DateTimeFromTicks((f1.ticks() + f2.ticks()) / 2)
@@ -276,16 +276,16 @@ class ConsultaMensualNominas(Ventana):
                 padre = self.wids['ventana'])
             return
         model = self.wids['tv_plus'].get_model()
-        id = model[path][-1]
-        if not isinstance(id, int):
+        ide = model[path][-1]
+        if not isinstance(ide, int):
             try:
-                id = int(utils._float(id))
+                ide = int(utils._float(ide))
             except:
                 txt = ("Identificador %s no se pudo convertir a entero. An" + 
-                       "ulo edición de importe libre" % id)
+                       "ulo edición de importe libre" % ide)
                 self.logger.error("%consulta_mensual_nominas.py::cambiar_importe_libre -> %s" % (self.usuario and self.usuario.usuario + ": " or "", txt))
                 return
-        empleado = pclases.Empleado.get(id)
+        empleado = pclases.Empleado.get(ide)
         f1 = self.inicio
         f2 = self.fin
         fecha = mx.DateTime.DateTimeFromTicks((f1.ticks() + f2.ticks()) / 2)
@@ -428,9 +428,9 @@ class ConsultaMensualNominas(Ventana):
             fila = [e.apellidos + ", " + e.nombre, 
                     catlab, 
                     e.centroTrabajo and e.centroTrabajo.nombre or "N/A"] 
-            for linea in LINEASPRODUCCION:
+            for linea in LINEASPRODUCCION:  # @UnusedVariable
                 fila += ["", "", "", "", ""]
-            for centro in RESTOCENTROS_Y_TOTAL:
+            for centro in RESTOCENTROS_Y_TOTAL:  # @UnusedVariable
                 fila += ["", "", "", ""]
             # Costes:
             # OJO: nomina base de empleado tiene prioridad sobre salarioBase 

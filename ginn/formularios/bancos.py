@@ -33,15 +33,13 @@
 ##       relacionada íntimamente con cuentas_origen.py
 ###################################################################
 
-import sys, os
 from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time, mx, mx.DateTime
+import gtk, mx.DateTime
 from framework import pclases
 from framework.seeker import VentanaGenerica 
-from formularios.utils import _float as float
 
 
 class Bancos(Ventana, VentanaGenerica):
@@ -164,14 +162,14 @@ class Bancos(Ventana, VentanaGenerica):
         filas_res = []
         for r in resultados:
             filas_res.append((r.id, r.nombre, r.iban))
-        id = utils.dialogo_resultado(filas_res,
+        ide = utils.dialogo_resultado(filas_res,
                                      titulo = 'SELECCIONE BANCO',
                                      cabeceras = ('ID', 'Nombre', 'IBAN'), 
                                      padre = self.wids['ventana'])
-        if id < 0:
+        if ide < 0:
             return None
         else:
-            return id
+            return ide
 
     def rellenar_widgets(self):
         """
@@ -198,7 +196,6 @@ class Bancos(Ventana, VentanaGenerica):
     def rellenar_tabla_concentraciones(self):
         model = self.wids['tv_concentracion'].get_model()
         model.clear()
-        total = 0.0
         for c in self.objeto.concentracionesRemesa:
             model.append((c.cliente.nombre, 
                           utils.float2str(c.concentracion), 
@@ -312,10 +309,10 @@ class Bancos(Ventana, VentanaGenerica):
             resultados = self.clase.select(criterio)
             if resultados.count() > 1:
                 ## Refinar los resultados
-                id = self.refinar_resultados_busqueda(resultados)
-                if id == None:
+                ide = self.refinar_resultados_busqueda(resultados)
+                if ide == None:
                     return
-                resultados = [self.clase.get(id)]
+                resultados = [self.clase.get(ide)]
                 # Me quedo con una lista de resultados de un único objeto ocupando la primera posición.
                 # (Más abajo será cuando se cambie realmente el objeto actual por este resultado.)
             elif resultados.count() < 1:

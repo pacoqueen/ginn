@@ -35,7 +35,7 @@ from framework import pclases
 from formularios import utils
 from geninformes import give_me_the_name_baby, escribe, rectangulo, el_encogedor_de_fuentes_de_doraemon, agregarFila
 from tempfile import gettempdir
-import mx, mx.DateTime
+import mx.DateTime
 
 PAGE_HEIGHT = defaultPageSize[1]; PAGE_WIDTH = defaultPageSize[0]
 estilos = getSampleStyleSheet()

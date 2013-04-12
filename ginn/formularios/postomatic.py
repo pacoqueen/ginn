@@ -35,11 +35,8 @@
 import pygtk
 pygtk.require('2.0')
 import gtk
-import gtk.glade
 import pango
-import os
 
-from widgets import Widgets
 from ventana import Ventana
 from utils import textview_get_all_text
 
@@ -85,7 +82,7 @@ class Postomatic(Ventana):
         self.wids['tv_texto'].get_buffer().connect('changed', self.actualizar_vista_previa)
         self.wids['tv_preview'].connect("key_release_event", 
             lambda w, e: self.wids['tv_texto'].get_buffer().set_text(w.get_buffer().get_text(*w.get_buffer().get_bounds())))
-        nombres_tags = self.crear_tags(self.wids['tv_preview'].get_buffer())
+        nombres_tags = self.crear_tags(self.wids['tv_preview'].get_buffer())  # @UnusedVariable
         # Valores por defecto:
         self.wids['cbe_color'].child.set_text('blue')
         self.wids['cbe_size'].child.set_text('9')
@@ -235,17 +232,17 @@ class Postomatic(Ventana):
 
     def cortar(self, menuitem):
         # Estas dos líneas se repiten: REFACTORINGGGGGÑE
-        buf = self.wids['tv_texto'].get_buffer()
+        buf = self.wids['tv_texto'].get_buffer()  # @UnusedVariable
 #    clipboard = gtk.Clipboard(gtk.gdk.display_get_default(), "PRIMARY")
 #    buf.cut_clipboard(clipboard, wids['tv_texto'].get_editable())  #WTF?
 
     def copiar(self, menuitem):
-        buf = self.wids['tv_texto'].get_buffer()
+        buf = self.wids['tv_texto'].get_buffer()  # @UnusedVariable
 #    clipboard = gtk.Clipboard(gtk.gdk.display_get_default(), "PRIMARY")
 #    buf.copy_clipboard(clipboard)
 
     def pegar(self, menuitem):
-        buf = self.wids['tv_texto'].get_buffer()
+        buf = self.wids['tv_texto'].get_buffer()  # @UnusedVariable
 #    clipboard = gtk.Clipboard(gtk.gdk.display_get_default(), "PRIMARY")
 #    buf.paste_clipboard(clipboard, None, wids['tv_texto'].get_editable())
 
@@ -268,7 +265,7 @@ class Postomatic(Ventana):
         pixbuf = gtk.gdk.pixbuf_new_from_file (file_name)
         if pos == None:
             # putting the image at the end.
-            sob, eob = buf.get_bounds()
+            sob, eob = buf.get_bounds()  # @UnusedVariable
             pos = eob
 #    mark = buf.create_mark (None, pos)
         buf.insert_pixbuf (pos, pixbuf)
@@ -310,10 +307,10 @@ class Postomatic(Ventana):
         self.marcar_code(buf)
 
     def marcar_quote(self, buf):
-        iter = buf.get_start_iter()
+        itr = buf.get_start_iter()
         while True:
             try:
-                match_start, match_end = iter.forward_search("[quote=", gtk.TEXT_SEARCH_TEXT_ONLY)
+                match_start, match_end = itr.forward_search("[quote=", gtk.TEXT_SEARCH_TEXT_ONLY)
                 buf.delete(match_start, match_end)
                 
                 match_start2, match_end2 = match_end.forward_search("]", gtk.TEXT_SEARCH_TEXT_ONLY)
@@ -325,15 +322,15 @@ class Postomatic(Ventana):
                 buf.apply_tag_by_name("quote", match_end2, match_end3)
                 buf.delete(match_start3, match_end3)
                 
-                iter = match_end3
+                itr = match_end3
             except TypeError:   # unpack non-sequence. No hay más coincidencias
                 return
 
     def marcar_size(self, buf):
-        iter = buf.get_start_iter()
+        itr = buf.get_start_iter()
         while True:
             try:
-                match_start, match_end = iter.forward_search("[size=", gtk.TEXT_SEARCH_TEXT_ONLY)
+                match_start, match_end = itr.forward_search("[size=", gtk.TEXT_SEARCH_TEXT_ONLY)
                 buf.delete(match_start, match_end)
                 
                 match_start2, match_end2 = match_end.forward_search("]", gtk.TEXT_SEARCH_TEXT_ONLY)
@@ -344,15 +341,15 @@ class Postomatic(Ventana):
                 buf.apply_tag_by_name(color, match_start, match_end3)
                 buf.delete(match_start3, match_end3)
                 
-                iter = match_end3
+                itr = match_end3
             except TypeError:   # unpack non-sequence. No hay más coincidencias
                 return
 
     def marcar_color(self, buf):
-        iter = buf.get_start_iter()
+        itr = buf.get_start_iter()
         while True:
             try:
-                match_start, match_end = iter.forward_search("[color=", gtk.TEXT_SEARCH_TEXT_ONLY)
+                match_start, match_end = itr.forward_search("[color=", gtk.TEXT_SEARCH_TEXT_ONLY)
                 buf.delete(match_start, match_end)
                 
                 match_start2, match_end2 = match_end.forward_search("]", gtk.TEXT_SEARCH_TEXT_ONLY)
@@ -363,61 +360,61 @@ class Postomatic(Ventana):
                 buf.apply_tag_by_name(color, match_start, match_end3)
                 buf.delete(match_start3, match_end3)
                 
-                iter = match_end3
+                itr = match_end3
             except TypeError:   # unpack non-sequence. No hay más coincidencias
                 return
 
     def marcar_underline(self, buf):
-        iter = buf.get_start_iter()
+        itr = buf.get_start_iter()
         while True:
             try:
-                match_start, match_end = iter.forward_search("[u]", gtk.TEXT_SEARCH_TEXT_ONLY)
+                match_start, match_end = itr.forward_search("[u]", gtk.TEXT_SEARCH_TEXT_ONLY)
                 buf.delete(match_start, match_end)
                 match_start2, match_end2 = match_end.forward_search("[/u]", gtk.TEXT_SEARCH_TEXT_ONLY)
                 buf.apply_tag_by_name("underline", match_start, match_end2)
                 buf.delete(match_start2, match_end2)
-                iter = match_end2
+                itr = match_end2
             except TypeError:   # unpack non-sequence. No hay más coincidencias
                 return
 
     def marcar_bold(self, buf):
-        iter = buf.get_start_iter()
+        itr = buf.get_start_iter()
         while True:
             try:
-                match_start, match_end = iter.forward_search("[b]", gtk.TEXT_SEARCH_TEXT_ONLY)
+                match_start, match_end = itr.forward_search("[b]", gtk.TEXT_SEARCH_TEXT_ONLY)
                 buf.delete(match_start, match_end)
                 match_start2, match_end2 = match_end.forward_search("[/b]", gtk.TEXT_SEARCH_TEXT_ONLY)
                 buf.apply_tag_by_name("bold", match_start, match_end2)
                 buf.delete(match_start2, match_end2)
-                iter = match_end2
+                itr = match_end2
             except TypeError:   # unpack non-sequence. No hay más coincidencias
                 return
 
     def marcar_italic(self, buf):
-        iter = buf.get_start_iter()
+        itr = buf.get_start_iter()
         while True:
             try:
-                match_start, match_end = iter.forward_search("[i]", gtk.TEXT_SEARCH_TEXT_ONLY)
+                match_start, match_end = itr.forward_search("[i]", gtk.TEXT_SEARCH_TEXT_ONLY)
                 buf.delete(match_start, match_end)
                 match_start2, match_end2 = match_end.forward_search("[/i]", gtk.TEXT_SEARCH_TEXT_ONLY)
                 buf.apply_tag_by_name("italic", match_start, match_end2)
                 buf.delete(match_start2, match_end2)
-                iter = match_end2
+                itr = match_end2
             except TypeError:   # unpack non-sequence. No hay más coincidencias
                 return
 
     def marcar_code(self, buf):
-        iter = buf.get_start_iter()
+        itr = buf.get_start_iter()
         while True:
             try:
-                match_start, match_end = iter.forward_search("[code]", gtk.TEXT_SEARCH_TEXT_ONLY)
+                match_start, match_end = itr.forward_search("[code]", gtk.TEXT_SEARCH_TEXT_ONLY)
                 buf.delete(match_start, match_end)
                 buf.insert(match_start, "\n")
                 match_start2, match_end2 = match_start.forward_search("[/code]", gtk.TEXT_SEARCH_TEXT_ONLY)
                 buf.apply_tag_by_name("code", match_start, match_end2)
                 buf.delete(match_start2, match_end2)
                 buf.insert(match_start2, "\n")
-                iter = match_start2
+                itr = match_start2
             except TypeError:   # unpack non-sequence. No hay más coincidencias
                 return
 
@@ -516,20 +513,20 @@ def attach_menu_notas(tv, clase, usuario, col = None):
         cell = gtk.CellRendererPixbuf()
         columna = tv.get_column(col)
         columna.pack_end(cell, False)
-        def check_notas(columna, cell, model, iter):
+        def check_notas(columna, cell, model, itr):
             try:
-                objeto = clase.get(model[iter][-1])
+                objeto = clase.get(model[itr][-1])
             # except pclases.SQLObjectNotFound:
-            except Exception, msg:  
+            except Exception:  
                 # Casi con total seguridad es un pclases.SQLObjectNotFound, pero paso de importar pclases aquí solo para eso.
                 # El objeto se ha borrado.
                 objeto = None
             if hasattr(objeto, 'notas') and objeto.notas:
                 pb = gtk.STOCK_EDIT
-                text = objeto.notas
+                text = objeto.notas  # @UnusedVariable
             else:
                 pb = None
-                text = ""
+                text = ""  # @UnusedVariable
             cell.set_property("stock-id", pb)
             # cell.set_tooltip_text(text) TODO: Los CellRenderer no derivan de Widget, la forma de poner un tooltip en un TreeView 
             # es meter el texto en una columna del model y hacer tv.set_tooltip_column(num_columna_del_model_que_contiene_el_texto).
@@ -566,20 +563,20 @@ def color_to_string(color):
 def abrir_notas(algo, tv, clase, usuario):
     seleccion = tv.get_selection()
     model, paths = seleccion.get_selected_rows()
-    iter = model.get_iter(paths[0])
-    id = model[iter][-1]
+    itr = model.get_iter(paths[0])
+    ide = model[itr][-1]
     try:
-        objeto = clase.get(id)
+        objeto = clase.get(ide)
     except ValueError:  # Es un PUID
         from framework import pclases
-        objeto = pclases.getObjetoPUID(id)
-    ventana = Postomatic(objeto, usuario)
+        objeto = pclases.getObjetoPUID(ide)
+    ventana = Postomatic(objeto, usuario)  # @UnusedVariable
 
 def button_clicked(w, event, ui, tv, clase, usuario = None):
     if event.button == 3:
         seleccion = tv.get_selection()
         if seleccion != None:
-            model, paths = seleccion.get_selected_rows()
+            model, paths = seleccion.get_selected_rows()  # @UnusedVariable
             if len(paths) > 0:
                 widget = ui.get_widget("/Popup")
                 single_selection = len(paths) == 1

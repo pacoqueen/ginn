@@ -39,13 +39,10 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
-import sys
 from framework import pclases
-import mx, mx.DateTime
-from informes import geninformes
+import mx.DateTime
 import ventana_progreso
 import re
-from utils import _float as float
 
 
 class ConsultaCobros(Ventana):
@@ -135,18 +132,18 @@ class ConsultaCobros(Ventana):
         return s
 
     def rellenar_tabla(self, elementos):
-    	"""
+        """
         Rellena el model con los items de la consulta.
         Elementos es un diccionario con objetos fecha como claves y 
         un diccionaro de dos elementos como valor. El segundo diccionario
         debe tener tres claves: 'cobros', 'vencimientos' y 'logic'. En cada
         una de ellas se guarda una lista de objetos de la clase correspondiente.
         """        
-    	model = self.wids['tv_datos'].get_model()
-    	model.clear()
+        model = self.wids['tv_datos'].get_model()
+        model.clear()
         cobros = 0
         vencimientos = 0
-    	for fecha in elementos:
+        for fecha in elementos:
             sumvtos = 0 
             frasvtos = []
             cobrosvencimientos = elementos[fecha]

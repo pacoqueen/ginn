@@ -37,7 +37,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
+import gtk
 from framework import pclases
 
 class BuscaLote(Ventana):
@@ -80,14 +80,14 @@ class BuscaLote(Ventana):
         pass
 
     def rellenar_tabla(self,lista = []):
-    	"""
+        """
         Rellena el model con los resultados de la búsqueda almacenados
         en una lista de lotes.
         """        
         model = self.wids['tv_resultado'].get_model()
-    	model.clear()
-    	for elem in lista:
-    		model.append((elem.numlote,
+        model.clear()
+        for elem in lista:
+            model.append((elem.numlote,
                     elem.codigo,
                     "%s (%s)" % (str(elem.tenacidad), utils.float2str(elem.calcular_tenacidad_media())),
                     "%s (%s)" % (str(elem.elongacion), utils.float2str(elem.calcular_elongacion_media())),

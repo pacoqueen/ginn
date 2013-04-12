@@ -114,7 +114,7 @@ conn = '%s://%s:%s@%s/%s?autoCommit=False' % (config.get_tipobd(),
 #                                     config.get_puerto()) 
 sqlhub.processConnection = connectionForURI(conn)
 
-if DEBUG and VERBOSE:
+if DEBUG: # and VERBOSE:
     conndebug = connectionForURI(conn)
     #conndebug.autoCommit = False
     conndebug.debug = True
@@ -19156,7 +19156,7 @@ class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
         cbrs = self.cobros[:]
         cbrs.sort(utils.cmp_fecha_id)
         class FakeVto:
-            id = 0; facturaVentaID = self.id; facturaVenta = self; prefacturaID = None; prefactura = None; fecha = self.fecha; importe = self.importeTotal; observaciones = "Vencimiento ficticio de la factura de abono."
+            ide = 0; facturaVentaID = self.id; facturaVenta = self; prefacturaID = None; prefactura = None; fecha = self.fecha; importe = self.importeTotal; observaciones = "Vencimiento ficticio de la factura de abono."
             def get_factura_o_prefactura(self):
                 return self.facturaVenta
         vtos = [FakeVto()]
@@ -19334,7 +19334,7 @@ class Usuario(SQLObject, PRPCTOO):
                     SELECT id FROM permiso 
                     WHERE ventana_id = %d AND usuario_id = %d;
                     """ % (ventana.id, self.id)
-            id = self.__class__._connection.queryOne(query)[0]
+            ide = self.__class__._connection.queryOne(query)[0]
             permiso = Permiso.get(id)
             return permiso
         except (IndexError, TypeError):
@@ -21843,7 +21843,7 @@ def getObjetoPUID(puid):
                    "Pale": Pale, 
                    "PartidaCem": PartidaCem, 
                   }
-    tipo, id = puid.split(":")
+    tipo, ide = puid.split(":")
     if tipo not in dict_clases:
         try:
             clase = eval(tipo)
@@ -21852,7 +21852,7 @@ def getObjetoPUID(puid):
                 ", ".join(dict_clases.keys()))
     else:
         clase = dict_clases[tipo]
-    id = int(id)
+    ide = int(id)
     objeto = clase.get(id)
     return objeto
 

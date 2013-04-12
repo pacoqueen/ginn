@@ -36,10 +36,7 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
-import sys
 from framework import pclases
-import mx, mx.DateTime
-from informes import geninformes
 from ventana_progreso import VentanaProgreso
 from utils import _float as float
 
@@ -99,11 +96,11 @@ class ConsultaCartera(Ventana):
         objeto_relacionado = objeto.confirming or objeto.pagareCobro
         if isinstance(objeto_relacionado, pclases.PagareCobro):
             import pagares_cobros
-            v = pagares_cobros.PagaresCobros(objeto_relacionado, 
+            v = pagares_cobros.PagaresCobros(objeto_relacionado,  # @UnusedVariable
                                              usuario = self.usuario)
         elif isinstance(objeto_relacionado, pclases.Confirming):
             import confirmings
-            v = confirmings.Confirmings(objeto_relacionado, 
+            v = confirmings.Confirmings(objeto_relacionado,  # @UnusedVariable
                                         usuario = self.usuario)
 
     def marcar_remesar(self, cell, path):
@@ -257,15 +254,15 @@ class ConsultaCartera(Ventana):
         w.show_all()
 
     def rellenar_tabla(self, elementos):
-    	"""
+        """
         Rellena el model con los items de la consulta.
         Elementos es un diccionario con objetos fecha como claves y 
         un diccionaro de dos elementos como valor. El segundo diccionario
         debe tener tres claves: 'pagos', 'vencimientos' y 'logic'. En cada
         una de ellas se guarda una lista de objetos de la clase correspondiente.
         """        
-    	model = self.wids['tv_datos'].get_model()
-    	model.clear()
+        model = self.wids['tv_datos'].get_model()
+        model.clear()
         total = total_obs = total_no_obs = 0.0
         vpro = VentanaProgreso(padre = self.wids['ventana'])
         vpro.mostrar()
@@ -278,7 +275,7 @@ class ConsultaCartera(Ventana):
             cliente = pclases.Cliente.get(clienteid)
         else:
             cliente = None
-    	for efecto in elementos:
+        for efecto in elementos:
             i += 1
             vpro.set_valor(i / tot, "Filtrando efectos... (%d/%d)" 
                     % (i, elementos.count()))
@@ -286,7 +283,7 @@ class ConsultaCartera(Ventana):
                 continue
             if efecto.get_estado() == pclases.CARTERA:
                 str_a_la_orden = efecto.get_str_tipo()
-                padre = model.append((False, 
+                padre = model.append((False,  # @UnusedVariable
                                       efecto.codigo, 
                                       efecto.cliente 
                                         and efecto.cliente.nombre or "", 

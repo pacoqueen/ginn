@@ -80,7 +80,6 @@ class ConsultaAlbaranesFacturados(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        import sys, os
         from informes.treeview2csv import treeview2csv
         from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
@@ -93,15 +92,15 @@ class ConsultaAlbaranesFacturados(Ventana):
         self.wids['ventana'].window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
         while gtk.events_pending(): gtk.main_iteration(False)
         model = tv.get_model()
-        id = model[path][-1]
+        ide = model[path][-1]
         if self.wids['rb_entrada'].get_active():
-            albaran = pclases.AlbaranEntrada.get(id)
+            albaran = pclases.AlbaranEntrada.get(ide)
             import albaranes_de_entrada
-            v = albaranes_de_entrada.AlbaranesDeEntrada(albaran)
+            v = albaranes_de_entrada.AlbaranesDeEntrada(albaran)  # @UnusedVariable
         elif self.wids['rb_salida'].get_active():
-            albaran = pclases.AlbaranSalida.get(id)
+            albaran = pclases.AlbaranSalida.get(ide)
             import albaranes_de_salida
-            v = albaranes_de_salida.AlbaranesDeSalida(albaran)
+            v = albaranes_de_salida.AlbaranesDeSalida(albaran)  # @UnusedVariable
         self.wids['ventana'].window.set_cursor(None)
 
     def cambiar_cabecera_columna(self, txt):

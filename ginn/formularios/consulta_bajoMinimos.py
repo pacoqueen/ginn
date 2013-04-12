@@ -92,7 +92,6 @@ class ConsultaBajoMinimos(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        import sys, os
         from informes.treeview2csv import treeview2csv
         from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
@@ -302,11 +301,11 @@ class ConsultaBajoMinimos(Ventana):
                                                 cerrado = False) 
                     pclases.Auditoria.nuevo(pedido, self.usuario, __file__)
                     for path in paths:
-                        id = model[path][-1]
+                        ide = model[path][-1]
                         ldp=pclases.LineaDePedidoDeCompra(pedidoCompra=pedido,
                                 cantidad = model[path][2] - model[path][3],
                                 precio = 0,
-                                productoCompraID = id,
+                                productoCompraID = ide,
                                 descuento = 0,
                                 fechaEntrega = None, 
                                 textoEntrega = None, 
@@ -314,7 +313,7 @@ class ConsultaBajoMinimos(Ventana):
                                         "faltas.")
                         pclases.Auditoria.nuevo(ldp, self.usuario, __file__)
                     import pedidos_de_compra
-                    ventana_pedido = pedidos_de_compra.PedidosDeCompra(pedido)
+                    ventana_pedido = pedidos_de_compra.PedidosDeCompra(pedido)  # @UnusedVariable
 
 
 def get_proveedor_productos(productos):

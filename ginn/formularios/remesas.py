@@ -36,7 +36,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time, mx, mx.DateTime
+import gtk, time, mx.DateTime
 from framework import pclases
 from framework.seeker import VentanaGenerica 
 from utils import _float as float
@@ -291,7 +291,7 @@ class Remesas(Ventana, VentanaGenerica):
             filas_res.append(
                     (r.id, r.codigo, r.banco and r.banco.nombre or "", 
                      sum([e.importe for e in r.efectos])))
-        id = utils.dialogo_resultado(filas_res,
+        ide = utils.dialogo_resultado(filas_res,
                                      titulo = 'SELECCIONE REMESA',
                                      cabeceras = ('ID', 'Código', 'Banco', 
                                                   'Importe'), 
@@ -404,7 +404,7 @@ class Remesas(Ventana, VentanaGenerica):
             resultados = self.clase.select(criterio)
             if resultados.count() > 1:
                 ## Refinar los resultados
-                id = self.refinar_resultados_busqueda(resultados)
+                ide = self.refinar_resultados_busqueda(resultados)
                 if id == None:
                     return
                 resultados = [self.clase.get(id)]

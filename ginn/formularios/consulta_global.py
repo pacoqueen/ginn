@@ -1306,7 +1306,7 @@ def consultar_kilos_fibra_consumidos(fechaini, fechafin):
         DROP TABLE partes_gtx_temp;
     """
     con.query(caidita_de_roma)
-    balas, kilos = balas_kilos[0]
+    balas, kilos = balas_kilos[0]  # @UnusedVariable
     return (kilos and kilos or 0.0)
 
 def consultar_horas_reales_gtx(fechaini, fechafin):
@@ -1477,7 +1477,7 @@ def consultar_empleados_por_dia_bolsas(fechaini, fechafin):
     # desglosado).
     fechas = []
     empleados = 0.0
-    for fecha, idempleado in filas_fecha_idempleado:
+    for fecha, idempleado in filas_fecha_idempleado:  # @UnusedVariable
         if fecha not in fechas:
             fechas.append(fecha)
         empleados += 1
@@ -1506,7 +1506,7 @@ def consultar_empleados_por_dia_gtx(fechaini, fechafin):
     # prefiero dejarla así porque creo que me hará falta en un futuro tenerlo desglosado).
     fechas = []
     empleados = 0.0
-    for fecha, idempleado in filas_fecha_idempleado:
+    for fecha, idempleado in filas_fecha_idempleado:  # @UnusedVariable
         if fecha not in fechas:
             fechas.append(fecha)
         empleados += 1
@@ -1758,8 +1758,8 @@ def _buscar_compras_geocompuestos(fecha_ini, fecha_fin):
     compras_geocmp = {}
     if 'total' not in compras_geocmp:
         compras_geocmp['total'] = {'cantidad': 0.0, 'euros': 0.0}
-    idcliente = None
-    resultado = []
+    idcliente = None  # @UnusedVariable
+    resultado = []  # @UnusedVariable
     facturas = pclases.FacturaCompra.select(pclases.AND(
                                 pclases.FacturaCompra.q.fecha >= fecha_ini,
                                 pclases.FacturaCompra.q.fecha <= fecha_fin),
@@ -1791,8 +1791,8 @@ def _buscar_ventas_geocompuestos(fecha_ini, fecha_fin):
     ventas_geocmp = {}
     if 'total' not in ventas_geocmp:
         ventas_geocmp['total'] = {'cantidad': 0.0, 'euros': 0.0}
-    idcliente = None
-    resultado = []
+    idcliente = None  # @UnusedVariable
+    resultado = []  # @UnusedVariable
     facturas = pclases.FacturaVenta.select(pclases.AND(
                                     pclases.FacturaVenta.q.fecha >= fecha_ini,
                                     pclases.FacturaVenta.q.fecha <= fecha_fin),
@@ -1829,9 +1829,9 @@ def _buscar_ventas(fecha_ini, fecha_fin):
         ventas_fibra['total'] = {'kilos': 0.0, 'euros': 0.0}
     if 'total' not in ventas_bolsas:
         ventas_bolsas['total'] = {'bolsas': 0, 'kilos': 0.0, 'euros': 0.0}
-    idcliente = None
-    resultado = []
-    resultado_abonos = {'lineasDeAbono': [], 'lineasDeDevolucion': []}
+    idcliente = None  # @UnusedVariable
+    resultado = []  # @UnusedVariable
+    resultado_abonos = {'lineasDeAbono': [], 'lineasDeDevolucion': []}  # @UnusedVariable
     facturas = pclases.FacturaVenta.select(pclases.AND(
                                     pclases.FacturaVenta.q.fecha >= fecha_ini,
                                     pclases.FacturaVenta.q.fecha <= fecha_fin),
@@ -2590,7 +2590,7 @@ def consultar_kilos_y_euros_fibra_consumidos(fechaini, fechafin):
         DROP TABLE partes_gtx_temp;
     """
     con.query(caidita_de_roma)
-    balas, kilos, euros = balas_kilos[0]
+    balas, kilos, euros = balas_kilos[0]  # @UnusedVariable
     return kilos and kilos or 0.0, euros and euros or 0.0
 
 def ejecutar_consultas_fibra_b_por_fechas(fechaini, fechafin):
@@ -2663,7 +2663,7 @@ def ejecutar_consultas_fibra_b_por_fechas(fechaini, fechafin):
             precio_total = 0.0
             for idldv in ldvs:
                 ldv = pclases.LineaDeVenta.get(idldv)
-                cantidad = ldv.cantidad
+                cantidad = ldv.cantidad  # @UnusedVariable
                 cantidad_total += ldv.cantidad
                 precio_total += ldv.precio
             precio = precio_total / cantidad_total
@@ -2890,8 +2890,8 @@ def buscar_compras_geocompuestos(anno, vpro = None, rango = None,
         gcomp[i] = gcompmes
         if vpro != None: 
             vpro.set_valor(vpro.get_valor() + incr_progreso, vpro.get_texto())
-    _gcomp = {}   # En lugar de [mes][proveedor] voy a hacer un diccionario 
-                  # [proveedor][mes]
+    _gcomp = {}     # En lugar de [mes][proveedor] voy a hacer un diccionario 
+                    # [proveedor][mes]
     for mes in gcomp:
         for proveedor in gcomp[mes]:
             if proveedor not in _gcomp:
@@ -2927,8 +2927,8 @@ def buscar_ventas_geocompuestos(anno, vpro = None, rango = None,
         gcomp[i] = gcompmes
         if vpro != None: 
             vpro.set_valor(vpro.get_valor() + incr_progreso, vpro.get_texto())
-    _gcomp = {}   # En lugar de [mes][tarifa] voy a hacer un diccionario 
-                  # [tarifa][mes]
+    _gcomp = {}     # En lugar de [mes][tarifa] voy a hacer un diccionario 
+                    # [tarifa][mes]
     for mes in gcomp:
         for tarifa in gcomp[mes]:
             if tarifa not in _gcomp:
@@ -2951,9 +2951,9 @@ def consultar_consumos(mes, anno, consumos_gtx, consumos_fibra,
     fin = utils.asegurar_fecha_positiva(fin)
     # XXX
 
-    gtx = {}
-    fibra = {}
-    bolsas = {}
+    gtx = {}  # @UnusedVariable
+    fibra = {}  # @UnusedVariable
+    bolsas = {}  # @UnusedVariable
     pdps = pclases.ParteDeProduccion.select(pclases.AND(
             pclases.ParteDeProduccion.q.fecha >= ini, 
             pclases.ParteDeProduccion.q.fecha <= fin))
@@ -3307,7 +3307,7 @@ def consultar_empleados_por_dia_fibra(fechaini, fechafin):
     # desglosado).
     fechas = []
     empleados = 0.0
-    for fecha, idempleado in filas_fecha_idempleado:
+    for fecha, idempleado in filas_fecha_idempleado:  # @UnusedVariable
         if fecha not in fechas:
             fechas.append(fecha)
         empleados += 1

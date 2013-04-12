@@ -363,7 +363,7 @@ class ListadoRollos(Ventana):
             return
         model = self.wids['tv_rollos'].get_model()
         fila = model[path]
-        id = fila[-1]
+        ide = fila[-1]
         rollo = pclases.Articulo.get(id).rollo
         if numrollo != rollo.numrollo:
             nuevo_numrollo = rollo.cambiar_numrollo(numrollo)

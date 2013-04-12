@@ -38,10 +38,9 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
+import gtk
 from framework import pclases
 import mx.DateTime
-from informes import geninformes
 from consulta_ventas_por_producto import convertir_a_listview    
 
 class ConsultaCompras(Ventana):
@@ -130,44 +129,44 @@ class ConsultaCompras(Ventana):
         puid = tv.get_model()[path][-1]
         o = pclases.getObjetoPUID(puid)
         if isinstance(o, pclases.FacturaCompra):
-            from formularios.facturas_compra import FacturasDeEntrada as NewW
+            from formularios.facturas_compra import FacturasDeEntrada as NewW  # @UnusedImport
         elif isinstance(o, pclases.Proveedor):
-            from formularios.proveedores import Proveedores as NewW
+            from formularios.proveedores import Proveedores as NewW  # @Reimport @UnusedImport
         elif isinstance(o, pclases.AlbaranEntrada):
-            from formularios.albaranes_de_entrada import AlbaranesDeEntrada as NewW
+            from formularios.albaranes_de_entrada import AlbaranesDeEntrada as NewW  # @UnusedImport @Reimport
         elif isinstance(o, pclases.LineaDeCompra):
             if o.facturaCompra:
-                from formularios.facturas_compra import FacturasDeEntrada as NewW
+                from formularios.facturas_compra import FacturasDeEntrada as NewW  # @Reimport @UnusedImport
                 o = o.facturaCompra
             elif o.albaranEntrada:
-                from formularios.albaranes_de_entrada import AlbaranesDeEntrada as NewW
+                from formularios.albaranes_de_entrada import AlbaranesDeEntrada as NewW  # @Reimport @UnusedImport
                 o = o.albaranEntrada
             else:
                 o = None
         elif isinstance(o, pclases.TransporteACuenta):
             if o.proveedor:
-                from formularios.proveedores import Proveedores as NewW
+                from formularios.proveedores import Proveedores as NewW  # @Reimport @UnusedImport
                 o = o.proveedor
             else:
-                from formularios.albaranes_de_salida import AlbaranesDeSalida as NewW
+                from formularios.albaranes_de_salida import AlbaranesDeSalida as NewW  # @Reimport @UnusedImport
                 o = o.albaranSalida
         elif isinstance(o, pclases.ServicioTomado):
             if o.facturaCompra:
-                from formularios.facturas_compra import FacturasDeEntrada as NewW
+                from formularios.facturas_compra import FacturasDeEntrada as NewW  # @Reimport @UnusedImport
                 o = o.facturaCompra
             elif o.comision:
                 if o.comision.facturaVenta:
-                    from formularios.facturas_venta import FacturasVenta as NewW
+                    from formularios.facturas_venta import FacturasVenta as NewW  # @Reimport @UnusedImport
                     o = o.comision.facturaVenta
                 elif o.comision.albaranSalida:
-                    from formularios.albaranes_de_salida import AlbaranesDeSalida as NewW
+                    from formularios.albaranes_de_salida import AlbaranesDeSalida as NewW  # @Reimport @UnusedImport
                     o = o.comision.albaranSalida
                 else:
                     o = None
             else:
                 o = None
         elif isinstance(o, pclases.AlbaranSalida):
-            from formularios.albaranes_de_salida import AlbaranesDeSalida as NewW
+            from formularios.albaranes_de_salida import AlbaranesDeSalida as NewW  # @Reimport
         else:
             o = None
         if o:
@@ -176,18 +175,18 @@ class ConsultaCompras(Ventana):
             while gtk.events_pending(): gtk.main_iteration(False)
             if not self.usuario:
                 self.wids['ventana'].window.set_cursor(None)
-                v = NewW(objeto = o, usuario = self.usuario)
+                v = NewW(objeto = o, usuario = self.usuario)  # @UnusedVariable
             else:
                 try:
                     ventana = pclases.Ventana.selectBy(
                         fichero = NewW.__module__)[0]  # @UndefinedVariable
                 except IndexError:#¿Ventana no está dada de alta en el sistema?
                     self.wids['ventana'].window.set_cursor(None)
-                    v = NewW(objeto = o, usuario = self.usuario)
+                    v = NewW(objeto = o, usuario = self.usuario)  # @UnusedVariable
                 else:
                     if self.usuario.get_permiso(ventana):
                         self.wids['ventana'].window.set_cursor(None)
-                        v = NewW(objeto = o, usuario = self.usuario)
+                        v = NewW(objeto = o, usuario = self.usuario)  # @UnusedVariable
                     else:
                         utils.dialogo_info(titulo = "USUARIO SIN PERMISO", 
                             texto = "Carece de permiso para abrir el elemento"

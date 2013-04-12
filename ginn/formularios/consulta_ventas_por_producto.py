@@ -40,7 +40,7 @@ import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade
 from framework import pclases
-import mx, mx.DateTime
+import mx.DateTime
 from informes import geninformes
 
 class ConsultaVentasPorProducto(Ventana):
@@ -92,9 +92,9 @@ class ConsultaVentasPorProducto(Ventana):
         un producto, abre el producto.
         """
         model = tv.get_model()
-        tipo, id = model[path][-1].split(":")
+        tipo, ide = model[path][-1].split(":")
         try:
-            id = int(id)
+            ide = int(id)
         except:
             txt = "%sconsulta_ventas_por_producto::abrir_producto_albaran_o_abono -> Excepción al convertir ID a entero: (tipo %s) %s." % (self.usuario and self.usuario + ": " or "", tipo, id)
             print txt

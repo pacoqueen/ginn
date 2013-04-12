@@ -41,7 +41,7 @@ import gtk, time
 from framework import pclases
 import mx.DateTime
 from informes import geninformes
-from ventana_progreso import VentanaProgreso, VentanaActividad
+from ventana_progreso import VentanaProgreso, VentanaActividad  # @UnusedImport
     
 
 class ConsultaLotesPorProducto(Ventana):
@@ -84,7 +84,6 @@ class ConsultaLotesPorProducto(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        import sys, os
         from informes.treeview2csv import treeview2csv
         from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
@@ -95,16 +94,16 @@ class ConsultaLotesPorProducto(Ventana):
     
     
     def rellenar_tabla(self,lista = []):
-    	"""
+        """
         Rellena el model con los resultados de la búsqueda almacenados
         en una lista de lotes.
         """        
         model = self.wids['tv_datos'].get_model()
         self.wids['tv_datos'].freeze_child_notify()
         self.wids['tv_datos'].set_model(None)
-    	model.clear()
-    	for elem in lista:
-    		model.append((elem.numlote,
+        model.clear()
+        for elem in lista:
+            model.append((elem.numlote,
                     elem.codigo,
                     str(elem.tenacidad),
                     str(elem.elongacion),
@@ -251,8 +250,8 @@ class ConsultaLotesPorProducto(Ventana):
         from formularios import reports
         datos = []
         lista = self.resultado
-    	for elem in lista:
-    		datos.append((elem.numlote,
+        for elem in lista:
+            datos.append((elem.numlote,
                     elem.codigo,
                     str(elem.tenacidad),
                     str(elem.elongacion),
@@ -277,15 +276,11 @@ class ConsultaLotesPorProducto(Ventana):
             print "No se encontró el parte: %s", e
         if parte.es_de_balas():
             import partes_de_fabricacion_balas
-            ventana_parteb = partes_de_fabricacion_balas.PartesDeFabricacionBalas(parte)
+            ventana_parteb = partes_de_fabricacion_balas.PartesDeFabricacionBalas(parte)  # @UnusedVariable
         else:
             import partes_de_fabricacion_rollos
-            ventana_parteb = partes_de_fabricacion_rollos.PartesDeFabricacionRollos(parte)
-
-
-
+            ventana_parteb = partes_de_fabricacion_rollos.PartesDeFabricacionRollos(parte)  # @UnusedVariable
+            
 
 if __name__ == '__main__':
     t = ConsultaLotesPorProducto()
-
-

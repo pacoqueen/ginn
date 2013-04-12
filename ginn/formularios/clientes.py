@@ -58,7 +58,6 @@ pygtk.require('2.0')
 import gtk, time
 from framework import pclases
 from informes import geninformes
-from utils import _float as float
 from formularios.reports import abrir_pdf
 from ventana_progreso import VentanaActividad
 import pclase2tv
@@ -206,9 +205,9 @@ class Clientes(Ventana):
                         "del cliente.", 
                 padre = self.wids['ventana'])
         else:
-            for iter in iters:
+            for itr in iters:
                 copiadas = 0
-                idcontacto = model[iter][-1]
+                idcontacto = model[itr][-1]
                 contacto = pclases.Contacto.get(idcontacto)
                 for obra in self.objeto.obras:
                     if contacto not in obra.contactos:
@@ -237,7 +236,7 @@ class Clientes(Ventana):
                 texto = "Debe seleccionar dos o más obras.", 
                 padre = self.wids['ventana'])
         else:
-            obras = [pclases.Obra.get(model[iter][-1]) for iter in iters]
+            obras = [pclases.Obra.get(model[itr][-1]) for itr in iters]
             ops = [(o.id, o.get_str_obra()) for o in obras]
             buena = utils.dialogo_combo(titulo = "SELECCIONE OBRA", 
                 texto = "Seleccione la obra base.\n"\
@@ -296,8 +295,8 @@ class Clientes(Ventana):
                         c = pclases.Contacto(nombre = nombre, 
                                              apellidos = apellidos)
                         pclases.Auditoria.nuevo(c, self.usuario, __file__)
-                    for iter in iters:
-                        idobra = model[iter][-1]
+                    for itr in iters:
+                        idobra = model[itr][-1]
                         obra = pclases.Obra.get(idobra)
                         c.addObra(obra)
                     self.rellenar_contactos()
@@ -372,9 +371,9 @@ class Clientes(Ventana):
             defecto = gtk.RESPONSE_CANCEL, 
             bloq_temp = [gtk.RESPONSE_YES, gtk.RESPONSE_NO])
         if res != gtk.RESPONSE_CANCEL:
-            for iter in iters:
-                id = model[iter][-1]
-                c = pclases.Contacto.get(id)
+            for itr in iters:
+                ide = model[itr][-1]
+                c = pclases.Contacto.get(ide)
                 if res == True:
                     for o in c.obras:
                         o.removeContacto(c)
@@ -419,9 +418,9 @@ class Clientes(Ventana):
         sel = self.wids['tv_obras'].get_selection()
         model, iters = sel.get_selected_rows()
         se_borro_algo = False
-        for iter in iters:
-            id = model[iter][-1]
-            obra = pclases.Obra.get(id)
+        for itr in iters:
+            ide = model[itr][-1]
+            obra = pclases.Obra.get(ide)
             if obra.facturasVenta or obra.pedidosVenta:
                 strfras = ", ".join([f.numfactura for f in obra.facturasVenta])
                 strfras += "\n"
@@ -794,7 +793,7 @@ class Clientes(Ventana):
                 except:
                     return
                 import prefacturas
-                v = prefacturas.Prefacturas(objeto=fra, usuario=self.usuario)
+                v = prefacturas.Prefacturas(objeto=fra, usuario=self.usuario)  # @UnusedVariable
 
     def listar_facturas(self, boton):
         """
@@ -827,7 +826,7 @@ class Clientes(Ventana):
                 except:
                     return
                 import facturas_venta
-                v = facturas_venta.FacturasVenta(objeto = fra, 
+                v = facturas_venta.FacturasVenta(objeto = fra,  # @UnusedVariable
                                                  usuario = self.usuario)
 
     def listar_productos_proforma(self, boton):
@@ -881,17 +880,17 @@ class Clientes(Ventana):
                                         idproducto.split(":")[1])
                         if producto.es_rollo():
                             import productos_de_venta_rollos as pdvr
-                            ventana_producto = pdvr.ProductosDeVentaRollos(
+                            ventana_producto = pdvr.ProductosDeVentaRollos(  # @UnusedVariable
                                             producto, usuario = self.usuario)
                         elif producto.es_bala() or producto.es_bigbag():
                             import productos_de_venta_balas as pdvb
-                            ventana_producto = pdvb.ProductosDeVentaBalas(
+                            ventana_producto = pdvb.ProductosDeVentaBalas(  # @UnusedVariable
                                             producto, usuario = self.usuario)
                     elif "PC" in idproducto:
                         producto = pclases.ProductoCompra.get(
                                         idproducto.split(":")[1])
                         import productos_compra
-                        ventana_producto = productos_compra.ProductosCompra(
+                        ventana_producto = productos_compra.ProductosCompra(  # @UnusedVariable
                                             producto, usuario = self.usuario)
                 except:
                     pass
@@ -905,7 +904,7 @@ class Clientes(Ventana):
             ide = model[itr][0]
             pedido = pclases.PedidoVenta.get(ide)
             import pedidos_de_venta
-            ventana = pedidos_de_venta.PedidosDeVenta(objeto = pedido, 
+            ventana = pedidos_de_venta.PedidosDeVenta(objeto = pedido,  # @UnusedVariable
                                                       usuario = self.usuario)
 
     def ayuda_forma_pago(self, boton):
@@ -1227,11 +1226,11 @@ class Clientes(Ventana):
         objeto = pclases.getObjetoPUID(puid)
         if isinstance(objeto, pclases.FacturaVenta):
             import facturas_venta
-            ventanafacturas = facturas_venta.FacturasVenta(objeto, 
+            ventanafacturas = facturas_venta.FacturasVenta(objeto,  # @UnusedVariable
                                 usuario = self.usuario)
         elif isinstance(objeto, pclases.FacturaDeAbono):
             import abonos_venta 
-            ventanaabonos = abonos_venta.AbonosVenta(objeto.abono, 
+            ventanaabonos = abonos_venta.AbonosVenta(objeto.abono,  # @UnusedVariable
                                 usuario = self.usuario)
         self.wids['ventana'].window.set_cursor(None)
 
@@ -1241,7 +1240,7 @@ class Clientes(Ventana):
         """
         idcliente = tv.get_model()[path][-1]
         cliente = pclases.Cliente.get(idcliente)
-        nueva_ventana = Clientes(cliente)
+        nueva_ventana = Clientes(cliente)  # @UnusedVariable
 
     def activar_widgets(self, s, chequear_permisos = True):
         """
@@ -1333,8 +1332,8 @@ class Clientes(Ventana):
                 res = widget.get_text()
             except AttributeError:
                 try:
-                    buffer = widget.get_buffer()
-                    res = buffer.get_text(*buffer.get_bounds())
+                    buff = widget.get_buffer()
+                    res = buff.get_text(*buff.get_bounds())
                 except AttributeError:
                     try:
                         # FIXME: Esto falla con versiones antiguas de Gtk
@@ -1440,8 +1439,8 @@ class Clientes(Ventana):
             self.wids['e_tarifa'].set_text(cliente.tarifa.nombre)
         else:
             self.wids['e_tarifa'].set_text('')
-        buffer = self.wids['e_observaciones'].get_buffer()
-        buffer.set_text(cliente.observaciones)
+        buff = self.wids['e_observaciones'].get_buffer()
+        buff.set_text(cliente.observaciones)
         utils.combo_set_from_db(self.wids['cbe_comercial'], cliente.clienteID)
         utils.combo_set_from_db(self.wids['cbe_proveedor'], 
                                 cliente.proveedorID)
@@ -1550,8 +1549,8 @@ class Clientes(Ventana):
                                                             texto = "¿Está seguro de que desea eliminar las cuentas seleccionadas?", 
                                                             padre = self.wids['ventana']):
             for path in paths:
-                id = model[path][-1]
-                c = pclases.CuentaBancariaCliente.get(id)
+                ide = model[path][-1]
+                c = pclases.CuentaBancariaCliente.get(ide)
                 try:
                     c.destroy(ventana = __file__)
                 except:
@@ -1579,8 +1578,8 @@ class Clientes(Ventana):
         Cambia el banco de la cuentaBancariaCliente.
         """
         model = self.wids['tv_cuentas'].get_model()
-        id = model[path][-1]
-        c = pclases.CuentaBancariaCliente.get(id)
+        ide = model[path][-1]
+        c = pclases.CuentaBancariaCliente.get(ide)
         c.banco = text
         self.rellenar_cuentas()
 
@@ -1589,8 +1588,8 @@ class Clientes(Ventana):
         Cambia el SWIF de la cuentaBancariaCliente.
         """
         model = self.wids['tv_cuentas'].get_model()
-        id = model[path][-1]
-        c = pclases.CuentaBancariaCliente.get(id)
+        ide = model[path][-1]
+        c = pclases.CuentaBancariaCliente.get(ide)
         c.swif = text
         self.rellenar_cuentas()
 
@@ -1599,8 +1598,8 @@ class Clientes(Ventana):
         Cambia el IBAN de la cuentaBancariaCliente.
         """
         model = self.wids['tv_cuentas'].get_model()
-        id = model[path][-1]
-        c = pclases.CuentaBancariaCliente.get(id)
+        ide = model[path][-1]
+        c = pclases.CuentaBancariaCliente.get(ide)
         c.iban = text
         self.rellenar_cuentas()
 
@@ -1609,8 +1608,8 @@ class Clientes(Ventana):
         Cambia la cuenta de la cuentaBancariaCliente.
         """
         model = self.wids['tv_cuentas'].get_model()
-        id = model[path][-1]
-        c = pclases.CuentaBancariaCliente.get(id)
+        ide = model[path][-1]
+        c = pclases.CuentaBancariaCliente.get(ide)
         c.cuenta = text
         self.rellenar_cuentas()
 
@@ -1619,8 +1618,8 @@ class Clientes(Ventana):
         Cambia las observaciones de la cuentaBancariaCliente.
         """
         model = self.wids['tv_cuentas'].get_model()
-        id = model[path][-1]
-        c = pclases.CuentaBancariaCliente.get(id)
+        ide = model[path][-1]
+        c = pclases.CuentaBancariaCliente.get(ide)
         c.observaciones = text
         self.rellenar_cuentas()
 
@@ -1781,7 +1780,7 @@ class Clientes(Ventana):
                       and c.name != "cuentaOrigenID"
                       and c.name != "tipoDeClienteID"
                       and c.name != "copiasFactura"]: 
-                      # Omito columna tarifa
+                        # Omito columna tarifa
             datos[c] = self.leer_valor(self.wids['e_%s' % c])
             if pclases.DEBUG:
                 if c == "observaciones":
@@ -1933,7 +1932,7 @@ class Clientes(Ventana):
         CWT
         """
         import consulta_pedidos_clientes
-        ventana = consulta_pedidos_clientes.ConsultaPedidosCliente(
+        ventana = consulta_pedidos_clientes.ConsultaPedidosCliente(  # @UnusedVariable
                     usuario = self.usuario, 
                     objeto = self.objeto)
 
@@ -1956,7 +1955,7 @@ class Clientes(Ventana):
         
     def ver_productos(self, boton):
         import consulta_productos_comprados
-        ventana = consulta_productos_comprados.ConsultaProductosComprados(
+        ventana = consulta_productos_comprados.ConsultaProductosComprados(  # @UnusedVariable
                     usuario = self.usuario, 
                     objeto = self.objeto)
 
@@ -2002,14 +2001,14 @@ class Clientes(Ventana):
                 producto = pclases.ProductoVenta.get(idproducto.split(":")[1])
                 if producto.es_rollo():
                     import productos_de_venta_rollos
-                    ventana_producto = productos_de_venta_rollos.ProductosDeVentaRollos(producto, usuario = self.usuario)
+                    ventana_producto = productos_de_venta_rollos.ProductosDeVentaRollos(producto, usuario = self.usuario)  # @UnusedVariable
                 elif producto.es_bala() or producto.es_bigbag():
                     import productos_de_venta_balas
-                    ventana_producto = productos_de_venta_balas.ProductosDeVentaBalas(producto, usuario = self.usuario)
+                    ventana_producto = productos_de_venta_balas.ProductosDeVentaBalas(producto, usuario = self.usuario)  # @UnusedVariable
             elif "PC" in idproducto:
                 producto = pclases.ProductoCompra.get(idproducto.split(":")[1])
                 import productos_compra
-                ventana_producto = productos_compra.ProductosCompra(producto, usuario = self.usuario)
+                ventana_producto = productos_compra.ProductosCompra(producto, usuario = self.usuario)  # @UnusedVariable
 
     def crear_nuevo_contador(self,boton):
         """

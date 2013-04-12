@@ -112,29 +112,29 @@ class ConsultaExistenciasPorAlmacen(Ventana):
         Si es un producto, abre el producto.
         """
         model = tv.get_model()
-        tipo, id = model[path][-1].split(":")
+        tipo, ide = model[path][-1].split(":")
         try:
-            id = int(id)
+            ide = int(ide)
         except:
-            txt = "%sconsulta_existencias_por_almacen.py::abrir_producto -> Excepción al convertir ID a entero: (tipo %s) %s." % (self.usuario and self.usuario + ": " or "", tipo, id)
+            txt = "%sconsulta_existencias_por_almacen.py::abrir_producto -> Excepción al convertir ID a entero: (tipo %s) %s." % (self.usuario and self.usuario + ": " or "", tipo, ide)
             print txt
             self.logger.error(txt)
         else:
             if tipo == "PV":        # ProductoVenta 
-                pv = pclases.ProductoVenta.get(id)
+                pv = pclases.ProductoVenta.get(ide)
                 if pv.es_rollo():
                     import productos_de_venta_rollos
-                    v = productos_de_venta_rollos.ProductosDeVentaRollos(pv, usuario = self.usuario)
+                    v = productos_de_venta_rollos.ProductosDeVentaRollos(pv, usuario = self.usuario)  # @UnusedVariable
                 elif pv.es_bala() or pv.es_bala_cable() or pv.es_bigbag():
                     import productos_de_venta_balas
-                    v = productos_de_venta_balas.ProductosDeVentaBalas(pv, usuario = self.usuario)
+                    v = productos_de_venta_balas.ProductosDeVentaBalas(pv, usuario = self.usuario)  # @UnusedVariable
                 elif pv.es_especial():
                     import productos_de_venta_especial
-                    v = productos_de_venta_especial.ProductosDeVentaEspecial(pv, usuario = self.usuario)
+                    v = productos_de_venta_especial.ProductosDeVentaEspecial(pv, usuario = self.usuario)  # @UnusedVariable
             elif tipo == "PC": 
-                pc = pclases.ProductoCompra.get(id)
+                pc = pclases.ProductoCompra.get(ide)
                 import productos_compra
-                v = productos_compra.ProductosCompra(pc, usuario = self.usuario)
+                v = productos_compra.ProductosCompra(pc, usuario = self.usuario)  # @UnusedVariable
 
     def chequear_cambios(self):
         pass

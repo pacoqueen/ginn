@@ -26,11 +26,10 @@ VERSION
 
 import sys, os, traceback, optparse
 import time
-import re
 #from pexpect import run, spawn
 
 
-import mx, mx.DateTime
+import mx.DateTime
 # Determino dónde estoy para importar pclases y utils
 diractual = os.path.split(os.path.abspath(os.path.curdir))[-1]
 if diractual == "fixes":
@@ -39,7 +38,7 @@ if diractual == "fixes":
 from framework import pclases
 from formularios import utils
 import gc
-import psycopg2
+import psycopg2  # @UnusedImport
 import psycopg2.extras
 
 def convierte_a_fecha(cad):
@@ -69,7 +68,7 @@ def parsea_fechas_argumentos(args):
             ini, fin = fin, ini
         fecha = ini
         fechas.append(fecha)
-        for i in range(int((fin - ini).days)):
+        for i in range(int((fin - ini).days)):  # @UnusedVariable
             fecha += mx.DateTime.oneDay
             fechas.append(fecha)
     else:
@@ -82,7 +81,7 @@ def parse_uri(uri):
     cadena recibida.
     """
     if "://" in uri:    # Es uri de pclases
-        tipo, resto = uri.split("://")
+        tipo, resto = uri.split("://")  # @UnusedVariable
     else:
         resto = uri
     user, resto = resto.split(":")
@@ -120,8 +119,8 @@ def recolectar_ids(ids_antes):
         cur.execute("SELECT id FROM %s;" % tabla)
         l = cur.fetchall()
         for tupla in l:
-            id = tupla[0]
-            ids_antes[tabla].append(id)
+            ide = tupla[0]
+            ids_antes[tabla].append(ide)
     con.close()
 
 def fotografiar_ids():
@@ -254,9 +253,9 @@ def sincronizar_tablas():
     """
     # 0.- Verificar que no voy a volcarme sobre mí mismo.
     uridest = options.destino
-    userdest, passworddest, hostdest, databasedest = parse_uri(uridest)
+    userdest, passworddest, hostdest, databasedest = parse_uri(uridest)  # @UnusedVariable
     urilocal = pclases.conn
-    userlocal, passwordlocal, hostlocal, databaselocal = parse_uri(urilocal)
+    userlocal, passwordlocal, hostlocal, databaselocal = parse_uri(urilocal)  # @UnusedVariable
     if hostlocal == hostdest and databasedest == databaselocal:
         print "Destino y origen son iguales. No se sincronizará nada."
     else:
@@ -275,17 +274,17 @@ def sincronizar_tablas():
                         }[tipo]
                 curlocal.execute("SELECT * FROM %s;" % tabla)
                 for tupla in curlocal.fetchall():
-                    (id, producto_venta_id, fecha, 
+                    (ide, producto_venta_id, fecha, 
                      cantidad, bultos, almacen_id) = tupla
                     # 2.- Si existe en la BD remota, actualizo el registro
                     curremoto.execute("""
                         SELECT * 
                           FROM %s 
-                         WHERE -- id = %d AND 
+                         WHERE -- ide = %d AND 
                                producto_venta_id = %d 
                            AND fecha = '%s'
                            AND almacen_id = %d; """ 
-                        % (tabla, id, producto_venta_id, fecha, almacen_id))
+                        % (tabla, ide, producto_venta_id, fecha, almacen_id))
                     tuplaremota = curremoto.fetchone() 
                     if tuplaremota:
                         if (tuplaremota['cantidad'] == cantidad and 
@@ -333,15 +332,15 @@ def volcar_a_bd_remota(ids_antes, ids_despues):
         curlocal = conlocal.cursor()
         curremoto = conremota.cursor()
         for tabla in ids_despues:
-            for id in ids_despues[tabla]:
-                #print id, type(id)
-                if id not in ids_antes[tabla]:
-                    tupla = curlocal.execute("SELECT * FROM %s WHERE id = %d;" 
-                        % (tabla, id)).fetchone()
+            for aidi in ids_despues[tabla]:
+                #print aidi, type(aidi)
+                if aidi not in ids_antes[tabla]:
+                    tupla = curlocal.execute("SELECT * FROM %s WHERE aidi = %d;" 
+                        % (tabla, aidi)).fetchone()
                     valores = ", ".join("'%s'" % v for v in tupla)
                     curremoto.execute("INSERT INTO %s VALUES (%s);" % (
                         tabla, valores))
-                    print "Registro ID %d insertado." % id
+                    print "Registro ID %d insertado." % aidi
 
 # DONE: ¿Sabes lo que sería la repera? Poder enviar los cálculos a otro 
 # ordenador y rescatar los registros e insertarlos directamente en la BD. O al 

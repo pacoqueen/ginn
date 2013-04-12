@@ -82,9 +82,10 @@
 from ventana import Ventana
 import utils
 import pygtk
+from formularios.reports import abrir_pdf
 pygtk.require('2.0')
 import gtk, time
-import sys, os
+import sys
 from framework import pclases
 from informes import geninformes
 from formularios.utils import ffloat
@@ -569,8 +570,8 @@ class AlbaranesDeSalida(Ventana):
             or utils.dialogo(titulo = "ARTÍCULOS DE BAJA CALIDAD", 
                              texto = texto, 
                              padre = self.wids['ventana'])):
-            self.crear_ldv(articulos)    # En realidad no crea, asocia 
-                                         # artículos al albarán
+            self.crear_ldv(articulos)   # En realidad no crea, asocia 
+                                        # artículos al albarán
             self.objeto.calcular_comisiones()
             self.actualizar_ventana()
 
@@ -670,9 +671,9 @@ class AlbaranesDeSalida(Ventana):
         elif tipocodigo == "J": # Una caja suelta de fibra de cemento
             cajas = pclases.Caja.select(pclases.Caja.q.codigo == "J%d"%codigo)
             articulo = []
-            for c in cajas:
+            for c in cajas:  # @UnusedVariable
                 # for b in c.bolsas:
-                articulo.append(b)
+                articulo.append(c)
         #elif tipocodigo == "K": # Una única bolsa de fibra de cemento
         #    articulo = pclases.Bolsa.select(
         #        pclases.Bolsa.q.codigo == "K%d" % codigo)
@@ -773,8 +774,8 @@ class AlbaranesDeSalida(Ventana):
         if pclases.DEBUG and not condicion: print "telefono", albaran.telefono
         condicion = condicion and self.wids['e_direccion'].get_text() == albaran.direccion
         if pclases.DEBUG and not condicion: print "direccion", albaran.direccion
-        buffer = self.wids['tv_observaciones'].get_buffer()
-        condicion = condicion and buffer.get_text(buffer.get_start_iter(), buffer.get_end_iter()) == albaran.observaciones 
+        buff = self.wids['tv_observaciones'].get_buffer()
+        condicion = condicion and buff.get_text(buff.get_start_iter(), buff.get_end_iter()) == albaran.observaciones 
         if pclases.DEBUG and not condicion: print "observaciones", albaran.observaciones
         condicion = condicion and utils.combo_get_value(self.wids['cbe_dni']) == albaran.transportistaID
         if pclases.DEBUG and not condicion: print "transportista", albaran.transportista
@@ -1402,7 +1403,7 @@ class AlbaranesDeSalida(Ventana):
         venta para llevar el control de bultos.
         """
         model = self.wids['tv_ldvs'].get_model()
-        # ids_articulos_added = tuple([a.id for a in self.objeto.articulos])
+        # ids_articulos_added = tuple([a.ide for a in self.objeto.articulos])
         # Esto de arriba ya no es así. Ahora los artículos por LDV ya incluyen 
         # los de transferencia además de los devueltos, así que construyo esta 
         # lista de otra forma:
@@ -1415,14 +1416,14 @@ class AlbaranesDeSalida(Ventana):
         paths_productos = {}
         for row in model:
             ldv_id = row[-1]
-            #id = pclases.LineaDeVenta.get(ldv_id).productoVentaID
-            id = pclases.getObjetoPUID(ldv_id).productoVentaID
+            #ide = pclases.LineaDeVenta.get(ldv_id).productoVentaID
+            ide = pclases.getObjetoPUID(ldv_id).productoVentaID
             # Puede llegar a crear un paths_productos[None] -> [<path>]. Mejor.
             path = row.path
             try:
-                paths_productos[id].append(path)
+                paths_productos[ide].append(path)
             except KeyError:
-                paths_productos[id] = [path]
+                paths_productos[ide] = [path]
         for ldt in self.objeto.lineasDeMovimiento:
             a = articulo = ldt.articulo
             if articulo.id not in ids_articulos_added:
@@ -1499,8 +1500,8 @@ class AlbaranesDeSalida(Ventana):
             nuevo_destino = self.crear_nuevo_destino()
             albaran.destino = nuevo_destino
         self.mostrar_destino(albaran.destino)
-        buffer = self.wids['tv_observaciones'].get_buffer()
-        buffer.set_text(albaran.observaciones)
+        buff = self.wids['tv_observaciones'].get_buffer()
+        buff.set_text(albaran.observaciones)
         self.mostrar_transportista(albaran.transportista)
         self.wids['cbe_nom'].child.set_text(albaran.nombre)
         self.wids['e_cp'].set_text(albaran.cp)
@@ -1934,8 +1935,8 @@ class AlbaranesDeSalida(Ventana):
         albaran.pais = self.wids['e_pais'].get_text()
         albaran.telefono = self.wids['e_telf'].get_text()
         albaran.direccion = self.wids['e_direccion'].get_text() 
-        buffer = self.wids['tv_observaciones'].get_buffer()
-        albaran.observaciones = buffer.get_text(buffer.get_start_iter(), buffer.get_end_iter())
+        buff = self.wids['tv_observaciones'].get_buffer()
+        albaran.observaciones = buff.get_text(buff.get_start_iter(), buff.get_end_iter())
         self.guardar_transportista(None)
         albaran.transportistaID = utils.combo_get_value(self.wids['cbe_dni'])
         self.guardar_destino(None)
@@ -2514,8 +2515,8 @@ class AlbaranesDeSalida(Ventana):
                 try:
                     idsarticulos = []
                     for ldv in prods[producto]:
-                        idsarticulos += [str(id) 
-                            for id in self.__ldvs[ldv.id]['idsarticulos']]
+                        idsarticulos += [str(ide) 
+                            for ide in self.__ldvs[ldv.id]['idsarticulos']]
                     idsarticulos = ", ".join(idsarticulos)
                     sql = """
                     -- SELECT COUNT(*) 
@@ -2725,8 +2726,6 @@ class AlbaranesDeSalida(Ventana):
         del albarán actual.
         """
         if pclases.DEBUG:
-            import time
-        if pclases.DEBUG:
             print "Llamando a self.preguntar_si_redistribuir..."
             antes = time.time()
         self.preguntar_si_redistribuir()
@@ -2788,7 +2787,6 @@ class AlbaranesDeSalida(Ventana):
             antes = time.time()
         if pclases.config.get_multipagina():
             from informes import albaran_multipag
-            from formularios.reports import abrir_pdf
             alb_mp = albaran_multipag.go_from_albaranSalida(self.objeto) 
             abrir_pdf(alb_mp)
         elif not pclases.config.get_valorar_albaranes():
@@ -2818,7 +2816,6 @@ class AlbaranesDeSalida(Ventana):
             antes = time.time()
         if pclases.config.get_carta_portes():
             from informes import albaran_porte
-            from formularios.reports import abrir_pdf
             try:
                 kilos = sum([ldv.producto.calcular_kilos() * ldv.cantidad  
                              for ldv in self.objeto.lineasDeVenta])
@@ -2871,7 +2868,7 @@ class AlbaranesDeSalida(Ventana):
                 self.objeto.bloqueado = factura.bloqueada = ok
                 nomarchivo_factura = imprimir_factura(factura, self.usuario, 
                                                       albaran = self.objeto)
-                for numcopia in range(self.objeto.cliente.copiasFactura):
+                for numcopia in range(self.objeto.cliente.copiasFactura):  # @UnusedVariable
                     imprimir_factura(factura, self.usuario, es_copia = True, 
                                      albaran = self.objeto)
                 self.actualizar_ventana()
@@ -2941,7 +2938,6 @@ class AlbaranesDeSalida(Ventana):
             if transportista != None:
                 porteadores = utils.dialogo_entrada(titulo = "CMR", texto = "Porteadores:", padre = self.wids['ventana'], textview = True)
                 if porteadores != None:
-                    from formularios.reports import abrir_pdf
                     abrir_pdf(geninformes.cmr(self.objeto, lugar_entrega, transportista, porteadores))
     
     def enviar_por_correo(self, email, fichero_albaran = None, fichero_factura = None, fichero_packing_list = None):
@@ -3139,10 +3135,10 @@ class AlbaranesDeSalida(Ventana):
         """
         pl = []
         albaran = self.objeto
-        for ldv, linea_de_venta in [(self.__ldvs[id], 
-                                     pclases.LineaDeVenta.get(id)) 
-                        for id in self.__ldvs 
-                        if pclases.LineaDeVenta.get(id).productoVenta != None]:
+        for ldv, linea_de_venta in [(self.__ldvs[ide], 
+                                     pclases.LineaDeVenta.get(ide)) 
+                        for ide in self.__ldvs 
+                        if pclases.LineaDeVenta.get(ide).productoVenta != None]:
             # Diccionario de la LDV de la ventana y objeto LDV en sí
             if (not (linea_de_venta.productoVenta != None 
                 and not linea_de_venta.productoVenta.es_especial())):
@@ -3183,7 +3179,7 @@ class AlbaranesDeSalida(Ventana):
             total = "%d" % len(balas)
             peso = "%s" % utils.float2str(sum([b[2] for b in balas])) 
                 # balas es una tupla de tuplas con 5 elementos: código, 
-                # peso como cadena, peso, id, código de trazabilidad (si es 
+                # peso como cadena, peso, ide, código de trazabilidad (si es 
                 # bala será el de Domenech) objeto articulo relacionado.
             modelo_pl_balas = False
             for i in range(len(balas)):
@@ -3872,7 +3868,7 @@ class AlbaranesDeSalida(Ventana):
             # albarán, que era anterior al de las facturas anteriores. CWT: Si 
             # usamos siempre la fecha actual, no debería haber problemas.
             fecha = mx.DateTime.localtime()
-            ultima_factura, ok = chequear_restricciones_nueva_factura(cliente,
+            ultima_factura, ok = chequear_restricciones_nueva_factura(cliente,  # @UnusedVariable
                                                                    numfactura,
                                                                         fecha)
             if ok:
@@ -4388,7 +4384,7 @@ def buscar_proveedor(nombre, ventana_padre = None,
                                               cabeceras = ('ID', 'Nombre', 'C.I.F.'),  
                                               padre = ventana_padre) 
         if idproveedor > 0:
-             proveedor = pclases.Proveedor.get(idproveedor)
+            proveedor = pclases.Proveedor.get(idproveedor)
     elif numresultados == 1:
         proveedor = proveedores[0]
     return proveedor
@@ -4412,7 +4408,7 @@ def buscar_cliente(nombre, ventana_padre = None):
                                               cabeceras = ('ID', 'Nombre', 'C.I.F.'),  
                                               padre = ventana_padre) 
         if idcliente > 0:
-             cliente = pclases.Cliente.get(idcliente)
+            cliente = pclases.Cliente.get(idcliente)
     elif numresultados == 1:
         cliente = clientes[0]
     return cliente
@@ -4528,7 +4524,7 @@ def probar_siguientes(c, cliente, fecha, rango = 5):
     numfactura = None
     for i in range(1, rango):
         tmpnumfactura = c.get_next_numfactura(inc = i)
-        ok, ult_factura = chequear_restricciones_nueva_factura(cliente, 
+        ok, ult_factura = chequear_restricciones_nueva_factura(cliente,  # @UnusedVariable
                                                                tmpnumfactura, 
                                                                fecha)
         if ok:

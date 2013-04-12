@@ -42,7 +42,6 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk
-import sys
 from framework import pclases
 import mx.DateTime
 from informes import geninformes
@@ -99,7 +98,7 @@ class ConsultaMarcadoCE(Ventana):
         """
         idpartida = tv.get_model()[path][-1]
         import resultados_geotextiles
-        ventana = resultados_geotextiles.ResultadosGeotextiles(
+        ventana = resultados_geotextiles.ResultadosGeotextiles(  # @UnusedVariable
                     pclases.Partida.get(idpartida), 
                     usuario = self.usuario)
 
@@ -124,7 +123,7 @@ class ConsultaMarcadoCE(Ventana):
         pass
 
     def rellenar_tabla(self, partidas):
-    	"""
+        """
         Rellena el model con los items de la consulta.
         Elementos es un diccionario con objetos fecha como claves y 
         un diccionaro de dos elementos como valor. El segundo diccionario
@@ -132,9 +131,9 @@ class ConsultaMarcadoCE(Ventana):
         una de ellas se guarda una lista de objetos de la clase 
         correspondiente.
         """        
-    	model = self.wids['tv_partidas'].get_model()
-    	model.clear()
-    	for partida in partidas:
+        model = self.wids['tv_partidas'].get_model()
+        model.clear()
+        for partida in partidas:
             producto = partida.get_producto()
             model.append((partida.numpartida, 
                           partida.codigo, 
@@ -179,8 +178,8 @@ class ConsultaMarcadoCE(Ventana):
                             print txt
                             self.logger.error(txt)
                             continue
-                        if cerproducto != producto:   # Porque ya lo he 
-                                                      # contado antes
+                        if cerproducto != producto:     # Porque ya lo he 
+                                                        # contado antes
                             for partida in cerproducto.get_partidas():
                                 if (partida not in partidas 
                                     and fechaini 

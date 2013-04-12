@@ -84,7 +84,6 @@ class ConsultaAlbaranesCliente(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        import sys, os
         from informes.treeview2csv import treeview2csv
         from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
@@ -97,23 +96,23 @@ class ConsultaAlbaranesCliente(Ventana):
         self.wids['ventana'].window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
         while gtk.events_pending(): gtk.main_iteration(False)
         model = tv.get_model()
-        id = model[path][-1]
-        albaran = pclases.AlbaranSalida.get(id)
+        ide = model[path][-1]
+        albaran = pclases.AlbaranSalida.get(ide)
         import albaranes_de_salida
-        v = albaranes_de_salida.AlbaranesDeSalida(albaran)
+        v = albaranes_de_salida.AlbaranesDeSalida(albaran)  # @UnusedVariable
         self.wids['ventana'].window.set_cursor(None)
 
     def chequear_cambios(self):
         pass
 
     def rellenar_tabla(self, items):
-    	"""
+        """
         Rellena el model con los items de la consulta
         """        
-    	model = self.wids['tv_datos'].get_model()
-    	model.clear()
+        model = self.wids['tv_datos'].get_model()
+        model.clear()
         total = 0
-    	for i in items:            
+        for i in items:            
             total += 1
             if i.cliente != None:
                 cliente = i.cliente.nombre

@@ -581,7 +581,6 @@ class ResultadosGeotextiles(Ventana):
         model.clear()
         partida = self.partida
         lotes = []
-        prods = []
         for b in partida.balas:
             if b.lote not in lotes:
                 lotes.append(b.lote)
@@ -607,14 +606,7 @@ class ResultadosGeotextiles(Ventana):
                 #                    b.lote.rizo, 
                 #                    b.lote.encogimiento, 
                 #                    b.lote.grasa)
-                iter = model.append(None, (infolote, b.lote.id))
-            # Esto tenía sentido cuando el consumo de balas se asociaba a un parte y no a una partida completa.
-            #for a in b.articulos:
-            #    if a.parteDeProduccion != None:
-            #        for c in a.parteDeProduccion.consumos:
-            #            if c.productoCompra not in prods:
-            #                prods.append(c.productoCompra)
-            #                model.append(iter, (c.productoCompra.descripcion, c.id))
+                itr = model.append(None, (infolote, b.lote.id))  # @UnusedVariable
 
     def calcular_caracteristicas(self):
         """
@@ -634,10 +626,10 @@ class ResultadosGeotextiles(Ventana):
                 ('poros', 'pruebasPoros'), 
                 ('piramidal', 'pruebasPiramidal')):
             media = 0.0
-            for p in eval("partida.%s" % nombrecampo):
+            for p in getattr(partida, nombrecampo): 
                 media += p.resultado
             try:
-                media /= len(eval("partida.%s" % nombrecampo))
+                media /= len(getattr(partida, nombrecampo))
             except ZeroDivisionError:
                 media = 0
             eval("partida.set(%s = %f)" % (nombreprueba, media))
@@ -666,9 +658,9 @@ class ResultadosGeotextiles(Ventana):
         Guarda el contenido del TextView en el atributo observaciones.
         """
         if self.objeto != None:
-            buffer = self.wids['txt_observaciones'].get_buffer()
-            self.objeto.observaciones = buffer.get_text(
-                buffer.get_start_iter(), buffer.get_end_iter())
+            buff = self.wids['txt_observaciones'].get_buffer()
+            self.objeto.observaciones = buff.get_text(
+                buff.get_start_iter(), buff.get_end_iter())
             self.wids['b_guardar_obs'].set_sensitive(False)
 
     def add(self, w):
@@ -684,16 +676,16 @@ class ResultadosGeotextiles(Ventana):
         """
         Borra una línea completa de resultados.
         """
-        model, iter = self.wids['tv_pruebas'].get_selection().get_selected()
-        if iter != None and utils.dialogo(titulo = 'BORRAR PRUEBA', 
+        model, itr = self.wids['tv_pruebas'].get_selection().get_selected()
+        if itr != None and utils.dialogo(titulo = 'BORRAR PRUEBA', 
                                           texto = '¿Está seguro?', 
                                           padre = self.wids['ventana']):
-            ids = map(int, model[iter][-1].split(','))
+            ids = map(int, model[itr][-1].split(','))
             for columnaid in range(len(ids)):
-                id = ids[columnaid]
-                if id != 0:
+                ide = ids[columnaid]
+                if ide != 0:
                     clase = self.get_clase(columnaid+1)
-                    prueba = clase.get(id)
+                    prueba = clase.get(ide)
                     prueba.destroy(ventana = __file__)
             self.rellenar_pruebas()
 
@@ -865,8 +857,8 @@ class ResultadosGeotextiles(Ventana):
         if clase != None:
             model = self.wids['tv_pruebas'].get_model()
             ids = map(int, model[path][-1].split(','))
-            id = ids[columnaid]
-            if id == 0:
+            ide = ids[columnaid]
+            if ide == 0:
                 if texto != "":
                     fecha = time.strptime(model[path][0], '%d/%m/%Y') 
                     prueba = clase(fecha = fecha, 
@@ -880,7 +872,7 @@ class ResultadosGeotextiles(Ventana):
                         model[path][columna] = "%.3f" % resultado
                     ## model[path][columna] = "%.2f" % resultado
             else:
-                prueba = clase.get(int(id))
+                prueba = clase.get(int(ide))
                 if texto == "": 
                     try:
                         prueba.destroy(ventana = __file__)
@@ -985,9 +977,9 @@ class ResultadosGeotextiles(Ventana):
             txt += "        Permeabilidad (l/m²/s): %s\n" % (fila[9])
             txt += "        Porometría (mm): %s\n" % (fila[10])
             txt += "        Piramidal (kN): %s\n\n" % (fila[11])
-        buffer = self.wids['txt_observaciones'].get_buffer()
-        txt += "\nObervaciones: %s\n" % buffer.get_text(
-            buffer.get_start_iter(), buffer.get_end_iter())
+        buff = self.wids['txt_observaciones'].get_buffer()
+        txt += "\nObervaciones: %s\n" % buff.get_text(
+            buff.get_start_iter(), buff.get_end_iter())
         reports.abrir_pdf(geninformes.texto_libre(txt, 
             "Resultados de laboratorio: %s" % (
                 self.objeto and self.objeto.codigo or "")))

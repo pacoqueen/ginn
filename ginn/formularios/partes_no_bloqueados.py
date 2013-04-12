@@ -245,7 +245,7 @@ class PartesNoBloqueados(Ventana):
         """
         model = self.wids['tv_partes'].get_model()
         bloqueado = not cell.get_active()
-        id = model[path][-1]
+        ide = model[path][-1]
         parte = pclases.ParteDeProduccion.get(id)
         self.abrir_ventana_parte(parte, path)
         # Cambiado comportamiento para obligar a revisar el parte.

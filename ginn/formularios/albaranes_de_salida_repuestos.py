@@ -35,10 +35,7 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
-import sys, os
 from framework import pclases
-from informes import geninformes
-from formularios.utils import ffloat, _float as float
 import mx.DateTime
 
 class AlbaranesDeSalidaRepuestos(Ventana):
@@ -171,7 +168,7 @@ class AlbaranesDeSalidaRepuestos(Ventana):
                 self.nuevo = False
                 # Activo la notificación:
                 albaran.notificador.activar(self.aviso_actualizacion) 
-        except Exception, msg:
+        except Exception:
             albaran = None  
         self.objeto = albaran
         self.actualizar_ventana()
@@ -207,7 +204,7 @@ class AlbaranesDeSalidaRepuestos(Ventana):
         model.clear()
         for ldv in self.objeto.lineasDeVenta:
             cantidad = ldv.cantidad 
-            iterpadre = model.append(None, (ldv.producto.codigo, 
+            iterpadre = model.append(None, (ldv.producto.codigo,  # @UnusedVariable
                                             ldv.producto.descripcion, 
                                             utils.float2str(cantidad),
                                             ldv.id))

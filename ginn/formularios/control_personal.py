@@ -34,7 +34,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time, mx, mx.DateTime
+import gtk, time, mx.DateTime
 from framework import pclases
 from framework.seeker import VentanaGenerica 
 from formularios.utils import _float as float
@@ -524,7 +524,7 @@ class ControlPersonal(Ventana, VentanaGenerica):
         ids = [e.id for e in empleados]
         empleados = []
         while orden:
-            id = orden.pop(0)
+            ide = orden.pop(0)
             if id in ids:
                 empleados.append(pclases.Empleado.get(id))
                 ids.remove(id)

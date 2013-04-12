@@ -4,14 +4,14 @@
 from geninformes import give_me_the_name_baby, rectangulo, escribe
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import cm
-import sys, os
+import os
 from tempfile import gettempdir
 from formularios import utils
 import Image
 import datetime
 
 # we know some glyphs are missing, suppress warnings
-import reportlab.rl_config
+import reportlab.rl_config  # @UnusedImport
 reportlab.rl_config.warnOnMissingFontGlyphs = 0
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont, TTFError

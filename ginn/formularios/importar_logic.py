@@ -50,20 +50,18 @@
 ## DONE: Con el metaf de menu.py no va el scp (da error por no 
 ## poder abrir fileno o algo así).
 ###################################################################
-from ventana import Ventana
-import utils
-import pygtk
-pygtk.require('2.0')
-import gtk, time
-import sys
-from framework import pclases
 from framework.configuracion import ConfigConexion
-import mx.DateTime
-import os, time, tempfile
 from sshsession import SshSession
-import socket
+from ventana import Ventana
 from ventana_progreso import VentanaActividad
-import gobject
+import gtk
+import os
+import pygtk
+import socket
+import sys
+import time
+import utils
+pygtk.require('2.0')
 
 class ImportarLogic(Ventana):
     # pexpect necesita una salida de erorres "de verdad"
@@ -113,17 +111,17 @@ class ImportarLogic(Ventana):
             dialog.set_current_folder(os.path.join(home, 'bin', 'geomdb'))
         else:
             dialog.set_current_folder(home)
-        filter = gtk.FileFilter()
-        filter.set_name("Archivos exportados de LOGIC")
-        filter.add_pattern("*.mdb")
-        filter.add_pattern("*.MDB")
-        filter.add_pattern("*.Mdb")
+        filtro = gtk.FileFilter()
+        filtro.set_name("Archivos exportados de LOGIC")
+        filtro.add_pattern("*.mdb")
+        filtro.add_pattern("*.MDB")
+        filtro.add_pattern("*.Mdb")
 
-        dialog.add_filter(filter)
-        filter = gtk.FileFilter()
-        filter.set_name("All files")
-        filter.add_pattern("*")
-        dialog.add_filter(filter)
+        dialog.add_filter(filtro)
+        filtro = gtk.FileFilter()
+        filtro.set_name("All files")
+        filtro.add_pattern("*")
+        dialog.add_filter(filtro)
 
 
         response = dialog.run()

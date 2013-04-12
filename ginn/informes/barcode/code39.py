@@ -100,10 +100,10 @@ _extchrs = _stdchrs + string.lowercase + \
     "!'#&\"(),:;<=>?@[\\]^_`{|}~\177"
 
 
-def _encode39(str, cksum):
+def _encode39(cad, cksum):
     newval = "*"
     v = 0
-    for c in str:
+    for c in cad:
         v = v + _patterns[c][1]
         newval = newval + c
     v = v % 43

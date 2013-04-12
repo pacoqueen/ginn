@@ -88,8 +88,8 @@ _extended = {
 }
 
 
-def _encode93(str):
-    s = map(None, str)
+def _encode93(cad):
+    s = map(None, cad)
     s.reverse()
 
     # compute 'C' checksum

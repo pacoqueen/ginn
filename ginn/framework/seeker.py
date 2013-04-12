@@ -99,7 +99,7 @@ class Resultado:
         """
         return self.resultado
 
-    id = property(get_id)
+    ide = property(get_id)
 
 
 class Seeker:

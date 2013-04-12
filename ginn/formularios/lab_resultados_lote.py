@@ -222,7 +222,7 @@ class LabResultadosLote(Ventana):
         """
         model, iter = self.wids['tv_encogimiento'].get_selection().get_selected()
         if iter != None:
-            dato, id = model[iter]
+            dato, ide = model[iter]
             self.encogimiento.remove((dato,id))
             self.rellenar_tablas()
         else:

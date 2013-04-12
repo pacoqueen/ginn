@@ -182,7 +182,7 @@ class ProductosDeVentaRollos(Ventana):
         muestra en pantalla.
         """
         if self.objeto:
-            id = utils.combo_get_value(cb)
+            ide = utils.combo_get_value(cb)
             if id:
                 marcado = pclases.MarcadoCe.get(id)
             else:
@@ -554,10 +554,10 @@ class ProductosDeVentaRollos(Ventana):
         """
         if self.objeto != None:
             try:
-                id = utils.combo_get_value(self.wids['cb_marcado'])
+                ide = utils.combo_get_value(self.wids['cb_marcado'])
             except AttributeError:  # Demasiado tiempo contando stock, aún 
                                     # no se ha rellenado la tabla:
-                id = None
+                ide = None
             if id:
                 cer = pclases.MarcadoCe.get(id)
             else:
@@ -584,7 +584,7 @@ class ProductosDeVentaRollos(Ventana):
         """
         if self.objeto != None:
             valores_malos = []
-            id = utils.combo_get_value(self.wids['cb_marcado'])
+            ide = utils.combo_get_value(self.wids['cb_marcado'])
             if id == 0:
                 cer = self.objeto.camposEspecificosRollo
             else:

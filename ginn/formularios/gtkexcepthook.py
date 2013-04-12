@@ -85,7 +85,7 @@ def analyse (exctyp, value, tb):
             if args: print args
             try: return linecache.getline (fname, lno[0])
             finally: lno[0] += 1
-        all, prev, name, scope = {}, None, '', None
+        todo, prev, name, scope = {}, None, '', None
         for ttype, tstr, stup, etup, line in tokenize.generate_tokens(readline): #@UnusedVariable
             if ttype == tokenize.NAME and tstr not in keyword.kwlist:
                 if name:
@@ -108,7 +108,7 @@ def analyse (exctyp, value, tb):
                     name += '.'
             else:
                 if name:
-                    all[name] = (scope, prev)
+                    todo[name] = (scope, prev)
                 prev, name, scope = None, '', None
                 if ttype == tokenize.NEWLINE:
                     break
@@ -126,8 +126,8 @@ def analyse (exctyp, value, tb):
         if context is None:
             context = []
         trace.write (''.join (['    ' + x.replace ('\t', '  ') for x in filter (lambda a: a.strip(), context)]))
-        if len (all):
-            trace.write ('  variables: %s\n' % myprettyprint(all))
+        if len (todo):
+            trace.write ('  variables: %s\n' % myprettyprint(todo))
 
     trace.write ('%s: %s' % (exctyp.__name__, value))
     return trace

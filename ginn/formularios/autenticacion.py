@@ -62,7 +62,6 @@ def get_IPLocal():
         except gaierror:
             ip = "127.0.0.1"
         if ip == "127.0.0.1" or ip == "127.0.1.1":
-            import os
             try:
                 comando_ifconfig = "/sbin/ifconfig %s 2>/dev/null | grep inet" % iface
                 ip = os.popen(comando_ifconfig).read().split()[1].split(":")[-1].strip()   # HACK: Do the trick! 

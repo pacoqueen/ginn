@@ -26,31 +26,31 @@ def __has_children(parent):
     elif type(parent) == type((1,2)):
         answer = __has_children(list(parent))
     elif type(parent) == type({1:2}):
-        for (key, value) in parent.items():
+        for (clave, value) in parent.items():  # @UnusedVariable
             if type(value) in valid: answer = True
     return answer
  
-def __print_list(list, n=0, shrink=False, opener="[", closer="]"):
+def __print_list(lista, n=0, shrink=False, opener="[", closer="]"):
     s = ""
-    assert type(list) == type([])
+    assert type(lista) == type([])
     sp = "".join([" "]*n)
     valid = [type([1,2]), type((1,2)), type({1:2})]
  
     # find the max index (for spacing of the format string)
-    size = len(list)
+    size = len(lista)
     fstring = "%s  %-"+str(size)+"s: "
  
     # start printing stuff
     s += opener
     #sys.stdout.write(opener)
     #sys.stdout.flush()
-    list.sort()
-    for index in range(len(list)):
+    lista.sort()
+    for index in range(len(lista)):
         s += newline()
         s += fstring % (sp, index)
         #sys.stdout.write(fstring%(sp, index))
         #sys.stdout.flush()
-        this = list[index]
+        this = lista[index]
         if not __has_children(this) and type(this) in valid:
             if type(this) == type([1,2]) and len(this) > 10 and shrink == True:
                 s += "['%s', ... ,'%s']" % (this[0], this[-1])
@@ -67,7 +67,7 @@ def __print_list(list, n=0, shrink=False, opener="[", closer="]"):
             s += str(this)
             #sys.stdout.write(str(this))
             #sys.stdout.flush()
-    if len(list) > 0:
+    if len(lista) > 0:
         s += newline()
         s += "%s%s" % (sp, closer)
         #sys.stdout.write("%s%s"%(sp, closer))
@@ -77,15 +77,15 @@ def __print_list(list, n=0, shrink=False, opener="[", closer="]"):
     #sys.stdout.flush()
     return s
  
-def __print_dict(dict, n=0, shrink=False):
+def __print_dict(dicc, n=0, shrink=False):
     s = ""
-    assert type(dict) == type({1:2})
+    assert type(dicc) == type({1:2})
     sp = "".join([" "]*n)
     valid = [type([1,2]), type((1,2)), type({1:2})]
  
     # find the max key-size (for spacing of the format string)
     size = 0
-    for key in dict.keys():
+    for key in dicc.keys():
         if len(str(key)) > size: size = len(str(key))
     fstring = "%s  %-"+str(size)+"s: "
  
@@ -93,14 +93,14 @@ def __print_dict(dict, n=0, shrink=False):
     s += "{"
     #sys.stdout.write("{")
     #sys.stdout.flush()
-    keys = dict.keys()
+    keys = dicc.keys()
     keys.sort()
     for key in keys:
         s += newline()
         s += fstring % (sp, key)
         #sys.stdout.write(fstring%(sp, key))
         #sys.stdout.flush()
-        this = dict[key]
+        this = dicc[key]
         if not __has_children(this) and type(this) in valid:
             if type(this) == type([1,2]) and len(this) > 10 and shrink == True:
                 s += "[%s, ... ,%s]" % (__type_quote(this[0]),
@@ -119,7 +119,7 @@ def __print_dict(dict, n=0, shrink=False):
             s += __type_quote(this)
             #sys.stdout.write(__type_quote(this))
             #sys.stdout.flush()
-    if len(dict.keys()) > 0:
+    if len(dicc.keys()) > 0:
         s += newline()
         s += "%s}" % sp
         #sys.stdout.write("%s}"%sp)

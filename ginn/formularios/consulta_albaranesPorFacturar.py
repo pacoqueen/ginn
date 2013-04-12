@@ -46,7 +46,6 @@ import pygtk
 pygtk.require('2.0')
 import gtk, time 
 from framework import pclases
-import sys
 
 
 class ConsultaAlbaranesPorFacturar(Ventana):
@@ -130,40 +129,40 @@ class ConsultaAlbaranesPorFacturar(Ventana):
         if tipo == "AE":
             albaran = pclases.AlbaranEntrada.get(ide)
             from formularios import albaranes_de_entrada
-            v = albaranes_de_entrada.AlbaranesDeEntrada(albaran, 
+            v = albaranes_de_entrada.AlbaranesDeEntrada(albaran,  # @UnusedVariable
                                                         usuario = self.usuario)
         elif tipo == "C":
             comision = pclases.Comision.get(ide)
             albaran = comision.albaranSalida
             if albaran != None:
                 from formularios import albaranes_de_salida
-                v = albaranes_de_salida.AlbaranesDeSalida(albaran, 
+                v = albaranes_de_salida.AlbaranesDeSalida(albaran,  # @UnusedVariable
                                                           usuario=self.usuario)
         elif tipo == "T":
             transporte = pclases.TransporteACuenta.get(ide)
             albaran = transporte.albaranSalida
             if albaran != None:
-                from formularios import albaranes_de_salida
-                v = albaranes_de_salida.AlbaranesDeSalida(albaran, 
+                from formularios import albaranes_de_salida  # @Reimport
+                v = albaranes_de_salida.AlbaranesDeSalida(albaran,  # @UnusedVariable
                                                           usuario=self.usuario)
         elif tipo == "LDC":
             ldc = pclases.LineaDeCompra.get(ide)
             albaran = ldc.albaranEntrada
             if albaran != None:
-                from formularios import albaranes_de_entrada
-                v = albaranes_de_entrada.AlbaranesDeEntrada(albaran, 
+                from formularios import albaranes_de_entrada  # @Reimport
+                v = albaranes_de_entrada.AlbaranesDeEntrada(albaran,  # @UnusedVariable
                                                         usuario = self.usuario)
         elif tipo == "AS":
             albaran = pclases.AlbaranSalida.get(ide)
-            from formularios import albaranes_de_salida
-            v = albaranes_de_salida.AlbaranesDeSalida(albaran, 
+            from formularios import albaranes_de_salida  # @Reimport
+            v = albaranes_de_salida.AlbaranesDeSalida(albaran,  # @UnusedVariable
                                                       usuario = self.usuario)
         elif tipo == "LDV": 
             ldv = pclases.LineaDeVenta.get(ide)
             albaran = ldv.albaranSalida
             if albaran != None:
-                from formularios import albaranes_de_salida
-                v = albaranes_de_salida.AlbaranesDeSalida(albaran, 
+                from formularios import albaranes_de_salida  # @Reimport
+                v = albaranes_de_salida.AlbaranesDeSalida(albaran,  # @UnusedVariable
                                                           usuario=self.usuario)
         self.wids['ventana'].window.set_cursor(None)
 

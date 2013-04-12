@@ -335,7 +335,7 @@ class TrazabilidadArticulos(Ventana):
                                pclases.RolloDefectuoso, pclases.BalaCable, 
                                pclases.RolloC, pclases.Pale, pclases.Caja, 
                                )):
-                               # pclases.Bolsa)):
+                                # pclases.Bolsa)):
             try:
                 objeto.articulo.sync()
             except AttributeError:
@@ -347,7 +347,7 @@ class TrazabilidadArticulos(Ventana):
             self.rellenar_produccion(objeto)
             self.wids['e_num'].set_text(objeto.codigo)
         elif isinstance(objeto, pclases.PartidaCarga):
-            from ventana_progreso import VentanaActividad, VentanaProgreso
+            from ventana_progreso import VentanaProgreso
             vpro = VentanaProgreso(padre = self.wids['ventana'])
             vpro.mostrar()
             i = 0.0
@@ -366,13 +366,12 @@ class TrazabilidadArticulos(Ventana):
             vpro.ocultar()
         elif isinstance(objeto,(pclases.Lote, pclases.LoteCem,
                                 pclases.Partida, pclases.PartidaCem)):
-            from ventana_progreso import VentanaActividad, VentanaProgreso
             vpro = VentanaProgreso(padre = self.wids['ventana'])
             vpro.mostrar()
             i = 0.0
             tot = 5
             vpro.set_valor(i/tot, "Buscando..."); i += 1
-            import time; time.sleep(0.5)
+            time.sleep(0.5)
             vpro.set_valor(i/tot, "Producto..."); i += 1
             self.rellenar_producto_lote_o_partida(objeto)
             vpro.set_valor(i/tot, "Lote/Partida..."); i += 1
@@ -1426,11 +1425,11 @@ def insertar_imagen(txt, imagen):
     Inserta una imagen en el TextView txt en la 
     posición actual del texto.
     """
-    buffer = txt.get_buffer()
-    mark = buffer.get_insert()
-    iter = buffer.get_iter_at_mark(mark)
-    buffer.insert_pixbuf(iter, imagen)
-    buffer.insert_at_cursor("\n")
+    buff = txt.get_buffer()
+    mark = buff.get_insert()
+    itr = buff.get_iter_at_mark(mark)
+    buff.insert_pixbuf(itr, imagen)
+    buff.insert_at_cursor("\n")
 
 def buscar_partes_fibra_fecha_y_hora(fechahora):
     """
@@ -1460,15 +1459,15 @@ def operarios_de_partes(partes):
     
 def escribir(txt, texto, estilos = ()):
     """
-    Escribe "texto" en el buffer del TextView "txt".
+    Escribe "texto" en el buff del TextView "txt".
     """
-    buffer = txt.get_buffer()
+    buff = txt.get_buffer()
     if estilos == ():
-        buffer.insert_at_cursor(texto)
+        buff.insert_at_cursor(texto)
     else:
         import pango
-        iter_insert = buffer.get_iter_at_mark(buffer.get_insert())
-        tag = buffer.create_tag()
+        iter_insert = buff.get_iter_at_mark(buff.get_insert())
+        tag = buff.create_tag()
         if "negrita" in estilos:
             tag.set_property("weight", pango.WEIGHT_BOLD)
             #tag.set_property("stretch", pango.STRETCH_ULTRA_EXPANDED)
@@ -1484,7 +1483,7 @@ def escribir(txt, texto, estilos = ()):
             tag.set_property("background", "pale green")
         if "grande" in estilos:
             tag.set_property("size_points", 14)
-        buffer.insert_with_tags(iter_insert, texto, tag)
+        buff.insert_with_tags(iter_insert, texto, tag)
 
 
 

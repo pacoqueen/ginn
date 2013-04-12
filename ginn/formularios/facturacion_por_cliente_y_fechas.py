@@ -46,7 +46,7 @@ pygtk.require('2.0')
 import gtk, time
 import sys, os
 from framework import pclases
-import mx, mx.DateTime
+import mx.DateTime
 from informes import geninformes
 from informes.treeview2csv import treeview2csv
 from formularios.reports import abrir_pdf, abrir_csv
@@ -534,7 +534,7 @@ class FacturacionPorClienteYFechas(Ventana):
             for fila_cliente in fila_mes_anno.iterchildren():
                 #print fila_cliente[2], fila_cliente[-1]
                 if fila_cliente[0].strip() == "":
-                    id = fila_cliente[-1]
+                    ide = fila_cliente[-1]
                     if id not in nodos_clientes:
                         itercliente = model.append(None, fila_cliente)
                         nodos_clientes[id] = itercliente

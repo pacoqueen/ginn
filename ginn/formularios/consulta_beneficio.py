@@ -37,11 +37,9 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
-import sys, os
+import gtk
 from framework import pclases
 import mx.DateTime
-from informes import geninformes
 from informes.treeview2pdf import treeview2pdf
 from informes.treeview2csv import treeview2csv
 from formularios.reports import abrir_csv, abrir_pdf

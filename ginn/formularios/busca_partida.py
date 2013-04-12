@@ -36,7 +36,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
+import gtk
 from framework import pclases
 
 class BuscaPartida(Ventana):
@@ -111,14 +111,14 @@ class BuscaPartida(Ventana):
         pass
 
     def rellenar_tabla(self, lista = []):
-    	"""
+        """
         Rellena el model con los resultados de la búsqueda almacenados
         en una lista de partidas.
         """        
         model = self.wids['tv_resultado'].get_model()
-    	model.clear()
-    	for elem in lista:
-    		model.append((elem.numpartida,
+        model.clear()
+        for elem in lista:
+            model.append((elem.numpartida,
                     elem.codigo,
                     "%.2f" % elem.longitudinal,
                     "%.2f" % elem.transversal,

@@ -143,7 +143,7 @@ class HorasTrabajadas(Ventana):
                                                    padre = self.wids['ventana'], 
                                                    cabeceras = ("ID", "Fecha", "Hora inicio", "Hora fin", "Duración", "Horas trabajadas"))
                 if id_parte != -1:
-                    tipo, id = id_parte.split(":")
+                    tipo, ide = id_parte.split(":")
                     self.wids['ventana'].window.set_cursor(None)
                     if tipo == "PDP": 
                         parte = pclases.ParteDeProduccion.get(id)

@@ -44,7 +44,7 @@ pygtk.require('2.0')
 import gtk, time
 from framework import pclases
 from informes import geninformes
-import time, mx, mx.DateTime
+import time, mx.DateTime
 from utils import _float as float
 
 
@@ -88,7 +88,7 @@ class PartesDeTrabajo(Ventana):
             # Es lento, pero no encuentro otra cosa:
             idct = None
             for i in xrange(len(model_combo)):
-                texto, id = model_combo[i]
+                texto, ide = model_combo[i]
                 if texto == text:
                     idct = id
                     break
@@ -258,7 +258,7 @@ class PartesDeTrabajo(Ventana):
             return
         model, paths = self.wids['tv_horas'].get_selection().get_selected_rows()
         for path in paths:
-            id = model[path][-1] # El id de empleado es la columna 0
+            ide = model[path][-1] # El id de empleado es la columna 0
             pdt = pclases.ParteDeTrabajo.get(id)
             pdt.destroy(ventana = __file__)
         self.rellenar_tabla()
@@ -291,7 +291,7 @@ class PartesDeTrabajo(Ventana):
         
     def cambiar_horafin(self, tv, path, newtext):
         model = self.wids['tv_horas'].get_model()
-        id = model[path][-1]
+        ide = model[path][-1]
         pt = pclases.ParteDeTrabajo.get(id)
         try:
             dtdelta = mx.DateTime.DateTimeDelta(0, float(newtext.split(':')[0]), float(newtext.split(':')[1]), 0)
@@ -317,7 +317,7 @@ class PartesDeTrabajo(Ventana):
 
     def cambiar_horainicio(self, tv, path, newtext):
         model = self.wids['tv_horas'].get_model()
-        id = model[path][-1]
+        ide = model[path][-1]
         pt = pclases.ParteDeTrabajo.get(id)
         try:
             dtdelta = mx.DateTime.DateTimeDelta(0, float(newtext.split(':')[0]), float(newtext.split(':')[1]), 0)
@@ -344,7 +344,7 @@ class PartesDeTrabajo(Ventana):
 
     def cambiar_horas(self, tv, path, newtext):
         model = self.wids['tv_horas'].get_model()
-        id = model[path][-1]
+        ide = model[path][-1]
         pt = pclases.ParteDeTrabajo.get(id)
         try:
             dtdelta = mx.DateTime.DateTimeDelta(0, float(newtext.split(':')[0]), float(newtext.split(':')[1]), 0)
@@ -366,7 +366,7 @@ class PartesDeTrabajo(Ventana):
         # ... ¿Desplegable? ¿Seguro? ¿Con qué opciones? 
         # Iba a ser un desplegable según las specs, pero al final es texto libre.
         model = self.wids['tv_horas'].get_model()
-        id = model[path][-1]
+        ide = model[path][-1]
         pdt = pclases.ParteDeTrabajo.get(id)
         pdt.trabajo = texto
         model[path][5] = texto

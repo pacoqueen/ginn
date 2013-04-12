@@ -39,7 +39,7 @@
 
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, gobject 
+import gtk, gobject 
 import time
 
 class VentanaProgreso:

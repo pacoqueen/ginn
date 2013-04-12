@@ -39,11 +39,9 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
+import gtk
 from framework import pclases
-import mx, mx.DateTime
-from informes import geninformes
-from utils import _float as float
+import mx.DateTime
     
 
 class VencimientosPendientesPorCliente(Ventana):
@@ -66,7 +64,6 @@ class VencimientosPendientesPorCliente(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        import sys, os
         from informes.treeview2csv import treeview2csv
         from formularios.reports import abrir_csv
         tv = self.wids['tv_cobros']
@@ -90,8 +87,8 @@ class VencimientosPendientesPorCliente(Ventana):
         self.colorear(self.wids['tv_cobros'])
         clientes = [(0, "Todos los clientes")] + [(c.id, c.nombre) for c in pclases.Cliente.select(orderBy="nombre")]
         utils.rellenar_lista(self.wids['cbe_cliente'], clientes)
-        def iter_cliente_seleccionado(completion, model, iter):
-            idcliente = model[iter][0]
+        def iter_cliente_seleccionado(completion, model, itr):
+            idcliente = model[itr][0]
             utils.combo_set_from_db(self.wids['cbe_cliente'], idcliente)
         self.wids['cbe_cliente'].child.get_completion().connect('match-selected', iter_cliente_seleccionado)
 
@@ -266,9 +263,9 @@ class VencimientosPendientesPorCliente(Ventana):
         pags = factura.cobros
         mas_larga = [l for l in (vtos, ests, pags) if len(l)==max(len(vtos), len(ests), len(pags))][0]
         if len(mas_larga) == 0: return []
-        for i in xrange(len(mas_larga)):
+        for i in xrange(len(mas_larga)):  # @UnusedVariable
             res.append([None, None, None])
-        def cmp(v1, v2):
+        def comp(v1, v2):
             if v1.fecha < v2.fecha: return -1
             if v1.fecha > v2.fecha: return 1
             return 0
@@ -283,14 +280,14 @@ class VencimientosPendientesPorCliente(Ventana):
                 return 2
         resto = [vtos, ests, pags]
         resto.remove(mas_larga)
-        mas_larga.sort(cmp)
+        mas_larga.sort(comp)
         pos = 0
         for item in mas_larga:
             res [pos][lugar(item)] = item
             pos += 1
         for lista in resto:
             mlc = mas_larga[:]
-            lista.sort(cmp)
+            lista.sort(comp)
             while lista:
                 item2 = lista.pop()
                 mindist = distancia(item2, mlc[0])
@@ -314,7 +311,7 @@ class VencimientosPendientesPorCliente(Ventana):
             idpagare = model[path][-1]
             pagare = pclases.PagareCobro.get(idpagare)
             import pagares_cobros
-            ventanapagares = pagares_cobros.PagaresCobros(pagare)
+            ventanapagares = pagares_cobros.PagaresCobros(pagare)  # @UnusedVariable
         else:
             idvto = model[path][-1]
             if idvto > 0:
@@ -322,10 +319,10 @@ class VencimientosPendientesPorCliente(Ventana):
                 fra = vto.get_factura_o_prefactura()
                 if isinstance(fra, pclases.FacturaVenta):
                     import facturas_venta           
-                    ventanafacturas = facturas_venta.FacturasVenta(fra)
+                    ventanafacturas = facturas_venta.FacturasVenta(fra)  # @UnusedVariable
                 elif isinstance(fra, pclases.Prefactura):
                     import prefacturas
-                    ventanafacturas = prefacturas.Prefacturas(fra)
+                    ventanafacturas = prefacturas.Prefacturas(fra)  # @UnusedVariable
 
 def buscar_facturas_de_abono_sin_pagar(cliente, 
                                        fechaini = None, 

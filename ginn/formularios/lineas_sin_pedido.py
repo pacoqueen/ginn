@@ -47,7 +47,7 @@ import pygtk
 pygtk.require('2.0')
 import gtk, time
 from framework import pclases
-import mx, mx.DateTime
+import mx.DateTime
 
 class LineasDeVentaSinPedido(Ventana):
     def __init__(self, objeto = None, usuario = None):

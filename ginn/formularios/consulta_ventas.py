@@ -242,7 +242,7 @@ class ConsultaVentas(Ventana):
         Abre la factura o el cliente según corresponda.
         """
         model = tv.get_model()
-        id = model[path][-1]
+        ide = model[path][-1]
         if id > 0 and model[path].parent == None:   # Es cliente.
             import clientes
             cliente = pclases.Cliente.get(id)
@@ -257,7 +257,7 @@ class ConsultaVentas(Ventana):
         Abre la factura o la ficha del comercial, según corresponda.
         """
         model = tv.get_model()
-        id = model[path][-1]
+        ide = model[path][-1]
         if id > 0 and id != '0' and model[path].parent == None: # Es comercial.
             comercial = pclases.Comercial.get(id)
             empleado = comercial.empleado
@@ -278,7 +278,7 @@ class ConsultaVentas(Ventana):
         Abre la factura o la ficha del proveedor, según corresponda.
         """
         model = tv.get_model()
-        id = model[path][-1]
+        ide = model[path][-1]
         if id > 0 and id != '0' and model[path].parent == None: # Es proveedor.
             proveedor = pclases.Proveedor.get(id)
             from formularios import proveedores
@@ -299,7 +299,7 @@ class ConsultaVentas(Ventana):
         un producto, abre el producto.
         """
         model = tv.get_model()
-        id = model[path][-1]
+        ide = model[path][-1]
         if id > 0 and model[path].parent == None:   # Es tarifa.
             import tarifas_de_precios
             tarifa = pclases.Tarifa.get(id)

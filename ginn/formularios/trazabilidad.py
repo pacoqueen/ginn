@@ -70,18 +70,18 @@ class Trazabilidad(Ventana):
         self.wids['tv_datos'].connect("row-expanded", self.expandir)
         self.wids['tv_datos'].connect("row-collapsed", self.cerrar)
         import pyconsole
-        vars_locales = locals()
+        vars_locales = locales()
         for k in locals_adicionales:
             vars_locales[k] = locals_adicionales[k] 
         consola = pyconsole.attach_console(self.wids['contenedor_consola'], 
                                            banner = "Consola python de depuración GINN", 
                                            script_inicio = """import sys, os, pygtk, gtk, gtk.glade, utils
-from framework import pclases, mx, mx.DateTime
+from framework import pclases, mx.DateTime
 from framework.seeker import VentanaGenerica as Ver
 dir()
 #Ver(self.objeto)
 """, 
-                                            locals = vars_locales)
+                                            locales = vars_locales)
         if objeto != None:
             self.rellenar_datos(objeto)
         cmd_gtk = cmdgtk.CmdGTK()
@@ -168,7 +168,7 @@ dir()
             articulo = self.buscar_bala(a_buscar[1:])
         elif a_buscar.upper().startswith('AS'):
             try:
-                id = int(a_buscar[2:])
+                ide = int(a_buscar[2:])
             except ValueError:
                 utils.dialogo_info(titulo = "ERROR", 
                                    texto = "El ID debe ser númerico.\nIntrodujo %s." % (a_buscar[2:]), 
@@ -183,7 +183,7 @@ dir()
                 return
         elif a_buscar.upper().startswith('PDP'):
             try:
-                id = int(a_buscar[3:])
+                ide = int(a_buscar[3:])
             except ValueError:
                 utils.dialogo_info(titulo = "ERROR", 
                                    texto = "El ID debe ser númerico.\nIntrodujo %s." % (a_buscar[3:]), 
@@ -300,7 +300,7 @@ dir()
            child[2] == "" and \
            child[3] == "":
             model.remove(child.iter)
-            id = int(model[path][0])
+            ide = int(model[path][0])
             clase = model[path][-1]
 #            print clase, id
             try:
@@ -335,7 +335,7 @@ dir()
         model = self.wids['tv_datos'].get_model()
         if model[path][0] == "":
             if model[path].parent != None:
-                id = model[path].parent[0]
+                ide = model[path].parent[0]
                 clase = model[path].parent[-1]
                 campo = model[path][1]
                 objeto = eval("pclases.%s.get(%d)" % (clase, int(id)))

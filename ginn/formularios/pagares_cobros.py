@@ -41,11 +41,10 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
+import gtk
 from framework import pclases
-from informes import geninformes
 from utils import _float as float
-import mx, mx.DateTime
+import mx.DateTime
 
 class PagaresCobros(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -136,7 +135,7 @@ class PagaresCobros(Ventana):
                     # Hay que determinar el vencimiento a duplicar.
                     pass
             self.actualizar_ventana()
-            nueva_ventana = PagaresCobros(copia)
+            nueva_ventana = PagaresCobros(copia)  # @UnusedVariable
         
     def recalcular(self, boton):
         """
@@ -163,9 +162,9 @@ class PagaresCobros(Ventana):
                             # cambio respecto a la ventana
         condicion = self.wids['e_fechar'].get_text() \
             == pagare.fechaRecepcion.strftime('%d/%m/%Y')
-        buffer = self.wids['txt_observaciones'].get_buffer()
+        buff = self.wids['txt_observaciones'].get_buffer()
         condicion = condicion and (
-            buffer.get_text(buffer.get_start_iter(), buffer.get_end_iter()) 
+            buff.get_text(buff.get_start_iter(), buff.get_end_iter()) 
                 == pagare.observaciones)
         condicion = condicion and (
             (self.wids['e_fechac'].get_text() 
@@ -262,9 +261,9 @@ class PagaresCobros(Ventana):
         en los que la cantidad cubierta por el pagaré (el cobro)
         difiera de la cantidad de la factura original.
         """
-        def cell_func(col, cell, model, iter, numcol):
-            valor = model[iter][numcol]
-            if model[iter][1] != model[iter][3]:
+        def cell_func(col, cell, model, itr, numcol):
+            valor = model[itr][numcol]
+            if model[itr][1] != model[itr][3]:
                 cell.set_property("foreground", "red")
             else:
                 cell.set_property("foreground", "black")
@@ -284,11 +283,11 @@ class PagaresCobros(Ventana):
         fra = cobro.facturaVenta
         if fra != None:
             import facturas_venta
-            ventanafacturas = facturas_venta.FacturasVenta(fra)
+            ventanafacturas = facturas_venta.FacturasVenta(fra)  # @UnusedVariable
         prefra = cobro.prefactura
         if prefra != None:
             import prefacturas
-            ventanafacturas = prefacturas.Prefacturas(prefra)
+            ventanafacturas = prefacturas.Prefacturas(prefra)  # @UnusedVariable
 
     def cambiar_importe_cobro(self, cell, path, texto):
         """
@@ -391,8 +390,8 @@ class PagaresCobros(Ventana):
         try:
             res = widget.get_text()
         except AttributeError:
-            buffer = widget.get_buffer()
-            res=buffer.get_text(buffer.get_bounds()[0], buffer.get_bounds()[1])
+            buff = widget.get_buffer()
+            res=buff.get_text(buff.get_bounds()[0], buff.get_bounds()[1])
         return res
 
     def rellenar_widgets(self):
@@ -587,9 +586,9 @@ class PagaresCobros(Ventana):
                     self.wids['e_fechar'].get_text(), 
                 padre = self.wids['ventana'])
             fechac = self.objeto.fechaCobro
-        buffer = self.wids['txt_observaciones'].get_buffer()
-        observaciones = buffer.get_text(buffer.get_start_iter(), 
-                                        buffer.get_end_iter())
+        buff = self.wids['txt_observaciones'].get_buffer()
+        observaciones = buff.get_text(buff.get_start_iter(), 
+                                        buff.get_end_iter())
         try:
             cantidad=float(self.wids['e_cantidad'].get_text().replace("€", ""))
         except:
@@ -752,8 +751,8 @@ class PagaresCobros(Ventana):
                 idsfra = []
             fras = []
             if len(idsfra) > 0 and idsfra[0] != -1:
-                for tipo, id in [f.split(":") for f in idsfra]:
-                    idfra = int(id)
+                for tipo, ide in [f.split(":") for f in idsfra]:
+                    idfra = int(ide)
                     if tipo == "FV":
                         fras.append(pclases.FacturaVenta.get(idfra))
                     elif tipo == "PF":
@@ -1097,9 +1096,9 @@ def preparar_vencimientos(factura):
                                                               len(ests), 
                                                               len(pags))][0]
     if len(mas_larga) == 0: return []
-    for i in xrange(len(mas_larga)):
+    for i in xrange(len(mas_larga)):  # @UnusedVariable
         res.append([None, None, None])
-    def cmp(v1, v2):
+    def comp(v1, v2):
         if v1.fecha < v2.fecha: return -1
         if v1.fecha > v2.fecha: return 1
         return 0
@@ -1114,14 +1113,14 @@ def preparar_vencimientos(factura):
             return 2
     resto = [vtos, ests, pags]
     resto.remove(mas_larga)
-    mas_larga.sort(cmp)
+    mas_larga.sort(comp)
     pos = 0
     for item in mas_larga:
         res [pos][lugar(item)] = item
         pos += 1
     for lista in resto:
         mlc = mas_larga[:]
-        lista.sort(cmp)
+        lista.sort(comp)
         while lista:
             item2 = lista.pop()
             mindist = distancia(item2, mlc[0])

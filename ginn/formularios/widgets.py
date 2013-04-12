@@ -26,7 +26,7 @@
 import os
 import pygtk
 pygtk.require('2.0')
-import gtk
+import gtk  # @UnusedImport
 import gtk.glade
 
 LANZAR_KEY_EXCEPTION = True # Si False se devuelve None cuando se busca un 
@@ -69,7 +69,7 @@ class Widgets:
             if res == None:  # Si no es del archivo glade...
                 try:         # tal vez se haya creado "programáticamente".
                     res = self.dynwidgets[key]
-                except KeyError, msg:
+                except KeyError:
                     res = None
                     if LANZAR_KEY_EXCEPTION:
                         raise KeyError, "Widget '%s' no existe." % key

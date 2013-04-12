@@ -143,9 +143,9 @@ class FacturasDeEntrada(Ventana):
                         <ui>
                             <popup name='Popup'>
                         """
-            for id in reg.get_lista():
+            for ide in reg.get_lista():
                 try:
-                    p = pclases.FacturaCompra.get(id)
+                    p = pclases.FacturaCompra.get(ide)
                 except pclases.SQLObjectNotFound:
                     pass    # La factura ya no existe
                 else:
@@ -157,7 +157,7 @@ class FacturasDeEntrada(Ventana):
                         """
             ag = gtk.ActionGroup("Recientes")
             actions = []
-            for info, id in lista:
+            for info, ide in lista:
                 actions.append((info, None, info, None, "Abrir " + info, 
                                 self.abrir_reciente))
             ag.add_actions(actions, lista)
@@ -174,9 +174,9 @@ class FacturasDeEntrada(Ventana):
         """
         accel_path = action.get_accel_path()
         txt_entrada = "/".join(accel_path.split("/")[2:])
-        for txt, id in lista:
+        for txt, ide in lista:
             if txt == txt_entrada:
-                factura = pclases.FacturaCompra.get(id)
+                factura = pclases.FacturaCompra.get(ide)
                 # XXX: Añado a objetos recientes.
                 objsr = pclases.ListaObjetosRecientes.buscar(
                                                         "facturas_compra.py", 
@@ -315,9 +315,9 @@ class FacturasDeEntrada(Ventana):
             if len(albaranes) > 1:
                 idsalbaranes = self.refinar_busqueda_albaran(albaranes)
                 if idsalbaranes != None and len(idsalbaranes) > 0:
-                    #albaranes = [p for p in albaranes if p.id == idalbaran]
-                    albaranes = [pclases.AlbaranEntrada.get(id) 
-                                 for id in idsalbaranes]
+                    #albaranes = [p for p in albaranes if p.ide == idalbaran]
+                    albaranes = [pclases.AlbaranEntrada.get(ide) 
+                                 for ide in idsalbaranes]
                 else:
                     return None
             elif len(albaranes) < 1:
@@ -480,10 +480,10 @@ class FacturasDeEntrada(Ventana):
                     self.cambiar_observaciones),
                 ('IDs', 'gobject.TYPE_STRING', False, False, False, None)
                )
-               # HACK: La última columna -oculta- va a tener una cadena con 
-               #       los IDs involucrados en la fila separados por coma y 
-               #       como cadena para aprovechar el preparar_listview sin 
-               #       tener que cambiar nada.
+                # HACK: La última columna -oculta- va a tener una cadena con 
+                #       los IDs involucrados en la fila separados por coma y 
+                #       como cadena para aprovechar el preparar_listview sin 
+                #       tener que cambiar nada.
         utils.preparar_listview(self.wids['tv_vencimientos'], cols)
         self.wids['e_subtotal'].set_alignment(1.0)
         self.wids['e_totdescuento'].set_alignment(1.0)
@@ -959,15 +959,15 @@ class FacturasDeEntrada(Ventana):
         """
         model = tv.get_model()
         tipo = model[path][0]
-        id = model[path][-1]
+        ide = model[path][-1]
         if "PED" in tipo.upper():
             import pedidos_de_compra
-            pedido = pclases.PedidoCompra.get(id)
-            ventana = pedidos_de_compra.PedidosDeCompra(pedido)
+            pedido = pclases.PedidoCompra.get(ide)
+            ventana = pedidos_de_compra.PedidosDeCompra(pedido)  # @UnusedVariable
         if "ALB" in tipo.upper():
             import albaranes_de_entrada
-            albaran = pclases.AlbaranEntrada.get(id)
-            ventana = albaranes_de_entrada.AlbaranesDeEntrada(albaran)
+            albaran = pclases.AlbaranEntrada.get(ide)
+            ventana = albaranes_de_entrada.AlbaranesDeEntrada(albaran)  # @UnusedVariable
 
     def rellenar_pedidos_y_albaranes(self):
         """
@@ -1164,7 +1164,7 @@ class FacturasDeEntrada(Ventana):
         Elimina de la factura de compra, el albarán al que
         pertenece la linea de compra seleccionada
         """
-        factura = self.objeto
+        factura = self.objeto  # @UnusedVariable
         model, itr = self.wids['tv_ldvs'].get_selection().get_selected()
         if itr != None:
             idldc = model[itr][-1]
@@ -1482,7 +1482,7 @@ class FacturasDeEntrada(Ventana):
         factura.descuento = descuento
         try:
             factura.fecha = utils.parse_fecha(fecha)
-        except Exception, e:
+        except Exception:
             factura.fecha = time.localtime()
         try:
             factura.fechaEntrada = utils.parse_fecha(
@@ -1906,7 +1906,7 @@ class FacturasDeEntrada(Ventana):
         total_vtos = 0
         total_pagado = 0
         total_vencido = 0
-        pendiente = 0
+        pendiente = 0  # @UnusedVariable
         for vto in vtos:
             if vto[0] != None:
                 cantidad = vto[0].importe
@@ -1922,13 +1922,13 @@ class FacturasDeEntrada(Ventana):
                 formapago = ""
             total_vtos += cantidad
             if vto[1] != None:
-                fechaest = utils.str_fecha(vto[1].fecha)
+                fechaest = utils.str_fecha(vto[1].fecha)  # @UnusedVariable
                 # OJO: Actualizo la cantidad de la estimación a la cantidad 
                 # del vencimiento real:
                 vto[1].importe = cantidad
                 ids += '%d,' % vto[1].id
             else:
-                fechaest = ''
+                fechaest = ''  # @UnusedVariable
                 ids += '%d,' % -1
             if vto[2] != None:
                 fechapag = utils.str_fecha(vto[2].fecha)
@@ -2009,9 +2009,9 @@ class FacturasDeEntrada(Ventana):
                      len(ests), 
                      len(pags))][0]
         if len(mas_larga) == 0: return []
-        for i in xrange(len(mas_larga)):
+        for i in xrange(len(mas_larga)):  # @UnusedVariable
             res.append([None, None, None])
-        def cmp(v1, v2):
+        def comp(v1, v2):
             if v1.fecha < v2.fecha: return -1
             if v1.fecha > v2.fecha: return 1
             return 0
@@ -2031,14 +2031,14 @@ class FacturasDeEntrada(Ventana):
             #     return 2
         resto = [vtos, ests, pags]
         resto.remove(mas_larga)
-        mas_larga.sort(cmp)
+        mas_larga.sort(comp)
         pos = 0
         for item in mas_larga:
             res [pos][lugar(item)] = item
             pos += 1
         for lista in resto:
             mlc = mas_larga[:]
-            lista.sort(cmp)
+            lista.sort(comp)
             while lista:
                 item2 = lista.pop()
                 mindist = distancia(item2, mlc[0])
@@ -2217,12 +2217,12 @@ class FacturasDeEntrada(Ventana):
             if resultados != [] and resultados[0] != -1:
                 for stuff in resultados:
                     if "C" in stuff:
-                        id = int(stuff.replace("C", ""))
-                        comision = pclases.Comision.get(id)
+                        ide = int(stuff.replace("C", ""))
+                        comision = pclases.Comision.get(ide)
                         comision.facturar(self.objeto)
                     elif "T" in stuff:
-                        id = int(stuff.replace("T", ""))
-                        transporte = pclases.TransporteACuenta.get(id)
+                        ide = int(stuff.replace("T", ""))
+                        transporte = pclases.TransporteACuenta.get(ide)
                         transporte.facturar(self.objeto)
                     else:
                         self.logger.error("facturas_compra::"
@@ -2549,8 +2549,8 @@ def abrir_adjunto_from_tv(tv, path, col):   # XXX: Código para adjuntos.
     Abre el adjunto con el programa asociado al mime-type del mismo.
     """
     model = tv.get_model()
-    id = model[path][-1]
-    documento = pclases.Documento.get(id)
+    ide = model[path][-1]
+    documento = pclases.Documento.get(ide)
     from multi_open import open as mopen
     mopen(documento.get_ruta_completa())
 

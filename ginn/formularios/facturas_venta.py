@@ -84,7 +84,7 @@ from albaranes_de_salida import ajustar_existencias
 from framework import pclases
 from informes import geninformes
 from prefacturas import bloquear_albaranes, descontar_existencias, \
-    desglosar_ldvs_por_pedido, desglosar_ldvs_por_albaran, buscar_cuentaOrigen
+    desglosar_ldvs_por_pedido, buscar_cuentaOrigen
 from utils import ffloat, _float as float
 from ventana import Ventana
 import gtk
@@ -92,8 +92,6 @@ import time
 import mx.DateTime
 import postomatic
 import pygtk
-import sys
-import os
 import utils
 pygtk.require('2.0')
 try:
@@ -517,7 +515,7 @@ class FacturasVenta(Ventana):
         un cliente válido, por tanto hay que
         hacerlo antes de llamar a esta función.
         """
-        factura = self.objeto
+        factura = self.objeto  # @UnusedVariable
         self.rellenar_ldvs()
         self.rellenar_sources()
         self.rellenar_vencimientos()
@@ -792,7 +790,7 @@ class FacturasVenta(Ventana):
         total_vtos = 0
         total_pagado = 0
         total_vencido = 0
-        pendiente = 0
+        pendiente = 0  # @UnusedVariable
         for vto in vtos:
             if vto[0] != None:
                 cantidad = vto[0].importe
@@ -810,13 +808,13 @@ class FacturasVenta(Ventana):
                 formapago = cuenta = ""
             total_vtos += cantidad
             if vto[1] != None:
-                fechaest = utils.str_fecha(vto[1].fecha)
+                fechaest = utils.str_fecha(vto[1].fecha)  # @UnusedVariable
                 # OJO: Actualizo la cantidad de la estimación a la cantidad 
                 #      del vencimiento real:
                 vto[1].importe = cantidad
                 ids += '%d,' % vto[1].id
             else:
-                fechaest = ''
+                fechaest = ''  # @UnusedVariable
                 ids += '%d,' % -1
             if vto[2] != None:
                 fechapag = utils.str_fecha(vto[2].fecha)
@@ -911,10 +909,10 @@ class FacturasVenta(Ventana):
         # mas_larga = max(vtos, ests, pags)     # No rula y no sé por qué
         mas_larga = [l for l in (vtos, ests, pags) if len(l)==max(len(vtos), len(ests), len(pags))][0]
         if len(mas_larga) == 0: return []
-        for i in xrange(len(mas_larga)):
+        for i in xrange(len(mas_larga)):  # @UnusedVariable
             res.append([None, None, None])
         #---------------------------------------------------#
-        def cmp(v1, v2):                                    #
+        def comp(v1, v2):                                   #
             if v1.fecha < v2.fecha: return -1               #
             if v1.fecha > v2.fecha: return 1                #
             return 0                                        #
@@ -930,14 +928,14 @@ class FacturasVenta(Ventana):
         #---------------------------------------------------#
         resto = [vtos, ests, pags]
         resto.remove(mas_larga)
-        mas_larga.sort(cmp)
+        mas_larga.sort(comp)
         pos = 0
         for item in mas_larga:
             res [pos][lugar(item)] = item
             pos += 1
         for lista in resto:
             mlc = mas_larga[:]
-            lista.sort(cmp)
+            lista.sort(comp)
             while lista:
                 item2 = lista.pop()
                 mindist = distancia(item2, mlc[0])
@@ -1274,7 +1272,7 @@ class FacturasVenta(Ventana):
             2.- La factura anterior no puede tener fecha posterior.
             3.- La factura posterior no puete tener fecha anterior.
         """
-        factura = self.objeto
+        factura = self.objeto  # @UnusedVariable
         # HACK:
         clientes = [str(c.id) for c in cliente.contador.clientes]
         clientes = ','.join(clientes)
@@ -1840,9 +1838,9 @@ class FacturasVenta(Ventana):
 
     def refinar_busqueda(self, resultados):
         """
-        resultados es una lista de id de productos.
+        resultados es una lista de ide de productos.
         """
-        resultados = [pclases.ProductoVenta.get(id) for id in resultados]
+        resultados = [pclases.ProductoVenta.get(ide) for ide in resultados]
         filas_res = [(p.id, p.codigo, p.nombre, p.descripcion, p.existencias, p.get_stock()) for p in resultados]
         idproducto = utils.dialogo_resultado(filas_res,
                                              titulo = 'Seleccione producto',
@@ -2820,8 +2818,8 @@ class FacturasVenta(Ventana):
                         linea['descripcion'] += " (%s)" % (
                                 l.descripcionComplementaria)
                     lineas.append(linea)
-                if len(pedidos) > 1:  # No quiero desglose si solo hay un 
-                                      # albarán.
+                if len(pedidos) > 1:    # No quiero desglose si solo hay un 
+                                        # albarán.
                     # Pie del albarán: Total del mismo sin IVA.
                     linea = {'codigo': "<formatolinea>di</formatolinea>", 
                              'cantidad': "", 
@@ -2951,7 +2949,7 @@ class FacturasVenta(Ventana):
                                                  vencimiento, 
                                                  texto, 
                                                  totales)
-                for numcopia in range(self.objeto.cliente.copiasFactura):
+                for numcopia in range(self.objeto.cliente.copiasFactura):  # @UnusedVariable
                     fracopia = geninformes.factura(cliente, 
                                                    facdata, 
                                                    lineas, 
@@ -3268,7 +3266,7 @@ def generar_recibo(factura, usuario=None, logger=None, ventana_padre=None):
             print txt
         else:
             import recibos
-            ventana = recibos.Recibos(objeto = recibo, usuario = usuario)
+            ventana = recibos.Recibos(objeto = recibo, usuario = usuario)  # @UnusedVariable
         
 
 if __name__ == '__main__':

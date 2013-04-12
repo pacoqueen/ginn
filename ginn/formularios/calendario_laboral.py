@@ -41,15 +41,10 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
-import sys
+import gtk
 from framework import pclases
 import mx.DateTime
-from informes import geninformes
 import ventana_progreso
-import re
-from utils import _float as float
-import os
 
 class CalendarioLaboral(Ventana):
         
@@ -63,8 +58,8 @@ class CalendarioLaboral(Ventana):
         connections = {'b_salir/clicked': self.salir
                        }
         self.add_connections(connections)
-        self.cal = []    # Los Gtk.Table no tienen método para acceder a los hijos por fila y columna (flipa!).
-                         # Así que los iré guardando aquí para poderlos crear y destruir sobre la marcha.
+        self.cal = []   # Los Gtk.Table no tienen método para acceder a los hijos por fila y columna (flipa!).
+                        # Así que los iré guardando aquí para poderlos crear y destruir sobre la marcha.
         utils.rellenar_lista(self.wids['cbe_linea'], 
                              [(l.id, l.nombre) for l in pclases.LineaDeProduccion.select(orderBy='nombre')])
         if mes == None:
@@ -168,9 +163,9 @@ class CalendarioLaboral(Ventana):
                                    texto = "Debe definir grupos de trabajo antes asignar\nturnos en el calendario laboral.",
                                    padre = self.wids['ventana'])
             else:   
-                for x in xrange(grupos.count()+3):
+                for x in xrange(grupos.count()+3):  # @UnusedVariable
                     l = []
-                    for y in xrange(len(dias_validos)+1):
+                    for y in xrange(len(dias_validos)+1):  # @UnusedVariable
                         l.append(None)
                     self.cal.append(l)
                 origen = gtk.Label("""<i>Día\Grupo</i>""")
@@ -245,7 +240,7 @@ class CalendarioLaboral(Ventana):
         dia = int(ch.get_name())
         mes = int(self.wids['sp_mes'].get_value())
         anno = int(self.wids['sp_anno'].get_value())
-        calendario, idldp = self.get_calendario(mes, anno)
+        calendario, idldp = self.get_calendario(mes, anno)  # @UnusedVariable
         if ch.get_active(): # Convierto el día en laborable. Relleno la línea de combos.
             # Borro widgets anteriores:
             cols = self.wids['tcal'].get_property("n-columns")

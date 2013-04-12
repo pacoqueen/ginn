@@ -39,7 +39,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time, os
+import time
 from framework import pclases
 from informes import geninformes
 import tempfile 

@@ -39,18 +39,10 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import sys, os
-import gtk, time
+import gtk
 from framework import pclases
-import csv
-import time
 from ventana_progreso import VentanaProgreso
-try:
-    import psycopg
-except ImportError:
-    import psycopg2 as psycopg
 import pango
-from utils import _float as float
 try:
     from psycopg import ProgrammingError as psycopg_ProgrammingError
 except ImportError:
@@ -208,9 +200,9 @@ class MostrarDatosLogic(Ventana):
         if cuenta != "" or comentario != "" or nomcuenta != '':
             Logic = pclases.LogicMovimientos
             # Construir esa consulta
-            buffer = self.wids['txt_sqlobject'].get_buffer()
-            bini, bfin = buffer.get_bounds()
-            consulta = buffer.get_text(bini, bfin)
+            buff = self.wids['txt_sqlobject'].get_buffer()
+            bini, bfin = buff.get_bounds()
+            consulta = buff.get_text(bini, bfin)
             if consulta != "": 
                 self.consulta = pclases.AND(Logic.q.importe >= 0, 
                                             Logic.q.contrapartidaInfo == '',
@@ -236,9 +228,9 @@ class MostrarDatosLogic(Ventana):
                 self.consulta = pclases.AND(self.consulta, Logic.q.comentario.contains(comentario))
         else:
             # Ejecutar la del cuadro de texto
-            buffer = self.wids['txt_sqlobject'].get_buffer()
-            bini, bfin = buffer.get_bounds()
-            consulta = buffer.get_text(bini, bfin)
+            buff = self.wids['txt_sqlobject'].get_buffer()
+            bini, bfin = buff.get_bounds()
+            consulta = buff.get_text(bini, bfin)
             self.consulta = consulta
         try:
             self.rellenar_logic()
@@ -260,7 +252,7 @@ class MostrarDatosLogic(Ventana):
             %s""" % msg, 
                                padre = self.wids['ventana'])
             self.consulta = consultabak
-            buffer.set_text("%s" % self.consulta)
+            buff.set_text("%s" % self.consulta)
 
     def get_objeto(self):
         return self.objeto

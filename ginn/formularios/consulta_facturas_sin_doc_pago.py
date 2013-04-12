@@ -88,16 +88,16 @@ class ConsultaFacturasSinDocumentoDePago(Ventana):
         hecho doble clic.
         """
         model = tv.get_model()
-        id = model[path][-1]
-        if id > 0:  # Si es negativo es un ID de cliente. No me interesa.
-            fra = pclases.FacturaVenta.get(id)
+        ide = model[path][-1]
+        if ide > 0:  # Si es negativo es un ID de cliente. No me interesa.
+            fra = pclases.FacturaVenta.get(ide)
             import facturas_venta
-            v = facturas_venta.FacturasVenta(fra, usuario = self.usuario)
-        elif id < 0:    # Ahora los id negativos son de abonos, no clientes.
-            fda = pclases.FacturaDeAbono.get(-id)
+            v = facturas_venta.FacturasVenta(fra, usuario = self.usuario)  # @UnusedVariable
+        elif ide < 0:    # Ahora los ide negativos son de abonos, no clientes.
+            fda = pclases.FacturaDeAbono.get(-ide)
             a = fda.abono
             import abonos_venta
-            v = abonos_venta.AbonosVenta(a, usuario = self.usuario)
+            v = abonos_venta.AbonosVenta(a, usuario = self.usuario)  # @UnusedVariable
 
     def chequear_cambios(self):
         pass
@@ -133,7 +133,7 @@ class ConsultaFacturasSinDocumentoDePago(Ventana):
             VC = pclases.VencimientoCobro   # Para asegurarme de 
                                             # que tiene vencimientos.
             FDA = pclases.FacturaDeAbono
-            C = pclases.Cobro
+            C = pclases.Cobro  # @UnusedVariable
             if fechaini:
                 facturas = FV.select(pclases.AND(
                                         FV.q.fecha >= fechaini, 
@@ -175,7 +175,7 @@ class ConsultaFacturasSinDocumentoDePago(Ventana):
             vpro = VentanaProgreso(padre = self.wids['ventana'])
             vpro.mostrar()
             txtvpro = "Buscando facturas sin documento de pago..."
-            nodos_clientes = {}
+            nodos_clientes = {}  # @UnusedVariable
             total = 0.0
             i = 0.0
             vpro.set_valor(i, txtvpro)

@@ -45,8 +45,6 @@ import time
 import mx.DateTime
 import postomatic
 import pygtk
-import sys
-import os
 import utils
 pygtk.require('2.0')
 try:
@@ -75,7 +73,7 @@ def buscar_cuentaOrigen(nombre, ventana_padre = None):
                                                  cabeceras = ('ID', 'Nombre', 'Banco', 'C.C.C.', 'Observaciones'),  
                                                  padre = ventana_padre) 
         if idcuentaOrigen > 0:
-             cuentaOrigen = pclases.CuentaOrigen.get(idcuentaOrigen)
+            cuentaOrigen = pclases.CuentaOrigen.get(idcuentaOrigen)
     elif numresultados == 1:
         cuentaOrigen = cuentaOrigenes[0]
     return cuentaOrigen
@@ -207,9 +205,9 @@ class Prefacturas(Ventana):
                 ('Forma de cobro', 'gobject.TYPE_STRING', True, True, False, self.cambiar_observaciones),
                 ('IDs', 'gobject.TYPE_STRING', False, False, False, None)
                )
-               # HACK: La última columna -oculta- va a tener una cadena con los IDs 
-               #       involucrados en la fila separados por coma y como cadena para
-               #       aprovechar el preparar_listview sin tener que cambiar nada.
+                # HACK: La última columna -oculta- va a tener una cadena con los IDs 
+                #       involucrados en la fila separados por coma y como cadena para
+                #       aprovechar el preparar_listview sin tener que cambiar nada.
         utils.preparar_listview(self.wids['tv_vencimientos'], cols)
         #-----------------------------------------------------------------------------------------------#
         def comprobar_que_no_me_hace_el_gato(paned, scrolltype_or_allocation_or_requisition = None):    #
@@ -365,7 +363,7 @@ class Prefacturas(Ventana):
         un cliente válido, por tanto hay que
         hacerlo antes de llamar a esta función.
         """
-        factura = self.objeto
+        factura = self.objeto  # @UnusedVariable
         self.rellenar_ldvs()
         self.rellenar_sources()
         self.rellenar_vencimientos()
@@ -628,7 +626,7 @@ class Prefacturas(Ventana):
         total_vtos = 0
         total_pagado = 0
         total_vencido = 0
-        pendiente = 0
+        pendiente = 0  # @UnusedVariable
         for vto in vtos:
             if vto[0] != None:
                 cantidad = vto[0].importe
@@ -645,13 +643,13 @@ class Prefacturas(Ventana):
                 formapago = cuenta = ""
             total_vtos += cantidad
             if vto[1] != None:
-                fechaest = utils.str_fecha(vto[1].fecha)
+                fechaest = utils.str_fecha(vto[1].fecha)  # @UnusedVariable
                 # OJO: Actualizo la cantidad de la estimación a la cantidad 
                 #      del vencimiento real:
                 vto[1].importe = cantidad
                 ids += '%d,' % vto[1].id
             else:
-                fechaest = ''
+                fechaest = ''  # @UnusedVariable
                 ids += '%d,' % -1
             if vto[2] != None:
                 fechapag = utils.str_fecha(vto[2].fecha)
@@ -735,16 +733,16 @@ class Prefacturas(Ventana):
         # mas_larga = max(vtos, ests, pags)     # No rula y no sé por qué
         mas_larga = [l for l in (vtos, ests, pags) if len(l)==max(len(vtos), len(ests), len(pags))][0]
         if len(mas_larga) == 0: return []
-        for i in xrange(len(mas_larga)):
+        for i in xrange(len(mas_larga)):  # @UnusedVariable
             res.append([None, None, None])
         #---------------------------------------------------#
-        def cmp(v1, v2):                                    #
+        def comp(v1, v2):                                  #
             if v1.fecha < v2.fecha: return -1               #
             if v1.fecha > v2.fecha: return 1                #
             return 0                                        #
-        def distancia(v1, v2):                              #
+        def distancia(v1, v2):                             #
             return abs(v1.fecha - v2.fecha)                 #
-        def lugar(v):                                       #
+        def lugar(v):                                      #
             if isinstance(v, pclases.VencimientoCobro):     #
                 return 0                                    #
             elif isinstance(v, pclases.EstimacionCobro):    #
@@ -754,14 +752,14 @@ class Prefacturas(Ventana):
         #---------------------------------------------------#
         resto = [vtos, ests, pags]
         resto.remove(mas_larga)
-        mas_larga.sort(cmp)
+        mas_larga.sort(comp)
         pos = 0
         for item in mas_larga:
             res [pos][lugar(item)] = item
             pos += 1
         for lista in resto:
             mlc = mas_larga[:]
-            lista.sort(cmp)
+            lista.sort(comp)
             while lista:
                 item2 = lista.pop()
                 mindist = distancia(item2, mlc[0])
@@ -1148,7 +1146,7 @@ class Prefacturas(Ventana):
         if numfactura == None:
             return
         try:
-            anno, numero = pclases.Prefactura.get_numero_numfactura_y_anno_from(numfactura)
+            anno, numero = pclases.Prefactura.get_numero_numfactura_y_anno_from(numfactura)  # @UnusedVariable
         except (AssertionError, ValueError, TypeError):
             nuevo_numero = None
         else:
@@ -1331,9 +1329,9 @@ class Prefacturas(Ventana):
 
     def refinar_busqueda(self, resultados):
         """
-        resultados es una lista de id de productos.
+        resultados es una lista de ide de productos.
         """
-        resultados = [pclases.ProductoVenta.get(id) for id in resultados]
+        resultados = [pclases.ProductoVenta.get(ide) for ide in resultados]
         filas_res = [(p.id, p.codigo, p.nombre, p.descripcion, p.existencias, p.get_stock()) for p in resultados]
         idproducto = utils.dialogo_resultado(filas_res,
                                              titulo = 'Seleccione producto',
@@ -1514,8 +1512,8 @@ class Prefacturas(Ventana):
         
     def drop_srv(self, boton):
         if self.wids['tv_servicios'].get_selection().count_selected_rows() != 0:
-            model, iter = self.wids['tv_servicios'].get_selection().get_selected()
-            idservicio = model[iter][-1]
+            model, itr = self.wids['tv_servicios'].get_selection().get_selected()
+            idservicio = model[itr][-1]
             servicio = pclases.Servicio.get(idservicio)
             servicio.prefactura = None
             if servicio.albaranSalida == None:
@@ -1555,9 +1553,9 @@ class Prefacturas(Ventana):
         Me cargo los vencimientos (estimado y no) que estén
         en la línea seleccionada. El pago no lo toco.
         """
-        model, iter = self.wids['tv_vencimientos'].get_selection().get_selected()
-        if iter == None: return
-        ids = model[iter][-1]
+        model, itr = self.wids['tv_vencimientos'].get_selection().get_selected()
+        if itr == None: return
+        ids = model[itr][-1]
         ids = [int(i) for i in ids.split(',')]
         idvto = ids[0]
         idest = ids[1]
@@ -2221,9 +2219,9 @@ class Prefacturas(Ventana):
         self.rellenar_totales()
 
     def drop_abono(self, b):
-        model, iter = self.wids['tv_abonos'].get_selection().get_selected()
-        if iter != None:
-            idpa = model[iter][-1]
+        model, itr = self.wids['tv_abonos'].get_selection().get_selected()
+        if itr != None:
+            idpa = model[itr][-1]
             pa = pclases.PagoDeAbono.get(idpa)
             try:
                 pa.destroy(ventana = __file__)

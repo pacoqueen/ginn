@@ -48,9 +48,9 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import sys, os 
+import os 
 from framework import pclases
-import gtk, time
+import gtk
 import mx.DateTime
 import gobject
 try:
@@ -159,10 +159,10 @@ class Usuarios(Ventana):
             print "usuaruos.py::es_diferente", "ch_firmaTecnico"
         condicion = (condicion and 
             self.wids['ch_firmaUsuario'].get_active() == usuario.firmaUsuario)
-        buffer = self.wids['txt_observaciones'].get_buffer()
+        buff = self.wids['txt_observaciones'].get_buffer()
         condicion = (condicion and 
-            usuario.observaciones == buffer.get_text(buffer.get_start_iter(), 
-                                                        buffer.get_end_iter()))
+            usuario.observaciones == buff.get_text(buff.get_start_iter(), 
+                                                        buff.get_end_iter()))
         if not condicion and pclases.DEBUG:
             print "usuaruos.py::es_diferente","txt_observaciones"
         return not condicion    # "condicion" verifica que sea igual
@@ -770,8 +770,8 @@ class Usuarios(Ventana):
         usuario.firmaUsuario = self.wids['ch_firmaUsuario'].get_active()
         if usuario.firmaTotal:
             usuario.firmaComercial = usuario.firmaDirector = usuario.firmaTecnico = usuario.firmaUsuario = True
-        buffer = self.wids['txt_observaciones'].get_buffer()
-        usuario.observaciones = buffer.get_text(buffer.get_start_iter(), buffer.get_end_iter())
+        buff = self.wids['txt_observaciones'].get_buffer()
+        usuario.observaciones = buff.get_text(buff.get_start_iter(), buff.get_end_iter())
         usuario.usuario = nusuario
         usuario.nombre = nombre 
         usuario.cuenta = cuenta

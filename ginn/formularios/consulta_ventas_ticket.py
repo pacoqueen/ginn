@@ -91,7 +91,7 @@ class ConsultaBeneficioTicket(Ventana):
         model = tv.get_model()
         tipo_e_id = model[path][-1]
         if "LDV" in tipo_e_id:
-            tipo, id = tipo_e_id.split(':')
+            tipo, ide = tipo_e_id.split(':')
             ldv = pclases.LineaDeVenta.get(id)
             producto = ldv.producto
             if isinstance(producto, pclases.ProductoVenta):

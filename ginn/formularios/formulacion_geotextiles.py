@@ -107,7 +107,7 @@ class FormulacionGeotextiles(Ventana):
         consumo y el de venta si es un "contenido" de consumo.
         """
         model = tv.get_model()
-        id = model[path][-1]
+        ide = model[path][-1]
         if model[path].parent == None:
             import productos_compra
             consumo = pclases.ConsumoAdicional.get(id)

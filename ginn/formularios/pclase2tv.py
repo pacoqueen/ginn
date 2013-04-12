@@ -10,7 +10,7 @@ de datos de la columna y todo, todo, todo.
 """
 
 from framework import pclases
-import mx, mx.DateTime
+import mx.DateTime
 import utils
 import ventana_progreso
 
@@ -20,7 +20,7 @@ def edit_text(cell, path, newtext, tv, numcol, clase, atributo):
     saca a partir del ID de la última columna del model.
     """
     model = tv.get_model()
-    id = model[path][-1]
+    ide = model[path][-1]
     objeto = clase.get(id)
     setattr(objeto, atributo, newtext)  # Sin validación. Texto acepta todo.
     objeto.syncUpdate()
@@ -32,7 +32,7 @@ def edit_fecha(cell, path, newtext, tv, numcol, clase, atributo):
     saca a partir del ID de la última columna del model.
     """
     model = tv.get_model()
-    id = model[path][-1]
+    ide = model[path][-1]
     objeto = clase.get(id)
     try:
         fecha = utils.parse_fecha(newtext)
@@ -54,7 +54,7 @@ def edit_fechahora(cell, path, newtext, tv, numcol, clase, atributo):
     saca a partir del ID de la última columna del model.
     """
     model = tv.get_model()
-    id = model[path][-1]
+    ide = model[path][-1]
     objeto = clase.get(id)
     try:
         fecha = utils.parse_fechahora(newtext)
@@ -76,7 +76,7 @@ def edit_hora(cell, path, newtext, tv, numcol, clase, atributo):
     saca a partir del ID de la última columna del model.
     """
     model = tv.get_model()
-    id = model[path][-1]
+    ide = model[path][-1]
     objeto = clase.get(id)
     try:
         hora = utils.parse_hora(newtext)
@@ -108,7 +108,7 @@ def edit_float(cell, path, newtext, tv, numcol, clase, atributo):
             padre = parent)
     else:
         model = tv.get_model()
-        id = model[path][-1]
+        ide = model[path][-1]
         objeto = clase.get(id)
         setattr(objeto, atributo, numero) 
         objeto.syncUpdate()
@@ -131,7 +131,7 @@ def edit_int(cell, path, newtext, tv, numcol, clase, atributo):
             padre = parent)
     else:
         model = tv.get_model()
-        id = model[path][-1]
+        ide = model[path][-1]
         objeto = clase.get(id)
         setattr(objeto, atributo, numero) 
         objeto.syncUpdate()
@@ -143,7 +143,7 @@ def edit_boolean(cell, path, tv, numcol, clase, atributo):
     que saca a partir del ID de la última columna del model.
     """
     model = tv.get_model()
-    id = model[path][-1]
+    ide = model[path][-1]
     objeto = clase.get(id)
     valor = not model[path][numcol]
     setattr(objeto, atributo, valor) 

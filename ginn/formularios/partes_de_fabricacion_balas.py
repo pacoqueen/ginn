@@ -1127,7 +1127,7 @@ class PartesDeFabricacionBalas(Ventana):
         def cell_func(column, cell, model, itr, i):
             muestra = False
             if model[itr][1] != '':
-                id = model[itr][-1]
+                ide = model[itr][-1]
                 try:
                     articulo = pclases.Articulo.get(id)
                 except pclases.SQLObjectNotFound:

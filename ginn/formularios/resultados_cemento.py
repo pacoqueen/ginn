@@ -50,7 +50,6 @@ import pygtk
 pygtk.require('2.0')
 import gtk, time
 from framework import pclases
-from informes import geninformes
 from utils import _float as float
 from resultados_fibra import comprobar_y_preguntar_si_guardar
 
@@ -373,8 +372,8 @@ class ResultadosFibra(Ventana):
         Guarda el contenido del TextView en el atributo observaciones.
         """
         if self.objeto != None:
-            buffer = self.wids['txt_observaciones'].get_buffer()
-            self.objeto.observaciones = buffer.get_text(buffer.get_start_iter(), buffer.get_end_iter())
+            buff = self.wids['txt_observaciones'].get_buffer()
+            self.objeto.observaciones = buff.get_text(buff.get_start_iter(), buff.get_end_iter())
             self.wids['b_guardar_obs'].set_sensitive(False)
 
     def add(self, w):
@@ -389,14 +388,14 @@ class ResultadosFibra(Ventana):
         """
         Borra una línea completa de resultados.
         """
-        model, iter = self.wids['tv_pruebas'].get_selection().get_selected()
-        if iter != None and utils.dialogo(titulo = 'BORRAR PRUEBA', texto = '¿Está seguro?', padre = self.wids['ventana']):
-            ids = map(int, model[iter][-1].split(','))
+        model, itr = self.wids['tv_pruebas'].get_selection().get_selected()
+        if itr != None and utils.dialogo(titulo = 'BORRAR PRUEBA', texto = '¿Está seguro?', padre = self.wids['ventana']):
+            ids = map(int, model[itr][-1].split(','))
             for columnaid in range(len(ids)):
-                id = ids[columnaid]
-                if id != 0:
+                ide = ids[columnaid]
+                if ide != 0:
                     clase = self.get_clase(columnaid+1)
-                    prueba = clase.get(id)
+                    prueba = clase.get(ide)
                     prueba.destroy(ventana = __file__)
             self.rellenar_pruebas()
 
@@ -531,8 +530,8 @@ class ResultadosFibra(Ventana):
         if clase != None:
             model = self.wids['tv_pruebas'].get_model()
             ids = map(int, model[path][-1].split(','))
-            id = ids[columnaid]
-            if id == 0:
+            ide = ids[columnaid]
+            if ide == 0:
                 if texto != "":
                     fecha = time.strptime(model[path][0], '%d/%m/%Y')
                     try: 
@@ -548,7 +547,7 @@ class ResultadosFibra(Ventana):
                     model[path][-1] = ','.join(map(str, ids))
                     model[path][columna] = "%.2f" % resultado
             else:
-                prueba = clase.get(int(id))
+                prueba = clase.get(int(ide))
                 if texto == "": 
                     try:
                         prueba.destroy(ventana = __file__)

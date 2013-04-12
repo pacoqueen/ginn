@@ -44,7 +44,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time, mx, mx.DateTime
+import gtk, time, mx.DateTime
 from framework import pclases
 from framework.seeker import VentanaGenerica 
 from utils import _float as float
@@ -340,7 +340,7 @@ class Transferencias(Ventana, VentanaGenerica):
         if a_buscar != None:
             facturas = pclases.FacturaCompra.select(pclases.FacturaCompra.q.numfactura.contains(a_buscar))
             if facturas.count() >= 1:
-                id = utils.dialogo_resultado(filas = [(f.id, f.numfactura, f.proveedor and f.proveedor.nombre or "") for f in facturas], 
+                ide = utils.dialogo_resultado(filas = [(f.id, f.numfactura, f.proveedor and f.proveedor.nombre or "") for f in facturas], 
                                              titulo = "SELECCIONE FACTURA", 
                                              padre = self.wids['ventana'], 
                                              cabeceras = ("ID", "Número de factura", "Proveedor"))
