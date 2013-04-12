@@ -34,20 +34,9 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, pango
-try:
-    from framework import pclases
-except ImportError:
-    import sys
-    from os.path import join as pathjoin
-    sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
+from framework import pclases
 import mx, mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
+from informes import geninformes
 import pclase2tv
 
 def callback(treeview, allocation, column, cell):
@@ -735,7 +724,7 @@ class CRM_DetallesFactura(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe.
         """
-        from ginn.formularios.reports import abrir_pdf
+        from formularios.reports import abrir_pdf
         abrir_pdf(geninformes.crm_generar_pdf_detalles_factura(self.objeto))
 
 def abrir_adjunto_from_tv(tv, path, col):

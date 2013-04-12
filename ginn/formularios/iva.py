@@ -45,20 +45,10 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
-try:
-    from framework import pclases
-except ImportError:
-    import sys
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
+import gtk, gtk.glade, time
+from framework import pclases
 import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
+from informes import geninformes
 from ventana_progreso import VentanaProgreso
 
 

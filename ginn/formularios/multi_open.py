@@ -19,12 +19,7 @@ __all__ = ['open', 'mailto']
 import os
 import sys
 import webbrowser
-try:
-    import subprocess
-except ImportError:
-    from os.path import join as osjoin
-    sys.path.append(osjoin("..", "formularios"))
-    import subprocess
+from formularios import subprocess
 
 from email.Utils import encode_rfc2231
 

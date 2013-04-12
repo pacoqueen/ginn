@@ -33,9 +33,9 @@
 #       por número de factura según su serie (contador) son consecutivas.
 ###############################################################################
 
-from ginn.framework import pclases
+from framework import pclases
 import mx.DateTime, time, sys
-from ginn.formularios import utils
+from formularios import utils
 
 """
 Test de coherencia de datos para realizar periódicamente.
@@ -196,7 +196,7 @@ def comprobar_articulos_con_enlaces_incorrectos(report_mode = False):
         # Cambio de estrategia. Evito recorrer los artículos que 
         # sé seguro que están bien:
     A = pclases.Articulo
-    from ginn.framework.pclases import AND, NOT, OR
+    from framework.pclases import AND, NOT, OR
     rs = AND(A.q.rolloID != None, A.q.rolloDefectuosoID == None, A.q.balaID == None, A.q.balaCableID == None, A.q.bigbagID == None)
     rsd = AND(A.q.rolloID == None, A.q.rolloDefectuosoID != None, A.q.balaID == None, A.q.balaCableID == None, A.q.bigbagID == None)
     bs = AND(A.q.rolloID == None, A.q.rolloDefectuosoID == None, A.q.balaID != None, A.q.balaCableID == None, A.q.bigbagID == None)

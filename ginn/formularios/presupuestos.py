@@ -43,13 +43,8 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, time, mx, mx.DateTime
-try:
-    from framework import pclases
-    from seeker import VentanaGenerica 
-except ImportError:
-    sys.path.append(os.path.join('..', 'framework'))
-    from framework import pclases
-    from seeker import VentanaGenerica 
+from framework import pclases
+from framework.seeker import VentanaGenerica 
 from utils import _float as float
 from pedidos_de_venta import preguntar_precio
 
@@ -353,9 +348,8 @@ class Presupuestos(Ventana, VentanaGenerica):
                 import geninformes
             except ImportError:
                 import sys
-                sys.path.append(os.path.join("..", "informes"))
                 import geninformes
-            from ginn.formularios.reports import abrir_pdf
+            from formularios.reports import abrir_pdf
             abrir_pdf(geninformes.generar_pdf_presupuesto(self.objeto))
 
     def imprimir_presupuesto(self, boton):
@@ -369,10 +363,9 @@ class Presupuestos(Ventana, VentanaGenerica):
                 exec "import %s as presupuesto" % modulo
             except ImportError:
                 import sys
-                sys.path.append(os.path.join("..", "informes"))
                 #import presupuesto
                 exec "import %s as presupuesto" % modulo
-            from ginn.formularios.reports import abrir_pdf
+            from formularios.reports import abrir_pdf
             abrir_pdf(presupuesto.go_from_presupuesto(self.objeto))  # @UndefinedVariable
 
     def es_diferente(self):

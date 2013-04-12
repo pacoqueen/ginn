@@ -33,12 +33,8 @@ import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, gobject, utils, pango
 import sys, os
-import sqlobject
 from widgets import Widgets
 
-path_framework = os.path.join("..", "framework")
-if path_framework not in sys.path:
-    sys.path.append(path_framework)
 
 def refrescar_cache_sqlobject():
     """
@@ -486,7 +482,6 @@ class Ventana:
         try:
             pwd = os.path.abspath(os.curdir)
             os.chdir(os.path.join('..', 'gajim-0.9.1', 'src'))
-            sys.path.append('.')
             if os.name == 'posix':
                 os.system("cd .. && ./launch.sh >/dev/null &")
             elif os.name == 'nt':
@@ -717,7 +712,7 @@ class Ventana:
                     if DEBUG:
                         print "5.- ventana.py::actualizar_ventana->", \
                               time.time() - antes
-                except sqlobject.SQLObjectNotFound:
+                except pclases.SQLObjectNotFound:
                     utils.dialogo_info(titulo = 'REGISTRO ELIMINADO', 
                       texto = 'El registro ha sido borrado desde otro puesto.', 
                       padre = self.wids['ventana'])

@@ -45,8 +45,8 @@ import gtk
 import sys
 from framework import pclases
 import mx.DateTime
-from ginn.informes import geninformes
-from ginn.formularios.reports import abrir_pdf
+from informes import geninformes
+from formularios.reports import abrir_pdf
 
 class ConsultaMarcadoCE(Ventana):
     inicio = None

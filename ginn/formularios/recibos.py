@@ -43,27 +43,11 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, time
-try:
-    from framework import pclases
-except ImportError:
-    import sys
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
+from framework import pclases
+from informes import geninformes
 from utils import _float as float
 import mx, mx.DateTime
-try:
-    from framework import pclases
-    from seeker import VentanaGenerica 
-except ImportError:
-    sys.path.append(os.path.join('..', 'framework'))
-    from framework import pclases
-    from seeker import VentanaGenerica 
+from framework.seeker import VentanaGenerica 
 from numerals import numerals
 
 class Recibos(Ventana, VentanaGenerica):
@@ -768,7 +752,7 @@ class Recibos(Ventana, VentanaGenerica):
         """
         Genera y muestra el PDF del recibo bancario.
         """
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         numrecibo = self.wids['e_numrecibo'].get_text()
         lugar_libramiento = self.wids['e_lugar_libramiento'].get_text()
         importe = self.wids['e_importe'].get_text()

@@ -71,21 +71,10 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time #, sqlobject   ## pclases enmascara sqlobject. No 
-                                        ## hace falta importarlo directamente.
-try:
-    from framework import pclases
-except ImportError:
-    import sys
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
+import gtk, gtk.glade, time 
+from framework import pclases
 import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
+from informes import geninformes
 from utils import _float as float
 try:
     import psycopg
@@ -195,7 +184,7 @@ def imprimir_etiqueta_de_rollo_defectuoso(rollo):
     Imprime una etiqueta de rollo defectuoso correspondiente 
     al objeto rollo/rolloDefectuoso recibido.
     """
-    from ginn.formularios import reports as informes
+    from formularios import reports as informes
     producto = rollo.productoVenta
     if isinstance(rollo, pclases.RolloDefectuoso):
         elemento = {'descripcion': producto.nombre,
@@ -2757,7 +2746,7 @@ class PartesDeFabricacionRollos(Ventana):
     
     def imprimir(self, boton):
         self.guardar(None)
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         parte = self.objeto
         ws = ('e_fecha', 'e_grsm2', 'sp_merma', 'e_partida', 'e_articulo', 
               'e_ancho', 'e_long_rollo', 'e_hora_ini', 'e_hora_fin', 
@@ -2849,7 +2838,7 @@ class PartesDeFabricacionRollos(Ventana):
             rollos_defecto.append(model[path][1])
             rollos_defecto.sort()
         rollos_defecto = ', '.join(rollos_defecto)
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         entrada, mostrar_marcado = self._dialogo_entrada(
             titulo = 'ETIQUETAS', 
             texto = "Introduzca el número de rollo o el rango (usando '-') "
@@ -3563,7 +3552,7 @@ def imprimir_etiqueta(articulo, marcado_ce, ventana_parte, defectuoso = False):
     else:
         if (articulo.rollo.numrollo > ventana_parte.ultima_etiqueta 
             or ventana_parte.ultima_etiqueta == None):
-            from ginn.formularios import reports as informes
+            from formularios import reports as informes
             rollos = []
             producto = articulo.productoVenta
             try:

@@ -29,31 +29,11 @@ from reportlab.lib import colors, enums
 from reportlab.lib.units import cm
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 import sys, os#, Image
-
-try:
-    import pclases, utils, numerals
-except ImportError:
-    try:
-        import sys, os
-        sys.path.insert(0, os.path.join("..", "framework"))
-        sys.path.insert(0, os.path.join("..", "formularios"))
-        import pclases, utils, numerals
-    except ImportError:
-        sys.path.insert(0, ".")
-        import pclases, utils, numerals
-try:
-    from geninformes import give_me_the_name_baby, escribe, rectangulo, el_encogedor_de_fuentes_de_doraemon, agregarFila
-except ImportError:
-    import sys
-    sys.path.append(os.path.join("..", "informes"))
-from geninformes import give_me_the_name_baby, escribe, rectangulo, el_encogedor_de_fuentes_de_doraemon, agregarFila
+from framework import pclases
+from formularios import utils, numerals
+from informes.geninformes import give_me_the_name_baby, escribe, rectangulo, el_encogedor_de_fuentes_de_doraemon, agregarFila
 from tempfile import gettempdir
-try:
-    from fixedpoint import FixedPoint
-except ImportError:
-    import sys
-    sys.path.append(os.path.join("..", "formularios"))
-    from fixedpoint import FixedPoint
+from fixedpoint import FixedPoint
 
 PAGE_HEIGHT = defaultPageSize[1]; PAGE_WIDTH = defaultPageSize[0]
 estilos = getSampleStyleSheet()

@@ -49,23 +49,13 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk, gtk.glade, time
 import sys, os
-try:
-    from framework import pclases
-except ImportError:
-    sys.path.append(os.path.join('..', 'framework'))
-    from framework import pclases
-try:
-    import geninformes
-except ImportError:
-    sys.path.append(os.path.join('..', 'informes'))
-    import geninformes
-sys.path.append('.')
-from mostrar_datos_logic import MostrarDatosLogic as BusquedaLogic
+from framework import pclases
+from informes import geninformes
 import re
 import mx, mx.DateTime
-from utils import _float as float
+from formularios.utils import _float as float
 
 # Modelos de cheques y pagarés:
 MONTE, CAIXA, BANKINTER = (0, 1, 2)
@@ -369,7 +359,7 @@ class PagaresPagos(Ventana):
         if a_buscar != None:
             if a_buscar.count('/') == 2:
                 fecha = utils.parse_fecha(a_buscar) 
-                resultados = pclases.PagarePago.select(sqlobject.OR(pclases.PagarePago.q.fechaEmision == fecha, 
+                resultados = pclases.PagarePago.select(pclases.OR(pclases.PagarePago.q.fechaEmision == fecha, 
                                                                      pclases.PagarePago.q.fechaPago == fecha))
                 lon = resultados.count()
             elif a_buscar == "":
@@ -490,7 +480,7 @@ class PagaresPagos(Ventana):
         proveedor = None
         a_buscar = utils.dialogo_entrada("Introduzca nombre o CIF del proveedor:", padre = self.wids['ventana']) 
         if a_buscar != None:
-            criterio = sqlobject.OR(pclases.Proveedor.q.nombre.contains(a_buscar),
+            criterio = pclases.OR(pclases.Proveedor.q.nombre.contains(a_buscar),
                                     pclases.Proveedor.q.cif.contains(a_buscar))
             resultados = pclases.Proveedor.select(criterio) 
             if resultados.count() > 1:
@@ -884,7 +874,7 @@ class PagaresPagos(Ventana):
         self.guardar()
         
     def imprimir_cheque_monte(self, boton):
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         import numerals
         pagare = self.objeto
         cantidad = pagare.cantidad
@@ -903,7 +893,7 @@ class PagaresPagos(Ventana):
             self.add_impr_observaciones("cheque El Monte")
 
     def imprimir_pagare_monte(self, boton):
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         import numerals
         pagare = self.objeto
         fechaPago = pagare.fechaPago
@@ -923,7 +913,7 @@ class PagaresPagos(Ventana):
             self.add_impr_observaciones("pagaré El Monte")
 
     def imprimir_pagare_caixa(self, boton):
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         import numerals
         pagare = self.objeto
         fechaPago = pagare.fechaPago
@@ -949,7 +939,7 @@ class PagaresPagos(Ventana):
             self.add_impr_observaciones("pagaré La Caixa")
 
     def imprimir_cheque_caixa(self, boton):
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         import numerals
         pagare = self.objeto
         cantidad = pagare.cantidad
@@ -1005,7 +995,7 @@ class PagaresPagos(Ventana):
             self.imprimir_pagare_bankinter()
 
     def imprimir_pagare_bankinter(self):
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         import numerals
         pagare = self.objeto
         fechaPago = pagare.fechaPago
@@ -1030,7 +1020,7 @@ class PagaresPagos(Ventana):
             self.add_impr_observaciones("pagaré Bankinter")
 
     def imprimir_cheque_bankinter(self):
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         import numerals
         pagare = self.objeto
         cantidad = pagare.cantidad

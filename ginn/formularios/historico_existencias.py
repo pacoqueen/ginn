@@ -39,19 +39,9 @@ import pygtk
 pygtk.require('2.0')
 import gtk, time
 import sys, os
-try:
-    from framework import pclases
-except ImportError:
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
+from framework import pclases
 import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    sys.path.append('../informes')
-    import geninformes
-import ventana_progreso
-sys.path.insert(0, os.path.join("..", "PyChart-1.39"))
+from informes import geninformes
 from pychart import *   # No me gusta, pero no queda otra
 from tempfile import gettempdir
     
@@ -211,7 +201,7 @@ class HistoricoExistencias(Ventana):
         vpro._ventana.realize()
         vpro._ventana.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
         while gtk.events_pending(): gtk.main_iteration(False)
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         try:
             vpro.set_valor(act/tot, msgtexto)
             informes.abrir_pdf(geninformes.existencias_productos('rollos', 

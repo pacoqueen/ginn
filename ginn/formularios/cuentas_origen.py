@@ -45,14 +45,9 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
-try:
-    from framework import pclases
-    from seeker import VentanaGenerica 
-except ImportError:
-    sys.path.append(os.path.join('..', 'framework'))
-    from framework import pclases
-    from seeker import VentanaGenerica 
+import gtk, gtk.glade, time
+from framework import pclases
+from framework.seeker import VentanaGenerica 
 from utils import _float as float
 import mx.DateTime
 
@@ -232,7 +227,7 @@ class CuentasOrigen(Ventana, VentanaGenerica):
                 ida_buscar = int(a_buscar)
             except ValueError:
                 ida_buscar = -1
-            criterio = sqlobject.OR(pclases.CuentaOrigen.q.nombre.contains(a_buscar),
+            criterio = pclases.OR(pclases.CuentaOrigen.q.nombre.contains(a_buscar),
                                     pclases.CuentaOrigen.q.banco.contains(a_buscar),
                                     pclases.CuentaOrigen.q.ccc.contains(a_buscar),
                                     pclases.CuentaOrigen.q.id == ida_buscar)

@@ -37,12 +37,7 @@ import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade
 import sys, os
-try:
-    from framework import pclases
-except ImportError:
-    from os.path import join as pathjoin
-    sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
+from framework import pclases
 import mx.DateTime
 
 class ListadoProductos(Ventana):
@@ -82,9 +77,8 @@ class ListadoProductos(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        sys.path.append(os.path.join("..", "informes"))
-        from ginn.informes.treeview2csv import treeview2csv
-        from ginn.formularios.reports import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
 
@@ -168,7 +162,7 @@ class ListadoProductos(Ventana):
         """
         Intenta sugerir productos según el corrector Norving.
         """
-        from ginn.utils import spelling
+        from utils import spelling
         palabras = []
         for pc in pclases.ProductoCompra.select():
             palabras.append(pc.codigo.lower())
@@ -204,8 +198,8 @@ class ListadoProductos(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from ginn.informes.treeview2pdf import treeview2pdf
-        from ginn.formularios.reports import abrir_pdf
+        from informes.treeview2pdf import treeview2pdf
+        from formularios.reports import abrir_pdf
         strfecha = utils.str_fecha(mx.DateTime.localtime())
         informe = treeview2pdf(self.wids['tv_datos'], 
                         titulo="Listado de productos con PVP (IVA incluido)", 

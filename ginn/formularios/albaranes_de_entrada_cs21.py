@@ -35,7 +35,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk, gtk.glade, time
 from framework import pclases
 from informes import geninformes
 from formularios.utils import _float as float
@@ -882,7 +882,7 @@ class AlbaranesDeEntradaCS21(Ventana):
         Crea un impreso del albarán
         """
         self.guardar(None)  # Si se ha olvidado guardar, guardo yo.
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         albaran = self.objeto
         if albaran.proveedor != None:
             proveedor = albaran.proveedor.nombre

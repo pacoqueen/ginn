@@ -39,7 +39,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject, os
+import gtk, gtk.glade, time, os
 from framework import pclases
 import geninformes
 import tempfile 
@@ -62,7 +62,7 @@ class ConsultaExistencias(Ventana):
         else:
             csv = False
             ruta_csv = None
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         informes.abrir_pdf(geninformes.existencias_productos(
             'balas', 
             "%s, %s" % (utils.str_fecha(time.localtime()), 

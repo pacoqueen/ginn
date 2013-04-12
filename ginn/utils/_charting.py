@@ -39,7 +39,7 @@ Example:
     eventBox = gtk.EventBox() # charts go into eventboxes, or windows
     place = self.get_widget("totals_by_day") #just some placeholder
 
-    eventBox.add(chart);
+    eventBox.add(chart)
     place.add(eventBox)
 
     #Let's imagine that we count how many apples we have gathered, by day
@@ -82,7 +82,7 @@ def set_color(context, color, g = None, b = None):
     
 
 def set_color_gdk(context, color):
-    # set_color_gdk(context, self.style.fg[gtk.STATE_NORMAL]);
+    # set_color_gdk(context, self.style.fg[gtk.STATE_NORMAL])
     r,g,b = color.red / 65536.0, color.green / 65536.0, color.blue / 65536.0
     context.set_source_rgb(r, g, b)
     
@@ -436,7 +436,7 @@ class BarChart(Chart):
         self.layout.set_width(-1)
 
         for i in range(len(self.keys)):
-            set_color(context, dark[8]);
+            set_color(context, dark[8])
             self.layout.set_text(self.keys[i])
             label_w, label_h = self.layout.get_pixel_size()
 
@@ -506,7 +506,7 @@ class BarChart(Chart):
             context.set_antialias(cairo.ANTIALIAS_DEFAULT)
 
             #put series keys
-            set_color(context, dark[8]);
+            set_color(context, dark[8])
             
             y = self.graph_height
             label_y = None

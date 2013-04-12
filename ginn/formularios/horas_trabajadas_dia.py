@@ -45,14 +45,8 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
-try:
-    from framework import pclases
-except ImportError:
-    import sys
-    from os.path import join as pathjoin
-    sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
+import gtk, gtk.glade, time
+from framework import pclases
 import mx.DateTime
     
 
@@ -157,8 +151,8 @@ class HorasTrabajadasDia(Ventana):
         # Antes de procesar los datos es mejor concretarlos en la consulta y 
         # así generamos menos tráfico y consumimos menos CPU.
         PDP = pclases.ParteDeProduccion
-        OR = sqlobject.OR
-        AND = sqlobject.AND
+        OR = pclases.OR
+        AND = pclases.AND
         fecha_ini = fecha_fin = fecha
         seis_am = mx.DateTime.DateTimeFrom(hour = 6) 
         medianoche = mx.DateTime.DateTimeFrom(hour = 0)
@@ -760,8 +754,8 @@ class HorasTrabajadasDia(Ventana):
         """
         Imprime el TreeView de la ventana.
         """
-        from ginn.informes.treeview2pdf import treeview2pdf
-        from ginn.formularios.reports import abrir_pdf
+        from informes.treeview2pdf import treeview2pdf
+        from formularios.reports import abrir_pdf
         strfecha = self.wids['e_fecha'].get_text()
         abrir_pdf(treeview2pdf(self.wids['tv_horas'], titulo = "Horas trabajadas", fecha = strfecha))
     
@@ -770,9 +764,8 @@ class HorasTrabajadasDia(Ventana):
         Exporta el contenido del TreeView a MS-Exel/OOoCalc.
         """
         import sys, os
-        sys.path.append(os.path.join("..", "informes"))
-        from ginn.informes.treeview2csv import treeview2csv
-        from ginn.formularios.reports import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         abrir_csv(treeview2csv(self.wids['tv_horas']))
 
 if __name__ == '__main__':

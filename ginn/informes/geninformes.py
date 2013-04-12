@@ -53,8 +53,8 @@ from reportlab.lib.units import inch, cm
 import mx.DateTime
 
 import sys, os
-from ginn.framework import pclases
-from ginn.formularios import utils
+from framework import pclases
+from formularios import utils
 import time
 from tempfile import gettempdir
 import Image
@@ -532,18 +532,9 @@ def existencias(hasta = None, exportar_a_csv_a = None, ventana_padre = None):
         i = 0.0
         tot = productos.count()
     if ventana_padre:
-        try:
-            from ventana_progreso import VentanaProgreso
-        except ImportError:
-            sys.path.append(os.path.join("..", "formularios"))
-        try:
-            from ventana_progreso import VentanaProgreso
-        except ImportError:
-            ventana_padre = None
-        else:
-            vpro = VentanaProgreso(padre = ventana_padre)
-            vpro.mostrar()
-            vpro.set_valor(0.0, "Procesando...")
+        vpro = VentanaProgreso(padre = ventana_padre)
+        vpro.mostrar()
+        vpro.set_valor(0.0, "Procesando...")
     for p in productos:
         if pclases.DEBUG or ventana_padre:
             i += 1
@@ -6098,9 +6089,6 @@ def agregarFila(origen,
 
 def exportar_a_csv(ruta, cabecera, datos):
     import treeview2csv
-    ruta_form = os.path.join("..", "formularios")
-    if ruta_form not in sys.path:
-        sys.path.append(ruta_form)
     from formularios.reports import abrir_csv
     datos_iso = []
     for fila in datos:
@@ -10012,8 +10000,8 @@ def calcular_medidas(cheque):
     medidas['ciudad'] =             [lm3 - 0.7*cm, 20.0 * cm]; l += 4*L
     medidas['entradilla'] =         [lm,        tm + l]; l += 1*L
     medidas['texto'] =              [lm,        tm + l]; l += 1*L
-    medidas['cabecera_desglose0'] = [lm2,        tm + l];
-    medidas['cabecera_desglose1'] = [lm3,       tm + l];
+    medidas['cabecera_desglose0'] = [lm2,        tm + l]
+    medidas['cabecera_desglose1'] = [lm3,       tm + l]
     medidas['cabecera_desglose2'] = [lm4,       tm + l]
     #medidas['despedida'] =          [lm,        11 * cm]
     #medidas['firma'] =              [lm3,       10 * cm]
@@ -10266,7 +10254,7 @@ def calcular_medidas_fax():
     medidas['contacto0'] =              [lm,            tm + l]
     medidas['contacto1'] =              [lm2,           tm + l]; l += L
     medidas['fax0'] =                   [lm,            tm + l]
-    medidas['fax1'] =                   [lm2,           tm + l];
+    medidas['fax1'] =                   [lm2,           tm + l]
     medidas['telefono0'] =              [lm4,           tm + l]
     medidas['telefono1'] =              [lm5,           tm + l]; l += L
     medidas['de0'] =                    [lm,            tm + l]
@@ -11252,7 +11240,7 @@ def generar_recibo(c, medidas, fuentes, xoffset, yoffset, datos):
                texto = datos['numrecibo'], alinTxtX = "centro")
     def escribir_cabecera_campo(x, y, txt):
         c.saveState()   # scope de c (canvas) entra en la función anidada.
-        c.setFont(fuentes['pequeña']['fuente'], fuentes['pequeña']['tamaño']);\
+        c.setFont(fuentes['pequeña']['fuente'], fuentes['pequeña']['tamaño'])
         c.drawString(x + 0.1 * cm, y - 0.3 * cm, escribe(txt)); \
         c.restoreState()
     escribir_cabecera_campo(mer[0], mer[1], "Nº Recibo")
@@ -11996,14 +11984,11 @@ def pruebines():
     nomarchivo = factura(cliente, factdata, lineas, arancel, vencimiento,
                          texto, totales)
     import sys, os
-    sys.path.append(os.path.join("..", "formularios"))
     from informes import abrir_pdf
     abrir_pdf(nomarchivo)
 
 def pruebines_bibales():
     import sys, os
-    sys.path.append(os.path.join("..", "formularios"))
-    sys.path.append(os.path.join("..", "framework"))
     import pclases
     from informes import abrir_pdf
     abrir_pdf(etiquetasBigbags(pclases.Bigbag.select()[:2]))
@@ -12011,8 +11996,6 @@ def pruebines_bibales():
 
 def pruebines2():
     import sys, os
-    sys.path.append(os.path.join("..", "formularios"))
-    sys.path.append(os.path.join("..", "framework"))
     import pclases
     from informes import abrir_pdf
     producto = pclases.ProductoVenta.select(
@@ -12037,8 +12020,6 @@ def pruebines2():
 
 def pruebines3():
     import sys, os
-    sys.path.append(os.path.join("..", "formularios"))
-    sys.path.append(os.path.join("..", "framework"))
     import pclases
     from informes import abrir_pdf
     from time import sleep
@@ -12054,8 +12035,6 @@ def pruebines3():
 
 def pruebines5():
     import sys, os
-    sys.path.append(os.path.join("..", "formularios"))
-    sys.path.append(os.path.join("..", "framework"))
     import pclases
     from informes import abrir_pdf
 
@@ -12070,8 +12049,6 @@ def probar_fuentes_disponibles():
     instalación de ReportLab local.
     """
     import sys, os
-    sys.path.append(os.path.join("..", "formularios"))
-    sys.path.append(os.path.join("..", "framework"))
     from informes import abrir_pdf
 
     y = A4[1] - 3 * cm
@@ -12092,8 +12069,6 @@ def probar_fuentes_disponibles():
 
 def pruebines4():
     import sys, os
-    sys.path.append(os.path.join("..", "formularios"))
-    sys.path.append(os.path.join("..", "framework"))
     import pclases
     from informes import abrir_pdf
 
@@ -12132,8 +12107,6 @@ def pruebines4():
 
 def pruebines6():
     import sys, os
-    sys.path.append(os.path.join("..", "formularios"))
-    sys.path.append(os.path.join("..", "framework"))
     import pclases
     from informes import abrir_pdf
 
@@ -12146,7 +12119,6 @@ def pruebines6():
                      "C/ Goser el destructor"))
 
 def pruebines_nuevas_etiquetas_domenech():
-    sys.path.append("../formularios")
     from listado_balas import preparar_datos_etiquetas_balas
     import random
     #balas = [pclases.Bala.select(orderBy = "-id")[random.randrange(0, 
@@ -12165,12 +12137,10 @@ def pruebines_nuevas_etiquetas_domenech():
     abrir_pdf(domenech_h_etiquetasBalasEtiquetadora(balas))
 
 def prueba_cmr():
-    sys.path.append("../formularios")
     from informes import abrir_pdf
     abrir_pdf(cmr(pclases.AlbaranSalida.get(2216)))
 
 def pruebines_pales_guaje():
-    sys.path.append("../formularios")
     from informes import mandar_a_imprimir_con_ghostscript, abrir_pdf
     pale = pclases.Pale.select(orderBy = "-id")[0]
     pale = [pale, pclases.Pale.select(orderBy = "id")[0]]
@@ -12180,7 +12150,6 @@ def pruebines_pales_guaje():
         #mandar_a_imprimir_con_ghostscript(filetiqpale)
 
 def pruebines_cajas_guaje():
-    sys.path.append("../formularios")
     from informes import mandar_a_imprimir_con_ghostscript, abrir_pdf
     caja = pclases.Caja.select(orderBy = "-id")[0]
     caja = [caja, pclases.Caja.select(orderBy = "id")[0]]

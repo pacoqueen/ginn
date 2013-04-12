@@ -49,13 +49,8 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
-try:
-    from framework import pclases
-except ImportError:
-    import sys
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
+import gtk, gtk.glade, time
+from framework import pclases
 from utils import _float as float
 
 
@@ -174,7 +169,7 @@ class ProductosDeVentaRollosGeocompuestos(Ventana):
                 pclases.LineaDeProduccion.q.nombre.contains('comercializado'))
             )[0]
             if producto != None: producto.notificador.desactivar()
-            producto = pclases.ProductoVenta.select(sqlobject.AND(pclases.ProductoVenta.q.camposEspecificosRolloID != None,pclases.ProductoVenta.q.lineaDeProduccionID == linea.id))[0]  # Selecciono todos y me quedo con el primero de la lista
+            producto = pclases.ProductoVenta.select(pclases.AND(pclases.ProductoVenta.q.camposEspecificosRolloID != None,pclases.ProductoVenta.q.lineaDeProduccionID == linea.id))[0]  # Selecciono todos y me quedo con el primero de la lista
             producto.notificador.activar(self.aviso_actualizacion)      # Activo la notificación
         except:
             producto = None     
@@ -200,7 +195,7 @@ class ProductosDeVentaRollosGeocompuestos(Ventana):
             pclases.LineaDeProduccion.q.nombre.contains('geocompuesto'), 
             pclases.LineaDeProduccion.q.nombre.contains('comercializado')))[0]
         try:
-            anterior = pclases.ProductoVenta.select(sqlobject.AND(pclases.ProductoVenta.q.camposEspecificosRolloID != None, pclases.ProductoVenta.q.lineaDeProduccionID == linea.id, pclases.ProductoVenta.q.id < producto.id),orderBy='-id')[0]
+            anterior = pclases.ProductoVenta.select(pclases.AND(pclases.ProductoVenta.q.camposEspecificosRolloID != None, pclases.ProductoVenta.q.lineaDeProduccionID == linea.id, pclases.ProductoVenta.q.id < producto.id),orderBy='-id')[0]
         except IndexError:
             utils.dialogo_info(texto = "El elemento seleccionado es el primero registrado en el sistema",titulo="ERROR")
             return
@@ -226,7 +221,7 @@ class ProductosDeVentaRollosGeocompuestos(Ventana):
             pclases.LineaDeProduccion.q.nombre.contains('geocompuesto'), 
             pclases.LineaDeProduccion.q.nombre.contains('comercializado')))[0]
         try:
-            siguiente = pclases.ProductoVenta.select(sqlobject.AND(pclases.ProductoVenta.q.camposEspecificosRolloID != None, pclases.ProductoVenta.q.lineaDeProduccionID == linea.id, pclases.ProductoVenta.q.id > producto.id),orderBy='id')[0]
+            siguiente = pclases.ProductoVenta.select(pclases.AND(pclases.ProductoVenta.q.camposEspecificosRolloID != None, pclases.ProductoVenta.q.lineaDeProduccionID == linea.id, pclases.ProductoVenta.q.id > producto.id),orderBy='id')[0]
         except IndexError:
             utils.dialogo_info(texto = "El elemento seleccionado es el último"
                                        " registrado en el sistema",
@@ -341,7 +336,7 @@ class ProductosDeVentaRollosGeocompuestos(Ventana):
         de error por pantalla y devolverá
         999.
         """
-        prods = pclases.ProductoVenta.select(sqlobject.AND(pclases.ProductoVenta.q.camposEspecificosRolloID !=None, pclases.ProductoVenta.q.codigo.startswith('843603219')))
+        prods = pclases.ProductoVenta.select(pclases.AND(pclases.ProductoVenta.q.camposEspecificosRolloID !=None, pclases.ProductoVenta.q.codigo.startswith('843603219')))
         codsproducto = [p.codigo[-4:-1] for p in prods]
         codsproducto.sort()
         for i in xrange(1000):
@@ -420,13 +415,13 @@ class ProductosDeVentaRollosGeocompuestos(Ventana):
                 ida_buscar = int(a_buscar)
             except ValueError:
                 ida_buscar = -1
-            criterio = sqlobject.OR(pclases.ProductoVenta.q.codigo.contains(a_buscar),
+            criterio = pclases.OR(pclases.ProductoVenta.q.codigo.contains(a_buscar),
                                             pclases.ProductoVenta.q.descripcion.contains(a_buscar),
                                             pclases.ProductoVenta.q.id == ida_buscar)
             linea = pclases.LineaDeProduccion.select(pclases.OR(
              pclases.LineaDeProduccion.q.nombre.contains('geocompuesto'), 
              pclases.LineaDeProduccion.q.nombre.contains('comercializado')))[0]
-            criterio = sqlobject.AND(criterio, 
+            criterio = pclases.AND(criterio, 
                 pclases.ProductoVenta.q.camposEspecificosRolloID != None, 
                 pclases.ProductoVenta.q.lineaDeProduccionID == linea.id)
             resultados = pclases.ProductoVenta.select(criterio)
@@ -553,7 +548,7 @@ class ProductosDeVentaRollosGeocompuestos(Ventana):
         Muestra las existencias del artículo en el almacén
         """
         producto = self.objeto
-        elementos = pclases.Articulo.select(sqlobject.AND(pclases.Articulo.q.albaranSalidaID == None,pclases.Articulo.q.productoVentaID == producto.id))
+        elementos = pclases.Articulo.select(pclases.AND(pclases.Articulo.q.albaranSalidaID == None,pclases.Articulo.q.productoVentaID == producto.id))
         utils.dialogo_info(titulo = 'EXISTENCIAS', texto = 'Hay %d unidades de %s en el almacén.\nEl mínimo es %d' % (elementos.count(),producto.descripcion,producto.minimo))
         
     def ver_tarifas(self, w):

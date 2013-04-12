@@ -46,14 +46,14 @@
 ##   sobra nada. Cada campo es para una cosa diferente.
 ###################################################################
 import os
-from ginn.formularios.ventana import Ventana
-from ginn.formularios import utils
+from formularios.ventana import Ventana
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk
-from ginn.framework import pclases
-from ginn.informes import geninformes
-from ginn.formularios.reports import abrir_pdf
+from framework import pclases
+from informes import geninformes
+from formularios.reports import abrir_pdf
 
 
 def imprimir_listado(boton):

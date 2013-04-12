@@ -38,9 +38,8 @@
 ###################################################################
 
 import sys
-sys.path.append('../framework')
 
-from framework import pclases, sqlobject
+from framework import pclases
 
 def id_propia_empresa_proveedor():
     """

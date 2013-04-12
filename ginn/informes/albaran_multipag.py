@@ -28,25 +28,11 @@ from reportlab.rl_config import defaultPageSize
 from reportlab.lib import colors, enums
 from reportlab.lib.units import cm
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet 
-import sys, os#, Image
 from factura_multipag import Linea, TablaFija
 
-try:
-    import pclases, utils
-except ImportError:
-    try:
-        import sys, os
-        sys.path.insert(0, os.path.join("..", "framework"))
-        import pclases, utils
-    except ImportError:
-        sys.path.insert(0, ".")
-        import pclases, utils
-try:
-    from geninformes import give_me_the_name_baby, escribe, rectangulo, el_encogedor_de_fuentes_de_doraemon, agregarFila
-except ImportError:
-    import sys
-    sys.path.append(os.path.join("..", "informes"))
-from geninformes import give_me_the_name_baby, escribe, rectangulo, el_encogedor_de_fuentes_de_doraemon, agregarFila
+from framework import pclases
+from formularios import utils
+from informes.geninformes import give_me_the_name_baby, escribe, rectangulo, el_encogedor_de_fuentes_de_doraemon, agregarFila
 from tempfile import gettempdir
 
 PAGE_HEIGHT = defaultPageSize[1]; PAGE_WIDTH = defaultPageSize[0]
@@ -488,16 +474,16 @@ def go(titulo,
              Spacer(1, 0.15 * cm), 
              totales, 
              lastPageNumberFlowable(0.9*PAGE_WIDTH - 0.5*cm + 1, 1.0*cm)] 
-             #Spacer(1, 0.15 * cm), 
-             # Línea doble.
-             #KeepTogether([LineaHorizontal(0.9 * PAGE_WIDTH), 
-             #              Spacer(1, 0.05 * cm), 
-             #              LineaHorizontal(0.9 * PAGE_WIDTH)]), 
-             #Spacer(1, 0.15 * cm), 
-             #CondPageBreak(13*cm), 
-             #logo_y_empresa, 
-             #Spacer(1, 0.25 * cm), 
-             #texto]
+            #Spacer(1, 0.15 * cm), 
+            # Línea doble.
+            #KeepTogether([LineaHorizontal(0.9 * PAGE_WIDTH), 
+            #              Spacer(1, 0.05 * cm), 
+            #              LineaHorizontal(0.9 * PAGE_WIDTH)]), 
+            #Spacer(1, 0.15 * cm), 
+            #CondPageBreak(13*cm), 
+            #logo_y_empresa, 
+            #Spacer(1, 0.25 * cm), 
+            #texto]
     story = utils.aplanar([i for i in story if i])
     _cabecera_y_cliente = lambda c, d: cabecera_y_cliente(c, 
                                                           d, 

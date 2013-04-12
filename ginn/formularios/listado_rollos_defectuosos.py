@@ -38,21 +38,11 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk, gtk.glade, time
 import sys
-try:
-    from framework import pclases
-except ImportError:
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
-import mx.DateTime
+from framework import pclases
 from partes_de_fabricacion_rollos import build_etiqueta
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
+from informes import geninformes
 
 class ListadoRollosDefectuosos(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -106,8 +96,8 @@ class ListadoRollosDefectuosos(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        from ginn.informes.treeview2csv import treeview2csv
-        from ginn.formularios.reports import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         tv = self.wids['tv_rollos']
         abrir_csv(treeview2csv(tv))
 
@@ -128,8 +118,8 @@ class ListadoRollosDefectuosos(Ventana):
         """
         Crea un PDF con el contenido del TreeView.
         """
-        from ginn.informes.treeview2pdf import treeview2pdf
-        from ginn.formularios.reports import abrir_pdf
+        from informes.treeview2pdf import treeview2pdf
+        from formularios.reports import abrir_pdf
         tv = self.wids['tv_rollos']
         model = tv.get_model()
         model.append(None, ("===", "===", "===", "===", "===", "===", 0))
@@ -375,7 +365,7 @@ class ListadoRollosDefectuosos(Ventana):
                 rollos_defecto.append(model[path][0])
                 rollos_defecto.sort()
             rollos_defecto = ', '.join(rollos_defecto)
-            from ginn.formularios import reports as informes
+            from formularios import reports as informes
             entrada, mostrar_marcado = self._dialogo_entrada(titulo='ETIQUETAS', 
                                                              texto="Introduzca los números de rollo, separados por coma, que desea etiquetar:",
                                                              valor_por_defecto = rollos_defecto,

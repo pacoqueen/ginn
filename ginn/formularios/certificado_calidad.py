@@ -39,8 +39,8 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk
-from ginn.framework import pclases
-from ginn.framework.seeker import VentanaGenerica 
+from framework import pclases
+from framework.seeker import VentanaGenerica 
 from formularios.trazabilidad_articulos import escribir as txt_write, \
                                                borrar_texto as txt_clear
 
@@ -470,7 +470,7 @@ class CertificadoCalidad(Ventana, VentanaGenerica):
             return
         #tv = self.wids['tv_datos']
         #from treeview2pdf import treeview2pdf
-        from ginn.formularios.reports import abrir_pdf
+        from formularios.reports import abrir_pdf
         #strfecha = "%s - %s" % (utils.str_fecha(mx.DateTime.localtime()), 
         #                        utils.str_hora(mx.DateTime.localtime()))
         #abrir_pdf(treeview2pdf(tv, 
@@ -478,8 +478,8 @@ class CertificadoCalidad(Ventana, VentanaGenerica):
         #        self.objeto.numalbaran),
         #    fecha = strfecha, 
         #    apaisado = False))
-        from ginn.informes import informe_certificado_calidad
-        from ginn.informes.geninformes import give_me_the_name_baby
+        from informes import informe_certificado_calidad
+        from informes.geninformes import give_me_the_name_baby
         from time import sleep
         dic_productos = {}
         model = self.wids['tv_datos'].get_model()
@@ -522,8 +522,8 @@ class CertificadoCalidad(Ventana, VentanaGenerica):
         if not self.objeto:
             return
         tv = self.wids['tv_datos']
-        from ginn.informes.treeview2csv import treeview2csv
-        from ginn.formularios.reports import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         nomarchivocsv = treeview2csv(tv)
         abrir_csv(nomarchivocsv)
 

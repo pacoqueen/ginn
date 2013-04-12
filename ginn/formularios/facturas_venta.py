@@ -85,19 +85,9 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import sys, os
-import gtk, gtk.glade, time, sqlobject
-try:
-    from framework import pclases
-except ImportError:
-    from os.path import join as pathjoin
-    sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
-try:
-    import geninformes
-except ImportError:
-    sys.path.append('../informes')
-    import geninformes
-import mx.DateTime 
+import gtk, gtk.glade, time
+from framework import pclases
+from informes import geninformes
 from utils import ffloat, _float as float
 import postomatic
 from albaranes_de_salida import ajustar_existencias
@@ -1839,7 +1829,7 @@ class FacturasVenta(Ventana):
                                     'CÓDIGO PRODUCTO', 
                                     padre = self.wids['ventana'])
         if txt != None:
-            criterio = sqlobject.OR(pclases.ProductoVenta.q.codigo.contains(txt),
+            criterio = pclases.OR(pclases.ProductoVenta.q.codigo.contains(txt),
                                     pclases.ProductoVenta.q.nombre.contains(txt),
                                     pclases.ProductoVenta.q.descripcion.contains(txt))
             prods = pclases.ProductoVenta.select(criterio)
@@ -2951,11 +2941,7 @@ class FacturasVenta(Ventana):
                                   fraccion = "céntimos").upper()
         if len(lineas) > 0:
             if pclases.config.get_multipagina() == 1:
-                try:
-                    import factura_multipag
-                except ImportError:
-                    sys.path.append(os.path.join("..", "informes"))
-                    import factura_multipag
+                from informes import factura_multipag
                 nomarchivo = factura_multipag.go_from_facturaVenta(factura)
             else:
                 nomarchivo = geninformes.factura(cliente, 
@@ -3015,7 +3001,7 @@ class FacturasVenta(Ventana):
         """
         Muestra la factura generada en PDF.
         """
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         informes.abrir_pdf(nomarchivo)
 
     def buscar_abonos(self, w):
@@ -3026,7 +3012,7 @@ class FacturasVenta(Ventana):
         la ventana.
         """
         cliente = self.objeto.cliente
-        abonos = pclases.Abono.select(sqlobject.AND(pclases.Abono.q.clienteID == cliente.id,
+        abonos = pclases.Abono.select(pclases.AND(pclases.Abono.q.clienteID == cliente.id,
                                                     pclases.Abono.q.facturaDeAbonoID != None))
         # Si tienen pagos de abono en la factura de abono es que ya se ha usado en otra factura.
         abonos = [a for a in abonos if a.facturaDeAbono.pagosDeAbono == []]

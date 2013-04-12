@@ -41,14 +41,10 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk, gtk.glade, time
 import sys
 from framework import pclases
-try:
-    import geninformes
-except ImportError:
-    import geninformes
-from utils import _float as float
+from informes import geninformes
 try:
     from psycopg import ProgrammingError as psycopg_ProgrammingError
 except ImportError:
@@ -110,19 +106,19 @@ class CategoriasLaborales(Ventana):
         determinar cómo comparar los valores.
         """
         res = False
-        if isinstance(type_col, sqlobject.SOStringCol):
+        if isinstance(type_col, pclases.SOStringCol):
             # Cadena: el widget es un entry
             res = self.comparar_string(col)
-        elif isinstance(type_col, sqlobject.SOIntCol):
+        elif isinstance(type_col, pclases.SOIntCol):
             # Entero: el widget es un entry
             res = self.comparar_int(col)
-        elif isinstance(type_col, sqlobject.SOBoolCol):
+        elif isinstance(type_col, pclases.SOBoolCol):
             # Boolean: el widget es un checkbox
             res = self.comparar_bool(col)
-        elif isinstance(type_col, sqlobject.SOForeignKey):
+        elif isinstance(type_col, pclases.SOForeignKey):
             # Entero-clave ajena: el widget es un comboboxentry
             res = self.comparar_ajena(col)
-        elif isinstance(type_col, sqlobject.SOCol):
+        elif isinstance(type_col, pclases.SOCol):
             # Clase base, casi seguro Float: el widget es un entry
             res = self.comparar_float(col)
         else:
@@ -171,7 +167,7 @@ class CategoriasLaborales(Ventana):
             self.logger.error(txt_error)
             valor_ventana = None
         try:
-            valor_campo = self.objeto._SO_getValue(col) # Es un ID -es decir, un entero-, no un objeto sqlobject.
+            valor_campo = self.objeto._SO_getValue(col) # Es un ID -es decir, un entero-, no un objeto pclases.
         except KeyError:
             txt_error = "categorias_laborales.py: No se pudo obtener el valor del objeto para %s." % col
             print txt_error
@@ -322,7 +318,7 @@ class CategoriasLaborales(Ventana):
         icol = 0
         irow = 0
         for col in self.objeto._SO_columnDict:
-            if not isinstance(self.objeto._SO_columnDict[col], sqlobject.SOBoolCol):
+            if not isinstance(self.objeto._SO_columnDict[col], pclases.SOBoolCol):
                 # Los checkboxes llevan su propio label.
                 label = self.build_label(col)
                 self.wids['t'].attach(label, icol, icol+1, irow, irow+1)
@@ -372,29 +368,29 @@ class CategoriasLaborales(Ventana):
         establece su valor por defecto.
         """
         res = gtk.Label('ERROR: N/A')
-        if isinstance(tipocampo, sqlobject.SOStringCol):  # Cadena: el widget es un entry
+        if isinstance(tipocampo, pclases.SOStringCol):  # Cadena: el widget es un entry
             res = gtk.Entry()
-            if tipocampo.default != None and tipocampo.default != sqlobject.sqlbuilder.NoDefault:
+            if tipocampo.default != None and tipocampo.default != pclases.sqlbuilder.NoDefault:
                 res.set_text("%s" % (tipocampo.default))
-        elif isinstance(tipocampo, sqlobject.SOIntCol):   # Entero: el widget es un entry
+        elif isinstance(tipocampo, pclases.SOIntCol):   # Entero: el widget es un entry
             res = gtk.Entry()
-            if tipocampo.default != None and tipocampo.default != sqlobject.sqlbuilder.NoDefault:
+            if tipocampo.default != None and tipocampo.default != pclases.sqlbuilder.NoDefault:
                 res.set_text("%s" % (tipocampo.default))
-        elif isinstance(tipocampo, sqlobject.SOBoolCol):  # Boolean: el widget es un checkbox
+        elif isinstance(tipocampo, pclases.SOBoolCol):  # Boolean: el widget es un checkbox
             label = self.build_label(nombrecampo)
             res = gtk.CheckButton(label = label.get_text())
             if tipocampo.default:
                 res.set_active(True)
-        elif isinstance(tipocampo, sqlobject.SOForeignKey):  # Entero-clave ajena: el widget es un comboboxentry
+        elif isinstance(tipocampo, pclases.SOForeignKey):  # Entero-clave ajena: el widget es un comboboxentry
             res = gtk.ComboBoxEntry()
             ajena = tipocampo.foreignKey
             clase = getattr(pclases, ajena)
             COLUMNATEXTO = 'nombre'     # XXX: Cambiar si no tiene una columna "nombre"
             contenido = [(r.id, r._SO_getValue(COLUMNATEXTO)) for r in clase.select(orderBy='id')]
             utils.rellenar_lista(res, contenido)
-        elif isinstance(tipocampo, sqlobject.SOCol):      # Clase base, casi seguro Float: el widget es un entry
+        elif isinstance(tipocampo, pclases.SOCol):      # Clase base, casi seguro Float: el widget es un entry
             res = gtk.Entry()
-            if tipocampo.default != None and tipocampo.default != sqlobject.sqlbuilder.NoDefault:
+            if tipocampo.default != None and tipocampo.default != pclases.sqlbuilder.NoDefault:
                 res.set_text(utils.float2str("%s" % tipocampo.default, 3, autodec = True))
         else:
             txt = "categorias_laborales.py: No se pudo construir el widget para %s." % nombrecampo
@@ -408,21 +404,21 @@ class CategoriasLaborales(Ventana):
 #        valor = self.objeto._SO_getValue(nombrecampo)
         get_valor = getattr(self.objeto, '_SO_get_%s' % (nombrecampo))
         valor = get_valor()
-        if isinstance(tipocampo, sqlobject.SOStringCol):  # Cadena: el widget es un entry
+        if isinstance(tipocampo, pclases.SOStringCol):  # Cadena: el widget es un entry
             if valor != None:
                 w.set_text(valor)
             else:
                 w.set_text("")
-        elif isinstance(tipocampo, sqlobject.SOIntCol):   # Entero: el widget es un entry
+        elif isinstance(tipocampo, pclases.SOIntCol):   # Entero: el widget es un entry
             try:
                 w.set_text("%d" % valor)
             except TypeError:
                 w.set_text("0")
-        elif isinstance(tipocampo, sqlobject.SOBoolCol):  # Boolean: el widget es un checkbox
+        elif isinstance(tipocampo, pclases.SOBoolCol):  # Boolean: el widget es un checkbox
             w.set_active(valor)
-        elif isinstance(tipocampo, sqlobject.SOForeignKey):  # Entero-clave ajena: el widget es un comboboxentry
+        elif isinstance(tipocampo, pclases.SOForeignKey):  # Entero-clave ajena: el widget es un comboboxentry
             utils.combo_set_from_db(w, valor)
-        elif isinstance(tipocampo, sqlobject.SOCol):      # Clase base, casi seguro Float: el widget es un entry
+        elif isinstance(tipocampo, pclases.SOCol):      # Clase base, casi seguro Float: el widget es un entry
             if valor != None:
                 try:
                     w.set_text(utils.float2str(valor, 3, autodec = True))
@@ -435,9 +431,9 @@ class CategoriasLaborales(Ventana):
 
     def get_valor(self, w, nombrecampo, tipocampo):
         res = None
-        if isinstance(tipocampo, sqlobject.SOStringCol):  # Cadena: el widget es un entry
+        if isinstance(tipocampo, pclases.SOStringCol):  # Cadena: el widget es un entry
             res = w.get_text()
-        elif isinstance(tipocampo, sqlobject.SOIntCol):   # Entero: el widget es un entry
+        elif isinstance(tipocampo, pclases.SOIntCol):   # Entero: el widget es un entry
             res = w.get_text()
             try:
                 res = int(res)
@@ -449,11 +445,11 @@ class CategoriasLaborales(Ventana):
                 txt = "El valor %s no es correcto. Introduzca un número entero." % (res)
                 utils.dialogo_info(titulo = "ERROR DE FORMATO", texto = txt, padre = self.wids['ventana'])
                 res = 0
-        elif isinstance(tipocampo, sqlobject.SOBoolCol):  # Boolean: el widget es un checkbox
+        elif isinstance(tipocampo, pclases.SOBoolCol):  # Boolean: el widget es un checkbox
             res = w.get_active()
-        elif isinstance(tipocampo, sqlobject.SOForeignKey):  # Entero-clave ajena: el widget es un comboboxentry
+        elif isinstance(tipocampo, pclases.SOForeignKey):  # Entero-clave ajena: el widget es un comboboxentry
             res = utils.combo_get_value(w)
-        elif isinstance(tipocampo, sqlobject.SOCol):      # Clase base, casi seguro Float: el widget es un entry
+        elif isinstance(tipocampo, pclases.SOCol):      # Clase base, casi seguro Float: el widget es un entry
             res = w.get_text()
             try:
                 res = float(res)
@@ -524,7 +520,7 @@ class CategoriasLaborales(Ventana):
         objetobak = self.objeto
         a_buscar = utils.dialogo_entrada("Introduzca nombre o código del puesto.")
         if a_buscar != None:
-            criterio = sqlobject.OR(pclases.CategoriaLaboral.q.codigo.contains(a_buscar),
+            criterio = pclases.OR(pclases.CategoriaLaboral.q.codigo.contains(a_buscar),
                                     pclases.CategoriaLaboral.q.puesto.contains(a_buscar))
             resultados = pclases.CategoriaLaboral.select(criterio)
             if resultados.count() > 1:

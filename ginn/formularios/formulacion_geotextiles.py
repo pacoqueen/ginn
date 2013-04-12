@@ -44,13 +44,8 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
-try:
-    from framework import pclases
-except ImportError:
-    import sys
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
+import gtk, gtk.glade, time
+from framework import pclases
 from utils import _float as float
 try:
     from psycopg import ProgrammingError as psycopg_ProgrammingError
@@ -289,7 +284,7 @@ class FormulacionGeotextiles(Ventana):
                 ida_buscar = int(a_buscar)
             except ValueError:
                 ida_buscar = -1
-            criterio = sqlobject.OR(
+            criterio = pclases.OR(
                 pclases.ProductoCompra.q.codigo.contains(a_buscar),
                 pclases.ProductoCompra.q.descripcion.contains(a_buscar),
                 pclases.ProductoCompra.q.id == ida_buscar)
@@ -448,10 +443,10 @@ class FormulacionGeotextiles(Ventana):
                                     titulo = 'BUSCAR PRODUCTO VENTA', 
                                     padre = self.wids['ventana'])
         if txt != None:
-            criterio = sqlobject.OR(pclases.ProductoVenta.q.codigo.contains(txt),
+            criterio = pclases.OR(pclases.ProductoVenta.q.codigo.contains(txt),
                                     pclases.ProductoVenta.q.nombre.contains(txt),
                                     pclases.ProductoVenta.q.descripcion.contains(txt))
-            criterio = sqlobject.AND(criterio, pclases.ProductoVenta.q.camposEspecificosRolloID != None)
+            criterio = pclases.AND(criterio, pclases.ProductoVenta.q.camposEspecificosRolloID != None)
             prods = pclases.ProductoVenta.select(criterio)
             productos = [p for p in prods]
         return productos

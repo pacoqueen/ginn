@@ -34,7 +34,7 @@ import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade
 import sys, os
-from ginn.framework import pclases
+from framework import pclases
 import mx.DateTime
 
 class ProduccionesEstandar(Ventana):
@@ -71,9 +71,8 @@ class ProduccionesEstandar(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        sys.path.append(os.path.join("..", "informes"))
-        from ginn.informes.treeview2csv import treeview2csv
-        from ginn.formularios.reports import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
 
@@ -142,9 +141,8 @@ class ProduccionesEstandar(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        sys.path.append(os.path.join("..", "informes"))
-        from ginn.informes.treeview2pdf import treeview2pdf
-        from ginn.formularios.reports import abrir_pdf
+        from informes.treeview2pdf import treeview2pdf
+        from formularios.reports import abrir_pdf
         strfecha = utils.str_fecha(mx.DateTime.localtime())
         informe = treeview2pdf(self.wids['tv_datos'], 
                         titulo="Listado de productos con velocidades", 

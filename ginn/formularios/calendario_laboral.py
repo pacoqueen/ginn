@@ -41,15 +41,11 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk, gtk.glade, time
 import sys
 from framework import pclases
 import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    import geninformes
-sys.path.append('.')
+from informes import geninformes
 import ventana_progreso
 import re
 from utils import _float as float

@@ -37,7 +37,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk, gtk.glade, time
 import sys, os
 from framework import pclases
 import mx.DateTime
@@ -82,7 +82,6 @@ class ConsultaAlbaranesFacturados(Ventana):
         Exporta el contenido del TreeView a un fichero csv.
         """
         import sys, os
-        sys.path.append(os.path.join("..", "informes"))
         from treeview2csv import treeview2csv
         from informes import abrir_csv
         tv = self.wids['tv_datos']
@@ -177,7 +176,7 @@ class ConsultaAlbaranesFacturados(Ventana):
             if not self.inicio:
                 albaranes = pclases.AlbaranEntrada.select(pclases.AlbaranEntrada.q.fecha <= self.fin, orderBy = 'fecha')
             else:
-                albaranes = pclases.AlbaranEntrada.select(sqlobject.AND(pclases.AlbaranEntrada.q.fecha >= self.inicio,
+                albaranes = pclases.AlbaranEntrada.select(pclases.AND(pclases.AlbaranEntrada.q.fecha >= self.inicio,
                                                                        pclases.AlbaranEntrada.q.fecha <= self.fin), 
                                                          orderBy='fecha')
             self.cambiar_cabecera_columna("Proveedor")
@@ -185,7 +184,7 @@ class ConsultaAlbaranesFacturados(Ventana):
             if not self.inicio:
                 albaranes = pclases.AlbaranSalida.select(pclases.AlbaranSalida.q.fecha <= self.fin, orderBy = 'fecha')
             else:
-                albaranes = pclases.AlbaranSalida.select(sqlobject.AND(pclases.AlbaranSalida.q.fecha >= self.inicio,
+                albaranes = pclases.AlbaranSalida.select(pclases.AND(pclases.AlbaranSalida.q.fecha >= self.inicio,
                                                                        pclases.AlbaranSalida.q.fecha <= self.fin), 
                                                          orderBy='fecha')
             self.cambiar_cabecera_columna("Cliente")
@@ -202,7 +201,7 @@ class ConsultaAlbaranesFacturados(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe.
         """
-        from ginn.formularios import reports as informes 
+        from formularios import reports as informes 
         datos = []
         model = self.wids['tv_datos'].get_model()
         for i in model:

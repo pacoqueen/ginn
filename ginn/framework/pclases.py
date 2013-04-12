@@ -90,8 +90,8 @@ import pprint
 import re
 import threading #, psycopg
 import time
-from ginn.formularios import utils
-from ginn.framework import notificacion
+from formularios import utils
+from framework import notificacion
 
 # GET FUN !
           
@@ -9944,18 +9944,12 @@ class ModeloEtiqueta(SQLObject, PRPCTOO):
         else:   # Si no hay módulo, se busca en geninformes.
             modulo = "geninformes"
         try:
-            modulobj = __import__(modulo)
-        except ImportError:
-            # Pruebo con la ruta en informes. Debería estar ahí.
-            sys.path.append(os.path.abspath(os.path.join(
-                os.path.dirname(__file__), "..", "informes")))
-            try:
-                modulobj = __import__(modulo)
-            except ImportError, e:
-                raise ValueError, "pclases::ModeloEtiqueta.get_func -> "\
-                    "El módulo %s no se encontró en la ruta estándar "\
-                    "de informes. Información de la excepción original: %s" % (
-                    modulo, e)
+            modulobj = __import__("informes." + modulo)
+        except ImportError, e:
+            raise ValueError, "pclases::ModeloEtiqueta.get_func -> "\
+                "El módulo %s no se encontró en la ruta estándar "\
+                "de informes. Información de la excepción original: %s" % (
+                modulo, e)
         try:
             fwrap = getattr(modulobj, self.funcion)
         except NameError:
@@ -16396,16 +16390,8 @@ class FacturaVenta(SQLObject, PRPCTOO, SuperFacturaVenta):
         """
         # No estoy muy seguro de que esta sea el sitio indicado para meter 
         # esta rutina.
-        try:
-            from geninformes import crm_generar_pdf_detalles_factura
-        except ImportError:
-            sys.path.append(os.path.join('..', 'informes'))
-            from geninformes import crm_generar_pdf_detalles_factura
-        try:
-            from albaranes_de_salida import imprimir_factura as generar_factura
-        except ImportError:
-            sys.path.append(os.path.join('..', 'formularios'))
-            from albaranes_de_salida import imprimir_factura as generar_factura
+        from informes.geninformes import crm_generar_pdf_detalles_factura
+        from formularios.albaranes_de_salida import imprimir_factura as generar_factura
         copiafra = generar_factura(self, abrir = False, es_copia = True)
         historial = crm_generar_pdf_detalles_factura(self) 
         comerciales = self.get_comerciales()

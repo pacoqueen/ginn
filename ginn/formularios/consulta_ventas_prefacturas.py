@@ -39,12 +39,7 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
-try:
-    from framework import pclases
-except ImportError:
-    import sys
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
+from framework import pclases
 import mx.DateTime
 
 class ConsultaVentasPrefacturas(Ventana):
@@ -179,7 +174,6 @@ class ConsultaVentasPrefacturas(Ventana):
             import charting
         except ImportError:
             import sys, os
-            sys.path.append(os.path.join("..", "utils"))
             import charting
         try:
             oldchart = self.wids['eventbox_chart'].get_child()
@@ -259,8 +253,8 @@ class ConsultaVentasPrefacturas(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from ginn.informes.treeview2pdf import treeview2pdf
-        from ginn.formularios.reports import abrir_pdf
+        from informes.treeview2pdf import treeview2pdf
+        from formularios.reports import abrir_pdf
         fechafin = mx.DateTime.DateTimeFrom(day = int(self.fin.split("/")[2]), 
                                             month = int(self.fin.split("/")[1]), 
                                             year = int(self.fin.split("/")[0]))

@@ -46,19 +46,8 @@ import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, time
 import sys, os
-try:
-    from framework import pclases
-    from seeker import VentanaGenerica
-except ImportError:
-    from os.path import join as pathjoin
-    sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
-    from seeker import VentanaGenerica
-try:
-    import geninformes
-except ImportError:
-    sys.path.append('../informes')
-    import geninformes
+from framework import pclases
+from framework.seeker import VentanaGenerica
 from utils import _float as float
 
 class ProductosCompra(Ventana, VentanaGenerica):
@@ -929,7 +918,6 @@ class ProductosCompra(Ventana, VentanaGenerica):
         Lanzará un ImportError si no se puede cargar el módulo corrector.
         Devuelve False si no se 
         """
-        sys.path.append(os.path.join("..", "utils"))
         import spelling     # Antes de hacer nada más, para no perder tiempo
                             # en caso de error.
         txtbase = []

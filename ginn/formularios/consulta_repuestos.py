@@ -39,13 +39,8 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject, os
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append(os.path.join('..','informes'))
-    import geninformes
+import gtk, gtk.glade, time, os
+from informes import geninformes
 import mx, mx.DateTime
 
 class ConsultaRepuestos(Ventana):
@@ -56,7 +51,7 @@ class ConsultaRepuestos(Ventana):
         comenzar la ventana (en lugar del primero de la tabla, que es
         el que se muestra por defecto).
         """
-        from ginn.formularios import reports as informes, tempfile
+        from formularios import reports as informes, tempfile
 
         exportar_a_csv_a = None
 

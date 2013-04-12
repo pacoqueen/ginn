@@ -41,21 +41,15 @@
 ## forma de pago del cliente.
 ###################################################################
 
-from ginn.formularios.ventana import Ventana
-from ginn.formularios import utils
+from formularios.ventana import Ventana
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
 import sys
-from ginn.framework import pclases
+from framework import pclases
 import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    sys.path.append('../informes')
-    import geninformes
-import re
-sys.path.append('.')
+from informes import geninformes
 import ventana_progreso
 from vencimientos_pendientes_por_cliente import buscar_facturas_de_abono_sin_pagar
 
@@ -113,8 +107,8 @@ class ConsultaVencimientosCobros(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        from ginn.informes.treeview2csv import treeview2csv
-        from ginn.formularios.reports import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
         tv = self.wids['tv_totales']
@@ -124,14 +118,14 @@ class ConsultaVencimientosCobros(Ventana):
         model = tv.get_model()
         if model[path][0] == "LOGIC":
             idlogic = model[path][-1].replace("L:", "")
-            from ginn.formularios import mostrar_datos_logic
+            from formularios import mostrar_datos_logic
             ventanalogic = mostrar_datos_logic.MostrarDatosLogic(usuario = self.usuario, padre = self.wids['ventana'], consulta = " id == %d " % (idlogic))  # @UnusedVariable
         elif model[path][-1].startswith("A:"):
             idfrabono = model[path][-1].replace("A:", "")
             frabono = pclases.FacturaDeAbono.get(idfrabono)
             abono = frabono.abono
             if abono:
-                from ginn.formularios import abonos_venta
+                from formularios import abonos_venta
                 ventanabonos = abonos_venta.AbonosVenta(objeto = abono,  # @UnusedVariable
                                                         usuario = self.usuario)
             else:
@@ -143,7 +137,7 @@ class ConsultaVencimientosCobros(Ventana):
             idvto = model[path][-1].replace("V:", "")
             vto = pclases.VencimientoCobro.get(idvto)
             if vto.facturaVenta != None:
-                from ginn.formularios import facturas_venta           
+                from formularios import facturas_venta           
                 ventanafacturas = facturas_venta.FacturasVenta(  # @UnusedVariable
                                     vto.facturaVenta, 
                                     usuario = self.usuario)
@@ -565,7 +559,7 @@ class ConsultaVencimientosCobros(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         datos = []
         for i in self.resultado:
             if not i[2]:    # i[2] = False cuando es vencimiento normal de la BD

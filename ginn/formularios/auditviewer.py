@@ -40,11 +40,7 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, time, gobject, pango
-try:
-    from framework import pclases
-except ImportError:
-    from os.path import join as pathjoin
-    from framework import pclases
+from framework import pclases
 import mx, mx.DateTime
 from consulta_existenciasBolsas import act_fecha 
 
@@ -94,7 +90,7 @@ class AuditViewer(Ventana):
         consola = pyconsole.attach_console(self.wids['contenedor_consola'], 
                                 banner = "Consola python de depuración GINN", 
                                 script_inicio = """import sys, os, pygtk, gtk, gtk.glade, utils
-from ginn.framework import pclases
+from framework import pclases
 import mx.DateTime
 dir()
 """, 

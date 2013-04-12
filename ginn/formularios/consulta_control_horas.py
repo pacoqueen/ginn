@@ -318,8 +318,7 @@ class ConsultaControlHoras(Ventana):
         #    import charting
         #except ImportError:
         #    import sys, os
-        #    sys.path.append(os.path.join("..", "utils"))
-        #    import charting
+        #        #    import charting
         #try:
         #    oldchart = self.wids['eventbox_chart'].get_child()
         #    if oldchart != None:
@@ -421,14 +420,14 @@ class ConsultaControlHoras(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        from ginn.informes.treeview2csv import treeview2csv
-        from ginn.formularios.reports import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
 
     def imprimir(self, boton):
-        from ginn.informes.treeview2pdf import treeview2pdf
-        from ginn.formularios.reports import abrir_pdf
+        from informes.treeview2pdf import treeview2pdf
+        from formularios.reports import abrir_pdf
         tv = self.wids['tv_datos']
         abrir_pdf(treeview2pdf(tv, 
                                titulo = "Resumen horas por empleado y día", 
@@ -464,7 +463,6 @@ def graficar(widevchart, datachart, logger = None, *resto_params, **resto_kwp):
         import charting
     except ImportError:
         import sys, os
-        sys.path.append(os.path.join("..", "utils"))
         import charting
     try:
         oldchart = widevchart.get_child()

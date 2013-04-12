@@ -270,7 +270,7 @@ class ConsultaIncidencias(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         datos = []
         for i in self.resultado:
 #            if len(i.observaciones) > 35:

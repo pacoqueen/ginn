@@ -40,18 +40,8 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, time
-try:
-    from framework import pclases
-except ImportError:
-    import sys
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
+from framework import pclases
+from informes import geninformes
 from utils import _float as float
 
 class Productos(Ventana):
@@ -283,8 +273,8 @@ class Productos(Ventana):
         """
         "Vuerca-vuerca" el TreeView en un PDF.
         """
-        from ginn.informes.treeview2pdf import treeview2pdf
-        from ginn.formularios.reports import abrir_pdf
+        from informes.treeview2pdf import treeview2pdf
+        from formularios.reports import abrir_pdf
         import mx.DateTime
         strfecha = utils.str_fecha(mx.DateTime.localtime())
         tv = self.wids['tv_datos']
@@ -294,8 +284,8 @@ class Productos(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        from ginn.informes.treeview2csv import treeview2csv
-        from ginn.formularios.reports import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
 

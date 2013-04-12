@@ -39,7 +39,7 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
-from ginn.framework import pclases
+from framework import pclases
 
 
 class ConsultaProductosComprados(Ventana):
@@ -89,9 +89,8 @@ class ConsultaProductosComprados(Ventana):
         Exporta el contenido del TreeView a un fichero csv.
         """
         import sys, os
-        sys.path.append(os.path.join("..", "informes"))
-        from ginn.informes.treeview2csv import treeview2csv
-        from ginn.formularios.reports import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
 
@@ -196,8 +195,8 @@ class ConsultaProductosComprados(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from ginn.informes.treeview2pdf import treeview2pdf
-        from ginn.formularios.reports import abrir_pdf
+        from informes.treeview2pdf import treeview2pdf
+        from formularios.reports import abrir_pdf
         idcliente = utils.combo_get_value(self.wids['cmbe_cliente'])
         if idcliente == None:
             utils.dialogo_info(titulo = 'ERROR',

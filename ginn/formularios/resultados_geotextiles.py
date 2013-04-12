@@ -50,18 +50,8 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, time
-try:
-    from framework import pclases
-except ImportError:
-    import sys
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
+from framework import pclases
+from informes import geninformes
 from utils import _float as float
 from resultados_fibra import comprobar_y_preguntar_si_guardar
 
@@ -952,7 +942,7 @@ class ResultadosGeotextiles(Ventana):
         """
         Imprime la información en pantalla.
         """
-        from ginn.formularios import reports as informes, geninformes
+        from formularios import reports as informes
         txt = "PARTIDA: %s\n" % (self.wids['e_numpartida'].get_text())
         txt += "PRODUCTO: %s\n\n" % (self.wids['e_nombre'].get_text())
         txt += "Lote y materia prima consumida:\n"

@@ -68,20 +68,10 @@
 from ventana import Ventana
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject, gobject
+import gtk, gtk.glade, time, gobject
 import utils, utils_almacen
-try:
-    from framework import pclases
-except ImportError:
-    import sys
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
+from framework import pclases
+from informes import geninformes
 from utils import _float as float
 import re, mx, mx.DateTime
 import postomatic
@@ -547,7 +537,7 @@ class PedidosDeCompra(Ventana):
             id_a_buscar = utils.parse_numero(a_buscar)
         except:
             id_a_buscar = 0
-        criterio = sqlobject.OR(pclases.ProductoCompra.q.id == id_a_buscar,
+        criterio = pclases.OR(pclases.ProductoCompra.q.id == id_a_buscar,
                         pclases.ProductoCompra.q.codigo.contains(a_buscar),
                         pclases.ProductoCompra.q.descripcion.contains(a_buscar))
         if filtrar:
@@ -1167,7 +1157,7 @@ class PedidosDeCompra(Ventana):
         OJO: Sólo imprime aquellas líneas pendientes de recibir.
         """
         self.guardar(None)  # Si se ha olvidado guardar, guardo yo.
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         pedido = self.objeto
         pednum = pedido.numpedido
         if pedido.proveedor == None:

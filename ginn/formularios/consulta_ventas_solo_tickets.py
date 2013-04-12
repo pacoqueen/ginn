@@ -35,10 +35,10 @@
 ###################################################################
 ## Consulta tanto por ticket como agrupada por tipo de material (familia).
 ###################################################################
-from ginn.formularios.reports import abrir_pdf, abrir_csv
-from ginn.framework import pclases
-from ginn.informes.treeview2csv import treeview2csv
-from ginn.informes.treeview2pdf import treeview2pdf
+from formularios.reports import abrir_pdf, abrir_csv
+from framework import pclases
+from informes.treeview2csv import treeview2csv
+from informes.treeview2pdf import treeview2pdf
 from ventana import Ventana
 import gtk
 import mx.DateTime

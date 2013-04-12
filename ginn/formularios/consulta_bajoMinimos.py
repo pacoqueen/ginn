@@ -38,7 +38,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk, gtk.glade, time
 from framework import pclases
 import mx.DateTime
 import geninformes
@@ -93,7 +93,6 @@ class ConsultaBajoMinimos(Ventana):
         Exporta el contenido del TreeView a un fichero csv.
         """
         import sys, os
-        sys.path.append(os.path.join("..", "informes"))
         from treeview2csv import treeview2csv
         from informes import abrir_csv
         tv = self.wids['tv_datos']
@@ -240,7 +239,7 @@ class ConsultaBajoMinimos(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         if self.resultado != []:
             datos = []
             if isinstance(self.resultado[0],tuple):

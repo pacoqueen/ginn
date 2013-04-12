@@ -47,14 +47,7 @@ import pygtk
 pygtk.require ('2.0')
 import gtk, pango
 
-try:
-    from utils import dialogo_entrada as fdialogo
-except ImportError:
-    try:
-        from utils.ui import dialogo_entrada as fdialogo
-    except ImportError:
-        sys.path.append("..")
-        from utils.ui import dialogo_entrada as fdialogo
+from formularios.utils import dialogo_entrada as fdialogo
         
 #def analyse (exctyp, value, tb):
 #    trace = StringIO()

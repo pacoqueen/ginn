@@ -50,11 +50,7 @@ pygtk.require('2.0')
 import gtk
 from framework import pclases
 import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    import geninformes
-from ventana_progreso import VentanaProgreso
+from informes import geninformes
 
 
 class BalasCable(Ventana):
@@ -108,7 +104,7 @@ class BalasCable(Ventana):
         from listado_balas import preparar_datos_etiquetas_balas_cable
         data = preparar_datos_etiquetas_balas_cable(balas)
         if data:
-            from ginn.formularios import reports as informes
+            from formularios import reports as informes
             informes.abrir_pdf(geninformes.etiquetasBalasCableEtiquetadora(data))
 
     def borrar_balas(self, balas):

@@ -35,21 +35,11 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, time, mx, mx.DateTime
-try:
-    from framework import pclases
-    from seeker import VentanaGenerica 
-except ImportError:
-    sys.path.append(os.path.join('..', 'framework'))
-    from framework import pclases
-    from seeker import VentanaGenerica 
+from framework import pclases
+from framework.seeker import VentanaGenerica 
 from utils import _float as float
 import ventana_progreso
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
+from informes import geninformes
 
 class ValorAlmacen(Ventana):
     def __init__(self, objeto = None, usuario = None):

@@ -34,15 +34,15 @@
 ###################################################################
 
 import sys, os
-from ginn.formularios.ventana import Ventana
+from formularios.ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
 from framework import pclases
 import mx.DateTime
-from ginn.formularios import ventana_progreso
-from ginn.informes import geninformes
+from formularios import ventana_progreso
+from informes import geninformes
     
 
 class ConsultaConsumo(Ventana):
@@ -84,8 +84,8 @@ class ConsultaConsumo(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        from ginn.informes.treeview2csv import treeview2csv
-        from ginn.formularios.reports import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
 
@@ -236,7 +236,7 @@ class ConsultaConsumo(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         datos = []
         model = self.wids['tv_datos'].get_model()
         for i in xrange(len(model)):

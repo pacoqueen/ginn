@@ -130,44 +130,44 @@ class ConsultaCompras(Ventana):
         puid = tv.get_model()[path][-1]
         o = pclases.getObjetoPUID(puid)
         if isinstance(o, pclases.FacturaCompra):
-            from ginn.formularios.facturas_compra import FacturasDeEntrada as NewW
+            from formularios.facturas_compra import FacturasDeEntrada as NewW
         elif isinstance(o, pclases.Proveedor):
-            from ginn.formularios.proveedores import Proveedores as NewW
+            from formularios.proveedores import Proveedores as NewW
         elif isinstance(o, pclases.AlbaranEntrada):
-            from ginn.formularios.albaranes_de_entrada import AlbaranesDeEntrada as NewW
+            from formularios.albaranes_de_entrada import AlbaranesDeEntrada as NewW
         elif isinstance(o, pclases.LineaDeCompra):
             if o.facturaCompra:
-                from ginn.formularios.facturas_compra import FacturasDeEntrada as NewW
+                from formularios.facturas_compra import FacturasDeEntrada as NewW
                 o = o.facturaCompra
             elif o.albaranEntrada:
-                from ginn.formularios.albaranes_de_entrada import AlbaranesDeEntrada as NewW
+                from formularios.albaranes_de_entrada import AlbaranesDeEntrada as NewW
                 o = o.albaranEntrada
             else:
                 o = None
         elif isinstance(o, pclases.TransporteACuenta):
             if o.proveedor:
-                from ginn.formularios.proveedores import Proveedores as NewW
+                from formularios.proveedores import Proveedores as NewW
                 o = o.proveedor
             else:
-                from ginn.formularios.albaranes_de_salida import AlbaranesDeSalida as NewW
+                from formularios.albaranes_de_salida import AlbaranesDeSalida as NewW
                 o = o.albaranSalida
         elif isinstance(o, pclases.ServicioTomado):
             if o.facturaCompra:
-                from ginn.formularios.facturas_compra import FacturasDeEntrada as NewW
+                from formularios.facturas_compra import FacturasDeEntrada as NewW
                 o = o.facturaCompra
             elif o.comision:
                 if o.comision.facturaVenta:
-                    from ginn.formularios.facturas_venta import FacturasVenta as NewW
+                    from formularios.facturas_venta import FacturasVenta as NewW
                     o = o.comision.facturaVenta
                 elif o.comision.albaranSalida:
-                    from ginn.formularios.albaranes_de_salida import AlbaranesDeSalida as NewW
+                    from formularios.albaranes_de_salida import AlbaranesDeSalida as NewW
                     o = o.comision.albaranSalida
                 else:
                     o = None
             else:
                 o = None
         elif isinstance(o, pclases.AlbaranSalida):
-            from ginn.formularios.albaranes_de_salida import AlbaranesDeSalida as NewW
+            from formularios.albaranes_de_salida import AlbaranesDeSalida as NewW
         else:
             o = None
         if o:
@@ -198,8 +198,8 @@ class ConsultaCompras(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        from ginn.informes.treeview2csv import treeview2csv
-        from ginn.formularios.reports import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
         tv = self.wids['tv_proveedor']
@@ -567,8 +567,8 @@ class ConsultaCompras(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from ginn.informes.treeview2pdf import treeview2pdf
-        from ginn.formularios.reports import abrir_pdf
+        from informes.treeview2pdf import treeview2pdf
+        from formularios.reports import abrir_pdf
         strfecha = "%s - %s" % (self.wids['e_fechainicio'].get_text(), self.wids['e_fechafin'].get_text())
         resp = utils.dialogo(titulo = "¿IMPRIMIR DESGLOSE?", 
             texto = "Puede imprimir únicamente los albaranes o toda la "

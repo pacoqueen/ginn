@@ -56,10 +56,9 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 import sys, os, pclases
-sys.path.append(os.path.join("..", "formularios"))
-from ginn.formularios import utils
+from formularios import utils
 import mx.DateTime
-from ginn.formularios.ventana import Ventana
+from formularios.ventana import Ventana
 
 class Resultado:
     """

@@ -40,14 +40,8 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import sys, os
-import sqlobject
 import gtk, gtk.glade, time
-try:
-    from framework import pclases
-except ImportError:
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
-import mx.DateTime
+from framework import pclases
 import csv
 import time
 from ventana_progreso import VentanaProgreso

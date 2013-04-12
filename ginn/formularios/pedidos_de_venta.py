@@ -83,16 +83,11 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, time 
-try:
-    from framework import pclases
-except ImportError:
-    import sys
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
+from framework import pclases
 import mx.DateTime
 from ventana_progreso import VentanaProgreso
 import pango
-import postomatic
+from formularios import postomatic
 
 def preguntar_precio(producto, ventana_padre = None):
     """

@@ -39,21 +39,10 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk, gtk.glade, time
 import sys
-try:
-    from framework import pclases
-except ImportError:
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
-import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    sys.path.append('../informes')
-    import geninformes
-import re
-sys.path.append('.')
+from framework import pclases
+from informes import geninformes
 import ventana_progreso
 from utils import _float as float
 
@@ -682,7 +671,7 @@ class ConsultaVencimientosPagos(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         datos = []
         for i in self.resultado:
             if not i[2]:    # i[2] = False cuando es vencimiento normal de la BD

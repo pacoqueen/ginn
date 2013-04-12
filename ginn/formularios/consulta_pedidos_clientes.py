@@ -38,7 +38,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk, gtk.glade, time
 from framework import pclases
 import mx.DateTime
 import geninformes
@@ -198,7 +198,7 @@ class ConsultaPedidosCliente(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         datos = []
         for i in self.resultado:
             datos.append((i.cliente.nombre,

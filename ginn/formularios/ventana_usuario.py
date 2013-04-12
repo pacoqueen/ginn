@@ -42,12 +42,7 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import sys, os 
-try:
-    from framework import pclases
-except ImportError:
-    sys.path.append(os.path.join('..', 'framework'))
-    from framework import pclases
-import gtk, gtk.glade, time, sqlobject, mx
+from framework import pclases
 import mx.DateTime
 import gobject
 import md5
@@ -342,7 +337,7 @@ class Usuarios(Ventana):
         usuario = self.objeto
         a_buscar = utils.dialogo_entrada("Introduzca nombre de usuario o nombre real:") 
         if a_buscar != None:
-            resultados = pclases.Usuario.select(sqlobject.OR(pclases.Usuario.q.usuario.contains(a_buscar),
+            resultados = pclases.Usuario.select(pclases.OR(pclases.Usuario.q.usuario.contains(a_buscar),
                                                              pclases.Usuario.q.nombre.contains(a_buscar)))
             if resultados.count() > 1:
                 ## Refinar los resultados

@@ -9,13 +9,7 @@ correspondiente con sus funciones para editar los valores de acuerdo al tipo
 de datos de la columna y todo, todo, todo.
 """
 
-try:
-    from framework import pclases
-except ImportError:
-    import sys
-    from os.path import join as pathjoin
-    sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
+from framework import pclases
 import mx, mx.DateTime
 import utils
 import ventana_progreso

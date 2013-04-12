@@ -41,9 +41,8 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 import sys, os 
-from ginn.framework import pclases
+from framework import pclases
 import mx.DateTime
-sys.path.append(os.path.join('..', 'informes'))
 
 class RollosProcesadosPorLote(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -112,8 +111,8 @@ class RollosProcesadosPorLote(Ventana):
         """
         "Vuerca-vuerca" el TreeView en un PDF.
         """
-        from ginn.informes.treeview2pdf import treeview2pdf
-        from ginn.formularios.reports import abrir_pdf
+        from informes.treeview2pdf import treeview2pdf
+        from formularios.reports import abrir_pdf
         strfecha = utils.str_fecha(mx.DateTime.localtime())
         tv = self.wids['tv_datos']
         abrir_pdf(treeview2pdf(tv, 
@@ -125,8 +124,8 @@ class RollosProcesadosPorLote(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        from ginn.informes.treeview2csv import treeview2csv
-        from ginn.formularios.reports import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
 

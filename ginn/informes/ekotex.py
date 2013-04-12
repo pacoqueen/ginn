@@ -6,7 +6,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.units import cm
 import sys, os
 from tempfile import gettempdir
-from ginn.formularios.utils import float2str
+from formularios.utils import float2str
 
 def etiqueta_rollos_portrait(rollos, mostrar_marcado = True):
     """
@@ -123,11 +123,9 @@ def etiqueta_rollos_portrait(rollos, mostrar_marcado = True):
 
 
 if __name__ == "__main__":
-    from ginn.formularios.reports import abrir_pdf
-    sys.path.append("../framework")
-    sys.path.append("../formularios")
-    from ginn.framework import pclases
-    from ginn.formularios.partes_de_fabricacion_rollos import build_etiqueta
+    from formularios.reports import abrir_pdf
+    from framework import pclases
+    from formularios.partes_de_fabricacion_rollos import build_etiqueta
     rollos = [pclases.Rollo.select(orderBy = "-id")[0]]
     pv = rollos[0].productoVenta
     rollos.append(pv.articulos[-1].rollo)

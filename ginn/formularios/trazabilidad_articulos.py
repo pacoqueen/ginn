@@ -43,15 +43,10 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk, gtk.glade, time
 import sys, os 
-try:
-    from framework import pclases
-except ImportError:
-    sys.path.append(os.path.join('..', 'framework'))
-    from framework import pclases
+from framework import pclases
 import mx, mx.DateTime
-sys.path.append(os.path.join('..', 'informes'))
 from barcode import code39
 from barcode.EANBarCode import EanBarCode
 from reportlab.lib.units import cm
@@ -78,7 +73,7 @@ class TrazabilidadArticulos(Ventana):
         """
         Vuelca toda la información de pantalla en bruto a un PDF.
         """
-        from ginn.formularios import reports as informes, geninformes
+        from formularios import reports as informes, geninformes
         datos = "Código de trazabilidad: %s\n\n"%self.wids['e_num'].get_text()
         for desc, txt in (("Producto:\n", self.wids['txt_producto']), 
                           ("Lote/Partida:\n", self.wids['txt_lp']), 

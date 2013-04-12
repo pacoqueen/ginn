@@ -39,19 +39,9 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade
-try:
-    from framework import pclases
-except ImportError:
-    import sys
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
+from framework import pclases
 import mx, mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
+from informes import geninformes
 
 class ConsultaVentasPorProducto(Ventana):
 
@@ -91,8 +81,8 @@ class ConsultaVentasPorProducto(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        from ginn.informes.treeview2csv import treeview2csv
-        from ginn.formularios.reports import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
 
@@ -279,8 +269,8 @@ class ConsultaVentasPorProducto(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe.
         """
-        from ginn.informes.treeview2pdf import treeview2pdf
-        from ginn.formularios.reports import abrir_pdf
+        from informes.treeview2pdf import treeview2pdf
+        from formularios.reports import abrir_pdf
         strfecha = "%s - %s" % (self.wids['e_fechainicio'].get_text(), self.wids['e_fechafin'].get_text())
         resp = utils.dialogo(titulo = "¿IMPRIMIR DESGLOSE?", 
                              texto = "Puede imprimir únicamente los productos o toda la información de la ventana.\n¿Desea imprimir toda la información desglosada?", 

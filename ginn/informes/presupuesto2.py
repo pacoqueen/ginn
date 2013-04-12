@@ -31,23 +31,9 @@ from reportlab.lib import colors, enums
 from reportlab.lib.units import cm
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet 
 import sys, os, Image
-
-try:
-    import pclases, utils
-except ImportError:
-    try:
-        import sys, os
-        sys.path.insert(0, os.path.join("..", "framework"))
-        import pclases, utils
-    except ImportError:
-        sys.path.insert(0, ".")
-        import pclases, utils
-try:
-    from geninformes import give_me_the_name_baby
-except ImportError:
-    import sys
-    sys.path.append(os.path.join("..", "informes"))
-from geninformes import give_me_the_name_baby, escribe
+from framework import pclases
+from formularios import utils
+from informes.geninformes import give_me_the_name_baby, escribe
 from tempfile import gettempdir
 
 

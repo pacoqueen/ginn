@@ -43,19 +43,9 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
-try:
-    from framework import pclases
-except ImportError:
-    import sys
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
+import gtk, gtk.glade, time
+from framework import pclases
+from informes import geninformes
 from utils import _float as float
 
 # XXX
@@ -188,7 +178,7 @@ class ResultadosPoros(Ventana):
         try:
             self.partida.sync()
             self.rellenar_widgets()
-        except sqlobject.SQLObjectNotFound:
+        except pclases.SQLObjectNotFound:
                 utils.dialogo_info(titulo = 'REGISTRO ELIMINADO', texto = 'El registro ha sido borrado desde otro puesto.')
                 self.partida = None
         self.activar_widgets(self.partida!=None)

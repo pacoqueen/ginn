@@ -37,7 +37,7 @@ import gtk
 import sys, os
 from framework import pclases
 import mx.DateTime
-from ginn.formularios.ventana_progreso import VentanaProgreso
+from formularios.ventana_progreso import VentanaProgreso
 
 class ConsultaExistenciasBolsas(Ventana):
 
@@ -113,8 +113,8 @@ class ConsultaExistenciasBolsas(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        from ginn.informes.treeview2csv import treeview2csv
-        from ginn.formularios.reports import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         npag = self.wids['nb_almacenes'].get_current_page()
         tv = self.tvs[npag][0]
         abrir_csv(treeview2csv(tv))
@@ -207,8 +207,8 @@ class ConsultaExistenciasBolsas(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from ginn.informes.treeview2pdf import treeview2pdf
-        from ginn.formularios.reports import abrir_pdf
+        from informes.treeview2pdf import treeview2pdf
+        from formularios.reports import abrir_pdf
         npag = self.wids['nb_almacenes'].get_current_page()
         tv, ekg, ebultos = self.tvs[npag][0:3]
         kg = ekg.get_text()

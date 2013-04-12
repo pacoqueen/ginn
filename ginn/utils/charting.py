@@ -58,7 +58,7 @@ Example:
     eventBox = gtk.EventBox() # charts go into eventboxes, or windows
     place = self.get_widget("totals_by_day") #just some placeholder
 
-    eventBox.add(chart);
+    eventBox.add(chart)
     place.add(eventBox)
 
     #Let's imagine that we count how many apples we have gathered, by day
@@ -394,7 +394,7 @@ class Chart(gtk.DrawingArea):
         if self.there_are_backgrounds:
             for i in range(records):
                 if data[i]["background"] != None:
-                    set_color(context, light[data[i]["background"]]);
+                    set_color(context, light[data[i]["background"]])
                     context.rectangle(graph_x + (step * i), 
                                       0, 
                                       step, 
@@ -403,7 +403,7 @@ class Chart(gtk.DrawingArea):
                     context.stroke()
 
         context.set_line_width(1)
-        context.set_dash ([1, 3]);
+        context.set_dash ([1, 3])
         set_color(context, dark[8])
         
         # scale lines
@@ -428,11 +428,11 @@ class Chart(gtk.DrawingArea):
         context.stroke()
         
         
-        context.set_dash ([]);
+        context.set_dash ([])
 
 
         # labels
-        set_color(context, dark[8]);
+        set_color(context, dark[8])
         for i in range(records):
             extent = context.text_extents(data[i]["label"]) #x, y, width, height
             context.move_to(graph_x + (step * i) + (step - extent[2]) / 2.0,
@@ -455,7 +455,7 @@ class Chart(gtk.DrawingArea):
         #flip the matrix vertically, so we do not have to think upside-down
         context.transform(cairo.Matrix(yy = -1, y0 = graph_height))
 
-        context.set_dash ([]);
+        context.set_dash ([])
         context.set_line_width(0)
         context.set_antialias(cairo.ANTIALIAS_NONE)
 
@@ -576,7 +576,7 @@ class Chart(gtk.DrawingArea):
         ellipsize_label = lambda(text): 3
 
         #now let's put the labels and align them right
-        set_color(context, dark[8]);
+        set_color(context, dark[8])
         for i in range(records):
             label = data[i]["label"]
             if self.legend_width:
@@ -598,7 +598,7 @@ class Chart(gtk.DrawingArea):
         context.stroke()
 
 
-        context.set_dash ([1, 3]);
+        context.set_dash ([1, 3])
         set_color(context, dark[8])
 
         # scale lines        
@@ -627,7 +627,7 @@ class Chart(gtk.DrawingArea):
 
         gap = step * 0.05
         
-        context.set_dash ([]);
+        context.set_dash ([])
         context.set_line_width(0)
         context.set_antialias(cairo.ANTIALIAS_NONE)
 
@@ -708,14 +708,14 @@ class Chart(gtk.DrawingArea):
         context.stroke()
 
         context.set_line_width(1)
-        context.set_dash ([1, 3]);
+        context.set_dash ([1, 3])
 
 
         #backgrounds
         if self.there_are_backgrounds:
             for i in range(records):
                 if data[i]["background"] != None:
-                    set_color(context, light[data[i]["background"]]);
+                    set_color(context, light[data[i]["background"]])
                     context.rectangle(graph_x + (step * i), 1, step, graph_height - 1)
                     context.fill_preserve()
                     context.stroke()
@@ -744,10 +744,10 @@ class Chart(gtk.DrawingArea):
         context.stroke()
         
         
-        context.set_dash ([]);
+        context.set_dash ([])
 
         # labels
-        set_color(context, dark[8]);
+        set_color(context, dark[8])
         for i in range(records):
             if i % 5 == 0:
                 context.move_to(graph_x + 5 + (step * i), graph_y + graph_height + 13)
@@ -772,7 +772,7 @@ class Chart(gtk.DrawingArea):
         context.transform(cairo.Matrix(yy = -1, y0 = graph_height))
 
 
-        set_color(context, dark[4]);
+        set_color(context, dark[4])
         # chart itself
         for i in range(records):
             if i == 0:
@@ -792,8 +792,8 @@ class Chart(gtk.DrawingArea):
         context.fill_preserve()    
 
         context.set_line_width(3)
-        context.set_line_join (cairo.LINE_JOIN_ROUND);
-        set_color(context, dark[4]);
+        context.set_line_join (cairo.LINE_JOIN_ROUND)
+        set_color(context, dark[4])
         context.stroke()    
         
 
@@ -820,7 +820,7 @@ if __name__ == "__main__":
     # Prueba de colores Tango.
     chart = Chart(orient = "horizontal") 
     place = gtk.Window() 
-    place.add(chart);
+    place.add(chart)
     data = [['Tango color 0', 1, 0],
             ['Tango color 1', 1, 1],
             ['Tango color 2', 1, 2],

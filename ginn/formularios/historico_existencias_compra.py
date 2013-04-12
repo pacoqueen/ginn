@@ -42,20 +42,9 @@ import pygtk
 pygtk.require('2.0')
 import gtk, time
 import sys, os
-try:
-    from framework import pclases
-except ImportError:
-    from os.path import join as pathjoin
-    sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
+from framework import pclases
 import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    sys.path.append('../informes')
-    import geninformes
-import ventana_progreso
-sys.path.insert(0, os.path.join("..", "PyChart-1.39"))
+from informes import geninformes
 from pychart import *   # No me gusta, pero no queda otra
 from tempfile import gettempdir
 from math import log10 as log 
@@ -346,7 +335,7 @@ class HistoricoExistenciasCompra(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         fechastr = self.wids['e_fecha'].get_text()
         fecha = utils.parse_fecha(fechastr)
         informes.abrir_pdf(

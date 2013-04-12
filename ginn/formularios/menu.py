@@ -61,8 +61,7 @@ from framework import pclases
 #os.chdir(os.path.dirname(os.path.realpath(sys.argv[0])))
 #print os.getcwd()
 #print os.path.realpath(sys.argv[0])
-#sys.path.append(".")
-
+#
 from formularios import gtkexcepthook
 
 from formularios import utils
@@ -693,7 +692,6 @@ class Menu:
         try:
             pwd = os.path.abspath(os.curdir)
             os.chdir(os.path.join('..', 'gajim-0.9.1', 'src'))
-            sys.path.append('.')
             # TODO: En la versión final hay que intentar que el usuario 
             #       que se conecte sea el mismo de la aplicación, o bien 
             #       compartir el mismo usuario para todos los que usen el 
@@ -829,7 +827,6 @@ def construir_y_enviar(w, ventana, remitente, observaciones, texto, usuario):
     try:
         import libgmail  # @UnresolvedImport
     except:
-        sys.path.insert(0, os.path.join('..', 'libgmail-0.1.11'))
         import libgmail  # @UnresolvedImport
     rte = remitente.get_text()
     buff = observaciones.get_buffer()

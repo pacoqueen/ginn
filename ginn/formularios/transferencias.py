@@ -45,13 +45,8 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, time, mx, mx.DateTime
-try:
-    from framework import pclases
-    from seeker import VentanaGenerica 
-except ImportError:
-    sys.path.append(os.path.join('..', 'framework'))
-    from framework import pclases
-    from seeker import VentanaGenerica 
+from framework import pclases
+from framework.seeker import VentanaGenerica 
 from utils import _float as float
 
 
@@ -97,8 +92,8 @@ class Transferencias(Ventana, VentanaGenerica):
         Solicita un firmante al usuario. El resto de los datos 
         se obtienen de la BD.
         """
-        from ginn.informes.geninformes import fax_transferencia
-        from ginn.formularios.reports import abrir_pdf
+        from informes.geninformes import fax_transferencia
+        from formularios.reports import abrir_pdf
         firmantes = {1: "Otro (texto libre)", 
                      2: "D. Enrique Román Corzo", 
                      3: "D. Enrique Figueroa Yáñez", 

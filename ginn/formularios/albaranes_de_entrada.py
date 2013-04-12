@@ -42,8 +42,8 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
-from ginn.framework import pclases
-from ginn.informes import geninformes
+from framework import pclases
+from informes import geninformes
 from formularios.utils import _float as float
 
 
@@ -964,7 +964,7 @@ class AlbaranesDeEntrada(Ventana):
         Crea un impreso del albarán
         """
         self.guardar(None)  # Si se ha olvidado guardar, guardo yo.
-        from ginn.formularios import reports
+        from formularios import reports
         albaran = self.objeto
         if albaran.proveedor != None:
             proveedor = albaran.proveedor.nombre

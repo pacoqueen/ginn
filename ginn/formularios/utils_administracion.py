@@ -40,7 +40,6 @@
 raise ImportError, "Este módulo está obsoleto."
 
 import sys
-sys.path.append('../framework')
 
 
 def id_propia_empresa_proveedor():

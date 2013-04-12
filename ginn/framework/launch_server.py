@@ -11,7 +11,6 @@
 import os, sys
 #os.chdir("/home/cleo1/compbio/amir/BiRC_New/BiRC")
 os.chdir(os.path.dirname(os.path.abspath(sys.argv[0])))
-sys.path.insert(0, os.path.abspath("."))
 
 try:
     import parse_mdblogic

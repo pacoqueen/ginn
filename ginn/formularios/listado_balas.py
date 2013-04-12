@@ -38,20 +38,10 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, datetime, sqlobject
-try:
-    from framework import pclases
-except ImportError:
-    import sys
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
+import gtk, gtk.glade, time, datetime
+from framework import pclases
 import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
+from informes import geninformes
 import re
 
 rexpcajas = re.compile("\([\d]+/[\d]+\)")
@@ -98,7 +88,6 @@ class ListadoBalas(Ventana):
         Exporta el contenido del TreeView a un fichero csv.
         """
         import sys, os
-        sys.path.append(os.path.join("..", "informes"))
         from treeview2csv import treeview2csv
         from informes import abrir_csv
         tv = self.wids['tv_balas']
@@ -122,7 +111,7 @@ class ListadoBalas(Ventana):
                 balas_defecto.append(model[path][0])
                 balas_defecto.sort()
             balas_defecto = ', '.join(balas_defecto)
-            from ginn.formularios import reports as informes
+            from formularios import reports as informes
             entrada = utils.dialogo_entrada(titulo='ETIQUETAS', 
                         texto="Introduzca los números de bala o bigbags que "
                               "desea etiquetar separados por coma o espacio."
@@ -163,7 +152,6 @@ class ListadoBalas(Ventana):
             import geninformes
         except ImportError:
             import sys, os
-            sys.path.append(os.path.join('..', 'informes'))
             import geninformes
         datos = []
         model = self.wids['tv_balas'].get_model()
@@ -201,7 +189,7 @@ class ListadoBalas(Ventana):
             desc_producto = self.wids['e_descripcion'].get_text()
             listado_pdf = geninformes.listado_balas(datos, desc_producto, 
                                                     fechaInforme)
-            from ginn.formularios import reports as informes
+            from formularios import reports as informes
             informes.abrir_pdf(listado_pdf)
 
     def set_inicio(self,boton):
@@ -609,10 +597,10 @@ class ListadoBalas(Ventana):
                 ida_buscar = int(a_buscar)
             except ValueError:
                 ida_buscar = -1
-            criterio = sqlobject.OR(
+            criterio = pclases.OR(
                 pclases.ProductoVenta.q.codigo.contains(a_buscar),
                 pclases.ProductoVenta.q.descripcion.contains(a_buscar))
-            criterio = sqlobject.AND(criterio, 
+            criterio = pclases.AND(criterio, 
                 pclases.ProductoVenta.q.camposEspecificosBalaID != None)
             resultados = pclases.ProductoVenta.select(criterio)
             if resultados.count() > 1:

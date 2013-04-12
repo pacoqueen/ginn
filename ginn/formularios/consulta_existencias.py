@@ -37,11 +37,11 @@
 
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject, os
+import gtk, gtk.glade, time, os
 import geninformes
 import mx.DateTime
 from ventana import Ventana
-from ginn.formularios import utils
+from formularios import utils
 
 class ConsultaExistencias(Ventana):
     
@@ -51,7 +51,7 @@ class ConsultaExistencias(Ventana):
         comenzar la ventana (en lugar del primero de la tabla, que es
         el que se muestra por defecto).
         """
-        from ginn.formularios import reports as informes, tempfile
+        from formularios import reports as informes, tempfile
 
         ventana = gtk.Window()  # Es solo para poder mostrar el diálogo de 
                                 # progreso.

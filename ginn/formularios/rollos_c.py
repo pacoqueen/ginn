@@ -38,20 +38,10 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
-try:
-    from framework import pclases
-except ImportError:
-    import sys
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
+import gtk, gtk.glade, time
+from framework import pclases
 import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
+from informes import geninformes
 from ventana_progreso import VentanaProgreso
 
 def descontar_material_adicional(ventana_parte, articulo, restar = True):
@@ -146,7 +136,7 @@ class RollosC(Ventana):
         from listado_rollos import preparar_datos_etiquetas_rollos_c
         data = preparar_datos_etiquetas_rollos_c(rollos)
         if data:
-            from ginn.formularios import reports as informes
+            from formularios import reports as informes
             informes.abrir_pdf(geninformes.etiquetasRollosCEtiquetadora(data))
 
     def borrar_rollos(self, rollos):

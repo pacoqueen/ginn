@@ -45,25 +45,11 @@ import pygtk
 pygtk.require('2.0')
 import gtk, time
 import sys, os
-try:
-    from framework import pclases
-except ImportError:
-    from os.path import join as pathjoin
-    sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
+from framework import pclases
 import mx, mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    sys.path.append('../informes')
-    import geninformes
-from utils import _float as float
-try:
-    from treeview2csv import treeview2csv
-except ImportError:
-    sys.path.append(os.path.join("..", "informes"))
-    from treeview2pdf import treeview2pdf
-from informes import abrir_pdf, abrir_csv
+from informes import geninformes
+from informes.treeview2csv import treeview2csv
+from formularios.reports import abrir_pdf, abrir_csv
 
 import re
 rex_importe_fras = re.compile("[\(\[].*[\]\)]")
@@ -172,7 +158,7 @@ def agregar_a_model(model, factura, padre, tv, nodos_clientes):
             row.append(pagare.codigo)
             row.append(utils.str_fecha(pagare.fechaRecepcion))
             row.append(utils.str_fecha(pagare.fechaCobro))
-            row.append(pagare.cantidad);
+            row.append(pagare.cantidad)
             row.append(0)
             total_pagares += cobro.importe
             if esta_pendiente:
@@ -794,7 +780,7 @@ class FacturacionPorClienteYFechas(Ventana):
         #utils.dialogo_info(titulo = "NO IMPLEMENTADO", 
         #                   texto = "Computer says no. Atjo.", 
         #                   padre = self.wids['ventana'])
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         if self.wids['notebook1'].get_current_page() == 0:
             tv = self.wids['tv_facturas']
         elif self.wids['notebook1'].get_current_page() == 1:

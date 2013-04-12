@@ -44,20 +44,9 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, time
-try:
-    from framework import pclases
-except ImportError:
-    import sys
-    from os.path import join as pathjoin
-    sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
+from framework import pclases
 import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
+from informes import geninformes
 import pango 
 
 
@@ -211,7 +200,6 @@ class ConsultaVentas(Ventana):
         Exporta el contenido del TreeView a un fichero csv.
         """
         import sys, os
-        sys.path.append(os.path.join("..", "informes"))
         from treeview2csv import treeview2csv
         from informes import abrir_csv
         if self.wids['notebook1'].get_current_page() == 0:
@@ -412,7 +400,6 @@ class ConsultaVentas(Ventana):
             import charting
         except ImportError:
             import sys, os
-            sys.path.append(os.path.join("..", "utils"))
             import charting
         try:
             oldchart = self.wids['eventbox_chart'].get_child()
@@ -449,7 +436,6 @@ class ConsultaVentas(Ventana):
                 import charting
             except ImportError:
                 import sys, os
-                sys.path.append(os.path.join("..", "utils"))
                 import charting
             try:
                 oldchart = self.wids['eventbox_chart'].get_child()
@@ -491,7 +477,6 @@ class ConsultaVentas(Ventana):
                 import charting
             except ImportError:
                 import sys, os
-                sys.path.append(os.path.join("..", "utils"))
                 import charting
             try:
                 oldchart = self.wids['eventbox_chart'].get_child()
@@ -539,7 +524,6 @@ class ConsultaVentas(Ventana):
                 import charting
             except ImportError:
                 import sys, os
-                sys.path.append(os.path.join("..", "utils"))
                 import charting
             try:
                 oldchart = self.wids['eventbox_chart'].get_child()
@@ -587,7 +571,6 @@ class ConsultaVentas(Ventana):
                 import charting
             except ImportError:
                 import sys, os
-                sys.path.append(os.path.join("..", "utils"))
                 import charting
             try:
                 oldchart = self.wids['eventbox_chart'].get_child()
@@ -1508,7 +1491,7 @@ class ConsultaVentas(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         datos = []
         model = self.wids['tv_datos'].get_model()
         for iter in model:

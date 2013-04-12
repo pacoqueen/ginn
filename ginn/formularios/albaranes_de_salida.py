@@ -2787,12 +2787,8 @@ class AlbaranesDeSalida(Ventana):
             print "Comprobando configuración de albarán multipágina..."
             antes = time.time()
         if pclases.config.get_multipagina():
-            try:
-                import albaran_multipag
-            except ImportError:
-                import sys
-                import albaran_multipag
-            from informes import abrir_pdf
+            from formularios import albaran_multipag
+            from formularios.reports import abrir_pdf
             alb_mp = albaran_multipag.go_from_albaranSalida(self.objeto) 
             abrir_pdf(alb_mp)
         elif not pclases.config.get_valorar_albaranes():
@@ -2821,11 +2817,7 @@ class AlbaranesDeSalida(Ventana):
                   "generación de factura y demás. No me interesa."
             antes = time.time()
         if pclases.config.get_carta_portes():
-            try:
-                import albaran_porte
-            except ImportError:
-                import sys
-                import albaran_porte
+            from formularios import albaran_porte
             from informes import abrir_pdf
             try:
                 kilos = sum([ldv.producto.calcular_kilos() * ldv.cantidad  
@@ -3094,7 +3086,7 @@ class AlbaranesDeSalida(Ventana):
         composan indica si hay que abrir también el de Composan.
         NOTA: La variable "composan" actualmente se ignora.
         """
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         informes.abrir_pdf(nomarchivo)
 
     def preguntar_si_redistribuir(self):
@@ -4354,10 +4346,7 @@ def imprimir_factura(factura, usuario = None, abrir = True, es_copia = False,
     texto = numerals.numerals(totalfra, moneda = "euros", 
                               fraccion = "céntimos").upper()
     if pclases.config.get_multipagina() == 1:
-        try:
-            import factura_multipag
-        except ImportError:
-            import factura_multipag
+        from formularios import factura_multipag
         nomarchivo = factura_multipag.go_from_facturaVenta(factura)
     else:
         nomarchivo = geninformes.factura(cliente,
@@ -4369,7 +4358,7 @@ def imprimir_factura(factura, usuario = None, abrir = True, es_copia = False,
                                          totales, 
                                          es_copia = es_copia)
     if abrir:
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         informes.abrir_pdf(nomarchivo)
     return nomarchivo
     

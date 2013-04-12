@@ -42,19 +42,9 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
-try:
-    from framework import pclases
-except ImportError:
-    import sys
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
+import gtk, gtk.glade, time
+from framework import pclases
+from informes import geninformes
 from utils import _float as float
 import mx, mx.DateTime
 
@@ -308,7 +298,7 @@ class ResultadosFluidez(Ventana):
         try:
             self.producto.sync()
             self.rellenar_widgets()
-        except sqlobject.SQLObjectNotFound:
+        except pclases.SQLObjectNotFound:
                 utils.dialogo_info(titulo = 'REGISTRO ELIMINADO', texto = 'El registro ha sido borrado desde otro puesto.')
                 self.producto = None
         self.activar_widgets(self.producto!=None)
@@ -521,8 +511,8 @@ class ResultadosFluidez(Ventana):
         """
         "Vuerca-vuerca" el TreeView en un PDF.
         """
-        from ginn.informes.treeview2pdf import treeview2pdf
-        from ginn.formularios.reports import abrir_pdf
+        from informes.treeview2pdf import treeview2pdf
+        from formularios.reports import abrir_pdf
         strfecha = utils.str_fecha(mx.DateTime.localtime())
         tv = self.wids['tv_pruebas']
         desc_prod = self.wids['e_nombre'].get_text()
@@ -535,8 +525,8 @@ class ResultadosFluidez(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        from ginn.informes.treeview2csv import treeview2csv
-        from ginn.formularios.reports import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         tv = self.wids['tv_pruebas']
         abrir_csv(treeview2csv(tv))
 

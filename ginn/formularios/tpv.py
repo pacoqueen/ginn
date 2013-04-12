@@ -47,7 +47,7 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
-from ginn.framework import pclases
+from framework import pclases
 import mx.DateTime
 import pango
 import gobject
@@ -1580,7 +1580,7 @@ class TPV(Ventana):
                                                         self.usuario)
             if idcliente != None:
                 cliente = pclases.Cliente.get(idcliente)
-                factura = crear_factura(cliente, padre = self.wids['ventana'], self.usuario)
+                factura = crear_factura(cliente, padre = self.wids['ventana'], usuario = self.usuario)
                 if factura != None:
                     sel = self.wids['tv_ventas'].get_selection()
                     model, paths = sel.get_selected_rows()
@@ -1647,7 +1647,7 @@ class TPV(Ventana):
                                                self.logger, 
                                                self.wids['ventana'])
                             factura.bloqueada = True
-                            from ginn.formularios.reports import mandar_a_imprimir_con_foxit
+                            from formularios.reports import mandar_a_imprimir_con_foxit
                             from albaranes_de_salida import imprimir_factura
                             mandar_a_imprimir_con_foxit(
                                 imprimir_factura(factura, self.usuario, False))
@@ -2467,11 +2467,7 @@ def buscar_clientes_parecidos(nombre, ventana_padre = None):
     """
     Busca clientes con nombre parecido al recibido y devuelve un ResultSelect.
     """
-    try:
-        import spelling
-    except ImportError:
-        sys.path.append(os.path.join("..", "utils"))
-        import spelling
+    from formularios import spelling
     nombres = ""
     for cliente in pclases.Cliente.selectBy(inhabilitado = False):
         nombres += cliente.nombre + "\n"

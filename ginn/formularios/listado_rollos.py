@@ -38,21 +38,11 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk, gtk.glade, time
 import sys
-try:
-    from framework import pclases
-except ImportError:
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
-import mx.DateTime
+from framework import pclases
 from partes_de_fabricacion_rollos import build_etiqueta
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
+from informes import geninformes
 
 class ListadoRollos(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -98,7 +88,6 @@ class ListadoRollos(Ventana):
         Exporta el contenido del TreeView a un fichero csv.
         """
         import sys, os
-        sys.path.append(os.path.join("..", "informes"))
         from treeview2csv import treeview2csv
         from informes import abrir_csv
         tv = self.wids['tv_rollos']
@@ -127,12 +116,7 @@ class ListadoRollos(Ventana):
         """
         Crea un PDF con el contenido del TreeView.
         """
-        try:
-            import geninformes
-        except ImportError:
-            import sys, os
-            sys.path.append(os.path.join('..', 'informes'))
-            import geninformes
+        from informes import geninformes
         datos = []
         model = self.wids['tv_rollos'].get_model()
         for i in model:
@@ -156,7 +140,7 @@ class ListadoRollos(Ventana):
         if datos != []:
             desc_producto = self.wids['e_descripcion'].get_text()
             listado_pdf = geninformes.listado_rollos(datos, desc_producto, fechaInforme)
-            from ginn.formularios import reports as informes
+            from formularios import reports as informes
             informes.abrir_pdf(listado_pdf)
 
     def mostrar_hora_parte(self, tv):
@@ -422,9 +406,9 @@ class ListadoRollos(Ventana):
                 ida_buscar = int(a_buscar)
             except ValueError:
                 ida_buscar = -1
-            criterio = sqlobject.OR(pclases.ProductoVenta.q.codigo.contains(a_buscar),
+            criterio = pclases.OR(pclases.ProductoVenta.q.codigo.contains(a_buscar),
                                             pclases.ProductoVenta.q.descripcion.contains(a_buscar))
-            criterio = sqlobject.AND(criterio, pclases.ProductoVenta.q.camposEspecificosRolloID != None)
+            criterio = pclases.AND(criterio, pclases.ProductoVenta.q.camposEspecificosRolloID != None)
             resultados = pclases.ProductoVenta.select(criterio)
             if resultados.count() > 1:
                     ## Refinar los resultados
@@ -559,7 +543,7 @@ class ListadoRollos(Ventana):
                 rollos_defecto.append(model[path][0])
                 rollos_defecto.sort()
             rollos_defecto = ', '.join(rollos_defecto)
-            from ginn.formularios import reports as informes
+            from formularios import reports as informes
             entrada, mostrar_marcado = self._dialogo_entrada(
                                         titulo = 'ETIQUETAS', 
                                         texto = "Introduzca los números de rollo, separados por coma, que desea etiquetar:",

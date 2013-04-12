@@ -39,9 +39,9 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk, gtk.glade, time
 import sys
-from ginn.framework import pclases
+from framework import pclases
 import mx.DateTime
 import geninformes
 import re
@@ -162,7 +162,7 @@ class ConsultaPendientesVtoBueno(Ventana):
         if not self.inicio:
             facturas = pclases.FacturaCompra.select(pclases.FacturaCompra.q.fecha <= self.fin, orderBy = 'fecha')
         else:
-            facturas = pclases.FacturaCompra.select(sqlobject.AND(pclases.FacturaCompra.q.fecha >= self.inicio,pclases.FacturaCompra.q.fecha <= self.fin), orderBy='fecha')       
+            facturas = pclases.FacturaCompra.select(pclases.AND(pclases.FacturaCompra.q.fecha >= self.inicio,pclases.FacturaCompra.q.fecha <= self.fin), orderBy='fecha')       
         idproveedor = utils.combo_get_value(self.wids['cmbe_proveedor'])
         if idproveedor != None:
             proveedor = pclases.Proveedor.get(utils.combo_get_value(self.wids['cmbe_proveedor']))

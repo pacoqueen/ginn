@@ -37,10 +37,10 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 import mx.DateTime
-from ginn.framework import pclases
-from ginn.informes import geninformes
-from ginn.formularios.utils import _float as float
-from ginn.formularios.crm_seguimiento_impagos import show_fecha
+from framework import pclases
+from informes import geninformes
+from formularios.utils import _float as float
+from formularios.crm_seguimiento_impagos import show_fecha
 
 def buscar_pendiente_servir(cliente = None, fini = None, ffin = None, 
                             padre = None, wids = None):
@@ -504,7 +504,7 @@ class PendientesServir(Ventana):
         """
         Imprime la información en dos documentos: fibra y geotextiles.
         """
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         idcliente = utils.combo_get_value(self.wids['cbe_cliente'])
         if idcliente > 0:
             nombrecliente = pclases.Cliente.get(idcliente).nombre

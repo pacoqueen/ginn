@@ -45,11 +45,7 @@ import pygtk
 pygtk.require('2.0')
 import gtk, time
 from framework import pclases
-try:
-    import geninformes
-except ImportError:
-    import geninformes
-import mx.DateTime
+from informes import geninformes
 
 
 class Ausencias(Ventana):
@@ -475,7 +471,7 @@ class Ausencias(Ventana):
                                padre = self.wids['ventana'])
 
     def imprimir_ausencia(self, b):
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         model, itr = self.wids['tv_ausencias'].get_selection().get_selected()
         if itr != None:
             ide = model[itr][-1]

@@ -2532,7 +2532,6 @@ def pedir_producto_compra(padre = None, proveedor = None):
     proveedor.
     """
     import sys, os
-    sys.path.append(os.path.join("..", "framework"))
     from framework import pclases
     producto = None
     codigo_o_descripcion = dialogo_entrada(titulo = "BUSCAR PRODUCTO", 
@@ -2690,7 +2689,6 @@ def buscar_productos_compra(a_buscar, incluir_obsoletos = False):
     # >>> pcs[0].obsoleto = True
     # >>> assert pcs.count() == c - 1
     import sys, os
-    sys.path.append(os.path.join("..", "framework"))
     from framework import pclases
     PC = pclases.ProductoCompra
     _a_buscar = " ".join([acortar_palabra_con_tilde(w) 
@@ -2740,7 +2738,6 @@ def buscar_productos_venta(a_buscar):
     Devuelve una lista de objetos productoVenta.
     """
     import sys, os
-    sys.path.append(os.path.join("..", "framework"))
     from framework import pclases
     criterio = pclases.OR(pclases.ProductoVenta.q.codigo.contains(a_buscar),
                         pclases.ProductoVenta.q.nombre.contains(a_buscar),
@@ -2775,7 +2772,6 @@ def buscar_producto_general(padre = None,
     # definir un contrato en condiciones para ella y hacer que los parámetros 
     # sean coherentes entre sí.
     import sys, os
-    sys.path.append(os.path.join("..", "framework"))
     from framework import pclases
     res = []
     if not saltar_dialogo:
@@ -2898,7 +2894,6 @@ def buscar_producto_general(padre = None,
                     res.append(pclases.ProductoVenta.get(id))
             if res == []:
                 try:
-                    sys.path.append(os.path.join("..", "utils"))
                     res = sugerir_alternativa(a_buscar, 
                                               padre, 
                                               mostrar_precios, 
@@ -2927,13 +2922,9 @@ def sugerir_alternativa(txt, padre, mostrar_precios, incluir_sin_iva):
     Devuelve un producto, si se optó por la alternativa; una lista vacía si 
     se rechazó y None si no se encontró nada parecido.
     """
-    from ginn.utils import spelling
+    from utils import spelling
     palabras = []
-    try:
-        from framework import pclases
-    except ImportError:
-        sys.path.append(os.path.join("..", "framework"))
-        from framework import pclases
+    from framework import pclases
     for pc in pclases.ProductoCompra.select():
         palabras.append(pc.codigo.lower())
         palabras.append(pc.descripcion.lower())
@@ -2965,11 +2956,7 @@ def buscar_proveedor(nombre, incluir_inhabilitados = False):
     Si no encuentra ninguno, devuelve None. Si encuentra varios, devuelve 
     una lista de todos ellos.
     """
-    try:
-        from framework import pclases
-    except ImportError:
-        sys.path.append(os.path.join("..", "framework"))
-        from framework import pclases
+    from framework import pclases
     if incluir_inhabilitados:
         p = pclases.Proveedor.select(
             pclases.Proveedor.q.nombre.contains(nombre))
@@ -3109,7 +3096,6 @@ def descargar_phaser(logger = None, datos = None):
     dic_articulos = {}      # Diccionario organizado por albaranes o partidas de carga, si fuera necesario.
     if datos != []:
         import sys, os
-        sys.path.append(os.path.join("..", "framework"))
         from framework import pclases
         clave = None
         for codigo in datos:
@@ -3173,7 +3159,6 @@ def procesar_albaran(codigo, logger = None):
     el objeto encontrado o None si no se encontró.
     """
     import sys, os
-    sys.path.append(os.path.join("..", "framework"))
     from framework import pclases
     numalbaran = codigo.replace("A", "")
     albaranes = pclases.AlbaranSalida.select(pclases.AlbaranSalida.q.numalbaran == numalbaran)
@@ -3196,7 +3181,6 @@ def procesar_rollo(codigo, logger = None):
     el objeto encontrado o None si no se encontró.
     """
     import sys, os
-    sys.path.append(os.path.join("..", "framework"))
     from framework import pclases
     rollos = pclases.Rollo.select(pclases.Rollo.q.codigo == codigo)
     if rollos.count() == 0:
@@ -3225,7 +3209,6 @@ def procesar_bala(codigo, logger = None):
     el objeto encontrado o None si no se encontró.
     """
     import sys, os
-    sys.path.append(os.path.join("..", "framework"))
     from framework import pclases
     balas = pclases.Bala.select(pclases.Bala.q.codigo == codigo)
     if balas.count() == 0:
@@ -3254,7 +3237,6 @@ def procesar_bigbag(codigo, logger = None):
     el objeto encontrado o None si no se encontró.
     """
     import sys, os
-    sys.path.append(os.path.join("..", "framework"))
     from framework import pclases
     bigbags = pclases.Bigbag.select(pclases.Bigbag.q.codigo == codigo)
     if bigbags.count() == 0:
@@ -3283,7 +3265,6 @@ def procesar_gtxc(codigo, logger = None):
     el objeto encontrado o None si no se encontró.
     """
     import sys, os
-    sys.path.append(os.path.join("..", "framework"))
     from framework import pclases
     gtxcs = pclases.RolloC.select(pclases.RolloC.q.codigo == codigo)
     if gtxcs.count() == 0:
@@ -3312,7 +3293,6 @@ def procesar_partida_carga(codigo, logger = None):
     el objeto encontrado o None si no se encontró.
     """
     import sys, os
-    sys.path.append(os.path.join("..", "framework"))
     from framework import pclases
     #numpartida_carga = codigo.replace("PC", "")
     #partidas_carga = pclases.PartidaCarga.select(pclases.PartidaCarga.q.codigo == numpartida_carga)
@@ -3672,12 +3652,7 @@ def buscar_factura(ventana_padre = None, multi = False, filtrar = False, cliente
     de SQLObject que se combinarán con AND al resto de 
     criterios para realizar la búsqueda.
     """
-    try:
-        from framework import pclases
-    except ImportError:
-        import sys, os
-        sys.path.insert(0, os.path.join("..", "framework"))
-        from framework import pclases
+    from framework import pclases
     res = None
     if filtrar:
         a_buscar = dialogo_entrada(titulo = "BUSCAR FACTURA", 
@@ -3731,13 +3706,7 @@ def abrir_factura_venta(id, num, usuario = None):
     devuelve False.
     En otro caso abre la ventana y devuelve True.
     """
-    try:
-        from framework import pclases
-    except ImportError:
-        from os.path import join as pathjoin
-        from sys import path
-        path.insert(0, pathjoin("..", "framework"))
-        from framework import pclases
+    from framework import pclases
     print id, num
     try:
         fra = pclases.FacturaVenta.get(id)
@@ -3748,13 +3717,7 @@ def abrir_factura_venta(id, num, usuario = None):
     else:
         if fra.numfactura == num:
             res = True
-            try:
-                import facturas_venta
-            except ImportError:
-                from os.path import join as pathjoin
-                from sys import path
-                path.insert(0, pathjoin("..", "formularios"))
-                import facturas_venta
+            from formularios import facturas_venta
             ventana = facturas_venta.FacturasVenta(fra, usuario)
         else:
             res = False
@@ -3768,13 +3731,7 @@ def abrir_prefactura(id, num, usuario = None):
     devuelve False.
     En otro caso abre la ventana y devuelve True.
     """
-    try:
-        from framework import pclases
-    except ImportError:
-        from os.path import join as pathjoin
-        from sys import path
-        path.insert(0, pathjoin("..", "framework"))
-        from framework import pclases
+    from framework import pclases
     try:
         fra = pclases.Prefactura.get(id)
     except pclases.SQLObjectNotFound:
@@ -3782,13 +3739,7 @@ def abrir_prefactura(id, num, usuario = None):
     else:
         if fra.numfactura == num:
             res = True
-            try:
-                import prefacturas
-            except ImportError:
-                from os.path import join as pathjoin
-                from sys import path
-                path.insert(0, pathjoin("..", "formularios"))
-                import prefacturas
+            from formularios import prefacturas
             ventana = prefacturas.Prefacturas(fra, usuario)
         else:
             res = False
@@ -3880,7 +3831,6 @@ def seleccionar_tipo_repuesto(ventana_padre = None):
     Muestra un diálogo con un combo para seleccionar un tipo de repuesto.
     """
     import sys, os
-    sys.path.append(os.path.join("..", "framework"))
     from framework import pclases
     res = None
     tipos = pclases.TipoDeMaterial.select(pclases.OR(
@@ -3908,7 +3858,6 @@ def seleccionar_repuesto(tipo, ventana_padre = None, dejar_crear = True,
     tipo "tipo". Si dejar_crear = True permite crear un producto no listado.
     """
     import sys, os
-    sys.path.append(os.path.join("..", "framework"))
     from framework import pclases
     res = None
     idtipo = tipo.id
@@ -4242,8 +4191,7 @@ def cambiar_por_combo(tv, numcol, opts, clase, campo, ventana_padre = None):
     posibles avisos de error al guardar los valores seleccionados en el combo.
     """
     import sys
-    sys.path.append(os.path.join("..", "framework"))
-    from ginn.framework.pclases import getObjetoPUID, SQLObjectNotFound
+    from framework.pclases import getObjetoPUID, SQLObjectNotFound
     # Elimino columna actual
     column = tv.get_column(numcol)
     column.clear()
@@ -4382,7 +4330,6 @@ if __name__=="__main__":
     print "Debe responder False: ", dialogo(titulo = "PRUEBA", texto = "Probando", defecto = False, tiempo = 4)
     print "Debe responder gtk.RESPONSE_CANCEL: ", dialogo(titulo = "PRUEBA", texto = "Probando", cancelar = True, defecto = gtk.RESPONSE_CANCEL, tiempo = 6)
     sys.exit(0)
-    sys.path.insert(0, os.path.join("..", "framework"))
     from framework import pclases
     #l = [filtrar_tildes(p.documentodepago.split(" ")[0].lower()) for p in pclases.Proveedor.select()]
     l = [filtrar_tildes(p.documentodepago) for p in pclases.Proveedor.select()]

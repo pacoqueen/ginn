@@ -48,20 +48,10 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
-try:
-    from framework import pclases
-except ImportError:
-    import sys
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
+import gtk, gtk.glade, time
+from framework import pclases
 import mx.DateTime
-try:
-    import geninformes
-except ImportError:
-    import sys
-    sys.path.append('../informes')
-    import geninformes
+from informes import geninformes
 import ventana_progreso
 
 
@@ -116,7 +106,6 @@ class ConsumoFibraPorPartidaGtx(Ventana):
         Exporta el contenido del TreeView a un fichero csv.
         """
         import sys, os
-        sys.path.append(os.path.join("..", "informes"))
         from treeview2csv import treeview2csv
         from informes import abrir_csv
         tv = self.wids['tv_datos']
@@ -235,7 +224,6 @@ class ConsumoFibraPorPartidaGtx(Ventana):
             import charting
         except ImportError:
             import sys, os
-            sys.path.append(os.path.join("..", "utils"))
             import charting
         try:
             oldchart = self.wids['eventbox_chart'].get_child()
@@ -443,7 +431,7 @@ class ConsumoFibraPorPartidaGtx(Ventana):
                 print txt
                 return
             partidas_carga = self.partidas_carga
-            from ginn.formularios import reports as informes
+            from formularios import reports as informes
             datos = []
             total_kilos_consumidos = 0.0
             total_kilos_producidos = 0.0

@@ -25,8 +25,8 @@
 
 import os
 import geninformes
-from ginn.formularios import utils
-from ginn.formularios.trazabilidad import Trazabilidad
+from formularios import utils
+from formularios.trazabilidad import Trazabilidad
 from framework import pclases
 from formularios.reports import abrir_csv
 from tempfile import gettempdir

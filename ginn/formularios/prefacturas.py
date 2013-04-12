@@ -40,19 +40,9 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import sys, os
-import gtk, gtk.glade, time, sqlobject
-try:
-    from framework import pclases
-except ImportError:
-    from os.path import join as pathjoin
-    sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
-try:
-    import geninformes
-except ImportError:
-    sys.path.append('../informes')
-    import geninformes
-import mx.DateTime 
+import gtk, gtk.glade, time
+from framework import pclases
+from informes import geninformes
 from utils import ffloat, _float as float
 import postomatic
 from albaranes_de_salida import ajustar_existencias
@@ -1327,7 +1317,7 @@ class Prefacturas(Ventana):
                                     'CÓDIGO PRODUCTO', 
                                     padre = self.wids['ventana'])
         if txt != None:
-            criterio = sqlobject.OR(pclases.ProductoVenta.q.codigo.contains(txt),
+            criterio = pclases.OR(pclases.ProductoVenta.q.codigo.contains(txt),
                                     pclases.ProductoVenta.q.nombre.contains(txt),
                                     pclases.ProductoVenta.q.descripcion.contains(txt))
             prods = pclases.ProductoVenta.select(criterio)
@@ -2181,7 +2171,7 @@ class Prefacturas(Ventana):
         """
         Muestra la factura generada en PDF.
         """
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         informes.abrir_pdf(nomarchivo)
 
     def buscar_abonos(self, w):
@@ -2192,7 +2182,7 @@ class Prefacturas(Ventana):
         la ventana.
         """
         cliente = self.objeto.cliente
-        abonos = pclases.Abono.select(sqlobject.AND(pclases.Abono.q.clienteID == cliente.id,
+        abonos = pclases.Abono.select(pclases.AND(pclases.Abono.q.clienteID == cliente.id,
                                                     pclases.Abono.q.facturaDeAbonoID != None))
         # Si tienen pagos de abono en la factura de abono es que ya se ha usado en otra factura.
         abonos = [a for a in abonos if a.facturaDeAbono.pagosDeAbono == []]

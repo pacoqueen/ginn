@@ -35,14 +35,9 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, gtk.glade, time, mx, mx.DateTime
-try:
-    from framework import pclases
-    from seeker import VentanaGenerica 
-except ImportError:
-    sys.path.append(os.path.join('..', 'framework'))
-    from framework import pclases
-    from seeker import VentanaGenerica 
-from utils import _float as float
+from framework import pclases
+from framework.seeker import VentanaGenerica 
+from formularios.utils import _float as float
 
 XBOTON, YBOTON = 21, 21
 

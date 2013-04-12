@@ -42,15 +42,10 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk, gtk.glade, time
 import sys, os
-try:
-    from framework import pclases
-except ImportError:
-    from os.path import join as pathjoin; sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
-import mx.DateTime
-from utils import _float as float
+from framework import pclases
+from formularios.utils import _float as float
 
 
 class ConsultaProductividad(Ventana):
@@ -121,7 +116,6 @@ class ConsultaProductividad(Ventana):
         Exporta el contenido del TreeView a un fichero csv.
         """
         import sys, os
-        sys.path.append(os.path.join("..", "informes"))
         from treeview2csv import treeview2csv
         from informes import abrir_csv
         tv = self.wids['tv_datos']
@@ -159,8 +153,7 @@ class ConsultaProductividad(Ventana):
         """
         Prepara los datos para enviar a geninformes.
         """
-        sys.path.append(os.path.join("..", "informes"))
-        from ginn.formularios import reports as informes, geninformes
+        from formularios import reports as informes, geninformes
         if self.wids['r_rollos'].get_active():
             linea = "de línea de geotextiles."
         elif self.wids['r_balas'].get_active():

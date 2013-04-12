@@ -57,13 +57,13 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time, mx.DateTime
-from ginn.framework import pclases
-from ginn.informes import geninformes
+from framework import pclases
+from informes import geninformes
 from utils import _float as float
 from ventana_progreso import VentanaActividad, VentanaProgreso
 import pango
 import re
-from ginn.formularios import reports as informes
+from formularios import reports as informes
        
 def verificar_solapamiento(partedeproduccion, padre = None, 
                            fecha_anterior = None, horaini_anterior = None, 

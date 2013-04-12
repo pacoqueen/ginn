@@ -39,10 +39,10 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk
-from ginn.framework import pclases
+from framework import pclases
 import mx.DateTime
-from ginn.formularios.reports import abrir_csv
-from ginn.informes.treeview2csv import treeview2csv
+from formularios.reports import abrir_csv
+from informes.treeview2csv import treeview2csv
 import ventana_progreso
 
 class Modelo347(Ventana):

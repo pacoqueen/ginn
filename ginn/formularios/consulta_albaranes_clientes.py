@@ -39,7 +39,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk, gtk.glade, time
 from framework import pclases
 import mx.DateTime
 import geninformes
@@ -86,7 +86,6 @@ class ConsultaAlbaranesCliente(Ventana):
         Exporta el contenido del TreeView a un fichero csv.
         """
         import sys, os
-        sys.path.append(os.path.join("..", "informes"))
         from treeview2csv import treeview2csv
         from informes import abrir_csv
         tv = self.wids['tv_datos']
@@ -168,19 +167,19 @@ class ConsultaAlbaranesCliente(Ventana):
                 albaranes = pclases.AlbaranSalida.select(pclases.AlbaranSalida.q.fecha <= self.fin,
                                                          orderBy = 'fecha')
             else:
-                albaranes = pclases.AlbaranSalida.select(sqlobject.AND(pclases.AlbaranSalida.q.fecha >= self.inicio,
+                albaranes = pclases.AlbaranSalida.select(pclases.AND(pclases.AlbaranSalida.q.fecha >= self.inicio,
                                                                        pclases.AlbaranSalida.q.fecha <= self.fin), 
                                                          orderBy='fecha')    
         else:
             self.cliente = pclases.Cliente.get(utils.combo_get_value(self.wids['cmbe_cliente']))
             cliente = self.cliente
             if not self.inicio:
-                albaranes = pclases.AlbaranSalida.select(sqlobject.AND(pclases.AlbaranSalida.q.fecha <= self.fin,
+                albaranes = pclases.AlbaranSalida.select(pclases.AND(pclases.AlbaranSalida.q.fecha <= self.fin,
                                                                        pclases.AlbaranSalida.q.clienteID == cliente.id), 
                                                          orderBy = 'fecha')
 
             else:
-                albaranes = pclases.AlbaranSalida.select(sqlobject.AND(pclases.AlbaranSalida.q.fecha >= self.inicio,
+                albaranes = pclases.AlbaranSalida.select(pclases.AND(pclases.AlbaranSalida.q.fecha >= self.inicio,
                                                                        pclases.AlbaranSalida.q.fecha <= self.fin, 
                                                                        pclases.AlbaranSalida.q.clienteID == cliente.id), 
                                                          orderBy='fecha')    
@@ -192,7 +191,7 @@ class ConsultaAlbaranesCliente(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         datos = []
         # for i in self.resultado:
         #     datos.append((i.cliente.nombre,

@@ -236,8 +236,8 @@ class ConsultaExistenciasPorAlmacen(Ventana):
                 if pagina == pagina_activa:
                     tv = self.wids['tv_%d' % a.id]
                     titulo = "Existencias por almacén: %s" % a.nombre
-        from ginn.informes.treeview2pdf import treeview2pdf
-        from ginn.formularios.reports import abrir_pdf
+        from informes.treeview2pdf import treeview2pdf
+        from formularios.reports import abrir_pdf
         strfecha = "%s - %s" % (utils.str_fecha(mx.DateTime.localtime()), 
                                 utils.str_hora(mx.DateTime.localtime()))
         fichpdf = treeview2pdf(tv, 
@@ -249,8 +249,8 @@ class ConsultaExistenciasPorAlmacen(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        from ginn.informes.treeview2csv import treeview2csv
-        from ginn.formularios.reports import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         pagina_activa = self.wids['notebook'].get_current_page()
         if pagina_activa == 0:
             tv = self.wids['tv_por_producto']

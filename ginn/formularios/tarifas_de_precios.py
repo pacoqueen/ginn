@@ -81,20 +81,10 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject, gobject
+import gtk, gtk.glade, time, gobject
 import sys, os
-try:
-    from framework import pclases
-except ImportError:
-    from os.path import join as pathjoin
-    sys.path.append(pathjoin("..", "framework"))
-    from framework import pclases
-try:
-    import geninformes
-except ImportError:
-    sys.path.append('../informes')
-    import geninformes
-from utils import _float as float
+from framework import pclases
+from informes import geninformes
 import mx, mx.DateTime
 
 class TarifasDePrecios(Ventana):
@@ -140,7 +130,7 @@ class TarifasDePrecios(Ventana):
         """
         Imprime la tarifa en pantalla.
         """
-        from ginn.formularios import reports as informes
+        from formularios import reports as informes
         datos = []
         model = self.wids['tabla_productos'].get_model()
         for iter in model: 
@@ -628,11 +618,11 @@ class TarifasDePrecios(Ventana):
                                          texto = "Introduzca texto a buscar: ", 
                                          padre = self.wids['ventana'])
         if a_buscar != None:
-            criterio = sqlobject.OR(
+            criterio = pclases.OR(
                 pclases.ProductoVenta.q.codigo.contains(a_buscar),
                 pclases.ProductoVenta.q.descripcion.contains(a_buscar))
             resultados_pv = pclases.ProductoVenta.select(criterio)
-            criterio = sqlobject.OR(
+            criterio = pclases.OR(
                 pclases.ProductoCompra.q.codigo.contains(a_buscar),
                 pclases.ProductoCompra.q.descripcion.contains(a_buscar))
             resultados_pc = pclases.ProductoCompra.select(pclases.AND(

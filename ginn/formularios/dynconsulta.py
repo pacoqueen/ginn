@@ -36,13 +36,8 @@ import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, mx.DateTime
-try:
-    from framework import pclases
-    from seeker import VentanaGenerica 
-except ImportError:
-    sys.path.append(os.path.join('..', 'framework'))
-    from framework import pclases
-    from seeker import VentanaGenerica 
+from framework import pclases
+from framework.seeker import VentanaGenerica 
 old_float = float
 from utils import _float as float
 from ventana_progreso import VentanaProgreso, VentanaActividad
@@ -54,10 +49,10 @@ try:
     from collections import MutableMapping as transformedDictBase
 except ImportError:
     transformedDictBase = object
-from ginn.informes import geninformes
-from ginn.informes.treeview2pdf import treeview2pdf
-from ginn.informes.treeview2csv import treeview2csv
-from ginn.formularios.reports import abrir_pdf, abrir_csv
+from informes import geninformes
+from informes.treeview2pdf import treeview2pdf
+from informes.treeview2csv import treeview2csv
+from formularios.reports import abrir_pdf, abrir_csv
 import pango
 
 class TransformedDict(transformedDictBase):

@@ -259,8 +259,8 @@ class ConsultaFacturasSinDocumentoDePago(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe.
         """
-        from ginn.informes.treeview2pdf import treeview2pdf
-        from ginn.formularios.reports import abrir_pdf
+        from informes.treeview2pdf import treeview2pdf
+        from formularios.reports import abrir_pdf
         strfecha = "%s - %s" % (
             self.wids['e_fechaini'].get_text(), 
             self.wids['e_fechafin'].get_text())
@@ -275,8 +275,8 @@ class ConsultaFacturasSinDocumentoDePago(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        from ginn.informes.treeview2csv import treeview2csv
-        from ginn.formularios.reports import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
 

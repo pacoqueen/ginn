@@ -25,11 +25,11 @@
 
 import os
 import geninformes
-from ginn.formularios import utils
-from ginn.formularios.trazabilidad import Trazabilidad
+from formularios import utils
+from formularios.trazabilidad import Trazabilidad
 import mx.DateTime
-from ginn.framework import pclases
-from ginn.formularios.reports import abrir_pdf
+from framework import pclases
+from formularios.reports import abrir_pdf
 from tempfile import gettempdir
 from gtk import TreeStore
 

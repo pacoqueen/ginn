@@ -36,8 +36,6 @@ diractual = os.path.split(os.path.abspath(os.path.curdir))[-1]
 if diractual == "fixes":
     path_to_f = os.path.join("..", "geotexinn02", "formularios")
     os.chdir(path_to_f)
-sys.path.insert(0, os.path.join("..", "framework"))
-sys.path.insert(1, os.path.join("..", "formularios"))
 from framework import pclases
 from formularios import utils
 import gc

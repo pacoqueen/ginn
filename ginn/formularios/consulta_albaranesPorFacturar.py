@@ -104,8 +104,8 @@ class ConsultaAlbaranesPorFacturar(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        from ginn.informes.treeview2csv import treeview2csv
-        from ginn.formularios.reports import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         if boton.name == "b_exportar_as": 
             tv = "tv_salida"
         elif boton.name == "b_exportar_ae": 
@@ -129,40 +129,40 @@ class ConsultaAlbaranesPorFacturar(Ventana):
         ide = int(ide)
         if tipo == "AE":
             albaran = pclases.AlbaranEntrada.get(ide)
-            from ginn.formularios import albaranes_de_entrada
+            from formularios import albaranes_de_entrada
             v = albaranes_de_entrada.AlbaranesDeEntrada(albaran, 
                                                         usuario = self.usuario)
         elif tipo == "C":
             comision = pclases.Comision.get(ide)
             albaran = comision.albaranSalida
             if albaran != None:
-                from ginn.formularios import albaranes_de_salida
+                from formularios import albaranes_de_salida
                 v = albaranes_de_salida.AlbaranesDeSalida(albaran, 
                                                           usuario=self.usuario)
         elif tipo == "T":
             transporte = pclases.TransporteACuenta.get(ide)
             albaran = transporte.albaranSalida
             if albaran != None:
-                from ginn.formularios import albaranes_de_salida
+                from formularios import albaranes_de_salida
                 v = albaranes_de_salida.AlbaranesDeSalida(albaran, 
                                                           usuario=self.usuario)
         elif tipo == "LDC":
             ldc = pclases.LineaDeCompra.get(ide)
             albaran = ldc.albaranEntrada
             if albaran != None:
-                from ginn.formularios import albaranes_de_entrada
+                from formularios import albaranes_de_entrada
                 v = albaranes_de_entrada.AlbaranesDeEntrada(albaran, 
                                                         usuario = self.usuario)
         elif tipo == "AS":
             albaran = pclases.AlbaranSalida.get(ide)
-            from ginn.formularios import albaranes_de_salida
+            from formularios import albaranes_de_salida
             v = albaranes_de_salida.AlbaranesDeSalida(albaran, 
                                                       usuario = self.usuario)
         elif tipo == "LDV": 
             ldv = pclases.LineaDeVenta.get(ide)
             albaran = ldv.albaranSalida
             if albaran != None:
-                from ginn.formularios import albaranes_de_salida
+                from formularios import albaranes_de_salida
                 v = albaranes_de_salida.AlbaranesDeSalida(albaran, 
                                                           usuario=self.usuario)
         self.wids['ventana'].window.set_cursor(None)
@@ -368,8 +368,8 @@ class ConsultaAlbaranesPorFacturar(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from ginn.informes.treeview2pdf import treeview2pdf
-        from ginn.formularios.reports import abrir_pdf
+        from informes.treeview2pdf import treeview2pdf
+        from formularios.reports import abrir_pdf
         if not self.inicio:
             fechaInforme = 'Hasta '+utils.str_fecha(time.strptime(self.fin,"%Y/%m/%d"))
         else:

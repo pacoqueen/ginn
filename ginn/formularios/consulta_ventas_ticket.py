@@ -41,16 +41,16 @@
 ###################################################################
 ## 
 ###################################################################
-from ginn.formularios.reports import abrir_pdf, abrir_csv
-from ginn.framework import pclases
-from ginn.informes.treeview2csv import treeview2csv
-from ginn.informes.treeview2pdf import treeview2pdf
+from formularios.reports import abrir_pdf, abrir_csv
+from framework import pclases
+from informes.treeview2csv import treeview2csv
+from informes.treeview2pdf import treeview2pdf
 from ventana import Ventana
 import gtk
 import mx.DateTime
 import pygtk
-from ginn.formularios import utils
-from ginn.formularios import ventana_progreso
+from formularios import utils
+from formularios import ventana_progreso
 pygtk.require('2.0')
 
 class ConsultaBeneficioTicket(Ventana):

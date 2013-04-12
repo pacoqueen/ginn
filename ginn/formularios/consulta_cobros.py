@@ -38,7 +38,7 @@ from ventana import Ventana
 import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade, time, sqlobject
+import gtk, gtk.glade, time
 import sys
 from framework import pclases
 import mx, mx.DateTime
@@ -96,8 +96,8 @@ class ConsultaCobros(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        from ginn.informes.treeview2csv import treeview2csv
-        from ginn.formularios.reports import abrir_csv
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
         abrir_csv(treeview2csv(tv))
 
@@ -270,14 +270,14 @@ class ConsultaCobros(Ventana):
         if not self.inicio:
             cobros = pclases.Cobro.select(pclases.Cobro.q.fecha <= self.fin, orderBy = 'fecha')
         else:
-            cobros = pclases.Cobro.select(sqlobject.AND(pclases.Cobro.q.fecha >= self.inicio,
+            cobros = pclases.Cobro.select(pclases.AND(pclases.Cobro.q.fecha >= self.inicio,
                                                       pclases.Cobro.q.fecha <= self.fin), orderBy = 'fecha')
         if not self.inicio:
             vencimientos = pclases.VencimientoCobro.select(pclases.VencimientoCobro.q.fecha <= self.fin, 
                                                            orderBy = 'fecha')
         else:
             vencimientos = pclases.VencimientoCobro.select(
-                                sqlobject.AND(pclases.VencimientoCobro.q.fecha >= self.inicio,
+                                pclases.AND(pclases.VencimientoCobro.q.fecha >= self.inicio,
                                               pclases.VencimientoCobro.q.fecha <= self.fin), orderBy = 'fecha')
         elementos = {}
         for item in cobros:
@@ -382,8 +382,8 @@ class ConsultaCobros(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from ginn.informes.treeview2pdf import treeview2pdf
-        from ginn.formularios.reports import abrir_pdf
+        from informes.treeview2pdf import treeview2pdf
+        from formularios.reports import abrir_pdf
         strdiaini = self.wids['e_fechainicio'].get_text()
         strdiafin = self.wids['e_fechafin'].get_text()
         abrir_pdf(treeview2pdf(self.wids['tv_datos'], titulo = "Vencimientos y cobros por fecha", fecha = "Del %s al %s" % (strdiaini, strdiafin)))
