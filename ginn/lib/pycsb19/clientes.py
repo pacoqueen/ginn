@@ -318,9 +318,9 @@ class Cliente:
                 #if self.CalculaDC(self.tBanco.get_text()+self.tOficina.get_text()+self.tCuenta.get_text())==1:
                 #    self.tDc.set_text("**")
                 #    self.Dialogo("El DC introducido es erroneo. Se ha sustituido por **.",1)
-		if self.CalcCC(self.tBanco.get_text(),self.tOficina.get_text(),self.tCuenta.get_text())<>self.tDc.get_text():
-			self.tDc.set_text("**")
-			self.Dialogo("El DC introducido es erroneo. Se ha sustituido por **.",1)
+                if self.CalcCC(self.tBanco.get_text(),self.tOficina.get_text(),self.tCuenta.get_text())<>self.tDc.get_text():
+                    self.tDc.set_text("**")
+                    self.Dialogo("El DC introducido es erroneo. Se ha sustituido por **.",1)
             return 0
         
     def CalculaDC(self,Dato):
@@ -365,25 +365,22 @@ class Cliente:
                 return 0
 
     def CRC(self,cTexto):
-	  factor=(1,2,4,8,5,10,9,7,3,6)
-	  # Cálculo CRC
-	  nCRC=0
-	  for n in range(10):
-	    nCRC += int(cTexto[n])*factor[n]
-	  # Reducción del CRC a un dígito
-	  nValor=11 - nCRC%11
-	  if nValor==10: nValor=1
-	  elif nValor==11: nValor=0
-	  return nValor
+        factor=(1,2,4,8,5,10,9,7,3,6)
+        # Cálculo CRC
+        nCRC=0
+        for n in range(10):
+            nCRC += int(cTexto[n])*factor[n]
+        # Reducción del CRC a un dígito
+        nValor=11 - nCRC%11
+        if nValor==10: nValor=1
+        elif nValor==11: nValor=0
+        return nValor
     def CalcCC(self,cBanco,cSucursal,cCuenta):
-	  cTexto="00%04d%04d" % (int(cBanco),int(cSucursal))
-	  DC1=self.CRC(cTexto)
-	  cTexto="%010d" % long(cCuenta)
-	  DC2=self.CRC(cTexto)
-	  return "%1d%1d" % (DC1,DC2)
-
-
-
+        cTexto="00%04d%04d" % (int(cBanco),int(cSucursal))
+        DC1=self.CRC(cTexto)
+        cTexto="%010d" % long(cCuenta)
+        DC2=self.CRC(cTexto)
+        return "%1d%1d" % (DC1,DC2)
 
     def SacaCampos(self, widget, event):
         #El 5 es doble click y el 4 es el simple

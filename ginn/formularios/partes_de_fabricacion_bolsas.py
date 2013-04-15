@@ -242,7 +242,7 @@ class PartesDeFabricacionBolsas(Ventana):
         """
         partedeproduccion = self.objeto
         if partedeproduccion == None: 
-            return False	# Si no hay partedeproduccion activo, devuelvo 
+            return False    # Si no hay partedeproduccion activo, devuelvo 
                             # que no hay cambio respecto a la ventana
         condicion = True
         valores = self.leer_valores_ventana()
@@ -261,7 +261,7 @@ class PartesDeFabricacionBolsas(Ventana):
                           "ventana", type(valor_ventana), valor_ventana, \
                           "objeto", valor_objeto, type(valor_objeto)
                 break
-        return not condicion	# Condición verifica que sea igual
+        return not condicion    # Condición verifica que sea igual
 
     def colorear_tabla_empleados(self):
         """

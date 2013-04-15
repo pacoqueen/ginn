@@ -22,7 +22,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA  #
 ###############################################################################
 
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, XPreformatted, Preformatted, PageBreak, KeepTogether, CondPageBreak, LongTable
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, XPreformatted, Preformatted, PageBreak, KeepTogether, CondPageBreak, LongTable  # @UnusedImport
 from reportlab.platypus.flowables import Flowable
 from reportlab.rl_config import defaultPageSize
 from reportlab.lib import colors, enums
@@ -31,7 +31,7 @@ from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 import sys, os#, Image
 from framework import pclases
 from formularios import utils, numerals
-from informes.geninformes import give_me_the_name_baby, escribe, rectangulo, el_encogedor_de_fuentes_de_doraemon, agregarFila
+from informes.geninformes import give_me_the_name_baby, escribe, rectangulo, el_encogedor_de_fuentes_de_doraemon, agregarFila  # @UnusedImport
 from tempfile import gettempdir
 from formularios.fixedpoint import FixedPoint
 
@@ -365,7 +365,7 @@ class TablaFija(Table):
     _old_drawOn = Table.drawOn
 
     def wrap(self, availWidth, availHeight):
-        w, h = Table.wrap(self, availWidth, availHeight)
+        w, h = Table.wrap(self, availWidth, availHeight)  # @UnusedVariable
         #print h, w, availHeight, availWidth
         h = 3*cm
         w = 0.9 * PAGE_WIDTH
@@ -460,7 +460,7 @@ def build_tabla_vencimientos(observaciones, vencimientos, forma_de_pago):
     for fila_datos in datos[1:]:
         fila = []
         for celda in fila_datos:
-             fila.append(Paragraph(escribe(celda), estilo_cont_tabla))
+            fila.append(Paragraph(escribe(celda), estilo_cont_tabla))
         _datos.append(fila)
     datos = _datos
     tabla = TablaFija(78,
@@ -536,7 +536,6 @@ def build_logo_y_empresa_por_separado(dde):
     if len(lineas_empresa) <= 3:
         while len(lineas_empresa) < 3:
             lineas_empresa.append("")
-        empresa = lineas_empresa
     else:
         texto_empresa = lineas_empresa[0] + "\n"
             #+ ". ".join(lineas_empresa[1:])
@@ -592,16 +591,16 @@ def go(titulo,
              Spacer(1, 0.25 * cm),
              vencimientos,
              lastPageNumberFlowable(0.9*PAGE_WIDTH - 0.5*cm + 1, 1.0*cm)]
-             #Spacer(1, 0.15 * cm),
-             # Línea doble.
-             #KeepTogether([LineaHorizontal(0.9 * PAGE_WIDTH),
-             #              Spacer(1, 0.05 * cm),
-             #              LineaHorizontal(0.9 * PAGE_WIDTH)]),
-             #Spacer(1, 0.15 * cm),
-             #CondPageBreak(13*cm),
-             #logo_y_empresa,
-             #Spacer(1, 0.25 * cm),
-             #texto]
+                #Spacer(1, 0.15 * cm),
+                # Línea doble.
+                #KeepTogether([LineaHorizontal(0.9 * PAGE_WIDTH),
+                #              Spacer(1, 0.05 * cm),
+                #              LineaHorizontal(0.9 * PAGE_WIDTH)]),
+                #Spacer(1, 0.15 * cm),
+                #CondPageBreak(13*cm),
+                #logo_y_empresa,
+                #Spacer(1, 0.25 * cm),
+                #texto]
     story = utils.aplanar([i for i in story if i])
     _cabecera_y_cliente = lambda c, d: cabecera_y_cliente(c,
                                                           d,
@@ -672,7 +671,7 @@ def go_from_facturaVenta(facturaVenta):
         if dde.email:
             datos_de_la_empresa.append(dde.email)
     except IndexError:
-        lineas_empresa = [None]
+        datos_de_la_empresa = [None]
     nomarchivo = os.path.join(gettempdir(),
                               "facturaVenta_%s.pdf" % give_me_the_name_baby())
     vencimientos = []

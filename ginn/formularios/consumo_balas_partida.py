@@ -459,8 +459,8 @@ Sin embalaje.</i></small>""" % (merma))
             if resp == [-1]:  # Ha cancelado
                 return
             partida = self.get_partida()
-            for id in resp:
-                bala = pclases.Bala.get(id)
+            for ide in resp:
+                bala = pclases.Bala.get(ide)
                 if bala.claseb:
                     if utils.dialogo(titulo = 'BALA MARCADA COMO BAJA CALIDAD',
                                      texto = 'La bala está marcada como clase B. Esto puede provocar\nproblemas en la línea de producción.\n¿Está seguro de querer comsumir la bala de fibra?', 

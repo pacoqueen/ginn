@@ -343,16 +343,16 @@ class ConsultaVencimientosPagos(Ventana):
         pass
 
     def rellenar_tabla(self, items):
-    	"""
+        """
         Rellena el model con los items de la consulta
         """        
-    	model = self.wids['tv_datos'].get_model()
-    	model.clear()
+        model = self.wids['tv_datos'].get_model()
+        model.clear()
         total = 0
         vencido = 0
         hoy = mx.DateTime.localtime()
         por_fecha = {}
-    	for i in items:
+        for i in items:
             if not i[2]:  # i[2] = False cuando es vencimiento normal de la BD
                 importe = i[1].importe
                 anno = i[1].fecha.year

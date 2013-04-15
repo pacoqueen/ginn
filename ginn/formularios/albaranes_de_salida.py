@@ -4038,7 +4038,7 @@ class AlbaranesDeSalida(Ventana):
                     utils.dialogo_info(titulo = 'ERROR VENCIMIENTOS POR DEFECTO', 
                                        texto = 'Los vencimientos por defecto del cliente no se pudieron procesar correctamente.\nVerifique que están bien escritos y el formato es correcto en la ventana de clientes.', 
                                        padre = self.wids['ventana'])
-                    return ok	# Los vencimientos no son válidos o no tiene.
+                    return ok    # Los vencimientos no son válidos o no tiene.
         if vtos:
             self.borrar_vencimientos_y_estimaciones(factura)
             total = self.rellenar_totales(factura)

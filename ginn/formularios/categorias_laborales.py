@@ -246,7 +246,7 @@ class CategoriasLaborales(Ventana):
         condicion = True
         for col in categoria_laboral._SO_columnDict:
             condicion = condicion and self.comparar_campo(col, categoria_laboral._SO_columnDict[col])
-        return not condicion	# Concición verifica que sea igual
+        return not condicion    # Concición verifica que sea igual
 
     def aviso_actualizacion(self):
         """

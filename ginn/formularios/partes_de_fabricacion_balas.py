@@ -2860,7 +2860,7 @@ class PartesDeFabricacionBalas(Ventana):
         else:
             model, paths = self.wids['tv_balas'].get_selection().get_selected_rows()
             for path in paths:
-                if model[path][1] != '':	# Nº bala o bigbag. Tiene, no es una incidencia.
+                if model[path][1] != '':    # Nº bala o bigbag. Tiene, no es una incidencia.
                     ide = model[path][-1]
                     articulo = pclases.Articulo.get(ide)
                     if articulo.es_bala():

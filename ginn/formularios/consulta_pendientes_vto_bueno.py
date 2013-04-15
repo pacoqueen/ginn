@@ -122,13 +122,13 @@ class ConsultaPendientesVtoBueno(Ventana):
         pass
 
     def rellenar_tabla(self, fras):
-    	"""
+        """
         Rellena el model con los items de la consulta
         """        
-    	model = self.wids['tv_datos'].get_model()
-    	model.clear()
+        model = self.wids['tv_datos'].get_model()
+        model.clear()
         self.wids['e_total_fras'].set_text("%d facturas listadas." % (len(fras)))
-    	for fra in fras:
+        for fra in fras:
             codigo_numerico_validacion = fra.get_codigo_validacion_visto_bueno()
             vtobueno = fra.vistoBuenoPago and fra.numeroControl or "PENDIENTE: %s" % (pclases.FacturaCompra.codigos_no_validacion[codigo_numerico_validacion])
             model.append((fra.numfactura,

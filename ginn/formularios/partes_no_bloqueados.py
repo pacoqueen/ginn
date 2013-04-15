@@ -153,10 +153,10 @@ class PartesNoBloqueados(Ventana):
         self.wids['ventana'].window.set_cursor(None)
 
     def rellenar_partes(self):
-    	"""
+        """
         Rellena el model con los partes no bloqueados.
         """
-    	model = self.wids['tv_partes'].get_model()
+        model = self.wids['tv_partes'].get_model()
         # Primero verifico los que ya estaban (si es que había alguno):
         for fila in model:
             idparte = fila[-1]
@@ -174,7 +174,7 @@ class PartesNoBloqueados(Ventana):
                         and self.usuario.usuario + ": " or "", pdp.id))
                 pdp.bloqueado = False
         # Y ahora meto los de la consulta real:
-    	model.clear()
+        model.clear()
         self.wids['tv_partes'].freeze_child_notify()
         self.wids['tv_partes'].set_model(None)
         vpro = ventana_progreso.VentanaProgreso(padre = self.wids['ventana'])

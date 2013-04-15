@@ -94,7 +94,7 @@ class AbonosVenta(Ventana):
         del objeto en memoria.
         """
         abono = self.objeto
-        if abono == None: return False	# Si no hay abono activo, devuelvo que 
+        if abono == None: return False    # Si no hay abono activo, devuelvo que 
                                         # no hay cambio respecto a la ventana
         condicion = self.wids['e_numabono'].get_text() == abono.numabono
         condicion = (condicion 
@@ -103,7 +103,7 @@ class AbonosVenta(Ventana):
          and abono.observaciones == self.wids['e_observaciones'].get_text())
         condicion = (condicion 
          and abono.almacenID==utils.combo_get_value(self.wids['cbe_almacen']))
-        return not condicion	# Condición verifica que sea igual
+        return not condicion    # Condición verifica que sea igual
 
     def aviso_actualizacion(self):
         """
@@ -216,12 +216,12 @@ class AbonosVenta(Ventana):
         try:
             # Anulo el aviso de actualización del envío que deja de ser activo.
             if abono != None: abono.notificador.set_func(lambda : None)
-            abono = pclases.Abono.select(orderBy = "-id")[0]	# Selecciono 
+            abono = pclases.Abono.select(orderBy = "-id")[0]    # Selecciono 
                                 # todos y me quedo con el primero de la lista
             abono.notificador.set_func(self.aviso_actualizacion)    # Activo 
                                                             # la notificación
         except:
-            abono = None 	
+            abono = None     
         self.objeto = abono
         self.actualizar_ventana()
 

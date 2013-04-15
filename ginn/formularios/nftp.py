@@ -80,7 +80,7 @@ def getConfig(name=None):
     if name is not None: 
         return conf[name]
     else: 
-        return conf['ginn']	#Debe haber al menos una configuración por defecto llamada 'ginn'
+        return conf['ginn']    #Debe haber al menos una configuración por defecto llamada 'ginn'
 
 def pathSplit(filepath): 
     if filepath.startswith('/'): 

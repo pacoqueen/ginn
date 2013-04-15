@@ -164,7 +164,7 @@ class Confirmings(Ventana):
         """
         confirming = self.objeto
         if confirming == None: 
-            return False	# Si no hay confirming activo, devuelvo que no 
+            return False    # Si no hay confirming activo, devuelvo que no 
                             # hay cambio respecto a la ventana
         condicion = self.wids['e_fechar'].get_text() \
             == confirming.fechaRecepcion.strftime('%d/%m/%Y')
@@ -188,7 +188,7 @@ class Confirmings(Ventana):
             self.wids['e_codigo'].get_text() == confirming.codigo)
         condicion = condicion and (
             utils.combo_get_value(self.wids['cbe_banco'])==confirming.bancoID)
-        return not condicion	# Concición verifica que sea igual
+        return not condicion    # Concición verifica que sea igual
 
     def aviso_actualizacion(self):
         """
@@ -331,12 +331,12 @@ class Confirmings(Ventana):
             # Anulo el aviso de actualización del envío que deja de ser activo.
             if confirming != None: 
                 confirming.notificador.set_func(lambda : None)
-            confirming = pclases.Confirming.select(orderBy = "-id")[0]	
+            confirming = pclases.Confirming.select(orderBy = "-id")[0]    
                 # Selecciono todos y me quedo con el primero de la lista
-            confirming.notificador.set_func(self.aviso_actualizacion)	
+            confirming.notificador.set_func(self.aviso_actualizacion)    
                 # Activo la notificación
         except:
-            confirming = None 	
+            confirming = None     
         self.objeto = confirming
         self.actualizar_ventana()
 

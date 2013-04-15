@@ -107,15 +107,15 @@ class ConsultaProducido(Ventana):
         pass
 
     def rellenar_tabla(self, items):
-    	"""
+        """
         Rellena el model con los items de la consulta.
         "items" es una lista de 4 elementos: Nombre producto, cantidad, ID y X.
         En la última columna del model (la oculta) se guarda un string "ID:X" donde X
         es R si es un rollo (geotextil) o B si es bala (fibra).
         """        
-    	model = self.wids['tv_datos'].get_model()
-    	model.clear()
-    	for item in items:
+        model = self.wids['tv_datos'].get_model()
+        model.clear()
+        for item in items:
             iter = model.append(None, (item[0],
                                        item[1],
                                        item[4],
@@ -423,7 +423,7 @@ class ConsultaProducido(Ventana):
         Rellena la tabla de producción por turnos.
         """
         model = self.wids['tv_ford'].get_model()
-    	model.clear()
+        model.clear()
         for grupo in ford:
             produccion = []
             for unidad in ford[grupo]:

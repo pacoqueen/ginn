@@ -276,7 +276,7 @@ class Empleados(Ventana):
                 and self.comparar_campo(col, empleado._SO_columnDict[col]))
             if not condicion:
                 break   # ¿"Pa" qué seguir?
-        return not condicion	# Concición verifica que sea igual
+        return not condicion    # Concición verifica que sea igual
 
     def aviso_actualizacion(self):
         """
@@ -299,7 +299,7 @@ class Empleados(Ventana):
             empleado = pclases.Empleado.select(orderBy="id")[0]
             empleado.notificador.set_func(self.aviso_actualizacion)
         except:
-            empleado = None 	
+            empleado = None     
         self.objeto = empleado
         self.actualizar_ventana()
 

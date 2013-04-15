@@ -72,15 +72,15 @@ class TiposIncidencia(Ventana):
         pass
 
     def rellenar_tabla(self):
-    	"""
+        """
         Rellena el model con los tipos de incidencia existentes
         """        
         tipos = pclases.TipoDeIncidencia.select(orderBy="descripcion")
-    	model = self.wids['tv_tipos'].get_model()
-    	model.clear()
-    	for t in tipos:
-    		model.append((t.descripcion,
-    				t.id))
+        model = self.wids['tv_tipos'].get_model()
+        model.clear()
+        for t in tipos:
+            model.append((t.descripcion,
+                    t.id))
     
     
     def eliminar_tipo_de_incidencia(self,widget):
@@ -91,28 +91,28 @@ class TiposIncidencia(Ventana):
         else:        
             utils.dialogo_info('ERROR','Seleccione incidencia a eliminar')
             return
-        try:	
+        try:    
             tipodeincidencia.destroy(ventana = __file__)
         except:
             utils.dialogo_info('ERROR','No se ha podido eliminar el tipo de incidencia. Probablemente existan procesos con este tipo de incidencia.')
         self.rellenar_tabla()
     
     def modificar_tipo_de_incidencia(self, widget):
-    	model, iter = self.wids['tv_tipos'].get_selection().get_selected()
-    	if iter != None:
-    	    idtipo = model[iter][-1]
+        model, iter = self.wids['tv_tipos'].get_selection().get_selected()
+        if iter != None:
+            idtipo = model[iter][-1]
             tipodeincidencia = pclases.TipoDeIncidencia.get(idtipo)
         else:
             utils.dialogo_info('ERROR','Seleccione incidencia a modificar')
             return
-    	nuevotipo = utils.dialogo_entrada('Introduzca el nuevo tipo de incidencia para: ' + tipodeincidencia.descripcion)
-    	try:	
-    		if nuevotipo != None:
-    			tipodeincidencia.descripcion = nuevotipo
-    	except:
-    		utils.dialogo_info('ERROR','No se ha podido modificar el tipo de incidencia.')
+        nuevotipo = utils.dialogo_entrada('Introduzca el nuevo tipo de incidencia para: ' + tipodeincidencia.descripcion)
+        try:    
+            if nuevotipo != None:
+                tipodeincidencia.descripcion = nuevotipo
+        except:
+            utils.dialogo_info('ERROR','No se ha podido modificar el tipo de incidencia.')
 
-    	self.rellenar_tabla()
+        self.rellenar_tabla()
     
     
     def crear_nuevo_tipodeincidencia(self, widget):
@@ -123,10 +123,10 @@ class TiposIncidencia(Ventana):
         en la ventana para que puedan ser editados el resto
         de campos que no se hayan pedido aquí.
         """
-    	nuevotipo = utils.dialogo_entrada('Introduzca el nuevo tipo de incidencia')
+        nuevotipo = utils.dialogo_entrada('Introduzca el nuevo tipo de incidencia')
         tipodeincidencia = pclases.TipoDeIncidencia(descripcion = nuevotipo)
         pclases.Auditoria.nuevo(tipodeincidencia, self.usuario, __file__)
-    	self.rellenar_tabla()
+        self.rellenar_tabla()
     
     
 if __name__ == '__main__':

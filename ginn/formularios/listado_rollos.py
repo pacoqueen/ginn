@@ -42,7 +42,6 @@ import gtk
 import time
 import mx.DateTime
 import pygtk
-import sys
 import utils
 pygtk.require('2.0')
 
@@ -89,7 +88,6 @@ class ListadoRollos(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        import sys, os
         from informes.treeview2csv import treeview2csv
         from formularios.reports import abrir_csv
         tv = self.wids['tv_rollos']
@@ -118,7 +116,6 @@ class ListadoRollos(Ventana):
         """
         Crea un PDF con el contenido del TreeView.
         """
-        from informes import geninformes
         datos = []
         model = self.wids['tv_rollos'].get_model()
         for i in model:
@@ -201,15 +198,15 @@ class ListadoRollos(Ventana):
         pass
 
     def rellenar_tabla(self, lista, defectuosos, gtxcs, producto):
-    	"""
+        """
         Rellena el model con el listado de rollos correspondiente.
         OJO: Los rollos defectuosos se listan, pero no se cuentan para los 
         totales. Los rollos de Gtx C van aparte siempre.
         """
         from ventana_progreso import VentanaProgreso
         vpro = VentanaProgreso(padre = self.wids['ventana'])
-    	model = self.wids['tv_rollos'].get_model()
-    	model.clear()
+        model = self.wids['tv_rollos'].get_model()
+        model.clear()
         metros_almacen = 0
         rollos_almacen = 0
         metros_fabricados = 0
@@ -244,7 +241,7 @@ class ListadoRollos(Ventana):
                               a.almacen and a.almacen.nombre or "", 
                               a.id))
             else:
-            	model.append((a.codigo,
+                model.append((a.codigo,
                               utils.str_fecha(a.rolloDefectuoso.fechahora),
                               utils.str_fecha(a.rolloDefectuoso.fechahora),
                               a.partida.codigo,
@@ -278,7 +275,7 @@ class ListadoRollos(Ventana):
                     kilosc += a.peso
                     rollosc += 1
             else:
-            	model.append((a.codigo,
+                model.append((a.codigo,
                               utils.str_fecha(a.rolloC.fechahora),
                               utils.str_hora(a.rolloC.fechahora),
                               "N/A",
@@ -289,7 +286,7 @@ class ListadoRollos(Ventana):
                 kilosc += a.peso
                 rollosc += 1
             i += 1
-    	for t in lista:
+        for t in lista:
             metros2 = t.productoVenta.camposEspecificosRollo.metrosLineales * t.productoVenta.camposEspecificosRollo.ancho
             metros_fabricados += metros2
             vpro.set_valor(i/tot, 'Añadiendo rollo %s...' % t.rollo.codigo)
@@ -312,13 +309,13 @@ class ListadoRollos(Ventana):
                         info_albaran,
                         utils.float2str(t.get_largo(), autodec = True), 
                         t.almacen and t.almacen.nombre or "", 
-    			    	t.id))
+                        t.id))
                 # Si tienen albarán hay un caso en que cuentan para almacén:
                 if t.albaranSalida and t.albaranSalida.es_de_movimiento():
                     metros_almacen += metros2
                     rollos_almacen += 1
             else:
-            	model.append((t.rollo.codigo,
+                model.append((t.rollo.codigo,
                         utils.str_fecha(t.rollo.fechahora),
                         # -----------------------------------------------------
                         # t.rollo.articulos[0].parteDeProduccion and utils.str_fecha(t.rollo.articulos[0].parteDeProduccion.fecha) or '',
@@ -328,7 +325,7 @@ class ListadoRollos(Ventana):
                         '-',
                         utils.float2str(t.get_largo(), autodec = True), 
                         t.almacen and t.almacen.nombre or "", 
-    			    	t.id))
+                        t.id))
                 metros_almacen += metros2
                 rollos_almacen += 1
             i += 1
@@ -364,7 +361,7 @@ class ListadoRollos(Ventana):
         model = self.wids['tv_rollos'].get_model()
         fila = model[path]
         ide = fila[-1]
-        rollo = pclases.Articulo.get(id).rollo
+        rollo = pclases.Articulo.get(ide).rollo
         if numrollo != rollo.numrollo:
             nuevo_numrollo = rollo.cambiar_numrollo(numrollo)
             if nuevo_numrollo != numrollo:
@@ -404,10 +401,6 @@ class ListadoRollos(Ventana):
                                 'del producto que desea listar:', 
                         padre = self.wids['ventana'])
         if a_buscar != None:
-            try:
-                ida_buscar = int(a_buscar)
-            except ValueError:
-                ida_buscar = -1
             criterio = pclases.OR(pclases.ProductoVenta.q.codigo.contains(a_buscar),
                                             pclases.ProductoVenta.q.descripcion.contains(a_buscar))
             criterio = pclases.AND(criterio, pclases.ProductoVenta.q.camposEspecificosRolloID != None)
@@ -505,30 +498,30 @@ class ListadoRollos(Ventana):
         txt = gtk.Label(texto)
         de.vbox.pack_start(txt)
         txt.show()
-        input = gtk.Entry()
-        input.set_visibility(not pwd)
+        einput = gtk.Entry()
+        einput.set_visibility(not pwd)
         def pasar_foco(widget, event):
-          if event.keyval == 65293 or event.keyval == 65421:
-            de.action_area.get_children()[1].grab_focus()
-        input.connect("key_press_event", pasar_foco)
-        de.vbox.pack_start(input)
-        input.show()
-        input.set_text(valor_por_defecto)
+            if event.keyval == 65293 or event.keyval == 65421:
+                de.action_area.get_children()[1].grab_focus()
+        einput.connect("key_press_event", pasar_foco)
+        de.vbox.pack_start(einput)
+        einput.show()
+        einput.set_text(valor_por_defecto)
         marcado = gtk.CheckButton("Mostrar etiqueta de marcado CE")
         marcado.set_active(True)
         de.vbox.pack_start(marcado)
         marcado.show()
         if len(titulo)<20:
-          width = 100
+            width = 100
         elif len(titulo)<60:
-          width = len(titulo)*10
+            width = len(titulo)*10
         else:
-          width = 600
+            width = 600
         de.resize(width, 80)
         de.run()
         de.destroy()
         if res[0]==False:
-          return None, None
+            return None, None
         return res[0], marcado.get_active()
 
     def etiquetar(self, boton):

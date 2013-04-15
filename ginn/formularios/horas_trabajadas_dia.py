@@ -200,7 +200,7 @@ class HorasTrabajadasDia(Ventana):
             r['varios'] = r['varios'] != 0 and "%02d:%02d" % self.horas_minutos_from_delta(r['varios']) or ""
 
     def rellenar_horas(self, b = None):
-    	"""
+        """
         Rellena el model con las horas trabajadas en cada parte del 
         rango de fechas.
         """
@@ -210,8 +210,8 @@ class HorasTrabajadasDia(Ventana):
             utils.dialogo_info(titulo = "FECHA INCORRECTA", texto = "La fecha no es correcta. Use el formato día/mes/año", padre = self.wids['ventana'])
             return
         fecha = mx.DateTime.DateTimeFrom(day = dia, month = mes, year = anno) 
-    	model = self.wids['tv_horas'].get_model()
-    	model.clear()
+        model = self.wids['tv_horas'].get_model()
+        model.clear()
 
         partes_produccion = self.buscar_partes_produccion(fecha)
         empleados, aux = self.preparar_datos(partes_produccion, fecha)

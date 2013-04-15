@@ -131,7 +131,7 @@ class ConsultaVentasPorProducto(Ventana):
         pass
 
     def rellenar_tabla(self, ldvs, ldds):
-    	"""
+        """
         Rellena el model con los items de la consulta.
         ldvs es una lista de líneas de venta.
         ldds es una lista de líneas de devolución.
@@ -140,8 +140,8 @@ class ConsultaVentasPorProducto(Ventana):
         la fila que ocupa (padre de la que se esté insertando en ese 
         momento) y la cantidad total del mismo.
         """ 
-    	model = self.wids['tv_datos'].get_model()
-    	model.clear()
+        model = self.wids['tv_datos'].get_model()
+        model.clear()
         total_otros = 0.0
         total_metros = 0.0
         total_kilos = 0.0

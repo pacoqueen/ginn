@@ -234,7 +234,7 @@ class PartesDeFabricacionRollos(Ventana):
         """
         self.usuario = usuario
         self.producto = None    # Producto relacionado con el parte. 
-			                	# Debe coincidir con el de todas las rollos 
+                                # Debe coincidir con el de todas las rollos 
                                 # de "Detalles de producción"
         self.ultima_etiqueta = None
         self.__lecturaescritura = None
@@ -365,7 +365,7 @@ class PartesDeFabricacionRollos(Ventana):
         """
         partedeproduccion = self.objeto
         if partedeproduccion == None: 
-            return False	# Si no hay partedeproduccion activo, devuelvo que no hay cambio respecto a la ventana
+            return False    # Si no hay partedeproduccion activo, devuelvo que no hay cambio respecto a la ventana
         try:
             condicion = utils.str_fecha(partedeproduccion.fecha) == self.wids['e_fecha'].get_text()
             condicion = condicion and (str(partedeproduccion.prodestandar) == self.wids['e_o11'].get_text())
@@ -383,7 +383,7 @@ class PartesDeFabricacionRollos(Ventana):
             self.logger.error(txt)
             partedeproduccion.sync()  # Si la excepción es por lo que pienso, al sincronizar se actualizarán las horas como mx y no como str.
             condicion = False
-        return not condicion	# Condición verifica que sea igual
+        return not condicion    # Condición verifica que sea igual
 
     def colorear_rollos(self, tv):
         def cell_func(column, cell, model, itr, numcol):
@@ -826,7 +826,7 @@ class PartesDeFabricacionRollos(Ventana):
                 partedeproduccion.notificador.activar(self.aviso_actualizacion)
                     # Activo la notificación
             except:
-                partedeproduccion = None 	
+                partedeproduccion = None     
             self.objeto = partedeproduccion
             self.actualizar_ventana()
 
@@ -1411,7 +1411,7 @@ class PartesDeFabricacionRollos(Ventana):
     # --------------- Manejadores de eventos ----------------------------
     def cambiar_peso_rollo(self, cell, path, newtext):
         model = self.wids['tv_rollos'].get_model()
-        if model[path][1] == '':	# Nº rollo, no tiene, no es un rollo.
+        if model[path][1] == '':    # Nº rollo, no tiene, no es un rollo.
             return
         ide = model[path][-1]
         articulo = pclases.Articulo.get(id)
@@ -1453,7 +1453,7 @@ class PartesDeFabricacionRollos(Ventana):
     def cambiar_observaciones(self, cell, path, newtext):
         model = self.wids['tv_rollos'].get_model()
         ide = model[path][-1]
-        if model[path][1] != '':	# Nº rollo, tiene, no es una incidencia.
+        if model[path][1] != '':    # Nº rollo, tiene, no es una incidencia.
             articulo = pclases.Articulo.get(id)
             if articulo.es_rollo():
                 rollo = articulo.rollo
@@ -1467,7 +1467,7 @@ class PartesDeFabricacionRollos(Ventana):
 
     def cambiar_inicio_incidencia(self, cell, path, newtext):
         model = self.wids['tv_rollos'].get_model()
-        if model[path][1] != '':	# Nº rollo, tiene, no es una incidencia.
+        if model[path][1] != '':    # Nº rollo, tiene, no es una incidencia.
             return
         ide = model[path][-1]
         incidencia = pclases.Incidencia.get(id)
@@ -1497,7 +1497,7 @@ class PartesDeFabricacionRollos(Ventana):
 
     def cambiar_fin_incidencia(self, cell, path, newtext):
         model = self.wids['tv_rollos'].get_model()
-        if model[path][1] != '':	# Nº rollo, tiene, no es una incidencia.
+        if model[path][1] != '':    # Nº rollo, tiene, no es una incidencia.
             return
         ide = model[path][-1]
         incidencia = pclases.Incidencia.get(id)
@@ -2034,7 +2034,7 @@ class PartesDeFabricacionRollos(Ventana):
         for path in paths:
             ide = model[path][-1]
             if (model[path][1] == 0 or model[path][1] == "" 
-                or model[path][1] == " "): 	# El número de rollo está vacío
+                or model[path][1] == " "):     # El número de rollo está vacío
                 utils.dialogo_info('ROLLO NO SELECCIONADO', 
                     'Debe seleccionar un rollo.\nPara eliminar una incidencia'
                     ' use «Eliminar incidencia».', 
@@ -2165,7 +2165,7 @@ class PartesDeFabricacionRollos(Ventana):
                 return
             for path in paths:
                 ide = model[path][-1]
-                if model[path][1] != '': 	# El número de rollo NO está vacío
+                if model[path][1] != '':     # El número de rollo NO está vacío
                     utils.dialogo_info('ROLLO SELECCIONADO', 
                                        'Ha seleccionado una rollo en lugar de una incidencia.\nUse «Quitar rollo» para eliminarla.', 
                                        padre = self.wids['ventana'])
@@ -2528,7 +2528,7 @@ class PartesDeFabricacionRollos(Ventana):
             model, paths = self.wids['tv_rollos'].get_selection().get_selected_rows()
             mostrar_muestra = mostrar_defectuoso = True; mostrar_limpiar = False
             for path in paths:
-                if model[path][1] != '':	# Nº rollo, tiene, no es una incidencia.
+                if model[path][1] != '':    # Nº rollo, tiene, no es una incidencia.
                     ide = model[path][-1]
                     articulo = pclases.Articulo.get(id)
                     if articulo.es_rollo():
@@ -2559,7 +2559,7 @@ class PartesDeFabricacionRollos(Ventana):
         else:
             model, paths = self.wids['tv_rollos'].get_selection().get_selected_rows()
             for path in paths:
-                if model[path][1] != '':	# Nº rollo, tiene, no es una incidencia.
+                if model[path][1] != '':    # Nº rollo, tiene, no es una incidencia.
                     ide = model[path][-1]
                     rollo = pclases.Articulo.get(id).rollo
                     if rollo != None:

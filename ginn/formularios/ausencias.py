@@ -292,8 +292,8 @@ class Ausencias(Ventana):
         try:
             # Anulo el aviso de actualización del envío que deja de ser activo.
             if empleado != None: empleado.notificador.set_func(lambda : None)
-            empleado = pclases.Empleado.select(pclases.Empleado.q.activo == True, orderBy="id")[0]	
-            empleado.notificador.set_func(self.aviso_actualizacion)	
+            empleado = pclases.Empleado.select(pclases.Empleado.q.activo == True, orderBy="id")[0]    
+            empleado.notificador.set_func(self.aviso_actualizacion)    
         except:
             empleado = None
         self.objeto = empleado

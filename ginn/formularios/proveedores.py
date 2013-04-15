@@ -173,7 +173,7 @@ class Proveedores(Ventana):
         del objeto en memoria.
         """
         proveedor = self.objeto
-        if proveedor == None: return False	# Si no hay proveedor activo, devuelvo que no hay cambio respecto a la ventana
+        if proveedor == None: return False    # Si no hay proveedor activo, devuelvo que no hay cambio respecto a la ventana
         condicion = True
         for c in proveedor._SO_columns:
             if c.name != "tipoDeProveedorID":
@@ -186,7 +186,7 @@ class Proveedores(Ventana):
                 condicion = (condicion 
                     and proveedor.tipoDeProveedorID == utils.combo_get_value(
                         self.wids['cb_tipo_de_proveedor']))
-        return not condicion	# Concición verifica que sea igual
+        return not condicion    # Concición verifica que sea igual
 
     def aviso_actualizacion(self):
         """
@@ -257,8 +257,8 @@ class Proveedores(Ventana):
         try:
             # Anulo el aviso de actualización del envío que deja de ser activo.
             if proveedor != None: proveedor.notificador.set_func(lambda : None)
-            proveedor = pclases.Proveedor.select(orderBy = "-id")[0]	# Selecciono todos y me quedo con el primero de la lista
-            proveedor.notificador.set_func(self.aviso_actualizacion)		# Activo la notificación
+            proveedor = pclases.Proveedor.select(orderBy = "-id")[0]    # Selecciono todos y me quedo con el primero de la lista
+            proveedor.notificador.set_func(self.aviso_actualizacion)        # Activo la notificación
         except:
             proveedor = None 
         self.objeto = proveedor

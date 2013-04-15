@@ -266,9 +266,9 @@ class PedidosDeVenta(Ventana):
                         <ui>
                             <popup name='Popup'>
                         """
-            for id in reg.get_lista():
+            for ide in reg.get_lista():
                 try:
-                    p = pclases.PedidoVenta.get(id)
+                    p = pclases.PedidoVenta.get(ide)
                 except pclases.SQLObjectNotFound:
                     pass    # Pedido borrado.
                 else:
@@ -281,7 +281,7 @@ class PedidosDeVenta(Ventana):
                         """
             ag = gtk.ActionGroup("Recientes")
             actions = []
-            for info, id in lista:
+            for info, ide in lista:
                 actions.append((info, None, info, None, "Abrir " + info, 
                                 self.abrir_reciente))
             ag.add_actions(actions, lista)
@@ -298,9 +298,9 @@ class PedidosDeVenta(Ventana):
         """
         accel_path = action.get_accel_path()
         txt_entrada = "/".join(accel_path.split("/")[2:])
-        for txt, id in lista:
+        for txt, ide in lista:
             if txt == txt_entrada:
-                pedido = pclases.PedidoVenta.get(id)
+                pedido = pclases.PedidoVenta.get(ide)
                 # XXX: Añado a objetos recientes.
                 objsr = pclases.ListaObjetosRecientes.buscar(
                                                         "pedidos_de_venta.py", 
@@ -341,8 +341,8 @@ class PedidosDeVenta(Ventana):
         lo elimina también de la base de datos.
         """
         seleccion = self.wids['tv_servicios'].get_selection()
-        model, iter = seleccion.get_selected()
-        if iter == None: 
+        model, itr = seleccion.get_selected()
+        if itr == None: 
             utils.dialogo_info('SELECCIONE UN SERVICIO', 
                                'Debe seleccionar el servicio a eliminar del '
                                'pedido.', 
@@ -354,7 +354,7 @@ class PedidosDeVenta(Ventana):
                              texto = txt, 
                              padre = self.wids['ventana']):
             return
-        idsrv = model[iter][-1]
+        idsrv = model[itr][-1]
         srv = pclases.Servicio.get(idsrv)
         if (srv.albaranSalida != None or srv.facturaVenta != None 
             or srv.prefactura != None):
@@ -422,7 +422,7 @@ class PedidosDeVenta(Ventana):
         """
         resultados es una lista de id de productos.
         """
-        resultados = [pclases.ProductoVenta.get(id) for id in resultados]
+        resultados = [pclases.ProductoVenta.get(ide) for ide in resultados]
         filas_res = [(p.id, p.codigo, p.nombre, p.descripcion, "CLIC PARA VER", "CLIC PARA VER") for p in resultados]
         idproducto = utils.dialogo_resultado(filas_res,
                                              titulo = 'Seleccione producto',
@@ -435,20 +435,20 @@ class PedidosDeVenta(Ventana):
             return [idproducto]
 
     def mostrar_info_stock(self, tv):
-        model, iter = tv.get_selection().get_selected()
-        if iter!=None and model[iter][-1] == "CLIC PARA VER":
+        model, itr = tv.get_selection().get_selected()
+        if itr!=None and model[itr][-1] == "CLIC PARA VER":
             vpro = VentanaProgreso(padre = self.wids['ventana'])
             vpro.mostrar()
             vpro.set_valor(0.0, "Contando existencias en almacén...")   
                 # PLAN: Algún día habrá que cachear el rollo de las existencias, porque recontar cada 
                 # vez que se necesita es un coñazo y dentro de poco va a ser lento de cojones.
-            producto = pclases.ProductoVenta.get(model[iter][0])   # En los diálogos de resultado va al revés.
+            producto = pclases.ProductoVenta.get(model[itr][0])   # En los diálogos de resultado va al revés.
             vpro.set_valor(0.25, "Contando existencias en almacén...")   
             stock = producto.get_stock()
             vpro.set_valor(0.5, "Contando existencias en almacén...")   
-            model[iter][-1] = stock
+            model[itr][-1] = stock
             vpro.set_valor(0.75, "Contando existencias en almacén...")   
-            model[iter][-2] = producto.existencias
+            model[itr][-2] = producto.existencias
             vpro.ocultar()
 
     def get_ldvs_from_pedido(self, pedido):
@@ -675,8 +675,8 @@ class PedidosDeVenta(Ventana):
         postomatic.attach_menu_notas(self.wids['tv_servicios'], 
                                      pclases.Servicio, self.usuario, 1)
         # ---------------------------------------------------------------------
-        def iter_cliente_seleccionado(completion, model, iter):
-            idcliente = model[iter][0]
+        def iter_cliente_seleccionado(completion, model, itr):
+            idcliente = model[itr][0]
             utils.combo_set_from_db(self.wids['cbe_cliente'], idcliente)
             try:
                 #if self.objeto.tarifa == None:
@@ -704,7 +704,6 @@ class PedidosDeVenta(Ventana):
             self.wids['e_iva'].set_text('%s %%' % (utils.float2str(iva*100,0)))
         # ---------------------------------------------------------------------
         def cambiar_tarifa(combo):
-            model = self.wids['cbe_cliente'].get_model()
             idcliente = utils.combo_get_value(combo)
             try:
                 cliente = pclases.Cliente.get(idcliente)
@@ -783,16 +782,16 @@ class PedidosDeVenta(Ventana):
         producto = ldp.productoVenta
         if producto != None:
             if producto.es_bala() or producto.es_bigbag():
-                import productos_de_venta_balas
-                ventana = productos_de_venta_balas.ProductosDeVentaBalas(
+                from formularios import productos_de_venta_balas
+                ventana = productos_de_venta_balas.ProductosDeVentaBalas(  # @UnusedVariable
                     producto, usuario = self.usuario)
             elif producto.es_rollo():
-                import productos_de_venta_rollos
-                ventana = productos_de_venta_rollos.ProductosDeVentaRollos(
+                from formularios import productos_de_venta_rollos
+                ventana = productos_de_venta_rollos.ProductosDeVentaRollos(  # @UnusedVariable
                     producto, usuario = self.usuario)
             elif producto.es_especial():
-                import productos_de_venta_especial
-                ventana = productos_de_venta_especial.ProductosDeVentaEspecial(
+                from formularios import productos_de_venta_especial
+                ventana = productos_de_venta_especial.ProductosDeVentaEspecial(  # @UnusedVariable
                     producto, usuario = self.usuario)
             else:
                 self.logger.error("pedidos_de_venta.py::abrir_producto: "
@@ -800,8 +799,8 @@ class PedidosDeVenta(Ventana):
                         % producto.id)
         else:
             producto = ldp.productoCompra
-            import productos_compra
-            ventana = productos_compra.ProductosCompra(producto, 
+            from formularios import productos_compra
+            ventana = productos_compra.ProductosCompra(producto,  # @UnusedVariable
                                                        usuario = self.usuario)
 
     def abrir_producto(self, tv, path, view_column):
@@ -810,37 +809,37 @@ class PedidosDeVenta(Ventana):
         if ldv.albaranSalidaID != None:
             # Abro el albarán
             albaran = ldv.albaranSalida
-            import albaranes_de_salida
-            ventana = albaranes_de_salida.AlbaranesDeSalida(albaran)
+            from formularios import albaranes_de_salida
+            ventana = albaranes_de_salida.AlbaranesDeSalida(albaran)  # @UnusedVariable
         elif ldv.facturaVentaID != None:
             # Abro la factura
             factura = ldv.facturaVenta
-            import facturas_venta
-            ventana = facturas_venta.FacturasVenta(factura)
+            from formularios import facturas_venta
+            ventana = facturas_venta.FacturasVenta(factura)  # @UnusedVariable
         elif ldv.prefacturaID != None:
             # Abro la prefactura
             factura = ldv.prefactura
-            import prefacturas
-            ventana = prefacturas.Prefacturas(factura)
+            from formularios import prefacturas
+            ventana = prefacturas.Prefacturas(factura)  # @UnusedVariable
         else:
             # Abro el producto
             producto = ldv.producto
             if isinstance(producto, pclases.ProductoVenta):
                 if producto.es_bala() or producto.es_bigbag():
-                    import productos_de_venta_balas
-                    ventana = productos_de_venta_balas.ProductosDeVentaBalas(
+                    from formularios import productos_de_venta_balas
+                    ventana = productos_de_venta_balas.ProductosDeVentaBalas(  # @UnusedVariable
                         producto)
                 elif producto.es_rollo():
-                    import productos_de_venta_rollos
-                    ventana = productos_de_venta_rollos.ProductosDeVentaRollos(
+                    from formularios import productos_de_venta_rollos
+                    ventana = productos_de_venta_rollos.ProductosDeVentaRollos(  # @UnusedVariable
                         producto)
                 else:
                     self.logger.error("pedidos_de_venta.py::abrir_producto: "
                                       "El producto ID %d no es bala, bigbag "
                                       "ni rollo" % producto.id)
             elif isinstance(producto, pclases.ProductoCompra):
-                import productos_compra
-                ventana = productos_compra.ProductosCompra(producto)
+                from formularios import productos_compra
+                ventana = productos_compra.ProductosCompra(producto)  # @UnusedVariable
     
     def check_permisos(self):
         """
@@ -971,7 +970,6 @@ class PedidosDeVenta(Ventana):
         esta función en ese caso.
         """
         if pclases.DEBUG:
-            import time
             antes = time.time()
             print "Empieza rellenar_widgets:", antes
         self.rellenar_desplegable_tarifas()
@@ -1701,7 +1699,7 @@ class PedidosDeVenta(Ventana):
             try:
                 idcliente = pclases.Cliente.get(idcliente)
             except pclases.SQLObjectNotFound:   # Cliente borrado después de empezar el pedido.
-                icliente = None
+                idcliente = None
         # Desactivo el notificador momentáneamente
         self.objeto.notificador.desactivar()
         # Actualizo los datos del objeto
@@ -1877,14 +1875,14 @@ class PedidosDeVenta(Ventana):
 
     def cambiar_tarifa_ldv(self, boton):
         seleccion = self.wids['tv_ldps'].get_selection()
-        model, iter = seleccion.get_selected()
-        if iter == None: 
+        model, itr = seleccion.get_selected()
+        if itr == None: 
             utils.dialogo_info('SELECCIONE UN PRODUCTO', 
                                'Debe seleccionar el producto al que cambiar '
                                'el precio.', 
                                padre = self.wids['ventana'])
             return
-        idldp = model[iter][-1]
+        idldp = model[itr][-1]
         ldp = pclases.LineaDePedido.get(idldp)
         idtarifa = utils.combo_get_value(self.wids['cbe_tarifa'])
         if idtarifa != -1 and idtarifa != None:
@@ -1903,8 +1901,8 @@ class PedidosDeVenta(Ventana):
         correspondiente.
         """
         seleccion = self.wids['tv_ldvs'].get_selection()
-        model, iter = seleccion.get_selected()
-        if iter == None: 
+        model, itr = seleccion.get_selected()
+        if itr == None: 
             utils.dialogo_info('SELECCIONE UN PRODUCTO', 
                                'Debe seleccionar el producto a eliminar del '
                                'pedido.', 
@@ -1917,7 +1915,7 @@ class PedidosDeVenta(Ventana):
                              texto = txt, 
                              padre = self.wids['ventana']):
             return
-        idldv = model[iter][-1]
+        idldv = model[itr][-1]
         ldv = pclases.LineaDeVenta.get(idldv)
         if ldv.albaranSalida != None:
             txt =  """
@@ -2162,8 +2160,8 @@ class PedidosDeVenta(Ventana):
         correspondiente.
         """
         seleccion = self.wids['tv_ldps'].get_selection()
-        model, iter = seleccion.get_selected()
-        if iter == None: 
+        model, itr = seleccion.get_selected()
+        if itr == None: 
             utils.dialogo_info('SELECCIONE UN PRODUCTO', 
                                'Debe seleccionar el producto a eliminar del '
                                'pedido.', 
@@ -2175,7 +2173,7 @@ class PedidosDeVenta(Ventana):
         if not utils.dialogo(titulo = '¿BORRAR?', 
                              texto = txt):
             return
-        idldp = model[iter][-1]
+        idldp = model[itr][-1]
         ldp = pclases.LineaDePedido.get(idldp)
         if ldp.albaranesSalida != []:
             txt =  """
@@ -2328,8 +2326,8 @@ class PedidosDeVenta(Ventana):
                 ldv.facturaVenta = fra
             # 10.- Abro la factura en una ventana nueva. Se cerrará sola 
             #      cuando el usuario la imprima.
-            import facturas_venta
-            vfras = facturas_venta.FacturasVenta(objeto = fra, 
+            from formularios import facturas_venta
+            vfras = facturas_venta.FacturasVenta(objeto = fra,  # @UnusedVariable
                                                  usuario = self.usuario)
             # 11.- Pregunto si crear nuevo pedido al mismo cliente.
             if utils.dialogo(titulo = "¿CREAR NUEVO PEDIDO?", 

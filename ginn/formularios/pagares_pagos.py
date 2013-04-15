@@ -103,7 +103,7 @@ class PagaresPagos(Ventana):
         del objeto en memoria.
         """
         pagare = self.objeto
-        if pagare == None: return False	# Si no hay pagare activo, devuelvo que no hay cambio respecto a la ventana
+        if pagare == None: return False    # Si no hay pagare activo, devuelvo que no hay cambio respecto a la ventana
         condicion = self.wids['e_fechae'].get_text() == pagare.fechaEmision.strftime('%d/%m/%Y')
         buff = self.wids['txt_observaciones'].get_buffer()
         condicion = condicion and (buff.get_text(buff.get_start_iter(), buff.get_end_iter()) == pagare.observaciones)
@@ -113,7 +113,7 @@ class PagaresPagos(Ventana):
                                     or self.wids['e_fechae'].get_text() == "" and not pagare.fechaEmision)
         condicion = condicion and (self.wids['e_cantidad'].get_text() == "%s" % utils.float2str(pagare.cantidad))
         condicion = condicion and (self.wids['e_codigo'].get_text() == pagare.codigo)
-        return not condicion	# Concición verifica que sea igual
+        return not condicion    # Concición verifica que sea igual
 
     def aviso_actualizacion(self):
         """
@@ -194,11 +194,11 @@ class PagaresPagos(Ventana):
         try:
             # Anulo el aviso de actualización del envío que deja de ser activo.
             if pagare != None: pagare.notificador.set_func(lambda : None)
-            pagare = pclases.PagarePago.select(orderBy="-id")[0]	
+            pagare = pclases.PagarePago.select(orderBy="-id")[0]    
                 # Selecciono todos y me quedo con el último creado
-            pagare.notificador.set_func(self.aviso_actualizacion)		# Activo la notificación
+            pagare.notificador.set_func(self.aviso_actualizacion)        # Activo la notificación
         except:
-            pagare = None 	
+            pagare = None     
         self.objeto = pagare
         self.actualizar_ventana()
 

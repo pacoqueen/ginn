@@ -449,12 +449,12 @@ class ConsultaTotalesGeotextiles(Ventana):
         pass
 
     def rellenar_tabla(self, items):
-    	"""
+        """
         Rellena el model con los items de la consulta
         """ 
-    	model = self.wids['tv_datos'].get_model()
-    	model.clear()
-    	for fila in items:
+        model = self.wids['tv_datos'].get_model()
+        model.clear()
+        for fila in items:
             model.append(fila)
         
     def buscar(self, boton):

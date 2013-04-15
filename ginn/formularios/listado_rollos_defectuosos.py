@@ -42,7 +42,6 @@ import gtk
 import time
 import mx.DateTime
 import pygtk
-import sys
 import utils
 pygtk.require('2.0')
 
@@ -269,12 +268,12 @@ class ListadoRollosDefectuosos(Ventana):
         # self.wids['e_total_fabricado'].set_text(str(metros_fabricados)+' m²')
         self.wids['e_total_almacen'].set_text('%s m² (%d rollos)' % (utils.float2str(metros_almacen, 0), rollos_almacen))
         self.wids['e_total_fabricado'].set_text('%s m² (%d rollos)' % (utils.float2str(metros_fabricados, 0), tot))
-        for iter in totales_por_producto:
-            model[iter][5] = "%d (%s) / %d (%s)" % (
-                totales_por_producto[iter][1], 
-                utils.float2str(totales_por_producto[iter][3]),
-                totales_por_producto[iter][0], 
-                utils.float2str(totales_por_producto[iter][2]))
+        for itr in totales_por_producto:
+            model[itr][5] = "%d (%s) / %d (%s)" % (
+                totales_por_producto[itr][1], 
+                utils.float2str(totales_por_producto[itr][3]),
+                totales_por_producto[itr][0], 
+                utils.float2str(totales_por_producto[itr][2]))
 
     def colorear(self, tv):
         def cell_func(column, cell, model, itr):
@@ -324,30 +323,30 @@ class ListadoRollosDefectuosos(Ventana):
         txt = gtk.Label(texto)
         de.vbox.pack_start(txt)
         txt.show()
-        input = gtk.Entry()
-        input.set_visibility(not pwd)
+        einput = gtk.Entry()
+        einput.set_visibility(not pwd)
         def pasar_foco(widget, event):
-          if event.keyval == 65293 or event.keyval == 65421:
-            de.action_area.get_children()[1].grab_focus()
-        input.connect("key_press_event", pasar_foco)
-        de.vbox.pack_start(input)
-        input.show()
-        input.set_text(valor_por_defecto)
+            if event.keyval == 65293 or event.keyval == 65421:
+                de.action_area.get_children()[1].grab_focus()
+        einput.connect("key_press_event", pasar_foco)
+        de.vbox.pack_start(einput)
+        einput.show()
+        einput.set_text(valor_por_defecto)
         marcado = gtk.CheckButton("Mostrar etiqueta de marcado CE")
         marcado.set_active(True)
         de.vbox.pack_start(marcado)
         marcado.show()
         if len(titulo)<20:
-          width = 100
+            width = 100
         elif len(titulo)<60:
-          width = len(titulo)*10
+            width = len(titulo)*10
         else:
-          width = 600
+            width = 600
         de.resize(width, 80)
         de.run()
         de.destroy()
         if res[0]==False:
-          return None, None
+            return None, None
         return res[0], marcado.get_active()
 
     def etiquetar(self, boton):

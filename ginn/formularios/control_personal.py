@@ -42,8 +42,8 @@ from formularios.utils import _float as float
 XBOTON, YBOTON = 21, 21
 
 FLECHA_ARRIBA = ["9 9 2 1",
-" 	c None",
-".	c #000000",
+"     c None",
+".    c #000000",
 "         ",
 "         ",
 "    .    ",
@@ -55,8 +55,8 @@ FLECHA_ARRIBA = ["9 9 2 1",
 "         "]
 
 FLECHA_ABAJO = ["9 9 2 1",
-" 	c None",
-".	c #000000",
+"     c None",
+".    c #000000",
 "         ",
 "         ",
 ".........",
@@ -525,11 +525,11 @@ class ControlPersonal(Ventana, VentanaGenerica):
         empleados = []
         while orden:
             ide = orden.pop(0)
-            if id in ids:
-                empleados.append(pclases.Empleado.get(id))
-                ids.remove(id)
-        for id in ids:
-            empleados.append(pclases.Empleado.get(id))
+            if ide in ids:
+                empleados.append(pclases.Empleado.get(ide))
+                ids.remove(ide)
+        for ide in ids:
+            empleados.append(pclases.Empleado.get(ide))
         # Finalmente añado aquellos que en su día estuvieron dados de alta y 
         # ahora no. Por tanto no aparecen en la lista de empleados pero tienen 
         # un registro "controlHoras" que hay que mostrar porque va a entrar en 
@@ -1262,8 +1262,8 @@ class ControlPersonal(Ventana, VentanaGenerica):
                     entry.set_text(utils.float2str(ch.horasVarios, 
                                                    autodec = True))
         hv.connect("changed", guardar, ch.id)
-        def guardar_combo(cb, id):
-            ch = pclases.ControlHoras.get(id)
+        def guardar_combo(cb, ide):
+            ch = pclases.ControlHoras.get(ide)
             ch.varios = cb.child.get_text()
         lista_hv.connect("changed", guardar_combo, ch.id)
         lista_hv.connect("focus_in_event", 
@@ -1286,9 +1286,9 @@ class ControlPersonal(Ventana, VentanaGenerica):
         tabla.attach(ebox, 
                      13, 14, 
                      fila, fila+1)
-        def guardar(entry, id):
+        def guardar(entry, ide):
             txt = entry.get_text()
-            ch = pclases.ControlHoras.get(id)
+            ch = pclases.ControlHoras.get(ide)
             ch.comentarios = txt
         comentarios.connect("changed", guardar, ch.id)
         comentarios.connect("focus_in_event", 
@@ -1313,8 +1313,8 @@ class ControlPersonal(Ventana, VentanaGenerica):
         tabla.attach(ebox, 
                      14, 15, 
                      fila, fila+1) 
-        def guardar(chbox, id):
-            ch = pclases.ControlHoras.get(id)
+        def guardar(chbox, ide):
+            ch = pclases.ControlHoras.get(ide)
             esta_de_baja = False
             for baja in ch.empleado.bajas:
                 if baja.esta_vigente(ch.fecha):
@@ -1353,8 +1353,8 @@ class ControlPersonal(Ventana, VentanaGenerica):
         tips.set_tip(ebox, "%s: Vacaciones y asuntos propios" % 
             (ch.empleado.nombre + " " + ch.empleado.apellidos))
         tips.enable()
-        def guardar(chbox, id):
-            ch = pclases.ControlHoras.get(id)
+        def guardar(chbox, ide):
+            ch = pclases.ControlHoras.get(ide)
             asuntos_propios = pclases.Ausencia.select(pclases.AND(
                 pclases.Ausencia.q.empleadoID == ch.empleado.id, 
                 pclases.Ausencia.q.fecha == ch.fecha)).count() > 0

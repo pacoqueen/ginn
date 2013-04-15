@@ -404,8 +404,8 @@ class FacturacionPorClienteYFechas(Ventana):
         lista_clientes.insert(0, (0, "Todos los clientes"))
         utils.rellenar_lista(self.wids['cbe_cliente'], 
                              lista_clientes)
-        def iter_cliente_seleccionado(completion, model, iter):
-            idcliente = model[iter][0]
+        def iter_cliente_seleccionado(completion, model, itr):
+            idcliente = model[itr][0]
             utils.combo_set_from_db(self.wids['cbe_cliente'], idcliente)
         self.wids['cbe_cliente'].child.get_completion().connect(
             'match-selected', iter_cliente_seleccionado)
@@ -535,11 +535,11 @@ class FacturacionPorClienteYFechas(Ventana):
                 #print fila_cliente[2], fila_cliente[-1]
                 if fila_cliente[0].strip() == "":
                     ide = fila_cliente[-1]
-                    if id not in nodos_clientes:
+                    if ide not in nodos_clientes:
                         itercliente = model.append(None, fila_cliente)
-                        nodos_clientes[id] = itercliente
+                        nodos_clientes[ide] = itercliente
                     else:
-                        itercliente = nodos_clientes[id]
+                        itercliente = nodos_clientes[ide]
                         row = model[itercliente]
                         for ncol in (3, 6, 11, 12):
                             row[ncol] += fila_cliente[ncol]

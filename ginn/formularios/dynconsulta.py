@@ -30,7 +30,7 @@
 ## 8 de febrero de 2012 -> Inicio
 ###################################################################
 
-import sys, os
+import sys
 from ventana import Ventana
 import utils
 import pygtk
@@ -39,17 +39,14 @@ import gtk, mx.DateTime
 from framework import pclases
 from framework.seeker import VentanaGenerica 
 old_float = float
-from utils import _float as float
 from ventana_progreso import VentanaProgreso, VentanaActividad
-from albaranes_de_salida import buscar_proveedor
 from widgets import replace_widget
-import pprint, collections
+import pprint
 from collections import defaultdict
 try:
     from collections import MutableMapping as transformedDictBase
 except ImportError:
     transformedDictBase = object
-from informes import geninformes
 from informes.treeview2pdf import treeview2pdf
 from informes.treeview2csv import treeview2csv
 from formularios.reports import abrir_pdf, abrir_csv
@@ -257,7 +254,7 @@ class DynConsulta(Ventana, VentanaGenerica):
         cols += [('PUID', 'gobject.TYPE_STRING', False, False, False, None)]
         utils.preparar_treeview(self.wids['tv_datos'], cols)
         for n in range(1, self.num_meses + 1):
-            col = self.wids['tv_datos'].get_column(n).get_cell_renderers()[0]\
+            self.wids['tv_datos'].get_column(n).get_cell_renderers()[0]\
                     .set_property("xalign", 1)
         col = self.wids['tv_datos'].get_column(0)
         col.set_expand(True)
@@ -387,46 +384,46 @@ class DynConsulta(Ventana, VentanaGenerica):
                     if isinstance(objeto, (pclases.ServicioTomado, 
                                           pclases.LineaDeCompra)):
                         if objeto.facturaCompra:
-                            import facturas_compra
-                            v = facturas_compra.FacturasDeEntrada(
+                            from formularios import facturas_compra
+                            v = facturas_compra.FacturasDeEntrada(  # @UnusedVariable
                                     objeto = objeto.facturaCompra, 
                                     usuario = self.usuario)
                         elif objeto.albaranEntrada:
-                            import albaranes_de_entrada
-                            v = albaranes_de_entrada.AlbaranesDeEntrada(
+                            from formularios import albaranes_de_entrada
+                            v = albaranes_de_entrada.AlbaranesDeEntrada(  # @UnusedVariable
                                     objeto = objeto.albaranEntrada, 
                                     usuario = self.usuario)
                     elif isinstance(objeto, (pclases.Servicio, 
                                              pclases.LineaDeVenta)): 
                         if objeto.facturaVenta:
-                            import facturas_venta
-                            v = facturas_venta.FacturasVenta(
+                            from formularios import facturas_venta
+                            v = facturas_venta.FacturasVenta(  # @UnusedVariable
                                     objeto = objeto.facturaVenta, 
                                     usuario = self.usuario)
                         elif objeto.prefactura:
-                            import prefacturas
-                            v = prefacturas.Prefacturas(
+                            from formularios import prefacturas
+                            v = prefacturas.Prefacturas(  # @UnusedVariable
                                     objeto = objeto.prefactura, 
                                     usuario = self.usuario)
                         elif objeto.albaranSalida:
-                            import albaranes_de_salida
-                            v = albaranes_de_salida.AlbaranesDeSalida(
+                            from formularios import albaranes_de_salida
+                            v = albaranes_de_salida.AlbaranesDeSalida(  # @UnusedVariable
                                     objeto = objeto.albaranSalida, 
                                     usuario = self.usuario)
                     elif isinstance(objeto, pclases.FacturaVenta):
-                        import facturas_venta
-                        v = facturas_venta.FacturasVenta(
+                        from formularios import facturas_venta  # @Reimport
+                        v = facturas_venta.FacturasVenta(  # @UnusedVariable
                                 objeto = objeto, 
                                 usuario = self.usuario)
                     elif isinstance(objeto, pclases.FacturaCompra):
-                        import facturas_compra
-                        v = facturas_compra.FacturasDeEntrada(
+                        from formularios import facturas_compra  # @Reimport
+                        v = facturas_compra.FacturasDeEntrada(  # @UnusedVariable
                                 objeto = objeto, 
                                 usuario = self.usuario)
                     elif isinstance(objeto, 
                             pclases.VencimientoValorPresupuestoAnual):
-                        import presupuestos
-                        v = presupuestos.Presupuestos(
+                        from formularios import presupuestos
+                        v = presupuestos.Presupuestos(  # @UnusedVariable
                                 objeto = objeto, 
                                 usuario = self.usuario)
                 # PORASQUI: El get_info() no es buena idea. Demasiado "técnico"
@@ -735,7 +732,7 @@ class DynConsulta(Ventana, VentanaGenerica):
                     model[nodo_padre][mes_matriz] = utils.float2str(
                             utils.parse_float(model[nodo_padre][mes_matriz]) 
                             + utils.parse_float(fila[mes_matriz]))
-                except (TypeError, ValueError), msg:
+                except (TypeError, ValueError):
                     model[nodo_padre][mes_matriz] = utils.float2str(
                             fila[mes_matriz])
             i += 1
@@ -770,8 +767,8 @@ class DynConsulta(Ventana, VentanaGenerica):
                                                                 self.num_meses)
             try:
                 filas[c][mes_offset] += v.importe
-            except KeyError: # Que será lo normal. No debería haber dos vtos. 
-                             # en la misma fecha para un mismo concepto.
+            except KeyError:    # Que será lo normal. No debería haber dos vtos. 
+                                # en la misma fecha para un mismo concepto.
                 filas[c][mes_offset] = v.importe
             if not v.fecha.month in self.tracking:
                 self.tracking[v.fecha.month] = defaultdict(list) 
@@ -796,7 +793,7 @@ class DynConsulta(Ventana, VentanaGenerica):
         for pa in pas:
             self.cave[pa.puid] = defaultdict(old_float)
             fila = [pa.descripcion] #FIXME: .replace("&", "&amp;")]
-            for m in range(self.num_meses):
+            for m in range(self.num_meses):  # @UnusedVariable
                 fila.append("")
             fila.append(pa.puid)
             nodo = model.append(None, fila) 
@@ -817,7 +814,7 @@ class DynConsulta(Ventana, VentanaGenerica):
         for c in conceptos:
             self.cave[c.puid] = defaultdict(old_float)
             filas[c] = []
-            for m in range(self.num_meses):
+            for m in range(self.num_meses):  # @UnusedVariable
                 filas[c].append(0)
             vpro.set_valor(i / conceptos_count, 
                            "Cargando conceptos de dynconsulta...") 
@@ -1491,7 +1488,6 @@ def buscar_albaranes_de_entrada(primes, finmes):
 
 def clasificar_vencimientos_compra(vtos, granzas, usuario, res, vpro):
     # Me quedo solo con los vencimientos de fras. de compra de granza.
-    fras = []
     for v in vtos:
         if pclases.DEBUG and pclases.VERBOSE:
             print __file__, v.get_info(), v.fecha

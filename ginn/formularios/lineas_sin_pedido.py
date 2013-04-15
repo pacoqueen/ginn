@@ -81,13 +81,13 @@ class LineasDeVentaSinPedido(Ventana):
         pass
 
     def rellenar_tabla(self):
-    	"""
+        """
         Rellena el model con los linea_sin_pedidoes existentes
         """        
         tipos = pclases.LineaDeVenta.select(pclases.LineaDeVenta.q.pedidoVentaID == None)
-    	model = self.wids['tv_tipos'].get_model()
-    	model.clear()
-    	for t in tipos:
+        model = self.wids['tv_tipos'].get_model()
+        model.clear()
+        for t in tipos:
             row = [hasattr(t.producto, "nombre") and t.producto.nombre or t.producto.descripcion,
                    t.producto.descripcion,
                    t.cantidad,

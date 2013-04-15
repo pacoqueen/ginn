@@ -56,7 +56,7 @@
 from reportlab.lib import colors  # @UnusedImport
 from reportlab.graphics.shapes import *  # @UnusedWildImport
 import Image  # @Reimport ¿?
-import ImageDraw	## Del PIL	
+import ImageDraw    ## Del PIL    
 
 
 class InvalidBarcode(StandardError):
@@ -124,7 +124,7 @@ class Barcode:
 ##                             format='eps', includeText=None, textSize=7, dpi=300):
     def generate(self, value, stream=None,
                              formato='eps', includeText=None, textSize=14, dpi=300,
-	             lineWidth = 1.2, lineHeight = 36):
+                 lineWidth = 1.2, lineHeight = 36):
         """
         Generates the requested bar code either via a stream or as the
         requested object type.
@@ -196,7 +196,7 @@ class Barcode:
         ##
         elif formato in ('png','tiff','ppm','xbm'):
 
-            code = value 	##
+            code = value     ##
         
             lineWidth = int(lineWidth * dpi/72+.5)     # 300dpi
             lineHeight = int(lineHeight * dpi/72+.5)    # 300dpi

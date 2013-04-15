@@ -214,7 +214,7 @@ class HorasTrabajadas(Ventana):
         return partes
 
     def rellenar_horas(self, b = None):
-    	"""
+        """
         Rellena el model con las horas trabajadas en cada parte del 
         rango de fechas.
         """
@@ -230,8 +230,8 @@ class HorasTrabajadas(Ventana):
         except:
             utils.dialogo_info(titulo = "FECHA INCORRECTA", texto = "La fecha inicial no es correcta. Use el formato día/mes/año")
             return
-    	model = self.wids['tv_horas'].get_model()
-    	model.clear()
+        model = self.wids['tv_horas'].get_model()
+        model.clear()
 
         partes_produccion = self.buscar_partes_produccion(fecha_ini, fecha_fin)
 

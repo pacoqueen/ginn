@@ -7726,8 +7726,8 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
                     caches_almacenes.append(cache)
                 res = sum(caches_almacenes)
         # --- 
-        if res == None:  # Aún no he encontrado las existencias, bien por 
-                         # no caché o bien porque hay que forzar.
+        if res == None: # Aún no he encontrado las existencias, bien por 
+                        # no caché o bien porque hay que forzar.
             if almacen:
                 cache_mas_cercano = HEC.select(
                     AND(HEC.q.fecha < fecha, 
@@ -7760,7 +7760,7 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
                          - self.get_entradas_y_salidas_entre(fecha, 
                                                              fechafin = None, 
                                                              almacen=almacen))
-                nuevo_cache = HEC(productoCompraID = self.id, 
+                nuevo_cache = HEC(productoCompraID = self.id,  # @UnusedVariable
                                   fecha = fecha, 
                                   cantidad = res, 
                                   observaciones = observaciones_historico, 
@@ -10325,7 +10325,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
             # embolsada. Por eso no devuelvo el peso de *una* bolsa, sino el 
             # peso de un bulto del producto, es decir, una caja.
             ceb = self.camposEspecificosBala
-            pesobolsa = ceb.gramosBolsa / 1000.0
+            pesobolsa = ceb.gramosBolsa / 1000.0  # @UnusedVariable
             pesocaja = ceb.pesobolsa * ceb.bolsasCaja
             res = pesocaja  # El bulto es la caja.
         elif self.es_especial():    # El número que devolverá puede variar 
@@ -11230,7 +11230,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         B = Bala
         AB = Abono
         LDD = LineaDeDevolucion
-        balas_devueltas = B.select(AND(
+        balas_devueltas = B.select(AND(  # @UnusedVariable
                             A.q.balaID == B.q.id, 
                             LDD.q.articuloID == A.q.id, 
                             LDD.q.abonoID == AB.q.id, 
@@ -11496,8 +11496,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
             clauses.append(A.q.rolloDefectuosoID == None)
         if (almacen and almacen != almacen_ppal):
             articulos_pdp = A.select(AND(A.q.id==-1, *clauses))  
-              # Siempre va a dar un SelectResult vacío porque no hay ID <= 0,
-              # que es justamente lo que queremos.
+                # Siempre va a dar un SelectResult vacío porque no hay ID <= 0,
+                # que es justamente lo que queremos.
         else:
             clauses.append(PDP.q.fechahorainicio >= desde)
             clauses.append(PDP.q.fechahorafin <= hasta)
@@ -12398,8 +12398,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         cantidad = sum([c.peso for c in cajas]) 
                     else:
                         cantidad = 0.0
-                except Exception, msg: # Lo que sea. Error psycopg, interno de 
-                                       # sqlobjet, lo que sea.
+                except Exception, msg:  # Lo que sea. Error psycopg, interno  
+                                        # de sqlobjet, lo que sea.
                     print "pclases.py: get_stock: Error contando existencias en cajas de productoVentaID %d: %s" % (self.id, msg)
                     cantidad = 0.0
             else:
@@ -12704,6 +12704,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                 res = 0.0
         else:
             res = 0.0
+        return res
 
     def get_stock_B(self, hasta = None, forzar = False, actualizar = True, 
                     contar_defectuosos = False, almacen = None):
@@ -13853,8 +13854,8 @@ class AlbaranSalida(SQLObject, PRPCTOO):
         #for ldv in self.lineasDeVenta:
         #    subtotal += ldv.precio * ldv.cantidad * (1 - ldv.descuento)
         for ldv in self.lineasDeVenta:
-            if ldv.productoCompraID != None: # No trazable. Cuento línea 
-                                             # del pedido.
+            if ldv.productoCompraID != None:    # No trazable. Cuento línea 
+                                                # del pedido.
                 subtotal += ldv.precio * ldv.cantidad * (1 - ldv.descuento)
         if not segun_factura:
             for a in self.articulos:
@@ -13961,7 +13962,6 @@ class AlbaranSalida(SQLObject, PRPCTOO):
         en la llamada anterior y posterior a la modificación. 
         """
         if DEBUG:
-            import time
             antes = time.time()
             print "Soy agrupar artículos. T0 =", antes 
         # Creo un diccionario con todas las LDVs. Dentro del diccionario irá
@@ -14009,7 +14009,6 @@ class AlbaranSalida(SQLObject, PRPCTOO):
             d[idldv]['idsarticulos'].append(a.id)
             d[idldv]['cantidad'] += a.get_cantidad()
         if DEBUG:
-            import time
             print "Soy agrupar artículos. T1 - T0=", time.time() - antes 
         return d
 
@@ -14273,10 +14272,10 @@ class ConsumoAdicional(SQLObject, PRPCTOO):
         regexp_porcentaje = re.compile("^-?\d+[\.,]?\d*\s*%$")
         regexp_fraccion = re.compile("-?\d+[\.,]?\d*\s*\w*\s*/\s*-?\d*[\.,]?\d*\s*\w+")
         if regexp_porcentaje.findall(txt) != []:
-            cantidad = self.__parsear_porcentaje()
+            cantidad = self.__parsear_porcentaje()  # @UnusedVariable
             res = ConsumoAdicional.PORCENTAJE
         elif regexp_fraccion.findall(txt) != []:
-            cantidad, unidad, cantidad_pv, unidad_pv = self.__parsear_fraccion()
+            cantidad, unidad, cantidad_pv, unidad_pv = self.__parsear_fraccion()  # @UnusedVariable
             res = ConsumoAdicional.FRACCION
         return res
             
@@ -14381,7 +14380,7 @@ class ConsumoAdicional(SQLObject, PRPCTOO):
             cantidad_a_consumir = self._calcular_cantidad_a_consumir(articulo)
         if cancelar:
             cantidad_a_consumir *= -1
-        consumo = Consumo(silo = silo, 
+        consumo = Consumo(silo = silo,  # @UnusedVariable
                           parteDeProduccion = articulo.parteDeProduccion, 
                           productoCompra = producto_a_consumir, 
                           actualizado = True, 
@@ -15918,7 +15917,6 @@ class SuperFacturaVenta:
         except AttributeError:
             pass    # No es factura de compra.
         try:
-            abono = self.abono
             for ldd in self.lineasDeDevolucion:
                 proveedor = ldd.producto.proveedor
                 if proveedor != None and proveedor not in proveedores:
@@ -16102,7 +16100,6 @@ class SuperFacturaVenta:
         for vto in dic_vtos:
             if (isinstance(vto, VencimientoCobro)
                 or (hasattr(vto, "id") and vto.id==0)): # FakeVto.id=0 siempre.
-                importe_cobrado_en_fecha = 0.0
                 for cobro in dic_vtos[vto]:
                     if cobro.confirmingID:
                         if (cobro.confirming.fechaRecepcion <= fecha 
@@ -16437,7 +16434,7 @@ class FacturaVenta(SQLObject, PRPCTOO, SuperFacturaVenta):
                     remitente[1], 
                     remitente[2])
             if ok:
-                t = Tarea(facturaVenta = self, 
+                t = Tarea(facturaVenta = self,  # @UnusedVariable
                           categoria = 
                             Categoria.get_categoria_tareas_automaticas(), 
                           texto = "Factura emitida hace más de 45 días."
@@ -16606,10 +16603,10 @@ class Prefactura(SQLObject, PRPCTOO, SuperFacturaVenta):
         fras = Prefactura.select(Prefactura.q.fecha >= mx.DateTime.DateTimeFrom(day = 1, month = 1, year = anno))
         numfacturas = [fra.get_numero_numfactura() for fra in fras]
         try:
-            next = max(numfacturas) + 1
+            sig = max(numfacturas) + 1
         except ValueError:
-            next = 1
-        return "%s/%s" % (anno, next)
+            sig = 1
+        return "%s/%s" % (anno, sig)
 
     get_next_numfactura = staticmethod(get_next_numfactura)
 
@@ -18303,7 +18300,7 @@ class DescuentoDeMaterial(SQLObject, PRPCTOO):
         """
         productoCompra = self.productoCompra
         productoCompra.sync()
-        antes = productoCompra.existencias
+        antes = productoCompra.existencias  # @UnusedVariable
         cantidad_original = productoCompra.existencias + self.cantidad
         productoCompra.existencias = cantidad_original
         if cantidad > productoCompra.existencias:
@@ -18908,7 +18905,7 @@ class LineaDeDevolucion(SQLObject, PRPCTOO):
             porcentaje = tarifa.get_porcentaje(producto, fraccion = True)
         else:
             try:
-                porcentaje = (self.precio / producto.precioDefecto) - 1.0
+                porcentaje = (precio / producto.precioDefecto) - 1.0
             except ZeroDivisionError:
                 porcentaje = 1.0
         return producto.precioDefecto * porcentaje * cantidad
@@ -19331,11 +19328,11 @@ class Usuario(SQLObject, PRPCTOO):
         try:
             # return [p for p in self.permisos if p.ventana == ventana][0]
             query = """
-                    SELECT id FROM permiso 
+                    SELECT ide FROM permiso 
                     WHERE ventana_id = %d AND usuario_id = %d;
                     """ % (ventana.id, self.id)
             ide = self.__class__._connection.queryOne(query)[0]
-            permiso = Permiso.get(id)
+            permiso = Permiso.get(ide)
             return permiso
         except (IndexError, TypeError):
             return None
@@ -19358,7 +19355,7 @@ class Usuario(SQLObject, PRPCTOO):
                 #m.destroy()
                 m.destroySelf()     # No quiero guardar traza de esto. Son 
                         # demasiados registros que voy a acabar ignorando.
-        a = Alerta(usuario = self, mensaje = texto, entregado = False)
+        a = Alerta(usuario = self, mensaje = texto, entregado = False)  # @UnusedVariable
 
     def cambiar_password(self, nueva):
         """
@@ -20608,10 +20605,10 @@ class ControlHoras(SQLObject, PRPCTOO):
         res = {}
         if actividad == "producción":
             por_linea = self._dividir_horas_produccion_por_linea()
-            rp, ep = self._dividir_horas_produccion_por_tipo()
+            rp, ep = self._dividir_horas_produccion_por_tipo()  # @UnusedVariable
         elif actividad == "mantenimiento":
             por_linea = self._dividir_horas_mantenimiento_por_linea()
-            rp, ep = self._dividir_horas_mantenimiento_por_tipo()
+            rp, ep = self._dividir_horas_mantenimiento_por_tipo()  # @UnusedVariable
         else:
             raise ValueError, "actividad debe ser producción o mantenimiento."
         for linea in por_linea:
@@ -20699,9 +20696,9 @@ class ControlHoras(SQLObject, PRPCTOO):
                 conceptos[ch.conceptoLibre] = 1
             else:
                 conceptos[ch.conceptoLibre] += 1
-        max, concepto = 0, ""
+        maxim, concepto = 0, ""
         for c in conceptos:
-            if conceptos[c] > max:
+            if conceptos[c] > maxim:
                 concepto = c
         return concepto
 
@@ -20796,7 +20793,7 @@ class ListaObjetosRecientes(SQLObject, PRPCTOO):
                 self.pop()
         else:
             self.pop(ide)
-        idr = IdReciente(listaObjetosRecientes = self, objetoID = ide)
+        idr = IdReciente(listaObjetosRecientes = self, objetoID = ide)  # @UnusedVariable
 
     def pop(self, ide = None):
         """
@@ -21269,8 +21266,8 @@ class Remesa(SQLObject, PRPCTOO):
         # Las rechazadas se borran directamente. No se guardan y por tanto no 
         # hay estado para ellas. 
         else:
-            return "En estudio"    # El banco me la está mirando y puede que 
-                                   # me confirme un efecto, todos o ninguno.
+            return "En estudio"     # El banco me la está mirando y puede que 
+                                    # me confirme un efecto, todos o ninguno.
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
@@ -21843,7 +21840,7 @@ def getObjetoPUID(puid):
                    "Pale": Pale, 
                    "PartidaCem": PartidaCem, 
                   }
-    tipo, ide = puid.split(":")
+    tipo, ide = puid.split(":")  # @UnusedVariable
     if tipo not in dict_clases:
         try:
             clase = eval(tipo)
@@ -21852,8 +21849,8 @@ def getObjetoPUID(puid):
                 ", ".join(dict_clases.keys()))
     else:
         clase = dict_clases[tipo]
-    ide = int(id)
-    objeto = clase.get(id)
+    ide = int(ide)
+    objeto = clase.get(ide)
     return objeto
 
 def func_orden_cargas_fecha(c1, c2):
@@ -21947,7 +21944,7 @@ def buscar_puids_sobre_fecha(fecha, nameclase, namecol):
     Devuelve una lista de PUIDs coincidentes.
     """
     colbusqueda = nameclase + ".q." + namecol
-    diasiguiente = fecha + mx.DateTime.oneDay
+    diasiguiente = fecha + mx.DateTime.oneDay  # @UnusedVariable
     consulta = nameclase + ".select(AND(%s >= fecha, %s < diasiguiente))" % (
         colbusqueda)
     if DEBUG:
@@ -21964,7 +21961,7 @@ def do_unittests():
         try:
             c = eval(clase)
             print "Buscando primer registro de %s... " % (clase),
-            reg = c.select(orderBy="id")[0]
+            reg = c.select(orderBy="id")[0]  # @UnusedVariable
             print "[OK]"
         except IndexError:
             print "[KO] - La clase %s no tiene registros" % (clase)

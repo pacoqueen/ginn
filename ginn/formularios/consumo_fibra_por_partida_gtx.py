@@ -156,13 +156,13 @@ class ConsumoFibraPorPartidaGtx(Ventana):
         pass
 
     def rellenar_tabla(self, partidas_carga):
-    	"""
+        """
         Rellena el model con los items de la consulta.
         partidas_carga es un diccionario... (mirar 
         abajo, en "buscar").
         """        
-    	model = self.wids['tv_datos'].get_model()
-    	model.clear()
+        model = self.wids['tv_datos'].get_model()
+        model.clear()
         datachart = []
         for pc in partidas_carga:
             abuelo = model.append(None, 

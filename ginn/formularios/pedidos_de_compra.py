@@ -68,7 +68,7 @@
 from ventana import Ventana
 import pygtk
 pygtk.require('2.0')
-import gtk, time, gobject
+import gtk, time
 import utils, utils_almacen
 from framework import pclases
 from informes import geninformes
@@ -197,17 +197,17 @@ class PedidosDeCompra(Ventana):
             self.wids['e_observaciones1'].get_text() == pedido.observaciones1)
         condicion = condicion and (
             self.wids['e_observaciones2'].get_text() == pedido.observaciones2)
-        return not condicion	# condicon verifica que todo sea igual.
+        return not condicion    # condicon verifica que todo sea igual.
 
     def parse_porcentaje(self, strfloat):
-      """
-      Recibe un porcentaje como cadena. Puede incluir el un espacio,
-      el signo menos (-) y el porciento (%).
-      La función procesa la cadena y devuelve un flotante que se 
-      corresponde con el valor completo del porcentaje, es decir, 
-      no en la forma 0. sino xx. (10 % = 10 != 0.1)
-      """
-      return utils.parse_porcentaje(strfloat)
+        """
+        Recibe un porcentaje como cadena. Puede incluir el un espacio,
+        el signo menos (-) y el porciento (%).
+        La función procesa la cadena y devuelve un flotante que se 
+        corresponde con el valor completo del porcentaje, es decir, 
+        no en la forma 0. sino xx. (10 % = 10 != 0.1)
+        """
+        return utils.parse_porcentaje(strfloat)
 
     def parse_fecha(self, strfecha):
         """
@@ -507,89 +507,89 @@ class PedidosDeCompra(Ventana):
             not self.wids['e_observaciones2'].get_text()) 
 
     def ir_a_primero(self):
-      """
-      Hace que el primer registro -si lo hay- de la tabla
-      pedidos con la propia empresa como cliente (pedido 
-      de compra) sea el pedido activo.
-      """
-      pedido = self.objeto
-      try:
-          # Anulo el aviso de actualización del pedido que deja de ser activo 
-          if pedido != None: pedido.notificador.desactivar()
-          pedido = pclases.PedidoCompra.select(orderBy = "-id")[0]
-          pedido.notificador.activar(self.aviso_actualizacion)
-      except:
-          pedido = None
-      self.objeto = pedido
-      self.actualizar_ventana()
+        """
+        Hace que el primer registro -si lo hay- de la tabla
+        pedidos con la propia empresa como cliente (pedido 
+        de compra) sea el pedido activo.
+        """
+        pedido = self.objeto
+        try:
+            # Anulo el aviso de actualización del pedido que deja de ser activo 
+            if pedido != None: pedido.notificador.desactivar()
+            pedido = pclases.PedidoCompra.select(orderBy = "-id")[0]
+            pedido.notificador.activar(self.aviso_actualizacion)
+        except:
+            pedido = None
+        self.objeto = pedido
+        self.actualizar_ventana()
 
     def pedir_producto(self, filtrar = True, txt = ''):
-      """
-      Pide un producto mediante una ventana de búsqueda.
-      Devuelve un objeto producto o None si canceló/no se encontró.
-      """
-      producto = None
-      a_buscar = utils.dialogo_entrada(titulo = "BUSCAR PRODUCTO", 
-                                       texto = "Introduzca texto a buscar: ", 
-                                       valor_por_defecto = txt)
-      if a_buscar != None:
-        try:
-            id_a_buscar = utils.parse_numero(a_buscar)
-        except:
-            id_a_buscar = 0
-        criterio = pclases.OR(pclases.ProductoCompra.q.id == id_a_buscar,
-                        pclases.ProductoCompra.q.codigo.contains(a_buscar),
-                        pclases.ProductoCompra.q.descripcion.contains(a_buscar))
-        if filtrar:
-            resultados = pclases.ProductoCompra.select(pclases.AND(
-                pclases.ProductoCompra.q.controlExistencias == True, 
-                pclases.ProductoCompra.q.obsoleto == False, 
-                criterio))
-        else:
-            resultados = pclases.ProductoCompra.select(criterio)
-        if resultados.count() > 1:
-            ## Refinar los resultados:
-            filas_res = []
-            for r in resultados:
-                filas_res.append((r.id, r.codigo, r.descripcion))
-            idproducto = utils.dialogo_resultado(filas_res, 
-                                            titulo = 'Seleccione producto', 
-                                            cabeceras = ('ID Interno', 
-                                                         'Código', 
-                                                         'Descripción'), 
-                                            padre = self.wids['ventana'])
-            if idproducto < 0:
+        """
+        Pide un producto mediante una ventana de búsqueda.
+        Devuelve un objeto producto o None si canceló/no se encontró.
+        """
+        producto = None
+        a_buscar = utils.dialogo_entrada(titulo = "BUSCAR PRODUCTO", 
+                                         texto = "Introduzca texto a buscar: ", 
+                                         valor_por_defecto = txt)
+        if a_buscar != None:
+            try:
+                id_a_buscar = utils.parse_numero(a_buscar)
+            except:
+                id_a_buscar = 0
+            criterio = pclases.OR(pclases.ProductoCompra.q.id == id_a_buscar,
+                    pclases.ProductoCompra.q.codigo.contains(a_buscar),
+                    pclases.ProductoCompra.q.descripcion.contains(a_buscar))
+            if filtrar:
+                resultados = pclases.ProductoCompra.select(pclases.AND(
+                    pclases.ProductoCompra.q.controlExistencias == True, 
+                    pclases.ProductoCompra.q.obsoleto == False, 
+                    criterio))
+            else:
+                resultados = pclases.ProductoCompra.select(criterio)
+            if resultados.count() > 1:
+                ## Refinar los resultados:
+                filas_res = []
+                for r in resultados:
+                    filas_res.append((r.id, r.codigo, r.descripcion))
+                idproducto = utils.dialogo_resultado(filas_res, 
+                                                titulo = 'Seleccione producto', 
+                                                cabeceras = ('ID Interno', 
+                                                             'Código', 
+                                                             'Descripción'), 
+                                                padre = self.wids['ventana'])
+                if idproducto < 0:
+                    return None, a_buscar
+                producto = pclases.ProductoCompra.get(idproducto)
+            elif resultados.count() < 1:
+                ## La búsqueda no produjo resultados.
+                utils.dialogo_info('SIN RESULTADOS', 
+                                   'La búsqueda no produjo ningún resultado.\n'
+                                   'Intente una búsqueda menos restrictiva usando'
+                                   ' un texto más corto.', 
+                                   padre = self.wids['ventana'])
                 return None, a_buscar
-            producto = pclases.ProductoCompra.get(idproducto)
-        elif resultados.count() < 1:
-            ## La búsqueda no produjo resultados.
-            utils.dialogo_info('SIN RESULTADOS', 
-                               'La búsqueda no produjo ningún resultado.\n'
-                               'Intente una búsqueda menos restrictiva usando'
-                               ' un texto más corto.', 
-                               padre = self.wids['ventana'])
-            return None, a_buscar
-        else:
-            producto = resultados[0]
-      return producto, a_buscar
+            else:
+                producto = resultados[0]
+        return producto, a_buscar
      
     # --------------- Manejadores de eventos ----------------------------
     def actualizar_precio_ldc(self, cell, path, nuevotexto):
-      """
-      Actualiza el precio en la LDC del "path" -última
-      columna del Row del Model - según el texto que 
-      contielle la delda "cell".
-      """
-      idldc = self.wids['tv_lineasdeventa'].get_model()[path][-1]
-      pedido = self.objeto
-      try:
-        ldc = [l for l in pedido.lineasDeCompra if l.id == idldc][0]
-        ldc.precio = utils._float(nuevotexto)
-        self.actualizar_ventana()
-      except IndexError:
-        utils.dialogo("La LDC no existe.")
-      except ValueError:
-        utils.dialogo("Debe ser un número.")
+        """
+        Actualiza el precio en la LDC del "path" -última
+        columna del Row del Model - según el texto que 
+        contielle la delda "cell".
+        """
+        idldc = self.wids['tv_lineasdeventa'].get_model()[path][-1]
+        pedido = self.objeto
+        try:
+            ldc = [l for l in pedido.lineasDeCompra if l.id == idldc][0]
+            ldc.precio = utils._float(nuevotexto)
+            self.actualizar_ventana()
+        except IndexError:
+            utils.dialogo("La LDC no existe.")
+        except ValueError:
+            utils.dialogo("Debe ser un número.")
 
     def actualizar_entrega_ldc(self, cell, path, nuevotexto):
         """
@@ -597,7 +597,6 @@ class PedidosDeCompra(Ventana):
         columna del Row del Model - según el texto que 
         contiene la celda "cell".
         """
-        pedido = self.objeto
         model = self.wids['tv_lineasdeventa'].get_model()
         idldc = model[path][-1]
         try:
@@ -611,21 +610,21 @@ class PedidosDeCompra(Ventana):
                           padre = self.wids['ventana'])
 
     def actualizar_cantidad_ldc(self, cell, path, nuevotexto):
-      """
-      Actualiza la cantidad en la LDC del "path" -última
-      columna del Row del Model - según el texto que 
-      contielle la delda "cell".
-      """
-      pedido = self.objeto
-      idldc = self.wids['tv_lineasdeventa'].get_model()[path][-1]
-      try:
-        ldc = [l for l in pedido.lineasDeCompra if l.id == idldc][0]
-        ldc.cantidad = utils._float(nuevotexto)
-        self.actualizar_ventana()
-      except IndexError:
-        utils.dialogo("La LDC no existe.")
-      except ValueError:
-        utils.dialogo("Debe ser un número.")
+        """
+        Actualiza la cantidad en la LDC del "path" -última
+        columna del Row del Model - según el texto que 
+        contielle la delda "cell".
+        """
+        pedido = self.objeto
+        idldc = self.wids['tv_lineasdeventa'].get_model()[path][-1]
+        try:
+            ldc = [l for l in pedido.lineasDeCompra if l.id == idldc][0]
+            ldc.cantidad = utils._float(nuevotexto)
+            self.actualizar_ventana()
+        except IndexError:
+            utils.dialogo("La LDC no existe.")
+        except ValueError:
+            utils.dialogo("Debe ser un número.")
 
     def crear_nuevo_pedido(self, event):
         """ 
@@ -731,7 +730,7 @@ class PedidosDeCompra(Ventana):
                 except AttributeError:  # No tiene fecha
                     self.wids['e_fecha'].set_text('')
                 model_ldc = self.wids['tv_lineasdeventa'].get_model()
-                model_ldc.clear()	# Por si ya había algo
+                model_ldc.clear()    # Por si ya había algo
                 for ldc in pedido.lineasDeCompra:
                     total = ldc.precio * ldc.cantidad
                     confirmada = ldc.albaranEntrada != None     # TODO: Este campo creo que ya sobra. Una vez comprobado que todas las líneas que aparezcan aquí lo tienen a True (porque no deberían existir LDCs con pedido pero sin albarán), quitar el campo.
@@ -774,7 +773,7 @@ class PedidosDeCompra(Ventana):
             self.wids['e_numpedido'].set_text("")
             self.wids['e_fecha'].set_text('')
             model_ldc = self.wids['tv_lineasdeventa'].get_model()
-            model_ldc.clear()	# Por si ya había algo
+            model_ldc.clear()    # Por si ya había algo
             self.wids['txt_entregas'].get_buffer().set_text("")
             self.wids['txt_observaciones'].get_buffer().set_text("")
             self.wids['e_forma_de_pago'].set_text("")
@@ -798,7 +797,7 @@ class PedidosDeCompra(Ventana):
         total = subtotal + total_iva + total_descuento
         self.wids['e_bruto'].set_text('%s €' % utils.float2str(subtotal))
         self.wids['e_totaliva'].set_text('%s €' % utils.float2str(total_iva))
-        self.wids['e_neto'].set_text('%s €' % utils.float2str(total_descuento))	
+        self.wids['e_neto'].set_text('%s €' % utils.float2str(total_descuento))    
         #OJO: El nombre está mal, no es el NETO (BRUTO+DESC.) es el TOTAL DESC.
         self.wids['e_total'].set_text('%s €' % utils.float2str(total))
  
@@ -850,56 +849,56 @@ class PedidosDeCompra(Ventana):
         return subtotal
 
     def mostrar_calendario(self, widget):
-      """
-      Muestra un Gtk.Calendar y escribe la fecha seleccionada
-      en el widget e_fecha.
-      """
-      self.wids['e_fecha'].set_text(utils.str_fecha(utils.mostrar_calendario(fecha_defecto = self.objeto and self.objeto.fecha or None, padre = self.wids['ventana'])))
+        """
+        Muestra un Gtk.Calendar y escribe la fecha seleccionada
+        en el widget e_fecha.
+        """
+        self.wids['e_fecha'].set_text(utils.str_fecha(utils.mostrar_calendario(fecha_defecto = self.objeto and self.objeto.fecha or None, padre = self.wids['ventana'])))
 
     def buscar_pedido(self, widget):
-      """
-      Muestra una ventana de búsqueda de pedidos de compra  
-      y a continuación los resultados. El pedido
-      seleccionado se hará activo en la
-      ventana.
-      """
-      pedido = self.objeto
-      a_buscar = utils.dialogo_entrada(titulo = "BUSCAR PEDIDO", 
-                                       texto = "Introduzca número de pedido:", 
-                                       padre = self.wids['ventana'])
-      # PLAN: En adelante sería interesante poder buscar por más criterios.
-      if a_buscar != None:
-        criterio = pclases.PedidoCompra.q.numpedido.contains(a_buscar)
-        resultados = pclases.PedidoCompra.select(criterio)
-        if resultados.count() > 1:
-          ## Refinar los resultados:
-          filas_res = []
-          for r in resultados:
-            try:
-              nombreproveedor = r.proveedor.nombre
-            except AttributeError: # No tiene proveedor. Es None y eso da un warning muy feo al representarlo en un TView.
-              nombreproveedor = ''
-            filas_res.append((r.id, r.numpedido, nombreproveedor, 
-                            [r.fecha and r.fecha.strftime('%d/%m/%Y') or ''][0]))
-          idpedido = utils.dialogo_resultado(filas_res, 
-                                             titulo = 'Seleccione pedido',
-                                        cabeceras = ('ID Interno', 'Número de pedido', 'Proveedor', 'Fecha'))
-          if idpedido < 0:
-            return
-          resultados = [pclases.PedidoCompra.get(idpedido)]
-            # Se supone que la comprensión es más rápida que PedidoCompra.get(id)
-        elif resultados.count() < 1:
-          ## Sin resultados de búsqueda
-          utils.dialogo_info('SIN RESULTADOS', 'La búsqueda no produjo resultados.\nAsegúrese de haber introducido un número de pedido.')
-          return
-        # Primero anulo la función de actualización:
-        if pedido != None: pedido.notificador.desactivar()
-        # Pongo el pedido como actual:
-        pedido = resultados[0]
-        # Y activo la función de notificación:
-        pedido.notificador.activar(self.aviso_actualizacion)
-        self.objeto = pedido
-        self.actualizar_ventana()
+        """
+        Muestra una ventana de búsqueda de pedidos de compra  
+        y a continuación los resultados. El pedido
+        seleccionado se hará activo en la
+        ventana.
+        """
+        pedido = self.objeto
+        a_buscar = utils.dialogo_entrada(titulo = "BUSCAR PEDIDO", 
+                                         texto = "Introduzca número de pedido:", 
+                                         padre = self.wids['ventana'])
+        # PLAN: En adelante sería interesante poder buscar por más criterios.
+        if a_buscar != None:
+            criterio = pclases.PedidoCompra.q.numpedido.contains(a_buscar)
+            resultados = pclases.PedidoCompra.select(criterio)
+            if resultados.count() > 1:
+                ## Refinar los resultados:
+                filas_res = []
+                for r in resultados:
+                    try:
+                        nombreproveedor = r.proveedor.nombre
+                    except AttributeError: # No tiene proveedor. Es None y eso da un warning muy feo al representarlo en un TView.
+                        nombreproveedor = ''
+                    filas_res.append((r.id, r.numpedido, nombreproveedor, 
+                                      [r.fecha and r.fecha.strftime('%d/%m/%Y') or ''][0]))
+                    idpedido = utils.dialogo_resultado(filas_res, 
+                                                       titulo = 'Seleccione pedido',
+                                                       cabeceras = ('ID Interno', 'Número de pedido', 'Proveedor', 'Fecha'))
+                    if idpedido < 0:
+                        return
+                    resultados = [pclases.PedidoCompra.get(idpedido)]
+                    # Se supone que la comprensión es más rápida que PedidoCompra.get(id)
+            elif resultados.count() < 1:
+                ## Sin resultados de búsqueda
+                utils.dialogo_info('SIN RESULTADOS', 'La búsqueda no produjo resultados.\nAsegúrese de haber introducido un número de pedido.')
+                return
+            # Primero anulo la función de actualización:
+            if pedido != None: pedido.notificador.desactivar()
+            # Pongo el pedido como actual:
+            pedido = resultados[0]
+            # Y activo la función de notificación:
+            pedido.notificador.activar(self.aviso_actualizacion)
+            self.objeto = pedido
+            self.actualizar_ventana()
 
     def anadir_ldc(self, widget):
         """
@@ -953,7 +952,8 @@ class PedidosDeCompra(Ventana):
                                              precio = precio,
                                              productoCompra = producto,
                                              descuento = 0, 
-                                             fechaEntrega = None) 
+                                             fechaEntrega = None, 
+                                             fechahora = fechahora) 
         pclases.Auditoria.nuevo(ldpc, self.usuario, __file__)
         self.actualizar_ventana()
 
@@ -964,7 +964,6 @@ class PedidosDeCompra(Ventana):
         propia BD impedirá el borrado (that's I hope).
         En todo caso, _se eliminará del pedido_.
         """
-        pedido = self.objeto
         model, paths = self.wids['tv_ldpc'].get_selection().get_selected_rows()
         for path in paths:
             idldpc = model[path][-1]
@@ -1111,45 +1110,45 @@ class PedidosDeCompra(Ventana):
         self.wids['b_guardar'].set_sensitive(False)
 
     def ver_envios(self, widget):
-      """
-      Busca y muestra, en una ventana aparte, los envíos
-      relacionados con el pedido actual a través de los
-      albaranes que contienen uno y otro siguiendo las
-      líneas de venta del pedido.
-      """
-      utils.dialogo_info('FUNCIÓN DESHABILITADA', 
-                         'Función deshabilitada temporalmente.', 
-                         padre = self.wids['ventana'])
+        """
+        Busca y muestra, en una ventana aparte, los envíos
+        relacionados con el pedido actual a través de los
+        albaranes que contienen uno y otro siguiendo las
+        líneas de venta del pedido.
+        """
+        utils.dialogo_info('FUNCIÓN DESHABILITADA', 
+                           'Función deshabilitada temporalmente.', 
+                           padre = self.wids['ventana'])
 
     def ver_vencimientos(self, widget):
-      """
-      Muestra los vencimientos del pedido actual
-      en un diálogo de resultados de búsqueda.
-      """
-      utils.dialogo_info('FUNCIÓN DESHABILITADA', 'Función deshabilitada temporalmente.', padre = self.wids['ventana'])
+        """
+        Muestra los vencimientos del pedido actual
+        en un diálogo de resultados de búsqueda.
+        """
+        utils.dialogo_info('FUNCIÓN DESHABILITADA', 'Función deshabilitada temporalmente.', padre = self.wids['ventana'])
       
     def ver_pagos(self, widget):
-      """
-      Muestra los pagos del pedido actual en una ventana de 
-      resultados.
-      """
-      utils.dialogo_info('FUNCIÓN DESHABILITADA', 'Función deshabilitada temporalmente.', padre = self.wids['ventana'])
+        """
+        Muestra los pagos del pedido actual en una ventana de 
+        resultados.
+        """
+        utils.dialogo_info('FUNCIÓN DESHABILITADA', 'Función deshabilitada temporalmente.', padre = self.wids['ventana'])
 
     def ver_facturas(self, widget):
-      """
-      Muestra las facturas relacionadas con el pedido
-      a través de las líneas de venta en una ventana
-      de resultados de búsqueda.
-      """
-      utils.dialogo_info('FUNCIÓN DESHABILITADA', 'Función deshabilitada temporalmente.', padre = self.wids['ventana'])
+        """
+        Muestra las facturas relacionadas con el pedido
+        a través de las líneas de venta en una ventana
+        de resultados de búsqueda.
+        """
+        utils.dialogo_info('FUNCIÓN DESHABILITADA', 'Función deshabilitada temporalmente.', padre = self.wids['ventana'])
 
     def ver_abonos(self, widget):
-      """
-      Muestra los abonos relacionados con las líneas
-      de venta que contiene el pedido actual en una
-      ventana de resultados.
-      """
-      utils.dialogo_info('FUNCIÓN DESHABILITADA', 'Función deshabilitada temporalmente.', padre = self.wids['ventana'])
+        """
+        Muestra los abonos relacionados con las líneas
+        de venta que contiene el pedido actual en una
+        ventana de resultados.
+        """
+        utils.dialogo_info('FUNCIÓN DESHABILITADA', 'Función deshabilitada temporalmente.', padre = self.wids['ventana'])
 
     def imprimir(self,boton):
         """
@@ -1231,10 +1230,10 @@ class PedidosDeCompra(Ventana):
               mostrar_precios = self.wids['ch_imprimir_precios'].get_active(),
               observaciones0 = pedido.observaciones0, 
               observaciones1 = pedido.observaciones1))
-              #observaciones2 = pedido.observaciones2)) <- Ya no hace falta, 
-              # se pasa directamente en forma_pago. Contienen lo mismo a no 
-              # ser que se deje en blanco observaciones2 en esta ventana y se 
-              # rellene la forma de pago teniendo nivel 0 ó 1.
+                #observaciones2 = pedido.observaciones2)) <- Ya no hace falta, 
+                # se pasa directamente en forma_pago. Contienen lo mismo a no 
+                # ser que se deje en blanco observaciones2 en esta ventana y se 
+                # rellene la forma de pago teniendo nivel 0 ó 1.
         
 if __name__=='__main__':
     p = PedidosDeCompra()

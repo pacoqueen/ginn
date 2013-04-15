@@ -247,7 +247,7 @@ class MotivosAusencia(Ventana):
         condicion = True
         for col in motivo._SO_columnDict:
             condicion = condicion and self.comparar_campo(col, motivo._SO_columnDict[col])
-        return not condicion	# Concición verifica que sea igual
+        return not condicion    # Concición verifica que sea igual
 
     def aviso_actualizacion(self):
         """
@@ -270,7 +270,7 @@ class MotivosAusencia(Ventana):
             motivo = pclases.Motivo.select(orderBy="id")[0]
             motivo.notificador.set_func(self.aviso_actualizacion)
         except:
-            motivo = None 	
+            motivo = None     
         self.objeto = motivo
         self.actualizar_ventana()
 

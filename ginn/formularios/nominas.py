@@ -271,7 +271,7 @@ class Nominas(Ventana):
         return partes
 
     def calcular_horas(self, fecha_ini, fecha_fin):
-    	"""
+        """
         Calcula las horas trabajadas en cada parte del 
         rango de fechas.
         """

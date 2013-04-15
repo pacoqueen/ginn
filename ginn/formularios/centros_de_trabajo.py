@@ -244,7 +244,7 @@ class CentrosDeTrabajo(Ventana):
         condicion = True
         for col in centroTrabajo._SO_columnDict:
             condicion = condicion and self.comparar_campo(col, centroTrabajo._SO_columnDict[col])
-        return not condicion	# Concición verifica que sea igual
+        return not condicion    # Concición verifica que sea igual
 
     def aviso_actualizacion(self):
         """
@@ -267,7 +267,7 @@ class CentrosDeTrabajo(Ventana):
             centroTrabajo = pclases.CentroTrabajo.select(orderBy="id")[0]
             centroTrabajo.notificador.set_func(self.aviso_actualizacion)
         except:
-            centroTrabajo = None 	
+            centroTrabajo = None     
         self.objeto = centroTrabajo
         self.actualizar_ventana()
 

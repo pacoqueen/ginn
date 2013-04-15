@@ -248,7 +248,7 @@ class Grupos(Ventana):
         condicion = True
         for col in grupo._SO_columnDict:
             condicion = condicion and self.comparar_campo(col, grupo._SO_columnDict[col])
-        return not condicion	# Concición verifica que sea igual
+        return not condicion    # Concición verifica que sea igual
 
     def aviso_actualizacion(self):
         """
@@ -271,7 +271,7 @@ class Grupos(Ventana):
             grupo = pclases.Grupo.select(orderBy="id")[0]
             grupo.notificador.set_func(self.aviso_actualizacion)
         except:
-            grupo = None 	
+            grupo = None     
         self.objeto = grupo
         self.actualizar_ventana()
 

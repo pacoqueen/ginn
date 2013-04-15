@@ -128,7 +128,7 @@ class FacturasVenta(Ventana):
                        'b_crear_servicio/clicked': self.add_srv,
                        'b_clonar_servicio/clicked': self.clon_srv,
                        'b_drop_servicio/clicked': self.drop_srv,
-		               'b_imprimir/clicked': self.imprimir,
+                       'b_imprimir/clicked': self.imprimir,
                        'b_vtos_defecto/clicked': 
                             self.crear_vencimientos_por_defecto,
                        'b_abonos/clicked': self.buscar_abonos,
@@ -150,7 +150,7 @@ class FacturasVenta(Ventana):
         del objeto en memoria.
         """
         factura = self.objeto
-        if factura == None: return False	# Si no hay factura activo, devuelvo que no hay cambio respecto a la ventana
+        if factura == None: return False    # Si no hay factura activo, devuelvo que no hay cambio respecto a la ventana
         condicion = factura.numfactura == self.wids['e_numfactura'].get_text()
         condicion = condicion and (factura.bloqueada == self.wids['ch_bloqueada'].get_active())
         condicion = condicion and (factura.observaciones == self.wids['e_observaciones'].get_text())
@@ -163,7 +163,7 @@ class FacturasVenta(Ventana):
             self.logger.error("facturas_venta.py::es_diferente -> Error, probablemente al parsear pordentaje: %s" % (msg))
         condicion = condicion and (utils.combo_get_value(self.wids['cbe_obra'])
             == factura.obraID)
-        return not condicion	# Condición verifica que sea igual
+        return not condicion    # Condición verifica que sea igual
 
     def aviso_actualizacion(self):
         """
@@ -407,12 +407,12 @@ class FacturasVenta(Ventana):
         try:
             # Anulo el aviso de actualización del envío que deja de ser activo.
             if factura != None: factura.notificador.set_func(lambda : None)
-            factura = pclases.FacturaVenta.select(orderBy="-id")[0]	
+            factura = pclases.FacturaVenta.select(orderBy="-id")[0]    
                 # Selecciono todos y me quedo con el primero de la lista
-            factura.notificador.set_func(self.aviso_actualizacion)		
+            factura.notificador.set_func(self.aviso_actualizacion)        
                 # Activo la notificación
         except:
-            factura = None 	
+            factura = None     
         self.objeto = factura
         self.actualizar_ventana()
 
@@ -604,7 +604,7 @@ class FacturasVenta(Ventana):
         try:
             cantidad = total/numvtos
         except ZeroDivisionError:
-            return	# No hay vencimientos.
+            return    # No hay vencimientos.
         for vto in vtos:
             vto.cantidad = cantidad
         self.rellenar_vencimientos()
@@ -784,7 +784,7 @@ class FacturasVenta(Ventana):
         # OJO: Además, también hay que emparejar por proximidad de fechas los pagos realizados
         #      (clase Pago) con los vencimientos a los que corresponderían (no hay relación directa).
         vtos = self.preparar_vencimientos()
-        # FIXME: (?) Se llama a preparar_vencimientos hasta 4 veces (!) al mostar una factura en pantalla.	
+        # FIXME: (?) Se llama a preparar_vencimientos hasta 4 veces (!) al mostar una factura en pantalla.    
         model = self.wids['tv_vencimientos'].get_model()
         model.clear()
         total_vtos = 0
@@ -804,7 +804,7 @@ class FacturasVenta(Ventana):
             else:
                 cantidad = 0
                 fechavto = ''
-                ids = '-1,'	# OJO: Si no hay, el ID lo considero -1.
+                ids = '-1,'    # OJO: Si no hay, el ID lo considero -1.
                 formapago = cuenta = ""
             total_vtos += cantidad
             if vto[1] != None:
@@ -2083,7 +2083,7 @@ class FacturasVenta(Ventana):
         ids = [int(i) for i in ids.split(',')]
         idvto = ids[0]
         idest = ids[1]
-        if idvto > 0:	# Si realmente hay un vto. (ver rellenar_vencimientos).
+        if idvto > 0:    # Si realmente hay un vto. (ver rellenar_vencimientos).
             vto = pclases.VencimientoCobro.get(idvto)
             vto.destroy(usuario = self.usuario, ventana = __file__)
         if idest > 0:
@@ -2106,10 +2106,10 @@ class FacturasVenta(Ventana):
             return
         idvto = int(self.wids['tv_vencimientos'].get_model()[path][-1].split(',')[0])   # WTF?
             # Al escribirlo no parecía tan lioso. Lo juro.
-        if idvto > 0:	# Es -1 si no había.
+        if idvto > 0:    # Es -1 si no había.
             vto = pclases.VencimientoCobro.get(idvto)
             vto.fecha = fecha
-        elif idvto == -1:	# Para el resto de valores rebota-rebota y en tu culo explota.
+        elif idvto == -1:    # Para el resto de valores rebota-rebota y en tu culo explota.
             factura = self.objeto
             vto = pclases.VencimientoCobro(fecha = fecha,
                                            facturaVenta = factura,
@@ -2117,7 +2117,7 @@ class FacturasVenta(Ventana):
                                            observaciones = factura.cliente and factura.cliente.textoformacobro or "",
                                            cuentaOrigen = factura.cliente and factura.cliente.cuentaOrigen or None)
             pclases.Auditoria.nuevo(vto, self.usuario, __file__)
-        self.rellenar_vencimientos()		# Para no sobrecargar mucho la red volviendo a rellenar LDVs y tal.
+        self.rellenar_vencimientos()        # Para no sobrecargar mucho la red volviendo a rellenar LDVs y tal.
 
     def cambiar_estimado(self, cell, path, texto):
         """
@@ -2134,10 +2134,10 @@ class FacturasVenta(Ventana):
             return
         idvto = int(self.wids['tv_vencimientos'].get_model()[path][-1].split(',')[1])
             # Al escribirlo no parecía tan lioso. Lo juro.
-        if idvto > 0:	# Es -1 si no había.
+        if idvto > 0:    # Es -1 si no había.
             vto = pclases.EstimacionCobro.get(idvto)
             vto.fecha = fecha
-        elif idvto == -1:	# Para el resto de valores rebota-rebota y en tu culo explota.
+        elif idvto == -1:    # Para el resto de valores rebota-rebota y en tu culo explota.
             factura = self.objeto
             vto = pclases.EstimacionCobro(fecha = fecha,
                                           facturaVenta = factura,
@@ -2167,10 +2167,10 @@ class FacturasVenta(Ventana):
                 'dia/mes/año.', 
                 padre = self.wids['ventana'])
             return
-        if idcobro > 0:	# Es -1 si no había.
+        if idcobro > 0:    # Es -1 si no había.
             cobro = pclases.Cobro.get(idcobro)
             cobro.fecha = fecha
-        elif idcobro == -1:	# Para el resto de valores rebota-rebota y en tu culo explota.
+        elif idcobro == -1:    # Para el resto de valores rebota-rebota y en tu culo explota.
             factura = self.objeto
             cobro = pclases.Cobro(fecha = fecha,
                                   facturaVenta = factura,
@@ -2198,10 +2198,10 @@ class FacturasVenta(Ventana):
                 'Introduzca un número sin símbolo de moneda.', 
                 padre = self.wids['ventana'])
             return
-        if idcobro > 0:	# Es -1 si no había.
+        if idcobro > 0:    # Es -1 si no había.
             cobro = pclases.Cobro.get(idcobro)
             cobro.importe = importe
-        elif idcobro == -1:	# Para el resto de valores rebota-rebota y en tu culo explota.
+        elif idcobro == -1:    # Para el resto de valores rebota-rebota y en tu culo explota.
             factura = self.objeto
             cobro = pclases.Cobro(fecha = time.localtime(),
                                   facturaVenta = factura,
@@ -2320,7 +2320,7 @@ class FacturasVenta(Ventana):
                         'están bien escritos y el formato es correcto en '
                         'la ventana de clientes.', 
                         padre = self.wids['ventana'])
-                    return	# Los vencimientos no son válidos o no tiene.
+                    return    # Los vencimientos no son válidos o no tiene.
         if vtos:
             self.borrar_vencimientos_y_estimaciones(factura)
             total = utils._float(
@@ -2496,10 +2496,10 @@ class FacturasVenta(Ventana):
             return
         idvto = int(self.wids['tv_vencimientos'].get_model()[path][-1].split(',')[0])
             # Al escribirlo no parecía tan lioso. Lo juro.
-        if idvto > 0:	# Es -1 si no había.
+        if idvto > 0:    # Es -1 si no había.
             vto = pclases.VencimientoCobro.get(idvto)
             vto.importe = cantidad
-        elif idvto == -1:	# Para el resto de valores rebota-rebota y en tu culo explota.
+        elif idvto == -1:    # Para el resto de valores rebota-rebota y en tu culo explota.
             factura = self.objeto
             vto = pclases.VencimientoCobro(fecha = time.localtime(),
                                            facturaVenta = factura,
@@ -2507,7 +2507,7 @@ class FacturasVenta(Ventana):
                                            observaciones = factura.cliente and factura.cliente.textoformacobro or "", 
                                            cuentaOrigen = factura.cliente and factura.cliente.cuentaOrigen or None)
             pclases.Auditoria.nuevo(vto, self.usuario, __file__)
-        self.rellenar_vencimientos()		# Para no sobrecargar mucho la red volviendo a rellenar LDVs y tal.
+        self.rellenar_vencimientos()        # Para no sobrecargar mucho la red volviendo a rellenar LDVs y tal.
 
     def cambiar_precio(self, cell, path, texto):
         """

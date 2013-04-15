@@ -510,7 +510,7 @@ class FormulacionFibra(Ventana):
                                               cabeceras = ("ID", "Código", "Descripción"), 
                                               multi = True)
         if idsproducto and idsproducto!= [-1]:
-            return [pclases.ProductoVenta.get(id) for id in idsproducto]
+            return [pclases.ProductoVenta.get(ide) for ide in idsproducto]
         
     def pedir_producto_compra(self):
         """

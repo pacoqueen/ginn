@@ -61,10 +61,10 @@ def eliminar_temporales():
     """
     from tempfile import gettempdir
     for root, dirs, files in os.walk(gettempdir()):
-        for file in files:
+        for fich in files:
             try:
-                #print os.path.join(root, file)
-                os.unlink(os.path.join(root, file))
+                #print os.path.join(root, fich)
+                os.unlink(os.path.join(root, fich))
                 # ¿Realmente necesito borrar solo los de ayer y anteriores?
                 # Se acaba de abrir el menú principal. No puede haber 
                 # etiquetas recién creadas y no impresas. Y si las hay, 

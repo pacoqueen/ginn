@@ -193,7 +193,7 @@ class TarifasDePrecios(Ventana):
         cb.set_model(model)
         
         if type(cb) == gtk.ComboBoxEntry:
-            if cb.get_text_column()==-1:	# MORON HACK: Para evitar un 
+            if cb.get_text_column()==-1:    # MORON HACK: Para evitar un 
                 cb.set_text_column(1)       # "assert - GtkWarning"
             completion = gtk.EntryCompletion()
             completion.set_model(model)
@@ -244,7 +244,7 @@ class TarifasDePrecios(Ventana):
             if m.get(itr, 0)[0] == tarifa.id:
                 # model.get devuelve una tupla de valores de columnas.
                 m.remove(itr)
-                break 	# No sigo recorriendo. Sólo elimino el primero y 
+                break     # No sigo recorriendo. Sólo elimino el primero y 
                         # me ahorro el resto del recorrido.
             itr = m.iter_next(itr)
 
@@ -536,9 +536,9 @@ class TarifasDePrecios(Ventana):
             pos=self.buscar_indice_texto(combo, combo.get_active_text())
         else:
             pos=combo.get_active()
-        if pos>=0:	# Tenemos una tarifa válida en el combo:
+        if pos>=0:    # Tenemos una tarifa válida en el combo:
             # Obtengo el identificador a partir del model
-            ide = combo.get_model()[pos][0]	# La columna 0 es el ide.
+            ide = combo.get_model()[pos][0]    # La columna 0 es el ide.
             # Y finalmente la tarifa actual:
             tarifa = self.objeto
             try:

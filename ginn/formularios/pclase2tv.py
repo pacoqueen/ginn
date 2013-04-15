@@ -10,9 +10,7 @@ de datos de la columna y todo, todo, todo.
 """
 
 from framework import pclases
-import mx.DateTime
 import utils
-import ventana_progreso
 
 def edit_text(cell, path, newtext, tv, numcol, clase, atributo):
     """
@@ -21,7 +19,7 @@ def edit_text(cell, path, newtext, tv, numcol, clase, atributo):
     """
     model = tv.get_model()
     ide = model[path][-1]
-    objeto = clase.get(id)
+    objeto = clase.get(ide)
     setattr(objeto, atributo, newtext)  # Sin validación. Texto acepta todo.
     objeto.syncUpdate()
     model[path][numcol] = getattr(objeto, atributo)
@@ -33,7 +31,7 @@ def edit_fecha(cell, path, newtext, tv, numcol, clase, atributo):
     """
     model = tv.get_model()
     ide = model[path][-1]
-    objeto = clase.get(id)
+    objeto = clase.get(ide)
     try:
         fecha = utils.parse_fecha(newtext)
     except (ValueError, TypeError):
@@ -55,7 +53,7 @@ def edit_fechahora(cell, path, newtext, tv, numcol, clase, atributo):
     """
     model = tv.get_model()
     ide = model[path][-1]
-    objeto = clase.get(id)
+    objeto = clase.get(ide)
     try:
         fecha = utils.parse_fechahora(newtext)
     except (ValueError, TypeError):
@@ -77,7 +75,7 @@ def edit_hora(cell, path, newtext, tv, numcol, clase, atributo):
     """
     model = tv.get_model()
     ide = model[path][-1]
-    objeto = clase.get(id)
+    objeto = clase.get(ide)
     try:
         hora = utils.parse_hora(newtext)
     except (ValueError, TypeError):
@@ -109,7 +107,7 @@ def edit_float(cell, path, newtext, tv, numcol, clase, atributo):
     else:
         model = tv.get_model()
         ide = model[path][-1]
-        objeto = clase.get(id)
+        objeto = clase.get(ide)
         setattr(objeto, atributo, numero) 
         objeto.syncUpdate()
     model[path][numcol] = utils.float2str(getattr(objeto, atributo), 
@@ -132,7 +130,7 @@ def edit_int(cell, path, newtext, tv, numcol, clase, atributo):
     else:
         model = tv.get_model()
         ide = model[path][-1]
-        objeto = clase.get(id)
+        objeto = clase.get(ide)
         setattr(objeto, atributo, numero) 
         objeto.syncUpdate()
     model[path][numcol] = getattr(objeto, atributo)
@@ -144,7 +142,7 @@ def edit_boolean(cell, path, tv, numcol, clase, atributo):
     """
     model = tv.get_model()
     ide = model[path][-1]
-    objeto = clase.get(id)
+    objeto = clase.get(ide)
     valor = not model[path][numcol]
     setattr(objeto, atributo, valor) 
     objeto.syncUpdate()
@@ -299,7 +297,7 @@ class Pclase2tv:
         *args y **kw son parámetros adicionales que se pasarán al filtro.
         """
         res = []
-        for colsum in sumatorios:
+        for colsum in sumatorios:  # @UnusedVariable
             res.append(0.0)
         objetos = self.clase.select(orderBy = campo_orden)
         model = self.tv.get_model()
@@ -343,7 +341,7 @@ def test(pclase):
     Recibe una pclase y monta una ventana con un TreeView para el modelo 
     generado.
     """
-    import pygtk, gtk
+    import gtk
     ventana = gtk.Window()
     ventana.set_title("table2tv")
     ventana.resize(800, 600)

@@ -127,11 +127,11 @@ class FacturasNoBloqueadas(Ventana):
         self.wids['tv_albaranes'].set_model(model)
 
     def rellenar_facturas(self):
-    	"""
+        """
         Rellena el model con las facturas no bloqueadas.
         """        
-    	model = self.wids['tv_facturas'].get_model()
-    	model.clear()
+        model = self.wids['tv_facturas'].get_model()
+        model.clear()
         self.wids['tv_facturas'].freeze_child_notify()
         self.wids['tv_facturas'].set_model(None)
         vpro = ventana_progreso.VentanaProgreso(padre = self.wids['ventana'])

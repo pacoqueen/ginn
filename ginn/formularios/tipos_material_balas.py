@@ -73,16 +73,16 @@ class TiposMaterialBala(Ventana):
         pass
 
     def rellenar_tabla(self):
-    	"""
+        """
         Rellena el model con los tipos de materialBala existentes
         """        
         tipos = pclases.TipoMaterialBala.select(orderBy="descripcion")
-    	model = self.wids['tv_tipos'].get_model()
-    	model.clear()
-    	for t in tipos:
-    		model.append((t.descripcion,
+        model = self.wids['tv_tipos'].get_model()
+        model.clear()
+        for t in tipos:
+            model.append((t.descripcion,
                     t.codigo,        
-    				t.id))
+                    t.id))
     
     
     def eliminar_tipo_de_materialBala(self,widget):
@@ -93,31 +93,31 @@ class TiposMaterialBala(Ventana):
         else:        
             utils.dialogo_info('ERROR','Seleccione material de bala a eliminar')
             return
-        try:	
+        try:    
             tipodematerialBala.destroy(ventana = __file__)
         except:
             utils.dialogo_info('ERROR','No se ha podido eliminar el tipo de material de bala. Probablemente existan procesos con este tipo de material.')
         self.rellenar_tabla()
     
     def modificar_tipo_de_materialBala(self, widget):
-    	model, iter = self.wids['tv_tipos'].get_selection().get_selected()
-    	if iter != None:
-    	    idtipo = model[iter][-1]
+        model, iter = self.wids['tv_tipos'].get_selection().get_selected()
+        if iter != None:
+            idtipo = model[iter][-1]
             tipodematerialBala = pclases.TipoMaterialBala.get(idtipo)
         else:
             utils.dialogo_info('ERROR','Seleccione material de bala a modificar')
             return
-    	nuevotipo = utils.dialogo_entrada('Introduzca el nuevo tipo de material de bala para: ' + tipodematerialBala.descripcion)
-    	nuevocodigo = utils.dialogo_entrada('Introduzca el codigo asociado')
-    	try:	
+        nuevotipo = utils.dialogo_entrada('Introduzca el nuevo tipo de material de bala para: ' + tipodematerialBala.descripcion)
+        nuevocodigo = utils.dialogo_entrada('Introduzca el codigo asociado')
+        try:    
             if nuevotipo != None:
                 tipodematerialBala.descripcion = nuevotipo
             if nuevocodigo != None:
                 tipodematerialBala.codigo = nuevocodigo
-    	except:
-    		utils.dialogo_info('ERROR','No se ha podido modificar el tipo de material de bala.')
+        except:
+            utils.dialogo_info('ERROR','No se ha podido modificar el tipo de material de bala.')
 
-    	self.rellenar_tabla()
+        self.rellenar_tabla()
     
     
     def crear_nuevo_tipodematerialBala(self, widget):
@@ -128,12 +128,12 @@ class TiposMaterialBala(Ventana):
         en la ventana para que puedan ser editados el resto
         de campos que no se hayan pedido aquí.
         """
-    	nuevotipo = utils.dialogo_entrada('Introduzca el nuevo tipo de material')
-    	nuevocodigo = utils.dialogo_entrada('Introduzca el código asociado al material')
+        nuevotipo = utils.dialogo_entrada('Introduzca el nuevo tipo de material')
+        nuevocodigo = utils.dialogo_entrada('Introduzca el código asociado al material')
         if nuevotipo != None and nuevocodigo !=None :
             tipodematerialBala = pclases.TipoMaterialBala(descripcion = nuevotipo, codigo = nuevocodigo)
             pclases.Auditoria.nuevo(tipodematerialBala, self.usuario, __file__)
-    	self.rellenar_tabla()
+        self.rellenar_tabla()
     
     
 if __name__ == '__main__':

@@ -321,11 +321,11 @@ class ConsultaVentas(Ventana):
         pass
 
     def rellenar_tabla_por_tarifa(self, items, items_abono, servicios):
-    	"""
+        """
         Rellena el model con los items de la consulta
         """ 
-    	model = self.wids['tv_datos'].get_model()
-    	model.clear()
+        model = self.wids['tv_datos'].get_model()
+        model.clear()
         total = 0.0
         self.metros_totales = 0.0
         self.kilos_totales = 0.0
@@ -343,7 +343,7 @@ class ConsultaVentas(Ventana):
             if not almacen or i.get_almacen() == almacen:
                 tarifa, total = self.procesar_lda(i, self.por_tarifa, model, 
                                                   total)
-    	for i in items:
+        for i in items:
             if not almacen or i.get_almacen() == almacen:
                 tarifa, total = self.procesar_ldv(i, self.por_tarifa, model, 
                                                   total)
