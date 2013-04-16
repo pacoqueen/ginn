@@ -38,7 +38,7 @@
 ## 
 ###################################################################
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk
@@ -282,11 +282,11 @@ class PagaresCobros(Ventana):
         cobro = pclases.Cobro.get(idcobro)
         fra = cobro.facturaVenta
         if fra != None:
-            import facturas_venta
+            from formularios import facturas_venta
             ventanafacturas = facturas_venta.FacturasVenta(fra)  # @UnusedVariable
         prefra = cobro.prefactura
         if prefra != None:
-            import prefacturas
+            from formularios import prefacturas
             ventanafacturas = prefacturas.Prefacturas(prefra)  # @UnusedVariable
 
     def cambiar_importe_cobro(self, cell, path, texto):

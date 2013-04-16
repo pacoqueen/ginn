@@ -50,7 +50,7 @@ from ventana import Ventana
 import gtk
 import mx.DateTime
 import pygtk
-import utils
+from formularios import utils
 pygtk.require('2.0')
 
 

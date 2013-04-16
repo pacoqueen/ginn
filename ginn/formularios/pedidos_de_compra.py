@@ -69,12 +69,12 @@ from ventana import Ventana
 import pygtk
 pygtk.require('2.0')
 import gtk, time
-import utils, utils_almacen
+from formularios import utils, utils_almacen
 from framework import pclases
 from informes import geninformes
 from utils import _float as float
 import re, mx.DateTime
-import postomatic
+from formularios import postomatic
 
 class PedidosDeCompra(Ventana):
     def __init__(self, objeto = None, usuario = None):

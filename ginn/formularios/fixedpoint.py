@@ -153,7 +153,7 @@ def bankersRounding(self, dividend, divisor, quotient, remainder):
          the remainder is more than half of the divisor
       or the remainder is exactly half the divisor and the quotient is odd
     """
-    c = comp(remainder << 1, divisor)
+    c = cmp(remainder << 1, divisor)
     # c < 0 <-> remainder < divisor/2, etc
     if c > 0 or (c == 0 and (quotient & 1) == 1):
         quotient += 1
@@ -166,7 +166,7 @@ def addHalfAndChop(self, dividend, divisor, quotient, remainder):
          the remainder is greater than half of the divisor
       or the remainder is exactly half the divisor and the quotient is >= 0
     """
-    c = comp(remainder << 1, divisor)
+    c = cmp(remainder << 1, divisor)
     # c < 0 <-> remainder < divisor/2, etc
     if c > 0 or (c == 0 and quotient >= 0):
         quotient += 1
@@ -342,10 +342,10 @@ class FixedPoint(object):
     def __cmp__(self, other):
         # Modificado por pacoqueen para evitar execpciones en comparaciones con no-flotantes y no -FP
         try:
-            xn, yn, p = _norm(self, other, FixedPoint=type(self))
+            xn, yn, p = _norm(self, other, FixedPoint=type(self))  # @UnusedVariable
         except TypeError:    # Seguramente sea None, un string o algo que no puedo convertir a FP para comparar
             return False
-        return comp(xn, yn)
+        return cmp(xn, yn)
 
     def __hash__(self):
         """ Caution!  == values must have equal hashes, and a FixedPoint

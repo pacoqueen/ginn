@@ -51,7 +51,7 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 import gobject
 pygtk.require('2.0')
@@ -60,7 +60,7 @@ from framework import pclases
 from informes import geninformes
 from formularios.reports import abrir_pdf
 from ventana_progreso import VentanaActividad
-import pclase2tv
+from formularios import pclase2tv
 
 class Clientes(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -792,7 +792,7 @@ class Clientes(Ventana):
                     fra = pclases.Prefactura.get(fra)
                 except:
                     return
-                import prefacturas
+                from formularios import prefacturas
                 v = prefacturas.Prefacturas(objeto=fra, usuario=self.usuario)  # @UnusedVariable
 
     def listar_facturas(self, boton):
@@ -825,7 +825,7 @@ class Clientes(Ventana):
                     fra = pclases.FacturaVenta.get(fra)
                 except:
                     return
-                import facturas_venta
+                from formularios import facturas_venta
                 v = facturas_venta.FacturasVenta(objeto = fra,  # @UnusedVariable
                                                  usuario = self.usuario)
 
@@ -879,17 +879,17 @@ class Clientes(Ventana):
                         producto = pclases.ProductoVenta.get(
                                         idproducto.split(":")[1])
                         if producto.es_rollo():
-                            import productos_de_venta_rollos as pdvr
+                            from formularios import productos_de_venta_rollos as pdvr
                             ventana_producto = pdvr.ProductosDeVentaRollos(  # @UnusedVariable
                                             producto, usuario = self.usuario)
                         elif producto.es_bala() or producto.es_bigbag():
-                            import productos_de_venta_balas as pdvb
+                            from formularios import productos_de_venta_balas as pdvb
                             ventana_producto = pdvb.ProductosDeVentaBalas(  # @UnusedVariable
                                             producto, usuario = self.usuario)
                     elif "PC" in idproducto:
                         producto = pclases.ProductoCompra.get(
                                         idproducto.split(":")[1])
-                        import productos_compra
+                        from formularios import productos_compra
                         ventana_producto = productos_compra.ProductosCompra(  # @UnusedVariable
                                             producto, usuario = self.usuario)
                 except:
@@ -903,7 +903,7 @@ class Clientes(Ventana):
         if itr != None:
             ide = model[itr][0]
             pedido = pclases.PedidoVenta.get(ide)
-            import pedidos_de_venta
+            from formularios import pedidos_de_venta
             ventana = pedidos_de_venta.PedidosDeVenta(objeto = pedido,  # @UnusedVariable
                                                       usuario = self.usuario)
 
@@ -1225,11 +1225,11 @@ class Clientes(Ventana):
         puid = model[path][-1]
         objeto = pclases.getObjetoPUID(puid)
         if isinstance(objeto, pclases.FacturaVenta):
-            import facturas_venta
+            from formularios import facturas_venta
             ventanafacturas = facturas_venta.FacturasVenta(objeto,  # @UnusedVariable
                                 usuario = self.usuario)
         elif isinstance(objeto, pclases.FacturaDeAbono):
-            import abonos_venta 
+            from formularios import abonos_venta 
             ventanaabonos = abonos_venta.AbonosVenta(objeto.abono,  # @UnusedVariable
                                 usuario = self.usuario)
         self.wids['ventana'].window.set_cursor(None)
@@ -1359,7 +1359,7 @@ class Clientes(Ventana):
         #nuevo.set_properties(*w.get_properties())
         #self.wids.widgets.pop(nombrew)
         #print self.wids.keys(), nombrew in self.wids.keys()
-        from widgets import replace_widget 
+        from formularios.widgets import replace_widget 
         replace_widget(w, nuevo)
         nuevo.show()
         return nuevo
@@ -1922,7 +1922,7 @@ class Clientes(Ventana):
                                            padre = self.wids['ventana'], 
                                            func_change = self.abrir_pedido)
         if idpedido > 0:
-            import pedidos_de_venta
+            from formularios import pedidos_de_venta
             p = pedidos_de_venta.PedidosDeVenta(pclases.PedidoVenta.get(idpedido), usuario = self.usuario)
     
     def ver_pedidos(self, boton):
@@ -1931,7 +1931,7 @@ class Clientes(Ventana):
         Ahora se abre la consulta adecuada con el cliente de la ventana.
         CWT
         """
-        import consulta_pedidos_clientes
+        from formularios import consulta_pedidos_clientes
         ventana = consulta_pedidos_clientes.ConsultaPedidosCliente(  # @UnusedVariable
                     usuario = self.usuario, 
                     objeto = self.objeto)
@@ -1950,11 +1950,11 @@ class Clientes(Ventana):
                                                 cabeceras = ('ID', 'Fecha', "Cliente final", "Contacto", "Pedidos relacionados"), 
                                                 padre = self.wids['ventana'])
         if idpresupuesto > 0:
-            import presupuestos
+            from formularios import presupuestos
             p = presupuestos.Presupuestos(objeto = pclases.Presupuesto.get(idpresupuesto), usuario = self.usuario)
         
     def ver_productos(self, boton):
-        import consulta_productos_comprados
+        from formularios import consulta_productos_comprados
         ventana = consulta_productos_comprados.ConsultaProductosComprados(  # @UnusedVariable
                     usuario = self.usuario, 
                     objeto = self.objeto)
@@ -2000,14 +2000,14 @@ class Clientes(Ventana):
             if "PV" in idproducto:
                 producto = pclases.ProductoVenta.get(idproducto.split(":")[1])
                 if producto.es_rollo():
-                    import productos_de_venta_rollos
+                    from formularios import productos_de_venta_rollos
                     ventana_producto = productos_de_venta_rollos.ProductosDeVentaRollos(producto, usuario = self.usuario)  # @UnusedVariable
                 elif producto.es_bala() or producto.es_bigbag():
-                    import productos_de_venta_balas
+                    from formularios import productos_de_venta_balas
                     ventana_producto = productos_de_venta_balas.ProductosDeVentaBalas(producto, usuario = self.usuario)  # @UnusedVariable
             elif "PC" in idproducto:
                 producto = pclases.ProductoCompra.get(idproducto.split(":")[1])
-                import productos_compra
+                from formularios import productos_compra
                 ventana_producto = productos_compra.ProductosCompra(producto, usuario = self.usuario)  # @UnusedVariable
 
     def crear_nuevo_contador(self,boton):

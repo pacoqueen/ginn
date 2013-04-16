@@ -38,10 +38,10 @@
 ##       trabajadas en el periodo de tiempo.
 ###################################################################
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
+import gtk
 from framework import pclases
 import mx.DateTime
 import datetime
@@ -146,17 +146,17 @@ class HorasTrabajadas(Ventana):
                     tipo, ide = id_parte.split(":")
                     self.wids['ventana'].window.set_cursor(None)
                     if tipo == "PDP": 
-                        parte = pclases.ParteDeProduccion.get(id)
+                        parte = pclases.ParteDeProduccion.get(ide)
                         if parte.es_de_geotextiles():
-                            import partes_de_fabricacion_rollos
-                            v = partes_de_fabricacion_rollos.PartesDeFabricacionRollos(objeto = parte, usuario = self.usuario)
+                            from formularios import partes_de_fabricacion_rollos
+                            v = partes_de_fabricacion_rollos.PartesDeFabricacionRollos(objeto = parte, usuario = self.usuario)  # @UnusedVariable
                         elif parte.es_de_fibra():
-                            import partes_de_fabricacion_balas
-                            v = partes_de_fabricacion_balas.PartesDeFabricacionBalas(objeto = parte, usuario = self.usuario)
+                            from formularios import partes_de_fabricacion_balas
+                            v = partes_de_fabricacion_balas.PartesDeFabricacionBalas(objeto = parte, usuario = self.usuario)  # @UnusedVariable
                     elif tipo == "PDT": 
-                        parte = pclases.ParteDeTrabajo.get(id)
-                        import partes_de_trabajo
-                        v = partes_de_trabajo.PartesDeTrabajo(objeto = parte, usuario = self.usuario)
+                        parte = pclases.ParteDeTrabajo.get(ide)
+                        from formularios import partes_de_trabajo
+                        v = partes_de_trabajo.PartesDeTrabajo(objeto = parte, usuario = self.usuario)  # @UnusedVariable
         self.wids['ventana'].window.set_cursor(None)
 
     def set_fecha_ini(self, b):

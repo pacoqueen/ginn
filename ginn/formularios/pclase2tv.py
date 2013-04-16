@@ -10,7 +10,7 @@ de datos de la columna y todo, todo, todo.
 """
 
 from framework import pclases
-import utils
+from formularios import utils
 
 def edit_text(cell, path, newtext, tv, numcol, clase, atributo):
     """

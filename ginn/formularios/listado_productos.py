@@ -32,7 +32,7 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk
@@ -91,18 +91,18 @@ class ListadoProductos(Ventana):
             if "PV" in idproducto:
                 producto = pclases.ProductoVenta.get(idproducto.split(":")[1])
                 if producto.es_rollo():
-                    import productos_de_venta_rollos
+                    from formularios import productos_de_venta_rollos
                     V = productos_de_venta_rollos.ProductosDeVentaRollos
-                    ventana_producto = V(producto, usuario = self.usuario)
+                    ventana_producto = V(producto, usuario = self.usuario)  # @UnusedVariable
                 elif producto.es_bala() or producto.es_bigbag():
-                    import productos_de_venta_balas
+                    from formularios import productos_de_venta_balas
                     V = productos_de_venta_balas.ProductosDeVentaBalas
-                    ventana_producto = V(producto, usuario = self.usuario)
+                    ventana_producto = V(producto, usuario = self.usuario)  # @UnusedVariable
             elif "PC" in idproducto:
                 producto = pclases.ProductoCompra.get(idproducto.split(":")[1])
-                import productos_compra
+                from formularios import productos_compra
                 V = productos_compra.ProductosCompra
-                ventana_producto = V(producto, usuario = self.usuario)
+                ventana_producto = V(producto, usuario = self.usuario)  # @UnusedVariable
         except Exception, e:
             utils.dialogo_info(titulo = "ERROR RECUPERANDO PRODUCTO",
                                texto = "El producto ID %d no se ha encontrado."

@@ -35,7 +35,7 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
@@ -752,7 +752,7 @@ class AlbaranesDeEntradaRepuestos(Ventana):
                                padre = self.wids['ventana'])
             if prov_anterior == None:
                 try:
-                    import utils_almacen
+                    from formularios import utils_almacen
                     idpropiaempresa=utils_almacen.id_propia_empresa_proveedor()
                     prov_anterior = pclases.Proveedor.get(idpropiaempresa)
                 except:

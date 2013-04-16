@@ -34,7 +34,7 @@
 ##
 ###################################################################
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
@@ -275,10 +275,10 @@ class ConsultaLotesPorProducto(Ventana):
         except AttributeError, e:
             print "No se encontró el parte: %s", e
         if parte.es_de_balas():
-            import partes_de_fabricacion_balas
+            from formularios import partes_de_fabricacion_balas
             ventana_parteb = partes_de_fabricacion_balas.PartesDeFabricacionBalas(parte)  # @UnusedVariable
         else:
-            import partes_de_fabricacion_rollos
+            from formularios import partes_de_fabricacion_rollos
             ventana_parteb = partes_de_fabricacion_rollos.PartesDeFabricacionRollos(parte)  # @UnusedVariable
             
 

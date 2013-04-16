@@ -33,7 +33,7 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk
@@ -123,17 +123,17 @@ class ConsultaExistenciasPorAlmacen(Ventana):
             if tipo == "PV":        # ProductoVenta 
                 pv = pclases.ProductoVenta.get(ide)
                 if pv.es_rollo():
-                    import productos_de_venta_rollos
+                    from formularios import productos_de_venta_rollos
                     v = productos_de_venta_rollos.ProductosDeVentaRollos(pv, usuario = self.usuario)  # @UnusedVariable
                 elif pv.es_bala() or pv.es_bala_cable() or pv.es_bigbag():
-                    import productos_de_venta_balas
+                    from formularios import productos_de_venta_balas
                     v = productos_de_venta_balas.ProductosDeVentaBalas(pv, usuario = self.usuario)  # @UnusedVariable
                 elif pv.es_especial():
-                    import productos_de_venta_especial
+                    from formularios import productos_de_venta_especial
                     v = productos_de_venta_especial.ProductosDeVentaEspecial(pv, usuario = self.usuario)  # @UnusedVariable
             elif tipo == "PC": 
                 pc = pclases.ProductoCompra.get(ide)
-                import productos_compra
+                from formularios import productos_compra
                 v = productos_compra.ProductosCompra(pc, usuario = self.usuario)  # @UnusedVariable
 
     def chequear_cambios(self):

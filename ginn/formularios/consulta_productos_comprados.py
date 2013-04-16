@@ -35,7 +35,7 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
@@ -88,7 +88,6 @@ class ConsultaProductosComprados(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        import sys, os
         from informes.treeview2csv import treeview2csv
         from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
@@ -104,15 +103,15 @@ class ConsultaProductosComprados(Ventana):
             if "PV" in idproducto:
                 producto = pclases.ProductoVenta.get(idproducto.split(":")[1])
                 if producto.es_rollo():
-                    import productos_de_venta_rollos
-                    ventana_producto = productos_de_venta_rollos.ProductosDeVentaRollos(producto, usuario = self.usuario)
+                    from formularios import productos_de_venta_rollos
+                    ventana_producto = productos_de_venta_rollos.ProductosDeVentaRollos(producto, usuario = self.usuario)  # @UnusedVariable
                 elif producto.es_bala() or producto.es_bigbag():
-                    import productos_de_venta_balas
-                    ventana_producto = productos_de_venta_balas.ProductosDeVentaBalas(producto, usuario = self.usuario)
+                    from formularios import productos_de_venta_balas
+                    ventana_producto = productos_de_venta_balas.ProductosDeVentaBalas(producto, usuario = self.usuario)  # @UnusedVariable
             elif "PC" in idproducto:
                 producto = pclases.ProductoCompra.get(idproducto.split(":")[1])
-                import productos_compra
-                ventana_producto = productos_compra.ProductosCompra(producto, usuario = self.usuario)
+                from formularios import productos_compra
+                ventana_producto = productos_compra.ProductosCompra(producto, usuario = self.usuario)  # @UnusedVariable
         except Exception, e:
             utils.dialogo_info(titulo = "ERROR RECUPERANDO PRODUCTO",
                                texto = "El producto ID %d no se ha encontrado."

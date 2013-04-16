@@ -32,7 +32,7 @@
 ## 17 de diciembre de 2012 - Inicio.
 ###################################################################
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
@@ -95,11 +95,11 @@ class ConsultaCartera(Ventana):
         objeto = pclases.getObjetoPUID(puid)
         objeto_relacionado = objeto.confirming or objeto.pagareCobro
         if isinstance(objeto_relacionado, pclases.PagareCobro):
-            import pagares_cobros
+            from formularios import pagares_cobros
             v = pagares_cobros.PagaresCobros(objeto_relacionado,  # @UnusedVariable
                                              usuario = self.usuario)
         elif isinstance(objeto_relacionado, pclases.Confirming):
-            import confirmings
+            from formularios import confirmings
             v = confirmings.Confirmings(objeto_relacionado,  # @UnusedVariable
                                         usuario = self.usuario)
 
@@ -225,7 +225,7 @@ class ConsultaCartera(Ventana):
             efecto.syncUpdate()
             ventana.destroy()
             self.buscar()
-            import remesas
+            from formularios import remesas
             remesas.Remesas(objeto = remesa, usuario = self.usuario)
         def cancelar(boton, ventana):
             ventana.destroy()

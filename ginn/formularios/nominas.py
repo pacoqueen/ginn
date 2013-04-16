@@ -40,7 +40,7 @@
 # como datetime y no pueden operar con los mx.DateTime.
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
@@ -141,7 +141,7 @@ class Nominas(Ventana):
         idnomina = model[path][-1]
         nomina = pclases.Nomina.get(idnomina)
         empleado = nomina.empleado
-        import empleados
+        from formularios import empleados
         self.wids['ventana'].window.set_cursor(None)
         ventanaempleado = empleados.Empleados(empleado)
 

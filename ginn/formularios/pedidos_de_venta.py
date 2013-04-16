@@ -79,7 +79,7 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time 
@@ -2312,7 +2312,7 @@ class PedidosDeVenta(Ventana):
                 alb_salida.bloqueado = True
             # 6.- Abro el albarán en una nueva ventana.
             ## Mejor que no, porque es bloqueante.
-            #import albaranes_de_salida
+            #from formularios import albaranes_de_salida
             #v = albaranes_de_salida.AlbaranesDeSalida(
             #    objeto = alb_salida, 
             #    usuario = self.usuario)

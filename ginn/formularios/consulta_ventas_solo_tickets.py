@@ -43,8 +43,8 @@ from ventana import Ventana
 import gtk
 import mx.DateTime
 import pygtk
-import utils
-import ventana_progreso
+from formularios import utils
+from formularios import ventana_progreso
 pygtk.require('2.0')
 
 class ConsultaBeneficioSoloTickets(Ventana):
@@ -87,19 +87,19 @@ class ConsultaBeneficioSoloTickets(Ventana):
         model = tv.get_model()
         tipo_e_id = model[path][-1]
         if "LDV" in tipo_e_id:
-            tipo, ide = tipo_e_id.split(':')
-            ldv = pclases.LineaDeVenta.get(id)
+            tipo, ide = tipo_e_id.split(':')  # @UnusedVariable
+            ldv = pclases.LineaDeVenta.get(ide)
             producto = ldv.producto
             if isinstance(producto, pclases.ProductoVenta):
                 if producto.es_rollo():
-                    import productos_de_venta_rollos
-                    ventana_producto = productos_de_venta_rollos.ProductosDeVentaRollos(producto, usuario = self.usuario)
+                    from formularios import productos_de_venta_rollos
+                    ventana_producto = productos_de_venta_rollos.ProductosDeVentaRollos(producto, usuario = self.usuario)  # @UnusedVariable
                 elif producto.es_bala() or producto.es_bigbag():
-                    import productos_de_venta_balas
-                    ventana_producto = productos_de_venta_balas.ProductosDeVentaBalas(producto, usuario = self.usuario)
+                    from formularios import productos_de_venta_balas
+                    ventana_producto = productos_de_venta_balas.ProductosDeVentaBalas(producto, usuario = self.usuario)  # @UnusedVariable
             elif isinstance(producto, pclases.ProductoCompra): 
-                import productos_compra
-                ventana_producto = productos_compra.ProductosCompra(producto, usuario = self.usuario)
+                from formularios import productos_compra
+                ventana_producto = productos_compra.ProductosCompra(producto, usuario = self.usuario)  # @UnusedVariable
 
     def chequear_cambios(self):
         pass
@@ -428,19 +428,19 @@ class ConsultaBeneficioSoloTickets(Ventana):
         """
         self.wids['e_total'].set_text(utils.float2str(total_facturado))
         self.wids['e_siniva'].set_text(utils.float2str(total_siniva))
-        try:
-            beneficio = total_beneficio * 100.0 / total_siniva
-        except ZeroDivisionError:
-            beneficio = 0
+        #try:
+        #    beneficio = total_beneficio * 100.0 / total_siniva
+        #except ZeroDivisionError:
+        #    beneficio = 0
         try:
             beneficio_sobre_costo = total_beneficio * 100.0 / total_costo
         except ZeroDivisionError:
             beneficio_sobre_costo = 0
-        try:
-            beneficio_cobro = (total_beneficio_de_lo_cobrado * 100.0 
-                                / total_cobrado)
-        except ZeroDivisionError:
-            beneficio_cobro = 0
+        #try:
+        #    beneficio_cobro = (total_beneficio_de_lo_cobrado * 100.0 
+        #                        / total_cobrado)
+        #except ZeroDivisionError:
+        #    beneficio_cobro = 0
         try:
             beneficio_cobro_sobre_costo = (100 * 
                 total_beneficio_de_lo_cobrado / total_costo_cobrado)
@@ -482,8 +482,6 @@ class ConsultaBeneficioSoloTickets(Ventana):
         inicio = self.inicio
         fin = self.fin
         LDV = pclases.LineaDeVenta
-        FV = pclases.FacturaVenta
-        AS = pclases.AlbaranSalida
         T = pclases.Ticket
         ldvst = LDV.select(pclases.AND(LDV.q.ticketID == T.q.id, 
                     LDV.q.albaranSalidaID == None, 

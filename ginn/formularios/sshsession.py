@@ -44,8 +44,6 @@ import sys
 import os
 import time
 
-True, False = 1, 0
-
 class SshException(Exception): 
     pass
 

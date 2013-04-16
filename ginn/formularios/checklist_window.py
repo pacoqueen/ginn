@@ -50,7 +50,7 @@ import gtk, pango
 
 import mx.DateTime
 
-import utils
+from formularios import utils
 
 from threading import Thread, Semaphore
 

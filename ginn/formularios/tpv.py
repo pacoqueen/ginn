@@ -43,7 +43,7 @@ except ImportError:
     pass
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
@@ -85,7 +85,7 @@ def intentar_imprimir_ticket(ticket):
         dest = file(fdest, "w")
         volcar_texto_ticket(ticket, dest)
         dest.close()
-        import multi_open
+        from formularios import multi_open
         multi_open.open(fdest)
 
 def volcar_texto_ticket(ticket, dest):
@@ -1617,7 +1617,7 @@ class TPV(Ventana):
                     if ldvs_facturadas != []:
                         ok = self.crear_vencimientos_por_defecto(factura)
                         if not ok:
-                            import facturas_venta
+                            from formularios import facturas_venta
                             utils.dialogo_info(titulo = "FACTURA CREADA", 
                                                texto = "Se creó con éxito la factura %s.\n\nA continuación se abrirá en una nueva ventana.\nVerifique todos los datos y cree los vencimientos antes de imprimir y bloquear la factura." % (factura.numfactura), 
                                                padre = self.wids['ventana'])

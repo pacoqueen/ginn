@@ -45,7 +45,7 @@ import gtk
 import time
 import mx.DateTime
 import pygtk
-import utils
+from formularios import utils
 pygtk.require('2.0')
 
 
@@ -196,13 +196,13 @@ class ConsultaProductividad(Ventana):
         if idparte > 0: # Podría usar también el chequeo de que padre != None.
             parte = pclases.ParteDeProduccion.get(idparte)
             if parte.es_de_balas():
-                import partes_de_fabricacion_balas
+                from formularios import partes_de_fabricacion_balas
                 ventana_parteb = partes_de_fabricacion_balas.PartesDeFabricacionBalas(parte)  # @UnusedVariable
             elif parte.es_de_geotextiles():
-                import partes_de_fabricacion_rollos
+                from formularios import partes_de_fabricacion_rollos
                 ventana_parteb = partes_de_fabricacion_rollos.PartesDeFabricacionRollos(parte)  # @UnusedVariable
             elif parte.es_de_bolsas():
-                import partes_de_fabricacion_bolsas
+                from formularios import partes_de_fabricacion_bolsas
                 ventana_parteb = partes_de_fabricacion_bolsas.PartesDeFabricacionBolsas(parte)  # @UnusedVariable
 
     def chequear_cambios(self):

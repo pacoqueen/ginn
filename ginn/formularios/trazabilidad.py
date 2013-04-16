@@ -39,14 +39,14 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
 from framework import pclases
 import mx.DateTime
 import os 
-import cmdgtk
+from formularios import cmdgtk
 
 class Trazabilidad(Ventana):
     """
@@ -69,11 +69,11 @@ class Trazabilidad(Ventana):
         self.wids['e_num'].connect("key_press_event", self.pasar_foco)
         self.wids['tv_datos'].connect("row-expanded", self.expandir)
         self.wids['tv_datos'].connect("row-collapsed", self.cerrar)
-        import pyconsole
-        vars_locales = locales()
+        from formularios import pyconsole
+        vars_locales = locals()
         for k in locals_adicionales:
             vars_locales[k] = locals_adicionales[k] 
-        consola = pyconsole.attach_console(self.wids['contenedor_consola'], 
+        consola = pyconsole.attach_console(self.wids['contenedor_consola'],  # @UnusedVariable
                                            banner = "Consola python de depuración GINN", 
                                            script_inicio = """import sys, os, pygtk, gtk, gtk.glade, utils
 from framework import pclases, mx.DateTime

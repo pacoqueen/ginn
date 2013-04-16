@@ -36,7 +36,7 @@
 from formularios import ventana_progreso
 from framework import pclases
 from informes import geninformes
-from pychart import * # No me gusta, pero no queda otra
+from formularios.pychart import * # No me gusta, pero no queda otra 
 from tempfile import gettempdir
 from ventana import Ventana
 import gtk
@@ -44,7 +44,7 @@ import time
 import mx.DateTime
 import pygtk
 import os
-import utils
+from formularios import utils
 pygtk.require('2.0')
     
 
@@ -97,7 +97,6 @@ class ConsultaProducido(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        import sys, os
         from informes.treeview2csv import treeview2csv
         from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
@@ -116,13 +115,13 @@ class ConsultaProducido(Ventana):
         model = self.wids['tv_datos'].get_model()
         model.clear()
         for item in items:
-            iter = model.append(None, (item[0],
+            itr = model.append(None, (item[0],
                                        item[1],
                                        item[4],
                                        utils.float2str(item[5]), 
                                        "%d:%s" % (item[2], item[3])))
             for lote_partida in item[6]:
-                model.append(iter, (lote_partida and lote_partida.codigo or "?", 
+                model.append(itr, (lote_partida and lote_partida.codigo or "?", 
                                     utils.float2str(item[6][lote_partida]['cantidad']), 
                                     item[6][lote_partida]['bultos'], 
                                     utils.float2str(item[6][lote_partida]['cantidad'] / item[6][lote_partida]['bultos']), 

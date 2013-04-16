@@ -32,14 +32,13 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk
 import mx.DateTime
 from framework import pclases
 from informes import geninformes
-from formularios.utils import _float as float
 from formularios.crm_seguimiento_impagos import show_fecha
 
 def buscar_pendiente_servir(cliente = None, fini = None, ffin = None, 
@@ -153,12 +152,12 @@ def build_datos_por_producto(por_producto):
                           bultos_A, 
                           kilos_B, 
                           bultos_B, 
-                          id))
+                          ide))
         else:
             datos.append((producto, 
                           pendiente, 
                           "-", "-", "-", "-", "-", "-",
-                          id))
+                          ide))
     datos.append((" >>> TOTAL: ", 
                   utils.float2str(total_por_producto_pendiente), 
                   utils.float2str(total_por_producto_existencias), 
@@ -411,7 +410,7 @@ class PendientesServir(Ventana):
         model = tv.get_model()
         idpedido = model[path][-1]
         if idpedido > 0:
-            import pedidos_de_venta
+            from formularios import pedidos_de_venta
             v = pedidos_de_venta.PedidosDeVenta(
                     pclases.PedidoVenta.get(idpedido), usuario = self.usuario)
 
@@ -462,8 +461,8 @@ class PendientesServir(Ventana):
         self.colorear(self.wids['tv_gtx_por_pedido'])
         self.colorear(self.wids['tv_otros_por_pedido'])
         utils.rellenar_lista(self.wids['cbe_cliente'], [(0, "Todos los clientes")] + [(c.id, c.nombre) for c in pclases.Cliente.select(orderBy="nombre")])
-        def iter_cliente_seleccionado(completion, model, iter):
-            idcliente = model[iter][0]
+        def iter_cliente_seleccionado(completion, model, itr):
+            idcliente = model[itr][0]
             utils.combo_set_from_db(self.wids['cbe_cliente'], idcliente)
         self.wids['cbe_cliente'].child.get_completion().connect('match-selected', iter_cliente_seleccionado)
         self.wids['cbe_cliente'].grab_focus()

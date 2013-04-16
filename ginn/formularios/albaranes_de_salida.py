@@ -80,7 +80,7 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 from formularios.reports import abrir_pdf
 pygtk.require('2.0')
@@ -949,7 +949,7 @@ class AlbaranesDeSalida(Ventana):
             #ldv = pclases.LineaDeVenta.get(idldv)
             ldv = pclases.getObjetoPUID(idldv)
             if ldv.pedidoVenta != None:
-                import pedidos_de_venta
+                from formularios import pedidos_de_venta
                 pedidos_de_venta.PedidosDeVenta(ldv.pedidoVenta)
         else:
             idarticulo = model[path][-1]
@@ -4318,7 +4318,7 @@ def imprimir_factura(factura, usuario = None, abrir = True, es_copia = False,
                    # 'pago': factura.cliente.vencimientos,
                    'pago': str(factura.get_plazo_pago(default = "")),
                    'documento': "; ".join(documentosDePago)}
-    import numerals
+    from formularios import numerals
     totalfra = factura.calcular_total()
     totales = {}
     totales['subtotal'] = "%s €" % (

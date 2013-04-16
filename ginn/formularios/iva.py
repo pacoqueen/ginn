@@ -42,14 +42,12 @@
 ## 
 ###################################################################
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
+import gtk
 from framework import pclases
 import mx.DateTime
-from informes import geninformes
-from ventana_progreso import VentanaProgreso
 
 
 class IVA(Ventana):
@@ -273,11 +271,11 @@ class IVA(Ventana):
         tipo, ide = tid.split(":")
         ide = int(ide)
         if tipo == "FV":
-            import facturas_venta
-            v = facturas_venta.FacturasVenta(pclases.FacturaVenta.get(id), usuario = self.usuario)
+            from formularios import facturas_venta
+            v = facturas_venta.FacturasVenta(pclases.FacturaVenta.get(id), usuario = self.usuario)  # @UnusedVariable
         elif tipo == "FC":
-            import facturas_compra
-            v = facturas_compra.FacturasDeEntrada(pclases.FacturaCompra.get(id), usuario = self.usuario)
+            from formularios import facturas_compra
+            v = facturas_compra.FacturasDeEntrada(pclases.FacturaCompra.get(id), usuario = self.usuario)  # @UnusedVariable
 
 
 ################################################################################

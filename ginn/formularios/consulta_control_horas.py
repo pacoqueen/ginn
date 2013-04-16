@@ -27,13 +27,13 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk, pango
 pygtk.require('2.0')
 import gtk, time
 from framework import pclases
 import mx.DateTime
-import ventana_progreso
+from formularios import ventana_progreso
     
 
 class ConsultaControlHoras(Ventana):
@@ -129,7 +129,7 @@ class ConsultaControlHoras(Ventana):
             except:
                 pass
             else:
-                import control_personal
+                from formularios import control_personal
                 v = control_personal.ControlPersonal(ch, self.usuario)  # @UnusedVariable
         elif tipo == "e":
             try:
@@ -137,7 +137,7 @@ class ConsultaControlHoras(Ventana):
             except:
                 pass
             else:
-                import empleados
+                from formularios import empleados
                 v = empleados.Empleados(e, self.usuario)  # @UnusedVariable
 
     def colorear(self):
@@ -314,10 +314,10 @@ class ConsultaControlHoras(Ventana):
         graficar(self.wids['eventbox_chart'], datachart, self.logger, 
                  orient = "horizontal", values_on_bars = True)
         #try:
-        #    import charting
+        #    from lib import charting
         #except ImportError:
         #    import sys, os
-        #        #    import charting
+        #        #    from lib import charting
         #try:
         #    oldchart = self.wids['eventbox_chart'].get_child()
         #    if oldchart != None:

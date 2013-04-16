@@ -30,14 +30,14 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, pango
 from framework import pclases
 import mx.DateTime
 from informes import geninformes
-import pclase2tv
+from formularios import pclase2tv
 
 def callback(treeview, allocation, column, cell):
     otherColumns = (c for c in treeview.get_columns() if c != column)
@@ -266,7 +266,7 @@ class CRM_DetallesFactura(Ventana):
                             a.estado = estado_no_pendiente
                         else:
                             a.destroy(ventana = __file__)
-                import pagares_cobros
+                from formularios import pagares_cobros
                 pagares_cobros.PagaresCobros(usuario = self.usuario, 
                                              objeto = pagare)
                 self.actualizar_ventana()
@@ -304,7 +304,7 @@ class CRM_DetallesFactura(Ventana):
                             a.estado = estado_no_pendiente
                         else:
                             a.destroy(ventana = __file__)
-                import confirmings as ventana_confirming 
+                from formularios import confirmings as ventana_confirming 
                 ventana_confirming.Confirmings(usuario = self.usuario, 
                                                objeto = confirming)
                 self.actualizar_ventana()
@@ -346,7 +346,7 @@ class CRM_DetallesFactura(Ventana):
         """
         Abre el cliente de la factura en pantalla.
         """
-        import clientes
+        from formularios import clientes
         v = clientes.Clientes(self.objeto.cliente, self.usuario)  # @UnusedVariable
 
     def rellenar_widgets(self):
@@ -476,7 +476,7 @@ class CRM_DetallesFactura(Ventana):
         """
         Abre la factura en una ventana nueva.
         """
-        import facturas_venta
+        from formularios import facturas_venta
         v = facturas_venta.FacturasVenta(objeto = self.objeto,  # @UnusedVariable
                                          usuario = self.usuario)
 

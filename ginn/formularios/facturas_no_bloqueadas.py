@@ -40,12 +40,11 @@
 ## aparecería en la lista).
 ###################################################################
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
+import gtk
 from framework import pclases
-import mx.DateTime
 from formularios import ventana_progreso    
 
 class FacturasNoBloqueadas(Ventana):
@@ -199,11 +198,10 @@ class FacturasNoBloqueadas(Ventana):
         else:
             idalbaran = model[path][-1]
         albaran = pclases.AlbaranSalida.get(idalbaran)
-        import albaranes_de_salida
-        ventana_alb = albaranes_de_salida.AlbaranesDeSalida(albaran)
+        from formularios import albaranes_de_salida
+        ventana_alb = albaranes_de_salida.AlbaranesDeSalida(albaran)  # @UnusedVariable
 
     def abrir_factura_tv(self, treeview, path, view_column):
-        model = treeview.get_model()
         self.abrir_ventana_factura(path)
 
     def abrir_ventana_factura(self, path):
@@ -221,8 +219,7 @@ class FacturasNoBloqueadas(Ventana):
         """
         Abre la factura para ser revisado.
         """
-        model = self.wids['tv_facturas'].get_model()
-        bloqueada = not cell.get_active()
+        bloqueada = not cell.get_active()  # @UnusedVariable
         self.abrir_ventana_factura(path)
         # Cambiado comportamiento para obligar a revisar la factura.
         #factura.bloqueada = bloqueada

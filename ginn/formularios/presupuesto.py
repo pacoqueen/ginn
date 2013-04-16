@@ -37,16 +37,15 @@
 ##       No haría falta código nuevo para nada.
 ###################################################################
 
-import sys, os
+import sys
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time, mx.DateTime
+import gtk, mx.DateTime
 from framework import pclases
 from framework.seeker import VentanaGenerica 
-from utils import _float as float
-from ventana_progreso import VentanaProgreso, VentanaActividad
+from ventana_progreso import VentanaProgreso
 from albaranes_de_salida import buscar_proveedor
 from dynconsulta import restar_mes
 
@@ -281,7 +280,7 @@ class Presupuesto(Ventana, VentanaGenerica):
         filas = {}
         for concepto in conceptos:
             filas[concepto] = []
-            for nummes in range(12):
+            for nummes in range(12):  # @UnusedVariable
                 filas[concepto].append(utils.float2str(0))
             vpro.set_valor(i / conceptos_count, 
                            "Cargando conceptos de presupuesto...") 
@@ -296,7 +295,7 @@ class Presupuesto(Ventana, VentanaGenerica):
         i = 0.0
         for pa in pas:
             fila = [pa.descripcion]
-            for nummes in range(12):
+            for nummes in range(12):  # @UnusedVariable
                 fila.append("")
             fila.append(pa.puid)
             nodo = model.append(None, fila) 
@@ -319,11 +318,11 @@ class Presupuesto(Ventana, VentanaGenerica):
         ultimo_mes_en_tabla = self.fecha_mes_final
         mes = ultimo_mes_en_tabla.month
         if mes == 1:
-            anno = ultimo_mes_en_tabla.year - 1
+            anno = ultimo_mes_en_tabla.year - 1  # @UnusedVariable
             mes = 12
         else:
             mes -= 1
-            anno = ultimo_mes_en_tabla.year
+            anno = ultimo_mes_en_tabla.year  # @UnusedVariable
         penultimo_mes_en_tabla = restar_mes(ultimo_mes_en_tabla)
         valores = pclases.ValorPresupuestoAnual.select(pclases.AND(
             pclases.ValorPresupuestoAnual.q.mes <= ultimo_mes_en_tabla, 
@@ -448,9 +447,9 @@ class Presupuesto(Ventana, VentanaGenerica):
         """
         Elimina los datos de la fila seleccionada o la fila completa.
         """
-        model, iter = self.wids['tv_datos'].get_selection().get_selected()
-        if iter:
-            puid = model[iter][-1]
+        model, itr = self.wids['tv_datos'].get_selection().get_selected()
+        if itr:
+            puid = model[itr][-1]
             o = pclases.getObjetoPUID(puid)
             if (isinstance(o, pclases.ConceptoPresupuestoAnual) 
                     and utils.dialogo(titulo = "ELIMINAR CONCEPTO", 
@@ -536,7 +535,7 @@ class Presupuesto(Ventana, VentanaGenerica):
                                 day = 1)
                     fechas_vencimientos = o.calcular_vencimientos(mes_importe)
                     for fecha_vto in fechas_vencimientos:
-                        vto = pclases.VencimientoValorPresupuestoAnual(
+                        vto = pclases.VencimientoValorPresupuestoAnual(  # @UnusedVariable
                                 valorPresupuestoAnual = v, 
                                 fecha = fecha_vto)
                 # OJO: HARCODED: Texto "Proveedores granza" para identificarlo.

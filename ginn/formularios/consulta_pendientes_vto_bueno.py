@@ -36,17 +36,12 @@
 ## 
 ###################################################################
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
-import sys
 from framework import pclases
 import mx.DateTime
-from informes import geninformes
-import re
-import ventana_progreso
-from utils import _float as float
 
 
 class ConsultaPendientesVtoBueno(Ventana):
@@ -99,8 +94,8 @@ class ConsultaPendientesVtoBueno(Ventana):
         model = tv.get_model()
         idfra = model[path][-1]
         fra = pclases.FacturaCompra.get(idfra)
-        import facturas_compra          
-        ventanafacturas = facturas_compra.FacturasDeEntrada(fra, usuario = self.usuario)
+        from formularios import facturas_compra          
+        ventanafacturas = facturas_compra.FacturasDeEntrada(fra, usuario = self.usuario)  # @UnusedVariable
 
     def colorear(self, tv):
         def cell_func_vto_bueno(col, cell, model, itr):

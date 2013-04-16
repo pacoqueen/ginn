@@ -40,7 +40,7 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
@@ -281,9 +281,9 @@ class FacturacionPorClienteYFechas(Ventana):
             utils.combo_set_from_db(self.wids['cbe_cliente'], objeto.id)
         gtk.main()
 
-    def expandir_subramas(self, tv, iter, path):
+    def expandir_subramas(self, tv, itr, path):
         """
-        Expande las todas subramas del iter recibido para evitar que 
+        Expande las todas subramas del itr recibido para evitar que 
         facturas con más de un vencimiento queden ocultas en un 
         primer vistazo buscando descuadres.
         """
@@ -296,8 +296,8 @@ class FacturacionPorClienteYFechas(Ventana):
         # no hará nada aunque lo intente.
         model = tv.get_model()
         if model[path].parent:
-            for i in range(model.iter_n_children(iter)):
-                iterhijo = model.iter_nth_child(iter, i)
+            for i in range(model.iter_n_children(itr)):
+                iterhijo = model.iter_nth_child(itr, i)
                 pathhijo = model.get_path(iterhijo)
                 tv.expand_to_path(pathhijo)
                 self.expandir_subramas(tv, iterhijo, pathhijo)
@@ -739,37 +739,31 @@ class FacturacionPorClienteYFechas(Ventana):
             if model[path][0].startswith("A"):    # Es una factura de abono
                 frabono = pclases.FacturaDeAbono.get(idfactura)
                 if frabono.abono:
-                    import abonos_venta
+                    from formularios import abonos_venta
                     v = abonos_venta.AbonosVenta(frabono.abono, usuario = self.usuario)
             elif model[path][0].startswith("*"):
                 fra = pclases.Prefactura.get(idfactura)
-                try:
-                    import prefacturas
-                except ImportError:
-                    from os.path import join as pathjoin
-                    from sys import path
-                    path.insert(0, pathjoin("..", "formularios"))
-                    import prefacturas
+                from formularios import prefacturas
                 ventana = prefacturas.Prefacturas(fra, self.usuario)
             else:
                 fra = pclases.FacturaVenta.get(idfactura)
                 try:
-                    import facturas_venta
+                    from formularios import facturas_venta
                 except ImportError:
                     from os.path import join as pathjoin
                     from sys import path
                     path.insert(0, pathjoin("..", "formularios"))
-                    import facturas_venta
+                    from formularios import facturas_venta
                 ventana = facturas_venta.FacturasVenta(fra, self.usuario)
         elif idfactura > 0 and model[path][0] == "":    # Es cliente.
             cliente = pclases.Cliente.get(idfactura)
             try:
-                import clientes
+                from formularios import clientes
             except ImportError:
                 from os.path import join as pathjoin
                 from sys import path
                 path.insert(0, pathjoin("..", "formularios"))
-                import clientes
+                from formularios import clientes
             ventana_clientes = clientes.Clientes(cliente, self.usuario)
 
 

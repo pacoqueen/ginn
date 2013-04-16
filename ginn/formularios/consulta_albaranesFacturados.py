@@ -39,7 +39,7 @@ from ventana import Ventana
 import gtk
 import time
 import pygtk
-import utils
+from formularios import utils
 pygtk.require('2.0')
 
 
@@ -95,11 +95,11 @@ class ConsultaAlbaranesFacturados(Ventana):
         ide = model[path][-1]
         if self.wids['rb_entrada'].get_active():
             albaran = pclases.AlbaranEntrada.get(ide)
-            import albaranes_de_entrada
+            from formularios import albaranes_de_entrada
             v = albaranes_de_entrada.AlbaranesDeEntrada(albaran)  # @UnusedVariable
         elif self.wids['rb_salida'].get_active():
             albaran = pclases.AlbaranSalida.get(ide)
-            import albaranes_de_salida
+            from formularios import albaranes_de_salida
             v = albaranes_de_salida.AlbaranesDeSalida(albaran)  # @UnusedVariable
         self.wids['ventana'].window.set_cursor(None)
 

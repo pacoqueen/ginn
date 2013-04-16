@@ -35,13 +35,12 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, gtk.glade
+import gtk
 from framework import pclases
 import mx.DateTime
-from informes import geninformes
 
 class ConsultaVentasPorProducto(Ventana):
 
@@ -94,38 +93,38 @@ class ConsultaVentasPorProducto(Ventana):
         model = tv.get_model()
         tipo, ide = model[path][-1].split(":")
         try:
-            ide = int(id)
+            ide = int(ide)
         except:
             txt = "%sconsulta_ventas_por_producto::abrir_producto_albaran_o_abono -> Excepción al convertir ID a entero: (tipo %s) %s." % (self.usuario and self.usuario + ": " or "", tipo, id)
             print txt
             self.logger.error(txt)
         else:
             if tipo == "PV":        # ProductoVenta 
-                pv = pclases.ProductoVenta.get(id)
+                pv = pclases.ProductoVenta.get(ide)
                 if pv.es_rollo():
-                    import productos_de_venta_rollos
-                    v = productos_de_venta_rollos.ProductosDeVentaRollos(pv, usuario = self.usuario)
+                    from formularios import productos_de_venta_rollos
+                    v = productos_de_venta_rollos.ProductosDeVentaRollos(pv, usuario = self.usuario)  # @UnusedVariable
                 elif pv.es_bala() or pv.es_bala_cable() or pv.es_bigbag():
-                    import productos_de_venta_balas
-                    v = productos_de_venta_balas.ProductosDeVentaBalas(pv, usuario = self.usuario)
+                    from formularios import productos_de_venta_balas
+                    v = productos_de_venta_balas.ProductosDeVentaBalas(pv, usuario = self.usuario)  # @UnusedVariable
                 elif pv.es_especial():
-                    import productos_de_venta_especial
-                    v = productos_de_venta_especial.ProductosDeVentaEspecial(pv, usuario = self.usuario)
+                    from formularios import productos_de_venta_especial
+                    v = productos_de_venta_especial.ProductosDeVentaEspecial(pv, usuario = self.usuario)  # @UnusedVariable
             elif tipo == "PC": 
-                pc = pclases.ProductoCompra.get(id)
-                import productos_compra
-                v = productos_compra.ProductosCompra(pc, usuario = self.usuario)
+                pc = pclases.ProductoCompra.get(ide)
+                from formularios import productos_compra
+                v = productos_compra.ProductosCompra(pc, usuario = self.usuario)  # @UnusedVariable
             elif tipo == "LDV":
-                ldv = pclases.LineaDeVenta.get(id)
+                ldv = pclases.LineaDeVenta.get(ide)
                 alb = ldv.albaranSalida
-                import albaranes_de_salida
-                v = albaranes_de_salida.AlbaranesDeSalida(alb, usuario = self.usuario)
+                from formularios import albaranes_de_salida
+                v = albaranes_de_salida.AlbaranesDeSalida(alb, usuario = self.usuario)  # @UnusedVariable
             elif tipo == "LDD": 
-                ldd = pclases.LineaDeDevolucion.get(id)
+                ldd = pclases.LineaDeDevolucion.get(ide)
                 adeda = ldd.lbaranDeEntradaDeAbono
                 abono = adeda.abono
-                import abonos_venta
-                v = abonos_venta.AbonosVenta(abono, usuario = self.usuario)
+                from formularios import abonos_venta
+                v = abonos_venta.AbonosVenta(abono, usuario = self.usuario)  # @UnusedVariable
 
     def chequear_cambios(self):
         pass

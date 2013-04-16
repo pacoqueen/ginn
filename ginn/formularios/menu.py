@@ -157,7 +157,7 @@ class Menu:
         Si user y passwd son distintos a None, no se mostrará la ventana de 
         autentificación a no ser que sean incorrectos.
         """
-        import gestor_mensajes, autenticacion
+        from formularios import gestor_mensajes, autenticacion
         login = autenticacion.Autenticacion(user, passwd)
         self.logger = login.logger
         if not login.loginvalido():
@@ -557,10 +557,10 @@ class Menu:
         exec "import %s" % archivo
         gobject.timeout_add(100, self.volver_a_cursor_original)
         if archivo == "usuarios": 
-            import usuarios
+            from formularios import usuarios
             v = usuarios.Usuarios(self.get_usuario())  # @UnusedVariable
         elif archivo == "ventana_usuario":
-            import ventana_usuario
+            from formularios import ventana_usuario
             v = ventana_usuario.Usuarios(self.get_usuario())  # @UnusedVariable
 
     def abrir_ventana(self, archivo, clase):
@@ -749,7 +749,7 @@ class Menu:
                 forzar_iter_gtk()
             w.show_all()
             forzar_iter_gtk()
-            import runapp
+            from formularios import runapp
             # SOLO PARA NOSTROMO:
             #os.system("./checklist_window.py 2>&1 | tee > ../../fixes/salida_check_`date +%Y_%m_%d_%H_%M`.txt &")
             comando = "./checklist_window.py 2>&1 | tee > "\
@@ -822,7 +822,7 @@ class Menu:
 
 def construir_y_enviar(w, ventana, remitente, observaciones, texto, usuario):
     # FIXME: Esto hay que cambiarlo.
-    import ventana_progreso
+    from formularios import ventana_progreso
     try:
         import libgmail  # @UnresolvedImport
     except:

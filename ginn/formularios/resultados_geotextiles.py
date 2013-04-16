@@ -46,7 +46,7 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
@@ -317,7 +317,7 @@ class ResultadosGeotextiles(Ventana):
                     padre = self.wids['ventana'])
                 if idrollo != None and idrollo > 0:
                     rollo = pclases.Rollo.get(idrollo)
-                    import trazabilidad_articulos
+                    from formularios import trazabilidad_articulos
                     trazabilidad_articulos.TrazabilidadArticulos(
                         usuario = self.usuario, objeto = rollo)
 

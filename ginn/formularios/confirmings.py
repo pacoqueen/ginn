@@ -42,7 +42,7 @@
 ## 
 ###################################################################
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk
@@ -234,14 +234,14 @@ class Confirmings(Ventana):
                                 # quitará el elemento activo del combo.
         self.wids['cbe_cliente'].child.set_text("")
         def iter_cliente_seleccionado(completion, model, itr = None):
-            if itr == None:    # Si me ha llamado el changed, el iter 
+            if itr == None:    # Si me ha llamado el changed, el itr 
                                 # habrá cambiado JUSTO AHORA.
                 try:
                     itr = completion.get_active_iter()
                 except AttributeError:
                     itr = None
             if itr != None:
-                idcliente = model[iter][0]
+                idcliente = model[itr][0]
                 utils.combo_set_from_db(self.wids['cbe_cliente'], idcliente)
                 for p in [p for p in self.objeto.cobros if p.cliente == None]:
                     p.clienteID = idcliente
@@ -284,11 +284,11 @@ class Confirmings(Ventana):
         cobro = pclases.Cobro.get(idcobro)
         fra = cobro.facturaVenta
         if fra != None:
-            import facturas_venta
+            from formularios import facturas_venta
             ventanafacturas = facturas_venta.FacturasVenta(fra)  # @UnusedVariable
         prefra = cobro.prefactura
         if prefra != None:
-            import prefacturas
+            from formularios import prefacturas
             ventanafacturas = prefacturas.Prefacturas(prefra)  # @UnusedVariable
 
     def cambiar_importe_cobro(self, cell, path, texto):

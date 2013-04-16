@@ -41,7 +41,7 @@
 
 import sys, os
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time, mx.DateTime
@@ -193,7 +193,7 @@ class Transferencias(Ventana, VentanaGenerica):
         y la introduce en el ComboBoxEntry.
         """
         if self.objeto != None:
-            import cuentas_destino
+            from formularios import cuentas_destino
             nueva_cuenta_destino = pclases.CuentaDestino(proveedor = self.objeto.proveedor, 
                                                          nombre = "Nueva cuenta de %s" % (self.objeto.proveedor and self.objeto.proveedor.nombre or "?"))
             pclases.Auditoria.nuevo(nueva_cuenta_destino, self.usuario, 

@@ -33,7 +33,7 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk
@@ -91,12 +91,12 @@ class ConsultaFacturasSinDocumentoDePago(Ventana):
         ide = model[path][-1]
         if ide > 0:  # Si es negativo es un ID de cliente. No me interesa.
             fra = pclases.FacturaVenta.get(ide)
-            import facturas_venta
+            from formularios import facturas_venta
             v = facturas_venta.FacturasVenta(fra, usuario = self.usuario)  # @UnusedVariable
         elif ide < 0:    # Ahora los ide negativos son de abonos, no clientes.
             fda = pclases.FacturaDeAbono.get(-ide)
             a = fda.abono
-            import abonos_venta
+            from formularios import abonos_venta
             v = abonos_venta.AbonosVenta(a, usuario = self.usuario)  # @UnusedVariable
 
     def chequear_cambios(self):

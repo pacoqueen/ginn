@@ -42,13 +42,13 @@
 ## 
 ###################################################################
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
+import gtk
 from framework import pclases
 import mx.DateTime
-    
+
 
 class HorasTrabajadasDia(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -463,7 +463,7 @@ class HorasTrabajadasDia(Ventana):
                                texto = "No se encontró un turno de noche definido.\nDebe configurar uno.",
                                padre = self.wids['ventana'])
             return
-        ininoche = mx.DateTime.DateTimeDeltaFrom(hours = turnonoche.horainicio.hour, 
+        ininoche = mx.DateTime.DateTimeDeltaFrom(hours = turnonoche.horainicio.hour,  # @UnusedVariable
                                                  minutes = turnonoche.horainicio.minute)
         finnoche = mx.DateTime.DateTimeDeltaFrom(hours = turnonoche.horafin.hour, 
                                                  minutes = turnonoche.horafin.minute)
@@ -725,30 +725,30 @@ class HorasTrabajadasDia(Ventana):
             # Empleado seleccionado
             idempleado = model[path][-1]
             empleado = pclases.Empleado.get(idempleado)
-            import empleados
+            from formularios import empleados
             self.wids['ventana'].window.set_cursor(None)
-            ventanaempleado = empleados.Empleados(empleado)
+            ventanaempleado = empleados.Empleados(empleado)  # @UnusedVariable
         else:
             # Parte seleccionado.
             # OJO: Para identificar si es parte de producción o de trabajo miro la duración en producción en el model.
             if model[path][7] != "":    # Es de GTX:
                 idparte = model[path][-1]
                 parte = pclases.ParteDeProduccion.get(idparte)
-                import partes_de_fabricacion_rollos
+                from formularios import partes_de_fabricacion_rollos
                 self.wids['ventana'].window.set_cursor(None)
-                ventanaparte = partes_de_fabricacion_rollos.PartesDeFabricacionRollos(parte)
+                ventanaparte = partes_de_fabricacion_rollos.PartesDeFabricacionRollos(parte)  # @UnusedVariable
             elif model[path][8] != "":   # Es de fibra
                 idparte = model[path][-1]
                 parte = pclases.ParteDeProduccion.get(idparte)
-                import partes_de_fabricacion_balas
+                from formularios import partes_de_fabricacion_balas
                 self.wids['ventana'].window.set_cursor(None)
-                ventanaparte = partes_de_fabricacion_balas.PartesDeFabricacionBalas(parte)
+                ventanaparte = partes_de_fabricacion_balas.PartesDeFabricacionBalas(parte)  # @UnusedVariable
             else:   # Debe ser parte de trabajo, no queda otra.
                 idparte = model[path][-1]
                 parte = pclases.ParteDeTrabajo.get(idparte)
-                import partes_de_trabajo
+                from formularios import partes_de_trabajo
                 self.wids['ventana'].window.set_cursor(None)
-                ventanaparte = partes_de_trabajo.PartesDeTrabajo(parte)
+                ventanaparte = partes_de_trabajo.PartesDeTrabajo(parte)  # @UnusedVariable
     
     def imprimir(self, boton):
         """
@@ -763,7 +763,6 @@ class HorasTrabajadasDia(Ventana):
         """
         Exporta el contenido del TreeView a MS-Exel/OOoCalc.
         """
-        import sys, os
         from informes.treeview2csv import treeview2csv
         from formularios.reports import abrir_csv
         abrir_csv(treeview2csv(self.wids['tv_horas']))

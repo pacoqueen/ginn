@@ -36,12 +36,11 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
+import gtk
 from framework import pclases
-from informes import geninformes
 from utils import _float as float
 
 
@@ -220,9 +219,9 @@ class LabResultadosLote(Ventana):
         """
         Elimina un valor de encogimiento de la lista
         """
-        model, iter = self.wids['tv_encogimiento'].get_selection().get_selected()
-        if iter != None:
-            dato, ide = model[iter]
+        model, itr = self.wids['tv_encogimiento'].get_selection().get_selected()
+        if itr != None:
+            dato, ide = model[itr]
             self.encogimiento.remove((dato,id))
             self.rellenar_tablas()
         else:
@@ -234,7 +233,7 @@ class LabResultadosLote(Ventana):
         Calcula la media de los valores de rizo, tenacidad, encogimiento y elongación
         """
         lote = self.lote
-         # La elongación depende del tipo de producto:
+        # La elongación depende del tipo de producto:
         try:
             dtex = lote.balas[0].articulos[0].productoVenta.camposEspecificosBala.dtex
         except:

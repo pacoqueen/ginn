@@ -36,7 +36,7 @@
 
 import os 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, gobject, pango
@@ -83,7 +83,7 @@ class AuditViewer(Ventana):
                     'gobject.TYPE_STRING', False, True, False, None), 
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_listview(self.wids['tv_datos'], cols)
-        import pyconsole
+        from formularios import pyconsole
         vars_locales = locals()
         for k in locals_adicionales:
             vars_locales[k] = locals_adicionales[k] 

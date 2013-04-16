@@ -64,7 +64,7 @@ except (ImportError, RuntimeError), msg:
     print "WARNING: No se pudo importar GTK/pyGTK. No se podrán usar funciones gráficas:\n%s" % (msg)
 import mx.DateTime, os, time, datetime
 try:
-    import nftp
+    from formularios import nftp
 except ImportError, msg:
     print "WARNING: No se pudo importar nftp. No se podrá usar FTP:\n%s" % (msg)
 from fixedpoint import FixedPoint as Ffloat

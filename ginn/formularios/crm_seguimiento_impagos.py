@@ -30,7 +30,7 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk
@@ -680,7 +680,7 @@ class CRM_SeguimientoImpagos(Ventana):
                 padre = self.wids['ventana'])
         else:
             fra = a.facturaVenta
-            import crm_detalles_factura
+            from formularios import crm_detalles_factura
             v = crm_detalles_factura.CRM_DetallesFactura(fra,  # @UnusedVariable
                                                          usuario = self.usuario)
             # Actualizo último evento porque probablemente lo haya cambiado
@@ -717,7 +717,7 @@ class CRM_SeguimientoImpagos(Ventana):
             if model[path].parent.parent: # Es abono o factura
                 if ide > 0:  # Si es negativo es un ID de cliente. No me interesa.
                     fra = pclases.FacturaVenta.get(ide)
-                    #import facturas_venta
+                    #from formularios import facturas_venta
                     #v = facturas_venta.FacturasVenta(fra, usuario = self.usuario)
                     from formularios import crm_detalles_factura
                     v = crm_detalles_factura.CRM_DetallesFactura(fra,  # @UnusedVariable

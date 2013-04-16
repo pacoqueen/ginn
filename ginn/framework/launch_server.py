@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 ######################################################
-# Modificado por Francisco José Rodríguez Bogado
+# Modificado por Francisco Josï¿½ Rodrï¿½guez Bogado
 ######################################################
-# Código para simular un daemon sacado de:
+# CÃ³digo para simular un daemon sacado de:
 # http://homepage.hispeed.ch/py430/python/daemon.py
 ######################################################
 
@@ -13,7 +13,7 @@ import os, sys
 os.chdir(os.path.dirname(os.path.abspath(sys.argv[0])))
 
 try:
-    import parse_mdblogic
+    from framework import parse_mdblogic
 except ImportError, msg:
     print 'Error importando "parse_mdblogic": %s' % (msg)
     sys.exit(1)
@@ -30,8 +30,7 @@ PIDFILE = '/var/run/parse_mdblogic.pid'
 USERPROG = parse_mdblogic.main
 ###########################################################################
 
-#based on Jürgen Hermanns http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/66012
-import sys, os
+#based on Jï¿½rgen Hermanns http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/66012
 
 class Log:
     """file like for writes with auto flush after each write

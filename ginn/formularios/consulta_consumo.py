@@ -41,7 +41,7 @@ import gtk
 import time
 import mx.DateTime
 import pygtk
-import utils
+from formularios import utils
 pygtk.require('2.0')
     
 

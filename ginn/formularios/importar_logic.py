@@ -60,7 +60,7 @@ import pygtk
 import socket
 import sys
 import time
-import utils
+from formularios import utils
 pygtk.require('2.0')
 
 class ImportarLogic(Ventana):

@@ -42,10 +42,10 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
+import gtk
 from framework import pclases
 import mx.DateTime
 
@@ -143,7 +143,7 @@ class LineasDeVentaSinPedido(Ventana):
                                     textoEntrega='')
         pclases.Auditoria.nuevo(ldc, self.usuario, __file__)
         self.rellenar_tabla()
-        import pedidos_de_venta
+        from formularios import pedidos_de_venta
         pedidos_de_venta.PedidosDeVenta(objeto = pedido, usuario = self.usuario)
     
     
@@ -199,7 +199,7 @@ class LineasDeVentaSinPedido(Ventana):
                                         textoEntrega='')
             pclases.Auditoria.nuevo(ldc, self.usuario, __file__)
             self.rellenar_tabla()
-            import pedidos_de_venta
+            from formularios import pedidos_de_venta
             pedidos_de_venta.PedidosDeVenta(objeto = pedido, usuario = self.usuario)
  
     def buscar_pedido(self, numero):

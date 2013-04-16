@@ -52,8 +52,7 @@ import time
 import mx.DateTime
 import pygtk
 import re
-import sys
-import ventana_progreso
+from formularios import ventana_progreso
 pygtk.require('2.0')
 
 class ConsultaVencimientosCobros(Ventana):
@@ -145,7 +144,7 @@ class ConsultaVencimientosCobros(Ventana):
                                     vto.facturaVenta, 
                                     usuario = self.usuario)
             elif vto.prefactura != None:
-                import prefacturas
+                from formularios import prefacturas
                 ventanafacturas = prefacturas.Prefacturas(vto.prefactura,  # @UnusedVariable
                                                         usuario = self.usuario)
 
@@ -233,7 +232,7 @@ class ConsultaVencimientosCobros(Ventana):
                               observaciones = observaciones, 
                               facturaDeAbono = None)
         pclases.Auditoria.nuevo(cobro, self.usuario, __file__)
-        import pagares_cobros
+        from formularios import pagares_cobros
         pp = pagares_cobros.PagaresCobros(pagare)  # @UnusedVariable
         self.buscar(None)   # Para recargar.
 
@@ -264,7 +263,7 @@ class ConsultaVencimientosCobros(Ventana):
                                   observaciones = observaciones, 
                                   facturaDeAbono = None)
             pclases.Auditoria.nuevo(cobro, self.usuario, __file__)
-            import facturas_venta
+            from formularios import facturas_venta
             fc = facturas_venta.FacturasVenta(factura)  # @UnusedVariable
             self.buscar(None)   # Para recargar.
      

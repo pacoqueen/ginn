@@ -569,7 +569,7 @@ class Proveedores(Ventana):
                                            cabeceras = ('ID', 'Número de pedido', 'Fecha'), 
                                            padre = self.wids['ventana'])
         if idpedido > 0:
-            import pedidos_de_compra
+            from formularios import pedidos_de_compra
             p = pedidos_de_compra.PedidosDeCompra(pclases.PedidoCompra.get(idpedido), usuario = self.usuario)
     
     def ver_facturas(self, boton):
@@ -585,7 +585,7 @@ class Proveedores(Ventana):
                                             cabeceras = ('ID', 'Número de factura', 'Fecha'), 
                                             padre = self.wids['ventana'])
         if idfactura > 0:
-            import facturas_compra
+            from formularios import facturas_compra
             p = facturas_compra.FacturasDeEntrada(pclases.FacturaCompra.get(idfactura), usuario = self.usuario)
         
     def ver_productos(self, boton):
@@ -612,7 +612,7 @@ class Proveedores(Ventana):
                                              cabeceras = ('ID', 'Código', 'Descripción', "Pedidos", "Albaranes", "Facturas"), 
                                              padre = self.wids['ventana'])
         if idproducto > 0:
-            import productos_compra
+            from formularios import productos_compra
             p = productos_compra.ProductosCompra(pclases.ProductoCompra.get(idproducto))
 
     def launch_browser_mailer(self, dialogo, uri, tipo):

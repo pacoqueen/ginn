@@ -37,16 +37,14 @@
 ###################################################################
 from framework import pclases
 from informes import geninformes
-from utils import _float as float
 from ventana import Ventana
 import gtk
 import time
 import mx.DateTime
 import pygtk
 import re
-import sys
-import utils
-import ventana_progreso
+from formularios import utils
+from formularios import ventana_progreso
 pygtk.require('2.0')
 
 
@@ -124,20 +122,20 @@ class ConsultaVencimientosPagos(Ventana):
         model = tv.get_model()
         if model[path][0] == "LOGIC":
             idlogic = model[path][-1]
-            import mostrar_datos_logic
-            ventanalogic = mostrar_datos_logic.MostrarDatosLogic(
+            from formularios import mostrar_datos_logic
+            ventanalogic = mostrar_datos_logic.MostrarDatosLogic(  # @UnusedVariable
                             usuario = self.usuario, 
                             padre = self.wids['ventana'], 
                             consulta = " ide = %s " % (idlogic))
         else:
             idvto = model[path][-1]
             vto = pclases.VencimientoPago.get(idvto)
-            import facturas_compra          
-            ventanafacturas = facturas_compra.FacturasDeEntrada(
+            from formularios import facturas_compra          
+            ventanafacturas = facturas_compra.FacturasDeEntrada(  # @UnusedVariable
                                 vto.facturaCompra, 
                                 usuario = self.usuario)
 
-    def button_clicked(self, list, event):
+    def button_clicked(self, lista, event):
         if event.button == 3:
             ui_string = """<ui>
                             <popup name='Popup'>
@@ -229,8 +227,8 @@ class ConsultaVencimientosPagos(Ventana):
             pagare.observaciones += "%s" % (observaciones != "" and "\nCuenta logic: %s" % (observaciones) or "") 
             pagare.sync()
             ####
-        import pagares_pagos
-        pp = pagares_pagos.PagaresPagos(pagare, usuario = self.usuario)
+        from formularios import pagares_pagos
+        pp = pagares_pagos.PagaresPagos(pagare, usuario = self.usuario)  # @UnusedVariable
         try:
             self.buscar(None)   # Para recargar.
         except AttributeError, msg:  # No tenía proveedor o algo ha pasado. Lo mando al logger:
@@ -273,8 +271,8 @@ class ConsultaVencimientosPagos(Ventana):
                                 cuentaOrigen = pclases.CuentaOrigen.select(orderBy = "-ide")[0], 
                                 cuentaDestino = proveedor and proveedor.cuentasDestino and proveedor.cuentasDestino[0] or None)
             pclases.Auditoria.nuevo(pago, self.usuario, __file__)
-            import transferencias
-            tr = transferencias.Transferencias(pago, usuario = self.usuario)
+            from formularios import transferencias
+            tr = transferencias.Transferencias(pago, usuario = self.usuario)  # @UnusedVariable
             self.buscar(None)   # Para recargar.
 
     def pagar_en_factura(self, requiem_for_syd_barret): 
@@ -305,8 +303,8 @@ class ConsultaVencimientosPagos(Ventana):
                                     importe = importe, 
                                     observaciones = observaciones)
                 pclases.Auditoria.nuevo(pago, self.usuario, __file__)
-                import facturas_compra
-                fc = facturas_compra.FacturasDeEntrada(factura, usuario = self.usuario)
+                from formularios import facturas_compra
+                fc = facturas_compra.FacturasDeEntrada(factura, usuario = self.usuario)  # @UnusedVariable
                 self.buscar(None)   # Para recargar.
      
     def colorear(self, tv):

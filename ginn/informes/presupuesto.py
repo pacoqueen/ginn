@@ -30,7 +30,7 @@ from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 import sys, os, Image
 from framework import pclases
 from formularios import utils
-from geninformes import give_me_the_name_baby, escribe
+from informes.geninformes import give_me_the_name_baby, escribe
 from tempfile import gettempdir
 
 

@@ -8,7 +8,7 @@ estáticamente. Así que simplemente devuelvo un diseño ya hecho en PDF.
 
 import os
 from tempfile import gettempdir
-from geninformes import give_me_the_name_baby
+from informes.geninformes import give_me_the_name_baby
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import cm
 

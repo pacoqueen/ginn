@@ -36,7 +36,7 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
@@ -298,14 +298,14 @@ class Productos(Ventana):
         if "PV" in model[path][0]:
             producto = pclases.ProductoVenta.get(ide)
             if producto.es_rollo():
-                import productos_de_venta_rollos
+                from formularios import productos_de_venta_rollos
                 ventana_producto = productos_de_venta_rollos.ProductosDeVentaRollos(producto, usuario = self.usuario)
             elif producto.es_bala() or producto.es_bigbag():
-                import productos_de_venta_balas
+                from formularios import productos_de_venta_balas
                 ventana_producto = productos_de_venta_balas.ProductosDeVentaBalas(producto, usuario = self.usuario)
         elif "PC" in model[path][0]:
             producto = pclases.ProductoCompra.get(ide)
-            import productos_compra
+            from formularios import productos_compra
             ventana_producto = productos_compra.ProductosCompra(producto, usuario = self.usuario)
 
     def rellenar_widgets(self, boton = None):

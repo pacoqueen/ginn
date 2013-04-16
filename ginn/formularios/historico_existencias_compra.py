@@ -40,14 +40,14 @@ from formularios import ventana_progreso
 from framework import pclases
 from informes import geninformes
 from math import log10 as log
-from pychart import * # No me gusta, pero no queda otra
+from formularios.pychart import * # No me gusta, pero no queda otra
 from tempfile import gettempdir
 from ventana import Ventana
 import gtk
 import mx.DateTime
 import os
 import pygtk
-import utils
+from formularios import utils
 pygtk.require('2.0')
 
 class HistoricoExistenciasCompra(Ventana):

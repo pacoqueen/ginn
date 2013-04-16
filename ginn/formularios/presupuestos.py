@@ -39,7 +39,7 @@
 
 import sys, os
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time, mx.DateTime
@@ -188,7 +188,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                     if srv.pedidoVenta == None:
                         srv.pedidoVenta = nuevopedido
                 self.actualizar_ventana()
-                import pedidos_de_venta
+                from formularios import pedidos_de_venta
                 ventanapedido = pedidos_de_venta.PedidosDeVenta(objeto = nuevopedido, usuario = self.usuario)
 
     def seleccionar_cantidad(self, producto):
@@ -344,11 +344,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         Genera y abre el PDF de la carta de oferta.
         """
         if self.objeto != None:
-            try:
-                import geninformes
-            except ImportError:
-                import sys
-                import geninformes
+            from informes import geninformes
             from formularios.reports import abrir_pdf
             abrir_pdf(geninformes.generar_pdf_presupuesto(self.objeto))
 
@@ -358,13 +354,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         if self.objeto != None:
             modulo = pclases.config.get_modelo_presupuesto()
-            try:
-                #import presupuesto
-                exec "import %s as presupuesto" % modulo
-            except ImportError:
-                import sys
-                #import presupuesto
-                exec "import %s as presupuesto" % modulo
+            exec "import %s as presupuesto" % modulo
             from formularios.reports import abrir_pdf
             abrir_pdf(presupuesto.go_from_presupuesto(self.objeto))  # @UndefinedVariable
 

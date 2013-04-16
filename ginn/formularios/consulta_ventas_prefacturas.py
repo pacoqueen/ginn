@@ -35,7 +35,7 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
@@ -115,8 +115,8 @@ class ConsultaVentasPrefacturas(Ventana):
         ide = model[path][-1]
         if ide > 0 and model[path].parent != None: # Es prefactura
             prefactura = pclases.Prefactura.get(ide)
-            import prefacturas
-            v = prefacturas.Prefacturas(prefactura)
+            from formularios import prefacturas
+            v = prefacturas.Prefacturas(prefactura)  # @UnusedVariable
 
     def chequear_cambios(self):
         pass
@@ -170,11 +170,7 @@ class ConsultaVentasPrefacturas(Ventana):
             import gtk, gobject, cairo, copy, math  # @UnusedImport
         except ImportError:
             return      # No se pueden dibujar gráficas. # TODO: Temporal.
-        try:
-            import charting
-        except ImportError:
-            import sys, os
-            import charting
+        from lib import charting
         try:
             oldchart = self.wids['eventbox_chart'].get_child()
             if oldchart != None:
@@ -224,7 +220,6 @@ class ConsultaVentasPrefacturas(Ventana):
         vpro.mostrar()
         # print self.fin, self.inicio
         vpro.set_valor(0.0, "Analizando prefacturas...")
-        idcliente = utils.combo_get_value(self.wids['cbe_cliente'])
         self.resultado = []
         fechafin = mx.DateTime.DateTimeFrom(day = int(self.fin.split("/")[2]), 
                                             month = int(self.fin.split("/")[1]), 

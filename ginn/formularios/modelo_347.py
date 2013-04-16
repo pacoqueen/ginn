@@ -35,7 +35,7 @@
 ## 
 ###################################################################
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk
@@ -43,7 +43,7 @@ from framework import pclases
 import mx.DateTime
 from formularios.reports import abrir_csv
 from informes.treeview2csv import treeview2csv
-import ventana_progreso
+from formularios import ventana_progreso
 
 class Modelo347(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -70,7 +70,7 @@ class Modelo347(Ventana):
             primer_anno = min(primer_anno_compra, primer_anno_venta)
             ultimo_anno = max(ultimo_anno_compra, ultimo_anno_venta)
         except IndexError:
-            primer_anno = ultimo_anno = actual = 0
+            primer_anno = ultimo_anno = actual = 0  # @UnusedVariable
         actual = mx.DateTime.localtime().year - 1
         self.wids['sp_anno'].set_value(actual)
         if not primer_anno <= actual <= ultimo_anno:
@@ -96,7 +96,7 @@ class Modelo347(Ventana):
         """
         model = tv.get_model()
         ide = model[path][-1]
-        cliente = pclases.Cliente.get(id) 
+        cliente = pclases.Cliente.get(ide) 
         anno = self.wids['sp_anno'].get_value_as_int()
         fini = mx.DateTime.DateTimeFrom(day = 1, 
                                         month = 1, 
@@ -104,8 +104,8 @@ class Modelo347(Ventana):
         fin = mx.DateTime.DateTimeFrom(day = 31, 
                                        month = 12, 
                                        year = anno)
-        import facturacion_por_cliente_y_fechas
-        ventana = facturacion_por_cliente_y_fechas.FacturacionPorClienteYFechas(
+        from formularios import facturacion_por_cliente_y_fechas
+        ventana = facturacion_por_cliente_y_fechas.FacturacionPorClienteYFechas(  # @UnusedVariable
             objeto = cliente, 
             fini = fini, 
             ffin = fin, 
@@ -124,11 +124,11 @@ class Modelo347(Ventana):
             model.clear()
             self.wids[tv].freeze_child_notify()
             self.wids[tv].set_model(None)
-            for nombre, cif, facturado, id in datos:
+            for nombre, cif, facturado, ide in datos:
                 model.append((nombre, 
                               cif, 
                               utils.float2str(facturado), 
-                              id))
+                              ide))
             sumatotal = sum([i[2] for i in datos])
             self.wids[total].set_text(utils.float2str(sumatotal))
             self.wids[tv].set_model(model)

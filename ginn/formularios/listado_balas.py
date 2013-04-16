@@ -44,7 +44,7 @@ import mx.DateTime
 import pygtk
 import re
 import sys
-import utils
+from formularios import utils
 pygtk.require('2.0')
 
 rexpcajas = re.compile("\([\d]+/[\d]+\)")
@@ -90,7 +90,6 @@ class ListadoBalas(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        import sys, os
         from informes.treeview2csv import treeview2csv
         from formularios.reports import abrir_csv
         tv = self.wids['tv_balas']
@@ -151,11 +150,6 @@ class ListadoBalas(Ventana):
         """
         Crea un PDF con el contenido del TreeView.
         """
-        try:
-            import geninformes
-        except ImportError:
-            import sys, os
-            import geninformes
         datos = []
         model = self.wids['tv_balas'].get_model()
         for i in model:
@@ -311,7 +305,7 @@ class ListadoBalas(Ventana):
         vpro = VentanaProgreso(padre = self.wids['ventana'])
         model = self.wids['tv_balas'].get_model()
         model.clear()
-        kilos_almacen = 0
+        kilos_almacen = 0  # @UnusedVariable
         kilos_fabricados = 0
         bultos_almacen = 0
         bultos_fabricados = 0
@@ -360,7 +354,7 @@ class ListadoBalas(Ventana):
                     # a la fecha superior de filtro.
                 if pclases.DEBUG:
                     print "Esta caja (%s) no está en almacén." % caja.codigo
-            itercaja = self.insert_caja(model, caja, iterpale)
+            itercaja = self.insert_caja(model, caja, iterpale)  # @UnusedVariable
         # Ahora añado la información de las cajas en almacén de cada palé.
         tot = len(cajas_por_pale)
         i = 0
@@ -596,10 +590,6 @@ class ListadoBalas(Ventana):
                             'del producto que desea listar:', 
                     padre = self.wids['ventana'])
         if a_buscar != None:
-            try:
-                ida_buscar = int(a_buscar)
-            except ValueError:
-                ida_buscar = -1
             criterio = pclases.OR(
                 pclases.ProductoVenta.q.codigo.contains(a_buscar),
                 pclases.ProductoVenta.q.descripcion.contains(a_buscar))
@@ -717,7 +707,7 @@ class ListadoBalas(Ventana):
                                               cajas_total_and_stock.split("/"))
             numalbaran = model[itr][4]
             numpartida = model[itr][5]
-            claseb = model[itr][7]
+            claseb = model[itr][7]  # @UnusedVariable
             almacen = model[itr][8]
             if numpartida != '-':
                 color = "green"
@@ -918,8 +908,8 @@ def preparar_datos_etiquetas_balas_cable(balas):
 def abrir_trazabilidad(tv, path, view_col, usuario):
     puid = tv.get_model()[path][-1]
     objeto = pclases.getObjetoPUID(puid)
-    import trazabilidad_articulos
-    v = trazabilidad_articulos.TrazabilidadArticulos(usuario = usuario, 
+    from formularios import trazabilidad_articulos
+    v = trazabilidad_articulos.TrazabilidadArticulos(usuario = usuario,  # @UnusedVariable
                                                      objeto = objeto)
 
 if __name__ == '__main__':

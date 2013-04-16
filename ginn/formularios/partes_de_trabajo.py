@@ -38,12 +38,11 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
+import gtk
 from framework import pclases
-from informes import geninformes
 import time, mx.DateTime
 from utils import _float as float
 
@@ -88,9 +87,9 @@ class PartesDeTrabajo(Ventana):
             # Es lento, pero no encuentro otra cosa:
             idct = None
             for i in xrange(len(model_combo)):
-                texto, ide = model_combo[i]
+                texto, ide = model_combo[i]  # @UnusedVariable
                 if texto == text:
-                    idct = id
+                    idct = ide
                     break
             if idct == None:
                 utils.dialogo_info(titulo = "ERROR CENTRO TRABAJO", texto = "Ocurrió un error inesperado guardando centro de trabajo.\n\nContacte con los desarrolladores de la aplicación\n(Vea el diálogo «Acerca de...» desde el menú de la aplicación.)", padre = self.wids['ventana'])
@@ -136,8 +135,8 @@ class PartesDeTrabajo(Ventana):
         anno = fecha_sel[0]
         mes = fecha_sel[1] 
         # TODO: De momento abre el calendario pero siempre en solo-lectura
-        import calendario_laboral
-        ventana_calendario_laboral = calendario_laboral.CalendarioLaboral(mes = mes, 
+        from formularios import calendario_laboral
+        ventana_calendario_laboral = calendario_laboral.CalendarioLaboral(mes = mes,  # @UnusedVariable
                                                                           anno = anno, 
                                                                           ldp = ldp, 
                                                                           solo_lectura = True)
@@ -215,13 +214,13 @@ class PartesDeTrabajo(Ventana):
                                       multi = True)
         if ids == [-1]:
             return
-        for id in ids:
+        for ide in ids:
             try:
-                e = pclases.Empleado.get(id)
+                e = pclases.Empleado.get(ide)
                 self.add_empleado_a_parte(e)
             except pclases.SQLObjectNotFound:
                 utils.dialogo_info(titulo = 'NÚMERO INCORRECTO', 
-                                   texto = 'El empleado con código identificador %d no existe o no se pudo agregar.' % id)
+                                   texto = 'El empleado con código identificador %d no existe o no se pudo agregar.' % ide)
 
     def add_empleados(self, empleados):
         for e in empleados:
@@ -259,7 +258,7 @@ class PartesDeTrabajo(Ventana):
         model, paths = self.wids['tv_horas'].get_selection().get_selected_rows()
         for path in paths:
             ide = model[path][-1] # El id de empleado es la columna 0
-            pdt = pclases.ParteDeTrabajo.get(id)
+            pdt = pclases.ParteDeTrabajo.get(ide)
             pdt.destroy(ventana = __file__)
         self.rellenar_tabla()
         self.rellenar_tabla_calendario()
@@ -292,7 +291,7 @@ class PartesDeTrabajo(Ventana):
     def cambiar_horafin(self, tv, path, newtext):
         model = self.wids['tv_horas'].get_model()
         ide = model[path][-1]
-        pt = pclases.ParteDeTrabajo.get(id)
+        pt = pclases.ParteDeTrabajo.get(ide)
         try:
             dtdelta = mx.DateTime.DateTimeDelta(0, float(newtext.split(':')[0]), float(newtext.split(':')[1]), 0)
             pt.horafin = mx.DateTime.DateTimeFrom(year = pt.horafin.year,
@@ -318,7 +317,7 @@ class PartesDeTrabajo(Ventana):
     def cambiar_horainicio(self, tv, path, newtext):
         model = self.wids['tv_horas'].get_model()
         ide = model[path][-1]
-        pt = pclases.ParteDeTrabajo.get(id)
+        pt = pclases.ParteDeTrabajo.get(ide)
         try:
             dtdelta = mx.DateTime.DateTimeDelta(0, float(newtext.split(':')[0]), float(newtext.split(':')[1]), 0)
             duracion = pt.horas
@@ -345,7 +344,7 @@ class PartesDeTrabajo(Ventana):
     def cambiar_horas(self, tv, path, newtext):
         model = self.wids['tv_horas'].get_model()
         ide = model[path][-1]
-        pt = pclases.ParteDeTrabajo.get(id)
+        pt = pclases.ParteDeTrabajo.get(ide)
         try:
             dtdelta = mx.DateTime.DateTimeDelta(0, float(newtext.split(':')[0]), float(newtext.split(':')[1]), 0)
             pt.horafin = pt.horainicio + dtdelta
@@ -367,7 +366,7 @@ class PartesDeTrabajo(Ventana):
         # Iba a ser un desplegable según las specs, pero al final es texto libre.
         model = self.wids['tv_horas'].get_model()
         ide = model[path][-1]
-        pdt = pclases.ParteDeTrabajo.get(id)
+        pdt = pclases.ParteDeTrabajo.get(ide)
         pdt.trabajo = texto
         model[path][5] = texto
     

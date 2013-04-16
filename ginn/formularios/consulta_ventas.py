@@ -40,7 +40,7 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
@@ -199,7 +199,6 @@ class ConsultaVentas(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        import sys, os
         from informes.treeview2csv import treeview2csv
         from formularios.reports import abrir_csv
         if self.wids['notebook1'].get_current_page() == 0:
@@ -243,25 +242,25 @@ class ConsultaVentas(Ventana):
         """
         model = tv.get_model()
         ide = model[path][-1]
-        if id > 0 and model[path].parent == None:   # Es cliente.
-            import clientes
-            cliente = pclases.Cliente.get(id)
-            v = clientes.Clientes(cliente)
-        elif id > 0 and model[path].parent != None: # Es factura.
-            factura = pclases.FacturaVenta.get(id)
-            import facturas_venta
-            v = facturas_venta.FacturasVenta(factura)
+        if ide > 0 and model[path].parent == None:   # Es cliente.
+            from formularios import clientes
+            cliente = pclases.Cliente.get(ide)
+            v = clientes.Clientes(cliente)  # @UnusedVariable
+        elif ide > 0 and model[path].parent != None: # Es factura.
+            factura = pclases.FacturaVenta.get(ide)
+            from formularios import facturas_venta
+            v = facturas_venta.FacturasVenta(factura)  # @UnusedVariable
     
     def abrir_factura_o_comercial(self, tv, path, view_column):
         """
         Abre la factura o la ficha del comercial, según corresponda.
         """
         model = tv.get_model()
-        ide = model[path][-1]
+        id = model[path][-1]
         if id > 0 and id != '0' and model[path].parent == None: # Es comercial.
             comercial = pclases.Comercial.get(id)
             empleado = comercial.empleado
-            import empleados
+            from formularios import empleados
             v = empleados.Empleados(empleado)
         elif id != "" and model[path].parent != None: # Es factura.
             factura = pclases.getObjetoPUID(id)
@@ -301,7 +300,7 @@ class ConsultaVentas(Ventana):
         model = tv.get_model()
         ide = model[path][-1]
         if id > 0 and model[path].parent == None:   # Es tarifa.
-            import tarifas_de_precios
+            from formularios import tarifas_de_precios
             tarifa = pclases.Tarifa.get(id)
             v = tarifas_de_precios.TarifasDePrecios(tarifa)
         elif id > 0 and model[path].parent != None: # Es producto
@@ -309,11 +308,11 @@ class ConsultaVentas(Ventana):
             producto = ldv.producto
             if isinstance(producto, pclases.ProductoVenta):
                 if producto.es_rollo():
-                    import productos_de_venta_rollos
+                    from formularios import productos_de_venta_rollos
                     v = productos_de_venta_rollos.ProductosDeVentaRollos(
                             producto)
                 elif producto.es_bala() or producto.es_bigbag():
-                    import productos_de_venta_balas
+                    from formularios import productos_de_venta_balas
                     v = productos_de_venta_balas.ProductosDeVentaBalas(
                             producto)
 
@@ -396,11 +395,7 @@ class ConsultaVentas(Ventana):
             datachart.append([t and t.nombre or "Sin tarifa", 
                               self.por_tarifa[t]['total'], 
                               t and 3 or 7])
-        try:
-            import charting
-        except ImportError:
-            import sys, os
-            import charting
+        from lib import charting
         try:
             oldchart = self.wids['eventbox_chart'].get_child()
             if oldchart != None:
@@ -432,11 +427,7 @@ class ConsultaVentas(Ventana):
                 datachart.append([t and t.nombre or "Sin tarifa", 
                                   self.por_tarifa[t]['total'], 
                                   t and 3 or 7])
-            try:
-                import charting
-            except ImportError:
-                import sys, os
-                import charting
+            from lib import charting
             try:
                 oldchart = self.wids['eventbox_chart'].get_child()
                 if oldchart != None:
@@ -473,11 +464,7 @@ class ConsultaVentas(Ventana):
             _datachart = datachart[:5]
             _datachart.append(("Resto", sum([c[1] for c in datachart[5:]]), 7))
             datachart = _datachart
-            try:
-                import charting
-            except ImportError:
-                import sys, os
-                import charting
+            from lib import charting
             try:
                 oldchart = self.wids['eventbox_chart'].get_child()
                 if oldchart != None:
@@ -520,11 +507,7 @@ class ConsultaVentas(Ventana):
             #_datachart = datachart[:5]
             #_datachart.append(("Resto", sum([c[1] for c in datachart[5:]])))
             #datachart = _datachart
-            try:
-                import charting
-            except ImportError:
-                import sys, os
-                import charting
+            from lib import charting
             try:
                 oldchart = self.wids['eventbox_chart'].get_child()
                 if oldchart != None:
@@ -567,11 +550,7 @@ class ConsultaVentas(Ventana):
             #_datachart = datachart[:5]
             #_datachart.append(("Resto", sum([c[1] for c in datachart[5:]])))
             #datachart = _datachart
-            try:
-                import charting
-            except ImportError:
-                import sys, os
-                import charting
+            from lib import charting
             try:
                 oldchart = self.wids['eventbox_chart'].get_child()
                 if oldchart != None:
@@ -1494,11 +1473,11 @@ class ConsultaVentas(Ventana):
         from formularios import reports
         datos = []
         model = self.wids['tv_datos'].get_model()
-        for iter in model:
-            datos.append((iter[0],  iter[1],  iter[2],  iter[3],  iter[4], 
-                          iter[5],  iter[6],  iter[7],  iter[8],  iter[9], 
-                          iter[10], iter[11], iter[12], iter[13]))
-            hijos = iter.iterchildren()
+        for itr in model:
+            datos.append((itr[0],  itr[1],  itr[2],  itr[3],  itr[4], 
+                          itr[5],  itr[6],  itr[7],  itr[8],  itr[9], 
+                          itr[10], itr[11], itr[12], itr[13]))
+            hijos = itr.iterchildren()
             if hijos != None:
                 for hijo in hijos:
                     datos.append((hijo[0], hijo[1], hijo[2], hijo[3], hijo[4], 

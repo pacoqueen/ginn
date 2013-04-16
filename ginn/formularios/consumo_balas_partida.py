@@ -36,10 +36,10 @@
 ##
 ###################################################################
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
+import gtk
 from framework import pclases
 import mx.DateTime
 from informes import geninformes
@@ -317,7 +317,6 @@ class ConsumoBalasPartida(Ventana):
         model.clear()
         cantidad = 0
         partida = self.get_partida()
-        lotes = {}
         if partida != None:
             vpro = VentanaProgreso(padre = self.wids['ventana'])
             vpro.mostrar()
@@ -397,7 +396,6 @@ Sin embalaje.</i></small>""" % (merma))
         rango = utils.dialogo_entrada(titulo = 'INTRODUZCA RANGO',
                                       texto = 'Rango de números de bala o el código individual.\nEscriba el rango de códigos de la forma "xxxx-yyyy", ambos inclusive.\nO bien una lista de números separada por comas o espacios (xxxx, yyyy zzzz).',
                                       padre = self.wids['ventana'])
-        articulos = []
         if rango == '' or rango == None:
             return rango
         try:
@@ -579,8 +577,8 @@ Sin embalaje.</i></small>""" % (merma))
         datos['partidas_gtx'] = ", ".join([p.codigo for p in partida_carga.partidas]) 
         model = self.wids['tv_balas'].get_model()
         datos['balas'] = []
-        for iter in model:
-            datos['balas'].append((iter[0], iter[1], ""))
+        for itr in model:
+            datos['balas'].append((itr[0], itr[1], ""))
         datos['balas'].append(("-" * 20, "-" * 20, ""))     # El último campo vacío es para que no queden los datos tan separados al imprimir.
         datos['balas'].append(("TOTAL CONSUMO FIBRA", self.wids['e_total'].get_text(), ""))
         datos['balas'].append(("TOTAL GEOTEXTILES PRODUCIDOS", self.wids['e_peso_gtx'].get_text(), ""))
@@ -589,10 +587,10 @@ Sin embalaje.</i></small>""" % (merma))
         datos['balas'].append(("", "", ""))
         datos['balas'].append(("", "", ""))
         datos['balas'].append(("Resumen por lotes:", "", ""))
-        for iter in model:
-            datos['balas'].append(("%d balas (%s kg)." % (iter[0], utils.float2str(iter[1], 1)), 
-                                   "Lote %s." % (iter[2]),
-                                   iter[3]))
+        for itr in model:
+            datos['balas'].append(("%d balas (%s kg)." % (itr[0], utils.float2str(itr[1], 1)), 
+                                   "Lote %s." % (itr[2]),
+                                   itr[3]))
         reports.abrir_pdf(geninformes.consumo_fibra_partida(datos, utils.str_fecha(mx.DateTime.localtime()), cols_a_derecha=(0, 1, )))
     
     def add_balas(self, boton):
@@ -623,8 +621,8 @@ Sin embalaje.</i></small>""" % (merma))
             len(self.objeto.get_balas_sin_albaran_interno()) > 0)
             # OJO: Esto puede dar una condición de carrera si el usuario no 
             # tiene permisos y aún no se ha actualizado la ventana.
-        import albaranes_de_salida
-        ventana = albaranes_de_salida.AlbaranesDeSalida(
+        from formularios import albaranes_de_salida
+        ventana = albaranes_de_salida.AlbaranesDeSalida(  # @UnusedVariable
                     usuario = self.usuario, objeto = albaran)
 
     def descargar_de_terminal(self, boton):
@@ -684,7 +682,7 @@ Sin embalaje.</i></small>""" % (merma))
             else:
                 self.logger.error("consumo_balas_partida::descargar_y_meter_balas_en_partida_carga: Se han importado balas a la partida ID %d y sin embargo no se ha podido crear el albarán interno." % (partida.id))
                 # ventanapartida = ConsumoBalasPartida(usuario = self.usuario, objeto = partida)
-                # import albaranes_de_salida
+                # from formularios import albaranes_de_salida
                 # ventanaalbaran = albaranes_de_salida.AlbaranesDeSalida(usuario = self.usuario, objeto = albaran)
 
     def introducir_balas_en_partida(self, lista_balas, partida):

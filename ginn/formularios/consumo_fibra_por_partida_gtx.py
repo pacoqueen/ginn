@@ -45,14 +45,14 @@
 ## carga completamente consumidas antes de la fecha final.
 ###################################################################
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
 from framework import pclases
 import mx.DateTime
 from informes import geninformes
-import ventana_progreso
+from formularios import ventana_progreso
 
 
 class ConsumoFibraPorPartidaGtx(Ventana):
@@ -105,7 +105,6 @@ class ConsumoFibraPorPartidaGtx(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        import sys, os
         from informes.treeview2csv import treeview2csv
         from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
@@ -216,15 +215,7 @@ class ConsumoFibraPorPartidaGtx(Ventana):
                               '',  
                               ))
         # Y ahora la gráfica.
-        try:
-            import gtk, gobject, cairo, copy, math
-        except ImportError:
-            return      # No se pueden dibujar gráficas. # TODO: Temporal.
-        try:
-            import charting
-        except ImportError:
-            import sys, os
-            import charting
+        from lib import charting
         try:
             oldchart = self.wids['eventbox_chart'].get_child()
             if oldchart != None:
@@ -403,8 +394,8 @@ class ConsumoFibraPorPartidaGtx(Ventana):
                                   'producto': 
                                    balas[0].articulo.productoVenta.descripcion
                                   })
-                                   # NOTA: el get_lotes() ya asegura que al 
-                                   # menos hay una bala en la consulta "balas".
+                                    # NOTA: el get_lotes() ya asegura que al 
+                                    # menos hay una bala en la consulta "balas"
                                 partidas_carga[partida_carga]\
                                     ['kilos_consumidos'] += kilos_consumidos
                                 partidas_carga[partida_carga]\
@@ -420,11 +411,11 @@ class ConsumoFibraPorPartidaGtx(Ventana):
         """
         if self.partidas_carga  != {}:
             if self.wids['rb_pesoreal'].get_active():
-                metodo = "reales tomados en la línea (incluyendo embalajes)." 
+                metodo = "reales tomados en la línea (incluyendo embalajes)."  # @UnusedVariable
             elif self.wids['rb_teorico'].get_active():
-                metodo = "teóricos."
+                metodo = "teóricos."  # @UnusedVariable
             elif self.wids['rb_pesosin'].get_active():
-                metodo = "reales tomados en la línea (sin embalajes)."
+                metodo = "reales tomados en la línea (sin embalajes)."  # @UnusedVariable
             else:
                 txt = "consumo_fibra_por_partida_gtx.py::imprimir -> ¡NO HAY SELECCIONADO NINGÚN RADIOBUTTON DEL GRUPO!"
                 self.logger.error(txt)
@@ -462,7 +453,7 @@ class ConsumoFibraPorPartidaGtx(Ventana):
                 total_metros_producidos += partidas_carga[pc]['metros']
                 total_balas_consumidas += partidas_carga[pc]['balas']
                 total_rollos_producidos += partidas_carga[pc]['rollos']
-                padre = datos.append(("     >>> Lotes de fibra consumidos", '', '', '', '', '', ''))
+                padre = datos.append(("     >>> Lotes de fibra consumidos", '', '', '', '', '', ''))  # @UnusedVariable
                 for lote in partidas_carga[pc]['lotes']:
                     datos.append(("               %s: %s" % (lote['código'], lote['producto']), 
                                   utils.float2str(lote['kilos']), 
@@ -472,7 +463,7 @@ class ConsumoFibraPorPartidaGtx(Ventana):
                                   '', 
                                   '', 
                                  ))
-                padre = datos.append(("     >>> Partidas de geotextiles producidas:", '', '', '', '', '', ''))
+                padre = datos.append(("     >>> Partidas de geotextiles producidas:", '', '', '', '', '', ''))  # @UnusedVariable
                 for pgtx in partidas_carga[pc]['partidas']:
                     datos.append(("               %s: %s" % (pgtx['código'], pgtx['producto']), 
                                   "", 

@@ -46,7 +46,7 @@ from ventana import Ventana
 import gtk
 import pygtk
 import sqlobject
-import utils
+from formularios import utils
 pygtk.require('2.0')
 try:
     from psycopg import ProgrammingError as psycopg_ProgrammingError

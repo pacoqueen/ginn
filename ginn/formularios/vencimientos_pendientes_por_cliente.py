@@ -36,7 +36,7 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk
@@ -310,7 +310,7 @@ class VencimientosPendientesPorCliente(Ventana):
         if model[path][4] != "":
             idpagare = model[path][-1]
             pagare = pclases.PagareCobro.get(idpagare)
-            import pagares_cobros
+            from formularios import pagares_cobros
             ventanapagares = pagares_cobros.PagaresCobros(pagare)  # @UnusedVariable
         else:
             idvto = model[path][-1]
@@ -318,10 +318,10 @@ class VencimientosPendientesPorCliente(Ventana):
                 vto = pclases.VencimientoCobro.get(idvto)
                 fra = vto.get_factura_o_prefactura()
                 if isinstance(fra, pclases.FacturaVenta):
-                    import facturas_venta           
+                    from formularios import facturas_venta           
                     ventanafacturas = facturas_venta.FacturasVenta(fra)  # @UnusedVariable
                 elif isinstance(fra, pclases.Prefactura):
-                    import prefacturas
+                    from formularios import prefacturas
                     ventanafacturas = prefacturas.Prefacturas(fra)  # @UnusedVariable
 
 def buscar_facturas_de_abono_sin_pagar(cliente, 

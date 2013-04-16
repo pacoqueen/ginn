@@ -64,7 +64,7 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
@@ -961,11 +961,11 @@ class FacturasDeEntrada(Ventana):
         tipo = model[path][0]
         ide = model[path][-1]
         if "PED" in tipo.upper():
-            import pedidos_de_compra
+            from formularios import pedidos_de_compra
             pedido = pclases.PedidoCompra.get(ide)
             ventana = pedidos_de_compra.PedidosDeCompra(pedido)  # @UnusedVariable
         if "ALB" in tipo.upper():
-            import albaranes_de_entrada
+            from formularios import albaranes_de_entrada
             albaran = pclases.AlbaranEntrada.get(ide)
             ventana = albaranes_de_entrada.AlbaranesDeEntrada(albaran)  # @UnusedVariable
 

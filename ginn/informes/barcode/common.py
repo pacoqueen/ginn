@@ -161,7 +161,7 @@ class Barcode(Flowable):
         Necesita los archivos de fuentes usados en EANBarCode.
         """
         import Image, ImageFont, ImageDraw
-        from EANBarCode import decodeFontFile, courB08_pil, courB08_pbm
+        from infomres.barcode.EANBarCode import decodeFontFile, courB08_pil, courB08_pbm
         
         # Fuente:
         decodeFontFile(courB08_pil ,"courB08.pil")
@@ -894,5 +894,7 @@ class Code11(Barcode):
 
 if __name__ == "__main__":
     from reportlab.lib.units import cm; import code39
-    b = code39.Extended39("Q-123456", xdim = .080*cm); import os; os.system("qiv %s" % (b.guardar_a_png()))
+    b = code39.Extended39("Q-123456", xdim = .080*cm)
+    import os
+    os.system("qiv %s" % (b.guardar_a_png()))
 

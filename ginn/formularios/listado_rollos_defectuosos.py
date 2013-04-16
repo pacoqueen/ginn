@@ -42,7 +42,7 @@ import gtk
 import time
 import mx.DateTime
 import pygtk
-import utils
+from formularios import utils
 pygtk.require('2.0')
 
 class ListadoRollosDefectuosos(Ventana):
@@ -110,7 +110,7 @@ class ListadoRollosDefectuosos(Ventana):
             ide = tv.get_model()[path][-1]
             if ide != None and ide > 0:
                 rollo = pclases.Articulo.get(ide).rolloDefectuoso
-                import trazabilidad_articulos
+                from formularios import trazabilidad_articulos
                 trazabilidad_articulos.TrazabilidadArticulos(
                     usuario = self.usuario, 
                     objeto = rollo)

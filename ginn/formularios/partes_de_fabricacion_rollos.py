@@ -68,7 +68,7 @@
 #sys.stdout = open("salida_debug.txt", "a")
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time 
@@ -79,7 +79,7 @@ from utils import _float as float
 try:
     import psycopg
 except ImportError:
-    import psycopg2 as psycopg
+    import psycopg2 as psycopg  # @UnusedImport
 from ventana_progreso import VentanaActividad, VentanaProgreso
 import re, os
 from formularios.partes_de_fabricacion_balas import verificar_solapamiento, \
@@ -405,7 +405,7 @@ class PartesDeFabricacionRollos(Ventana):
                 # Marco el color de fondo para las muestras:
                 ide = model[itr][-1]
                 try:
-                    articulo = pclases.Articulo.get(id)
+                    articulo = pclases.Articulo.get(ide)
                     if articulo.es_rollo():
                         rollo = articulo.rollo
                         if rollo.muestra:
@@ -416,7 +416,7 @@ class PartesDeFabricacionRollos(Ventana):
                             cell.set_property("cell-background", "white")
                     elif articulo.es_rollo_defectuoso():
                         cell.set_property("cell-background", "orange red")
-                except pclases.SQLObjectNotFound, msg:
+                except pclases.SQLObjectNotFound: 
                     pass
             elif model[itr][5].strip() != "":
                 cell.set_property("text", model[itr][numcol])
@@ -569,7 +569,7 @@ class PartesDeFabricacionRollos(Ventana):
         """
         model = self.wids['tv_desecho'].get_model()
         ide = model[path][-1]
-        desecho = pclases.DescuentoDeMaterial.get(id)
+        desecho = pclases.DescuentoDeMaterial.get(ide)
         desecho.observaciones = newtext
         desecho.fechahora = mx.DateTime.localtime()     # Actualizo la fecha y hora.
         self.objeto.unificar_desechos()
@@ -583,7 +583,7 @@ class PartesDeFabricacionRollos(Ventana):
         """
         model = self.wids['tv_desecho'].get_model()
         ide = model[path][-1]
-        desecho = pclases.DescuentoDeMaterial.get(id)
+        desecho = pclases.DescuentoDeMaterial.get(ide)
         try:
             newtext=newtext.replace(desecho.productoCompra.unidad, "").strip()
             nueva_cantidad = utils._float(newtext)
@@ -664,10 +664,10 @@ class PartesDeFabricacionRollos(Ventana):
         
     def drop_agujas(self, b):
         """ DEPRECATED """
-        model, iter = self.wids['tv_agujas'].get_selection().get_selected()
-        if iter == None:
+        model, itr = self.wids['tv_agujas'].get_selection().get_selected()
+        if itr == None:
             return
-        idconsumo = model[iter][-1]
+        idconsumo = model[itr][-1]
         consumo = [c for c in self.objeto.consumos if c.id == idconsumo][0]
         self.actualizar_consumo(consumo, False)
         consumo.parteDeProduccion = None
@@ -729,7 +729,7 @@ class PartesDeFabricacionRollos(Ventana):
             newtext = "%s:%s" % (newtext[:-2], newtext[-2:])
         model = self.wids['tv_empleados'].get_model()
         ide = model[path][-1]
-        ht = pclases.HorasTrabajadas.get(id)
+        ht = pclases.HorasTrabajadas.get(ide)
         try:
             try:
                 dtdelta = mx.DateTime.DateTimeDelta(0, float(newtext.split(':')[0]), float(newtext.split(':')[1]), 0)
@@ -742,7 +742,7 @@ class PartesDeFabricacionRollos(Ventana):
             ht.horas = newtext 
             ht.sync(); ht.syncUpdate()
             model[path][3] = ht.horas.strftime('%H:%M')
-        except (ValueError, TypeError), msg:
+        except (ValueError, TypeError):
             utils.dialogo_info(titulo = "ERROR", texto = 'El texto "%s" no representa el formato horario.' % newtext, padre = self.wids['ventana'])
 
     def cambiar_peso_bala(self, cell, path, newtext):
@@ -862,9 +862,9 @@ class PartesDeFabricacionRollos(Ventana):
             return idpartedeproduccion
 
     def mostrar_info_parte(self, tv):
-        model, iter = tv.get_selection().get_selected()
-        if iter!=None and model[iter][-2] == "CLIC PARA VER":
-            parte = pclases.ParteDeProduccion.get(model[iter][0])   # En los 
+        model, itr = tv.get_selection().get_selected()
+        if itr!=None and model[itr][-2] == "CLIC PARA VER":
+            parte = pclases.ParteDeProduccion.get(model[itr][0])   # En los 
                 # diálogos de resultado el ID va al revés.
             if parte.es_de_balas() and parte.articulos != []:
                 try:
@@ -876,7 +876,7 @@ class PartesDeFabricacionRollos(Ventana):
             else:
                 lotepartida = 'VACIO'
             producto = parte.articulos != [] and parte.articulos[0].productoVenta.nombre or 'VACÍO'
-            model[iter][-2] = lotepartida
+            model[itr][-2] = lotepartida + "(" + producto + ")"
 
     def calcular_duracion(self, hfin, hini):
         """
@@ -1287,8 +1287,8 @@ class PartesDeFabricacionRollos(Ventana):
             peso_total = 0
         self.wids['e_peso_total'].set_text("%s" % utils.float2str(peso_total))
             # Peso total teórico, SIN embalajes.
-        merma = self.wids['sp_merma'].get_value() / 100.0     # (está en % 
-                                                              # como entero)
+        merma = self.wids['sp_merma'].get_value() / 100.0   # (está en % 
+                                                            # como entero)
         consumo_estimado = peso_total / (1.0 - merma)
         self.wids['e_consumo_estimado'].set_text("%s" % (
             utils.float2str(consumo_estimado)))
@@ -1414,7 +1414,7 @@ class PartesDeFabricacionRollos(Ventana):
         if model[path][1] == '':    # Nº rollo, no tiene, no es un rollo.
             return
         ide = model[path][-1]
-        articulo = pclases.Articulo.get(id)
+        articulo = pclases.Articulo.get(ide)
         if articulo.es_rollo():
             rollo = articulo.rollo
         elif articulo.es_rollo_defectuoso():
@@ -1438,10 +1438,10 @@ class PartesDeFabricacionRollos(Ventana):
         rollo.densidad = dens 
         model[path][3] = rollo.densidad
         self.rellenar_tabla_rollos(actualizar_tabla = False)
-        iter = model.get_iter(path)
-        iter = model.iter_next(iter)
-        if iter != None:
-            path_siguiente = model.get_path(iter)
+        itr = model.get_iter(path)
+        itr = model.iter_next(itr)
+        if itr != None:
+            path_siguiente = model.get_path(itr)
             column = self.wids['tv_rollos'].get_column(2)
             cell = column.get_cell_renderers()[0]
             self.wids['tv_rollos'].set_cursor_on_cell(path_siguiente, column, cell, start_editing=False)
@@ -1454,14 +1454,14 @@ class PartesDeFabricacionRollos(Ventana):
         model = self.wids['tv_rollos'].get_model()
         ide = model[path][-1]
         if model[path][1] != '':    # Nº rollo, tiene, no es una incidencia.
-            articulo = pclases.Articulo.get(id)
+            articulo = pclases.Articulo.get(ide)
             if articulo.es_rollo():
                 rollo = articulo.rollo
             elif articulo.es_rollo_defectuoso():
                 rollo = articulo.rolloDefectuoso
             rollo.observaciones = newtext
         else:
-            incidencia = pclases.Incidencia.get(id)
+            incidencia = pclases.Incidencia.get(ide)
             incidencia.observaciones = newtext
         model[path][-2] = newtext
 
@@ -1470,7 +1470,7 @@ class PartesDeFabricacionRollos(Ventana):
         if model[path][1] != '':    # Nº rollo, tiene, no es una incidencia.
             return
         ide = model[path][-1]
-        incidencia = pclases.Incidencia.get(id)
+        incidencia = pclases.Incidencia.get(ide)
         try:
             incidencia.horainicio = mx.DateTime.DateTimeFrom(
                                         day = self.objeto.fecha.day, 
@@ -1500,7 +1500,7 @@ class PartesDeFabricacionRollos(Ventana):
         if model[path][1] != '':    # Nº rollo, tiene, no es una incidencia.
             return
         ide = model[path][-1]
-        incidencia = pclases.Incidencia.get(id)
+        incidencia = pclases.Incidencia.get(ide)
         try:
             incidencia.horafin = mx.DateTime.DateTimeFrom(
                                         day = self.objeto.fecha.day, 
@@ -1666,9 +1666,11 @@ class PartesDeFabricacionRollos(Ventana):
         de datos en el objeto y lo sincroniza con la BD.
         """
         partedeproduccion = self.objeto
-        ye_olde_fecha, ye_olde_horainicio, ye_olde_horafin \
-                = partedeproduccion.fecha, partedeproduccion.horainicio, \
-                  partedeproduccion.horafin
+        (ye_olde_fecha, 
+         ye_olde_horainicio,  # @UnusedVariable
+         ye_olde_horafin) = (partedeproduccion.fecha,  # @UnusedVariable
+                             partedeproduccion.horainicio, 
+                             partedeproduccion.horafin)
         ye_olde_horainicio = utils.str_hora_corta(partedeproduccion.horainicio) 
         ye_olde_horafin = utils.str_hora_corta(partedeproduccion.horafin)
             # Campos del objeto que hay que guardar:
@@ -1992,7 +1994,6 @@ class PartesDeFabricacionRollos(Ventana):
                                       texto = 'Rango de números de rollos o el código indovidual.\nEscriba el rango de códigos de la forma "xxxx-yyyy", ambos inclusive.',
                                       padre = self.wids['ventana'],
                                       valor_por_defecto = ultimo_mas_uno)
-        articulos = []
         if rango == '' or rango == None:
             return []
         rango = rango.upper()
@@ -2040,7 +2041,7 @@ class PartesDeFabricacionRollos(Ventana):
                     ' use «Eliminar incidencia».', 
                     padre = self.wids['ventana'])
             else:
-                articulo = pclases.Articulo.get(id)
+                articulo = pclases.Articulo.get(ide)
                 try:
                     rollo = articulo.rollo
                     rolloDefectuoso = articulo.rolloDefectuoso
@@ -2170,7 +2171,7 @@ class PartesDeFabricacionRollos(Ventana):
                                        'Ha seleccionado una rollo en lugar de una incidencia.\nUse «Quitar rollo» para eliminarla.', 
                                        padre = self.wids['ventana'])
                 else:
-                    incidencia = pclases.Incidencia.get(id)
+                    incidencia = pclases.Incidencia.get(ide)
                     incidencia.parteDeProduccion = None
                     try:
                         incidencia.destroy(ventana = __file__)
@@ -2199,15 +2200,15 @@ class PartesDeFabricacionRollos(Ventana):
                                       padre = self.wids['ventana'])
         if ids == [-1]:
             return
-        for id in ids:
+        for ide in ids:
             try:
-                e = pclases.Empleado.get(id)
+                e = pclases.Empleado.get(ide)
                 self.objeto.addEmpleado(e)
             except:
                 utils.dialogo_info(titulo = 'NÚMERO INCORRECTO', 
                                    texto = 'El empleado con código '
                                            'identificador %d no existe o '
-                                           'no se pudo agregar.' % id, 
+                                           'no se pudo agregar.' % ide, 
                                    padre = self.wids['ventana'])
         self.rellenar_tabla_empleados()
 
@@ -2215,8 +2216,8 @@ class PartesDeFabricacionRollos(Ventana):
         if self.wids['tv_empleados'].get_selection().count_selected_rows() == 0:
             return
         model, path = self.wids['tv_empleados'].get_selection().get_selected()
-        ide = model[path][0]     # El id del empleado es la columna 0
-        e = pclases.Empleado.get(id)
+        ide = model[path][0]     # El ide del empleado es la columna 0
+        e = pclases.Empleado.get(ide)
         self.objeto.removeEmpleado(e)
         self.rellenar_tabla_empleados()
 
@@ -2409,7 +2410,6 @@ class PartesDeFabricacionRollos(Ventana):
         rango = utils.dialogo_entrada(titulo = 'INTRODUZCA RANGO',
                                       texto = 'Rango de números de bala o el código indovidual.\nEscriba el rango de códigos de la forma "xxxx-yyyy", ambos inclusive.',
                                       padre = self.wids['ventana'])
-        articulos = []
         if rango == '' or rango == None:
             return rango
         try:
@@ -2445,8 +2445,8 @@ class PartesDeFabricacionRollos(Ventana):
             if resp == [-1]:  # Ha cancelado
                 return
             partida = self.get_partida()
-            for id in resp:
-                bala = pclases.Bala.get(id)
+            for ide in resp:
+                bala = pclases.Bala.get(ide)
                 if bala.claseb:
                     if utils.dialogo(titulo = 'BALA MARCADA COMO BAJA CALIDAD',
                                      texto = 'La bala está marcada como clase B. Esto puede provocar\nproblemas en la línea de producción.\n¿Está seguro de querer comsumir la bala de fibra?', 
@@ -2488,7 +2488,7 @@ class PartesDeFabricacionRollos(Ventana):
             bala.partida = None
         self.rellenar_balas()
 
-    def button_clicked(self, list, event):
+    def button_clicked(self, lista, event):
         if event.button == 3:
             # menu = gtk.Menu()
             #ui_string = """<ui>
@@ -2530,7 +2530,7 @@ class PartesDeFabricacionRollos(Ventana):
             for path in paths:
                 if model[path][1] != '':    # Nº rollo, tiene, no es una incidencia.
                     ide = model[path][-1]
-                    articulo = pclases.Articulo.get(id)
+                    articulo = pclases.Articulo.get(ide)
                     if articulo.es_rollo():
                         rollo = articulo.rollo
                         mostrar_muestra = mostrar_muestra and not(rollo.muestra)
@@ -2561,7 +2561,7 @@ class PartesDeFabricacionRollos(Ventana):
             for path in paths:
                 if model[path][1] != '':    # Nº rollo, tiene, no es una incidencia.
                     ide = model[path][-1]
-                    rollo = pclases.Articulo.get(id).rollo
+                    rollo = pclases.Articulo.get(ide).rollo
                     if rollo != None:
                         rollo.rollob = False
                         rollo.muestra = False
@@ -2587,7 +2587,7 @@ class PartesDeFabricacionRollos(Ventana):
             for path in paths:
                 if model[path][1] != '': # Nº rollo, tiene, no es incidencia.
                     ide = model[path][-1]
-                    rollo = pclases.Articulo.get(id).rollo
+                    rollo = pclases.Articulo.get(ide).rollo
                     motivo = utils.dialogo_entrada(titulo = "MOTIVO", 
                                                    texto = "Introduzca el motivo por el cual el rollo %s se considera defectuoso:" % (rollo.codigo), 
                                                    padre = self.wids['ventana'])
@@ -2653,7 +2653,7 @@ class PartesDeFabricacionRollos(Ventana):
                     if model[path][1] != '':    # Nº rollo, tiene, 
                                                 # no es una incidencia.
                         ide = model[path][-1]
-                        rollo = pclases.Articulo.get(id).rollo
+                        rollo = pclases.Articulo.get(ide).rollo
                         if rollo != None:
                             rollo.muestra = True
                             rollo.observaciones += '>>> Muestra %s' % codigo
@@ -2754,7 +2754,7 @@ class PartesDeFabricacionRollos(Ventana):
               'e_consumo_estimado')
         datos = {}
         for w in ws:
-             datos[w] = self.wids[w].get_text()
+            datos[w] = self.wids[w].get_text()
         empleados = []
         for h in parte.horasTrabajadas:
             empleados.append(h.empleado)
@@ -2798,30 +2798,30 @@ class PartesDeFabricacionRollos(Ventana):
         txt = gtk.Label(texto)
         de.vbox.pack_start(txt)
         txt.show()
-        input = gtk.Entry()
-        input.set_visibility(not pwd)
+        einput = gtk.Entry()
+        einput.set_visibility(not pwd)
         def pasar_foco(widget, event):
-          if event.keyval == 65293 or event.keyval == 65421:
-            de.action_area.get_children()[1].grab_focus()
-        input.connect("key_press_event", pasar_foco)
-        de.vbox.pack_start(input)
-        input.show()
-        input.set_text(valor_por_defecto)
+            if event.keyval == 65293 or event.keyval == 65421:
+                de.action_area.get_children()[1].grab_focus()
+        einput.connect("key_press_event", pasar_foco)
+        de.vbox.pack_start(einput)
+        einput.show()
+        einput.set_text(valor_por_defecto)
         marcado = gtk.CheckButton("Mostrar etiqueta de marcado CE")
         marcado.set_active(True)
         de.vbox.pack_start(marcado)
         marcado.show()
         if len(titulo)<20:
-          width = 100
+            width = 100
         elif len(titulo)<60:
-          width = len(titulo)*10
+            width = len(titulo)*10
         else:
-          width = 600
+            width = 600
         de.resize(width, 80)
         de.run()
         de.destroy()
         if res[0]==False:
-          return None, None
+            return None, None
         return res[0], marcado.get_active()
 
         
@@ -3129,7 +3129,7 @@ class PartesDeFabricacionRollos(Ventana):
         Abre la ventana de pesaje automático.
         """
         rollo = None
-        ventana_pesaje = crear_ventana_pesaje(self, 
+        ventana_pesaje = crear_ventana_pesaje(self,  # @UnusedVariable
                             padre = self.wids['ventana'], 
                             rollo = rollo, 
                             objeto_ventana_parte = self)
@@ -3143,7 +3143,7 @@ class PartesDeFabricacionRollos(Ventana):
         se elimina antes de salir de la rutina.
         """
         # Pedir producto(s) a consumir.
-        producto, texto_buscado = utils.pedir_producto_compra(
+        producto, texto_buscado = utils.pedir_producto_compra(  # @UnusedVariable
             padre = self.wids['ventana'])
         # Pedir cantidad.
         if producto != None:
@@ -3587,8 +3587,10 @@ def imprimir_etiqueta(articulo, marcado_ce, ventana_parte, defectuoso = False):
                 kilos_fibra = 5500.0 * (1 - articulo.parteDeProduccion.merma) # OJO: Harcoded
                 kilos_por_rollo = (campos.metros_cuadrados * campos.gramos) / 1000.0
                 rollos_parte = int(kilos_fibra / kilos_por_rollo)
-                ultima = articulo.rollo.numrollo + rollos_parte    # Mando a imprimir todos los rollos de la partida a no ser que ya se
-                                                                   # hayan imprimido y sean rollos sueltos que han salido de más.
+                ultima = articulo.rollo.numrollo + rollos_parte
+                    # Mando a imprimir todos los rollos de la partida a no ser 
+                    # que ya se hayan imprimido y sean rollos sueltos que han 
+                    # salido de más.
             else:
                 ultima = articulo.rollo.numrollo + 1
             for numrollo in xrange(articulo.rollo.numrollo, ultima):
@@ -3755,7 +3757,7 @@ def actualizar_albaran_interno_con_tubos(pdp):
         if ldv.productoCompra in cons_tubos:
             try:
                 ldv.destroy(ventana = __file__)
-            except Exception, msg:
+            except Exception:
                 # ¿La LDV está relacionada con un pedido o algo "asina"?
                 ldv.albaranSalida = None
                 print "partes_de_fabricacion_rollos::No se pudo eliminar LDV ID %d de albarán interno %s. Elimino relación entre ellos." % (ldv.id, pdp.albaranInterno.numalbaran)

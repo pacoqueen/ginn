@@ -31,7 +31,8 @@
 ## 
 ###################################################################
 from ventana import Ventana
-import utils
+from formularios import utils
+import re
 import pygtk
 pygtk.require('2.0')
 import gtk
@@ -129,12 +130,12 @@ class FormulacionBolsaCemento(Ventana):
         model = tv.get_model()
         ide = model[path][-1]
         if model[path].parent == None:
-            import productos_compra
+            from formularios import productos_compra
             consumo = pclases.ConsumoAdicional.get(ide)
             producto_compra = consumo.productoCompra
             v = productos_compra.ProductosCompra(producto_compra)  # @UnusedVariable
         else:
-            import productos_de_venta_balas
+            from formularios import productos_de_venta_balas
             v = productos_de_venta_balas.ProductosDeVentaBalas(  # @UnusedVariable
                 pclases.ProductoVenta.get(ide))
 
@@ -695,7 +696,6 @@ def comprobar_unidad(txt, cantidadpc = 1.0):
     txt = "%s %s" % (utils.float2str(cantidadpc, 5), txt)
     txt = txt.strip()
     # TODO: De momento lo hago así porque no sé de qué modo ni dónde guardarlo:
-    import re
     regexp_porcentaje = re.compile("^-?\d+[\.,]?\d*\s*%$")
     regexp_fraccion = re.compile("-?\d+[\.,]?\d*\s*\w*\s*/\s*-?\d*[\.,]?\d*\s*\w+")
     if regexp_porcentaje.findall(txt) != []:
@@ -710,7 +710,6 @@ def parsear_porcentaje(txt):
     """
     Devuelve la cantidad del porcentaje como fracción de 1.
     """
-    import re
     regexp_float = re.compile("^-?\d+[\.,]?\d*")
     num = regexp_float.findall(txt)[0]
     return utils._float(num) / 100
@@ -722,7 +721,6 @@ def parsear_fraccion(txt):
     Es necesario que venga la cantidadpc aunque en el registro, en el campo 
     "unidad" no aparece.
     """
-    import re
     regexp_float = re.compile("-?\d+[\.,]?\d*")
     regexp_unidad = re.compile("\w+")
     cantidades = regexp_float.findall(txt)

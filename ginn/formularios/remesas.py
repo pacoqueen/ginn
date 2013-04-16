@@ -31,15 +31,13 @@
 ## 
 ###################################################################
 
-import sys, os
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time, mx.DateTime
+import gtk, mx.DateTime
 from framework import pclases
 from framework.seeker import VentanaGenerica 
-from utils import _float as float
 
 
 class Remesas(Ventana, VentanaGenerica):
@@ -226,14 +224,14 @@ class Remesas(Ventana, VentanaGenerica):
                             "devolver los efectos a cartera.", 
                     padre = self.wids['ventana'])
         else:
-            model,iter = self.wids['tv_efectos'].get_selection().get_selected()
-            if iter == None:
+            model,itr = self.wids['tv_efectos'].get_selection().get_selected()
+            if itr == None:
                 utils.dialogo(titulo = "SELECCIONE EFECTO A BORRAR", 
                         texto = "No ha seleccionado ningún efecto para "
                                 "retirar de la remesa.", 
                         padre = self.wids['ventana'])
             else:
-                puid = model[iter][-1]
+                puid = model[itr][-1]
                 efecto = pclases.getObjetoPUID(puid)
                 self.objeto.removeEfecto(efecto)
                 self.actualizar_ventana()
@@ -243,12 +241,12 @@ class Remesas(Ventana, VentanaGenerica):
         puid = model[path][-1]
         objeto = pclases.getObjetoPUID(puid)
         if objeto.pagareCobro:
-            import pagares_cobros
-            v = pagares_cobros.PagaresCobros(objeto.pagareCobro, 
+            from formularios import pagares_cobros
+            v = pagares_cobros.PagaresCobros(objeto.pagareCobro,  # @UnusedVariable
                                              usuario = self.usuario)
         elif objeto.confirming:
-            import confirmings
-            v = confirmings.Confirmings(objeto.confirming, 
+            from formularios import confirmings
+            v = confirmings.Confirmings(objeto.confirming,  # @UnusedVariable
                                         usuario = self.usuario)
 
     def activar_widgets(self, s, chequear_permisos = True):
@@ -296,10 +294,10 @@ class Remesas(Ventana, VentanaGenerica):
                                      cabeceras = ('ID', 'Código', 'Banco', 
                                                   'Importe'), 
                                      padre = self.wids['ventana'])
-        if id < 0:
+        if ide < 0:
             return None
         else:
-            return id
+            return ide
 
     def rellenar_widgets(self):
         """
@@ -405,9 +403,9 @@ class Remesas(Ventana, VentanaGenerica):
             if resultados.count() > 1:
                 ## Refinar los resultados
                 ide = self.refinar_resultados_busqueda(resultados)
-                if id == None:
+                if ide == None:
                     return
-                resultados = [self.clase.get(id)]
+                resultados = [self.clase.get(ide)]
                 # Me quedo con una lista de resultados de un único objeto ocupando la primera posición.
                 # (Más abajo será cuando se cambie realmente el objeto actual por este resultado.)
             elif resultados.count() < 1:
@@ -447,7 +445,7 @@ class Remesas(Ventana, VentanaGenerica):
         self.objeto.notificador.activar(lambda: None)
         # Actualizo los datos del objeto
         for colname in self.dic_campos:
-            if colname not in ("id", ):
+            if colname not in ("ide", ):
                 col = self.clase._SO_columnDict[colname]
                 # FIXME: Las fechas en blanco se deberían guardar como Nones. Ahora mismo vuelve al valor que tuviera antes.
                 try:
@@ -501,11 +499,11 @@ class Remesas(Ventana, VentanaGenerica):
         model = self.wids['tv_efectos'].get_model()
         model[path][0] = not model[path][0]
         a_confirmar = []
-        iter = model.get_iter_first()
-        while iter:
-            if model[iter][0]:
-                a_confirmar.append(pclases.getObjetoPUID(model[iter][-1]))
-            iter = model.iter_next(iter)
+        itr = model.get_iter_first()
+        while itr:
+            if model[itr][0]:
+                a_confirmar.append(pclases.getObjetoPUID(model[itr][-1]))
+            itr = model.iter_next(itr)
         self.wids['e_importe_seleccionado'].set_text(
                 utils.float2str(sum([o.cantidad for o in a_confirmar])))
 
@@ -526,13 +524,12 @@ class Remesas(Ventana, VentanaGenerica):
         else:
             efectos_a_confirmar = []
             model = self.wids['tv_efectos'].get_model()
-            a_confirmar = []
-            iter = model.get_iter_first()
-            while iter:
-                if model[iter][0]:
+            itr = model.get_iter_first()
+            while itr:
+                if model[itr][0]:
                     efectos_a_confirmar.append(
-                            pclases.getObjetoPUID(model[iter][-1]))
-                iter = model.iter_next(iter)
+                            pclases.getObjetoPUID(model[itr][-1]))
+                itr = model.iter_next(itr)
             if not efectos_a_confirmar:
                 continuar = utils.dialogo(titulo = "REMESA VACÍA", 
                         texto = "No ha seleccionado ningún efecto de cobro.\n"

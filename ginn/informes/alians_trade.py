@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from geninformes import give_me_the_name_baby, rectangulo, escribe
+from informes.geninformes import give_me_the_name_baby, rectangulo, escribe
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import cm
 import os

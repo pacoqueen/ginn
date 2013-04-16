@@ -36,16 +36,14 @@
 from formularios import ventana_progreso
 from framework import pclases
 from informes import geninformes
-from pychart import * # No me gusta, pero no queda otra
+from formularios.pychart import * # No me gusta, pero no queda otra
 from tempfile import gettempdir
 from ventana import Ventana
 import gtk
-import time
 import mx.DateTime
 import pygtk
-import sys
 import os
-import utils
+from formularios import utils
 pygtk.require('2.0')
     
 

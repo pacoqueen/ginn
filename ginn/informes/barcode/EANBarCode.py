@@ -187,7 +187,7 @@ class EanBarCode:
             # devuelvo un PIL con el contenido de ese archivo. OJO: Necesita ghostView para que PIL pueda
             # leer EPS.
             # DEPRECATED. El code39.py que solía usar ya no es el code39.py fusilado de ReportLab que uso ahora.
-            import _code39
+            from informes.barcode import _code39
             codbar = _code39.Code39()
             value = value.upper()
             f = open(value+'.eps', 'wb')
@@ -246,16 +246,16 @@ class EanBarCode:
         im.save(nombre, upper(extension))
         return nombre
 
-def decodeFontFile(data, file):
+def decodeFontFile(data, fich):
     """ Decode font file embedded in this script and create file """
     from zlib import decompress
     from base64 import decodestring
     from os.path import exists
 
-    # If the font file is missing
-    if not exists(file):
-        # Write font file
-        open (file, "wb").write(decompress(decodestring(data)))
+    # If the font fich is missing
+    if not exists(fich):
+        # Write font fich
+        open (fich, "wb").write(decompress(decodestring(data)))
 
 def testWithChecksum():
     """ Test bar code with checksum """

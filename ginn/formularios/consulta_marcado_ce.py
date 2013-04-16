@@ -38,7 +38,7 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk
@@ -97,7 +97,7 @@ class ConsultaMarcadoCE(Ventana):
         partida de la fila a la que se ha hecho doble clic.
         """
         idpartida = tv.get_model()[path][-1]
-        import resultados_geotextiles
+        from formularios import resultados_geotextiles
         ventana = resultados_geotextiles.ResultadosGeotextiles(  # @UnusedVariable
                     pclases.Partida.get(idpartida), 
                     usuario = self.usuario)

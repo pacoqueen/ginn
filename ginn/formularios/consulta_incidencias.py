@@ -32,9 +32,9 @@
 ## Changelog:
 ## 
 ###################################################################
-###################################################################
+
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
@@ -42,8 +42,8 @@ import os
 from framework import pclases
 import mx.DateTime
 from informes import geninformes
-import ventana_progreso
-from pychart import *   # No me gusta, pero no queda otra @UnusedWildImport
+from formularios import ventana_progreso
+from formularios.pychart import *   # No me gusta, pero no queda otra 
 from tempfile import gettempdir
 
 class ConsultaIncidencias(Ventana):
@@ -81,7 +81,7 @@ class ConsultaIncidencias(Ventana):
         temp = time.localtime()
         self.fin = str(temp[0])+'/'+str(temp[1])+'/'+str(temp[2])
         self.wids['e_fechafin'].set_text(utils.str_fecha(temp))
-        import custom_widgets
+        from formularios import custom_widgets
         self.wids['velocimetro'] = custom_widgets.Velocimetro(0.0, 100.0, 0.0)
         self.wids['hbox8'].pack_end(self.wids['velocimetro'], False, False, 5)
         self.wids['velocimetro'].show_all()

@@ -32,7 +32,7 @@ import sys, os#, Image
 from factura_multipag import TablaFija
 from framework import pclases
 from formularios import utils
-from geninformes import give_me_the_name_baby, escribe, rectangulo, el_encogedor_de_fuentes_de_doraemon, agregarFila
+from informes.geninformes import give_me_the_name_baby, escribe, rectangulo, el_encogedor_de_fuentes_de_doraemon, agregarFila
 from tempfile import gettempdir
 
 PAGE_HEIGHT = defaultPageSize[1]; PAGE_WIDTH = defaultPageSize[0]

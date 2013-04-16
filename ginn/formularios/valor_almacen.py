@@ -30,12 +30,12 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, mx.DateTime
 from framework import pclases
-import ventana_progreso
+from formularios import ventana_progreso
 
 class ValorAlmacen(Ventana):
     def __init__(self, objeto = None, usuario = None):

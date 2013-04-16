@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from geninformes import give_me_the_name_baby, rectangulo, escribe
+from informes.geninformes import give_me_the_name_baby, rectangulo, escribe
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import cm
-import sys, os
+import os
 from tempfile import gettempdir
 from formularios.utils import float2str
 
@@ -18,7 +18,7 @@ def etiqueta_rollos_portrait(rollos, mostrar_marcado = True):
     width = 8.4 * cm
 
     # Escala
-    ancho = 7.2
+    ancho = 7.2  # @UnusedVariable
     alto = 11.3
     scale = height / alto 
     

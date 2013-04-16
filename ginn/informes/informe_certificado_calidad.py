@@ -23,17 +23,16 @@
 ###############################################################################
 
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, \
-                               TableStyle, XPreformatted, Preformatted,\
-                               PageBreak, KeepTogether, CondPageBreak, Image
+                               KeepTogether, Image
 from reportlab.platypus.flowables import Flowable
 from reportlab.rl_config import defaultPageSize
 from reportlab.lib import colors, enums
 from reportlab.lib.units import cm
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet 
-import sys, os
+import os
 from framework import pclases
 from formularios import utils
-from geninformes import give_me_the_name_baby, escribe, rectangulo, el_encogedor_de_fuentes_de_doraemon, agregarFila
+from informes.geninformes import escribe
 from tempfile import gettempdir
 import mx.DateTime
 
@@ -385,7 +384,7 @@ def go_from_albaranSalida(albaranSalida):
     """
     os.chdir("../formularios")
     from formularios import certificado_calidad
-    v = certificado_calidad.CertificadoCalidad(albaranSalida)
+    v = certificado_calidad.CertificadoCalidad(albaranSalida)  # @UnusedVariable
 
 if __name__ == "__main__":
     go_from_albaranSalida(pclases.AlbaranSalida.selectBy(numalbaran="6343")[0])

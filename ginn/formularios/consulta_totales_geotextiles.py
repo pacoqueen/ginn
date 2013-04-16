@@ -43,7 +43,7 @@ from framework import pclases
 import mx.DateTime
 from informes import geninformes
 from math import ceil
-import ventana_progreso
+from formularios import ventana_progreso
 
 def buscar_annos_ini_fin():
     """
@@ -593,10 +593,10 @@ class ConsultaTotalesGeotextiles(Ventana):
         from formularios import reports
         datos = []
         model = self.wids['tv_datos'].get_model()
-        for iter in model:
+        for itr in model:
             row = []
             for i in xrange(25):
-                row.append(iter[i])
+                row.append(itr[i])
             datos.append(tuple(row))
         datos.insert(-1, ("---", )*25)  # La línea horizontal antes del TOTAL
         if datos != []:

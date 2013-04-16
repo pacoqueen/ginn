@@ -42,12 +42,10 @@
 from framework import pclases
 from ventana import Ventana
 import gtk
-import time
-import mx.DateTime
 import pygtk
 import sys
-import utils
-import ventana_progreso
+from formularios import utils
+from formularios import ventana_progreso
 pygtk.require('2.0')
 
 class PartesNoBloqueados(Ventana):
@@ -118,14 +116,14 @@ class PartesNoBloqueados(Ventana):
         self.wids['ventana'].window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
         while gtk.events_pending(): gtk.main_iteration(False)
         try:
-            model, iter = tv.get_selection().get_selected()
+            model, itr = tv.get_selection().get_selected()
         except AttributeError:
             self.wids['ventana'].window.set_cursor(None)
             return  # TreeView es None porque se estaba cerrando la ventana o 
                     # algo.
-        if iter!=None and model[iter][0] == "CLIC PARA VER":
+        if itr!=None and model[itr][0] == "CLIC PARA VER":
             try:
-                parte = pclases.ParteDeProduccion.get(model[iter][-1])
+                parte = pclases.ParteDeProduccion.get(model[itr][-1])
             except pclases.SQLObjectNotFound:
                 self.wids['ventana'].window.set_cursor(None)
                 return  # Parte borrado
@@ -148,8 +146,8 @@ class PartesNoBloqueados(Ventana):
                 lotepartida = 'VACIO'
             producto = (parte.articulos != [] 
                         and parte.articulos[0].productoVenta.nombre or 'VACÍO')
-            model[iter][0] = producto
-            model[iter][5] = lotepartida
+            model[itr][0] = producto
+            model[itr][5] = lotepartida
         self.wids['ventana'].window.set_cursor(None)
 
     def rellenar_partes(self):
@@ -209,9 +207,9 @@ class PartesNoBloqueados(Ventana):
         self.rellenar_partes()
 
     def abrir_parte(self, b):
-        model, iter = self.wids['tv_partes'].get_selection().get_selected()
-        if iter != None:
-            self.abrir_parte_tv(self.wids['tv_partes'], model.get_path(iter), 
+        model, itr = self.wids['tv_partes'].get_selection().get_selected()
+        if itr != None:
+            self.abrir_parte_tv(self.wids['tv_partes'], model.get_path(itr), 
                                 None)
 
     def abrir_parte_tv(self, treeview, path, view_column):
@@ -230,23 +228,23 @@ class PartesNoBloqueados(Ventana):
                 # En los partes se asegura que no se cierre hasta que la 
                 # casilla esté marcada.
         if parte.es_de_balas():
-            import partes_de_fabricacion_balas
-            ventana_parteb = partes_de_fabricacion_balas.PartesDeFabricacionBalas(parte)
+            from formularios import partes_de_fabricacion_balas
+            ventana_parteb = partes_de_fabricacion_balas.PartesDeFabricacionBalas(parte)  # @UnusedVariable
         elif parte.es_de_rollos():
-            import partes_de_fabricacion_rollos
-            ventana_parteb = partes_de_fabricacion_rollos.PartesDeFabricacionRollos(parte)
+            from formularios import partes_de_fabricacion_rollos
+            ventana_parteb = partes_de_fabricacion_rollos.PartesDeFabricacionRollos(parte)  # @UnusedVariable
         elif parte.es_de_bolsas():
-            import partes_de_fabricacion_bolsas
-            ventana_parteb = partes_de_fabricacion_bolsas.PartesDeFabricacionBolsas(parte)
+            from formularios import partes_de_fabricacion_bolsas
+            ventana_parteb = partes_de_fabricacion_bolsas.PartesDeFabricacionBolsas(parte)  # @UnusedVariable
 
     def bloquear(self, cell, path):
         """
         Abre el parte para ser revisado.
         """
         model = self.wids['tv_partes'].get_model()
-        bloqueado = not cell.get_active()
+        bloqueado = not cell.get_active()  # @UnusedVariable
         ide = model[path][-1]
-        parte = pclases.ParteDeProduccion.get(id)
+        parte = pclases.ParteDeProduccion.get(ide)
         self.abrir_ventana_parte(parte, path)
         # Cambiado comportamiento para obligar a revisar el parte.
         #parte.bloqueado = bloqueado

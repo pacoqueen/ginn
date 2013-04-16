@@ -91,19 +91,19 @@ class ConsultaBeneficioTicket(Ventana):
         model = tv.get_model()
         tipo_e_id = model[path][-1]
         if "LDV" in tipo_e_id:
-            tipo, ide = tipo_e_id.split(':')
-            ldv = pclases.LineaDeVenta.get(id)
+            tipo, ide = tipo_e_id.split(':')  # @UnusedVariable
+            ldv = pclases.LineaDeVenta.get(ide)
             producto = ldv.producto
             if isinstance(producto, pclases.ProductoVenta):
                 if producto.es_rollo():
-                    import productos_de_venta_rollos
-                    ventana_producto = productos_de_venta_rollos.ProductosDeVentaRollos(producto, usuario = self.usuario)
+                    from formularios import productos_de_venta_rollos
+                    ventana_producto = productos_de_venta_rollos.ProductosDeVentaRollos(producto, usuario = self.usuario)  # @UnusedVariable
                 elif producto.es_bala() or producto.es_bigbag():
-                    import productos_de_venta_balas
-                    ventana_producto = productos_de_venta_balas.ProductosDeVentaBalas(producto, usuario = self.usuario)
+                    from formularios import productos_de_venta_balas
+                    ventana_producto = productos_de_venta_balas.ProductosDeVentaBalas(producto, usuario = self.usuario)  # @UnusedVariable
             elif isinstance(producto, pclases.ProductoCompra): 
-                import productos_compra
-                ventana_producto = productos_compra.ProductosCompra(producto, usuario = self.usuario)
+                from formularios import productos_compra
+                ventana_producto = productos_compra.ProductosCompra(producto, usuario = self.usuario)  # @UnusedVariable
 
     def chequear_cambios(self):
         pass

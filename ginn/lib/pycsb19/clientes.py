@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os, sys
-import gtk
+import os
+import gtk  # @UnusedImport
 import gtk.glade
 import gobject
 import sqlite3 as sqlite
@@ -144,10 +144,10 @@ class Cliente:
         return
         
     def VisualizaDatos(self,Datos):
-        store=gtk.ListStore(gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING)
+        #store=gtk.ListStore(gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING)
         store=self.tvClientes.get_model()
-        iter=store.append()
-        store.set(iter,0,Datos[0],1,Datos[1],2,Datos[2],3,Datos[6],4,Datos[7],5,Datos[8],6,Datos[9])
+        itr=store.append()
+        store.set(itr,0,Datos[0],1,Datos[1],2,Datos[2],3,Datos[6],4,Datos[7],5,Datos[8],6,Datos[9])
         self.tvClientes.set_model(store)
 
         
@@ -170,7 +170,7 @@ class Cliente:
         for x in cursor.fetchall():
             item=[]
             for n in x:
-               item.append(n)
+                item.append(n)
             self.VisualizaDatos(item)
         self.CierraDb()
         
@@ -260,7 +260,6 @@ class Cliente:
 
 
     def CompruebaCampos(self):
-        Salida=""
         if self.tCodigo.get_text()=="":
             self.Dialogo("No se ha introducido el nif",1)
             return 1
@@ -389,16 +388,16 @@ class Cliente:
             #try:
                 Linea=self.tvClientes.get_cursor()
                 store=self.tvClientes.get_model()
-                iter=store[Linea[0][0]]
+                itr=store[Linea[0][0]]
                 
                 self.AbreDb()
                 cursor = self.conexion.cursor()
-                sql="select codigo, nif, nombre, direccion, ciudad, cp, banco, oficina, dc, cuenta from clientes where codigo='"+iter[0]+"'"
+                sql="select codigo, nif, nombre, direccion, ciudad, cp, banco, oficina, dc, cuenta from clientes where codigo='"+itr[0]+"'"
                 cursor.execute(sql)
                 for x in cursor.fetchall():
                     item=[]
                     for n in x:
-                       item.append(n)
+                        item.append(n)
                 self.CierraDb()
                 
                 self.tCodigo.set_text(item[0])

@@ -90,9 +90,9 @@ from ventana import Ventana
 import gtk
 import time
 import mx.DateTime
-import postomatic
+from formularios import postomatic
 import pygtk
-import utils
+from formularios import utils
 pygtk.require('2.0')
 try:
     from psycopg import ProgrammingError as psycopg_ProgrammingError
@@ -2899,7 +2899,7 @@ class FacturasVenta(Ventana):
                        # 'pago': factura.cliente.vencimientos,
                        'pago': str(factura.get_plazo_pago(default = "")),
                        'documento': "; ".join(documentosDePago)}
-        import numerals
+        from formularios import numerals
         total = self.wids['e_total'].get_text()
         total = total.replace('€', '')
         total = total.replace(' ', '')
@@ -3265,7 +3265,7 @@ def generar_recibo(factura, usuario=None, logger=None, ventana_padre=None):
                 logger.error(txt)
             print txt
         else:
-            import recibos
+            from formularios import recibos
             ventana = recibos.Recibos(objeto = recibo, usuario = usuario)  # @UnusedVariable
         
 

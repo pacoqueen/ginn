@@ -35,12 +35,11 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
 from framework import pclases
-import mx.DateTime
 from informes import geninformes
 
 
@@ -115,8 +114,8 @@ class ConsultaPedidosCliente(Ventana):
                                "\n%s" % (idpedido, e),
                                padre = self.wids['ventana'])
         else:
-            import pedidos_de_venta
-            ventanapedido = pedidos_de_venta.PedidosDeVenta(objeto = pedido,
+            from formularios import pedidos_de_venta
+            ventanapedido = pedidos_de_venta.PedidosDeVenta(objeto = pedido,  # @UnusedVariable
                                                         usuario = self.usuario)
 
     def chequear_cambios(self):

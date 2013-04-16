@@ -34,14 +34,14 @@
 ## 
 ###################################################################
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
 from framework import pclases
 import mx.DateTime
 from informes import geninformes
-import ventana_progreso
+from formularios import ventana_progreso
 
 
 class ConsultaEntradasAlmacen(Ventana):

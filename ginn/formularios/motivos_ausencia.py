@@ -45,7 +45,7 @@ import time
 import pygtk
 import sqlobject
 import sys
-import utils
+from formularios import utils
 pygtk.require('2.0')
 try:
     from psycopg import ProgrammingError as psycopg_ProgrammingError

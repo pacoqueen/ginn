@@ -60,7 +60,7 @@ def eliminar_temporales():
     el programa y pete.
     """
     from tempfile import gettempdir
-    for root, dirs, files in os.walk(gettempdir()):
+    for root, dirs, files in os.walk(gettempdir()):  # @UnusedVariable
         for fich in files:
             try:
                 #print os.path.join(root, fich)

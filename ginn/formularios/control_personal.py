@@ -29,15 +29,13 @@
 ##  
 ###################################################################
 
-import sys, os
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time, mx.DateTime
+import gtk, mx.DateTime
 from framework import pclases
 from framework.seeker import VentanaGenerica 
-from formularios.utils import _float as float
 
 XBOTON, YBOTON = 21, 21
 
@@ -737,8 +735,8 @@ class ControlPersonal(Ventana, VentanaGenerica):
         tabla.attach(ebox, 
                      0, 1, 
                      fila, fila+1)
-        def guardar_grupo(cb, id):
-            ch = pclases.ControlHoras.get(id)
+        def guardar_grupo(cb, ide):
+            ch = pclases.ControlHoras.get(ide)
             ch.grupo = utils.combo_get_value(cb)
         grupo.connect("changed", guardar_grupo, ch.id)
         #grupo.connect("focus", 
@@ -791,10 +789,10 @@ class ControlPersonal(Ventana, VentanaGenerica):
         tabla.attach(ebox, 
                      2, 3, 
                      fila, fila+1)
-        def guardar(entry, id):
+        def guardar(entry, ide):
             txt = entry.get_text()
             if txt:
-                ch = pclases.ControlHoras.get(id)
+                ch = pclases.ControlHoras.get(ide)
                 try:
                     horas = utils._float(txt)
                     if not check_horas_regulares(ch, horas):
@@ -832,8 +830,8 @@ class ControlPersonal(Ventana, VentanaGenerica):
         tabla.attach(ebox, 
                      3, 4, 
                      fila, fila+1)
-        def guardar(chbox, id):
-            ch = pclases.ControlHoras.get(id)
+        def guardar(chbox, ide):
+            ch = pclases.ControlHoras.get(ide)
             ch.nocturnidad = chbox.get_active()
         n.connect("toggled", guardar, ch.id)
         n.connect("focus_in_event", 
@@ -878,8 +876,8 @@ class ControlPersonal(Ventana, VentanaGenerica):
         tabla.attach(ebox, 
                      5, 6, 
                      fila, fila+1)
-        def abrir_popup(boton, id):
-            ch = pclases.ControlHoras.get(id)
+        def abrir_popup(boton, ide):
+            ch = pclases.ControlHoras.get(ide)
             v = gtk.Window()
             v.set_title("Desglose de horas extras")
             v.set_modal(True)
@@ -951,9 +949,9 @@ class ControlPersonal(Ventana, VentanaGenerica):
                 self.wids['ventana'].unfullscreen()
                 self._is_fullscreen = False
                 era_fullscreen = True
-            def cerrar_y_actualizar(ventana, id, 
+            def cerrar_y_actualizar(ventana, ide, 
                                     pd, md, ad, vd, pn, mn, an, vn):
-                ch = pclases.ControlHoras.get(id)
+                ch = pclases.ControlHoras.get(ide)
                 for campo, entry in (("horasExtraDiaProduccion", pd), 
                                      ("horasExtraDiaMantenimiento", md), 
                                      ("horasExtraDiaAlmacen", ad), 
@@ -967,14 +965,14 @@ class ControlPersonal(Ventana, VentanaGenerica):
                     except:
                         h = 0
                     setattr(ch, campo, h)
-                he = self.wids['horas_extras_%d' % id]
+                he = self.wids['horas_extras_%d' % ide]
                 he.set_text(utils.float2str(ch.calcular_total_horas_extras(), 
                                             autodec = True))
                 if era_fullscreen:
                     self.wids['ventana'].fullscreen()
                     self._is_fullscreen = True
             v.connect("destroy", cerrar_y_actualizar, 
-                                 id, pd, md, ad, vd, pn, mn, an, vn)
+                                 ide, pd, md, ad, vd, pn, mn, an, vn)
         boton_he.connect("clicked", abrir_popup, ch.id)
         boton_he.connect("focus_in_event", 
                          focusin, 
@@ -1057,7 +1055,7 @@ class ControlPersonal(Ventana, VentanaGenerica):
                 self.wids['ventana'].unfullscreen()
                 self._is_fullscreen = False
                 era_fullscreen = True
-            def cerrar_y_actualizar(ventana, id, entries):
+            def cerrar_y_actualizar(ventana, ide, entries):
                 for horaslinea in entries:
                     entry = entries[horaslinea]
                     try:
@@ -1065,7 +1063,7 @@ class ControlPersonal(Ventana, VentanaGenerica):
                     except (TypeError, ValueError):
                         horas = 0
                     horaslinea.horasProduccion = horas
-                he = self.wids['horas_produccion_%d' % id]
+                he = self.wids['horas_produccion_%d' % ide]
                 he.set_text(utils.float2str(
                                 ch.calcular_total_horas_produccion(), 
                                 autodec = True))
@@ -1116,14 +1114,14 @@ class ControlPersonal(Ventana, VentanaGenerica):
         tabla.attach(ebox, 
                      9, 10, 
                      fila, fila+1)
-        def abrir_popup(boton, id):
-            ch = pclases.ControlHoras.get(id)
+        def abrir_popup(boton, ide):
+            ch = pclases.ControlHoras.get(ide)
             v = gtk.Window()
             v.set_title("Desglose de horas de mantenimiento")
             v.set_modal(True)
             v.set_transient_for(self.wids['ventana'])
             tabla = gtk.Table()
-            lineas = pclases.LineaDeProduccion.select(orderBy = "-id")
+            lineas = pclases.LineaDeProduccion.select(orderBy = "-ide")
             tabla.resize(lineas.count() + 1, 2)
             tabla.attach(gtk.Label("Horas"), 1, 2, 0, 1)
             fila = 1
@@ -1134,11 +1132,11 @@ class ControlPersonal(Ventana, VentanaGenerica):
                             pclases.ControlHorasMantenimiento\
                                 .q.lineaDeProduccionID == linea.id, 
                             pclases.ControlHorasMantenimiento\
-                                .q.controlHorasID == id))[0]
+                                .q.controlHorasID == ide))[0]
                 except IndexError:
                     h = pclases.ControlHorasMantenimiento(
                             lineaDeProduccion = linea, 
-                            controlHorasID = id)
+                            controlHorasID = ide)
                     pclases.Auditoria.nuevo(h, self.usuario, __file__)
                 entries[h] = gtk.Entry()
                 entries[h].set_alignment(0.9)
@@ -1155,7 +1153,7 @@ class ControlPersonal(Ventana, VentanaGenerica):
                 self.wids['ventana'].unfullscreen()
                 self._is_fullscreen = False
                 era_fullscreen = True
-            def cerrar_y_actualizar(ventana, id, entries):
+            def cerrar_y_actualizar(ventana, ide, entries):
                 for horaslinea in entries:
                     entry = entries[horaslinea]
                     try:
@@ -1163,14 +1161,14 @@ class ControlPersonal(Ventana, VentanaGenerica):
                     except (TypeError, ValueError):
                         horas = 0
                     horaslinea.horasMantenimiento = horas
-                he = self.wids['horas_mantenimiento_%d' % id]
+                he = self.wids['horas_mantenimiento_%d' % ide]
                 he.set_text(utils.float2str(
                                 ch.calcular_total_horas_mantenimiento(), 
                                 autodec = True))
                 if era_fullscreen:
                     self.wids['ventana'].fullscreen()
                     self._is_fullscreen = True
-            v.connect("destroy", cerrar_y_actualizar, id, entries)
+            v.connect("destroy", cerrar_y_actualizar, ide, entries)
         boton.connect("clicked", abrir_popup, ch.id)
         boton.connect("focus_in_event", 
                       focusin, 
@@ -1195,10 +1193,10 @@ class ControlPersonal(Ventana, VentanaGenerica):
                      10, 11, 
                      fila, fila+1, 
                      xoptions = gtk.SHRINK)
-        def guardar(entry, id):
+        def guardar(entry, ide):
             txt = entry.get_text()
             if txt:
-                ch = pclases.ControlHoras.get(id)
+                ch = pclases.ControlHoras.get(ide)
                 try:
                     ch.horasAlmacen = utils._float(txt)
                 except:
@@ -1233,7 +1231,6 @@ class ControlPersonal(Ventana, VentanaGenerica):
                    self.wids['scrolledwindow1'].get_hadjustment(),
                    self.wids['scrolledwindow1'].get_vadjustment())
         lista_hv = gtk.ComboBoxEntry()
-        model = gtk.ListStore(str)
         textos = [c.varios for c in pclases.ControlHoras.select(
                     pclases.ControlHoras.q.varios != "")]
         textos = utils.unificar_textos(textos)
@@ -1252,10 +1249,10 @@ class ControlPersonal(Ventana, VentanaGenerica):
         tabla.attach(ebox, 
                      12, 13, 
                      fila, fila+1)
-        def guardar(entry, id):
+        def guardar(entry, ide):
             txt = entry.get_text()
             if txt:
-                ch = pclases.ControlHoras.get(id)
+                ch = pclases.ControlHoras.get(ide)
                 try:
                     ch.horasVarios = utils._float(txt)
                 except:

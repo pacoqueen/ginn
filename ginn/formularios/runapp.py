@@ -3,7 +3,7 @@
 
 # Créditos: Oswaldo Hernández (oswaldo@soft-com.es)
 
-import subprocess
+from formularios import subprocess
 import threading
 import re
 

@@ -5,10 +5,10 @@ import os, sys
 import gtk
 import gtk.glade
 import gobject
-import remesas
-import ordenante
-import presentador
-import importar
+from lib.pyCsb19 import remesas
+from lib.pyCsb19 import ordenante
+from lib.pyCsb19 import presentador
+from lib.pyCsb19 import importar
 import sqlite3 as sqlite
 
 

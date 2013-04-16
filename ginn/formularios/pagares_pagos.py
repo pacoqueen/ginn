@@ -46,7 +46,7 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk
@@ -166,7 +166,7 @@ class PagaresPagos(Ventana):
         pago = pclases.Pago.get(idpago)
         fra = pago.facturaCompra
         if fra != None: 
-            import facturas_compra
+            from formularios import facturas_compra
             ventanafacturas = facturas_compra.FacturasDeEntrada(fra)  # @UnusedVariable
 
     def activar_widgets(self, s):
@@ -874,7 +874,7 @@ class PagaresPagos(Ventana):
         
     def imprimir_cheque_monte(self, boton):
         from formularios import reports
-        import numerals
+        from formularios import numerals
         pagare = self.objeto
         cantidad = pagare.cantidad
         if pagare.pagos == [] or pagare.pagos[0].proveedor == None:
@@ -893,7 +893,7 @@ class PagaresPagos(Ventana):
 
     def imprimir_pagare_monte(self, boton):
         from formularios import reports
-        import numerals
+        from formularios import numerals
         pagare = self.objeto
         fechaPago = pagare.fechaPago
         cantidad = pagare.cantidad
@@ -913,7 +913,7 @@ class PagaresPagos(Ventana):
 
     def imprimir_pagare_caixa(self, boton):
         from formularios import reports
-        import numerals
+        from formularios import numerals
         pagare = self.objeto
         fechaPago = pagare.fechaPago
         cantidad = pagare.cantidad
@@ -939,7 +939,7 @@ class PagaresPagos(Ventana):
 
     def imprimir_cheque_caixa(self, boton):
         from formularios import reports
-        import numerals
+        from formularios import numerals
         pagare = self.objeto
         cantidad = pagare.cantidad
         if pagare.pagos == [] or pagare.pagos[0].proveedor == None:
@@ -995,7 +995,7 @@ class PagaresPagos(Ventana):
 
     def imprimir_pagare_bankinter(self):
         from formularios import reports
-        import numerals
+        from formularios import numerals
         pagare = self.objeto
         fechaPago = pagare.fechaPago
         cantidad = pagare.cantidad
@@ -1020,7 +1020,7 @@ class PagaresPagos(Ventana):
 
     def imprimir_cheque_bankinter(self):
         from formularios import reports
-        import numerals
+        from formularios import numerals
         pagare = self.objeto
         cantidad = pagare.cantidad
         if pagare.pagos == [] or pagare.pagos[0].proveedor == None:
@@ -1359,7 +1359,7 @@ def sean_young():
     """
     cantidad = 1234567.89
     destinatario = "Andy Kaufman, Bob Zmuda, George Shapiro & Tony Clifton Co."
-    import numerals
+    from formularios import numerals
     euros = numerals.numerals(cantidad, moneda = '', fraccion='céntimos')  
         # ¿Por qué lo pondría sin moneda?
     fecha = mx.DateTime.localtime()

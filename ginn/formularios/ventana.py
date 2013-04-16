@@ -189,7 +189,7 @@ class Ventana:
                         and event.state & gtk.gdk.CONTROL_MASK \
                         and event.state & gtk.gdk.MOD1_MASK:
                     # print "CONTROL+ALT+q"
-                    import trazabilidad
+                    from formularios import trazabilidad
                     t = trazabilidad.Trazabilidad(self.objeto,  # @UnusedVariable
                                                   ventana_padre = self)
                 elif event.keyval == gtk.gdk.keyval_from_name(tecla_fullscreen):

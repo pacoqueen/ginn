@@ -31,7 +31,7 @@
 ## 
 ###################################################################
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
@@ -169,7 +169,7 @@ class ConsultaVencimientosPagados(Ventana):
         idpago = model[path][-1]
         pago = pclases.Pago.get(idpago)
         if pago.facturaCompra:
-            import facturas_compra          
+            from formularios import facturas_compra          
             ventanafacturas = facturas_compra.FacturasDeEntrada(  # @UnusedVariable
                                 pago.facturaCompra, 
                                 usuario = self.usuario)

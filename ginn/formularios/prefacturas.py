@@ -43,9 +43,9 @@ from ventana import Ventana
 import gtk
 import time
 import mx.DateTime
-import postomatic
+from formularios import postomatic
 import pygtk
-import utils
+from formularios import utils
 pygtk.require('2.0')
 try:
     from psycopg import ProgrammingError as psycopg_ProgrammingError
@@ -2110,7 +2110,7 @@ class Prefacturas(Ventana):
         vencimiento = {'fecha': "; ".join(fechasVencimiento),
                        'pago': factura.cliente.vencimientos,
                        'documento': "; ".join(documentosDePago)}
-        import numerals
+        from formularios import numerals
         total = self.wids['e_total'].get_text()
         total = total.replace('€', '')
         total = total.replace(' ', '')

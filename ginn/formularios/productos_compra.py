@@ -41,7 +41,7 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
@@ -324,7 +324,7 @@ class ProductosCompra(Ventana, VentanaGenerica):
         ldc = pclases.LineaDeCompra.get(idldc)
         albaran = ldc.albaranEntrada
         if albaran != None:
-            import albaranes_de_entrada
+            from formularios import albaranes_de_entrada
             ventana = albaranes_de_entrada.AlbaranesDeEntrada(albaran)
 
     def actualizar_historico(self, tv, path, view_col):
@@ -856,7 +856,7 @@ class ProductosCompra(Ventana, VentanaGenerica):
         Abre la ventana "productos.py" donde se muestran todos los 
         productos y tarifas en tabla.
         """
-        import productos
+        from formularios import productos
         ventana_tabla = productos.Productos(usuario = self.usuario)
 
     def buscar_producto(self, widget, a_buscar = ""):

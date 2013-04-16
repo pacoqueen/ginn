@@ -35,14 +35,14 @@
 ##                        venta.
 ###################################################################
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk, time
 from framework import pclases
 import mx.DateTime
 from informes import geninformes
-import utils_almacen
+from formularios import utils_almacen
 
 class ConsultaBajoMinimos(Ventana):
     
@@ -312,7 +312,7 @@ class ConsultaBajoMinimos(Ventana):
                                 notas = "Creado a partir de la consulta de "
                                         "faltas.")
                         pclases.Auditoria.nuevo(ldp, self.usuario, __file__)
-                    import pedidos_de_compra
+                    from formularios import pedidos_de_compra
                     ventana_pedido = pedidos_de_compra.PedidosDeCompra(pedido)  # @UnusedVariable
 
 

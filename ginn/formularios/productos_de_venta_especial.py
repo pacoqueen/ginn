@@ -38,7 +38,7 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk
@@ -634,7 +634,7 @@ class ProductosDeVentaEspecial(Ventana):
 
     def ver_tarifas(self, w):
         producto = self.objeto
-        import tarifas_de_precios
+        from formularios import tarifas_de_precios
         v = tarifas_de_precios.TarifasDePrecios()
 
     def add_campoesp(self, w):

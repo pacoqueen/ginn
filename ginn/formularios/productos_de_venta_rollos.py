@@ -40,7 +40,7 @@
 ###################################################################
 
 from ventana import Ventana
-import utils
+from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk
@@ -970,7 +970,7 @@ class ProductosDeVentaRollos(Ventana):
 
     def ver_ficha(self, w):
         producto = self.objeto
-        import formulacion_geotextiles
+        from formularios import formulacion_geotextiles
         formulacion_geotextiles.FormulacionGeotextiles(producto)
         return
 
@@ -988,7 +988,7 @@ class ProductosDeVentaRollos(Ventana):
         
     def ver_tarifas(self, w):
         producto = self.objeto
-        import tarifas_de_precios
+        from formularios import tarifas_de_precios
         tarifas_de_precios.TarifasDePrecios()
         return
 
