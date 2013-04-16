@@ -48,6 +48,7 @@ from framework import pclases
 import mx.DateTime
 from informes import geninformes
 import pango 
+from lib import charting
 
 
 class ConsultaVentas(Ventana):
@@ -256,21 +257,21 @@ class ConsultaVentas(Ventana):
         Abre la factura o la ficha del comercial, según corresponda.
         """
         model = tv.get_model()
-        id = model[path][-1]
-        if id > 0 and id != '0' and model[path].parent == None: # Es comercial.
-            comercial = pclases.Comercial.get(id)
+        ide = model[path][-1]
+        if ide > 0 and ide != '0' and model[path].parent == None: # Es comercial.
+            comercial = pclases.Comercial.get(ide)
             empleado = comercial.empleado
             from formularios import empleados
-            v = empleados.Empleados(empleado)
-        elif id != "" and model[path].parent != None: # Es factura.
-            factura = pclases.getObjetoPUID(id)
+            v = empleados.Empleados(empleado)  # @UnusedVariable
+        elif ide != "" and model[path].parent != None: # Es factura.
+            factura = pclases.getObjetoPUID(ide)
             if isinstance(factura, pclases.FacturaVenta):
                 from formularios import facturas_venta
-                v = facturas_venta.FacturasVenta(factura, 
+                v = facturas_venta.FacturasVenta(factura,  # @UnusedVariable
                                                  usuario = self.usuario)
             elif isinstance(factura, pclases.FacturaDeAbono):
                 from formularios import abonos_venta
-                v = abonos_venta.AbonosVenta(factura, usuario = self.usuario)
+                v = abonos_venta.AbonosVenta(factura, usuario = self.usuario)  # @UnusedVariable
 
     def abrir_factura_o_proveedor(self, tv, path, view_column):
         """
@@ -278,19 +279,19 @@ class ConsultaVentas(Ventana):
         """
         model = tv.get_model()
         ide = model[path][-1]
-        if id > 0 and id != '0' and model[path].parent == None: # Es proveedor.
-            proveedor = pclases.Proveedor.get(id)
+        if ide > 0 and ide != '0' and model[path].parent == None: # Es proveedor.
+            proveedor = pclases.Proveedor.get(ide)
             from formularios import proveedores
-            v = proveedores.Proveedores(proveedor)
-        elif id != "" and model[path].parent != None: # Es factura.
-            factura = pclases.getObjetoPUID(id)
+            v = proveedores.Proveedores(proveedor)  # @UnusedVariable
+        elif ide != "" and model[path].parent != None: # Es factura.
+            factura = pclases.getObjetoPUID(ide)
             if isinstance(factura, pclases.FacturaVenta):
                 from formularios import facturas_venta
-                v = facturas_venta.FacturasVenta(factura, 
+                v = facturas_venta.FacturasVenta(factura,  # @UnusedVariable
                                                  usuario = self.usuario)
             elif isinstance(factura, pclases.FacturaDeAbono):
                 from formularios import abonos_venta
-                v = abonos_venta.AbonosVenta(factura, usuario = self.usuario)
+                v = abonos_venta.AbonosVenta(factura, usuario = self.usuario)  # @UnusedVariable
 
     def abrir_producto_o_tarifa(self, tv, path, view_column):
         """
@@ -299,21 +300,21 @@ class ConsultaVentas(Ventana):
         """
         model = tv.get_model()
         ide = model[path][-1]
-        if id > 0 and model[path].parent == None:   # Es tarifa.
+        if ide > 0 and model[path].parent == None:   # Es tarifa.
             from formularios import tarifas_de_precios
-            tarifa = pclases.Tarifa.get(id)
-            v = tarifas_de_precios.TarifasDePrecios(tarifa)
-        elif id > 0 and model[path].parent != None: # Es producto
-            ldv = pclases.LineaDeVenta.get(id)
+            tarifa = pclases.Tarifa.get(ide)
+            v = tarifas_de_precios.TarifasDePrecios(tarifa)  # @UnusedVariable
+        elif ide > 0 and model[path].parent != None: # Es producto
+            ldv = pclases.LineaDeVenta.get(ide)
             producto = ldv.producto
             if isinstance(producto, pclases.ProductoVenta):
                 if producto.es_rollo():
                     from formularios import productos_de_venta_rollos
-                    v = productos_de_venta_rollos.ProductosDeVentaRollos(
+                    v = productos_de_venta_rollos.ProductosDeVentaRollos(  # @UnusedVariable
                             producto)
                 elif producto.es_bala() or producto.es_bigbag():
                     from formularios import productos_de_venta_balas
-                    v = productos_de_venta_balas.ProductosDeVentaBalas(
+                    v = productos_de_venta_balas.ProductosDeVentaBalas(  # @UnusedVariable
                             producto)
 
     def chequear_cambios(self):
@@ -386,16 +387,11 @@ class ConsultaVentas(Ventana):
         total_metros = "%s m²" % (utils.float2str(self.metros_totales))
         self.wids['e_total_metros'].set_text(total_metros)
         # Y ahora la gráfica.
-        try:
-            import gtk, gobject, cairo, copy, math
-        except ImportError:
-            return      # No se pueden dibujar gráficas. 
         datachart = []
         for t in self.por_tarifa:
             datachart.append([t and t.nombre or "Sin tarifa", 
                               self.por_tarifa[t]['total'], 
                               t and 3 or 7])
-        from lib import charting
         try:
             oldchart = self.wids['eventbox_chart'].get_child()
             if oldchart != None:
@@ -418,16 +414,11 @@ class ConsultaVentas(Ventana):
     def cambiar_grafica(self, nb, page, page_num):
         if page_num == 0:
             # Y ahora la gráfica.
-            try:
-                import gtk, gobject, cairo, copy, math
-            except ImportError:
-                return      # No se pueden dibujar gráficas. 
             datachart = []
             for t in self.por_tarifa:
                 datachart.append([t and t.nombre or "Sin tarifa", 
                                   self.por_tarifa[t]['total'], 
                                   t and 3 or 7])
-            from lib import charting
             try:
                 oldchart = self.wids['eventbox_chart'].get_child()
                 if oldchart != None:
@@ -449,10 +440,6 @@ class ConsultaVentas(Ventana):
                 self.logger.error(txt)
         elif page_num == 1:
             # Y ahora la gráfica.
-            try:
-                import gtk, gobject, cairo, copy, math
-            except ImportError:
-                return      # No se pueden dibujar gráficas. 
             datachart = []
             for t in self.por_cliente:
                 datachart.append([t and t.nombre or "Sin cliente", 
@@ -464,7 +451,6 @@ class ConsultaVentas(Ventana):
             _datachart = datachart[:5]
             _datachart.append(("Resto", sum([c[1] for c in datachart[5:]]), 7))
             datachart = _datachart
-            from lib import charting
             try:
                 oldchart = self.wids['eventbox_chart'].get_child()
                 if oldchart != None:
@@ -483,10 +469,6 @@ class ConsultaVentas(Ventana):
                 self.logger.error(txt)
         elif page_num == 3:
             # Y ahora la gráfica.
-            try:
-                import gtk, gobject, cairo, copy, math
-            except ImportError:
-                return      # No se pueden dibujar gráficas. 
             datachart = []
             model = self.wids['tv_comercial'].get_model()
             try:
@@ -507,7 +489,6 @@ class ConsultaVentas(Ventana):
             #_datachart = datachart[:5]
             #_datachart.append(("Resto", sum([c[1] for c in datachart[5:]])))
             #datachart = _datachart
-            from lib import charting
             try:
                 oldchart = self.wids['eventbox_chart'].get_child()
                 if oldchart != None:
@@ -526,10 +507,6 @@ class ConsultaVentas(Ventana):
                 self.logger.error(txt)
         elif page_num == 4:
             # Y ahora la gráfica.
-            try:
-                import gtk, gobject, cairo, copy, math
-            except ImportError:
-                return      # No se pueden dibujar gráficas. 
             datachart = []
             model = self.wids['tv_proveedor'].get_model()
             try:
@@ -550,7 +527,6 @@ class ConsultaVentas(Ventana):
             #_datachart = datachart[:5]
             #_datachart.append(("Resto", sum([c[1] for c in datachart[5:]])))
             #datachart = _datachart
-            from lib import charting
             try:
                 oldchart = self.wids['eventbox_chart'].get_child()
                 if oldchart != None:
@@ -573,21 +549,21 @@ class ConsultaVentas(Ventana):
             # Lo pongo en negativo porque es dinero que se ha devuelto/pagado.
         total_ldv = lda.cantidad * precio 
         tarifa = lda.get_tarifa()
-        kilos = kilos_gtx = kilos_cable = metros = rollos = 0
+        kilos = kilos_gtx = kilos_cable = metros = rollos = 0  # @UnusedVariable
         if lda.productoVenta and lda.productoVenta.es_rollo():
             metros = lda.cantidad
             try:
-                rollos = int(lda.cantidad / 
+                rollos = int(lda.cantidad /  # @UnusedVariable
                     lda.productoVenta.camposEspecificosRollo.metros_cuadrados)
             except ZeroDivisionError:
-                rollos = 0
-            kilos_gtx = ((metros * 
+                rollos = 0  # @UnusedVariable
+            kilos_gtx = ((metros *  # @UnusedVariable
                 lda.productoVenta.camposEspecificosRollo.gramos) / 1000.0)
         elif lda.productoVenta and (lda.productoVenta.es_bala() 
                                     or lda.productoVenta.es_bigbag()):
-            kilos = lda.cantidad
+            kilos = lda.cantidad  # @UnusedVariable
         elif lda.productoVenta and (lda.productoVenta.es_bala_cable()):
-            kilos_cable = lda.cantidad
+            kilos_cable = lda.cantidad  # @UnusedVariable
         else:       # ldv.producto es un pclases.ProductoCompra. No puedo 
                     # medir sus metros, kilos ni bultos
             pass

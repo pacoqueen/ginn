@@ -42,9 +42,8 @@ from ventana import Ventana
 from formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
+import gtk
 from framework import pclases
-import mx.DateTime
 import os 
 from formularios import cmdgtk
 
@@ -104,8 +103,8 @@ dir()
         gtk.main()
 
     def pasar_foco(self, widget, event):
-      if event.keyval == 65293 or event.keyval == 65421:
-        self.wids['b_buscar'].grab_focus()
+        if event.keyval == 65293 or event.keyval == 65421:
+            self.wids['b_buscar'].grab_focus()
 
     def chequear_cambios(self):
         pass
@@ -175,10 +174,10 @@ dir()
                                    padre = self.wids['ventana'])
                 return
             try:
-                articulo = pclases.AlbaranSalida.get(id)
+                articulo = pclases.AlbaranSalida.get(ide)
             except pclases.SQLObjectNotFound:
                 utils.dialogo_info(titulo = "ERROR", 
-                                   texto = "El AlbaranSalida con ID %d no existe." % (id), 
+                                   texto = "El AlbaranSalida con ID %d no existe." % (ide), 
                                    padre = self.wids['ventana'])
                 return
         elif a_buscar.upper().startswith('PDP'):
@@ -190,10 +189,10 @@ dir()
                                    padre = self.wids['ventana'])
                 return
             try:
-                articulo = pclases.ParteDeProduccion.get(id)
+                articulo = pclases.ParteDeProduccion.get(ide)
             except pclases.SQLObjectNotFound:
                 utils.dialogo_info(titulo = "ERROR", 
-                                   texto = "El ParteDeProduccion con ID %d no existe." % (id), 
+                                   texto = "El ParteDeProduccion con ID %d no existe." % (ide), 
                                    padre = self.wids['ventana'])
                 return
         else:
@@ -207,32 +206,32 @@ dir()
     def rellenar_datos(self, articulo):
         model = self.wids['tv_datos'].get_model()
         model.clear()
-        iter = self.insertar_rama(articulo, None, model)
+        itr = self.insertar_rama(articulo, None, model)  # @UnusedVariable
     
     def insertar_rama(self, objeto, padre, model):
-        iter = self.insertar_nombre(objeto, padre, model)
-        self.insertar_campos(objeto, iter, model)
-        self.insertar_ajenos(objeto, iter, model)
-        self.insertar_multiples(objeto, iter, model)
-        return iter
+        itr = self.insertar_nombre(objeto, padre, model)
+        self.insertar_campos(objeto, itr, model)
+        self.insertar_ajenos(objeto, itr, model)
+        self.insertar_multiples(objeto, itr, model)
+        return itr
     
     def insertar_nombre(self, objeto, padre, model, nombre_opcional = ""):
         if objeto == None:
-            iter = model.append(padre, ("", 
-                                        nombre_opcional, 
-                                        "", 
-                                        ""))
+            itr = model.append(padre, ("", 
+                                       nombre_opcional, 
+                                       "", 
+                                       ""))
             return None
         else:
             try:
                 nombretabla = objeto.sqlmeta.table
             except AttributeError: # SQLObject <= 0.6.1
                 nombretabla = objeto._table
-            iter = model.append(padre, (objeto.id, 
+            itr = model.append(padre, (objeto.id, 
                                         nombretabla, 
                                         "", 
                                         objeto.__class__.__name__))
-            return iter
+            return itr
          
     def insertar_campos(self, objeto, padre, model):
         """
@@ -269,8 +268,8 @@ dir()
         for ajena in ajenas:
             reg_ajena = ajena[:-2]
             obj_d = getattr(objeto, reg_ajena)
-            iter = self.insertar_nombre(obj_d, padre, model, reg_ajena)
-            model.append(iter, ("", "", "", ""))
+            itr = self.insertar_nombre(obj_d, padre, model, reg_ajena)
+            model.append(itr, ("", "", "", ""))
 
     def insertar_multiples(self, objeto, padre, model):
         """
@@ -289,10 +288,10 @@ dir()
             lista_objs = getattr(objeto, multiple.joinMethodName)
             # print multiple.joinMethodName, lista_objs
             for obj_d in lista_objs:
-                iter = self.insertar_nombre(obj_d, padre, model, multiple.otherClassName)
-                model.append(iter, ("", "", "", ""))
+                itr = self.insertar_nombre(obj_d, padre, model, multiple.otherClassName)
+                model.append(itr, ("", "", "", ""))
     
-    def expandir(self, tv, iter, path):
+    def expandir(self, tv, itr, path):
         model = tv.get_model()
         child = model[path].iterchildren().next()
         if child[0] == "" and \
@@ -302,11 +301,11 @@ dir()
             model.remove(child.iter)
             ide = int(model[path][0])
             clase = model[path][-1]
-#            print clase, id
+#            print clase, ide
             try:
-                objeto = eval('pclases.%s.get(%d)' % (clase, id))
+                objeto = eval('pclases.%s.get(%d)' % (clase, ide))
             except pclases.SQLObjectNotFound:
-                utils.dialogo_info(titulo = "ERROR", texto = "El objeto %s con ID %d no existe." % (clase, id))
+                utils.dialogo_info(titulo = "ERROR", texto = "El objeto %s con ID %d no existe." % (clase, ide))
             padre = model.get_iter(path)
             try:
                 objeto.sync()
@@ -319,7 +318,7 @@ dir()
             self.insertar_multiples(objeto, padre, model)
             tv.expand_row(path, False)
 
-    def cerrar(self, tv, iter, path):
+    def cerrar(self, tv, itr, path):
         model = tv.get_model()
         iterador = model[path].iterchildren()
         try:
@@ -329,7 +328,7 @@ dir()
                 hijo = iterador.next()
         except StopIteration:
             pass
-        model.append(iter, ("", "", "", ""))
+        model.append(itr, ("", "", "", ""))
 
     def cambiar_valor(self, cell, path, text):
         model = self.wids['tv_datos'].get_model()
@@ -338,7 +337,7 @@ dir()
                 ide = model[path].parent[0]
                 clase = model[path].parent[-1]
                 campo = model[path][1]
-                objeto = eval("pclases.%s.get(%d)" % (clase, int(id)))
+                objeto = eval("pclases.%s.get(%d)" % (clase, int(ide)))
                 objeto.syncUpdate()
                 try:
                     try:
@@ -346,10 +345,10 @@ dir()
                     except Exception, inner_e:
                         try:
                             setattr(objeto, campo, utils._float(text))
-                        except Exception, float_e:
+                        except Exception, float_e:  # @UnusedVariable
                             try:
                                 setattr(objeto, campo, int(text))
-                            except Exception, int_e:
+                            except Exception, int_e:  # @UnusedVariable
                                 raise inner_e
                     model[path][2] = getattr(objeto, campo)
                 except Exception, e:

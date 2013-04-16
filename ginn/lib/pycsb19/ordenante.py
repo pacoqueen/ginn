@@ -1,8 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
-import gtk
+import gtk  # @UnusedImport
 import gtk.glade
 import gobject
 import sqlite3 as sqlite
@@ -150,10 +149,10 @@ class Ordenante:
         return
         
     def VisualizaDatos(self,Datos):
-        store=gtk.ListStore(gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING)
+        store=gtk.ListStore(gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING)  # @UnusedVariable
         store=self.tvOrdenante.get_model()
-        iter=store.append()
-        store.set(iter,0,Datos[0],1,Datos[1],2,Datos[2],3,Datos[3],4,Datos[4],5,Datos[5],6,Datos[6])
+        itr=store.append()
+        store.set(itr,0,Datos[0],1,Datos[1],2,Datos[2],3,Datos[3],4,Datos[4],5,Datos[5],6,Datos[6])
         self.tvOrdenante.set_model(store)
         
     def GrabaDatos(self,datos):
@@ -175,7 +174,7 @@ class Ordenante:
         for x in cursor.fetchall():
             item=[]
             for n in x:
-               item.append(n)
+                item.append(n)
             self.VisualizaDatos(item)
         self.CierraDb()
         
@@ -262,7 +261,7 @@ class Ordenante:
             
     def Ceros(self,Numero):
         d=""
-        for n in range(0,Numero):
+        for n in range(0,Numero):  # @UnusedVariable
             d=d+"0"
         return d
 
@@ -333,14 +332,14 @@ class Ordenante:
             try:
                 Linea=self.tvOrdenante.get_cursor()
                 store=self.tvOrdenante.get_model()
-                iter=store[Linea[0][0]]
-                self.tNif.set_text(iter[0])
-                self.tSufijo.set_text(iter[1])
-                self.tNombre.set_text(iter[2])
-                self.tBanco.set_text(iter[3])
-                self.tOficina.set_text(iter[4])
-                self.tDc.set_text(iter[5])
-                self.tCuenta.set_text(iter[6])
+                itr=store[Linea[0][0]]
+                self.tNif.set_text(itr[0])
+                self.tSufijo.set_text(itr[1])
+                self.tNombre.set_text(itr[2])
+                self.tBanco.set_text(itr[3])
+                self.tOficina.set_text(itr[4])
+                self.tDc.set_text(itr[5])
+                self.tCuenta.set_text(itr[6])
                 self.tNif.set_editable(0)
                 self.tSufijo.set_editable(0)
             except:

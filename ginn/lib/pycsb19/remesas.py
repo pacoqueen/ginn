@@ -1,8 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os, sys
-import gtk
+import gtk  # @UnusedImport
 import gtk.glade
 import gobject
 import recibo
@@ -236,10 +235,10 @@ class Remesas:
             return 1
 
     def VisualizaDatos(self,Datos):
-        store=gtk.ListStore(gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING)
+        store=gtk.ListStore(gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING)  # @UnusedVariable
         store=self.tvRecibos.get_model()
-        iter=store.append()
-        store.set(iter,0,Datos[0],1,Datos[1],2,Datos[2])
+        itr=store.append()
+        store.set(itr,0,Datos[0],1,Datos[1],2,Datos[2])
         self.tvRecibos.set_model(store)
         
     def MiraRecibos(self):
@@ -341,7 +340,7 @@ class Remesas:
                 
             else:
                 pass
-             #   print "salio por aqui"
+            #   print "salio por aqui"
             return 0
         else:
             #print "no Es distinto"
@@ -371,7 +370,7 @@ class Remesas:
             
             
     def Modificar(self,widget):
-        store=gtk.ListStore(gobject.TYPE_STRING,gobject.TYPE_STRING)
+        store=gtk.ListStore(gobject.TYPE_STRING,gobject.TYPE_STRING)  # @UnusedVariable
         store=self.tvRecibos.get_model()
         if self.tvRecibos.get_cursor()[0]<>None:
             self.VenRecibos=recibo.Recibo()
@@ -432,13 +431,13 @@ class Remesas:
         
     def Espacios(self,Numero):
         d=""
-        for n in range(0,Numero):
+        for n in range(0,Numero):  # @UnusedVariable
             d=d+" "
         return d
 
     def Ceros(self,Numero):
         d=""
-        for n in range(0,Numero):
+        for n in range(0,Numero):  # @UnusedVariable
             d=d+"0"
         return d
 
@@ -471,10 +470,10 @@ class Remesas:
         f=open(Fichero,"w")
 
         #Cabecera de presentador
-        ord=self.conexion.cursor()
+        cur=self.conexion.cursor()
         sql="SELECT ordenante FROM remesas WHERE codigo="+self.CodRemesa
-        ord.execute(sql)
-        ordenante=ord.fetchall()[0][0]
+        cur.execute(sql)
+        ordenante=cur.fetchall()[0][0]
         
         rem=self.conexion.cursor()
         sql="SELECT nif, sufijo, nombre, banco, oficina, dc, cuenta FROM ordenantes WHERE nif='"+ordenante.split(":")[0]+"' and sufijo='"+ordenante.split(":")[1]+"'"
@@ -575,9 +574,9 @@ class Remesas:
             else:
                 NombreCliente=c[2]
 
-            DireCliente=c[3]
-            CiudadCliente=c[4]
-            CpCliente=c[5]
+            DireCliente=c[3]  # @UnusedVariable
+            CiudadCliente=c[4]  # @UnusedVariable
+            CpCliente=c[5]  # @UnusedVariable
             BancoCliente=c[6]
             OficinaCliente=c[7]
             DcCliente=c[8]

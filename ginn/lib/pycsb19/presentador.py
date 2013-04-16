@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-import gtk
+import gtk  # @UnusedImport
 import gtk.glade
 import gobject
 import sqlite3 as sqlite
@@ -125,10 +125,10 @@ class Presentador:
         return
         
     def VisualizaDatos(self,Datos):
-        store=gtk.ListStore(gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING)
+        store=gtk.ListStore(gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING)  # @UnusedVariable
         store=self.tvPresentador.get_model()
-        iter=store.append()
-        store.set(iter,0,Datos[0],1,Datos[1],2,Datos[2],3,Datos[3],4,Datos[4])
+        itr=store.append()
+        store.set(itr,0,Datos[0],1,Datos[1],2,Datos[2],3,Datos[3],4,Datos[4])
         self.tvPresentador.set_model(store)
         
     def GrabaDatos(self,datos):
@@ -150,7 +150,7 @@ class Presentador:
         for x in cursor.fetchall():
             item=[]
             for n in x:
-               item.append(n)
+                item.append(n)
             self.VisualizaDatos(item)
         self.CierraDb()
         
@@ -219,7 +219,7 @@ class Presentador:
         
 
     def CompruebaCampos(self):
-        Salida=""
+        Salida=""  # @UnusedVariable
         if self.tNif.get_text()=="":
             self.Dialogo("No se ha introducido el nif",1)
             return 1
@@ -251,12 +251,12 @@ class Presentador:
             try:
                 Linea=self.tvPresentador.get_cursor()
                 store=self.tvPresentador.get_model()
-                iter=store[Linea[0][0]]
-                self.tNif.set_text(iter[0])
-                self.tSufijo.set_text(iter[1])
-                self.tNombre.set_text(iter[2])
-                self.tBanco.set_text(iter[3])
-                self.tOficina.set_text(iter[4])
+                itr=store[Linea[0][0]]
+                self.tNif.set_text(itr[0])
+                self.tSufijo.set_text(itr[1])
+                self.tNombre.set_text(itr[2])
+                self.tBanco.set_text(itr[3])
+                self.tOficina.set_text(itr[4])
                 self.tNif.set_editable(0)
                 self.tSufijo.set_editable(0)
             except:

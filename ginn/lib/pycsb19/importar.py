@@ -1,12 +1,11 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os, sys
-import gtk
+import gtk  # @UnusedImport
 import gtk.glade
 import gobject
-import ordenante
-import presentador
+import ordenante  # @UnusedImport
+import presentador  # @UnusedImport
 import sqlite3 as sqlite
 
 
@@ -164,9 +163,9 @@ class Importar:
 
     def SacaPresentador(self):
         Datos=[]
-        file = open(self.tNombre.get_text(),"r")
+        fich = open(self.tNombre.get_text(),"r")
         #Solo leemos la primera linea porque es donde deberia de estar el presentador
-        linea=file.readline()
+        linea=fich.readline()
         
         if linea[0:4]=="5180":
             Datos.append(linea[4:13]) #nif
@@ -174,13 +173,13 @@ class Importar:
             Datos.append(unicode(linea[28:68], 'latin-1').encode('utf-8')) #Nombre
             Datos.append(linea[88:92]) #Banco
             Datos.append(linea[92:96]) #Oficina
-        file.close()
+        fich.close()
         
         if Datos<>[]:
             store=gtk.ListStore(gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING)
             store=self.tvPresentador.get_model()
-            iter=store.append()
-            store.set(iter,0,Datos[0],1,Datos[1],2,Datos[2],3,Datos[3],4,Datos[4])
+            itr=store.append()
+            store.set(itr,0,Datos[0],1,Datos[1],2,Datos[2],3,Datos[3],4,Datos[4])
             self.tvPresentador.set_model(store)
         else:
             d=gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_QUESTION, gtk.BUTTONS_OK,"El fichero parece no tener presentador, puede que no sea un fichero del cuaderno 19 valido")
@@ -190,9 +189,9 @@ class Importar:
         
     def SacaOrdenante(self):        
         Datos=[]
-        file = open(self.tNombre.get_text(),"r")
+        fich = open(self.tNombre.get_text(),"r")
         while 1:
-            linea=file.readline()
+            linea=fich.readline()
 
             if linea[0:4]=="5380":
                 Datos.append(linea[4:13]) #nif
@@ -205,34 +204,34 @@ class Importar:
                 
                 store=gtk.ListStore(gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING)
                 store=self.tvOrdenante.get_model()
-                iter=store.append()
-                store.set(iter,0,Datos[0],1,Datos[1],2,Datos[2],3,Datos[3],4,Datos[4],5,Datos[5],6,Datos[6])
+                itr=store.append()
+                store.set(itr,0,Datos[0],1,Datos[1],2,Datos[2],3,Datos[3],4,Datos[4],5,Datos[5],6,Datos[6])
                 self.tvOrdenante.set_model(store)
                 Datos=[]
 
-               #Mira a ver si se acaba el fichero
+            #Mira a ver si se acaba el fichero
             if linea=="":
                 break
        
-        file.close()
+        fich.close()
         
     def SacaRecibos(self):
-        file = open(self.tNombre.get_text(),"r")
+        fich = open(self.tNombre.get_text(),"r")
         sw=0
         while 1:
 
-            linea=file.readline()
+            linea=fich.readline()
             if linea[0:4]=="5680":
-                data=gtk.ListStore(gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING)
+                data=gtk.ListStore(gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING)  # @UnusedVariable
                 store=self.tvRecibos.get_model()
-                iter=store.append()
+                itr=store.append()
                 if sw<>0:
                     self.tvRecibos.set_model(store)
                     sw=0
                 
                 Datos=[]
                 #Los inicializo primero por si no hay datos que los meta igualmente con null
-                for n in range (0,27):
+                for n in range (0,27):  # @UnusedVariable
                     Datos.append("")
                     
                 sw=1
@@ -244,47 +243,47 @@ class Importar:
                 Datos[5]=linea[78:88]      #cuenta
                 Datos[6]=str(int(linea[88:96]))+","+linea[96:98]      #importe
                 Datos[7]=unicode(linea[114:154], 'latin-1').encode('utf-8')      #concepto1
-                store.set(iter,0,Datos[0],1,Datos[1],2,Datos[2],3,Datos[3],4,Datos[4],5,Datos[5],6,Datos[6],7,Datos[7])
+                store.set(itr,0,Datos[0],1,Datos[1],2,Datos[2],3,Datos[3],4,Datos[4],5,Datos[5],6,Datos[6],7,Datos[7])
                     
             elif linea[0:4]=="5681":
                 Datos[8]=unicode(linea[28:68], 'latin-1').encode('utf-8')      #concepto2
                 Datos[9]=unicode(linea[68:108], 'latin-1').encode('utf-8')      #concepto3
                 Datos[10]=unicode(linea[108:148], 'latin-1').encode('utf-8')      #concepto4
-                store.set(iter,8,Datos[8],9,Datos[9],10,Datos[10])
+                store.set(itr,8,Datos[8],9,Datos[9],10,Datos[10])
             
 
             elif linea[0:4]=="5682":
                 Datos[11]=unicode(linea[28:68], 'latin-1').encode('utf-8')      #concepto5
                 Datos[12]=unicode(linea[68:108], 'latin-1').encode('utf-8')      #concepto6
                 Datos[13]=unicode(linea[108:148], 'latin-1').encode('utf-8')      #concepto7
-                store.set(iter,11,Datos[11],12,Datos[12],13,Datos[13])
+                store.set(itr,11,Datos[11],12,Datos[12],13,Datos[13])
             
 
             elif linea[0:4]=="5683":
                 Datos[14]=unicode(linea[28:68], 'latin-1').encode('utf-8')      #concepto8
                 Datos[15]=unicode(linea[68:108], 'latin-1').encode('utf-8')      #concepto9
                 Datos[16]=unicode(linea[108:148], 'latin-1').encode('utf-8')      #concepto10
-                store.set(iter,14,Datos[14],15,Datos[15],16,Datos[16])
+                store.set(itr,14,Datos[14],15,Datos[15],16,Datos[16])
                 
 
             elif linea[0:4]=="5684":
                 Datos[17]=unicode(linea[28:68], 'latin-1').encode('utf-8')      #concepto11
                 Datos[18]=unicode(linea[68:108], 'latin-1').encode('utf-8')      #concepto12
                 Datos[19]=unicode(linea[108:148], 'latin-1').encode('utf-8')      #concepto13
-                store.set(iter,17,Datos[17],18,Datos[18],19,Datos[19])
+                store.set(itr,17,Datos[17],18,Datos[18],19,Datos[19])
 
             elif linea[0:4]=="5685":
                 Datos[20]=unicode(linea[28:68], 'latin-1').encode('utf-8')      #concepto14
                 Datos[21]=unicode(linea[68:108], 'latin-1').encode('utf-8')      #concepto15
                 Datos[22]=unicode(linea[108:148], 'latin-1').encode('utf-8')      #concepto16
-                store.set(iter,20,Datos[20],21,Datos[21],22,Datos[22])
+                store.set(itr,20,Datos[20],21,Datos[21],22,Datos[22])
 
             elif linea[0:4]=="5686":
                 Datos[23]=unicode(linea[28:68], 'latin-1').encode('utf-8')      #Titular
                 Datos[24]=unicode(linea[68:108], 'latin-1').encode('utf-8')      #Domicilio
                 Datos[25]=unicode(linea[108:143], 'latin-1').encode('utf-8')      #plaza
                 Datos[26]=unicode(linea[143:148], 'latin-1').encode('utf-8')      #cp
-                store.set(iter,23,Datos[23],24,Datos[24],25,Datos[25],26,Datos[26])
+                store.set(itr,23,Datos[23],24,Datos[24],25,Datos[25],26,Datos[26])
 
 
             elif linea[0:4]=="5880":
@@ -296,7 +295,7 @@ class Importar:
             if linea=="":
                 break
        
-        file.close()
+        fich.close()
         
 
         
@@ -356,10 +355,10 @@ class Importar:
             
                 store=self.tvPresentador.get_model()
                 store[0][0]=self.CompruebaLongitud(store[0][0],9,"TEXT")         #NIF
-                store[0][1]==self.CompruebaLongitud(store[0][1],3,"NUM")         #Sufijo
-                store[0][2]==self.CompruebaLongitud(store[0][2],40,"TEXT")         #Nombre
-                store[0][3]==self.CompruebaLongitud(store[0][3],4,"NUM")         #Banco
-                store[0][4]==self.CompruebaLongitud(store[0][4],4,"NUM")         #Oficina
+                store[0][1]=self.CompruebaLongitud(store[0][1],3,"NUM")         #Sufijo
+                store[0][2]=self.CompruebaLongitud(store[0][2],40,"TEXT")         #Nombre
+                store[0][3]=self.CompruebaLongitud(store[0][3],4,"NUM")         #Banco
+                store[0][4]=self.CompruebaLongitud(store[0][4],4,"NUM")         #Oficina
                 
                 presentador=store[0][0]+":"+store[0][1]
                 sql="select count(nif) from presentadores where nif='"+store[0][0]+"' and sufijo='"+store[0][1]+"'"
@@ -379,12 +378,12 @@ class Importar:
             
                 store=self.tvOrdenante.get_model()
                 store[0][0]=self.CompruebaLongitud(store[0][0],9,"TEXT")         #NIF
-                store[0][1]==self.CompruebaLongitud(store[0][1],3,"NUM")         #Sufijo
-                store[0][2]==self.CompruebaLongitud(store[0][2],40,"TEXT")         #Nombre
-                store[0][3]==self.CompruebaLongitud(store[0][3],4,"NUM")         #Banco
-                store[0][4]==self.CompruebaLongitud(store[0][4],4,"NUM")         #Oficina
-                store[0][5]==self.CompruebaLongitud(store[0][5],2,"NUM")         #DC
-                store[0][6]==self.CompruebaLongitud(store[0][6],10,"NUM")         #Cuenta
+                store[0][1]=self.CompruebaLongitud(store[0][1],3,"NUM")         #Sufijo
+                store[0][2]=self.CompruebaLongitud(store[0][2],40,"TEXT")         #Nombre
+                store[0][3]=self.CompruebaLongitud(store[0][3],4,"NUM")         #Banco
+                store[0][4]=self.CompruebaLongitud(store[0][4],4,"NUM")         #Oficina
+                store[0][5]=self.CompruebaLongitud(store[0][5],2,"NUM")         #DC
+                store[0][6]=self.CompruebaLongitud(store[0][6],10,"NUM")         #Cuenta
                 
                 ordenante=store[0][0]+":"+store[0][1]
                 sql="select count(nif) from ordenantes where nif='"+store[0][0]+"' and sufijo='"+store[0][1]+"'"
@@ -543,13 +542,13 @@ class Importar:
 
     def Ceros(self,Numero):
         d=""
-        for n in range(0,Numero):
+        for n in range(0,Numero):  # @UnusedVariable
             d=d+"0"
         return d
 
     def Espacios(self,Numero):
         d=""
-        for n in range(0,Numero):
+        for n in range(0,Numero):  # @UnusedVariable
             d=d+" "
         return d
 

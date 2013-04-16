@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os, sys
-import gtk
-import gtk.glade
+import gtk, gtk.glade  # @UnusedImport
 import gobject
-from lib.pyCsb19 import remesas
-from lib.pyCsb19 import ordenante
-from lib.pyCsb19 import presentador
-from lib.pyCsb19 import importar
+from lib.pycsb19 import remesas
+from lib.pycsb19 import ordenante
+from lib.pycsb19 import presentador
+from lib.pycsb19 import importar
 import sqlite3 as sqlite
 
 

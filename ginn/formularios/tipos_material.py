@@ -45,7 +45,7 @@ from ventana import Ventana
 from formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
+import gtk
 from framework import pclases
 
 class TiposMaterial(Ventana):
@@ -84,9 +84,9 @@ class TiposMaterial(Ventana):
     
     
     def eliminar_tipo_de_material(self,widget):
-        model, iter = self.wids['tv_tipos'].get_selection().get_selected()
-        if iter != None:
-            idtipo = model[iter][-1]
+        model, itr = self.wids['tv_tipos'].get_selection().get_selected()
+        if itr != None:
+            idtipo = model[itr][-1]
             tipodematerial = pclases.TipoDeMaterial.get(idtipo)
         else:        
             utils.dialogo_info('ERROR','Seleccione material a eliminar')
@@ -98,9 +98,9 @@ class TiposMaterial(Ventana):
         self.rellenar_tabla()
     
     def modificar_tipo_de_material(self, widget):
-        model, iter = self.wids['tv_tipos'].get_selection().get_selected()
-        if iter != None:
-            idtipo = model[iter][-1]
+        model, itr = self.wids['tv_tipos'].get_selection().get_selected()
+        if itr != None:
+            idtipo = model[itr][-1]
             tipodematerial = pclases.TipoDeMaterial.get(idtipo)
         else:
             utils.dialogo_info('ERROR','Seleccione material a modificar')

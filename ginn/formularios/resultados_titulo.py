@@ -42,7 +42,6 @@ import pygtk
 pygtk.require('2.0')
 import gtk, time
 from framework import pclases
-from informes import geninformes
 from utils import _float as float
 
 
@@ -120,7 +119,7 @@ class ResultadosTitulo(Ventana):
         Calcula la media, desviación típica y marca los valores según tolerancia. 
         """
         lote = self.lote
-         # La tolerancia depende del tipo de producto:
+        # La tolerancia depende del tipo de producto:
         try:
             dtex = lote.balas[0].articulos[0].productoVenta.camposEspecificosBala.dtex
         except:
@@ -227,12 +226,12 @@ class ResultadosTitulo(Ventana):
             print "WARNING: Se ha intentano añadir una prueba con lote = None"
     
     def drop(self, w):
-        model, iter = self.wids['tv_pruebas'].get_selection().get_selected()
-        if iter != None and utils.dialogo(titulo = 'BORRAR PRUEBA', 
+        model, itr = self.wids['tv_pruebas'].get_selection().get_selected()
+        if itr != None and utils.dialogo(titulo = 'BORRAR PRUEBA', 
                                           texto = '¿Está seguro?', 
                                           padre = self.wids['ventana']):
-            ide = model[iter][-1]
-            prueba = pclases.PruebaTitulo.get(id)
+            ide = model[itr][-1]
+            prueba = pclases.PruebaTitulo.get(ide)
             prueba.destroy(ventana = __file__)
             self.rellenar_pruebas()
 

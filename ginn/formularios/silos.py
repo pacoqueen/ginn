@@ -39,12 +39,11 @@ from ventana import Ventana
 from formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
+import gtk
 from framework import pclases
-from informes import geninformes
 from utils import _float as float
 import pango
-from ventana_progreso import VentanaActividad, VentanaProgreso
+from ventana_progreso import VentanaProgreso
 
 
 class Silos(Ventana):
@@ -92,7 +91,7 @@ class Silos(Ventana):
         Entrada: s debe ser True o False. En todo caso
         se evaluará como boolean.
         """
-        ws = ('hbox', 'b_nuevo', 'b_borrar')
+        ws = ('hbox', 'b_nuevo', 'b_borrar')  # @UnusedVariable
         # for w in ws:
         #     self.wids[w].set_sensitive(s)
 
@@ -245,9 +244,9 @@ class Silos(Ventana):
         Muestra el producto fabricado en el registro consumo 
         donde se ha hecho clic.
         """
-        model, iter = tv.get_selection().get_selected()
-        if iter != None and "CLIC PARA VER" in model[iter][-1]:
-            s = model[iter][-1]
+        model, itr = tv.get_selection().get_selected()
+        if itr != None and "CLIC PARA VER" in model[itr][-1]:
+            s = model[itr][-1]
             idconsumo = s[s.rindex("[")+1: s.rindex("]")]
             descarga = pclases.Consumo.get(int(idconsumo))
             pdp = descarga.parteDeProduccion
@@ -256,7 +255,7 @@ class Silos(Ventana):
             else:
                 producto_fabricado = None
             producto_fabricado = producto_fabricado and producto_fabricado.descripcion or ""
-            model[iter][-1] = producto_fabricado
+            model[itr][-1] = producto_fabricado
         
     def ajustar_silo(self, boton, silo):
         """

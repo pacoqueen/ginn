@@ -42,7 +42,6 @@ import pygtk
 pygtk.require('2.0')
 import gtk, time
 from framework import pclases
-from informes import geninformes
 from formularios.utils import _float as float
 
 
@@ -116,9 +115,9 @@ class ResultadosTenacidad(Ventana):
         Calcula la media de los valores de rizo, tenacidad, encogimiento y elongación.
         """
         lote = self.lote
-         # La elongación depende del tipo de producto:
+        # La elongación depende del tipo de producto:
         try:
-            dtex = lote.balas[0].articulos[0].productoVenta.camposEspecificosBala.dtex
+            dtex = lote.balas[0].articulos[0].productoVenta.camposEspecificosBala.dtex  # @UnusedVariable
         except:
             utils.dialogo_info(titulo = 'ERROR', texto = 'Ocurrió un error buscando el tipo de fibra')
             return       
@@ -224,10 +223,10 @@ class ResultadosTenacidad(Ventana):
             print "WARNING: Se ha intentano añadir una prueba con lote = None"
     
     def drop(self, w):
-        model, iter = self.wids['tv_pruebas'].get_selection().get_selected()
-        if iter != None and utils.dialogo(titulo = 'BORRAR PRUEBA', texto = '¿Está seguro?'):
-            ide = model[iter][-1]
-            prueba = pclases.PruebaTenacidad.get(id)
+        model, itr = self.wids['tv_pruebas'].get_selection().get_selected()
+        if itr != None and utils.dialogo(titulo = 'BORRAR PRUEBA', texto = '¿Está seguro?'):
+            ide = model[itr][-1]
+            prueba = pclases.PruebaTenacidad.get(ide)
             prueba.destroy(ventana = __file__)
             self.rellenar_pruebas()
 

@@ -45,7 +45,6 @@ import pygtk
 pygtk.require('2.0')
 import gtk, time
 from framework import pclases
-from informes import geninformes
 from utils import _float as float
 
 # XXX
@@ -135,12 +134,12 @@ class ResultadosPermeabilidad(Ventana):
         for b in partida.balas:
             if b.lote not in lotes:
                 lotes.append(b.lote)
-                iter = model.append(None, (b.lote.numlote, b.lote.id))
+                itr = model.append(None, (b.lote.numlote, b.lote.id))
             for a in b.articulos:
                 for c in a.parteDeProduccion.consumos:
                     if c.productoCompra not in prods:
                         prods.append(c.productoCompra)
-                        model.append(iter, (c.productoCompra.descripcion, c.id))
+                        model.append(itr, (c.productoCompra.descripcion, c.id))
 # XXX
 
     def rellenar_pruebas(self):
@@ -161,13 +160,13 @@ class ResultadosPermeabilidad(Ventana):
         """
         partida = self.partida
         media = 0.0
-        for p in eval("partida.%s" % nombrecampo):
+        for p in getattr(partida, nombrecampo):
             media += p.resultado
         try:
-            media /= len(eval("partida.%s" % nombrecampo))
+            media /= len(getattr(partida, nombrecampo))
         except ZeroDivisionError:
             media = 0
-        eval("partida.set(%s = %f)" % (nombreprueba, media))
+        setattr(partida, nombreprueba, media)
         self.rellenar_info_partida()
 
     def actualizar_ventana(self):
@@ -198,7 +197,7 @@ class ResultadosPermeabilidad(Ventana):
                                    texto = 'Debe introducir el resultado de la prueba.')
                 return
             try:
-                prueba = claseprueba(fecha = time.strptime(fecha, '%d/%m/%Y'),
+                prueba = claseprueba(fecha = time.strptime(fecha, '%d/%m/%Y'),  # @UnusedVariable
                                      resultado = resultado,
                                      partida = self.partida)
             except:
@@ -211,10 +210,10 @@ class ResultadosPermeabilidad(Ventana):
             print "WARNING: Se ha intentano añadir una prueba con partida = None"
     
     def drop(self, w):
-        model, iter = self.wids['tv_pruebas'].get_selection().get_selected()
-        if iter != None and utils.dialogo(titulo = 'BORRAR PRUEBA', texto = '¿Está seguro?'):
-            ide = model[iter][-1]
-            prueba = claseprueba.get(id)
+        model, itr = self.wids['tv_pruebas'].get_selection().get_selected()
+        if itr != None and utils.dialogo(titulo = 'BORRAR PRUEBA', texto = '¿Está seguro?'):
+            ide = model[itr][-1]
+            prueba = claseprueba.get(ide)
             prueba.destroy(ventana = __file__)
             self.rellenar_pruebas()
 

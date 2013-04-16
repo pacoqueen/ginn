@@ -63,7 +63,7 @@ def runapp(app, cbkStdOut = None, cbkStdErr = None, sh=False):
                               stderr = subprocess.PIPE,
                               shell = sh)
 
-    except  Exception, e:
+    except  Exception:
         # fallo al ejecutar, comando incorrecto, ....
         raise
 
@@ -91,52 +91,52 @@ def runapp(app, cbkStdOut = None, cbkStdErr = None, sh=False):
 ##############################
 if __name__ == "__main__":
 
-     import sys
+    import sys
 
-     def printstdout(msg):
-         print "Out capturado:%s" % (msg),
-         sys.stdout.flush()
+    def printstdout(msg):
+        print "Out capturado:%s" % (msg),
+        sys.stdout.flush()
 
-     def printstderr(msg):
-         print "Err capturado:%s" % (msg),
-         sys.stdout.flush()
+    def printstderr(msg):
+        print "Err capturado:%s" % (msg),
+        sys.stdout.flush()
 
-     def printlista(lista):
-         for l in lista:
-             print "\t%s" % l,
+    def printlista(lista):
+        for l in lista:
+            print "\t%s" % l,
 
-     # -- capturar resultado en tiempo real --
-     cmd = "ping www.google.com"
-     ret =  runapp(cmd, printstdout, printstderr)
-     if ret == 0:
-         print "%s OK " % cmd
-     else:
-         print "%s Falló con codigo %s" % (cmd, ret)
+    # -- capturar resultado en tiempo real --
+    cmd = "ping www.google.com"
+    ret =  runapp(cmd, printstdout, printstderr)
+    if ret == 0:
+        print "%s OK " % cmd
+    else:
+        print "%s Falló con codigo %s" % (cmd, ret)
 
 
-     # -- ejecutar y guardar el resultado en una lista --
-     cmd = "ping www.google.com"
-     out = []
-     ret =  runapp(cmd, out.append)
-     if ret == 0:
-         print "%s OK" % cmd
-     else:
-         print "%s Falló con codigo %s" % (cmd, ret)
-     print "Detalles:"
-     printlista(out)
+    # -- ejecutar y guardar el resultado en una lista --
+    cmd = "ping www.google.com"
+    out = []
+    ret =  runapp(cmd, out.append)
+    if ret == 0:
+        print "%s OK" % cmd
+    else:
+        print "%s Falló con codigo %s" % (cmd, ret)
+    print "Detalles:"
+    printlista(out)
 
-     # -- ejecutar en shell --
-     out = []
-     cmd = "dir *.*"
-     ret = runapp(cmd, out.append, sh=True)
-     if ret == 0:
-         print "%s OK" % cmd
-     else:
-         print "%s falló con codigo %s" % (cmd, ret)
-     printlista(out)
+    # -- ejecutar en shell --
+    out = []
+    cmd = "dir *.*"
+    ret = runapp(cmd, out.append, sh=True)
+    if ret == 0:
+        print "%s OK" % cmd
+    else:
+        print "%s falló con codigo %s" % (cmd, ret)
+    printlista(out)
 
-     # -- ejecutar simple, no capturar salida ----
-     if runapp("ping dominio.que.no.responde.com") == 0:
-         print "OOPS, dominio.que.no.responde.com ¡¡Si responde!!"
-     else:
-         print "dominio.que.no.responde.com, no responde"
+    # -- ejecutar simple, no capturar salida ----
+    if runapp("ping dominio.que.no.responde.com") == 0:
+        print "OOPS, dominio.que.no.responde.com ¡¡Si responde!!"
+    else:
+        print "dominio.que.no.responde.com, no responde"

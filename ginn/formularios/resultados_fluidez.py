@@ -44,7 +44,6 @@ import pygtk
 pygtk.require('2.0')
 import gtk, time
 from framework import pclases
-from informes import geninformes
 from utils import _float as float
 import mx.DateTime
 
@@ -369,9 +368,9 @@ class ResultadosFluidez(Ventana):
                 self.usuario and self.usuario.usuario + ": " or "", txt))
     
     def drop(self, w):
-        model, iter = self.wids['tv_pruebas'].get_selection().get_selected()
-        if iter != None and utils.dialogo(titulo = 'BORRAR PRUEBA', texto = '¿Está seguro?'):
-            id1, id2 = [int(i) for i in model[iter][-1].split(":")]
+        model, itr = self.wids['tv_pruebas'].get_selection().get_selected()
+        if itr != None and utils.dialogo(titulo = 'BORRAR PRUEBA', texto = '¿Está seguro?'):
+            id1, id2 = [int(i) for i in model[itr][-1].split(":")]
             prueba = pclases.PruebaGranza.get(id1)
             prueba.destroy(ventana = __file__)
             if id2 > 0:
@@ -459,7 +458,6 @@ class ResultadosFluidez(Ventana):
         """
         PRECONDICIÓN: self.producto != None
         """
-        producto = self.producto
         self.wids['e_codigo'].set_text(self.producto.codigo)
         self.wids['e_nombre'].set_text(self.producto.descripcion)
         self.wids['e_proveedor'].set_text(self.proveedores(self.producto))

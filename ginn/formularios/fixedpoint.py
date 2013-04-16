@@ -176,9 +176,9 @@ def addHalfAndChop(self, dividend, divisor, quotient, remainder):
 try:
     object
 except NameError:
-    class object:
+    class object:  # @ReservedAssignment
         pass
-    def property(x, y):
+    def property(x, y):  # @ReservedAssignment
         return None
 
 # The default value for the number of decimal digits carried after the
@@ -410,7 +410,7 @@ class FixedPoint(object):
         return _mkFP(self._roundquotient(n1 * _tento(p), n2), p, type(self))
 
     def __rdiv__(self, other):
-        n1, n2, p = _norm(self, other, FixedPoint=type(self))
+        n1, n2, p = _norm(self, other, FixedPoint=type(self))  # @UnusedVariable
         return _mkFP(n2, p, FixedPoint=type(self)) / self
 
     def __divmod__(self, other):
@@ -423,14 +423,14 @@ class FixedPoint(object):
         return q, _mkFP(n1 - q * n2, p, type(self))
 
     def __rdivmod__(self, other):
-        n1, n2, p = _norm(self, other, FixedPoint=type(self))
+        n1, n2, p = _norm(self, other, FixedPoint=type(self))  # @UnusedVariable
         return divmod(_mkFP(n2, p), self)
 
     def __mod__(self, other):
         return self.__divmod__(other)[1]
 
     def __rmod__(self, other):
-        n1, n2, p = _norm(self, other, FixedPoint=type(self))
+        n1, n2, p = _norm(self, other, FixedPoint=type(self))  # @UnusedVariable
         return _mkFP(n2, p, type(self)).__mod__(self)
 
     def __float__(self):
@@ -496,7 +496,7 @@ def _tento(n, cache={}):
         answer = cache[n] = 10L ** n
         return answer
 
-def _norm(x, y, isinstance=isinstance, FixedPoint=FixedPoint,
+def _norm(x, y, isinstance=isinstance, FixedPoint=FixedPoint,  # @ReservedAssignment
                 _tento=_tento):
     """Return xn, yn, p s.t.
            p = max(x.p, y.p)

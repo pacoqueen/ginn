@@ -632,7 +632,7 @@ class ResultadosGeotextiles(Ventana):
                 media /= len(getattr(partida, nombrecampo))
             except ZeroDivisionError:
                 media = 0
-            eval("partida.set(%s = %f)" % (nombreprueba, media))
+            setattr(partida, nombreprueba, media)
         self.rellenar_info_partida()
 
     def actualizar_ventana(self):

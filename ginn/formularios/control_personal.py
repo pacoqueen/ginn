@@ -1016,14 +1016,14 @@ class ControlPersonal(Ventana, VentanaGenerica):
         tabla.attach(ebox, 
                      7, 8, 
                      fila, fila+1)
-        def abrir_popup(boton, id):
-            ch = pclases.ControlHoras.get(id)
+        def abrir_popup(boton, ide):
+            ch = pclases.ControlHoras.get(ide)
             v = gtk.Window()
             v.set_title("Desglose de horas de producción")
             v.set_modal(True)
             v.set_transient_for(self.wids['ventana'])
             tabla = gtk.Table()
-            lineas = pclases.LineaDeProduccion.select(orderBy = "-id")
+            lineas = pclases.LineaDeProduccion.select(orderBy = "-ide")
             tabla.resize(lineas.count() + 1, 2)
             tabla.attach(gtk.Label("Horas"), 1, 2, 0, 1)
             fila = 1
@@ -1034,11 +1034,11 @@ class ControlPersonal(Ventana, VentanaGenerica):
                             pclases.ControlHorasProduccion\
                                 .q.lineaDeProduccionID == linea.id, 
                             pclases.ControlHorasProduccion\
-                                .q.controlHorasID == id))[0]
+                                .q.controlHorasID == ide))[0]
                 except IndexError:
                     h = pclases.ControlHorasProduccion(
                             lineaDeProduccion = linea, 
-                            controlHorasID = id)
+                            controlHorasID = ide)
                     pclases.Auditoria.nuevo(h, self.usuario, __file__)
                 entries[h] = gtk.Entry()
                 entries[h].set_alignment(0.9)
@@ -1070,7 +1070,7 @@ class ControlPersonal(Ventana, VentanaGenerica):
                 if era_fullscreen:
                     self.wids['ventana'].fullscreen()
                     self._is_fullscreen = True
-            v.connect("destroy", cerrar_y_actualizar, id, entries)
+            v.connect("destroy", cerrar_y_actualizar, ide, entries)
         boton.connect("clicked", abrir_popup, ch.id)
         boton.connect("focus_in_event", 
                       focusin, 
