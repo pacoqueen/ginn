@@ -40,7 +40,6 @@ from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk
-import sys, os 
 from framework import pclases
 import mx.DateTime
 

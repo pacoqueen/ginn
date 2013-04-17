@@ -316,14 +316,14 @@ class ProductosDeVentaRollosGeocompuestos(Ventana):
         def sup(n):
             return ((n+9)/10)*10
         peso = 1
-        sum = 0
+        suma = 0
         for d in cod:
-            sum += int(d) * peso
+            suma += int(d) * peso
             if peso == 1:
                 peso = 3
             else:
                 peso = 1
-        return str(sup(sum) - sum)
+        return str(sup(suma) - suma)
 
     def buscar_cod_libre(self):
         """

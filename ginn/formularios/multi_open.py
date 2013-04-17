@@ -217,7 +217,7 @@ else:
     _open = get()
 
 
-def open(filename):
+def open(filename):  # @ReservedAssignment
     '''Open a file or an URL in the registered default application.'''
 
     return _open(filename)

@@ -40,9 +40,8 @@ from ventana import Ventana
 from formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time, sys, os
+import gtk 
 from framework import pclases
-from informes import geninformes
 
 
 class RollosAlmacen(Ventana):

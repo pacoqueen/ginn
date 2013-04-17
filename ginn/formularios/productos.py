@@ -39,10 +39,8 @@ from ventana import Ventana
 from formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
+import gtk
 from framework import pclases
-from informes import geninformes
-from utils import _float as float
 
 class Productos(Ventana):
     def __init__(self, objeto = None, usuario = None):

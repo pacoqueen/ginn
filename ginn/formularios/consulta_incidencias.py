@@ -43,7 +43,7 @@ from framework import pclases
 import mx.DateTime
 from informes import geninformes
 from formularios import ventana_progreso
-from pychart import *   # No me gusta, pero no queda otra 
+from pychart import *   # No me gusta, pero no queda otra @UnusedWildImport
 from tempfile import gettempdir
 
 class ConsultaIncidencias(Ventana):

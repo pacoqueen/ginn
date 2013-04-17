@@ -43,11 +43,9 @@ from ventana import Ventana
 from formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
+import gtk
 from framework import pclases
 import mx.DateTime
-from utils import _float as float    
-from math import floor, ceil
 import datetime
 
 class Nominas(Ventana):
@@ -143,7 +141,7 @@ class Nominas(Ventana):
         empleado = nomina.empleado
         from formularios import empleados
         self.wids['ventana'].window.set_cursor(None)
-        ventanaempleado = empleados.Empleados(empleado)
+        ventanaempleado = empleados.Empleados(empleado)  # @UnusedVariable
 
     def get_float_tv(self, path, texto, col):
         model = self.wids['tv_nominas'].get_model()
@@ -296,7 +294,7 @@ class Nominas(Ventana):
         # Ahora los que no trabajaron:
         all_emps = pclases.Empleado.select(pclases.Empleado.q.planta == True)
         ids_emps_trabajo = [e['id'] for e in empleados]
-        descanso = [e for e in all_emps if e.id not in ids_emps_trabajo]
+        descanso = [e for e in all_emps if e.id not in ids_emps_trabajo]  # @UnusedVariable
         return empleados
                            
     def func_sort_partes(self, p1, p2):
@@ -336,7 +334,7 @@ class Nominas(Ventana):
         # a otra jornada laboral distinta del día natural.
         res = []
         aux = {}
-        ininoche = mx.DateTime.DateTimeDeltaFrom(hours = 22, minutes = 0)
+        ininoche = mx.DateTime.DateTimeDeltaFrom(hours = 22, minutes = 0)  # @UnusedVariable
         finnoche = mx.DateTime.DateTimeDeltaFrom(hours = 6, minutes = 0)
         # Hay que ordenar los partes por fecha y hora para que se contabilicen 
         # bien las horas extras.

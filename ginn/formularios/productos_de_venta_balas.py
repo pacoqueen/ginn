@@ -400,10 +400,10 @@ class ProductosDeVentaBalas(Ventana):
     def calcular_digitoc(self, cod):
         pesos = [1, 3]*6
         magic = 10
-        sum = 0
+        suma = 0
         for i in range(12):
-            sum = sum + int(cod[i]) * pesos[i]
-        z = (magic - (sum % magic)) % magic
+            suma = suma + int(cod[i]) * pesos[i]
+        z = (magic - (suma % magic)) % magic
         if z < 0 or z >= magic:
             return None
         return str(z)

@@ -41,7 +41,7 @@ def etiqueta_nied(rollos, mostrar_marcado = False):
         nomarchivo = os.path.join(gettempdir(),
                 "etiqNied_%s.pdf" % give_me_the_name_baby())
         c = canvas.Canvas(nomarchivo, pagesize = (width, height))
-        for rollo in rollos:
+        for rollo in rollos:  # @UnusedVariable
             c.drawImage(pagina, 0, 0, width, height)
             c.showPage()
         c.save()

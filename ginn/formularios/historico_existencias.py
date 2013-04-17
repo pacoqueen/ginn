@@ -36,7 +36,7 @@
 from formularios import ventana_progreso
 from framework import pclases
 from informes import geninformes
-from pychart import * # No me gusta, pero no queda otra
+from pychart import * # No me gusta, pero no queda otra @UnusedWildImport
 from tempfile import gettempdir
 from ventana import Ventana
 import gtk

@@ -33,7 +33,6 @@ except:
     raise SystemExit
 
 
-import pygtk
 if gtk.pygtk_version < (2, 0):
     print "Se necesita PyGtk 2.0 o posterior."
     raise SystemExit
@@ -223,7 +222,7 @@ class StarHScale(gtk.Widget):
         self.window.move_resize(*self.allocation)
 
         # load the star xpm
-        self.pixmap, mask = gtk.gdk.pixmap_create_from_xpm_d(
+        self.pixmap, mask = gtk.gdk.pixmap_create_from_xpm_d(  # @UnusedVariable
             self.window
             , self.style.bg[gtk.STATE_NORMAL]
             , STAR_PIXMAP)
@@ -275,10 +274,10 @@ class StarHScale(gtk.Widget):
         # if this is a hint, then let's get all the necessary
         # information, if not it's all we need.
         if event.is_hint:
-            x, y, state = event.window.get_pointer()
+            x, y, state = event.window.get_pointer()  # @UnusedVariable
         else:
-            x = event.x
-            y = event.y
+            x = event.x  # @UnusedVariable
+            y = event.y  # @UnusedVariable
             state = event.state
 
         if (state & gtk.gdk.BUTTON1_MASK):

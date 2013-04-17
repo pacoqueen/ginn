@@ -42,9 +42,8 @@ from ventana import Ventana
 from formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
+import gtk
 from framework import pclases
-from informes import geninformes
 import mx.DateTime
 
 
@@ -148,7 +147,7 @@ class MuestrasPendientes(Ventana):
         m = pclases.Muestra.get(mid)
         lote = m.lote
         from formularios import resultados_fibra
-        ventana = resultados_fibra.ResultadosFibra(lote, 
+        ventana = resultados_fibra.ResultadosFibra(lote,  # @UnusedVariable
             usuario = self.usuario)
 
     def abrir_resultados_geo(self, tv, path, view_column):
@@ -156,7 +155,7 @@ class MuestrasPendientes(Ventana):
         m = pclases.Muestra.get(mid)
         partida = m.partida
         from formularios import resultados_geotextiles
-        ventana = resultados_geotextiles.ResultadosGeotextiles(partida, 
+        ventana = resultados_geotextiles.ResultadosGeotextiles(partida,  # @UnusedVariable
                     usuario = self.usuario)
 
     def cambiar_pendiente_f(self, cell, path):

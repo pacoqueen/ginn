@@ -43,8 +43,7 @@ from ventana import Ventana
 from formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
-import sys, os
+import gtk
 from framework import pclases
 import mx.DateTime
 from informes import geninformes
@@ -205,7 +204,7 @@ def agregar_a_model(model, factura, padre, tv, nodos_clientes):
         if row[0] != "" and row[1] != "":
             nodo_fra = model.append(padre, row)
         else:
-            nodo_segundo_vto_o_superior = model.append(nodo_fra, row)
+            nodo_segundo_vto_o_superior = model.append(nodo_fra, row)  # @UnusedVariable
             # tv.expand_row(model.get_path(nodo_segundo_vto_o_superior), False)
         # Actualizo fila padre.
         model[nodos_clientes[idcliente][anno][mes]][3] += row[3]
@@ -268,7 +267,7 @@ class FacturacionPorClienteYFechas(Ventana):
                        'b_fechaini/clicked': self.cambiar_fechaini, 
                        'b_fechafin/clicked': self.cambiar_fechafin, 
                        'b_export/clicked': self.exportar_a_csv, }
-                       #'tv_facturas/row-expanded': self.expandir_subramas}  
+                        #'tv_facturas/row-expanded': self.expandir_subramas}  
         self.add_connections(connections)
         self.wids['tv_facturas'].connect("row-expanded", 
                                          self.expandir_subramas)
@@ -528,7 +527,7 @@ class FacturacionPorClienteYFechas(Ventana):
         model = self.wids['tv_cliente'].get_model()
         model.clear()
         for fila_mes_anno in modelfechas:
-            fecha = fila_mes_anno[1]
+            fecha = fila_mes_anno[1]  # @UnusedVariable
             # Inserto el cliente en el otro model, y si existe actualizo 
             # cantidades.
             for fila_cliente in fila_mes_anno.iterchildren():
@@ -740,11 +739,11 @@ class FacturacionPorClienteYFechas(Ventana):
                 frabono = pclases.FacturaDeAbono.get(idfactura)
                 if frabono.abono:
                     from formularios import abonos_venta
-                    v = abonos_venta.AbonosVenta(frabono.abono, usuario = self.usuario)
+                    v = abonos_venta.AbonosVenta(frabono.abono, usuario = self.usuario)  # @UnusedVariable
             elif model[path][0].startswith("*"):
                 fra = pclases.Prefactura.get(idfactura)
                 from formularios import prefacturas
-                ventana = prefacturas.Prefacturas(fra, self.usuario)
+                ventana = prefacturas.Prefacturas(fra, self.usuario)  # @UnusedVariable
             else:
                 fra = pclases.FacturaVenta.get(idfactura)
                 try:
@@ -754,7 +753,7 @@ class FacturacionPorClienteYFechas(Ventana):
                     from sys import path
                     path.insert(0, pathjoin("..", "formularios"))
                     from formularios import facturas_venta
-                ventana = facturas_venta.FacturasVenta(fra, self.usuario)
+                ventana = facturas_venta.FacturasVenta(fra, self.usuario)  # @UnusedVariable
         elif idfactura > 0 and model[path][0] == "":    # Es cliente.
             cliente = pclases.Cliente.get(idfactura)
             try:
@@ -764,7 +763,7 @@ class FacturacionPorClienteYFechas(Ventana):
                 from sys import path
                 path.insert(0, pathjoin("..", "formularios"))
                 from formularios import clientes
-            ventana_clientes = clientes.Clientes(cliente, self.usuario)
+            ventana_clientes = clientes.Clientes(cliente, self.usuario)  # @UnusedVariable
 
 
     def imprimir(self, boton):
@@ -774,7 +773,6 @@ class FacturacionPorClienteYFechas(Ventana):
         #utils.dialogo_info(titulo = "NO IMPLEMENTADO", 
         #                   texto = "Computer says no. Atjo.", 
         #                   padre = self.wids['ventana'])
-        from formularios import reports
         if self.wids['notebook1'].get_current_page() == 0:
             tv = self.wids['tv_facturas']
         elif self.wids['notebook1'].get_current_page() == 1:
@@ -805,7 +803,7 @@ class FacturacionPorClienteYFechas(Ventana):
         datos.append(("    Pendiente:", self.wids['e_pendiente_otros'].get_text(), "", "", "", "", "", "", ""))
         datos.append(("    Cobrado:", self.wids['e_cobrado_otros'].get_text(), "", "", "", "", "", "", ""))
         cliente = self.wids['cbe_cliente'].child.get_text()
-        reports.abrir_pdf(geninformes.facturacion_por_cliente_y_fechas("Facturación %s" % cliente, self.wids['e_fechaini'].get_text(), self.wids['e_fechafin'].get_text(), datos))
+        abrir_pdf(geninformes.facturacion_por_cliente_y_fechas("Facturación %s" % cliente, self.wids['e_fechaini'].get_text(), self.wids['e_fechafin'].get_text(), datos))
 
     def exportar_a_csv(self, boton):
         """

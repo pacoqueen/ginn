@@ -22,12 +22,13 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA  #
 ###############################################################################
 
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+import Image
 from reportlab.rl_config import defaultPageSize
 from reportlab.lib import colors, enums
 from reportlab.lib.units import cm
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet 
-import sys, os, Image
+import os
 from framework import pclases
 from formularios import utils
 from informes.geninformes import give_me_the_name_baby, escribe

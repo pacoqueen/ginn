@@ -39,12 +39,11 @@
 ###################################################################
 
 
-import sys, os
 from ventana import Ventana
 from formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time, mx.DateTime
+import gtk, mx.DateTime
 from framework import pclases
 from framework.seeker import VentanaGenerica 
 from utils import _float as float
@@ -205,7 +204,7 @@ class Transferencias(Ventana, VentanaGenerica):
                 Después podrá seleccionarla en la ventana de transferencias.                            
                                """, 
                                padre = self.wids['ventana'])
-            v = cuentas_destino.CuentasDestino(objeto = nueva_cuenta_destino, usuario = self.usuario)
+            v = cuentas_destino.CuentasDestino(objeto = nueva_cuenta_destino, usuario = self.usuario)  # @UnusedVariable
             self.actualizar_ventana()
 
     def set_factura(self, boton):
@@ -344,8 +343,8 @@ class Transferencias(Ventana, VentanaGenerica):
                                              titulo = "SELECCIONE FACTURA", 
                                              padre = self.wids['ventana'], 
                                              cabeceras = ("ID", "Número de factura", "Proveedor"))
-                if id > 0:
-                    res = pclases.FacturaCompra.get(id)
+                if ide > 0:
+                    res = pclases.FacturaCompra.get(ide)
             else:
                 utils.dialogo_info(titulo = "SIN RESULTADOS", 
                                    texto = "La búsqueda del texto %s no produjo resultados." % (a_buscar), 

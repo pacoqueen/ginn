@@ -38,13 +38,10 @@
 ###################################################################
 
 from framework import pclases
-from informes import geninformes
 from ventana import Ventana
 import gtk
-import time
 import pygtk
 import sqlobject
-import sys
 from formularios import utils
 pygtk.require('2.0')
 try:
@@ -154,7 +151,6 @@ class MotivosAusencia(Ventana):
         return res
 
     def comparar_ajena(self, col):
-        res = None
         try:
             valor_ventana = utils.combo_get_value(self.wids[col])
         except KeyError:
@@ -173,7 +169,6 @@ class MotivosAusencia(Ventana):
         return res
 
     def comparar_bool(self, col):
-        res = False
         try:
             valor_ventana = self.wids[col].get_active()
         except KeyError:
@@ -192,7 +187,6 @@ class MotivosAusencia(Ventana):
         return res
 
     def comparar_int(self, col):
-        res = False
         try:
             valor_ventana = self.wids[col].get_text()
         except KeyError:
@@ -218,7 +212,6 @@ class MotivosAusencia(Ventana):
         return res
 
     def comparar_string(self, col):
-        res = False
         try:
             valor_ventana = self.wids[col].get_text()
         except KeyError:

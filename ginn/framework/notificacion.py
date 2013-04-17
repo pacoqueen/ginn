@@ -57,37 +57,42 @@
 ## que necesitan un notificador por cada objeto en ventana. Ver por ejemplo 
 ## «productos_especiales.py»
 
-class Notificacion:
-  #DONE: No está bonito llamar a las clases con minúsculas. Eso no está bonito.
-  def __init__(self, obj):
-    """
-    obj es el objeto al que se asocia el notificador.
-    """
-    self.__func = lambda : None
-    self.observador = obj
+DEBUGPRINT = False
 
-  def set_func(self, f):
-    self.__func = f
-    ## self.observador.ejecutar_hilo()
-  
-  def activar(self, f):
-    self.set_func(f)
-    # print " --- Notificación activada ---"
-  
-  def desactivar(self):
-    ## self.observador.parar_hilo()
-    self.__func = lambda : None
-    # print " --- Notificación desactivada ---"
+class Notificacion:
+    #DONE: No está bonito llamar a las clases con minúsculas. Eso no está bonito.
+    def __init__(self, obj):
+        """
+        obj es el objeto al que se asocia el notificador.
+        """
+        self.__func = lambda : None
+        self.observador = obj
+
+    def set_func(self, f):
+        self.__func = f
+        ## self.observador.ejecutar_hilo()
     
-  def run(self, *args, **kwargs):
-    # print "EJECUTO", self.__func
-    try:
-        self.__func(*args, **kwargs)
-    except (AttributeError, KeyError), msg:
-        pass    # La ventana se ha cerrado y el objeto sigue en memoria. No 
-                # tiene importancia.
-        #print "notificacion::run -> Ventana cerrada. Ignorando notificación"
-        #      ". Mensaje de la excepción: %s" % (msg)
+    def activar(self, f):
+        self.set_func(f)
+        if DEBUGPRINT:
+            print " --- Notificación activada ---"
+    
+    def desactivar(self):
+        ## self.observador.parar_hilo()
+        self.__func = lambda : None
+        if DEBUGPRINT:
+            print " --- Notificación desactivada ---"
+        
+    def run(self, *args, **kwargs):
+        # print "EJECUTO", self.__func
+        try:
+            self.__func(*args, **kwargs)
+        except (AttributeError, KeyError), msg:
+            pass    # La ventana se ha cerrado y el objeto sigue en memoria. No 
+                    # tiene importancia.
+            if DEBUGPRINT:
+                print "notificacion::run -> Ventana cerrada. Ignorando "\
+                      "notificación. Mensaje de la excepción: %s" % (msg)
 
 #---------------------- EOC NOTIFICACIÓN ------------------------------------
 

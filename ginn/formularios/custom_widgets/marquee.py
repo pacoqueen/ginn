@@ -7,10 +7,8 @@
 # Thanks for some suggestions to Albert Hofkamp <a.t.hofkamp@tue.nl>.
 
 import os
-import math
 import gobject
 import gtk
-import pango
 
 hirek_be="[R88] A R�DI� 88 AKTU�LIS H�REI: [R88]  Veszteget�s miatt 4 rend�rt �s egy hat�r�rt tart�ztattott le a Csongr�d Megyei F��gy�szs�g Nyomoz�hivatala, azzal gyan�s�tj�k �ket, hogy m�r hosszabb ideje cs�sz�p�nzt fogadtak el. [R88]  �nnep�lyesen �tadt�k a magyar-szerb hat�ron a Horgosi Hat�r�tkel�t, ez a r�szkei hat�r szerb oldala. A  fel�j�t�s, �s az oda vezet� aut�p�ly�k �p�t�se m�r �vekkel ezel�tt elkezd�d�tt. [R88] �jra megnyitotta kapuit az �jszegedi Ligetf�rd�, miut�n a m�lt h�ten h�tf�n bez�rt�k a SZUE medenc�j�t, �s a f�rd�t, mert el�rkezett a s�tor�ll�t�s ideje. [R88]  A hidegebbre fordult id�ben eddig k�t hajl�ktalan halt meg kih�l�s miatt a f�v�rosban. A h�v�s �jszak�k sokszor nagyobb vesz�lyt jelentenek az utc�n l�v�knek, mint a kem�ny fagyok, ilyenkor ugyanis az emberek m�g nincsenek felk�sz�lve a hidegre. [R88] Ma ny�jtja be a korm�ny a parlamentnek a m�sodik eg�szs�g�gyi reformcsomagot, k�zt�k a vizitd�j bevezet�s�r�l sz�l� javaslatot, ebben az is le van �rva, hogy az orvosok p�nz�gyi retorzi�ra sz�m�thatnak, ha nem szedik be a betegekt�l a vizitd�jat.[R88] Egy 20 �ves f�rfi elismerte, hogy � rakta fel az internetre azt a hamis fenyeget�st, amely szerint terrort�mad�sok k�sz�lnek az amerikai futball stadionok ellen nyolc v�rosban.  [R88] �szak-Korea legf�bb vezet�je egy k�nai deleg�ci� el�tt megb�nta a k�s�rleti atomrobbant�st, �s k�z�lte, hogy hajland� visszat�rni a t�rgyal�sokhoz, amennyiben Washington felhagy orsz�ga gazdas�gi elszigetel�s�vel. [R88] 61 orsz�g filmjei versenyeznek id�n a legjobb k�lf�ldi filmnek j�r� Oscar-d�j�rt, ez pedig rekord. Magyarorsz�g Hajd� Szabolcs Feh�r Teny�r c�m� filmj�t ind�tja a megm�rettet�sen. [R88] R�SZLETEK A R�DI� 88 AD�S�BAN AZ FM 95.4-EN. [R88]  �szi Kult�r�lis Fesztiv�l 2006. okt�ber 1-31. www.u-szeged.hu/okf"
 
@@ -109,7 +107,7 @@ class PixbufsDemo(gtk.Window):
         try:
             self.background = gtk.gdk.pixbuf_new_from_file(
                 os.path.join(IMAGE_DIR, BACKGROUND_NAME))
-        except gobject.GError, error:
+        except gobject.GError:
             return False
 
         self.back_width  = self.background.get_width()
@@ -119,7 +117,7 @@ class PixbufsDemo(gtk.Window):
             try:
                 self.images.append(gtk.gdk.pixbuf_new_from_file(
                     os.path.join(IMAGE_DIR, filename)))
-            except gobject.GError, error:
+            except gobject.GError:
                 return False
 
         return True

@@ -235,7 +235,7 @@ def build_datos_por_pedido(fibra_o_gtx):
                                       str_fechaentrega, 
                                       textoentrega or "", 
                                       fdp, 
-                                      id))
+                                      ide))
                     else:
                         datos.append((numpedido, 
                                       fechapedido, 
@@ -246,7 +246,7 @@ def build_datos_por_pedido(fibra_o_gtx):
                                       str_fechaentrega, 
                                       textoentrega or "", 
                                       fdp, 
-                                      id))
+                                      ide))
     return datos, por_producto
 
 
@@ -411,7 +411,7 @@ class PendientesServir(Ventana):
         idpedido = model[path][-1]
         if idpedido > 0:
             from formularios import pedidos_de_venta
-            v = pedidos_de_venta.PedidosDeVenta(
+            v = pedidos_de_venta.PedidosDeVenta(  # @UnusedVariable
                     pclases.PedidoVenta.get(idpedido), usuario = self.usuario)
 
     def inicializar_ventana(self):

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import gtk, pygtk, gobject
+import gtk, gobject
 
 class MarqueeLabel(gtk.Label):
     """

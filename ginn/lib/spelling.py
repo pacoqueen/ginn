@@ -6,9 +6,8 @@ Peter Norvig, eres grande, you motherfucker!
 Basado en http://norvig.com/spell-correct.html
 """
 
-import re, collections, string
+import re, collections, string, sys
 
-import string, sys
 version = string.split(string.split(sys.version.replace("+", ""))[0], ".")
     # Debian empaqueta la versión con un '+' después del 5 y peta.
 if map(int, version) < [2, 5]:

@@ -37,8 +37,6 @@
 ## 19 de enero de 2006 -> Fork a v02.
 ###################################################################
 
-import sys
-
 from framework import pclases
 
 def id_propia_empresa_proveedor():

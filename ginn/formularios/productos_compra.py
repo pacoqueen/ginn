@@ -44,8 +44,7 @@ from ventana import Ventana
 from formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
-import sys, os
+import gtk
 from framework import pclases
 from framework.seeker import VentanaGenerica
 from utils import _float as float
@@ -325,7 +324,7 @@ class ProductosCompra(Ventana, VentanaGenerica):
         albaran = ldc.albaranEntrada
         if albaran != None:
             from formularios import albaranes_de_entrada
-            ventana = albaranes_de_entrada.AlbaranesDeEntrada(albaran)
+            ventana = albaranes_de_entrada.AlbaranesDeEntrada(albaran)  # @UnusedVariable
 
     def actualizar_historico(self, tv, path, view_col):
         """
@@ -334,12 +333,12 @@ class ProductosCompra(Ventana, VentanaGenerica):
         if self.usuario != None and self.usuario.nivel > 0:
             return
         ide = tv.get_model()[path][-1]
-        h = pclases.HistorialExistenciasCompra.get(id)
+        h = pclases.HistorialExistenciasCompra.get(ide)
         fecha = h.fecha
         producto = h.productoCompra
         almacen = h.almacen
         # print "Recontando..."
-        tal = producto.get_existencias_historico(fecha, forzar = True, 
+        tal = producto.get_existencias_historico(fecha, forzar = True,  # @UnusedVariable
             actualizar = True, almacen = almacen)
         # print tal
         self.rellenar_historial(producto)
@@ -358,7 +357,7 @@ class ProductosCompra(Ventana, VentanaGenerica):
         except ValueError:
             return
         if self.usuario == None or self.usuario.nivel == 0:
-            h = pclases.HistorialExistenciasCompra.get(id)
+            h = pclases.HistorialExistenciasCompra.get(ide)
             h.cantidad = cantidad
             model[path][1] = h.cantidad
 
@@ -368,7 +367,7 @@ class ProductosCompra(Ventana, VentanaGenerica):
         """
         model = self.wids['tv_hist'].get_model()
         ide = model[path][-1]
-        h = pclases.HistorialExistenciasCompra.get(id)
+        h = pclases.HistorialExistenciasCompra.get(ide)
         h.observaciones = texto
         model[path][2] = h.observaciones
 
@@ -857,7 +856,7 @@ class ProductosCompra(Ventana, VentanaGenerica):
         productos y tarifas en tabla.
         """
         from formularios import productos
-        ventana_tabla = productos.Productos(usuario = self.usuario)
+        ventana_tabla = productos.Productos(usuario = self.usuario)  # @UnusedVariable
 
     def buscar_producto(self, widget, a_buscar = ""):
         """

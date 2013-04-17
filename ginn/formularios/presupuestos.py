@@ -37,7 +37,6 @@
 ## 
 ###################################################################
 
-import sys, os
 from ventana import Ventana
 from formularios import utils
 import pygtk
@@ -45,7 +44,6 @@ pygtk.require('2.0')
 import gtk, time, mx.DateTime
 from framework import pclases
 from framework.seeker import VentanaGenerica 
-from utils import _float as float
 from pedidos_de_venta import preguntar_precio
 
 class Presupuestos(Ventana, VentanaGenerica):
@@ -189,7 +187,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                         srv.pedidoVenta = nuevopedido
                 self.actualizar_ventana()
                 from formularios import pedidos_de_venta
-                ventanapedido = pedidos_de_venta.PedidosDeVenta(objeto = nuevopedido, usuario = self.usuario)
+                ventanapedido = pedidos_de_venta.PedidosDeVenta(objeto = nuevopedido, usuario = self.usuario)  # @UnusedVariable
 
     def seleccionar_cantidad(self, producto):
         """

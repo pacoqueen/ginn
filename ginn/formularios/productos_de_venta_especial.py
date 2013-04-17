@@ -350,23 +350,23 @@ class ProductosDeVentaEspecial(Ventana):
         #def sup(n):
         #    return ((n+9)/10)*10
         #peso = 1
-        #sum = 0
+        #suma = 0
         #for d in cod:
-        #    sum += int(d) * peso
+        #    suma += int(d) * peso
         #    if peso == 1:
         #        peso = 3
         #    else:
         #        peso = 1
-        #return str(sup(sum) - sum)
+        #return str(sup(suma) - suma)
         pesos = [1, 3]*6
         magic = 10
-        sum = 0
+        suma = 0
         for i in range(12):
             try:
-                sum = sum + int(cod[i]) * pesos[i]
+                suma = suma + int(cod[i]) * pesos[i]
             except ValueError:  # Sustituyo caracteres no numéricos
-                sum = sum + (ord(cod[i] - ord("0")) % 10) * pesos[i]
-        z = (magic - (sum % magic)) % magic
+                suma = suma + (ord(cod[i] - ord("0")) % 10) * pesos[i]
+        z = (magic - (suma % magic)) % magic
         if z < 0 or z >= magic:
             return None
         return str(z)

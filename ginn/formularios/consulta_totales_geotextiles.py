@@ -439,7 +439,6 @@ class ConsultaTotalesGeotextiles(Ventana):
         """
         Exporta el contenido del TreeView a un fichero csv.
         """
-        import sys, os
         from informes.treeview2csv import treeview2csv
         from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']

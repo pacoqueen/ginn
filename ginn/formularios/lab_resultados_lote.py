@@ -222,7 +222,7 @@ class LabResultadosLote(Ventana):
         model, itr = self.wids['tv_encogimiento'].get_selection().get_selected()
         if itr != None:
             dato, ide = model[itr]
-            self.encogimiento.remove((dato,id))
+            self.encogimiento.remove((dato,ide))
             self.rellenar_tablas()
         else:
             utils.dialogo_info(titulo = 'ERROR', texto = 'No se ha seleccionado ningún elemento a borrar')

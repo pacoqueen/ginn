@@ -3930,7 +3930,7 @@ class Pale(SQLObject, PRPCTOO):
                     numcajas = numcajasdefecto 
                     )
             # 2.- Creo las cajas.
-            for i in range(pale.numcajas):
+            for i in range(pale.numcajas):  # @UnusedVariable
                 caja = Caja.crear_caja(parteDeProduccion, pale, 
                                        numbolsas)
             # OJO: Le paso el último artículo porque la formulación de esta 

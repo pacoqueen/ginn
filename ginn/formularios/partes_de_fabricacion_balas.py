@@ -884,7 +884,7 @@ class PartesDeFabricacionBalas(Ventana):
                 lotepartida = parte.articulos[0].rollo.partida.codigo
             else:
                 lotepartida = 'VACIO'
-            producto = parte.articulos != [] and parte.articulos[0].productoVenta.nombre or 'VACÍO'
+            producto = parte.articulos != [] and parte.articulos[0].productoVenta.nombre or 'VACÍO'  # @UnusedVariable
             model[itr][-1] = lotepartida
 
 
@@ -1129,9 +1129,9 @@ class PartesDeFabricacionBalas(Ventana):
             if model[itr][1] != '':
                 ide = model[itr][-1]
                 try:
-                    articulo = pclases.Articulo.get(id)
+                    articulo = pclases.Articulo.get(ide)
                 except pclases.SQLObjectNotFound:
-                    print "partes_de_fabricacion_balas.py: cell_func en colorear: El artículo ID %d ya no existe. No aplico función de render." % (id)
+                    print "partes_de_fabricacion_balas.py: cell_func en colorear: El artículo ID %d ya no existe. No aplico función de render." % (ide)
                     return
                 try:
                     if articulo.es_bala():
@@ -3875,8 +3875,8 @@ def recv_serial(com, ventana, l_peso, ventana_parte, e_numbala, l_estable, l_pes
     if c.strip() != '':
         # Tratar
         try:
-            estable, algo, peso_str = c.split()
-        except ValueError, msg:
+            estable, algo, peso_str = c.split()  # @UnusedVariable
+        except ValueError, msg:  # @UnusedVariable
             # utils.dialogo_info(titulo = "ERROR DE PESAJE", 
             #                    texto = "Ocurrió un error en la comunicación con la báscula.\nCierre y vuelva a abrir la ventana de lectura de báscula.", 
             #                    padre = ventana_parte.wids['ventana'])
