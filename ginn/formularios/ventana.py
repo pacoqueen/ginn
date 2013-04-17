@@ -83,29 +83,7 @@ class Ventana:
             usuario = pclases.Usuario.get(usuario)
         self.__usuario = usuario
         self._is_fullscreen = False
-        import logging
-        #from logging import handlers
-        self.logger = logging.getLogger('GINN')
-        self.logger.DEBUG = 0
-        self.logger.ERROR = 1
-        self.logger.WARN = self.logger.WARNING = 2
-        self.logger.INFO = 3
-        hdlr = logging.FileHandler('ginn.log', encoding = "utf-8")
-        # El Rotating... peta en Windows cuando hay múltiples procesos 
-        # accediendo al archivo. Lo cambio por una entrada en el crontab del 
-        # servidor:
-        #  cp /home/compartido/betav2/formularios/ginn.log \
-        #     /home/compartido/betav2/formularios/`date +"%Y%m%d"`_ginn.log \
-        #  && (echo > /home/compartido/betav2/formularios/ginn.log)
-        #hdlr = handlers.RotatingFileHandler('ginn.log', 
-        #                                    maxBytes = 1024*1024, 
-        #                                    backupCount = 1024, 
-        #                                    encoding = "utf-8")
-        formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-        hdlr.setFormatter(formatter)
-        if not self.logger.handlers:    # Primera vez no hay handlers. Añado:
-            self.logger.addHandler(hdlr)
-        self.logger.setLevel(logging.DEBUG)
+        self.logger = get_ginn_logger()
         self.wids = Widgets(glade)
         self.handlers_id = dict([(w, {}) for w in self.wids.keys()])
         for w in self.wids.keys():
@@ -990,6 +968,31 @@ class Ventana:
         else: # or nivel == 2
             self.logger.warning(txt2log)
 
+def get_ginn_logger():
+    import logging 
+    #from logging import handlers
+    logger = logging.getLogger('GINN')
+    logger.DEBUG = 0
+    logger.ERROR = 1
+    logger.WARN = logger.WARNING = 2
+    logger.INFO = 3
+    hdlr = logging.FileHandler('ginn.log', encoding="utf-8") 
+    # El Rotating... peta en Windows cuando hay múltiples procesos
+    # accediendo al archivo. Lo cambio por una entrada en el crontab del
+    # servidor:
+    #  cp /home/compartido/betav2/formularios/ginn.log \
+    #     /home/compartido/betav2/formularios/`date +"%Y%m%d"`_ginn.log \
+    #  && (echo > /home/compartido/betav2/formularios/ginn.log)
+    #hdlr = handlers.RotatingFileHandler('ginn.log',
+    #                                    maxBytes = 1024*1024,
+    #                                    backupCount = 1024,
+    #                                    encoding = "utf-8")
+    formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+    hdlr.setFormatter(formatter)
+    if not logger.handlers: # Primera vez no hay handlers. Añado:
+        logger.addHandler(hdlr)
+    logger.setLevel(logging.DEBUG)
+    return logger
 
 def determine_ico_from_filename(archivo, clase):
     """@todo: A partir del nombre de archivo y de la clase devuelve la ruta 

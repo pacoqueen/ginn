@@ -65,7 +65,6 @@ from framework import pclases
 from formularios import gtkexcepthook
 
 from formularios import utils
-import mx.DateTime
 from framework.configuracion import ConfigConexion
 
 from formularios import custom_widgets
@@ -820,219 +819,55 @@ class Menu:
         vacerca.destroy()
 
 
-def construir_y_enviar(w, ventana, remitente, observaciones, texto, usuario):
-    # FIXME: Esto hay que cambiarlo.
-    from formularios import ventana_progreso
-    try:
-        import libgmail  # @UnresolvedImport
-    except:
-        import libgmail  # @UnresolvedImport
-    rte = remitente.get_text()
-    buff = observaciones.get_buffer()
-    obs = buff.get_text(buff.get_start_iter(), buff.get_end_iter()) 
-    if usuario == None:
-        contra = ''
-    else:
-        contra = usuario.cpass
-    pwd = utils.dialogo_entrada(titulo = 'CONTRASEÑA', texto = """ 
-    Introduzca la contraseña de su cuenta de correo en gmail.       
-    No se almacenará.
-    
-    """, pwd = True, valor_por_defecto = contra)
-    if pwd != None and pwd != "":
-        vpro = ventana_progreso.VentanaProgreso()
-        vpro.tiempo = 25
-        vpro.mostrar()
-        vpro.set_valor(0.0, "Intentando login en %s..." % rte)
-        import time 
-        for nada in xrange(50):
-            vpro.set_valor(nada/100.0, "Intentando login en %s..." % rte)
-            time.sleep(0.05)     # Es que si no no da tiempo a ver el mensajito.
-        con = libgmail.GmailAccount(rte, pwd)
-        try:
-            con.login()
-        except:
-            utils.dialogo_info(titulo = "ERROR",
-                texto = "Login erróneo. No se introdujo una cuenta de gmail "
-                        "o contraseña válida.\n\nVuelva a intentarlo.")
-            guardar_error_a_disco(rte, obs, texto)
-            vpro.ocultar()
-            return
-        texto = "OBSERVACIONES: " + obs + "\n\n\n" + texto 
-        tos = ('rodriguez.bogado@gmail.com', )
-        i = 0
-        for to in tos:
-            vpro.set_valor((i/len(tos)*0.5) + 0.5, "Enviando a %s..." % to)
-            msg = libgmail.GmailComposedMessage(to, 
-                "ERROR GINN. Capturada excepción no contemplada.", texto)
-            try:
-                con.sendMessage(msg)
-            except Exception, msg:
-                utils.dialogo_info(titulo = "ERROR",
-                    texto = "Ocurrió un error al enviar el correo electrónico."
-                            "\n\n\n%s" % msg)
-                guardar_error_a_disco(rte, obs, texto)
-                vpro.ocultar()
-                return
-        vpro.ocultar()
-        utils.dialogo_info(titulo = 'CORREO ENVIADO', 
-            texto = 'Informe de error enviado por correo electrónico.')
-        ventana.destroy()
-
-def mostrar_dialogo_y_guardar(txt):
-    dialog = gtk.FileChooserDialog("GUARDAR TRAZA/DEBUG",
-                                   None,
-                                   gtk.FILE_CHOOSER_ACTION_SAVE,
-                                   (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-                                    gtk.STOCK_SAVE, gtk.RESPONSE_ACCEPT))
-    dialog.set_default_response(gtk.RESPONSE_OK)
-    try:
-        home = os.environ['HOME']
-    except KeyError:
-        try:
-            home = os.environ['HOMEPATH']
-        except KeyError:
-            home = "."
-            print "WARNING: No se pudo obtener el «home» del usuario"
-    if os.path.exists(os.path.join(home, 'tmp')):
-        dialog.set_current_folder(os.path.join(home, 'tmp'))
-    else:
-        dialog.set_current_folder(home)
-    filtro = gtk.FileFilter()
-    filtro.set_name("Archivos de traza-depuración texto plano ginn")
-    filtro.add_pattern("*.qdg")
-    filtro.add_pattern("*.QDG")
-    filtro.add_pattern("*.Qdg")
-
-    dialog.add_filter(filtro)
-    filtro = gtk.FileFilter()
-    filtro.set_name("Todos")
-    filtro.add_pattern("*")
-    dialog.add_filter(filtro)
-
-    dialog.set_current_name("%s.qdg" % (mx.DateTime.localtime().strftime("%d_%m_%Y")))
-
-    if dialog.run() == gtk.RESPONSE_ACCEPT:
-        nomarchivo = dialog.get_filename()
-        try:
-            if nomarchivo[:nomarchivo.rindex(".")] not in ("qdg", "QDG", "Qdg"):
-                nomarchivo = nomarchivo + ".qdg"
-        except:
-            nomarchivo = nomarchivo + ".qdg"
-        save_to_file(nomarchivo, txt)
-    dialog.destroy()
-
-def save_to_file(nombre, texto):
-    """
-    Abre el archivo "nombre" y guarda el texto en él. Si ya existe, lo añade.
-    """
-    try:
-        f = open(nombre, 'a')
-        f.write(texto)
-        f.close()
-        utils.dialogo_info(titulo = "TRAZA GUARDADA",
-            texto = "La información de depuración se ha guardado correctament"\
-                    "e en %s.\nCierre la ventana y reinicie el programa compl"\
-                    "eto." % (nombre))
-    except IOError:
-        utils.dialogo_info(titulo = "NO TIENE PERMISO", 
-            texto = "No tiene permiso para guardar el archivo. Pruebe en otro"\
-                    " directorio.")
-
-def guardar_error_a_disco(remitente, observaciones, texto):
-    """
-    Pregunta si guardar el error en disco como archivo de texto.
-    """
-    if utils.dialogo(titulo = "¿GUARDAR A DISCO?",
-        texto = "Si no puede enviar el informe de error o no tiene conexión a"\
-                " internet\npuede guardar la información en un fichero de tex"\
-                "to para que sea revisada más tarde.\n\n¿Quiere guardar la tr"\
-                "aza de depuración en disco ahora?"):
-        txt = "REMITENTE: %s\n\nOBSERVACIONES: %s\n\nTEXTO: \n%s\n" % (
-            remitente, observaciones, texto)
-        mostrar_dialogo_y_guardar(txt)
-
-def crear_ventana(titulo, texto, usuario):
-    # PLAN: ¿Meto un "recordar contraseña"?
-    ventana = gtk.Window()
-    ventana.set_title(titulo)
-    ventana.set_modal(True)
-    ventana.set_position(gtk.WIN_POS_CENTER_ALWAYS)
-    tabla = gtk.Table(5, 2)
-    imagen = gtk.Image()
-    imagen.set_from_file(os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), 
-        "..", 'imagenes', 'emblem-mail.png'))
-    info = gtk.Label('Se produjo un error mientras usaba la aplicación\n'
-        'Es recomendable enviar un informe a los desarrolladores.\nDebe '
-        'contar con una cuenta de correo electrónico para poder hacerlo.')
-    tabla.attach(imagen, 0, 1, 0, 1, xpadding = 5, ypadding = 5)
-    tabla.attach(info, 1, 2, 0, 1, xpadding = 5, ypadding = 5)
-    tabla.attach(gtk.Label('Cuenta: '), 0, 1, 1, 2, xpadding = 5, 
-                 ypadding = 5)
-    remitente = gtk.Entry()
-    if usuario != None:
-        remitente.set_text(usuario.cuenta)
-    tabla.attach(remitente, 1, 2, 1, 2, xpadding = 5, ypadding = 5)
-    tabla.attach(gtk.Label('Observaciones: '), 0, 1, 2, 3, xpadding = 5, 
-                 ypadding = 5)
-    observaciones = gtk.TextView()
-    tabla.attach(observaciones, 1, 2, 2, 3, xpadding = 5, ypadding = 5)
-    expander = gtk.Expander("Ver...")
-    tabla.attach(expander, 0, 2, 4, 5, xpadding = 5, ypadding = 5)
-    hb_error = gtk.HBox()
-    expander.add(hb_error)
-    hb_error.pack_start(gtk.Label('Error capturado: '))
-    hb_error.pack_start(gtk.Label(texto))
-    boton = gtk.Button(stock = gtk.STOCK_OK)
-    tabla.attach(boton, 1, 2, 3, 4, xpadding = 5, ypadding = 5)
-    ventana.add(tabla)
-    ventana.show_all()
-    return ventana, boton, remitente, observaciones
-
-def _crear_ventana(titulo, texto, usuario):
-    # PLAN: ¿Meto un "recordar contraseña"?
-    ventana = gtk.Window()
-    ventana.set_title(titulo)
-    ventana.set_modal(True)
-    ventana.set_position(gtk.WIN_POS_CENTER_ALWAYS)
-    tabla = gtk.Table(5, 2)
-    imagen = gtk.Image()
-    imagen.set_from_file(os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), 
-        '..', 'imagenes', 'emblem-mail.png'))
-    info = gtk.Label('Se produjo un error mientras usaba la aplicación\nEs '
-                     'recomendable enviar un informe a los desarrolladores.\n'
-                     'Debe contar con una cuenta de correo gmail para poder '
-                     'hacerlo.')
-    tabla.attach(imagen, 0, 1, 0, 1, xpadding = 5, ypadding = 5)
-    tabla.attach(info, 1, 2, 0, 1, xpadding = 5, ypadding = 5)
-    tabla.attach(gtk.Label('cuenta Gmail: '), 
-                 0, 1, 1, 2, xpadding = 5, ypadding = 5)
-    remitente = gtk.Entry()
-    if usuario != None:
-        remitente.set_text(usuario.cuenta)
-    tabla.attach(remitente, 1, 2, 1, 2, xpadding = 5, ypadding = 5)
-    tabla.attach(gtk.Label('Observaciones: '), 0, 1, 2, 3, 
-                 xpadding = 5, ypadding = 5)
-    observaciones = gtk.TextView()
-    tabla.attach(observaciones, 1, 2, 2, 3, xpadding = 5, ypadding = 5)
-    tabla.attach(gtk.Label('Error capturado: '), 0, 1, 4, 5, 
-                 xpadding = 5, ypadding = 5)
-    tabla.attach(gtk.Label(texto), 1, 2, 4, 5, xpadding = 5, ypadding = 5)
-    boton = gtk.Button(stock = gtk.STOCK_OK)
-    tabla.attach(boton, 1, 2, 3, 4, xpadding = 5, ypadding = 5)
-    ventana.add(tabla)
-    ventana.show_all()
-    return ventana, boton, remitente, observaciones
-
 def enviar_correo(texto, usuario = None):
-    ventana, boton, remitente, observaciones = crear_ventana(
-        'ENVIAR INFORME DE ERROR', texto, usuario)
-    ventana.connect('destroy', gtk.main_quit)
-    boton.connect('clicked', construir_y_enviar, 
-                  ventana, remitente, observaciones, texto, usuario)
-    gtk.main()
+    """
+    Envía **silenciosamente** un correo electrónico con el texto recibido.
+    Si no se puede enviar o no se recibe usuario, se guarda el texto en 
+    disco.
+    """
+    import smtplib
+    if usuario:
+        gmail_user = usuario.cuenta
+        gmail_pwd = usuario.cpass
+    else:
+        gmail_user = "practicas.geotexan@gmail.com" # Utilizo una cuenta "genérica"
+        gmail_pwd = "20mesa20" # FIXME !!!
+    gmail_from = gmail_user
+    gmail_to = ['frbogado@geotexan.com'] 
+    gmail_subject = "Geotex-INN: Informe de error"
+    gmail_text = texto
+
+    # Prepare actual message
+    message = """\From: %s\nTo: %s\nSubject: %s\n\n%s
+    """ % (gmail_from, ", ".join(gmail_to), gmail_subject, gmail_text)
+    try:
+        #server = smtplib.SMTP(SERVER) 
+        server = smtplib.SMTP("smtp.gmail.com", 587) #or port 465 doesn't seem to work!
+        server.ehlo()
+        server.starttls()
+        server.login(gmail_user, gmail_pwd)
+        server.sendmail(gmail_from, gmail_to, message)
+        #server.quit()
+        server.close()
+    except:
+        guardar_error_a_log(usuario, texto)
+        
+def guardar_error_a_log(usuario, texto):
+    """
+    Guarda el texto en el log de la aplicación. Si no se recibe usuario (es 
+    None) utiliza el registrado en pclases.
+    """
+    from ventana import get_ginn_logger
+    logger = get_ginn_logger()
+    if not usuario:
+        try:
+            nombre_usuario = pclases.logged_user.usuario  # @UndefinedVariable
+        except AttributeError:
+            nombre_usuario = "N/A"
+    else:
+        nombre_usuario = usuario.usuario
+    texto_a_log = "%s: -> %s" % (nombre_usuario, texto)
+    logger.error(texto_a_log)
 
 def escalar_a(ancho, alto, pixbuf):
     """
