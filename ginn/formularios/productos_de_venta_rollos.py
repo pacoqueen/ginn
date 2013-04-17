@@ -183,8 +183,8 @@ class ProductosDeVentaRollos(Ventana):
         """
         if self.objeto:
             ide = utils.combo_get_value(cb)
-            if id:
-                marcado = pclases.MarcadoCe.get(id)
+            if ide:
+                marcado = pclases.MarcadoCe.get(ide)
             else:
                 marcado = self.objeto.camposEspecificosRollo
             self.mostrar_marcado(marcado)
@@ -558,8 +558,8 @@ class ProductosDeVentaRollos(Ventana):
             except AttributeError:  # Demasiado tiempo contando stock, aún 
                                     # no se ha rellenado la tabla:
                 ide = None
-            if id:
-                cer = pclases.MarcadoCe.get(id)
+            if ide:
+                cer = pclases.MarcadoCe.get(ide)
             else:
                 cer = self.objeto.camposEspecificosRollo
             # "Atributos"
@@ -585,10 +585,10 @@ class ProductosDeVentaRollos(Ventana):
         if self.objeto != None:
             valores_malos = []
             ide = utils.combo_get_value(self.wids['cb_marcado'])
-            if id == 0:
+            if ide == 0:
                 cer = self.objeto.camposEspecificosRollo
             else:
-                cer = pclases.MarcadoCe.get(id)
+                cer = pclases.MarcadoCe.get(ide)
             # "Atributos"
             for nombre_campo in [k for k in cer._SO_columnDict.keys() if "Prueba" in k]:
                 valor_ventana = self.wids["e_%s" % (nombre_campo)].get_text()
@@ -987,7 +987,6 @@ class ProductosDeVentaRollos(Ventana):
         return
         
     def ver_tarifas(self, w):
-        producto = self.objeto
         from formularios import tarifas_de_precios
         tarifas_de_precios.TarifasDePrecios()
         return
@@ -1000,7 +999,7 @@ class ProductosDeVentaRollos(Ventana):
         if not valor:
             return
         producto = self.objeto
-        ce = pclases.CamposEspecificos(productoVenta = producto,
+        ce = pclases.CamposEspecificos(productoVenta = producto,  # @UnusedVariable
                                      nombre = campo,
                                      valor = valor)
         self.mostrar_especificos()

@@ -144,7 +144,7 @@ class Productos(Ventana):
                                padre = self.wids['ventana'])
         else:
             if "PC" in model[path][0]:
-                producto = pclases.ProductoCompra.get(id)
+                producto = pclases.ProductoCompra.get(ide)
                 producto.sync()
                 #producto.existencias = existencias
                 producto.set_existencias(existencias)
@@ -171,9 +171,9 @@ class Productos(Ventana):
         model = self.wids['tv_datos'].get_model()
         ide = model[path][-1]
         if "PC" in model[path][0]:
-            producto = pclases.ProductoCompra.get(id)
+            producto = pclases.ProductoCompra.get(ide)
         elif "PV" in model[path][0]:
-            producto = pclases.ProductoVenta.get(id)
+            producto = pclases.ProductoVenta.get(ide)
         else:
             return
         producto.sync()
@@ -207,9 +207,9 @@ class Productos(Ventana):
                                padre = self.wids['ventana'])
         else:
             if "PC" in model[path][0]:
-                producto = pclases.ProductoCompra.get(id)
+                producto = pclases.ProductoCompra.get(ide)
             elif "PV" in model[path][0]:
-                producto = pclases.ProductoVenta.get(id)
+                producto = pclases.ProductoVenta.get(ide)
             else:
                 return
             for numcol in range(5, 5 + len(self.__tarifas)):
@@ -245,9 +245,9 @@ class Productos(Ventana):
         model = self.wids['tv_datos'].get_model()
         ide = model[path][-1]
         if "PC" in model[path][0]:
-            producto = pclases.ProductoCompra.get(id)
+            producto = pclases.ProductoCompra.get(ide)
         elif "PV" in model[path][0]:
-            producto = pclases.ProductoVenta.get(id)
+            producto = pclases.ProductoVenta.get(ide)
         else:
             return
         try:
@@ -297,14 +297,14 @@ class Productos(Ventana):
             producto = pclases.ProductoVenta.get(ide)
             if producto.es_rollo():
                 from formularios import productos_de_venta_rollos
-                ventana_producto = productos_de_venta_rollos.ProductosDeVentaRollos(producto, usuario = self.usuario)
+                ventana_producto = productos_de_venta_rollos.ProductosDeVentaRollos(producto, usuario = self.usuario)  # @UnusedVariable
             elif producto.es_bala() or producto.es_bigbag():
                 from formularios import productos_de_venta_balas
-                ventana_producto = productos_de_venta_balas.ProductosDeVentaBalas(producto, usuario = self.usuario)
+                ventana_producto = productos_de_venta_balas.ProductosDeVentaBalas(producto, usuario = self.usuario)  # @UnusedVariable
         elif "PC" in model[path][0]:
             producto = pclases.ProductoCompra.get(ide)
             from formularios import productos_compra
-            ventana_producto = productos_compra.ProductosCompra(producto, usuario = self.usuario)
+            ventana_producto = productos_compra.ProductosCompra(producto, usuario = self.usuario)  # @UnusedVariable
 
     def rellenar_widgets(self, boton = None):
         """

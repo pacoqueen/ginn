@@ -142,10 +142,10 @@ class GesRemesas:
         self.CierraDb()
 
     def VisualizaDatos(self,Datos):
-        store=gtk.ListStore(gobject.TYPE_STRING,gobject.TYPE_STRING)
+        store=gtk.ListStore(gobject.TYPE_STRING,gobject.TYPE_STRING)  # @UnusedVariable
         store=self.tvRemesas.get_model()
-        iter=store.append()
-        store.set(iter,0,Datos[0],1,Datos[1])
+        itr=store.append()
+        store.set(itr,0,Datos[0],1,Datos[1])
         self.tvRemesas.set_model(store)
 
     def LlamaPresentador(self,widget):
@@ -160,7 +160,7 @@ class GesRemesas:
         #Orden.ventana.set_modal(True)
     
     def Eliminar(self,widget):
-        store=gtk.ListStore(gobject.TYPE_STRING,gobject.TYPE_STRING)
+        store=gtk.ListStore(gobject.TYPE_STRING,gobject.TYPE_STRING)  # @UnusedVariable
         store=self.tvRemesas.get_model()
         if self.tvRemesas.get_cursor()[0]<>None:
             #cone=gadfly.gadfly("csb19","./dbCsb19/")
@@ -200,7 +200,7 @@ class GesRemesas:
         # lista de dos elementos: 
         # 1 -> numero de elemento del tree view
         # 2 -> gtk.TreeViewColumn object
-        store=gtk.ListStore(gobject.TYPE_STRING,gobject.TYPE_STRING)
+        store=gtk.ListStore(gobject.TYPE_STRING,gobject.TYPE_STRING)  # @UnusedVariable
         store=self.tvRemesas.get_model()
         if self.tvRemesas.get_cursor()[0]<>None:
             self.RemAbrir=remesas.Remesas()

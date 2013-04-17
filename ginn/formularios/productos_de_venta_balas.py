@@ -704,7 +704,6 @@ class ProductosDeVentaBalas(Ventana):
         utils.dialogo_info(titulo = 'EXISTENCIAS', texto = 'Hay %d balas de %s en el almacén.\nEl mínimo es %d.' % (elementos.count(),producto.descripcion,producto.minimo), padre = self.wids['ventana'])
 
     def ver_tarifas(self, w):
-        producto = self.objeto
         from formularios import tarifas_de_precios
         tarifas_de_precios.TarifasDePrecios()
         return

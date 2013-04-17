@@ -49,7 +49,7 @@ from ventana import Ventana
 from formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
+import gtk
 from framework import pclases
 from utils import _float as float
 
@@ -552,7 +552,6 @@ class ProductosDeVentaRollosGeocompuestos(Ventana):
         utils.dialogo_info(titulo = 'EXISTENCIAS', texto = 'Hay %d unidades de %s en el almacén.\nEl mínimo es %d' % (elementos.count(),producto.descripcion,producto.minimo))
         
     def ver_tarifas(self, w):
-        producto = self.objeto
         from formularios import tarifas_de_precios
         tarifas_de_precios.TarifasDePrecios()
 

@@ -197,7 +197,7 @@ class ResultadosPoros(Ventana):
                                    texto = 'Debe introducir el resultado de la prueba.')
                 return
             try:
-                prueba = claseprueba(fecha = time.strptime(fecha, '%d/%m/%Y'),
+                prueba = claseprueba(fecha = time.strptime(fecha, '%d/%m/%Y'),  # @UnusedVariable
                                      resultado = resultado,
                                      partida = self.partida)
             except:
@@ -210,10 +210,10 @@ class ResultadosPoros(Ventana):
             print "WARNING: Se ha intentano añadir una prueba con partida = None"
     
     def drop(self, w):
-        model, iter = self.wids['tv_pruebas'].get_selection().get_selected()
-        if iter != None and utils.dialogo(titulo = 'BORRAR PRUEBA', texto = '¿Está seguro?'):
-            ide = model[iter][-1]
-            prueba = claseprueba.get(id)
+        model, itr = self.wids['tv_pruebas'].get_selection().get_selected()
+        if itr != None and utils.dialogo(titulo = 'BORRAR PRUEBA', texto = '¿Está seguro?'):
+            ide = model[itr][-1]
+            prueba = claseprueba.get(ide)
             prueba.destroy(ventana = __file__)
             self.rellenar_pruebas()
 

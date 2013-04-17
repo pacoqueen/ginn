@@ -633,9 +633,8 @@ class ProductosDeVentaEspecial(Ventana):
             self.ir_a_primero()
 
     def ver_tarifas(self, w):
-        producto = self.objeto
         from formularios import tarifas_de_precios
-        v = tarifas_de_precios.TarifasDePrecios()
+        v = tarifas_de_precios.TarifasDePrecios()  # @UnusedVariable
 
     def add_campoesp(self, w):
         campo = utils.dialogo_entrada('Introduzca nombre del campo:', 'NOMBRE', padre = self.wids['ventana'])
