@@ -86,6 +86,8 @@ class Ventana:
             import pclases
             usuario = pclases.Usuario.get(usuario)
         self.__usuario = usuario
+        if not hasattr(self, "usuario"):
+            self.usuario = self.__usuario
         self._is_fullscreen = False
         import logging
         from logging import handlers
