@@ -28,33 +28,35 @@
 #   0. You just DO WHAT THE FUCK YOU WANT TO.
 ################################################################################
 
-# Para ver cómo generar y actualizar 117n l10n: 
+# Para ver cómo generar y actualizar i18n l10n: 
 #   http://my.opera.com/th3pr0ph3t/blog/localizacion-en-python-usando-gettext
 # Usar el script ../l10n/actualizar_traduccion.sh si se cambia o 
 # añade alguna cadena. Instala gtranslate si quieres llevar una vida mejor.
 
 import inspect, linecache, pydoc, sys, os# , traceback
 from cStringIO import StringIO
-from gettext import gettext as _
 from smtplib import SMTP, SMTPException
 
+import locale
+if locale.getlocale()[0] is None:
+    locale.setlocale(locale.LC_ALL, '')
 import gettext
-gettext.textdomain("gtkexcepthook")
-gettext.bindtextdomain("gtkexcepthook", 
-        os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "mo")))
+TRANSLATION_DOMAIN = "gtkexcepthook"
+LOCALE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "locale"))
+_ = gettext.translation(TRANSLATION_DOMAIN, LOCALE_DIR).ugettext
 
 import pygtk
-pygtk.require ('2.0')
+pygtk.require('2.0')
 import gtk, pango
 
 from formularios.utils import dialogo_entrada as fdialogo
         
-#def analyse (exctyp, value, tb):
+#def analyse(exctyp, value, tb):
 #    trace = StringIO()
-#    traceback.print_exception (exctyp, value, tb, None, trace)
+#    traceback.print_exception(exctyp, value, tb, None, trace)
 #    return trace
 
-def lookup (name, frame, lcls):
+def lookup(name, frame, lcls):
     '''Find the value for a given name in the given frame'''
     if name in lcls:
         return 'local', lcls[name]
@@ -62,28 +64,28 @@ def lookup (name, frame, lcls):
         return 'global', frame.f_globals[name]
     elif '__builtins__' in frame.f_globals:
         builtins = frame.f_globals['__builtins__']
-        if type (builtins) is dict:
+        if type(builtins) is dict:
             if name in builtins:
                 return 'builtin', builtins[name]
         else:
-            if hasattr (builtins, name):
-                return 'builtin', getattr (builtins, name)
+            if hasattr(builtins, name):
+                return 'builtin', getattr(builtins, name)
     return None, []
 
-def analyse (exctyp, value, tb):
+def analyse(exctyp, value, tb):
     import tokenize, keyword
 
     trace = StringIO()
     nlines = 3
-    frecs = inspect.getinnerframes (tb, nlines)
-    trace.write ('Traceback (most recent call last):\n')
+    frecs = inspect.getinnerframes(tb, nlines)
+    trace.write('Traceback (most recent call last):\n')
     for frame, fname, lineno, funcname, context, cindex in frecs: #@UnusedVariable
-        trace.write ('  File "%s", line %d, ' % (fname, lineno))
-        args, varargs, varkw, lcls = inspect.getargvalues (frame)
+        trace.write('  File "%s", line %d, ' % (fname, lineno))
+        args, varargs, varkw, lcls = inspect.getargvalues(frame)
 
-        def readline (lno=[lineno], *args):
+        def readline(lno=[lineno], *args):
             if args: print args
-            try: return linecache.getline (fname, lno[0])
+            try: return linecache.getline(fname, lno[0])
             finally: lno[0] += 1
         todo, prev, name, scope = {}, None, '', None
         for ttype, tstr, stup, etup, line in tokenize.generate_tokens(readline): #@UnusedVariable
@@ -91,14 +93,14 @@ def analyse (exctyp, value, tb):
                 if name:
                     if name[-1] == '.':
                         try:
-                            val = getattr (prev, tstr)
+                            val = getattr(prev, tstr)
                         except AttributeError:
                             # XXX skip the rest of this identifier only
                             break
                         name += tstr
                 else:
                     assert not name and not scope
-                    scope, val = lookup (tstr, frame, lcls)
+                    scope, val = lookup(tstr, frame, lcls)
                     name = tstr
                 if val:
                     prev = val
@@ -116,8 +118,8 @@ def analyse (exctyp, value, tb):
         args = []   # El "self" dentro de la lista de argumentos da problemas. 
                     # Salta un KeyError. Le paso la lista vacía para evitar 
                     # problemas.
-        trace.write (funcname 
-                     + inspect.formatargvalues (args, 
+        trace.write(funcname 
+                     + inspect.formatargvalues(args, 
                         varargs, 
                         varkw, 
                         lcls, 
@@ -125,11 +127,11 @@ def analyse (exctyp, value, tb):
                      +'\n')
         if context is None:
             context = []
-        trace.write (''.join (['    ' + x.replace ('\t', '  ') for x in filter (lambda a: a.strip(), context)]))
-        if len (todo):
-            trace.write ('  variables: %s\n' % myprettyprint(todo))
+        trace.write(''.join(['    ' + x.replace('\t', '  ') for x in filter(lambda a: a.strip(), context)]))
+        if len(todo):
+            trace.write('  variables: %s\n' % myprettyprint(todo))
 
-    trace.write ('%s: %s' % (exctyp.__name__, value))
+    trace.write('%s: %s' % (exctyp.__name__, value))
     return trace
 
 def myprettyprint(stuff):
@@ -141,14 +143,19 @@ def myprettyprint(stuff):
     #else:
     #    return pformat(stuff)
 
-def _info (exctyp, value, tb):
+def _info(exctyp, value, tb):
+    # PORASQUI: Si se puede enviar por correo, enviar por correo y no abrir 
+    # siquiera la ventana. O guardar a log o algo así si no se puede. Lo de 
+    # preguntar al usuario se tiene que quedar como última opción, porque 
+    # siempre pasan del tema. Solo mostrar una ventana si no se puede continuar 
+    # la ejecución del programa de ninguna de las maneras.
     trace = None
-    dialog = gtk.MessageDialog (parent=None, flags=0, 
+    dialog = gtk.MessageDialog(parent=None, flags=0, 
                                 type=gtk.MESSAGE_WARNING, 
                                 buttons=gtk.BUTTONS_NONE)
-    dialog.set_title (_("Bug Detected"))
-    if gtk.check_version (2, 4, 0) is not None:
-        dialog.set_has_separator (False)
+    dialog.set_title(_("Bug Detected"))
+    if gtk.check_version(2, 4, 0) is not None:
+        dialog.set_has_separator(False)
 
     primary = _("<big><b>A programming error has been detected during the execution of this program.</b></big>")
     secondary = _("It probably isn't fatal, but should be reported to the developers nonetheless.")
@@ -159,28 +166,28 @@ def _info (exctyp, value, tb):
         raise
         dialog.vbox.get_children()[0].get_children()[1].set_markup('%s\n\n%s' 
             % (primary, secondary))
-        #lbl.set_property ("use-markup", True)
+        #lbl.set_property("use-markup", True)
     else:
         del setsec
-        dialog.set_markup (primary)
-        dialog.format_secondary_text (secondary)
+        dialog.set_markup(primary)
+        dialog.format_secondary_text(secondary)
 
     try:
         email = feedback #@UndefinedVariable
-        dialog.add_button (_("Report..."), 3)
+        dialog.add_button(_("Report..."), 3)
     except NameError:
         # could ask for an email address instead...
         pass
-    dialog.add_button (_("Details..."), 2)
-    dialog.add_button (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)
-    dialog.add_button (gtk.STOCK_QUIT, 1)
-    dialog.add_button (_("Close all"), 4)
+    dialog.add_button(_("Details..."), 2)
+    dialog.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)
+    dialog.add_button(gtk.STOCK_QUIT, 1)
+    dialog.add_button(_("Close all"), 4)
 
     while True:
         resp = dialog.run()
         if resp == 3:
             if trace == None:
-                trace = analyse (exctyp, value, tb)
+                trace = analyse(exctyp, value, tb)
 
             # TODO: prettyprint, deal with problems in sending feedback, &tc
             try:
@@ -188,7 +195,7 @@ def _info (exctyp, value, tb):
             except NameError:
                 server = 'localhost'
 
-            message = 'From: %s"\nTo: %s\nSubject: Exception feedback\n\n%s'%(
+            message = 'From: %s"\nTo: %s\nSubject: Geotex-INN -- Excepción capturada.\n\n%s'%(
                 email, "Soporte G-INN", trace.getvalue())
 
             s = SMTP()
@@ -234,35 +241,35 @@ def _info (exctyp, value, tb):
                 pass    # No se ha especificado contraseña, será que no 
                         # necesita autentificación entonces.
             try:
-                s.sendmail (email, (devs_to,), message) #@UndefinedVariable
+                s.sendmail(email, (devs_to,), message) #@UndefinedVariable
             except NameError:
-                s.sendmail (email, (email,), message)
+                s.sendmail(email, (email,), message)
             s.quit()
             break
 
         elif resp == 2:
             if trace == None:
-                trace = analyse (exctyp, value, tb)
+                trace = analyse(exctyp, value, tb)
 
             # Show details...
-            details = gtk.Dialog (_("Bug Details"), dialog,
+            details = gtk.Dialog(_("Bug Details"), dialog,
               gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
               (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE, ))
-            details.set_property ("has-separator", False)
+            details.set_property("has-separator", False)
 
             textview = gtk.TextView(); textview.show()
-            textview.set_editable (False)
-            textview.modify_font (pango.FontDescription ("Monospace"))
+            textview.set_editable(False)
+            textview.modify_font(pango.FontDescription("Monospace"))
 
             sw = gtk.ScrolledWindow(); sw.show()
-            sw.set_policy (gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-            sw.add (textview)
-            details.vbox.add (sw)
+            sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+            sw.add(textview)
+            details.vbox.add(sw)
             textbuffer = textview.get_buffer()
-            textbuffer.set_text (trace.getvalue())
+            textbuffer.set_text(trace.getvalue())
 
-            monitor = gtk.gdk.screen_get_default ().get_monitor_at_window (dialog.window)
-            area = gtk.gdk.screen_get_default ().get_monitor_geometry (monitor)
+            monitor = gtk.gdk.screen_get_default().get_monitor_at_window(dialog.window)
+            area = gtk.gdk.screen_get_default().get_monitor_geometry(monitor)
             try:
                 w = area.width // 1.6
                 h = area.height // 1.6
@@ -270,7 +277,7 @@ def _info (exctyp, value, tb):
                 # python < 2.2
                 w = area.width / 1.6
                 h = area.height / 1.6
-            details.set_default_size (int (w), int (h))
+            details.set_default_size(int(w), int(h))
 
             details.run()
             details.destroy()
@@ -288,15 +295,19 @@ def _info (exctyp, value, tb):
 sys.excepthook = _info
 
 if __name__ == '__main__':
-    class X (object):
+    class X(object):
         pass
     x = X()
     x.y = 'Test'
     x.z = x
     w = ' e'
     # Descomentar para botón enviar por correo:
-    #feedback = 'developer@bigcorp.comp'
-    #smtphost = 'mx.bigcorp.comp'
+    feedback = 'informatica@geotexan.com'
+    smtphost = 'smtp.googlemail.com'
+    devs_to = "frbogado@geotexan.com"
+    port = 465
+    port = 587
+    ssl = True
     1, x.z.y, f, w #@UndefinedVariable
-    raise Exception (x.z.y + w)
+    raise Exception(x.z.y + w)
 

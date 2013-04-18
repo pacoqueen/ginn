@@ -163,19 +163,32 @@ class Menu:
             sys.exit(1)
         pclases.logged_user = self.usuario = login.loginvalido()
         # Configuración del correo para informes de error:
+        gtkexcepthook.devs_to = "informatica@geotexan.com"
         if self.usuario.cuenta:
             gtkexcepthook.feedback = self.usuario.cuenta
             gtkexcepthook.password = self.usuario.cpass
             if not self.usuario.smtpserver:
-                gtkexcepthook.smtphost = "smtp.gmail.com"
+                gtkexcepthook.smtphost = "smtp.googlemail.com"
                 gtkexcepthook.ssl = True
                 gtkexcepthook.port = 587
             else:
                 gtkexcepthook.smtphost = self.usuario.smtpserver
-                gtkexcepthook.ssl = False
-                gtkexcepthook.port = 25
-            gtkexcepthook.devs_to = "rodriguez.bogado@gmail.com"\
-                                    ", informatica@geotexan.com"
+                gtkexcepthook.ssl = (
+                    gtkexcepthook.smtphost.endswith("googlemail.com") 
+                     or gtkexcepthook.smtphost.endswith("gmail.com")) 
+                gtkexcepthook.port = gtkexcepthook.ssl and 587 or 25 
+        else:
+            try:
+                gtkexcepthook.feedback = pclases.Usuario.selectBy(usuario = "admin")[0].feedback
+                gtkexcepthook.password = pclases.Usuario.selectBy(usuario = "admin")[0].password
+                gtkexcepthook.smtphost = pclases.Usuario.selectBy(usuario = "admin")[0].smtphost
+            except IndexError:
+                gtkexcepthook.feedback = "informatica@geotexan.com"
+                gtkexcepthook.smtphost = "smtp.googlemail.com"
+            gtkexcepthook.ssl = (
+                gtkexcepthook.smtphost.endswith("googlemail.com") 
+                 or gtkexcepthook.smtphost.endswith("gmail.com")) 
+            gtkexcepthook.port = gtkexcepthook.ssl and 587 or 25 
         # Continúo con el gestor de mensajes y resto de ventana menú.
         if pclases.VERBOSE:
             print "Cargando gestor de mensajes..."
