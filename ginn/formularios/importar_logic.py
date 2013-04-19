@@ -80,7 +80,7 @@ class ImportarLogic(Ventana):
 ##############################################################################################################
 
         self.seguir = True
-        Ventana.__init__(self, 'importar_logic.glade', objeto)
+        Ventana.__init__(self, 'importar_logic.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_abrir/clicked': self.abrir,
                        'b_abrir_cuentas/clicked': self.abrir_cuentas,

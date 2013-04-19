@@ -70,7 +70,7 @@ class MostrarDatosLogic(Ventana):
                                         pclases.NOT(Logic.q.comentario.startswith("Apertura Ejercicio")) ) 
         else:
             self.consulta = consulta
-        Ventana.__init__(self, 'mostrar_datos_logic.glade', objeto)
+        Ventana.__init__(self, 'mostrar_datos_logic.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_limpiar/clicked': self.limpiar,
                        'b_aplicar/clicked': self.aplicar,

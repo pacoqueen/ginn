@@ -260,7 +260,7 @@ class FacturacionPorClienteYFechas(Ventana):
         el que se muestra por defecto).
         """
         self.usuario = usuario
-        Ventana.__init__(self, 'facturacion_por_cliente_y_fechas.glade', objeto)
+        Ventana.__init__(self, 'facturacion_por_cliente_y_fechas.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_imprimir/clicked': self.imprimir, 
                        'cbe_cliente/changed': self.cambiar_cliente, 

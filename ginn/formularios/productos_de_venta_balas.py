@@ -59,7 +59,7 @@ class ProductosDeVentaBalas(Ventana):
         """
         self.usuario = usuario
         self._objetoreciencreado = None
-        Ventana.__init__(self, 'productos_de_venta_balas.glade', objeto)
+        Ventana.__init__(self, 'productos_de_venta_balas.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_anterior/clicked': self.ir_a_anterior,
                        'b_siguiente/clicked':self.ir_a_siguiente,

@@ -67,7 +67,7 @@ class Bancos(Ventana, VentanaGenerica):
                            "telefono":           "e_telefono", 
                            "fax":                "e_fax"
                           }
-        Ventana.__init__(self, 'bancos.glade', objeto)
+        Ventana.__init__(self, 'bancos.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_nuevo/clicked': self.nuevo,
                        'b_borrar/clicked': self.borrar,

@@ -54,9 +54,9 @@ class Trazabilidad(Ventana):
     """
     def __init__(self, objeto = None, usuario = None, ventana_padre = None, locals_adicionales = {}):
         try:
-            Ventana.__init__(self, 'trazabilidad.glade', objeto)
+            Ventana.__init__(self, 'trazabilidad.glade', objeto, usuario = usuario)
         except:     # Tal vez me estén llamando desde otro directorio
-            Ventana.__init__(self, os.path.join('..', 'formularios', 'trazabilidad.glade'), objeto)
+            Ventana.__init__(self, os.path.join('..', 'formularios', 'trazabilidad.glade'), objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_buscar/clicked': self.buscar}
         self.add_connections(connections)

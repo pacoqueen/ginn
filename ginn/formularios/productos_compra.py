@@ -58,7 +58,7 @@ class ProductosCompra(Ventana, VentanaGenerica):
         """
         self.usuario = usuario
         self._objetoreciencreado = None
-        Ventana.__init__(self, 'productos_compra.glade', objeto)
+        Ventana.__init__(self, 'productos_compra.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_articulos/clicked': self.ver_articulos,
                        'b_tarifas/clicked': self.ver_tarifas,

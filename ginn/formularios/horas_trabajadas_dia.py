@@ -53,7 +53,7 @@ import mx.DateTime
 class HorasTrabajadasDia(Ventana):
     def __init__(self, objeto = None, usuario = None):
         self.usuario = usuario
-        Ventana.__init__(self, 'horas_trabajadas_dia.glade', objeto)
+        Ventana.__init__(self, 'horas_trabajadas_dia.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_fecha/clicked': self.set_fecha,
                        'b_consultar/clicked': self.rellenar_horas,

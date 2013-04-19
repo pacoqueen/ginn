@@ -249,7 +249,7 @@ class PartesDeFabricacionRollos(Ventana):
         # contiene "x" la ventana permite crear nuevos partes. Si tiene "r" 
         # permite leer partes antiguos. Y si contiene "w" permite editar 
         # partes antiguos. Ueeee.
-        Ventana.__init__(self, 'partes_de_fabricacion_rollos.glade', objeto)
+        Ventana.__init__(self, 'partes_de_fabricacion_rollos.glade', objeto, usuario = usuario)
         # XXX
         self.wids['sp_merma'] = gtk.SpinButton()
         self.wids['sp_merma'].set_range(0, 100)

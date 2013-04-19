@@ -80,7 +80,7 @@ class Autenticacion(Ventana):
         """
         Constructor.
         """
-        Ventana.__init__(self, 'autenticacion.glade', None)
+        Ventana.__init__(self, 'autenticacion.glade', None, usuario = user)
         connections = {'b_aceptar/clicked': self.login_from_ventana,
                        'e_usuario/activate': self.pasar_a_pass,
                        'e_passwd/activate': self.login_from_ventana,

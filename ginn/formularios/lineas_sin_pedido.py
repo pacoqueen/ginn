@@ -57,7 +57,7 @@ class LineasDeVentaSinPedido(Ventana):
         el que se muestra por defecto).
         """
         self.usuario = usuario
-        Ventana.__init__(self, 'lineas_sin_pedido.glade', objeto)
+        Ventana.__init__(self, 'lineas_sin_pedido.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_agregar/clicked': self.crear_nuevo_pedido,
                        'b_borrar/clicked': self.eliminar_linea_sin_pedido,

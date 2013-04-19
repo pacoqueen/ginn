@@ -52,7 +52,7 @@ class AuditViewer(Ventana):
                  locals_adicionales = {}):
         self.filtro = [""]
         try:
-            Ventana.__init__(self, 'trazabilidad.glade', objeto)    
+            Ventana.__init__(self, 'trazabilidad.glade', objeto, usuario = usuario)    
             # Me vale el mismo glade. Modificaré dinámicamente lo que me 
             # estorbe.
         except:     # Tal vez me estén llamando desde otro directorio

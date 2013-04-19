@@ -56,7 +56,7 @@ class ConsultaEntradasAlmacen(Ventana):
         el que se muestra por defecto).
         """
         global fin
-        Ventana.__init__(self, 'consulta_entradas_almacen.glade', objeto)
+        Ventana.__init__(self, 'consulta_entradas_almacen.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_buscar/clicked': self.buscar,
                        'b_imprimir/clicked': self.imprimir,

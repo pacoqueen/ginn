@@ -53,7 +53,7 @@ class RollosAlmacen(Ventana):
         """
         self.meses = ['TOTAL', 'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
                       'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'] 
-        Ventana.__init__(self, 'rollos_almacen.glade', objeto)
+        Ventana.__init__(self, 'rollos_almacen.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_actualizar/clicked': self.actualizar
                       }

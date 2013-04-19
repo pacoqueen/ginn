@@ -45,7 +45,7 @@ class ValorAlmacen(Ventana):
         el que se muestra por defecto).
         """
         self.usuario = usuario
-        Ventana.__init__(self, 'valor_almacen.glade', objeto)
+        Ventana.__init__(self, 'valor_almacen.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_actualizar/clicked': 
                         lambda *a, **kw: self.rellenar_widgets(),

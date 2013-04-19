@@ -51,7 +51,7 @@ class VencimientosPendientesPorCliente(Ventana):
         comenzar la ventana (en lugar del primero de la tabla, que es
         el que se muestra por defecto).
         """
-        Ventana.__init__(self, 'vencimientos_pendientes_por_cliente.glade', objeto)
+        Ventana.__init__(self, 'vencimientos_pendientes_por_cliente.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'cbe_cliente/changed': self.cambiar_cliente, 
                        'b_exportar/clicked': self.exportar}  

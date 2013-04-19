@@ -47,7 +47,7 @@ class BuscaPartida(Ventana):
         el que se muestra por defecto).
         """
         self.usuario = usuario
-        Ventana.__init__(self, 'busca_partida.glade', objeto)
+        Ventana.__init__(self, 'busca_partida.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_buscar/clicked': self.buscar,
                        'b_ayuda/clicked': self.ayuda}

@@ -48,7 +48,7 @@ from formularios import ventana_progreso
 class Modelo347(Ventana):
     def __init__(self, objeto = None, usuario = None):
         self.usuario = usuario
-        Ventana.__init__(self, 'modelo_347.glade', objeto)
+        Ventana.__init__(self, 'modelo_347.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_buscar/clicked': self.buscar,
                        'b_imprimir/clicked': self.imprimir,

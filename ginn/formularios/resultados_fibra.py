@@ -58,7 +58,7 @@ class ResultadosFibra(Ventana):
         el que se muestra por defecto).
         """
         self.usuario = usuario
-        Ventana.__init__(self, 'resultados_fibra.glade', objeto)
+        Ventana.__init__(self, 'resultados_fibra.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self._salir,
                        'b_lote/clicked': self.set_lote,
                        'b_fecha/clicked': self.fecha,

@@ -61,7 +61,7 @@ class Presupuesto(Ventana, VentanaGenerica):
         self.usuario = usuario
         self.clase = None
         self.dic_campos = {}
-        Ventana.__init__(self, 'presupuesto.glade', objeto)
+        Ventana.__init__(self, 'presupuesto.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_nuevo/clicked': self.nuevo,
                        'b_borrar/clicked': self.borrar,

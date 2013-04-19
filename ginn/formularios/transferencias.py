@@ -65,7 +65,7 @@ class Transferencias(Ventana, VentanaGenerica):
                            "fecha": "e_fecha", 
                            "conceptoLibre": "e_concepto", 
                           }
-        Ventana.__init__(self, 'transferencias.glade', objeto)
+        Ventana.__init__(self, 'transferencias.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_nuevo/clicked': self.nuevo,
                        'b_borrar/clicked': self.borrar,

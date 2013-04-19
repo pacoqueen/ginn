@@ -62,7 +62,7 @@ class FormulacionFibra(Ventana):
         comenzar la ventana (en lugar del primero de la tabla, que es
         el que se muestra por defecto).
         """
-        Ventana.__init__(self, 'formulacion_fibra.glade', objeto)
+        Ventana.__init__(self, 'formulacion_fibra.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        '_b_guardar/clicked': self.guardar,
                        'b_ensimaje/clicked': self.buscar_mp,

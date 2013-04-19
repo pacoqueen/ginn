@@ -54,7 +54,7 @@ class Silos(Ventana):
         el que se muestra por defecto).
         """
         self.usuario = usuario
-        Ventana.__init__(self, 'silos.glade', objeto)
+        Ventana.__init__(self, 'silos.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_nuevo/clicked': self.nuevo,
                        'b_borrar/clicked': self.borrar,

@@ -52,7 +52,7 @@ class Nominas(Ventana):
     def __init__(self, objeto = None, usuario = None):
         """
         """
-        Ventana.__init__(self, 'nominas.glade', objeto)
+        Ventana.__init__(self, 'nominas.glade', objeto, usuario = usuario)
         self.meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
                       'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
         utils.combo_fill_text(self.wids['cb_mes'], self.meses)

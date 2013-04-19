@@ -51,7 +51,7 @@ pygtk.require('2.0')
 class PartesNoBloqueados(Ventana):
     def __init__(self, objeto = None, usuario = None):
         self.usuario = usuario
-        Ventana.__init__(self, 'partes_no_bloqueados.glade', objeto)
+        Ventana.__init__(self, 'partes_no_bloqueados.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_editar/clicked': self.abrir_parte,
                        'b_actualizar/clicked': self.actualizar}

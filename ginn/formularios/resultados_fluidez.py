@@ -55,7 +55,7 @@ class ResultadosFluidez(Ventana):
         el que se muestra por defecto).
         """
         self.usuario = usuario
-        Ventana.__init__(self, 'resultados_fluidez.glade', objeto)
+        Ventana.__init__(self, 'resultados_fluidez.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_lote/clicked': self.set_mp,
                        'b_fecha/clicked': self.fecha,

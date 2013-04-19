@@ -116,7 +116,7 @@ class PartesDeFabricacionBalas(Ventana):
         self.__permisos = permisos
         self.producto = None    # Producto relacionado con el parte. 
                                 # Debe coincidir con el de todas las balas de "Detalles de producción"
-        Ventana.__init__(self, 'partes_de_fabricacion_balas.glade', objeto)
+        Ventana.__init__(self, 'partes_de_fabricacion_balas.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self._salir,
                        'ventana/delete_event' : self._salir,
                        'b_nuevo/clicked': self.crear_nuevo_partedeproduccion,

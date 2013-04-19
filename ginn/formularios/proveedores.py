@@ -74,7 +74,7 @@ class Proveedores(Ventana):
         """
         self.usuario = usuario
         self._objetoreciencreado = None
-        Ventana.__init__(self, 'proveedores.glade', objeto)
+        Ventana.__init__(self, 'proveedores.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_pedidos/clicked': self.ver_pedidos,
                        'b_facturas/clicked': self.ver_facturas,

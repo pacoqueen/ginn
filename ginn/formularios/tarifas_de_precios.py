@@ -94,7 +94,7 @@ class TarifasDePrecios(Ventana):
         el que se muestra por defecto).
         """
         self.usuario = usuario
-        Ventana.__init__(self, 'tarifas_de_precios.glade', objeto)
+        Ventana.__init__(self, 'tarifas_de_precios.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_nueva_tarifa/clicked': self.crear_nueva_tarifa,
                        'b_anadir_producto_tarifa/clicked': 

@@ -57,7 +57,7 @@ class ListadoBalas(Ventana):
         el que se muestra por defecto).
         """
         self.usuario = usuario
-        Ventana.__init__(self, 'listado_balas.glade', objeto)
+        Ventana.__init__(self, 'listado_balas.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_fecha_inicio/clicked': self.set_inicio,
                        'b_fecha_fin/clicked': self.set_fin,

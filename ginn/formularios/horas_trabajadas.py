@@ -50,7 +50,7 @@ import datetime
 class HorasTrabajadas(Ventana):
     def __init__(self, objeto = None, usuario = None):
         self.usuario = usuario
-        Ventana.__init__(self, 'horas_trabajadas.glade', objeto)
+        Ventana.__init__(self, 'horas_trabajadas.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_fecha_ini/clicked': self.set_fecha_ini,
                        'b_fecha_fin/clicked': self.set_fecha_fin,

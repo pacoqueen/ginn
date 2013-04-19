@@ -50,7 +50,7 @@ class Contadores(Ventana):
         el que se muestra por defecto).
         """
         self.usuario = usuario
-        Ventana.__init__(self, 'contadores.glade', objeto)
+        Ventana.__init__(self, 'contadores.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_agregar/clicked': self.crear_nuevo_contador,
                        'b_borrar/clicked': self.eliminar_contador,

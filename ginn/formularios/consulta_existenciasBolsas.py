@@ -49,7 +49,7 @@ class ConsultaExistenciasBolsas(Ventana):
         self.usuario = usuario
         self.inicio = None
         self.fin = None
-        Ventana.__init__(self, 'consulta_existenciasBolsas.glade', objeto)
+        Ventana.__init__(self, 'consulta_existenciasBolsas.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_fecha/clicked': self.set_fecha, 
                        'b_actualizar/clicked': self.buscar,

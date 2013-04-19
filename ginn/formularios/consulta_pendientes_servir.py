@@ -325,7 +325,7 @@ class PendientesServir(Ventana):
         el que se muestra por defecto).
         """
         self.usuario = usuario
-        Ventana.__init__(self, 'consulta_pendientes_servir.glade', objeto)
+        Ventana.__init__(self, 'consulta_pendientes_servir.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_fechaini/clicked': self.set_inicio,
                        'b_fechafin/clicked': self.set_fin, 

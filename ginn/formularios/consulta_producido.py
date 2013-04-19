@@ -65,7 +65,7 @@ class ConsultaProducido(Ventana):
         self.metros = 0
         self.rollos = 0
         self.balas = 0
-        Ventana.__init__(self, 'consulta_producido.glade', objeto)
+        Ventana.__init__(self, 'consulta_producido.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_buscar/clicked': self.buscar,
                        'b_imprimir/clicked': self.imprimir,

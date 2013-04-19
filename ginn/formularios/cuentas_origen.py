@@ -65,7 +65,7 @@ class CuentasOrigen(Ventana, VentanaGenerica):
                            "contacto": "e_contacto", 
                            "fax": "e_fax", 
                            "telefono": "e_telefono"}
-        Ventana.__init__(self, 'cuentas_origen.glade', objeto)
+        Ventana.__init__(self, 'cuentas_origen.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_nuevo/clicked': self.nuevo,
                        'b_borrar/clicked': self.borrar,

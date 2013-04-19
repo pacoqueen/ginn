@@ -52,7 +52,7 @@ class ResultadosTenacidad(Ventana):
         comenzar la ventana (en lugar del primero de la tabla, que es
         el que se muestra por defecto).
         """
-        Ventana.__init__(self, 'resultados_tenacidad.glade', objeto)
+        Ventana.__init__(self, 'resultados_tenacidad.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_lote/clicked': self.set_lote,
                        'b_fecha/clicked': self.fecha,

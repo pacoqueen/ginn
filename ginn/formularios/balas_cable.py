@@ -58,7 +58,7 @@ class BalasCable(Ventana):
 
     def __init__(self, objeto = None, usuario = None):
         self.usuario = usuario
-        Ventana.__init__(self, 'balas_cable.glade', objeto)
+        Ventana.__init__(self, 'balas_cable.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_aplicar/clicked': self.actualizar_tabla, 
                        'b_add/clicked': self.crear_bala, 

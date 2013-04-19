@@ -50,7 +50,7 @@ from formularios import ventana_progreso
 class FacturasNoBloqueadas(Ventana):
     def __init__(self, objeto = None, usuario = None):
         self.usuario = usuario
-        Ventana.__init__(self, 'facturas_no_bloqueadas.glade', objeto)
+        Ventana.__init__(self, 'facturas_no_bloqueadas.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_editar/clicked': self.abrir_factura,
                        'b_actualizar/clicked': self.actualizar}

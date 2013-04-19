@@ -55,7 +55,7 @@ class TiposMaterial(Ventana):
         comenzar la ventana (en lugar del primero de la tabla, que es
         el que se muestra por defecto).
         """
-        Ventana.__init__(self, 'tipos_material.glade', objeto)
+        Ventana.__init__(self, 'tipos_material.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_agregar/clicked': self.crear_nuevo_tipodematerial,
                        'b_borrar/clicked': self.eliminar_tipo_de_material,

@@ -47,7 +47,7 @@ from formularios import ventana_progreso
 
 class ConsultaBeneficio(Ventana):
     def __init__(self, objeto = None, usuario = None):
-        Ventana.__init__(self, 'consulta_beneficio.glade', objeto)
+        Ventana.__init__(self, 'consulta_beneficio.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_buscar/clicked': self.buscar,
                        'b_imprimir/clicked': self.imprimir,

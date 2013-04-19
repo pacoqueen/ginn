@@ -57,7 +57,7 @@ class ConsultaPedidosCliente(Ventana):
         """
         self.usuario = usuario
         global fin
-        Ventana.__init__(self, 'consulta_pedidos_clientes.glade', objeto)
+        Ventana.__init__(self, 'consulta_pedidos_clientes.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_buscar/clicked': self.buscar,
                        'b_imprimir/clicked': self.imprimir,

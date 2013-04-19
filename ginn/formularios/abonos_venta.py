@@ -61,7 +61,7 @@ class AbonosVenta(Ventana):
         el que se muestra por defecto).
         """
         self.usuario = usuario
-        Ventana.__init__(self, 'abonos_venta.glade', objeto)
+        Ventana.__init__(self, 'abonos_venta.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_nuevo/clicked': self.crear_nuevo_abono,
                        'b_guardar/clicked': self.guardar,

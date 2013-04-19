@@ -55,7 +55,7 @@ class MuestrasPendientes(Ventana):
         el que se muestra por defecto).
         """
         self.usuario = usuario
-        Ventana.__init__(self, 'muestras_pendientes.glade', objeto)
+        Ventana.__init__(self, 'muestras_pendientes.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_actualizar/clicked': self.actualizar
                       }

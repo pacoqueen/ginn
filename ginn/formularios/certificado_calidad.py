@@ -52,7 +52,7 @@ class CertificadoCalidad(Ventana, VentanaGenerica):
         """
         self.usuario = usuario
         self.objeto = objeto
-        Ventana.__init__(self, 'certificado_calidad.glade', self.objeto)
+        Ventana.__init__(self, 'certificado_calidad.glade', self.objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_buscar/clicked': self.buscar,
                        'b_imprimir/clicked': self.imprimir, 

@@ -56,7 +56,7 @@ class HistoricoExistencias(Ventana):
         el que se muestra por defecto).
         """
         self.grafico = None
-        Ventana.__init__(self, 'historico_existencias.glade', objeto)
+        Ventana.__init__(self, 'historico_existencias.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_fecha/clicked': self.set_fecha,
                        'b_imprimir/clicked': self.imprimir,

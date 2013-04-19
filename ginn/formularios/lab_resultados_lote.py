@@ -51,7 +51,7 @@ class LabResultadosLote(Ventana):
         comenzar la ventana (en lugar del primero de la tabla, que es
         el que se muestra por defecto).
         """
-        Ventana.__init__(self, 'lab_resultados_lote.glade', objeto)
+        Ventana.__init__(self, 'lab_resultados_lote.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_lote/clicked': self.lote,
                        'b_add_elongacion/clicked': self.add_elongacion,

@@ -57,7 +57,7 @@ class Ausencias(Ventana):
         Aunque la clase "principal" es Ausencia, self.objeto será el 
         empleado al que pertenecen las ausencias.
         """
-        Ventana.__init__(self, 'ausencias.glade', objeto)
+        Ventana.__init__(self, 'ausencias.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_drop_ausencia/clicked': self.drop_ausencia,
                        'b_add_ausencia/clicked': self.add_ausencia,

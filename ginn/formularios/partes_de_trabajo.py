@@ -56,7 +56,7 @@ class PartesDeTrabajo(Ventana):
         parte, y se mostrará la fecha correspondiente a ese parte.
         """
         self.usuario = usuario
-        Ventana.__init__(self, 'partes_de_trabajo.glade', objeto)
+        Ventana.__init__(self, 'partes_de_trabajo.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_add/clicked': self.add,
                        'b_drop/clicked': self.drop

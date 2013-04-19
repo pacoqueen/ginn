@@ -47,7 +47,7 @@ class BuscaLote(Ventana):
         comenzar la ventana (en lugar del primero de la tabla, que es
         el que se muestra por defecto).
         """
-        Ventana.__init__(self, 'busca_lote.glade', objeto)
+        Ventana.__init__(self, 'busca_lote.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_buscar/clicked': self.buscar,
                        'b_ayuda/clicked': self.ayuda}

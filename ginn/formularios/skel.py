@@ -66,7 +66,7 @@ class XXXSkel(Ventana, VentanaGenerica):
         self.clase = pclases.XXXClaseDePclases
         self.dic_campos = {"XXXcampo_de_pclases": "XXXnombre_del_widget_en_glade", 
                           }
-        Ventana.__init__(self, 'XXXfichero_glade.glade', objeto)
+        Ventana.__init__(self, 'XXXfichero_glade.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_nuevo/clicked': self.nuevo,
                        'b_borrar/clicked': self.borrar,

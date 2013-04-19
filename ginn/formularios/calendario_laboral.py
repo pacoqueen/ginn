@@ -54,7 +54,7 @@ class CalendarioLaboral(Ventana):
         línea de producción con la que comenzar la ventana.
         """
         self.escritura = not solo_lectura
-        Ventana.__init__(self, 'calendario_laboral.glade', None)
+        Ventana.__init__(self, 'calendario_laboral.glade', None, usuario = usuario)
         connections = {'b_salir/clicked': self.salir
                        }
         self.add_connections(connections)

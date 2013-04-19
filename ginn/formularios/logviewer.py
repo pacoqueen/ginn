@@ -55,11 +55,11 @@ class LogViewer(Ventana):
         self.fichero_log = fichero_log
         self.filtro = [""]
         try:
-            Ventana.__init__(self, 'trazabilidad.glade', objeto)    
+            Ventana.__init__(self, 'trazabilidad.glade', objeto, usuario = usuario)    
             # Me vale el mismo glade. Modificaré dinámicamente lo que me 
             # estorbe.
         except:     # Tal vez me estén llamando desde otro directorio
-            Ventana.__init__(self, os.path.join('..', 'formularios', 'trazabilidad.glade'), objeto)
+            Ventana.__init__(self, os.path.join('..', 'formularios', 'trazabilidad.glade'), objeto, usuario = usuario)
         connections = {'b_salir/clicked': self._salir}
         self.add_connections(connections)
         self.wids['hbox1'].set_property("visible", False)

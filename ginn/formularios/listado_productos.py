@@ -53,7 +53,7 @@ class ListadoProductos(Ventana):
         """
         self.usuario = usuario
         global fin
-        Ventana.__init__(self, 'listado_productos.glade', objeto)
+        Ventana.__init__(self, 'listado_productos.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_limpiar/clicked': self.limpiar_tv, 
                        'b_buscar/clicked': self.buscar,

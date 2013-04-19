@@ -50,7 +50,7 @@ pygtk.require('2.0')
 class ConsultaBeneficioSoloTickets(Ventana):
     def __init__(self, objeto = None, usuario = None):
         self.usuario = usuario
-        Ventana.__init__(self, 'consulta_ventas_ticket.glade', objeto)
+        Ventana.__init__(self, 'consulta_ventas_ticket.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_buscar/clicked': self.buscar,
                        'b_imprimir/clicked': self.imprimir,

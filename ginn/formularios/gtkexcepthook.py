@@ -50,6 +50,7 @@ pygtk.require('2.0')
 import gtk, pango
 
 from formularios.utils import dialogo_entrada as fdialogo
+from formularios.ventana_progreso import VentanaActividad
         
 #def analyse(exctyp, value, tb):
 #    trace = StringIO()
@@ -175,38 +176,50 @@ def _info(exctyp, value, tb):
     try:
         email = feedback #@UndefinedVariable
         dialog.add_button(_("Report..."), 3)
+        autosend = True
     except NameError:
         # could ask for an email address instead...
-        pass
+        autosend = False
     dialog.add_button(_("Details..."), 2)
     dialog.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)
     dialog.add_button(gtk.STOCK_QUIT, 1)
     dialog.add_button(_("Close all"), 4)
 
     while True:
-        resp = dialog.run()
+        if not autosend:
+            resp = dialog.run()
+        else:
+            resp = 3    # Emulo que se ha pulsado el botón.
         if resp == 3:
+            vpro = VentanaActividad(
+                texto = "Enviando informe de error. Por favor, espere...\n"
+                        "(Si esta ventana persiste, reinicie la aplicación)")
+            vpro.mostrar()
+            vpro.mover()
             if trace == None:
                 trace = analyse(exctyp, value, tb)
-
+            vpro.mover()
             # TODO: prettyprint, deal with problems in sending feedback, &tc
             try:
                 server = smtphost #@UndefinedVariable
             except NameError:
                 server = 'localhost'
-
+            vpro.mover()
             message = 'From: %s"\nTo: %s\nSubject: Geotex-INN -- Excepción capturada.\n\n%s'%(
                 email, "Soporte G-INN", trace.getvalue())
-
+            vpro.mover()
             s = SMTP()
+            vpro.mover()
             try:
                 s.connect(server, port) #@UndefinedVariable
             except NameError:
                 s.connect(server)
+            vpro.mover()
             try:
                 passoteword = password #@UndefinedVariable
             except NameError:
                 pass
+            vpro.ocultar()
             try:
                 try:
                     if not passoteword:
@@ -225,6 +238,8 @@ def _info(exctyp, value, tb):
                                                         pwd = True) 
                     if passoteword == None:
                         continue
+                vpro.mostrar()
+                vpro.mover()
                 try:
                     if ssl: #@UndefinedVariable
                         s.ehlo()
@@ -232,20 +247,30 @@ def _info(exctyp, value, tb):
                         s.ehlo()
                 except NameError, msg:
                     pass    # No hay variable ssl. No cifrado.
+                vpro.mover()
                 try:
                     s.login(email, passoteword)
                 except SMTPException:
                     print msg
                     pass    # Servidor no necesita autenticación.
+                vpro.mover()
             except NameError, msg:
                 pass    # No se ha especificado contraseña, será que no 
                         # necesita autentificación entonces.
+            vpro.mover()
             try:
-                s.sendmail(email, (devs_to,), message) #@UndefinedVariable
-            except NameError:
-                s.sendmail(email, (email,), message)
-            s.quit()
-            break
+                try:
+                    s.sendmail(email, (devs_to,), message) #@UndefinedVariable
+                except NameError:
+                    s.sendmail(email, (email,), message)
+            except:
+                vpro.ocultar()
+                autosend = False # ¿No Inet? Volver a bucle mostrando ventana.
+                continue
+            else:
+                vpro.ocultar()
+                s.quit()
+                break
 
         elif resp == 2:
             if trace == None:

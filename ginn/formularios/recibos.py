@@ -72,7 +72,7 @@ class Recibos(Ventana, VentanaGenerica):
                            "direccionLibrado": "e_direccion_librado", 
                            "observaciones": "txt_observaciones", 
                            }
-        Ventana.__init__(self, 'recibos.glade', objeto)
+        Ventana.__init__(self, 'recibos.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_nuevo/clicked': self.nuevo,
                        'b_borrar/clicked': self.borrar,

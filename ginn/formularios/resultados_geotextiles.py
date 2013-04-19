@@ -63,7 +63,7 @@ class ResultadosGeotextiles(Ventana):
         el que se muestra por defecto).
         """
         self.usuario = usuario
-        Ventana.__init__(self, 'resultados_geotextiles.glade', objeto)
+        Ventana.__init__(self, 'resultados_geotextiles.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self._salir,
                        'b_partida/clicked': self.set_partida,
                        'b_add/clicked': self.add,

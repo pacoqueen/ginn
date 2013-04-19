@@ -82,6 +82,8 @@ class Ventana:
             from framework import pclases
             usuario = pclases.Usuario.get(usuario)
         self.__usuario = usuario
+        if not hasattr(self, "usuario"):
+            self.usuario = self.__usuario
         self._is_fullscreen = False
         self.logger = get_ginn_logger()
         self.wids = Widgets(glade)
