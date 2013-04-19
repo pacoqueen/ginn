@@ -4,8 +4,8 @@
 import gtk  # @UnusedImport
 import gtk.glade
 import gobject
-import recibo
-import ordenante
+from lib.pycsb19 import recibo
+from lib.pyscb19 import ordenante
 import sqlite3 as sqlite
 import time
 

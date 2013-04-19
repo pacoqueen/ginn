@@ -64,7 +64,7 @@
 
 
 DEBUG = False
-DEBUG = True   # Se puede activar desde ipython después de importar con 
+#DEBUG = True   # Se puede activar desde ipython después de importar con 
                 # pclases.DEBUG = True
 VERBOSE = True  # Activar para mostrar por pantalla progreso al cargar clases.
 VERBOSE = False

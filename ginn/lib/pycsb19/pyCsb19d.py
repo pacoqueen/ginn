@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os, sys
-import gtk
+import os
+import gtk  # @UnusedImport
 import gtk.glade
 import gobject
 
@@ -72,17 +72,17 @@ class Devoluciones:
 
         
     def VisualizaDatosOrdenantes(self,Datos):
-        store=gtk.ListStore(gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING)
+        store=gtk.ListStore(gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING)  # @UnusedVariable
         store=self.tvOrdenantes.get_model()
-        iter=store.append()
-        store.set(iter,0,Datos[0],1,Datos[1],2,Datos[2])
+        itr=store.append()
+        store.set(itr,0,Datos[0],1,Datos[1],2,Datos[2])
         self.tvOrdenantes.set_model(store)
 
     def VisualizaDatosDevoluciones(self,Datos):
-        store=gtk.ListStore(gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING)
+        store=gtk.ListStore(gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING)  # @UnusedVariable
         store=self.tvDevoluciones.get_model()
-        iter=store.append()
-        store.set(iter,0,Datos[0],1,Datos[1],2,Datos[2],3,Datos[3])
+        itr=store.append()
+        store.set(itr,0,Datos[0],1,Datos[1],2,Datos[2],3,Datos[3])
         self.tvDevoluciones.set_model(store)
 
     def SeleccionarFichero(self, Widget):
@@ -141,8 +141,8 @@ class Devoluciones:
             try:
                 Linea=self.tvOrdenantes.get_cursor()
                 store=self.tvOrdenantes.get_model()
-                iter=store[Linea[0][0]]
-                self.NifSufijo=iter[0]+iter[1]
+                itr=store[Linea[0][0]]
+                self.NifSufijo=itr[0]+itr[1]
                 data=gtk.ListStore(gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING,gobject.TYPE_STRING)
                 data.clear()
                 self.tvDevoluciones.set_model(data)
@@ -423,10 +423,10 @@ class Devoluciones:
             #Ordenante
             Linea=self.tvOrdenantes.get_cursor()
             store=self.tvOrdenantes.get_model()
-            iter=store[Linea[0][0]]
-            self.NifSufijo=iter[0]+iter[1]
-            html.write("<td width='80%' align='Left' class='cabtabla1'>"+iter[2]+"</td>\n")            
-            html.write("<td width='20%' align='center' class='cabtabla'>"+iter[0]+"-"+iter[1]+"</td>\n")
+            itr=store[Linea[0][0]]
+            self.NifSufijo=itr[0]+itr[1]
+            html.write("<td width='80%' align='Left' class='cabtabla1'>"+itr[2]+"</td>\n")            
+            html.write("<td width='20%' align='center' class='cabtabla'>"+itr[0]+"-"+itr[1]+"</td>\n")
             html.write("</tr>\n")
             html.write("</table>\n")
             html.write("<br><br>\n")
