@@ -64,7 +64,7 @@
 
 
 DEBUG = False
-#DEBUG = True   # Se puede activar desde ipython después de importar con 
+DEBUG = True    # Se puede activar desde ipython después de importar con 
                 # pclases.DEBUG = True
 VERBOSE = True  # Activar para mostrar por pantalla progreso al cargar clases.
 VERBOSE = False
@@ -79,7 +79,9 @@ from configuracion import ConfigConexion
 from math import ceil
 from select import select
 from sqlobject.col import SOForeignKey, SODateCol, SODateTimeCol, \
-                          SOBoolCol, SOCol, SOFloatCol, SOIntCol, SOStringCol  # @UnusedImport
+                          SOUnicodeCol, SODecimalCol, SOMediumIntCol, \
+                          SOSmallIntCol, SOTinyIntCol, \
+                          SOBoolCol, SOCol, SOFloatCol, SOIntCol, SOStringCol   # @UnusedImport
 from sqlobject.joins import MultipleJoin, RelatedJoin
 from sqlobject.main import SQLObjectNotFound, SQLObject
 from sqlobject.sqlbuilder import AND, OR, \
@@ -173,6 +175,51 @@ class SQLlist(list):
         raise TypeError, "No se pueden eliminar elementos de un SelectResults."
     def remove(self, *args, **kw):
         raise TypeError, "No se pueden eliminar elementos de un SelectResults."
+    
+    
+# HACK:
+# Hago todas las consultas case-insensitive machacando la función de 
+# sqlbuilder y de paso hago un workaround del bug del doble caracter 
+# de ESCAPE con postgresql en la versión empaquetada con Ubuntu precise. 
+# TODO: Temporal hasta que la versión upstream 1.2 entre en el repositorio.  
+from sqlobject import sqlbuilder, LIKE
+_CONTAINSSTRING = sqlbuilder.CONTAINSSTRING
+def CONTAINSSTRING_failsafe(expr, pattern):
+    # return LIKE(expr, '%' + _LikeQuoted(pattern) + '%', escape='\\')
+    return LIKE(expr, '%' + sqlbuilder._LikeQuoted(pattern) + '%')
+
+def CONTAINSSTRING(expr, pattern):
+    try:
+        nombre_clase = SQLObject.sqlmeta.style.dbTableToPythonClass(
+                        expr.tableName)
+        clase = globals()[nombre_clase]
+        columna = clase.sqlmeta.columns[expr.fieldName]
+    except (AttributeError, KeyError):
+        return _CONTAINSSTRING(expr, pattern)
+    if isinstance(columna, (SOStringCol, SOUnicodeCol)):
+        # Algunos backends no tienen ILIKE. En ese caso debería usar la 
+        # versión "a prueba de fallos" declarada arriba.
+        op = sqlbuilder.SQLOp("ILIKE", expr, 
+                                '%' + sqlbuilder._LikeQuoted(pattern) + '%')
+    elif isinstance(columna, (SOFloatCol, SOIntCol, SODecimalCol, 
+                              SOMediumIntCol, SOSmallIntCol, SOTinyIntCol)):
+        try:
+            pattern = str(float(pattern))
+        except ValueError:
+            pattern = None
+        if not pattern:
+            op = sqlbuilder.SQLOp("IS NOT", expr, None)
+        else:
+            op = sqlbuilder.SQLOp("=", expr, 
+                                    sqlbuilder._LikeQuoted(pattern))
+    else:
+        op = sqlbuilder.SQLOp("LIKE", expr, 
+                                '%' + sqlbuilder._LikeQuoted(pattern) + '%')
+    return op
+
+sqlbuilder.CONTAINSSTRING = CONTAINSSTRING
+
+
 
 class SQLObjectChanged(Exception):
     """ User-defined exception para ampliar la funcionalidad

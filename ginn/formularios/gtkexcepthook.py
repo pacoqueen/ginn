@@ -145,7 +145,7 @@ def myprettyprint(stuff):
     #    return pformat(stuff)
 
 def _info(exctyp, value, tb):
-    # PORASQUI: Si se puede enviar por correo, enviar por correo y no abrir 
+    # DONE: Si se puede enviar por correo, enviar por correo y no abrir 
     # siquiera la ventana. O guardar a log o algo así si no se puede. Lo de 
     # preguntar al usuario se tiene que quedar como última opción, porque 
     # siempre pasan del tema. Solo mostrar una ventana si no se puede continuar 
