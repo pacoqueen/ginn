@@ -8281,7 +8281,7 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
         """
         if not fechainicio and not fechafin:
             pedidos = PedidoCompra.select(PedidoCompra.q.cerrado == False, 
-                                          orderBy = "numpedido")
+                    orderBy = sqlbuilder.func.lower(PedidoCompra.q.numpedido))
         elif fechainicio and not fechafin:
             pedidos = PedidoCompra.select(
                         AND(PedidoCompra.q.fecha >= fechainicio, 
