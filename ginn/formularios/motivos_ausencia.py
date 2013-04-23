@@ -238,8 +238,8 @@ class MotivosAusencia(Ventana):
         if motivo == None: return False
 
         condicion = True
-        for col in motivo._SO_columnDict:
-            condicion = condicion and self.comparar_campo(col, motivo._SO_columnDict[col])
+        for col in motivo.sqlmeta.columns:
+            condicion = condicion and self.comparar_campo(col, motivo.sqlmeta.columns[col])
         return not condicion    # Concición verifica que sea igual
 
     def aviso_actualizacion(self):
@@ -300,7 +300,7 @@ class MotivosAusencia(Ventana):
         Redimensiona «t» y crea dentro los widgets necesarios para
         mostrar y editar los campos de «objeto».
         """
-        numcampos = len(self.objeto._SO_columnDict)
+        numcampos = len(self.objeto.sqlmeta.columns)
         if numcampos % 2 != 0:
             numwidgets = numcampos + 1
         else:
@@ -310,14 +310,14 @@ class MotivosAusencia(Ventana):
         self.wids['t'].resize(numwidgets / 2, 4)
         icol = 0
         irow = 0
-        for col in self.objeto._SO_columnDict:
-            if not isinstance(self.objeto._SO_columnDict[col], pclases.SOBoolCol):
+        for col in self.objeto.sqlmeta.columns:
+            if not isinstance(self.objeto.sqlmeta.columns[col], pclases.SOBoolCol):
                 # Los checkboxes llevan su propio label.
                 label = self.build_label(col)
                 self.wids['t'].attach(label, icol, icol+1, irow, irow+1)
             icol += 1
-            child = self.build_child(col, self.objeto._SO_columnDict[col])
-            self.set_valor(child, col, self.objeto._SO_columnDict[col])
+            child = self.build_child(col, self.objeto.sqlmeta.columns[col])
+            self.set_valor(child, col, self.objeto.sqlmeta.columns[col])
             self.wids['t'].attach(child, icol, icol+1, irow, irow+1)
             icol += 1
             if icol == 4:
@@ -394,7 +394,7 @@ class MotivosAusencia(Ventana):
         return res
         
     def set_valor(self, w, nombrecampo, tipocampo):
-#        valor = self.objeto._SO_getValue(nombrecampo)
+        # valor = self.objeto._SO_getValue(nombrecampo)
         valor = eval("self.objeto._SO_get_%s()" % (nombrecampo))
         if isinstance(tipocampo, pclases.SOStringCol):  # Cadena: el widget es un entry
             if valor != None:
@@ -536,8 +536,8 @@ class MotivosAusencia(Ventana):
         # Desactivo el notificador momentáneamente
         motivo.notificador.set_func(lambda: None)
         # Actualizo los datos del objeto
-        for col in motivo._SO_columnDict:
-            valor = self.get_valor(self.wids[col], col, motivo._SO_columnDict[col])
+        for col in motivo.sqlmeta.columns:
+            valor = self.get_valor(self.wids[col], col, motivo.sqlmeta.columns[col])
             try:
                 motivo._SO_setValue(col, valor, None, None)
             except psycopg_ProgrammingError:

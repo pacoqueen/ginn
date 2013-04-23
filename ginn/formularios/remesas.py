@@ -93,7 +93,7 @@ class Remesas(Ventana, VentanaGenerica):
             for colname in self.dic_campos:
                 if colname in ("id", ):
                     continue
-                col = self.clase._SO_columnDict[colname]
+                col = self.clase.sqlmeta.columns[colname]
                 try:
                     valor_ventana = self.leer_valor(col, 
                                                     self.dic_campos[colname])
@@ -310,7 +310,7 @@ class Remesas(Ventana, VentanaGenerica):
         remesa = self.objeto
         for nombre_col in self.dic_campos:
             if nombre_col not in ("id", ):
-                self.escribir_valor(remesa._SO_columnDict[nombre_col], 
+                self.escribir_valor(remesa.sqlmeta.columns[nombre_col], 
                                     getattr(remesa, nombre_col), 
                                     self.dic_campos[nombre_col])
             else:
@@ -446,7 +446,7 @@ class Remesas(Ventana, VentanaGenerica):
         # Actualizo los datos del objeto
         for colname in self.dic_campos:
             if colname not in ("ide", ):
-                col = self.clase._SO_columnDict[colname]
+                col = self.clase.sqlmeta.columns[colname]
                 # FIXME: Las fechas en blanco se deberían guardar como Nones. Ahora mismo vuelve al valor que tuviera antes.
                 try:
                     valor_ventana = self.leer_valor(col, self.dic_campos[colname])

@@ -244,8 +244,8 @@ class CategoriasLaborales(Ventana):
         if categoria_laboral == None: return False
 
         condicion = True
-        for col in categoria_laboral._SO_columnDict:
-            condicion = condicion and self.comparar_campo(col, categoria_laboral._SO_columnDict[col])
+        for col in categoria_laboral.sqlmeta.columns:
+            condicion = condicion and self.comparar_campo(col, categoria_laboral.sqlmeta.columns[col])
         return not condicion    # Concición verifica que sea igual
 
     def aviso_actualizacion(self):
@@ -302,7 +302,7 @@ class CategoriasLaborales(Ventana):
         Redimensiona «t» y crea dentro los widgets necesarios para
         mostrar y editar los campos de «objeto».
         """
-        numcampos = len(self.objeto._SO_columnDict)
+        numcampos = len(self.objeto.sqlmeta.columns)
         if numcampos % 2 != 0:
             numwidgets = numcampos + 1
         else:
@@ -312,14 +312,14 @@ class CategoriasLaborales(Ventana):
         self.wids['t'].resize(numwidgets / 2, 4)
         icol = 0
         irow = 0
-        for col in self.objeto._SO_columnDict:
-            if not isinstance(self.objeto._SO_columnDict[col], pclases.SOBoolCol):
+        for col in self.objeto.sqlmeta.columns:
+            if not isinstance(self.objeto.sqlmeta.columns[col], pclases.SOBoolCol):
                 # Los checkboxes llevan su propio label.
                 label = self.build_label(col)
                 self.wids['t'].attach(label, icol, icol+1, irow, irow+1)
             icol += 1
-            child = self.build_child(col, self.objeto._SO_columnDict[col])
-            self.set_valor(child, col, self.objeto._SO_columnDict[col])
+            child = self.build_child(col, self.objeto.sqlmeta.columns[col])
+            self.set_valor(child, col, self.objeto.sqlmeta.columns[col])
             self.wids['t'].attach(child, icol, icol+1, irow, irow+1)
             icol += 1
             if icol == 4:
@@ -549,8 +549,8 @@ class CategoriasLaborales(Ventana):
         # Desactivo el notificador momentáneamente
         categoria_laboral.notificador.set_func(lambda: None)
         # Actualizo los datos del objeto
-        for col in categoria_laboral._SO_columnDict:
-            valor = self.get_valor(self.wids[col], col, categoria_laboral._SO_columnDict[col])
+        for col in categoria_laboral.sqlmeta.columns:
+            valor = self.get_valor(self.wids[col], col, categoria_laboral.sqlmeta.columns[col])
             try:
                 categoria_laboral._SO_setValue(col, valor, None, None)
             except psycopg_ProgrammingError:

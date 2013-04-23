@@ -620,7 +620,7 @@ class Recibos(Ventana, VentanaGenerica):
             "%s €" % (utils.float2str(recibo.importe)))
         if recibo != None:
             for nombre_col in self.dic_campos:
-                self.escribir_valor(recibo._SO_columnDict[nombre_col], 
+                self.escribir_valor(recibo.sqlmeta.columns[nombre_col], 
                                     getattr(recibo, nombre_col), 
                                     self.dic_campos[nombre_col])
             self.objeto.make_swap()
@@ -637,7 +637,7 @@ class Recibos(Ventana, VentanaGenerica):
         else:
             igual = self.objeto != None
             for colname in self.dic_campos:
-                col = self.clase._SO_columnDict[colname]
+                col = self.clase.sqlmeta.columns[colname]
                 try:
                     valor_ventana = self.leer_valor(col, 
                                                     self.dic_campos[colname])
@@ -692,7 +692,7 @@ class Recibos(Ventana, VentanaGenerica):
             self.objeto.notificador.activar(lambda: None)
             # Actualizo los datos del objeto
             for colname in self.dic_campos:
-                col = self.clase._SO_columnDict[colname]
+                col = self.clase.sqlmeta.columns[colname]
                 try:
                     valor_ventana = self.leer_valor(col, 
                                                     self.dic_campos[colname])

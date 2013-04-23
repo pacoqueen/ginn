@@ -200,7 +200,7 @@ class Pclase2tv:
         self.tv = tv
         self.funciones = {}
         self.cols_a_ignorar = cols_a_ignorar
-        self.__columnas = self.clase._SO_columns
+        self.__columnas = self.clase.sqlmeta.columnList
         cols = self.crear_cols(nombres_col, orden)
         utils.preparar_listview(self.tv, cols, multi = seleccion_multiple)
         if objeto_clave_ajena:

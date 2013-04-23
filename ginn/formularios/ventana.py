@@ -516,7 +516,7 @@ class Ventana:
             try:
                 self.objeto.sync()
                 try:
-                    ajenas = [c for c in self.objeto._SO_columnDict 
+                    ajenas = [c for c in self.objeto.sqlmeta.columns 
                               if c.upper().endswith('ID')]
                 except AttributeError:  # SQLObject > 0.6.1
                     ajenas = [c for c in self.objeto.sqlmeta.columns
@@ -527,10 +527,7 @@ class Ventana:
                     if obj_d != None:
                         obj_d.sync()
                         # print obj_d
-                try:
-                    multiples = self.objeto._SO_joinList
-                except AttributeError:  # SQLObject > 0.6.1
-                    multiples = self.objeto.sqlmeta.joins
+                multiples = self.objeto.sqlmeta.joins
                 for multiple in multiples:
                     lista_objs = getattr(self.objeto, multiple.joinMethodName)
                     for obj_d in [l for l in lista_objs if l != None]:

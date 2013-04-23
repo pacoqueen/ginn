@@ -683,18 +683,18 @@ def comprobar_numeracion_articulos(report_mode = False,
     """
     res = True
     bs = pclases.Bala._queryAll(
-      "SELECT ide, numbala FROM bala WHERE numbala > 0 ORDER BY numbala;")
+      "SELECT id, numbala FROM bala WHERE numbala > 0 ORDER BY numbala;")
     bcs = pclases.BalaCable._queryAll(
-      "SELECT ide, numbala FROM bala_cable WHERE numbala > 0 ORDER BY numbala;")
+      "SELECT id, numbala FROM bala_cable WHERE numbala > 0 ORDER BY numbala;")
     rs = pclases.Rollo._queryAll(
-      "SELECT ide, numrollo FROM rollo WHERE numrollo > 0 ORDER BY numrollo;")
+      "SELECT id, numrollo FROM rollo WHERE numrollo > 0 ORDER BY numrollo;")
     rds = pclases.RolloDefectuoso._queryAll(
-      """SELECT ide, numrollo 
+      """SELECT id, numrollo 
          FROM rollo_defectuoso 
          WHERE numrollo > 0 
          ORDER BY numrollo;""")
     bbs = pclases.Bigbag._queryAll(
-      "SELECT ide,numbigbag FROM bigbag WHERE numbigbag > 0 ORDER BY numbigbag;")
+      "SELECT id,numbigbag FROM bigbag WHERE numbigbag > 0 ORDER BY numbigbag;")
     _ignore_list = {"Bala": [], 
                     "BalaCable": [], 
                     "Rollo": [], 

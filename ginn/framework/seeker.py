@@ -40,8 +40,8 @@
 # * Si es un String, prácticamente no hay que hacer nada. Un entry y a correr.
 # * Como label de todos ellos se puede usar el col.name.
 # * Incluso se puede recorrer la lista de registros que referencian al objeto 
-#   en cuestión (ver el _SO_joinDict de pclases.Clase) y mostrarlos todos en un
-#   TreeView/ListView.
+#   en cuestión (ver el sqlmeta.joins de pclases.Clase) y mostrarlos todos en 
+#   un TreeView/ListView.
 ###############################################################################
 
 
@@ -72,7 +72,7 @@ class Resultado:
         lo encapsula dentro de un atributo propio.
         """
         self.resultado = resultado_pclases
-        self.tabla = resultado_pclases._table
+        self.tabla = resultado_pclases.sqlmeta.table
         self.clase = resultado_pclases.__class__.__name__
 
     def __repr__(self):
@@ -165,32 +165,32 @@ class Seeker:
         No chequea que el término de búsqueda esté instanciado.
         """
         criterios = []
-        for nombre_campo in clase._SO_columnDict.keys():
+        for nombre_campo in clase.sqlmeta.columns.keys():
             query_attr = getattr(clase, "q")
             campo_query = getattr(query_attr, nombre_campo)
-            if isinstance(clase._SO_columnDict[nombre_campo], pclases.SOStringCol):
+            if isinstance(clase.sqlmeta.columns[nombre_campo], pclases.SOStringCol):
                 criterio = campo_query.contains(self.token)
-            elif isinstance(clase._SO_columnDict[nombre_campo], pclases.SOBoolCol): 
+            elif isinstance(clase.sqlmeta.columns[nombre_campo], pclases.SOBoolCol): 
                 if isinstance(self.token, type(True)):
                     criterio = campo_query == self.token
                 else:
                     continue
-            elif isinstance(clase._SO_columnDict[nombre_campo], pclases.SOForeignKey):
+            elif isinstance(clase.sqlmeta.columns[nombre_campo], pclases.SOForeignKey):
                 if isinstance(self.token, type(1)):
                     criterio = campo_query == self.token
                 else:
                     continue
-            elif isinstance(clase._SO_columnDict[nombre_campo], pclases.SOIntCol): 
+            elif isinstance(clase.sqlmeta.columns[nombre_campo], pclases.SOIntCol): 
                 try:
                     criterio = campo_query == int(self.token)
                 except ValueError:
                     continue
-            elif isinstance(clase._SO_columnDict[nombre_campo], pclases.SOFloatCol): 
+            elif isinstance(clase.sqlmeta.columns[nombre_campo], pclases.SOFloatCol): 
                 try:
                     criterio = campo_query == float(self.token)
                 except ValueError:
                     continue
-            elif isinstance(clase._SO_columnDict[nombre_campo], pclases.SODateCol): 
+            elif isinstance(clase.sqlmeta.columns[nombre_campo], pclases.SODateCol): 
                 if self.token.count('/') == 2:
                     dia, mes, anno = self.token.split('/')
                 else:
@@ -201,7 +201,7 @@ class Seeker:
                     continue
                 else:
                     criterio = campo_query == fecha 
-            elif isinstance(clase._SO_columnDict[nombre_campo], pclases.SOCol):    # Aquí estarían los DateTime con hora (timestamp) 
+            elif isinstance(clase.sqlmeta.columns[nombre_campo], pclases.SOCol):    # Aquí estarían los DateTime con hora (timestamp) 
                 continue
             else:
                 continue
@@ -271,12 +271,12 @@ class VentanaGenerica(Ventana):
         Inicializa los controles de la ventana, construyendo 
         los modelos para los TreeView, etc.
         """
-        for colname in self.clase._SO_columnDict:
-            col = self.clase._SO_columnDict[colname]
+        for colname in self.clase.sqlmeta.columns:
+            col = self.clase.sqlmeta.columns[colname]
             contenedor, widget = build_widget(col)
             self.wids[col.name] = widget
             self.wids['vbox'].add(contenedor)
-        for col in self.clase._SO_joinList:
+        for col in self.clase.sqlmeta.joins:
             contenedor, widget = build_listview(col)
             self.wids[col.joinMethodName] = widget
             self.wids['vbox_relaciones'].add(contenedor)
@@ -313,8 +313,8 @@ class VentanaGenerica(Ventana):
             igual = True
         else:
             igual = self.objeto != None
-            for colname in self.clase._SO_columnDict:
-                col = self.clase._SO_columnDict[colname]
+            for colname in self.clase.sqlmeta.columns:
+                col = self.clase.sqlmeta.columns[colname]
                 valor_ventana = self.leer_valor(col)
                 valor_objeto = getattr(self.objeto, col.name)
                 if isinstance(col, pclases.SODateCol):
@@ -401,11 +401,11 @@ class VentanaGenerica(Ventana):
         del campo correspondiente.
         """
         if self.objeto != None:
-            for colname in self.clase._SO_columnDict:
-                col = self.clase._SO_columnDict[colname]
+            for colname in self.clase.sqlmeta.columns:
+                col = self.clase.sqlmeta.columns[colname]
                 valor_objeto = getattr(self.objeto, col.name)
                 self.escribir_valor(col, valor_objeto)
-            for col in self.clase._SO_joinList:
+            for col in self.clase.sqlmeta.joins:
                 self.rellenar_tabla(col)
 
     def escribir_valor(self, col, valor, nombre_widget = None, precision = 2):
@@ -511,8 +511,8 @@ class VentanaGenerica(Ventana):
         Crea y muestra un nuevo objeto de la clase.
         """
         params = {}
-        for colname in self.clase._SO_columnDict:
-            col = self.clase._SO_columnDict[colname]
+        for colname in self.clase.sqlmeta.columns:
+            col = self.clase.sqlmeta.columns[colname]
             params[colname] = self.get_valor_defecto(col)
         cad_params = ", ".join(["%s = %s" % (param, params[param]) for param in params])
         self.objeto = eval("self.clase(%s)" % (cad_params))
@@ -529,8 +529,8 @@ class VentanaGenerica(Ventana):
         """
         Guarda los valores de la ventana en los atributos del objeto.
         """
-        for colname in self.clase._SO_columnDict:
-            col = self.clase._SO_columnDict[colname]
+        for colname in self.clase.sqlmeta.columns:
+            col = self.clase.sqlmeta.columns[colname]
             valor_ventana = self.leer_valor(col)
             setattr(self.objeto, colname, valor_ventana)
         self.objeto.syncUpdate()
@@ -557,7 +557,7 @@ class VentanaGenerica(Ventana):
         en el modelo del listview construido para él.
         """
         model = self.wids[coljoin.joinMethodName].get_model()
-        columnas = getattr(coljoin.otherClass, "_SO_columnDict").keys()
+        columnas = getattr(coljoin.otherClass, "sqlmeta.columns").keys()
         columnas.append('id')
         model.clear()
         for registro in getattr(self.objeto, coljoin.joinMethodName):
@@ -630,7 +630,7 @@ def build_widget_valor(col):
         datos = []
         for reg in func_select():
             campos = []
-            for columna in clase_tablajena._SO_columnDict:
+            for columna in clase_tablajena.sqlmeta.columns:
                 valor = getattr(reg, columna)
                 campos.append(`valor`)
             info = ", ".join(campos)
@@ -647,7 +647,7 @@ def build_listview(coljoin):
     Construye un listview y su modelo para albergar los 
     datos relacionados a través de la columna "uno-a-muchos" «col».
     """
-    columnas = getattr(coljoin.otherClass, "_SO_columnDict").keys()
+    columnas = getattr(coljoin.otherClass, "sqlmeta.columns").keys()
     cols = []
     for col in columnas:
         nombre = col.title()

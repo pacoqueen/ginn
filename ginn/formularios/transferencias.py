@@ -236,7 +236,7 @@ class Transferencias(Ventana, VentanaGenerica):
         else:
             igual = self.objeto != None
             for colname in self.dic_campos:
-                col = self.clase._SO_columnDict[colname]
+                col = self.clase.sqlmeta.columns[colname]
                 try:
                     valor_ventana = self.leer_valor(col, self.dic_campos[colname])
                 except (ValueError, mx.DateTime.RangeError, TypeError):
@@ -324,7 +324,7 @@ class Transferencias(Ventana, VentanaGenerica):
         else:
             utils.rellenar_lista(self.wids['cbe_destino'], [(p.id, p.nombre + " " + p.cuenta) for p in pclases.CuentaDestino.select(orderBy = "nombre")])
         for nombre_col in self.dic_campos:
-            self.escribir_valor(self.objeto._SO_columnDict[nombre_col], getattr(self.objeto, nombre_col), self.dic_campos[nombre_col])
+            self.escribir_valor(self.objeto.sqlmeta.columns[nombre_col], getattr(self.objeto, nombre_col), self.dic_campos[nombre_col])
         self.wids['e_factura'].set_text(self.objeto.concepto)
         self.objeto.make_swap()
 
@@ -451,7 +451,7 @@ class Transferencias(Ventana, VentanaGenerica):
         self.objeto.notificador.activar(lambda: None)
         # Actualizo los datos del objeto
         for colname in self.dic_campos:
-            col = self.clase._SO_columnDict[colname]
+            col = self.clase.sqlmeta.columns[colname]
             try:
                 valor_ventana = self.leer_valor(col, self.dic_campos[colname])
                 setattr(self.objeto, colname, valor_ventana)

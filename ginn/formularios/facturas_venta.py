@@ -2527,7 +2527,11 @@ class FacturasVenta(Ventana):
         idldv = model[path][-1]
         ldv = pclases.LineaDeVenta.get(idldv)
         if not ldv.pedidoVentaID or (ldv.pedidoVentaID and not ldv.pedidoVenta.bloqueado):
+            precio_anterior = ldv.precio
             ldv.precio = cantidad
+            pclases.Auditoria.modificado(ldv, self.usuario, __file__, 
+                                         "Precio actualizado de %f a %f." 
+                                            % (precio_anterior, ldv.precio))
             self.rellenar_ldvs()
             self.rellenar_vencimientos()    # Para que verifique si los totales coinciden
         else:
@@ -2546,7 +2550,11 @@ class FacturasVenta(Ventana):
                                                                                             
                     """ % (ldv.pedidoVenta.numpedido), 
                                 padre = self.wids['ventana']):
+                    precio_anterior = ldv.precio
                     ldv.precio = cantidad
+                    pclases.Auditoria.modificado(ldv, self.usuario, __file__, 
+                        "Precio actualizado de %f a %f." % (precio_anterior, 
+                                                            ldv.precio))
                     self.rellenar_ldvs()
                     self.rellenar_vencimientos()        # Redundante. Esto se puede refactorizar. ¿Es hora de probar el Bicycle Repair Man?
 

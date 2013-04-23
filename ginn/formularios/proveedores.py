@@ -175,7 +175,7 @@ class Proveedores(Ventana):
         proveedor = self.objeto
         if proveedor == None: return False    # Si no hay proveedor activo, devuelvo que no hay cambio respecto a la ventana
         condicion = True
-        for c in proveedor._SO_columns:
+        for c in proveedor.sqlmeta.columnList:
             if c.name != "tipoDeProveedorID":
                 textobj = eval('proveedor.%s' % c.name)
                 textven = self.leer_valor(self.wids['e_%s' % c.name]) 
@@ -320,7 +320,7 @@ class Proveedores(Ventana):
                 proveedor.nombre))
             # Aprovechando que todo son "text" y los "entry" se llaman casi 
             # igual:
-            for c in proveedor._SO_columns:
+            for c in proveedor.sqlmeta.columnList:
                 if c.name != "tipoDeProveedorID":
                     textobj = getattr(proveedor, c.name)
                     # Reparo los Nones que haya en la BD
@@ -524,7 +524,7 @@ class Proveedores(Ventana):
         # Actualizo los datos del objeto
         cif = self.wids['e_cif'].get_text()
         self.wids['e_cif'].set_text(utils.parse_cif(cif) or self.objeto.cif)
-        for c in [c.name for c in proveedor._SO_columns]:
+        for c in [c.name for c in proveedor.sqlmeta.columnList]:
             if c != "tipoDeProveedorID":
                 valor = self.leer_valor(self.wids['e_%s' % c])
             else:

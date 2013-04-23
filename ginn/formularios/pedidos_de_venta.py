@@ -1364,7 +1364,10 @@ class PedidosDeVenta(Ventana):
                     else:
                         return
                 try:
+                    antes = srv.precio
                     srv.precio = precio
+                    pclases.Auditoria.modificado(srv, self.usuario, __file__, 
+                        "Precio cambiado de %f a %f" % (antes, srv.precio))
                 except:
                     return
                 self.actualizar_ventana()
@@ -1400,7 +1403,10 @@ class PedidosDeVenta(Ventana):
             return
         model = self.wids['tv_ldvs'].get_model()
         ldv = pclases.LineaDeVenta.get(model[path][-1])
+        antes = ldv.precio
         ldv.precio = precio
+        pclases.Auditoria.modificado(ldv, self.usuario, __file__, 
+            "Precio cambiado de %f a %f" % (antes, ldv.precio))
         self.actualizar_ventana()
         
     def cambiar_cantidad(self, cell, path, texto):
@@ -1456,7 +1462,10 @@ class PedidosDeVenta(Ventana):
                     ldporiginal.pedidoVenta = None
                 else:
                     return
+            antes = ldp.precio
             ldp.precio = precio
+            pclases.Auditoria.modificado(ldp, self.usuario, __file__, 
+                "Precio cambiado de %f a %f" % (antes, ldp.precio))
             if ldp.get_lineas_de_venta() != [] \
                and utils.dialogo(
                             titulo = "¿CAMBIAR PRECIO PRODUCTOS SERVIDOS?", 
@@ -1470,7 +1479,10 @@ class PedidosDeVenta(Ventana):
                 """, 
                             padre = self.wids['ventana']):
                 for ldv in ldp.get_lineas_de_venta():
+                    antes = ldv.precio
                     ldv.precio = ldp.precio
+                    pclases.Auditoria.modificado(ldv, self.usuario, __file__, 
+                        "Precio cambiado de %f a %f" % (antes, ldv.precio))
             self.actualizar_ventana()
         
     def cambiar_cantidad_ldp(self, cell, path, texto):
@@ -1887,7 +1899,10 @@ class PedidosDeVenta(Ventana):
         idtarifa = utils.combo_get_value(self.wids['cbe_tarifa'])
         if idtarifa != -1 and idtarifa != None:
             tarifa = pclases.Tarifa.get(idtarifa)
+            antes = ldp.precio
             ldp.precio = tarifa.obtener_precio(ldp.producto)
+            pclases.Auditoria.modificado(ldp, self.usuario, __file__, 
+                "Precio cambiado de %f a %f" % (antes, ldp.precio))
             self.actualizar_ventana()
 
     def drop_ldv(self, boton):
@@ -1957,12 +1972,18 @@ class PedidosDeVenta(Ventana):
         if idtarifa == -1 or idtarifa == None:
             for ldp in self.objeto.lineasDePedido:
                 if ldp.producto.precioDefecto:
+                    antes = ldp.precio
                     ldp.precio = ldp.producto.precioDefecto
+                    pclases.Auditoria.modificado(ldp, self.usuario, __file__, 
+                            "Precio cambiado de %f a %f" % (antes, ldp.precio))
         else:
             tarifa = pclases.Tarifa.get(idtarifa)
             for ldp in self.objeto.lineasDePedido:
                 if tarifa.obtener_precio(ldp.producto):
+                    antes = ldp.precio
                     ldp.precio = tarifa.obtener_precio(ldp.producto)
+                    pclases.Auditoria.modificado(ldp, self.usuario, __file__, 
+                        "Precio cambiado de %f a %f" % (antes, ldp.precio))
         self.rellenar_widgets()
 
     

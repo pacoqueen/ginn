@@ -146,7 +146,7 @@ class ProductosCompra(Ventana, VentanaGenerica):
                 print "productos_compra::es_diferente -> %s ha cambiado" % (
                     "e_unidad")
         condicion = (condicion and self.objeto.observaciones==self.leer_valor(
-            pclases.ProductoCompra._SO_columnDict["observaciones"], 
+            pclases.ProductoCompra.sqlmeta.columns["observaciones"], 
             'txt_observaciones'))
         if pclases.DEBUG and not condicion:
             print "productos_compra::es_diferente -> %s ha cambiado" % (
@@ -571,7 +571,7 @@ class ProductosCompra(Ventana, VentanaGenerica):
         self.rellenar_tarifas()
         txt_proveedores = ", ".join([p.nombre for p in producto.proveedores])
         self.wids['e_proveedores'].set_text(txt_proveedores)
-        self.escribir_valor(self.objeto._SO_columnDict["observaciones"], 
+        self.escribir_valor(self.objeto.sqlmeta.columns["observaciones"], 
                             self.objeto.observaciones, 
                             'txt_observaciones')
         self.objeto.make_swap()
@@ -952,7 +952,7 @@ class ProductosCompra(Ventana, VentanaGenerica):
         producto = self.objeto
         codigo = self.wids['e_codigo'].get_text()
         producto.observaciones = self.leer_valor(
-            pclases.ProductoCompra._SO_columnDict["observaciones"], 
+            pclases.ProductoCompra.sqlmeta.columns["observaciones"], 
             'txt_observaciones')
         # Control de código duplicado.
         if codigo.strip():
@@ -1057,10 +1057,11 @@ class ProductosCompra(Ventana, VentanaGenerica):
                 producto.destroy_en_cascada(ventana = __file__)   # CWT
                 self.objeto = None
                 self.ir_a_primero()
-        except: 
+        except Exception, msg: 
             utils.dialogo_info('PRODUCTO NO ELIMINADO', 
-                               'El producto está implicado en operaciones '\
-                               'que impiden su borrado.', 
+                               'El producto está implicado en operaciones '
+                               'que impiden su borrado.\n\n\n'
+                               'Información de depuración:\n\t%s' % msg, 
                                padre = self.wids['ventana'])
 
 

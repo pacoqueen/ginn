@@ -242,7 +242,7 @@ dir()
         """
         if padre == None: return
         try:
-            campos = [c for c in objeto._SO_columnDict 
+            campos = [c for c in objeto.sqlmeta.columns 
                       if not c.upper().endswith('ID')]
         except AttributeError:  # SQLObject > 0.6.1
             campos = [c for c in objeto.sqlmeta.columns
@@ -260,7 +260,7 @@ dir()
         """
         if padre == None: return
         try:
-            ajenas = [c for c in objeto._SO_columnDict 
+            ajenas = [c for c in objeto.sqlmeta.columns 
                       if c.upper().endswith('ID')]
         except AttributeError:  # SQLObject > 0.6.1
             ajenas = [c for c in objeto.sqlmeta.columns
@@ -280,10 +280,7 @@ dir()
         por los datos de este registro cuando expanda la fila.
         """
         if padre == None: return
-        try:
-            multiples = objeto._SO_joinList
-        except AttributeError:  # SQLObject > 0.6.1
-            multiples = objeto.sqlmeta.joins
+        multiples = objeto.sqlmeta.joins
         for multiple in multiples:
             lista_objs = getattr(objeto, multiple.joinMethodName)
             # print multiple.joinMethodName, lista_objs

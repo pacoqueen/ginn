@@ -537,7 +537,7 @@ class ProductosDeVentaRollos(Ventana):
 
     def mostrar_marcado(self, cer):
         # "Atributos"
-        for nombre_campo in [k for k in cer._SO_columnDict.keys() if "Prueba" in k]:
+        for nombre_campo in [k for k in cer.sqlmeta.columns.keys() if "Prueba" in k]:
             valor_campo = getattr(cer, nombre_campo)
             valor_texto = utils.float2str(valor_campo, 3, autodec = True)
             self.wids["e_%s" % (nombre_campo)].set_text(valor_texto)
@@ -563,7 +563,7 @@ class ProductosDeVentaRollos(Ventana):
             else:
                 cer = self.objeto.camposEspecificosRollo
             # "Atributos"
-            for nombre_campo in [k for k in cer._SO_columnDict.keys() if "Prueba" in k]:
+            for nombre_campo in [k for k in cer.sqlmeta.columns.keys() if "Prueba" in k]:
                 valor_campo = getattr(cer, nombre_campo)
                 valor_texto = utils.float2str(valor_campo, 3, autodec = True)
                 valor_ventana = self.wids["e_%s" % (nombre_campo)].get_text()
@@ -590,7 +590,7 @@ class ProductosDeVentaRollos(Ventana):
             else:
                 cer = pclases.MarcadoCe.get(ide)
             # "Atributos"
-            for nombre_campo in [k for k in cer._SO_columnDict.keys() if "Prueba" in k]:
+            for nombre_campo in [k for k in cer.sqlmeta.columns.keys() if "Prueba" in k]:
                 valor_ventana = self.wids["e_%s" % (nombre_campo)].get_text()
                 try:
                     valor_campo = utils._float(valor_ventana)

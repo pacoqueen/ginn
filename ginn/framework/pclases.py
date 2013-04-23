@@ -64,7 +64,7 @@
 
 
 DEBUG = False
-DEBUG = True    # Se puede activar desde ipython después de importar con 
+#DEBUG = True    # Se puede activar desde ipython después de importar con 
                 # pclases.DEBUG = True
 VERBOSE = True  # Activar para mostrar por pantalla progreso al cargar clases.
 VERBOSE = False
@@ -75,7 +75,7 @@ if DEBUG or VERBOSE:
 logged_user = None
 
 import sys, os
-from configuracion import ConfigConexion
+from framework.configuracion import ConfigConexion
 from math import ceil
 from select import select
 from sqlobject.col import SOForeignKey, SODateCol, SODateTimeCol, \
@@ -94,6 +94,7 @@ import threading #, psycopg
 import time
 from formularios import utils
 from framework import notificacion
+import datetime
 
 # GET FUN !
           
@@ -122,6 +123,76 @@ if DEBUG: # and VERBOSE:
     conndebug.debug = True
 
 
+# HACK:
+# autocommit en algunas versiones es un boolean y sqlobject intenta 
+# activarlo como si fuera una función. Aquí hago el cambiazo:
+#conhack = sqlhub.getConnection().getConnection()
+#conhack = sqlhub.processConnection.getConnection()
+conhack = connectionForURI(conn)
+#conhack._autocommit = conhack.autocommit
+#def _setAutoCommit(conn, auto):
+#    conn.autocommit = auto
+#conhack.autocommit = _setAutoCommit
+#conhack.autocommit(1)
+# PORASQUI: Esto no funciona. Me pone el autocommit en otra conexión.
+if hasattr(conhack, "autocommit"):
+    if callable(conhack.autocommit):
+        conhack.autocommit(1)
+    else:
+        conhack.autocommit = 1
+# HACK:
+# Hago todas las consultas case-insensitive machacando la función de 
+# sqlbuilder y de paso hago un workaround del bug del doble caracter 
+# de ESCAPE con postgresql en la versión empaquetada con Ubuntu precise. 
+# TODO: Temporal hasta que la versión upstream 1.2 entre en el repositorio.  
+from sqlobject import sqlbuilder, LIKE
+_CONTAINSSTRING = sqlbuilder.CONTAINSSTRING
+def CONTAINSSTRING_failsafe(expr, pattern):
+    # return LIKE(expr, '%' + _LikeQuoted(pattern) + '%', escape='\\')
+    # Esto de arriba DUPLICA el carácter \ y da error al ejecutar la consulta.
+    return LIKE(expr, '%' + sqlbuilder._LikeQuoted(pattern) + '%')
+
+def CONTAINSSTRING(expr, pattern):
+    try:
+        nombre_clase = SQLObject.sqlmeta.style.dbTableToPythonClass(
+                        expr.tableName)
+        clase = globals()[nombre_clase]
+        columna = clase.sqlmeta.columns[expr.fieldName]
+    except (AttributeError, KeyError):
+        return _CONTAINSSTRING(expr, pattern)
+    if isinstance(columna, (SOStringCol, SOUnicodeCol)):
+        # Algunos backends no tienen ILIKE. En ese caso debería usar la 
+        # versión "a prueba de fallos" declarada arriba.
+        op = sqlbuilder.SQLOp("ILIKE", expr, 
+                                '%' + sqlbuilder._LikeQuoted(pattern) + '%')
+    elif isinstance(columna, (SOFloatCol, SOIntCol, SODecimalCol, 
+                              SOMediumIntCol, SOSmallIntCol, SOTinyIntCol)):
+        try:
+            pattern = str(float(pattern))
+        except ValueError:
+            pattern = None
+        if not pattern:
+            op = sqlbuilder.SQLOp("IS NOT", expr, None)
+        else:
+            op = sqlbuilder.SQLOp("=", expr, 
+                                    sqlbuilder._LikeQuoted(pattern))
+    else:
+        op = sqlbuilder.SQLOp("LIKE", expr, 
+                                '%' + sqlbuilder._LikeQuoted(pattern) + '%')
+    return op
+
+sqlbuilder.CONTAINSSTRING = CONTAINSSTRING
+
+
+class SQLObjectChanged(Exception):
+    """ User-defined exception para ampliar la funcionalidad
+    de SQLObject y que soporte objetos persistentes."""
+    def __init__(self, value):
+        Exception.__init__(self)
+        self.value = value
+
+    def __str__(self):
+        return repr(self.value)
 class SQLtuple(tuple):
     """
     Básicamemte una tupla, pero con la función .count() para hacerla 
@@ -175,61 +246,6 @@ class SQLlist(list):
         raise TypeError, "No se pueden eliminar elementos de un SelectResults."
     def remove(self, *args, **kw):
         raise TypeError, "No se pueden eliminar elementos de un SelectResults."
-    
-    
-# HACK:
-# Hago todas las consultas case-insensitive machacando la función de 
-# sqlbuilder y de paso hago un workaround del bug del doble caracter 
-# de ESCAPE con postgresql en la versión empaquetada con Ubuntu precise. 
-# TODO: Temporal hasta que la versión upstream 1.2 entre en el repositorio.  
-from sqlobject import sqlbuilder, LIKE
-_CONTAINSSTRING = sqlbuilder.CONTAINSSTRING
-def CONTAINSSTRING_failsafe(expr, pattern):
-    # return LIKE(expr, '%' + _LikeQuoted(pattern) + '%', escape='\\')
-    return LIKE(expr, '%' + sqlbuilder._LikeQuoted(pattern) + '%')
-
-def CONTAINSSTRING(expr, pattern):
-    try:
-        nombre_clase = SQLObject.sqlmeta.style.dbTableToPythonClass(
-                        expr.tableName)
-        clase = globals()[nombre_clase]
-        columna = clase.sqlmeta.columns[expr.fieldName]
-    except (AttributeError, KeyError):
-        return _CONTAINSSTRING(expr, pattern)
-    if isinstance(columna, (SOStringCol, SOUnicodeCol)):
-        # Algunos backends no tienen ILIKE. En ese caso debería usar la 
-        # versión "a prueba de fallos" declarada arriba.
-        op = sqlbuilder.SQLOp("ILIKE", expr, 
-                                '%' + sqlbuilder._LikeQuoted(pattern) + '%')
-    elif isinstance(columna, (SOFloatCol, SOIntCol, SODecimalCol, 
-                              SOMediumIntCol, SOSmallIntCol, SOTinyIntCol)):
-        try:
-            pattern = str(float(pattern))
-        except ValueError:
-            pattern = None
-        if not pattern:
-            op = sqlbuilder.SQLOp("IS NOT", expr, None)
-        else:
-            op = sqlbuilder.SQLOp("=", expr, 
-                                    sqlbuilder._LikeQuoted(pattern))
-    else:
-        op = sqlbuilder.SQLOp("LIKE", expr, 
-                                '%' + sqlbuilder._LikeQuoted(pattern) + '%')
-    return op
-
-sqlbuilder.CONTAINSSTRING = CONTAINSSTRING
-
-
-
-class SQLObjectChanged(Exception):
-    """ User-defined exception para ampliar la funcionalidad
-    de SQLObject y que soporte objetos persistentes."""
-    def __init__(self, value):
-        Exception.__init__(self)
-        self.value = value
-
-    def __str__(self):
-        return repr(self.value)
 
 
 class PRPCTOO:
@@ -273,7 +289,7 @@ class PRPCTOO:
     def make_swap(self):
         # Antes del sync voy a copiar los datos a un swap temporal, para 
         # poder comparar:
-        for campo in self._SO_columnDict:
+        for campo in self.sqlmeta.columns:
             self.swap[campo] = getattr(self, campo)
         
     def diff(self):
@@ -284,7 +300,7 @@ class PRPCTOO:
         """
         res = {}
         self.sync()
-        for campo in self._SO_columnDict:
+        for campo in self.sqlmeta.columns:
             old = self.swap[campo]
             new = getattr(self, campo)
             if old != new:
@@ -302,7 +318,7 @@ class PRPCTOO:
         # Y ahora sincronizo:
         self.sync()
         # y comparo:
-        for campo in self._SO_columnDict:
+        for campo in self.sqlmeta.columns:
             # print self.swap[campo], eval('self.%s' % campo) 
             #if self.swap[campo] != eval('self.%s' % campo): 
             if self.swap[campo] != getattr(self, campo): 
@@ -387,7 +403,7 @@ class PRPCTOO:
              profundidad máxima de recursividad intentando eliminarse en 
              cascada a sí mismo por haber ciclos en la BD. 
         """
-        for join in self._SO_joinDict:
+        for join in self.sqlmeta.joins:
             lista = join.joinMethodName
             for dependiente in getattr(self, lista):
             # for dependiente in eval("self.%s" % (lista)):
@@ -430,14 +446,14 @@ class PRPCTOO:
         """
         assert type(obj) == type(self) and obj != None, \
                 "Los objetos deben pertenecer a la misma clase y no ser nulos."
-        for nombre_col in self._SO_columnDict:
+        for nombre_col in self.sqlmeta.columns:
             valor = getattr(obj, nombre_col)
             if valor == None or (isinstance(valor, str) and valor.strip() == ""):
                 if DEBUG and VERBOSE:
                     print "Cambiando valor de columna %s en objeto destino."%(
                             nombre_col)
                 setattr(obj, nombre_col, getattr(self, nombre_col))
-        for col in self._SO_joinList:
+        for col in self.sqlmeta.joins:
             atributo_lista = col.joinMethodName
             lista_muchos = getattr(self, atributo_lista)
             nombre_clave_ajena = repr(self.__class__).replace("'", ".").split(".")[-2] + "ID" # HACK (y de los feos)
@@ -464,7 +480,7 @@ class PRPCTOO:
         valores del objeto actual para esos parámetros.
         """
         parametros = {}
-        for campo in self._SO_columnDict:
+        for campo in self.sqlmeta.columns:
             valor = getattr(self, campo)
             parametros[campo] = valor
         for campo in kw:
@@ -484,7 +500,7 @@ class PRPCTOO:
         Este método se hereda por todas las clases y debería ser redefinido.
         """
         try:
-            return "%s ID %d (PUID %s)"%(self._table, self.id, self.get_puid())
+            return "%s ID %d (PUID %s)"%(self.sqlmeta.table, self.id, self.get_puid())
         except AttributeError:
             try:
                 return "%s ID %d (PUID %s)" % (self.sqlmeta.table, self.id, 
@@ -528,10 +544,10 @@ def starter(objeto, *args, **kw):
     SQLObject._init(objeto, *args, **kw)
     PRPCTOO.__init__(objeto, objeto.sqlmeta.table)
     # XXX: Compatibilidad hacia atrás con SQLObject 0.6.1
-    if not hasattr(objeto, "_table"):
-        objeto._table = objeto.sqlmeta.table
-    if not hasattr(objeto, "_SO_columnDict"):
-        objeto._SO_columnDict = objeto.sqlmeta.columns
+    #if not hasattr(objeto, "_table"):
+    #    objeto._table = objeto.sqlmeta.table
+    #if not hasattr(objeto, "_SO_columnDict"):
+    #    objeto._SO_columnDict = objeto.sqlmeta.columns
     #if not hasattr(objeto, "_connection"):
     #    objeto._connection = sqlhub.getConnection()
     # XXX
@@ -602,8 +618,8 @@ FRA_NO_DOCUMENTADA,FRA_NO_VENCIDA,FRA_IMPAGADA,FRA_COBRADA,FRA_ABONO = range(5)
 GESTION, CARTERA, DESCONTADO, IMPAGADO, COBRADO = range(5)
 
 # VERBOSE MODE
-total = 161 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
-            # Más bien grep print_verbose pclases.py | wc -l
+total = 158 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
+            # Más bien grep " = print_verbose(" pclases.py | grep -v \# | wc -l
 cont = 0
 tiempo = time.time()
 
@@ -4889,7 +4905,11 @@ class Proveedor(SQLObject, PRPCTOO):
         except (TypeError, ValueError):
             diacobro = None
         for incr in vtos:
-            res.append(fecha + incr)
+            try:
+                nfecha = fecha + incr
+            except TypeError: # No se pueden sumar fechas datetime con enteros.
+                nfecha = fecha + datetime.timedelta(incr)
+            res.append(nfecha)
             if diacobro != None:
                 while True:
                     try:
@@ -4902,7 +4922,11 @@ class Proveedor(SQLObject, PRPCTOO):
                         diacobro -= 1
                         if diacobro <= 0:
                             diacobro = 31
-                if res[-1] < fecha + incr:
+                try:
+                    nfecha = fecha + incr
+                except TypeError:
+                    nfecha = fecha + datetime.timedelta(incr)
+                if res[-1] < nfecha:
                     mes = res[-1].month + 1; anno = res[-1].year
                     if mes > 12:
                         mes = 1; anno += 1
@@ -14636,7 +14660,11 @@ class Cliente(SQLObject, PRPCTOO):
         except (TypeError, ValueError):
             diacobro = None
         for incr in vtos:
-            res.append(fecha + incr)
+            try:
+                nfecha = fecha + incr
+            except TypeError:
+                nfecha = fecha + datetime.timedelta(incr)
+            res.append(nfecha)
             if diacobro != None:
                 while True:
                     try:
@@ -14649,7 +14677,11 @@ class Cliente(SQLObject, PRPCTOO):
                         diacobro -= 1
                         if diacobro <= 0:
                             diacobro = 31
-                if res[-1] < fecha + incr:
+                try:
+                    nfecha = fecha + incr
+                except TypeError: # No se pueden sumar fechas datetime con enteros.
+                    nfecha = fecha + datetime.timedelta(incr)
+                if res[-1] < nfecha:
                     mes = res[-1].month + 1; anno = res[-1].year
                     if mes > 12:
                         mes = 1; anno += 1
@@ -17520,7 +17552,6 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
                     try:
                         parada.horafin -= sinco_minutosh
                     except TypeError:   # Algo es un datetime.datetime
-                        import datetime
                         sinco_minutosh = datetime.timedelta(minutes = 5)
                         parada.horafin -= sinco_minutosh 
 
@@ -18192,7 +18223,9 @@ class HorasTrabajadas(SQLObject, PRPCTOO):
     # tablas (../BD/tablas.sql) y en esta clase se me duplican las columnas 
     # empleadoid y partedeproduccionid si no las declaro tal y como en las 
     # tablas.
+    # XXX: Compatibilidad hacia atrás con SQLObject 0.6.1
     _table = 'parte_de_produccion_empleado'
+    # XXX
     class sqlmeta:
         table = "parte_de_produccion_empleado"
         fromDatabase = True
@@ -19375,7 +19408,7 @@ class Usuario(SQLObject, PRPCTOO):
         try:
             # return [p for p in self.permisos if p.ventana == ventana][0]
             query = """
-                    SELECT ide FROM permiso 
+                    SELECT id FROM permiso 
                     WHERE ventana_id = %d AND usuario_id = %d;
                     """ % (ventana.id, self.id)
             ide = self.__class__._connection.queryOne(query)[0]
@@ -21926,7 +21959,7 @@ def unificar(bueno, malos, borrar_despues = True):
                    if l in letters or l in "12344567890" or l in "_"]
     nombreclase = "".join(nombreclase)
     for malo in malos:
-        for join in malo._SO_joinDict:
+        for join in malo.sqlmeta.joins:
             lista = join.joinMethodName
             for dependiente in getattr(malo, lista):
                 for col in dependiente._SO_columns:
@@ -21963,7 +21996,7 @@ def el_anecdoton(fecha):
         except AttributeError:
             padres = []
         if SQLObject in padres:
-            dict_cols = clase._SO_columnDict
+            dict_cols = clase.sqlmeta.columns
             for namecol in dict_cols:
                 col = dict_cols[namecol]
                 if isinstance(col, SODateCol):
@@ -22004,6 +22037,7 @@ def do_unittests():
     # Pruebas unitarias
     cmd_grep = r"egrep ^class %s | grep PRPCTOO | grep ')' | cut -d ' ' -f 2 | cut -d '(' -f 1" % __file__
     clases_persistentes = [s.replace("\n", "") for s in os.popen(cmd_grep)]
+    conhack.autoCommit = False  # HACK del autocommit en SQLObject Ubuntu 12.04
     for clase in clases_persistentes:
         try:
             c = eval(clase)
@@ -22012,6 +22046,15 @@ def do_unittests():
             print "[OK]"
         except IndexError:
             print "[KO] - La clase %s no tiene registros" % (clase)
+    conhack.autoCommit = True   # HACK del autocommit en SQLObject Ubuntu 12.04
+
+
+# HACK:
+# autocommit en algunas versiones es un boolean y sqlobject intenta 
+# activarlo como si fuera una función. Aquí pasa algo parecido a la 
+# magia. Porque si lo activo manualmente ahora, no protesta y 
+# funciona el autocommit. 
+conhack.autoCommit = True
 
 
 if __name__ == '__main__':

@@ -368,7 +368,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                             # de usar los botones de incremento y decremento.
             igual = self.objeto != None
             for colname in self.dic_campos:
-                col = self.clase._SO_columnDict[colname]
+                col = self.clase.sqlmeta.columns[colname]
                 try:
                     valor_ventana = self.leer_valor(col, self.dic_campos[colname])
                 except (ValueError, mx.DateTime.RangeError, TypeError):
@@ -681,7 +681,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                     "Sin comercial relacionado")
                 self.wids['cbe_comercial'].set_active(-1)
             else:
-                self.escribir_valor(presupuesto._SO_columnDict[nombre_col], 
+                self.escribir_valor(presupuesto.sqlmeta.columns[nombre_col], 
                                     getattr(presupuesto, nombre_col), 
                                     self.dic_campos[nombre_col])
         # El descuento global aparte, que lleva porcentaje
@@ -896,7 +896,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.objeto.notificador.activar(lambda: None)
         # Actualizo los datos del objeto
         for colname in self.dic_campos:
-            col = self.clase._SO_columnDict[colname]
+            col = self.clase.sqlmeta.columns[colname]
             try:
                 valor_ventana = self.leer_valor(col, self.dic_campos[colname])
                 if valor_ventana == -1 and colname == "comercialID":

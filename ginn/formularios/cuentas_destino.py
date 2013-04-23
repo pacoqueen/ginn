@@ -89,7 +89,7 @@ class CuentasDestino(Ventana, VentanaGenerica):
         else:
             igual = self.objeto != None
             for colname in self.dic_campos:
-                col = self.clase._SO_columnDict[colname]
+                col = self.clase.sqlmeta.columns[colname]
                 try:
                     valor_ventana = self.leer_valor(col, self.dic_campos[colname])
                 except (ValueError, mx.DateTime.RangeError, TypeError):
@@ -175,7 +175,7 @@ class CuentasDestino(Ventana, VentanaGenerica):
         """
         cuenta = self.objeto
         for nombre_col in self.dic_campos:
-            self.escribir_valor(cuenta._SO_columnDict[nombre_col], getattr(cuenta, nombre_col), self.dic_campos[nombre_col])
+            self.escribir_valor(cuenta.sqlmeta.columns[nombre_col], getattr(cuenta, nombre_col), self.dic_campos[nombre_col])
         self.rellenar_tabla_transferencias()
         self.objeto.make_swap()
 
@@ -275,7 +275,7 @@ class CuentasDestino(Ventana, VentanaGenerica):
         self.objeto.notificador.activar(lambda: None)
         # Actualizo los datos del objeto
         for colname in self.dic_campos:
-            col = self.clase._SO_columnDict[colname]
+            col = self.clase.sqlmeta.columns[colname]
             try:
                 valor_ventana = self.leer_valor(col, self.dic_campos[colname])
                 setattr(self.objeto, colname, valor_ventana)

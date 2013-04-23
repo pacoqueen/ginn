@@ -997,7 +997,7 @@ class Clientes(Ventana):
         cliente = self.objeto
         if cliente == None: return False    # Si no hay cliente activo, devuelvo que no hay cambio respecto a la ventana
         condicion = True
-        lista = [cli for cli in cliente._SO_columns 
+        lista = [cli for cli in cliente.sqlmeta.columnList 
                     if cli.name!='tarifaID' 
                         and cli.name!='contadorID' 
                         and cli.name!='formadepago' 
@@ -1766,7 +1766,7 @@ class Clientes(Ventana):
                 (self.wids['e_cp'], self.wids['e_cpfacturacion'])):
                 wfacturacion.set_text(wpostal.get_text())
         datos = {}
-        for c in [c.name for c in cliente._SO_columns 
+        for c in [c.name for c in cliente.sqlmeta.columnList 
                   if c.name != 'tarifaID' 
                       and c.name != 'contadorID' 
                       and c.name != 'formadepago' 

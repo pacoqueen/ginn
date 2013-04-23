@@ -672,9 +672,10 @@ class Menu:
         """
         EXPERIMENTAL
         """
-        self._lanzar_ventana(archivo, clase)
-        return
+        #self._lanzar_ventana(archivo, clase)
+        #return
         # XXX
+        # PORASQUI: Probarlo en Windows y tal...
         from multiprocessing import Process
         v = Process(target = self._importar_e_instanciar, 
                     args = (archivo, clase))

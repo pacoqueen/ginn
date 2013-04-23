@@ -51,6 +51,7 @@ from informes.treeview2pdf import treeview2pdf
 from informes.treeview2csv import treeview2csv
 from formularios.reports import abrir_pdf, abrir_csv
 import pango
+import datetime
 
 class TransformedDict(transformedDictBase):
     """
@@ -94,7 +95,7 @@ class TransformedDict(transformedDictBase):
 class MyMonthsDict(TransformedDict):
     def __keytransform__(self, key):
         try:
-            assert isinstance(key, type(mx.DateTime.today()))
+            assert isinstance(key, (type(mx.DateTime.today()), datetime.date))
             key = primero_de_mes(key)
         except AssertionError:
             anno = mx.DateTime.today().year

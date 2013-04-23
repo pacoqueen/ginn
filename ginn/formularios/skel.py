@@ -93,7 +93,7 @@ class XXXSkel(Ventana, VentanaGenerica):
         else:
             igual = self.objeto != None
             for colname in self.dic_campos:
-                col = self.clase._SO_columnDict[colname]
+                col = self.clase.sqlmeta.columns[colname]
                 try:
                     valor_ventana = self.leer_valor(col, self.dic_campos[colname])
                 except (ValueError, mx.DateTime.RangeError, TypeError):
@@ -182,7 +182,7 @@ class XXXSkel(Ventana, VentanaGenerica):
         """
         XXXobjeto = self.objeto
         for nombre_col in self.dic_campos:
-            self.escribir_valor(XXXobjeto._SO_columnDict[nombre_col], getattr(XXXobjeto, nombre_col), self.dic_campos[nombre_col])
+            self.escribir_valor(XXXobjeto.sqlmeta.columns[nombre_col], getattr(XXXobjeto, nombre_col), self.dic_campos[nombre_col])
         self.rellenar_tabla_XXX()
         self.objeto.make_swap()
 
@@ -280,7 +280,7 @@ class XXXSkel(Ventana, VentanaGenerica):
         self.objeto.notificador.activar(lambda: None)
         # Actualizo los datos del objeto
         for colname in self.dic_campos:
-            col = self.clase._SO_columnDict[colname]
+            col = self.clase.sqlmeta.columns[colname]
             try:
                 valor_ventana = self.leer_valor(col, self.dic_campos[colname])
                 setattr(self.objeto, colname, valor_ventana)
