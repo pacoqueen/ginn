@@ -1375,10 +1375,12 @@ class PartesDeFabricacionBolsas(Ventana):
             try:
                 e = pclases.Empleado.get(ide)
                 self.objeto.addEmpleado(e)
-            except:
+            except Exception, msg:
                 utils.dialogo_info(titulo = 'NÚMERO INCORRECTO', 
-                        texto = 'El empleado con código identificador %d no '\
-                                'existe o no se pudo agregar.' % ide, 
+                        texto = 'El empleado con código identificador %s no '\
+                                'existe o no se pudo agregar.\n\n'
+                                'Información de depuración:\n'
+                                '\t%s' % (ide, msg), 
                         padre = self.wids['ventana'])
         self.rellenar_tabla_empleados()
 

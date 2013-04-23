@@ -80,7 +80,7 @@ from math import ceil
 from select import select
 from sqlobject.col import SOForeignKey, SODateCol, SODateTimeCol, \
                           SOUnicodeCol, SODecimalCol, SOMediumIntCol, \
-                          SOSmallIntCol, SOTinyIntCol, \
+                          SOSmallIntCol, SOTinyIntCol, ForeignKey, \
                           SOBoolCol, SOCol, SOFloatCol, SOIntCol, SOStringCol   # @UnusedImport
 from sqlobject.joins import MultipleJoin, RelatedJoin
 from sqlobject.main import SQLObjectNotFound, SQLObject
@@ -17692,8 +17692,8 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         Si el empleado ya estaba en el parte no se hace nada.
         """
         HT = HorasTrabajadas
-        qry = HT.select(AND(HT.q.empleadoid == empleado.id, 
-                            HT.q.partedeproduccionid == self.id))
+        qry = HT.select(AND(HT.q.empleado == empleado, 
+                            HT.q.parteDeProduccion == self))
         if qry.count() == 0:
             if horas == None:
                 try:
@@ -17713,8 +17713,8 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
                                   "Excepción al calcular la duración del "\
                                   "parte:", msg
                 horas = horas.strftime('%H:%M')
-            horas_trabajadas = HT(empleadoid = empleado.id,
-                                  partedeproduccionid = self.id,
+            horas_trabajadas = HT(empleadoidID = empleado.id,
+                                  partedeproduccionidID = self.id,
                                   horas = horas)    # ¿Porcuá? No lo sé. 
                                                     # Debería seguir el 
                                                     # formato CamelCase pero 
@@ -17731,7 +17731,8 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         una excepción.
         """
         HT = HorasTrabajadas
-        qry = HT.select(AND(HT.q.empleadoid == empleado.id, HT.q.partedeproduccionid == self.id))
+        qry = HT.select(AND(HT.q.empleado == empleado, 
+                            HT.q.parteDeProduccion == self))
         # No debería haber más de un registro con el mismo par de IDs. El método de creación lo asegura.
         if qry.count() != 0:
             # qry[0].empleado = None
@@ -18223,15 +18224,11 @@ class HorasTrabajadas(SQLObject, PRPCTOO):
     # tablas (../BD/tablas.sql) y en esta clase se me duplican las columnas 
     # empleadoid y partedeproduccionid si no las declaro tal y como en las 
     # tablas.
-    # XXX: Compatibilidad hacia atrás con SQLObject 0.6.1
-    _table = 'parte_de_produccion_empleado'
-    # XXX
     class sqlmeta:
         table = "parte_de_produccion_empleado"
         fromDatabase = True
-    
-    #--------------- #empleadoid = ForeignKey('Empleado', dbName = 'empleadoid')
-    #-------------------- #partedeproduccionid = ForeignKey('ParteDeProduccion',
+    #empleado = ForeignKey('Empleado', dbName = 'empleadoid')
+    #parteDeProduccion = ForeignKey('ParteDeProduccion',
     #                                 dbName = 'partedeproduccionid')
 
     def _init(self, *args, **kw):
@@ -18255,6 +18252,13 @@ class HorasTrabajadas(SQLObject, PRPCTOO):
     parteDeProduccion = property(get_parteDeProduccion, set_parteDeProduccion)
     # Por coherencia con el resto de clases
 
+    @property
+    def empleado(self):
+        return self.empleadoid
+    @setter
+    def set_empleado(self, e):
+        self.empleadoid = e
+        
     def get_horas_dia(self):
         """
         :returns: DateTimeDelta con el número de horas trabajadas entre 
