@@ -18255,10 +18255,15 @@ class HorasTrabajadas(SQLObject, PRPCTOO):
     @property
     def empleado(self):
         return self.empleadoid
-    @setter
-    def set_empleado(self, e):
+    
+    @empleado.setter
+    def empleado(self, e):
         self.empleadoid = e
-        
+    
+    @empleado.deleter
+    def empleado(self):
+        del self.empleadoid
+    
     def get_horas_dia(self):
         """
         :returns: DateTimeDelta con el número de horas trabajadas entre 
