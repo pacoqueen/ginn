@@ -1354,13 +1354,13 @@ class PartesDeFabricacionBolsas(Ventana):
 
     def add_empleado(self, w):
         empleados = pclases.Empleado.select(pclases.AND(
-                            pclases.Empleado.q.activo == True,  # @UndefinedVariable
-                            pclases.Empleado.q.planta == True),  # @UndefinedVariable
-                        orderBy = 'apellidos')
-        empleados = [(e.id, e.nombre, e.apellidos) for e in empleados \
-                     if e.planta and \
-                        e.activo and \
-                        e.categoriaLaboral and \
+                pclases.Empleado.q.activo == True,  # @UndefinedVariable
+                pclases.Empleado.q.planta == True),  # @UndefinedVariable
+            orderBy = 'apellidos')
+        empleados = [(e.id, e.nombre, e.apellidos) for e in empleados 
+                     if e.planta and 
+                        e.activo and 
+                        e.categoriaLaboral and 
                         e.categoriaLaboral.planta] 
                         # e.categoriaLaboral.planta and \
                         # e.categoriaLaboral.lineaDeProduccion == self.linea)]

@@ -80,8 +80,9 @@ from math import ceil
 from select import select
 from sqlobject.col import SOForeignKey, SODateCol, SODateTimeCol, \
                           SOUnicodeCol, SODecimalCol, SOMediumIntCol, \
-                          SOSmallIntCol, SOTinyIntCol, ForeignKey, \
-                          SOBoolCol, SOCol, SOFloatCol, SOIntCol, SOStringCol   # @UnusedImport
+                          SOSmallIntCol, SOTinyIntCol
+from sqlobject.col import ForeignKey, SOBoolCol, SOCol  # @UnusedImport
+from sqlobject.col import SOFloatCol, SOIntCol, SOStringCol   # @UnusedImport
 from sqlobject.joins import MultipleJoin, RelatedJoin
 from sqlobject.main import SQLObjectNotFound, SQLObject
 from sqlobject.sqlbuilder import AND, OR, \
@@ -134,12 +135,13 @@ conhack = connectionForURI(conn)
 #    conn.autocommit = auto
 #conhack.autocommit = _setAutoCommit
 #conhack.autocommit(1)
-# PORASQUI: Esto no funciona. Me pone el autocommit en otra conexión.
-if hasattr(conhack, "autocommit"):
-    if callable(conhack.autocommit):
-        conhack.autocommit(1)
-    else:
-        conhack.autocommit = 1
+# Esto no funciona. Me pone el autocommit en otra conexión. Lo activo al final 
+# del fichero. Ver HACK antes del "__main__".
+## if hasattr(conhack, "autocommit"):
+##    if callable(conhack.autocommit):
+##        conhack.autocommit(1)
+##    else:
+##        conhack.autocommit = 1
 # HACK:
 # Hago todas las consultas case-insensitive machacando la función de 
 # sqlbuilder y de paso hago un workaround del bug del doble caracter 
