@@ -17694,8 +17694,8 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         Si el empleado ya estaba en el parte no se hace nada.
         """
         HT = HorasTrabajadas
-        qry = HT.select(AND(HT.q.empleado == empleado, 
-                            HT.q.parteDeProduccion == self))
+        qry = HT.select(AND(HT.q.empleadoid == empleado, 
+                            HT.q.partedeproduccionid == self))
         if qry.count() == 0:
             if horas == None:
                 try:
@@ -17733,8 +17733,8 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         una excepción.
         """
         HT = HorasTrabajadas
-        qry = HT.select(AND(HT.q.empleado == empleado, 
-                            HT.q.parteDeProduccion == self))
+        qry = HT.select(AND(HT.q.empleadoid == empleado, 
+                            HT.q.partedeproduccionid == self))
         # No debería haber más de un registro con el mismo par de IDs. El método de creación lo asegura.
         if qry.count() != 0:
             # qry[0].empleado = None
@@ -18237,16 +18237,16 @@ class HorasTrabajadas(SQLObject, PRPCTOO):
         starter(self, *args, **kw)
 
     def get_parteDeProduccion(self):
-        return self.partedeproduccion
-
-    def set_parteDeProduccion(self, valor):
-        self.partedeproduccion = valor
-
-    def get_parteDeProduccionID(self):
         return self.partedeproduccionid
 
-    def set_parteDeProduccionID(self, valor):
+    def set_parteDeProduccion(self, valor):
         self.partedeproduccionid = valor
+
+    def get_parteDeProduccionID(self):
+        return self.partedeproduccionidID
+
+    def set_parteDeProduccionID(self, valor):
+        self.partedeproduccionidID = valor
 
     parteDeProduccionID = property(get_parteDeProduccionID, 
                                    set_parteDeProduccionID)       
