@@ -75,7 +75,7 @@ class Trazabilidad(Ventana):
         consola = pyconsole.attach_console(self.wids['contenedor_consola'],  # @UnusedVariable
                                            banner = "Consola python de depuración GINN", 
                                            script_inicio = """import sys, os, pygtk, gtk, gtk.glade, utils
-from framework import pclases, mx.DateTime
+from framework import pclases
 from framework.seeker import VentanaGenerica as Ver
 dir()
 #Ver(self.objeto)

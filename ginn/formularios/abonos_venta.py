@@ -185,11 +185,16 @@ class AbonosVenta(Ventana):
                              and self.objeto.facturaDeAbono != None))
         se_puede_generar_albaran_entrada \
             = self.wids['b_albaran_abono'].get_property("sensitive")
-        s = s and (self.usuario == None or self.usuario.nivel <= 1)
-        if self.usuario and self.usuario.nivel > 1:
-            self.wids['b_nuevo'].set_sensitive(False)
-            # PLAN: Cambiar por permisos lectura/escritura/nuevo en lugar de 
-            # hacerlo en base al nivel de privilegios del usuario.
+        try:
+            print __file__
+            permisos = self.usuario.get_permiso(__file__)
+            print permisos
+            self.wids['b_nuevo'].set_sensitive(permisos.nuevo)
+            s = s and permisos.permiso
+        except AttributeError:
+            s = s and (self.usuario == None or self.usuario.nivel <= 1)
+            if self.usuario and self.usuario.nivel > 1:
+                self.wids['b_nuevo'].set_sensitive(False)
         ws = ('hbox1', 'hbox5', 'vbox2', 'hbox6', 'b_albaran_abono', 
               'b_fra_abono', 'b_add_ajuste', 'b_drop_ajuste', 
               'b_add_devolucion', 'b_drop_devolucion', 'b_borrar', 
@@ -1436,5 +1441,5 @@ class AbonosVenta(Ventana):
 
 
 if __name__ == '__main__':
-    v = AbonosVenta()
+    v = AbonosVenta(usuario = pclases.Usuario.selectBy(usuario = "enrique")[0])
 
