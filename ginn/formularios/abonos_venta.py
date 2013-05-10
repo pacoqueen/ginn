@@ -186,9 +186,7 @@ class AbonosVenta(Ventana):
         se_puede_generar_albaran_entrada \
             = self.wids['b_albaran_abono'].get_property("sensitive")
         try:
-            print __file__
             permisos = self.usuario.get_permiso(__file__)
-            print permisos
             self.wids['b_nuevo'].set_sensitive(permisos.nuevo)
             s = s and permisos.permiso
         except AttributeError:
