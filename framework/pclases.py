@@ -19317,6 +19317,20 @@ class Usuario(SQLObject, PRPCTOO):
         Devuelve el registro permiso del usuario sobre 
         la ventana "ventana" o None si no se encuentra.
         """
+        if isinstance(ventana, str):
+            try:
+                ventana = Ventana.selectBy(fichero = ventana)[0]
+            except IndexError:
+                ventana = os.path.basename(ventana)
+                if ventana.endswith(".pyc"):
+                    ventana = ventana[:-1]
+                try:
+                    ventana = Ventana.selectBy(fichero = ventana)[0]
+                except IndexError:
+                    pass    # No existe o me han mandado otra cosa en el 
+                            # parámetro. Intento seguir...
+        elif isinstance(ventana, int):
+            ventana = Ventana.get(ventana)
         try:
             # return [p for p in self.permisos if p.ventana == ventana][0]
             query = """
