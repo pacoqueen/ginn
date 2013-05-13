@@ -13575,6 +13575,31 @@ class AlbaranSalida(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
+    @property
+    def provincia(self):
+        """
+        Devuelve la provincia de la dirección de envío del albarán. Por 
+        motivos históricos se guarda en el mismo campo que el código postal.
+        """
+        try:
+            return " ".join(self.cp.split()[1:])
+        except AttributeError:
+            return ""
+
+    @property
+    def codigo_postal(self):
+        """
+        Devuelve únicamente el código postal de la dirección de envío del 
+        albarán. Por motivos históricos se guarda en el mismo campo junto con 
+        la provincia.
+        """
+        rexp_cp = re.compile("[\d]+")
+        try:
+            cp = rexp_cp.findall(self.cp)[0]
+        except (IndexError, AttributeError):
+            cp = ""
+        return cp
+
     def cambiar_destino(self, almacen_destino = None):
         """Cambia el destino de un albarán. Si ya tenía cantidades asignadas, 
         altera también sus existencias en cada almacén para ajustarlo a la 

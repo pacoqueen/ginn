@@ -2727,7 +2727,7 @@ class FacturasVenta(Ventana):
             cpenv = obra.cp
         except AttributeError:
             try:
-                cpenv = albaran.cp
+                cpenv = albaran.codigo_postal
                 if not cpenv or not cpenv.strip():
                     raise AttributeError
             except AttributeError:

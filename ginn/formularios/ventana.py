@@ -104,7 +104,10 @@ class Ventana:
                 icono = determine_ico_from_filename(fichero, clase)
                 self.wids['ventana'].set_icon_from_file(icono)
             except:     # Icono por defecto "de toa la vida de Elvis".
-                logo_xpm = gtk.gdk.pixbuf_new_from_file("logo.xpm")
+                logo_xpm = gtk.gdk.pixbuf_new_from_file(
+                        os.path.join(
+                         os.path.dirname(os.path.realpath(__file__)), 
+                         '..', 'imagenes', "logo.xpm"))
                 self.wids['ventana'].set_icon(logo_xpm)
             self.wids['barra_estado'] = gtk.Statusbar()
             label_statusbar = self.wids['barra_estado'].get_children()[0].child
