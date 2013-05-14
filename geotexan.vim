@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 16 abril 2013 at 12:56:46.
+" Created by session.vim 1.5 on 13 mayo 2013 at 16:56:00.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -40,15 +40,36 @@ badd +43 ginn/formularios/historico_existencias_compra.py
 badd +39 ginn/formularios/historico_existencias.py
 badd +46 ginn/formularios/consulta_incidencias.py
 badd +39 ginn/formularios/consulta_producido.py
-badd +0 ginn/__init__.py
+badd +1 ginn/__init__.py
+badd +1 ginn/formularios/clientes.py
+badd +1 ginn/formularios/productos_compra.py
+badd +1 ginn/formularios/productos_de_venta_balas.py
+badd +1 ginn/formularios/recibos.py
+badd +483 ginn/formularios/productos_de_venta_rollos.py
+badd +624 ginn/formularios/productos_de_venta_rollos_geocompuestos.py
+badd +319 ginn/formularios/productos_de_venta_especial.py
 args formularios/auditviewer.py
-set lines=21 columns=80
-edit ginn/__init__.py
+set lines=47 columns=80
+edit ginn/formularios/recibos.py
 set splitbelow splitright
+wincmd _ | wincmd |
+split
+wincmd _ | wincmd |
+split
+wincmd _ | wincmd |
+split
+3wincmd k
+wincmd w
+wincmd w
+wincmd w
 set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
+exe '1resize ' . ((&lines * 39 + 23) / 47)
+exe '2resize ' . ((&lines * 1 + 23) / 47)
+exe '3resize ' . ((&lines * 1 + 23) / 47)
+exe '4resize ' . ((&lines * 1 + 23) / 47)
 argglobal
 setlocal fdm=indent
 setlocal fde=0
@@ -58,12 +79,134 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 1 - ((0 * winheight(0) + 9) / 19)
+53
+silent! normal zo
+99
+silent! normal zo
+100
+silent! normal zo
+102
+silent! normal zo
+102
+silent! normal zo
+100
+silent! normal zo
+99
+silent! normal zo
+53
+silent! normal zo
+let s:l = 607 - ((13 * winheight(0) + 19) / 39)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+607
+normal! 04l
+wincmd w
+argglobal
+edit ginn/formularios/productos_de_venta_balas.py
+setlocal fdm=indent
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=99
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+let s:l = 1 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 1
 normal! 0
+wincmd w
+argglobal
+edit ginn/formularios/productos_compra.py
+setlocal fdm=indent
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=99
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+let s:l = 1 - ((0 * winheight(0) + 0) / 1)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+1
+normal! 0
+wincmd w
+argglobal
+edit ginn/formularios/clientes.py
+setlocal fdm=indent
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=99
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+66
+silent! normal zo
+67
+silent! normal zo
+76
+silent! normal zo
+76
+silent! normal zo
+76
+silent! normal zo
+76
+silent! normal zo
+76
+silent! normal zo
+76
+silent! normal zo
+67
+silent! normal zo
+145
+silent! normal zo
+146
+silent! normal zo
+160
+silent! normal zo
+146
+silent! normal zo
+145
+silent! normal zo
+1260
+silent! normal zo
+1260
+silent! normal zo
+1626
+silent! normal zo
+1639
+silent! normal zo
+1639
+silent! normal zo
+1626
+silent! normal zo
+1687
+silent! normal zo
+1698
+silent! normal zo
+1698
+silent! normal zo
+1687
+silent! normal zo
+66
+silent! normal zo
+let s:l = 1363 - ((0 * winheight(0) + 0) / 1)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+1363
+normal! 019l
+wincmd w
+exe '1resize ' . ((&lines * 39 + 23) / 47)
+exe '2resize ' . ((&lines * 1 + 23) / 47)
+exe '3resize ' . ((&lines * 1 + 23) / 47)
+exe '4resize ' . ((&lines * 1 + 23) / 47)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf

@@ -213,6 +213,8 @@ class Proveedores(Ventana):
         self.wids['b_buscar'].set_sensitive(True)
         utils.combo_set_from_db(self.wids['cb_orden'], 
                                 self.wids['cb_orden'].get_model()[0][0])
+        self.wids['cb_orden'].connect("changed", 
+                self.actualizar_botones_anterior_siguiente)
         cols = (('Nombre', 'gobject.TYPE_STRING', False, True, True, None),
                 ('Banco', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Swift', 'gobject.TYPE_STRING', False, True, False, None),
@@ -306,6 +308,22 @@ class Proveedores(Ventana):
         except AttributeError: # No tiene el set_text, por tanto no es un Entry.
             widget.get_buffer().set_text(valor)
 
+    def actualizar_botones_anterior_siguiente(self, *args, **kw):
+        if self.objeto:
+            orden = utils.combo_get_value(self.wids['cb_orden'])
+            if orden == "Orden cronológico":
+                anteriores = pclases.Proveedor.select(
+                        pclases.Proveedor.q.id < self.objeto.id).count()
+                siguientes = pclases.Proveedor.select(
+                        pclases.Proveedor.q.id > self.objeto.id).count()
+            elif orden == "Orden alfabético": 
+                anteriores = pclases.Proveedor.select(
+                        pclases.Proveedor.q.nombre < self.objeto.nombre).count()
+                siguientes = pclases.Proveedor.select(
+                        pclases.Proveedor.q.nombre > self.objeto.nombre).count()
+            self.wids['b_back'].set_sensitive(anteriores)
+            self.wids['b_next'].set_sensitive(siguientes)
+
     def rellenar_widgets(self):
         """
         Introduce la información del proveedor actual
@@ -356,6 +374,8 @@ class Proveedores(Ventana):
                     self.objeto.syncUpdate()
                     self.wids['e_documentodepago'].set_text(
                             self.objeto.documentodepago)
+            ### Botones anterior/siguiente
+            self.actualizar_botones_anterior_siguiente()
 
     def rellenar_cuentas(self):
         """

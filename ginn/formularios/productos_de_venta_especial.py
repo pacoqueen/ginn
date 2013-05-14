@@ -174,8 +174,12 @@ class ProductosDeVentaEspecial(Ventana):
             self.wids['b_siguiente'].set_sensitive(False)
             s = False
         else:
-            self.wids['b_anterior'].set_sensitive(True)
-            self.wids['b_siguiente'].set_sensitive(True)
+            # Se ejecuta DESPUÉS de rellenar_widgets. Así que si allí se han 
+            # habilitado/deshabilitado por ser el primero/último; lo dejo 
+            # como está.
+            pass
+            #self.wids['b_anterior'].set_sensitive(True)
+            #self.wids['b_siguiente'].set_sensitive(True)
         ws = ('e_idproducto', 'e_codigo', 'e_descripcion', 'frame1', 'e_nombre', 'e_precio', 'e_minimo', 'e_stock', 
               'b_contar', 'b_borrar', 'b_tarifas', 'e_arancel', 'frame2') 
         for w in ws:
@@ -312,6 +316,15 @@ class ProductosDeVentaEspecial(Ventana):
         self.rellenar_existencias_almacen(producto)
         self.objeto.make_swap()
         self.objeto.camposEspecificosEspecial.make_swap()
+        # Sombreado de botones anterior-siguiente
+        anteriores = pclases.ProductoVenta.select(pclases.AND(
+            pclases.ProductoVenta.q.camposEspecificosEspecialID != None, 
+            pclases.ProductoVenta.q.id < producto.id),orderBy='-id').count()
+        siguientes = pclases.ProductoVenta.select(pclases.AND(
+            pclases.ProductoVenta.q.camposEspecificosEspecialID != None, 
+            pclases.ProductoVenta.q.id > producto.id),orderBy='id').count()
+        self.wids['b_anterior'].set_sensitive(anteriores)
+        self.wids['b_siguiente'].set_sensitive(siguientes)
 
     def rellenar_tabla_tarifas(self):
         model = self.wids['tv_tarifas'].get_model()

@@ -578,6 +578,13 @@ class ProductosCompra(Ventana, VentanaGenerica):
         self.wids['e_stock'].modify_bg(gtk.STATE_NORMAL, None)  # Por si se 
             # ha cambiado desde el aviso de actualización.
         self.actualizar_estado_controles(self.wids['ch_obsoleto'])
+        ### Botones anterior/siguiente
+        anteriores = pclases.ProductoCompra.select(
+                pclases.AND(pclases.ProductoCompra.q.id < producto.id)).count()
+        siguientes = pclases.ProductoCompra.select(
+                pclases.AND(pclases.ProductoCompra.q.id > producto.id)).count()
+        self.wids['b_anterior'].set_sensitive(anteriores)
+        self.wids['b_siguiente'].set_sensitive(siguientes)
 
     def rellenar_existencias_almacen(self, producto):
         """

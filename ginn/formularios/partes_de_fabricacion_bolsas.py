@@ -527,6 +527,8 @@ class PartesDeFabricacionBolsas(Ventana):
                         "verifique que se corresponde con la partida real.", 
                 padre = self.wids['ventana'])
             self.objeto.observaciones += "\nPartida corregida automáticamente."
+        self.wids['b_back'].set_sensitive(self.objeto and self.objeto.anterior() and 1 or 0)
+        self.wids['b_next'].set_sensitive(self.objeto and self.objeto.siguiente() and 1 or 0)
     
     def rellenar_estadisticas(self):
         partedeproduccion = self.objeto

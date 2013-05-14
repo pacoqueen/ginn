@@ -348,6 +348,32 @@ class ProductosDeVentaBalas(Ventana):
         self.rellenar_tabla_tarifas()
         self.objeto.make_swap()
         self.wids['e_cajasPale'].set_sensitive(not self.objeto.articulos)
+        ### Botones anterior/siguiente
+        producto = self.objeto
+        try:
+            linea = pclases.LineaDeProduccion.select(
+                pclases.LineaDeProduccion.q.nombre.contains('fibra'))[0]
+            lineaembol = pclases.LineaDeProduccion.select(
+                pclases.LineaDeProduccion.q.nombre.contains('bolsa'))[0]
+            anteriores = pclases.ProductoVenta.select(pclases.AND(
+                pclases.ProductoVenta.q.camposEspecificosBalaID != None, 
+                pclases.OR(
+                  pclases.ProductoVenta.q.lineaDeProduccionID == linea.id, 
+                  pclases.ProductoVenta.q.lineaDeProduccionID == lineaembol.id
+                ),
+                pclases.ProductoVenta.q.id < producto.id)).count()
+            siguientes = pclases.ProductoVenta.select(pclases.AND(
+                pclases.ProductoVenta.q.camposEspecificosBalaID != None, 
+                pclases.OR(
+                  pclases.ProductoVenta.q.lineaDeProduccionID == linea.id, 
+                  pclases.ProductoVenta.q.lineaDeProduccionID == lineaembol.id
+                ),
+                pclases.ProductoVenta.q.id > producto.id)).count()
+        except:
+            pass
+        else:
+            self.wids['b_anterior'].set_sensitive(anteriores)
+            self.wids['b_siguiente'].set_sensitive(siguientes)
 
     def rellenar_tabla_tarifas(self):
         model = self.wids['tv_tarifas'].get_model()

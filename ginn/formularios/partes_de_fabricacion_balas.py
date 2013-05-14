@@ -954,6 +954,8 @@ class PartesDeFabricacionBalas(Ventana):
         self.rellenar_tabla_desechos()
         self.check_permisos()
         self.objeto.make_swap()
+        self.wids['b_back'].set_sensitive(self.objeto and self.objeto.anterior() and 1 or 0)
+        self.wids['b_next'].set_sensitive(self.objeto and self.objeto.siguiente() and 1 or 0)
 
     def check_permisos(self):
         if "w" in self.__permisos:  # Puede modificar los partes:

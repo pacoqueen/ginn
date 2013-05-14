@@ -152,7 +152,10 @@ class ProductosDeVentaRollosGeocompuestos(Ventana):
               'e_gramos' , 'e_composan', 'e_diametro' , 'e_ancho' , 'e_rollo_camion', 'e_metros_lineales', 'b_borrar', 
               'b_fichas', 'b_articulos','b_tarifas','e_arancel', 'b_anterior', 'b_siguiente', 'frame2') 
         for w in ws:
-            self.wids[w].set_sensitive(s)
+            if "anterior" in w or "siguiente" in w:
+                self.wids[w].set_sensitive(self.wids[w].get_sensitive() and s)
+            else:
+                self.wids[w].set_sensitive(s)
         if chequear_permisos:
             self.check_permisos(nombre_fichero_ventana = "productos_de_venta_rollos_geocompuestos.py")
 
@@ -276,6 +279,26 @@ class ProductosDeVentaRollosGeocompuestos(Ventana):
             self.muestra_stock()
             self.mostrar_especificos()
             self.objeto.make_swap()
+            # Sombreado de botones anterior-siguiente
+            producto = self.objeto
+            try:
+                linea = pclases.LineaDeProduccion.select(pclases.OR(
+                pclases.LineaDeProduccion.q.nombre.contains('geocompuesto'), 
+                pclases.LineaDeProduccion.q.nombre.contains('comercializado'))
+                )[0]
+            except IndexError:
+                pass
+            else:
+                siguientes = pclases.ProductoVenta.select(pclases.AND(
+                    pclases.ProductoVenta.q.camposEspecificosRolloID != None, 
+                    pclases.ProductoVenta.q.lineaDeProduccionID == linea.id, 
+                    pclases.ProductoVenta.q.id > producto.id)).count()
+                anteriores = pclases.ProductoVenta.select(pclases.AND(
+                    pclases.ProductoVenta.q.camposEspecificosRolloID != None, 
+                    pclases.ProductoVenta.q.lineaDeProduccionID == linea.id, 
+                    pclases.ProductoVenta.q.id < producto.id)).count()
+                self.wids['b_anterior'].set_sensitive(anteriores)
+                self.wids['b_siguiente'].set_sensitive(siguientes)
 
     def mostrar_especificos(self):
         """

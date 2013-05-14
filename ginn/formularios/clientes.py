@@ -1092,6 +1092,8 @@ class Clientes(Ventana):
         self.wids['b_buscar'].set_sensitive(True)
         utils.combo_set_from_db(self.wids['cb_orden'], 
                                 self.wids['cb_orden'].get_model()[0][0])
+        self.wids['cb_orden'].connect("changed", 
+                self.actualizar_botones_anterior_siguiente)
         contadores = []
         if pclases.DEBUG:
             print "1.- clientes.py::inicializar_ventana ->", time.time() - antes
@@ -1515,6 +1517,26 @@ class Clientes(Ventana):
                 self.objeto.make_swap()
         if pclases.DEBUG:
             print "9.- clientes.py::rellenar_widgets ->", time.time() - antes
+        ### Botones anterior/siguiente
+        self.actualizar_botones_anterior_siguiente()
+        if pclases.DEBUG:
+            print "10.- clientes.py::rellenar_widgets ->", time.time() - antes
+
+    def actualizar_botones_anterior_siguiente(self, *args, **kw):
+        if self.objeto:
+            orden = utils.combo_get_value(self.wids['cb_orden'])
+            if orden == "Orden cronológico":
+                anteriores = pclases.Cliente.select(
+                        pclases.Cliente.q.id < self.objeto.id).count()
+                siguientes = pclases.Cliente.select(
+                        pclases.Cliente.q.id > self.objeto.id).count()
+            elif orden == "Orden alfabético": 
+                anteriores = pclases.Cliente.select(
+                        pclases.Cliente.q.nombre < self.objeto.nombre).count()
+                siguientes = pclases.Cliente.select(
+                        pclases.Cliente.q.nombre > self.objeto.nombre).count()
+            self.wids['b_back'].set_sensitive(anteriores)
+            self.wids['b_next'].set_sensitive(siguientes)
 
     def rellenar_cuentas(self):
         """

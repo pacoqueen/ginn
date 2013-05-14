@@ -626,6 +626,14 @@ class Recibos(Ventana, VentanaGenerica):
             self.objeto.make_swap()
         else:
             self.activar_widgets(False)
+        ### Botones anterior/siguiente
+        id_actual = recibo.id
+        siguientes = pclases.Recibo.select(pclases.Recibo.q.id > id_actual 
+                ).count()
+        anteriores = pclases.Recibo.select(pclases.Recibo.q.id < id_actual
+                ).count()
+        self.wids['b_anterior'].set_sensitive(anteriores)
+        self.wids['b_siguiente'].set_sensitive(siguientes)
     
     def es_diferente(self):
         """
