@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 13 mayo 2013 at 16:56:00.
+" Created by session.vim 1.5 on 14 mayo 2013 at 17:14:04.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -35,41 +35,41 @@ badd +179 formularios/consulta_facturas_sin_doc_pago.py
 badd +73 formularios/utils_almacen.py
 badd +1 ginn/formularios/dynconsulta.glade
 badd +10 ginn/formularios/dynconsulta.py
-badd +9 ginn/framework/pclases.py
+badd +17376 ginn/framework/pclases.py
 badd +43 ginn/formularios/historico_existencias_compra.py
 badd +39 ginn/formularios/historico_existencias.py
 badd +46 ginn/formularios/consulta_incidencias.py
 badd +39 ginn/formularios/consulta_producido.py
 badd +1 ginn/__init__.py
-badd +1 ginn/formularios/clientes.py
-badd +1 ginn/formularios/productos_compra.py
-badd +1 ginn/formularios/productos_de_venta_balas.py
-badd +1 ginn/formularios/recibos.py
+badd +1542 ginn/formularios/clientes.py
+badd +444 ginn/formularios/productos_compra.py
+badd +780 ginn/formularios/productos_de_venta_balas.py
+badd +525 ginn/formularios/recibos.py
 badd +483 ginn/formularios/productos_de_venta_rollos.py
 badd +624 ginn/formularios/productos_de_venta_rollos_geocompuestos.py
 badd +319 ginn/formularios/productos_de_venta_especial.py
+badd +0 ginn/formularios/partes_de_fabricacion_balas.py
+badd +0 ginn/formularios/partes_de_fabricacion_bolsas.py
+badd +0 ginn/formularios/partes_de_fabricacion_rollos.py
+badd +669 ginn/formularios/proveedores.py
 args formularios/auditviewer.py
 set lines=47 columns=80
-edit ginn/formularios/recibos.py
+edit ginn/formularios/partes_de_fabricacion_rollos.py
 set splitbelow splitright
 wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
-wincmd _ | wincmd |
-split
-3wincmd k
-wincmd w
+2wincmd k
 wincmd w
 wincmd w
 set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 39 + 23) / 47)
-exe '2resize ' . ((&lines * 1 + 23) / 47)
-exe '3resize ' . ((&lines * 1 + 23) / 47)
-exe '4resize ' . ((&lines * 1 + 23) / 47)
+exe '1resize ' . ((&lines * 17 + 23) / 47)
+exe '2resize ' . ((&lines * 12 + 23) / 47)
+exe '3resize ' . ((&lines * 14 + 23) / 47)
 argglobal
 setlocal fdm=indent
 setlocal fde=0
@@ -79,31 +79,47 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-53
+229
 silent! normal zo
-99
+230
 silent! normal zo
-100
+262
 silent! normal zo
-102
+262
 silent! normal zo
-102
+262
 silent! normal zo
-100
+262
 silent! normal zo
-99
+262
 silent! normal zo
-53
+230
 silent! normal zo
-let s:l = 607 - ((13 * winheight(0) + 19) / 39)
+339
+silent! normal zo
+340
+silent! normal zo
+342
+silent! normal zo
+340
+silent! normal zo
+339
+silent! normal zo
+905
+silent! normal zo
+905
+silent! normal zo
+229
+silent! normal zo
+let s:l = 957 - ((7 * winheight(0) + 8) / 17)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-607
-normal! 04l
+957
+normal! 081l
 wincmd w
 argglobal
-edit ginn/formularios/productos_de_venta_balas.py
+edit ginn/formularios/partes_de_fabricacion_bolsas.py
 setlocal fdm=indent
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -112,15 +128,19 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 1 - ((0 * winheight(0) + 0) / 1)
+85
+silent! normal zo
+85
+silent! normal zo
+let s:l = 1927 - ((11 * winheight(0) + 6) / 12)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
+1927
 normal! 0
 wincmd w
 argglobal
-edit ginn/formularios/productos_compra.py
+edit ginn/formularios/partes_de_fabricacion_balas.py
 setlocal fdm=indent
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -129,84 +149,21 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 1 - ((0 * winheight(0) + 0) / 1)
+108
+silent! normal zo
+108
+silent! normal zo
+let s:l = 3998 - ((11 * winheight(0) + 7) / 14)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
+3998
 normal! 0
 wincmd w
-argglobal
-edit ginn/formularios/clientes.py
-setlocal fdm=indent
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=99
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-66
-silent! normal zo
-67
-silent! normal zo
-76
-silent! normal zo
-76
-silent! normal zo
-76
-silent! normal zo
-76
-silent! normal zo
-76
-silent! normal zo
-76
-silent! normal zo
-67
-silent! normal zo
-145
-silent! normal zo
-146
-silent! normal zo
-160
-silent! normal zo
-146
-silent! normal zo
-145
-silent! normal zo
-1260
-silent! normal zo
-1260
-silent! normal zo
-1626
-silent! normal zo
-1639
-silent! normal zo
-1639
-silent! normal zo
-1626
-silent! normal zo
-1687
-silent! normal zo
-1698
-silent! normal zo
-1698
-silent! normal zo
-1687
-silent! normal zo
-66
-silent! normal zo
-let s:l = 1363 - ((0 * winheight(0) + 0) / 1)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-1363
-normal! 019l
-wincmd w
-exe '1resize ' . ((&lines * 39 + 23) / 47)
-exe '2resize ' . ((&lines * 1 + 23) / 47)
-exe '3resize ' . ((&lines * 1 + 23) / 47)
-exe '4resize ' . ((&lines * 1 + 23) / 47)
+2wincmd w
+exe '1resize ' . ((&lines * 17 + 23) / 47)
+exe '2resize ' . ((&lines * 12 + 23) / 47)
+exe '3resize ' . ((&lines * 14 + 23) / 47)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
@@ -221,6 +178,6 @@ let &so = s:so_save | let &siso = s:siso_save
 doautoall SessionLoadPost
 unlet SessionLoad
 tabnext 1
-1wincmd w
+2wincmd w
 
 " vim: ft=vim ro nowrap smc=128

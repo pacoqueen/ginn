@@ -332,7 +332,7 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkEntry" id="e_total_obs">
+              <widget class="GtkEntry" id="e_total_no_obs">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="editable">False</property>
@@ -352,7 +352,7 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkEntry" id="e_total_no_obs">
+              <widget class="GtkEntry" id="e_total_obs">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="editable">False</property>
