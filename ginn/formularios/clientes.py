@@ -1380,7 +1380,15 @@ class Clientes(Ventana):
             self.activar_widgets(False)
             return
         cliente = self.objeto
-        self.wids['ventana'].set_title("Clientes - %s" % (cliente.nombre))
+        orden = utils.combo_get_value(self.wids['cb_orden'])
+        if orden == "Orden cronológico":
+            clientes = pclases.Cliente.select(orderBy = "id")
+        elif orden == "Orden alfabético": 
+            clientes = pclases.Cliente.select(orderBy = "nombre")
+        clientes_count = clientes.count()
+        yo_index = pclases.SQLlist(clientes).index(self.objeto) + 1
+        self.wids['ventana'].set_title("Clientes - %s (%d de %d)" % (
+            cliente.nombre, yo_index, clientes_count))
         self.wids['e_telefono'].set_text(cliente.telefono or '')
         self.wids['e_nombre'].set_text(cliente.nombre or '')
         self.wids['e_cif'].set_text(cliente.cif or '')

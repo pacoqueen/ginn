@@ -521,8 +521,14 @@ class ProductosCompra(Ventana, VentanaGenerica):
         esta función en ese caso.
         """
         producto = self.objeto
+        productos = pclases.ProductoCompra.select(orderBy = "id")
+        productos_count = productos.count()
+        yo_index = pclases.SQLlist(productos).index(producto) + 1
         self.wids['ventana'].set_title(
-            "Productos de compra - %s" % (producto.descripcion))
+            "Productos de compra - %s (%d de %d)" % (
+                producto.descripcion, 
+                yo_index, 
+                productos_count))
         self.wids['ch_obsoleto'].set_active(producto.obsoleto)
         self.wids['e_codigo'].set_text(producto.codigo)
         self.wids['e_descripcion'].set_text(producto.descripcion)

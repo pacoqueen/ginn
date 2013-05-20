@@ -307,6 +307,23 @@ class ProductosDeVentaBalas(Ventana):
         esta función en ese caso.
         """
         producto = self.objeto
+        linea = pclases.LineaDeProduccion.select(
+            pclases.LineaDeProduccion.q.nombre.contains('fibra'))[0]
+        lineaembol = pclases.LineaDeProduccion.select(
+            pclases.LineaDeProduccion.q.nombre.contains('bolsa'))[0]
+        productos = pclases.ProductoVenta.select(pclases.AND(
+            pclases.ProductoVenta.q.camposEspecificosBalaID != None, 
+            pclases.OR(
+                pclases.ProductoVenta.q.lineaDeProduccionID == linea.id, 
+                pclases.ProductoVenta.q.lineaDeProduccionID == lineaembol.id
+            )), orderBy = 'id')
+        productos_count = productos.count()
+        yo_index = pclases.SQLlist(productos).index(producto) + 1
+        self.wids['ventana'].set_title(
+            "Productos de venta: FIBRA - %s (%d de %d)" % (
+                producto.descripcion, 
+                yo_index, 
+                productos_count))
         if len(producto.articulos) > 0:
             self.wids['ch_reciclada'].set_sensitive(False)  
             # Una vez se ha fabricado algo no puedo dejar que cambie la fibra a reciclada y viceversa, puesto que entonces me

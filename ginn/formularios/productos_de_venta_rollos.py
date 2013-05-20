@@ -438,6 +438,19 @@ class ProductosDeVentaRollos(Ventana):
         esta función en ese caso.
         """
         producto = self.objeto
+        linea = pclases.LineaDeProduccion.select(
+            pclases.LineaDeProduccion.q.nombre.contains('geotextiles'))[0]
+        productos = pclases.ProductoVenta.select(pclases.AND(
+            pclases.ProductoVenta.q.camposEspecificosRolloID != None, 
+            pclases.ProductoVenta.q.lineaDeProduccionID == linea.id, 
+            ), orderBy = 'id')
+        productos_count = productos.count()
+        yo_index = pclases.SQLlist(productos).index(producto) + 1
+        self.wids['ventana'].set_title(
+            "Productos de venta: GEOTEXTILES - %s (%d de %d)" % (
+                producto.descripcion, 
+                yo_index, 
+                productos_count))
         if len(producto.articulos) > 0:
             self.wids['ch_gtxc'].set_sensitive(False)
             # No puede cambiar el tipo de producto una vez fabricado algo.
@@ -499,13 +512,13 @@ class ProductosDeVentaRollos(Ventana):
         anteriores = pclases.ProductoVenta.select(pclases.AND(
                 pclases.ProductoVenta.q.camposEspecificosRolloID != None, 
                 pclases.ProductoVenta.q.lineaDeProduccionID == linea.id, 
-                pclases.ProductoVenta.q.id < producto.id))
+                pclases.ProductoVenta.q.id < producto.id)).count()
         siguientes = pclases.ProductoVenta.select(pclases.AND(
                 pclases.ProductoVenta.q.camposEspecificosRolloID != None, 
                 pclases.ProductoVenta.q.lineaDeProduccionID == linea.id, 
-                pclases.ProductoVenta.q.id > producto.id))
-        self.wids['b_anterior'].set_sensitive(anteriores.count())
-        self.wids['b_siguiente'].set_sensitive(siguientes.count())
+                pclases.ProductoVenta.q.id > producto.id)).count()
+        self.wids['b_anterior'].set_sensitive(anteriores)
+        self.wids['b_siguiente'].set_sensitive(siguientes)
 
     def rellenar_marcado_ce(self, marcado_activo = None):
         """

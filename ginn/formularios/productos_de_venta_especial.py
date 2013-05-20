@@ -180,12 +180,14 @@ class ProductosDeVentaEspecial(Ventana):
             pass
             #self.wids['b_anterior'].set_sensitive(True)
             #self.wids['b_siguiente'].set_sensitive(True)
-        ws = ('e_idproducto', 'e_codigo', 'e_descripcion', 'frame1', 'e_nombre', 'e_precio', 'e_minimo', 'e_stock', 
+        ws = ('e_idproducto', 'e_codigo', 'e_descripcion', 'frame1', 
+              'e_nombre', 'e_precio', 'e_minimo', 'e_stock', 
               'b_contar', 'b_borrar', 'b_tarifas', 'e_arancel', 'frame2') 
         for w in ws:
             self.wids[w].set_sensitive(s)
         if chequear_permisos:
-            self.check_permisos(nombre_fichero_ventana = "productos_de_venta_especial.py")
+            self.check_permisos(
+                nombre_fichero_ventana = "productos_de_venta_especial.py")
 
     def ir_a_primero(self):
         """
@@ -291,7 +293,19 @@ class ProductosDeVentaEspecial(Ventana):
         esta función en ese caso.
         """
         producto = self.objeto
-        self.wids['i_barcode'].set_from_file(EanBarCode().getImage(producto.codigo))
+        productos = pclases.ProductoVenta.select(
+            pclases.ProductoVenta.q.camposEspecificosEspecialID != None, 
+            orderBy='id')
+        productos_count = productos.count()
+        yo_index = pclases.SQLlist(productos).index(producto) + 1
+        self.wids['ventana'].set_title(
+            "Productos de venta: ESPECIAL - %s (%d de %d)" % (
+                producto.descripcion, 
+                yo_index, 
+                productos_count))
+
+        self.wids['i_barcode'].set_from_file(EanBarCode().getImage(
+            producto.codigo))
         self.wids['e_codigo'].set_text(producto.codigo)
         self.wids['e_descripcion'].set_text(producto.descripcion)
         self.wids['e_nombre'].set_text(producto.nombre)

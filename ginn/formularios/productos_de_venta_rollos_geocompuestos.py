@@ -261,6 +261,25 @@ class ProductosDeVentaRollosGeocompuestos(Ventana):
         if self.objeto != None:
             self.activar_widgets(True)
             producto = self.objeto
+            try:
+                linea = pclases.LineaDeProduccion.select(pclases.OR(
+                pclases.LineaDeProduccion.q.nombre.contains('geocompuesto'), 
+                pclases.LineaDeProduccion.q.nombre.contains('comercializado'))
+                )[0]
+            except IndexError:
+                pass
+            else:
+                productos = pclases.ProductoVenta.select(pclases.AND(
+                    pclases.ProductoVenta.q.camposEspecificosRolloID != None, 
+                    pclases.ProductoVenta.q.lineaDeProduccionID == linea.id, 
+                    ), orderBy = "id")            
+                productos_count = productos.count()
+                yo_index = pclases.SQLlist(productos).index(producto) + 1
+                self.wids['ventana'].set_title(
+                    "Productos de venta: GEOCOMPUESTOS - %s (%d de %d)" % (
+                        producto.descripcion, 
+                        yo_index, 
+                        productos_count))
             self.wids['e_codigo'].set_text(producto.codigo)
             self.wids['e_descripcion'].set_text(producto.descripcion)
             self.wids['e_nombre'].set_text(producto.nombre)

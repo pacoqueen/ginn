@@ -334,8 +334,15 @@ class Proveedores(Ventana):
         """
         proveedor = self.objeto
         if proveedor != None:
-            self.wids['ventana'].set_title("Proveedores - %s" % (
-                proveedor.nombre))
+            orden = utils.combo_get_value(self.wids['cb_orden'])
+            if orden == "Orden cronológico":
+                proveedores = pclases.Proveedor.select(orderBy = "id")
+            elif orden == "Orden alfabético": 
+                proveedores = pclases.Proveedor.select(orderBy = "nombre")
+            proveedores_count = proveedores.count()
+            yo_index = pclases.SQLlist(proveedores).index(self.objeto) + 1
+            self.wids['ventana'].set_title("Proveedores - %s (%d de %d)" % (
+                proveedor.nombre, yo_index, proveedores_count))
             # Aprovechando que todo son "text" y los "entry" se llaman casi 
             # igual:
             for c in proveedor.sqlmeta.columnList:
