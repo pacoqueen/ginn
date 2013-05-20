@@ -64,7 +64,7 @@ class Remesas(Ventana, VentanaGenerica):
                            "id":            "e_id", 
                            "aceptada":      "ch_aceptada", 
                           }
-        Ventana.__init__(self, 'remesas.glade', objeto)
+        Ventana.__init__(self, 'remesas.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_nuevo/clicked': self.nuevo,
                        'b_borrar/clicked': self.borrar,
@@ -139,7 +139,7 @@ class Remesas(Ventana, VentanaGenerica):
                 ('Importe', 'gobject.TYPE_STRING', False, True, False, None),
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
                 # La última columna (oculta en la Vista) siempre es el id.
-        utils.preparar_listview(self.wids['tv_efectos'], cols)
+        utils.preparar_listview(self.wids['tv_efectos'], cols, multi = True)
         col_confirmado = self.wids['tv_efectos'].get_column(0)
         ch_todos = gtk.CheckButton("Todos")
         ch_todos.connect("clicked", self.marcar_todos)
@@ -165,10 +165,17 @@ class Remesas(Ventana, VentanaGenerica):
                 self.objeto and not self.objeto.aceptada or False)
 
     def marcar_todos(self, boton):
-        model = self.wids['tv_efectos'].get_model()
-        cell = self.wids['tv_efectos'].get_column(0).get_cell_renderers()[0]
+        tv_efectos = self.wids['tv_efectos']
+        model = tv_efectos.get_model()
+        cell = tv_efectos.get_column(0).get_cell_renderers()[0]
+        sel = tv_efectos.get_selection()
         for treemodelrow in model:
-            self.confirmar_efecto(cell, treemodelrow.path)
+            path = treemodelrow.path
+            self.confirmar_efecto(cell, path)
+            if model[path][0]:
+                sel.select_path(path)
+            else:
+                sel.unselect_path(path)
 
     def add_efecto(self, boton):
         """
@@ -231,16 +238,18 @@ class Remesas(Ventana, VentanaGenerica):
                             "devolver los efectos a cartera.", 
                     padre = self.wids['ventana'])
         else:
-            model,iter = self.wids['tv_efectos'].get_selection().get_selected()
-            if iter == None:
+            sel = self.wids['tv_efectos'].get_selection()
+            model, paths = sel.get_selected_rows()
+            if not paths:
                 utils.dialogo(titulo = "SELECCIONE EFECTO A BORRAR", 
                         texto = "No ha seleccionado ningún efecto para "
                                 "retirar de la remesa.", 
                         padre = self.wids['ventana'])
             else:
-                puid = model[iter][-1]
-                efecto = pclases.getObjetoPUID(puid)
-                self.objeto.removeEfecto(efecto)
+                for path in paths:
+                    puid = model[path][-1]
+                    efecto = pclases.getObjetoPUID(puid)
+                    self.objeto.removeEfecto(efecto)
                 self.actualizar_ventana()
 
     def abrir_efecto(self, tv, path, view_column):
