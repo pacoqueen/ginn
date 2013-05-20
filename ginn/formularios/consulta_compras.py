@@ -537,8 +537,8 @@ class ConsultaCompras(Ventana):
                 if producto not in proveedores[p]:
                     proveedores[p][producto] = {
                         'euros_euros_dubidu': total_sin_iva, 
-                        'cantidubidubida': ldc.cantidad, 
-                        'unidad': ldc.productoCompra.unidad}
+                        'cantidubidubida': tac.cantidad, 
+                        'unidad': tac.productoCompra.unidad}
                 else:
                     proveedores[p][producto]['euros_euros_dubidu']+=total_sin_iva
                     proveedores[p][producto]['cantidubidubida'] += ldc.cantidad
