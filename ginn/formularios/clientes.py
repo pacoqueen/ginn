@@ -1498,10 +1498,17 @@ class Clientes(Ventana):
             doc_from_db = self.objeto.get_documentoDePago().documento
         except AttributeError:
             doc_from_db = None
+        if doc_from_db and doc_from_db.upper() == self.objeto.documentodepago.upper():
+            self.objeto.documentodepago = doc_from_db
+            self.objeto.syncUpdate()
+            self.wids['e_documentodepago'].set_text(
+                    self.objeto.documentodepago)
+            pclases.Auditoria.modificado(self.objeto, self.usuario, 
+                                         __file__)
         if doc_from_db and doc_from_db != self.objeto.documentodepago:
             if utils.dialogo(titulo = "CORREGIR DOCUMENTO DE PAGO", 
                     texto = "El cliente actual tiene como documento de pago:\n"
-                            "«%s». Se acoseja usar «%s».\n"
+                            "«%s». Se aconseja usar «%s».\n"
                             "¿Corregirlo automáticamente?\n\n"
                             "(Responda «No» si la forma de pago es correcta \n"
                             "o prefiere corregirlo manualmente)" % (
