@@ -537,11 +537,11 @@ class ConsultaCompras(Ventana):
                 if producto not in proveedores[p]:
                     proveedores[p][producto] = {
                         'euros_euros_dubidu': total_sin_iva, 
-                        'cantidubidubida': tac.cantidad, 
-                        'unidad': tac.productoCompra.unidad}
+                        'cantidubidubida': 1, 
+                        'unidad': "ud"}
                 else:
                     proveedores[p][producto]['euros_euros_dubidu']+=total_sin_iva
-                    proveedores[p][producto]['cantidubidubida'] += ldc.cantidad
+                    proveedores[p][producto]['cantidubidubida'] += 1 
         model = self.wids['tv_proveedor'].get_model()
         model.clear()
         for p in proveedores:
