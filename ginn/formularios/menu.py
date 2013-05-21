@@ -65,7 +65,7 @@ from framework import pclases
 from formularios import gtkexcepthook
 
 from formularios import utils
-from framework.configuracion import ConfigConexion
+from framework.configuracion import ConfigConexion, parse_params
 
 from formularios import custom_widgets
 
@@ -930,10 +930,11 @@ def escalar_a(ancho, alto, pixbuf):
         pixbuf = pixbuf2
     return pixbuf
 
+
 def main():
     # Si hay ficheros de estilo gtk, los cargo por orden: General de la 
     # aplicación y específico del usuario en WIN y UNIX. Se machacan opciones 
-    # de por ese orden.
+    # por ese orden.
     GTKRC2 = ".gtkrc-2.0" # Depende de la versión...
     GTKRC = "gtkrc"
     gtk.rc_parse(os.path.join(
@@ -957,37 +958,7 @@ def main():
     #                        }
     # class '*' style 'blanco_y_negro'
     ##
-    fconfig = None
-    user = None
-    passwd = None
-    if len(sys.argv) > 1:
-        from optparse import OptionParser
-        usage = "uso: %prog [opciones] usuario contraseña"
-        parser = OptionParser(usage = usage)
-        parser.add_option("-c", "--config", 
-                          dest = "fichconfig", 
-                          help = "Usa una configuración alternativa "
-                                 "almacenada en FICHERO", 
-                          metavar="FICHERO")
-        (options, args) = parser.parse_args()
-        fconfig = options.fichconfig
-        if len(args) >= 1:
-            user = args[0]
-        if len(args) >= 2:
-            passwd = args[1]
-        # HACK
-        if fconfig:
-            config = ConfigConexion()
-            config.set_file(fconfig)
-        # Lo hago así porque en todos sitios se llama al constructor sin 
-        # parámetros, y quiero instanciar al singleton por primera vez aquí. 
-        # Después pongo la configuración correcta en el archivo y en sucesivas 
-        # llamadas al constructor va a devolver el objeto que acabo de crear y 
-        # con la configuración que le acabo de asignar. En caso de no recibir 
-        # fichero de configuración, la siguiente llamada al constructor será 
-        # la que cree el objeto y establezca la configuración del programa. 
-        # OJO: Dos llamadas al constructor con parámetros diferentes crean 
-        # objetos diferentes.
+    user, passwd = parse_params()
     #salida = MetaF()
     #sys.stdout = salida
     errores = MetaF()

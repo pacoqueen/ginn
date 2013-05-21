@@ -98,7 +98,7 @@ from framework import notificacion
 import datetime
 
 # GET FUN !
-          
+
 config = ConfigConexion()
 
 #conn = '%s://%s:%s@%s/%s' % (config.get_tipobd(), 

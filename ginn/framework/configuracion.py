@@ -52,7 +52,7 @@ ventanas_sobre              : (cf|fc) [cf] Orden horizontal de las direcciones a
 modelo_presupuesto          : ("string") [presupuesto] Nombre del módulo a importar (sin el «.py») para generar el PDF de los presupuestos.
 """
 
-import os
+import os, sys
 
 class Singleton(type):
     """
@@ -403,4 +403,33 @@ def unittest():
     assert tb1 is tb2
     assert ta1 is not tb1
 
+def parse_params():
+    fconfig = None
+    user = None
+    passwd = None
+    if len(sys.argv) > 1:
+        from optparse import OptionParser
+        usage = "uso: %prog [opciones] usuario contraseña"
+        parser = OptionParser(usage=usage)
+        parser.add_option("-c", "--config", dest="fichconfig", help="Usa una configuración alternativa "
+            "almacenada en FICHERO", 
+            metavar="FICHERO")
+        options, args = parser.parse_args()
+        fconfig = options.fichconfig
+        if len(args) >= 1:
+            user = args[0]
+        if len(args) >= 2:
+            passwd = args[1] # HACK
+        if fconfig:
+            config = ConfigConexion()
+            config.set_file(fconfig) # Lo hago así porque en todos sitios se llama al constructor sin
+        # parámetros, y quiero instanciar al singleton por primera vez aquí.
+        # Después pongo la configuración correcta en el archivo y en sucesivas
+        # llamadas al constructor va a devolver el objeto que acabo de crear y
+        # con la configuración que le acabo de asignar. En caso de no recibir
+        # fichero de configuración, la siguiente llamada al constructor será
+        # la que cree el objeto y establezca la configuración del programa.
+        # OJO: Dos llamadas al constructor con parámetros diferentes crean
+        # objetos diferentes.
+    return user, passwd
  
