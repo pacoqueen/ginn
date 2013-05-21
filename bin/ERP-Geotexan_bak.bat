@@ -7,12 +7,12 @@ REM datos.
 REM 
 
 ECHO OFF
-GINNDRIVE=L:
-GINNPATH=%GINNDRIVE%\ginn
-GINNEXE=%GINNPATH%\main.py
-GINNCONF=%GINNPATH%\framework\ginn.conf.dev
-GINNHOST=192.168.1.100 	& REM bacall.geotexan.es
-GINNSHARE="\\%GINNHOST%\compartido\ginn"
+set GINNDRIVE=L:
+set GINNPATH=%GINNDRIVE%\ginn
+set GINNEXE=%GINNPATH%\main.py
+set GINNCONF=%GINNPATH%\framework\ginn.conf.dev
+set GINNHOST=192.168.1.100 	& REM bacall.geotexan.es
+set GINNSHARE="\\%GINNHOST%\compartido\ginn"
 ECHO ON 
 
 @net use %GINNDRIVE% %GINNSHARE%

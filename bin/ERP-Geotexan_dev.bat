@@ -6,12 +6,12 @@ REM Lanzador DOS para versión de desarrollo contra base de datos independiente.
 REM 
 
 ECHO OFF
-GINNDRIVE=Q:
-GINNPATH=%GINNDRIVE%\ginn
-GINNEXE=%GINNPATH%\main.py
-GINNCONF=""
-GINNHOST=192.168.1.102 	& REM pennyworth.geotexan.es
-GINNSHARE="\\%GINNHOST%\compartido\ginn"	& REM /user:nobody
+set GINNDRIVE=Q:
+set GINNPATH=%GINNDRIVE%\ginn
+set GINNEXE=%GINNPATH%\main.py
+set GINNCONF=""
+set GINNHOST=192.168.1.102 	& REM pennyworth.geotexan.es
+set GINNSHARE="\\%GINNHOST%\compartido\ginn"	& REM /user:nobody
 ECHO ON 
 
 @net use %GINNDRIVE% %GINNSHARE%
