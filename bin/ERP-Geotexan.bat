@@ -21,3 +21,5 @@ ECHO ON
 @%SYSTEMDRIVE%\Python27\python.exe %GINNEXE% -c %GINNCONF% || %SYSTEMDRIVE%\Python26\python.exe %GINNEXE% -c %GINNCONF%	|| %SYSTEMDRIVE%\Python25\python.exe %GINNEXE% -c %GINNCONF%
 
 echo Abriendo Geotex-INN...
+
+@%SYSTEMDRIVE%

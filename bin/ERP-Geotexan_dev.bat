@@ -9,7 +9,7 @@ ECHO OFF
 set GINNDRIVE=Q:
 set GINNPATH=%GINNDRIVE%\ginn
 set GINNEXE=%GINNPATH%\main.py
-set GINNCONF=""
+set GINNCONF=%GINNPATH%\framework\ginn.conf.dev
 set GINNHOST=192.168.1.102 	& REM pennyworth.geotexan.es
 set GINNSHARE="\\%GINNHOST%\compartido\ginn"	& REM /user:nobody
 ECHO ON 
@@ -21,3 +21,5 @@ ECHO ON
 @%SYSTEMDRIVE%\Python27\python.exe %GINNEXE% -c %GINNCONF% || %SYSTEMDRIVE%\Python26\python.exe %GINNEXE% -c %GINNCONF% || %SYSTEMDRIVE%\Python25\python.exe %GINNEXE% -c %GINNCONF%
 
 echo Abriendo Geotex-INN (version de desarrollo)...
+
+@%SYSTEMDRIVE%
