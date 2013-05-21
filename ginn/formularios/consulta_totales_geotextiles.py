@@ -81,7 +81,7 @@ def get_produccion(fecha_ini, fecha_fin, incluir_sin_parte = False):
         articulos_de_rollos_sin_parte_de_produccion_y_entre_fechas = pclases.Articulo.select("""
         rollo_id IN (SELECT id FROM rollo WHERE fechahora >= '%s' AND fechahora < '%s') AND parte_de_produccion_id IS NULL
         """ % (fechasqlini, fechasqlfin))
-        dimensiones = pclases.CamposEspecificosRollo._queryAll(  # @UndefinedVariable
+        dimensiones = pclases.CamposEspecificosRollo._queryAll( 
         """
             SELECT ancho*metros_lineales, ancho*metros_lineales*gramos, producto_venta.id FROM campos_especificos_rollo, producto_venta
             WHERE campos_especificos_rollo.id=producto_venta.campos_especificos_rollo_id

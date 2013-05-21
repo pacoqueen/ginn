@@ -817,17 +817,18 @@ class Menu:
                              '<rodriguez.bogado@gmail.com>', 
                              'Diego Muñoz Escalante <escalant3@gmail.com>'])
         config = ConfigConexion()
-        logo = gtk.gdk.pixbuf_new_from_file(
-            os.path.join(
-                         os.path.dirname(os.path.realpath(__file__)), 
-                         '..', 'imagenes', config.get_logo()))
+        logo = gtk.gdk.pixbuf_new_from_file(os.path.join(
+                os.path.dirname(os.path.realpath(__file__)), 
+                '..', 'imagenes', config.get_logo()))
         logo = escalar_a(300, 200, logo)
         vacerca.set_logo(logo)
-        vacerca.set_license(open(os.path.join('..', 'gpl.txt')).read())
+        vacerca.set_license(open(os.path.join(
+                os.path.dirname(os.path.realpath(__file__)), 
+                '..', 'gpl.txt')).read())
         vacerca.set_website('http://ginn.sf.net')
         vacerca.set_artists(['Iconos gartoon por Kuswanto (a.k.a. Zeus) '
                              '<zeussama@gmail.com>'])
-        vacerca.set_copyright('Copyright 2005-2010  Francisco José Rodríguez'
+        vacerca.set_copyright('Copyright 2005-2013  Francisco José Rodríguez'
                               ' Bogado, Diego Muñoz Escalante.')
         vacerca.run()
         vacerca.destroy()

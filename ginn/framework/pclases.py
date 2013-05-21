@@ -527,11 +527,13 @@ class PRPCTOO:
 
     puid = property(get_puid)
     
-    def _queryAll(self, *args, **kw):
-        return self._connection.queryAll(*args, **kw)
+    @classmethod
+    def _queryAll(clase, *args, **kw):
+        return clase._connection.queryAll(*args, **kw)
     
-    def _queryOne(self, *args, **kw):
-        return self._connection.queryOne(*args, **kw)
+    @classmethod
+    def _queryOne(clase, *args, **kw):
+        return clase._connection.queryOne(*args, **kw)
     
     
 def starter(objeto, *args, **kw):
