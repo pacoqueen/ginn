@@ -43,7 +43,9 @@ if locale.getlocale()[0] is None:
 import gettext
 TRANSLATION_DOMAIN = "gtkexcepthook"
 LOCALE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "locale"))
-_ = gettext.translation(TRANSLATION_DOMAIN, LOCALE_DIR).ugettext
+language = gettext.translation(TRANSLATION_DOMAIN, LOCALE_DIR, [locale.getdefaultlocale()[0]])
+language.install()
+_ = language.ugettext
 
 import pygtk
 pygtk.require('2.0')
