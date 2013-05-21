@@ -1,9 +1,25 @@
-REM @net use l: "\\Ginn\compartido\betav2" /user:nobody
-REM @net use l: "\\192.168.1.100\compartido\betav2" /user:nobody
+REM ==============
+REM = Geotex-INN =
+REM ==============
+REM 
+REM Lanzador DOS para versión de desarrollo contra base de datos independiente.
+REM 
 
-@net use q: "\\192.168.1.102\compartido\ginn"
-@Q:
-@cd formularios
-@%SYSTEMDRIVE%\Python25\python.exe menu.py || %SYSTEMDRIVE%\Python26\python.exe menu.py || %SYSTEMDRIVE%\Python27\python.exe menu.py
+ECHO OFF
+GINNDRIVE=Q:
+GINNPATH=%GINNDRIVE%\ginn
+GINNEXE=%GINNPATH%\main.py
+GINNCONF=""
+GINNHOST=192.168.1.102 	& REM pennyworth.geotexan.es
+GINNSHARE="\\%GINNHOST%\compartido\ginn"	& REM /user:nobody
+ECHO ON 
 
-echo Abriendo Geotex-INN...
+@net use %GINNDRIVE% %GINNSHARE%
+@%GINNDRIVE%
+@cd %GINNPATH%
+@export PYTHONPATH=%PYTHONPATH%;%GINNPATH%
+@%SYSTEMDRIVE%\Python27\python.exe %GINNEXE% -c %GINNCONF% 
+	|| %SYSTEMDRIVE%\Python26\python.exe %GINNEXE% -c %GINNCONF%
+	|| %SYSTEMDRIVE%\Python25\python.exe %GINNEXE% -c %GINNCONF%
+
+echo Abriendo Geotex-INN (version de desarrollo)...

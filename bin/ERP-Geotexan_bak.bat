@@ -1,9 +1,26 @@
-REM @net use l: "\\Ginn\compartido\betav2" /user:nobody
-REM @net use l: "\\192.168.1.100\compartido\betav2" /user:nobody
+REM ==============
+REM = Geotex-INN =
+REM ==============
+REM 
+REM Lanzador DOS para versión contra última copia de seguridad de la base de 
+REM datos.
+REM 
 
-@net use l: "\\192.168.1.100\compartido\ginn"
-@L:
-@cd formularios
-@%SYSTEMDRIVE%\Python27\python.exe menu.py -c ../framework/ginn.conf.dev|| %SYSTEMDRIVE%\Python26\python.exe menu.py -c ../framework/ginn.conf.dev || %SYSTEMDRIVE%\Python26\python.exe menu.py -c ../framework/ginn.conf.dev
+ECHO OFF
+GINNDRIVE=L:
+GINNPATH=%GINNDRIVE%\ginn
+GINNEXE=%GINNPATH%\main.py
+GINNCONF=%GINNPATH%\framework\ginn.conf.dev
+GINNHOST=192.168.1.100 	& REM bacall.geotexan.es
+GINNSHARE="\\%GINNHOST%\compartido\ginn"
+ECHO ON 
 
-echo Abriendo Geotex-INN (edici�n de ayer)...
+@net use %GINNDRIVE% %GINNSHARE%
+@%GINNDRIVE%
+@cd %GINNPATH%
+@export PYTHONPATH=%PYTHONPATH%;%GINNPATH%
+@%SYSTEMDRIVE%\Python27\python.exe %GINNEXE% -c %GINNCONF% 
+	|| %SYSTEMDRIVE%\Python26\python.exe %GINNEXE% -c %GINNCONF%
+	|| %SYSTEMDRIVE%\Python25\python.exe %GINNEXE% -c %GINNCONF%
+
+echo Abriendo Geotex-INN (edición de ayer)...
