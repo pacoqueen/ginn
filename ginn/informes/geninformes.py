@@ -75,14 +75,22 @@ try:
     pdfmetrics.registerFont(TTFont('LiberationI', 'LiberationSans-Italic.ttf'))
     pdfmetrics.registerFont(TTFont('LiberationBI', 'LiberationSans-BoldItalic.ttf'))
 except TTFError:
-    pdfmetrics.registerFont(TTFont('Vera', os.path.join("..", "informes", 'Vera.ttf')))
-    pdfmetrics.registerFont(TTFont('VeraB', os.path.join("..", "informes", 'VeraBd.ttf')))
-    pdfmetrics.registerFont(TTFont('VeraI', os.path.join("..", "informes", 'VeraIt.ttf')))
-    pdfmetrics.registerFont(TTFont('VeraBI', os.path.join("..", "informes", 'VeraBI.ttf')))
-    pdfmetrics.registerFont(TTFont('Liberation', os.path.join("..", "informes", 'LiberationSans-Regular.ttf')))
-    pdfmetrics.registerFont(TTFont('LiberationB', os.path.join("..", "informes", 'LiberationSans-Bold.ttf')))
-    pdfmetrics.registerFont(TTFont('LiberationI', os.path.join("..", "informes", 'LiberationSans-Italic.ttf')))
-    pdfmetrics.registerFont(TTFont('LiberationBI', os.path.join("..", "informes", 'LiberationSans-BoldItalic.ttf')))
+    pdfmetrics.registerFont(TTFont('Vera', os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), "..", "informes", 'Vera.ttf')))
+    pdfmetrics.registerFont(TTFont('VeraB', os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), "..", "informes", 'VeraBd.ttf')))
+    pdfmetrics.registerFont(TTFont('VeraI', os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), "..", "informes", 'VeraIt.ttf')))
+    pdfmetrics.registerFont(TTFont('VeraBI', os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), "..", "informes", 'VeraBI.ttf')))
+    pdfmetrics.registerFont(TTFont('Liberation', os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), "..", "informes", 'LiberationSans-Regular.ttf')))
+    pdfmetrics.registerFont(TTFont('LiberationB', os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), "..", "informes", 'LiberationSans-Bold.ttf')))
+    pdfmetrics.registerFont(TTFont('LiberationI', os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), "..", "informes", 'LiberationSans-Italic.ttf')))
+    pdfmetrics.registerFont(TTFont('LiberationBI', os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), "..", "informes", 'LiberationSans-BoldItalic.ttf')))
 
 
 # Medidas fundamentales
@@ -239,7 +247,7 @@ def cabecera(c, texto, fecha = None, apaisado = False):
 
     xIzquierda = lm -4
     rectangulo(c, (xIzquierda, tm+2*inch), (rm, bm-0.2*inch))
-    c.drawImage(os.path.join('..', 'imagenes', datos_empresa.logo),
+    c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo),
                 lm+0.1*inch, height - 1*inch, 0.7*inch, 0.7*inch)
     c.setFont("Helvetica", 20)
 
@@ -1445,7 +1453,7 @@ def albaran(composan, cliente, envio, general, lineas, observaciones, destino,
     # La cabecera
     if composan:
         if datos_empresa.logo2:
-            c.drawImage(os.path.join('..', 'imagenes', datos_empresa.logo2),
+            c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo2),
                         lm+0.5*inch, height - 0.5*inch, 2*inch, 0.5*inch)
         c.setFont("Helvetica-Bold", 18)
         c.drawCentredString(width/2, tm+inch, escribe('ALBARÁN'))
@@ -1462,7 +1470,7 @@ def albaran(composan, cliente, envio, general, lineas, observaciones, destino,
         c.drawString(width-2.5*inch, linea, escribe('Tel: %s Fax: %s' % (
             datos_empresa.telalbaran2, datos_empresa.faxalbaran2)))
     else:
-        ruta_logo = os.path.join('..', 'imagenes', datos_empresa.logo)
+        ruta_logo = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo)
         im = Image.open(ruta_logo)
         ancho, alto = im.size
         nuevo_alto = 1.5 * inch
@@ -1479,7 +1487,7 @@ def albaran(composan, cliente, envio, general, lineas, observaciones, destino,
             # c.drawImage(os.path.join('..', 'imagenes',
             #   datos_empresa.logoiso1), rm-1.5*inch, tm+0.75*inch, inch,
             #   0.65*inch)
-            c.drawImage(os.path.join('..', 'imagenes', datos_empresa.logoiso1),
+            c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logoiso1),
                         rm-1.75*inch,
                         tm+0.65*inch,
                         width = 119,
@@ -1867,7 +1875,7 @@ def albaranValorado(cliente,
                               "albaran_%s.pdf" % give_me_the_name_baby())
     c = canvas.Canvas(nomarchivo)
     # La cabecera
-    ruta_logo = os.path.join('..', 'imagenes', datos_empresa.logo)
+    ruta_logo = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo)
     im = Image.open(ruta_logo)
     ancho, alto = im.size
     nuevo_alto = 1.5 * inch
@@ -1881,7 +1889,7 @@ def albaranValorado(cliente,
     c.drawCentredString(width/2, tm+inch, escribe('ALBARÁN'))
     c.setFont("Helvetica", 8)
     if datos_empresa.bvqi:
-        c.drawImage(os.path.join('..', 'imagenes', datos_empresa.logoiso1),
+        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logoiso1),
                     rm-1.75*inch,
                     tm+0.65*inch,
                     width = 119,
@@ -2319,7 +2327,7 @@ def albaranEntrada(general, lineas, observaciones):
                               "albaranCompra_%s.pdf" % give_me_the_name_baby())
     c = canvas.Canvas(nomarchivo)
     # La cabecera
-    c.drawImage(os.path.join('..', 'imagenes', datos_empresa.logo),
+    c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo),
                 lm+0.5*inch, height - 1.5*inch, 1.5*inch, 1.5*inch)
     c.setFont("Helvetica-Bold", 18)
     c.drawCentredString(width/2, tm+inch, escribe('ALBARÁN DE ENTRADA'))
@@ -2327,7 +2335,7 @@ def albaranEntrada(general, lineas, observaciones):
     tamano = 8
     c.setFont(fuente, tamano)
     if datos_empresa.bvqi:
-        c.drawImage(os.path.join('..', 'imagenes', datos_empresa.logoiso1),
+        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logoiso1),
                     rm-1.75*inch, tm+0.65*inch, width = 119, height = 65)
         c.drawCentredString(rm-inch, tm+0.65*inch, escribe('9000122-1035'))
     linea = height-15
@@ -2505,7 +2513,7 @@ def pedidoCompra(general, proveedor, lineas, entregas, observaciones,
                               "pedidoCompra_%s.pdf" % give_me_the_name_baby())
     c = canvas.Canvas(nomarchivo)
     # La cabecera
-    c.drawImage(os.path.join('..', 'imagenes', datos_empresa.logo),
+    c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo),
                 lm+0.5*inch, height - 1.5*inch, 1.5*inch, 1.5*inch)
     c.setFont("Helvetica-Bold", 18)
     c.drawCentredString(width/2, tm+inch, escribe('PEDIDO DE COMPRA'))
@@ -2513,7 +2521,7 @@ def pedidoCompra(general, proveedor, lineas, entregas, observaciones,
     tamano = 8
     c.setFont(fuente, tamano)
     if datos_empresa.bvqi:
-        c.drawImage(os.path.join('..', 'imagenes', datos_empresa.logoiso1),
+        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logoiso1),
                     rm-1.75*inch, tm+0.65*inch, width = 119, height = 65)
         c.drawCentredString(rm-inch, tm+0.65*inch, escribe('9000122-1035'))
     linea = height-15
@@ -3046,7 +3054,7 @@ def factura(cliente,
             marca_de_agua(c, " COPIA ", fontsize = 56)
         # La cabecera
         if datos_empresa.logo:
-            ruta_logo = os.path.join('..', 'imagenes', datos_empresa.logo)
+            ruta_logo = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo)
             im = Image.open(ruta_logo)
             ancho, alto = im.size
             nuevo_alto = 1.5 * inch
@@ -3058,13 +3066,13 @@ def factura(cliente,
                         ancho_proporcional,
                         nuevo_alto)
         if datos_empresa.bvqi:
-            c.drawImage(os.path.join('..','imagenes',datos_empresa.logoiso2),
+            c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..','imagenes',datos_empresa.logoiso2),
                         rm-1.65*inch, height - 2.5*cm, 3.3*cm, 1.85*cm)
 
         # XXX
         if not datos_empresa.esSociedad:
             if datos_empresa.logo2 != "":
-                c.drawImage(os.path.join('..','imagenes',datos_empresa.logo2),
+                c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..','imagenes',datos_empresa.logo2),
                             rm-1.65*inch, height - 2.5*cm, 3.3*cm, 1.85*cm)
         # XXX
 
@@ -3123,7 +3131,7 @@ def factura(cliente,
                     linea,
                     escribe('Certificado marcado    9000122-1035'),
                     "Courier", 10, (0, 0, 0), 10)
-            c.drawImage(os.path.join('..', 'imagenes', "CE.png"),
+            c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', "CE.png"),
                         posx + anchosemitexto, 
                         linea, 
                         0.5*cm, 
@@ -3902,7 +3910,7 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
                     linea,
                     escribe('Certificado marcado    9000122-1035'),
                     "Courier", 10, (0, 0, 0), 10)
-            c.drawImage(os.path.join('..', 'imagenes', "CE.png"),
+            c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', "CE.png"),
                         posx + anchosemitexto, 
                         linea, 
                         0.5*cm, 
@@ -4468,10 +4476,10 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
         bm, tm = bmbak, tmbak
         numpagina += 1
         # La cabecera
-        c.drawImage(os.path.join('..', 'imagenes', datos_empresa.logo),
+        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo),
                     lm+0.5*inch, height - 1.5*inch, 1.5*inch, 1.5*inch)
         if datos_empresa.bvqi:
-            c.drawImage(os.path.join('..', 'imagenes', datos_empresa.logoiso2),
+            c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logoiso2),
                         rm-1.65*inch, height - 2.5*cm, 3.3*cm, 1.85*cm)
 
         linea = height-50
@@ -4511,7 +4519,7 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
                     linea,
                     escribe('Certificado marcado    9000122-1035'),
                     "Courier", 10, (0, 0, 0), 10)
-            c.drawImage(os.path.join('..', 'imagenes', "CE.png"),
+            c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', "CE.png"),
                         posx + anchosemitexto, 
                         linea, 
                         0.5*cm, 
@@ -5630,7 +5638,7 @@ def marcoParte(c, texto):
     datos_empresa = pclases.DatosDeLaEmpresa.select()[0]
 
     rectangulo(c, (lm, tm+2*inch), (rm, bm-0.5*inch))
-    c.drawImage(os.path.join('..', 'imagenes', datos_empresa.logo),
+    c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo),
                 lm+0.1*inch, height - 1*inch, 0.7*inch, 0.7*inch)
     c.setFont("Helvetica", 20)
     c.drawString(lm+inch, height-0.8*inch, escribe(texto))
@@ -6730,7 +6738,7 @@ def etiquetasRollos(rollos, mostrar_marcado):
 
         for i in range(len(temp)):
             if mostrar_marcado:
-                c.drawImage(os.path.join('..', 'imagenes', 'CE.png'),
+                c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', 'CE.png'),
                             xCE[i] - (3 * cm / 2), -yCE[i], width = 2 * cm,
                             height = 1.64 * cm)
                 c.setFont("Helvetica", 20)
@@ -6943,7 +6951,7 @@ def etiquetasBigbags(bigbags):
     for bigbag in bigbags:
         rectangulo(c, (izquierda, arriba), (derecha, abajo), doble = True)
 
-        c.drawImage(os.path.join('..', 'imagenes', datos_empresa.logo),
+        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo),
                     ximage, yimage, 3 * cm, 3 * cm)
         c.setFont("Times-Roman", 20)
         c.rotate(90)
@@ -7033,10 +7041,10 @@ def abono_old(cliente, factdata, lineasAbono, lineasDevolucion, texto):
     lineas = lineas[:MAXLINAB]
     while (lineas != []):
         # La cabecera
-        c.drawImage(os.path.join('..', 'imagenes', datos_empresa.logo),
+        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo),
                     lm+0.5*inch, height - 1.5*inch, 1.5*inch, 1.5*inch)
         if datos_empresa.bvqi:
-            c.drawImage(os.path.join('..', 'imagenes', datos_empresa.logoiso1),
+            c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logoiso1),
                         rm-1.5*inch, tm+1.5*inch, inch, 0.65*inch)
             c.drawCentredString(rm-inch, tm+1.40*inch, escribe('9000122-1035'))
         linea = height-50
@@ -8109,7 +8117,7 @@ def pintar_data_pale(c, data, ancho, alto, tipo = 0):
     # Logotipo de marcado CE.
     anchomarcado = 2 * cm / 2.0
     altomarcado = 1.64 * cm / 2.0
-    c.drawImage(os.path.join('..', 'imagenes', 'CE.png'), 
+    c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', 'CE.png'), 
                 sizes['marcado'][0] - anchomarcado / 2.0, 
                 sizes['marcado'][1] + 0.35*cm, 
                 width = anchomarcado, height = altomarcado)
@@ -8231,7 +8239,7 @@ def pintar_data_caja(c, data, ancho, alto, tipo = 0):
     # Logotipo de marcado CE.
     anchomarcado = 2 * cm / 2.0
     altomarcado = 1.64 * cm / 2.0
-    c.drawImage(os.path.join('..', 'imagenes', 'CE.png'), 
+    c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', 'CE.png'), 
                 sizes['marcado'][0] - anchomarcado / 2.0, 
                 sizes['marcado'][1] + 0.35*cm, 
                 width = anchomarcado, height = altomarcado)
@@ -9022,7 +9030,7 @@ def etiquetasBalasCableEtiquetadora(balas):
         ean13rotado = ean13rotado.rotate(90)
         ean13rotado.save(nombreficheroean13)
         c.drawImage(nombreficheroean13, xCodigo, yCodigo)
-        c.drawImage(os.path.join('..', 'imagenes', 'reciclar.gif'),
+        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', 'reciclar.gif'),
                     (ancho - 157 / 3.0)/ 2.0,
                      arriba - 156 / 3.0 - 0.2 * cm,
                      width = 157 / 3.0,
@@ -9108,7 +9116,7 @@ def etiquetasRollosCEtiquetadora(rollos):
         ean13rotado = ean13rotado.rotate(90)
         ean13rotado.save(nombreficheroean13)
         c.drawImage(nombreficheroean13, xCodigo, yCodigo)
-        c.drawImage(os.path.join('..', 'imagenes', 'mpp.png'),
+        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', 'mpp.png'),
                     (ancho - 686 / 5.0)/ 2.0,
                      arriba - 152 / 5.0 - 0.6 * cm,
                      width = 686 / 5.0,
@@ -9175,7 +9183,7 @@ def _etiquetasRollosEtiquetadora(rollos, mostrar_marcado):
         c.rotate(90)
 
         if mostrar_marcado:
-            c.drawImage(os.path.join('..', 'imagenes', 'CE.png'),
+            c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', 'CE.png'),
                 xCE - (3 * cm / 2), -yCE, width = 2 * cm, height = 1.64 * cm)
             c.setFont("Helvetica", 20)
             c.drawCentredString(xCodigoCE, -yCodigoCE, "9000122-1035")
@@ -9239,7 +9247,7 @@ def ausencia(empleado, centro, fecha, turno, motivo, motivos):
     titulo1 = 'GEOTEXAN S.A.'
     titulo = 'COMUNICACIÓN DE PERMISOS Y ASUNTOS PROPIOS DEL PERSONAL'
     xIzquierda = lm -4
-    c.drawImage(os.path.join('..', 'imagenes', datos_empresa.logo),
+    c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo),
                 lm+0.1*inch, height - 1.2*inch, 0.9*inch, 0.9*inch)
     c.setFont("Helvetica-Bold", 12)
     c.drawString(lm+3.2*inch, height-0.65*inch, escribe(titulo1))
@@ -9796,7 +9804,7 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
                           (width - 0.3 * cm, height - 0.3 * cm))
 
             if mostrar_marcado and not rollo['defectuoso']:
-                c.drawImage(os.path.join('..', 'imagenes', 'CE.png'),
+                c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', 'CE.png'),
                             width/2 - (2 * cm / 2),
                             height - 0.3 * cm - 0.1 * cm - 1.64 * cm,
                             width = 2 * cm,
@@ -9845,7 +9853,7 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
                              "BE existir y ser del tipo plcases.Rollo "\
                              "o pclases.RolloDefectuoso."
                     raise TypeError, txterr 
-                c.drawImage(os.path.join('..', 'imagenes', 'none.png'),
+                c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', 'none.png'),
                             width/2 - (1 * cm / 2),
                             height - 0.6 * cm - 0.2 * cm - 0.82 * cm,
                             width = 1 * cm,
@@ -10023,13 +10031,13 @@ def _escribir_textofijo(c, medidas):
         c.line(1*cm, A4[1]/3, 1.2*cm, A4[1]/3)
         c.line(1*cm, (A4[1]*2/3), 1.2*cm, (A4[1]*2/3))
         # Y ahora los logos y el texto fijo de verdad.
-        c.drawImage(os.path.join('..', 'imagenes', datos_empresa.logo),
+        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo),
                     medidas['logo0_cabecera'][0],
                     medidas['logo0_cabecera'][1],
                     medidas['logo0_cabecera'][2],
                     medidas['logo0_cabecera'][3])
         if datos_empresa.bvqi:
-            c.drawImage(os.path.join('..','imagenes',datos_empresa.logoiso1),
+            c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..','imagenes',datos_empresa.logoiso1),
                         medidas['logo1_cabecera'][0],
                         medidas['logo1_cabecera'][1],
                         medidas['logo1_cabecera'][2],
@@ -10475,14 +10483,14 @@ def escribir_cabecera(canvas, medidas, fuentes):
     Escribe la cabecera del fax.
     """
     datos_empresa = pclases.DatosDeLaEmpresa.select()[0]
-    canvas.drawImage(os.path.join('..', 'imagenes', datos_empresa.logo),
+    canvas.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo),
                      medidas['logo0_cabecera'][0],
                      medidas['logo0_cabecera'][1],
                      medidas['logo0_cabecera'][2],
                      medidas['logo0_cabecera'][3])
     if datos_empresa.bvqi:
         canvas.drawImage(
-            os.path.join('..', 'imagenes', datos_empresa.logoiso1),
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logoiso1),
             medidas['logo1_cabecera'][0],
             medidas['logo1_cabecera'][1],
             medidas['logo1_cabecera'][2],
