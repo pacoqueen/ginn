@@ -59,13 +59,17 @@
 
 DEBUGPRINT = False
 
+def noop(*args, **kw):
+    return
+
 class Notificacion:
     #DONE: No está bonito llamar a las clases con minúsculas. Eso no está bonito.
     def __init__(self, obj):
         """
         obj es el objeto al que se asocia el notificador.
         """
-        self.__func = lambda : None
+        #self.__func = lambda : None    # lambda no es "pickable"
+        self.__func = noop
         self.observador = obj
 
     def set_func(self, f):
@@ -79,7 +83,7 @@ class Notificacion:
     
     def desactivar(self):
         ## self.observador.parar_hilo()
-        self.__func = lambda : None
+        self.__func = noop
         if DEBUGPRINT:
             print " --- Notificación desactivada ---"
         
