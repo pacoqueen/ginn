@@ -10,7 +10,7 @@ ECHO OFF
 set GINNDRIVE=L:
 set GINNPATH=%GINNDRIVE%\formularios
 set GINNEXE=%GINNPATH%\menu.py
-set GINNCONF=%GINNPATH%\framework\ginn.conf.dev
+set GINNCONF=%GINNPATH%\..\framework\ginn.conf.dev
 set GINNHOST=192.168.1.100 	& REM bacall.geotexan.es
 set GINNSHARE="\\%GINNHOST%\compartido\ginn"
 ECHO ON 
