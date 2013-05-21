@@ -75,7 +75,7 @@ if DEBUG or VERBOSE:
 logged_user = None
 
 import sys, os
-from framework.configuracion import ConfigConexion
+from framework.configuracion import ConfigConexion, parse_params
 from math import ceil
 from select import select
 from sqlobject.col import SOForeignKey, SODateCol, SODateTimeCol, \
@@ -98,7 +98,7 @@ from framework import notificacion
 import datetime
 
 # GET FUN !
-
+parse_params()  # Comprueba que no se haya especificado una conf. alternativa.
 config = ConfigConexion()
 
 #conn = '%s://%s:%s@%s/%s' % (config.get_tipobd(), 
