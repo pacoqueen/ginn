@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 20 mayo 2013 at 15:44:22.
+" Created by session.vim 1.5 on 22 mayo 2013 at 17:12:23.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -43,7 +43,7 @@ badd +39 ginn/formularios/consulta_producido.py
 badd +1 ginn/__init__.py
 badd +1542 ginn/formularios/clientes.py
 badd +444 ginn/formularios/productos_compra.py
-badd +780 ginn/formularios/productos_de_venta_balas.py
+badd +323 ginn/formularios/productos_de_venta_balas.py
 badd +525 ginn/formularios/recibos.py
 badd +2147 ginn/formularios/productos_de_venta_rollos.py
 badd +643 ginn/formularios/productos_de_venta_rollos_geocompuestos.py
@@ -52,9 +52,11 @@ badd +3998 ginn/formularios/partes_de_fabricacion_balas.py
 badd +1927 ginn/formularios/partes_de_fabricacion_bolsas.py
 badd +961 ginn/formularios/partes_de_fabricacion_rollos.py
 badd +669 ginn/formularios/proveedores.py
+badd +1 ~/CICAN/Codificación/src/formularios/menu.py
+badd +1 ginn/formularios/launcher.py
 args formularios/auditviewer.py
 set lines=47 columns=80
-edit ginn/formularios/productos_de_venta_balas.py
+edit ~/CICAN/Codificación/src/formularios/menu.py
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
@@ -69,20 +71,28 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-54
+105
 silent! normal zo
-302
+379
 silent! normal zo
-302
+379
 silent! normal zo
-54
+442
 silent! normal zo
-let s:l = 313 - ((11 * winheight(0) + 22) / 45)
+463
+silent! normal zo
+463
+silent! normal zo
+442
+silent! normal zo
+105
+silent! normal zo
+let s:l = 547 - ((34 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-313
-normal! 010l
+547
+normal! 07l
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf

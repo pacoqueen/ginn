@@ -663,22 +663,18 @@ class Menu:
         # abriendo para controlar... no sé, algo, contar las ventanas 
         # abiertas o qué se yo.
 
-    def _importar_e_instanciar(self, archivo, clase):
-        exec "import %s" % archivo
-        v = eval('%s.%s' % (archivo, clase))
-        v(usuario = self.get_usuario())
-
-    def lanzar_ventana(self, archivo, clase):
+    def __lanzar_ventana(self, archivo, clase):
         """
         EXPERIMENTAL
+        Da violaciones de segmento en GNU/Linux y salta excepción en Windows. 
+        DISASTER!
         """
         #self._lanzar_ventana(archivo, clase)
         #return
         # XXX
-        # PORASQUI: Probarlo en Windows y tal...
         from multiprocessing import Process
-        v = Process(target = self._importar_e_instanciar, 
-                    args = (archivo, clase))
+        v = Process(target = importar_e_instanciar, 
+                    args = (archivo, clase, self.get_usuario()))
         try:
             self.ventanas_abiertas.append(v)
         except (AttributeError):
@@ -687,6 +683,19 @@ class Menu:
         # Esto debería ir en otra función al salir:
         for v in self.ventanas_abiertas:
             v.join()
+            
+    def lanzar_ventana(self, archivo, clase):
+        """
+        VERY PRETTY EXPERIMENTAL
+        """
+        # La idea es que los datos que requieren las ventanas que vienen desde 
+        # el menú se pasen por un pipe en lugar de acceder de forma compartida 
+        # por el fork (no hay exec multiplataforma). De este modo el menú y la 
+        # nueva ventana serán procesos completamente indepentientes. No se 
+        # necesitan compartir más datos una vez abierta la ventana. Así que 
+        # guay. No más segfaults en el join ni excepciones de pickle.
+        pass
+        # PORASQUI: Probarlo en Windows y tal...
 
     def enviar_correo_error_ventana(self):
         print "Se ha detectado un error"
@@ -851,6 +860,9 @@ def enviar_correo(texto, usuario = None):
     gmail_to = ['frbogado@geotexan.com'] 
     gmail_subject = "Geotex-INN: Informe de error"
     gmail_text = texto
+    # TODO: No estaría de más meter algo de información extra del tipo: 
+    #       fecha, hora (aunque esté en la cabecera del correo), IP, nombre 
+    #       usuario, host, etc...
 
     # Prepare actual message
     message = """\From: %s\nTo: %s\nSubject: %s\n\n%s
@@ -989,6 +1001,12 @@ def read_changelog():
     f.close()
     return content
 
+
+def importar_e_instanciar(archivo, clase, usuario):
+    exec "import %s" % archivo
+    v = eval('%s.%s' % (archivo, clase))
+    v(usuario = usuario)
+    
 
 if __name__ == '__main__':
     # Import Psyco if available

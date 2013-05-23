@@ -411,9 +411,18 @@ def parse_params():
         from optparse import OptionParser
         usage = "uso: %prog [opciones] usuario contraseña"
         parser = OptionParser(usage=usage)
-        parser.add_option("-c", "--config", dest="fichconfig", help="Usa una configuración alternativa "
-            "almacenada en FICHERO", 
-            metavar="FICHERO")
+        parser.add_option("-c", "--config", dest = "fichconfig", 
+                          help = "Usa una configuración alternativa "
+                                 "almacenada en FICHERO", 
+                          metavar="FICHERO")
+        parser.add_option("-v", "--ventana", dest = "ventana", 
+                          help = "Nombre de la ventana (mismo que del fichero"
+                                 "pero sin la extensión", 
+                          metavar = "USUARIO")
+        parser.add_option("-c", "--clase", dest = "clase", 
+                          help = "Nombre de la clase a instanciar.", 
+                          metavar = "CLASE")
+        # PORASQUI: Organiza mejor las opciones, anda. Que esto de abajo es feísimo
         options, args = parser.parse_args()
         fconfig = options.fichconfig
         if len(args) >= 1:
