@@ -351,9 +351,9 @@ class ResultadosGeotextiles(Ventana):
                     True, True, False, self.cambiar_perforacion), 
                 ('Espesor\n(mm)', 'gobject.TYPE_STRING', 
                     True, True, False, self.cambiar_espesor), 
-                ('Permeabilidad\n(l/m²/s)', 'gobject.TYPE_STRING', 
+                ('Permeabilidad\n(m/s)', 'gobject.TYPE_STRING', 
                     True, True, False, self.cambiar_permeabilidad), 
-                ('Porometría\n(mm)', 'gobject.TYPE_STRING', 
+                ('Porometría\n(µm)', 'gobject.TYPE_STRING', 
                     True, True, False, self.cambiar_porometria), 
                 ('Punzonamiento\npiramidal (kN)', 'gobject.TYPE_STRING', 
                     True, True, False, self.cambiar_piramidal), 
@@ -807,7 +807,7 @@ class ResultadosGeotextiles(Ventana):
         self.wids['e_cbr'].set_text("%.2f" % partida.compresion)
         self.wids['e_cono'].set_text("%.2f" % partida.perforacion)
         self.wids['e_espesor'].set_text("%.2f" % partida.espesor)
-        self.wids['e_permeabilidad'].set_text("%.2f" % partida.permeabilidad)
+        self.wids['e_permeabilidad'].set_text("%.3f" % partida.permeabilidad)
         self.wids['e_porometria'].set_text("%.3f" % partida.poros)
         self.wids['e_piramidal'].set_text("%.2f" % partida.piramidal)
         self.rellenar_lotes()
@@ -992,8 +992,8 @@ class ResultadosGeotextiles(Ventana):
             txt += "        CBR (kN): %s\n" % (fila[6])
             txt += "        Cono: %s\n" % (fila[7])
             txt += "        Espesor (mm): %s\n" % (fila[8])
-            txt += "        Permeabilidad (l/m²/s): %s\n" % (fila[9])
-            txt += "        Porometría (mm): %s\n" % (fila[10])
+            txt += "        Permeabilidad (m/s): %s\n" % (fila[9])
+            txt += "        Porometría (µm): %s\n" % (fila[10])
             txt += "        Piramidal (kN): %s\n\n" % (fila[11])
         buffer = self.wids['txt_observaciones'].get_buffer()
         txt += "\nObervaciones: %s\n" % buffer.get_text(
