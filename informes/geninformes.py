@@ -1504,7 +1504,6 @@ def albaran(composan, cliente, envio, general, lineas, observaciones, destino,
                     nuevo_alto)
         c.setFont("Helvetica-Bold", 18)
         c.drawCentredString(width/2, tm+inch, escribe('ALBARÁN'))
-        c.setFont("Helvetica", 8)
         if datos_empresa.bvqi:
             # c.drawImage(os.path.join('..', 'imagenes',
             #   datos_empresa.logoiso1), rm-1.5*inch, tm+0.75*inch, inch,
@@ -1514,7 +1513,10 @@ def albaran(composan, cliente, envio, general, lineas, observaciones, destino,
                         tm+0.65*inch,
                         width = 119,
                         height = 65)
-            c.drawCentredString(rm-inch, tm+0.65*inch, escribe('9000122-1035'))
+            c.setFont("Helvetica", 6)
+            c.drawCentredString(rm-0.94*inch, tm+0.66*inch, escribe('Geotextiles CE 1035-CPD-ES033858'))
+            c.drawCentredString(rm-0.94*inch, tm+0.56*inch, escribe('Fibra CE 1035-CPD-9003712'))
+        c.setFont("Helvetica", 8)
         linea = height-15
         if datos_empresa.direccion != datos_empresa.dirfacturacion:
             if not datos_empresa.esSociedad:
@@ -1909,14 +1911,16 @@ def albaranValorado(cliente,
                 nuevo_alto)
     c.setFont("Helvetica-Bold", 18)
     c.drawCentredString(width/2, tm+inch, escribe('ALBARÁN'))
-    c.setFont("Helvetica", 8)
     if datos_empresa.bvqi:
         c.drawImage(os.path.join('..', 'imagenes', datos_empresa.logoiso1),
                     rm-1.75*inch,
                     tm+0.65*inch,
                     width = 119,
                     height = 65)
-        c.drawCentredString(rm-inch, tm+0.65*inch, escribe('9000122-1035'))
+        c.setFont("Helvetica", 6)
+        c.drawCentredString(rm-0.94*inch, tm+0.66*inch, escribe('Geotextiles CE 1035-CPD-ES033858'))
+        c.drawCentredString(rm-0.94*inch, tm+0.56*inch, escribe('Fibra CE 1035-CPD-9003712'))
+    c.setFont("Helvetica", 8)
     linea = height-15
     if datos_empresa.direccion != datos_empresa.dirfacturacion:
         if not datos_empresa.esSociedad:
@@ -2355,11 +2359,13 @@ def albaranEntrada(general, lineas, observaciones):
     c.drawCentredString(width/2, tm+inch, escribe('ALBARÁN DE ENTRADA'))
     fuente = "Helvetica"
     tamano = 8
-    c.setFont(fuente, tamano)
     if datos_empresa.bvqi:
         c.drawImage(os.path.join('..', 'imagenes', datos_empresa.logoiso1),
                     rm-1.75*inch, tm+0.65*inch, width = 119, height = 65)
-        c.drawCentredString(rm-inch, tm+0.65*inch, escribe('9000122-1035'))
+        c.setFont(fuente, tamano - 2)
+        c.drawCentredString(rm-0.94*inch, tm+0.66*inch, escribe('Geotextiles CE 1035-CPD-ES033858'))
+        c.drawCentredString(rm-0.94*inch, tm+0.56*inch, escribe('Fibra CE 1035-CPD-9003712'))
+    c.setFont(fuente, tamano)
     linea = height-15
     if datos_empresa.direccion != datos_empresa.dirfacturacion:
         if datos_empresa.esSociedad:
@@ -2541,11 +2547,13 @@ def pedidoCompra(general, proveedor, lineas, entregas, observaciones,
     c.drawCentredString(width/2, tm+inch, escribe('PEDIDO DE COMPRA'))
     fuente = "Helvetica"
     tamano = 8
-    c.setFont(fuente, tamano)
     if datos_empresa.bvqi:
         c.drawImage(os.path.join('..', 'imagenes', datos_empresa.logoiso1),
                     rm-1.75*inch, tm+0.65*inch, width = 119, height = 65)
-        c.drawCentredString(rm-inch, tm+0.65*inch, escribe('9000122-1035'))
+        c.setFont(fuente, tamano - 2)
+        c.drawCentredString(rm-0.94*inch, tm+0.66*inch, escribe('Geotextiles CE 1035-CPD-ES033858'))
+        c.drawCentredString(rm-0.94*inch, tm+0.56*inch, escribe('Fibra CE 1035-CPD-9003712'))
+    c.setFont(fuente, tamano)
     linea = height-15
     if datos_empresa.direccion != datos_empresa.dirfacturacion:
         posx_dirfiscal = (width / 2) - (1.5 * inch)

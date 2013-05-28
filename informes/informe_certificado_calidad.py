@@ -245,7 +245,7 @@ Geotextil no tejido formado por fibras vírgenes <b>100% de polipropileno</b>, u
     estilo_numero_marcado.alignment = enums.TA_CENTER
     estilo_numero_marcado.fontSize = 7
     estilo_numero_marcado.fontName = "Courier"
-    p.insert(2, Paragraph(escribe("9000122-1035"), estilo_numero_marcado))
+    p.insert(2, Paragraph(escribe("1035-CPD-ES033858"), estilo_numero_marcado))
     estilo_nombre_empresa = ParagraphStyle("NombreEmpresa", 
                                            parent = estilos["Normal"])
     estilo_nombre_empresa.alignment = enums.TA_CENTER
