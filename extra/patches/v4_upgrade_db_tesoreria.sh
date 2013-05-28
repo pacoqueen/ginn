@@ -1,4 +1,5 @@
 databases="dev_ginn ginn"
+#databases="qinn"
 for db in $databases; do
     psql $db << EOF
 CREATE TABLE documento_de_pago(

@@ -29,7 +29,7 @@ Created on 22/05/2013
 @author: bogado
 '''
 
-def main():
+def run(modulo, clase, usuario):
     """
     Esto va a recibir cuatro parámetros:
     * fichero
@@ -38,8 +38,21 @@ def main():
     * nombre del fichero de configuración
     Con eso iniciará un proceso donde la ventana está instanciada (y por 
     tanto entra en ejecución).
+    El parse_params de configuracion.py se encarga de establecer los modos 
+    verbose, debug y la configuración de acceso a la BD; y nos devuelve el 
+    usuario y contraseña a autenticar (si falta alguno de ellos, se 
+    pregunta mediante el autenticacion.py).
+    Una vez pasado hecho login, se crea el proceso y se inicia el bucle GTK de 
+    la ventana en cuestión.
     """
-    
+    # PORASQUI (too)
+
+def main():
+    """
+    Trata los argumentos y llama al método run, que es el que realmente 
+    hace todo el trabajo.
+    """
+    pass    # TODO
 
 if __name__ == '__main__':
     main()

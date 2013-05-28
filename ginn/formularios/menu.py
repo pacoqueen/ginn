@@ -158,9 +158,9 @@ class Menu:
         """
         from formularios import gestor_mensajes, autenticacion
         login = autenticacion.Autenticacion(user, passwd)
-        self.logger = login.logger
         if not login.loginvalido():
             sys.exit(1)
+        self.logger = login.logger
         pclases.logged_user = self.usuario = login.loginvalido()
         # Configuración del correo para informes de error:
         gtkexcepthook.devs_to = "informatica@geotexan.com"
@@ -971,7 +971,7 @@ def main():
     #                        }
     # class '*' style 'blanco_y_negro'
     ##
-    user, passwd = parse_params()
+    user, passwd = parse_params() #, config, verbose, debug = parse_params()
     #salida = MetaF()
     #sys.stdout = salida
     errores = MetaF()

@@ -8133,7 +8133,8 @@ def generar_data_pale(pale, tipo = 0):
     #res['partida'] = pale.partidaCem and pale.partidaCem.codigo or ""
     res['partida'] = "%s bolsas. %s" % (
         pale.codigo, pale.partidaCem and pale.partidaCem.codigo or "")
-    res['marcado'] = "9003712-1035"
+    #res['marcado'] = "9003712-1035"    # (jmadrid) El número no era así. Es: 
+    res['marcado'] = "1035-CPD-9003712"
     if tipo >= 1:
         pv = pale.productoVenta
         try:
@@ -8253,7 +8254,7 @@ def generar_data_caja(caja, tipo = 0):
     res['código'] = caja.codigo
     res['partida'] = (caja.partidaCem and 
         "Partida %s" % caja.partidaCem.codigo or "")
-    res['marcado'] = "9003712-1035"
+    res['marcado'] = "1035-CPD-9003712"
     res['descripción'] = "Caja de %d bolsas" % (caja.numbolsas)
     res['palé'] = "Palé %s" % caja.pale.codigo
     if tipo >= 1:

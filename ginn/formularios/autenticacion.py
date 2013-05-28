@@ -122,7 +122,9 @@ class Autenticacion(Ventana):
         self.wids['label1'].set_text(
             'ERROR:\nUsuario o contraseña incorrectos.')
         self.wids['image1'].set_from_file(
-            os.path.join('..', 'imagenes', 'error.png'))
+            os.path.join(
+                os.path.abspath(os.path.dirname(os.path.realpath(__file__))), 
+                '..', 'imagenes', 'error.png'))
         self.logger.warning('Acceso erróneo. Usuario: %s. IP: %s', 
                             self.wids['e_usuario'].get_text(), get_IPLocal())
         while gtk.events_pending():
@@ -135,7 +137,9 @@ class Autenticacion(Ventana):
         self.wids['e_passwd'].set_text('')
         self.wids['e_passwd'].grab_focus()
         self.wids['image1'].set_from_file(
-            os.path.join('..', 'imagenes', 'llave.png'))
+            os.path.join(
+                os.path.abspath(os.path.dirname(os.path.realpath(__file__))), 
+                '..', 'imagenes', 'llave.png'))
         self.wids['label1'].set_text(txt)
 
     def pasar_a_pass(self, e):
@@ -151,7 +155,8 @@ class Autenticacion(Ventana):
             self.__usuario = user
             self.wids['ventana'].destroy()
             gtk.main_quit()
-            self.logger.warning('LOGIN CORRECTO: %s. IP: %s' % (usuario, get_IPLocal()))
+            self.logger.warning('LOGIN CORRECTO: %s. IP: %s' % (
+                                                    usuario, get_IPLocal()))
 
     def do_login(self, usuario, passwd):
         """
