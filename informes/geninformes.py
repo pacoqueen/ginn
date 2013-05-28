@@ -3150,22 +3150,40 @@ def factura(cliente,
         # y tiene N.I.F. en lugar de C.I.F.
         linea = sigLinea()
         if datos_empresa.bvqi:
+            # Marcado CE Geotextiles
             anchotexto = c.stringWidth(
-                            escribe('Certificado marcado CE 9000122-1035'),
-                            "Courier", 10)
+                            escribe('Geotextiles CE 1035-CPD-ES033858'),
+                            "Courier", 8)
             anchosemitexto = c.stringWidth(
-                                escribe('Certificado marcado '),
-                                "Courier", 10)
+                                escribe('Geotextiles '),
+                                "Courier", 8)
             posx = (width - anchotexto)/2 
             cursiva(c, posx,
                     linea,
-                    escribe('Certificado marcado    9000122-1035'),
-                    "Courier", 10, (0, 0, 0), 10)
+                    escribe('Geotextiles    1035-CPD-ES033858'),
+                    "Courier", 8, (0, 0, 0), 10)
             c.drawImage(os.path.join('..', 'imagenes', "CE.png"),
                         posx + anchosemitexto, 
                         linea, 
-                        0.5*cm, 
-                        0.25*cm)
+                        0.40*cm, 
+                        0.20*cm)
+            # Marcado CE fibra
+            anchotexto = c.stringWidth(
+                            escribe('Fibra CE 1035-CPD-9003712'),
+                            "Courier", 8)
+            anchosemitexto = c.stringWidth(
+                                escribe('Fibra '),
+                                "Courier", 8)
+            posx = (width - anchotexto)/2 
+            cursiva(c, posx,
+                    linea - 8,
+                    escribe('Fibra    1035-CPD-9003712'),
+                    "Courier", 8, (0, 0, 0), 10)
+            c.drawImage(os.path.join('..', 'imagenes', "CE.png"),
+                        posx + anchosemitexto, 
+                        linea - 8, 
+                        0.40*cm, 
+                        0.20*cm)
         c.setFont("Helvetica", 10)
 
 
@@ -3930,25 +3948,43 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
         c.setFont("Helvetica", 10)
         linea = sigLinea()
         linea = sigLinea()
-        linea = sigLinea()
         if datos_empresa.bvqi:
+            # Marcado CE Geotextiles
             anchotexto = c.stringWidth(
-                            escribe('Certificado marcado CE 9000122-1035'),
-                            "Courier", 10)
+                            escribe('Geotextiles CE 1035-CPD-ES033858'),
+                            "Courier", 8)
             anchosemitexto = c.stringWidth(
-                                escribe('Certificado marcado '),
-                                "Courier", 10)
+                                escribe('Geotextiles '),
+                                "Courier", 8)
             posx = (width - anchotexto)/2 
             cursiva(c, posx,
                     linea,
-                    escribe('Certificado marcado    9000122-1035'),
-                    "Courier", 10, (0, 0, 0), 10)
+                    escribe('Geotextiles    1035-CPD-ES033858'),
+                    "Courier", 8, (0, 0, 0), 10)
             c.drawImage(os.path.join('..', 'imagenes', "CE.png"),
                         posx + anchosemitexto, 
                         linea, 
-                        0.5*cm, 
-                        0.25*cm)
+                        0.40*cm, 
+                        0.20*cm)
+            # Marcado CE fibra
+            anchotexto = c.stringWidth(
+                            escribe('Fibra CE 1035-CPD-9003712'),
+                            "Courier", 8)
+            anchosemitexto = c.stringWidth(
+                                escribe('Fibra '),
+                                "Courier", 8)
+            posx = (width - anchotexto)/2 
+            cursiva(c, posx,
+                    linea - 8,
+                    escribe('Fibra    1035-CPD-9003712'),
+                    "Courier", 8, (0, 0, 0), 10)
+            c.drawImage(os.path.join('..', 'imagenes', "CE.png"),
+                        posx + anchosemitexto, 
+                        linea - 8, 
+                        0.40*cm, 
+                        0.20*cm)
         c.setFont("Helvetica", 10)
+        linea = sigLinea()
         # La fecha y el número de factura fuera del cuadro
         # XXX
         if not datos_empresa.esSociedad:
@@ -4540,27 +4576,40 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
             datos_empresa.str_cif_o_nif(), datos_empresa.cif)))
         linea = sigLinea()
         if datos_empresa.bvqi:
-            #cursiva(c, (width - c.stringWidth(
-            #            escribe('Certificado marcado CE 9000122-1035'),
-            #            "Courier", 10))/2 , linea,
-            #        escribe('Certificado marcado CE 9000122-1035'),
-            #        "Courier", 10, (0, 0, 0), 10)
+            # Marcado CE Geotextiles
             anchotexto = c.stringWidth(
-                            escribe('Certificado marcado CE 9000122-1035'),
-                            "Courier", 10)
+                            escribe('Geotextiles CE 1035-CPD-ES033858'),
+                            "Courier", 8)
             anchosemitexto = c.stringWidth(
-                                escribe('Certificado marcado '),
-                                "Courier", 10)
+                                escribe('Geotextiles '),
+                                "Courier", 8)
             posx = (width - anchotexto)/2 
             cursiva(c, posx,
                     linea,
-                    escribe('Certificado marcado    9000122-1035'),
-                    "Courier", 10, (0, 0, 0), 10)
+                    escribe('Geotextiles    1035-CPD-ES033858'),
+                    "Courier", 8, (0, 0, 0), 10)
             c.drawImage(os.path.join('..', 'imagenes', "CE.png"),
                         posx + anchosemitexto, 
                         linea, 
-                        0.5*cm, 
-                        0.25*cm)
+                        0.40*cm, 
+                        0.20*cm)
+            # Marcado CE fibra
+            anchotexto = c.stringWidth(
+                            escribe('Fibra CE 1035-CPD-9003712'),
+                            "Courier", 8)
+            anchosemitexto = c.stringWidth(
+                                escribe('Fibra '),
+                                "Courier", 8)
+            posx = (width - anchotexto)/2 
+            cursiva(c, posx,
+                    linea - 8,
+                    escribe('Fibra    1035-CPD-9003712'),
+                    "Courier", 8, (0, 0, 0), 10)
+            c.drawImage(os.path.join('..', 'imagenes', "CE.png"),
+                        posx + anchosemitexto, 
+                        linea - 8, 
+                        0.40*cm, 
+                        0.20*cm)
         c.setFont("Helvetica", 10)
 
 
@@ -6783,7 +6832,6 @@ def etiquetasRollos(rollos, mostrar_marcado):
                             height = 1.64 * cm)
                 c.setFont("Helvetica", 20)
                 c.drawCentredString(xCodigoCE[i], -yCodigoCE[i],
-                                    # "9000122-1035")
                                     "1035-CPD-ES033858")
             c.setFont("Helvetica-Bold", 26)
             c.drawCentredString(xDescripcion[i], -yDescripcion[i],
@@ -7024,309 +7072,6 @@ def etiquetasBigbags(bigbags):
     c.save()
     return nomarchivo
 
-
-
-def abono_old(cliente, factdata, lineasAbono, lineasDevolucion, texto):
-    """
-
-    **************
-    ** OBSOLETO **
-    **************
-
-    Con los datos de entrada genera el abono.
-
-    @params
-
-    cliente --> es un diccionario con:
-        - 'numcli' Número de cliente
-        - 'nombre'
-        - 'cif'
-        - 'direccion'
-        - 'cp'
-        - 'localidad'
-        - 'pais'
-        - 'telf'
-        - 'fax'
-
-    factdata --> datos de la cabecera de la factura, es diccionario con:
-        - 'facnum' Número de factura
-        - 'fecha'
-
-    lineasAbono y lineasDescuento --> datos del cuerpo de la factura, es una
-      lista (un elemento por línea) de diccionarios con:
-        - 'producto'
-        - 'importe'
-        - 'cantidad'
-        - 'total'
-        - 'observaciones'
-
-    texto -- > observaciones
-    """
-
-    datos_empresa = pclases.DatosDeLaEmpresa.select()[0]
-
-    global linea
-    tm, bm, lm, rm = (680, 56.69, 05.35, 566.92)
-    x, y = lm, tm
-    global linea
-    # Creo la hoja
-    nomarchivo = os.path.join(gettempdir(),
-                              "abono_%s.pdf" % give_me_the_name_baby())
-    c = canvas.Canvas(nomarchivo)
-    suma = 0.0
-    # Caben 11 líneas por página. Tenemos que cortar de 11 en 11 para las
-    # distintas páginas que pudiera haber
-    buffer_texto = texto
-    lineas = lineasAbono + ['marca'] + lineasDevolucion
-    buffer = lineas[MAXLINAB:]
-    lineas = lineas[:MAXLINAB]
-    while (lineas != []):
-        # La cabecera
-        c.drawImage(os.path.join('..', 'imagenes', datos_empresa.logo),
-                    lm+0.5*inch, height - 1.5*inch, 1.5*inch, 1.5*inch)
-        if datos_empresa.bvqi:
-            c.drawImage(os.path.join('..', 'imagenes', datos_empresa.logoiso1),
-                        rm-1.5*inch, tm+1.5*inch, inch, 0.65*inch)
-            c.drawCentredString(rm-inch, tm+1.40*inch, escribe('9000122-1035'))
-        linea = height-50
-        c.setFont("Helvetica-Bold", 18)
-        c.drawCentredString(rm-inch, tm+0.75*inch, escribe('Factura de abono'))
-        c.drawCentredString(width/2, linea, escribe('GEOTEXAN S.A.'))
-        linea = sigLinea()
-        c.setFont("Helvetica", 10)
-        c.drawCentredString(width/2, linea, escribe('Av. Reino Unido nº1 1ºD'))
-        linea = sigLinea()
-        c.drawCentredString(width/2, linea, escribe('41012 SEVILLA, ESPAÑA'))
-        linea = sigLinea()
-        c.drawCentredString(width/2, linea, escribe('C.I.F. :A-91.249.631'))
-        linea = sigLinea()
-        cursiva(c, (width - c.stringWidth(
-                escribe('Certificado marcado CE 9000122-1035'),
-                "Courier", 10))/2 ,
-            linea,
-            escribe('Certificado marcado CE 9000122-1035'),
-            "Courier", 10, (0, 0, 0), 10)
-
-        c.setFont("Helvetica", 10)
-
-        # La fecha y el número de factra fuera del cuadro
-        linea = sigLinea(15)
-        c.setFont("Times-Italic", 10)
-        c.drawString(lm + 3 * cm, linea, escribe('FECHA FACTURA:'))
-        xNumFactura = width/2 + 3 * cm
-        c.drawString(xNumFactura, linea, escribe('Nº FACTURA:'))
-        c.setFont("Helvetica-Bold", 10)
-        c.drawString(lm + 3 * cm + c.stringWidth('FECHA FACTURA: ',
-                     'Times-Italic', 10), linea, escribe(factdata['fecha']))
-        xNumFactura = width/2 + 3 * cm + c.stringWidth('Nº FACTURA: ',
-                                                       'Times-Italic', 10)
-        c.drawString(xNumFactura, linea, escribe(factdata['facnum']))
-
-        # Los cuadros de datos fiscales y datos de envío
-        xLocal = lm+inch
-        xFact = width/2 + 0.7*inch
-        xLocalTitulo = xLocal - 37
-        xFactTitulo = xFact - 37
-
-        linea = sigLinea(2)
-
-        # La doble línea:
-        c.saveState()
-        c.setStrokeColorRGB(0.1, 0.1, 1.0)
-        c.line(xLocalTitulo, linea-4, rm, linea-4)
-        c.line(xLocalTitulo, linea-1, rm, linea-1)
-        c.restoreState()
-
-        # El doble rectángulo
-        c.saveState()
-        c.setLineWidth(0.5)
-            # ------
-        c.line(xLocalTitulo, linea-8, rm, linea-8)
-        c.line(xLocalTitulo+2, linea-10, rm-2, linea-10)
-            # ______
-        c.line(xLocalTitulo+2, linea-8-15, rm-2, linea-8-15)
-        c.line(xLocalTitulo, linea-10-15, rm, linea-10-15)
-            # |
-        c.line(xLocalTitulo, linea-8, xLocalTitulo, linea-10-15)
-        c.line(xLocalTitulo+2, linea-10, xLocalTitulo+2, linea-8-15)
-            #      |
-        c.line(rm-2, linea-10, rm-2, linea-8-15)
-        c.line(rm, linea-8, rm, linea-10-15)
-        c.drawString(xLocalTitulo + 14, linea - 20,
-                     escribe('Cliente: %s' % (cliente['numcli'])))
-        c.drawString(width/2 + 10, linea - 20,
-                     escribe('CIF: %s' % (cliente['cif'])))
-        c.restoreState()
-
-        linea = sigLinea(35) # Ponia 10
-        c.setFont("Helvetica", 8)
-        c.drawString(xLocalTitulo, linea-1,
-                     escribe('Dirección de correspondencia:'))
-        c.drawString(xFactTitulo, linea-1, escribe('Dirección fiscal:'))
-        c.setFont("Helvetica", 10)
-        rectangulo(c, (lm+0.45*inch, tm - 0.1 * cm),
-                   (xFact-50, tm-inch - 0.1 * cm), doble = True)
-        rectangulo(c, (xFact-40,     tm - 0.1 * cm),
-                   (rm, tm-inch - 0.1 * cm), doble = True)
-        ### DATA
-        linea = tm+0.45*inch-30
-        linea = sigLinea()
-        c.setFont("Helvetica", 8)
-        c.drawString(xLocalTitulo, linea, escribe('Nombre:'))
-        c.drawString(xFactTitulo, linea, escribe('Nombre:'))
-        c.setFont("Helvetica", 10)
-        c.drawString(xLocal, linea, escribe(cliente['nombre']))
-        c.drawString(xFact, linea, escribe(cliente['nombref']))
-        linea = sigLinea()
-        c.setFont("Helvetica", 8)
-        c.drawString(xLocalTitulo, linea, escribe('Dirección:'))
-        c.drawString(xFactTitulo, linea, escribe('Dirección:'))
-        c.setFont("Helvetica", 10)
-        c.drawString(xLocal, linea, escribe(cliente['direccion']))
-        c.drawString(xFact, linea, escribe(cliente['direccionf']))
-        linea = sigLinea()
-        c.setFont("Helvetica", 8)
-        c.drawString(xLocalTitulo, linea, escribe('Localidad:'))
-        c.drawString(xFactTitulo, linea, escribe('Localidad:'))
-        c.setFont("Helvetica", 10)
-        c.drawString(xLocal, linea, escribe(cliente['localidad']))
-        c.drawString(xFact, linea, escribe(cliente['localidadf']))
-        linea = sigLinea()
-        c.setFont("Helvetica", 8)
-        c.drawString(xLocalTitulo, linea, escribe('CP:'))
-        c.drawString(xFactTitulo, linea, escribe('CP:'))
-        c.setFont("Helvetica", 10)
-        c.drawString(xFact, linea,
-                     escribe(cliente['cpf']+' '+cliente['provinciaf']))
-        c.drawString(xLocal, linea,
-                     escribe(cliente['cp']+' '+cliente['provincia']))
-        linea = sigLinea()
-        c.setFont("Helvetica", 8)
-        c.drawString(xLocalTitulo, linea, escribe('País:'))
-        c.drawString(xFactTitulo, linea, escribe('País:'))
-        c.setFont("Helvetica", 10)
-        c.drawString(xLocal, linea, escribe(cliente['pais']))
-        c.drawString(xFact, linea, escribe(cliente['paisf']))
-
-        linea = sigLinea(10)
-
-        # El cuerpo
-        x1 = lm + 0.5*inch
-        x2 = x1 + 2.5*inch
-        x3 = x2 + 0.75*inch
-        x4 = x3 + 0.75*inch
-        x5 = x4 + 1*inch
-        yFinDatos = bm + 1.1*inch
-        # -- Cuadro global
-        rectangulo(c, (x1, tm-0.75*inch-58), (rm, yFinDatos))
-        # -- Cabeceras
-        rectangulo(c, (x1, tm-0.75*inch-58), (x2, tm-0.75*inch-74),
-                   'Producto', 'centro')
-        rectangulo(c, (x2, tm-0.75*inch-58), (x3, tm-0.75*inch-74),
-                   'Importe', 'centro')
-        rectangulo(c, (x3, tm-0.75*inch-74), (x4, tm-0.75*inch-74),
-                   'Cantidad', 'centro')
-        rectangulo(c, (x4, tm-0.75*inch-58), (x5, tm-0.75*inch-74),
-                   'Total', 'centro')
-        rectangulo(c, (x5, tm-0.75*inch-58), (rm, tm-0.75*inch-74),
-                   'Observaciones', 'centro')
-
-        # -- Columnas de datos
-        rectangulo(c, (x1, tm-0.75*inch-74), (x1, yFinDatos))
-        rectangulo(c, (x2, tm-0.75*inch-74), (x2, yFinDatos))
-        rectangulo(c, (x3, tm-0.75*inch-74), (x4, yFinDatos))
-        rectangulo(c, (x4, tm-0.75*inch-74), (x5, yFinDatos))
-        rectangulo(c, (x5, tm-0.75*inch-74), (rm, yFinDatos))
-
-
-        # DATA
-        # Caben exactamente 11 líneas de venta. Debemos hacer una
-        # segunda página en caso de que haya más
-
-        linea = tm-1.92*inch
-        xproducto = x1+4
-        ximporte = x3-4
-        xcantidad = x4-4
-        xtotal = x5-4
-        xobservaciones = x5+4
-        TOTAL = 0.0
-        if lineas != None:
-            for l in lineas:
-                if l =='marca':
-                    linea = sigLinea()
-                else:
-                    c.drawString(xproducto, linea, escribe(l['producto']))
-                    c.drawRightString(ximporte, linea, escribe(l['importe']))
-                    c.drawRightString(xcantidad, linea, escribe(l['cantidad']))
-                    c.drawRightString(xtotal, linea, escribe(l['total']))
-                    linea = sigLinea()
-                    TOTAL += float(l['total'])
-
-
-        # -- Cuadro final
-        yObservaciones = bm+inch
-        yObservacionesAbajo = yObservaciones - 60
-        rectangulo(c, (lm+0.5*inch, yObservaciones),
-                   (rm-2.2*inch, yObservacionesAbajo))
-        origen = lm+0.5*inch + 4
-        linea = yObservaciones - 10
-        c.drawString(origen, linea, escribe('OBSERVACIONES'))
-        linea = sigLinea(12)
-        # DATA
-        if texto != None:
-            longitud = c.stringWidth(texto, 'Helvetica-Bold', 10)
-            longitudLimite = (rm - 2.2*inch) - origen
-            lineasSumadas = 1
-            if longitud < longitudLimite:
-                c.drawString(origen, linea, escribe(texto))
-            else:
-                renglones = longitud / longitudLimite
-                renglones = int(renglones) + 1
-                corte = int(len(texto)/renglones)
-                memcorte = corte
-                for i in range(renglones):
-                    while (len(texto) > corte
-                           and texto[corte-1] != ' '
-                           and corte < 2*memcorte):
-                        corte += 1
-                    if corte == 2*memcorte:
-                        corte = memcorte
-                    c.drawString(origen, linea, escribe(texto[:corte]))
-                    linea = sigLinea(12)
-                    texto = texto[corte:]
-                    corte = memcorte
-            texto = buffer_texto
-
-
-            # -- Totales
-            yTotal = yObservaciones
-            yTotalAbajo = yObservaciones - 15
-            c.drawString(rm-1.7*inch, yTotalAbajo+2, escribe('TOTAL'))
-            rectangulo(c, (rm-1*inch, yTotal), (rm, yTotalAbajo),
-                       utils.float2str(TOTAL)+' €', 'derecha')
-            linea = yTotalAbajo+2
-            linea = sigLinea()
-            c.setFont("Helvetica", 8)
-            c.drawString(rm-0.9*inch, linea, escribe('I.V.A. no incluido'))
-
-        # Pie de albarán
-        c.setFont("Helvetica-Bold", 10)
-        linea = bm-0.25*inch
-        c.drawCentredString(width/2, linea, escribe('DIRECCIÓN DE LA FÁBRICA'\
-            ': Avda. Concha Espina nº 5 21.660 MINAS DE RIOTINTO (HUELVA)'))
-        linea = sigLinea()
-        c.drawCentredString(width/2, linea,
-                            escribe('Tlf. 959 59 20 98 Fax. 959 59 03 38'))
-
-
-        # Salvamos la página
-        c.showPage()
-        lineas = buffer[:MAXLINAB]
-        buffer = buffer[MAXLINAB:]
-
-    # Salvamos el documento
-    c.save()
-    return nomarchivo
 
 def consumoPartida(partida, salida = "txt"):
     """
@@ -9235,7 +8980,7 @@ def _etiquetasRollosEtiquetadora(rollos, mostrar_marcado):
             c.drawImage(os.path.join('..', 'imagenes', 'CE.png'),
                 xCE - (3 * cm / 2), -yCE, width = 2 * cm, height = 1.64 * cm)
             c.setFont("Helvetica", 20)
-            c.drawCentredString(xCodigoCE, -yCodigoCE, "9000122-1035")
+            c.drawCentredString(xCodigoCE, -yCodigoCE, "1035-CPD-ES033858")
         c.setFont("Helvetica-Bold", 26)
         c.drawCentredString(xDescripcion, -yDescripcion,
             escribe(temp['descripcion']))
@@ -9860,7 +9605,6 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
                             height = 1.64 * cm)
                 c.setFont("Helvetica", 18)
                 c.drawCentredString(width/2, height - 2.7 * cm ,
-                                    # "9000122-1035")
                                     "1035-CPD-ES033858")
             if rollo['defectuoso']:
                 # DONE: If 'defectuoso' hay que quitar el marcado CE y poner 
@@ -10092,11 +9836,15 @@ def _escribir_textofijo(c, medidas):
                         medidas['logo1_cabecera'][1],
                         medidas['logo1_cabecera'][2],
                         medidas['logo1_cabecera'][3])
-            c.setFont("Helvetica", 8)
+            c.setFont("Helvetica", 6)
+            c.drawCentredString(medidas['logo1_cabecera'][0]
+                                    + medidas['logo1_cabecera'][2]/2.0,
+                                medidas['logo1_cabecera'][1] + 0.02*cm,
+                                escribe('Geotextiles CE 1035-CPD-ES033858'))
             c.drawCentredString(medidas['logo1_cabecera'][0]
                                     + medidas['logo1_cabecera'][2]/2.0,
                                 medidas['logo1_cabecera'][1] - 0.2*cm,
-                                escribe('9000122-1035'))
+                                escribe('Fibra CE 1035-CPD-9003712'))
         c.setFont("Times-Roman", 14)
         c.drawString(medidas['ciudad'][0], medidas['ciudad'][1],
                      escribe("%s," % (datos_empresa.ciudad)))
@@ -10545,11 +10293,15 @@ def escribir_cabecera(canvas, medidas, fuentes):
             medidas['logo1_cabecera'][1],
             medidas['logo1_cabecera'][2],
             medidas['logo1_cabecera'][3])
-        canvas.setFont("Helvetica", 8)
+        canvas.setFont("Helvetica", 6)
+        canvas.drawCentredString(medidas['logo1_cabecera'][0]
+                                    + medidas['logo1_cabecera'][2]/2.0,
+                                 medidas['logo1_cabecera'][1] + 0.02*cm,
+                                 escribe('Geotextiles CE 1035-CPD-ES033858'))
         canvas.drawCentredString(medidas['logo1_cabecera'][0]
                                     + medidas['logo1_cabecera'][2]/2.0,
                                  medidas['logo1_cabecera'][1] - 0.2*cm,
-                                 escribe('9000122-1035'))
+                                 escribe('Fibra CE 1035-CPD-9003712'))
     canvas.setFont(fuentes['cabecera_negrita']['fuente'],
                    fuentes['cabecera_negrita']['tamaño'])
     canvas.drawString(medidas['empresa_cabecera'][0],
