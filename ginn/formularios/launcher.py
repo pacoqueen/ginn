@@ -35,7 +35,6 @@ def run(modulo, clase, usuario):
     * fichero
     * clase a instanciar
     * usuario
-    * nombre del fichero de configuración
     Con eso iniciará un proceso donde la ventana está instanciada (y por 
     tanto entra en ejecución).
     El parse_params de configuracion.py se encarga de establecer los modos 
@@ -45,14 +44,25 @@ def run(modulo, clase, usuario):
     Una vez pasado hecho login, se crea el proceso y se inicia el bucle GTK de 
     la ventana en cuestión.
     """
-    # PORASQUI (too)
+    exec "import %s" % modulo
+    v = eval('%s.%s' % (modulo, clase))
+    v(usuario = usuario)
+    
 
 def main():
     """
     Trata los argumentos y llama al método run, que es el que realmente 
     hace todo el trabajo.
     """
-    pass    # TODO
+    import sys
+    from framework.configuracion import parse_params
+    from formularios.autenticacion import Autenticacion
+    usuario, contrasenna, modulo, clase = parse_params()
+    login = Autenticacion(usuario, contrasenna)
+    if login.loginvalido():
+        run(modulo, clase, usuario)
+    else:
+        sys.exit(1)
 
 if __name__ == '__main__':
     main()

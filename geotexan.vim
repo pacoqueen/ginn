@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 28 mayo 2013 at 17:22:40.
+" Created by session.vim 1.5 on 30 mayo 2013 at 16:40:25.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -63,8 +63,8 @@ badd +1502 ginn/informes/geninformes.py
 badd +233 ginn/informes/informe_certificado_calidad.py
 badd +1518 informes/geninformes.py
 args formularios/auditviewer.py
-set lines=46 columns=80
-edit ginn/__init__.py
+set lines=45 columns=80
+edit ginn/formularios/menu.py
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
@@ -79,12 +79,20 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 1 - ((0 * winheight(0) + 22) / 44)
+150
+silent! normal zo
+151
+silent! normal zo
+151
+silent! normal zo
+150
+silent! normal zo
+let s:l = 160 - ((21 * winheight(0) + 21) / 43)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
-normal! 0
+160
+normal! 08l
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf

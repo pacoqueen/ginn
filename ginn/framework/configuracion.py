@@ -404,6 +404,13 @@ def unittest():
     assert ta1 is not tb1
     
 def parse_params():
+    """
+    Analiza los parámetros recibidos en línea de comandos y devuelve usuario 
+    y contraseña, que pueden ser None si no se han especificado.
+    Si encuentra fichero de configuración y opciones verbose|debug las activa 
+    internamente, pero no devuelve su estado. Para saber qué valores han 
+    tomado se debe consultar a la clase ConfigConexion o a pclases.
+    """
     import optparse
     desc = "Inicia la aplicación con el usuario especificado según la "\
            "configuración indicada. Si no se recibe fichero, se usará por "\
@@ -420,6 +427,8 @@ def parse_params():
                       default = False)
     parser.add_option('-d', action = "store_true", dest = "debug", 
                       default = False)
+    parser.add_option('-w', "--window", help = "Ventana a iniciar", 
+                      action = "store", type = "string", dest = "ventana")
     (opts, args) = parser.parse_args()
     # Por compatibilidad hacia atrás, voy a tomar los argumentos posicionales 
     # como usuario y contraseña si no se especifica nada en las opciones.
@@ -450,10 +459,25 @@ def parse_params():
         # la que cree el objeto y establezca la configuración del programa.
         # OJO: Dos llamadas al constructor con parámetros diferentes crean
         # objetos diferentes.    
+    # Ventana: módulo + clase
+    # A partir del nombre de la ventana, saco el fichero y clase a instanciar.
+    if opts.ventana:
+        if opts.ventana.endswith(".py"):
+            modulo = opts.ventana[:-3]
+        else:
+            modulo = opts.ventana
+        modulo = os.path.basename(modulo)
+        clase = None    # PORASQUI: Habría que determinar el nombre de la 
+                        # clase de la ventana. ¿Puedo tirar de pclases para 
+                        # saberlo según la tabla de ventanas, o me tiro a 
+                        # por un grep? ¿Y en Windows, que no hay grep, qué?
+                        # ¿Parseo el .py completo hasta encontrar class *?
+    else:
+        modulo, clase = None, None
     # Resto de parámetros
     verbose = opts.verbose
     import pclases
     pclases.VERBOSE = verbose
     debug = opts.debug
     pclases.DEBUG = debug
-    return user, password #, config, verbose, debug
+    return user, password, modulo, clase #, config, verbose, debug
