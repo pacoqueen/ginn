@@ -52,7 +52,7 @@ ventanas_sobre              : (cf|fc) [cf] Orden horizontal de las direcciones a
 modelo_presupuesto          : ("string") [presupuesto] Nombre del módulo a importar (sin el «.py») para generar el PDF de los presupuestos.
 """
 
-import os, sys
+import os
 
 class Singleton(type):
     """
@@ -402,34 +402,82 @@ def unittest():
     tb1, tb2 = Test(5), Test(5)
     assert tb1 is tb2
     assert ta1 is not tb1
-
+    
 def parse_params():
-    fconfig = None
-    user = None
-    passwd = None
-    if len(sys.argv) > 1:
-        from optparse import OptionParser
-        usage = "uso: %prog [opciones] usuario contraseña"
-        parser = OptionParser(usage=usage)
-        parser.add_option("-c", "--config", dest="fichconfig", help="Usa una configuración alternativa "
-            "almacenada en FICHERO", 
-            metavar="FICHERO")
-        options, args = parser.parse_args()
-        fconfig = options.fichconfig
-        if len(args) >= 1:
+    """
+    Analiza los parámetros recibidos en línea de comandos y devuelve usuario 
+    y contraseña, que pueden ser None si no se han especificado.
+    Si encuentra fichero de configuración y opciones verbose|debug las activa 
+    internamente, pero no devuelve su estado. Para saber qué valores han 
+    tomado se debe consultar a la clase ConfigConexion o a pclases.
+    """
+    import optparse
+    desc = "Inicia la aplicación con el usuario especificado según la "\
+           "configuración indicada. Si no se recibe fichero, se usará por "\
+           "defecto «ginn.conf». Si no se escribe contraseña, se solicitará."
+    parser = optparse.OptionParser(description = desc)
+    parser.add_option('-u', '--user', help = "Usuario a autenticar", 
+                      action = "store", type = "string", dest = "user")
+    parser.add_option('-p', '--password', help = "Contraseña", 
+                      action = "store", type ="string", dest = "password")
+    parser.add_option('-c', '--config', help = "Fichero de configuración", 
+                      action = "store", type = "string", dest = "config", 
+                      default = "ginn.conf")
+    parser.add_option('-v', action = "store_true", dest = "verbose", 
+                      default = False)
+    parser.add_option('-d', action = "store_true", dest = "debug", 
+                      default = False)
+    parser.add_option('-w', "--window", help = "Ventana a iniciar", 
+                      action = "store", type = "string", dest = "ventana")
+    (opts, args) = parser.parse_args()
+    # Por compatibilidad hacia atrás, voy a tomar los argumentos posicionales 
+    # como usuario y contraseña si no se especifica nada en las opciones.
+    if not opts.user:
+        try:
             user = args[0]
-        if len(args) >= 2:
-            passwd = args[1] # HACK
-        if fconfig:
-            config = ConfigConexion()
-            config.set_file(fconfig) # Lo hago así porque en todos sitios se llama al constructor sin
-        # parámetros, y quiero instanciar al singleton por primera vez aquí.
+        except IndexError:
+            user = None
+    if not opts.password:
+        try:
+            password = args[1]
+        except IndexError:
+            password = None
+    # Fichero de configuración
+    if not os.path.exists(opts.config):
+        config = os.path.join(
+                os.path.abspath(os.path.dirname(os.path.realpath(__file__))), 
+                "..", "framework", opts.config)
+    else:
+        config = opts.config
+    ConfigConexion().set_file(config) # Lo hago así porque en todos sitios se 
+        # llama al constructor sin parámetros, y quiero instanciar al 
+        # singleton por primera vez aquí.
         # Después pongo la configuración correcta en el archivo y en sucesivas
         # llamadas al constructor va a devolver el objeto que acabo de crear y
         # con la configuración que le acabo de asignar. En caso de no recibir
         # fichero de configuración, la siguiente llamada al constructor será
         # la que cree el objeto y establezca la configuración del programa.
         # OJO: Dos llamadas al constructor con parámetros diferentes crean
-        # objetos diferentes.
-    return user, passwd
- 
+        # objetos diferentes.    
+    # Ventana: módulo + clase
+    # A partir del nombre de la ventana, saco el fichero y clase a instanciar.
+    if opts.ventana:
+        if opts.ventana.endswith(".py"):
+            modulo = opts.ventana[:-3]
+        else:
+            modulo = opts.ventana
+        modulo = os.path.basename(modulo)
+        clase = None    # PORASQUI: Habría que determinar el nombre de la 
+                        # clase de la ventana. ¿Puedo tirar de pclases para 
+                        # saberlo según la tabla de ventanas, o me tiro a 
+                        # por un grep? ¿Y en Windows, que no hay grep, qué?
+                        # ¿Parseo el .py completo hasta encontrar class *?
+    else:
+        modulo, clase = None, None
+    # Resto de parámetros
+    verbose = opts.verbose
+    import pclases
+    pclases.VERBOSE = verbose
+    debug = opts.debug
+    pclases.DEBUG = debug
+    return user, password, modulo, clase #, config, verbose, debug

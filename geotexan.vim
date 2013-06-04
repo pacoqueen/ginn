@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 20 mayo 2013 at 15:44:22.
+" Created by session.vim 1.5 on 30 mayo 2013 at 16:40:25.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -12,7 +12,7 @@ if &background != 'dark'
 	set background=dark
 endif
 if !exists('g:colors_name') || g:colors_name != 'desert' | colorscheme desert | endif
-call setqflist([])
+call setqflist([{'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:1495:            c.drawCentredString(rm-inch, tm+0.65*inch, escribe(''9000122-1035''))'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:1897:        c.drawCentredString(rm-inch, tm+0.65*inch, escribe(''9000122-1035''))'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:2340:        c.drawCentredString(rm-inch, tm+0.65*inch, escribe(''9000122-1035''))'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:2526:        c.drawCentredString(rm-inch, tm+0.65*inch, escribe(''9000122-1035''))'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:3124:                            escribe(''Certificado marcado CE 9000122-1035''),'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:3132:                    escribe(''Certificado marcado    9000122-1035''),'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:3903:                            escribe(''Certificado marcado CE 9000122-1035''),'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:3911:                    escribe(''Certificado marcado    9000122-1035''),'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:4507:            #            escribe(''Certificado marcado CE 9000122-1035''),'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:4509:            #        escribe(''Certificado marcado CE 9000122-1035''),'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:4512:                            escribe(''Certificado marcado CE 9000122-1035''),'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:4520:                    escribe(''Certificado marcado    9000122-1035''),'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:6746:                                    # "9000122-1035")'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:7049:            c.drawCentredString(rm-inch, tm+1.40*inch, escribe(''9000122-1035''))'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:7063:                escribe(''Certificado marcado CE 9000122-1035''),'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:7066:            escribe(''Certificado marcado CE 9000122-1035''),'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:9190:            c.drawCentredString(xCodigoCE, -yCodigoCE, "9000122-1035")'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:9815:                                    # "9000122-1035")'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:10050:                                escribe(''9000122-1035''))'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:10503:                                 escribe(''9000122-1035''))'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/informe_certificado_calidad.py:232:    p.insert(2, Paragraph(escribe("9000122-1035"), estilo_numero_marcado))'}])
 let SessionLoad = 1
 if &cp | set nocp | endif
 let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
@@ -24,6 +24,7 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
 endif
 set shortmess=aoO
 badd +1 formularios/auditviewer.py
+badd +13 ~/.vim/plugin/ack.vim
 badd +249 formularios/consulta_existenciasBolsas.py
 badd +1 formularios/dynconsulta.py
 badd +1 framework/pclases.py
@@ -35,7 +36,7 @@ badd +179 formularios/consulta_facturas_sin_doc_pago.py
 badd +73 formularios/utils_almacen.py
 badd +1 ginn/formularios/dynconsulta.glade
 badd +10 ginn/formularios/dynconsulta.py
-badd +17376 ginn/framework/pclases.py
+badd +107 ginn/framework/pclases.py
 badd +43 ginn/formularios/historico_existencias_compra.py
 badd +39 ginn/formularios/historico_existencias.py
 badd +46 ginn/formularios/consulta_incidencias.py
@@ -43,7 +44,7 @@ badd +39 ginn/formularios/consulta_producido.py
 badd +1 ginn/__init__.py
 badd +1542 ginn/formularios/clientes.py
 badd +444 ginn/formularios/productos_compra.py
-badd +780 ginn/formularios/productos_de_venta_balas.py
+badd +323 ginn/formularios/productos_de_venta_balas.py
 badd +525 ginn/formularios/recibos.py
 badd +2147 ginn/formularios/productos_de_venta_rollos.py
 badd +643 ginn/formularios/productos_de_venta_rollos_geocompuestos.py
@@ -52,9 +53,18 @@ badd +3998 ginn/formularios/partes_de_fabricacion_balas.py
 badd +1927 ginn/formularios/partes_de_fabricacion_bolsas.py
 badd +961 ginn/formularios/partes_de_fabricacion_rollos.py
 badd +669 ginn/formularios/proveedores.py
+badd +547 ~/workspace/CICAN/src/formularios/menu.py
+badd +1 ginn/formularios/launcher.py
+badd +492 ginn/formularios/empleados.py
+badd +38 ginn/formularios/resultados_geotextiles.py
+badd +58 ginn/formularios/menu.py
+badd +142 ginn/formularios/autenticacion.py
+badd +1502 ginn/informes/geninformes.py
+badd +233 ginn/informes/informe_certificado_calidad.py
+badd +1518 informes/geninformes.py
 args formularios/auditviewer.py
-set lines=47 columns=80
-edit ginn/formularios/productos_de_venta_balas.py
+set lines=45 columns=80
+edit ginn/formularios/menu.py
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
@@ -69,20 +79,20 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-54
+150
 silent! normal zo
-302
+151
 silent! normal zo
-302
+151
 silent! normal zo
-54
+150
 silent! normal zo
-let s:l = 313 - ((11 * winheight(0) + 22) / 45)
+let s:l = 160 - ((21 * winheight(0) + 21) / 43)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-313
-normal! 010l
+160
+normal! 08l
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf

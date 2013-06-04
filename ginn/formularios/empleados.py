@@ -279,7 +279,10 @@ class Empleados(Ventana):
         actualizado.
         """
         utils.dialogo_info('ACTUALIZAR',
-                           'El empleado ha sido modificado remotamente.\nDebe actualizar la información mostrada en pantalla.\nPulse el botón «Actualizar»')
+                           'El empleado ha sido modificado remotamente.\n'
+                           'Debe actualizar la información mostrada en '
+                           'pantalla.\nPulse el botón «Actualizar»', 
+                           padre = self.wids['ventana'])
         self.wids['b_actualizar'].set_sensitive(True)
 
     def ir_a_primero(self):
@@ -308,11 +311,15 @@ class Empleados(Ventana):
         """
         filas_res = []
         for r in resultados:
-            filas_res.append((r.id,r.nombre,r.apellidos,r.dni, r.centroTrabajo and r.centroTrabajo.nombre or "",
-                              r.categoriaLaboral and r.categoriaLaboral.codigo or "", r.activo and "Sí" or "No")) 
+            filas_res.append((r.id, r.nombre, r.apellidos, r.dni, 
+                              r.centroTrabajo and r.centroTrabajo.nombre or "",
+                              r.categoriaLaboral 
+                                    and r.categoriaLaboral.codigo or "", 
+                              r.activo and "Sí" or "No")) 
         idempleado = utils.dialogo_resultado(filas_res,
-                                             titulo = 'Seleccione empleado',
-                                             cabeceras = ('Código (ID)', 'Nombre', 'Apellidos', 'DNI', 'Centro trabajo', 'Cat. laboral', 'Activo'))
+            titulo = 'Seleccione empleado',
+            cabeceras = ('Código (ID)', 'Nombre', 'Apellidos', 'DNI', 
+                         'Centro trabajo', 'Cat. laboral', 'Activo'))
         if idempleado < 0:
             return None
         else:
@@ -323,11 +330,11 @@ class Empleados(Ventana):
         Redimensiona «t» y crea dentro los widgets necesarios para
         mostrar y editar los campos de «objeto».
         """
-        # HACK: Es para evitar el campo precio hora extra, que ya no se usa. Nómina ahora es el sueldo base a
-        # sumar al cálculo de la nomina mensual.
+        # HACK: Es para evitar el campo precio hora extra, que ya no se usa. 
+        # Nómina ahora es el sueldo base a sumar al cálculo de la nomina 
+        # mensual.
         d = {}
         for c in self.objeto.sqlmeta.columns:
-#            if c != 'nomina' and c != 'preciohora':
             if c != 'preciohora':
                 d[c] = self.objeto.sqlmeta.columns[c]
         self.objeto.sqlmeta.columns = d
@@ -343,7 +350,8 @@ class Empleados(Ventana):
         icol = 0
         irow = 0
         for col in self.objeto.sqlmeta.columns:
-            if not isinstance(self.objeto.sqlmeta.columns[col], pclases.SOBoolCol):
+            if not isinstance(self.objeto.sqlmeta.columns[col], 
+                              pclases.SOBoolCol):
                 # Los checkboxes llevan su propio label.
                 label = self.build_label(col)
                 self.wids['t'].attach(label, icol, icol+1, irow, irow+1)
@@ -357,7 +365,8 @@ class Empleados(Ventana):
                 irow += 1
         self.wids['t'].show_all()
         self.objeto.make_swap()
-        # Añadido: Si el empleado no tiene alta como trabajador, deshabilito el botón de permisos.
+        # Añadido: Si el empleado no tiene alta como trabajador, deshabilito 
+        # el botón de permisos.
         self.wids['b_ausencias'].set_sensitive(self.objeto.activo)
 
     def build_label(self, nombrecampo):
@@ -468,7 +477,8 @@ class Empleados(Ventana):
 #                self.logger.error(txt)
                 txt = "El valor «%s» no es correcto. Introduzca un número"\
                       " entero." % (res)
-                utils.dialogo_info(titulo = "ERROR DE FORMATO", texto = txt, padre = self.wids['ventana'])
+                utils.dialogo_info(titulo = "ERROR DE FORMATO", texto = txt, 
+                                   padre = self.wids['ventana'])
                 res = 0
         elif isinstance(tipocampo, pclases.SOBoolCol):  
             # Boolean: el widget es un checkbox

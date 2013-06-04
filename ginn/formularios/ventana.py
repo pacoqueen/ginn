@@ -82,9 +82,11 @@ class Ventana:
             from framework import pclases
             usuario = pclases.Usuario.get(usuario)
         self.__usuario = usuario
-        if not hasattr(self, "usuario"):
+        if (not hasattr(self, "usuario") 
+            or not isinstance(self.usuario, pclases.Usuario)):
             self.usuario = self.__usuario
         self._is_fullscreen = False
+        # Logger no es "pickable". http://mail.python.org/pipermail/python-bugs-list/2011-December/154441.html
         self.logger = get_ginn_logger()
         self.wids = Widgets(glade)
         self.handlers_id = dict([(w, {}) for w in self.wids.keys()])
@@ -146,6 +148,8 @@ class Ventana:
             txt = "ventana.py::__init__ -> No se pudo establecer ancho de "\
                   "borde, icono de ventana o barra de estado. Excepción: %s."\
                     % (msg)
+            print txt
+            # FIXME: Logger no es "pickable" y falla el Process
             self.logger.warning(txt)
         self.objeto = objeto
         self.make_connections()
@@ -202,6 +206,7 @@ class Ventana:
         except Exception, msg:
             txtexcp = "ventana.py::__init__ -> Mnemonics no añadidos. %s"%msg
             print txtexcp
+            # FIXME: Logger no es "picakble"
             self.logger.warning(txtexcp)
         # Mejor al final, que esto también provocaba falsos positivos al 
         # argar ventanas con objetos inicializados en self.objeto.
@@ -510,7 +515,7 @@ class Ventana:
         vacerca.set_license(open(os.path.join('..', 'gpl.txt')).read())
         vacerca.set_website('http://ginn.sf.net')
         vacerca.set_artists(['Iconos gartoon por Kuswanto (a.k.a. Zeus) <zeussama@gmail.com>'])
-        vacerca.set_copyright('Copyright 2005-2008  Francisco José Rodríguez Bogado, Diego Muñoz Escalante.')
+        vacerca.set_copyright('Copyright 2005-2013  Francisco José Rodríguez Bogado, Diego Muñoz Escalante.')
         vacerca.run()
         vacerca.destroy()
 
@@ -1018,9 +1023,11 @@ def determine_ico_from_filename(archivo, clase):
         except IndexError:
             ico = "logo.xpm"
         else:
-            ico = os.path.join("..", "imagenes", v.icono)
+            ico = os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+                               "..", "imagenes", v.icono)
     else:
-        ico = os.path.join("..", "imagenes", v.icono)
+        ico = os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+                           "..", "imagenes", v.icono)
     return ico
 
 
@@ -1040,5 +1047,3 @@ class MetaPermiso:
         self.escritura = False
         self.nuevo = False
         self.permiso = False
-
- 

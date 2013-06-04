@@ -5,7 +5,7 @@ CREATE TABLE auditoria(
     id SERIAL PRIMARY KEY, 
     usuario_id INT REFERENCES usuario,  -- FK al usuario 
     ventana_id INT REFERENCES ventana,  -- FK ventana desde donde se ha hecho.
-    puid TEXT,          -- Me lo tiene que dar la capa superior.
+    dbpuid TEXT,          -- Me lo tiene que dar la capa superior.
     action TEXT,        -- creación, modificación o borrado
     ip TEXT DEFAULT NULL,   -- IP desde la que realizó la acción
     hostname TEXT DEFAULT NULL, -- Si es posible, el nombre de la máquina.

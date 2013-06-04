@@ -1031,7 +1031,7 @@ class AlbaranesDeSalida(Ventana):
                 #      AND articulo.producto_venta_id = %d 
                 #    GROUP BY caja.id 
                 #    -- ORDER BY caja.id;""" % (albaran.id, producto.id))
-                queryres_ids = pclases.Caja._queryAll(  # @UndefinedVariable
+                queryres_ids = pclases.Caja._queryAll( 
                     """SELECT caja.id FROM caja, articulo 
                     WHERE caja.id = articulo.caja_id 
                       AND articulo.albaran_salida_id = %d 
