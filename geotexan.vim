@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 30 mayo 2013 at 16:40:25.
+" Created by session.vim 1.5 on 05 junio 2013 at 12:02:38.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -12,7 +12,7 @@ if &background != 'dark'
 	set background=dark
 endif
 if !exists('g:colors_name') || g:colors_name != 'desert' | colorscheme desert | endif
-call setqflist([{'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:1495:            c.drawCentredString(rm-inch, tm+0.65*inch, escribe(''9000122-1035''))'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:1897:        c.drawCentredString(rm-inch, tm+0.65*inch, escribe(''9000122-1035''))'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:2340:        c.drawCentredString(rm-inch, tm+0.65*inch, escribe(''9000122-1035''))'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:2526:        c.drawCentredString(rm-inch, tm+0.65*inch, escribe(''9000122-1035''))'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:3124:                            escribe(''Certificado marcado CE 9000122-1035''),'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:3132:                    escribe(''Certificado marcado    9000122-1035''),'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:3903:                            escribe(''Certificado marcado CE 9000122-1035''),'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:3911:                    escribe(''Certificado marcado    9000122-1035''),'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:4507:            #            escribe(''Certificado marcado CE 9000122-1035''),'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:4509:            #        escribe(''Certificado marcado CE 9000122-1035''),'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:4512:                            escribe(''Certificado marcado CE 9000122-1035''),'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:4520:                    escribe(''Certificado marcado    9000122-1035''),'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:6746:                                    # "9000122-1035")'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:7049:            c.drawCentredString(rm-inch, tm+1.40*inch, escribe(''9000122-1035''))'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:7063:                escribe(''Certificado marcado CE 9000122-1035''),'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:7066:            escribe(''Certificado marcado CE 9000122-1035''),'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:9190:            c.drawCentredString(xCodigoCE, -yCodigoCE, "9000122-1035")'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:9815:                                    # "9000122-1035")'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:10050:                                escribe(''9000122-1035''))'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/geninformes.py:10503:                                 escribe(''9000122-1035''))'}, {'lnum': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': '/tmp/v3uP79P/53', 'text': 'ginn/informes/informe_certificado_calidad.py:232:    p.insert(2, Paragraph(escribe("9000122-1035"), estilo_numero_marcado))'}])
+call setqflist([{'lnum': 0, 'col': 0, 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'formularios/auditviewer.py', 'text': 'ginn/formularios/pedidos_de_compra.py:445:                    if self.usuario.nivel <= 1:'}, {'lnum': 0, 'col': 0, 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'formularios/auditviewer.py', 'text': 'ginn/formularios/consumo_balas_partida.py:220:                if self.usuario.nivel <= 1:'}, {'lnum': 0, 'col': 0, 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'formularios/auditviewer.py', 'text': 'ginn/formularios/facturas_venta.py:1443:                    condicion_modificacion or self.usuario.nivel <= 1)'}, {'lnum': 0, 'col': 0, 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'formularios/auditviewer.py', 'text': 'ginn/formularios/facturas_venta.py:2595:                    condicion_modificacion = condicion_modificacion or self.usuario.nivel <= 1'}, {'lnum': 0, 'col': 0, 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'formularios/auditviewer.py', 'text': 'ginn/formularios/contadores.py:87:        self.wids[''b_modificar''].set_sensitive(self.usuario == None or self.usuario.nivel <= 1)'}, {'lnum': 0, 'col': 0, 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'formularios/auditviewer.py', 'text': 'ginn/formularios/ventana.py:917:                    if self.usuario.nivel <= 1:'}, {'lnum': 0, 'col': 0, 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'formularios/auditviewer.py', 'text': 'ginn/formularios/productos_compra.py:288:            (not self.usuario) or (self.usuario.nivel <= 1))'}, {'lnum': 0, 'col': 0, 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'formularios/auditviewer.py', 'text': 'ginn/formularios/facturas_compra.py:205:                    if self.usuario.nivel <= 1:'}, {'lnum': 0, 'col': 0, 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'formularios/auditviewer.py', 'text': 'ginn/formularios/abonos_venta.py:193:            s = s and (self.usuario == None or self.usuario.nivel <= 1)'}, {'lnum': 0, 'col': 0, 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'formularios/auditviewer.py', 'text': 'ginn/formularios/partes_de_fabricacion_rollos.py:779:        s = (s and ((self.usuario and self.usuario.nivel <= 1) '}, {'lnum': 0, 'col': 0, 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'formularios/auditviewer.py', 'text': 'ginn/formularios/partes_de_fabricacion_rollos.py:2732:            # NEW!: Los partes bloqueados solo los pueden desbloquear usuarios con nivel <= 1.'}, {'lnum': 0, 'col': 0, 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'formularios/auditviewer.py', 'text': 'ginn/formularios/partes_de_fabricacion_rollos.py:2734:                if self.usuario and self.usuario.nivel <= 1: # and self.objeto.bloqueado and not ch.get_active():'}, {'lnum': 0, 'col': 0, 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'formularios/auditviewer.py', 'text': 'ginn/formularios/partes_de_fabricacion_balas.py:809:        s = s and ((self.usuario != None and self.usuario.nivel <= 1) or not self.objeto.bloqueado or self.usuario == None)'}, {'lnum': 0, 'col': 0, 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'formularios/auditviewer.py', 'text': 'ginn/formularios/partes_de_fabricacion_balas.py:2976:            # NEW!: Los partes bloqueados solo los pueden desbloquear usuarios con nivel <= 1.'}, {'lnum': 0, 'col': 0, 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'formularios/auditviewer.py', 'text': 'ginn/formularios/partes_de_fabricacion_balas.py:2978:                if self.usuario and self.usuario.nivel <= 1: # and self.objeto.bloqueado and not ch.get_active():'}, {'lnum': 0, 'col': 0, 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'formularios/auditviewer.py', 'text': 'ginn/formularios/albaranes_de_salida.py:2841:        if ((self.usuario == None or self.usuario.nivel <= 1) '}, {'lnum': 0, 'col': 0, 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'formularios/auditviewer.py', 'text': 'ginn/formularios/silos.py:107:            self.usuario == None or self.usuario.nivel <= 1)'}, {'lnum': 0, 'col': 0, 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'formularios/auditviewer.py', 'text': 'ginn/formularios/prefacturas.py:1062:                condicion_modificacion = condicion_modificacion or self.usuario.nivel <= 1'}, {'lnum': 0, 'col': 0, 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'formularios/auditviewer.py', 'text': 'ginn/formularios/prefacturas.py:1940:                    condicion_modificacion = condicion_modificacion or self.usuario.nivel <= 1'}, {'lnum': 0, 'col': 0, 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'formularios/auditviewer.py', 'text': 'ginn/formularios/pedidos_de_venta.py:858:                    if self.usuario.nivel <= 1:'}, {'lnum': 0, 'col': 0, 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'formularios/auditviewer.py', 'text': 'ginn/formularios/partes_de_fabricacion_bolsas.py:390:        s = s and ((self.usuario and self.usuario.nivel <= 1) '}, {'lnum': 0, 'col': 0, 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'formularios/auditviewer.py', 'text': 'ginn/formularios/partes_de_fabricacion_bolsas.py:901:            and (not self.usuario or self.usuario.nivel <= 1)'}, {'lnum': 0, 'col': 0, 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'formularios/auditviewer.py', 'text': 'ginn/formularios/partes_de_fabricacion_bolsas.py:1459:            if not self.usuario or self.usuario.nivel <= 1:'}, {'lnum': 0, 'col': 0, 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'formularios/auditviewer.py', 'text': 'ginn/formularios/partes_de_fabricacion_bolsas.py:1518:            # usuarios con nivel <= 1.'}, {'lnum': 0, 'col': 0, 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'formularios/auditviewer.py', 'text': 'ginn/formularios/partes_de_fabricacion_bolsas.py:1520:                if self.usuario and self.usuario.nivel <= 1: # and self.objeto.bloqueado and not ch.get_active():'}])
 let SessionLoad = 1
 if &cp | set nocp | endif
 let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
@@ -62,15 +62,47 @@ badd +142 ginn/formularios/autenticacion.py
 badd +1502 ginn/informes/geninformes.py
 badd +233 ginn/informes/informe_certificado_calidad.py
 badd +1518 informes/geninformes.py
+badd +0 ginn/formularios/facturas_venta.py
 args formularios/auditviewer.py
 set lines=45 columns=80
-edit ginn/formularios/menu.py
+edit ginn/formularios/facturas_venta.py
 set splitbelow splitright
+wincmd _ | wincmd |
+split
+wincmd _ | wincmd |
+split
+2wincmd k
+wincmd w
+wincmd w
 set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
+exe '1resize ' . ((&lines * 15 + 22) / 45)
+exe '2resize ' . ((&lines * 16 + 22) / 45)
+exe '3resize ' . ((&lines * 10 + 22) / 45)
 argglobal
+setlocal fdm=indent
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=99
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+105
+silent! normal zo
+363
+silent! normal zo
+let s:l = 378 - ((13 * winheight(0) + 7) / 15)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+378
+normal! 022l
+wincmd w
+argglobal
+edit ginn/formularios/menu.py
 setlocal fdm=indent
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -83,16 +115,34 @@ setlocal fen
 silent! normal zo
 151
 silent! normal zo
-151
-silent! normal zo
-150
-silent! normal zo
-let s:l = 160 - ((21 * winheight(0) + 21) / 43)
+let s:l = 160 - ((7 * winheight(0) + 8) / 16)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 160
 normal! 08l
+wincmd w
+argglobal
+edit ginn/formularios/productos_compra.py
+setlocal fdm=indent
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=99
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+let s:l = 320 - ((4 * winheight(0) + 5) / 10)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+320
+normal! 08l
+wincmd w
+2wincmd w
+exe '1resize ' . ((&lines * 15 + 22) / 45)
+exe '2resize ' . ((&lines * 16 + 22) / 45)
+exe '3resize ' . ((&lines * 10 + 22) / 45)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
@@ -107,6 +157,6 @@ let &so = s:so_save | let &siso = s:siso_save
 doautoall SessionLoadPost
 unlet SessionLoad
 tabnext 1
-1wincmd w
+2wincmd w
 
 " vim: ft=vim ro nowrap smc=128
