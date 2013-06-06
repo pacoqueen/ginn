@@ -776,7 +776,7 @@ class PartesDeFabricacionRollos(Ventana):
         Entrada: s debe ser True o False. En todo caso
         se evaluará como boolean.
         """
-        s = (s and ((self.usuario and self.usuario.nivel <= 1) 
+        s = (s and ((self.usuario and self.usuario.nivel <= 2) 
              or not self.objeto.bloqueado 
              or not self.usuario))
         if self.objeto:
@@ -2295,7 +2295,7 @@ class PartesDeFabricacionRollos(Ventana):
             pass
         else:   # Hay partida anterior.
             if (anterior.esta_vacia() and (
-                self.usuario == None or self.usuario.nivel > 2)):
+                self.usuario == None or self.usuario.nivel > 3)):
                 # Muestro el diálogo e impido pasar de partida solo si hay un 
                 # usuario registrado y no tiene un nivel de privilegios "alto".
                 utils.dialogo_info(titulo = "PARTIDA INCORRECTA", 
@@ -2731,7 +2731,7 @@ class PartesDeFabricacionRollos(Ventana):
         elif ch.get_active() != self.objeto.bloqueado:
             # NEW!: Los partes bloqueados solo los pueden desbloquear usuarios con nivel <= 1.
             if self.objeto.bloqueado:
-                if self.usuario and self.usuario.nivel <= 1: # and self.objeto.bloqueado and not ch.get_active():
+                if self.usuario and self.usuario.nivel <= 2: # and self.objeto.bloqueado and not ch.get_active():
                     self.objeto.bloqueado = False
             else:
                 if "w" in self.__permisos:  # Tiene permiso para bloquear el parte

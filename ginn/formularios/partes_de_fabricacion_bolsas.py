@@ -86,7 +86,7 @@ class PartesDeFabricacionBolsas(Ventana):
         self.SHOW_PALES_COMPLETOS = False   # Si True meterá también cajas y 
                                             # bolsas en el treeview. Igual a 
                                             # mucho más lento.
-        self.NIVEL_POR_LOTES = 1    # Mínimo nivel (o máximo, según se vea) 
+        self.NIVEL_POR_LOTES = 2    # Mínimo nivel (o máximo, según se vea) 
                                     # para poder crear palés por lote.
         self.objeto = objeto
         self.usuario = usuario
@@ -387,7 +387,7 @@ class PartesDeFabricacionBolsas(Ventana):
         Entrada: s debe ser True o False. En todo caso
         se evaluará como boolean.
         """
-        s = s and ((self.usuario and self.usuario.nivel <= 1) 
+        s = s and ((self.usuario and self.usuario.nivel <= 2) 
                    or not self.objeto.bloqueado or not self.usuario)
         if self.objeto:
             s = s or self.objeto.id == self.__lecturaescritura
@@ -396,10 +396,10 @@ class PartesDeFabricacionBolsas(Ventana):
               'table1', 'hbox6')
         for w in ws:
             self.wids[w].set_sensitive(s)
-        if self.usuario and self.usuario.nivel > 1: # No permito (des)bloquear.
+        if self.usuario and self.usuario.nivel > 2: # No permito (des)bloquear.
             self.wids['ch_bloqueado'].set_sensitive(False)
         #if self.usuario:
-        #    self.wids['b_partida'].set_sensitive(s and self.usuario.nivel < 2)
+        #    self.wids['b_partida'].set_sensitive(s and self.usuario.nivel < 3)
 
     def ir_a_primero(self):
         """
@@ -898,7 +898,7 @@ class PartesDeFabricacionBolsas(Ventana):
             and self.objeto 
             and not self.objeto.bloqueado 
             and self.objeto.fecha < mx.DateTime.localtime()-mx.DateTime.oneDay
-            and (not self.usuario or self.usuario.nivel <= 1)
+            and (not self.usuario or self.usuario.nivel <= 2)
            ):  # Tiene permiso para bloquear el parte
             res = utils.dialogo(titulo = "DEBE VERIFICAR EL PARTE",
                                 texto = "Antes de cerrar el parte debe verifi"
@@ -1441,7 +1441,7 @@ class PartesDeFabricacionBolsas(Ventana):
                 pclases.PREFIJO_PARTIDACEM, ""))
             partida = pclases.PartidaCem.select(
                         pclases.PartidaCem.q.numpartida == codigo)[0]  # @UndefinedVariable
-            if (self.usuario and self.usuario.nivel > 1 
+            if (self.usuario and self.usuario.nivel > 2 
                 and partida.numpartida > ultima_partida):
                 utils.dialogo_info(titulo = "NÚMERO DE PARTIDA INCORRECTO", 
                     texto = "El número de partida %d es superior al de la "
@@ -1456,7 +1456,7 @@ class PartesDeFabricacionBolsas(Ventana):
                               % (codigo, msg))
             return
         except IndexError:
-            if not self.usuario or self.usuario.nivel <= 1:
+            if not self.usuario or self.usuario.nivel <= 2:
                 partida = pclases.PartidaCem(numpartida = codigo, 
                                              codigo = "M-%d" % codigo)
                 pclases.Auditoria.nuevo(partida, self.usuario, __file__)
@@ -1517,7 +1517,7 @@ class PartesDeFabricacionBolsas(Ventana):
             # NEW!: Los partes bloqueados solo los pueden desbloquear 
             # usuarios con nivel <= 1.
             if self.objeto.bloqueado:
-                if self.usuario and self.usuario.nivel <= 1: # and self.objeto.bloqueado and not ch.get_active():
+                if self.usuario and self.usuario.nivel <= 2: # and self.objeto.bloqueado and not ch.get_active():
                     self.objeto.bloqueado = False
             else:
                 if self.__permisos.escritura:   # Tiene permiso para bloquear 

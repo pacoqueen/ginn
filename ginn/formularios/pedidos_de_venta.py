@@ -855,7 +855,7 @@ class PedidosDeVenta(Ventana):
             if ventanas.count() == 1:   # Siempre debería ser 1.
                 permiso = self.usuario.get_permiso(ventanas[0])
                 if permiso.escritura:
-                    if self.usuario.nivel <= 1:
+                    if self.usuario.nivel <= 2:
                         # print "Activo widgets para usuario con nivel de 
                         # privilegios <= 1."
                         self.activar_widgets(True, chequear_permisos = False)
@@ -2259,7 +2259,7 @@ class PedidosDeVenta(Ventana):
         pedido.sync()
         if not self.satisface_riesgo():
             return
-        if pedido.cerrado and self.usuario and self.usuario.nivel > 1:
+        if pedido.cerrado and self.usuario and self.usuario.nivel > 2:
             utils.dialogo_info(titulo = "PERMISOS INUFICIENTES", 
                 texto = "El pedido está cerrado y no tiene nivel de permisos"
                         " suficiente para hacer una factura directa.", 

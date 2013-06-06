@@ -203,7 +203,7 @@ class ConsumoBalasPartida(Ventana):
                 permiso = self.usuario.get_permiso(ventana)
                 ws = ("b_add_partida_gtx", "b_drop_partida_gtx", "b_add_balas", "b_add_producto", "b_drop_bala", "b_phaser", "b_albaran", 
                       "e_fecha", "b_fecha", "b_from_pdp", "b_from_albaran")
-                if not permiso.escritura and self.usuario.nivel > 1:
+                if not permiso.escritura and self.usuario.nivel > 2:
                     for w in ws:
                         self.wids[w].set_sensitive(False)
                 else:
@@ -211,13 +211,13 @@ class ConsumoBalasPartida(Ventana):
                         self.wids[w].set_sensitive(True)
                 self.wids['b_partida'].set_sensitive(
                     not(not permiso.nuevo and not permiso.lectura))
-                if self.usuario.nivel > 1 and \
+                if self.usuario.nivel > 2 and \
                         permiso.nuevo and \
                         pclases.PartidaCarga.select().count() > 0 and \
                         self.objeto == pclases.PartidaCarga.select(orderBy = "-id")[0]:
                     for w in ws:
                         self.wids[w].set_sensitive(True)
-                if self.usuario.nivel <= 1:
+                if self.usuario.nivel <= 2:
                     for w in ws:
                         self.wids[w].set_sensitive(True)
             # print permiso.nuevo, permiso.escritura
@@ -516,7 +516,7 @@ Sin embalaje.</i></small>""" % (merma))
                 print txt
             else:
                 permiso = self.usuario.get_permiso(ventana)
-                if not permiso.nuevo and self.usuario.nivel > 1:
+                if not permiso.nuevo and self.usuario.nivel > 2:
                     utils.dialogo_info(titulo = "NO TIENE PERMISOS", 
                                        texto = "No tiene permisos suficientes"
                                                " para crear partidas.", 

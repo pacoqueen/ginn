@@ -1441,7 +1441,7 @@ class ControlPersonal(Ventana, VentanaGenerica):
                 if w.name != "e_fecha": # Por comodidad para editar la fecha
                     w.connect("key_press_event", cambiar_cursor_por_tabulador)
         # Si usuario tiene nivel 0 ó 1 debería dejarle editar siempre.
-        if self.usuario and self.usuario.nivel > 1:
+        if self.usuario and self.usuario.nivel > 2:
             self.wids['tabla'].set_sensitive(check_dias_consecutivos(fecha))
         else:
             self.wids['tabla'].set_sensitive(True)

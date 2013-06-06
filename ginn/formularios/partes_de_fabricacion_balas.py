@@ -806,7 +806,7 @@ class PartesDeFabricacionBalas(Ventana):
         Entrada: s debe ser True o False. En todo caso
         se evaluará como boolean.
         """
-        s = s and ((self.usuario != None and self.usuario.nivel <= 1) or not self.objeto.bloqueado or self.usuario == None)
+        s = s and ((self.usuario != None and self.usuario.nivel <= 2) or not self.objeto.bloqueado or self.usuario == None)
         # s = s and ("w" in self.__permisos or not self.objeto.bloqueado)
         if self.objeto:
             s = s or self.objeto.id == self.__lecturaescritura
@@ -2975,7 +2975,7 @@ class PartesDeFabricacionBalas(Ventana):
         elif ch.get_active() != self.objeto.bloqueado:
             # NEW!: Los partes bloqueados solo los pueden desbloquear usuarios con nivel <= 1.
             if self.objeto.bloqueado:
-                if self.usuario and self.usuario.nivel <= 1: # and self.objeto.bloqueado and not ch.get_active():
+                if self.usuario and self.usuario.nivel <= 2: # and self.objeto.bloqueado and not ch.get_active():
                     self.objeto.bloqueado = False
             else:
                 if "w" in self.__permisos:  # Tiene permiso para bloquear el parte

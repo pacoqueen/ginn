@@ -190,8 +190,8 @@ class AbonosVenta(Ventana):
             self.wids['b_nuevo'].set_sensitive(permisos.nuevo)
             s = s and permisos.permiso
         except AttributeError:
-            s = s and (self.usuario == None or self.usuario.nivel <= 1)
-            if self.usuario and self.usuario.nivel > 1:
+            s = s and (self.usuario == None or self.usuario.nivel <= 2)
+            if self.usuario and self.usuario.nivel > 2:
                 self.wids['b_nuevo'].set_sensitive(False)
         ws = ('hbox1', 'hbox5', 'vbox2', 'hbox6', 'b_albaran_abono', 
               'b_fra_abono', 'b_add_ajuste', 'b_drop_ajuste', 

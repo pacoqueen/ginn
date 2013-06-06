@@ -279,7 +279,7 @@ class PartesDeTrabajo(Ventana):
         fecha_sel[1] += 1   # En los gtk.Calendar el mes empieza en 0
         fechafin = mx.DateTime.DateTimeFrom(year = fecha_sel[0], month = fecha_sel[1], day = fecha_sel[2]) + mx.DateTime.oneDay
         if (abs(mx.DateTime.localtime() - fechafin) >= mx.DateTime.oneDay * 4 
-            and self.usuario and self.usuario.nivel > 1):
+            and self.usuario and self.usuario.nivel > 2):
             bloqueado = True
         else:
             bloqueado = False

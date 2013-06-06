@@ -452,7 +452,7 @@ class Clientes(Ventana):
                             except AttributeError:
                                 bloqueada = fra.bloqueado
                             if (not bloqueada 
-                                or (self.usuario and self.usuario.nivel <= 2)):
+                                or (self.usuario and self.usuario.nivel <= 3)):
                                 fra.obra = nueva_obra
                                 fra.sync()
                                 fras_cambiadas += 1
@@ -2050,7 +2050,7 @@ class Clientes(Ventana):
         """
         Crea un nuevo contador y lo asocia al cliente actual
         """
-        if self.usuario and self.usuario.nivel > 1:
+        if self.usuario and self.usuario.nivel > 2:
             utils.dialogo_info(titulo = "USUARIO SIN PRIVILEGIOS", 
                 texto = "No puede crear nuevos contadores desde esta ventana.",
                 padre = self.wids['ventana'])

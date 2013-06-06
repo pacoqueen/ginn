@@ -370,7 +370,7 @@ class FacturasVenta(Ventana):
         if (self.objeto 
             and self.objeto.bloqueada 
             and self.usuario 
-            and self.usuario.nivel >= 2):
+            and self.usuario.nivel >= 3):
             s = False
         ws = ('hbox1', 'hbox5', 'alignment4', 'hbox_observaciones', 'hpaned1', 
               #'expander1', 
@@ -383,8 +383,8 @@ class FacturasVenta(Ventana):
         if (self.objeto 
             and self.objeto.bloqueada 
             and self.usuario 
-            and self.usuario.nivel <= 2):
-            # Si el usuario tiene nivel 2 y permiso sobre la ventana (si ha 
+            and self.usuario.nivel <= 3):
+            # Si el usuario tiene nivel 3 y permiso sobre la ventana (si ha 
             # podido abrirla es que sí), le dejo editar los vencimientos y 
             # cobros.
             #self.wids['expander1'].set_sensitive(True)
@@ -395,7 +395,7 @@ class FacturasVenta(Ventana):
         col = self.wids['tv_ldvs'].get_column(2)
         if col != None: # Si ya se ha construido el widget
             col.set_property("visible", 
-                             not(self.usuario and self.usuario.nivel > 1))
+                             not(self.usuario and self.usuario.nivel > 2))
         self.desproteger_si_permiso_escritura(self.wids['hbox_observaciones'])
 
     def ir_a_primero(self):
@@ -1440,7 +1440,7 @@ class FacturasVenta(Ventana):
                          or (permisos.nuevo 
                              and self.objeto == self._objetoreciencreado)))
                 condicion_modificacion = (
-                    condicion_modificacion or self.usuario.nivel <= 1)
+                    condicion_modificacion or self.usuario.nivel <= 2)
             if not condicion_modificacion and self.usuario != None:
                 utils.dialogo_info(titulo = "OPERACIÓN NO PERMITIDA",
                     texto = "No tiene privilegios suficientes para cambiar "
@@ -2417,7 +2417,7 @@ class FacturasVenta(Ventana):
                     wid.set_sensitive(True)
 
     def cambiar_descripcion_complementaria(self, cell, path, texto):
-        if self.usuario != None and self.usuario.nivel > 1:
+        if self.usuario != None and self.usuario.nivel > 2:
             utils.dialogo_info(titulo = "CAMBIO NO PERMITIDO", 
                 texto = "No tiene suficiente nivel de privilegios para "
                         "establecer una descripción complementaria.", 
@@ -2431,7 +2431,7 @@ class FacturasVenta(Ventana):
         """
         Cambia la cantidad, etcétera etcétera.
         """
-        if self.usuario != None and self.usuario.nivel > 1:
+        if self.usuario != None and self.usuario.nivel > 2:
             utils.dialogo_info(titulo = "CAMBIO NO PERMITIDO", 
                 texto = "No tiene suficiente nivel de privilegios para "
                         "cambiar la cantidad.", 
@@ -2592,7 +2592,7 @@ class FacturasVenta(Ventana):
                     permisos = self.usuario.get_permiso(ventana)
                     condicion_modificacion = condicion_modificacion and \
                                             (permisos.escritura or (permisos.nuevo and self.objeto == self._objetoreciencreado))
-                    condicion_modificacion = condicion_modificacion or self.usuario.nivel <= 1
+                    condicion_modificacion = condicion_modificacion or self.usuario.nivel <= 2
                 if not condicion_modificacion and self.usuario != None:
                     utils.dialogo_info(titulo = "OPERACIÓN NO PERMITIDA",
                         texto = "No tiene privilegios suficientes para "

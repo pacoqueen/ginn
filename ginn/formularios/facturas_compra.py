@@ -202,7 +202,7 @@ class FacturasDeEntrada(Ventana):
             if ventanas.count() == 1:   # Siempre debería ser 1.
                 permiso = self.usuario.get_permiso(ventanas[0])
                 if permiso.escritura:
-                    if self.usuario.nivel <= 1:
+                    if self.usuario.nivel <= 2:
                         if pclases.DEBUG and pclases.VERBOSE:
                             print "Activo widgets para usuario con nivel "\
                                     "de privilegios <= 1."
@@ -779,8 +779,8 @@ class FacturasDeEntrada(Ventana):
             else:
                 self.wids[w].set_sensitive(s)
         if (self.objeto and self.objeto.bloqueada and self.usuario 
-            and self.usuario.nivel == 2):
-            # Si el usuario tiene nivel 2 y permiso sobre la ventana (si ha 
+            and self.usuario.nivel == 3):
+            # Si el usuario tiene nivel 3 y permiso sobre la ventana (si ha 
             # podido abrirla es que sí), 
             # le dejo editar los vencimientos y cobros.
             self.wids['expander1'].set_sensitive(True)

@@ -160,7 +160,7 @@ class ProductosCompra(Ventana, VentanaGenerica):
         actualizado.
         """
         if (self.objeto.existencias != self.objeto.swap['existencias'] 
-            and (not self.usuario or self.usuario.nivel > 1)):
+            and (not self.usuario or self.usuario.nivel > 3)):
             # No dejo decidir al usuario, actualizo las existencias para 
             # ajustarlas a la cantidad de la BD y evitar que machaque el 
             # cambio de stock remoto con un valor local obsoleto.
@@ -285,7 +285,7 @@ class ProductosCompra(Ventana, VentanaGenerica):
         # tendrán que seguir los procedimientos lógicos de añadir por albarán 
         # de entrada o sacar por albaranes de salida o TPV.
         self.wids['e_stock'].set_property("editable", 
-            (not self.usuario) or (self.usuario.nivel <= 1))
+            (not self.usuario) or (self.usuario.nivel <= 2))
         # XXX: Me ha pillado el toro de la migración de libglade a GtkBuilder.
         self.wids['lproveedor_defecto'] = gtk.Label("Por defecto:")
         self.wids['cb_proveedor'] = gtk.ComboBox()
@@ -317,7 +317,7 @@ class ProductosCompra(Ventana, VentanaGenerica):
         """
         Abre el albarán de entrada seleccionado.
         """
-        if self.usuario != None and self.usuario.nivel >= 1:
+        if self.usuario != None and self.usuario.nivel >= 2:
             return
         idldc = tv.get_model()[path][-1]
         ldc = pclases.LineaDeCompra.get(idldc)

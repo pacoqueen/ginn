@@ -84,14 +84,14 @@ class Contadores(Ventana):
         pass
 
     def rellenar_widgets(self):
-        self.wids['b_modificar'].set_sensitive(self.usuario == None or self.usuario.nivel <= 1)
+        self.wids['b_modificar'].set_sensitive(self.usuario == None or self.usuario.nivel <= 2)
         self.rellenar_tabla()
 
     def cambiar_valor_contador(self, cell, path, texto):
         """
         Cambia el número del contador seleccionado.
         """
-        if self.usuario != None and self.usuario.nivel > 1:
+        if self.usuario != None and self.usuario.nivel > 2:
             # Sólo faltaba que cualquiera pudiera andar tocando los contadores
             utils.dialogo_info(titulo = "SIN PRIVILEGIOS", 
                                texto = "No tiene permisos suficientes para editar los contadores.", 

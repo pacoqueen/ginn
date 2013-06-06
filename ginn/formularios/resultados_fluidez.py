@@ -101,13 +101,13 @@ class ResultadosFluidez(Ventana):
             else:
                 permiso = self.usuario.get_permiso(ventana)
                 if not permiso or (not permiso.escritura 
-                                   and self.usuario.nivel > 1):
+                                   and self.usuario.nivel > 2):
                     #self.wids['tv_pruebas'].set_sensitive(False)
                     # Ya no se pueden editar valores en el TreeView, así que 
                     # no lo deshabilito para permitir ordenar por fecha.
                     self.wids['b_drop'].set_sensitive(False)
                 if not permiso or (not permiso.nuevo 
-                                   and self.usuario.nivel > 1):
+                                   and self.usuario.nivel > 2):
                     self.wids['b_add'].set_sensitive(False)
      
     def crear_listviewes(self):

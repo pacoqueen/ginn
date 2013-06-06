@@ -442,9 +442,9 @@ class PedidosDeCompra(Ventana):
             if ventanas.count() == 1:   # Siempre debería ser 1.
                 permiso = self.usuario.get_permiso(ventanas[0])
                 if permiso.escritura:
-                    if self.usuario.nivel <= 1:
+                    if self.usuario.nivel <= 2:
                         # print "Activo widgets para usuario con nivel de 
-                        # privilegios <= 1."
+                        # privilegios <= 2."
                         self.activar_widgets(True, chequear_permisos = False)
                     else:
                         # print "Activo widgets porque permiso de lectura y 
@@ -497,7 +497,7 @@ class PedidosDeCompra(Ventana):
         # (dde.pedCompraTextoFijo)
         if self.usuario and self.usuario.nivel > 0:
             self.wids['e_observaciones0'].set_sensitive(False)
-        if self.usuario and self.usuario.nivel > 1:
+        if self.usuario and self.usuario.nivel > 2:
             self.wids['e_observaciones2'].set_sensitive(False)
         # El texto de la forma de pago de observaciones 2 tiene preferencia 
         # sobre el de toda la vida. Si está relleno, oculto el otro para no 

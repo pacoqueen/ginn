@@ -1773,7 +1773,7 @@ class AlbaranesDeSalida(Ventana):
                                         invertir = True)
         #if self.usuario != None and self.usuario.nivel > 1 and numero_numalbaran != None and numero_numalbaran > nuevo_numalbaran:
         if (self.usuario 
-            and self.usuario.nivel > 1 
+            and self.usuario.nivel > 2 
             and numero_numalbaran_usuario != None 
             and numero_numalbaran_usuario > numero_numalbaran_sugerido):
             utils.dialogo_info(titulo = "NÚMERO DE ALBARÁN INCORRECTO", 
@@ -2126,7 +2126,7 @@ class AlbaranesDeSalida(Ventana):
                         # almacén. Si no, preguntar si servir lo que haya.
                         cantidad_a_servir = (ldp.cantidadPedida 
                                              - ldp.cantidadServida)
-                        if self.usuario and self.usuario.nivel > 1:
+                        if self.usuario and self.usuario.nivel > 2:
                             cantidad_a_servir=comprobar_existencias_producto(
                                                 ldp, 
                                                 self.wids['ventana'], 
@@ -2757,7 +2757,7 @@ class AlbaranesDeSalida(Ventana):
             if ((ldv.productoVentaID != None 
                  and ldv.productoVenta.articulos != []) 
                 and (self.usuario != None 
-                     and self.usuario.nivel >= 2 
+                     and self.usuario.nivel >= 3 
                      and not self.objeto.bloqueado)):
                 # DONE: Así consigo que se imprima la cantidad del pedido en 
                 #       productos "especiales" (cables de fibra y cosas 
@@ -2838,7 +2838,7 @@ class AlbaranesDeSalida(Ventana):
             # OJO: No se adjunta al correo.
         else:
             self.imprimir_cmr()
-        if ((self.usuario == None or self.usuario.nivel <= 1) 
+        if ((self.usuario == None or self.usuario.nivel <= 2) 
             and self.objeto.bloqueado):
             utils.dialogo_info(titulo = "NO SE GENERARÁ FACTURA",
                                texto = """
@@ -3516,7 +3516,7 @@ class AlbaranesDeSalida(Ventana):
             and cli.get_facturas_vencidas_sin_documento_de_cobro()):
             frasvenc = cli.get_facturas_vencidas_sin_documento_de_cobro()
             strfrasvenc = "; ".join([f.numfactura for f in frasvenc])
-            if not self.usuario or self.usuario.nivel > 1:
+            if not self.usuario or self.usuario.nivel > 2:
                 utils.dialogo_info(titulo = "CLIENTE DEUDOR", 
                                 texto = "El cliente tiene %d facturas "
                                        "vencidas sin documento de pago:\n%s" 
