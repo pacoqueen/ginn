@@ -52,7 +52,7 @@ def run(modulo, clase, usuario):
         else:
             comando = "export PYTHONPATH=$PYTHONPATH:" + ruta + "; " 
         comando += os.path.join(ruta, "formularios", modulo + ".py")
-        args = []
+        args = ["-u %s" % usuario] #, "-c %s" % fconfig] 
         print comando
         subprocess.Popen([comando] + args, shell = True)
     except Exception, msg:     # fallback
