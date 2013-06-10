@@ -499,5 +499,5 @@ def parse_params():
     pclases.VERBOSE = verbose
     debug = opts.debug
     pclases.DEBUG = debug
-    return user, password, modulo, clase #, config, verbose, debug
+    return user, password, modulo, clase, config #, verbose, debug
 

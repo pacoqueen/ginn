@@ -29,7 +29,7 @@ Created on 22/05/2013
 @author: bogado
 '''
 
-def run(modulo, clase, usuario):
+def run(modulo, clase, usuario, fconfig):
     """
     Esto va a recibir cuatro parámetros:
     * fichero
@@ -52,7 +52,8 @@ def run(modulo, clase, usuario):
         else:
             comando = "export PYTHONPATH=$PYTHONPATH:" + ruta + "; " 
         comando += os.path.join(ruta, "formularios", modulo + ".py")
-        args = ["-u %s" % usuario] #, "-c %s" % fconfig] 
+        args = [] # ["-u %s" % usuario, "-c %s" % fconfig] 
+        comando += " -u %s -c %s" % (usuario.usuario, fconfig) 
         print comando
         subprocess.Popen([comando] + args, shell = True)
     except Exception, msg:     # fallback

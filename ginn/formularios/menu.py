@@ -147,7 +147,7 @@ class MetaF:
 
 
 class Menu:
-    def __init__(self, user = None, passwd = None):
+    def __init__(self, user = None, passwd = None, fconfig = None):
         """
         user: Usuario. Si es None se solicitará en la ventana de 
         autentificación.
@@ -156,6 +156,7 @@ class Menu:
         Si user y passwd son distintos a None, no se mostrará la ventana de 
         autentificación a no ser que sean incorrectos.
         """
+        self.fconfig = fconfig
         from formularios import gestor_mensajes, autenticacion
         login = autenticacion.Autenticacion(user, passwd)
         if not login.loginvalido():
@@ -695,7 +696,7 @@ class Menu:
         # necesitan compartir más datos una vez abierta la ventana. Así que 
         # guay. No más segfaults en el join ni excepciones de pickle.
         from formularios import launcher
-        launcher.run(archivo, clase, self.usuario)
+        launcher.run(archivo, clase, self.usuario, self.fconfig)
         # PORASQUI: Probarlo en Windows y tal...
 
     def enviar_correo_error_ventana(self):
@@ -972,12 +973,12 @@ def main():
     #                        }
     # class '*' style 'blanco_y_negro'
     ##
-    user, passwd, modulo, clase = parse_params() 
+    user, passwd, modulo, clase, fconfig = parse_params() 
     #salida = MetaF()
     #sys.stdout = salida
     errores = MetaF()
     sys.stderr = errores
-    m = Menu(user, passwd)
+    m = Menu(user, passwd, fconfig)
     m.mostrar()
     if not errores.vacio():
         print "Se han detectado algunos errores en segundo plano durante "\
