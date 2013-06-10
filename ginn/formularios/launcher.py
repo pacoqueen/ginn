@@ -44,9 +44,22 @@ def run(modulo, clase, usuario):
     Una vez pasado hecho login, se crea el proceso y se inicia el bucle GTK de 
     la ventana en cuestión.
     """
-    exec "import %s" % modulo
-    v = eval('%s.%s' % (modulo, clase))
-    v(usuario = usuario)
+    try:
+        import subprocess, os, sys
+        ruta = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
+        if sys.platform[:3] == "win":
+            comando = "set PYTHONPATH=%PYTHONPATH%;" + ruta + " & " 
+        else:
+            comando = "export PYTHONPATH=$PYTHONPATH:" + ruta + "; " 
+        comando += os.path.join(ruta, "formularios", modulo + ".py")
+        args = []
+        print comando
+        subprocess.Popen([comando] + args, shell = True)
+    except Exception, msg:     # fallback
+        print "launcher.py:", msg
+        exec "import %s" % modulo
+        v = eval('%s.%s' % (modulo, clase))
+        v(usuario = usuario)
     
 
 def main():
@@ -66,3 +79,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

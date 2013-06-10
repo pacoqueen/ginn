@@ -402,6 +402,16 @@ def unittest():
     tb1, tb2 = Test(5), Test(5)
     assert tb1 is tb2
     assert ta1 is not tb1
+
+def guess_class(modulo):
+    # Lo mismo es mejor con esto: http://docs.python.org/2/library/imp.html
+    exec "from formularios import " + modulo
+    exec "moduler = " + modulo
+    clases = [c for c in dir(moduler) if c[0].isupper() 
+                                        and c != "Ventana" 
+                                        and c != "VentanaGenerica"]
+    return clases[0]
+    
     
 def parse_params():
     """
@@ -437,11 +447,15 @@ def parse_params():
             user = args[0]
         except IndexError:
             user = None
+    else:
+        user = opts.user
     if not opts.password:
         try:
             password = args[1]
         except IndexError:
             password = None
+    else:
+        password = opts.password
     # Fichero de configuración
     if not os.path.exists(opts.config):
         config = os.path.join(
@@ -467,11 +481,14 @@ def parse_params():
         else:
             modulo = opts.ventana
         modulo = os.path.basename(modulo)
-        clase = None    # PORASQUI: Habría que determinar el nombre de la 
-                        # clase de la ventana. ¿Puedo tirar de pclases para 
-                        # saberlo según la tabla de ventanas, o me tiro a 
-                        # por un grep? ¿Y en Windows, que no hay grep, qué?
-                        # ¿Parseo el .py completo hasta encontrar class *?
+        try:
+            clase = guess_class(modulo)
+        except:
+            clase = None    # PORASQUI: Habría que determinar el nombre de la 
+                            # clase de la ventana. ¿Puedo tirar de pclases para
+                            # saberlo según la tabla de ventanas, o me tiro a 
+                            # por un grep? ¿Y en Windows, que no hay grep, qué?
+                            # ¿Parseo el .py completo hasta encontrar class *?
     else:
         modulo, clase = None, None
     # Resto de parámetros
@@ -481,3 +498,4 @@ def parse_params():
     debug = opts.debug
     pclases.DEBUG = debug
     return user, password, modulo, clase #, config, verbose, debug
+

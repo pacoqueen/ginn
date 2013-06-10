@@ -694,7 +694,8 @@ class Menu:
         # nueva ventana serán procesos completamente indepentientes. No se 
         # necesitan compartir más datos una vez abierta la ventana. Así que 
         # guay. No más segfaults en el join ni excepciones de pickle.
-        pass
+        from formularios import launcher
+        launcher.run(archivo, clase, self.usuario)
         # PORASQUI: Probarlo en Windows y tal...
 
     def enviar_correo_error_ventana(self):
@@ -971,7 +972,7 @@ def main():
     #                        }
     # class '*' style 'blanco_y_negro'
     ##
-    user, passwd = parse_params() #, config, verbose, debug = parse_params()
+    user, passwd, modulo, clase = parse_params() 
     #salida = MetaF()
     #sys.stdout = salida
     errores = MetaF()

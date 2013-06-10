@@ -78,9 +78,11 @@ class Ventana:
         directorio de formularios (logo.xpm) o una ruta **RELATIVA** a 
         otro icono soportado por Pixbuf.
         """
+        from framework import pclases
         if isinstance(usuario, int):
-            from framework import pclases
             usuario = pclases.Usuario.get(usuario)
+        if isinstance(usuario, str):
+            usuario = pclases.Usuario.selectBy(usuario = usuario)[0]
         self.__usuario = usuario
         if (not hasattr(self, "usuario") 
             or not isinstance(self.usuario, pclases.Usuario)):
