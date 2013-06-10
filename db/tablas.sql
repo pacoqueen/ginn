@@ -287,7 +287,10 @@ CREATE TABLE linea_de_produccion(
     formulacion_id INT REFERENCES formulacion DEFAULT NULL,
     nombre TEXT,
     descripcion TEXT,
-    observaciones TEXT DEFAULT ''
+    observaciones TEXT DEFAULT '', 
+    precio_minimo FLOAT DEFAULT NULL    -- NEW! 10/06/2013 Precio mínimo por 
+                                -- kilo al que se pueden vender los productos.
+        -- ALTER TABLE linea_de_produccion ADD COLUMN precio_minimo DEFAULT NULL; UPDATE linea_de_produccion SET precio_minimo = NULL;
 );
 
 ----------------------------
@@ -1351,7 +1354,10 @@ CREATE TABLE pedido_venta(
         -- solo "obra", pero como ahora hay un obraID, he tenido que renombrar
         -- el campo.
     obra_id INT REFERENCES obra DEFAULT NULL,   -- NEW! 09/09/2009 Beatles' day
-    forma_de_pago_id INT REFERENCES forma_de_pago DEFAULT NULL
+    forma_de_pago_id INT REFERENCES forma_de_pago DEFAULT NULL, 
+    validado BOOLEAN DEFAULT TRUE   -- NEW! 10/06/13. Si cumple requisitos 
+                                    -- para poderse servir.
+    -- ALTER TABLE pedido_venta ADD COLUMN validado BOOLEAN DEFAULT TRUE; UPDATE pedido_venta SET validado = TRUE;
 );
 
 ----------------------------

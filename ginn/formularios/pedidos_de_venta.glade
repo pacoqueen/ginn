@@ -1,22 +1,25 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <glade-interface>
   <!-- interface-requires gtk+ 2.16 -->
   <!-- interface-naming-policy toplevel-contextual -->
   <widget class="GtkWindow" id="ventana">
     <property name="visible">True</property>
+    <property name="can_focus">False</property>
     <property name="title" translatable="yes">Pedidos de venta</property>
     <child>
       <widget class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
-        <property name="orientation">vertical</property>
+        <property name="can_focus">False</property>
         <child>
           <widget class="GtkHBox" id="hbox1">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <child>
               <widget class="GtkLabel" id="label1">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="xpad">5</property>
-                <property name="label" translatable="yes">&lt;b&gt;Pedido n&#xBA;: &lt;/b&gt;</property>
+                <property name="label" translatable="yes">&lt;b&gt;Pedido nº: &lt;/b&gt;</property>
                 <property name="use_markup">True</property>
               </widget>
               <packing>
@@ -29,14 +32,21 @@
               <widget class="GtkEntry" id="e_numpedido">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="primary_icon_activatable">False</property>
+                <property name="secondary_icon_activatable">False</property>
+                <property name="primary_icon_sensitive">True</property>
+                <property name="secondary_icon_sensitive">True</property>
               </widget>
               <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>
             </child>
             <child>
               <widget class="GtkLabel" id="label2">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="xpad">5</property>
                 <property name="label" translatable="yes">Fecha: </property>
               </widget>
@@ -50,8 +60,14 @@
               <widget class="GtkEntry" id="e_fecha">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="primary_icon_activatable">False</property>
+                <property name="secondary_icon_activatable">False</property>
+                <property name="primary_icon_sensitive">True</property>
+                <property name="secondary_icon_sensitive">True</property>
               </widget>
               <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
                 <property name="position">3</property>
               </packing>
             </child>
@@ -61,6 +77,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
+                <property name="use_action_appearance">False</property>
                 <property name="use_underline">True</property>
               </widget>
               <packing>
@@ -72,20 +89,24 @@
           </widget>
           <packing>
             <property name="expand">False</property>
+            <property name="fill">True</property>
             <property name="position">0</property>
           </packing>
         </child>
         <child>
           <widget class="GtkHBox" id="hbox5">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <child>
               <widget class="GtkTable" id="table4">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="n_rows">2</property>
                 <property name="n_columns">2</property>
                 <child>
                   <widget class="GtkLabel" id="label11">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="xpad">5</property>
                     <property name="label" translatable="yes">&lt;b&gt;Cliente: &lt;/b&gt;</property>
                     <property name="use_markup">True</property>
@@ -97,6 +118,16 @@
                 <child>
                   <widget class="GtkComboBoxEntry" id="cbe_cliente">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child internal-child="entry">
+                      <widget class="GtkEntry" id="comboboxentry-entry2">
+                        <property name="can_focus">False</property>
+                        <property name="primary_icon_activatable">False</property>
+                        <property name="secondary_icon_activatable">False</property>
+                        <property name="primary_icon_sensitive">True</property>
+                        <property name="secondary_icon_sensitive">True</property>
+                      </widget>
+                    </child>
                   </widget>
                   <packing>
                     <property name="left_attach">1</property>
@@ -106,6 +137,7 @@
                 <child>
                   <widget class="GtkLabel" id="label5">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="xalign">1</property>
                     <property name="label" translatable="yes">Comercial: </property>
                   </widget>
@@ -118,6 +150,16 @@
                 <child>
                   <widget class="GtkComboBoxEntry" id="cbe_comercial">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child internal-child="entry">
+                      <widget class="GtkEntry" id="comboboxentry-entry4">
+                        <property name="can_focus">False</property>
+                        <property name="primary_icon_activatable">False</property>
+                        <property name="secondary_icon_activatable">False</property>
+                        <property name="primary_icon_sensitive">True</property>
+                        <property name="secondary_icon_sensitive">True</property>
+                      </widget>
+                    </child>
                   </widget>
                   <packing>
                     <property name="left_attach">1</property>
@@ -128,43 +170,54 @@
                 </child>
               </widget>
               <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
                 <property name="position">0</property>
               </packing>
             </child>
             <child>
               <widget class="GtkHBox" id="hbox16">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="spacing">5</property>
                 <child>
                   <widget class="GtkVSeparator" id="vseparator1">
                     <property name="visible">True</property>
-                    <property name="orientation">vertical</property>
+                    <property name="can_focus">False</property>
                   </widget>
                   <packing>
                     <property name="expand">False</property>
+                    <property name="fill">True</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
                   <widget class="GtkLabel" id="label34">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Obra: </property>
                   </widget>
                   <packing>
                     <property name="expand">False</property>
+                    <property name="fill">True</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
                 <child>
                   <widget class="GtkTable" id="table3">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="n_rows">2</property>
                     <property name="n_columns">2</property>
                     <child>
                       <widget class="GtkEntry" id="e_obra">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="invisible_char">&#x2022;</property>
+                        <property name="invisible_char">•</property>
+                        <property name="primary_icon_activatable">False</property>
+                        <property name="secondary_icon_activatable">False</property>
+                        <property name="primary_icon_sensitive">True</property>
+                        <property name="secondary_icon_sensitive">True</property>
                       </widget>
                       <packing>
                         <property name="left_attach">1</property>
@@ -176,6 +229,7 @@
                     <child>
                       <widget class="GtkLabel" id="label_txt_compl">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">&lt;small&gt;&lt;i&gt;Texto complementario:&lt;/i&gt;&lt;/small&gt;</property>
                         <property name="use_markup">True</property>
                       </widget>
@@ -187,6 +241,7 @@
                     <child>
                       <widget class="GtkComboBox" id="cb_obra">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                       </widget>
                       <packing>
                         <property name="right_attach">2</property>
@@ -194,11 +249,15 @@
                     </child>
                   </widget>
                   <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
                     <property name="position">2</property>
                   </packing>
                 </child>
               </widget>
               <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
                 <property name="padding">10</property>
                 <property name="position">1</property>
               </packing>
@@ -206,6 +265,7 @@
           </widget>
           <packing>
             <property name="expand">False</property>
+            <property name="fill">True</property>
             <property name="position">1</property>
           </packing>
         </child>
@@ -216,13 +276,15 @@
             <child>
               <widget class="GtkVBox" id="vbox2">
                 <property name="visible">True</property>
-                <property name="orientation">vertical</property>
+                <property name="can_focus">False</property>
                 <child>
                   <widget class="GtkHBox" id="hbox7">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <child>
                       <widget class="GtkLabel" id="label14">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes"> Tarifa: </property>
                       </widget>
                       <packing>
@@ -234,8 +296,20 @@
                     <child>
                       <widget class="GtkComboBoxEntry" id="cbe_tarifa">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <child internal-child="entry">
+                          <widget class="GtkEntry" id="comboboxentry-entry6">
+                            <property name="can_focus">False</property>
+                            <property name="primary_icon_activatable">False</property>
+                            <property name="secondary_icon_activatable">False</property>
+                            <property name="primary_icon_sensitive">True</property>
+                            <property name="secondary_icon_sensitive">True</property>
+                          </widget>
+                        </child>
                       </widget>
                       <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
@@ -244,18 +318,22 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
+                        <property name="use_action_appearance">False</property>
                         <child>
                           <widget class="GtkAlignment" id="alignment6">
                             <property name="visible">True</property>
+                            <property name="can_focus">False</property>
                             <property name="xscale">0</property>
                             <property name="yscale">0</property>
                             <child>
                               <widget class="GtkHBox" id="hbox8">
                                 <property name="visible">True</property>
+                                <property name="can_focus">False</property>
                                 <property name="spacing">2</property>
                                 <child>
                                   <widget class="GtkImage" id="image5">
                                     <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
                                     <property name="stock">gtk-ok</property>
                                   </widget>
                                   <packing>
@@ -267,6 +345,7 @@
                                 <child>
                                   <widget class="GtkLabel" id="label15">
                                     <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
                                     <property name="label" translatable="yes">Aplicar tarifa al
 pedido completo</property>
                                     <property name="use_underline">True</property>
@@ -293,18 +372,22 @@ pedido completo</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
+                        <property name="use_action_appearance">False</property>
                         <child>
                           <widget class="GtkAlignment" id="alignment7">
                             <property name="visible">True</property>
+                            <property name="can_focus">False</property>
                             <property name="xscale">0</property>
                             <property name="yscale">0</property>
                             <child>
                               <widget class="GtkHBox" id="hbox9">
                                 <property name="visible">True</property>
+                                <property name="can_focus">False</property>
                                 <property name="spacing">2</property>
                                 <child>
                                   <widget class="GtkImage" id="image6">
                                     <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
                                     <property name="stock">gtk-ok</property>
                                   </widget>
                                   <packing>
@@ -316,8 +399,9 @@ pedido completo</property>
                                 <child>
                                   <widget class="GtkLabel" id="label16">
                                     <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
                                     <property name="label" translatable="yes">Aplicar tarifa solo a
-la l&#xED;nea seleccionada</property>
+la línea seleccionada</property>
                                     <property name="use_underline">True</property>
                                   </widget>
                                   <packing>
@@ -340,6 +424,7 @@ la l&#xED;nea seleccionada</property>
                   </widget>
                   <packing>
                     <property name="expand">False</property>
+                    <property name="fill">True</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
@@ -347,16 +432,16 @@ la l&#xED;nea seleccionada</property>
                   <widget class="GtkVPaned" id="vpaned1">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="orientation">vertical</property>
                     <child>
                       <widget class="GtkVBox" id="vbox4">
                         <property name="visible">True</property>
-                        <property name="orientation">vertical</property>
+                        <property name="can_focus">False</property>
                         <child>
                           <widget class="GtkLabel" id="label17">
                             <property name="visible">True</property>
+                            <property name="can_focus">False</property>
                             <property name="xalign">0.029999999329447746</property>
-                            <property name="label" translatable="yes">&lt;b&gt;L&#xED;neas de pedido:&lt;/b&gt;</property>
+                            <property name="label" translatable="yes">&lt;b&gt;Líneas de pedido:&lt;/b&gt;</property>
                             <property name="use_markup">True</property>
                           </widget>
                           <packing>
@@ -379,6 +464,8 @@ la l&#xED;nea seleccionada</property>
                             </child>
                           </widget>
                           <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
@@ -395,13 +482,14 @@ la l&#xED;nea seleccionada</property>
                         <child>
                           <widget class="GtkVBox" id="vbox5">
                             <property name="visible">True</property>
-                            <property name="orientation">vertical</property>
+                            <property name="can_focus">False</property>
                             <child>
                               <widget class="GtkCheckButton" id="ch_transporte">
-                                <property name="label" translatable="yes">Marque esta casilla para indicar que el transporte en el albar&#xE1;n debe ser cargado al cliente pero no conoce a&#xFA;n el importe exacto.</property>
+                                <property name="label" translatable="yes">Marque esta casilla para indicar que el transporte en el albarán debe ser cargado al cliente pero no conoce aún el importe exacto.</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="use_underline">True</property>
                                 <property name="draw_indicator">True</property>
                               </widget>
@@ -424,6 +512,8 @@ la l&#xED;nea seleccionada</property>
                                 </child>
                               </widget>
                               <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
                                 <property name="position">1</property>
                               </packing>
                             </child>
@@ -432,6 +522,7 @@ la l&#xED;nea seleccionada</property>
                         <child>
                           <widget class="GtkLabel" id="label36">
                             <property name="visible">True</property>
+                            <property name="can_focus">False</property>
                             <property name="xalign">0.029999999329447746</property>
                             <property name="label" translatable="yes">&lt;b&gt;Servicios y transportes:&lt;/b&gt;</property>
                             <property name="use_markup">True</property>
@@ -448,6 +539,8 @@ la l&#xED;nea seleccionada</property>
                     </child>
                   </widget>
                   <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
@@ -456,6 +549,7 @@ la l&#xED;nea seleccionada</property>
             <child>
               <widget class="GtkLabel" id="label23">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Pedido</property>
               </widget>
               <packing>
@@ -466,10 +560,11 @@ la l&#xED;nea seleccionada</property>
             <child>
               <widget class="GtkVBox" id="vbox3">
                 <property name="visible">True</property>
-                <property name="orientation">vertical</property>
+                <property name="can_focus">False</property>
                 <child>
                   <widget class="GtkLabel" id="label18">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="xalign">0.029999999329447746</property>
                     <property name="label" translatable="yes">Salidas relacionadas:</property>
                   </widget>
@@ -493,6 +588,8 @@ la l&#xED;nea seleccionada</property>
                     </child>
                   </widget>
                   <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
@@ -507,6 +604,7 @@ la l&#xED;nea seleccionada</property>
             <child>
               <widget class="GtkLabel" id="label24">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Salidas</property>
               </widget>
               <packing>
@@ -518,12 +616,17 @@ la l&#xED;nea seleccionada</property>
             <child>
               <widget class="GtkTable" id="table2">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="n_rows">6</property>
                 <property name="n_columns">2</property>
                 <child>
                   <widget class="GtkEntry" id="e_paisCorrespondencia">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="primary_icon_activatable">False</property>
+                    <property name="secondary_icon_activatable">False</property>
+                    <property name="primary_icon_sensitive">True</property>
+                    <property name="secondary_icon_sensitive">True</property>
                   </widget>
                   <packing>
                     <property name="left_attach">1</property>
@@ -536,6 +639,10 @@ la l&#xED;nea seleccionada</property>
                   <widget class="GtkEntry" id="e_provinciaCorrespondencia">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="primary_icon_activatable">False</property>
+                    <property name="secondary_icon_activatable">False</property>
+                    <property name="primary_icon_sensitive">True</property>
+                    <property name="secondary_icon_sensitive">True</property>
                   </widget>
                   <packing>
                     <property name="left_attach">1</property>
@@ -548,6 +655,10 @@ la l&#xED;nea seleccionada</property>
                   <widget class="GtkEntry" id="e_ciudadCorrespondencia">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="primary_icon_activatable">False</property>
+                    <property name="secondary_icon_activatable">False</property>
+                    <property name="primary_icon_sensitive">True</property>
+                    <property name="secondary_icon_sensitive">True</property>
                   </widget>
                   <packing>
                     <property name="left_attach">1</property>
@@ -560,6 +671,10 @@ la l&#xED;nea seleccionada</property>
                   <widget class="GtkEntry" id="e_cpCorrespondencia">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="primary_icon_activatable">False</property>
+                    <property name="secondary_icon_activatable">False</property>
+                    <property name="primary_icon_sensitive">True</property>
+                    <property name="secondary_icon_sensitive">True</property>
                   </widget>
                   <packing>
                     <property name="left_attach">1</property>
@@ -572,6 +687,10 @@ la l&#xED;nea seleccionada</property>
                   <widget class="GtkEntry" id="e_direccionCorrespondencia">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="primary_icon_activatable">False</property>
+                    <property name="secondary_icon_activatable">False</property>
+                    <property name="primary_icon_sensitive">True</property>
+                    <property name="secondary_icon_sensitive">True</property>
                   </widget>
                   <packing>
                     <property name="left_attach">1</property>
@@ -584,6 +703,10 @@ la l&#xED;nea seleccionada</property>
                   <widget class="GtkEntry" id="e_nombreCorrespondencia">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="primary_icon_activatable">False</property>
+                    <property name="secondary_icon_activatable">False</property>
+                    <property name="primary_icon_sensitive">True</property>
+                    <property name="secondary_icon_sensitive">True</property>
                   </widget>
                   <packing>
                     <property name="left_attach">1</property>
@@ -593,7 +716,8 @@ la l&#xED;nea seleccionada</property>
                 <child>
                   <widget class="GtkLabel" id="label33">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">Pa&#xED;s: </property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">País: </property>
                   </widget>
                   <packing>
                     <property name="top_attach">5</property>
@@ -603,6 +727,7 @@ la l&#xED;nea seleccionada</property>
                 <child>
                   <widget class="GtkLabel" id="label32">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Provincia: </property>
                   </widget>
                   <packing>
@@ -613,6 +738,7 @@ la l&#xED;nea seleccionada</property>
                 <child>
                   <widget class="GtkLabel" id="label31">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Ciudad: </property>
                   </widget>
                   <packing>
@@ -623,7 +749,8 @@ la l&#xED;nea seleccionada</property>
                 <child>
                   <widget class="GtkLabel" id="label30">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">C&#xF3;digo postal: </property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">Código postal: </property>
                   </widget>
                   <packing>
                     <property name="top_attach">2</property>
@@ -633,7 +760,8 @@ la l&#xED;nea seleccionada</property>
                 <child>
                   <widget class="GtkLabel" id="label29">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">Direcci&#xF3;n: </property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">Dirección: </property>
                   </widget>
                   <packing>
                     <property name="top_attach">1</property>
@@ -643,6 +771,7 @@ la l&#xED;nea seleccionada</property>
                 <child>
                   <widget class="GtkLabel" id="label28">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Nombre: </property>
                   </widget>
                 </child>
@@ -654,7 +783,8 @@ la l&#xED;nea seleccionada</property>
             <child>
               <widget class="GtkLabel" id="label7">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">Direcci&#xF3;n correspondencia</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Dirección correspondencia</property>
               </widget>
               <packing>
                 <property name="position">2</property>
@@ -664,17 +794,21 @@ la l&#xED;nea seleccionada</property>
             </child>
           </widget>
           <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
             <property name="position">2</property>
           </packing>
         </child>
         <child>
           <widget class="GtkFrame" id="frame1">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="label_xalign">0</property>
             <property name="shadow_type">in</property>
             <child>
               <widget class="GtkAlignment" id="alignment4">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="xalign">1</property>
                 <property name="xscale">0.10000000149011612</property>
                 <property name="left_padding">12</property>
@@ -682,6 +816,7 @@ la l&#xED;nea seleccionada</property>
                 <child>
                   <widget class="GtkTable" id="table1">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="n_rows">4</property>
                     <property name="n_columns">4</property>
                     <property name="column_spacing">16</property>
@@ -691,11 +826,15 @@ la l&#xED;nea seleccionada</property>
                         <property name="can_focus">True</property>
                         <property name="editable">False</property>
                         <property name="has_frame">False</property>
+                        <property name="primary_icon_activatable">False</property>
+                        <property name="secondary_icon_activatable">False</property>
+                        <property name="primary_icon_sensitive">True</property>
+                        <property name="secondary_icon_sensitive">True</property>
                       </widget>
                       <packing>
                         <property name="left_attach">2</property>
                         <property name="right_attach">3</property>
-                        <property name="y_options"></property>
+                        <property name="y_options"/>
                       </packing>
                     </child>
                     <child>
@@ -704,16 +843,21 @@ la l&#xED;nea seleccionada</property>
                         <property name="can_focus">True</property>
                         <property name="editable">False</property>
                         <property name="has_frame">False</property>
+                        <property name="primary_icon_activatable">False</property>
+                        <property name="secondary_icon_activatable">False</property>
+                        <property name="primary_icon_sensitive">True</property>
+                        <property name="secondary_icon_sensitive">True</property>
                       </widget>
                       <packing>
                         <property name="left_attach">3</property>
                         <property name="right_attach">4</property>
-                        <property name="y_options"></property>
+                        <property name="y_options"/>
                       </packing>
                     </child>
                     <child>
                       <widget class="GtkLabel" id="lsubtotal">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="xalign">0</property>
                         <property name="label" translatable="yes">Subtotal: </property>
                       </widget>
@@ -721,12 +865,13 @@ la l&#xED;nea seleccionada</property>
                         <property name="left_attach">1</property>
                         <property name="right_attach">2</property>
                         <property name="x_options">GTK_FILL</property>
-                        <property name="y_options"></property>
+                        <property name="y_options"/>
                       </packing>
                     </child>
                     <child>
                       <widget class="GtkLabel" id="label8">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="xalign">0</property>
                         <property name="label" translatable="yes">Descuento: </property>
                       </widget>
@@ -736,12 +881,13 @@ la l&#xED;nea seleccionada</property>
                         <property name="top_attach">1</property>
                         <property name="bottom_attach">2</property>
                         <property name="x_options">GTK_FILL</property>
-                        <property name="y_options"></property>
+                        <property name="y_options"/>
                       </packing>
                     </child>
                     <child>
                       <widget class="GtkLabel" id="label9">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="xalign">0</property>
                         <property name="label" translatable="yes">I.V.A.: </property>
                       </widget>
@@ -751,12 +897,13 @@ la l&#xED;nea seleccionada</property>
                         <property name="top_attach">2</property>
                         <property name="bottom_attach">3</property>
                         <property name="x_options">GTK_FILL</property>
-                        <property name="y_options"></property>
+                        <property name="y_options"/>
                       </packing>
                     </child>
                     <child>
                       <widget class="GtkLabel" id="label10">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="xalign">0</property>
                         <property name="label" translatable="yes">TOTAL: </property>
                       </widget>
@@ -766,21 +913,25 @@ la l&#xED;nea seleccionada</property>
                         <property name="top_attach">3</property>
                         <property name="bottom_attach">4</property>
                         <property name="x_options">GTK_FILL</property>
-                        <property name="y_options"></property>
+                        <property name="y_options"/>
                       </packing>
                     </child>
                     <child>
                       <widget class="GtkEntry" id="e_descuento">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="primary_icon_activatable">False</property>
+                        <property name="secondary_icon_activatable">False</property>
+                        <property name="primary_icon_sensitive">True</property>
+                        <property name="secondary_icon_sensitive">True</property>
                       </widget>
                       <packing>
                         <property name="left_attach">2</property>
                         <property name="right_attach">3</property>
                         <property name="top_attach">1</property>
                         <property name="bottom_attach">2</property>
-                        <property name="x_options"></property>
-                        <property name="y_options"></property>
+                        <property name="x_options"/>
+                        <property name="y_options"/>
                         <property name="x_padding">6</property>
                       </packing>
                     </child>
@@ -788,14 +939,18 @@ la l&#xED;nea seleccionada</property>
                       <widget class="GtkEntry" id="e_iva">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="primary_icon_activatable">False</property>
+                        <property name="secondary_icon_activatable">False</property>
+                        <property name="primary_icon_sensitive">True</property>
+                        <property name="secondary_icon_sensitive">True</property>
                       </widget>
                       <packing>
                         <property name="left_attach">2</property>
                         <property name="right_attach">3</property>
                         <property name="top_attach">2</property>
                         <property name="bottom_attach">3</property>
-                        <property name="x_options"></property>
-                        <property name="y_options"></property>
+                        <property name="x_options"/>
+                        <property name="y_options"/>
                         <property name="x_padding">5</property>
                       </packing>
                     </child>
@@ -805,13 +960,17 @@ la l&#xED;nea seleccionada</property>
                         <property name="can_focus">True</property>
                         <property name="editable">False</property>
                         <property name="has_frame">False</property>
+                        <property name="primary_icon_activatable">False</property>
+                        <property name="secondary_icon_activatable">False</property>
+                        <property name="primary_icon_sensitive">True</property>
+                        <property name="secondary_icon_sensitive">True</property>
                       </widget>
                       <packing>
                         <property name="left_attach">3</property>
                         <property name="right_attach">4</property>
                         <property name="top_attach">1</property>
                         <property name="bottom_attach">2</property>
-                        <property name="y_options"></property>
+                        <property name="y_options"/>
                         <property name="y_padding">4</property>
                       </packing>
                     </child>
@@ -821,13 +980,17 @@ la l&#xED;nea seleccionada</property>
                         <property name="can_focus">True</property>
                         <property name="editable">False</property>
                         <property name="has_frame">False</property>
+                        <property name="primary_icon_activatable">False</property>
+                        <property name="secondary_icon_activatable">False</property>
+                        <property name="primary_icon_sensitive">True</property>
+                        <property name="secondary_icon_sensitive">True</property>
                       </widget>
                       <packing>
                         <property name="left_attach">3</property>
                         <property name="right_attach">4</property>
                         <property name="top_attach">2</property>
                         <property name="bottom_attach">3</property>
-                        <property name="y_options"></property>
+                        <property name="y_options"/>
                         <property name="y_padding">4</property>
                       </packing>
                     </child>
@@ -837,13 +1000,17 @@ la l&#xED;nea seleccionada</property>
                         <property name="can_focus">True</property>
                         <property name="editable">False</property>
                         <property name="has_frame">False</property>
+                        <property name="primary_icon_activatable">False</property>
+                        <property name="secondary_icon_activatable">False</property>
+                        <property name="primary_icon_sensitive">True</property>
+                        <property name="secondary_icon_sensitive">True</property>
                       </widget>
                       <packing>
                         <property name="left_attach">3</property>
                         <property name="right_attach">4</property>
                         <property name="top_attach">3</property>
                         <property name="bottom_attach">4</property>
-                        <property name="y_options"></property>
+                        <property name="y_options"/>
                         <property name="y_padding">4</property>
                       </packing>
                     </child>
@@ -872,6 +1039,7 @@ No se tiene en cuenta el precio de venta, solo se muestran totales por producto.
                         <child>
                           <widget class="GtkLabel" id="label21">
                             <property name="visible">True</property>
+                            <property name="can_focus">False</property>
                             <property name="label" translatable="yes">&lt;small&gt;Pendiente
 de servir&lt;/small&gt;</property>
                             <property name="use_markup">True</property>
@@ -905,6 +1073,7 @@ No se tiene en cuenta el precio de venta, solo se muestran totales por producto.
                         <child>
                           <widget class="GtkLabel" id="label35">
                             <property name="visible">True</property>
+                            <property name="can_focus">False</property>
                             <property name="label" translatable="yes">&lt;small&gt;Pendiente
 de facturar&lt;/small&gt;</property>
                             <property name="use_markup">True</property>
@@ -941,6 +1110,7 @@ de facturar&lt;/small&gt;</property>
             <child>
               <widget class="GtkLabel" id="label6">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Totales</property>
                 <property name="use_markup">True</property>
               </widget>
@@ -951,6 +1121,7 @@ de facturar&lt;/small&gt;</property>
           </widget>
           <packing>
             <property name="expand">False</property>
+            <property name="fill">True</property>
             <property name="position">3</property>
           </packing>
         </child>
@@ -961,10 +1132,13 @@ de facturar&lt;/small&gt;</property>
             <child>
               <widget class="GtkToolbar" id="toolbar1">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="toolbar_style">both</property>
                 <child>
                   <widget class="GtkToolButton" id="b_ver_albaranes">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="use_action_appearance">False</property>
                     <property name="label" translatable="yes">Ver albaranes</property>
                     <property name="use_underline">True</property>
                     <property name="stock_id">gtk-find</property>
@@ -977,6 +1151,8 @@ de facturar&lt;/small&gt;</property>
                 <child>
                   <widget class="GtkToolButton" id="b_vencimientos">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="use_action_appearance">False</property>
                     <property name="label" translatable="yes">Ver vencimientos</property>
                     <property name="use_underline">True</property>
                     <property name="stock_id">gtk-find</property>
@@ -989,6 +1165,8 @@ de facturar&lt;/small&gt;</property>
                 <child>
                   <widget class="GtkToolButton" id="b_cobros">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="use_action_appearance">False</property>
                     <property name="label" translatable="yes">Ver cobros</property>
                     <property name="use_underline">True</property>
                     <property name="stock_id">gtk-find</property>
@@ -1001,6 +1179,8 @@ de facturar&lt;/small&gt;</property>
                 <child>
                   <widget class="GtkToolButton" id="b_facturas">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="use_action_appearance">False</property>
                     <property name="label" translatable="yes">Ver facturas</property>
                     <property name="use_underline">True</property>
                     <property name="stock_id">gtk-find</property>
@@ -1013,6 +1193,8 @@ de facturar&lt;/small&gt;</property>
                 <child>
                   <widget class="GtkToolButton" id="b_abonos">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="use_action_appearance">False</property>
                     <property name="label" translatable="yes">Ver abonos</property>
                     <property name="use_underline">True</property>
                     <property name="stock_id">gtk-find</property>
@@ -1027,6 +1209,7 @@ de facturar&lt;/small&gt;</property>
             <child>
               <widget class="GtkLabel" id="label12">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Consultas sobre el pedido</property>
               </widget>
               <packing>
@@ -1036,16 +1219,19 @@ de facturar&lt;/small&gt;</property>
           </widget>
           <packing>
             <property name="expand">False</property>
+            <property name="fill">True</property>
             <property name="position">4</property>
           </packing>
         </child>
         <child>
           <widget class="GtkHBox" id="hbox3">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="spacing">10</property>
             <child>
               <widget class="GtkHButtonBox" id="hbuttonbox2">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="border_width">5</property>
                 <property name="layout_style">spread</property>
                 <child>
@@ -1055,18 +1241,22 @@ de facturar&lt;/small&gt;</property>
                     <property name="receives_default">True</property>
                     <property name="has_tooltip">True</property>
                     <property name="tooltip" translatable="yes">Borra del pedido el producto seleccionado.</property>
+                    <property name="use_action_appearance">False</property>
                     <child>
                       <widget class="GtkAlignment" id="alignment2">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="xscale">0</property>
                         <property name="yscale">0</property>
                         <child>
                           <widget class="GtkHBox" id="hbox4">
                             <property name="visible">True</property>
+                            <property name="can_focus">False</property>
                             <property name="spacing">2</property>
                             <child>
                               <widget class="GtkImage" id="image2">
                                 <property name="visible">True</property>
+                                <property name="can_focus">False</property>
                                 <property name="stock">gtk-remove</property>
                               </widget>
                               <packing>
@@ -1078,6 +1268,7 @@ de facturar&lt;/small&gt;</property>
                             <child>
                               <widget class="GtkLabel" id="label4">
                                 <property name="visible">True</property>
+                                <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">Borrar salida
  relacionada</property>
                                 <property name="use_underline">True</property>
@@ -1105,19 +1296,23 @@ de facturar&lt;/small&gt;</property>
                     <property name="can_default">True</property>
                     <property name="receives_default">True</property>
                     <property name="has_tooltip">True</property>
-                    <property name="tooltip" translatable="yes">A&#xF1;adir un producto al pedido.</property>
+                    <property name="tooltip" translatable="yes">Añadir un producto al pedido.</property>
+                    <property name="use_action_appearance">False</property>
                     <child>
                       <widget class="GtkAlignment" id="alignment5">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="xscale">0</property>
                         <property name="yscale">0</property>
                         <child>
                           <widget class="GtkHBox" id="hbox6">
                             <property name="visible">True</property>
+                            <property name="can_focus">False</property>
                             <property name="spacing">2</property>
                             <child>
                               <widget class="GtkImage" id="image4">
                                 <property name="visible">True</property>
+                                <property name="can_focus">False</property>
                                 <property name="stock">gtk-add</property>
                               </widget>
                               <packing>
@@ -1129,7 +1324,8 @@ de facturar&lt;/small&gt;</property>
                             <child>
                               <widget class="GtkLabel" id="label13">
                                 <property name="visible">True</property>
-                                <property name="label" translatable="yes">A&#xF1;adir salida
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Añadir salida
  relacionada</property>
                                 <property name="use_underline">True</property>
                               </widget>
@@ -1156,18 +1352,22 @@ de facturar&lt;/small&gt;</property>
                     <property name="can_focus">True</property>
                     <property name="can_default">True</property>
                     <property name="receives_default">True</property>
+                    <property name="use_action_appearance">False</property>
                     <child>
                       <widget class="GtkAlignment" id="alignment8">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="xscale">0</property>
                         <property name="yscale">0</property>
                         <child>
                           <widget class="GtkHBox" id="hbox10">
                             <property name="visible">True</property>
+                            <property name="can_focus">False</property>
                             <property name="spacing">2</property>
                             <child>
                               <widget class="GtkImage" id="image7">
                                 <property name="visible">True</property>
+                                <property name="can_focus">False</property>
                                 <property name="stock">gtk-remove</property>
                               </widget>
                               <packing>
@@ -1179,7 +1379,8 @@ de facturar&lt;/small&gt;</property>
                             <child>
                               <widget class="GtkLabel" id="label19">
                                 <property name="visible">True</property>
-                                <property name="label" translatable="yes">Borrar l&#xED;nea
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Borrar línea
  de pedido</property>
                                 <property name="use_underline">True</property>
                               </widget>
@@ -1206,18 +1407,22 @@ de facturar&lt;/small&gt;</property>
                     <property name="can_focus">True</property>
                     <property name="can_default">True</property>
                     <property name="receives_default">True</property>
+                    <property name="use_action_appearance">False</property>
                     <child>
                       <widget class="GtkAlignment" id="alignment9">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="xscale">0</property>
                         <property name="yscale">0</property>
                         <child>
                           <widget class="GtkHBox" id="hbox11">
                             <property name="visible">True</property>
+                            <property name="can_focus">False</property>
                             <property name="spacing">2</property>
                             <child>
                               <widget class="GtkImage" id="image8">
                                 <property name="visible">True</property>
+                                <property name="can_focus">False</property>
                                 <property name="stock">gtk-add</property>
                               </widget>
                               <packing>
@@ -1229,7 +1434,8 @@ de facturar&lt;/small&gt;</property>
                             <child>
                               <widget class="GtkLabel" id="label20">
                                 <property name="visible">True</property>
-                                <property name="label" translatable="yes">A&#xF1;adir l&#xED;nea
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Añadir línea
  de pedido</property>
                                 <property name="use_underline">True</property>
                               </widget>
@@ -1257,19 +1463,23 @@ de facturar&lt;/small&gt;</property>
                     <property name="can_default">True</property>
                     <property name="receives_default">True</property>
                     <property name="has_tooltip">True</property>
-                    <property name="tooltip" translatable="yes">Agrupa las l&#xED;neas de pedido por producto siempre que sus precios, descuentos y entregas sean id&#xE9;nticos.</property>
+                    <property name="tooltip" translatable="yes">Agrupa las líneas de pedido por producto siempre que sus precios, descuentos y entregas sean idénticos.</property>
+                    <property name="use_action_appearance">False</property>
                     <child>
                       <widget class="GtkAlignment" id="alignment11">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="xscale">0</property>
                         <property name="yscale">0</property>
                         <child>
                           <widget class="GtkHBox" id="hbox13">
                             <property name="visible">True</property>
+                            <property name="can_focus">False</property>
                             <property name="spacing">2</property>
                             <child>
                               <widget class="GtkImage" id="image9">
                                 <property name="visible">True</property>
+                                <property name="can_focus">False</property>
                                 <property name="stock">gtk-convert</property>
                               </widget>
                               <packing>
@@ -1281,7 +1491,8 @@ de facturar&lt;/small&gt;</property>
                             <child>
                               <widget class="GtkLabel" id="label22">
                                 <property name="visible">True</property>
-                                <property name="label" translatable="yes">Unificar l&#xED;neas
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Unificar líneas
    de pedido</property>
                                 <property name="use_underline">True</property>
                               </widget>
@@ -1308,18 +1519,22 @@ de facturar&lt;/small&gt;</property>
                     <property name="can_focus">True</property>
                     <property name="can_default">True</property>
                     <property name="receives_default">True</property>
+                    <property name="use_action_appearance">False</property>
                     <child>
                       <widget class="GtkAlignment" id="alignment12">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="xscale">0</property>
                         <property name="yscale">0</property>
                         <child>
                           <widget class="GtkHBox" id="hbox14">
                             <property name="visible">True</property>
+                            <property name="can_focus">False</property>
                             <property name="spacing">2</property>
                             <child>
                               <widget class="GtkImage" id="image10">
                                 <property name="visible">True</property>
+                                <property name="can_focus">False</property>
                                 <property name="stock">gtk-add</property>
                               </widget>
                               <packing>
@@ -1331,7 +1546,8 @@ de facturar&lt;/small&gt;</property>
                             <child>
                               <widget class="GtkLabel" id="label26">
                                 <property name="visible">True</property>
-                                <property name="label" translatable="yes">A&#xF1;adir servicio
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Añadir servicio
  o transporte</property>
                                 <property name="use_underline">True</property>
                               </widget>
@@ -1358,18 +1574,22 @@ de facturar&lt;/small&gt;</property>
                     <property name="can_focus">True</property>
                     <property name="can_default">True</property>
                     <property name="receives_default">True</property>
+                    <property name="use_action_appearance">False</property>
                     <child>
                       <widget class="GtkAlignment" id="alignment13">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="xscale">0</property>
                         <property name="yscale">0</property>
                         <child>
                           <widget class="GtkHBox" id="hbox15">
                             <property name="visible">True</property>
+                            <property name="can_focus">False</property>
                             <property name="spacing">2</property>
                             <child>
                               <widget class="GtkImage" id="image11">
                                 <property name="visible">True</property>
+                                <property name="can_focus">False</property>
                                 <property name="stock">gtk-remove</property>
                               </widget>
                               <packing>
@@ -1381,6 +1601,7 @@ de facturar&lt;/small&gt;</property>
                             <child>
                               <widget class="GtkLabel" id="label27">
                                 <property name="visible">True</property>
+                                <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">Borrar servicio
  o transporte</property>
                                 <property name="use_underline">True</property>
@@ -1404,6 +1625,7 @@ de facturar&lt;/small&gt;</property>
                 </child>
               </widget>
               <packing>
+                <property name="expand">True</property>
                 <property name="fill">False</property>
                 <property name="position">0</property>
               </packing>
@@ -1411,8 +1633,27 @@ de facturar&lt;/small&gt;</property>
             <child>
               <widget class="GtkVBox" id="vbox6">
                 <property name="visible">True</property>
-                <property name="orientation">vertical</property>
+                <property name="can_focus">False</property>
                 <property name="homogeneous">True</property>
+                <child>
+                  <widget class="GtkCheckButton" id="validado">
+                    <property name="label" translatable="yes">Validado</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="tooltip" translatable="yes">Los pedidos se validan automáticamente a no ser que:
+- Se venda por debajo de precio mínimo.
+- El cliente no cumpla las condiciones de crédito.
+En esos casos debe ser un usuario con privilegios para poder validar el pedido.</property>
+                    <property name="use_action_appearance">False</property>
+                    <property name="draw_indicator">True</property>
+                  </widget>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
                 <child>
                   <widget class="GtkCheckButton" id="bloqueado">
                     <property name="label" translatable="yes">Pedido verificado y bloqueado</property>
@@ -1420,24 +1661,8 @@ de facturar&lt;/small&gt;</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
                     <property name="has_tooltip">True</property>
-                    <property name="tooltip" translatable="yes">Si el pedido tiene esta casilla marcada, no permite m&#xE1;s modificaciones salvo para usuarios con nivel de privilegios suficiente.</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
-                  </widget>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkCheckButton" id="cerrado">
-                    <property name="label" translatable="yes">Pedido cerrado</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="has_tooltip">True</property>
-                    <property name="tooltip" translatable="yes">Si esta casilla est&#xE1; marcada, el pedido se considera cerrado y toda la mercanc&#xED;a servida. No admitir&#xE1; m&#xE1;s albaranes y no constar&#xE1; en las consultas de pendientes de servir.</property>
+                    <property name="tooltip" translatable="yes">Si el pedido tiene esta casilla marcada, no permite más modificaciones salvo para usuarios con nivel de privilegios suficiente.</property>
+                    <property name="use_action_appearance">False</property>
                     <property name="use_underline">True</property>
                     <property name="draw_indicator">True</property>
                   </widget>
@@ -1447,20 +1672,42 @@ de facturar&lt;/small&gt;</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
+                <child>
+                  <widget class="GtkCheckButton" id="cerrado">
+                    <property name="label" translatable="yes">Pedido cerrado</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="has_tooltip">True</property>
+                    <property name="tooltip" translatable="yes">Si esta casilla está marcada, el pedido se considera cerrado y toda la mercancía servida. No admitirá más albaranes y no constará en las consultas de pendientes de servir.</property>
+                    <property name="use_action_appearance">False</property>
+                    <property name="use_underline">True</property>
+                    <property name="draw_indicator">True</property>
+                  </widget>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
               </widget>
               <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>
             </child>
           </widget>
           <packing>
             <property name="expand">False</property>
+            <property name="fill">True</property>
             <property name="position">5</property>
           </packing>
         </child>
         <child>
           <widget class="GtkHButtonBox" id="hbuttonbox1">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="border_width">5</property>
             <child>
               <widget class="GtkButton" id="b_actualizar">
@@ -1469,6 +1716,7 @@ de facturar&lt;/small&gt;</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">False</property>
+                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </widget>
               <packing>
@@ -1484,6 +1732,7 @@ de facturar&lt;/small&gt;</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">False</property>
+                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </widget>
               <packing>
@@ -1499,6 +1748,7 @@ de facturar&lt;/small&gt;</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">False</property>
+                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </widget>
               <packing>
@@ -1514,6 +1764,7 @@ de facturar&lt;/small&gt;</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">False</property>
+                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </widget>
               <packing>
@@ -1529,6 +1780,7 @@ de facturar&lt;/small&gt;</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">False</property>
+                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </widget>
               <packing>
@@ -1543,24 +1795,32 @@ de facturar&lt;/small&gt;</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="tooltip" translatable="yes">Mantener pulsado y seleccionar un pedido de los recientemente abiertos para mostrarlo en la ventana actual.</property>
+                <property name="use_action_appearance">False</property>
                 <child>
                   <widget class="GtkHBox" id="hbox2">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <child>
                       <widget class="GtkLabel" id="label3">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Abrir reciente</property>
                       </widget>
                       <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
                         <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
                       <widget class="GtkImage" id="image1">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="stock">gtk-open</property>
                       </widget>
                       <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
@@ -1579,7 +1839,8 @@ de facturar&lt;/small&gt;</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="tooltip" translatable="yes">Realiza un albar&#xE1;n y una factura con el pedido completo, a excepci&#xF3;n de aquellas l&#xED;neas que requieran c&#xF3;digos de trazabilidad, en cuyo caso no se cerrar&#xE1;n el albar&#xE1;n ni la factura.</property>
+                <property name="tooltip" translatable="yes">Realiza un albarán y una factura con el pedido completo, a excepción de aquellas líneas que requieran códigos de trazabilidad, en cuyo caso no se cerrarán el albarán ni la factura.</property>
+                <property name="use_action_appearance">False</property>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -1594,6 +1855,7 @@ de facturar&lt;/small&gt;</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">False</property>
+                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </widget>
               <packing>
@@ -1605,6 +1867,7 @@ de facturar&lt;/small&gt;</property>
           </widget>
           <packing>
             <property name="expand">False</property>
+            <property name="fill">True</property>
             <property name="position">6</property>
           </packing>
         </child>

@@ -7,7 +7,7 @@ def main():
         menu.main()
     else:
         from formularios import launcher
-        launcher.main()
+        launcher.run(modulo, clase, user, fconfig)
 
 if __name__ == '__main__':
     main()

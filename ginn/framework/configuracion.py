@@ -464,7 +464,6 @@ def parse_params():
     else:
         config = opts.config
     config = os.path.realpath(config)
-    print "--------->", config
     ConfigConexion().set_file(config) # Lo hago así porque en todos sitios se 
         # llama al constructor sin parámetros, y quiero instanciar al 
         # singleton por primera vez aquí.

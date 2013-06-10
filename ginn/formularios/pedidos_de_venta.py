@@ -89,6 +89,8 @@ from ventana_progreso import VentanaProgreso
 import pango
 from formularios import postomatic
 
+NIVEL_VALIDACION = 1
+
 def preguntar_precio(producto, ventana_padre = None):
     """
     Muestra un diálogo para preguntar el precio del producto 
@@ -156,6 +158,7 @@ class PedidosDeVenta(Ventana):
                        'b_facturar/clicked': self.facturar, 
                        #'cb_obra/changed': 
                        #     self.cambiar_direccionCorrespondencia
+                       'validado/toggled': self.check_puede_validar
                        }  
         self.add_connections(connections)
         self.inicializar_ventana()
@@ -165,6 +168,16 @@ class PedidosDeVenta(Ventana):
         else:
             self.ir_a(objeto)
         gtk.main()
+
+    def check_puede_validar(self, ch):
+        if (self.usuario and self.usuario.nivel > NIVEL_VALIDACION 
+                and not self.objeto.validado
+                and not self.objeto.validable):
+            ch.set_active(False)
+            utils.dialogo_info("PERMISOS INSUFICIENTES", 
+                    texto = "No posee privilegios suficientes para validar "
+                            "el pedido.", 
+                    padre = self.wids['ventana'])
 
     def conectar_dircorrespondencia(self):
         """
@@ -489,6 +502,7 @@ class PedidosDeVenta(Ventana):
         except ValueError, msg:
             self.logger.error("pedidos_de_venta::es_diferente-> Error al intepretar porcentaje: %s" % (msg))
         condicion = condicion and self.objeto.bloqueado == self.wids['bloqueado'].get_active()
+        condicion = condicion and self.objeto.validado == self.wids['validado'].get_active()
         condicion = condicion and self.objeto.cerrado == self.wids['cerrado'].get_active()
         condicion = condicion and self.objeto.transporteACargo == self.wids['ch_transporte'].get_active()
         idcomercial = utils.combo_get_value(self.wids['cbe_comercial'])
@@ -895,7 +909,7 @@ class PedidosDeVenta(Ventana):
         evitar recursión infinita.
         """
         ws = ('e_numpedido', 'e_fecha', 'b_fecha', 'cbe_cliente', 
-              'cbe_tarifa', 'tv_ldps', 'bloqueado', 'cerrado', 
+              'cbe_tarifa', 'tv_ldps', 'bloqueado', 'validado', 'cerrado', 
               'b_unificar', 'b_add_ldv', 'b_drop_ldv', 'b_borrar', 'tv_ldvs', 
               'b_tarifa_ldv', 'b_add_ldp', 'b_drop_ldp', 
               'b_aplicar_tarifa', 'ch_transporte', 'e_iva', 'e_descuento', 
@@ -951,10 +965,17 @@ class PedidosDeVenta(Ventana):
                               utils.str_fecha(r.fecha), 
                               r.get_nombre_cliente(), 
                               r.cerrado, 
-                              r.bloqueado))
+                              r.bloqueado, 
+                              r.validado))
         idpedido = utils.dialogo_resultado(filas_res,
                                            titulo = 'Seleccione pedido',
-                                           cabeceras = ('ID', 'Número de pedido', 'Fecha', 'Cliente', "Cerrado", "Bloqueado"),
+                                           cabeceras = ('ID', 
+                                               'Número de pedido', 
+                                               'Fecha', 
+                                               'Cliente', 
+                                               "Cerrado", 
+                                               "Bloqueado", 
+                                               "Verificado"),
                                            padre = self.wids['ventana'])
         if idpedido < 0:
             return None
@@ -1042,6 +1063,7 @@ class PedidosDeVenta(Ventana):
         self.wids['ch_transporte'].set_active(self.objeto.transporteACargo)
         self.wids['cerrado'].set_active(self.objeto.cerrado)
         self.wids['bloqueado'].set_active(self.objeto.bloqueado)
+        self.wids['validado'].set_active(self.objeto.validado)
         if pclases.DEBUG: 
             print "Después de rellenar totales:", time.time()-antes
         # Comerciales:
@@ -1072,7 +1094,32 @@ class PedidosDeVenta(Ventana):
         self.rellenar_obras(self.wids['cbe_cliente'])
         if pclases.DEBUG: 
             print "Después de rellenar_obras:", time.time()-antes
+        self.comprobar_validable()
+        if pclases.DEBUG:
+            print "Después de comprobar validable:", time.time() - antes
         self.objeto.make_swap()
+
+    def comprobar_validable(self):
+        """
+        Si el pedido no cumple las condiciones de validación, desmarca la 
+        casilla de validable y, si es el caso, resalta en rojo el cliente 
+        sin crédito.
+        """
+        if not self.objeto.validable:
+            self.objeto.validado = False
+            if self.usuario and self.usuario.nivel > NIVEL_VALIDACION:
+                # No hago nada y dejo que mantenga el valor que tuviera.
+                self.wids['validado'].set_active(self.objeto.validado)
+# PORASQUI: Ahora tengo otro problema. Si un usuario ha validado y el que no tenía privilegios vuelve a abrir el pedido, se escuajaringa todo y vuelve a marcarlo como nó válido para servir. Tampoco he hecho todavía el control desde los albaranes de salida para no servir pedidos no validados ni la ventana de modificar el precio mínimo.
+            if self.objeto.cliente.calcular_credito_disponible(
+                    base = self.objeto.calcular_importe_total(iva = True))<=0:
+                color = self.wids['cbe_cliente'].child.get_colormap().\
+                        alloc_color("IndianRed1")
+            else:
+                color = None
+        else:
+            color = None
+        self.wids['cbe_cliente'].child.modify_base(gtk.STATE_NORMAL, color)
 
     def rellenar_desplegable_tarifas(self):
         """
@@ -1606,6 +1653,7 @@ class PedidosDeVenta(Ventana):
             descuento = 0,
             transporteACargo = False,
             bloqueado = True,
+            validado = True, 
             cerrado = False, 
             tarifa = tarifa_defecto)
         pclases.Auditoria.nuevo(self.objeto, self.usuario, __file__)
@@ -1718,6 +1766,7 @@ class PedidosDeVenta(Ventana):
         self.objeto.numpedido = numpedido
         self.objeto.cliente = idcliente
         self.objeto.bloqueado = self.wids['bloqueado'].get_active()
+        self.objeto.validado = self.wids['validado'].get_active()
         self.objeto.cerrado = self.wids['cerrado'].get_active()
         tarifa_anterior = self.objeto.tarifa
         if idtarifa == -1:
@@ -2362,7 +2411,8 @@ class PedidosDeVenta(Ventana):
                       numpedido = 
                         `pclases.PedidoVenta.get_siguiente_numero_numpedido()`,
                       bloqueado = False, 
-                      cerrado = False)
+                      cerrado = False, 
+                      validado = True)
                     for puid in puidsldv:
                         ldp_o_srv = pclases.getObjetoPUID(puid)
                         try:
@@ -2546,6 +2596,5 @@ def pedir_clonar_ldvs(pedido, ventana_padre = None):
     return res
 
 if __name__=='__main__':
-#    p = pclases.PedidoVenta.select()[-1]
     v = PedidosDeVenta()
 

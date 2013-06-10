@@ -6636,6 +6636,25 @@ class LineaDePedido(SQLObject, PRPCTOO):
             info_entrega)
         return res
 
+    @property
+    def precioKilo(self):
+        """
+        Devuelve el precio por kilo de la línea de pedido siempre que sea 
+        posible. None si no lo puede calcular.
+        """
+        res = None
+        # TODO: De momento solo para geotextiles.
+        if hasattr(self.producto, "es_rollo") and self.producto.es_rollo():
+            # El precio es por metro cuadrado. Tengo que hacer la conversión:
+            gramos_m2 = self.producto.camposEspecificosRollo.gramos
+            m2 = self.producto.camposEspecificosRollo.metrosCuadrados
+            kilos = gramos_m2 / 1000.0 * m2
+            try:
+                res = self.precio * m2 / kilos
+            except ZeroDivisionError:
+                res = None 
+        return res
+
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 class Ticket(SQLObject, PRPCTOO):
@@ -7403,6 +7422,19 @@ class Producto:
     Superclase para productos de compra y de venta.
     ... que ya iba siendo hora.
     """
+    @property
+    def precioMinimo(self):
+        """
+        Devuelve el precio mínimo establecido para el tipo de producto. None 
+        si no se ha especificado.
+        """
+        try:
+            linea = self.lineaDeProduccion
+            res = linea.precioMinimo
+        except AttributeError:
+            res = None
+        return res
+
     def es_fibra(self):
         """
         Devuelve True si el producto es un producto de venta y además 
@@ -9632,6 +9664,28 @@ class PedidoVenta(SQLObject, PRPCTOO):
                                                   cliente, 
                                                   abierto, 
                                                   bloqueado)
+
+    @property
+    def validable(self):
+        """
+        Devuelve True si el pedido es validable:
+            * Ningún precio está por debajo del mínimo.
+            * El cliente no está en riesgo (crédito insuficiente).
+        """
+        # PLAN: ¿Debería tener otro método para ver por qué motivo no valida?
+        validable = True
+        for ldp in self.lineasDePedido:
+            precioMinimo = ldp.producto.precioMinimo
+            precioKilo = ldp.precioKilo
+            if (precioMinimo != None and precioKilo != None 
+                    and precioKilo < precioMinimo):
+                validable = False
+                break
+        if validable:
+            importe_pedido = base = self.calcular_importe_total(iva = True)
+            if self.cliente.calcular_credito_disponible(importe_pedido) <= 0:
+                validable = False
+        return validable
 
     def adivinar_obra(self):
         """

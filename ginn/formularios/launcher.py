@@ -53,11 +53,13 @@ def run(modulo, clase, usuario, fconfig):
             comando = "export PYTHONPATH=$PYTHONPATH:" + ruta + "; " 
         comando += os.path.join(ruta, "formularios", modulo + ".py")
         args = [] # ["-u %s" % usuario, "-c %s" % fconfig] 
-        comando += " -u %s -c %s" % (usuario.usuario, fconfig) 
-        print comando
+        if not isinstance(usuario, str):
+            usuario = usuario.usuario   # Debe ser instancia de pclases
+        comando += " -u %s -c %s" % (usuario, fconfig) 
         subprocess.Popen([comando] + args, shell = True)
     except Exception, msg:     # fallback
-        print "launcher.py:", msg
+        # Esto debería ir al logger o algo:
+        #print "launcher.py:", msg
         exec "import %s" % modulo
         v = eval('%s.%s' % (modulo, clase))
         v(usuario = usuario)
@@ -71,10 +73,10 @@ def main():
     import sys
     from framework.configuracion import parse_params
     from formularios.autenticacion import Autenticacion
-    usuario, contrasenna, modulo, clase = parse_params()
+    usuario, contrasenna, modulo, clase, fconfig = parse_params()
     login = Autenticacion(usuario, contrasenna)
     if login.loginvalido():
-        run(modulo, clase, usuario)
+        run(modulo, clase, usuario, fconfig)
     else:
         sys.exit(1)
 
