@@ -19488,6 +19488,7 @@ class Usuario(SQLObject, PRPCTOO):
     listasObjetosRecientes = MultipleJoin("ListaObjetosRecientes")
     empleados = MultipleJoin("Empleado")
     auditorias = MultipleJoin("Auditoria")
+    pedidosVenta = MultipleJoin("PedidoVenta")
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)

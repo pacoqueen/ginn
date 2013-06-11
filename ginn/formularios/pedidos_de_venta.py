@@ -170,14 +170,57 @@ class PedidosDeVenta(Ventana):
         gtk.main()
 
     def check_puede_validar(self, ch):
-        if (self.usuario and self.usuario.nivel > NIVEL_VALIDACION 
-                and not self.objeto.validado
-                and not self.objeto.validable):
+        """
+        Si está validado:
+            - Deja el pedido como no validado. Sea quien sea.
+        Si no está validado: 
+            - Si el usuario tiene nivel: valida.
+            - Si el usuario no tiene nivel: no valida y muestra aviso.
+        """
+        if self.objeto.validado:
+            self.objeto.validado = False
+            ch.set_active(self.objeto.validado)
+        else:
+            pass
+            # PORASQUI: Ten en cuenta que esto se activa desde el rellenar_widgets también. No solo cuando le da el usuario.
+        if ((not self.usuario or self.usuario.nivel > NIVEL_VALIDACION)
+                and ch.get_active()
+                and not self.objeto.validable
+                and not self.objeto.usuario):
             ch.set_active(False)
+            self.objeto.validado = False
             utils.dialogo_info("PERMISOS INSUFICIENTES", 
                     texto = "No posee privilegios suficientes para validar "
                             "el pedido.", 
                     padre = self.wids['ventana'])
+
+    def comprobar_validable(self):
+        """
+        Si el pedido no cumple las condiciones de validación, desmarca la 
+        casilla de validable y, si es el caso, resalta en rojo el cliente 
+        sin crédito.
+        """
+        if not self.objeto.validable:
+            if ((self.usuario and self.usuario.nivel > NIVEL_VALIDACION) 
+                    or self.objeto.usuario):
+                # Usuario con privilegios o pedido ya validado manualmente. 
+                # No hago nada y dejo que mantenga el valor que tuviera.
+                self.wids['validado'].set_active(self.objeto.validado)
+            else:
+                self.objeto.validado = False
+# PORASQUI: Ahora tengo otro problema. Si un usuario ha validado y el que no tenía privilegios vuelve a abrir el pedido, se escuajaringa todo y vuelve a marcarlo como nó válido para servir. Tampoco he hecho todavía el control desde los albaranes de salida para no servir pedidos no validados ni la ventana de modificar el precio mínimo.
+            if self.objeto.cliente.calcular_credito_disponible(
+                    base = self.objeto.calcular_importe_total(iva = True))<=0:
+                color = self.wids['cbe_cliente'].child.get_colormap().\
+                        alloc_color("IndianRed1")
+            else:
+                color = None
+        else:
+            color = None
+        self.wids['cbe_cliente'].child.modify_base(gtk.STATE_NORMAL, color)
+        self.wids['validado'].set_label("Validado%s" % (
+            self.objeto.usuario and " (" + self.objeto.usuario.usuario + ")" 
+            or ""))
 
     def conectar_dircorrespondencia(self):
         """
@@ -1098,28 +1141,6 @@ class PedidosDeVenta(Ventana):
         if pclases.DEBUG:
             print "Después de comprobar validable:", time.time() - antes
         self.objeto.make_swap()
-
-    def comprobar_validable(self):
-        """
-        Si el pedido no cumple las condiciones de validación, desmarca la 
-        casilla de validable y, si es el caso, resalta en rojo el cliente 
-        sin crédito.
-        """
-        if not self.objeto.validable:
-            self.objeto.validado = False
-            if self.usuario and self.usuario.nivel > NIVEL_VALIDACION:
-                # No hago nada y dejo que mantenga el valor que tuviera.
-                self.wids['validado'].set_active(self.objeto.validado)
-# PORASQUI: Ahora tengo otro problema. Si un usuario ha validado y el que no tenía privilegios vuelve a abrir el pedido, se escuajaringa todo y vuelve a marcarlo como nó válido para servir. Tampoco he hecho todavía el control desde los albaranes de salida para no servir pedidos no validados ni la ventana de modificar el precio mínimo.
-            if self.objeto.cliente.calcular_credito_disponible(
-                    base = self.objeto.calcular_importe_total(iva = True))<=0:
-                color = self.wids['cbe_cliente'].child.get_colormap().\
-                        alloc_color("IndianRed1")
-            else:
-                color = None
-        else:
-            color = None
-        self.wids['cbe_cliente'].child.modify_base(gtk.STATE_NORMAL, color)
 
     def rellenar_desplegable_tarifas(self):
         """
