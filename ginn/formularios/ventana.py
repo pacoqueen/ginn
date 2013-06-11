@@ -83,6 +83,8 @@ class Ventana:
             usuario = pclases.Usuario.get(usuario)
         if isinstance(usuario, str):
             usuario = pclases.Usuario.selectBy(usuario = usuario)[0]
+        if usuario == None:
+            usuario = pclases.logged_user
         self.__usuario = usuario
         if (not hasattr(self, "usuario") 
             or not isinstance(self.usuario, pclases.Usuario)):

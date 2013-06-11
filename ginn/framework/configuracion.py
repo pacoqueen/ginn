@@ -439,6 +439,10 @@ def parse_params():
                       default = False)
     parser.add_option('-w', "--window", help = "Ventana a iniciar", 
                       action = "store", type = "string", dest = "ventana")
+    parser.add_option('-o', "--object", 
+                      help = "Objeto a abrir al inicio de la ventana", 
+                      action = "store", type = "string", dest = "puid", 
+                      default = None)
     (opts, args) = parser.parse_args()
     # Por compatibilidad hacia atrás, voy a tomar los argumentos posicionales 
     # como usuario y contraseña si no se especifica nada en las opciones.
@@ -494,9 +498,6 @@ def parse_params():
         modulo, clase = None, None
     # Resto de parámetros
     verbose = opts.verbose
-    import pclases
-    pclases.VERBOSE = verbose
     debug = opts.debug
-    pclases.DEBUG = debug
-    return user, password, modulo, clase, config #, verbose, debug
+    return user, password, modulo, clase, config, verbose, debug, opts.puid
 

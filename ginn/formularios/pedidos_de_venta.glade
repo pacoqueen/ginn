@@ -1643,7 +1643,7 @@ de facturar&lt;/small&gt;</property>
                     <property name="receives_default">False</property>
                     <property name="tooltip" translatable="yes">Los pedidos se validan automáticamente a no ser que:
 - Se venda por debajo de precio mínimo.
-- El cliente no cumpla las condiciones de crédito.
+- El cliente no cumpla las condiciones de riesgo.
 En esos casos debe ser un usuario con privilegios para poder validar el pedido.</property>
                     <property name="use_action_appearance">False</property>
                     <property name="draw_indicator">True</property>

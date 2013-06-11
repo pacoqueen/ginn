@@ -73,7 +73,7 @@ def main():
     import sys
     from framework.configuracion import parse_params
     from formularios.autenticacion import Autenticacion
-    usuario, contrasenna, modulo, clase, fconfig = parse_params()
+    usuario, contrasenna, modulo, clase, fconfig, verbose, debug, obj_puid = parse_params()
     login = Autenticacion(usuario, contrasenna)
     if login.loginvalido():
         run(modulo, clase, usuario, fconfig)

@@ -85,11 +85,11 @@ pygtk.require('2.0')
 import gtk, time 
 from framework import pclases
 import mx.DateTime
-from ventana_progreso import VentanaProgreso
+from ventana_progreso import VentanaProgreso, VentanaActividad
 import pango
 from formularios import postomatic
+import sys
 
-NIVEL_VALIDACION = 1
 
 def preguntar_precio(producto, ventana_padre = None):
     """
@@ -124,6 +124,7 @@ class PedidosDeVenta(Ventana):
         comenzar la ventana (en lugar del primero de la tabla, que es
         el que se muestra por defecto).
         """
+        self.NIVEL_VALIDACION = 1
         self.usuario = usuario
         self.ldvs = {}
         self.ldps = {}
@@ -172,55 +173,108 @@ class PedidosDeVenta(Ventana):
     def check_puede_validar(self, ch):
         """
         Si está validado:
-            - Deja el pedido como no validado. Sea quien sea.
+            - Deja el pedido como indica el check. Sea quien sea. Si estamos 
+              rellenando los widgets, ch estará marcado o desmarcado en 
+              función del valor del pedido. Si le ha dado el usuario, el ch 
+              tiene el nuevo valor de validación (opuesto en este instante a 
+              lo que guarda self.objeto.validado).
         Si no está validado: 
-            - Si el usuario tiene nivel: valida.
+            - Si el usuario tiene nivel: valida y guarda el usuario.
             - Si el usuario no tiene nivel: no valida y muestra aviso.
         """
-        if self.objeto.validado:
-            self.objeto.validado = False
-            ch.set_active(self.objeto.validado)
-        else:
-            pass
-            # PORASQUI: Ten en cuenta que esto se activa desde el rellenar_widgets también. No solo cuando le da el usuario.
-        if ((not self.usuario or self.usuario.nivel > NIVEL_VALIDACION)
-                and ch.get_active()
-                and not self.objeto.validable
-                and not self.objeto.usuario):
-            ch.set_active(False)
-            self.objeto.validado = False
-            utils.dialogo_info("PERMISOS INSUFICIENTES", 
-                    texto = "No posee privilegios suficientes para validar "
-                            "el pedido.", 
-                    padre = self.wids['ventana'])
+        if self.objeto.validado == ch.get_active():     # Estoy rellenando. No 
+            # hay edición del usuario. No compruebo nada.
+            pass 
+        else:   # El usuario está desvalidando o intentando validar.
+            self.objeto.notificador.desactivar()
+            vpro = VentanaActividad(self.wids['ventana'], 
+                                    "Comprobando permisos validación...")
+            vpro.mostrar()
+            vpro.mover()
+            tmphndlr = self.handlers_id['validado']['toggled'][-1] # -1? r-u-sure?
+            vpro.mover()
+            if ((not self.usuario or self.usuario.nivel > self.NIVEL_VALIDACION)
+                    and ch.get_active() # = estoy intentando validar
+                    and not self.objeto.validable):     # Pero no puedo
+                vpro.mover()
+                ch.disconnect(tmphndlr)
+                ch.set_active(False)
+                self.objeto.validado = False
+                self.objeto.usuario = None
+                vpro.mover()
+                self.objeto.syncUpdate()
+                vpro.mover()
+                vpro.ocultar()
+                utils.dialogo_info("PERMISOS INSUFICIENTES", 
+                        texto = "No posee privilegios suficientes para validar "
+                                "el pedido.", 
+                        padre = self.wids['ventana'])
+            else:   # Estoy "desvalidando", tengo permisos o es validable.
+                vpro.mover()
+                ch.disconnect(tmphndlr)
+                vpro.mover()
+                if ch.get_active():     # Estoy validando
+                    self.objeto.validado = True
+                    self.objeto.usuario = self.usuario
+                else:   # Estoy desvalidando
+                    self.objeto.validado = False
+                    self.objeto.usuario = None
+                vpro.mover()
+                self.objeto.syncUpdate()
+                vpro.mover()
+                self.rellenar_y_comprobar_validable()  # Equivale a 
+                    # rellenar_widgets pero solo la parte del checkbox.
+                vpro.mover()
+                vpro.ocultar()
+            tmphndlr = ch.connect("toggled", self.check_puede_validar)
+            self.handlers_id['validado']['toggled'].append(tmphndlr)
+            self.wids['b_actualizar'].set_sensitive(False) # Falsos positivos.
+            self.objeto.notificador.activar(self.aviso_actualizacion)
 
-    def comprobar_validable(self):
+    def rellenar_y_comprobar_validable(self):
         """
         Si el pedido no cumple las condiciones de validación, desmarca la 
         casilla de validable y, si es el caso, resalta en rojo el cliente 
         sin crédito.
         """
+        self.objeto.notificador.desactivar()
+        vpro = VentanaActividad(self.wids['ventana'], 
+                                "Comprobando validación...")
+        vpro.mostrar()
         if not self.objeto.validable:
-            if ((self.usuario and self.usuario.nivel > NIVEL_VALIDACION) 
+            vpro.mover()
+            if ((self.usuario and self.usuario.nivel <= self.NIVEL_VALIDACION) 
                     or self.objeto.usuario):
                 # Usuario con privilegios o pedido ya validado manualmente. 
                 # No hago nada y dejo que mantenga el valor que tuviera.
-                self.wids['validado'].set_active(self.objeto.validado)
+                vpro.mover()
             else:
+                vpro.mover()
                 self.objeto.validado = False
-# PORASQUI: Ahora tengo otro problema. Si un usuario ha validado y el que no tenía privilegios vuelve a abrir el pedido, se escuajaringa todo y vuelve a marcarlo como nó válido para servir. Tampoco he hecho todavía el control desde los albaranes de salida para no servir pedidos no validados ni la ventana de modificar el precio mínimo.
+                self.objeto.syncUpdate()
+            vpro.mover()
             if self.objeto.cliente.calcular_credito_disponible(
                     base = self.objeto.calcular_importe_total(iva = True))<=0:
+                vpro.mover()
                 color = self.wids['cbe_cliente'].child.get_colormap().\
                         alloc_color("IndianRed1")
             else:
+                vpro.mover()
                 color = None
         else:
+            vpro.mover()
             color = None
+        vpro.mover()
         self.wids['cbe_cliente'].child.modify_base(gtk.STATE_NORMAL, color)
+        vpro.mover()
         self.wids['validado'].set_label("Validado%s" % (
             self.objeto.usuario and " (" + self.objeto.usuario.usuario + ")" 
             or ""))
+        vpro.mover()
+        self.wids['validado'].set_active(self.objeto.validado)
+        vpro.mover()
+        vpro.ocultar()
+        self.objeto.notificador.activar(self.aviso_actualizacion)        
 
     def conectar_dircorrespondencia(self):
         """
@@ -239,6 +293,22 @@ class PedidosDeVenta(Ventana):
 
     def cambiar_datos_relacionados_con_cliente(self, combo):
         #self.cambiar_direccionCorrespondencia(combo)
+        idcliente = utils.combo_get_value(combo)
+        if idcliente:
+            cliente = pclases.Cliente.get(idcliente)
+            cliente.sync()
+            credito = cliente.calcular_credito_disponible()
+            if credito == sys.maxint:   # ¿maxint, te preguntarás? Ver 
+                                        # docstring de calcular_credito
+                                        # y respuesta hallarás.
+                strcredito = "∞"
+            else:
+                strcredito = utils.float2str(credito)
+        else:
+            strcredito = "¡UN «GRITÓN» DE DÓLARES!"
+        self.wids['cbe_cliente'].set_tooltip_text(
+            "Crédito disponible (sin contar el importe del pedido): %s" 
+            % strcredito)
         self.rellenar_obras(combo)
 
     def rellenar_obras(self, combo):
@@ -380,6 +450,7 @@ class PedidosDeVenta(Ventana):
                                 "transporte:", 
                         padre = self.wids['ventana'])
             if concepto != None:
+                self.guardar(None)  # Por si no están guardadas fecha, etc.
                 srv = pclases.Servicio(pedidoVenta = self.objeto, 
                                        facturaVenta = None, 
                                        albaranSalida = None, 
@@ -1033,6 +1104,8 @@ class PedidosDeVenta(Ventana):
         hay que tener cuidado de no llamar a 
         esta función en ese caso.
         """
+        numpedido_antes = self.wids['e_numpedido'].get_text()
+        total_antes = self.wids['e_total'].get_text()
         if pclases.DEBUG:
             antes = time.time()
             print "Empieza rellenar_widgets:", antes
@@ -1106,7 +1179,8 @@ class PedidosDeVenta(Ventana):
         self.wids['ch_transporte'].set_active(self.objeto.transporteACargo)
         self.wids['cerrado'].set_active(self.objeto.cerrado)
         self.wids['bloqueado'].set_active(self.objeto.bloqueado)
-        self.wids['validado'].set_active(self.objeto.validado)
+        # Esto se hace después en el rellenar_y_comprobar_validable
+        #self.wids['validado'].set_active(self.objeto.validado)
         if pclases.DEBUG: 
             print "Después de rellenar totales:", time.time()-antes
         # Comerciales:
@@ -1134,10 +1208,25 @@ class PedidosDeVenta(Ventana):
             self.objeto.paisCorrespondencia)
         if pclases.DEBUG: 
             print "Después de dirección correspondencia:", time.time()-antes
-        self.rellenar_obras(self.wids['cbe_cliente'])
+        self.cambiar_datos_relacionados_con_cliente(self.wids['cbe_cliente'])
+        #self.rellenar_obras(self.wids['cbe_cliente'])
         if pclases.DEBUG: 
             print "Después de rellenar_obras:", time.time()-antes
-        self.comprobar_validable()
+        numpedido_despues = self.wids['e_numpedido'].get_text()
+        total_despues = self.wids['e_total'].get_text()
+        # Si ha cambiado el total pero no el número de pedido estoy en el 
+        # mismo objeto pero se han añadido líneas, cambiados precios, etc.
+        # Por tanto, si el pedido estaba validado, ya no vale. Hay que 
+        # comprobar otra vez que es legítimo para validación. Eso lo consigo 
+        # quitando el posible usuario que lo validó. Así en la comprobación 
+        # se vuelven a chequear las condiciones.
+        if (numpedido_antes == numpedido_despues 
+                and total_antes != total_despues):
+            self.objeto.notificador.desactivar()
+            self.objeto.usuario = None
+            self.objeto.syncUpdate()
+            self.objeto.notificador.activar(self.aviso_actualizacion)
+        self.rellenar_y_comprobar_validable()
         if pclases.DEBUG:
             print "Después de comprobar validable:", time.time() - antes
         self.objeto.make_swap()
@@ -1755,11 +1844,20 @@ class PedidosDeVenta(Ventana):
         Guarda el contenido de los entry y demás widgets de entrada
         de datos en el objeto y lo sincroniza con la BD.
         """
-        self.objeto
+        if not self.usuario or self.usuario.nivel > self.NIVEL_VALIDACION:
+            self.objeto.usuario = None # He cambiado algo después de 
+            # validación manual (o no). Motivo suficiente para que si no es 
+            # validable, se vuelva a requerir validación de alguien con nivel.
+            self.objeto.syncUpdate()
         # Campos del objeto que hay que guardar:
         numpedido = self.wids['e_numpedido'].get_text()
         if numpedido == '' or numpedido == None:
-            utils.dialogo_info(titulo = 'PEDIDO SIN NÚMERO', texto = 'Está totalmente desaconsejado almacenar pedidos sin número.\nAsigne un número al pedido si quiere relacionarlo más tarde con albaranes y facturas.', padre = self.wids['ventana'])
+            utils.dialogo_info(titulo = 'PEDIDO SIN NÚMERO', 
+                    texto = 'Está totalmente desaconsejado almacenar pedidos'
+                            ' sin número.\nAsigne un número al pedido si '
+                            'quiere relacionarlo más tarde con albaranes y '
+                            'facturas.', 
+                    padre = self.wids['ventana'])
         fecha = self.wids['e_fecha'].get_text()
         idcliente = utils.combo_get_value(self.wids['cbe_cliente'])
         try:
@@ -1779,8 +1877,8 @@ class PedidosDeVenta(Ventana):
         if idcliente != None:
             try:
                 idcliente = pclases.Cliente.get(idcliente)
-            except pclases.SQLObjectNotFound:   # Cliente borrado después de empezar el pedido.
-                idcliente = None
+            except pclases.SQLObjectNotFound:   # Cliente borrado después 
+                idcliente = None                # de empezar el pedido.
         # Desactivo el notificador momentáneamente
         self.objeto.notificador.desactivar()
         # Actualizo los datos del objeto
@@ -1956,6 +2054,7 @@ class PedidosDeVenta(Ventana):
             return None
 
     def cambiar_tarifa_ldv(self, boton):
+        self.guardar(None)
         seleccion = self.wids['tv_ldps'].get_selection()
         model, itr = seleccion.get_selected()
         if itr == None: 

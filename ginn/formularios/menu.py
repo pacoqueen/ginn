@@ -973,7 +973,7 @@ def main():
     #                        }
     # class '*' style 'blanco_y_negro'
     ##
-    user, passwd, modulo, clase, fconfig = parse_params() 
+    user, passwd, modulo, clase, fconfig, verbose, debug, obj_puid = parse_params() 
     #salida = MetaF()
     #sys.stdout = salida
     errores = MetaF()

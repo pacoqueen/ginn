@@ -1,7 +1,7 @@
 from framework.configuracion import parse_params
 
 def main():
-    user, password, modulo, clase, fconfig = parse_params()
+    user, password, modulo, clase, fconfig, verbose, debug, obj_puid = parse_params()
     if not modulo:
         from formularios import menu
         menu.main()

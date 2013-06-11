@@ -98,7 +98,16 @@ from framework import notificacion
 import datetime
 
 # GET FUN !
-parse_params()  # Comprueba que no se haya especificado una conf. alternativa.
+
+usu, contra, modul, clas, confi, verb, debu, obj_puid = parse_params()  
+# Comprueba que no se haya especificado una conf. alternativa y establezco 
+# parametrización en función de lo especificado en CLI. La configuración 
+# alternativa se cambia en el propio parse_params.
+# El usuario lo establezco después, una vez declarada la clase.
+if debu != None:
+    DEBUG = debu
+if verb != None:
+    VERBOSE = verb
 config = ConfigConexion()
 
 #conn = '%s://%s:%s@%s/%s' % (config.get_tipobd(), 
@@ -9682,8 +9691,9 @@ class PedidoVenta(SQLObject, PRPCTOO):
                 validable = False
                 break
         if validable:
-            importe_pedido = base = self.calcular_importe_total(iva = True)
-            if self.cliente.calcular_credito_disponible(importe_pedido) <= 0:
+            importe_pedido = self.calcular_importe_total(iva = True)
+            if self.cliente.calcular_credito_disponible(
+                    base = importe_pedido) <= 0:
                 validable = False
         return validable
 
@@ -19563,6 +19573,13 @@ class Usuario(SQLObject, PRPCTOO):
                 if c not in res:
                     res.append(c)
         return res
+
+# Instanciación diferida de usuario según parámetros
+if usu:
+    try:
+        logged_user = Usuario.selectBy(usuario = usu)[0]
+    except IndexError:
+        pass
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
