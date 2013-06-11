@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 10 junio 2013 at 22:53:17.
+" Created by session.vim 1.5 on 11 junio 2013 at 07:30:40.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -64,12 +64,12 @@ badd +1502 ginn/informes/geninformes.py
 badd +233 ginn/informes/informe_certificado_calidad.py
 badd +1518 informes/geninformes.py
 badd +371 ginn/formularios/facturas_venta.py
-badd +0 ginn/framework/configuracion.py
+badd +1 ginn/framework/configuracion.py
 badd +4 bin/ginn.sh
 badd +13 ginn/main.py
-badd +0 ginn/formularios/ventana.py
+badd +1 ginn/formularios/ventana.py
 badd +2545 ginn/formularios/pedidos_de_venta.py
-badd +0 db/tablas.sql
+badd +1 db/tablas.sql
 args formularios/auditviewer.py
 set lines=59 columns=80
 edit db/tablas.sql
@@ -101,13 +101,13 @@ set nosplitright
 wincmd t
 set winheight=1 winwidth=1
 exe '1resize ' . ((&lines * 1 + 29) / 59)
-exe '2resize ' . ((&lines * 21 + 29) / 59)
+exe '2resize ' . ((&lines * 9 + 29) / 59)
 exe '3resize ' . ((&lines * 1 + 29) / 59)
 exe '4resize ' . ((&lines * 1 + 29) / 59)
 exe '5resize ' . ((&lines * 1 + 29) / 59)
-exe '6resize ' . ((&lines * 17 + 29) / 59)
-exe '7resize ' . ((&lines * 2 + 29) / 59)
-exe '8resize ' . ((&lines * 6 + 29) / 59)
+exe '6resize ' . ((&lines * 22 + 29) / 59)
+exe '7resize ' . ((&lines * 1 + 29) / 59)
+exe '8resize ' . ((&lines * 14 + 29) / 59)
 argglobal
 setlocal fdm=indent
 setlocal fde=0
@@ -131,6 +131,8 @@ normal! zo
 normal! zo
 292
 normal! zo
+845
+normal! zo
 1322
 normal! zo
 1359
@@ -147,14 +149,16 @@ normal! zo
 normal! zo
 1359
 normal! zo
-1373
+1376
 normal! zo
-let s:l = 293 - ((0 * winheight(0) + 0) / 1)
+1412
+normal! zo
+let s:l = 292 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-293
-normal! 0134|
+292
+normal! 013|
 wincmd w
 argglobal
 edit ginn/framework/pclases.py
@@ -166,7 +170,7 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-6639
+6381
 normal! zo
 6641
 normal! zo
@@ -188,12 +192,14 @@ normal! zo
 normal! zo
 9718
 normal! zo
-let s:l = 9671 - ((0 * winheight(0) + 10) / 21)
+19483
+normal! zo
+let s:l = 19491 - ((7 * winheight(0) + 4) / 9)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-9671
-normal! 05|
+19491
+normal! 046|
 wincmd w
 argglobal
 edit ginn/framework/configuracion.py
@@ -279,6 +285,8 @@ normal! zo
 normal! zo
 68
 normal! zo
+68
+normal! zo
 273
 normal! zo
 338
@@ -286,6 +294,12 @@ normal! zo
 381
 normal! zo
 559
+normal! zo
+638
+normal! zo
+638
+normal! zo
+638
 normal! zo
 638
 normal! zo
@@ -326,160 +340,164 @@ normal! zo
 normal! zo
 173
 normal! zo
-174
+187
 normal! zo
-178
+193
 normal! zo
-178
+193
 normal! zo
-179
+194
 normal! zo
-184
+198
 normal! zo
-184
+204
 normal! zo
-351
+205
 normal! zo
-359
+213
 normal! zo
-478
+215
 normal! zo
-540
+226
 normal! zo
-561
+394
 normal! zo
-675
+402
 normal! zo
-675
+521
 normal! zo
-859
+583
 normal! zo
-867
+604
 normal! zo
-870
+718
 normal! zo
-872
-normal! zo
-879
-normal! zo
-880
+718
 normal! zo
 902
 normal! zo
-954
+910
 normal! zo
-963
+913
 normal! zo
-964
+915
 normal! zo
-964
+922
 normal! zo
-964
+923
 normal! zo
-971
+945
 normal! zo
-971
+997
 normal! zo
-971
+1006
 normal! zo
-971
+1007
 normal! zo
-971
+1007
 normal! zo
-971
+1007
 normal! zo
-971
+1014
 normal! zo
-971
+1014
 normal! zo
-986
+1014
 normal! zo
-1103
+1014
 normal! zo
-1109
+1014
 normal! zo
-1115
+1014
 normal! zo
-1117
+1014
 normal! zo
-1120
+1014
 normal! zo
-1207
-normal! zo
-1208
-normal! zo
-1211
+1029
 normal! zo
 1228
 normal! zo
-1234
+1229
 normal! zo
-1248
+1232
 normal! zo
-1258
+1249
 normal! zo
-1302
+1255
 normal! zo
-1314
+1269
 normal! zo
-1619
+1279
 normal! zo
-1677
+1323
 normal! zo
-1692
+1335
 normal! zo
-1707
+1640
 normal! zo
-1733
+1698
 normal! zo
-2040
+1713
 normal! zo
-2272
+1728
 normal! zo
-2281
+1754
 normal! zo
-2286
+2061
 normal! zo
-2299
+2293
 normal! zo
-2318
+2302
 normal! zo
-2335
+2307
 normal! zo
-2404
+2320
 normal! zo
-2409
+2339
 normal! zo
-2436
+2356
 normal! zo
-2441
+2425
 normal! zo
-2443
+2425
 normal! zo
-2444
+2425
 normal! zo
-2476
+2425
 normal! zo
-2490
+2430
 normal! zo
-2490
+2457
 normal! zo
-2490
+2462
 normal! zo
-2490
+2464
 normal! zo
-2490
+2465
 normal! zo
-2490
+2497
 normal! zo
-2490
+2511
 normal! zo
-let s:l = 1113 - ((7 * winheight(0) + 8) / 17)
+2511
+normal! zo
+2511
+normal! zo
+2511
+normal! zo
+2511
+normal! zo
+2511
+normal! zo
+2511
+normal! zo
+let s:l = 185 - ((14 * winheight(0) + 11) / 22)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1113
-normal! 0336|
+185
+normal! 0124|
 wincmd w
 argglobal
 edit ginn/main.py
@@ -493,12 +511,12 @@ setlocal fdn=20
 setlocal fen
 4
 normal! zo
-let s:l = 4 - ((0 * winheight(0) + 1) / 2)
+let s:l = 5 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-4
-normal! 027|
+5
+normal! 018|
 wincmd w
 argglobal
 edit ginn/formularios/launcher.py
@@ -516,22 +534,22 @@ normal! zo
 normal! zo
 69
 normal! zo
-let s:l = 58 - ((2 * winheight(0) + 3) / 6)
+let s:l = 56 - ((1 * winheight(0) + 7) / 14)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-58
-normal! 055|
+56
+normal! 024|
 wincmd w
 6wincmd w
 exe '1resize ' . ((&lines * 1 + 29) / 59)
-exe '2resize ' . ((&lines * 21 + 29) / 59)
+exe '2resize ' . ((&lines * 9 + 29) / 59)
 exe '3resize ' . ((&lines * 1 + 29) / 59)
 exe '4resize ' . ((&lines * 1 + 29) / 59)
 exe '5resize ' . ((&lines * 1 + 29) / 59)
-exe '6resize ' . ((&lines * 17 + 29) / 59)
-exe '7resize ' . ((&lines * 2 + 29) / 59)
-exe '8resize ' . ((&lines * 6 + 29) / 59)
+exe '6resize ' . ((&lines * 22 + 29) / 59)
+exe '7resize ' . ((&lines * 1 + 29) / 59)
+exe '8resize ' . ((&lines * 14 + 29) / 59)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
