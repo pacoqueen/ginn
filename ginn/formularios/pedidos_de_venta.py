@@ -300,7 +300,7 @@ class PedidosDeVenta(Ventana):
         vpro.mover()
         txtestado = self.objeto.get_str_estado()
         if self.objeto.validado:
-            iconostockstado = gtk.STOCK_OK
+            iconostockstado = gtk.STOCK_YES
         else:
             iconostockstado = gtk.STOCK_STOP
         self.wids['iconostado'].set_from_stock(iconostockstado, 
