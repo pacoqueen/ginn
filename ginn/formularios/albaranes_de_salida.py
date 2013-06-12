@@ -2036,6 +2036,17 @@ class AlbaranesDeSalida(Ventana):
             return
         pedido.sync()   # Por si ha habido cambios y no 
                         # ha saltado el fallo de caché.
+        if not pedido.validado:
+            utils.dialogo_info(titulo = "PEDIDO NO VALIDADO", 
+                    texto = "El pedido contiene ventas por debajo del precio\n"
+                            " mínimo o bien el cliente no satisface las \n"
+                            "condiciones de riesgo:\n\n"
+                            "\t· %s\n\n"
+                            "Solicite a un usuario con permisos suficientes \n"
+                            "la validación del pedido desde la ventana de \n"
+                            "pedidos de venta." % (pedido.get_str_estado()), 
+                    padre = self.wids['ventana'])
+            return
         importe_pedido = pedido.calcular_importe_total(iva = True)
         if pclases.DEBUG:
             print "albaranes_de_salida -> importe_pedido", importe_pedido 

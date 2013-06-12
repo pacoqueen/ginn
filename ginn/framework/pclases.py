@@ -9668,11 +9668,45 @@ class PedidoVenta(SQLObject, PRPCTOO):
             bloqueado = "bloqueado"
         else:
             bloqueado = "no bloqueado"
-        return "Pedido %s (%s) de %s. %s y %s" % (self.numpedido, 
-                                                  utils.str_fecha(self.fecha), 
-                                                  cliente, 
-                                                  abierto, 
-                                                  bloqueado)
+        if self.validado:
+            validado = "validado"
+        else:
+            validado = "no validado"
+        return "Pedido %s (%s) de %s. %s, %s y %s." % (self.numpedido, 
+                                                utils.str_fecha(self.fecha), 
+                                                cliente, 
+                                                abierto, 
+                                                bloqueado, 
+                                                validado)
+
+    def get_str_estado(self):
+        """
+        Devuelve una cadena de texto con el estado del pedido y el motivo, 
+        en su caso, de la no validación automática.
+        """
+        txtestado = None
+        if not self.validado:
+            for ldp in self.lineasDePedido:
+                precioMinimo = ldp.producto.precioMinimo
+                precioKilo = ldp.precioKilo
+                if (precioMinimo != None and precioKilo != None 
+                        and precioKilo < precioMinimo):
+                    txtestado = "Necesita validación manual: "\
+                                "ventas por debajo de precio."
+                    break
+            if not txtestado:
+                importe_pedido = self.calcular_importe_total(iva = True)
+                if self.cliente.calcular_credito_disponible(
+                        base = importe_pedido) <= 0:
+                    txtestado = "Necesita validación manual: "\
+                                "cliente con crédito insuficiente."
+            if not txtestado:   # Entonces lo han invalidado manualmente. 
+                                # No queda otra.
+                txtestado = "Necesita validación manual: "\
+                            "Validación cancelada por el usuario."
+        else:
+            txtestado = "Validado"
+        return txtestado
 
     @property
     def validable(self):
@@ -9804,10 +9838,11 @@ class PedidoVenta(SQLObject, PRPCTOO):
                 productos[producto] = {'servido': 0, 'pedido': 0}
             productos[producto]['pedido'] += ldp.cantidad
         for ldv in self.lineasDeVenta:
-            producto = ldv.producto
-            if producto not in productos:
-                productos[producto] = {'servido': 0, 'pedido': 0}
-            productos[producto]['servido'] += ldv.cantidad
+            if ldv.albaranSalida:
+                producto = ldv.producto
+                if producto not in productos:
+                    productos[producto] = {'servido': 0, 'pedido': 0}
+                productos[producto]['servido'] += ldv.cantidad
         servicios_pendientes = [s for s in self.servicios 
                                 if s.albaranSalida == None]
         productos_pendientes = [p for p in productos 
@@ -9891,8 +9926,21 @@ class PedidoVenta(SQLObject, PRPCTOO):
     def get_facturas(self):
         """
         Devuelve las facturas relacionadas con el pedido actual a través de 
+        las líneas de venta.
+        """
+        facturas = []
+        for ldv in self.lineasDeVenta:
+            fra = ldv.facturaVenta
+            if fra != None and fra not in facturas:
+                facturas.append(fra)
+        return facturas
+
+    def _DEPRECATED_get_facturas(self):
+        """
+        Devuelve las facturas relacionadas con el pedido actual a través de 
         sus albaranes de salida.
         """
+        # DEPRECATED
         facturas = []
         for a in self.get_albaranes():
             if not a:

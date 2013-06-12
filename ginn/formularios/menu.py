@@ -639,6 +639,9 @@ class Menu:
                 #v.wids['ventana'].set_icon_from_filename(icowindow)
             else:
                 try:
+                    # TODO: PORASQUI: Terminar esto YA.
+                    raise NotImplementedError, \
+                            "Lanzador multiproceso en desarrollo..."
                     self.lanzar_ventana(archivo, clase)
                 except Exception, e:
                     print e

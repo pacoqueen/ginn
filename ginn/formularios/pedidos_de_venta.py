@@ -193,7 +193,7 @@ class PedidosDeVenta(Ventana):
             vpro.mover()
             tmphndlr = self.handlers_id['validado']['toggled'][-1] # -1? r-u-sure?
             vpro.mover()
-            if ((not self.usuario or self.usuario.nivel > self.NIVEL_VALIDACION)
+            if ((not self.usuario or self.usuario.nivel>self.NIVEL_VALIDACION)
                     and ch.get_active() # = estoy intentando validar
                     and not self.objeto.validable):     # Pero no puedo
                 vpro.mover()
@@ -203,6 +203,11 @@ class PedidosDeVenta(Ventana):
                 self.objeto.usuario = None
                 vpro.mover()
                 self.objeto.syncUpdate()
+                pclases.Auditoria.modificado(self.objeto, 
+                    self.usuario, __file__, 
+                    "Se impide intento de validación en pedido %s por %s." 
+                        % (self.objeto.numpedido, 
+                           self.usuario.usuario))
                 vpro.mover()
                 vpro.ocultar()
                 utils.dialogo_info("PERMISOS INSUFICIENTES", 
@@ -216,9 +221,21 @@ class PedidosDeVenta(Ventana):
                 if ch.get_active():     # Estoy validando
                     self.objeto.validado = True
                     self.objeto.usuario = self.usuario
-                else:   # Estoy desvalidando
+                    pclases.Auditoria.modificado(self.objeto, 
+                        self.usuario, __file__, 
+                        "Pedido %s validado por %s." 
+                            % (self.objeto.numpedido, 
+                               self.objeto.usuario.usuario))
+                else:   # Estoy invalidando
                     self.objeto.validado = False
                     self.objeto.usuario = None
+                    pclases.Auditoria.modificado(self.objeto, 
+                        self.usuario, __file__, 
+                        "Pedido %s invalidado por %s." 
+                            % (self.objeto.numpedido, 
+                               self.usuario and self.usuario.usuario 
+                               or "¡NADIE!"))
+
                 vpro.mover()
                 self.objeto.syncUpdate()
                 vpro.mover()
@@ -251,7 +268,15 @@ class PedidosDeVenta(Ventana):
             else:
                 vpro.mover()
                 self.objeto.validado = False
+                self.objeto.usuario = None
                 self.objeto.syncUpdate()
+                vpro.mover()
+                pclases.Auditoria.modificado(self.objeto, 
+                    self.usuario, __file__, 
+                    "Pedido %s invalidado automáticamente. Usuario: %s." 
+                        % (self.objeto.numpedido, 
+                           self.usuario and self.usuario.usuario 
+                           or "¡NADIE!"))
             vpro.mover()
             if self.objeto.cliente.calcular_credito_disponible(
                     base = self.objeto.calcular_importe_total(iva = True))<=0:
@@ -273,6 +298,15 @@ class PedidosDeVenta(Ventana):
         vpro.mover()
         self.wids['validado'].set_active(self.objeto.validado)
         vpro.mover()
+        txtestado = self.objeto.get_str_estado()
+        if self.objeto.validado:
+            iconostockstado = gtk.STOCK_OK
+        else:
+            iconostockstado = gtk.STOCK_STOP
+        self.wids['iconostado'].set_from_stock(iconostockstado, 
+                                               gtk.ICON_SIZE_DND)
+        self.wids['iconostado'].set_tooltip_text(txtestado)
+        self.wids['b_facturar'].set_sensitive(self.objeto.validado)
         vpro.ocultar()
         self.objeto.notificador.activar(self.aviso_actualizacion)        
 
@@ -304,11 +338,14 @@ class PedidosDeVenta(Ventana):
                 strcredito = "∞"
             else:
                 strcredito = utils.float2str(credito)
+            strfdp = cliente.textoformacobro
         else:
             strcredito = "¡UN «GRITÓN» DE DÓLARES!"
+            strfdp = "Subasta (de lata de anchoas)"
         self.wids['cbe_cliente'].set_tooltip_text(
-            "Crédito disponible (sin contar el importe del pedido): %s" 
+            "Crédito disponible (sin contar el importe del pedido): %s\n"
             % strcredito)
+        self.wids['cbe_fdp'].set_tooltip_text("Forma de pago: %s" % strfdp)
         self.rellenar_obras(combo)
 
     def rellenar_obras(self, combo):
@@ -892,13 +929,16 @@ class PedidosDeVenta(Ventana):
                     pclases.FormaDePago.q.activa == True, 
                     orderBy = ("documento_de_pago_id", "plazo"))]
         #fdps.sort(key = lambda p: p[1])
-        # TODO: Sería usable que se marcara con un astersico, en negrita o 
+        # TODO: Sería usable que se marcara con un asterisco, en negrita o 
         #       algo la forma de pago del cliente. Para que el usuario lo 
         #       pudiera seleccionar ya que no se permite un valor por defecto
         #       para obligar al usuario a rellenarlo y evitar errores entre el 
         #       teclado y la silla.
         utils.rellenar_lista(self.wids['cbe_fdp'], fdps)
         t.attach(self.wids['cbe_fdp'], 2, ncols, nrows, nrows + 1)
+        self.wids['iconostado'].set_from_stock(gtk.STOCK_DIALOG_QUESTION, 
+                                               gtk.ICON_SIZE_DND)
+        self.wids['iconostado'].set_tooltip_text("Estado desconocido.")
 
     def abrir_producto_from_ldp(self,tv, path, view_column):
         """
@@ -1885,7 +1925,18 @@ class PedidosDeVenta(Ventana):
         self.objeto.numpedido = numpedido
         self.objeto.cliente = idcliente
         self.objeto.bloqueado = self.wids['bloqueado'].get_active()
+        validado_antes = self.objeto.validado
         self.objeto.validado = self.wids['validado'].get_active()
+        if validado_antes != self.objeto.validado:
+            pclases.Auditoria.modificado(self.objeto, 
+                self.usuario, __file__, 
+                "Se guarda pedido %s con validación modificada.\n"
+                "Antes: %s. Ahora: %s. Usuario: %s." 
+                    % (self.objeto.numpedido, 
+                        validado_antes, 
+                        self.objeto.validado, 
+                        self.usuario and self.usuario.usuario 
+                        or "¡NADIE!"))
         self.objeto.cerrado = self.wids['cerrado'].get_active()
         tarifa_anterior = self.objeto.tarifa
         if idtarifa == -1:
