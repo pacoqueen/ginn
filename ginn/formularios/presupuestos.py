@@ -352,7 +352,9 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         if self.objeto != None:
             modulo = pclases.config.get_modelo_presupuesto()
-            exec "import %s as presupuesto" % modulo
+            import importlib
+            presupuesto = importlib.import_module("." + modulo, "informes")
+            #exec "import %s as presupuesto" % modulo
             from formularios.reports import abrir_pdf
             abrir_pdf(presupuesto.go_from_presupuesto(self.objeto))  # @UndefinedVariable
 

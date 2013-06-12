@@ -19688,7 +19688,8 @@ class DatosDeLaEmpresa(SQLObject, PRPCTOO):
         Devuelve la ruta completa al logotipo de datos de la empresa.
         Si no tiene logo, devuelve None.
         """
-        im = os.path.join("..", "imagenes", self.logo)
+        im = os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+                          "..", "imagenes", self.logo)
         return os.path.abspath(im)
 
     @classmethod
@@ -20406,7 +20407,8 @@ class Documento(SQLObject, PRPCTOO):
         # Normalmente formularios o framework.
         # Por tanto lo primero que hago es salir del subdirectorio para buscar 
         # el de documentos adjuntos.
-        RUTA_BASE = os.path.join("..", config.get_dir_adjuntos())
+        RUTA_BASE = os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+                          "..", "..", config.get_dir_adjuntos())
         try:
             assert os.path.exists(RUTA_BASE)
         except AssertionError:
