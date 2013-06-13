@@ -90,6 +90,7 @@ import pango
 from formularios import postomatic
 import sys
 
+NIVEL_VALIDACION = 1
 
 def preguntar_precio(producto, ventana_padre = None):
     """
@@ -113,7 +114,6 @@ def preguntar_precio(producto, ventana_padre = None):
                       padre = ventana_padre)
         precio = 0
     return precio
-         
 
 
 class PedidosDeVenta(Ventana):
@@ -124,7 +124,6 @@ class PedidosDeVenta(Ventana):
         comenzar la ventana (en lugar del primero de la tabla, que es
         el que se muestra por defecto).
         """
-        self.NIVEL_VALIDACION = 1
         self.usuario = usuario
         self.ldvs = {}
         self.ldps = {}
@@ -159,7 +158,8 @@ class PedidosDeVenta(Ventana):
                        'b_facturar/clicked': self.facturar, 
                        #'cb_obra/changed': 
                        #     self.cambiar_direccionCorrespondencia
-                       'validado/toggled': self.check_puede_validar
+                       'validado/toggled': self.check_puede_validar, 
+                       'tv_ldps/query-tooltip': self.tooltip_query 
                        }  
         self.add_connections(connections)
         self.inicializar_ventana()
@@ -193,7 +193,7 @@ class PedidosDeVenta(Ventana):
             vpro.mover()
             tmphndlr = self.handlers_id['validado']['toggled'][-1] # -1? r-u-sure?
             vpro.mover()
-            if ((not self.usuario or self.usuario.nivel>self.NIVEL_VALIDACION)
+            if ((not self.usuario or self.usuario.nivel > NIVEL_VALIDACION)
                     and ch.get_active() # = estoy intentando validar
                     and not self.objeto.validable):     # Pero no puedo
                 vpro.mover()
@@ -260,7 +260,7 @@ class PedidosDeVenta(Ventana):
         vpro.mostrar()
         if not self.objeto.validable:
             vpro.mover()
-            if ((self.usuario and self.usuario.nivel <= self.NIVEL_VALIDACION) 
+            if ((self.usuario and self.usuario.nivel <= NIVEL_VALIDACION) 
                     or self.objeto.usuario):
                 # Usuario con privilegios o pedido ya validado manualmente. 
                 # No hago nada y dejo que mantenga el valor que tuviera.
@@ -812,6 +812,9 @@ class PedidosDeVenta(Ventana):
         self.wids['tv_ldvs'].connect("row-activated", self.abrir_producto)
         self.wids['tv_ldps'].connect("row-activated", 
             self.abrir_producto_from_ldp)
+        #self.wids['tv_ldps'].set_property("has-tooltip", True)
+        self.wids['tv_ldps'].set_tooltip_column(3)
+        self.wids['tv_ldps'].connect("query-tooltip", self.tooltip_query)
         cols = (('Producto', 'gobject.TYPE_STRING', False, True, True, None), 
                 ('Cantidad', 'gobject.TYPE_FLOAT', False, True, False, None), 
                 ('IDProducto', 'gobject.TYPE_STRING', False, False, False, 
@@ -939,6 +942,22 @@ class PedidosDeVenta(Ventana):
         self.wids['iconostado'].set_from_stock(gtk.STOCK_DIALOG_QUESTION, 
                                                gtk.ICON_SIZE_DND)
         self.wids['iconostado'].set_tooltip_text("Estado desconocido.")
+
+    def tooltip_query(self, treeview, x, y, mode, tooltip):
+        y_offset = treeview.get_bin_window().get_position()[1]
+        path = treeview.get_path_at_pos(x, y - y_offset)
+        if path:
+            treepath, column = path[:2]  # @UnusedVariable
+            model = treeview.get_model()
+            itr = model.get_iter(treepath)
+            ldp = pclases.LineaDePedido.get(model[itr][-1])
+            precioKilo = ldp.precioKilo
+            if precioKilo != None:
+                texto = "%s € / kg" % (utils.float2str(precioKilo))
+                tooltip.set_text(texto)
+                return True     # Muestra ya el tooltip
+        return False    # No muestra tooltip.
+
 
     def abrir_producto_from_ldp(self,tv, path, view_column):
         """
@@ -1884,7 +1903,7 @@ class PedidosDeVenta(Ventana):
         Guarda el contenido de los entry y demás widgets de entrada
         de datos en el objeto y lo sincroniza con la BD.
         """
-        if not self.usuario or self.usuario.nivel > self.NIVEL_VALIDACION:
+        if not self.usuario or self.usuario.nivel > NIVEL_VALIDACION:
             self.objeto.usuario = None # He cambiado algo después de 
             # validación manual (o no). Motivo suficiente para que si no es 
             # validable, se vuelva a requerir validación de alguien con nivel.

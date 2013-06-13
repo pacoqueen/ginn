@@ -86,6 +86,8 @@ from framework import pclases
 from informes import geninformes
 import mx.DateTime
 
+from formularios.pedidos_de_venta import NIVEL_VALIDACION
+
 class TarifasDePrecios(Ventana):
     def __init__(self, objeto = None, usuario = None):
         """
@@ -324,6 +326,27 @@ class TarifasDePrecios(Ventana):
             self.wids['e_periodo_validez_fin'].set_text(
                 utils.str_fecha(tarifa.periodoValidezFin))
             self.objeto.make_swap()
+            self.rellenar_precio_minimo()
+
+    def rellenar_precio_minimo(self):
+        # Precios mínimos
+        model = self.wids['tv_precio_minimo'].get_model()
+        try:
+            model.clear()
+            for l in pclases.LineaDeProduccion.select(orderBy = "id"):
+                strfamilia = l.nombre
+                if l.nombre.startswith("Línea de"):
+                    strfamilia = strfamilia.replace("Línea de", "")
+                if l.precioMinimo != None:
+                    strprecioMinimo = utils.float2str(l.precioMinimo)
+                else:
+                    strprecioMinimo = ""
+                model.append((strfamilia, strprecioMinimo, l.puid))
+        except AttributeError:
+            return  # Todavía no se ha creado el TV.
+        self.wids['tv_precio_minimo'].set_sensitive(
+                self.usuario and self.usuario.nivel <= NIVEL_VALIDACION 
+                or False)
   
     def inicializar_ventana(self):
         """ Prepara los widgets del formulario. Esto sólo debe 
@@ -377,16 +400,44 @@ class TarifasDePrecios(Ventana):
             column = cols[i]
             cells = column.get_cell_renderers()
             for cell in cells:
-                column.set_cell_data_func(cell,utils.redondear_flotante_en_cell_cuando_sea_posible, (i, 3))
+                column.set_cell_data_func(cell,
+                    utils.redondear_flotante_en_cell_cuando_sea_posible, 
+                    (i, 3))
   
-        ## ----------------------- COMBO BOX -----------------------------------------
+        ## ----------------------- COMBO BOX ---------------------------------
         tarifa = self.rellenar_tarifas(self.wids['cb_nombre_tarifa'])
         # Al rellenar las tarifas del combo ya se selecciona la primera
         # automáticamente, así que aprovecho para asignarla.
         # Y desactivo los widgets si no hay ninguna:
         self.activar_widgets(tarifa != None)
+        ## Precio mínimo por "familia"
+        cols = (("Familia", "gobject.TYPE_STRING", False, True, True, None), 
+                ("Precio mínimo por kg", "gobject.TYPE_STRING", 
+                    True, True, False, self.cambiar_precio_minimo), 
+                ("puid", "gobject.TYPE_STRING", False, False, False, None))
+        utils.preparar_listview(self.wids['tv_precio_minimo'], cols)
+        cell = self.wids['tv_precio_minimo'].get_column(1).get_cell_renderers()[0]
+        cell.set_property("xalign", 1.0)
+        self.wids['notebook1'].set_current_page(1)
         self.rellenar_widgets()
 
+    def cambiar_precio_minimo(self, cell, path, texto):
+        if texto.strip() == "":
+            precio = None
+        else:
+            try:
+                precio = utils._float(texto)
+            except:
+                return
+        model = self.wids['tv_precio_minimo'].get_model()
+        ldp = pclases.getObjetoPUID(model[path][-1])
+        antes = ldp.precioMinimo
+        ldp.precioMinimo = precio
+        pclases.Auditoria.modificado(ldp, self.usuario, __file__, 
+            "Precio mínimo de %s cambiado de %s a %s" % (
+                ldp.nombre, antes, ldp.precioMinimo))
+        self.rellenar_precio_minimo()
+  
     def limpiar_ventana(self):
         """ 
         Limpa todos los widgets de la ventana, EXCEPTO 
@@ -602,7 +653,7 @@ class TarifasDePrecios(Ventana):
                 tarifa = pclases.Tarifa.get(m[0][0]) # m[0][0] -> id de la primera fila
                 self.wids['cb_nombre_tarifa'].set_active(0)
             self.objeto = tarifa
-            self.activar_widgets(tarifa!=None)
+            self.activar_widgets(tarifa != None)
 
     def annadir_producto_a_tarifa(self, event):
         """ 

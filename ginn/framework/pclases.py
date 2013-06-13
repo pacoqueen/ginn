@@ -9692,7 +9692,10 @@ class PedidoVenta(SQLObject, PRPCTOO):
                 if (precioMinimo != None and precioKilo != None 
                         and precioKilo < precioMinimo):
                     txtestado = "Necesita validación manual: "\
-                                "ventas por debajo de precio."
+                                "ventas por debajo de precio\n"\
+                                "(%s < %s)." % (
+                                    utils.float2str(precioKilo), 
+                                    utils.float2str(precioMinimo))
                     break
             if not txtestado:
                 importe_pedido = self.calcular_importe_total(iva = True)
