@@ -6800,7 +6800,6 @@ def etiquetasRollos(rollos, mostrar_marcado):
                             height = 1.64 * cm)
                 c.setFont("Helvetica", 20)
                 c.drawCentredString(xCodigoCE[i], -yCodigoCE[i],
-                                    # "9000122-1035")
                                     "1035-CPD-ES033858")
             c.setFont("Helvetica-Bold", 26)
             c.drawCentredString(xDescripcion[i], -yDescripcion[i],
@@ -9566,7 +9565,6 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
                             height = 1.64 * cm)
                 c.setFont("Helvetica", 18)
                 c.drawCentredString(width/2, height - 2.7 * cm ,
-                                    # "9000122-1035")
                                     "1035-CPD-ES033858")
             if rollo['defectuoso']:
                 # DONE: If 'defectuoso' hay que quitar el marcado CE y poner 
