@@ -12,19 +12,19 @@ fi
 
 DEST=/home/compartido
 if [ -d $DEST ]; then 
-    # Este script está en loquesea/ginn/utils
+    # Este script está en loquesea/Geotex-INN/ginn/lib
     DIRUTILS=`dirname $(readlink -f $0)`
     cd $DIRUTILS 
-    cd ../..
+    cd ../../..
     echo "Estamos en ",
     echo $(pwd)
     #read -p "ENTER para corregir permisos de grupo..." mierda
     echo "Corrigiendo permisos de grupo..." 
-    chmod g+rw -R ginn
+    chmod g+rw -R Geotex-INN
     #read -p "Copiando fichero de configuración. Pulsa ENTER para continuar..." mierda
     echo "Coppiando fichero de log y configuración..."
-    cp -vf $DEST/ginn/framework/ginn.conf /tmp
-    cp -vf $DEST/ginn/formularios/ginn.log /tmp
+    cp -vf $DEST/Geotex-INN/ginn/framework/ginn.conf /tmp
+    cp -vf $DEST/Geotex-INN/ginn/formularios/ginn.log /tmp
     #read -p "Copiando ficheros de desarrollo a compartido. Pulsa ENTER para empezar..." mierda
     echo "Copiando ficheros de desarrollo a compartido..."
     sudo rsync -av ginn $DEST
@@ -34,16 +34,16 @@ if [ -d $DEST ]; then
     rm $DEST/ginn/.gitignore
     #read -p "Pulsa ENTER para restaurar fichero de configuración..." mierda
     echo "Restaurando fichero de log y configuración..."
-    cp -vf /tmp/ginn.conf $DEST/ginn/framework/
-    cp -vf /tmp/ginn.log $DEST/ginn/formularios/
+    cp -vf /tmp/ginn.conf $DEST/Geotex-INN/ginn/framework/
+    cp -vf /tmp/ginn.log $DEST/Geotex-INN/ginn/formularios/
     #read -p "Asignando permisos. Pulsa ENTER para seguir..." merde
     echo "Regenerando log..."
-    cd ginn
-    sudo chown $(whoami) $DEST/ginn/ChangeLog.git.txt
-    chmod +w $DEST/ginn/ChangeLog.git.txt
-    git log | grep -v "commit " | grep -v "Author:" | egrep -v "$^" | grep -v "Merge: " > $DEST/ginn/ChangeLog.git.txt
+    cd Geotex-INN
+    sudo chown $(whoami) $DEST/Geotex-INN/doc/ChangeLog.git.txt
+    chmod +w $DEST/Geotex-INN/ginn/doc/ChangeLog.git.txt
+    git log | grep -v "commit " | grep -v "Author:" | egrep -v "$^" | grep -v "Merge: " > $DEST/Geotex-INN/doc/ChangeLog.git.txt
     echo "Asignando permisos..."
-    sudo chown -R nobody:nogroup $DEST/ginn
+    sudo chown -R nobody:nogroup $DEST/Geotex-INN
 else
     echo "Este script debe ejecutarse en el servidor"
 fi
