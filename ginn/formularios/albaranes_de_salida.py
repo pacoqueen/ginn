@@ -4103,7 +4103,7 @@ class AlbaranesDeSalida(Ventana):
                 except (AttributeError, IndexError):
                     str_formapago = factura.cliente and factura.cliente.textoformacobro or ""
             for incr in vtos:
-                fechavto = factura.fecha + (incr * mx.DateTime.oneDay)
+                fechavto = mx.DateTime.DateFrom(factura.fecha) + (incr * mx.DateTime.oneDay)
                 vto = pclases.VencimientoCobro(fecha = fechavto,
                                                importe = cantidad,
                                                facturaVenta = factura, 
