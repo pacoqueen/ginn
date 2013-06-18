@@ -2347,7 +2347,7 @@ class FacturasVenta(Ventana):
                 # ¿Factura sin pedido?
                 str_formapago = factura.cliente.textoformacobro
             for incr in vtos:
-                fechavto = factura.fecha + (incr * mx.DateTime.oneDay)
+                fechavto = mx.DateTime.DateFrom(factura.fecha) + (incr * mx.DateTime.oneDay)
                 vto = pclases.VencimientoCobro(fecha = fechavto,
                         importe = cantidad,
                         facturaVenta = factura, 
