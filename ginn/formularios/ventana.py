@@ -918,8 +918,8 @@ class Ventana:
                 if permiso == None:
                     permiso = MetaPermiso()
                 if permiso.escritura:
-                    if self.usuario.nivel <= 1:
-                        # print "Activo widgets para usuario con nivel de privilegios <= 1."
+                    if self.usuario.nivel <= 2:
+                        # print "Activo widgets para usuario con nivel de privilegios <= 2."
                         self.activar_widgets(True, chequear_permisos = False)
                     else:
                         # print "Activo widgets porque permiso de escritura y objeto no bloqueado o recién creado."
