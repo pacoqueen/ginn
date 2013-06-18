@@ -1169,7 +1169,7 @@ class AlbaranesDeSalida(Ventana):
         se evaluará como boolean.
         """
         if (self.objeto and self.objeto.bloqueado and self.usuario 
-            and self.usuario.nivel >= 2):
+            and self.usuario.nivel > 2):
             s = False
         ws = ('b_add_producto', 'b_drop_ldv', 'b_borrar', 'e_numalbaran', 
               'ch_bloqueado', 'b_fecha', 'cbe_cliente', 'tv_ldvs', 'e_fecha', 
