@@ -291,9 +291,11 @@ class Usuarios(Ventana):
         for v in pclases.Ventana.select():
             try:
                 pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(
+                    os.path.dirname(os.path.realpath(__file__)), 
                     '..', 'imagenes', v.icono))
             except (gobject.GError, AttributeError):
                 pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(
+                    os.path.dirname(os.path.realpath(__file__)), 
                     '..', 'imagenes', 'dorsia.png'))
             model.append((v.descripcion, 
                           v.fichero, 
