@@ -1816,7 +1816,7 @@ class PedidosDeVenta(Ventana):
         if self.objeto != None: self.objeto.notificador.desactivar()
         self._objetoreciencreado = self.objeto = pclases.PedidoVenta(
             cliente = None, 
-            fecha = time.localtime(), 
+            fecha = mx.DateTime.localtime(), 
             numpedido = numpedido,
             iva = 0.21,
             descuento = 0,
@@ -1975,7 +1975,7 @@ class PedidosDeVenta(Ventana):
             #    year = int(fecha.split('/')[2])) 
             self.objeto.fecha = utils.parse_fecha(fecha)
         except:
-            self.objeto.fecha = time.localtime()
+            self.objeto.fecha = mx.DateTime.localtime()
         self.objeto.descuento = descuento
         self.objeto.iva = iva
         self.objeto.direccionCorrespondencia = self.wids['e_direccionCorrespondencia'].get_text()
