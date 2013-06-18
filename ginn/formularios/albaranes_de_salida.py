@@ -3559,7 +3559,7 @@ class AlbaranesDeSalida(Ventana):
             and cli.get_facturas_vencidas_sin_documento_de_cobro()):
             frasvenc = cli.get_facturas_vencidas_sin_documento_de_cobro()
             strfrasvenc = "; ".join([f.numfactura for f in frasvenc])
-            if not self.usuario or self.usuario.nivel > 2:
+            if not self.usuario or self.usuario.nivel >= 2:
                 utils.dialogo_info(titulo = "CLIENTE DEUDOR", 
                                 texto = "El cliente tiene %d facturas "
                                        "vencidas sin documento de pago:\n%s" 
