@@ -156,7 +156,7 @@ conhack = connectionForURI(conn)
 # sqlbuilder y de paso hago un workaround del bug del doble caracter 
 # de ESCAPE con postgresql en la versión empaquetada con Ubuntu precise. 
 # TODO: Temporal hasta que la versión upstream 1.2 entre en el repositorio.  
-from sqlobject import sqlbuilder, LIKE
+from sqlobject import sqlbuilder, LIKE, styles
 _CONTAINSSTRING = sqlbuilder.CONTAINSSTRING
 def CONTAINSSTRING_failsafe(expr, pattern):
     # return LIKE(expr, '%' + _LikeQuoted(pattern) + '%', escape='\\')
@@ -165,7 +165,9 @@ def CONTAINSSTRING_failsafe(expr, pattern):
 
 def CONTAINSSTRING(expr, pattern):
     try:
-        nombre_clase = SQLObject.sqlmeta.style.dbTableToPythonClass(
+        #nombre_clase = SQLObject.sqlmeta.style.dbTableToPythonClass(
+        #                expr.tableName)
+        nombre_clase = styles.defaultStyle.dbTableToPythonClass(
                         expr.tableName)
         clase = globals()[nombre_clase]
         columna = clase.sqlmeta.columns[expr.fieldName]
