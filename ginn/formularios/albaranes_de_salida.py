@@ -173,6 +173,8 @@ class AlbaranesDeSalida(Ventana):
                 strcredito = utils.float2str(credito)
                 if credito <= 0:
                     color = combo.child.get_colormap().alloc_color("IndianRed1")
+                else:
+                    color = None
             strfdp = cliente.textoformacobro
         else:
             strcredito = "¡UN «GRITÓN» DE DÓLARES!"
