@@ -3633,7 +3633,8 @@ def imprimir_etiqueta(articulo, marcado_ce, ventana_parte, defectuoso = False):
 def recv_serial(com, ventana, l_peso, ventana_parte, ch_marcado, e_numrollo, 
                 ch_defectuoso, objeto_ventana_parte):
     #DEBUG:    print "callback lanzado. leyendo..."    # Tal y como suponía, esto es BLOQUEANTE con timeout_add.
-    c = com.readline(eol = '\r') 
+    # c = com.readline(eol = '\r') 
+    c = com.readline() 
     #DEBUG:     print "leído: ", c
     if c.strip() != '':
         # Tratar
