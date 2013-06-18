@@ -970,7 +970,7 @@ class AbonosVenta(Ventana):
             return  # El cliente no existe o canceló.
         if abono != None:
             abono.notificador.desactivar()
-        abono = pclases.Abono(fecha = time.localtime(), 
+        abono = pclases.Abono(fecha = mx.DateTime.localtime(), 
                             facturaDeAbono = None,
                             numabono = numabono,
                             cliente = cliente, 
