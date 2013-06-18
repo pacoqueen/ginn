@@ -1219,7 +1219,7 @@ class AbonosVenta(Ventana):
         texto = convertir_numero_a_texto(totales['total'], moneda = "euros", 
                                          fraccion = "céntimos").upper()
         vencimiento = {'fecha': utils.str_fecha(  # @UnusedVariable
-                                    abono.fecha + mx.DateTime.oneDay * 90),
+                            mx.DateTime.DateFrom(abono.fecha) + mx.DateTime.oneDay * 90),
                        'pago': "vencimiento['pago']", 
                        'documento': "vencimiento['documento']" 
                       }
