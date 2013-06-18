@@ -9729,7 +9729,7 @@ class PedidoVenta(SQLObject, PRPCTOO):
                 break
         if validable:
             importe_pedido = self.calcular_importe_total(iva = True)
-            if self.cliente.calcular_credito_disponible(
+            if self.cliente and self.cliente.calcular_credito_disponible(
                     base = importe_pedido) <= 0:
                 validable = False
         return validable
