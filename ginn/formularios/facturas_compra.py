@@ -1244,7 +1244,7 @@ class FacturasDeEntrada(Ventana):
                     iva = 0.0
             else:
                 iva = 0.21
-            factura = pclases.FacturaCompra(fecha = time.localtime(),
+            factura = pclases.FacturaCompra(fecha = mx.DateTime.localtime(),
                                         numfactura = numfactura,
                                         proveedor = proveedor, 
                                         vistoBuenoComercial = False, 
@@ -1483,12 +1483,12 @@ class FacturasDeEntrada(Ventana):
         try:
             factura.fecha = utils.parse_fecha(fecha)
         except Exception:
-            factura.fecha = time.localtime()
+            factura.fecha = mx.DateTime.localtime()
         try:
             factura.fechaEntrada = utils.parse_fecha(
                     self.wids['e_fecha_entrada'].get_text())
         except:
-            factura.fechaEntrada = time.localtime()
+            factura.fechaEntrada = mx.DateTime.localtime()
 
         # Si los vistos buenos no han cambiado, significa (ya que el botón 
         # guardar se ha habilitado) que lo que ha cambiado es algún campo de 
@@ -1772,7 +1772,7 @@ class FacturasDeEntrada(Ventana):
                     numvtos = len(vtos)
                     cantidad = total/numvtos
                     if not factura.fecha:
-                        factura.fecha = time.localtime()
+                        factura.fecha = mx.DateTime.localtime()
                     if (proveedor.diadepago != None 
                         and proveedor.diadepago != ''
                         and proveedor.diadepago != "-"):
@@ -1879,7 +1879,7 @@ class FacturasDeEntrada(Ventana):
         elif idvto == -1:   # Para el resto de valores rebota-rebota y en tu 
                             # culo explota.
             factura = self.objeto
-            vto = pclases.VencimientoPago(fecha = time.localtime(),
+            vto = pclases.VencimientoPago(fecha = mx.DateTime.localtime(),
                                           facturaCompra = factura,
                                           importe = cantidad, 
                                           fechaPagado = None)
@@ -2147,7 +2147,7 @@ class FacturasDeEntrada(Ventana):
         elif idpago == -1:  # Para el resto de valores rebota-rebota 
                             # y en tu culo explota.
             factura = self.objeto
-            pago = pclases.Pago(fecha = time.localtime(),
+            pago = pclases.Pago(fecha = mx.DateTime.localtime(),
                                   facturaCompra = factura,
                                   importe = importe)
             pclases.Auditoria.nuevo(pago, self.usuario, __file__)
