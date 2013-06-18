@@ -1827,9 +1827,9 @@ class FacturasDeEntrada(Ventana):
                             vto.fecha = fechaest 
                         # Si la fecha de vencimiento cae en sábado o domingo, 
                         # lo paso al lunes siguiente.
-                        while vto.fecha.day_of_week >= 5:   
+                        while mx.DateTime.DateFrom(vto.fecha).day_of_week >= 5:   
                             # 0 = lunes... 5 = sábado, 6 = domingo
-                            vto.fecha += mx.DateTime.oneDay
+                            vto.fecha = mx.DateTime.DateFrom(vto.fecha) + mx.DateTime.oneDay
                         vto.fecha = utils.asegurar_fecha_positiva(vto.fecha)
                     # Si los he creado automáticamente, son válidos.
                     self.objeto.vencimientosConfirmados = True
