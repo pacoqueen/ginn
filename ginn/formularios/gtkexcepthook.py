@@ -268,6 +268,7 @@ def _info(exctyp, value, tb):
             except:
                 vpro.ocultar()
                 autosend = False # ¿No Inet? Volver a bucle mostrando ventana.
+                                    # TODO: Y además volcar a log o algo, ¿no?
                 continue
             else:
                 vpro.ocultar()

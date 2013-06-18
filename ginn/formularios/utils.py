@@ -62,7 +62,7 @@ try:
     import gobject
 except (ImportError, RuntimeError), msg:
     print "WARNING: No se pudo importar GTK/pyGTK. No se podrán usar funciones gráficas:\n%s" % (msg)
-import mx.DateTime, os, time, datetime
+import mx.DateTime, os, time, datetime, re, string, sys
 try:
     from formularios import nftp
 except ImportError, msg:
@@ -71,19 +71,19 @@ from fixedpoint import FixedPoint as Ffloat
 from collections import defaultdict
 
 
-def str_fechahoralarga(datetime):
+def str_fechahoralarga(fechahora):
     """
-    Devuelve el datetime recibido como una cadena que 
+    Devuelve el fechahora recibido como una cadena que 
     muestra la fecha y la hora.
     """
-    return "%s %s" % (str_fecha(datetime), str_hora(datetime))
+    return "%s %s" % (str_fecha(fechahora), str_hora(fechahora))
 
-def str_fechahora(datetime):
+def str_fechahora(fechahora):
     """
-    Devuelve el datetime recibido como una cadena que 
+    Devuelve el fechahora recibido como una cadena que 
     muestra la fecha y la hora.
     """
-    return "%s %s" % (str_fecha(datetime), str_hora_corta(datetime))
+    return "%s %s" % (str_fecha(fechahora), str_hora_corta(fechahora))
 
 def str_fecha(fecha = time.localtime()):
     """
@@ -1866,8 +1866,7 @@ def parse_fecha(txt):
     '01/01/09'
     """
     # TODO: Aquí hay un pequeño problema. Ya no acepta fechas 22-11-1979.
-    from re import compile
-    if compile("(\d{2}-\d{2}-(\d{4}|\d{2}))").findall(txt):
+    if re.compile("(\d{2}-\d{2}-(\d{4}|\d{2}))").findall(txt):
         txt = txt.replace("-", "/")
     # Navision plagiarism! (¿Quién lo diría?)
     txt = txt.strip().upper()
@@ -1944,12 +1943,10 @@ def parse_fechahora(txt):
     excepción.
     """
     try:
-        import datetime
         if isinstance(txt, datetime.datetime):
             txt = txt.strftime("%d/%m/%Y %H:%M:%S")
     except ImportError:
         pass
-    import re
     fechamysqlstyle = re.compile("\d+-\d+-\d+ \d{2}:\d{2}")
     if fechamysqlstyle.findall(txt):
         dia, mes, anno = txt.split(" ")[0].split("-")[:3]
@@ -2235,8 +2232,6 @@ def descamelcase_o_matic(s):
     sustituyendo las mayúsculas por "espacio-minúscula" y poniendo 
     la primera letra en mayúscula.
     """
-    import string
-
     res = ""
     for c in s:
         if c in string.uppercase:
@@ -2321,7 +2316,6 @@ def dialogo_pedir_codigos(titulo = "INTRODUZCA RANGO",
     convirtiendo a mayúscula). Devuelve una lista iterable de códigos o números, dependiendo de si 
     se detectó la letra inicial o no.
     """
-    import re
     rangos = re.compile("[a-zA-Z]*\ ?\d+[ ]*-[ ]*[a-zA-Z]*\ ?\d+")
     sueltos = re.compile("[a-zA-Z]*\ ?\d+")
     numero = re.compile("\d+")
@@ -2372,7 +2366,6 @@ def dialogo_pedir_rango(titulo = "INTRODUZCA RANGO",
     cancela el diálogo.
     OJO: No acepta números negativos.
     """
-    import re
     rangos = re.compile("\d+[ ]*-[ ]*\d+")
     sueltos = re.compile("\d+")
     res = None
@@ -2651,8 +2644,7 @@ def acortar_palabra_con_tilde(w):
     Útil para hacer búsquedas "tilde-insensitives" a costa de perder un poco 
     de precisión.
     """
-    from string import letters
-    no_tildes = letters + "1234567890"# ñÑüÜ.,-_"
+    no_tildes = string.letters + "1234567890"# ñÑüÜ.,-_"
     # CWT: Para que Iván B. pueda buscar A-4 y C/L, es necesario incluir estos 
     # símbolos 
     no_tildes += "-/"
@@ -3313,7 +3305,6 @@ def parse_numero(cad, invertir = False):
     de la cadena cad o None si no contiene ninguna cifra.
     Si invertir == True, devuelve el primer número encontrado por el final.
     """
-    import re
     regexp = re.compile("[0-9]*")
     try:
         ultimo = [int(item) for item in regexp.findall(cad) if item!='']
@@ -3945,9 +3936,7 @@ def sort_nicely(l):
     obvio, por otra parte, porque para enteros no hacen falta estas alforjas). 
     No permite tampoco que la lista sea heterogénea.
     """ 
-    import sys
     if sys.version_info >= (2, 4): 
-        import re
         #convert = lambda text: int(text) if text.isdigit() else text 
         def convert(text):
             if text.isdigit():
@@ -4059,7 +4048,6 @@ def parse_cif(cif = None):
         # hubiera 8 números sin letra). La comprobación de NIF de Hacienda no la 
         # conozco, pero debe andar por algún lado, porque el programa de ayuda 
         # del 349 detecta NIF incorrectos.
-        import string, re
         cif = str(cif).upper().strip()
         letras = string.letters[string.letters.index("A"):]
         numeros = "0123456789"
@@ -4298,7 +4286,6 @@ def sanitize(cad):
     return cad
 
 if __name__=="__main__":
-    import sys
     print dialogo_radio(titulo='Seleccione una opción', 
                 texto='Selecciona una opción del radiobutton y tal y cual.', 
                 ops=[(0, 'Sin opciones'), (1, "Una opción"), (2, "Y otra"), 

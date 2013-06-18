@@ -15607,7 +15607,8 @@ class Alarma(SQLObject, PRPCTOO):
             # días y aún no se ha recibido un documento de pago. En el correo 
             # se debe adjuntar el PDF del historial de la factura y un PDF de 
             # la copia de la factura -la que lleva marca de agua-.
-            if (fra.fecha+(mx.DateTime.oneDay * 45) <= mx.DateTime.localtime()
+            if (mx.DateTime.DateFrom(fra.fecha) + (mx.DateTime.oneDay * 45) 
+                    <= mx.DateTime.localtime()
                 and not fra.cobros):
                 # Verifico que no se haya enviado ya el correo electrónico.
                 for t in fra.tareas:
