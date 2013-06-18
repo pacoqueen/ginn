@@ -209,7 +209,7 @@ class ResultadosTenacidad(Ventana):
                                    texto = 'Debe introducir el resultado de la prueba.')
                 return
             try:
-                prueba = pclases.PruebaTenacidad(fecha = time.strptime(fecha, '%d/%m/%Y'),
+                prueba = pclases.PruebaTenacidad(fecha = utils.parse_fecha(fecha),
                                                  resultado = resultado,
                                                  lote = self.lote)
                 pclases.Auditoria.nuevo(prueba, self.usuario, __file__)
@@ -287,7 +287,7 @@ class ResultadosTenacidad(Ventana):
         model = self.wids['tv_pruebas'].get_model()
         prueba = pclases.PruebaTenacidad.get(model[path][-1])
         try:
-            prueba.fecha = time.strptime(texto, '%d/%m/%Y')
+            prueba.fecha = utils.parse_fecha(texto)
         except:
             utils.dialogo_info('FECHA INCORRECTA', 
                                'La fecha introducida (%s) no es correcta.' % texto)

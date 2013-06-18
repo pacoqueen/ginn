@@ -211,7 +211,7 @@ class ResultadosTitulo(Ventana):
                                    padre = self.wids['ventana'])
                 return
             try:
-                prueba = pclases.PruebaTitulo(fecha = time.strptime(fecha, '%d/%m/%Y'),
+                prueba = pclases.PruebaTitulo(fecha = utils.parse_fecha(fecha),
                                                     resultado = resultado,
                                                     lote = self.lote)
                 pclases.Auditoria.nuevo(prueba, self.usuario, __file__)
@@ -302,7 +302,7 @@ class ResultadosTitulo(Ventana):
         model = self.wids['tv_pruebas'].get_model()
         prueba = pclases.PruebaTitulo.get(model[path][-1])
         try:
-            prueba.fecha = time.strptime(texto, '%d/%m/%Y')
+            prueba.fecha = utils.parse_fecha(texto)
         except:
             utils.dialogo_info('FECHA INCORRECTA', 
                                'La fecha introducida (%s) no es correcta.' % texto,

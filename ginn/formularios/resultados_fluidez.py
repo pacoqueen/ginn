@@ -474,7 +474,7 @@ class ResultadosFluidez(Ventana):
         model = self.wids['tv_pruebas'].get_model()
         prueba = pclases.PruebaGranza.get(model[path][-1])
         try:
-            prueba.fecha = time.strptime(texto, '%d/%m/%Y')
+            prueba.fecha = utils.parse_fecha(texto)
         except:
             utils.dialogo_info('FECHA INCORRECTA', 
                                'La fecha introducida (%s) no es correcta.' % texto, 

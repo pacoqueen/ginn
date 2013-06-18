@@ -196,7 +196,7 @@ class ResultadosLongitudinal(Ventana):
                                    texto = 'Debe introducir el resultado de la prueba.')
                 return
             try:
-                prueba = claseprueba(fecha = time.strptime(fecha, '%d/%m/%Y'),  # @UnusedVariable
+                prueba = claseprueba(fecha = utils.parse_fecha(fecha),  # @UnusedVariable
                                      resultado = resultado,
                                      partida = self.partida)
             except:
@@ -276,7 +276,7 @@ class ResultadosLongitudinal(Ventana):
         model = self.wids['tv_pruebas'].get_model()
         prueba = claseprueba.get(model[path][-1])
         try:
-            prueba.fecha = time.strptime(texto, '%d/%m/%Y')
+            prueba.fecha = utils.parse_fecha(texto)
         except:
             utils.dialogo_info('FECHA INCORRECTA', 
                                'La fecha introducida (%s) no es correcta.' % texto)

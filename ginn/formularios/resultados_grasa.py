@@ -163,7 +163,7 @@ class ResultadosGrasa(Ventana):
                                    texto = 'Debe introducir el resultado de la prueba.')
                 return
             try:
-                prueba = pclases.PruebaGrasa(fecha = time.strptime(fecha, '%d/%m/%Y'),
+                prueba = pclases.PruebaGrasa(fecha = utils.parse_fecha(fecha),
                                                     resultado = resultado,
                                                     lote = self.lote)
                 pclases.Auditoria.nuevo(prueba, self.usuario, __file__)
@@ -242,7 +242,7 @@ class ResultadosGrasa(Ventana):
         model = self.wids['tv_pruebas'].get_model()
         prueba = pclases.PruebaGrasa.get(model[path][-1])
         try:
-            prueba.fecha = time.strptime(texto, '%d/%m/%Y')
+            prueba.fecha = utils.parse_fecha(texto)
         except:
             utils.dialogo_info('FECHA INCORRECTA', 
                                'La fecha introducida (%s) no es correcta.' % texto)

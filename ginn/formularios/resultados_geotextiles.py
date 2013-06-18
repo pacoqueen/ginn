@@ -796,7 +796,7 @@ class ResultadosGeotextiles(Ventana):
 
     def cambiar_fecha(self, cell, path, texto):
         try:
-            fecha = time.strptime(texto, '%d/%m/%Y')
+            fecha = utils.parse_fecha(texto)
         except:
             utils.dialogo_info('FECHA INCORRECTA', 
                 'La fecha introducida (%s) no es correcta.' % texto, 
@@ -860,7 +860,7 @@ class ResultadosGeotextiles(Ventana):
             ide = ids[columnaid]
             if ide == 0:
                 if texto != "":
-                    fecha = time.strptime(model[path][0], '%d/%m/%Y') 
+                    fecha = utils.parse_fecha(model[path][0]) 
                     prueba = clase(fecha = fecha, 
                                    resultado = resultado,
                                    partida = self.partida)
