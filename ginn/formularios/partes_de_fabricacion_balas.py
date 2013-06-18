@@ -587,7 +587,9 @@ class PartesDeFabricacionBalas(Ventana):
             self.logger.warning("partes_de_fabricacion_balas.py: "
                                 "No se encontró granza reciclada.", 
                                 exc_info = True)
-        opciones_granza = [(g.id, g.descripcion) for g in granzas]
+            opciones_granza = []
+        else:
+            opciones_granza = [(g.id, g.descripcion) for g in granzas]
         utils.rellenar_lista(combo, opciones_granza)
         nombre_combo = "cbe_reciclada_%d" % (numcombo)
         combo.set_name(nombre_combo)

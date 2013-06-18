@@ -2307,21 +2307,30 @@ class PartesDeFabricacionRollos(Ventana):
         # XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX
         # Pongo la partida como actual.
         partida_carga = partida.partidaCarga
-        self.wids['e_partida'].set_text(partida_carga.codigo)
-        self.wids['e_partida_gtx'].set_text(partida.codigo)
-        if partida.rollos: # Ya tiene algún rollo asociado de un parte anterior
-            productoVenta = partida.rollos[0].articulos[0].productoVenta
-            self.producto = productoVenta
-            self.rellenar_datos_articulo(self.producto)
-            self.wids['e_fichaproduccion'].set_text(
-                self.producto.camposEspecificosRollo.fichaFabricacion)
-            self.objeto.fichaproduccion \
-                = self.wids['e_fichaproduccion'].get_text()
-        for a in self.objeto.articulos: # Y cambio de partida los artículos y 
-                                        # de producto de venta.
-            a.partida = partida
-            a.productoVenta = self.producto
-        self.actualizar_ventana()
+        if not partida_carga:
+            utils.dialogo_info(titulo = "PARTIDA VACÍA", 
+                    texto = "No hay constancia de carga de fibra para \n"
+                            "producir la partida %s.\n\n"
+                            "Cree una partida de carga y agregue la partida\n"
+                            "antes de volver a intentarlo." % partida.codigo, 
+                    padre = self.wids['ventana'])
+            partida.destroy(ventana = __file__)
+        else:
+            self.wids['e_partida'].set_text(partida_carga.codigo)
+            self.wids['e_partida_gtx'].set_text(partida.codigo)
+            if partida.rollos: # Ya tiene algún rollo asociado de un parte anterior
+                productoVenta = partida.rollos[0].articulos[0].productoVenta
+                self.producto = productoVenta
+                self.rellenar_datos_articulo(self.producto)
+                self.wids['e_fichaproduccion'].set_text(
+                    self.producto.camposEspecificosRollo.fichaFabricacion)
+                self.objeto.fichaproduccion \
+                    = self.wids['e_fichaproduccion'].get_text()
+            for a in self.objeto.articulos: # Y cambio de partida los artículos y 
+                                            # de producto de venta.
+                a.partida = partida
+                a.productoVenta = self.producto
+            self.actualizar_ventana()
 
     def nueva_partida(self, numpartida):
         """ Marcado para DEPRECATED """

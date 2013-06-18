@@ -109,12 +109,17 @@ class ConsumoBalasPartida(Ventana):
                                            texto = "Introduzca el número de partida de geotextiles", 
                                            padre = self.wids['ventana'])
         if numpartida != None:
-            numpartida = numpartida.upper().replace("P-", "")
-            partida = pclases.Partida.select(pclases.Partida.q.numpartida == numpartida)
-            try:
-                encontradas = partida.count()
-            except:
+            numpartida = numpartida.upper().strip().replace("P-", "")
+            numpartida = utils.parse_numero(numpartida)
+            if numpartida == None:
                 encontradas = 0
+            else:
+                partida = pclases.Partida.select(
+                        pclases.Partida.q.numpartida == numpartida)
+                try:
+                    encontradas = partida.count()
+                except:
+                    encontradas = 0
             if encontradas == 1:
                 partida = partida[0]
                 if partida.partidaCargaID != None:

@@ -40,7 +40,7 @@ if [ -d $DEST ]; then
     echo "Regenerando log..."
     cd Geotex-INN
     sudo chown $(whoami) $DEST/Geotex-INN/doc/ChangeLog.git.txt
-    chmod +w $DEST/Geotex-INN/ginn/doc/ChangeLog.git.txt
+    chmod +w $DEST/Geotex-INN/doc/ChangeLog.git.txt
     git log | grep -v "commit " | grep -v "Author:" | egrep -v "$^" | grep -v "Merge: " > $DEST/Geotex-INN/doc/ChangeLog.git.txt
     echo "Asignando permisos..."
     sudo chown -R nobody:nogroup $DEST/Geotex-INN

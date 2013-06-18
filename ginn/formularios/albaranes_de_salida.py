@@ -140,6 +140,7 @@ class AlbaranesDeSalida(Ventana):
                        'cbe_almacenOrigenID/changed': self.check_almacenes, 
                        'cbe_almacenDestinoID/changed': self.check_almacenes, 
                        'ch_facturable/toggled': self.sombrear_entry_motivo, 
+                       'cbe_cliente/changed': self.resaltar_credito
                       }
         self.add_connections(connections)
         if pclases.DEBUG:
@@ -153,6 +154,34 @@ class AlbaranesDeSalida(Ventana):
         else:
             self.ir_a(objeto)
         gtk.main()
+
+    def resaltar_credito(self, combo):
+        """
+        Colorea el combo del cliente para mostrar si tiene o no crédito.
+        """
+        idcliente = utils.combo_get_value(combo)
+        if idcliente:
+            cliente = pclases.Cliente.get(idcliente)
+            cliente.sync()
+            credito = cliente.calcular_credito_disponible()
+            if credito == sys.maxint:   # ¿maxint, te preguntarás? Ver 
+                                        # docstring de calcular_credito
+                                        # y respuesta hallarás.
+                strcredito = "∞"
+                color = None
+            else:
+                strcredito = utils.float2str(credito)
+                if credito <= 0:
+                    color = combo.child.get_colormap().alloc_color("IndianRed1")
+            strfdp = cliente.textoformacobro
+        else:
+            strcredito = "¡UN «GRITÓN» DE DÓLARES!"
+            strfdp = "Subasta (de lata de anchoas)"
+            color = None
+        combo.set_tooltip_text(
+            "Crédito disponible (sin contar el importe del albarán): %s\n"
+            % strcredito)
+        combo.child.modify_base(gtk.STATE_NORMAL, color)
 
     def sombrear_entry_motivo(self, ch):
         """
@@ -1552,6 +1581,7 @@ class AlbaranesDeSalida(Ventana):
         self.wids['cbe_almacenOrigenID'].set_sensitive(not hay_ldvs)
         self.wids['cbe_almacenDestinoID'].set_sensitive(not hay_ldvs)
         self.sombrear_entry_motivo(self.wids['ch_facturable'])
+        self.resaltar_credito(self.wids['cbe_cliente'])
 
     def activar_packing_list(self):
         """
