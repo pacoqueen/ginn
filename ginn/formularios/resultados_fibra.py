@@ -643,6 +643,9 @@ class ResultadosFibra(Ventana):
             if ide == 0:
                 if texto != "":
                     fecha = time.strptime(model[path][0], '%d/%m/%Y') 
+                    fecha = mx.DateTime.DateFrom(fecha.tm_year, 
+                                                 fecha.tm_mon, 
+                                                 fecha.tm_mday)
                     prueba = clase(fecha = fecha, 
                                    resultado = resultado,
                                    lote = self.lote)
