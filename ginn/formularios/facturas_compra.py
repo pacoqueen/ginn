@@ -1790,9 +1790,9 @@ class FacturasDeEntrada(Ventana):
                     else:
                         diaest = False
                     for incr in vtos:
-                        fechavto = factura.fecha + incr
+                        fechavto = mx.DateTime.DateFrom(factura.fecha) + incr
                         vto = pclases.VencimientoPago(
-                                fecha = factura.fecha + incr,
+                                fecha = mx.DateTime.DateFrom(factura.fecha) + incr,
                                 importe = cantidad,
                                 facturaCompra = factura, 
                                 observaciones = factura.proveedor 
