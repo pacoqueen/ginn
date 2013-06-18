@@ -258,9 +258,13 @@ class Usuarios(Ventana):
         model.clear()
         for m in pclases.Modulo.select():
             try:
-                pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join('..', 'imagenes', m.icono))
+                pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(
+                    os.path.dirname(os.path.realpath(__file__)), 
+                    '..', 'imagenes', m.icono))
             except (gobject.GError, AttributeError):
-                pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join('..', 'imagenes', 'dorsia.png'))
+                pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(
+                    os.path.dirname(os.path.realpath(__file__)), 
+                    '..', 'imagenes', 'dorsia.png'))
             iterpadre = model.append(None, (m.nombre, 
                                             m.descripcion, 
                                             m.icono,
@@ -268,9 +272,13 @@ class Usuarios(Ventana):
                                             m.id))
             for v in m.ventanas:
                 try:
-                    pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join('..', 'imagenes', v.icono))
+                    pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(
+                    os.path.dirname(os.path.realpath(__file__)), 
+                        '..', 'imagenes', v.icono))
                 except (gobject.GError, AttributeError):
-                    pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join('..', 'imagenes', 'dorsia.png'))
+                    pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(
+                    os.path.dirname(os.path.realpath(__file__)), 
+                        '..', 'imagenes', 'dorsia.png'))
                 model.append(iterpadre, (v.fichero,
                                          v.descripcion, 
                                          v.icono,
@@ -282,9 +290,11 @@ class Usuarios(Ventana):
         model.clear()
         for v in pclases.Ventana.select():
             try:
-                pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join('..', 'imagenes', v.icono))
+                pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(
+                    '..', 'imagenes', v.icono))
             except (gobject.GError, AttributeError):
-                pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join('..', 'imagenes', 'dorsia.png'))
+                pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(
+                    '..', 'imagenes', 'dorsia.png'))
             model.append((v.descripcion, 
                           v.fichero, 
                           v.clase, 
