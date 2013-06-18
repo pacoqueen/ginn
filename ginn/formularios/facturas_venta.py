@@ -2203,7 +2203,7 @@ class FacturasVenta(Ventana):
             cobro.importe = importe
         elif idcobro == -1:    # Para el resto de valores rebota-rebota y en tu culo explota.
             factura = self.objeto
-            cobro = pclases.Cobro(fecha = time.localtime(),
+            cobro = pclases.Cobro(fecha = mx.DateTime.localtime(),
                                   facturaVenta = factura,
                                   importe = importe, 
                                   facturaDeAbono = None, 
@@ -2331,7 +2331,7 @@ class FacturasVenta(Ventana):
             except ZeroDivisionError:
                 cantidad = total
             if not factura.fecha:
-                factura.fecha = time.localtime()
+                factura.fecha = mx.DateTime.localtime()
             if cliente.diadepago != None and cliente.diadepago != '':
                 diaest = cliente.get_dias_de_pago()
             else:
@@ -2501,7 +2501,7 @@ class FacturasVenta(Ventana):
             vto.importe = cantidad
         elif idvto == -1:    # Para el resto de valores rebota-rebota y en tu culo explota.
             factura = self.objeto
-            vto = pclases.VencimientoCobro(fecha = time.localtime(),
+            vto = pclases.VencimientoCobro(fecha = mx.DateTime.localtime(),
                                            facturaVenta = factura,
                                            importe = cantidad,
                                            observaciones = factura.cliente and factura.cliente.textoformacobro or "", 

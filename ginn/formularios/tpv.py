@@ -1434,7 +1434,7 @@ class TPV(Ventana):
             numvtos = len(vtos)
             cantidad = total/numvtos
             if not factura.fecha:
-                factura.fecha = time.localtime()
+                factura.fecha = mx.DateTime.localtime()
             if (cliente.diadepago != None 
                and cliente.diadepago != ''
                and cliente.diadepago.strip() != "-"):

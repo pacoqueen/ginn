@@ -678,7 +678,7 @@ class PedidosDeCompra(Ventana):
                 # Aquí ya debo tener un número de pedido y de cliente correcto.
                 self._objetoreciencreado = pedido = pclases.PedidoCompra(
                     proveedor = None, 
-                    fecha = time.localtime(), 
+                    fecha = mx.DateTime.localtime(), 
                     numpedido = numpedido, 
                     descuento = 0,
                     iva = 0.21, 
@@ -946,7 +946,7 @@ class PedidosDeCompra(Ventana):
                           texto = 'Inténtelo de nuevo usando punto (.) como símbolo decimal.', 
                           padre = self.wids['ventana'])
             return
-        fechahora = time.localtime()
+        fechahora = mx.DateTime.localtime()
         ldpc = pclases.LineaDePedidoDeCompra(pedidoCompra = pedido,
                                              cantidad = cantidad,
                                              precio = precio,
@@ -1081,7 +1081,7 @@ class PedidosDeCompra(Ventana):
             pedido.fecha = fecha
         except:
             print 'ERROR: Pedidos de compra: No se pudo "parsear" la fecha. Se usará la fecha actual.'
-            pedido.fecha = time.localtime()
+            pedido.fecha = mx.DateTime.localtime()
         pedido.proveedor = idproveedor
         pedido.iva=iva
         bounds = self.wids['txt_entregas'].get_buffer().get_bounds()

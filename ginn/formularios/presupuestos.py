@@ -168,7 +168,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                     nuevopedido = None
             else:
                 nuevopedido = pclases.PedidoVenta(cliente=self.objeto.cliente, 
-                                        fecha = time.localtime(), 
+                                        fecha = mx.DateTime.localtime(), 
                                         numpedido = numpedido,
                                         iva = self.objeto.cliente.iva,
                                         descuento = 0,

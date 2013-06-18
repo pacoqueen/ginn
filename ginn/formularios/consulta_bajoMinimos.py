@@ -294,7 +294,7 @@ class ConsultaBajoMinimos(Ventana):
                         [pclases.ProductoCompra.get(model[path][-1]) 
                          for path in paths])
                     pedido=pclases.PedidoCompra(proveedor = proveedor, 
-                                                fecha = time.localtime(), 
+                                                fecha = mx.DateTime.localtime(), 
                                                 numpedido = numpedido, 
                                                 descuento = 0,
                                                 iva = 0.21, 

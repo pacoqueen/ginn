@@ -371,7 +371,7 @@ class AlbaranesDeSalidaRepuestos(Ventana):
         try:
             albaran.fecha = utils.parse_fecha(fecha)
         except:
-            albaran.fecha = time.localtime()
+            albaran.fecha = mx.DateTime.localtime()
         albaran.almacenOrigenID=utils.combo_get_value(self.wids['cbe_almacen'])
         # Fuerzo la actualización de la BD y no espero a que SQLObject lo 
         # haga por mí:

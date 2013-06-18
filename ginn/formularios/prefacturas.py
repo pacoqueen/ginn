@@ -1671,7 +1671,7 @@ class Prefacturas(Ventana):
             cobro.importe = importe
         elif idcobro == -1:    # Para el resto de valores rebota-rebota y en tu culo explota.
             factura = self.objeto
-            cobro = pclases.Cobro(fecha = time.localtime(),
+            cobro = pclases.Cobro(fecha = mx.DateTime.localtime(),
                                   prefactura = factura, 
                                   facturaVenta = None, 
                                   importe = importe, 
@@ -1745,7 +1745,7 @@ class Prefacturas(Ventana):
             numvtos = len(vtos)
             cantidad = total/numvtos
             if not factura.fecha:
-                factura.fecha = time.localtime()
+                factura.fecha = mx.DateTime.localtime()
             if cliente.diadepago != None and cliente.diadepago != '':
                 diaest = cliente.get_dias_de_pago()
             else:
@@ -1860,7 +1860,7 @@ class Prefacturas(Ventana):
             vto.importe = cantidad
         elif idvto == -1:    # Para el resto de valores rebota-rebota y en tu culo explota.
             factura = self.objeto
-            vto = pclases.VencimientoCobro(fecha = time.localtime(),
+            vto = pclases.VencimientoCobro(fecha = mx.DateTime.localtime(),
                                            prefactura = factura, 
                                            facturaVenta = None, 
                                            importe = cantidad,

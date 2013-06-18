@@ -674,7 +674,7 @@ class AlbaranesDeEntradaRepuestos(Ventana):
                     valor_por_defecto = almacenppal)
         if not almo:    # Cancelar
             return
-        albaran = pclases.AlbaranEntrada(fecha = time.localtime(),
+        albaran = pclases.AlbaranEntrada(fecha = mx.DateTime.localtime(),
                                          numalbaran = numalbaran,
                                          proveedorID = idproveedor, 
                                          repuestos = True, 
@@ -765,7 +765,7 @@ class AlbaranesDeEntradaRepuestos(Ventana):
         try:
             albaran.fecha = utils.parse_fecha(fecha)
         except:
-            albaran.fecha = time.localtime()
+            albaran.fecha = mx.DateTime.localtime()
             utils.dialogo_info(titulo = "ERROR GUARDANDO FECHA", 
                                texto = "La fecha %s no es correcta." % (fecha), 
                                padre = self.wids['ventana'])

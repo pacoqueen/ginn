@@ -998,7 +998,7 @@ class PartesDeFabricacionBolsas(Ventana):
             return
         if partedeproduccion != None:
             partedeproduccion.notificador.desactivar()
-        partedeproduccion = pclases.ParteDeProduccion(fecha = time.localtime(),
+        partedeproduccion = pclases.ParteDeProduccion(fecha = mx.DateTime.localtime(),
             horainicio = time.struct_time(time.localtime()[:4] 
                                           + (0,0) 
                                           + time.localtime()[6:]),

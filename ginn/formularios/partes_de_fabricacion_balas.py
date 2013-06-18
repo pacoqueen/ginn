@@ -1571,7 +1571,7 @@ class PartesDeFabricacionBalas(Ventana):
             partedeproduccion.notificador.desactivar()
         horainicio = time.struct_time(time.localtime()[:4]+(0,0)+time.localtime()[6:])
         horafin = time.struct_time(time.localtime()[:3]+((time.localtime()[3]+8)%24, 0,0)+time.localtime()[6:])
-        partedeproduccion = pclases.ParteDeProduccion(fecha = time.localtime(),
+        partedeproduccion = pclases.ParteDeProduccion(fecha = mx.DateTime.localtime(),
                                                       horainicio = horainicio,
                                                       horafin = horafin,
                                                       prodestandar = 0,
@@ -1747,7 +1747,7 @@ class PartesDeFabricacionBalas(Ventana):
         try:
             partedeproduccion.fecha = utils.parse_fecha(fecha)
         except:
-            partedeproduccion.fecha = time.localtime()
+            partedeproduccion.fecha = mx.DateTime.localtime()
         partedeproduccion.sync()    # Para forzar a que el atributo fecha sea una fecha "válida" dentro del dominio antes de leerlo para guardar la hora.
         try:
             partedeproduccion.horainicio = mx.DateTime.DateTimeFrom(

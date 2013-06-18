@@ -146,8 +146,6 @@ def cursiva(c,              # Canvas
     c.restoreState()
 
 def give_me_the_name_baby():
-    #import time
-    #return '_'.join(map(str, time.localtime()[:6]))
     return time.strftime("%Y%m%d%H%M%S")
 
 def escribe(cadena_original, limite = None):
