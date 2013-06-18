@@ -2644,11 +2644,16 @@ def acortar_palabra_con_tilde(w):
     Útil para hacer búsquedas "tilde-insensitives" a costa de perder un poco 
     de precisión.
     """
-    no_tildes = string.letters + "1234567890"# ñÑüÜ.,-_"
+    # VERY ULTRA ÜBER UGLY HACK. En Windows el abecedario ya trae tildes y no 
+    # veas la que me está liando.
+    if len(string.letters) > 52:
+        no_tildes = string.letters[:string.letters.index("z") + 1] + "1234567890"# ñÑüÜ.,-_"
+    else:
+        no_tildes = string.letters + "123456790"
     # CWT: Para que Iván B. pueda buscar A-4 y C/L, es necesario incluir estos 
     # símbolos 
     no_tildes += "-/"
-    w += "Á"    # UGLY DIRTY HACK de mi propio algoritmo. Esto es para cortar 
+    w += " "    # UGLY DIRTY HACK de mi propio algoritmo. Esto es para cortar 
                 # al final de la palabra y que entre en la actualización de 
                 # mas_larga si fuera necesario.
     mas_larga = [0, ""]

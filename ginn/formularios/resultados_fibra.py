@@ -48,7 +48,7 @@ import gtk, time
 from framework import pclases
 from informes import geninformes
 from utils import _float as float
-
+import mx
 
 class ResultadosFibra(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -592,6 +592,9 @@ class ResultadosFibra(Ventana):
     def cambiar_fecha(self, cell, path, texto):
         try:
             fecha = time.strptime(texto, '%d/%m/%Y')
+            fecha = mx.DateTime.DateFrom(fecha.tm_year, 
+                                         fecha.tm_mon, 
+                                         fecha.tm_mday)
         except:
             utils.dialogo_info('FECHA INCORRECTA', 
                                'La fecha introducida (%s) no es correcta.' % (texto), 
