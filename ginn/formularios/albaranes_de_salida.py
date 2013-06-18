@@ -1956,7 +1956,7 @@ class AlbaranesDeSalida(Ventana):
         try:
             albaran.fecha = utils.parse_fecha(fecha)
         except:
-            albaran.fecha = time.localtime()
+            albaran.fecha = mx.DateTime.localtime()
         if idcliente != None:
             albaran.cliente = pclases.Cliente.get(idcliente)
         else:
@@ -4091,7 +4091,7 @@ class AlbaranesDeSalida(Ventana):
             except ZeroDivisionError:
                 cantidad = total
             if not factura.fecha:
-                factura.fecha = time.localtime()
+                factura.fecha = mx.DateTime.localtime()
             if cliente.diadepago != None and cliente.diadepago != '':
                 diaest = cliente.get_dias_de_pago()
             else:

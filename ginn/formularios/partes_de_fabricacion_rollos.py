@@ -1544,7 +1544,7 @@ class PartesDeFabricacionRollos(Ventana):
             return
         if partedeproduccion != None:
             partedeproduccion.notificador.desactivar()
-        partedeproduccion = pclases.ParteDeProduccion(fecha = time.localtime(),
+        partedeproduccion = pclases.ParteDeProduccion(fecha = mx.DateTime.localtime(),
             horainicio = time.struct_time(time.localtime()[:4] 
                                           + (0,0) 
                                           + time.localtime()[6:]),
@@ -1705,7 +1705,7 @@ class PartesDeFabricacionRollos(Ventana):
         try:
             partedeproduccion.fecha = utils.parse_fecha(fecha)
         except:
-            partedeproduccion.fecha = time.localtime()
+            partedeproduccion.fecha = mx.DateTime.localtime()
         partedeproduccion.horainicio = horainicio
         partedeproduccion.horafin = horafin
         partedeproduccion._corregir_campos_fechahora()
