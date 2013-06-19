@@ -1245,10 +1245,15 @@ def existencias_productos(informe, fecha, hasta = None, almacen = None,
                     # no los quiero).
                 if stock < p.minimo:
                     c.setFillColorRGB(255, 0, 0)
+                if stock == None:
+                    print "===============> El stock de %s es None!!!", p.descripcion
+                    stock = 0
+                try:
+                    strstock = utils.float2str(stock, 1)
+                except ValueError:  
+                    strstock = "-"
                 c.drawRightString(xStock, linea,
-                                  escribe("%s %s" % (
-                                    utils.float2str(stock, 1), unidad_producto)
-                                  ))
+                                  escribe("%s %s"%(strstock, unidad_producto)))
                 bultos = p.get_existencias_A(hasta, almacen = almacen)# Nada 
                     # de rollos defectuosos (remember: rollos X, largo 
                     # inferior, no los quiero).
