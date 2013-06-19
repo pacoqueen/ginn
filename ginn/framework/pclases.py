@@ -15075,6 +15075,9 @@ class Cliente(SQLObject, PRPCTOO):
         por ejemplo, 11k € y se va a sacar una factura de 11.5k €, SOBREPASA 
         el límite y no debería dejar sacarla.
         """
+        # TODO: Esto, ahora que se usa intensivamente en pedidos y albaranes, 
+        # hay que optimizarlo. Seriamente, además. Con clientes como CETCO es 
+        # isufrible esperar a los "actualizar_ventana".
         if self.riesgoConcedido==-1: # Ignorar. Devuelvo un máximo arbitrario.
             credito = sys.maxint
         else:

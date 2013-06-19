@@ -378,7 +378,7 @@ dir()
             anno = fecha.year
             hora = mx.DateTime.DateTimeFrom(day = dia, month = mes, year = anno, hour = horas, minute = minutos, second = segundos)
         except:
-            if hora_anterior != None:
+            if hora_anterior:
                 hora = hora_anterior
         return hora
 
