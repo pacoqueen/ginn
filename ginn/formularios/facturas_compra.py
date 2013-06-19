@@ -2386,7 +2386,7 @@ class FacturasDeEntrada(Ventana):
             # si no, aviso.
             if not self.comprobar_fechas_vencimientos():
                 if not self.objeto.vencimientosConfirmados:
-                    res_recordar = []
+                    res_recordar = [False]
                     resp = utils.dialogo(titulo = "VENCIMIENTOS NO COINCIDEN", 
                         texto = "Las fechas o el número de vencimientos no coi"
                                 "nciden con los vencimientos por defecto del p"
@@ -2400,7 +2400,10 @@ class FacturasDeEntrada(Ventana):
                     try:
                         self.objeto.vencimientosConfirmados = res_recordar[0]
                     except IndexError:
-                        self.objeto.vencimientosConfirmados = res_recordar
+                        try:
+                            self.objeto.vencimientosConfirmados = res_recordar
+                        except:     # ¿ValueError? ¿formencode.api.Invalid?
+                            self.objeto.vencimientosConfirmados = False
                     self.objeto.make_swap() 
                     if resp:
                         if not self.crear_vencimientos_por_defecto(None):
