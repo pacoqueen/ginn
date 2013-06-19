@@ -1236,16 +1236,28 @@ class ConsultaVentas(Ventana):
                         #    fdp = factura.cliente.get_texto_forma_cobro()
                         #except (IndexError, AttributeError):
                         #    ftp = ""
-                fdpreal = factura.get_str_cobro_real()
-                model.append(padre, 
-                        ("", 
-                         factura.cliente.cif, 
-                         utils.str_fecha(factura.fecha), 
-                         utils.float2str(factura.calcular_importe_total()), 
-                         factura.numfactura, 
-                         fdp, 
-                         fdpreal, 
-                         factura.id))
+                try:
+                    fdpreal = factura.get_str_cobro_real()
+                    model.append(padre, 
+                            ("", 
+                             factura.cliente.cif, 
+                             utils.str_fecha(factura.fecha), 
+                             utils.float2str(factura.calcular_importe_total()), 
+                             factura.numfactura, 
+                             fdp, 
+                             fdpreal, 
+                             factura.id))
+                except AttributeError:  # ¿Factura es None?
+                    txt = "El cliente %s tiene servicios o ventas "\
+                          "sin factura. Sin embargo se ha intentado mostrar"\
+                          " información de una factura en la consulta, "\
+                          "obteniendo 'None' desde un servicio o una ldv."\
+                          "No debería ser una línea de abono. Se tratan"\
+                          "en otra función diferente."\
+                          "Contenido del diccionario 'self.por_cliente': %s"\
+                            % (cliente.nombre, self.por_cliente)
+                    self.logger.warning(txt)
+                    print txt
 
     def rellenar_tabla_comerciales(self, resultado, resultado_abonos, 
                                    servicios):
