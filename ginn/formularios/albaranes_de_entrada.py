@@ -45,7 +45,7 @@ import gtk, time
 from framework import pclases
 from informes import geninformes
 from formularios.utils import _float as float
-
+import mx
 
 class AlbaranesDeEntrada(Ventana):
     def __init__(self, objeto = None, usuario = None):
