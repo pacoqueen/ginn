@@ -1243,10 +1243,9 @@ def existencias_productos(informe, fecha, hasta = None, almacen = None,
                 stock = p.get_stock_A(hasta, almacen = almacen) # Nada de 
                     # rollos defectuosos (remember: rollos X, largo inferior, 
                     # no los quiero).
-                if stock < p.minimo:
+                if stock != None and stock < p.minimo:
                     c.setFillColorRGB(255, 0, 0)
                 if stock == None:
-                    print "===============> El stock de %s es None!!!", p.descripcion
                     stock = 0
                 try:
                     strstock = utils.float2str(stock, 1)
