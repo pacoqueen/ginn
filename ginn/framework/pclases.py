@@ -15102,7 +15102,9 @@ class Cliente(SQLObject, PRPCTOO):
 
     def calcular_sin_documentar(self):
         sin_documentar = self.get_facturas_sin_doc_pago()
-        total = sum([f.calcular_importe_total() for f in sin_documentar])
+        # total = sum([f.calcular_importe_total() for f in sin_documentar])
+        total = sum([f.calcular_importe_no_documentado() 
+                        for f in sin_documentar])
         return total
 
     def calcular_sin_vencer(self):
