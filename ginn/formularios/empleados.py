@@ -152,7 +152,7 @@ class Empleados(Ventana):
             self.logger.error(txt_error)
             valor_ventana = 0.0
         try:
-            valor_ventana = float(valor_ventana)
+            valor_ventana = utils.parse_float(valor_ventana)
         except ValueError:
             txt_error = "empleados.py: No se pudo convertir %s(%s) a "\
                         "float." % (col, valor_ventana)

@@ -207,13 +207,20 @@ class Ausencias(Ventana):
         model = self.wids['tv_ausencias'].get_model()
         ausencia = pclases.Ausencia.get(model[path][-1])
         try:
-            ausencia.fecha = time.strptime(texto, '%d/%m/%Y')
+            tfecha = time.strptime(texto, '%d/%m/%Y')
+            ausencia.fecha = mx.DateTime.DateFrom(tfecha.tm_year, 
+                                                  tfecha.tm_mon, 
+                                                  tfecha.tm_mday)
         except:
             try:
-                ausencia.fecha = time.strptime(texto, '%d/%m/%y')
+                tfecha = time.strptime(texto, '%d/%m/%y')
+                ausencia.fecha = mx.DateTime.DateFrom(tfecha.tm_year, 
+                                                  tfecha.tm_mon, 
+                                                  tfecha.tm_mday)
             except:
                 utils.dialogo_info('FECHA INCORRECTA', 
-                                   'La fecha introducida (%s) no es correcta.' % texto)
+                                   'La fecha introducida (%s) no es correcta.' % texto, 
+                                   padre = self.wids['ventana'])
         ausencia.sync()
         model[path][0] = utils.str_fecha(ausencia.fecha)
 

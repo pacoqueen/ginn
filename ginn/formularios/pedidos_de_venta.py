@@ -1044,7 +1044,7 @@ class PedidosDeVenta(Ventana):
                 if permiso.escritura:
                     if self.usuario.nivel <= 2:
                         # print "Activo widgets para usuario con nivel de 
-                        # privilegios <= 1."
+                        # privilegios <= 2."
                         self.activar_widgets(True, chequear_permisos = False)
                     else:
                         # print "Activo widgets porque permiso de escritura "\
