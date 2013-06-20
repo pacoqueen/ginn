@@ -1356,7 +1356,7 @@ class FacturasDeEntrada(Ventana):
         if not fecha:
             try:
                 fecha = utils.parse_fecha(self.wids['e_fecha'].get_text())
-            except TypeError:
+            except (TypeError, ValueError):
                 fecha = mx.DateTime.today()
         anno = fecha.year
         facturas_existentes = pclases.FacturaCompra.select(pclases.AND(
