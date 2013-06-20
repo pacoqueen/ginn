@@ -83,7 +83,7 @@ class Ventana:
             usuario = pclases.Usuario.get(usuario)
         if isinstance(usuario, str):
             usuario = pclases.Usuario.selectBy(usuario = usuario)[0]
-        if usuario == None:
+        if not usuario:
             usuario = pclases.logged_user
         self.__usuario = usuario
         if (not hasattr(self, "usuario") 
@@ -141,9 +141,9 @@ class Ventana:
                                                            config.get_puerto(), 
                                                            config.get_dbname())
             info_usuario = ""
-            if hasattr(self, "usuario") and self.usuario != None:
+            if hasattr(self, "usuario") and self.usuario:
                 info_usuario = " usuario: %s." % (self.usuario.usuario)
-            if self.__usuario != None:
+            if self.__usuario:
                 info_usuario = " __usuario: %s." % (self.__usuario.usuario)
             utils.escribir_barra_estado(self.wids['barra_estado'], 
                                         "Conectado a %s.%s" % (info_conexion, 
@@ -312,7 +312,7 @@ class Ventana:
         """
         Construye un menú con las mismas opciones que el menú principal.
         """
-        if self.__usuario != None:
+        if self.__usuario:
             ui = """<ui>
                         <menubar name="MenuSuperior">
                  """

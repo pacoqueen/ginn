@@ -157,7 +157,7 @@ class PartesDeFabricacionBalas(Ventana):
             self.logger.error("La línea de fibra no está correctamente dada de alta.")
             self.linea = None
         self.inicializar_ventana()
-        if self.objeto == None:
+        if not self.objeto:
             self.ir_a_primero()
         else:
             self.objeto = None
@@ -256,7 +256,7 @@ class PartesDeFabricacionBalas(Ventana):
         del objeto en memoria.
         """
         partedeproduccion = self.objeto
-        if partedeproduccion == None: return False  # Si no hay partedeproduccion activo, devuelvo que no hay cambio respecto a la ventana
+        if not partedeproduccion: return False  # Si no hay partedeproduccion activo, devuelvo que no hay cambio respecto a la ventana
         condicion = utils.str_fecha(partedeproduccion.fecha) == self.wids['e_fecha'].get_text()
         try:
             condicion = condicion and (self.wids['e_fichaproduccion'].get_text() == partedeproduccion.fichaproduccion)
@@ -1719,7 +1719,7 @@ class PartesDeFabricacionBalas(Ventana):
             if len(horainicio) < 4:
                 horainicio = ("0" * (4 - len(horainicio))) + horainicio
             horainicio = "%s:%s" % (horainicio[:-2], horainicio[-2:])
-        if horainicio == None or horainicio.strip() == "":
+        if not horainicio or horainicio.strip() == "":
             msg = "partes_de_fabricacion_balas.py::guardar -> Error al leer hora inicio. Parte ID %d. horainicio = %s. Pongo horainicio a valor actual del parte." % (self.objeto.id, horainicio)
             self.logger.error(msg)
             print msg
@@ -1730,7 +1730,7 @@ class PartesDeFabricacionBalas(Ventana):
             if len(horafin) < 4:
                 horafin = ("0" * (4 - len(horafin))) + horafin
             horafin = "%s:%s" % (horafin[:-2], horafin[-2:])
-        if horafin == None or horafin.strip() == "":
+        if not horafin or horafin.strip() == "":
             msg = "partes_de_fabricacion_balas.py::guardar -> Error al leer hora inicio. Parte ID %d. horafin = %s. Pongo horafin a valor actual del parte." % (self.objeto.id, horafin)
             self.logger.error(msg)
             print msg
@@ -2446,7 +2446,7 @@ class PartesDeFabricacionBalas(Ventana):
                                      time.localtime()[4], 
                                      0, 
                                      'HORA INICIO')
-        if horaini == None: 
+        if not horaini: 
             return
         utils.dialogo_info('HORA FIN', 
             'A continuación seleccione la hora de finalización de la'
@@ -2456,7 +2456,7 @@ class PartesDeFabricacionBalas(Ventana):
                                      time.localtime()[4], 
                                      0, 
                                      'HORA FIN')
-        if horafin == None:
+        if not horafin:
             return
         self.objeto.sync()
         horaini = mx.DateTime.DateTimeFrom(day = self.objeto.fecha.day, 
