@@ -591,7 +591,9 @@ class Clientes(Ventana):
 
     def rellenar_tabla_facturas(self, nombre_tv, nombre_func_fras, 
                                 ventana_progreso, nombre_entry_total = None, 
-                                cache = {}, ignorar_total = False):
+                                cache = {}, ignorar_total = False, 
+                                nombre_func_importe = "calcular_importe_total"
+                               ):
         try:
             model = self.wids[nombre_tv].get_model()
             model.clear()
@@ -603,7 +605,8 @@ class Clientes(Ventana):
         total = 0.0
         for f in fras:
             if not ignorar_total:
-                importe = f.calcular_importe_total()
+                calcular_importe = getattr(f, nombre_func_importe)
+                importe = calcular_importe()
             else:
                 importe = 0.0
             total += importe 
@@ -622,7 +625,8 @@ class Clientes(Ventana):
                                              "get_facturas_sin_doc_pago", 
                                              ventana_progreso, 
                                              "e_pdte_doc", 
-                                             cache)
+                                             cache, 
+                                             "calcular_importe_no_documentado")
         return total
 
     def rellenar_no_vencidas(self, ventana_progreso, cache = {}):
