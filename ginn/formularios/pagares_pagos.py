@@ -54,7 +54,7 @@ import os
 from framework import pclases
 from informes import geninformes
 import re
-import mx.DateTime
+import mx.DateTime, datetime
 
 # Modelos de cheques y pagarés:
 MONTE, CAIXA, BANKINTER = (0, 1, 2)
@@ -330,9 +330,15 @@ class PagaresPagos(Ventana):
         # CWT: Fecha por defecto los 25 si no es domingo.
         fecha_defecto = mx.DateTime.localtime()
         while fecha_defecto.day != 25:
-            fecha_defecto += mx.DateTime.oneDay
-        if fecha_defecto.day_of_week == 6:
-            fecha_defecto += mx.DateTime.oneDay
+            # fecha_defecto += mx.DateTime.oneDay
+            fecha_defecto += datetime.timedelta(1)
+        try:
+            diasemana = fecha_defecto.day_of_week
+        except AttributeError:  # No es un mx. Es un datetime.
+            diasemana = fecha_defecto.weekday()
+        if diasemana == 6:
+            #fecha_defecto += mx.DateTime.oneDay
+            fecha_defecto += datetime.timedelta(1)
         self.objeto = pclases.PagarePago(fechaPago = fecha_defecto, 
                                          cantidad = 0, 
                                          pagado = -1, 
@@ -410,7 +416,7 @@ class PagaresPagos(Ventana):
         try:
             fechav = utils.parse_fecha(self.wids['e_fechav'].get_text())
         except:
-            utils.dialogo_info(titulo = "ERROR EN FORMATO DE FECHA", texto = "El texto %s no es correcto o no representa una fecha" % self.wids['e_fechae'].get_text(), padre = self.wids['ventana'])
+            utils.dialogo_info(titulo = "ERROR EN FORMATO DE FECHA", texto = "El texto %s no es correcto o no representa una fecha" % self.wids['e_fechav'].get_text(), padre = self.wids['ventana'])
             fechav = self.objeto.fechaPago
         buff = self.wids['txt_observaciones'].get_buffer()
         observaciones = buff.get_text(buff.get_start_iter(), buff.get_end_iter())
@@ -425,11 +431,21 @@ class PagaresPagos(Ventana):
         self.objeto.fechaEmision = fechae
         self.objeto.fechaPago = fechav
         if self.objeto.fechaEmision == self.objeto.fechaPago:
-            while self.objeto.fechaEmision.day_of_week >= 5:
-                self.objeto.fechaEmision += mx.DateTime.oneDay
+            try:
+                diasemana = self.objeto.fechaEmision.day_of_week
+            except AttributeError:  # No es un mx. Es un datetime.
+                diasemana = self.objeto.fechaEmision.weekday()
+            while diasemana >= 5:
+                # self.objeto.fechaEmision += mx.DateTime.oneDay
+                self.objeto.fechaEmision += datetime.timedelta(1)
             self.objeto.fechaPago = self.objeto.fechaEmision
-        while self.objeto.fechaPago.day_of_week >= 5:   # NOTA: La fecha de pago debe caer entre lunes y viernes.
-            self.objeto.fechaPago += mx.DateTime.oneDay
+        try:
+            diasemana = self.objeto.fechaPago.day_of_week
+        except AttributeError:  # No es un mx. Es un datetime.
+            diasemana = self.objeto.fechaPago.weekday()
+        while diasemana >= 5:   # NOTA: La fecha de pago debe caer entre lunes y viernes.
+            #self.objeto.fechaPago += mx.DateTime.oneDay
+            self.objeto.fechaPago += datetime.timedelta()
         # Fuerzo la actualización de la BD y no espero a que SQLObject lo haga por mí:
         pagare.syncUpdate()
         # Vuelvo a activar el notificador
@@ -1363,7 +1379,8 @@ def sean_young():
     euros = numerals.numerals(cantidad, moneda = '', fraccion='céntimos')  
         # ¿Por qué lo pondría sin moneda?
     fecha = mx.DateTime.localtime()
-    vencimiento = fecha + (mx.DateTime.oneDay * 7)
+    #vencimiento = fecha + (mx.DateTime.oneDay * 7)
+    vencimiento = fecha + datetime.timedelta(7)
     print "Generando pagaré..."
     london_kills_me(cantidad, destinatario, euros, fecha, vencimiento, 
                     pagare = True)
