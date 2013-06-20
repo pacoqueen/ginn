@@ -201,7 +201,10 @@ class HistoricoExistenciasCompra(Ventana):
         """
         Dibuja un plot con una línea por cada producto.
         """
-        theme.get_options()  # @UndefinedVariable
+        try:
+            theme.get_options()  # @UndefinedVariable
+        except TypeError:
+            pass    # Error en esta versión de PyChart.
         theme.use_color = True  # @UndefinedVariable
         theme.reinitialize()  # @UndefinedVariable
         tempdir = gettempdir()
@@ -276,7 +279,10 @@ class HistoricoExistenciasCompra(Ventana):
         if pychart_available and datos_por_producto != {}:
             self.dibujar_grafica_multiple(datos_por_producto) 
         elif pychart_available and len(datos) > 0:
-            theme.get_options()  # @UndefinedVariable
+            try:
+                theme.get_options()  # @UndefinedVariable
+            except TypeError:
+                pass    # ¿Peta esta versión de PyChart?
             theme.use_color = True  # @UndefinedVariable
             theme.reinitialize()  # @UndefinedVariable
             tempdir = gettempdir()

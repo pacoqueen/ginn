@@ -7857,7 +7857,8 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
                     # En un caso raro, podría ser None. Aseguro un número:
                     existencias_anteriores = cache_mas_cercano.cantidad or 0
                     entradas_y_salidas = self.get_entradas_y_salidas_entre(
-                        cache_mas_cercano.fecha + mx.DateTime.oneDay, fecha, 
+                        mx.DateTime.DateFrom(cache_mas_cercano.fecha) 
+                            + mx.DateTime.oneDay, fecha, 
                         almacen = almacen)
                         # Le sumo un día porque en el caché ya están incluídas 
                         # las existencias justo hasta las 23:59:59 de ese mismo 
