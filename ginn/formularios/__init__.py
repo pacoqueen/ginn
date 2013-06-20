@@ -33,5 +33,10 @@ if "HOMEPATH" in os.environ:
 #                        }
 # class '*' style 'blanco_y_negro'
 ###############################################################################
-
+# TODO: Esto de parsear el gtkrc está repetido aquí y en el menu.py. Debería dejarlo en un solo sitio y tener cuidado con el tema MS-Windows en Windows 8, Vista y algunos XP. La solución pasa por poner el tema Industrial o Redmond con el GTK2-prefs.exe. O bien usar esto:
+# import platform
+# if platform.win32_ver()[0] != "post2008Server": # Windows 8
+#   gtk.rc_parse_string('gtk-theme-name = "Industrial"') # O bien
+#   gtk.rc_parse_string('gtk-theme-name = "Redmond"')
+# Pero teniendo cuidado de hacerlo antes de aplicar el style morado para la versión dev.
 

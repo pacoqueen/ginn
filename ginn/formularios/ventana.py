@@ -663,13 +663,7 @@ class Ventana:
             cursor_reloj = gtk.gdk.Cursor(gtk.gdk.WATCH)
             self.wids['ventana'].window.set_cursor(cursor_reloj)
             utils.set_unset_urgency_hint(self.wids['ventana'], False)
-            try:
-                import platform
-                if platform.win32_ver()[0] != "post2008Server":
-                    while gtk.events_pending(): gtk.main_iteration(False)
-            except:
-                pass    # TODO: El Windows 8 de Jesús PETA el proceso 
-                        # python.exe en el main_iteration. WORKAROUND.
+            while gtk.events_pending(): gtk.main_iteration(False)
         if DEBUG:
             print "1.- ventana.py::actualizar_ventana->", time.time() - antes
         if self.soy_ventana_consulta():
