@@ -3536,6 +3536,12 @@ class AlbaranesDeSalida(Ventana):
                                padre = self.wids['ventana'])
             return
         if self.comprobar_cliente_deudor():
+            self.to_log("[add_pedido] Cliente deudor.", 
+                        {"cliente": self.objeto.cliente 
+                                    and self.objeto.cliente.get_info()
+                                    or "¿Sin self.objeto.cliente?", 
+                         "albarán": self.objeto.numalbaran, 
+                        })
             return
         self.crear_servicio()
         self.objeto.calcular_comisiones()
@@ -3568,13 +3574,19 @@ class AlbaranesDeSalida(Ventana):
                                 padre = self.wids['ventana'])
                 return True
             else:
-                return not utils.dialogo(titulo = "CLIENTE DEUDOR", 
+                continuar = utils.dialogo(titulo = "CLIENTE DEUDOR", 
                                texto = "El cliente tiene %d facturas "
                                        "vencidas sin documento de pago:\n%s\n"
                                        "¿Desea continuar?" 
                                         % (len(frasvenc), 
                                            strfrasvenc),
                                padre = self.wids['ventana'])
+                self.to_log("[comprobar_cliente_deudor] "
+                                "Cliente deudor pero usuario %s continúa." 
+                                    % self.usuario, 
+                            {"cliente": cli.get_info(), 
+                             "albarán": self.objeto.numalbaran })
+                return not continuar
         return False
     
     def drop_srv(self, boton):
