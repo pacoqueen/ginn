@@ -626,7 +626,9 @@ class Clientes(Ventana):
                                              ventana_progreso, 
                                              "e_pdte_doc", 
                                              cache, 
-                                             "calcular_importe_no_documentado")
+                                             nombre_func_importe = 
+                                              "calcular_importe_no_documentado"
+                                            )
         return total
 
     def rellenar_no_vencidas(self, ventana_progreso, cache = {}):
