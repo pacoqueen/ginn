@@ -36,7 +36,11 @@
 from formularios import ventana_progreso
 from framework import pclases
 from informes import geninformes
-from pychart import * # No me gusta, pero no queda otra @UnusedWildImport
+try:
+    from pychart import * # No me gusta, pero no queda otra @UnusedWildImport
+    pychart_available = True
+except ImportError:
+    pychart_available = False
 from tempfile import gettempdir
 from ventana import Ventana
 import gtk
@@ -444,7 +448,7 @@ class ConsultaProducido(Ventana):
         Dibuja el gráfico de tarta. Si se mezclan balas y rollos, usa unidades (balas o rollos). 
         Si es solo de geotextiles o de fibra, se usan sus unidades (metros o kilos).
         """
-        if len(data) > 0:
+        if pychart_available and len(data) > 0:
             theme.use_color = True
             theme.reinitialize()
             tempdir = gettempdir()

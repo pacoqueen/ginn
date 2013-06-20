@@ -36,7 +36,11 @@
 from formularios import ventana_progreso
 from framework import pclases
 from informes import geninformes
-from pychart import * # No me gusta, pero no queda otra @UnusedWildImport
+try:
+    from pychart import * # No me gusta, pero no queda otra @UnusedWildImport
+    pychart_available = True
+except ImportError:
+    pychart_available = False
 from tempfile import gettempdir
 from ventana import Ventana
 import gtk
@@ -129,7 +133,7 @@ class HistoricoExistencias(Ventana):
         """
         Dibuja el gráfico a partir del diccionario de datos recibido.
         """
-        if len(datos) > 0:
+        if pychart_available and len(datos) > 0:
             theme.use_color = True  # @UndefinedVariable
             theme.reinitialize()  # @UndefinedVariable
             tempdir = gettempdir()

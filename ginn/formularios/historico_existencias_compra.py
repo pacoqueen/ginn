@@ -40,7 +40,11 @@ from formularios import ventana_progreso
 from framework import pclases
 from informes import geninformes
 from math import log10 as log
-from pychart import * # No me gusta, pero no queda otra @UnusedWildImport
+try:
+    from pychart import * # No me gusta, pero no queda otra @UnusedWildImport
+    pychart_available = True
+except ImportError:
+    pychart_available = False
 from tempfile import gettempdir
 from ventana import Ventana
 import gtk
@@ -269,9 +273,9 @@ class HistoricoExistenciasCompra(Ventana):
         Si se va a dibujar únicamente un producto, éste debe recibirse como 
         parámetro.
         """
-        if datos_por_producto != {}:
+        if pychart_available and datos_por_producto != {}:
             self.dibujar_grafica_multiple(datos_por_producto) 
-        elif len(datos) > 0:
+        elif pychart_available and len(datos) > 0:
             theme.get_options()  # @UndefinedVariable
             theme.use_color = True  # @UndefinedVariable
             theme.reinitialize()  # @UndefinedVariable

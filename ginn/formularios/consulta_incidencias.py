@@ -43,7 +43,11 @@ from framework import pclases
 import mx.DateTime
 from informes import geninformes
 from formularios import ventana_progreso
-from pychart import *   # No me gusta, pero no queda otra @UnusedWildImport
+try:
+    from pychart import *   # No me gusta, pero no queda otra @UnusedWildImport
+    pychart_available = True
+except ImportError:
+    pychart_available = False
 from tempfile import gettempdir
 
 class ConsultaIncidencias(Ventana):
@@ -205,7 +209,7 @@ class ConsultaIncidencias(Ventana):
             # Gráfico usando PyChart:
             data.append((st_tipo, tiempo.hours))
         # Dibujo del gráfico
-        if len(data) > 0:
+        if pychart_available and len(data) > 0:
             theme.use_color = True
             theme.reinitialize()
             tempdir = gettempdir()
