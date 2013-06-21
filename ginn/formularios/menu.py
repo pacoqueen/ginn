@@ -69,7 +69,7 @@ from framework.configuracion import ConfigConexion, parse_params
 
 from formularios import custom_widgets
 
-__version__ = '5.0.1 (alpha)'
+__version__ = '5.0.3 (beta)'
 __version_info__ = tuple(
     [int(num) for num in __version__.split()[0].split('.')] + 
     [txt.replace("(", "").replace(")", "") for txt in __version__.split()[1:]]
@@ -621,7 +621,7 @@ class Menu:
             #       sale del "busy" justo cuando debe, al abrirse la 
             #       ventana.
             v = None 
-            gobject.timeout_add(100, self.volver_a_cursor_original)
+            gobject.timeout_add(1000, self.volver_a_cursor_original)
             # NOTA: OJO: TODO: Usuario harcoded. Cambiar en cuanto sea 
             #                  posible.
             if ((self.get_usuario().usuario == "geotextil" or 
@@ -639,7 +639,6 @@ class Menu:
                 #v.wids['ventana'].set_icon_from_filename(icowindow)
             else:
                 try:
-                    # TODO: PORASQUI: Terminar esto YA.
                     #raise NotImplementedError, \
                     #        "Lanzador multiproceso en desarrollo..."
                     self.lanzar_ventana(archivo, clase)
@@ -700,7 +699,6 @@ class Menu:
         # guay. No más segfaults en el join ni excepciones de pickle.
         from formularios import launcher
         launcher.run(archivo, clase, self.usuario, self.fconfig)
-        # PORASQUI: Probarlo en Windows y tal...
 
     def enviar_correo_error_ventana(self):
         print "Se ha detectado un error"
