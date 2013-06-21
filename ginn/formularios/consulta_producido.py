@@ -391,8 +391,12 @@ class ConsultaProducido(Ventana):
         produccion = parte.get_produccion()
         total_horas = sum([grupos[g] for g in grupos])
         for grupo in grupos:
-            producido_proporcional = (produccion[0] 
+            try:
+                producido_proporcional = (produccion[0] 
                                       *(grupos[grupo].hours/total_horas.hours))
+            except ZeroDivisionError:
+                # Valor de horas nulo. No cuenta para el informe.
+                producido_proporcional = 0.0
             if grupo not in ford:
                 ford[grupo] = {}
             if produccion[1] not in ford[grupo]:
