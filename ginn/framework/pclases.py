@@ -13882,11 +13882,11 @@ class AlbaranSalida(SQLObject, PRPCTOO):
         res = []
         for ldv in self.lineasDeVenta:
             pedido = ldv.pedidoVenta
-            if pedido not in res:
+            if pedido and pedido not in res:
                 res.append(pedido)
         for srv in self.servicios:
             pedido = srv.pedidoVenta
-            if pedido not in res:
+            if pedido and pedido not in res:
                 res.append(pedido)
         return res
 
