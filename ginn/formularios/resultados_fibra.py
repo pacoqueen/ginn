@@ -48,7 +48,7 @@ import gtk, time
 from framework import pclases
 from informes import geninformes
 from utils import _float as float
-import mx
+import mx.DateTime
 
 class ResultadosFibra(Ventana):
     def __init__(self, objeto = None, usuario = None):

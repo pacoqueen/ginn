@@ -35,10 +35,11 @@ from ventana import Ventana
 from formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
+import gtk
 from framework import pclases
 from informes import geninformes
 from formularios.utils import _float as float
+import mx.DateTime
 
 
 class AlbaranesDeEntradaCS21(Ventana):

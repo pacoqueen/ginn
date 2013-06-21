@@ -28,6 +28,25 @@ Created on 22/05/2013
 @author: bogado
 '''
 
+import os, sys
+
+def guess_interprete():
+    """
+    Devuelve el intérprete python encontrado en el sistema.
+    None si no se pudo determinar.
+    """
+    sysdrive = os.getenv("SYSTEMDRIVE")
+    if not sysdrive:
+        sysdrive = "C:"
+    res = None
+    for pyver in ("27", "26", "25"):
+        interprete = os.path.join(sysdrive, os.path.sep, "Python" + pyver, 
+                                  "pythonw.exe")
+        if os.path.exists(interprete):
+            res = interprete
+            break
+    return res
+
 def run(modulo, clase, usuario, fconfig):
     """
     Esto va a recibir cuatro parámetros:
@@ -44,12 +63,17 @@ def run(modulo, clase, usuario, fconfig):
     la ventana en cuestión.
     """
     try:
-        import subprocess, os, sys
+        import subprocess
         ruta = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
         if sys.platform[:3] == "win":
             comando = "set PYTHONPATH=%PYTHONPATH%;" + ruta + " & " 
+            interprete = guess_interprete()
+            if not interprete:
+                interprete = ""
         else:
             comando = "export PYTHONPATH=$PYTHONPATH:" + ruta + "; " 
+            interprete = ""
+        comando += interprete
         comando += os.path.join(ruta, "formularios", modulo + ".py")
         args = [] # ["-u %s" % usuario, "-c %s" % fconfig] 
         if not isinstance(usuario, str):

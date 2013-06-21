@@ -19,7 +19,7 @@ __all__ = ['open', 'mailto']
 import os
 import sys
 import webbrowser
-from formularios import subprocess
+import subprocess
 
 from email.Utils import encode_rfc2231
 
