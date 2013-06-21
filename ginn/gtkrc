@@ -3,5 +3,5 @@ style 'blanco_y_morado' { bg[NORMAL] = '#FFFFFF'
                          base[NORMAL] = '#FFFFFF' 
                          text[NORMAL] = '#6633FF' 
                        }
-#class '*' style 'blanco_y_morado'
+class '*' style 'blanco_y_morado'
 
