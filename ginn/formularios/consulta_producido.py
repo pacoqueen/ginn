@@ -397,6 +397,11 @@ class ConsultaProducido(Ventana):
             except ZeroDivisionError:
                 # Valor de horas nulo. No cuenta para el informe.
                 producido_proporcional = 0.0
+                self.to_log("[agregar_parte_a_dicford] Parte con duración 0.", 
+                        {"parte de producción": parte, 
+                         "producción": produccion, 
+                         "total_horas": total_horas, 
+                         "grupos": grupos})
             if grupo not in ford:
                 ford[grupo] = {}
             if produccion[1] not in ford[grupo]:

@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 21 junio 2013 at 14:57:05.
+" Created by session.vim 1.5 on 21 junio 2013 at 16:13:29.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -60,7 +60,7 @@ badd +155 ginn/formularios/empleados.py
 badd +38 ginn/formularios/resultados_geotextiles.py
 badd +964 ginn/formularios/menu.py
 badd +142 ginn/formularios/autenticacion.py
-badd +1 ginn/informes/geninformes.py
+badd +9568 ginn/informes/geninformes.py
 badd +233 ginn/informes/informe_certificado_calidad.py
 badd +1518 informes/geninformes.py
 badd +371 ginn/formularios/facturas_venta.py
@@ -87,7 +87,7 @@ badd +1 ginn/formularios/ausencias.py
 badd +67 ginn/formularios/partes_no_bloqueados.py
 args formularios/auditviewer.py
 set lines=44 columns=80
-edit ginn/informes/geninformes.py
+edit ginn/formularios/consulta_producido.py
 set splitbelow splitright
 wincmd _ | wincmd |
 split
@@ -112,11 +112,11 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 1 + 22) / 44)
+exe '1resize ' . ((&lines * 30 + 22) / 44)
 exe '2resize ' . ((&lines * 1 + 22) / 44)
-exe '3resize ' . ((&lines * 23 + 22) / 44)
+exe '3resize ' . ((&lines * 1 + 22) / 44)
 exe '4resize ' . ((&lines * 1 + 22) / 44)
-exe '5resize ' . ((&lines * 8 + 22) / 44)
+exe '5resize ' . ((&lines * 1 + 22) / 44)
 exe '6resize ' . ((&lines * 1 + 22) / 44)
 exe '7resize ' . ((&lines * 1 + 22) / 44)
 argglobal
@@ -128,12 +128,32 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 9548 - ((0 * winheight(0) + 0) / 1)
+56
+silent! normal zo
+173
+silent! normal zo
+192
+silent! normal zo
+384
+silent! normal zo
+394
+silent! normal zo
+395
+silent! normal zo
+396
+silent! normal zo
+396
+silent! normal zo
+396
+silent! normal zo
+396
+silent! normal zo
+let s:l = 388 - ((7 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-9548
-normal! 04l
+388
+normal! 027l
 wincmd w
 argglobal
 edit ginn/formularios/partes_de_fabricacion_rollos.py
@@ -170,7 +190,7 @@ if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 108
-normal! 04l
+normal! 025l
 wincmd w
 argglobal
 edit ginn/formularios/launcher.py
@@ -202,12 +222,12 @@ silent! normal zo
 silent! normal zo
 69
 silent! normal zo
-let s:l = 83 - ((15 * winheight(0) + 11) / 23)
+let s:l = 109 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-83
-normal! 08l
+109
+normal! 0
 wincmd w
 argglobal
 edit ginn/formularios/menu.py
@@ -282,7 +302,7 @@ silent! normal zo
 silent! normal zo
 14710
 silent! normal zo
-let s:l = 10153 - ((6 * winheight(0) + 4) / 8)
+let s:l = 10153 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -429,12 +449,11 @@ normal! zt
 506
 normal! 0
 wincmd w
-3wincmd w
-exe '1resize ' . ((&lines * 1 + 22) / 44)
+exe '1resize ' . ((&lines * 30 + 22) / 44)
 exe '2resize ' . ((&lines * 1 + 22) / 44)
-exe '3resize ' . ((&lines * 23 + 22) / 44)
+exe '3resize ' . ((&lines * 1 + 22) / 44)
 exe '4resize ' . ((&lines * 1 + 22) / 44)
-exe '5resize ' . ((&lines * 8 + 22) / 44)
+exe '5resize ' . ((&lines * 1 + 22) / 44)
 exe '6resize ' . ((&lines * 1 + 22) / 44)
 exe '7resize ' . ((&lines * 1 + 22) / 44)
 tabnext 1
@@ -451,6 +470,6 @@ let &so = s:so_save | let &siso = s:siso_save
 doautoall SessionLoadPost
 unlet SessionLoad
 tabnext 1
-3wincmd w
+1wincmd w
 
 " vim: ft=vim ro nowrap smc=128
