@@ -7565,6 +7565,11 @@ def corregir_nombres_fecha(s):
              'December': 'diciembre'}
     for in_english in trans:
         s = s.replace(in_english, trans[in_english])
+    # ¿Qué le pasa al ReportLab en MS-Windows que me devuelve esto como Latin?
+    try:
+        s.decode("utf8")
+    except UnicodeDecodeError:
+        s = s.decode("latin1").encode("utf8")
     return s
 
 
@@ -9084,17 +9089,14 @@ def ausencia(empleado, centro, fecha, turno, motivo, motivos):
     c.restoreState()
     # Impreso
     c.setFont("Helvetica", 11)
-
     c.drawString(xIzquierda, yPrimeraLinea, escribe('D/Dña ' + empleado))
     c.drawString(xDerecha, yPrimeraLinea, escribe('Centro trabajo: ' + centro))
-
     fecha_cad = corregir_nombres_fecha(fecha.strftime("%A, %d de %B de %Y"))
     c.drawString(xIzquierda, yTerceraLinea,
         escribe('Que el próximo día %s, siendo su turno %s, no acudirá '\
                 'a su puesto de' % (fecha_cad, turno)))
     c.drawString(xIzquierda, yCuartaLinea,
         escribe('trabajo por el siguiente motivo:'))
-
     c.drawString(xIzquierda, yPrimeraLineaFinal,
         escribe('(*) Estos motivos de ausencia al puesto de trabajo penalizan'\
                 ' en el cómputo para el Plus de no absentismo'))
