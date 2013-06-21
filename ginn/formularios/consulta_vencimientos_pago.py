@@ -268,7 +268,7 @@ class ConsultaVencimientosPagos(Ventana):
                                 importe = importe, 
                                 observaciones = "Transferencia a %s por pago de %s." % (proveedor and proveedor.nombre or "?", 
                                                                                         (factura and factura.numfactura) or observaciones), 
-                                cuentaOrigen = pclases.CuentaOrigen.select(orderBy = "-ide")[0], 
+                                cuentaOrigen = pclases.CuentaOrigen.select(orderBy = "-id")[0], 
                                 cuentaDestino = proveedor and proveedor.cuentasDestino and proveedor.cuentasDestino[0] or None)
             pclases.Auditoria.nuevo(pago, self.usuario, __file__)
             from formularios import transferencias
