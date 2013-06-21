@@ -73,7 +73,7 @@ def run(modulo, clase, usuario, fconfig):
         else:
             comando = "export PYTHONPATH=$PYTHONPATH:" + ruta + "; " 
             interprete = ""
-        comando += interprete 
+        comando += interprete + " " 
         comando += os.path.join(ruta, "formularios", modulo + ".py")
         args = [] # ["-u %s" % usuario, "-c %s" % fconfig] 
         if not isinstance(usuario, str):
