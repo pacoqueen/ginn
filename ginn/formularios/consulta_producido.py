@@ -511,7 +511,7 @@ class ConsultaProducido(Ventana):
             datos.append(("", "", ""))
             datos.append(("", "-" * 30 , "-" * 30))
             datos.append(("", "", ""))
-            datos.append((" " * 50 + "TOTAL:", "%s m²" % (utils.float2str(self.kilos)), self.balas))
+            datos.append((" " * 50 + "TOTAL:", "%s kg" % (utils.float2str(self.kilos)), self.balas))
         if self.rollos != 0:
             datos.append(("", "", ""))
             datos.append(("", "-" * 30 , "-" * 30))
