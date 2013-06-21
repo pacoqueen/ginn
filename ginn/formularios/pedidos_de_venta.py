@@ -212,7 +212,7 @@ class PedidosDeVenta(Ventana):
                 vpro.ocultar()
                 utils.dialogo_info("PERMISOS INSUFICIENTES", 
                         texto = "No posee privilegios suficientes para validar "
-                                "el pedido.", 
+                                "este pedido.", 
                         padre = self.wids['ventana'])
             else:   # Estoy "desvalidando", tengo permisos o es validable.
                 vpro.mover()
