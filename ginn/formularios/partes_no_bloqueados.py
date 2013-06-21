@@ -73,7 +73,7 @@ class PartesNoBloqueados(Ventana):
         self.colorear(self.wids['tv_partes'])
         try:
             ventanas_con_permiso = [p.ventana.fichero 
-                for p in usuario.permisos if p.permiso] 
+                for p in self.usuario.permisos if p.permiso] 
                     # and p.escritura]  # STILL UNIMPLEMENTED
         except AttributeError:
             print "De momento esta ventana sólo se puede abrir desde el menú."
@@ -281,3 +281,4 @@ class PartesNoBloqueados(Ventana):
 
 if __name__ == '__main__':
     t = PartesNoBloqueados()
+
