@@ -1023,7 +1023,7 @@ class ControlPersonal(Ventana, VentanaGenerica):
             v.set_modal(True)
             v.set_transient_for(self.wids['ventana'])
             tabla = gtk.Table()
-            lineas = pclases.LineaDeProduccion.select(orderBy = "-ide")
+            lineas = pclases.LineaDeProduccion.select(orderBy = "-id")
             tabla.resize(lineas.count() + 1, 2)
             tabla.attach(gtk.Label("Horas"), 1, 2, 0, 1)
             fila = 1
@@ -1121,7 +1121,7 @@ class ControlPersonal(Ventana, VentanaGenerica):
             v.set_modal(True)
             v.set_transient_for(self.wids['ventana'])
             tabla = gtk.Table()
-            lineas = pclases.LineaDeProduccion.select(orderBy = "-ide")
+            lineas = pclases.LineaDeProduccion.select(orderBy = "-id")
             tabla.resize(lineas.count() + 1, 2)
             tabla.attach(gtk.Label("Horas"), 1, 2, 0, 1)
             fila = 1
