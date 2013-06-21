@@ -640,8 +640,8 @@ class Menu:
             else:
                 try:
                     # TODO: PORASQUI: Terminar esto YA.
-                    raise NotImplementedError, \
-                            "Lanzador multiproceso en desarrollo..."
+                    #raise NotImplementedError, \
+                    #        "Lanzador multiproceso en desarrollo..."
                     self.lanzar_ventana(archivo, clase)
                 except Exception, e:
                     print e
