@@ -10150,7 +10150,7 @@ class ModeloEtiqueta(SQLObject, PRPCTOO):
                 "de informes. Información de la excepción original: %s" % (
                 modulo, e)
         try:
-            fwrap = getattr(modulobj, self.funcion)
+            fwrap = getattr(getattr(modulobj, modulo), self.funcion)
         except NameError:
             raise ValueError, "pclases::ModeloEtiqueta.get_func -> " \
                 "El módulo %s no contiene ninguna función %s." % (
