@@ -73,14 +73,13 @@ def run(modulo, clase, usuario, fconfig):
         else:
             comando = "export PYTHONPATH=$PYTHONPATH:" + ruta + "; " 
             interprete = ""
-        comando += interprete + ' "'
+        comando += interprete 
         comando += os.path.join(ruta, "formularios", modulo + ".py")
         args = [] # ["-u %s" % usuario, "-c %s" % fconfig] 
         if not isinstance(usuario, str):
             usuario = usuario.usuario   # Debe ser instancia de pclases
         comando += " -u %s -c %s" % (usuario, fconfig) 
-        comando += '"'
-        print comando
+        # print comando
         subprocess.Popen([comando] + args, shell = True)
     except Exception, msg:     # fallback
         # Esto debería ir al logger o algo:
