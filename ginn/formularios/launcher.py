@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008 Francisco José Rodríguez Bogado,                    #
-#                          Diego Muñoz Escalante.                             #
-# (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
+# Copyright (C) 2005-2013 Francisco José Rodríguez Bogado                     #
+#                         <frbogado@geotexan.com>                             #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
 #                                                                             #
@@ -73,7 +72,7 @@ def main():
     import sys
     from framework.configuracion import parse_params
     from formularios.autenticacion import Autenticacion
-    usuario, contrasenna, modulo, clase, fconfig, verbose, debug, obj_puid = parse_params()
+    usuario, contrasenna, modulo, clase, fconfig, verbose, debug, obj_puid = parse_params()  # @UnusedVariable
     login = Autenticacion(usuario, contrasenna)
     if login.loginvalido():
         run(modulo, clase, usuario, fconfig)

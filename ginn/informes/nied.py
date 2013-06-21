@@ -51,4 +51,3 @@ def etiqueta_nied(rollos, mostrar_marcado = False):
 if __name__ == "__main__":
     # For testing purposes only.
     print etiqueta_nied(range(10))
-

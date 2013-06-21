@@ -215,8 +215,5 @@ class Contadores(Ventana):
     
     
 if __name__ == '__main__':
-    try:
-        t = Contadores(usuario = pclases.Usuario.get(5))
-    except:
-        t = Contadores()
- 
+    t = Contadores() 
+    

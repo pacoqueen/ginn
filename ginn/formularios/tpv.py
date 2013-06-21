@@ -2509,7 +2509,4 @@ def seleccionar_parecido(clientes, buscado, sugerido, ventana_padre = None):
 check_almacen()
 
 if __name__ == '__main__':
-    #pclases.DEBUG = True
     t = TPV()
-
-

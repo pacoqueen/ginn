@@ -836,5 +836,3 @@ if __name__ == "__main__":
     place.connect("destroy", gtk.main_quit)
     
     gtk.main()
-
-

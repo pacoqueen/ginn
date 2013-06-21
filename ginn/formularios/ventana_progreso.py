@@ -356,4 +356,3 @@ if __name__ == '__main__':
     # Esto es sólo para un ejemplo, la clase NO se usa exactamente así.
     gobject.idle_add(ejemplo)
     gtk.main()
-    

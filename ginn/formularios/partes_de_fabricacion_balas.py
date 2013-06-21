@@ -3992,9 +3992,4 @@ def entran_en_turno(selfobjeto, hi, hf):
 
  
 if __name__ == "__main__":
-    # p = PartesDeFabricacionBalas(permisos = "rx")
-    # p = PartesDeFabricacionBalas(permisos = "rx", usuario = pclases.Usuario.select(pclases.Usuario.q.usuario == "rafael")[0])
-    # p = PartesDeFabricacionBalas(permisos = "rwx", usuario = pclases.Usuario.get(1))
-    p = PartesDeFabricacionBalas(
-            usuario = pclases.Usuario.selectBy(usuario = "jmadrid")[0])
-
+    p = PartesDeFabricacionBalas()

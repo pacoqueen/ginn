@@ -244,4 +244,3 @@ def valorar_segun_tarifa(tarifa):
 
 if __name__ == "__main__":
     p = ValorAlmacen()
-

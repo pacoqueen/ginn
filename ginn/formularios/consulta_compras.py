@@ -742,11 +742,5 @@ def get_fechavto(item):
 
 
 if __name__ == '__main__':
-    ano, mes = mx.DateTime.localtime().year, mx.DateTime.localtime().month
-    mes -= 1
-    if mes < 1:
-        mes = 12
-        ano -= 1
-    ftest = mx.DateTime.DateTimeFrom(ano, mes, 2)
-    t = ConsultaCompras(ffin = ftest)
+    t = ConsultaCompras()
 

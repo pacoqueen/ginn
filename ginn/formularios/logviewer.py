@@ -423,4 +423,3 @@ dir()
 
 if __name__ == '__main__':
     t = LogViewer()
-

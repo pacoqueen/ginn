@@ -593,10 +593,4 @@ class Presupuesto(Ventana, VentanaGenerica):
 
 
 if __name__ == "__main__":
-    pclases.DEBUG = True
-    try:    # Para testeo. 1 = Enero
-        mes = int(sys.argv[1])
-    except (TypeError, ValueError, IndexError):
-        mes = None
-    p = Presupuesto(mes_actual = mes)
-
+    p = Presupuesto()

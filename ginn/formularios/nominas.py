@@ -864,4 +864,3 @@ class Nominas(Ventana):
 
 if __name__ == '__main__':
     t = Nominas()
-

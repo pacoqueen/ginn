@@ -913,6 +913,4 @@ def abrir_trazabilidad(tv, path, view_col, usuario):
                                                      objeto = objeto)
 
 if __name__ == '__main__':
-    #pclases.DEBUG = True
     t = ListadoBalas()
-

@@ -356,6 +356,6 @@ def test(pclase):
 
 
 if __name__ == "__main__":
-    test(pclases.Usuario)
+    test(pclases.Ventana)
     #test(pclases.Nota)
-
+    #test(pclases.Usuario)

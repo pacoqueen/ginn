@@ -640,4 +640,3 @@ class ProductosDeVentaRollosGeocompuestos(Ventana):
 
 if __name__ == "__main__":
     p = ProductosDeVentaRollosGeocompuestos()
-

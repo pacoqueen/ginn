@@ -491,6 +491,4 @@ class Transferencias(Ventana, VentanaGenerica):
             self.ir_a_primero()
 
 if __name__ == "__main__":
-    #p = Transferencias()
-    p = Transferencias(usuario = pclases.Usuario.selectBy(usuario = "admin")[0])
-
+    p = Transferencias()

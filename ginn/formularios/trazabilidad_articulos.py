@@ -1488,5 +1488,4 @@ def escribir(txt, texto, estilos = ()):
 
 
 if __name__ == '__main__':
-    t = TrazabilidadArticulos(usuario = pclases.Usuario.get(1))
-    
+    t = TrazabilidadArticulos()

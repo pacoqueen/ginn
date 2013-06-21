@@ -803,4 +803,3 @@ class Recibos(Ventana, VentanaGenerica):
 
 if __name__ == '__main__':
     v = Recibos()
-

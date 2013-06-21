@@ -228,4 +228,3 @@ class FacturasNoBloqueadas(Ventana):
 
 if __name__ == '__main__':
     t = FacturasNoBloqueadas()
- 

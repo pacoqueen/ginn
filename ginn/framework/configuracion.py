@@ -407,7 +407,7 @@ def guess_class(modulo):
     # Lo mismo es mejor con esto: http://docs.python.org/2/library/imp.html
     exec "from formularios import " + modulo
     exec "moduler = " + modulo
-    clases = [c for c in dir(moduler) if c[0].isupper() 
+    clases = [c for c in dir(moduler) if c[0].isupper()  # @UndefinedVariable
                                         and c != "Ventana" 
                                         and c != "VentanaGenerica"]
     return clases[0]

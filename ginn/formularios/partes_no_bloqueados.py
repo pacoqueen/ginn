@@ -280,5 +280,4 @@ class PartesNoBloqueados(Ventana):
                 column.set_cell_data_func(cell, cell_func, i)
 
 if __name__ == '__main__':
-    t = PartesNoBloqueados(usuario = pclases.Usuario.get(1))
-
+    t = PartesNoBloqueados()

@@ -86,4 +86,3 @@ if __name__ == "__main__":
     win.show()
     
     gtk.main()
-

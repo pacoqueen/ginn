@@ -54,6 +54,7 @@ except ImportError:
     from framework.seeker import VentanaGenerica 
 from utils import _float as float
 
+# TODO: Meter los registros de Auditoría.[nuevo|borrado|modificado] aquí también.
 
 class XXXSkel(Ventana, VentanaGenerica):
     def __init__(self, objeto = None, usuario = None):
@@ -327,4 +328,3 @@ class XXXSkel(Ventana, VentanaGenerica):
 
 if __name__ == "__main__":
     p = XXXSkel()
-

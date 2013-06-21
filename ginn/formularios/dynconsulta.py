@@ -1740,18 +1740,4 @@ def esta_pendiente(o):
 
 
 if __name__ == "__main__":
-    """
-    Primer parámetro: número de meses a mostrar.
-    Segundo parámetro: primer mes a mostrar (1 = enero).
-    """
-    pclases.DEBUG = True
-    try:
-        num_meses = int(sys.argv[1])
-    except (TypeError, ValueError, IndexError):
-        num_meses = None
-    try:    # Para testeo. 1 = Enero
-        mes = int(sys.argv[2])
-    except (TypeError, ValueError, IndexError):
-        mes = None
-    p = DynConsulta(mes_actual = mes, num_meses = num_meses)
-
+    p = DynConsulta()

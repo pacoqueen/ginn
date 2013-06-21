@@ -596,4 +596,3 @@ if __name__ == "__main__":
                  lineas_contenido, 
                  totales, 
                  datos_de_la_empresa)
-

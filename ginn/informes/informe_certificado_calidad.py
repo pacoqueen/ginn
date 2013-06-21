@@ -388,4 +388,3 @@ def go_from_albaranSalida(albaranSalida):
 
 if __name__ == "__main__":
     go_from_albaranSalida(pclases.AlbaranSalida.selectBy(numalbaran="6343")[0])
-

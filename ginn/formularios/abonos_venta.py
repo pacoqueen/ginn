@@ -1439,5 +1439,5 @@ class AbonosVenta(Ventana):
 
 
 if __name__ == '__main__':
-    v = AbonosVenta(usuario = pclases.Usuario.selectBy(usuario = "enrique")[0])
+    v = AbonosVenta()
 

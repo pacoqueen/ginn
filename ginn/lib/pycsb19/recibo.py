@@ -158,5 +158,3 @@ if __name__ == "__main__":
     gtk.rc_parse("gtkrc.txt")
     ven = Recibo()
     ven.Main()
-
-    

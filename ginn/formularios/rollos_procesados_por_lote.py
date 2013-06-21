@@ -153,5 +153,4 @@ def buscar_rollo(n):
     return tuple(rollos)
 
 if __name__ == '__main__':
-    t = RollosProcesadosPorLote(usuario = pclases.Usuario.get(1))
-    
+    t = RollosProcesadosPorLote()

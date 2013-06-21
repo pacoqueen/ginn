@@ -680,5 +680,3 @@ if __name__ == "__main__":
         v = VentanaGenerica(objeto_resultado)
     else:
         v = VentanaGenerica(pclases.DatosDeLaEmpresa)
-
-

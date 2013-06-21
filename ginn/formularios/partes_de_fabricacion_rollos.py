@@ -3785,11 +3785,4 @@ def actualizar_albaran_interno_con_tubos(pdp):
 
 
 if __name__ == "__main__":
-    p = PartesDeFabricacionRollos(permisos = "rx", usuario = pclases.Usuario.select(pclases.Usuario.q.usuario == "geotextil")[0])
-    #p = PartesDeFabricacionRollos(permisos = "rxw", usuario = pclases.Usuario.select(pclases.Usuario.q.usuario == "admin")[0])
-    #if len(sys.argv) > 1 and sys.argv[1] == "-b":
-    #    crear_ventana_pesaje(None)  # Esto cascará, ya no me vale para hacer las pruebas unitarias.
-    #    gtk.main()
-    #else:
-    #    p = PartesDeFabricacionRollos(permisos = "rxw")
-
+    p = PartesDeFabricacionRollos()

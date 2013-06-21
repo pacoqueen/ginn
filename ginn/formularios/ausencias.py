@@ -506,6 +506,4 @@ class Ausencias(Ventana):
 
 
 if __name__ == '__main__':
-    import random
-    v = Ausencias(pclases.Empleado.select()[random.randrange(pclases.Empleado.select().count())])
-
+    v = Ausencias()

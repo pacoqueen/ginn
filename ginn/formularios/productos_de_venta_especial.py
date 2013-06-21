@@ -705,4 +705,3 @@ class ProductosDeVentaEspecial(Ventana):
 
 if __name__ == "__main__":
     p = ProductosDeVentaEspecial()
-

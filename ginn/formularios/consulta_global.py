@@ -3496,11 +3496,4 @@ def consultar_gtxc(fechaini, fechafin):
     return rollosc.sum("peso")
 
 if __name__ == '__main__':
-    import sys
-    try:
-        t = ConsultaGlobal(
-            usuario = pclases.Usuario.get(int(sys.argv[1])))
-    except:
-        t = ConsultaGlobal(
-            usuario = pclases.Usuario.selectBy(usuario = "nicolas")[0])
-
+    t = ConsultaGlobal()

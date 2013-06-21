@@ -897,4 +897,3 @@ if __name__ == "__main__":
     b = code39.Extended39("Q-123456", xdim = .080*cm)
     import os
     os.system("qiv %s" % (b.guardar_a_png()))
-

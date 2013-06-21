@@ -87,4 +87,3 @@ if __name__ == "__main__":
 
     # start the daemon main loop
     main()
-

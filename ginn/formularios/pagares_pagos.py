@@ -1393,4 +1393,3 @@ def sean_young():
 if __name__ == '__main__':
     v = PagaresPagos()
     #sean_young()
-

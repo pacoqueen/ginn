@@ -1920,8 +1920,4 @@ def imprimir_etiquetas_pales(pales, padre = None, mostrar_dialogo = True):
 
 
 if __name__ == "__main__":
-    pclases.DEBUG = True
-    p = PartesDeFabricacionBolsas(usuario = pclases.Usuario.select(
-        pclases.Usuario.q.usuario == "cemento")[0])  # @UndefinedVariable
-        #pclases.Usuario.q.usuario == "jagiles")[0])
-
+    p = PartesDeFabricacionBolsas()

@@ -276,5 +276,4 @@ class MostrarDatosLogic(Ventana):
 
 if __name__ == '__main__':
     t = MostrarDatosLogic()
-    print t.get_objeto()
-
+    #print t.get_objeto()

@@ -208,4 +208,3 @@ class ListadoProductos(Ventana):
 
 if __name__ == '__main__':
     t = ListadoProductos()
-

@@ -770,6 +770,4 @@ Sin embalaje.</i></small>""" % (merma))
 
 
 if __name__ == '__main__':
-    t = ConsumoBalasPartida(usuario = pclases.Usuario.get(1))
-    #t = ConsumoBalasPartida()
- 
+    t = ConsumoBalasPartida()

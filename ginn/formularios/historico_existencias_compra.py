@@ -384,7 +384,4 @@ def get_fechas():
 
 
 if __name__ == '__main__':
-    pclases.DEBUG = True
     t = HistoricoExistenciasCompra() 
-
-    

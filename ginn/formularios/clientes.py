@@ -2171,15 +2171,5 @@ def copy_to_clipboard(texto):
 
 
 if __name__ == '__main__':
-    try:
-        pclases.DEBUG = True
-        v = Clientes(
-                usuario = pclases.Usuario.selectBy(usuario = "javier")[0], 
-                #objeto = pclases.Cliente.select(
-                #            pclases.Cliente.q.nombre.contains("GEA 21 S."), 
-                #            orderBy = "id")[0])
-                #objeto = pclases.Cliente.get(2))    # Composan
-                )
-    except:
-        v = Clientes()
+    v = Clientes()
 

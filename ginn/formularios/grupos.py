@@ -552,4 +552,3 @@ class Grupos(Ventana):
       
 if __name__ == '__main__':
     v = Grupos()
-

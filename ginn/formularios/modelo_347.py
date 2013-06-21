@@ -211,4 +211,3 @@ class Modelo347(Ventana):
 
 if __name__ == '__main__':
     t = Modelo347()
-

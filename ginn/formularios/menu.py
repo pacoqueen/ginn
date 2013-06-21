@@ -568,7 +568,7 @@ class Menu:
     def abrir_ventana_usuario(self, archivo):
         self.ventana.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
         exec "import %s" % archivo
-        gobject.timeout_add(100, self.volver_a_cursor_original)
+        gobject.timeout_add(3000, self.volver_a_cursor_original)
         if archivo == "usuarios": 
             from formularios import usuarios
             v = usuarios.Usuarios(self.get_usuario())  # @UnusedVariable
@@ -621,7 +621,7 @@ class Menu:
             #       sale del "busy" justo cuando debe, al abrirse la 
             #       ventana.
             v = None 
-            gobject.timeout_add(1000, self.volver_a_cursor_original)
+            gobject.timeout_add(3000, self.volver_a_cursor_original)
             # NOTA: OJO: TODO: Usuario harcoded. Cambiar en cuanto sea 
             #                  posible.
             if ((self.get_usuario().usuario == "geotextil" or 
@@ -1021,4 +1021,3 @@ if __name__ == '__main__':
     except ImportError:
         print "Optimizaciones no disponibles."
     main()
-

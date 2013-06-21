@@ -455,4 +455,3 @@ if __name__ == "__main__":
            texto, 
            despedida, 
            ruta_logo = "../imagenes/dorsia.png")
-

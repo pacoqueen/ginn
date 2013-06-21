@@ -358,4 +358,3 @@ def buscar_facturas_de_abono_sin_pagar(cliente,
 
 if __name__ == '__main__':
     t = VencimientosPendientesPorCliente()
-

@@ -44,7 +44,7 @@ from framework import pclases
 from informes import geninformes
 import tempfile 
 
-class ConsultaExistencias(Ventana):
+class ConsultaExistenciasBalas(Ventana):
     
     def __init__(self, objeto = None, usuario = None):
         """
@@ -94,5 +94,5 @@ class ConsultaExistencias(Ventana):
                 
 
 if __name__ == '__main__':
-    t = ConsultaExistencias()
+    t = ConsultaExistenciasBalas()
  

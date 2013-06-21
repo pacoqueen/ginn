@@ -553,4 +553,3 @@ class MotivosAusencia(Ventana):
 
 if __name__ == '__main__':
     v = MotivosAusencia()
-

@@ -968,6 +968,4 @@ def buscar_cliente(padre = None):
     return idcliente
 
 if __name__ == "__main__":
-    #p = Presupuestos(usuario = pclases.Usuario.get(18))
-    p = Presupuestos(usuario = pclases.Usuario.get(22))
-
+    p = Presupuestos()

@@ -316,4 +316,3 @@ class CuentasOrigen(Ventana, VentanaGenerica):
 
 if __name__ == "__main__":
     p = CuentasOrigen()
-

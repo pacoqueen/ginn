@@ -2354,6 +2354,4 @@ def bloquear_albaranes(f):
 
 
 if __name__ == '__main__':
-    # v = Prefacturas(usuario = pclases.Usuario.select(pclases.Usuario.q.usuario.contains("Maril"))[0])
     v = Prefacturas()
-

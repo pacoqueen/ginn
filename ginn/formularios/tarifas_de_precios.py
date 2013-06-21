@@ -743,4 +743,3 @@ class TarifasDePrecios(Ventana):
 
 if __name__ == '__main__':
     v = TarifasDePrecios()
-

@@ -256,5 +256,3 @@ def get_fechas():
 
 if __name__ == '__main__':
     t = HistoricoExistencias() 
-
-    

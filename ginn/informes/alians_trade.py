@@ -362,4 +362,3 @@ if __name__ == "__main__":
         rollos.append(pv.articulos[-1].rollo)
     rollos = [build_etiqueta(r)[0] for r in rollos]
     abrir_pdf(etiqueta_rollos_polaco(rollos, mostrar_marcado = True))
-

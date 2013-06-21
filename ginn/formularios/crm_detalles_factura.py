@@ -740,11 +740,4 @@ def abrir_adjunto_from_tv(tv, path, col):
 
 
 if __name__ == '__main__':
-    #t = CRM_DetallesFactura(pclases.FacturaVenta.select(orderBy = "-id")[0])
-    f = pclases.FacturaVenta.select(
-                pclases.FacturaVenta.q.numfactura == "X111172", 
-                orderBy = "-id")[0]
-    t = CRM_DetallesFactura(objeto = f)
-    pclases.DEBUG = True
-    # t = CRM_DetallesFactura()
-
+    t = CRM_DetallesFactura()

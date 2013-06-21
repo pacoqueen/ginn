@@ -3278,12 +3278,4 @@ def generar_recibo(factura, usuario=None, logger=None, ventana_padre=None):
         
 
 if __name__ == '__main__':
-    # v = FacturasVenta(usuario = pclases.Usuario.select(pclases.Usuario.q.usuario.contains("Maril"))[0])
-    try:
-        u = pclases.Usuario.select(
-            pclases.Usuario.q.usuario.contains("admon2"))[0]
-        f = pclases.FacturaVenta.selectBy(numfactura = "X110130")[0]
-        v = FacturasVenta(usuario = u, objeto = f)
-    except IndexError:
-        v = FacturasVenta()
-
+    v = FacturasVenta()

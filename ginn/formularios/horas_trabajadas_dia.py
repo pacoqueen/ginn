@@ -769,4 +769,3 @@ class HorasTrabajadasDia(Ventana):
 
 if __name__ == '__main__':
     t = HorasTrabajadasDia()
-

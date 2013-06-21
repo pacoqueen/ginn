@@ -497,4 +497,3 @@ dir()
 if __name__ == '__main__':
     t = Trazabilidad()
     #dump("Rollo", pclases.Rollo.select()[0])
-    
