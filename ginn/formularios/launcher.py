@@ -79,7 +79,7 @@ def run(modulo, clase, usuario, fconfig):
         if not isinstance(usuario, str):
             usuario = usuario.usuario   # Debe ser instancia de pclases
         comando += " -u %s -c %s" % (usuario, fconfig) 
-        # print comando
+        print comando
         subprocess.Popen([comando] + args, shell = True)
     except Exception, msg:     # fallback
         # Esto debería ir al logger o algo:
