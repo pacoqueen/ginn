@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
-#                          Diego Muñoz Escalante.                             #
-# (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
+# Copyright (C) 2005-2013  Francisco José Rodríguez Bogado                    #
+#                          <frbogado@geotexan.com>                            #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
 #                                                                             #
@@ -600,12 +599,14 @@ class Ventana:
         # Existe la posibilidad de que entre la tarea de chequear cambios 
         # antes de inicializar el GUI, por eso chequeo que el botón ya esté 
         # disponible a través de libglade.
+        # Algunas ventanas redefinen el es_diferente para devolver algo que no 
+        # sea booleano o entero. Me aseguro haciendo la conversión con bool.
         try:
             boton_guardar = self.wids['b_guardar']
         except KeyError:
             boton_guardar = None
         if boton_guardar != None:
-            boton_guardar.set_sensitive(self.es_diferente())
+            boton_guardar.set_sensitive(bool(self.es_diferente()))
         return True
 
     def actualizar_ventana_consulta(self):

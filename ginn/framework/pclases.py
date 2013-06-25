@@ -7914,7 +7914,8 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
         # XXX
         """
         #unittest:
-        from framework import pclases, mx
+        from framework import pclases
+        import mx.DateTime
         pclases.DEBUG = True
         pc = pclases.ProductoCompra.select(
             pclases.ProductoCompra.q.descripcion.contains("PLAST"), 
@@ -9712,6 +9713,8 @@ class PedidoVenta(SQLObject, PRPCTOO):
                             "Validación cancelada por el usuario."
         else:
             txtestado = "Validado"
+            if self.usuario:
+                txtestado = " (%s)" % self.usuario.usuario
         return txtestado
 
     @property

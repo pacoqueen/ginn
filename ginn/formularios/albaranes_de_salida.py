@@ -2108,10 +2108,12 @@ class AlbaranesDeSalida(Ventana):
                             }, nivel = self.logger.INFO) 
                 return
             else:
+                if self.objeto.cliente:
+                    info_cliente = self.objeto.cliente.get_info()
+                else:
+                    info_cliente = "¿Sin self.objeto.cliente?"
                 self.to_log("[add_pedido] Cliente sin crédito.", 
-                            {"cliente": self.objeto.cliente 
-                                        and self.objeto.cliente.get_info()
-                                        or "¿Sin self.objeto.cliente?", 
+                            {"cliente": info_cliente, 
                              "albarán": self.objeto.numalbaran, 
                              "crédito disponible": 
                               pedido.cliente and 
@@ -2123,10 +2125,12 @@ class AlbaranesDeSalida(Ventana):
                              "¿continuar?": True
                             }, nivel = self.logger.INFO) 
         if self.comprobar_cliente_deudor():
+            if self.objeto.cliente:
+                info_cliente = self.objeto.cliente.get_info()
+            else:
+                info_cliente = "¿Sin self.objeto.cliente?"
             self.to_log("[add_pedido] Cliente deudor.", 
-                        {"cliente": self.objeto.cliente 
-                                    and self.objeto.cliente.get_info()
-                                    or "¿Sin self.objeto.cliente?", 
+                        {"cliente": info_cliente, 
                          "albarán": self.objeto.numalbaran, 
                         })
             return

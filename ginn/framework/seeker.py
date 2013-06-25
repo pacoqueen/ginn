@@ -304,11 +304,14 @@ class VentanaGenerica(Ventana):
             if w != 'b_actualizar' and w != 'b_guardar' and w not in excepciones:
                 self.wids[w].set_sensitive(activo)
 
-    def es_diferente(self):
+    def es_diferente(self, debug_mode = False):
         """
         Devuelve True si algún valor en ventana difiere de 
         los del objeto.
+        Si debug_mode es True devuelve la lista de campos que no son 
+        iguales en vez de un booleano.
         """
+        campos_diferentes = []
         if self.objeto == None:
             igual = True
         else:
@@ -321,8 +324,13 @@ class VentanaGenerica(Ventana):
                     valor_objeto = utils.abs_mxfecha(valor_objeto)
                 igual = igual and (valor_ventana == valor_objeto)
                 if not igual:
-                    break
-        return not igual
+                    campos_diferentes.append(colname)
+                    if not debug_mode:  # No sigo mirando
+                        break
+        if not debug_mode:
+            return not igual
+        else:
+            return campos_diferentes
 
     def leer_valor(self, col, nombre_widget = None):
         """

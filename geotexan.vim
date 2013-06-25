@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 21 junio 2013 at 16:13:29.
+" Created by session.vim 1.5 on 24 junio 2013 at 17:20:21.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -41,9 +41,9 @@ badd +1197 ginn/framework/pclases.py
 badd +201 ginn/formularios/historico_existencias_compra.py
 badd +39 ginn/formularios/historico_existencias.py
 badd +46 ginn/formularios/consulta_incidencias.py
-badd +463 ginn/formularios/consulta_producido.py
+badd +392 ginn/formularios/consulta_producido.py
 badd +1 ginn/__init__.py
-badd +631 ginn/formularios/clientes.py
+badd +2031 ginn/formularios/clientes.py
 badd +314 ginn/formularios/productos_compra.py
 badd +323 ginn/formularios/productos_de_venta_balas.py
 badd +525 ginn/formularios/recibos.py
@@ -63,12 +63,12 @@ badd +142 ginn/formularios/autenticacion.py
 badd +9568 ginn/informes/geninformes.py
 badd +233 ginn/informes/informe_certificado_calidad.py
 badd +1518 informes/geninformes.py
-badd +371 ginn/formularios/facturas_venta.py
+badd +1 ginn/formularios/facturas_venta.py
 badd +468 ginn/framework/configuracion.py
 badd +4 bin/ginn.sh
 badd +10 ginn/main.py
 badd +664 ginn/formularios/ventana.py
-badd +1047 ginn/formularios/pedidos_de_venta.py
+badd +377 ginn/formularios/pedidos_de_venta.py
 badd +867 db/tablas.sql
 badd +3581 ginn/formularios/albaranes_de_salida.py
 badd +1 ginn/formularios/presupuesto.py
@@ -85,9 +85,10 @@ badd +37 ginn/formularios/__init__.py
 badd +416 ginn/formularios/pagares_pagos.py
 badd +1 ginn/formularios/ausencias.py
 badd +67 ginn/formularios/partes_no_bloqueados.py
+badd +0 ginn/formularios/gtkexcepthook.py
 args formularios/auditviewer.py
-set lines=44 columns=80
-edit ginn/formularios/consulta_producido.py
+set lines=58 columns=80
+edit ginn/formularios/gtkexcepthook.py
 set splitbelow splitright
 wincmd _ | wincmd |
 split
@@ -112,13 +113,13 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 30 + 22) / 44)
-exe '2resize ' . ((&lines * 1 + 22) / 44)
-exe '3resize ' . ((&lines * 1 + 22) / 44)
-exe '4resize ' . ((&lines * 1 + 22) / 44)
-exe '5resize ' . ((&lines * 1 + 22) / 44)
-exe '6resize ' . ((&lines * 1 + 22) / 44)
-exe '7resize ' . ((&lines * 1 + 22) / 44)
+exe '1resize ' . ((&lines * 44 + 29) / 58)
+exe '2resize ' . ((&lines * 1 + 29) / 58)
+exe '3resize ' . ((&lines * 1 + 29) / 58)
+exe '4resize ' . ((&lines * 1 + 29) / 58)
+exe '5resize ' . ((&lines * 1 + 29) / 58)
+exe '6resize ' . ((&lines * 1 + 29) / 58)
+exe '7resize ' . ((&lines * 1 + 29) / 58)
 argglobal
 setlocal fdm=indent
 setlocal fde=0
@@ -128,32 +129,16 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-56
+155
 silent! normal zo
-173
+169
 silent! normal zo
-192
-silent! normal zo
-384
-silent! normal zo
-394
-silent! normal zo
-395
-silent! normal zo
-396
-silent! normal zo
-396
-silent! normal zo
-396
-silent! normal zo
-396
-silent! normal zo
-let s:l = 388 - ((7 * winheight(0) + 15) / 30)
+let s:l = 284 - ((0 * winheight(0) + 22) / 44)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-388
-normal! 027l
+284
+normal! 011l
 wincmd w
 argglobal
 edit ginn/formularios/partes_de_fabricacion_rollos.py
@@ -449,13 +434,13 @@ normal! zt
 506
 normal! 0
 wincmd w
-exe '1resize ' . ((&lines * 30 + 22) / 44)
-exe '2resize ' . ((&lines * 1 + 22) / 44)
-exe '3resize ' . ((&lines * 1 + 22) / 44)
-exe '4resize ' . ((&lines * 1 + 22) / 44)
-exe '5resize ' . ((&lines * 1 + 22) / 44)
-exe '6resize ' . ((&lines * 1 + 22) / 44)
-exe '7resize ' . ((&lines * 1 + 22) / 44)
+exe '1resize ' . ((&lines * 44 + 29) / 58)
+exe '2resize ' . ((&lines * 1 + 29) / 58)
+exe '3resize ' . ((&lines * 1 + 29) / 58)
+exe '4resize ' . ((&lines * 1 + 29) / 58)
+exe '5resize ' . ((&lines * 1 + 29) / 58)
+exe '6resize ' . ((&lines * 1 + 29) / 58)
+exe '7resize ' . ((&lines * 1 + 29) / 58)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
