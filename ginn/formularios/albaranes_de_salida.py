@@ -2214,6 +2214,7 @@ class AlbaranesDeSalida(Ventana):
                         else:
                             nombreproducto = "?"
                         return nombreproducto
+                    # TODO: Para pedidos con muchos albaranes, la lista de números de albarán es demasiado larga y el diálogo sobrepasa el ancho de la pantalla.
                     utils.dialogo_info(titulo = 'LÍNEAS NO ALBARANEADAS',
                                        texto = """
                     Las siguientes líneas de venta no se agregaron al albarán                   

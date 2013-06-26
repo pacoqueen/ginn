@@ -632,6 +632,10 @@ FRA_NO_DOCUMENTADA,FRA_NO_VENCIDA,FRA_IMPAGADA,FRA_COBRADA,FRA_ABONO = range(5)
 # Estados de pagarés/confirming
 GESTION, CARTERA, DESCONTADO, IMPAGADO, COBRADO = range(5)
 
+# Estados de validación de pedidos
+NO_VALIDABLE, VALIDABLE, PLAZO_EXCESIVO, SIN_FORMA_DE_PAGO, \
+        PRECIO_INSUFICIENTE, CLIENTE_DEUDOR = range(6)
+
 # VERBOSE MODE
 total = 158 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
             # Más bien grep " = print_verbose(" pclases.py | grep -v \# | wc -l
@@ -9689,7 +9693,26 @@ class PedidoVenta(SQLObject, PRPCTOO):
         en su caso, de la no validación automática.
         """
         txtestado = None
-        if not self.validado:
+        estado_validacion = self.get_estado_validacion()
+        if estado_validacion == VALIDABLE:
+            txtestado = "Validado"
+            if self.usuario:
+                txtestado += " (%s)" % self.usuario.usuario
+        elif estado_validacion == NO_VALIDABLE: 
+            txtestado = "Necesita validación manual: "\
+                        "Validación cancelada por el usuario."
+        elif estado_validacion == PLAZO_EXCESIVO: 
+            txtestado = "Necesita validación manual: "\
+                        "El plazo de la forma de pago es excesivo."
+        elif estado_validacion == SIN_FORMA_DE_PAGO: 
+            txtestado = "Necesita validación manual: "\
+                        "No se ha seleccionado forma de pago para el pedido."
+        elif estado_validacion == CLIENTE_DEUDOR:            
+            txtestado = "Necesita validación manual: "\
+                        "Cliente con crédito insuficiente."
+        elif estado_validacion == PRECIO_INSUFICIENTE:
+            txtestado = "Necesita validación manual: "\
+                        "Ventas por debajo de precio mínimo definido."
             for ldp in self.lineasDePedido:
                 precioMinimo = ldp.producto.precioMinimo
                 precioKilo = ldp.precioKilo
@@ -9701,20 +9724,6 @@ class PedidoVenta(SQLObject, PRPCTOO):
                                     utils.float2str(precioKilo), 
                                     utils.float2str(precioMinimo))
                     break
-            if not txtestado:
-                importe_pedido = self.calcular_importe_total(iva = True)
-                if self.cliente.calcular_credito_disponible(
-                        base = importe_pedido) <= 0:
-                    txtestado = "Necesita validación manual: "\
-                                "cliente con crédito insuficiente."
-            if not txtestado:   # Entonces lo han invalidado manualmente. 
-                                # No queda otra.
-                txtestado = "Necesita validación manual: "\
-                            "Validación cancelada por el usuario."
-        else:
-            txtestado = "Validado"
-            if self.usuario:
-                txtestado = " (%s)" % self.usuario.usuario
         return txtestado
 
     @property
@@ -9723,21 +9732,48 @@ class PedidoVenta(SQLObject, PRPCTOO):
         Devuelve True si el pedido es validable:
             * Ningún precio está por debajo del mínimo.
             * El cliente no está en riesgo (crédito insuficiente).
+            * La forma de pago es inferior o igual a 120 días.
         """
-        # PLAN: ¿Debería tener otro método para ver por qué motivo no valida?
-        validable = True
+        estado_validacion = self.get_estado_validacion()
+        if estado_validacion == VALIDABLE:
+            return True
+        else:
+            return False
+
+    def get_estado_validacion(self):
+        """
+        Devuelve el estado de la validación del pedido en el momento de 
+        llamar a la función. Puede ser:
+            NO_VALIDABLE: Por algún motivo indeterminado o invalidación 
+                          manual del usuario.
+            VALIDABLE: Cumple todos los requisitos de validación automática.
+            PLAZO_EXCESIVO: La forma de pago seleccionada en el pedido supera 
+                            los 120 días.
+            SIN_FORMA_DE_PAGO: El pedido no tiene forma de pago definida.
+            PRECIO_INSUFICIENTE: Algún precio por kilo en las líneas del 
+                                 pedido está por encima del mínimo configurado 
+                                 por familia de productos.
+            CLIENTE_DEUDOR: El cliente no tiene crédito suficiente. 
+        """
+        validable = VALIDABLE
         for ldp in self.lineasDePedido:
             precioMinimo = ldp.producto.precioMinimo
             precioKilo = ldp.precioKilo
             if (precioMinimo != None and precioKilo != None 
                     and precioKilo < precioMinimo):
-                validable = False
+                validable = PRECIO_INSUFICIENTE
                 break
+        if validable:
+            fdp = self.formaDePago
+            if not fdp:
+                validable = SIN_FORMA_DE_PAGO
+            elif fdp.plazo > 120:
+                validable = PLAZO_EXCESIVO
         if validable:
             importe_pedido = self.calcular_importe_total(iva = True)
             if self.cliente and self.cliente.calcular_credito_disponible(
                     base = importe_pedido) <= 0:
-                validable = False
+                validable = CLIENTE_DEUDOR
         return validable
 
     def adivinar_obra(self):
@@ -15082,20 +15118,51 @@ class Cliente(SQLObject, PRPCTOO):
         # TODO: Esto, ahora que se usa intensivamente en pedidos y albaranes, 
         # hay que optimizarlo. Seriamente, además. Con clientes como CETCO es 
         # isufrible esperar a los "actualizar_ventana".
+# PORASQUI
+        if DEBUG:
+            bacall = antes = time.time()                        # XXX
         if self.riesgoConcedido==-1: # Ignorar. Devuelvo un máximo arbitrario.
             credito = sys.maxint
         else:
             if impagado is None:
+                if DEBUG and VERBOSE:
+                    print "[0] >>>", time.time() - antes        # XXX
+                    antes = time.time()                         # XXX
                 impagado = self.calcular_impagado()
+                if DEBUG and VERBOSE:
+                    print "[1] >>>", time.time() - antes        # XXX
+                    antes = time.time()                         # XXX
             if impagado > 0:
                 credito = 0
             else:
                 if sin_documentar is None:
+                    if DEBUG and VERBOSE:
+                        print "[2] >>>", time.time() - antes    # XXX
+                        antes = time.time()                     # XXX
                     sin_documentar = self.calcular_sin_documentar()
+                    if DEBUG and VERBOSE:
+                        print "[3] >>>", time.time() - antes    # XXX
+                        antes = time.time()                     # XXX
                 if sin_vencer is None:
+                    if DEBUG and VERBOSE:
+                        print "[4] >>>", time.time() - antes    # XXX
+                        antes = time.time()                     # XXX
                     sin_vencer = self.calcular_sin_vencer()
+                    if DEBUG and VERBOSE:
+                        print "[5] >>>", time.time() - antes    # XXX
+                        antes = time.time()                     # XXX
                 credito = self.riesgoConcedido - (sin_documentar + sin_vencer)
                 credito -= base
+        if DEBUG:
+            clara = time.time() - bacall                        # XXX
+            print "[Cliente.calcular_credito_disponible]"\
+                  " Tiempo transcurrido: %.2f segundos" % clara # XXX
+        # Pruebas ANTES de optimización: 
+        # >>> from framework import pclases
+        # >>> for c in pclases.Cliente.select(pclases.Cliente.q.nombre.contains("CETCO")):
+        # >>>     print c.nombre, c.calcular_credito_disponible()
+        # CETCO IBERIA, S.L.U. Tiempo transcurrido: 25.51 segundos (etc.) 
+        # XXX 
         return credito
 
     def calcular_impagado(self):
@@ -15826,8 +15893,7 @@ class SuperFacturaVenta:
         """
         Calcula el total de la factura, con descuentos, IVA y demás incluido.
         Devuelve un FixedPoint (a casi todos los efectos, se comporta como 
-        un FLOAT.
-        De todas formas, pasa bien por el utils.float2str).
+        un FLOAT. De todas formas, pasa bien por el utils.float2str).
         """
         subtotal = self.calcular_subtotal() 
         tot_dto = self.calcular_total_descuento(subtotal) 
@@ -21435,6 +21501,9 @@ class Efecto(SQLObject, PRPCTOO):
         return str_a_la_orden
 
     def get_estado(self, fecha = mx.DateTime.today()):
+        """
+        Devuelve el estado del efecto de cobro. Ya sea confirming o pagaré.
+        """
         try:
             return self.pagareCobro.get_estado(fecha)
         except AttributeError:
