@@ -69,7 +69,7 @@ from framework.configuracion import ConfigConexion, parse_params
 
 from formularios import custom_widgets
 
-__version__ = '5.0.3 (beta)'
+__version__ = '5.0.5 (beta)'
 __version_info__ = tuple(
     [int(num) for num in __version__.split()[0].split('.')] + 
     [txt.replace("(", "").replace(")", "") for txt in __version__.split()[1:]]
