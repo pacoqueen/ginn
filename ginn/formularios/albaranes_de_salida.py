@@ -1183,9 +1183,9 @@ class AlbaranesDeSalida(Ventana):
         for w in ("cbe_almacenOrigenID", "cbe_almacenDestinoID"):
             self.wids[w].set_sensitive(
                 s and self.wids[w].get_property("sensitive"))
-        # CWT: No bloquear transportes si el usuario tienen nivel <=2 (va por 
+        # CWT: No bloquear transportes si el usuario tienen nivel <=3 (va por 
         # Rafa, en concreto, pero con más razón que un santo, eso sí).
-        if self.usuario and self.usuario.nivel <= 2:
+        if self.usuario and self.usuario.nivel <= 3:
             self.wids['expander3'].set_sensitive(True)
             self.wids['tv_transportesACuenta'].set_sensitive(True)
             self.wids['b_add_transporteACuenta'].set_sensitive(True) 
