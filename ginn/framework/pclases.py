@@ -2878,7 +2878,20 @@ class Cobro(SQLObject, PRPCTOO):
                        doc = "Cliente relacionado con el cobro.")
     numfactura = property(get_numfactura, doc = get_numfactura.__doc__)
 
-    def esta_cobrado(self, fecha_base = None, gato_en_talega = False):
+    def esta_cobrado(self, fecha_base = None):
+        # EXPERIMENTAL
+        if fecha_base:
+            strfecha = fecha_base.strftime("%Y-%m-%d")
+            sql = "SELECT cobro_esta_cobrado(%d, '%s');" % (self.id, strfecha)
+        else:
+            sql = "SELECT cobro_esta_cobrado(%d);" % self.id
+        try:
+            cobrado = self._connection.queryOne(sql)[0]
+        except IndexError:
+            cobrado = 0.0 # Ola ke ase ¿cobro no existe o ke ase?
+        return cobrado  # 0.0 es False
+
+    def DEPRECATED_esta_cobrado(self, fecha_base = None, gato_en_talega = False):
         """
         Devuelve True si el cobro está realmente pagado en la fecha indicada 
         (o en cualquier fecha, si no se especifica), esto es:
@@ -2921,8 +2934,8 @@ class Cobro(SQLObject, PRPCTOO):
                 else:
                     if not gato_en_talega:
                         # Cobrado si no ha vencido en fecha base y ya existía.
-                        if (compromiso_cobro.fechaVencimiento < fecha_base and 
-                            compromiso_cobro.fechaRecepcion >= fecha_base):
+                        if (compromiso_cobro.fechaVencimiento > fecha_base and 
+                            compromiso_cobro.fechaRecepcion <= fecha_base):
                             cobrado += compromiso_cobro.cantidad
         elif self.confirming:
             compromiso_cobro = self.confirming
@@ -2945,7 +2958,7 @@ class Cobro(SQLObject, PRPCTOO):
                 else:
                     if not gato_en_talega:
                         # Cobrado si ya existía.
-                        if compromiso_cobro.fechaRecepcion >= fecha_base:
+                        if compromiso_cobro.fechaRecepcion <= fecha_base:
                             cobrado += compromiso_cobro.cantidad
         return cobrado  # 0.0 es False.
 
@@ -15124,11 +15137,13 @@ class Cliente(SQLObject, PRPCTOO):
         if self.riesgoConcedido==-1: # Ignorar. Devuelvo un máximo arbitrario.
             credito = sys.maxint
         else:
+            tempcache = {} # Intentémoslo. Deberían hacerse 1/4 menos de 
+                            # llamadas a get_estado **contra** la BD.
             if impagado is None:
                 if DEBUG and VERBOSE:
                     print "[0] >>>", time.time() - antes        # XXX
                     antes = time.time()                         # XXX
-                impagado = self.calcular_impagado()
+                impagado = self.calcular_impagado(cache = tempcache)
                 if DEBUG and VERBOSE:
                     print "[1] >>>", time.time() - antes        # XXX
                     antes = time.time()                         # XXX
@@ -15139,7 +15154,8 @@ class Cliente(SQLObject, PRPCTOO):
                     if DEBUG and VERBOSE:
                         print "[2] >>>", time.time() - antes    # XXX
                         antes = time.time()                     # XXX
-                    sin_documentar = self.calcular_sin_documentar()
+                    sin_documentar = self.calcular_sin_documentar(
+                                                            cache = tempcache)
                     if DEBUG and VERBOSE:
                         print "[3] >>>", time.time() - antes    # XXX
                         antes = time.time()                     # XXX
@@ -15147,7 +15163,7 @@ class Cliente(SQLObject, PRPCTOO):
                     if DEBUG and VERBOSE:
                         print "[4] >>>", time.time() - antes    # XXX
                         antes = time.time()                     # XXX
-                    sin_vencer = self.calcular_sin_vencer()
+                    sin_vencer = self.calcular_sin_vencer(cache = tempcache)
                     if DEBUG and VERBOSE:
                         print "[5] >>>", time.time() - antes    # XXX
                         antes = time.time()                     # XXX
@@ -15165,20 +15181,20 @@ class Cliente(SQLObject, PRPCTOO):
         # XXX 
         return credito
 
-    def calcular_impagado(self):
-        impagadas = self.get_facturas_impagadas()
+    def calcular_impagado(self, cache = {}):
+        impagadas = self.get_facturas_impagadas(cache = cache)
         total = sum([f.calcular_importe_total() for f in impagadas])
         return total
 
-    def calcular_sin_documentar(self):
-        sin_documentar = self.get_facturas_sin_doc_pago()
+    def calcular_sin_documentar(self, cache = {}):
+        sin_documentar = self.get_facturas_sin_doc_pago(cache = cache)
         # total = sum([f.calcular_importe_total() for f in sin_documentar])
         total = sum([f.calcular_importe_no_documentado() 
                         for f in sin_documentar])
         return total
 
-    def calcular_sin_vencer(self):
-        sin_vencer = self.get_facturas_doc_no_vencidas()
+    def calcular_sin_vencer(self, cache = {}):
+        sin_vencer = self.get_facturas_doc_no_vencidas(cache = cache)
         total = sum([f.calcular_importe_total() for f in sin_vencer])
         return total
 
@@ -16041,33 +16057,19 @@ class SuperFacturaVenta:
             # (*) Una promesa de pago cuenta para mí como un cobro aunque 
             # todavía no tenga las pelas en el bolsillo.
             cobros_cobrados = [c for c in self.cobros 
-                                if not c.sync() and c.esta_cobrado()]
+                                if c.esta_cobrado()]
+                                #if not c.sync() and c.esta_cobrado()]
             # UGLY HACK: sync() siempre devuelve None, por eso le pongo el 
             # not. Así fuerzo a sincronizar los valores antes de comprobar 
-            # si está cobrado.
+            # si está cobrado. 
+            # UPDATE: [20130627] Ya no es necesario el sync. Con la 
+            # optimización de esta_cobrado ejecuto una stored en el SGBD.
         else:
             cobros_cobrados = [c for c in self.cobros 
-                                if not c.sync() and 
-                                   c.fecha <= fecha_base and 
+                                if c.fecha <= fecha_base and 
                                    c.esta_cobrado(fecha_base)]
         res = sum([c.importe for c in cobros_cobrados])
         return res
-
-    def _calcular_cobrado(self, fecha = mx.DateTime.today()):
-        # FIXME: No se tiene en cuenta la fecha. 
-        # TODO: Optimizable
-# PORASQUI: Repetido. Además, cambiar por SQL. LAS DOS FUNCIONES REPETIDAS.
-        cobrado = 0.0
-        for c in self.cobros:
-            if c.confirmingID:
-                if not c.confirming.pendiente:
-                    cobrado += c.importe
-            elif c.pagareCobroID:
-                if not c.pagareCobro.pendiente:
-                    cobrado += c.importe
-            else:
-                cobrado += c.importe
-        return cobrado
 
     def calcular_pendiente_de_documento_de_pago(self):
         """
@@ -16287,7 +16289,8 @@ class SuperFacturaVenta:
         # Todos los vencimientos tienen un cobro y ese cobro:
         #  - No es pagaré ni confirming.
         #  - O bien, es pagaré o confirming y no están pendientes.
-        cobrado = self.calcular_cobrado(fecha)
+        #cobrado = self.DEPRECATED_calcular_cobrado(fecha)      # 0.013 según cProfile
+        cobrado = self.calcular_cobrado(fecha)     # 0.005 según cProfile
         if round(cobrado, 2) == round(self.calcular_total(), 2):
             return FRA_COBRADA        
         # No documentada (ni pagarés, ni confirmings; o bien ningún cobro en 

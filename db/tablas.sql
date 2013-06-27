@@ -3412,7 +3412,7 @@ CREATE FUNCTION cobro_esta_cobrado(idcobro INTEGER,
         DECLARE
             registro_cobro cobro%ROWTYPE;
             registro_pagare_cobro pagare_cobro%ROWTYPE;
-            registro_confirming registro_confirming%ROWTYPE;
+            registro_confirming confirming%ROWTYPE;
             cobrado FLOAT;
         BEGIN
             -- Selecciono el cobro en cuestión:
@@ -3427,14 +3427,47 @@ CREATE FUNCTION cobro_esta_cobrado(idcobro INTEGER,
                 -- solo una parte del pagaré por error de alguien o lo que sea)
                 IF (NOT (registro_pagare_cobro.fecha_cobrado IS NULL))
                    AND fecha >= registro_pagare_cobro.fecha_cobrado THEN
+                    cobrado := registro_pagare_cobro.cobrado;
+                -- Si no, pero no ha vencido todavía (y lo he recibido) 
+                ELSIF registro_pagare_cobro.fecha_cobro > fecha
+                      AND registro_pagare_cobro.fecha_recepcion <= fecha THEN
                     cobrado := registro_pagare_cobro.cantidad;
-                -- Si no, 
-                ELSIF registro_pagare_cobro.fecha_vencimiento < fecha
-                      AND registro_pagare_cobro.fecha_recepcion >= fecha):
-                    cobrado := registro_pagare_cobro.cantidad;
+                ELSE
+                    cobrado := 0.0;
+                END IF;
             ELSIF NOT (registro_cobro.confirming_id IS NULL) THEN
+                -- Si es un confirming, lo cuento como cobrado si no está 
+                -- pendiente o si ya lo he recibido, ya que si no responde 
+                -- el cliente, responderá el banco.
+                SELECT * INTO registro_confirming
+                  FROM confirming 
+                 WHERE confirming.id = registro_cobro.confirming_id;
+                IF registro_confirming.fecha_recepcion <= fecha THEN
+                    -- Recibido
+                    IF registro_confirming.fecha_cobrado IS NOT NULL
+                        AND registro_confirming.fecha_cobrado > fecha THEN
+                        -- Recibido y vencido.
+                        cobrado := registro_confirming.cobrado;
+                        -- .cobrado puede ser 0.0 si está pendiente en la app.
+                    ELSE
+                        -- Recibido y no vencido.
+                        cobrado := registro_confirming.cantidad;
+                    END IF;
+                ELSE
+                    -- No recibido
+                    cobrado := 0.0;
+                END IF;
             ELSE
+                -- Es un cobro que no implica efectos futuribles 
+                -- (transferencia, contado, etc.). Cuenta como cobrado desde 
+                -- el momento en que se recibe.
+                IF registro_cobro.fecha <= fecha THEN
+                    cobrado := registro_cobro.importe;
+                ELSE
+                    cobrado := 0.0;
+                END IF;
             END IF;
+            return cobrado;
         END;
     $$ LANGUAGE plpgsql; -- NEW 26/06/2013
 

@@ -41,8 +41,8 @@ def main():
         #cProfile.run("test_cetco()", sort = 'cumulative')
         cProfile.run("test_cetco()", filestats, sort = 'cumulative')
         p = pstats.Stats(filestats)
-        p.strip_dirs().sort_stats("time").print_stats(10)
-        p.strip_dirs().sort_stats("cumulative").print_stats(10)
+        p.strip_dirs().sort_stats("time").print_stats("pclases", 10)
+        p.strip_dirs().sort_stats("cumulative").print_stats("pclases", 10)
 
 if __name__ == "__main__":
     main()
