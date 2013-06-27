@@ -636,6 +636,9 @@ GESTION, CARTERA, DESCONTADO, IMPAGADO, COBRADO = range(5)
 NO_VALIDABLE, VALIDABLE, PLAZO_EXCESIVO, SIN_FORMA_DE_PAGO, \
         PRECIO_INSUFICIENTE, CLIENTE_DEUDOR = range(6)
 
+# Tiempo de expiración de la cutrecaché de crédito de clientes
+T_CACHE_EXPIRED = 60    # Segundos.
+
 # VERBOSE MODE
 total = 158 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
             # Más bien grep " = print_verbose(" pclases.py | grep -v \# | wc -l
@@ -15109,11 +15112,34 @@ class Cliente(SQLObject, PRPCTOO):
             res = self.riesgoConcedido - (pdte_cobro + base)
         return res
 
-    def calcular_credito_disponible(self, 
-                                    impagado = None, 
-                                    sin_documentar = None, 
-                                    sin_vencer = None, 
-                                    base = 0.0):
+    def __actualizar_cache_credito(self, valor_credito, *args):
+        self.tiempocache = time.time()
+        self.valorcache = valor_credito
+        self.cachedargs = args
+
+    def __cutrecache_caducada(self, *args):
+        """
+        De momento vamos a hacer suposiciones de tiempo.
+        Queridos profesores de la facultad. En estos 10 años no me he olvidado 
+        de vuestros consejos. PERO.
+        """
+        try:
+            expired = time.time() - self.tiempocache > T_CACHE_EXPIRED
+        except AttributeError:  # No hay caché. Por tanto... sí.
+            expired = True
+        if not expired:
+            # Puede que sea una llamada con otros parámetros:
+            if args != self.cachedargs:
+                expired = True
+            else:
+                expired = False
+        return expired
+
+    def _calcular_credito_disponible(self, 
+                                     impagado = None, 
+                                     sin_documentar = None, 
+                                     sin_vencer = None, 
+                                     base = 0.0):
         """
         Devuelve el máximo del importe que puede servirse a un cliente.
         sin_documentar y sin_vencer se pueden instanciar a una cantidad si 
@@ -15131,7 +15157,8 @@ class Cliente(SQLObject, PRPCTOO):
         # TODO: Esto, ahora que se usa intensivamente en pedidos y albaranes, 
         # hay que optimizarlo. Seriamente, además. Con clientes como CETCO es 
         # isufrible esperar a los "actualizar_ventana".
-# PORASQUI
+        if DEBUG and VERBOSE:
+            print "SOY EL PUTO CALCULAR_CREDITO SIN CACHÉ"
         if DEBUG:
             bacall = antes = time.time()                        # XXX
         if self.riesgoConcedido==-1: # Ignorar. Devuelvo un máximo arbitrario.
@@ -15180,6 +15207,32 @@ class Cliente(SQLObject, PRPCTOO):
         # CETCO IBERIA, S.L.U. Tiempo transcurrido: 25.51 segundos (etc.) 
         # XXX 
         return credito
+
+    def calcular_credito_disponible(self, 
+                                    impagado = None, 
+                                    sin_documentar = None, 
+                                    sin_vencer = None, 
+                                    base = 0.0):
+        ########## La Chapucaché:
+        """
+        < ¿caché? >---sí-->< ¿caducada? >---no-->[Devolver caché] 
+             |no                 |sí                    ^
+             |-------------------·                      |
+             v                                          |
+         [calcular]------->[actualizar caché]-----------·
+        """
+        if ((not hasattr(self, "tiempocache"))    # Primera vez. O bien 
+            or self.__cutrecache_caducada(impagado, 
+                                          sin_documentar, 
+                                          sin_vencer, 
+                                          base)): # (sort of) fallo de caché
+            credito = self._calcular_credito_disponible(impagado, 
+                                                        sin_documentar, 
+                                                        sin_vencer, 
+                                                        base)
+            self.__actualizar_cache_credito(credito, impagado, sin_documentar, 
+                                            sin_vencer, base)
+        return self.valorcache
 
     def calcular_impagado(self, cache = {}):
         impagadas = self.get_facturas_impagadas(cache = cache)

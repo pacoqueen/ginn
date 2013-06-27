@@ -280,16 +280,19 @@ class PedidosDeVenta(Ventana):
                            self.usuario and self.usuario.usuario 
                            or "¡NADIE!"))
             vpro.mover()
-            if (self.objeto.cliente 
-                and (self.objeto.cliente.calcular_credito_disponible(
-                     base = self.objeto.calcular_importe_total(iva = True))<=0)
-               ):
-                vpro.mover()
-                color = self.wids['cbe_cliente'].child.get_colormap().\
-                        alloc_color("IndianRed1")
-            else:
-                vpro.mover()
-                color = None
+            color = None
+            if self.objeto.cliente:
+                if self.cache_credito == None:
+                    vpro.mover()
+                    importe_pedido = self.objeto.calcular_importe_total(
+                                        iva = True)
+                    vpro.mover()
+                    self.cache_credito = self.objeto.cliente.\
+                            calcular_credito_disponible(base = importe_pedido)
+                if self.cache_credito <= 0:
+                    vpro.mover()
+                    color = self.wids['cbe_cliente'].child.get_colormap().\
+                                alloc_color("IndianRed1")
         else:
             vpro.mover()
             color = None
@@ -335,7 +338,12 @@ class PedidosDeVenta(Ventana):
         if idcliente:
             cliente = pclases.Cliente.get(idcliente)
             cliente.sync()
-            credito = cliente.calcular_credito_disponible()
+            if self.cache_credito == None:
+                importe_pedido = self.objeto.calcular_importe_total(iva = True)
+                self.cache_credito = credito = cliente.\
+                        calcular_credito_disponible(base = importe_pedido)
+            else:
+                credito = self.cache_credito
             if credito == sys.maxint:   # ¿maxint, te preguntarás? Ver 
                                         # docstring de calcular_credito
                                         # y respuesta hallarás.
@@ -347,7 +355,7 @@ class PedidosDeVenta(Ventana):
             strcredito = "¡UN «GRITÓN» DE DÓLARES!"
             strfdp = "Subasta (de lata de anchoas)"
         self.wids['cbe_cliente'].set_tooltip_text(
-            "Crédito disponible (sin contar el importe del pedido): %s\n"
+            "Crédito disponible (incluyendo el importe del pedido): %s\n"
             % strcredito)
         self.wids['cbe_fdp'].set_tooltip_text("Forma de pago: %s" % strfdp)
         self.rellenar_obras(combo)
@@ -755,6 +763,7 @@ class PedidosDeVenta(Ventana):
         valores por defecto, deshabilitando los innecesarios,
         rellenando los combos, formateando el TreeView -si lo hay-...
         """
+        self.cache_credito = None
         # Inicialmente no se muestra NADA. Sólo se le deja al
         # usuario la opción de buscar o crear nuevo.
         self.activar_widgets(False)
@@ -1206,6 +1215,9 @@ class PedidosDeVenta(Ventana):
         hay que tener cuidado de no llamar a 
         esta función en ese caso.
         """
+        if pclases.DEBUG and pclases.VERBOSE:
+            print "---> SOY RELLENAR WIDGETS"
+        self.cache_credito = None
         numpedido_antes = self.wids['e_numpedido'].get_text()
         total_antes = self.wids['e_total'].get_text()
         if pclases.DEBUG:
@@ -2509,7 +2521,11 @@ class PedidosDeVenta(Ventana):
         caso, se le avisa y se impide que continúe devolviendo FALSE.
         """
         importe_pedido = self.objeto.calcular_importe_total(iva = True)
-        credito = self.objeto.cliente.calcular_credito_disponible()
+        if self.cache_credito == None:
+            self.cache_credito = credito = self.objeto.cliente.\
+                    calcular_credito_disponible(base = importe_pedido)
+        else:
+            credito = self.cache_credito
         if importe_pedido > credito:
             texto = "El crédito actual del cliente es de %s.\n"\
                      "El importe del pedido es %s.\n" % (
