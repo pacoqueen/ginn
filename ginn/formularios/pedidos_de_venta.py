@@ -340,10 +340,9 @@ class PedidosDeVenta(Ventana):
             cliente.sync()
             if self.cache_credito == None:
                 importe_pedido = self.objeto.calcular_importe_total(iva = True)
-                self.cache_credito = credito = cliente.\
+                self.cache_credito = cliente.\
                         calcular_credito_disponible(base = importe_pedido)
-            else:
-                credito = self.cache_credito
+            credito = self.cache_credito
             if credito == sys.maxint:   # ¿maxint, te preguntarás? Ver 
                                         # docstring de calcular_credito
                                         # y respuesta hallarás.
@@ -2522,10 +2521,9 @@ class PedidosDeVenta(Ventana):
         """
         importe_pedido = self.objeto.calcular_importe_total(iva = True)
         if self.cache_credito == None:
-            self.cache_credito = credito = self.objeto.cliente.\
+            self.cache_credito = self.objeto.cliente.\
                     calcular_credito_disponible(base = importe_pedido)
-        else:
-            credito = self.cache_credito
+        credito = self.cache_credito
         if importe_pedido > credito:
             texto = "El crédito actual del cliente es de %s.\n"\
                      "El importe del pedido es %s.\n" % (

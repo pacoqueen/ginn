@@ -337,7 +337,7 @@
                     <child>
                       <widget class="GtkComboBox" id="cb_tipo_de_proveedor">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can_focus">True</property>
                       </widget>
                       <packing>
                         <property name="left_attach">1</property>
@@ -1285,7 +1285,7 @@
                         <child>
                           <widget class="GtkComboBoxEntry" id="cbe_documentodepago">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can_focus">True</property>
                             <child internal-child="entry">
                               <widget class="GtkEntry" id="e_documentodepago">
                                 <property name="can_focus">True</property>
@@ -1371,7 +1371,7 @@
             <child>
               <widget class="GtkComboBox" id="cb_orden">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can_focus">True</property>
                 <property name="items" translatable="yes">Orden alfabético
 Orden cronológico</property>
               </widget>

@@ -16325,16 +16325,21 @@ class SuperFacturaVenta:
         """
         Devuelve el estado de la factura:
         0: No documentada ni vencida: Ningún documento de pago relacionado.
+           FRA_NO_DOCUMENTADA
         1: Documentada no vencida: Tiene documento de pago y éste todavía 
                                    no ha vencido. Se toma en cuenta la fecha 
                                    de vencimiento del doc. de pago, no la de 
                                    la factura.
+           FRA_NO_VENCIDA
         2: Impagada: Los vencimientos de la factura han cumplido y no se ha 
                      cobrado, con o sin documento de pago de por medio.
+           FRA_IMPAGADA
         3: Cobrada: Toda la factura está cobrada.
+           FRA_COBRADA
         4: Pendiente de abonar: Así estarán todos los abonos antes de 
                                 descontarlos en un cobro o en un nuevo pedido.
                                 No contarán para el cálculo del crédito.
+           FRA_ABONO
         Para que una factura esté en un estado, todos los vencimientos de la 
         misma deben estar en ese estado.
         """
@@ -19578,16 +19583,21 @@ class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
         """
         Devuelve el estado de la factura de abono:
         0: No documentada ni vencida: Ningún documento de pago relacionado.
+           FRA_NO_DOCUMENTADA
         1: Documentada no vencida: Tiene documento de pago y éste todavía 
                                    no ha vencido. Se toma en cuenta la fecha 
                                    de vencimiento del doc. de pago, no la de 
                                    la factura.
+           FRA_NO_VENCIDA
         2: Impagada: Los vencimientos de la factura han cumplido y no se ha 
                      cobrado, con o sin documento de pago de por medio.
+           FRA_IMPAGADA
         3: Cobrada: Toda la factura está cobrada.
+           FRA_COBRADA
         4: Pendiente de abonar: Así estarán todos los abonos antes de 
                                 descontarlos en un cobro o en un nuevo pedido.
                                 No contarán para el cálculo del crédito.
+           FRA_ABONO
         Para que una factura esté en un estado, todos los vencimientos de la 
         misma deben estar en ese estado.
         """
