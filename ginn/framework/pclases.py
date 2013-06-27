@@ -16287,7 +16287,7 @@ class SuperFacturaVenta:
         # Todos los vencimientos tienen un cobro y ese cobro:
         #  - No es pagaré ni confirming.
         #  - O bien, es pagaré o confirming y no están pendientes.
-        cobrado = self._calcular_cobrado(fecha)
+        cobrado = self.calcular_cobrado(fecha)
         if round(cobrado, 2) == round(self.calcular_total(), 2):
             return FRA_COBRADA        
         # No documentada (ni pagarés, ni confirmings; o bien ningún cobro en 
