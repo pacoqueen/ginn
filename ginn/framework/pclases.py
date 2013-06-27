@@ -16053,6 +16053,22 @@ class SuperFacturaVenta:
         res = sum([c.importe for c in cobros_cobrados])
         return res
 
+    def _calcular_cobrado(self, fecha = mx.DateTime.today()):
+        # FIXME: No se tiene en cuenta la fecha. 
+        # TODO: Optimizable
+# PORASQUI: Repetido. Además, cambiar por SQL. LAS DOS FUNCIONES REPETIDAS.
+        cobrado = 0.0
+        for c in self.cobros:
+            if c.confirmingID:
+                if not c.confirming.pendiente:
+                    cobrado += c.importe
+            elif c.pagareCobroID:
+                if not c.pagareCobro.pendiente:
+                    cobrado += c.importe
+            else:
+                cobrado += c.importe
+        return cobrado
+
     def calcular_pendiente_de_documento_de_pago(self):
         """
         Devuelve la cantidad de la factura pendiente de cubrir por un 
@@ -16271,16 +16287,7 @@ class SuperFacturaVenta:
         # Todos los vencimientos tienen un cobro y ese cobro:
         #  - No es pagaré ni confirming.
         #  - O bien, es pagaré o confirming y no están pendientes.
-        cobrado = 0.0
-        for c in self.cobros:
-            if c.confirmingID:
-                if not c.confirming.pendiente:
-                    cobrado += c.importe
-            elif c.pagareCobroID:
-                if not c.pagareCobro.pendiente:
-                    cobrado += c.importe
-            else:
-                cobrado += c.importe
+        cobrado = self._calcular_cobrado(fecha)
         if round(cobrado, 2) == round(self.calcular_total(), 2):
             return FRA_COBRADA        
         # No documentada (ni pagarés, ni confirmings; o bien ningún cobro en 

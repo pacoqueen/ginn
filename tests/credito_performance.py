@@ -8,6 +8,7 @@ ruta_ginn = os.path.abspath(os.path.join(
     os.path.dirname(__file__), "..", "ginn"))
 sys.path.append(ruta_ginn)
 from framework import pclases
+pclases.DEBUG = True
 
 if PYCALLGRAPH:
     ruta_pycallgraph = os.path.abspath(os.path.join(os.environ["HOME"], "bin", "pycallgraph"))

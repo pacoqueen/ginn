@@ -3188,6 +3188,12 @@ CREATE TABLE auditoria(
 );
 
 ------------------------ FUNCIONES ------------------------
+CREATE LANGUAGE plpgsql;
+
+-- Para PostgreSQL 7.4 usar:
+-- CREATE FUNCTION plpgsql_call_handler() RETURNS language_handler AS '$libdir/plpgsql' LANGUAGE C;
+-- CREATE TRUSTED PROCEDURAL LANGUAGE plpgsql HANDLER plpgsql_call_handler;
+
 CREATE FUNCTION ultimo_lote_mas_uno()
     RETURNS INT8
     LANGUAGE SQL
@@ -3389,6 +3395,49 @@ CREATE FUNCTION caja_es_clase_b(INT)
            AND producto_venta.campos_especificos_bala_id = ceb.id 
     ;'; -- NEW 11/09/2009
 
+CREATE FUNCTION cobro_esta_cobrado(idcobro INTEGER, 
+                                   fecha DATE DEFAULT CURRENT_DATE)
+    -- Recibe un ID de cobro y una fecha.
+    -- Devuelve el importe cobrado en esa fecha, que depende de:
+    --  * Si es una transferencia, efectivo, cheque o cualquier otra cosa 
+    --    que no sea un confirming o un pagaré; se cuenta como cobrado en 
+    --    cuanto se alcanza la fecha de cobro.
+    --  * Si es un confirming, cuenta como cobrado siempre que tenga el 
+    --    campo pendiente == FALSE. Ya que si no responde el cliente, 
+    --    responde el banco por él.
+    --  * Si es un pagaré, cuenta como cobrado si no está pendiente o no 
+    --    está vencido todavía (fecha_cobro <= DATE recibido).
+    RETURNS FLOAT
+    AS $$
+        DECLARE
+            registro_cobro cobro%ROWTYPE;
+            registro_pagare_cobro pagare_cobro%ROWTYPE;
+            registro_confirming registro_confirming%ROWTYPE;
+            cobrado FLOAT;
+        BEGIN
+            -- Selecciono el cobro en cuestión:
+            SELECT * INTO registro_cobro FROM cobro WHERE id = idcobro;
+            -- Buscar si es pagaré, confirming u otra cosa:
+            IF NOT (registro_cobro.pagare_cobro_id IS NULL) THEN
+                SELECT * INTO registro_pagare_cobro 
+                  FROM pagare_cobro 
+                 WHERE pagare_cobro.id = registro_cobro.pagare_cobro_id;
+                -- Si tiene fecha de cobro y ya ha pasado, he cobrado lo 
+                -- que indique el pagaré (que puede ser 0 si está pendiente o 
+                -- solo una parte del pagaré por error de alguien o lo que sea)
+                IF (NOT (registro_pagare_cobro.fecha_cobrado IS NULL))
+                   AND fecha >= registro_pagare_cobro.fecha_cobrado THEN
+                    cobrado := registro_pagare_cobro.cantidad;
+                -- Si no, 
+                ELSIF registro_pagare_cobro.fecha_vencimiento < fecha
+                      AND registro_pagare_cobro.fecha_recepcion >= fecha):
+                    cobrado := registro_pagare_cobro.cantidad;
+            ELSIF NOT (registro_cobro.confirming_id IS NULL) THEN
+            ELSE
+            END IF;
+        END;
+    $$ LANGUAGE plpgsql; -- NEW 26/06/2013
+
 -------------------------------------------------------------------------------
 
 ---- ALTERS TABLESss ---- s ----
@@ -3458,12 +3507,6 @@ CREATE UNIQUE INDEX hec ON historial_existencias_compra (producto_compra_id, alm
 CREATE INDEX pcobsoleto ON producto_compra (obsoleto);
 
 ---- TRIGGERS ----
-CREATE LANGUAGE plpgsql;
-
--- Para PostgreSQL 7.4 usar:
--- CREATE FUNCTION plpgsql_call_handler() RETURNS language_handler AS '$libdir/plpgsql' LANGUAGE C;
--- CREATE TRUSTED PROCEDURAL LANGUAGE plpgsql HANDLER plpgsql_call_handler;
-
 CREATE FUNCTION un_solo_almacen_ppal() RETURNS TRIGGER AS '
     BEGIN
 --        -- Casos a cubrir:

@@ -280,8 +280,10 @@ class PedidosDeVenta(Ventana):
                            self.usuario and self.usuario.usuario 
                            or "¡NADIE!"))
             vpro.mover()
-            if self.objeto.cliente.calcular_credito_disponible(
-                    base = self.objeto.calcular_importe_total(iva = True))<=0:
+            if (self.objeto.cliente 
+                and (self.objeto.cliente.calcular_credito_disponible(
+                     base = self.objeto.calcular_importe_total(iva = True))<=0)
+               ):
                 vpro.mover()
                 color = self.wids['cbe_cliente'].child.get_colormap().\
                         alloc_color("IndianRed1")
