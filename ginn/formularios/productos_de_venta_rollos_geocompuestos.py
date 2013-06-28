@@ -504,11 +504,11 @@ class ProductosDeVentaRollosGeocompuestos(Ventana):
         nombre = self.wids['e_nombre'].get_text()
         arancel = self.wids['e_arancel'].get_text()
         try:
-            precio = float(self.wids['e_precio'].get_text().replace(',','.'))
+            precio = utils.parse_float(self.wids['e_precio'].get_text().replace(',','.'))
         except ValueError:
             precio = producto.precio
         try:
-            minimo = float(self.wids['e_minimo'].get_text())
+            minimo = utils.parse_float(self.wids['e_minimo'].get_text())
         except ValueError:
             minimo = producto.minimo
         try:
@@ -516,7 +516,7 @@ class ProductosDeVentaRollosGeocompuestos(Ventana):
         except ValueError:
             gramos = producto.camposEspecificosRollo.gramos
         try:
-            ancho = float(self.wids['e_ancho'].get_text())
+            ancho = utils.parse_float(self.wids['e_ancho'].get_text())
         except ValueError:
             ancho = producto.camposEspecificosRollo.ancho
         try:

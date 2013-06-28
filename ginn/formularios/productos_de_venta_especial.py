@@ -575,15 +575,15 @@ class ProductosDeVentaEspecial(Ventana):
         nombre = self.wids['e_nombre'].get_text()
         arancel = self.wids['e_arancel'].get_text()
         try:
-            precio = float(self.wids['e_precio'].get_text())
+            precio = utils.parse_float(self.wids['e_precio'].get_text())
         except ValueError:
             precio = producto.preciopordefecto
         try:
-            minimo = float(self.wids['e_minimo'].get_text())
+            minimo = utils.parse_float(self.wids['e_minimo'].get_text())
         except ValueError:
             minimo = producto.minimo
         try:
-            stock = utils._float(self.wids['e_stock'].get_text())
+            stock = utils.parse_float(self.wids['e_stock'].get_text())
         except ValueError:
             stock = producto.camposEspecificosEspecial.stock
         try:

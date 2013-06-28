@@ -631,15 +631,15 @@ class ProductosDeVentaBalas(Ventana):
         nombre = self.wids['e_nombre'].get_text()
         arancel = self.wids['e_arancel'].get_text()
         try:
-            precio = float(self.wids['e_precio'].get_text().replace(',','.'))
+            precio = utils.parse_float(self.wids['e_precio'].get_text().replace(',','.'))
         except ValueError:
             precio = producto.preciopordefecto
         try:
-            minimo = float(self.wids['e_minimo'].get_text())
+            minimo = utils.parse_float(self.wids['e_minimo'].get_text())
         except ValueError:
             minimo = producto.minimo
         try:
-            dtex = float(self.wids['e_dtex'].get_text())
+            dtex = utils.parse_float(self.wids['e_dtex'].get_text())
         except ValueError:
             dtex = producto.camposEspecificosBala.dtex
         try:
@@ -658,7 +658,7 @@ class ProductosDeVentaBalas(Ventana):
         idtipoMaterialBala = utils.combo_get_value(self.wids['cb_material']) 
         prodestandar = self.wids['e_prodestandar'].get_text()
         try:
-            prodestandar = float(prodestandar)
+            prodestandar = utils.parse_float(prodestandar)
         except ValueError:
             prodestandar = 0.0
         # Desactivo el notificador momentáneamente

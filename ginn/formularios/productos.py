@@ -137,7 +137,7 @@ class Productos(Ventana):
         model = self.wids['tv_datos'].get_model()
         ide = model[path][-1]
         try:
-            existencias = utils._float(texto)
+            existencias = utils.parse_float(texto)
         except ValueError:
             utils.dialogo_info(titulo = "ERROR DE FORMATO", 
                                texto = "El texto %s no es correcto." % (texto), 
@@ -200,7 +200,7 @@ class Productos(Ventana):
         model = self.wids['tv_datos'].get_model()
         ide = model[path][-1]
         try:
-            precio = utils._float(texto)
+            precio = utils.parse_float(texto)
         except ValueError:
             utils.dialogo_info(titulo = "ERROR DE FORMATO", 
                                texto = "El texto %s no es correcto." % (texto), 
@@ -251,7 +251,7 @@ class Productos(Ventana):
         else:
             return
         try:
-            precio = utils._float(texto)
+            precio = utils.parse_float(texto)
         except ValueError:
             try:
                 porcentaje = utils.parse_porcentaje(texto, True)
