@@ -63,7 +63,8 @@ def refrescar_cache_sqlobject():
     # print "%d objetos actualizados con éxito. Tiempo: " % (oks), time.time() - t1
 
 def install_bug_hook(usuario):
-    # Configuración del correo para informes de error:
+    """Configuración del correo para informes de error."""
+    from framework import pclases
     gtkexcepthook.devs_to = "informatica@geotexan.com"
     if usuario and usuario.cuenta:
         gtkexcepthook.feedback = usuario.cuenta
