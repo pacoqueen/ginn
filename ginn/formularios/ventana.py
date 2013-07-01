@@ -81,8 +81,8 @@ def install_bug_hook(usuario):
             gtkexcepthook.port = gtkexcepthook.ssl and 587 or 25 
     else:
         try:
-            gtkexcepthook.feedback = pclases.Usuario.selectBy(usuario = "admin")[0].feedback
-            gtkexcepthook.password = pclases.Usuario.selectBy(usuario = "admin")[0].password
+            gtkexcepthook.feedback = pclases.Usuario.selectBy(usuario = "admin")[0].cuenta
+            gtkexcepthook.password = pclases.Usuario.selectBy(usuario = "admin")[0].cpass
             gtkexcepthook.smtphost = pclases.Usuario.selectBy(usuario = "admin")[0].smtphost
         except IndexError:
             gtkexcepthook.feedback = "informatica@geotexan.com"
