@@ -83,7 +83,7 @@ def install_bug_hook(usuario):
         try:
             gtkexcepthook.feedback = pclases.Usuario.selectBy(usuario = "admin")[0].cuenta
             gtkexcepthook.password = pclases.Usuario.selectBy(usuario = "admin")[0].cpass
-            gtkexcepthook.smtphost = pclases.Usuario.selectBy(usuario = "admin")[0].smtphost
+            gtkexcepthook.smtphost = pclases.Usuario.selectBy(usuario = "admin")[0].smtpserver
         except IndexError:
             gtkexcepthook.feedback = "informatica@geotexan.com"
             gtkexcepthook.smtphost = "smtp.googlemail.com"
