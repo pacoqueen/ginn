@@ -63,7 +63,12 @@ def refrescar_cache_sqlobject():
     # print "%d objetos actualizados con éxito. Tiempo: " % (oks), time.time() - t1
 
 def install_bug_hook(usuario):
-    """Configuración del correo para informes de error."""
+    """
+    Instala en memoria el manejador de excepciones no controladas 
+    explícitamente. Envía un correo electrónico con la configuración del 
+    usuario recibido a una cuenta predefinida.
+    """
+    # Configuración del correo para informes de error: 
     from framework import pclases
     gtkexcepthook.devs_to = "informatica@geotexan.com"
     if usuario and usuario.cuenta:
@@ -81,12 +86,14 @@ def install_bug_hook(usuario):
             gtkexcepthook.port = gtkexcepthook.ssl and 587 or 25 
     else:
         try:
-            gtkexcepthook.feedback = pclases.Usuario.selectBy(usuario = "admin")[0].cuenta
-            gtkexcepthook.password = pclases.Usuario.selectBy(usuario = "admin")[0].cpass
-            gtkexcepthook.smtphost = pclases.Usuario.selectBy(usuario = "admin")[0].smtpserver
+            usuario_defecto = pclases.Usuario.selectBy(usuario = "admin")[0]
         except IndexError:
             gtkexcepthook.feedback = "informatica@geotexan.com"
             gtkexcepthook.smtphost = "smtp.googlemail.com"
+        else:
+            gtkexcepthook.feedback = usuario_defecto.cuenta
+            gtkexcepthook.password = usuario_defecto.cpass
+            gtkexcepthook.smtphost = usuario_defecto.smtpserver
         gtkexcepthook.ssl = (
             gtkexcepthook.smtphost.endswith("googlemail.com") 
              or gtkexcepthook.smtphost.endswith("gmail.com")) 
