@@ -1606,7 +1606,7 @@ class PartesDeFabricacionBalas(Ventana):
                         a_buscar = "%s/%d" % (a_buscar, 
                                               mx.DateTime.localtime().year)
                     try:
-                        fecha = utils.parse_fecha(fecha)
+                        fecha = utils.parse_fecha(a_buscar)
                     except ValueError:
                         fecha = "" 
                     resultados = pclases.ParteDeProduccion.select(
