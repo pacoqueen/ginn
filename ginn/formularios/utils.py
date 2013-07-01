@@ -69,6 +69,7 @@ except ImportError, msg:
     print "WARNING: No se pudo importar nftp. No se podrá usar FTP:\n%s" % (msg)
 from fixedpoint import FixedPoint as Ffloat
 from collections import defaultdict
+import re
 
 
 def str_fechahoralarga(fechahora):
@@ -1889,7 +1890,7 @@ def parse_fecha(txt):
     if "+" in txt or "-" in txt:
         txt = txt.replace("D", " * mx.DateTime.oneDay")
         txt = txt.replace("H", "mx.DateTime.today()")
-        rex = compile("[-]?\d+/\d+/\d+")
+        rex = re.compile("[-]?\d+/\d+/\d+")
         for bingo in rex.findall(txt):
             try:
                 _bingo = "/".join([`int(i)` for i in bingo.split("/")])

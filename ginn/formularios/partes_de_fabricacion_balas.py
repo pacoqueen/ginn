@@ -1605,6 +1605,7 @@ class PartesDeFabricacionBalas(Ventana):
                     if a_buscar.count('/') == 1:
                         a_buscar = "%s/%d" % (a_buscar, 
                                               mx.DateTime.localtime().year)
+                    fecha = utils.parse_fecha(fecha)
                     if len(a_buscar.split('/')[-1]) == 2:
                         fecha = time.strptime(a_buscar, '%d/%m/%y')
                     else:
