@@ -411,18 +411,18 @@ class AlbaranesDeSalida(Ventana):
                         })
             return
         if self.comprobar_cliente_deudor():
-            self.to_log("[pedir_rango] Cliente deudor.", 
-                        {"cliente": self.objeto.cliente 
-                                    and self.objeto.cliente.get_info() 
-                                    or "¿Sin self.objeto.cliente?", 
-                         "albarán": self.objeto.numalbaran, 
-                         "crédito disponible": 
-                            self.objeto.cliente and 
-                            self.objeto.cliente.calcular_credito_disponible(
+            try:
+                infocliente = self.objeto.cliente.get_info()
+                credicliente = self.objeto.cliente.calcular_credito_disponible(
                                 base=self.objeto.calcular_total(
                                                 iva_incluido = True, 
                                                 segun_factura = False))
-                            or "¿Sin self.objeto.cliente?", 
+            except AttributeError:
+                infocliente = credicliente = "¿Sin self.objeto.cliente?"
+            self.to_log("[pedir_rango] Cliente deudor.", 
+                        {"cliente": infocliente, 
+                         "albarán": self.objeto.numalbaran, 
+                         "crédito disponible": credicliente, 
                          "importe albarán": self.objeto.calcular_total(
                                                 iva_incluido = True, 
                                                 segun_factura = False)
@@ -2030,10 +2030,12 @@ class AlbaranesDeSalida(Ventana):
                         }, nivel = self.logger.INFO) 
             return
         if self.comprobar_cliente_deudor():
+            try:
+                infocliente = self.objeto.cliente.get_info()
+            except AttributeError:
+                infocliente = "¿Sin self.objeto.cliente?"
             self.to_log("[add_pedido] Cliente deudor.", 
-                        {"cliente": self.objeto.cliente 
-                                    and self.objeto.cliente.get_info()
-                                    or "¿Sin self.objeto.cliente?", 
+                        {"cliente": infocliente, 
                          "albarán": self.objeto.numalbaran, 
                         })
             return
@@ -2082,9 +2084,17 @@ class AlbaranesDeSalida(Ventana):
         importe_pedido = pedido.calcular_importe_total(iva = True)
         if pclases.DEBUG:
             print "albaranes_de_salida -> importe_pedido", importe_pedido 
+        cliente = pedido.cliente
+        try:
+            infocliente = cliente.get_info()
+            credicliente = cliente.calcular_credito_disponible(
+                            base = importe_pedido)
+        except AttributeError:
+            infocliente = credicliente = "¿Sin self.objeto.cliente?"
         if (pedido.cliente 
-            and pedido.cliente.calcular_credito_disponible(
-                base = importe_pedido) <= 0):
+            #and pedido.cliente.calcular_credito_disponible(
+            #    base = importe_pedido) <= 0):
+            and credicliente <= 0):
             if not utils.dialogo(titulo = "CLIENTE SIN CRÉDITO", 
                                  texto = "El cliente sobrepasa el "
                                          "crédito concedido sumando el "
@@ -2097,40 +2107,30 @@ class AlbaranesDeSalida(Ventana):
                                  tiempo = 15, 
                                  icono = gtk.STOCK_DIALOG_WARNING):
                 self.to_log("[add_pedido] Cliente sin crédito.", 
-                            {"cliente": pedido.cliente.get_info(), 
+                            {"cliente": infocliente, 
                              "albarán": self.objeto.numalbaran, 
-                             "crédito disponible": 
-                              pedido.cliente.calcular_credito_disponible(
-                                base=importe_pedido), 
+                             "crédito disponible": credicliente,
                              "base": importe_pedido,
                              "pedido": pedido.numpedido, 
                              "¿continuar?": False
                             }, nivel = self.logger.INFO) 
                 return
             else:
-                if self.objeto.cliente:
-                    info_cliente = self.objeto.cliente.get_info()
-                else:
-                    info_cliente = "¿Sin self.objeto.cliente?"
                 self.to_log("[add_pedido] Cliente sin crédito.", 
-                            {"cliente": info_cliente, 
+                            {"cliente": infocliente, 
                              "albarán": self.objeto.numalbaran, 
-                             "crédito disponible": 
-                              pedido.cliente and 
-                              pedido.cliente.calcular_credito_disponible(
-                                base=importe_pedido)
-                              or "¿Sin self.objeto.cliente?", 
+                             "crédito disponible": credicliente, 
                              "base": importe_pedido,
                              "pedido": pedido.numpedido, 
                              "¿continuar?": True
                             }, nivel = self.logger.INFO) 
         if self.comprobar_cliente_deudor():
             if self.objeto.cliente:
-                info_cliente = self.objeto.cliente.get_info()
+                infocliente = self.objeto.cliente.get_info()
             else:
-                info_cliente = "¿Sin self.objeto.cliente?"
+                infocliente = "¿Sin self.objeto.cliente?"
             self.to_log("[add_pedido] Cliente deudor.", 
-                        {"cliente": info_cliente, 
+                        {"cliente": infocliente, 
                          "albarán": self.objeto.numalbaran, 
                         })
             return
