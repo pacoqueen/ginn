@@ -62,12 +62,11 @@ from framework import pclases
 #print os.getcwd()
 #print os.path.realpath(sys.argv[0])
 #
-from formularios import gtkexcepthook
-
 from formularios import utils
 from framework.configuracion import ConfigConexion, parse_params
 
 from formularios import custom_widgets
+from formularios.ventana import install_bug_hook
 
 __version__ = '5.0.5 (beta)'
 __version_info__ = tuple(
@@ -163,33 +162,8 @@ class Menu:
             sys.exit(1)
         self.logger = login.logger
         pclases.logged_user = self.usuario = login.loginvalido()
-        # Configuración del correo para informes de error:
-        gtkexcepthook.devs_to = "informatica@geotexan.com"
-        if self.usuario.cuenta:
-            gtkexcepthook.feedback = self.usuario.cuenta
-            gtkexcepthook.password = self.usuario.cpass
-            if not self.usuario.smtpserver:
-                gtkexcepthook.smtphost = "smtp.googlemail.com"
-                gtkexcepthook.ssl = True
-                gtkexcepthook.port = 587
-            else:
-                gtkexcepthook.smtphost = self.usuario.smtpserver
-                gtkexcepthook.ssl = (
-                    gtkexcepthook.smtphost.endswith("googlemail.com") 
-                     or gtkexcepthook.smtphost.endswith("gmail.com")) 
-                gtkexcepthook.port = gtkexcepthook.ssl and 587 or 25 
-        else:
-            try:
-                gtkexcepthook.feedback = pclases.Usuario.selectBy(usuario = "admin")[0].feedback
-                gtkexcepthook.password = pclases.Usuario.selectBy(usuario = "admin")[0].password
-                gtkexcepthook.smtphost = pclases.Usuario.selectBy(usuario = "admin")[0].smtphost
-            except IndexError:
-                gtkexcepthook.feedback = "informatica@geotexan.com"
-                gtkexcepthook.smtphost = "smtp.googlemail.com"
-            gtkexcepthook.ssl = (
-                gtkexcepthook.smtphost.endswith("googlemail.com") 
-                 or gtkexcepthook.smtphost.endswith("gmail.com")) 
-            gtkexcepthook.port = gtkexcepthook.ssl and 587 or 25 
+        # Informes de error por correo:
+        install_bug_hook(self.usuario)
         # Continúo con el gestor de mensajes y resto de ventana menú.
         if pclases.VERBOSE:
             print "Cargando gestor de mensajes..."

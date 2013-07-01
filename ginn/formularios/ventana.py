@@ -34,6 +34,7 @@ pygtk.require('2.0')
 import gtk, gobject, pango
 import sys, os
 from widgets import Widgets
+from formularios import gtkexcepthook
 
 
 def refrescar_cache_sqlobject():
@@ -60,6 +61,35 @@ def refrescar_cache_sqlobject():
                 pass
     # XXX
     # print "%d objetos actualizados con éxito. Tiempo: " % (oks), time.time() - t1
+
+def install_bug_hook(usuario):
+    # Configuración del correo para informes de error:
+    gtkexcepthook.devs_to = "informatica@geotexan.com"
+    if usuario.cuenta:
+        gtkexcepthook.feedback = usuario.cuenta
+        gtkexcepthook.password = usuario.cpass
+        if not usuario.smtpserver:
+            gtkexcepthook.smtphost = "smtp.googlemail.com"
+            gtkexcepthook.ssl = True
+            gtkexcepthook.port = 587
+        else:
+            gtkexcepthook.smtphost = usuario.smtpserver
+            gtkexcepthook.ssl = (
+                gtkexcepthook.smtphost.endswith("googlemail.com") 
+                 or gtkexcepthook.smtphost.endswith("gmail.com")) 
+            gtkexcepthook.port = gtkexcepthook.ssl and 587 or 25 
+    else:
+        try:
+            gtkexcepthook.feedback = pclases.Usuario.selectBy(usuario = "admin")[0].feedback
+            gtkexcepthook.password = pclases.Usuario.selectBy(usuario = "admin")[0].password
+            gtkexcepthook.smtphost = pclases.Usuario.selectBy(usuario = "admin")[0].smtphost
+        except IndexError:
+            gtkexcepthook.feedback = "informatica@geotexan.com"
+            gtkexcepthook.smtphost = "smtp.googlemail.com"
+        gtkexcepthook.ssl = (
+            gtkexcepthook.smtphost.endswith("googlemail.com") 
+             or gtkexcepthook.smtphost.endswith("gmail.com")) 
+        gtkexcepthook.port = gtkexcepthook.ssl and 587 or 25 
 
 
 class Ventana:
@@ -91,6 +121,7 @@ class Ventana:
         self._is_fullscreen = False
         # Logger no es "pickable". http://mail.python.org/pipermail/python-bugs-list/2011-December/154441.html
         self.logger = get_ginn_logger()
+        install_bug_hook(self.usuario)
         self.wids = Widgets(glade)
         self.handlers_id = dict([(w, {}) for w in self.wids.keys()])
         for w in self.wids.keys():
