@@ -65,7 +65,7 @@ def refrescar_cache_sqlobject():
 def install_bug_hook(usuario):
     # Configuración del correo para informes de error:
     gtkexcepthook.devs_to = "informatica@geotexan.com"
-    if usuario.cuenta:
+    if usuario and usuario.cuenta:
         gtkexcepthook.feedback = usuario.cuenta
         gtkexcepthook.password = usuario.cpass
         if not usuario.smtpserver:
