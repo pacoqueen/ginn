@@ -3188,6 +3188,12 @@ CREATE TABLE auditoria(
 );
 
 ------------------------ FUNCIONES ------------------------
+CREATE LANGUAGE plpgsql;
+
+-- Para PostgreSQL 7.4 usar:
+-- CREATE FUNCTION plpgsql_call_handler() RETURNS language_handler AS '$libdir/plpgsql' LANGUAGE C;
+-- CREATE TRUSTED PROCEDURAL LANGUAGE plpgsql HANDLER plpgsql_call_handler;
+
 CREATE FUNCTION ultimo_lote_mas_uno()
     RETURNS INT8
     LANGUAGE SQL
@@ -3389,6 +3395,137 @@ CREATE FUNCTION caja_es_clase_b(INT)
            AND producto_venta.campos_especificos_bala_id = ceb.id 
     ;'; -- NEW 11/09/2009
 
+CREATE FUNCTION cobro_esta_cobrado(idcobro INTEGER, 
+                                   fecha DATE DEFAULT CURRENT_DATE)
+    -- Recibe un ID de cobro y una fecha.
+    -- Devuelve el importe cobrado en esa fecha, que depende de:
+    --  * Si es una transferencia, efectivo, cheque o cualquier otra cosa 
+    --    que no sea un confirming o un pagaré; se cuenta como cobrado en 
+    --    cuanto se alcanza la fecha de cobro.
+    --  * Si es un confirming, cuenta como cobrado siempre que tenga el 
+    --    campo pendiente == FALSE. Ya que si no responde el cliente, 
+    --    responde el banco por él.
+    --  * Si es un pagaré, cuenta como cobrado si no está pendiente o no 
+    --    está vencido todavía (fecha_cobro <= DATE recibido).
+    RETURNS FLOAT
+    AS $$
+        DECLARE
+            registro_cobro cobro%ROWTYPE;
+            registro_pagare_cobro pagare_cobro%ROWTYPE;
+            registro_confirming confirming%ROWTYPE;
+            cobrado FLOAT;
+        BEGIN
+            -- Selecciono el cobro en cuestión:
+            SELECT * INTO registro_cobro FROM cobro WHERE id = idcobro;
+            -- Buscar si es pagaré, confirming u otra cosa:
+            IF NOT (registro_cobro.pagare_cobro_id IS NULL) THEN
+                SELECT * INTO registro_pagare_cobro 
+                  FROM pagare_cobro 
+                 WHERE pagare_cobro.id = registro_cobro.pagare_cobro_id;
+                -- Si tiene fecha de cobro y ya ha pasado, he cobrado lo 
+                -- que indique el pagaré (que puede ser 0 si está pendiente,  
+                -- solo una parte del pagaré por error de alguien o lo que 
+                -- sea, o completo --cuando se pone el pendiente=FALSE, el 
+                -- cobrado se iguala al importe total del pagaré--).
+                IF (NOT (registro_pagare_cobro.fecha_cobrado IS NULL))
+                   AND fecha >= registro_pagare_cobro.fecha_cobrado THEN
+                    cobrado := registro_pagare_cobro.cobrado;
+                -- Si no, pero no ha vencido todavía (y lo he recibido) 
+                ELSIF registro_pagare_cobro.fecha_cobro > fecha
+                      AND registro_pagare_cobro.fecha_recepcion <= fecha THEN
+                    cobrado := registro_pagare_cobro.cantidad;
+                ELSE
+                    cobrado := 0.0;
+                END IF;
+            ELSIF NOT (registro_cobro.confirming_id IS NULL) THEN
+                -- Si es un confirming, lo cuento como cobrado si no está 
+                -- pendiente o si ya lo he recibido, ya que si no responde 
+                -- el cliente, responderá el banco.
+                SELECT * INTO registro_confirming
+                  FROM confirming 
+                 WHERE confirming.id = registro_cobro.confirming_id;
+                IF registro_confirming.fecha_recepcion <= fecha THEN
+                    -- Recibido
+                    IF registro_confirming.fecha_cobrado IS NOT NULL
+                        AND registro_confirming.fecha_cobrado > fecha THEN
+                        -- Recibido y vencido.
+                        cobrado := registro_confirming.cobrado;
+                        -- .cobrado puede ser 0.0 si está pendiente en la app.
+                    ELSE
+                        -- Recibido y no vencido.
+                        cobrado := registro_confirming.cantidad;
+                    END IF;
+                ELSE
+                    -- No recibido
+                    cobrado := 0.0;
+                END IF;
+            ELSE
+                -- Es un cobro que no implica efectos futuribles 
+                -- (transferencia, contado, etc.). Cuenta como cobrado desde 
+                -- el momento en que se recibe.
+                IF registro_cobro.fecha <= fecha THEN
+                    cobrado := registro_cobro.importe;
+                ELSE
+                    cobrado := 0.0;
+                END IF;
+            END IF;
+            return cobrado;
+        END;
+    $$ LANGUAGE plpgsql; -- NEW 26/06/2013
+
+CREATE OR REPLACE FUNCTION fra_documentada(idfra INTEGER, 
+                                           fecha DATE DEFAULT CURRENT_DATE)
+    -- Devuelve el importe de la factura cubierto por documentos de cobro.
+    RETURNS FLOAT
+    AS $$
+        SELECT COALESCE(SUM(importe), 0)
+          FROM cobro 
+         WHERE factura_venta_id = $1
+               AND fecha >= $2;
+    $$ LANGUAGE SQL;    -- NEW! 28/06/2013
+
+CREATE OR REPLACE FUNCTION fra_vencida(idfra INTEGER, 
+                                       fecha DATE DEFAULT CURRENT_DATE)
+    -- Devuelve el importe de la factura vencida en la fecha recibida.
+    -- Cobrada o no.
+    RETURNS FLOAT
+    AS $$
+        SELECT COALESCE(SUM(importe), 0)
+          FROM vencimiento_cobro 
+         WHERE factura_venta_id = $1
+               AND fecha >= $2;
+    $$ LANGUAGE SQL;    -- NEW! 28/06/2013
+
+CREATE OR REPLACE FUNCTION fra_cobrada(idfra INTEGER, 
+                                       fecha DATE DEFAULT CURRENT_DATE)
+    -- Devuelve el importe de la factura cobrado hasta la fecha indicada.
+    -- El cobro se hace efectivo al momento en el caso de que no sea pagaré o 
+    -- confirming. En esos dos casos el cobro se hace efectivo en el momento 
+    -- en que se negocian o llega el vencimiento (pendiente = FALSE).
+    -- El total de una factura se compone del importe cobrado, el importe 
+    -- pendiente no vencido y el importe impagado (pdte. vencido).
+    RETURNS FLOAT
+    AS $$
+        SELECT COALESCE(SUM(cobro_esta_cobrado(id, $2)), 0)
+          FROM cobro 
+         WHERE factura_venta_id = $1;
+    $$ LANGUAGE SQL;    -- NEW! 28/06/2013
+
+CREATE OR REPLACE FUNCTION fra_pendiente(idfra INTEGER, 
+                                         fecha DATE DEFAULT CURRENT_DATE)
+    -- Devuelve el importe de la factura no vencida ni cobrada o documentada.
+    -- PORASQUI
+    RETURNS FLOAT
+    AS $$
+    $$ LANGUAGE SQL;    -- NEW! 28/06/2013
+
+CREATE OR REPLACE FUNCTION fra_impagada(idfra INTEGER, 
+                                        fecha DATE DEFAULT CURRENT_DATE)
+    -- Devuelve el importe de la factura vencida y no cobrada ni documentada.
+    RETURNS FLOAT
+    AS $$
+    $$ LANGUAGE SQL;    -- NEW! 28/06/2013
+
 -------------------------------------------------------------------------------
 
 ---- ALTERS TABLESss ---- s ----
@@ -3458,12 +3595,6 @@ CREATE UNIQUE INDEX hec ON historial_existencias_compra (producto_compra_id, alm
 CREATE INDEX pcobsoleto ON producto_compra (obsoleto);
 
 ---- TRIGGERS ----
-CREATE LANGUAGE plpgsql;
-
--- Para PostgreSQL 7.4 usar:
--- CREATE FUNCTION plpgsql_call_handler() RETURNS language_handler AS '$libdir/plpgsql' LANGUAGE C;
--- CREATE TRUSTED PROCEDURAL LANGUAGE plpgsql HANDLER plpgsql_call_handler;
-
 CREATE FUNCTION un_solo_almacen_ppal() RETURNS TRIGGER AS '
     BEGIN
 --        -- Casos a cubrir:

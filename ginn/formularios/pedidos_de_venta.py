@@ -238,6 +238,8 @@ class PedidosDeVenta(Ventana):
 
                 vpro.mover()
                 self.objeto.syncUpdate()
+                self.objeto.swap['validado'] = self.objeto.validado
+                self.objeto.swap['usuarioID'] = self.objeto.usuarioID
                 vpro.mover()
                 self.rellenar_y_comprobar_validable()  # Equivale a 
                     # rellenar_widgets pero solo la parte del checkbox.
@@ -245,8 +247,8 @@ class PedidosDeVenta(Ventana):
                 vpro.ocultar()
             tmphndlr = ch.connect("toggled", self.check_puede_validar)
             self.handlers_id['validado']['toggled'].append(tmphndlr)
-            self.wids['b_actualizar'].set_sensitive(False) # Falsos positivos.
             self.objeto.notificador.activar(self.aviso_actualizacion)
+            self.wids['b_actualizar'].set_sensitive(False) # Falsos positivos.
 
     def rellenar_y_comprobar_validable(self):
         """
@@ -278,14 +280,19 @@ class PedidosDeVenta(Ventana):
                            self.usuario and self.usuario.usuario 
                            or "¡NADIE!"))
             vpro.mover()
-            if self.objeto.cliente.calcular_credito_disponible(
-                    base = self.objeto.calcular_importe_total(iva = True))<=0:
-                vpro.mover()
-                color = self.wids['cbe_cliente'].child.get_colormap().\
-                        alloc_color("IndianRed1")
-            else:
-                vpro.mover()
-                color = None
+            color = None
+            if self.objeto.cliente:
+                if self.cache_credito == None:
+                    vpro.mover()
+                    importe_pedido = self.objeto.calcular_importe_total(
+                                        iva = True)
+                    vpro.mover()
+                    self.cache_credito = self.objeto.cliente.\
+                            calcular_credito_disponible(base = importe_pedido)
+                if self.cache_credito <= 0:
+                    vpro.mover()
+                    color = self.wids['cbe_cliente'].child.get_colormap().\
+                                alloc_color("IndianRed1")
         else:
             vpro.mover()
             color = None
@@ -331,7 +338,11 @@ class PedidosDeVenta(Ventana):
         if idcliente:
             cliente = pclases.Cliente.get(idcliente)
             cliente.sync()
-            credito = cliente.calcular_credito_disponible()
+            if self.cache_credito == None:
+                importe_pedido = self.objeto.calcular_importe_total(iva = True)
+                self.cache_credito = cliente.\
+                        calcular_credito_disponible(base = importe_pedido)
+            credito = self.cache_credito
             if credito == sys.maxint:   # ¿maxint, te preguntarás? Ver 
                                         # docstring de calcular_credito
                                         # y respuesta hallarás.
@@ -343,7 +354,7 @@ class PedidosDeVenta(Ventana):
             strcredito = "¡UN «GRITÓN» DE DÓLARES!"
             strfdp = "Subasta (de lata de anchoas)"
         self.wids['cbe_cliente'].set_tooltip_text(
-            "Crédito disponible (sin contar el importe del pedido): %s\n"
+            "Crédito disponible (incluyendo el importe del pedido): %s\n"
             % strcredito)
         self.wids['cbe_fdp'].set_tooltip_text("Forma de pago: %s" % strfdp)
         self.rellenar_obras(combo)
@@ -623,62 +634,99 @@ class PedidosDeVenta(Ventana):
         """
         if self.objeto == None:
             return None
-        return pclases.LineaDeVenta.select(pclases.LineaDeVenta.q.pedidoVentaID==pedido.id)
+        return pclases.LineaDeVenta.select(
+                pclases.LineaDeVenta.q.pedidoVentaID==pedido.id)
 
     def es_diferente(self):
         """
-        Devuelve True si la información en pantalla es distinta a la
-        del objeto en memoria.
+        Devuelve equivalente a True si la información en pantalla es distinta 
+        a la del objeto en memoria. En realidad, y para facilitar la 
+        depuración, devuelve el nombre del campo que es diferente entre 
+        memoria y pantalla.
         """
-        self.objeto
-        if self.objeto == None: return False # Si no hay self.objeto activo, devuelvo que no hay cambio respecto a la ventana
-        condicion = self.objeto.numpedido == self.wids['e_numpedido'].get_text()
-        condicion = condicion and (utils.str_fecha(self.objeto.fecha) == self.wids['e_fecha'].get_text())
+        if self.objeto == None: 
+            return False    # Si no hay self.objeto activo, devuelvo que no 
+                            # hay cambio respecto a la ventana
+        diferente = []
+        if self.objeto.numpedido != self.wids['e_numpedido'].get_text():
+            diferente.append("numpedido")
+        if (utils.str_fecha(self.objeto.fecha) 
+                != self.wids['e_fecha'].get_text()):
+            diferente.append("fecha")
+        if self.objeto.tarifa:
+            if (self.objeto.tarifa.id 
+                    != utils.combo_get_value(self.wids['cbe_tarifa'])):
+                diferente.append("tarifa")
+        else:
+            if utils.combo_get_value(self.wids['cbe_tarifa']) not in (None, -1):
+                diferente.append("tarifa")
+        if self.objeto.cliente:
+            if (self.objeto.cliente.id 
+                    != utils.combo_get_value(self.wids['cbe_cliente'])):
+                diferente.append("cliente")
+        else:
+            if utils.combo_get_value(self.wids['cbe_cliente']) not in (None, -1):
+                diferente.append("cliente")
         try:
-            condicion = (condicion and 
-                        ((self.objeto.tarifa == None and utils.combo_get_value(self.wids['cbe_tarifa']) == None) or 
-                        (self.objeto.tarifa.id == utils.combo_get_value(self.wids['cbe_tarifa']))))
-        except AttributeError:  # No tiene cliente pero en cbe_tarifa hay algo activo
-            return True # Es diferente y no sigo chequeando campos
-        try:
-            condicion = (condicion and 
-                        ((self.objeto.cliente == None and utils.combo_get_value(self.wids['cbe_cliente']) == None) or 
-                        (self.objeto.cliente.id == utils.combo_get_value(self.wids['cbe_cliente']))))
-        except AttributeError:  # No tiene cliente pero en cbe_cliente hay algo activo
-            return True # Es diferente y no sigo chequeando campos
-        try:
-            condicion = condicion and (self.objeto.descuento == utils.parse_porcentaje(self.wids['e_descuento'].get_text(), fraccion = True))
-            condicion = condicion and ((self.objeto.iva < 0)
-                                       or (self.objeto.iva == utils.parse_porcentaje(self.wids['e_iva'].get_text(), True)))
+            if not (self.objeto.descuento == utils.parse_porcentaje(
+                                        self.wids['e_descuento'].get_text(), 
+                                        fraccion = True)):
+                diferente.append("descuento")
+            if not ((self.objeto.iva < 0) or (
+                self.objeto.iva == utils.parse_porcentaje(
+                                            self.wids['e_iva'].get_text(), 
+                                            True))
+                ):
+                diferente.append("iva")
         except ValueError, msg:
-            self.logger.error("pedidos_de_venta::es_diferente-> Error al intepretar porcentaje: %s" % (msg))
-        condicion = condicion and self.objeto.bloqueado == self.wids['bloqueado'].get_active()
-        condicion = condicion and self.objeto.validado == self.wids['validado'].get_active()
-        condicion = condicion and self.objeto.cerrado == self.wids['cerrado'].get_active()
-        condicion = condicion and self.objeto.transporteACargo == self.wids['ch_transporte'].get_active()
+            self.logger.error(
+                    "pedidos_de_venta::es_diferente-> "
+                    "Error al intepretar porcentaje: %s" % (msg))
+        if not self.objeto.bloqueado == self.wids['bloqueado'].get_active():
+            diferente.append("bloqueado")
+        if not (self.objeto.validado == self.wids['validado'].get_active()):
+            diferente.append("validado")
+        if not (self.objeto.cerrado == self.wids['cerrado'].get_active()):
+            diferente.append("cerrado")
+        if not (self.objeto.transporteACargo 
+                == self.wids['ch_transporte'].get_active()):
+            diferente.append("transporteACargo")
         idcomercial = utils.combo_get_value(self.wids['cbe_comercial'])
         if idcomercial == -1:
             idcomercial = None
-        condicion = condicion and self.objeto.comercialID == idcomercial
+        if not (self.objeto.comercialID == idcomercial):
+            diferente.append("comercialID")
         idfdp = utils.combo_get_value(self.wids['cbe_fdp'])
-        condicion = condicion and self.objeto.formaDePagoID == idfdp
-        condicion = condicion and self.objeto.direccionCorrespondencia == self.wids['e_direccionCorrespondencia'].get_text()
-        condicion = condicion and self.objeto.nombreCorrespondencia == self.wids['e_nombreCorrespondencia'].get_text()
-        condicion = condicion and self.objeto.cpCorrespondencia == self.wids['e_cpCorrespondencia'].get_text()
-        condicion = condicion and self.objeto.ciudadCorrespondencia == self.wids['e_ciudadCorrespondencia'].get_text()
-        condicion = condicion and self.objeto.provinciaCorrespondencia == self.wids['e_provinciaCorrespondencia'].get_text()
-        condicion = condicion and self.objeto.paisCorrespondencia == self.wids['e_paisCorrespondencia'].get_text()
-        condicion = condicion and self.objeto.textoObra == self.wids['e_obra'].get_text()
-        try:
-            condicion = (condicion and 
-                ((self.objeto.obra == None 
-                  and utils.combo_get_value(self.wids['cb_obra']) == None) 
-                 or 
-                 (self.objeto.obra.id 
-                    == utils.combo_get_value(self.wids['cb_obra']))))
-        except AttributeError:  # No tiene cliente pero en cb_obra hay algo activo
-            return True # Es diferente y no sigo chequeando campos
-        return not condicion    # Condición verifica que sea igual
+        if not (self.objeto.formaDePagoID == idfdp):
+            diferente.append("formaDePagoID")
+        if not (self.objeto.direccionCorrespondencia 
+                == self.wids['e_direccionCorrespondencia'].get_text()):
+            diferente.append("direccionCorrespondencia")
+        if not (self.objeto.nombreCorrespondencia 
+                == self.wids['e_nombreCorrespondencia'].get_text()):
+            diferente.append("nombreCorrespondencia")
+        if not (self.objeto.cpCorrespondencia 
+                == self.wids['e_cpCorrespondencia'].get_text()):
+            diferente.append("cpCorrespondencia")
+        if not (self.objeto.ciudadCorrespondencia 
+                == self.wids['e_ciudadCorrespondencia'].get_text()):
+            diferente.append("ciudadCorrespondencia")
+        if not (self.objeto.provinciaCorrespondencia 
+                == self.wids['e_provinciaCorrespondencia'].get_text()):
+            diferente.append("provinciaCorrespondencia")
+        if not (self.objeto.paisCorrespondencia 
+                == self.wids['e_paisCorrespondencia'].get_text()):
+            diferente.append("paisCorrespondencia")
+        if not (self.objeto.textoObra == self.wids['e_obra'].get_text()):
+            diferente.append("textoObra")
+        if not self.objeto.obra:
+            if utils.combo_get_value(self.wids['cb_obra']) not in (None, -1):
+                diferente.append("obra")
+        else:
+            if (self.objeto.obra.id 
+                    != utils.combo_get_value(self.wids['cb_obra'])):
+                diferente.append("obra")
+        return diferente 
 
     def cambiar_por_combo(self, tv, numcol):
         # OJO: NO USAR.
@@ -714,6 +762,7 @@ class PedidosDeVenta(Ventana):
         valores por defecto, deshabilitando los innecesarios,
         rellenando los combos, formateando el TreeView -si lo hay-...
         """
+        self.cache_credito = None
         # Inicialmente no se muestra NADA. Sólo se le deja al
         # usuario la opción de buscar o crear nuevo.
         self.activar_widgets(False)
@@ -1139,7 +1188,8 @@ class PedidosDeVenta(Ventana):
                               r.get_nombre_cliente(), 
                               r.cerrado, 
                               r.bloqueado, 
-                              r.validado))
+                              r.validado, 
+                              r.usuario and r.usuario.usuario or ""))
         idpedido = utils.dialogo_resultado(filas_res,
                                            titulo = 'Seleccione pedido',
                                            cabeceras = ('ID', 
@@ -1148,7 +1198,8 @@ class PedidosDeVenta(Ventana):
                                                'Cliente', 
                                                "Cerrado", 
                                                "Bloqueado", 
-                                               "Verificado"),
+                                               "Verificado", 
+                                               "Validado por"),
                                            padre = self.wids['ventana'])
         if idpedido < 0:
             return None
@@ -1163,6 +1214,9 @@ class PedidosDeVenta(Ventana):
         hay que tener cuidado de no llamar a 
         esta función en ese caso.
         """
+        if pclases.DEBUG and pclases.VERBOSE:
+            print "---> SOY RELLENAR WIDGETS"
+        self.cache_credito = None
         numpedido_antes = self.wids['e_numpedido'].get_text()
         total_antes = self.wids['e_total'].get_text()
         if pclases.DEBUG:
@@ -1241,7 +1295,7 @@ class PedidosDeVenta(Ventana):
         # Esto se hace después en el rellenar_y_comprobar_validable
         #self.wids['validado'].set_active(self.objeto.validado)
         if pclases.DEBUG: 
-            print "Después de rellenar totales:", time.time()-antes
+            print "Después de rellenar totales:", time.time() - antes
         # Comerciales:
         utils.combo_set_from_db(self.wids['cbe_comercial'], 
             self.objeto.comercial and self.objeto.comercialID or -1)
@@ -2466,7 +2520,10 @@ class PedidosDeVenta(Ventana):
         caso, se le avisa y se impide que continúe devolviendo FALSE.
         """
         importe_pedido = self.objeto.calcular_importe_total(iva = True)
-        credito = self.objeto.cliente.calcular_credito_disponible()
+        if self.cache_credito == None:
+            self.cache_credito = self.objeto.cliente.\
+                    calcular_credito_disponible(base = importe_pedido)
+        credito = self.cache_credito
         if importe_pedido > credito:
             texto = "El crédito actual del cliente es de %s.\n"\
                      "El importe del pedido es %s.\n" % (

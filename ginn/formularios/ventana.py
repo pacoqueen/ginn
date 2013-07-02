@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
-#                          Diego Muñoz Escalante.                             #
-# (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
+# Copyright (C) 2005-2013  Francisco José Rodríguez Bogado                    #
+#                          <frbogado@geotexan.com>                            #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
 #                                                                             #
@@ -35,6 +34,7 @@ pygtk.require('2.0')
 import gtk, gobject, pango
 import sys, os
 from widgets import Widgets
+from formularios import gtkexcepthook
 
 
 def refrescar_cache_sqlobject():
@@ -61,6 +61,43 @@ def refrescar_cache_sqlobject():
                 pass
     # XXX
     # print "%d objetos actualizados con éxito. Tiempo: " % (oks), time.time() - t1
+
+def install_bug_hook(usuario):
+    """
+    Instala en memoria el manejador de excepciones no controladas 
+    explícitamente. Envía un correo electrónico con la configuración del 
+    usuario recibido a una cuenta predefinida.
+    """
+    # Configuración del correo para informes de error: 
+    from framework import pclases
+    gtkexcepthook.devs_to = "informatica@geotexan.com"
+    if usuario and usuario.cuenta:
+        gtkexcepthook.feedback = usuario.cuenta
+        gtkexcepthook.password = usuario.cpass
+        if not usuario.smtpserver:
+            gtkexcepthook.smtphost = "smtp.googlemail.com"
+            gtkexcepthook.ssl = True
+            gtkexcepthook.port = 587
+        else:
+            gtkexcepthook.smtphost = usuario.smtpserver
+            gtkexcepthook.ssl = (
+                gtkexcepthook.smtphost.endswith("googlemail.com") 
+                 or gtkexcepthook.smtphost.endswith("gmail.com")) 
+            gtkexcepthook.port = gtkexcepthook.ssl and 587 or 25 
+    else:
+        try:
+            usuario_defecto = pclases.Usuario.selectBy(usuario = "admin")[0]
+        except IndexError:
+            gtkexcepthook.feedback = "informatica@geotexan.com"
+            gtkexcepthook.smtphost = "smtp.googlemail.com"
+        else:
+            gtkexcepthook.feedback = usuario_defecto.cuenta
+            gtkexcepthook.password = usuario_defecto.cpass
+            gtkexcepthook.smtphost = usuario_defecto.smtpserver
+        gtkexcepthook.ssl = (
+            gtkexcepthook.smtphost.endswith("googlemail.com") 
+             or gtkexcepthook.smtphost.endswith("gmail.com")) 
+        gtkexcepthook.port = gtkexcepthook.ssl and 587 or 25 
 
 
 class Ventana:
@@ -92,6 +129,7 @@ class Ventana:
         self._is_fullscreen = False
         # Logger no es "pickable". http://mail.python.org/pipermail/python-bugs-list/2011-December/154441.html
         self.logger = get_ginn_logger()
+        install_bug_hook(self.usuario)
         self.wids = Widgets(glade)
         self.handlers_id = dict([(w, {}) for w in self.wids.keys()])
         for w in self.wids.keys():
@@ -600,12 +638,14 @@ class Ventana:
         # Existe la posibilidad de que entre la tarea de chequear cambios 
         # antes de inicializar el GUI, por eso chequeo que el botón ya esté 
         # disponible a través de libglade.
+        # Algunas ventanas redefinen el es_diferente para devolver algo que no 
+        # sea booleano o entero. Me aseguro haciendo la conversión con bool.
         try:
             boton_guardar = self.wids['b_guardar']
         except KeyError:
             boton_guardar = None
         if boton_guardar != None:
-            boton_guardar.set_sensitive(self.es_diferente())
+            boton_guardar.set_sensitive(bool(self.es_diferente()))
         return True
 
     def actualizar_ventana_consulta(self):

@@ -632,6 +632,13 @@ FRA_NO_DOCUMENTADA,FRA_NO_VENCIDA,FRA_IMPAGADA,FRA_COBRADA,FRA_ABONO = range(5)
 # Estados de pagarés/confirming
 GESTION, CARTERA, DESCONTADO, IMPAGADO, COBRADO = range(5)
 
+# Estados de validación de pedidos
+NO_VALIDABLE, VALIDABLE, PLAZO_EXCESIVO, SIN_FORMA_DE_PAGO, \
+        PRECIO_INSUFICIENTE, CLIENTE_DEUDOR = range(6)
+
+# Tiempo de expiración de la cutrecaché de crédito de clientes
+T_CACHE_EXPIRED = 60    # Segundos.
+
 # VERBOSE MODE
 total = 158 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
             # Más bien grep " = print_verbose(" pclases.py | grep -v \# | wc -l
@@ -2874,7 +2881,20 @@ class Cobro(SQLObject, PRPCTOO):
                        doc = "Cliente relacionado con el cobro.")
     numfactura = property(get_numfactura, doc = get_numfactura.__doc__)
 
-    def esta_cobrado(self, fecha_base = None, gato_en_talega = False):
+    def esta_cobrado(self, fecha_base = None):
+        # EXPERIMENTAL
+        if fecha_base:
+            strfecha = fecha_base.strftime("%Y-%m-%d")
+            sql = "SELECT cobro_esta_cobrado(%d, '%s');" % (self.id, strfecha)
+        else:
+            sql = "SELECT cobro_esta_cobrado(%d);" % self.id
+        try:
+            cobrado = self._connection.queryOne(sql)[0]
+        except IndexError:
+            cobrado = 0.0 # Ola ke ase ¿cobro no existe o ke ase?
+        return cobrado  # 0.0 es False
+
+    def DEPRECATED_esta_cobrado(self, fecha_base = None, gato_en_talega = False):
         """
         Devuelve True si el cobro está realmente pagado en la fecha indicada 
         (o en cualquier fecha, si no se especifica), esto es:
@@ -2917,8 +2937,8 @@ class Cobro(SQLObject, PRPCTOO):
                 else:
                     if not gato_en_talega:
                         # Cobrado si no ha vencido en fecha base y ya existía.
-                        if (compromiso_cobro.fechaVencimiento < fecha_base and 
-                            compromiso_cobro.fechaRecepcion >= fecha_base):
+                        if (compromiso_cobro.fechaVencimiento > fecha_base and 
+                            compromiso_cobro.fechaRecepcion <= fecha_base):
                             cobrado += compromiso_cobro.cantidad
         elif self.confirming:
             compromiso_cobro = self.confirming
@@ -2941,7 +2961,7 @@ class Cobro(SQLObject, PRPCTOO):
                 else:
                     if not gato_en_talega:
                         # Cobrado si ya existía.
-                        if compromiso_cobro.fechaRecepcion >= fecha_base:
+                        if compromiso_cobro.fechaRecepcion <= fecha_base:
                             cobrado += compromiso_cobro.cantidad
         return cobrado  # 0.0 es False.
 
@@ -7914,7 +7934,8 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
         # XXX
         """
         #unittest:
-        from framework import pclases, mx
+        from framework import pclases
+        import mx.DateTime
         pclases.DEBUG = True
         pc = pclases.ProductoCompra.select(
             pclases.ProductoCompra.q.descripcion.contains("PLAST"), 
@@ -9688,7 +9709,26 @@ class PedidoVenta(SQLObject, PRPCTOO):
         en su caso, de la no validación automática.
         """
         txtestado = None
-        if not self.validado:
+        estado_validacion = self.get_estado_validacion()
+        if estado_validacion == VALIDABLE:
+            txtestado = "Validado"
+            if self.usuario:
+                txtestado += " (%s)" % self.usuario.usuario
+        elif estado_validacion == NO_VALIDABLE: 
+            txtestado = "Necesita validación manual: "\
+                        "Validación cancelada por el usuario."
+        elif estado_validacion == PLAZO_EXCESIVO: 
+            txtestado = "Necesita validación manual: "\
+                        "El plazo de la forma de pago es excesivo."
+        elif estado_validacion == SIN_FORMA_DE_PAGO: 
+            txtestado = "Necesita validación manual: "\
+                        "No se ha seleccionado forma de pago para el pedido."
+        elif estado_validacion == CLIENTE_DEUDOR:            
+            txtestado = "Necesita validación manual: "\
+                        "Cliente con crédito insuficiente."
+        elif estado_validacion == PRECIO_INSUFICIENTE:
+            txtestado = "Necesita validación manual: "\
+                        "Ventas por debajo de precio mínimo definido."
             for ldp in self.lineasDePedido:
                 precioMinimo = ldp.producto.precioMinimo
                 precioKilo = ldp.precioKilo
@@ -9700,18 +9740,6 @@ class PedidoVenta(SQLObject, PRPCTOO):
                                     utils.float2str(precioKilo), 
                                     utils.float2str(precioMinimo))
                     break
-            if not txtestado:
-                importe_pedido = self.calcular_importe_total(iva = True)
-                if self.cliente.calcular_credito_disponible(
-                        base = importe_pedido) <= 0:
-                    txtestado = "Necesita validación manual: "\
-                                "cliente con crédito insuficiente."
-            if not txtestado:   # Entonces lo han invalidado manualmente. 
-                                # No queda otra.
-                txtestado = "Necesita validación manual: "\
-                            "Validación cancelada por el usuario."
-        else:
-            txtestado = "Validado"
         return txtestado
 
     @property
@@ -9720,21 +9748,48 @@ class PedidoVenta(SQLObject, PRPCTOO):
         Devuelve True si el pedido es validable:
             * Ningún precio está por debajo del mínimo.
             * El cliente no está en riesgo (crédito insuficiente).
+            * La forma de pago es inferior o igual a 120 días.
         """
-        # PLAN: ¿Debería tener otro método para ver por qué motivo no valida?
-        validable = True
+        estado_validacion = self.get_estado_validacion()
+        if estado_validacion == VALIDABLE:
+            return True
+        else:
+            return False
+
+    def get_estado_validacion(self):
+        """
+        Devuelve el estado de la validación del pedido en el momento de 
+        llamar a la función. Puede ser:
+            NO_VALIDABLE: Por algún motivo indeterminado o invalidación 
+                          manual del usuario.
+            VALIDABLE: Cumple todos los requisitos de validación automática.
+            PLAZO_EXCESIVO: La forma de pago seleccionada en el pedido supera 
+                            los 120 días.
+            SIN_FORMA_DE_PAGO: El pedido no tiene forma de pago definida.
+            PRECIO_INSUFICIENTE: Algún precio por kilo en las líneas del 
+                                 pedido está por encima del mínimo configurado 
+                                 por familia de productos.
+            CLIENTE_DEUDOR: El cliente no tiene crédito suficiente. 
+        """
+        validable = VALIDABLE
         for ldp in self.lineasDePedido:
             precioMinimo = ldp.producto.precioMinimo
             precioKilo = ldp.precioKilo
             if (precioMinimo != None and precioKilo != None 
                     and precioKilo < precioMinimo):
-                validable = False
+                validable = PRECIO_INSUFICIENTE
                 break
+        if validable:
+            fdp = self.formaDePago
+            if not fdp:
+                validable = SIN_FORMA_DE_PAGO
+            elif fdp.plazo > 120:
+                validable = PLAZO_EXCESIVO
         if validable:
             importe_pedido = self.calcular_importe_total(iva = True)
             if self.cliente and self.cliente.calcular_credito_disponible(
                     base = importe_pedido) <= 0:
-                validable = False
+                validable = CLIENTE_DEUDOR
         return validable
 
     def adivinar_obra(self):
@@ -15057,11 +15112,34 @@ class Cliente(SQLObject, PRPCTOO):
             res = self.riesgoConcedido - (pdte_cobro + base)
         return res
 
-    def calcular_credito_disponible(self, 
-                                    impagado = None, 
-                                    sin_documentar = None, 
-                                    sin_vencer = None, 
-                                    base = 0.0):
+    def __actualizar_cache_credito(self, valor_credito, *args):
+        self.tiempocache = time.time()
+        self.valorcache = valor_credito
+        self.cachedargs = args
+
+    def __cutrecache_caducada(self, *args):
+        """
+        De momento vamos a hacer suposiciones de tiempo.
+        Queridos profesores de la facultad. En estos 10 años no me he olvidado 
+        de vuestros consejos. PERO.
+        """
+        try:
+            expired = time.time() - self.tiempocache > T_CACHE_EXPIRED
+        except AttributeError:  # No hay caché. Por tanto... sí.
+            expired = True
+        if not expired:
+            # Puede que sea una llamada con otros parámetros:
+            if args != self.cachedargs:
+                expired = True
+            else:
+                expired = False
+        return expired
+
+    def _calcular_credito_disponible(self, 
+                                     impagado = None, 
+                                     sin_documentar = None, 
+                                     sin_vencer = None, 
+                                     base = 0.0):
         """
         Devuelve el máximo del importe que puede servirse a un cliente.
         sin_documentar y sin_vencer se pueden instanciar a una cantidad si 
@@ -15079,36 +15157,97 @@ class Cliente(SQLObject, PRPCTOO):
         # TODO: Esto, ahora que se usa intensivamente en pedidos y albaranes, 
         # hay que optimizarlo. Seriamente, además. Con clientes como CETCO es 
         # isufrible esperar a los "actualizar_ventana".
+        if DEBUG and VERBOSE:
+            print "SOY EL PUTO CALCULAR_CREDITO SIN CACHÉ"
+        if DEBUG:
+            bacall = antes = time.time()                        # XXX
         if self.riesgoConcedido==-1: # Ignorar. Devuelvo un máximo arbitrario.
             credito = sys.maxint
         else:
+            tempcache = {} # Intentémoslo. Deberían hacerse 1/4 menos de 
+                            # llamadas a get_estado **contra** la BD.
             if impagado is None:
-                impagado = self.calcular_impagado()
+                if DEBUG and VERBOSE:
+                    print "[0] >>>", time.time() - antes        # XXX
+                    antes = time.time()                         # XXX
+                impagado = self.calcular_impagado(cache = tempcache)
+                if DEBUG and VERBOSE:
+                    print "[1] >>>", time.time() - antes        # XXX
+                    antes = time.time()                         # XXX
             if impagado > 0:
                 credito = 0
             else:
                 if sin_documentar is None:
-                    sin_documentar = self.calcular_sin_documentar()
+                    if DEBUG and VERBOSE:
+                        print "[2] >>>", time.time() - antes    # XXX
+                        antes = time.time()                     # XXX
+                    sin_documentar = self.calcular_sin_documentar(
+                                                            cache = tempcache)
+                    if DEBUG and VERBOSE:
+                        print "[3] >>>", time.time() - antes    # XXX
+                        antes = time.time()                     # XXX
                 if sin_vencer is None:
-                    sin_vencer = self.calcular_sin_vencer()
+                    if DEBUG and VERBOSE:
+                        print "[4] >>>", time.time() - antes    # XXX
+                        antes = time.time()                     # XXX
+                    sin_vencer = self.calcular_sin_vencer(cache = tempcache)
+                    if DEBUG and VERBOSE:
+                        print "[5] >>>", time.time() - antes    # XXX
+                        antes = time.time()                     # XXX
                 credito = self.riesgoConcedido - (sin_documentar + sin_vencer)
                 credito -= base
+        if DEBUG:
+            clara = time.time() - bacall                        # XXX
+            print "[Cliente.calcular_credito_disponible]"\
+                  " Tiempo transcurrido: %.2f segundos" % clara # XXX
+        # Pruebas ANTES de optimización: 
+        # >>> from framework import pclases
+        # >>> for c in pclases.Cliente.select(pclases.Cliente.q.nombre.contains("CETCO")):
+        # >>>     print c.nombre, c.calcular_credito_disponible()
+        # CETCO IBERIA, S.L.U. Tiempo transcurrido: 25.51 segundos (etc.) 
+        # XXX 
         return credito
 
-    def calcular_impagado(self):
-        impagadas = self.get_facturas_impagadas()
+    def calcular_credito_disponible(self, 
+                                    impagado = None, 
+                                    sin_documentar = None, 
+                                    sin_vencer = None, 
+                                    base = 0.0):
+        ########## La Chapucaché:
+        """
+        < ¿caché? >---sí-->< ¿caducada? >---no-->[Devolver caché] 
+             |no                 |sí                    ^
+             |-------------------·                      |
+             v                                          |
+         [calcular]------->[actualizar caché]-----------·
+        """
+        if ((not hasattr(self, "tiempocache"))    # Primera vez. O bien 
+            or self.__cutrecache_caducada(impagado, 
+                                          sin_documentar, 
+                                          sin_vencer, 
+                                          base)): # (sort of) fallo de caché
+            credito = self._calcular_credito_disponible(impagado, 
+                                                        sin_documentar, 
+                                                        sin_vencer, 
+                                                        base)
+            self.__actualizar_cache_credito(credito, impagado, sin_documentar, 
+                                            sin_vencer, base)
+        return self.valorcache
+
+    def calcular_impagado(self, cache = {}):
+        impagadas = self.get_facturas_impagadas(cache = cache)
         total = sum([f.calcular_importe_total() for f in impagadas])
         return total
 
-    def calcular_sin_documentar(self):
-        sin_documentar = self.get_facturas_sin_doc_pago()
+    def calcular_sin_documentar(self, cache = {}):
+        sin_documentar = self.get_facturas_sin_doc_pago(cache = cache)
         # total = sum([f.calcular_importe_total() for f in sin_documentar])
         total = sum([f.calcular_importe_no_documentado() 
                         for f in sin_documentar])
         return total
 
-    def calcular_sin_vencer(self):
-        sin_vencer = self.get_facturas_doc_no_vencidas()
+    def calcular_sin_vencer(self, cache = {}):
+        sin_vencer = self.get_facturas_doc_no_vencidas(cache = cache)
         total = sum([f.calcular_importe_total() for f in sin_vencer])
         return total
 
@@ -15823,8 +15962,7 @@ class SuperFacturaVenta:
         """
         Calcula el total de la factura, con descuentos, IVA y demás incluido.
         Devuelve un FixedPoint (a casi todos los efectos, se comporta como 
-        un FLOAT.
-        De todas formas, pasa bien por el utils.float2str).
+        un FLOAT. De todas formas, pasa bien por el utils.float2str).
         """
         subtotal = self.calcular_subtotal() 
         tot_dto = self.calcular_total_descuento(subtotal) 
@@ -15972,14 +16110,16 @@ class SuperFacturaVenta:
             # (*) Una promesa de pago cuenta para mí como un cobro aunque 
             # todavía no tenga las pelas en el bolsillo.
             cobros_cobrados = [c for c in self.cobros 
-                                if not c.sync() and c.esta_cobrado()]
+                                if c.esta_cobrado()]
+                                #if not c.sync() and c.esta_cobrado()]
             # UGLY HACK: sync() siempre devuelve None, por eso le pongo el 
             # not. Así fuerzo a sincronizar los valores antes de comprobar 
-            # si está cobrado.
+            # si está cobrado. 
+            # UPDATE: [20130627] Ya no es necesario el sync. Con la 
+            # optimización de esta_cobrado ejecuto una stored en el SGBD.
         else:
             cobros_cobrados = [c for c in self.cobros 
-                                if not c.sync() and 
-                                   c.fecha <= fecha_base and 
+                                if c.fecha <= fecha_base and 
                                    c.esta_cobrado(fecha_base)]
         res = sum([c.importe for c in cobros_cobrados])
         return res
@@ -16185,16 +16325,21 @@ class SuperFacturaVenta:
         """
         Devuelve el estado de la factura:
         0: No documentada ni vencida: Ningún documento de pago relacionado.
+           FRA_NO_DOCUMENTADA
         1: Documentada no vencida: Tiene documento de pago y éste todavía 
                                    no ha vencido. Se toma en cuenta la fecha 
                                    de vencimiento del doc. de pago, no la de 
                                    la factura.
+           FRA_NO_VENCIDA
         2: Impagada: Los vencimientos de la factura han cumplido y no se ha 
                      cobrado, con o sin documento de pago de por medio.
+           FRA_IMPAGADA
         3: Cobrada: Toda la factura está cobrada.
+           FRA_COBRADA
         4: Pendiente de abonar: Así estarán todos los abonos antes de 
                                 descontarlos en un cobro o en un nuevo pedido.
                                 No contarán para el cálculo del crédito.
+           FRA_ABONO
         Para que una factura esté en un estado, todos los vencimientos de la 
         misma deben estar en ese estado.
         """
@@ -16202,16 +16347,8 @@ class SuperFacturaVenta:
         # Todos los vencimientos tienen un cobro y ese cobro:
         #  - No es pagaré ni confirming.
         #  - O bien, es pagaré o confirming y no están pendientes.
-        cobrado = 0.0
-        for c in self.cobros:
-            if c.confirmingID:
-                if not c.confirming.pendiente:
-                    cobrado += c.importe
-            elif c.pagareCobroID:
-                if not c.pagareCobro.pendiente:
-                    cobrado += c.importe
-            else:
-                cobrado += c.importe
+        #cobrado = self.DEPRECATED_calcular_cobrado(fecha)      # 0.013 según cProfile
+        cobrado = self.calcular_cobrado(fecha)     # 0.005 según cProfile
         if round(cobrado, 2) == round(self.calcular_total(), 2):
             return FRA_COBRADA        
         # No documentada (ni pagarés, ni confirmings; o bien ningún cobro en 
@@ -19446,16 +19583,21 @@ class FacturaDeAbono(SQLObject, PRPCTOO, SuperFacturaVenta):
         """
         Devuelve el estado de la factura de abono:
         0: No documentada ni vencida: Ningún documento de pago relacionado.
+           FRA_NO_DOCUMENTADA
         1: Documentada no vencida: Tiene documento de pago y éste todavía 
                                    no ha vencido. Se toma en cuenta la fecha 
                                    de vencimiento del doc. de pago, no la de 
                                    la factura.
+           FRA_NO_VENCIDA
         2: Impagada: Los vencimientos de la factura han cumplido y no se ha 
                      cobrado, con o sin documento de pago de por medio.
+           FRA_IMPAGADA
         3: Cobrada: Toda la factura está cobrada.
+           FRA_COBRADA
         4: Pendiente de abonar: Así estarán todos los abonos antes de 
                                 descontarlos en un cobro o en un nuevo pedido.
                                 No contarán para el cálculo del crédito.
+           FRA_ABONO
         Para que una factura esté en un estado, todos los vencimientos de la 
         misma deben estar en ese estado.
         """
@@ -21432,6 +21574,9 @@ class Efecto(SQLObject, PRPCTOO):
         return str_a_la_orden
 
     def get_estado(self, fecha = mx.DateTime.today()):
+        """
+        Devuelve el estado del efecto de cobro. Ya sea confirming o pagaré.
+        """
         try:
             return self.pagareCobro.get_estado(fecha)
         except AttributeError:

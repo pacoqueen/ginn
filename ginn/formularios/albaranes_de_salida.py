@@ -411,18 +411,18 @@ class AlbaranesDeSalida(Ventana):
                         })
             return
         if self.comprobar_cliente_deudor():
-            self.to_log("[pedir_rango] Cliente deudor.", 
-                        {"cliente": self.objeto.cliente 
-                                    and self.objeto.cliente.get_info() 
-                                    or "¿Sin self.objeto.cliente?", 
-                         "albarán": self.objeto.numalbaran, 
-                         "crédito disponible": 
-                            self.objeto.cliente and 
-                            self.objeto.cliente.calcular_credito_disponible(
+            try:
+                infocliente = self.objeto.cliente.get_info()
+                credicliente = self.objeto.cliente.calcular_credito_disponible(
                                 base=self.objeto.calcular_total(
                                                 iva_incluido = True, 
                                                 segun_factura = False))
-                            or "¿Sin self.objeto.cliente?", 
+            except AttributeError:
+                infocliente = credicliente = "¿Sin self.objeto.cliente?"
+            self.to_log("[pedir_rango] Cliente deudor.", 
+                        {"cliente": infocliente, 
+                         "albarán": self.objeto.numalbaran, 
+                         "crédito disponible": credicliente, 
                          "importe albarán": self.objeto.calcular_total(
                                                 iva_incluido = True, 
                                                 segun_factura = False)
@@ -1183,9 +1183,9 @@ class AlbaranesDeSalida(Ventana):
         for w in ("cbe_almacenOrigenID", "cbe_almacenDestinoID"):
             self.wids[w].set_sensitive(
                 s and self.wids[w].get_property("sensitive"))
-        # CWT: No bloquear transportes si el usuario tienen nivel <=2 (va por 
+        # CWT: No bloquear transportes si el usuario tienen nivel <=3 (va por 
         # Rafa, en concreto, pero con más razón que un santo, eso sí).
-        if self.usuario and self.usuario.nivel <= 2:
+        if self.usuario and self.usuario.nivel <= 3:
             self.wids['expander3'].set_sensitive(True)
             self.wids['tv_transportesACuenta'].set_sensitive(True)
             self.wids['b_add_transporteACuenta'].set_sensitive(True) 
@@ -2030,10 +2030,12 @@ class AlbaranesDeSalida(Ventana):
                         }, nivel = self.logger.INFO) 
             return
         if self.comprobar_cliente_deudor():
+            try:
+                infocliente = self.objeto.cliente.get_info()
+            except AttributeError:
+                infocliente = "¿Sin self.objeto.cliente?"
             self.to_log("[add_pedido] Cliente deudor.", 
-                        {"cliente": self.objeto.cliente 
-                                    and self.objeto.cliente.get_info()
-                                    or "¿Sin self.objeto.cliente?", 
+                        {"cliente": infocliente, 
                          "albarán": self.objeto.numalbaran, 
                         })
             return
@@ -2082,9 +2084,17 @@ class AlbaranesDeSalida(Ventana):
         importe_pedido = pedido.calcular_importe_total(iva = True)
         if pclases.DEBUG:
             print "albaranes_de_salida -> importe_pedido", importe_pedido 
+        cliente = pedido.cliente
+        try:
+            infocliente = cliente.get_info()
+            credicliente = cliente.calcular_credito_disponible(
+                            base = importe_pedido)
+        except AttributeError:
+            infocliente = credicliente = "¿Sin self.objeto.cliente?"
         if (pedido.cliente 
-            and pedido.cliente.calcular_credito_disponible(
-                base = importe_pedido) <= 0):
+            #and pedido.cliente.calcular_credito_disponible(
+            #    base = importe_pedido) <= 0):
+            and credicliente <= 0):
             if not utils.dialogo(titulo = "CLIENTE SIN CRÉDITO", 
                                  texto = "El cliente sobrepasa el "
                                          "crédito concedido sumando el "
@@ -2097,11 +2107,9 @@ class AlbaranesDeSalida(Ventana):
                                  tiempo = 15, 
                                  icono = gtk.STOCK_DIALOG_WARNING):
                 self.to_log("[add_pedido] Cliente sin crédito.", 
-                            {"cliente": pedido.cliente.get_info(), 
+                            {"cliente": infocliente, 
                              "albarán": self.objeto.numalbaran, 
-                             "crédito disponible": 
-                              pedido.cliente.calcular_credito_disponible(
-                                base=importe_pedido), 
+                             "crédito disponible": credicliente,
                              "base": importe_pedido,
                              "pedido": pedido.numpedido, 
                              "¿continuar?": False
@@ -2109,24 +2117,20 @@ class AlbaranesDeSalida(Ventana):
                 return
             else:
                 self.to_log("[add_pedido] Cliente sin crédito.", 
-                            {"cliente": self.objeto.cliente 
-                                        and self.objeto.cliente.get_info()
-                                        or "¿Sin self.objeto.cliente?", 
+                            {"cliente": infocliente, 
                              "albarán": self.objeto.numalbaran, 
-                             "crédito disponible": 
-                              pedido.cliente and 
-                              pedido.cliente.calcular_credito_disponible(
-                                base=importe_pedido)
-                              or "¿Sin self.objeto.cliente?", 
+                             "crédito disponible": credicliente, 
                              "base": importe_pedido,
                              "pedido": pedido.numpedido, 
                              "¿continuar?": True
                             }, nivel = self.logger.INFO) 
         if self.comprobar_cliente_deudor():
+            if self.objeto.cliente:
+                infocliente = self.objeto.cliente.get_info()
+            else:
+                infocliente = "¿Sin self.objeto.cliente?"
             self.to_log("[add_pedido] Cliente deudor.", 
-                        {"cliente": self.objeto.cliente 
-                                    and self.objeto.cliente.get_info()
-                                    or "¿Sin self.objeto.cliente?", 
+                        {"cliente": infocliente, 
                          "albarán": self.objeto.numalbaran, 
                         })
             return
@@ -2210,6 +2214,7 @@ class AlbaranesDeSalida(Ventana):
                         else:
                             nombreproducto = "?"
                         return nombreproducto
+                    # TODO: Para pedidos con muchos albaranes, la lista de números de albarán es demasiado larga y el diálogo sobrepasa el ancho de la pantalla.
                     utils.dialogo_info(titulo = 'LÍNEAS NO ALBARANEADAS',
                                        texto = """
                     Las siguientes líneas de venta no se agregaron al albarán                   
@@ -4631,14 +4636,5 @@ def comprobar_existencias_producto(ldp, ventana_padre, cantidad, almacen):
  
 
 if __name__=='__main__':
-    pclases.DEBUG = True
-    try:
-        raise ZeroDivisionError, "Que estoy probando ahora otra cosa, leñe."
-        a = AlbaranesDeSalida(
-            objeto = pclases.AlbaranSalida.select(
-                pclases.AlbaranSalida.q.numalbaran == "11590", 
-                orderBy = "-id")[0])
-    except ZeroDivisionError:
-        a = AlbaranesDeSalida()
-    #a = AlbaranesDeSalida()
+    a = AlbaranesDeSalida()
 

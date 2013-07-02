@@ -2121,10 +2121,15 @@ class Clientes(Ventana):
         for t in tarifas:
             ops.append((t.id,t.nombre))
         if ops == []:
-            utils.dialogo_info(titulo = 'ERROR', texto = 'No hay tarifas registradas en el sistema')
-            return
-        self.objeto.tarifa = utils.dialogo_combo(titulo = 'Seleccione tarifa', ops = ops, padre = self.wids['ventana'])
-        self.actualizar_ventana(deep_refresh = False)
+            utils.dialogo_info(titulo = 'ERROR', 
+                    texto = 'No hay tarifas registradas en el sistema', 
+                    padre = self.wids['ventana'])
+        else:
+            self.objeto.tarifa = utils.dialogo_combo(
+                    titulo = 'Seleccione tarifa', 
+                    ops = ops, 
+                    padre = self.wids['ventana'])
+            self.actualizar_ventana(deep_refresh = False)
         
         
 def buscar_clientes_obras(txt):

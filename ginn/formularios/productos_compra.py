@@ -353,7 +353,7 @@ class ProductosCompra(Ventana, VentanaGenerica):
         model = self.wids['tv_hist'].get_model()
         ide = model[path][-1]
         try:
-            cantidad = float(texto)
+            cantidad = utils.parse_float(texto)
         except ValueError:
             return
         if self.usuario == None or self.usuario.nivel == 0:
@@ -981,7 +981,7 @@ class ProductosCompra(Ventana, VentanaGenerica):
         producto.controlExistencias \
             = self.wids['ch_control_existencias'].get_active()
         try:
-            minimo = float(self.wids['e_minimo'].get_text())
+            minimo = utils.parse_float(self.wids['e_minimo'].get_text())
         except ValueError:
             minimo = producto.minimo
         try:
@@ -989,7 +989,7 @@ class ProductosCompra(Ventana, VentanaGenerica):
         except ValueError:
             unidad = producto.unidad
         try:
-            existencias = float(self.wids['e_stock'].get_text())
+            existencias = utils.parse_float(self.wids['e_stock'].get_text())
         except:
             existencias = producto.existencias
         try:

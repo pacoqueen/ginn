@@ -606,7 +606,7 @@ class ProductosDeVentaRollos(Ventana):
             for nombre_campo in [k for k in cer.sqlmeta.columns.keys() if "Prueba" in k]:
                 valor_ventana = self.wids["e_%s" % (nombre_campo)].get_text()
                 try:
-                    valor_campo = utils._float(valor_ventana)
+                    valor_campo = utils.parse_float(valor_ventana)
                 except ValueError:
                     valores_malos.append((valor_ventana, nombre_campo))
                 else:
@@ -861,11 +861,11 @@ class ProductosDeVentaRollos(Ventana):
         nombre = self.wids['e_nombre'].get_text()
         arancel = self.wids['e_arancel'].get_text()
         try:
-            precio = float(self.wids['e_precio'].get_text())
+            precio = utils.parse_float(self.wids['e_precio'].get_text())
         except ValueError:
             precio = producto.preciopordefecto
         try:
-            minimo = float(self.wids['e_minimo'].get_text())
+            minimo = utils.parse_float(self.wids['e_minimo'].get_text())
         except ValueError:
             minimo = producto.minimo
         try:
@@ -873,7 +873,7 @@ class ProductosDeVentaRollos(Ventana):
         except ValueError:
             gramos = producto.camposEspecificosRollo.gramos
         try:
-            ancho = float(self.wids['e_ancho'].get_text())
+            ancho = utils.parse_float(self.wids['e_ancho'].get_text())
         except ValueError:
             ancho = producto.camposEspecificosRollo.ancho
         try:
@@ -889,12 +889,12 @@ class ProductosDeVentaRollos(Ventana):
         except ValueError:
             rolloCamion = producto.camposEspecificosRollo.rollosPorCamion
         try:
-            pesoEmbalaje = float(self.wids['e_peso_embalaje'].get_text())
+            pesoEmbalaje = utils.parse_float(self.wids['e_peso_embalaje'].get_text())
         except ValueError:
             pesoEmbalaje = producto.camposEspecificosRollo.pesoEmbalaje
         prodestandar = self.wids['e_prodestandar'].get_text()
         try:
-            prodestandar = float(prodestandar)
+            prodestandar = utils.parse_float(prodestandar)
         except ValueError:
             prodestandar = 0.0
         producto.camposEspecificosRollo.fichaFabricacion \

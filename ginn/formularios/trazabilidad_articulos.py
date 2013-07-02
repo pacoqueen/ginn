@@ -48,6 +48,12 @@ from framework import pclases
 from informes.barcode import code39
 from informes.barcode.EANBarCode import EanBarCode
 from reportlab.lib.units import cm
+from ventana_progreso import VentanaProgreso
+import time
+from formularios import reports
+from informes import geninformes
+import pango
+
 
 class TrazabilidadArticulos(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -71,8 +77,6 @@ class TrazabilidadArticulos(Ventana):
         """
         Vuelca toda la información de pantalla en bruto a un PDF.
         """
-        from formularios import reports
-        from informes import geninformes
         datos = "Código de trazabilidad: %s\n\n"%self.wids['e_num'].get_text()
         for desc, txt in (("Producto:\n", self.wids['txt_producto']), 
                           ("Lote/Partida:\n", self.wids['txt_lp']), 
@@ -347,13 +351,12 @@ class TrazabilidadArticulos(Ventana):
             self.rellenar_produccion(objeto)
             self.wids['e_num'].set_text(objeto.codigo)
         elif isinstance(objeto, pclases.PartidaCarga):
-            from ventana_progreso import VentanaProgreso
             vpro = VentanaProgreso(padre = self.wids['ventana'])
             vpro.mostrar()
             i = 0.0
             tot = 5
             vpro.set_valor(i/tot, "Buscando..."); i += 1
-            import time; time.sleep(0.5)
+            time.sleep(0.5)
             vpro.set_valor(i/tot, "Producto..."); i += 1
             self.rellenar_producto_partida_carga(objeto)
             vpro.set_valor(i/tot, "Lote/Partida..."); i += 1
@@ -716,7 +719,6 @@ class TrazabilidadArticulos(Ventana):
                                        utils.str_hora_corta(parte.horainicio), 
                                        utils.str_hora_corta(parte.horafin)))
         escribir(txtvw, "\n\nConsumos:\n", ("rojo, negrita"))
-        from informes import geninformes
         escribir(txtvw, geninformes.consumoPartida(objeto), ("rojo"))
 
     def mostrar_produccion_lote_cemento(self, objeto, txtvw):
@@ -1465,7 +1467,6 @@ def escribir(txt, texto, estilos = ()):
     if estilos == ():
         buff.insert_at_cursor(texto)
     else:
-        import pango
         iter_insert = buff.get_iter_at_mark(buff.get_insert())
         tag = buff.create_tag()
         if "negrita" in estilos:
