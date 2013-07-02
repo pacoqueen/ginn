@@ -4636,14 +4636,5 @@ def comprobar_existencias_producto(ldp, ventana_padre, cantidad, almacen):
  
 
 if __name__=='__main__':
-    pclases.DEBUG = True
-    try:
-        raise ZeroDivisionError, "Que estoy probando ahora otra cosa, leñe."
-        a = AlbaranesDeSalida(
-            objeto = pclases.AlbaranSalida.select(
-                pclases.AlbaranSalida.q.numalbaran == "11590", 
-                orderBy = "-id")[0])
-    except ZeroDivisionError:
-        a = AlbaranesDeSalida()
-    #a = AlbaranesDeSalida()
+    a = AlbaranesDeSalida()
 
