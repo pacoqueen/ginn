@@ -41,7 +41,6 @@ from informes import geninformes
 from utils import ffloat, _float as float
 from ventana import Ventana
 import gtk
-import time
 import mx.DateTime
 from formularios import postomatic
 import pygtk

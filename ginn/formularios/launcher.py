@@ -81,7 +81,7 @@ def run(modulo, clase, usuario, fconfig):
         comando += " -u %s -c %s" % (usuario, fconfig) 
         # print comando
         subprocess.Popen([comando] + args, shell = True)
-    except Exception, msg:     # fallback
+    except Exception, msg:     # fallback @UnusedVariable
         # Esto debería ir al logger o algo:
         #print "launcher.py:", msg
         exec "import %s" % modulo

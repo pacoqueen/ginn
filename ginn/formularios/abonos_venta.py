@@ -46,7 +46,7 @@ from ventana import Ventana
 from formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
+import gtk
 from framework import pclases
 from formularios import reports
 from informes import geninformes

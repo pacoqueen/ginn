@@ -41,7 +41,7 @@ from ventana import Ventana
 from formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time, mx.DateTime
+import gtk, mx.DateTime
 from framework import pclases
 from framework.seeker import VentanaGenerica 
 from pedidos_de_venta import preguntar_precio

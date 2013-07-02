@@ -69,6 +69,11 @@ DEBUG = False
 VERBOSE = True  # Activar para mostrar por pantalla progreso al cargar clases.
 VERBOSE = False
 
+if sys.executable.endswith("pythonw.exe"):
+    # Porque entonces no hay stdout y salta excepción IOError 9
+    # Más info: http://bugs.python.org/issue706263
+    DEBUG = VERBOSE = False
+
 if DEBUG or VERBOSE:
     print "IMPORTANDO PCLASES"
 

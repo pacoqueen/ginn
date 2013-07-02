@@ -37,7 +37,6 @@
 ##       No haría falta código nuevo para nada.
 ###################################################################
 
-import sys
 from ventana import Ventana
 from formularios import utils
 import pygtk

@@ -30,7 +30,6 @@
 ## 8 de febrero de 2012 -> Inicio
 ###################################################################
 
-import sys
 from ventana import Ventana
 from formularios import utils
 import pygtk

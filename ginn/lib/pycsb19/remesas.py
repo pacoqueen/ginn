@@ -75,7 +75,7 @@ class Remesas:
         self.tvRecibos.append_column(column)
         
     def AbreDb(self):
-        self.conexion=sqlite.connect(db="./dbCsb19/db", mode=077)
+        self.conexion=sqlite.connect(db="./dbCsb19/db", mode=077)  # @UndefinedVariable
         
     def CierraDb(self):
         self.conexion.close()
@@ -86,7 +86,7 @@ class Remesas:
                 self.Modificar(widget)
        
     def MiraRemesa(self,Nombre):
-        con=sqlite.connect(db="./dbCsb19/db", mode=077)
+        con=sqlite.connect(db="./dbCsb19/db", mode=077)  # @UndefinedVariable
         cursor = con.cursor()
                             
         #Mira a ver si ya existe la remesa

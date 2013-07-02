@@ -83,7 +83,7 @@ class GesRemesas:
             f.close()
         except:
             #Creamos la base de datos
-            conn = sqlite.connect(db="./dbCsb19/db", mode=077)
+            conn = sqlite.connect(db="./dbCsb19/db", mode=077)  # @UndefinedVariable
             cursor = conn.cursor()
             cursor.execute("create table presentadores (nif varchar, sufijo varchar, nombre varchar, banco varchar,oficina varchar)")
             conn.commit()
@@ -99,7 +99,7 @@ class GesRemesas:
 
         
     def AbreDb(self):
-        self.conexion= sqlite.connect(db="./dbCsb19/db", mode=077)
+        self.conexion= sqlite.connect(db="./dbCsb19/db", mode=077)  # @UndefinedVariable
         
     def CierraDb(self):
         self.conexion.close()

@@ -175,10 +175,10 @@ class AlbaranesDeSalida(Ventana):
                     color = combo.child.get_colormap().alloc_color("IndianRed1")
                 else:
                     color = None
-            strfdp = cliente.textoformacobro
+            # strfdp = cliente.textoformacobro
         else:
             strcredito = "¡UN «GRITÓN» DE DÓLARES!"
-            strfdp = "Subasta (de lata de anchoas)"
+            # strfdp = "Subasta (de lata de anchoas)"
             color = None
         combo.set_tooltip_text(
             "Crédito disponible (sin contar el importe del albarán): %s\n"

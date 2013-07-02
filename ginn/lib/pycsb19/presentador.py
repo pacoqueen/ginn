@@ -91,7 +91,7 @@ class Presentador:
         
 
     def AbreDb(self):
-        self.conexion= sqlite.connect(db="./dbCsb19/db", mode=077)
+        self.conexion= sqlite.connect(db="./dbCsb19/db", mode=077)  # @UndefinedVariable
         
     def CierraDb(self):
         self.conexion.close()
