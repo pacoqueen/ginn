@@ -531,6 +531,4 @@ class ResultadosFluidez(Ventana):
 
 if __name__=='__main__':
     a = ResultadosFluidez()
-    #a = ResultadosFluidez(usuario = pclases.Usuario.selectBy(
-    #    usuario = "jmadrid")[0])
 

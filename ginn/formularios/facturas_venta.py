@@ -3278,3 +3278,4 @@ def generar_recibo(factura, usuario=None, logger=None, ventana_padre=None):
 
 if __name__ == '__main__':
     v = FacturasVenta()
+

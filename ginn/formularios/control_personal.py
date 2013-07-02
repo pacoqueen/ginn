@@ -1479,3 +1479,4 @@ def conectar_color_foco(w, tabla):
 
 if __name__ == "__main__":
     p = ControlPersonal()
+

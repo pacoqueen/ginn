@@ -476,4 +476,3 @@ def graficar(widevchart, datachart, logger = None, *resto_params, **resto_kwp):
 if __name__ == '__main__':
     t = ConsultaControlHoras() 
 
-    

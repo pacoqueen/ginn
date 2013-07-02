@@ -677,3 +677,4 @@ def parsear_fraccion(txt):
 
 if __name__ == '__main__':
     f = FormulacionGeotextiles()
+

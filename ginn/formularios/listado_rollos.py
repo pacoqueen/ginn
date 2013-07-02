@@ -617,3 +617,4 @@ def preparar_datos_etiquetas_rollos_c(rollos):
 
 if __name__ == '__main__':
     t = ListadoRollos()
+

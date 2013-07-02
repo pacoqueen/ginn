@@ -1118,3 +1118,4 @@ def show_fecha(entry, event):
 
 if __name__ == '__main__':
     t = CRM_SeguimientoImpagos()
+

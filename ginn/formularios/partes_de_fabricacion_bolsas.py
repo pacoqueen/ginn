@@ -1921,3 +1921,4 @@ def imprimir_etiquetas_pales(pales, padre = None, mostrar_dialogo = True):
 
 if __name__ == "__main__":
     p = PartesDeFabricacionBolsas()
+

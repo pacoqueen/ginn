@@ -358,3 +358,4 @@ def get_color_producto(n):
 
 if __name__ == '__main__':
     v = Silos()
+

@@ -191,8 +191,8 @@ class GestorMensajes:
                 break
 
 if __name__=='__main__':
-    gm = GestorMensajes(
-            pclases.Usuario.select(pclases.Usuario.q.usuario=='admin')[0])
+    gm = GestorMensajes()
+            #pclases.Usuario.select(pclases.Usuario.q.usuario=='admin')[0])
 #    gm.nueva_alerta('Esto es una alerta de prueba')
 #    gm.nueva_alerta('Esto es otra alerta')
 #    gm.nueva_alerta("""Oh! Otra alerta más. Y esta a demás tiene un montón de texto. Pero no un montón de eso que dices "bueno, es un montoncito", no. Esto es un montón pero un montón de verdad. Meet the new boss... same as the old boss. My name is Ivor, I'm an engine driver.

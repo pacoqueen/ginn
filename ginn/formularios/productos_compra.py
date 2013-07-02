@@ -1101,6 +1101,6 @@ class ProductosCompra(Ventana, VentanaGenerica):
 
 
 if __name__=='__main__':
-    pclases.DEBUG = True
+    # pclases.DEBUG = True
     v = ProductosCompra()
     

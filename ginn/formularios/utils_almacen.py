@@ -131,3 +131,4 @@ def productosConFicha():
         for p in c.productosVenta:
             productos.append(p.id)
     return productos
+

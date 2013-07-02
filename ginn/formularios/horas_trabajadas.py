@@ -530,3 +530,4 @@ class HorasTrabajadas(Ventana):
 
 if __name__ == '__main__':
     t = HorasTrabajadas()
+

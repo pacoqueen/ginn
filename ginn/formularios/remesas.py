@@ -582,3 +582,4 @@ class Remesas(Ventana, VentanaGenerica):
 
 if __name__ == "__main__":
     p = Remesas()
+

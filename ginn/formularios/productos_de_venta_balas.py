@@ -794,3 +794,4 @@ class ProductosDeVentaBalas(Ventana):
 
 if __name__ == "__main__":
     p = ProductosDeVentaBalas()
+

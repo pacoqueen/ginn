@@ -741,3 +741,4 @@ def abrir_adjunto_from_tv(tv, path, col):
 
 if __name__ == '__main__':
     t = CRM_DetallesFactura()
+

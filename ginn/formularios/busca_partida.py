@@ -220,3 +220,4 @@ class BuscaPartida(Ventana):
 
 if __name__ == '__main__':
     b = BuscaPartida()    
+

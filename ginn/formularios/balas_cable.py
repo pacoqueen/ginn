@@ -431,4 +431,3 @@ class BalasCable(Ventana):
 if __name__ == '__main__':
     v = BalasCable() 
 
-

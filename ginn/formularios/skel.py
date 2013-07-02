@@ -328,3 +328,4 @@ class XXXSkel(Ventana, VentanaGenerica):
 
 if __name__ == "__main__":
     p = XXXSkel()
+

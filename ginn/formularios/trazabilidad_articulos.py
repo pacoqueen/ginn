@@ -1490,3 +1490,4 @@ def escribir(txt, texto, estilos = ()):
 
 if __name__ == '__main__':
     t = TrazabilidadArticulos()
+

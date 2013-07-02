@@ -320,3 +320,4 @@ class CuentasDestino(Ventana, VentanaGenerica):
 
 if __name__ == "__main__":
     p = CuentasDestino()
+

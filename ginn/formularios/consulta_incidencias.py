@@ -302,3 +302,4 @@ class ConsultaIncidencias(Ventana):
 
 if __name__ == '__main__':
     t = ConsultaIncidencias()    
+

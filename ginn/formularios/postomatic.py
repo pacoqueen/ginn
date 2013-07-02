@@ -587,3 +587,4 @@ def button_clicked(w, event, ui, tv, clase, usuario = None):
 # --------------- Rutina principal ----------------------------------
 if __name__ == "__main__":
     v = Postomatic()
+

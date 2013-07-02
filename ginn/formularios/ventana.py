@@ -1091,3 +1091,4 @@ class MetaPermiso:
         self.escritura = False
         self.nuevo = False
         self.permiso = False
+

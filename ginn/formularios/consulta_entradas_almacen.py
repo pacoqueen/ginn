@@ -269,4 +269,3 @@ class ConsultaEntradasAlmacen(Ventana):
 if __name__ == '__main__':
     t = ConsultaEntradasAlmacen()
 
-

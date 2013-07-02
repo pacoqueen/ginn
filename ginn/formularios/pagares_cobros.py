@@ -1136,3 +1136,4 @@ def preparar_vencimientos(factura):
 
 if __name__ == '__main__':
     v = PagaresCobros()
+

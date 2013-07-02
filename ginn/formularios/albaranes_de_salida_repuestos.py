@@ -529,9 +529,5 @@ class AlbaranesDeSalidaRepuestos(Ventana):
 
 
 if __name__=='__main__':
-    try:
-        a = AlbaranesDeSalidaRepuestos(usuario = pclases.Usuario.select(pclases.Usuario.q.usuario.contains("rafa"))[0])
-    except:
-        a = AlbaranesDeSalidaRepuestos()
-    #a = AlbaranesDeSalida()
+    a = AlbaranesDeSalidaRepuestos()
 

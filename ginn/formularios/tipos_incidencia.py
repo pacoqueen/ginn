@@ -131,3 +131,4 @@ class TiposIncidencia(Ventana):
     
 if __name__ == '__main__':
     t = TiposIncidencia()    
+

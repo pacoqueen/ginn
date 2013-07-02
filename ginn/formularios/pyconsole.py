@@ -694,3 +694,4 @@ def attach_console(contenedor, banner = "Hola holita", script_inicio = "from fra
 
 if __name__ == '__main__':
     _make_window()
+

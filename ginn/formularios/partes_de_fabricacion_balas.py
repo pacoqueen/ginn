@@ -3993,3 +3993,4 @@ def entran_en_turno(selfobjeto, hi, hf):
  
 if __name__ == "__main__":
     p = PartesDeFabricacionBalas()
+

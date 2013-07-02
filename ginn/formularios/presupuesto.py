@@ -593,3 +593,4 @@ class Presupuesto(Ventana, VentanaGenerica):
 
 if __name__ == "__main__":
     p = Presupuesto()
+

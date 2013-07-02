@@ -3497,3 +3497,4 @@ def consultar_gtxc(fechaini, fechafin):
 
 if __name__ == '__main__':
     t = ConsultaGlobal()
+

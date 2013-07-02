@@ -668,9 +668,5 @@ class Proveedores(Ventana):
 
 
 if __name__=='__main__':
-    try:
-        v = Proveedores(
-            usuario = pclases.Usuario.selectBy(usuario = "marilo")[0])
-    except IndexError:
-        v = Proveedores()
+    v = Proveedores()
 

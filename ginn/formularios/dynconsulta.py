@@ -1740,3 +1740,4 @@ def esta_pendiente(o):
 
 if __name__ == "__main__":
     p = DynConsulta()
+

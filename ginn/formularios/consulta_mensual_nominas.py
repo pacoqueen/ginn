@@ -817,4 +817,3 @@ def rellenar_subtabla(filas, w):
 if __name__ == '__main__':
     t = ConsultaMensualNominas() 
 
-    

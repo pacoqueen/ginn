@@ -689,7 +689,8 @@ class FacturasDeEntrada(Ventana):
         if tabla == None:
             tabla = self.wids['tv_ldvs']
         if factura != None:
-            lineas = factura.lineasDeCompra
+            lineas = factura.lineasDeCompra[:]
+            lineas.sort(key = lambda l: l.id)
             model = self.wids['tv_ldvs'].get_model()
             model.clear()
             for l in lineas:
@@ -2559,8 +2560,5 @@ def abrir_adjunto_from_tv(tv, path, col):   # XXX: Código para adjuntos.
 
 
 if __name__=='__main__':
-    a = FacturasDeEntrada(usuario = pclases.Usuario.select(
-        pclases.Usuario.q.usuario.contains("maril"))[0])
-    #a = FacturasDeEntrada()
-
+    a = FacturasDeEntrada()
 

@@ -1238,4 +1238,3 @@ class PedidosDeCompra(Ventana):
 if __name__=='__main__':
     p = PedidosDeCompra()
 
-
