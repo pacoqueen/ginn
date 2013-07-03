@@ -26,7 +26,13 @@
 ## facturaventa.py - Clase ORM FacturaVenta para las facturas de venta.      ##
 ###############################################################################
 
-from . import * 
+from sqlobject import SQLObject, MultipleJoin
+from . import PRPCTOO, starter, DEBUG
+from . import Categoria, Contador, Nota, Tarea, Ventana
+from superfacturaventa import SuperFacturaVenta 
+from formularios import utils
+import mx.DateTime
+import re
 
 class FacturaVenta(SQLObject, PRPCTOO, SuperFacturaVenta):
     class sqlmeta:

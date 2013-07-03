@@ -26,7 +26,13 @@
 ## superfacturaventa.py - Clase base para todas las facturas de venta. ##
 #########################################################################
 
-from . import * 
+from . import VERBOSE, VencimientoCobro, DocumentoDePago
+import mx.DateTime
+from formularios import utils
+import re
+
+# "Macros/constantes" de tipos de facturas:
+FRA_NO_DOCUMENTADA,FRA_NO_VENCIDA,FRA_IMPAGADA,FRA_COBRADA,FRA_ABONO = range(5)
 
 class SuperFacturaVenta:
     """
@@ -40,6 +46,7 @@ class SuperFacturaVenta:
 
         [1] Cobrado o no, da igual.
         """
+        from facturadeabono import FacturaDeAbono
         if isinstance(self, FacturaDeAbono):
             # Las facturas de abono no tienen vencimientos, solo "cobros" que 
             # se relacionan con otros efectos de cobro. "So", el importe habrá 
@@ -312,6 +319,9 @@ class SuperFacturaVenta:
         Divide el resultado que devuelva la función «func_a_evaluar_en_lineas» 
         aplicada a las líneas de venta, servicio, de abono, etc.
         """
+        from facturaventa import FacturaVenta
+        from facturadeabono import FacturaDeAbono
+        from prefactura import Prefactura
         comerciales = {None: 0.0}   # Al menos siempre debe quedar None con 0
                                     # aunque no tenga eledeuves ni servicios.
         totalregladetres = 0.0
@@ -349,6 +359,9 @@ class SuperFacturaVenta:
         Divide el resultado que devuelva la función «func_a_evaluar_en_lineas» 
         aplicada a las líneas de venta, servicio, de abono, etc.
         """
+        from facturaventa import FacturaVenta
+        from facturadeabono import FacturaDeAbono
+        from prefactura import Prefactura
         proveedores = {None: 0.0}   # Al menos siempre debe quedar None con 0
                                     # aunque no tenga eledeuves ni servicios.
         totalregladetres = 0.0
