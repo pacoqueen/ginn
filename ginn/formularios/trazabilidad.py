@@ -47,8 +47,6 @@ from framework import pclases
 import os 
 from formularios import cmdgtk
 
-print 1/0
-
 class Trazabilidad(Ventana):
     """
     Ventana de trazabilidad interna de objetos.
