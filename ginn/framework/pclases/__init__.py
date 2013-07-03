@@ -4968,8 +4968,16 @@ class Proveedor(SQLObject, PRPCTOO):
                     res[-1] = mx.DateTime.DateTimeFrom(day = diacobro, 
                                                        month = mes, 
                                                        year = anno)
-                while res[-1].day_of_week >= 5:
+                try:
+                    diasemana = res[-1].day_of_week
+                except AttributeError:
+                    diasemana = res[-1].weekday()
+                while diasemana >= 5:
                     res[-1] += mx.DateTime.oneDay
+                    try:
+                        diasemana = res[-1].day_of_week
+                    except AttributeError:
+                        diasemana = res[-1].weekday()
         res.sort()
         return res
         
@@ -18676,7 +18684,11 @@ class ControlHoras(SQLObject, PRPCTOO):
             mantsab = sum([cm.horasMantenimiento for cm 
                            in self.controlesHorasMantenimiento 
                            if cm.lineaDeProduccion == linea])
-            if self.fecha.day_of_week == 5:
+            try:
+                diasemana = self.fecha.day_of_week
+            except AttributeError:
+                diasemana = self.fecha.weekday()
+            if diasemana == 5:
                 res[linea]["mantenimiento sábado"] = mantsab
             res[linea]["mantenimiento"] = mantsab 
         res[self.RESTOCENTROS[0]]["regulares"] += hrpc["almacén"]
