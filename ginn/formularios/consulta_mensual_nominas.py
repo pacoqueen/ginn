@@ -639,7 +639,11 @@ def analizar_ch(ch, empleados):
         += ch.calcular_total_horas_extras_dia()
     empleados[empleado]["horas extras noche"] \
         += ch.calcular_total_horas_extras_noche()
-    if ch.fecha.day_of_week == 5: 
+    try:
+        diasemana = ch.fecha.day_of_week
+    except AttributeError:
+        diasemana = ch.weekday()
+    if diasemana == 5: 
         #empleados[empleado]["horas sábado"] += ch.calcular_total_horas()
         # CWT: Las horas de sábado para el plus solo son las de mantenimiento.
         hmantsab = ch.calcular_total_horas_mantenimiento()
