@@ -2605,6 +2605,7 @@ class VencimientoPago(SQLObject, PRPCTOO):
         """
         for v in VencimientoPago.select(AND(
                 VencimientoPago.q.procesado == False, 
+                NOT(VencimientoPago.q.observaciones.contains("TRANSF")), 
                 OR(VencimientoPago.q.observaciones.contains("DOMICILIA"), 
                    VencimientoPago.q.observaciones.contains("RECIBO"), 
                    VencimientoPago.q.observaciones.contains("BANC")))):
@@ -20922,3 +20923,4 @@ if __name__ == '__main__':
     do_unittests()
     #r = Rollo.select()[0]
     #r.destroy_en_cascada()
+
