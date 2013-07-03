@@ -6241,7 +6241,11 @@ class BalaCable(SQLObject, PRPCTOO):
         balas = BalaCable.select(AND(BalaCable.q.fechahora >= primero_mes, 
                                      BalaCable.q.fechahora < primero_mes_sig))
         peso = balas.sum("peso")
+        if peso is None:
+            peso = 0
         emba = balas.sum("peso_embalaje")
+        if emba is None:
+            emba = 0
         res = peso - emba 
         return res
 
