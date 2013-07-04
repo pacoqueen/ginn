@@ -434,7 +434,11 @@ class Nominas(Ventana):
                     festivos = [f.fecha for f in calendario.festivos]
                     if fdia in festivos:
                         res[pos]['festivos'] += ht_horas
-                if fdia.day_of_week == 5:    # 0 es lunes
+                try:
+                    diasemana = fdia.day_of_week
+                except AttributeError:
+                    diasemana = fdia.weekday()
+                if diasemana == 5:    # 0 es lunes
                     res[pos]['sabados'] += ht_horas
                 # Ya tengo las horas nocturas (variable noche) y las extras (extra). 
                 # Guardo valores en el diccionario de resultados globales:
@@ -549,7 +553,11 @@ class Nominas(Ventana):
                 festivos += [f.fecha for f in calendario.festivos]
             if fdia in festivos:
                 res[pos]['festivos'] += ht_horas
-            if fdia.day_of_week == 5:    # 0 es lunes
+            try:
+                diasemana = fdia.day_of_week
+            except AttributeError:
+                diasemana = fdia.weekday()
+            if diasemana == 5:    # 0 es lunes
                 res[pos]['sabados'] += ht_horas
             # Ya tengo las horas nocturas (variable noche) y las extras (extra). 
             # Guardo valores en el diccionario de resultados globales:
