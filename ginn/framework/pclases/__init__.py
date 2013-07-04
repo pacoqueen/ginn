@@ -19212,7 +19212,7 @@ class Auditoria(SQLObject, PRPCTOO):
         if not descripcion:
             try:
                 #descripcion = objeto.get_info() #Nuevos valores. Mejor que nada
-                descripcion = pprint.pformat(objeto.diff()).decode("utf8").replace("'", '"')
+                descripcion = pprint.pformat(objeto.diff()).decode("utf8").replace("'", '"').encode("ascii", "ignore")
             except Exception, msg:
                 descripcion = "Error al obtener información del objeto. "\
                               "Excepción capturada: %s " % msg
