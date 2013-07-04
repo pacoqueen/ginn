@@ -19216,6 +19216,8 @@ class Auditoria(SQLObject, PRPCTOO):
             except Exception, msg:
                 descripcion = "Error al obtener información del objeto. "\
                               "Excepción capturada: %s " % msg
+        else:
+            descripcion = descripcion.decode("utf8", "ignore")
         if not usuario:
             usuario = logged_user
         Auditoria(usuario = usuario, 
