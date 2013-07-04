@@ -14087,7 +14087,8 @@ class AlbaranSalida(SQLObject, PRPCTOO):
         ## mal traducida del francés-?) ha pasado a la capa inferior: Ahora es un procedimiento almacenado 
         ## en la BD. Aunque no compilado, es STABLE, por lo que sí está optimizado y vuela; sobre todo en 
         ## comparación con el código de arriba.
-        res = self._connection.queryOne("SELECT es_interno(%d);" % self.id)[0] == 1
+        res = self._connection.queryOne(
+                "SELECT es_interno(%d);" % self.id)[0] == 1
         ## ... Aunque en determinadas ocasiones, recorriendo una lista de 1560 albaranes, la consulta me 
         ## ha llegado a dar un par de segundos por arriba. De todas formas la necesitaba como funcion SQL para 
         ## la consulta de HistorialExistencias.
