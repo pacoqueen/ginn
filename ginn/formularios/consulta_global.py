@@ -3493,7 +3493,11 @@ def consultar_gtxc(fechaini, fechafin):
     rollosc = pclases.RolloC.select(pclases.AND(
                 pclases.RolloC.q.fechahora >= fini, 
                 pclases.RolloC.q.fechahora < ffin))
-    return rollosc.sum("peso")
+    if rollosc.count() > 0:
+        kilos = rollosc.sum("peso")
+    else:
+        kilos = 0.0
+    return kilos
 
 if __name__ == '__main__':
     t = ConsultaGlobal()
