@@ -1,0 +1,971 @@
+CHANGELOG
+---------
+
+[2013-07-03]
+ * BUGFIX: Corregido error al imprimir TreeView (consulta nóminas).
+ * BUGFIX: Error en día de la semana en consulta nóminas corregido otra vez.
+ * TYPO: Error en campo fecha corregido de consulta nóminas.
+ * BUGFIX: Corregido error al determinar día de la semana en consulta de nóminas.
+ * Refactorizada clase cliente de pclases.
+ * BUGFIX: Error en el cálculo de acumulados de fibra de desecho.
+ * BUGFIX: No se marcan como pagados automáticamente los vencimientos de transferencias bancarias. Solo recibos.
+ * BUGFIX: Corregidos errores de importación circular en el nuevo paquete pclases.
+ * Tema estándar de versión en producción.
+ * BUGFIX: Error en el cálculo de acumulados de fibra de desecho.
+
+[2013-07-02]
+ * Factura fe venta de pclases separada y testeada.
+ * Proof of concept de separación de pclases en paquete. De momento solo factura de venta y superclase de facturas.
+ * Auditoría de permisos al abrir ventana con el nuevo launcher.
+ * Prevengo errores de salida estándar en Windows.
+ * Desactivo DEBUG por defecto en albaranes de salida.
+
+[2013-07-01]
+ * Bug feedback desde menú, aunque sin correo electrónico.
+ * BUGFIX: Variable incorrecta.
+ * BUGFIX: Vuelve a funcionar la búsqueda por fecha en partes de fibra.
+ * BUGFIX: Vuelve a funcionar la búsqueda por fecha en partes de fibra.
+ * TYPO: Corregido nombre de campo smtp en envío por email de errores.
+ * TYPO: Corregido nombre de campo en feedback por email de errores.
+ * Reporte de errores adaptado al nuevo launcher.
+ * Reporte de errores adaptado al nuevo launcher.
+ * Reporte de errores adaptado al nuevo launcher.
+ * BUGFIX: Corregido error al buscar partidas en trazabilidad y mejorado log de albaranes de salida.
+
+[2013-06-28]
+ * BUGFIX: Reconoce números con ',' como separador decimal.
+
+[2013-06-27]
+ * BUGFIX: Corrige GINN-105.
+ * Se permite edición de transportes a usuarios con nivel 3.
+ * Pequeña mejora en el cálculo de crédito desde pedidos de venta.
+ * Inremento versión para diferenciar la de la optimización.
+ * Primer intento de optimización del cálculo de crédito.
+ * BUGFIX: Ya no se cuelga al comprobar validación en pedidos sin cliente.
+ * BUGFIX: Ya no se cuelga al comprobar validación en pedidos sin cliente.
+
+[2013-06-26]
+ * USABILIDAD: Aclaración de validación en Tooltip de pedidos de venta.
+ * Validación automática de pedidos también depende ahora del plazo de pago (120 días o menos).
+
+[2013-06-25]
+ * BUGFIX: Eliminados falsos positivos de actualización al validar/desvalidar pedidos de venta.
+
+[2013-06-21]
+ * TYPO: Aparecían metros cuadrados en un total de fibra. Se cambia por kilos.
+ * TYPO: Aparecían metros cuadrados en un total de fibra. Se cambia por kilos.
+ * Añadido volcado a log para detectar partes nulos desde ventana de productos terminados.
+ * BUGFIX: Consulta corregida.
+ * BUGFIX: Capturo excepción de división por cero en consulta de productos terminados (¡partes con tiempo trabajado = 0\!)
+ * En la rama de desarrollo no funciona el lanzador. En producción sí.
+ * Merge con blade-runner.
+ * Adaptadas etiquetas personalizadas a nueva versión del ERP.
+ * Adaptadas etiquetas personalizadas a nueva versión del ERP.
+ * Testing en blade-runner.
+ * Merge con master.
+ * Ventana de partes no bloqueados corregida para soporte con nuevo launcher multiproceso.
+ * TYPO: Error tonto. Faltaba un separador.
+ * BUGFIX: Launcher ahora detecta la plataforma.
+ * BUGFIX: Launcher esta fallando.
+ * Paso a producción.
+ * Reordenadas importaciones y soporte de launcher para sistemas sin intérprete asociado en el MIME.
+ * No funciona el merge=ours.
+ * BUGFIX: Corregido error al buscar línea en el pop-up de la ventana de control de personal.
+ * BUGFIX: Corregido error en búsqueda al abrir el pop-up de la ventana de control de personal.
+ * Merge con blade-runner. Launcher a producción.
+ * Adaptadas ventanas y clases al nuevo lanzador.
+ * Cambio de versión y pongo a testing el lanzador multiproceso (por fin).
+ * Tests de lanzador.
+ * USABILIDAD: Mejora en texto diálogo validación.
+ * BUGFIX: Corregido error interno de pedidos nulos al buscar pedidos a partir de un albarán.
+ * Merge con master y preservo el gtk-style morado.
+ * BUGFIX: Corregidos errores de codificación con tildes en partes de ausencia.
+
+[2013-06-20]
+ * A nostromo.
+ * BUGFIX: Conversión errónea de cadena a flotante corregida.
+ * BUGFIX: Mejorada comprobación de fechas en fras. de compra.
+ * CWT: (jpedrero) Dejar que los usuarios con nivel 0, 1 ó 2 (epalomo y rparra) puedan sacar albaranes de clientes con facturas impagadas.
+ * CWT: (jpedrero) Dejar que los usuarios con nivel 0, 1 ó 2 (epalomo y rparra) puedan sacar albaranes de clientes con facturas impagadas.
+ * BUGFIX: Error de tipos de fecha mx y datetime en pagares_pago.
+ * BUGFIX: Cambios en el cálculo de fras. no documentadas.
+ * BUGFIX: Más precisión en cálculo de no documentado. Ya no cuenta fra. completa, sino el importe realmente no documentado en el caso en que se pague una parte y se deje pendiente otra (caso TEXION con fra EX130052.
+ * BUGFIX: Más precisión en cálculo de no documentado. Ya no cuenta fra. completa, sino el importe realmente no documentado en el caso en que se pague una parte y se deje pendiente otra (caso TEXION con fra EX130052.
+ * BUGFIX: El erorr de jmadrid en Windows 8 era por el tema MS-Windows de GTK. Al final se cambia a Industrial y no hace falta tocar código.
+ * WORKAROUND para Windows 8. Violación de segmento en gtk_main_iteration de actualizar_ventana.
+ * BUGFIX: Soporte para otras versiones de PyChart.
+ * Soporte para sistemas sin PyChart.
+ * BUGFIX: Violación de segmento en partes de fibra con Windows 8.
+ * Ruta errónea en logo de partes de fibra.
+
+[2013-06-19]
+ * Bugfixes.
+ * BUGFIX: Log a posibles errores de clasificación de facturas en consulta de ventas.
+ * BUGFIX: Corregiro error de importación en albaranes de entrada.
+ * BUGFIX: Corregido error al confirmar vencimientos en facturas de compra.
+ * BUGFIX: Consulta de stock de fibra corregida.
+ * BUGFIX: Consulta de stock de fibra corregida.
+ * BUGFIX: Arreglada violación de segmento de mx al comparar hora en logviewer.
+
+[2013-06-18]
+ * El nuevo pyserial no admite especificar fin de línea al leer pesos de rollos.
+ * BUGFIX: Corregidos **posibles** errores de fecha en sistemas Microsoft con ventanas de laboratorio.
+ * BUGFIX: Corregido error al buscar productos y al meter resultados de laboratorio de fibra y fibra de cemento.
+ * BUGFIX: Las consultas SELECT fallan al intentar hacerlas case insensitive.
+ * BUGFIX: Corregido error al interpretar fecha en resultados de fibra de laboratorio.
+ * ComboBox de clientes en pedidos de venta ya tiene foco para buscar tecleando.
+ * BUGFIX: Se intentaba validar en pedidos sin cliente.
+ * BUGFIX: Cambio las estructuras time.localtime por mx.DateTime.
+ * BUGFIX: Error al crear vencimientos por sumar tipos diferentes de fecha.
+ * BUGFIX: Más errores de inicialización con time.localtime.
+ * BUGFIX: Más errores de inicialización con time.localtime.
+ * BUGFIX: Más errores de inicialización con time.localtime.
+ * BUGFIX: No se podían crear abonos por inicialización de fecha con time.localtime en lugar de mx.DateTime.
+ * BUGFIX: Corregido error con fechas mx en abonos.
+ * BUGFIX: Necesario ajustar nivel para desbloquear a 2 o menos para rparra en albaranes de salida.
+ * BUGFIX: Reajuste niveles en albaranes de salida.
+ * BUGFIX: Reajuste nivel para albaranes bloqueados.
+ * BUGFIX: Color en clientes con crédito no estaba instanciado y fallaba en albaranes de salida.
+ * BUGFIX: Corregidos más errores con datetime y mx.DateTime mezclados.
+ * BUGFIX: Corregidos más errores con datetime y mx.DateTime mezclados.
+ * BUGFIX: Corregido error al crear facturas de compra.
+ * Corregido error al guardar observaciones en clientes.
+ * Corregido error al comparar fechas de factura.
+ * Corregido error (2) en ventana usuarios.
+ * BUGFIX con rutas de imágenes en ventana usuarios.
+ * Sigo en Riotinto.
+ * USABILIDAD: Coloreado de cliente según crédito en albaranes de salida.
+ * Quito configuración de repositorio.
+
+[2013-06-17]
+ * Corregida ruta al _changelog_ en el script de despliegue.
+ * BUGFIX: Corregido error al usar una partida inconsistente en partes de geotextiles. Corregido error al buscar partida en ventana de partidas de carga.
+ * BUGFIX: Corregido error granzas recicladas en partes de fibra.
+ * Adaptación acceso directo edición backup a versión 5.0.
+ * Adaptado script de inicio.
+ * BUGFIX en script sincronización desarrollo-producción.
+ * Script actualizacion bacall adaptado a version 5.0.
+ * Merge con blade-runner. Configuración de producción.
+
+[2013-06-14]
+ * Listo para merge con master el lunes.
+
+[2013-06-13]
+ * Precio kilo en tooltip de pedidos de venta y precio mínimo finalmente en ventana de tarifas.
+
+[2013-06-12]
+ * Sesión de trabajo en vim actualizada.
+ * Rutas relativas a logo corregidas.
+ * Cambio de icono validación.
+ * Testing de validación pedidos de venta en pennyworth.
+
+[2013-06-11]
+ * A falta de algunos controles, ya funciona la validación de pedidos de venta.
+ * Sesión de desarrollo.
+ * Afinando tests de validación de pedidos de venta.
+
+[2013-06-10]
+ * Validación de pedidos casi lista.
+ * ¡Por fin funciona el launcher en MS-Windows!
+ * Pruebas de multiproceso en Windows.
+ * Pruebas de multiproceso en Windows.
+
+[2013-06-06]
+ * Sesión para mañana.
+ * Reajuste niveles de permisos.
+ * Inicio modificación validación pedidos de venta.
+
+[2013-06-04]
+ * Actualizada lista de requisitos.
+ * Actualizada lista de dependencias.
+
+[2013-05-31]
+ * Nuevo launcher multiproceso en progreso.
+
+[2013-05-30]
+ * Cambio en marcado CE.
+
+[2013-05-28]
+ * Códigos marcado CE corregidos.
+ * Launcher y marcado CE.
+ * Corrección códigos marcado CE.
+ * Corregido número CE en fibra embolsada.
+
+[2013-05-27]
+ * Parche de master. Cambio en unidades de dos pruebas (jmadrid).
+ * Cambio en unidades de resultados geotextiles.
+
+[2013-05-23]
+ * Intentando hacer el menú multiproceso.
+
+[2013-05-21]
+ * Corregido error con _queryAll. Ya se pueden hacer consultas directas en SQL a través del framework.
+ * Enésimo intento de multiproceso en Windows.
+ * i18n en Windows.
+ * Mejor localización de directorio de imágenes para informes.
+ * i18n l10n
+ * Fixes error al parsear configuración alternativa.
+ * Fixes error al parsear configuración alternativa.
+ * Más pruebas de lanzadores...
+ * Test lanzadores Windows.
+ * Fichero de configuración se busca en ruta correcta.
+ * Corregidos errores en .bat de DOS.
+ * Mejoro cargador de aplicación en Windows.
+ * Mejoro cargador de aplicación en Windows.
+ * Mejoro cargador de aplicación en Windows.
+
+[2013-05-20]
+ * Otro BUGFIX en consulta de compras con transportes a cuenta.
+ * Otro bug en consulta_compras corregido. También con transportes a cuenta.
+ * BUGFIX en consulta de compras con transportes a cuenta.
+ * BUGFIX: Error en consulta de compras con transportes a cuenta.
+ * Contador de registros e índice del actual en ventanas con botones siguiente/anterior.
+ * Patch from blade-runner. Fixes GINN-80
+ * Fixes GINN-80
+ * Portado parche GINN-81 de blade-runner.
+ * Fixes GINN-81 (totales intercambiados)
+
+[2013-05-14]
+ * Botones anterior/siguiente sombreados si no hay más registros.
+
+[2013-05-13]
+ * Corregido error al buscar provincia de la dirección de envío de un albarán cuando se emite una factura sin obra relacionada (CP y provincia están en el mismo campo en el albarán).
+
+[2013-05-10]
+ * Corregida importación en trazabilidad interna.
+ * Mejorada comprobación de permisos. Parche desde blade-runner.
+ * Mejorada comprobación de permisos en abonos de venta.
+
+[2013-05-08]
+ * Corregido error con HorasTrabajadas en partes de producción (de envasado).
+ * Resolviendo problemas autocommit e independencia fork SQLObject.
+
+[2013-04-29]
+ * Test de HorasTrabajadas y pre-merge con blade-runner.
+
+[2013-04-23]
+ * Corrigiendo bug de HorasTrabajadas.
+ * Elimino compatibilidad hacia atrás con mi fork de SQLObject 0.6.1
+
+[2013-04-22]
+ * Prueba con func en orderBy.
+ * Búsqueda case insensitive y corregido bug de doble ESCAPE.
+
+[2013-04-19]
+ * Script para extraer cuentas de correo para newsletter.
+ * Mejorado envío de bugs por correo.
+
+[2013-04-18]
+ * Parche de master de bug de ausencias a blade-runner.
+ * Corregido error de auditoría al crear ausencias en empleados.
+ * i18n y l10n de gtkexcepthook + envío de errores por correo.
+
+[2013-04-17]
+ * Corregido el envío de correos de error desde el menú principal.
+ * Llegó el momento de jubilar libgmail.
+ * Fin de errores y warnings en rama eclipse.
+
+[2013-04-16]
+ * 200 Warnings y contando.
+ * TYPO corregido.
+ * Vuelta a chuck-berry.
+ * Warnings corregidos en nostromo.
+
+[2013-04-15]
+ * Corrigiendo warnings desde nostromo.
+ * 652 warnings en huck-berry.
+
+[2013-04-12]
+ * Corrigiendo los más de 1700 warnings. Ahora están por debajo de 1000
+ * Al fin limpiados los más de 1300 errores que marcaba PyDev.
+ * Evito colisión de nombres entre paquete utils (renombrado a lib) y módulo utils (de formularios). Es lo mismo que pasó con informes (paquete) y reports (módulo).
+ * Añadidos scripts de arranque e instalación en MS-Windows.
+ * Corregidas rutas de importación de pclases.
+
+[2013-04-11]
+ * Eliminando importaciones con rutas relativas y hacks en PYTHONPATH.
+ * Adaptando imports a nueva estructura.
+ * Cambio gitignore a nueva estructura de paquete.
+ * Incluyo bin en repo.
+ * Dependencias actualizadas en chuck.berry
+
+[2013-04-10]
+ * Probando abonos de venta en la nueva rama.
+ * En plena migración a 5.0
+ * Cambio en estructura del proyecto.
+ * Parche de master para eliminación de bala huérfana.
+ * Parche de master para bug de eliminación de balas huérfanas.
+ * BUGFIX: El error no era del dbpuid, sino a bala huérfana.
+ * BUG en partes de fibra con dbpuid.
+
+[2013-04-09]
+ * Adapto parche de usabilidad de master a rama eclipse.
+ * Merge con blade-runner para bugfix de forma de pago (USABILIDAD).
+ * USABILIDAD: Unifico forma de pago por defecto con la normalizada del sistema.
+ * Merge con parche de auditoría de master.
+ * Corregido puid en ventana de auditoría al nuevo dbpuid.
+ * Renombro columna puid en Auditoría para evitar conflictos con atributo.
+ * Nueva versión 5.0
+
+[2013-04-08]
+ * Push a chuck-berry.
+
+[2013-04-05]
+ * Más 'undefined variable from import' con SQLObject.
+ * Algunos errores en rama eclipse en chuck-berry.
+
+[2013-04-04]
+ * Cerrando bugs y adaptando a IDE eclipse + PyDev.
+ * Sigo adaptando rama eclipse y corrigiendo bugs antiguos.
+ * 2 chuck-berry.
+
+[2013-04-03]
+ * Fixes en eclipse (PyDev)
+ * Limpio compilados y adapto pclases a pydev.
+
+[2013-04-02]
+ * Actualización biblioteca gmail.
+ * EPIC FAIL! Regression.
+ * FAIL enorme en test de regresión. Volviendo a versión de ayer.
+ * BUGFIX: Ya se pueden volver a añadir consumos de bigbag a partes de fibra embolsada.
+ * Corregido error al añadir bigbag.
+
+[2013-04-01]
+ * Adaptando a eclipse (albaranes_de_salida.py).
+ * Adapto código a eclipse+pydev.
+ * Adaptando a eclipse pydev. Actualizada versión libgmail.
+ * BUGFIX: Se muestran abonos pdtes. de documentar en la consulta de facturas pendientes de documentar.
+
+[2013-03-28]
+ * No guardo traza de lectura de mensajes (eran masivas y un desperdicio de todo).
+ * Incidencia de auditviewer cerrada.
+ * Corregidos filtros en auditviewer.
+ * Despliegue a producción.
+ * Iconos del entry de búsqueda activados.
+ * No acaba de funcionar el gittatributes.
+ * Mejora en filtro búsqueda tvaudit.
+ * Merge con desarrollo.
+ * USABILIDAD: Mejora legibilidad auditviewer.
+ * Merge con producción.
+ * Reduzco registros a mostrar buscando más velocidad.
+ * Merge con desarrollo.
+ * Debugging auditviewer.
+ * Debugging auditviewer.
+ * Fixed gtkrc.
+ * Update vim session.
+ * Merge a master.
+
+[2013-03-27]
+ * Audiviewer más ágil (espero). Falta probarlo en producción. Añadidas sesiones en vim.
+
+[2013-03-25]
+ * Desarrollo a nostromo.
+ * Fixes GINN-79
+ * Bugfixing...
+ * Audito cambio de forma de pago de clientes.
+ * Testing auditviewer.
+ * Merge con blade-runner para bugfixes.
+ * BUGFIX: Corregido error al exportar desde facturación por cliente y fecha.
+
+[2013-03-22]
+ * Rama de desarrollo a nostromo.
+ * Rama de desarrollo para nostromo.
+
+[2013-03-21]
+ * TYPO
+ * Merge con blade-runner
+ * Se permiten crear fras. de compra con el mismo número y proveedor si sin años diferentes.
+ * Se permiten crear fras. de compra con el mismo número y proveedor si sin años diferentes.
+ * Más tiempo para refrescar el AuditViewer, mejorado registro de modificaciones en tabla de auditoría.
+
+[2013-03-20]
+ * Merged con versión de desarrollo.
+ * Merge con versión de desarrollo.
+ * BUGFIX: No se permitía quitar la cuenta bancaria por defecto en los clientes.
+ * Se permiten más opciones en forma de pago a proveedores (sin día fijo y nuevos plazos no contemplados).
+
+[2013-03-19]
+ * Se permiten más opciones en forma de pago a proveedores (sin día fijo y nuevos plazos no contemplados).
+ * Se permiten más opciones en forma de pago a proveedores (sin día fijo y nuevos plazos no contemplados).
+
+[2013-03-18]
+ * Corregido error al crear nuevo repuesto desde albaranes de entrada de repuestos.
+
+[2013-03-14]
+ * Corregida sincronización tras corregir forma de pago automática en ventana clientes.
+
+[2013-03-13]
+ * Corregidos errores antiguos e implementados métodos para documento de pago en pclases.
+
+[2013-03-11]
+ * USABILIDAD: Coloreado en presupuesto anual.
+ * USABILIDAD: Saco los botones adelante/atrás del notebook de datos.
+ * Formato de moneda en todas las cifras de presupuesto.
+ * Nuevo checkbox para marcar/desmarcar todos los efectos de una remesa.
+ * Totales con y sin comentarios (endosados) de efectos en consulta cartera.
+ * Observaciones en consulta efectos en cartera.
+ * Anterior y siguiente en ventana de proveedores.
+ * Botones adelante/atrás en clientes.
+ * Botones adelante/atrás en partes de geotextiles y fibra embolsada.
+ * Probando botones anterior y siguiente en partes de fibra.
+ * Redistribuyo ancho de la ventana de consulta de efectos y habilito el filtro por cliente en versiones nuevas de PyGtk.
+ * Paso la comprobación de balas huérfanas a una única vez por cada carga de ventana. Hacerlo en la actualización del 'rellenar_widgets' es muy costoso.
+
+[2013-03-08]
+ * Merge con blade-runner.
+ * BUGFIX: Corregido error al cambiar servicios que no vienen de albaranes en facturas de compra.
+ * Elimino balas huérfanas al recargar partes para evitar más errores con los cortes de luz.
+ * Opción para descartar datos confirmados en dynconsulta.
+ * Capturada excepción de error de lectura de báscula en línea de fibras.
+ * BUGFIX: pyserial continua con problemas.
+ * Resolving merge conflicts.
+ * mend
+ * Soporte para pyserial en Python 2.7.
+
+[2013-03-07]
+ * Corregido bug GINN-75 de nuevo.
+
+[2013-03-06]
+ * Nueva opción para controlar mejor cuánto del presupuesto está cubierto por datos reales cuando no se cumple el criterio de sustitución.
+ * USABILIDAD: Filtro registros de borrado de alertas de gestor de mensajes en auditviewer.
+ * Eliminada anfibología.
+ * Coloreado en dynconsulta según porcentaje de realidad en cada valor.
+ * Dynconsulta: Hay algunos errores en la traza de proveedores de granza cuando se mezclan datos reales y presupuestados. Y la gradación de colores todavía no está muy conseguida.
+
+[2013-03-05]
+ * Intento de colorear gradualmente el fondo de las celdas con valores reales.
+ * BUGFIX: Quedaban algunas comparaciones de mx con None que petan en Windows con la versión de python 2.7
+ * El campo observaciones en la ventana de pagarés no se autoexpandía.
+ * Corregida dynconsulta. No ponía a cero totales al refrescar.
+ * Se permite cambiar manualmente la forma de pago de un vencimiento en factuas de venta y la impresión acorde de la misma (antes había un error y mostraba mal los plazos).
+ * Merge con bugfixes de blade-runner.
+ * BUGFIX: Merge de albaranes de repuestos con master (ya estaba corregido en mainstream).
+ * BUGFIX: Corregido parser de horas cuando no se indican minutos.
+ * BUGFIX: Corregido error al determinar empresa como cliente en albaranes de repuestos.
+ * Guardo en auditoría también los riesgos de los clientes antes y después de guardar (interesa seguir la pista a esto).
+ * BUGFIX: Corregido error al crear registro de auditoría de nuevo rollo cuando el objeto rollo todavía no tenía asociado un nuevo artículo.
+ * Merge con master.
+ * BUGFIX: Error en auditviewer corregido.
+ * No acaba de funcionar el merge strategy.
+ * Ya disponibles las opciones de exportar e imprimir en la dynconsulta.
+ * Totales en dynconsulta.
+
+[2013-03-04]
+ * Valores de dynconsulta: gastos en negativo, ingresos en positivo.
+ * BUGFIX: Corregido error de constraint al eliminar bala.
+ * Problemas con el gitattribute.
+ * Problemas con el gitattribute.
+ * Problemas con el gitattribute.
+ * Corregido error de auditoría al crear rollos nuevos.
+ * La combinación de colores no debería entrar en el merge de ramas.
+ * BUGFIX: Soporte PyGTK < 2.12 para Python 2.5.
+ * Corregido error al crear objeto de auditoría en línea de fibra.
+ * Merge con el cambio de color de auditviewer en master.
+ * Cambio color de modificaciones en auditviewer.
+ * Estilo diferente de colores para diferenciar ambas ramas en ejecución.
+ * Focus en desplegable clientes para búsqueda interactiva en ventana de pagarés de cobro.
+ * Corregidor error al recrear vencimientos en facturas de venta.
+ * BUGFIX: Corregido mismo error que al crear y eliminar confirming pero en pagarés de cobro.
+ * Cada rama tendrá su gtkrc (ver .gitattributes).
+ * Cada rama tendrá su gtkrc (ver .gitattributes).
+ * Auditoría en modificación clientes.
+ * Icono nuevo para visor de auditoría.
+ * Visor de registros de auditoría.
+ * BUGFIX: Corregido error al determinar vencimientos al calcular valores presupuestados.
+ * BUGFIX: Corregido error analizando servicios en albaranes de entrada en dynconsulta.
+ * BUGFIX: Corregido error analizando servicios de albaranes de entrada en dynconsulta.
+ * Corregido error al determinar vencimientos de un cliente de servicios.
+ * Corregido typo en dynconsulta.
+ * BUGFIX: Corregido error en foco de ComboBoxEntry de clientes.
+ * BUGFIX: Corregido error al eliminar un confirming.
+ * BUGFIX: Error usuario en auditoria ventana confirmings.
+ * BUGFIX: Error banco por defecto al crear nuevo confirming corregido.
+ * BUGFIX: Compatibilidad con python 2.5.
+ * BUGFIX: Compatibilidad con python 2.5.
+ * Actualización a versión 4.1
+ * Paso a versión 4.1
+ * Quito colores Gtk para distinguir ramas.
+ * BUGFIX: Error en orden de creación de tablas en actualización a versión 4.
+ * Compatibilidad con python 2.5.
+ * Compatibilidad con python 2.5.
+ * Compatibilidad con python 2.5.
+ * Compatibilidad con python 2.5.
+ * Compatibilidad con python 2.5.
+
+[2013-03-03]
+ * No muestro traza en valores nulos de dynconsulta.
+ * Elimino valores espurios y mejoro visibilidad de datos en trazas de dynconsulta.
+ * IVA incluido en todos los elementos de la dynconsulta y mejora en la ventana de inspect.
+ * Corregidos errores de cálculo en dynconslta y distribución vencimientos presupuestados en clientes y resto de proveedores.
+
+[2013-03-02]
+ * Arrastro IVA a compensar a mes siguiente en dynconsulta.
+ * Todos los valores en formato 0,00 en dynconsulta.
+ * Todos los valores en formato 0,00 en dynconsulta.
+ * Ventana de inspección funcional. Falta usabilidad.
+
+[2013-03-01]
+ * Dynconsulta terminada. Queda algo de testeo y repasar especificaciones.
+ * Anotación para modificar cuanto antes.
+ * Cálculo de ventas disponible en dynconsulta.
+
+[2013-02-27]
+ * Testeados albaranes y facturas de granza. Criterio de sustitución works like a charm. Falta resto de proveedores y ventas.
+ * Vtos. reales en dynconsulta para proveedores de granza COMPROBADOS. El criterio de sustitución funciona bien y combina datos reales con presupuestados. Pero OJO: hasta que no se crean los vtos. en la factura de compra, el dato real NO CUENTA.
+ * BUGFIX: Corregido error al consultar proveedores de un producto incluido en un pedido de un proveedor que haya sido eliminado por error.
+ * Concesión de permisos en vencimiento_valor_presupuesto_anual.
+ * Pruebas vencimientos compras dynconsulta.
+
+[2013-02-25]
+ * Cambio en modelo de datos para facilitar vencimientos en presupuesto.
+ * BUGFIX: Corregido error al comparar fechas en consulta marcado CE.
+
+[2013-02-22]
+ * Incidencia GINN-75 corregida.
+
+[2013-02-21]
+ * Paso el ciclar_mes a presupuesto, que es donde debe estar.
+ * Función para actualizar vencimientos de todos los valores presupuestados.
+ * Pequeños cambios en qué se muestra con DEBUG y VERBOSE en pclases.
+ * Distribución de vtos. en dynconsulta en desarrollo.
+
+[2013-02-20]
+ * Corregida ambigüedad entre atributo cliente y propiedad cliente en cobros.
+
+[2013-02-19]
+ * Probando vencimientos de valores de presupuesto.
+ * Nuevo campo para controlar vencimientos de valores presupuestados.
+ * BUGFIX: Filtro erróneo en factuas de Portugal al calcular el IVA.
+ * BUGFIX en deteccón de valores de presupuesto de tipo IVA.
+ * BUGFIX en deteccón de valores de presupuesto de tipo IVA.
+ * BUG fecha mx comparando con None.
+ * Activo modo depuración para pennyworth.
+ * Correcciones en el cálculo y sustitución del IVA en dynconsulta.
+ * Pendiente de ventana inspect y ventas. Compras e impuestos ya funcionan en dynconsulta.
+
+[2013-02-18]
+ * Pruebas de dynconsulta con distribución de datos reales.
+
+[2013-02-16]
+ * Pruebas de spread de valores reales por forma de pago.
+ * Se complica la clasificación de datos reales por mes en dynconsulta.
+
+[2013-02-15]
+ * Merge de pedidos de compra con master.
+ * USABILIDAD: Resalto en color en los cambios de los valores de la dynconsulta.
+ * Paso brach blade-runner a nostromo.
+
+[2013-02-12]
+ * Pruebas de rotación de mes inicial en dynconsulta.
+
+[2013-02-11]
+ * Nuevos iconos para módulo financiero.
+ * Primera prueba en servidor.
+ * USABILIDAD: Muestro cabecera de fila en dyncolsulta como tooltip para tablas 'anchas'.
+ * Ventana de inspección en desarrollo.
+ * La dynconsulta empieza a tomar forma.
+
+[2013-02-07]
+ * Clean-up code doc.
+ * Merge con geninformes de master en blade-runner.
+ * Texto de condiciones de recepción de factura en pedidos de compra. [GINN-70]
+ * Cambio a versión 4.0.3
+ * Merge con resolve de issue GINN-6 de master a blade-runner.
+ * Resuelta incidencia GINN-6: 4 decimales en pedidos de venta.
+
+[2013-02-06]
+ * Merge con el BUGFIX de partes de embolsado de master a blade-runner.
+ * USABILIDA: Mejoras en diálogo hora. Corregido error con datetime y mx al comparar horas de incidencias en partes de embolsado.
+ * Tipo por defecto en clientes y proveedores.
+ * Corregido el misterioso error de la doble barra en retornos de carro.
+
+[2013-02-05]
+ * TYPO: Me había comido una coma y se creaba mal un tipo de cliente.
+ * Añadidas familias de clientes y proveedores.
+
+[2013-02-04]
+ * Ha hecho falta modificar la capa modelo para relacionar conceptos del presupuesto con los proveedores de granza reales en la base de datos.
+ * Mejora en búsqueda de proveedores en albaranes de salida y presupuesto listo para parte de ventas.
+ * Funciona el traspaso automático de valores al finalizar un mes en presupuesto.
+ * Añadida opción de concepto de primer nivel y selección manual de mes actual para testing.
+
+[2013-02-01]
+ * Cuatro decimales en precios al generar factura desde albaranes de salida.
+ * Corregido BUG #4
+ * Añadida metainfo de KDE y dumps de ginn.
+
+[2013-01-28]
+ * Hay que rediseñar la ventana de costes (presupuesto anual) a requisitos más concretos.
+ * Quitado autodec en precio y toneladas de presupuesto. Malinterpretaba cifras.
+ * BUGFIX: Corregido error en índices mes módulo 13 (1 a 12, no 0 a 11)
+ * BUGFIX: Corregido error en índices mes módulo 13 (1 a 12, no 0 a 11)
+ * BUGFIX: Corregido error en índices mes módulo 12 (1 a 12, no 0 a 11)
+ * BUGFIX: Corregido error al avanzar mes en presupuesto anual.
+ * BUGFIX: Corregido error cuenta doble-clic en menú.
+ * Implementada entrada de datos compuesta en proveedores de granza.
+ * Pruebas con datos (casi) reales para presupuesto anual.
+ * Criterio de sustitución por valores reales en presupuesto anual en pruebas.
+
+[2013-01-26]
+ * Primeras pruebas presupuesto anual.
+
+[2013-01-24]
+ * Mejora del parche de transción de versión.
+
+[2013-01-22]
+ * Implementado botón para desconfirmar y retirar efecos de una remesa. Se quitan los confirming de la consulta de cartera.
+
+[2013-01-21]
+ * Implementada restricción para que todos los efectos de una remesa sean del mismo tipo.
+ * Error al aceptar remesa sin código ni fecha corregido.
+ * Error al aceptar remesa sin código ni fecha corregido.
+ * BUGFIX: Corregido error al confirmar remesas no completas.
+ * BUGFIX: Corregido error al comprobar fecha prevista de abono en ventana remesas.
+ * Soporte para python2.5 en módulo tesorería.
+ * Soporte para python2.5 en módulo tesorería.
+ * Probada concenctración máxima por cliente concreto y banco.
+ * Ya funciona el control de concentración máxima genérica.
+ * BUGFIX: Ya se calcula bien la concentración actual en cada banco.
+ * Corregido error al mostrar porcentajes multiplicados por 100 en conentración máxima de clientes en remesa.
+ * Corrección de errores en consulta cartera.
+
+[2013-01-20]
+ * Concentraciones en remesas pasa a testing.
+ * Parece que la consulta de cartera y ventana de remesas al fin funciona.
+
+[2013-01-18]
+ * Añadido widget personalizado starhscale.
+ * Widget personalizado velocímetro añadido.
+ * Parche corregido para transición ginn a dev_ginn.
+ * Desarrollo remesas en progreso.
+ * A nostromo a terminar remesas en versión de desarrollo.
+
+[2013-01-10]
+ * Merge con master.
+ * Corregido error al exportar a CSV algunas descripciones de producto.
+ * Nueva consulta activa en menú. Queda un bug al exportar a CSV con el producto NT 12 (2.30X900) m2. Investigando...
+ * Nueva consulta de velocidades de las líneas según producto en servidor.
+ * Nueva consulta de velocidades de las líneas según producto en servidor.
+
+[2013-01-09]
+ * Merge con master.
+ * Corregido error en codificación de caracteres de marquee label.
+ * TYPO: Corregido error en el open del Changelog. Se había ido un paréntesis.
+ * Corregido error de permisos en script de despliegue.
+ * BUGFIX: Corregido error al buscar ChangeLog.
+ * Se modifica script de despliegue a producción para incluir últimas actualizaciones.
+ * Eliminado antiguo módulo de custom widgets.
+ * Nuevo icono para módulo tesorería.
+ * Añadidos nuevos widgets y divididos en paquete custom_widgets para mejor organización del código.
+ * Marquee label en menú con actualizaciones del ChangeLog.
+ * Algunas modificaciones de la rama experimental pasan a la versión en producción.
+ * Corregido error al comparar fecha con None en consulta de vencimientos de pago.
+ * Corregido error al comparar fecha con None en consulta de vencimientos de pago.
+
+[2013-01-08]
+ * Preservo logs también en esta rama.
+ * TODO anotado.
+ * Preservo log en actualización compartido.
+ * ENTER también en menú.
+ * ENTER para abrir ventanas también.
+
+[2012-12-28]
+ * BUGFIX: Ya abren las ventanas con doble clic también en python 2.7 con pygtk 2.28 en Windows.
+ * BUGFIX: Ya abren las ventanas con doble clic también en python 2.7 con pygtk 2.28 en Windows.
+ * Confirmings con vencimiento por defecto a 60 días (ley 2013).
+
+[2012-12-20]
+ * Muchos flecos sueltos, pero por si me paso a nostromo estos días.
+ * Un pagaré en remesa sin fecha prevista puede estar disponible para otra remesa.
+ * Me faltaban dos campos en una tabla con los que ya estaba trabajando. Lapsus teclae mío, I suppose.
+ * Script para crear el módulo en la BD.
+ * Script para crear el módulo en la BD.
+ * Script para crear el módulo en la BD.
+ * Nuevo icono y script para crear módulo y ventanas en el menú.
+ * Nueva etiqueta de un metro de NIED.
+ * Elimino alarmas antes de eliminar factura.
+ * Nuevos campos en bancos.
+ * Para empezar a afinar y probar remesas.
+
+[2012-12-19]
+ * Comienzo remesas.
+
+[2012-12-18]
+ * BUG fechas MX pyd en confirming.
+ * BUG al seleccionar cliente.
+ * BUG porque no hay clienteID en pagarés ni confirming.
+ * Empiezo a probar en entorno de pruebas (pennyworth).
+ * Error interpretación en concentraciones. Corregido.
+ * Icono de tesorería.
+ * Cambio el GTKRC para diferenciar los entornos en ejecución.
+ * Corregido bug en estado confirming.
+ * Ventana de bancos ya es funcional.
+ * Paso a pennyworth
+ * Paso a pennyworth
+ * Paso a pennyworth
+
+[2012-12-17]
+ * Inicio ficha bancos.
+ * Consulta de cartera empieza a levantarse.
+ * Parche actualización tablas auditoría.
+
+[2012-12-12]
+ * Parece que la auditoría de eliminación en cascada también funciona.
+ * Parece que la auditoría de eliminación funciona.
+ * Modifico ahora la destrucción de objetos para auditarlo también.
+
+[2012-12-11]
+ * Nueva tabla de auditoría.
+
+[2012-12-10]
+ * BUG deep_refresh desde fras. compra en pedidos compra corregido.
+
+[2012-12-04]
+ * Ya solo se carga un handler del logger por cada instancia del intérprete, no uno por ventana.
+ * BUGFIX: Se abría una factura cuando se hacía doble clic en una obra.
+ * BUGFIX: Se abría una factura cuando se hacía doble clic en una obra.
+ * Se dejaba abierto el ginn.conf.
+ * Almacenes inactivos.
+
+[2012-12-03]
+ * Campo para almacenes ya inactivos. Pero no se usa todavía en ningún sitio del programa.
+ * Preparando nueva versión.
+ * Simplifico volcado a log.
+ * BUGFIX: Ye olde bug. Comparación de mx con None (peta en Windows).
+ * BUG al calcular bultos de fibra en fras. pendientes de imprimir.
+
+[2012-11-30]
+ * Muestro diferencia y forma de pago real en CRM.
+ * Desviación pagos también en detalles CRM.
+ * Faltaba columna en impreso y había un error al estimar doc. pago en cobros.
+
+[2012-11-29]
+ * Columna desviación plazo terminada.
+ * ¿Qué hacía esto aquí todavía?
+ * Modificación desviación pago en progreso.
+
+[2012-11-28]
+ * Faltaba adaptar el informe de la consulta de pendientes de servir.ç
+ * Forma de cobro y filtro de fecha en consulta de pedidos pendientes.
+ * Terminado un get_horas_produccion que se había enquistado desde Elvis sabe cuándo.
+
+[2012-11-23]
+ * CIF Irlanda.
+
+[2012-11-21]
+ * Cambio de logos XPM.
+ * Cambio orden en desplegable formas de pago.
+ * Formas de pago obsoletas no se muestran.
+ * Sanitize en cadenas de texto para menú de pedidos recientes.
+
+[2012-11-20]
+ * Error en plazo fra. impresa corregido.
+ * No forma de pago por defecto.
+ * No forma de pago por defecto.
+ * IVA en abonos sale según fecha facturas abonadas.
+
+[2012-11-19]
+ * Facturas sin pedido no fallan al crear vtos. por defecto.
+
+[2012-11-16]
+ * Impresión corregida para mostrar formas de cobro.
+ * Quito pausas al sincronizar compartido.
+ * BUG en coloreado.
+ * BUG en coloreado.
+ * Formas de pago en tablas por tarifa y por cliente.
+ * Faltaba relación uno a muchos en clase forma de pago con pedidos venta.
+ * Modificación de formas de cobro hecha. Consulta en progreso.
+
+[2012-11-15]
+ * Formas de cobro en progreso.
+
+[2012-11-14]
+ * Modificación de formas de pago en progreso.
+
+[2012-11-13]
+ * Icono de ventana ahora es el mismo que se ve en el menú.
+
+[2012-11-09]
+ * Corregido error apóstrofe en cliente al imprimir factura.
+
+[2012-11-05]
+ * Enlace a datos de ejemplo (populate).
+ * Datos de ejemplo.
+ * Miniguía de instalación.
+ * Miniguía de instalación.
+
+[2012-10-31]
+ * Algunos caracteres dan problemas en Windows.
+
+[2012-10-30]
+ * Al corregir existencias silo no se tenía en cuenta almacenes.
+
+[2012-10-23]
+ * CIF francés del principado de Mónaco soportado en clientes.
+ * CIF francés del principado de Mónaco soportado en clientes.
+
+[2012-10-22]
+ * Formatting cleanup.
+
+[2012-10-16]
+ * BUG al detectar ancho rollo etiquetas NIED.
+ * BUG al detectar ancho rollo etiquetas NIED.
+ * Etiquetas NIED.
+
+[2012-10-02]
+ * Bug buscar fecha en control personal corregido.
+
+[2012-09-27]
+ * Por defecto documento de pago en clientes es Pagaré a la orden.
+ * Soporte para comboEntries en versiones antiguas de pygtk.
+ * Workaround para el combo en glade.
+
+[2012-09-26]
+ * Migración a builder fallida. Corrijo versión libglade.
+ * Formas de pago comunes en clientes.
+ * Script para paso a despliegue terminado y probado.
+ * Migrando a gtkbuilder.
+ * Script para sincronizar producción con directorio despliegue.
+
+[2012-09-25]
+ * Merging...
+
+[2012-09-21]
+ * Did I mention I'm stupid?
+ * Stupid scope bug solved.
+ * Workaround a la limitación del portapapeles de Gtk usando Tkinter.
+ * Copia al portapapeles con éxito ya.
+ * Me equivoqué de SELECTION.
+ * Copia al portapapeles primario.
+ * Botones para copiar direcciones de clientes a portapapeles.
+
+[2012-09-19]
+ * Método para cambiar el destino de un albarán con mercanía ya añadida.
+
+[2012-09-14]
+ * Nuevo ChangeLog a partir de git en lugar de cvs. Un paso más al cambio definitivo.
+
+[2012-09-13]
+ * IVA 18 en comentarios cambiado por 21%.
+ * Más IVA al 18% escondido.
+ * Quedaban algunos rincones con el IVA al 18% por defecto en lugar de al 21.
+ * Añado también el directorio settings.
+ * Cambio en la forma de mostrar BD en menú principal.
+ * Ignoro ficheros de proyecto de Apatana/Eclipse
+
+[2012-09-12]
+ * Muestro config en menú principal.
+
+[2012-09-03]
+ * BUGFIX al comparar fechas con None (ye olde known WIN-MXDateTime bug)
+ * Parse para .gtkrc-2.0 de usuario.
+ * Cambio de IVA.
+
+[2012-08-30]
+ * Convierte formato moneda, kilos y metros a número antes de exportar a CSV.
+
+[2012-08-29]
+ * Lanzadores en utils para tenerlos a mano.
+ * Nuevo icono para versión 'nighty build'.
+ * Cambio a Liberation en líneas de factura.
+ * Deshabilito debug en etiquetas Alians.
+ * Inteto tirar de xdg-open para los PDF, pero hay que refinarlo todavía.
+ * Meto más confs en gitignore.
+ * Ignoro confs
+ * No es necesario tener información sensible aunque sea inútil o de ejemplo.
+ * BUGFIX: Corregida ruta fuente Vera.
+
+[2012-08-28]
+ * BUGFIX al buscar fuente TT.
+ * BUGFIX al buscar fuente TT.
+ * Terminadas las etiquetas de Alians Trade.
+ * Terminadas las etiquetas de Alians Trade.
+ * Terminadas las etiquetas de Alians Trade.
+ * Nuevo script para sincronizar con la última copia diaria.
+ * Etiquetas Alians Trade.
+
+[2012-08-21]
+ * Soporte para datetime (SQLObject en python 2.7).
+ * BUGFIX: En utils.py quedaban vestigios de un bug antiguo.
+
+[2012-08-20]
+ * BUGFIX: Quedaba una comparación de fecha con None que en python2.7 provoca un error de mx en Windows.
+
+[2012-08-02]
+ * Pequeña optimización y conforme destino en albaranes de salida.
+ * Añadido "conforme destino" al albarán no valorado.
+ * Corregido bug en la optimización de contar palés.
+ * Soporte para optimización de bultos en versiones avanzadas de SQLObject.
+ * Corregido error al eliminar artículos.
+
+[2012-07-19]
+ * Borro compilados
+ * Borro compilados
+ * Corregida ruta a gs en Pychart.
+
+[2012-07-03]
+ * Fixes GINN-56
+
+[2012-06-07]
+ * Solves issue GINN-52
+ * Solves issue GINN-52
+
+[2012-06-06]
+ * Ignoro temporales gedit.
+
+[2012-05-31]
+ * Cambio de versión.
+ * No sé por qué no lo tenía aquí.
+ * Resuelto conflicto en utils.
+
+[2012-05-30]
+ * Meged parse_cif from cvs.
+ * Describo ramas.
+ * Describo ramas.
+ * MINORS: Ajuste ancho de código fuente.
+ * Merge con CVS en nostromo.
+ * Ya reconoce GB correctamente.
+
+[2012-05-29]
+ * Nuevos formatos de CIF soportados. Listo para testing.
+ * 2 nostromo
+ * Ignoro baks y adjuntos.
+ * Ignoro baks y adjuntos.
+ * Ignoro baks y adjuntos.
+
+[2012-05-25]
+ * Fusiono con CVS para trabajar en paralelo con los dos controles de versiones.
+ * Preparo el gitignore para fundir con CVS
+
+[2012-05-22]
+ * Cambiado texto para que sea más claro al usuario.
+
+[2012-05-18]
+ * ¿Cómo se me han colado tantos pyc si están en el .gitignore?
+
+[2012-05-17]
+ * Más limpieza de "compilados".
+
+[2012-05-16]
+ * Quito compilados.
+ * Ignoro log y backups de la BD.
+
+[2012-05-15]
+ * Quito log y "compilados".
+ * Nuevo lanzador multiproceso de Doraemon.
+ * Fixes issue GINN-43 (confirm issue)
+ * Fixes issue 43 (confirm issue)
+ * Ignoro temporales de Vim en git.
+ * Preparo cambio de versión.
+ * Corregido conflicto de nombres en Python2.7
+ * Corregido conflicto de nombres en python2.7
+
+[2012-05-14]
+ * initial commit
+
+[2012-05-11]
+ * Eliminada dependencia de fork de SQLObject.
+ * Eliminada dependencia de fork de SQLObject.
+
+[2012-05-09]
+ * Initial commit
