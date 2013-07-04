@@ -4272,8 +4272,12 @@ class Caja(SQLObject, PRPCTOO):
             bolsas_anteriores = cajas_anteriores.sum("numbolsas")
         except TypeError: # Número de caja no válido. No se pudo hacer el sum.
             bolsas_anteriores = 0 
+        if bolsas_anteriores is None:
+            bolsas_anteriores = 0
         primera = bolsas_anteriores + 1
         ultima = cajas_conmigo.sum("numbolsas")
+        if ultima is None:
+            ultima = 0
         return primera, ultima  # Ambas incluidas.
 
     def _get_bounds_numbolsa_range(self):
@@ -6222,7 +6226,11 @@ class BalaCable(SQLObject, PRPCTOO):
         el embalaje.
         """
         peso = BalaCable.select().sum("peso")
+        if peso is None:
+            peso = 0.0
         emba = BalaCable.select().sum("peso_embalaje")
+        if emba is None:
+            emba = 0.0
         res = peso - emba 
         return res
     calcular_acumulado_peso_sin = staticmethod(calcular_acumulado_peso_sin)
@@ -6388,6 +6396,10 @@ class RolloC(SQLObject, PRPCTOO):
         """
         peso = RolloC.select().sum("peso")
         emba = RolloC.select().sum("peso_embalaje")
+        if peso is None:
+            peso = 0.0
+        if emba is None:
+            emba = 0.0
         res = peso - emba 
         return res
 
@@ -6410,7 +6422,11 @@ class RolloC(SQLObject, PRPCTOO):
         rollosc = RolloC.select(AND(RolloC.q.fechahora >= primero_mes, 
                                     RolloC.q.fechahora < primero_mes_sig))
         peso = rollosc.sum("peso")
+        if peso is None:
+            peso = 0.0
         emba = rollosc.sum("peso_embalaje")
+        if emba is None:
+            emba = 0.0
         res = peso - emba 
         return res
 
@@ -8181,15 +8197,24 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
                 = self.__get_consultas_entradas_y_salidas_desde(sqlfechaini, 
                                                                 almacen)
         if entradas.count() > 0:
-            qin += entradas.sum("cantidad")
+            esum = entradas.sum("cantidad")
+            if esum is None:
+                esum = 0.0
+            qin += esum 
             if DEBUG:
                 print "get_entradas_y_salidas_desde; qin:", qin
         if salidas_consumos.count() > 0:
-            qout += salidas_consumos.sum("cantidad")
+            esum = salidas_consumos.sum("cantidad")
+            if esum is None:
+                esum = 0.0
+            qout += esum
             if DEBUG:
                 print "get_entradas_y_salidas_desde; qout:", qout
         if salidas_albaranes.count() > 0:
-            qout += salidas_albaranes.sum("cantidad")
+            esum = salidas_albaranes.sum("cantidad")
+            if esum is None:
+                esum = 0.0
+            qout += esum 
             if DEBUG:
                 print "get_entradas_y_salidas_desde; qout:", qout
         return qin - qout
@@ -12719,6 +12744,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
             except TypeError:   # No pudo hacer el sum porque no 
                                 # había registros.
                 res = 0.0
+            if res is None:
+                res = 0.0
         elif self.es_rollo():
             rollos = Rollo.select(""" 
                         id IN (SELECT rollo_id 
@@ -12739,6 +12766,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
             except TypeError:       # No pudo hacer el sum porque
                                     # no había registros.
                 res = 0.0
+            if res is None:
+                res = 0.0
         elif self.es_caja():
             try:
                 res = Caja.select(""" 
@@ -12751,6 +12780,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                 #res = sum([c.peso for c in res if not c.claseb])
             except TypeError:       # No pudo hacer el sum porque no 
                                     # había registros.
+                res = 0.0
+            if res is None:
                 res = 0.0
         else:
             res = 0.0
@@ -12768,6 +12799,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         """%(self.id, almacen.id)).sum("pesobala")
             except TypeError:   # No pudo hacer el sum porque no 
                                 # había registros.
+                res = 0.0
+            if res is None:
                 res = 0.0
         elif self.es_rollo():
             rollos = Rollo.select(""" 
@@ -12790,6 +12823,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
             except TypeError:       # No pudo hacer el sum porque no 
                                     # había registros.
                 res = 0.0
+            if res is None:
+                res = 0.0
         elif self.es_caja():
             try:
                 res = Caja.select(""" 
@@ -12803,6 +12838,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         #""" % (self.id, almacen.id)).sum("peso")
             except TypeError:       # No pudo hacer el sum porque no 
                                     # había registros.
+                res = 0.0
+            if res is None:
                 res = 0.0
         else:
             res = 0.0
@@ -12880,6 +12917,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
             except TypeError:   # No pudo hacer el sum porque no 
                                 # había registros.
                 res = 0.0
+            if res is None:
+                res = 0.0
         elif self.es_rollo():
             rollos = RolloDefectuoso.select(""" 
                         id IN (SELECT rollo_defectuoso_id 
@@ -12900,6 +12939,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
             except TypeError:       # No pudo hacer el sum porque no 
                                     # había registros.
                 res = 0.0
+            if res is None:
+                res = 0.0
         elif self.es_caja():
             try:
                 res = Caja.select(""" 
@@ -12911,6 +12952,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         """ % (self.id)).sum("peso")
             except TypeError:       # No pudo hacer el sum porque no 
                                     # había registros.
+                res = 0.0
+            if res is None:
                 res = 0.0
         else:
             res = 0.0
@@ -12929,6 +12972,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         """ % (self.id, almacen.id)).sum("pesobala")
             except TypeError:       # No pudo hacer el sum porque no 
                                     # había registros.
+                res = 0.0
+            if res is None:
                 res = 0.0
         elif self.es_rollo():
             rollos = RolloDefectuoso.select(""" 
@@ -12950,6 +12995,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
             except TypeError:       # No pudo hacer el sum porque no 
                                     # había registros.
                 res = 0.0
+            if res is None:
+                res = 0.0
         elif self.es_caja():
             try:
                 res = Caja.select(""" 
@@ -12961,6 +13008,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         """ % (self.id, almacen.id)).sum("peso")
             except TypeError:       # No pudo hacer el sum porque no 
                                     # había registros.
+                res = 0.0
+            if res is None:
                 res = 0.0
         else:
             res = 0.0
@@ -13047,6 +13096,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
             except TypeError:   # No pudo hacer el sum porque no 
                                 # había registros.
                 res = 0.0
+            if res is None:
+                res = 0.0
         elif self.es_rollo_c():
             try:
                 res = RolloC.select(""" 
@@ -13057,6 +13108,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         """ % (self.id)).sum("peso")
             except TypeError:       # No pudo hacer el sum porque
                                     # no había registros.
+                res = 0.0
+            if res is None:
                 res = 0.0
         else:
             res = 0.0
@@ -13074,6 +13127,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
             except TypeError:   # No pudo hacer el sum porque no 
                                 # había registros.
                 res = 0.0
+            if res is None:
+                res = 0.0
         elif self.es_rollo_c():
             try:
                 res = RolloC.select(""" 
@@ -13084,6 +13139,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         """ % (self.id, almacen.id)).sum("peso")
             except TypeError:       # No pudo hacer el sum porque
                                     # no había registros.
+                res = 0.0
+            if res is None:
                 res = 0.0
         else:
             res = 0.0
@@ -19679,6 +19736,8 @@ class ConceptoPresupuestoAnual(SQLObject, PRPCTOO):
             criterios.append(ValorPresupuestoAnual.q.mes <= ffin)
         valores = ValorPresupuestoAnual.select(AND(*criterios))
         res = valores.sum("importe")
+        if res is None:
+            res = 0.0
         return res
 
     def calcular_total_vencimientos(self, fini = mx.DateTime.today(), 
