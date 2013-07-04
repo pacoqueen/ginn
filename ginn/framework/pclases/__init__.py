@@ -13889,7 +13889,9 @@ class AlbaranSalida(SQLObject, PRPCTOO):
                     a.almacen = almacen_destino
                 else:
                     # Ya no está en el almacén en el que estaba.
-                    pass # No sé si dar error o qué... Rompería la trazabilidad, pero abortar aquí el proceso sería peor. FIXME: Hacer un "rollback" o algo.
+                    pass    # No sé si dar error o qué... Rompería la 
+                        # trazabilidad, pero abortar aquí el proceso 
+                        # sería peor. FIXME: Hacer un "rollback" o algo.
             else:   # Se vendió a un cliente.
                 a.almacen = almacen_destino
         self.almacenDestino = almacen_destino
