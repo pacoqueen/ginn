@@ -675,6 +675,11 @@ class Ventana:
                     and "consulta" in self.wids['ventana'].title.lower()) 
         except AttributeError:
             return False
+        except KeyError:    # 'ventana' ya no existe. O es un ciclo 
+                # "encasquillado" de gtk mientras se estaba cerrando la 
+                # ventana, o definitivamente soy cualquier cosa menos una 
+                # consulta del programa.
+            return None
 
     def actualizar_ventana(self, widget = None, objeto_anterior = None, 
                            deep_refresh = True):
