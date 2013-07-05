@@ -396,7 +396,7 @@ class PartesDeFabricacionBolsas(Ventana):
               'table1', 'hbox6')
         for w in ws:
             self.wids[w].set_sensitive(s)
-        if self.usuario and self.usuario.nivel > 2: # No permito (des)bloquear.
+        if self.usuario and self.usuario.nivel > 3: # No permito (des)bloquear.
             self.wids['ch_bloqueado'].set_sensitive(False)
         #if self.usuario:
         #    self.wids['b_partida'].set_sensitive(s and self.usuario.nivel < 3)
