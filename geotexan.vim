@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 05 julio 2013 at 19:21:19.
+" Created by session.vim 1.5 on 08 julio 2013 at 15:13:18.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -43,7 +43,7 @@ badd +39 ginn/formularios/historico_existencias.py
 badd +46 ginn/formularios/consulta_incidencias.py
 badd +392 ginn/formularios/consulta_producido.py
 badd +1 ginn/__init__.py
-badd +1910 ginn/formularios/clientes.py
+badd +1247 ginn/formularios/clientes.py
 badd +991 ginn/formularios/productos_compra.py
 badd +638 ginn/formularios/productos_de_venta_balas.py
 badd +525 ginn/formularios/recibos.py
@@ -58,7 +58,7 @@ badd +547 ~/workspace/CICAN/src/formularios/menu.py
 badd +109 ginn/formularios/launcher.py
 badd +155 ginn/formularios/empleados.py
 badd +38 ginn/formularios/resultados_geotextiles.py
-badd +166 ginn/formularios/menu.py
+badd +770 ginn/formularios/menu.py
 badd +142 ginn/formularios/autenticacion.py
 badd +7583 ginn/informes/geninformes.py
 badd +233 ginn/informes/informe_certificado_calidad.py
@@ -67,7 +67,7 @@ badd +1 ginn/formularios/facturas_venta.py
 badd +468 ginn/framework/configuracion.py
 badd +4 bin/ginn.sh
 badd +10 ginn/main.py
-badd +89 ginn/formularios/ventana.py
+badd +678 ginn/formularios/ventana.py
 badd +2286 ginn/formularios/pedidos_de_venta.py
 badd +1 db/tablas.sql
 badd +412 ginn/formularios/albaranes_de_salida.py
@@ -98,9 +98,14 @@ badd +398 ginn/framework/pclases/superfacturaventa.py
 badd +4 ginn/framework/pclases/facturaventa.py
 badd +647 ginn/formularios/consulta_mensual_nominas.py
 badd +1 ginn/informes/treeview2pdf.py
+badd +129 ginn/formularios/balas_cable.py
+badd +13 ginn/informes/nied.py
+badd +0 ginn/informes/norma2013.py
+badd +65 ginn/formularios/widgets.py
+badd +1 ginn/informes/ekotex.py
 args formularios/auditviewer.py
 set lines=58 columns=111
-edit ginn/formularios/ventana.py
+edit ginn/informes/norma2013.py
 set splitbelow splitright
 wincmd _ | wincmd |
 vsplit
@@ -190,18 +195,12 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-104
-normal! zo
-665
-normal! zo
-685
-normal! zo
-let s:l = 681 - ((26 * winheight(0) + 17) / 34)
+let s:l = 13 - ((9 * winheight(0) + 17) / 34)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-681
-normal! 040|
+13
+normal! 010|
 wincmd w
 argglobal
 edit db/tablas.sql
