@@ -114,8 +114,8 @@ class BalasCable(Ventana):
         """
         for b in balas:
             a = b.articulo
-            a.balaCable = None
             try:
+                a.balaCable = None
                 a.destroy(ventana = __file__)
             except Exception, msg:
                 self.logger.error("%sbalas_cable::borrar_balas -> Artículo ID %d de bala ID %d (%s) no se pudo eliminar. Excepción: %s" 
