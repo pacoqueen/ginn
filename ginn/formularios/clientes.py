@@ -1239,7 +1239,10 @@ class Clientes(Ventana):
             from formularios import abonos_venta 
             ventanaabonos = abonos_venta.AbonosVenta(objeto.abono,  # @UnusedVariable
                                 usuario = self.usuario)
-        self.wids['ventana'].window.set_cursor(None)
+        try:
+            self.wids['ventana'].window.set_cursor(None)
+        except KeyError:
+            pass    # La ventana se cerró antes que la factura que abrió.
 
     def abrir_cliente(self, tv, path, view_column):
         """
