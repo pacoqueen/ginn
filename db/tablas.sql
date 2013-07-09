@@ -506,6 +506,11 @@ CREATE TABLE producto_venta(
     -- NEW! 23/11/06
     campos_especificos_especial_id INT
         REFERENCES campos_especificos_especial DEFAULT NULL,
+    -- NEW! 9/07/2013
+    anno_certificacion INT DEFAULT NULL, 
+    dni TEXT DEFAULT '', 
+    uso TEXT DEFAULT '', 
+    -- ALTER TABLE producto_venta ADD COLUMN anno_certificacion INT DEFAULT NULL; ALTER TABLE producto_venta ADD COLUMN dni TEXT DEFAULT ''; ALTER TABLE producto_venta ADD COLUMN uso TEXT DEFAULT ''; UPDATE producto_venta SET anno_certificacion = NULL; UPDATE producto_venta SET dni = ''; UPDATE producto_venta SET uso = ''; 
     CHECK (NOT(campos_especificos_bala_id <> NULL
                 AND campos_especificos_rollo_id <> NULL
                 AND campos_especificos_especial_id <> NULL))
