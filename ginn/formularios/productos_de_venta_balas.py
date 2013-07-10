@@ -303,10 +303,10 @@ class ProductosDeVentaBalas(Ventana):
         """
         filas_res = []
         for r in resultados:
-            filas_res.append((r.id, r.codigo, r.descripcion))
+            filas_res.append((r.id, r.codigo, r.nombre, r.descripcion))
         idproducto = utils.dialogo_resultado(filas_res,
                                              titulo = 'Seleccione producto',
-                                             cabeceras = ('ID Interno', 'Código', 'Descripción'))
+                                             cabeceras = ('ID Interno', 'Código', 'Nombre', 'Descripción'))
         if idproducto < 0:
             return None
         else:
@@ -588,7 +588,8 @@ class ProductosDeVentaBalas(Ventana):
         la ventana de resultados.
         """
         producto = self.objeto
-        a_buscar = utils.dialogo_entrada("Introduzca código o descripción de producto:") 
+        a_buscar = utils.dialogo_entrada(
+                "Introduzca código o descripción de producto:") 
         if a_buscar != None:
             try:
                 ida_buscar = int(a_buscar)
