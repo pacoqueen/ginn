@@ -17662,7 +17662,7 @@ class DatosDeLaEmpresa(SQLObject, PRPCTOO):
         Si no tiene logo, devuelve None.
         """
         im = os.path.join(os.path.dirname(os.path.realpath(__file__)), 
-                          "..", "imagenes", self.logo)
+                          "..", "..", "imagenes", self.logo)
         return os.path.abspath(im)
 
     @classmethod
