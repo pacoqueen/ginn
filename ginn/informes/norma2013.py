@@ -16,7 +16,8 @@ from framework import pclases
 
 def etiqueta_rollos_norma13(rollos, mostrar_marcado = True):
     """
-    Construye una etiqueta 
+    Construye una etiqueta por cada objeto rollo recibido y las devuelve 
+    en un solo PDF.
     """
     # Voy a tratar de reescribir esto regla en mano a ver si consigo 
     # cuadrarlo bien en la etiquetadora GEMINI.
@@ -90,7 +91,6 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True):
             producto.camposEspecificosRollo.ancho, 
             producto.camposEspecificosRollo.metrosLineales)
 
-
         rectangulo(c, (margen, margen),
                       (ancho - margen, alto - margen))
         if mostrar_marcado: 
@@ -123,7 +123,6 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True):
 
 if __name__ == "__main__":
     from formularios.reports import abrir_pdf
-    from formularios.partes_de_fabricacion_rollos import build_etiqueta
     rollos = [pclases.Rollo.select(orderBy = "-id")[0]]
     pv = rollos[0].productoVenta
     rollos.append(pv.articulos[-1].rollo)
