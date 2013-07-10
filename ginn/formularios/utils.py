@@ -1651,10 +1651,6 @@ def mostrar_hora(horas = 0, minutos = 0, segundos = 0, titulo = 'HORA',
         wids['ventana'].destroy()                                             #
     def cancelar(boton):                                                      #
         wids['ventana'].destroy()                                             #
-    def show_leading_zeros(spin_button):
-        adjustment = spin_button.get_adjustment()
-        spin_button.set_text("%02d" % (int(adjustment.get_value())))
-        return True
     #-------------------------------------------------------------------------#
     connections = {'ventana/destroy': gtk.main_quit,
                    'b_cancelar/clicked': cancelar, 
@@ -1681,6 +1677,15 @@ def mostrar_hora(horas = 0, minutos = 0, segundos = 0, titulo = 'HORA',
     wids['sp_hora'].select_region(0, -1)
     gtk.main()
     return hora[0]
+
+def show_leading_zeros(spin_button):
+    adjustment = spin_button.get_adjustment()
+    try:
+        spin_button.set_text('{:02d}'.format(int(adjustment.get_value())))
+    except:     # ¿Python < 2.7?
+        spin_button.set_text("%02d" % (int(adjustment.get_value())))
+    return True
+
 
 # ----------------------- UTILS DIEGO ------------------------- #
 def parse_euro(strfloat):

@@ -59,7 +59,8 @@ class ProductosDeVentaBalas(Ventana):
         """
         self.usuario = usuario
         self._objetoreciencreado = None
-        Ventana.__init__(self, 'productos_de_venta_balas.glade', objeto, usuario = usuario)
+        Ventana.__init__(self, 'productos_de_venta_balas.glade', objeto, 
+                         usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_anterior/clicked': self.ir_a_anterior,
                        'b_siguiente/clicked':self.ir_a_siguiente,
@@ -74,7 +75,10 @@ class ProductosDeVentaBalas(Ventana):
                        'b_add_campoesp/clicked': self.add_campoesp,
                        'b_drop_campoesp/clicked': self.drop_campoesp,
                        'b_change_campoesp/clicked': self.change_campoesp,
-                       'b_buscar/clicked': self.buscar_producto}  
+                       'b_buscar/clicked': self.buscar_producto, 
+                       'ch_no_anno_cert/toggled': self.change_anno_cert, 
+                       'sp_anno_certificacion/output': utils.show_leading_zeros
+                      }
         self.add_connections(connections)
         self.inicializar_ventana()
         if self.objeto == None:
@@ -134,6 +138,16 @@ class ProductosDeVentaBalas(Ventana):
             cajasPale_compara = "N/A"
         condicion = condicion and (
             cajasPale_compara == self.wids['e_cajasPale'].get_text())
+        condicion = (condicion and 
+            producto.dni == self.wids['e_dni'].get_text())
+        condicion = (condicion and 
+            producto.uso == self.wids['e_uso'].get_text())
+        if self.wids['ch_no_anno_cert'].get_active():
+            condicion = (condicion and producto.annoCertificacion == None)
+        else:
+            condicion = (condicion and
+                producto.annoCertificacion 
+                    == self.wids['sp_anno_certificacion'].get_value_as_int())
         return not condicion    # Concición verifica que sea igual
 
     def aviso_actualizacion(self):
@@ -365,6 +379,17 @@ class ProductosDeVentaBalas(Ventana):
         self.rellenar_tabla_tarifas()
         self.objeto.make_swap()
         self.wids['e_cajasPale'].set_sensitive(not self.objeto.articulos)
+        # Nuevos campos de etiquetas norma13:
+        if self.objeto.annoCertificacion is None:
+            self.wids['sp_anno_certificacion'].set_text("")
+            self.wids['ch_no_anno_cert'].set_active(True)
+        else:
+            self.wids['sp_anno_certificacion'].set_value(
+                    self.objeto.annoCertificacion)
+            utils.show_leading_zeros(self.wids['sp_anno_certificacion'])
+            self.wids['ch_no_anno_cert'].set_active(False)
+        self.wids['e_dni'].set_text(producto.dni)
+        self.wids['e_uso'].set_text(producto.uso)
         ### Botones anterior/siguiente
         producto = self.objeto
         try:
@@ -391,6 +416,10 @@ class ProductosDeVentaBalas(Ventana):
         else:
             self.wids['b_anterior'].set_sensitive(anteriores)
             self.wids['b_siguiente'].set_sensitive(siguientes)
+
+    def change_anno_cert(self, ch_no_anno):
+        self.wids['sp_anno_certificacion'].set_sensitive(
+                not ch_no_anno.get_active())
 
     def rellenar_tabla_tarifas(self):
         model = self.wids['tv_tarifas'].get_model()
@@ -694,6 +723,13 @@ class ProductosDeVentaBalas(Ventana):
         producto.camposEspecificosBala.antiuv = antiuv
         producto.camposEspecificosBala.reciclada = reciclada
         producto.camposEspecificosBala.tipoMaterialBalaID = idtipoMaterialBala
+        producto.dni = self.wids['e_dni'].get_text()
+        producto.uso = self.wids['e_uso'].get_text()
+        if self.wids['ch_no_anno_cert'].get_active():
+            producto.annoCertificacion = None
+        else:
+            producto.annoCertificacion \
+                    = self.wids['sp_anno_certificacion'].get_value_as_int()
         # Fuerzo la actualización de la BD y no espero a que SQLObject lo 
         # haga por mí:
         producto.syncUpdate()

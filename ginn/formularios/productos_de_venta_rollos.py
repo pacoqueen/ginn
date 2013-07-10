@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2013  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -86,7 +86,10 @@ class ProductosDeVentaRollos(Ventana):
                        'b_historial/clicked': self.mostrar_historial, 
                        'b_fechaInicio/clicked': self.fecha_inicio_marcado, 
                        'b_fechaFin/clicked': self.fecha_fin_marcado, 
-                       'cb_marcado/changed': self.cambiar_marcado_mostrado}  
+                       'cb_marcado/changed': self.cambiar_marcado_mostrado, 
+                       'ch_no_anno_cert/toggled': self.change_anno_cert, 
+                       'sp_anno_certificacion/output': utils.show_leading_zeros
+                      }  
         self.add_connections(connections)
         self.inicializar_ventana()
         if self.objeto == None:
@@ -263,6 +266,16 @@ class ProductosDeVentaRollos(Ventana):
         except AttributeError:
             modelo_etiqueta_objeto = None
         condicion = (condicion and modelo_etiqueta_objeto == modelo_etiqueta)
+        condicion = (condicion and 
+            producto.dni == self.wids['e_dni'].get_text())
+        condicion = (condicion and 
+            producto.uso == self.wids['e_uso'].get_text())
+        if self.wids['ch_no_anno_cert'].get_active():
+            condicion = (condicion and producto.annoCertificacion == None)
+        else:
+            condicion = (condicion and
+                producto.annoCertificacion 
+                    == self.wids['sp_anno_certificacion'].get_value_as_int())
         return not condicion    # Concición verifica que sea igual
 
     def aviso_actualizacion(self):
@@ -454,7 +467,8 @@ class ProductosDeVentaRollos(Ventana):
         if len(producto.articulos) > 0:
             self.wids['ch_gtxc'].set_sensitive(False)
             # No puede cambiar el tipo de producto una vez fabricado algo.
-        self.wids['i_barcode'].set_from_file(EanBarCode().getImage(producto.codigo))
+        self.wids['i_barcode'].set_from_file(
+                EanBarCode().getImage(producto.codigo))
         self.wids['e_codigo'].set_text(producto.codigo)
         self.wids['e_descripcion'].set_text(producto.descripcion)
         self.wids['e_nombre'].set_text(producto.nombre)
@@ -499,6 +513,17 @@ class ProductosDeVentaRollos(Ventana):
             modelo_etiqueta = 0
         utils.combo_set_from_db(self.wids['cb_etiqueta'], 
                                 modelo_etiqueta)
+        # Nuevos campos de etiquetas norma13:
+        if self.objeto.annoCertificacion is None:
+            self.wids['sp_anno_certificacion'].set_text("")
+            self.wids['ch_no_anno_cert'].set_active(True)
+        else:
+            self.wids['sp_anno_certificacion'].set_value(
+                    self.objeto.annoCertificacion)
+            utils.show_leading_zeros(self.wids['sp_anno_certificacion'])
+            self.wids['ch_no_anno_cert'].set_active(False)
+        self.wids['e_dni'].set_text(producto.dni)
+        self.wids['e_uso'].set_text(producto.uso)
         # Datos no modificables:
         self.wids['e_idproducto'].set_text(`producto.id`)
         self.muestra_stock()
@@ -519,6 +544,10 @@ class ProductosDeVentaRollos(Ventana):
                 pclases.ProductoVenta.q.id > producto.id)).count()
         self.wids['b_anterior'].set_sensitive(anteriores)
         self.wids['b_siguiente'].set_sensitive(siguientes)
+
+    def change_anno_cert(self, ch_no_anno):
+        self.wids['sp_anno_certificacion'].set_sensitive(
+                not ch_no_anno.get_active())
 
     def rellenar_marcado_ce(self, marcado_activo = None):
         """
@@ -839,7 +868,9 @@ class ProductosDeVentaRollos(Ventana):
         codigo = self.wids['e_codigo'].get_text()
         if len(codigo) < 12:
             utils.dialogo_info(titulo = "CÓDIGO DEMASIADO CORTO", 
-                               texto = "El código debe tener 13 dígitos para ajustarse al formato EAN-13.\nSe va a completar con ceros.", 
+                               texto = "El código debe tener 13 dígitos para "
+                                       "ajustarse al formato EAN-13.\nSe va a"
+                                       " completar con ceros.", 
                                padre = self.wids['ventana'])
             codigo += "0" * (12 - len(codigo))  # Completo hasta 12 para que después se le haga la suma de control.
         if len(codigo) == 12:
@@ -899,9 +930,7 @@ class ProductosDeVentaRollos(Ventana):
             prodestandar = 0.0
         producto.camposEspecificosRollo.fichaFabricacion \
             = self.wids['e_ficha_fabricacion'].get_text()
-
         composan = self.wids['e_composan'].get_text()
- 
         # Desactivo el notificador momentáneamente
         producto.notificador.activar(lambda: None)
         # Actualizo los datos del objeto
@@ -936,6 +965,13 @@ class ProductosDeVentaRollos(Ventana):
             modelo_etiqueta = None
         producto.camposEspecificosRollo.modeloEtiquetaID = modelo_etiqueta
         self.guardar_marcado_ce()
+        producto.dni = self.wids['e_dni'].get_text()
+        producto.uso = self.wids['e_uso'].get_text()
+        if self.wids['ch_no_anno_cert'].get_active():
+            producto.annoCertificacion = None
+        else:
+            producto.annoCertificacion \
+                    = self.wids['sp_anno_certificacion'].get_value_as_int()
         # Fuerzo la actualización de la BD y no espero a que SQLObject 
         # lo haga por mí:
         producto.syncUpdate()

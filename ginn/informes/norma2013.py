@@ -14,7 +14,7 @@ from tempfile import gettempdir
 from formularios.utils import float2str
 from framework import pclases
 
-def etiqueta_rollos_portrait(rollos, mostrar_marcado = True):
+def etiqueta_rollos_norma13(rollos, mostrar_marcado = True):
     """
     Construye una etiqueta 
     """
@@ -127,5 +127,5 @@ if __name__ == "__main__":
     rollos = [pclases.Rollo.select(orderBy = "-id")[0]]
     pv = rollos[0].productoVenta
     rollos.append(pv.articulos[-1].rollo)
-    abrir_pdf(etiqueta_rollos_portrait(rollos))
+    abrir_pdf(etiqueta_rollos_norma13(rollos))
 
