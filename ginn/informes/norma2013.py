@@ -42,7 +42,7 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True):
 
     # Datos fijos:
     _data = {# "00 logo_marcado": None, 
-             "01 texto_marcado": "0135",    # Fijo
+             "01 texto_marcado": "1035",    # Fijo
              "02 fabricado_por": "Fabricado por: %s", 
              "03 direccion1": None, 
              "04 direccion2": None, 
@@ -120,6 +120,8 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True):
                         marcado[0], 
                         marcado[1],
                         width = logo[0], height = logo[1])
+        else:
+            data["01 texto_marcado"] = ""
         lineas = _data.keys()
         lineas.sort()
         # Posición y estilo de la primera línea.
@@ -193,7 +195,7 @@ def etiqueta_rollos_norma13_en(rollos, mostrar_marcado = True):
 
     # Datos fijos:
     _data = {# "00 logo_marcado": None, 
-             "01 texto_marcado": "0135",    # Fijo
+             "01 texto_marcado": "1035",    # Fijo
              "02 fabricado_por": "Manufactured by: %s", 
              "03 direccion1": None, 
              "04 direccion2": None, 
@@ -272,6 +274,8 @@ def etiqueta_rollos_norma13_en(rollos, mostrar_marcado = True):
                         marcado[0], 
                         marcado[1],
                         width = logo[0], height = logo[1])
+        else:
+            data["01 texto_marcado"] = ""
         lineas = _data.keys()
         lineas.sort()
         # Posición y estilo de la primera línea.
@@ -312,5 +316,5 @@ if __name__ == "__main__":
             rollos = [a.rollo for a in p.articulos[:2]]
             break
     abrir_pdf(etiqueta_rollos_norma13(rollos))
-    abrir_pdf(etiqueta_rollos_norma13_en(rollos))
+    abrir_pdf(etiqueta_rollos_norma13_en(rollos, False))
 
