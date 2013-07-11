@@ -3109,7 +3109,13 @@ class Cobro(SQLObject, PRPCTOO):
                   vencimiento del documento del cobro. Si ocurre algún 
                   error, devuelve None.
         """
-        fechafra = self.facturaVenta.fecha
+        try:
+            fechafra = self.facturaVenta.fecha
+        except AttributeError:   # Es una factura proforma o de abono.
+            try:
+                fechafra = self.facturaDeAbono.fecha
+            except AttributeError:
+                fechafra = self.prefactura.fecha
         fechavto = self.fechaVencimiento
         res = int(ceil((fechavto - fechafra).days))
         return res

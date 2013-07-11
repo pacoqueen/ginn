@@ -13,6 +13,7 @@ import os
 from tempfile import gettempdir
 from formularios.utils import float2str
 from framework import pclases
+from collections import defaultdict
 
 def etiqueta_rollos_norma13(rollos, mostrar_marcado = True):
     """
@@ -31,8 +32,8 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True):
     
     # Medidas:
     logo = (3.8 * cm, 2.8 * cm)
-    margen = 0.2 * cm
-    marcado = (((ancho - logo[0]) / 2) - margen, (alto - margen - logo[1]))
+    margen = 0.1 * cm
+    marcado = (((ancho - logo[0]) / 2) - margen, (alto - margen - logo[1] - 2))
     
     # Imágenes:
     logo_marcado = os.path.abspath(os.path.join(os.path.dirname(__file__), 
@@ -54,11 +55,12 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True):
              "12 producto": None, 
              "13 descripcion": 
                  "Geotextil no tejido de polipropileno 100% virgen", 
-             "14 uso": None, 
+             "14 uso": "Uso: %s", 
              "15 blanco3": "",      # Separador 
              "16 codigo": "Partida: %d Rollo: %d", 
              "17 caracteristicas": "Gramaje: %d g/m² Ancho: %.1f m Largo: %d m" 
             }
+    estilos = defaultdict(lambda: ("Helvetica", 9)) # Helvética a 9 por defecto
     data = {}
     # Datos de la BD dependientes del rollo
     #   1.- Empresa
@@ -79,10 +81,10 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True):
     for rollo in rollos:
     #   2.- Producto
         producto = rollo.productoVenta
-        data["06 año_certif"] = producto.annoCertificacion
+        data["06 año_certif"] = "%02d" % producto.annoCertificacion
         data["08 dni"] = producto.dni
         data["12 producto"] = producto.nombre
-        data["14 uso"] = producto.uso
+        data["14 uso"] = _data["14 uso"] % producto.uso
     #   3.- Rollo
         data["16 codigo"] = _data["16 codigo"] % (rollo.partida.numpartida, 
                                                   rollo.numrollo)
@@ -100,13 +102,17 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True):
                         width = logo[0], height = logo[1])
         lineas = _data.keys()
         lineas.sort()
-        c.setFont("Helvetica", 10)
-        y = alto - logo[1] - 0.1 * cm - 10
+        # Posición y estilo de la primera línea.
+        c.setFont(*estilos[lineas[0]])
+        tamfuente = estilos[lineas[0]][0]
+        y = alto - logo[1] - 0.1 * cm - tamfuente
+        # ¿Cuánto me desplazaré de línea a línea?
         offset_y = (y - margen) / len(lineas)
         for linea in lineas:
             try:
                 dato = data[linea]
-            except KeyError:
+            except KeyError: # Si no está en los valores asignados, busco en 
+                             # los originales. Deben ser datos fijos.
                 dato = _data[linea]
             if dato is None:
                 dato = ""
@@ -114,8 +120,6 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True):
                                 y, 
                                 escribe(dato))
             y -= offset_y
-        #c.setPageRotation(-90)
-        #c.rotate(-90)
         c.showPage()
     c.save()
     return nomarchivo
@@ -123,8 +127,9 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True):
 
 if __name__ == "__main__":
     from formularios.reports import abrir_pdf
-    rollos = [pclases.Rollo.select(orderBy = "-id")[0]]
-    pv = rollos[0].productoVenta
-    rollos.append(pv.articulos[-1].rollo)
+    for p in pclases.ProductoVenta.select():
+        if "GEOTESAN" in p.nombre and " 21 " in p.descripcion and p.articulos:
+            rollos = [a.rollo for a in p.articulos[:2]]
+            break
     abrir_pdf(etiqueta_rollos_norma13(rollos))
 
