@@ -266,6 +266,14 @@ class ProductosDeVentaRollos(Ventana):
         except AttributeError:
             modelo_etiqueta_objeto = None
         condicion = (condicion and modelo_etiqueta_objeto == modelo_etiqueta)
+        cliente = utils.combo_get_value(self.wids['cbe_cliente'])
+        if cliente == 0:
+            cliente = None
+        try:
+            cliente_objeto = cer.cliente.id
+        except AttributeError:
+            cliente_objeto = None
+        condicion = (condicion and cliente_objeto == cliente)
         condicion = (condicion and 
             producto.dni == self.wids['e_dni'].get_text())
         condicion = (condicion and 
@@ -306,10 +314,21 @@ class ProductosDeVentaRollos(Ventana):
                 ('Precio', 'gobject.TYPE_FLOAT', False, True, False, None),
                 ('ID', 'gobject.TYPE_INT64', False, False, False, None))
         utils.preparar_listview(self.wids['tv_tarifas'], cols)
-        etiquetas = ((0, "Estándar Geotexan"), )
+        try:
+            dde_nombre = pclases.DatosDeLaEmpresa.select()[0].nombre
+        except IndexError:
+            dde_nombre = ""
+        etiquetas = ((0, "Estándar %s" % dde_nombre), )
         for modelo in pclases.ModeloEtiqueta.select():
             etiquetas += ((modelo.id, modelo.nombre), )
         utils.rellenar_lista(self.wids['cb_etiqueta'], etiquetas)
+        clientes = ((0, dde_nombre), )
+        for cliente in pclases.Cliente.select(
+                pclases.Cliente.q.inhabilitado == False, 
+                orderBy = "nombre"):
+            clientes += ((cliente.id, "%s (%s)" % (cliente.nombre, 
+                                                   cliente.cif)), )
+        utils.rellenar_lista(self.wids['cbe_cliente'], clientes)
 
     def activar_widgets(self, s, chequear_permisos = True):
         """
@@ -325,7 +344,7 @@ class ProductosDeVentaRollos(Ventana):
               'e_peso_embalaje', 'e_metros_lineales', 'b_borrar', 'b_fichas', 
               'b_articulos','b_tarifas','e_arancel', 'e_prodestandar', 
               'frame2', 'table3', "ch_gtxc", "e_ficha_fabricacion", 
-              "cb_etiqueta")
+              "cb_etiqueta", "cbe_cliente")
         for w in ws:
             self.wids[w].set_sensitive(s)
         if chequear_permisos:
@@ -513,6 +532,11 @@ class ProductosDeVentaRollos(Ventana):
             modelo_etiqueta = 0
         utils.combo_set_from_db(self.wids['cb_etiqueta'], 
                                 modelo_etiqueta)
+        try:
+            cliente = campos.cliente.id
+        except AttributeError:
+            cliente = 0
+        utils.combo_set_from_db(self.wids['cbe_cliente'], cliente)
         # Nuevos campos de etiquetas norma13:
         if self.objeto.annoCertificacion is None:
             self.wids['sp_anno_certificacion'].set_text("")
@@ -964,6 +988,10 @@ class ProductosDeVentaRollos(Ventana):
         if modelo_etiqueta == 0:
             modelo_etiqueta = None
         producto.camposEspecificosRollo.modeloEtiquetaID = modelo_etiqueta
+        cliente = utils.combo_get_value(self.wids['cbe_cliente'])
+        if cliente == 0:
+            cliente = None
+        producto.camposEspecificosRollo.clienteID = cliente
         self.guardar_marcado_ce()
         producto.dni = self.wids['e_dni'].get_text()
         producto.uso = self.wids['e_uso'].get_text()

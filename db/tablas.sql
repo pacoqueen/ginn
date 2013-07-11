@@ -325,91 +325,6 @@ CREATE TABLE campos_especificos_bala(
     cajas_pale INT DEFAULT NULL       -- Solo aplicable a Geocem embolsado.
 );
 
------------------------------------------------
--- Tabla de funciones para generar etiquetas --
------------------------------------------------
-CREATE TABLE modelo_etiqueta(
-    id SERIAL PRIMARY KEY, 
-    nombre TEXT,    -- Nombre descriptivo de la etiqueta.
-    modulo TEXT,    -- Módulo (fichero python sin extensión) donde reside 
-                    -- la función que se invocará para generar la etiqueta.
-                    -- El módulo se importará desde el directorio «informes».
-    funcion TEXT    -- Nombre de la función que devolverá un PDF con las 
-                    -- etiquetas.
-);
-
-----------------------------------
--- Campos específicos de rollos --
-----------------------------------
-CREATE TABLE campos_especificos_rollo(
-    id SERIAL PRIMARY KEY,
-    gramos INT DEFAULT 0,
-    codigo_composan TEXT DEFAULT '',
-    ancho FLOAT DEFAULT 0.0,
-    diametro INT DEFAULT 0,
-    rollos_por_camion INT DEFAULT 0,
-    metros_lineales INT DEFAULT 0,
-    peso_embalaje FLOAT DEFAULT 0.0,
-    ----- TOLERANCIAS EN PRUEBAS SOBRE GEOTEXTILES sobre estándar -----
-    estandar_prueba_gramaje FLOAT DEFAULT 0.0,
-    tolerancia_prueba_gramaje FLOAT DEFAULT 0.0,
-    estandar_prueba_longitudinal FLOAT DEFAULT 0.0,
-        -- Resistencia longitudinal
-    tolerancia_prueba_longitudinal FLOAT DEFAULT 0.0,
-        -- Resistencia longitudinal
-    estandar_prueba_alargamiento_longitudinal FLOAT DEFAULT 0.0,
-    tolerancia_prueba_alargamiento_longitudinal FLOAT DEFAULT 0.0,
-    estandar_prueba_transversal FLOAT DEFAULT 0.0,
-        -- Resistencia transversal
-    tolerancia_prueba_transversal FLOAT DEFAULT 0.0,
-        -- Resistencia transversal
-    estandar_prueba_alargamiento_transversal FLOAT DEFAULT 0.0,
-    tolerancia_prueba_alargamiento_transversal FLOAT DEFAULT 0.0,
-    estandar_prueba_compresion FLOAT DEFAULT 0.0,           -- CBR
-    tolerancia_prueba_compresion FLOAT DEFAULT 0.0,         -- CBR
-    estandar_prueba_perforacion FLOAT DEFAULT 0.0,
-    tolerancia_prueba_perforacion FLOAT DEFAULT 0.0,
-    estandar_prueba_espesor FLOAT DEFAULT 0.0,
-    tolerancia_prueba_espesor FLOAT DEFAULT 0.0,
-    estandar_prueba_permeabilidad FLOAT DEFAULT 0.0,
-    tolerancia_prueba_permeabilidad FLOAT DEFAULT 0.0,
-    estandar_prueba_poros FLOAT DEFAULT 0.0,
-    tolerancia_prueba_poros FLOAT DEFAULT 0.0,
-    -- Tolerancias superiores (las anteries son la tolerancia normal -1 ver la
-    -- tolerancia en la hoja de marcado- o la tolerancia inferior -en los
-    -- valores que son +/- en el cuadro de marcado-.
-    tolerancia_prueba_gramaje_sup FLOAT DEFAULT 0.0,    -- Gramaje
-    tolerancia_prueba_longitudinal_sup FLOAT DEFAULT 0.0,
-        -- Resistencia longitudinal
-    tolerancia_prueba_alargamiento_longitudinal_sup FLOAT DEFAULT 0.0,
-        -- Alargamiento longitudinal
-    tolerancia_prueba_transversal_sup FLOAT DEFAULT 0.0,
-        -- Resistencia transversal
-    tolerancia_prueba_alargamiento_transversal_sup FLOAT DEFAULT 0.0,
-        -- Alargamiento transversal
-    tolerancia_prueba_compresion_sup FLOAT DEFAULT 0.0,     -- CBR
-    tolerancia_prueba_perforacion_sup FLOAT DEFAULT 0.0,    -- Cono
-    tolerancia_prueba_espesor_sup FLOAT DEFAULT 0.0,        -- Espesor
-    tolerancia_prueba_permeabilidad_sup FLOAT DEFAULT 0.0,  -- Permeabilidad
-    tolerancia_prueba_poros_sup FLOAT DEFAULT 0.0,          -- Porometría
-    ficha_fabricacion TEXT DEFAULT '',      -- NEW! 20/01/08.
-    c BOOLEAN DEFAULT FALSE,   -- Si True, es rollo «C» con anchos, largos y
-                               -- grosores heterogéneos e ignorables.
-    -- NEW! 13/06/2011: Nueva prueba para certificado de calidad ASQUAL
-    -- Resistencia al punzonado piramidal (NF G38-019) KN y tolerancia en % 
-    -- (aunque guardaré valores absolutos por "tradición").
-    -- OJO: Antes de actualizar en clientes, ejecutar esto:
-    -- ALTER TABLE campos_especificos_rollo ADD COLUMN estandar_prueba_piramidal FLOAT DEFAULT 0.0; ALTER TABLE campos_especificos_rollo ADD COLUMN tolerancia_prueba_piramidal FLOAT DEFAULT 0.0; ALTER TABLE campos_especificos_rollo ADD COLUMN tolerancia_prueba_piramidal_sup FLOAT DEFAULT 0.0; ALTER TABLE marcado_ce ADD COLUMN estandar_prueba_piramidal FLOAT DEFAULT 0.0; ALTER TABLE marcado_ce ADD COLUMN tolerancia_prueba_piramidal FLOAT DEFAULT 0.0; ALTER TABLE marcado_ce ADD COLUMN tolerancia_prueba_piramidal_sup FLOAT DEFAULT 0.0; ALTER TABLE partida ADD COLUMN piramidal FLOAT DEFAULT 0; CREATE TABLE prueba_piramidal(id SERIAL PRIMARY KEY, partida_id INT REFERENCES partida, fecha DATE DEFAULT CURRENT_DATE, resultado FLOAT DEFAULT 0.0);
-
-    estandar_prueba_piramidal FLOAT DEFAULT 0.0, 
-    tolerancia_prueba_piramidal FLOAT DEFAULT 0.0, 
-    tolerancia_prueba_piramidal_sup FLOAT DEFAULT 0.0,
-    
-    -- NEW! 07/11/2011: Nueva tabla y campo de modelo de etiquetas.
-    --                  NULL imprime la etiqueta genérica de geninformes.
-    modelo_etiqueta_id INT REFERENCES modelo_etiqueta DEFAULT NULL
-);
-
 CREATE TABLE marcado_ce(
     id SERIAL PRIMARY KEY,
     campos_especificos_rollo_id INT REFERENCES campos_especificos_rollo,
@@ -1272,6 +1187,95 @@ CREATE TABLE cliente(
     facturar_con_albaran BOOLEAN DEFAULT TRUE,      -- NEW! 02/03/2009
     copias_factura INT DEFAULT 0,   -- Sin incluir la original. NEW! 09/07/2009
     tipo_de_cliente_id INT REFERENCES tipo_de_cliente DEFAULT NULL
+);
+
+-----------------------------------------------
+-- Tabla de funciones para generar etiquetas --
+-----------------------------------------------
+CREATE TABLE modelo_etiqueta(
+    id SERIAL PRIMARY KEY, 
+    nombre TEXT,    -- Nombre descriptivo de la etiqueta.
+    modulo TEXT,    -- Módulo (fichero python sin extensión) donde reside 
+                    -- la función que se invocará para generar la etiqueta.
+                    -- El módulo se importará desde el directorio «informes».
+    funcion TEXT    -- Nombre de la función que devolverá un PDF con las 
+                    -- etiquetas.
+);
+
+----------------------------------
+-- Campos específicos de rollos --
+----------------------------------
+CREATE TABLE campos_especificos_rollo(
+    id SERIAL PRIMARY KEY,
+    gramos INT DEFAULT 0,
+    codigo_composan TEXT DEFAULT '',
+    ancho FLOAT DEFAULT 0.0,
+    diametro INT DEFAULT 0,
+    rollos_por_camion INT DEFAULT 0,
+    metros_lineales INT DEFAULT 0,
+    peso_embalaje FLOAT DEFAULT 0.0,
+    ----- TOLERANCIAS EN PRUEBAS SOBRE GEOTEXTILES sobre estándar -----
+    estandar_prueba_gramaje FLOAT DEFAULT 0.0,
+    tolerancia_prueba_gramaje FLOAT DEFAULT 0.0,
+    estandar_prueba_longitudinal FLOAT DEFAULT 0.0,
+        -- Resistencia longitudinal
+    tolerancia_prueba_longitudinal FLOAT DEFAULT 0.0,
+        -- Resistencia longitudinal
+    estandar_prueba_alargamiento_longitudinal FLOAT DEFAULT 0.0,
+    tolerancia_prueba_alargamiento_longitudinal FLOAT DEFAULT 0.0,
+    estandar_prueba_transversal FLOAT DEFAULT 0.0,
+        -- Resistencia transversal
+    tolerancia_prueba_transversal FLOAT DEFAULT 0.0,
+        -- Resistencia transversal
+    estandar_prueba_alargamiento_transversal FLOAT DEFAULT 0.0,
+    tolerancia_prueba_alargamiento_transversal FLOAT DEFAULT 0.0,
+    estandar_prueba_compresion FLOAT DEFAULT 0.0,           -- CBR
+    tolerancia_prueba_compresion FLOAT DEFAULT 0.0,         -- CBR
+    estandar_prueba_perforacion FLOAT DEFAULT 0.0,
+    tolerancia_prueba_perforacion FLOAT DEFAULT 0.0,
+    estandar_prueba_espesor FLOAT DEFAULT 0.0,
+    tolerancia_prueba_espesor FLOAT DEFAULT 0.0,
+    estandar_prueba_permeabilidad FLOAT DEFAULT 0.0,
+    tolerancia_prueba_permeabilidad FLOAT DEFAULT 0.0,
+    estandar_prueba_poros FLOAT DEFAULT 0.0,
+    tolerancia_prueba_poros FLOAT DEFAULT 0.0,
+    -- Tolerancias superiores (las anteries son la tolerancia normal -1 ver la
+    -- tolerancia en la hoja de marcado- o la tolerancia inferior -en los
+    -- valores que son +/- en el cuadro de marcado-.
+    tolerancia_prueba_gramaje_sup FLOAT DEFAULT 0.0,    -- Gramaje
+    tolerancia_prueba_longitudinal_sup FLOAT DEFAULT 0.0,
+        -- Resistencia longitudinal
+    tolerancia_prueba_alargamiento_longitudinal_sup FLOAT DEFAULT 0.0,
+        -- Alargamiento longitudinal
+    tolerancia_prueba_transversal_sup FLOAT DEFAULT 0.0,
+        -- Resistencia transversal
+    tolerancia_prueba_alargamiento_transversal_sup FLOAT DEFAULT 0.0,
+        -- Alargamiento transversal
+    tolerancia_prueba_compresion_sup FLOAT DEFAULT 0.0,     -- CBR
+    tolerancia_prueba_perforacion_sup FLOAT DEFAULT 0.0,    -- Cono
+    tolerancia_prueba_espesor_sup FLOAT DEFAULT 0.0,        -- Espesor
+    tolerancia_prueba_permeabilidad_sup FLOAT DEFAULT 0.0,  -- Permeabilidad
+    tolerancia_prueba_poros_sup FLOAT DEFAULT 0.0,          -- Porometría
+    ficha_fabricacion TEXT DEFAULT '',      -- NEW! 20/01/08.
+    c BOOLEAN DEFAULT FALSE,   -- Si True, es rollo «C» con anchos, largos y
+                               -- grosores heterogéneos e ignorables.
+    -- NEW! 13/06/2011: Nueva prueba para certificado de calidad ASQUAL
+    -- Resistencia al punzonado piramidal (NF G38-019) KN y tolerancia en % 
+    -- (aunque guardaré valores absolutos por "tradición").
+    -- OJO: Antes de actualizar en clientes, ejecutar esto:
+    -- ALTER TABLE campos_especificos_rollo ADD COLUMN estandar_prueba_piramidal FLOAT DEFAULT 0.0; ALTER TABLE campos_especificos_rollo ADD COLUMN tolerancia_prueba_piramidal FLOAT DEFAULT 0.0; ALTER TABLE campos_especificos_rollo ADD COLUMN tolerancia_prueba_piramidal_sup FLOAT DEFAULT 0.0; ALTER TABLE marcado_ce ADD COLUMN estandar_prueba_piramidal FLOAT DEFAULT 0.0; ALTER TABLE marcado_ce ADD COLUMN tolerancia_prueba_piramidal FLOAT DEFAULT 0.0; ALTER TABLE marcado_ce ADD COLUMN tolerancia_prueba_piramidal_sup FLOAT DEFAULT 0.0; ALTER TABLE partida ADD COLUMN piramidal FLOAT DEFAULT 0; CREATE TABLE prueba_piramidal(id SERIAL PRIMARY KEY, partida_id INT REFERENCES partida, fecha DATE DEFAULT CURRENT_DATE, resultado FLOAT DEFAULT 0.0);
+
+    estandar_prueba_piramidal FLOAT DEFAULT 0.0, 
+    tolerancia_prueba_piramidal FLOAT DEFAULT 0.0, 
+    tolerancia_prueba_piramidal_sup FLOAT DEFAULT 0.0,
+    
+    -- NEW! 07/11/2011: Nueva tabla y campo de modelo de etiquetas.
+    --                  NULL imprime la etiqueta genérica de geninformes.
+    modelo_etiqueta_id INT REFERENCES modelo_etiqueta DEFAULT NULL, 
+    cliente_id INT REFERENCES cliente DEFAULT NULL  -- Este producto se 
+        -- fabrica específicamente para un cliente y sus etiquetas serán 
+        -- la que indique "modelo_etiqueta_id" pero con los datos de 
+        -- distribuidor de "cliente_id".
 );
 
 ------------------------------------

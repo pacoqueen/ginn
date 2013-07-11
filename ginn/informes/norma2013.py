@@ -67,6 +67,7 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True):
     try:
         empresa = pclases.DatosDeLaEmpresa.select()[0]
         data["02 fabricado_por"] = _data["02 fabricado_por"] % empresa.nombre
+        # PORASQUI: Si hay distribuidor, este texto cambia.
         data["03 direccion1"] = empresa.direccion + ", " + empresa.cp
         data["04 direccion2"] = ", ".join((empresa.ciudad, 
                                            empresa.provincia, 
