@@ -69,6 +69,10 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True):
     data = {}
     # Datos de la BD dependientes del rollo
     for rollo in rollos:
+        # 0.- ¿En qué formato viene? Si es el antiguo (datos en diccionario) 
+        #     me quedo con el objeto de pclases en sí.
+        if isinstance(rollo, dict):
+            rollo = rollo['objeto']
         #   1.- Empresa
         try:
             empresa = pclases.DatosDeLaEmpresa.select()[0]
@@ -217,6 +221,10 @@ def etiqueta_rollos_norma13_en(rollos, mostrar_marcado = True):
     data = {}
     # Datos de la BD dependientes del rollo
     for rollo in rollos:
+        # 0.- ¿En qué formato viene? Si es el antiguo (datos en diccionario) 
+        #     me quedo con el objeto de pclases en sí.
+        if isinstance(rollo, dict):
+            rollo = rollo['objeto']
         #   1.- Empresa
         try:
             empresa = pclases.DatosDeLaEmpresa.select()[0]
