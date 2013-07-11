@@ -7,6 +7,7 @@ este formato de etiqueta para geotextiles y geocem.
 """
 
 from informes.geninformes import give_me_the_name_baby, rectangulo, escribe
+from informes.geninformes import el_encogedor_de_fuentes_de_doraemon
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import cm
 import os
@@ -58,28 +59,41 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True):
              "14 uso": "Uso: %s", 
              "15 blanco3": "",      # Separador 
              "16 codigo": "Partida: %d Rollo: %d", 
-             "17 caracteristicas": "Gramaje: %d g/m² Ancho: %.1f m Largo: %d m" 
+             "17 caracteristicas": "Gramaje: %d g/m² Ancho: %s m Largo: %d m" 
             }
     estilos = defaultdict(lambda: ("Helvetica", 9)) # Helvética a 9 por defecto
+    estilos["02 fabricado_por"] = ("Helvetica-Bold", 10)
+    estilos["12 producto"] = ("Helvetica-Bold", 9)
+    estilos["16 codigo"] = ("Helvetica-Bold", 9)
+    estilos["17 caracteristicas"] = ("Helvetica-Bold", 9)
     data = {}
     # Datos de la BD dependientes del rollo
-    #   1.- Empresa
-    try:
-        empresa = pclases.DatosDeLaEmpresa.select()[0]
-        data["02 fabricado_por"] = _data["02 fabricado_por"] % empresa.nombre
-        # PORASQUI: Si hay distribuidor, este texto cambia.
-        data["03 direccion1"] = empresa.direccion + ", " + empresa.cp
-        data["04 direccion2"] = ", ".join((empresa.ciudad, 
-                                           empresa.provincia, 
-                                           empresa.pais))
-        data["05 telefono"] = _data["05 telefono"] % (empresa.telefono, 
-                                                      empresa.email)
-    except IndexError:
-        data["02 fabricado_por"] = ""
-        data["03 direccion1"] = ""
-        data["04 direccion2"] = ""
-        data["05 telefono"] = ""
     for rollo in rollos:
+        #   1.- Empresa
+        try:
+            empresa = pclases.DatosDeLaEmpresa.select()[0]
+            data["02 fabricado_por"] = _data["02 fabricado_por"] % (
+                                                                empresa.nombre)
+            # Si hay distribuidor, este texto cambia.
+            distribuidor = rollo.productoVenta.camposEspecificosRollo.cliente
+            if distribuidor:
+                data["03 direccion1"] = "Distribuido por: %s" % (
+                                                        distribuidor.nombre)
+                data["04 direccion2"] = distribuidor.get_direccion_completa()
+                data["05 telefono"] = _data["05 telefono"] % (
+                        distribuidor.telefono, distribuidor.email)
+            else:   # Sigo con los datos de "propia empresa". Distribuyo yo.
+                data["03 direccion1"] = empresa.direccion + ", " + empresa.cp
+                data["04 direccion2"] = ", ".join((empresa.ciudad, 
+                                                   empresa.provincia, 
+                                                   empresa.pais))
+                data["05 telefono"] = _data["05 telefono"] % (empresa.telefono,
+                                                              empresa.email)
+        except IndexError:
+            data["02 fabricado_por"] = ""
+            data["03 direccion1"] = ""
+            data["04 direccion2"] = ""
+            data["05 telefono"] = ""
     #   2.- Producto
         producto = rollo.productoVenta
         data["06 año_certif"] = "%02d" % producto.annoCertificacion
@@ -91,7 +105,8 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True):
                                                   rollo.numrollo)
         data["17 caracteristicas"] = _data["17 caracteristicas"] % (
             producto.camposEspecificosRollo.gramos, 
-            producto.camposEspecificosRollo.ancho, 
+            float2str(producto.camposEspecificosRollo.ancho, 
+                      autodec = True, separador_decimales = "."), 
             producto.camposEspecificosRollo.metrosLineales)
 
         rectangulo(c, (margen, margen),
@@ -104,8 +119,7 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True):
         lineas = _data.keys()
         lineas.sort()
         # Posición y estilo de la primera línea.
-        c.setFont(*estilos[lineas[0]])
-        tamfuente = estilos[lineas[0]][0]
+        tamfuente = estilos[lineas[0]][1]
         y = alto - logo[1] - 0.1 * cm - tamfuente
         # ¿Cuánto me desplazaré de línea a línea?
         offset_y = (y - margen) / len(lineas)
@@ -117,9 +131,166 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True):
                 dato = _data[linea]
             if dato is None:
                 dato = ""
-            c.drawCentredString((ancho / 2), 
-                                y, 
-                                escribe(dato))
+            c.setFont(*estilos[linea])
+            #c.drawCentredString((ancho / 2), 
+            #                    y, 
+            #                    escribe(dato))
+            el_encogedor_de_fuentes_de_doraemon(c, 
+                                                fuente = estilos[linea][0], 
+                                                tamannoini = estilos[linea][1],
+                                                xini = margen, 
+                                                xfin = ancho - margen, 
+                                                y = y, 
+                                                texto = dato, 
+                                                alineacion = 0)
+            y -= offset_y
+        c.showPage()
+    c.save()
+    return nomarchivo
+
+def helene_laanest(texto):
+    """
+    En honor a la profe de inglés, recibe el texto (solo hay dos o tres 
+    posibles) y lo devuelve en inglés. Es una cutrada, pero los requisitos 
+    han llegado tarde. Muy tarde.
+    """
+    translate_table = defaultdict(lambda: texto)
+    translate_table["Drenaje, filtración, refuerzo y separación"] \
+            = "Drainage, filtration, reinforcement and separation"
+    translate_table["Drenaje, filtración, refuerzo, separación y protección"]\
+            = "Drainage, filtration, reinforcement, separation and protection"
+    translate_table["Fibra de polipropileno virgen embolsada en papel hidrosoluble para su uso como aditivo del hormigón"] \
+            = "100% polypropylene fibers in water-soluble paper bags used like an additive for concrete"
+    return translate_table[texto]
+
+def etiqueta_rollos_norma13_en(rollos, mostrar_marcado = True):
+    """
+    Construye una etiqueta por cada objeto rollo recibido y las devuelve 
+    en un solo PDF. Etiqueta en inglés.
+    """
+    # Voy a tratar de reescribir esto regla en mano a ver si consigo 
+    # cuadrarlo bien en la etiquetadora GEMINI.
+    alto = 12.55 * cm
+    ancho = 8.4 * cm
+
+    # Creo la hoja
+    nomarchivo = os.path.join(gettempdir(),
+        "etiq_norma13_en%s.pdf" % give_me_the_name_baby())
+    c = canvas.Canvas(nomarchivo, pagesize = (ancho, alto))
+    
+    # Medidas:
+    logo = (3.8 * cm, 2.8 * cm)
+    margen = 0.1 * cm
+    marcado = (((ancho - logo[0]) / 2) - margen, (alto - margen - logo[1] - 2))
+    
+    # Imágenes:
+    logo_marcado = os.path.abspath(os.path.join(os.path.dirname(__file__), 
+                                   "..", "imagenes", "CE.png"))
+
+    # Datos fijos:
+    _data = {# "00 logo_marcado": None, 
+             "01 texto_marcado": "0135",    # Fijo
+             "02 fabricado_por": "Manufactured by: %s", 
+             "03 direccion1": None, 
+             "04 direccion2": None, 
+             "05 telefono": "Phone: +34 %s, %s", 
+             "06 año_certif": None, 
+             "07 blanco1": "",      # Separador
+             "08 dni": None, 
+             "09 iso1": "From EN13249:2001 to EN13257:2001",  # Fijo
+             "10 iso2": "EN13265:2001",     # Fijo
+             "11 blanco2": "",      # Separador
+             "12 producto": None, 
+             "13 descripcion": 
+                 "Nonwoven geotextile of 100% polypropylene fibres.", 
+             "14 uso": "Use: %s", 
+             "15 blanco3": "",      # Separador 
+             "16 codigo": "Batch: %d Roll: %d", 
+             "17 caracteristicas": 
+                "Mass per area: %d g/m² Width: %s m Length: %d m" 
+            }
+    estilos = defaultdict(lambda: ("Helvetica", 9)) # Helvética a 9 por defecto
+    estilos["02 fabricado_por"] = ("Helvetica-Bold", 10)
+    estilos["12 producto"] = ("Helvetica-Bold", 9)
+    estilos["16 codigo"] = ("Helvetica-Bold", 9)
+    estilos["17 caracteristicas"] = ("Helvetica-Bold", 9)
+    data = {}
+    # Datos de la BD dependientes del rollo
+    for rollo in rollos:
+        #   1.- Empresa
+        try:
+            empresa = pclases.DatosDeLaEmpresa.select()[0]
+            data["02 fabricado_por"] = _data["02 fabricado_por"] % (
+                                                                empresa.nombre)
+            # Si hay distribuidor, este texto cambia.
+            distribuidor = rollo.productoVenta.camposEspecificosRollo.cliente
+            if distribuidor:
+                data["03 direccion1"] = "Distributed by: %s" % (
+                                                        distribuidor.nombre)
+                data["04 direccion2"] = distribuidor.get_direccion_completa()
+                data["05 telefono"] = _data["05 telefono"] % (
+                        distribuidor.telefono, distribuidor.email)
+            else:   # Sigo con los datos de "propia empresa". Distribuyo yo.
+                data["03 direccion1"] = empresa.direccion + ", " + empresa.cp
+                data["04 direccion2"] = ", ".join((empresa.ciudad, 
+                                                   empresa.provincia, 
+                                                   empresa.pais))
+                data["05 telefono"] = _data["05 telefono"] % (empresa.telefono,
+                                                              empresa.email)
+        except IndexError:
+            data["02 fabricado_por"] = ""
+            data["03 direccion1"] = ""
+            data["04 direccion2"] = ""
+            data["05 telefono"] = ""
+    #   2.- Producto
+        producto = rollo.productoVenta
+        data["06 año_certif"] = "%02d" % producto.annoCertificacion
+        data["08 dni"] = producto.dni
+        data["12 producto"] = producto.nombre
+        data["14 uso"] = _data["14 uso"] % helene_laanest(producto.uso)
+    #   3.- Rollo
+        data["16 codigo"] = _data["16 codigo"] % (rollo.partida.numpartida, 
+                                                  rollo.numrollo)
+        data["17 caracteristicas"] = _data["17 caracteristicas"] % (
+            producto.camposEspecificosRollo.gramos, 
+            float2str(producto.camposEspecificosRollo.ancho, 
+                      autodec = True, separador_decimales = "."), 
+            producto.camposEspecificosRollo.metrosLineales)
+
+        rectangulo(c, (margen, margen),
+                      (ancho - margen, alto - margen))
+        if mostrar_marcado: 
+            c.drawImage(logo_marcado, 
+                        marcado[0], 
+                        marcado[1],
+                        width = logo[0], height = logo[1])
+        lineas = _data.keys()
+        lineas.sort()
+        # Posición y estilo de la primera línea.
+        tamfuente = estilos[lineas[0]][1]
+        y = alto - logo[1] - 0.1 * cm - tamfuente
+        # ¿Cuánto me desplazaré de línea a línea?
+        offset_y = (y - margen) / len(lineas)
+        for linea in lineas:
+            try:
+                dato = data[linea]
+            except KeyError: # Si no está en los valores asignados, busco en 
+                             # los originales. Deben ser datos fijos.
+                dato = _data[linea]
+            if dato is None:
+                dato = ""
+            c.setFont(*estilos[linea])
+            #c.drawCentredString((ancho / 2), 
+            #                    y, 
+            #                    escribe(dato))
+            el_encogedor_de_fuentes_de_doraemon(c, 
+                                                fuente = estilos[linea][0], 
+                                                tamannoini = estilos[linea][1],
+                                                xini = margen, 
+                                                xfin = ancho - margen, 
+                                                y = y, 
+                                                texto = dato, 
+                                                alineacion = 0)
             y -= offset_y
         c.showPage()
     c.save()
@@ -133,4 +304,5 @@ if __name__ == "__main__":
             rollos = [a.rollo for a in p.articulos[:2]]
             break
     abrir_pdf(etiqueta_rollos_norma13(rollos))
+    abrir_pdf(etiqueta_rollos_norma13_en(rollos))
 
