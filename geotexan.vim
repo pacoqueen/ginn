@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 11 julio 2013 at 10:50:51.
+" Created by session.vim 1.5 on 11 julio 2013 at 15:16:43.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -47,7 +47,7 @@ badd +1247 ginn/formularios/clientes.py
 badd +991 ginn/formularios/productos_compra.py
 badd +310 ginn/formularios/productos_de_venta_balas.py
 badd +525 ginn/formularios/recibos.py
-badd +968 ginn/formularios/productos_de_venta_rollos.py
+badd +2207 ginn/formularios/productos_de_venta_rollos.py
 badd +507 ginn/formularios/productos_de_venta_rollos_geocompuestos.py
 badd +578 ginn/formularios/productos_de_venta_especial.py
 badd +1608 ginn/formularios/partes_de_fabricacion_balas.py
@@ -69,7 +69,7 @@ badd +4 bin/ginn.sh
 badd +10 ginn/main.py
 badd +678 ginn/formularios/ventana.py
 badd +2286 ginn/formularios/pedidos_de_venta.py
-badd +1 db/tablas.sql
+badd +1283 db/tablas.sql
 badd +412 ginn/formularios/albaranes_de_salida.py
 badd +1 ginn/formularios/presupuesto.py
 badd +9 ginn/formularios/presupuestos.py
@@ -80,7 +80,7 @@ badd +724 ginn/formularios/facturas_compra.py
 badd +1686 ginn/formularios/utils.py
 badd +648 ginn/formularios/resultados_fibra.py
 badd +812 ginn/formularios/albaranes_de_entrada.py
-badd +1228 ginn/formularios/consulta_ventas.py
+badd +1 ginn/formularios/consulta_ventas.py
 badd +37 ginn/formularios/__init__.py
 badd +685 ginn/formularios/pagares_pagos.py
 badd +509 ginn/formularios/ausencias.py
@@ -122,7 +122,13 @@ wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
-5wincmd k
+wincmd _ | wincmd |
+split
+wincmd _ | wincmd |
+split
+7wincmd k
+wincmd w
+wincmd w
 wincmd w
 wincmd w
 wincmd w
@@ -133,18 +139,22 @@ set nosplitright
 wincmd t
 set winheight=1 winwidth=1
 exe 'vert 1resize ' . ((&columns * 30 + 55) / 111)
-exe '2resize ' . ((&lines * 7 + 22) / 44)
+exe '2resize ' . ((&lines * 1 + 22) / 44)
 exe 'vert 2resize ' . ((&columns * 80 + 55) / 111)
 exe '3resize ' . ((&lines * 1 + 22) / 44)
 exe 'vert 3resize ' . ((&columns * 80 + 55) / 111)
-exe '4resize ' . ((&lines * 1 + 22) / 44)
+exe '4resize ' . ((&lines * 28 + 22) / 44)
 exe 'vert 4resize ' . ((&columns * 80 + 55) / 111)
-exe '5resize ' . ((&lines * 26 + 22) / 44)
+exe '5resize ' . ((&lines * 1 + 22) / 44)
 exe 'vert 5resize ' . ((&columns * 80 + 55) / 111)
 exe '6resize ' . ((&lines * 1 + 22) / 44)
 exe 'vert 6resize ' . ((&columns * 80 + 55) / 111)
 exe '7resize ' . ((&lines * 1 + 22) / 44)
 exe 'vert 7resize ' . ((&columns * 80 + 55) / 111)
+exe '8resize ' . ((&lines * 1 + 22) / 44)
+exe 'vert 8resize ' . ((&columns * 80 + 55) / 111)
+exe '9resize ' . ((&lines * 1 + 22) / 44)
+exe 'vert 9resize ' . ((&columns * 80 + 55) / 111)
 argglobal
 enew
 file __Tag_List__
@@ -166,12 +176,29 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 1171 - ((3 * winheight(0) + 3) / 7)
+let s:l = 1171 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 1171
 normal! 042l
+wincmd w
+argglobal
+edit ginn/informes/geninformes.py
+setlocal fdm=indent
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=99
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+let s:l = 2912 - ((0 * winheight(0) + 0) / 1)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+2912
+normal! 0
 wincmd w
 argglobal
 edit ginn/informes/norma2013.py
@@ -183,110 +210,338 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-19
+20
 silent! normal zo
-40
+41
 silent! normal zo
-40
+41
 silent! normal zo
-40
+41
 silent! normal zo
-40
+41
 silent! normal zo
-40
+41
 silent! normal zo
-40
+41
 silent! normal zo
-44
+45
 silent! normal zo
-44
+45
 silent! normal zo
-68
+74
 silent! normal zo
-72
+78
 silent! normal zo
-72
+80
 silent! normal zo
-72
+80
 silent! normal zo
-72
+80
 silent! normal zo
-72
+80
 silent! normal zo
-72
+80
 silent! normal zo
-72
+80
 silent! normal zo
-75
+80
 silent! normal zo
-75
+80
 silent! normal zo
-75
+80
 silent! normal zo
-75
+80
 silent! normal zo
-75
+80
 silent! normal zo
-75
+80
 silent! normal zo
-75
+82
 silent! normal zo
-75
+84
 silent! normal zo
-75
+85
 silent! normal zo
-75
+85
 silent! normal zo
-83
+85
 silent! normal zo
-90
+85
 silent! normal zo
-90
+85
 silent! normal zo
-90
+85
 silent! normal zo
-90
+85
 silent! normal zo
-90
+85
 silent! normal zo
-90
+85
 silent! normal zo
-90
-silent! normal zo
-90
+88
 silent! normal zo
 90
 silent! normal zo
-97
+92
 silent! normal zo
-97
+92
 silent! normal zo
-99
+92
 silent! normal zo
-100
+92
 silent! normal zo
-100
+92
 silent! normal zo
-112
+92
+silent! normal zo
+92
+silent! normal zo
+95
+silent! normal zo
+95
+silent! normal zo
+95
+silent! normal zo
+95
+silent! normal zo
+95
+silent! normal zo
+95
+silent! normal zo
+95
+silent! normal zo
+95
+silent! normal zo
+95
+silent! normal zo
+95
+silent! normal zo
+102
+silent! normal zo
+109
+silent! normal zo
+109
+silent! normal zo
+109
+silent! normal zo
+109
+silent! normal zo
+109
+silent! normal zo
+109
+silent! normal zo
+109
+silent! normal zo
+109
+silent! normal zo
+109
+silent! normal zo
+111
+silent! normal zo
+113
+silent! normal zo
+117
+silent! normal zo
+117
+silent! normal zo
+119
 silent! normal zo
 120
 silent! normal zo
 120
 silent! normal zo
-120
+133
 silent! normal zo
-120
+145
 silent! normal zo
-129
+145
 silent! normal zo
-131
+145
 silent! normal zo
-let s:l = 99 - ((0 * winheight(0) + 0) / 1)
+145
+silent! normal zo
+145
+silent! normal zo
+145
+silent! normal zo
+145
+silent! normal zo
+145
+silent! normal zo
+158
+silent! normal zo
+165
+silent! normal zo
+167
+silent! normal zo
+169
+silent! normal zo
+173
+silent! normal zo
+194
+silent! normal zo
+194
+silent! normal zo
+194
+silent! normal zo
+194
+silent! normal zo
+194
+silent! normal zo
+194
+silent! normal zo
+198
+silent! normal zo
+198
+silent! normal zo
+228
+silent! normal zo
+231
+silent! normal zo
+232
+silent! normal zo
+234
+silent! normal zo
+234
+silent! normal zo
+234
+silent! normal zo
+234
+silent! normal zo
+234
+silent! normal zo
+234
+silent! normal zo
+234
+silent! normal zo
+234
+silent! normal zo
+234
+silent! normal zo
+234
+silent! normal zo
+234
+silent! normal zo
+234
+silent! normal zo
+238
+silent! normal zo
+239
+silent! normal zo
+239
+silent! normal zo
+239
+silent! normal zo
+239
+silent! normal zo
+239
+silent! normal zo
+239
+silent! normal zo
+239
+silent! normal zo
+239
+silent! normal zo
+239
+silent! normal zo
+242
+silent! normal zo
+244
+silent! normal zo
+246
+silent! normal zo
+246
+silent! normal zo
+246
+silent! normal zo
+246
+silent! normal zo
+246
+silent! normal zo
+246
+silent! normal zo
+246
+silent! normal zo
+249
+silent! normal zo
+249
+silent! normal zo
+249
+silent! normal zo
+249
+silent! normal zo
+249
+silent! normal zo
+249
+silent! normal zo
+249
+silent! normal zo
+249
+silent! normal zo
+249
+silent! normal zo
+249
+silent! normal zo
+263
+silent! normal zo
+263
+silent! normal zo
+263
+silent! normal zo
+263
+silent! normal zo
+263
+silent! normal zo
+263
+silent! normal zo
+263
+silent! normal zo
+263
+silent! normal zo
+263
+silent! normal zo
+265
+silent! normal zo
+267
+silent! normal zo
+271
+silent! normal zo
+271
+silent! normal zo
+273
+silent! normal zo
+274
+silent! normal zo
+274
+silent! normal zo
+287
+silent! normal zo
+299
+silent! normal zo
+299
+silent! normal zo
+299
+silent! normal zo
+299
+silent! normal zo
+299
+silent! normal zo
+299
+silent! normal zo
+299
+silent! normal zo
+299
+silent! normal zo
+313
+silent! normal zo
+315
+silent! normal zo
+let s:l = 320 - ((27 * winheight(0) + 14) / 28)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-99
-normal! 026l
+320
+normal! 0
 wincmd w
 argglobal
 edit db/tablas.sql
@@ -298,120 +553,173 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-345
+408
 silent! normal zo
-493
+498
 silent! normal zo
-583
+1123
 silent! normal zo
-1939
+1196
 silent! normal zo
-2129
+1199
 silent! normal zo
-2327
+1199
 silent! normal zo
-2504
+1199
 silent! normal zo
-2562
+1202
 silent! normal zo
-3089
+1202
 silent! normal zo
-3404
+1202
 silent! normal zo
-3404
+1209
 silent! normal zo
-3404
+1261
 silent! normal zo
-3404
+1261
 silent! normal zo
-3404
+1261
 silent! normal zo
-3404
+1261
 silent! normal zo
-3404
+1261
 silent! normal zo
-3417
+1331
 silent! normal zo
-3423
+1385
+silent! normal zo
+1421
+silent! normal zo
+1943
+silent! normal zo
+2133
+silent! normal zo
+2331
+silent! normal zo
+2508
+silent! normal zo
+2566
+silent! normal zo
+3093
+silent! normal zo
+3408
+silent! normal zo
+3408
+silent! normal zo
+3408
+silent! normal zo
+3408
+silent! normal zo
+3408
+silent! normal zo
+3408
+silent! normal zo
+3408
+silent! normal zo
+3421
 silent! normal zo
 3427
 silent! normal zo
-3493
+3431
 silent! normal zo
-3493
+3450
 silent! normal zo
-3493
+3497
 silent! normal zo
-3493
+3497
 silent! normal zo
-3493
+3497
 silent! normal zo
-3493
+3497
 silent! normal zo
-3493
+3497
 silent! normal zo
-3493
+3497
 silent! normal zo
-3498
+3497
 silent! normal zo
-3505
+3497
 silent! normal zo
-3505
+3502
 silent! normal zo
-3505
+3509
 silent! normal zo
-3505
+3509
 silent! normal zo
-3505
+3509
 silent! normal zo
-3505
+3509
 silent! normal zo
-3505
+3509
 silent! normal zo
-3505
+3509
 silent! normal zo
-3520
+3509
 silent! normal zo
-3520
+3509
 silent! normal zo
-3520
+3524
 silent! normal zo
-3520
+3524
 silent! normal zo
-3520
+3524
 silent! normal zo
-3520
+3524
 silent! normal zo
-3520
+3524
 silent! normal zo
-3520
+3524
 silent! normal zo
-3520
+3524
 silent! normal zo
-3528
+3524
 silent! normal zo
-3528
+3524
 silent! normal zo
-3528
+3532
 silent! normal zo
-3528
+3532
 silent! normal zo
-3528
+3532
 silent! normal zo
-3528
+3532
 silent! normal zo
-3528
+3532
 silent! normal zo
-3528
+3532
 silent! normal zo
-3528
+3532
 silent! normal zo
-let s:l = 525 - ((0 * winheight(0) + 0) / 1)
+3532
+silent! normal zo
+3532
+silent! normal zo
+let s:l = 1287 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-525
-normal! 040l
+1287
+normal! 025l
+wincmd w
+argglobal
+edit ginn/formularios/partes_de_fabricacion_rollos.py
+setlocal fdm=indent
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=99
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+109
+silent! normal zo
+let s:l = 121 - ((0 * winheight(0) + 0) / 1)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+121
+normal! 049l
 wincmd w
 argglobal
 edit ginn/framework/pclases/__init__.py
@@ -1203,7 +1511,7 @@ silent! normal zo
 silent! normal zo
 19738
 silent! normal zo
-let s:l = 3119 - ((16 * winheight(0) + 13) / 26)
+let s:l = 3119 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -1530,20 +1838,24 @@ normal! zt
 2291
 normal! 044l
 wincmd w
-5wincmd w
+4wincmd w
 exe 'vert 1resize ' . ((&columns * 30 + 55) / 111)
-exe '2resize ' . ((&lines * 7 + 22) / 44)
+exe '2resize ' . ((&lines * 1 + 22) / 44)
 exe 'vert 2resize ' . ((&columns * 80 + 55) / 111)
 exe '3resize ' . ((&lines * 1 + 22) / 44)
 exe 'vert 3resize ' . ((&columns * 80 + 55) / 111)
-exe '4resize ' . ((&lines * 1 + 22) / 44)
+exe '4resize ' . ((&lines * 28 + 22) / 44)
 exe 'vert 4resize ' . ((&columns * 80 + 55) / 111)
-exe '5resize ' . ((&lines * 26 + 22) / 44)
+exe '5resize ' . ((&lines * 1 + 22) / 44)
 exe 'vert 5resize ' . ((&columns * 80 + 55) / 111)
 exe '6resize ' . ((&lines * 1 + 22) / 44)
 exe 'vert 6resize ' . ((&columns * 80 + 55) / 111)
 exe '7resize ' . ((&lines * 1 + 22) / 44)
 exe 'vert 7resize ' . ((&columns * 80 + 55) / 111)
+exe '8resize ' . ((&lines * 1 + 22) / 44)
+exe 'vert 8resize ' . ((&columns * 80 + 55) / 111)
+exe '9resize ' . ((&lines * 1 + 22) / 44)
+exe 'vert 9resize ' . ((&columns * 80 + 55) / 111)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
@@ -1558,6 +1870,6 @@ let &so = s:so_save | let &siso = s:siso_save
 doautoall SessionLoadPost
 unlet SessionLoad
 tabnext 1
-5wincmd w
+4wincmd w
 
 " vim: ft=vim ro nowrap smc=128

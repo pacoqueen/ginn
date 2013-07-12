@@ -275,9 +275,9 @@ class ProductosDeVentaRollos(Ventana):
             cliente_objeto = None
         condicion = (condicion and cliente_objeto == cliente)
         condicion = (condicion and 
-            producto.dni == self.wids['e_dni'].get_text())
+            producto.dni == self.wids['cbe_dni'].child.get_text())
         condicion = (condicion and 
-            producto.uso == self.wids['e_uso'].get_text())
+            producto.uso == self.wids['cbe_uso'].child.get_text())
         if self.wids['ch_no_anno_cert'].get_active():
             condicion = (condicion and producto.annoCertificacion == None)
         else:
@@ -538,6 +538,18 @@ class ProductosDeVentaRollos(Ventana):
             cliente = 0
         utils.combo_set_from_db(self.wids['cbe_cliente'], cliente)
         # Nuevos campos de etiquetas norma13:
+        dnises = utils.unificar(
+                [p.dni for p in pclases.ProductoVenta.select()
+                    if p.es_rollo() and p.dni != None and p.dni != ""])
+        dnises.sort()
+        dnises = enumerate(dnises)
+        utils.rellenar_lista(self.wids['cbe_dni'], dnises)
+        usos = utils.unificar(
+                [p.uso for p in pclases.ProductoVenta.select()
+                    if p.es_rollo() and p.uso != None and p.uso != ""])
+        usos.sort()
+        usos = enumerate(usos)
+        utils.rellenar_lista(self.wids['cbe_uso'], usos)
         if self.objeto.annoCertificacion is None:
             self.wids['sp_anno_certificacion'].set_text("")
             self.wids['ch_no_anno_cert'].set_active(True)
@@ -546,8 +558,8 @@ class ProductosDeVentaRollos(Ventana):
                     self.objeto.annoCertificacion)
             utils.show_leading_zeros(self.wids['sp_anno_certificacion'])
             self.wids['ch_no_anno_cert'].set_active(False)
-        self.wids['e_dni'].set_text(producto.dni)
-        self.wids['e_uso'].set_text(producto.uso)
+        self.wids['cbe_dni'].child.set_text(producto.dni)
+        self.wids['cbe_uso'].child.set_text(producto.uso)
         # Datos no modificables:
         self.wids['e_idproducto'].set_text(`producto.id`)
         self.muestra_stock()
@@ -993,8 +1005,8 @@ class ProductosDeVentaRollos(Ventana):
             cliente = None
         producto.camposEspecificosRollo.clienteID = cliente
         self.guardar_marcado_ce()
-        producto.dni = self.wids['e_dni'].get_text()
-        producto.uso = self.wids['e_uso'].get_text()
+        producto.dni = self.wids['cbe_dni'].child.get_text()
+        producto.uso = self.wids['cbe_uso'].child.get_text()
         if self.wids['ch_no_anno_cert'].get_active():
             producto.annoCertificacion = None
         else:

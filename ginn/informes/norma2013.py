@@ -100,10 +100,16 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True):
             data["05 telefono"] = ""
     #   2.- Producto
         producto = rollo.productoVenta
-        data["06 año_certif"] = "%02d" % producto.annoCertificacion
+        if producto.annoCertificacion != None:
+            data["06 año_certif"] = "%02d" % producto.annoCertificacion
+        else:
+            data["06 año_certif"] = ""
         data["08 dni"] = producto.dni
         data["12 producto"] = producto.nombre
-        data["14 uso"] = _data["14 uso"] % producto.uso
+        if producto.uso:
+            data["14 uso"] = _data["14 uso"] % producto.uso
+        else:
+            data["14 uso"] = ""
     #   3.- Rollo
         data["16 codigo"] = _data["16 codigo"] % (rollo.partida.numpartida, 
                                                   rollo.numrollo)
@@ -254,10 +260,16 @@ def etiqueta_rollos_norma13_en(rollos, mostrar_marcado = True):
             data["05 telefono"] = ""
     #   2.- Producto
         producto = rollo.productoVenta
-        data["06 año_certif"] = "%02d" % producto.annoCertificacion
+        if producto.annoCertificacion != None:
+            data["06 año_certif"] = "%02d" % producto.annoCertificacion
+        else:
+            data["06 año_certif"] = ""
         data["08 dni"] = producto.dni
         data["12 producto"] = producto.nombre
-        data["14 uso"] = _data["14 uso"] % helene_laanest(producto.uso)
+        if producto.uso:
+            data["14 uso"] = _data["14 uso"] % helene_laanest(producto.uso)
+        else:
+            data["14 uso"] = ""
     #   3.- Rollo
         data["16 codigo"] = _data["16 codigo"] % (rollo.partida.numpartida, 
                                                   rollo.numrollo)

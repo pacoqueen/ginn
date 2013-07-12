@@ -425,44 +425,6 @@ Será eliminado en próximas versiones.</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkEntry" id="e_dni">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="invisible_char">•</property>
-                <property name="invisible_char_set">True</property>
-                <property name="primary_icon_activatable">False</property>
-                <property name="secondary_icon_activatable">False</property>
-                <property name="primary_icon_sensitive">True</property>
-                <property name="secondary_icon_sensitive">True</property>
-              </widget>
-              <packing>
-                <property name="left_attach">3</property>
-                <property name="right_attach">4</property>
-                <property name="top_attach">6</property>
-                <property name="bottom_attach">7</property>
-                <property name="y_options"/>
-              </packing>
-            </child>
-            <child>
-              <widget class="GtkEntry" id="e_uso">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="invisible_char">•</property>
-                <property name="invisible_char_set">True</property>
-                <property name="primary_icon_activatable">False</property>
-                <property name="secondary_icon_activatable">False</property>
-                <property name="primary_icon_sensitive">True</property>
-                <property name="secondary_icon_sensitive">True</property>
-              </widget>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="right_attach">4</property>
-                <property name="top_attach">7</property>
-                <property name="bottom_attach">8</property>
-                <property name="y_options"/>
-              </packing>
-            </child>
-            <child>
               <widget class="GtkHBox" id="hbox8">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -514,7 +476,53 @@ Será eliminado en próximas versiones.</property>
               </packing>
             </child>
             <child>
+              <widget class="GtkComboBoxEntry" id="cbe_uso">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child internal-child="entry">
+                  <widget class="GtkEntry" id="comboboxentry-entry4">
+                    <property name="can_focus">True</property>
+                    <property name="invisible_char">•</property>
+                    <property name="primary_icon_activatable">False</property>
+                    <property name="secondary_icon_activatable">False</property>
+                    <property name="primary_icon_sensitive">True</property>
+                    <property name="secondary_icon_sensitive">True</property>
+                  </widget>
+                </child>
+              </widget>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">4</property>
+                <property name="top_attach">7</property>
+                <property name="bottom_attach">8</property>
+                <property name="y_options">GTK_EXPAND</property>
+              </packing>
+            </child>
+            <child>
               <placeholder/>
+            </child>
+            <child>
+              <widget class="GtkComboBoxEntry" id="cbe_dni">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child internal-child="entry">
+                  <widget class="GtkEntry" id="comboboxentry-entry5">
+                    <property name="can_focus">True</property>
+                    <property name="invisible_char">•</property>
+                    <property name="primary_icon_activatable">False</property>
+                    <property name="secondary_icon_activatable">False</property>
+                    <property name="primary_icon_sensitive">True</property>
+                    <property name="secondary_icon_sensitive">True</property>
+                  </widget>
+                </child>
+              </widget>
+              <packing>
+                <property name="left_attach">3</property>
+                <property name="right_attach">4</property>
+                <property name="top_attach">6</property>
+                <property name="bottom_attach">7</property>
+                <property name="y_options">GTK_EXPAND</property>
+              </packing>
             </child>
           </widget>
           <packing>
