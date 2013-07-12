@@ -722,6 +722,8 @@ class ProductosDeVentaRollos(Ventana):
         """
         Escribe el stock del producto en el widget.
         """
+        # PLAN: ¿Y si hacemos esto asíncrono y que se muestre unos segundos 
+        # mas tarde pero que mientras la ventana siga respondiendo?
         producto = self.objeto
         from ventana_progreso import VentanaProgreso
         vpro = VentanaProgreso(padre = self.wids['ventana'])
@@ -814,7 +816,8 @@ class ProductosDeVentaRollos(Ventana):
                                                 rollosPorCamion = 0, 
                                                 c = False, 
                                                 modeloEtiqueta = None)
-        linea = pclases.LineaDeProduccion.select(pclases.LineaDeProduccion.q.nombre.contains('geotextiles'))[0] 
+        linea = pclases.LineaDeProduccion.select(
+                pclases.LineaDeProduccion.q.nombre.contains('geotextiles'))[0] 
         producto = pclases.ProductoVenta(lineaDeProduccion = linea,
                                          camposEspecificosBala = None,
                                          camposEspecificosRollo = campos, 
@@ -1097,7 +1100,8 @@ class ProductosDeVentaRollos(Ventana):
         ops = [(c.id, c.nombre) for c in campos]
         return utils.dialogo_combo('SELECCIONE CAMPO', 
                                    'Seleccione un campo al que camiar el valor o eliminar.\nSi desea cambiar el nombre del campo debe eliminarlo\ny crear uno nuevo con el nuevo nombre.\n',
-                                   ops)
+                                   ops, 
+                                   padre = self.wids['ventana'])
 
     def drop_campoesp(self, w):
         producto = self.objeto

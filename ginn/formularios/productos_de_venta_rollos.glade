@@ -615,6 +615,7 @@ Será eliminado en próximas versiones.</property>
                                 <property name="can_focus">False</property>
                                 <property name="n_rows">6</property>
                                 <property name="n_columns">4</property>
+                                <property name="column_spacing">2</property>
                                 <child>
                                   <widget class="GtkEntry" id="e_ficha_fabricacion">
                                     <property name="visible">True</property>

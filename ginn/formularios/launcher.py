@@ -47,7 +47,7 @@ def guess_interprete():
             break
     return res
 
-def run(modulo, clase, usuario, fconfig):
+def run(modulo, clase, usuario, fconfig, obj_puid = None):
     """
     Esto va a recibir cuatro parámetros:
     * fichero
@@ -79,14 +79,21 @@ def run(modulo, clase, usuario, fconfig):
         if not isinstance(usuario, str):
             usuario = usuario.usuario   # Debe ser instancia de pclases
         comando += " -u %s -c %s" % (usuario, fconfig) 
+        if obj_puid:
+            comando += " -o %s" % obj_puid
         # print comando
         subprocess.Popen([comando] + args, shell = True)
     except Exception, msg:     # fallback @UnusedVariable
-        # Esto debería ir al logger o algo:
+        # TODO: Esto debería ir al logger o algo:
         #print "launcher.py:", msg
         exec "import %s" % modulo
         v = eval('%s.%s' % (modulo, clase))
-        v(usuario = usuario)
+        if obj_puid:
+            from framework import pclases
+            objeto = pclases.getObjetoPUID(puid)
+            v(usuario = usuario, objeto = objeto)
+        else:
+            v(usuario = usuario)
     
 
 def main():
@@ -100,7 +107,7 @@ def main():
     usuario, contrasenna, modulo, clase, fconfig, verbose, debug, obj_puid = parse_params()  # @UnusedVariable
     login = Autenticacion(usuario, contrasenna)
     if login.loginvalido():
-        run(modulo, clase, usuario, fconfig)
+        run(modulo, clase, usuario, fconfig, obj_puid)
     else:
         sys.exit(1)
 

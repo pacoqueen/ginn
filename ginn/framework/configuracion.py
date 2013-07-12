@@ -494,10 +494,13 @@ def parse_params():
                             # saberlo según la tabla de ventanas, o me tiro a 
                             # por un grep? ¿Y en Windows, que no hay grep, qué?
                             # ¿Parseo el .py completo hasta encontrar class *?
+        # Objeto a abrir en la ventana. Si no se especifica ventana, no tiene 
+        # sentido.
+        puid = opts.puid
     else:
-        modulo, clase = None, None
+        modulo, clase, puid = None, None, None
     # Resto de parámetros
     verbose = opts.verbose
     debug = opts.debug
-    return user, password, modulo, clase, config, verbose, debug, opts.puid
+    return user, password, modulo, clase, config, verbose, debug, puid
 
