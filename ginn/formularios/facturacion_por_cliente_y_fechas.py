@@ -260,7 +260,8 @@ class FacturacionPorClienteYFechas(Ventana):
         el que se muestra por defecto).
         """
         self.usuario = usuario
-        Ventana.__init__(self, 'facturacion_por_cliente_y_fechas.glade', objeto, usuario = usuario)
+        Ventana.__init__(self, 'facturacion_por_cliente_y_fechas.glade', 
+                         objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_imprimir/clicked': self.imprimir, 
                        'cbe_cliente/changed': self.cambiar_cliente, 
@@ -392,6 +393,25 @@ class FacturacionPorClienteYFechas(Ventana):
             self.wids['tv_cliente'].get_column(2))
         self.wids['tv_cliente'].connect("row-activated", self.abrir_factura)
         self.colorear(self.wids['tv_cliente'])
+        cols = (("Suplemento", 'gobject.TYPE_STRING', 
+                    False, True, False, None), 
+                ("NIF", 'gobject.TYPE_STRING', 
+                    False, True, True, None), 
+                ("Código Cesce", 'gobject.TYPE_STRING', 
+                    False, True, False, None), 
+                ("Fecha factura", 'gobject.TYPE_STRING', 
+                    False, True, False, None), 
+                ("Importe", 'gobject.TYPE_FLOAT', 
+                    False, True, False, None), 
+                ("Forma de pago", 'gobject.TYPE_STRING', 
+                    False, True, False, None), 
+                ("Vencimiento", 'gobject.TYPE_STRING', 
+                    False, True, False, None), 
+                ("Número factura", 'gobject.TYPE_STRING', 
+                    False, True, False, None), 
+                ('ID', 'gobject.TYPE_INT64', False, False, False, None))
+        utils.preparar_listview(self.wids['tv_cesce'], cols)
+        self.wids['tv_cesce'].connect("row-activated", self.abrir_factura)
         hoy = mx.DateTime.localtime()
         fini = mx.DateTime.DateTimeFrom(day = 1, 
                                         month = hoy.month, 
@@ -647,6 +667,20 @@ class FacturacionPorClienteYFechas(Ventana):
                          total_otros, pendiente_otros, cobrado_otros, 
                          total_vencimientos, total_cobrado_strict, 
                          nodos_clientes):
+        # Nueva consulta CESCE (jpedrero)
+        if f.cliente.riesgoAsegurado != -1:
+            model = self.wids['tv_cesce'].get_model()
+            for v in f.vencimientosCobro:
+                model.append(("", 
+                              f.cliente.cif, 
+                              "", 
+                              utils.str_fecha(f.fecha), 
+                              f.importeTotal, 
+                              v.observaciones, 
+                              utils.str_fecha(v.fecha), 
+                              f.numfactura, 
+                              f.id))
+        # Los otros dos TreeViews, más complejos:
         fecha = f.fecha
         mes = utils.corregir_nombres_fecha(fecha.strftime("%B '%y"))
         primero_mes = mx.DateTime.DateTimeFrom(day = 1, 
