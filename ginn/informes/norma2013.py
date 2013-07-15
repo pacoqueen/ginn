@@ -48,7 +48,7 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True, lang = "es"):
              "02 fabricado_por": "Fabricado por: %s", 
              "03 direccion1": None, 
              "04 direccion2": None, 
-             "05 telefono": "Tfno: +34 %s, %s", 
+             "05 telefono": "Tfno: %s, %s", 
              "06 año_certif": None, 
              "07 blanco1": "",      # Separador
              "08 dni": None, 
@@ -100,7 +100,11 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True, lang = "es"):
             # Si hay distribuidor, este texto cambia.
             distribuidor = productoVenta.camposEspecificosRollo.cliente
             if distribuidor:
-                data["03 direccion1"] = "Distribuido por: %s" % (
+                if lang == "en":
+                    data["03 direccion1"] = helene_laanest(
+                            "Distribuido por: %s") % (distribuidor.nombre)
+                else:
+                    data["03 direccion1"] = "Distribuido por: %s" % (
                                                         distribuidor.nombre)
                 data["04 direccion2"] = distribuidor.get_direccion_completa()
                 data["05 telefono"] = _data["05 telefono"] % (
@@ -196,7 +200,8 @@ def helene_laanest(texto):
     translate_table["Fibra de polipropileno virgen embolsada en papel hidrosoluble para su uso como aditivo del hormigón"] \
             = "100% polypropylene fibers in water-soluble paper bags used like an additive for concrete"
     translate_table["Fabricado por: %s"] = "Manufactured by: %s"
-    translate_table["Tfno: +34 %s, %s"] = "Phone: +34 %s, %s"
+    translate_table["Distribuido por: %s"] = "Distributed by: %s"
+    translate_table["Tfno: %s, %s"] = "Phone: %s, %s"
     translate_table["De EN13249:2001 a EN13257:2001"] = "From EN13249:2001 to EN13257:2001"
     translate_table["Geotextil no tejido de polipropileno 100% virgen"] = "Nonwoven geotextile of 100% polypropylene fibres."
     translate_table["Uso: %s"] = "Use: %s"

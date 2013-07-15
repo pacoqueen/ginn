@@ -110,7 +110,7 @@
                 <child>
                   <widget class="GtkLabel" id="label7">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">&lt;i&gt;Método de cálculo de peso de los geotextiles -columna "kg prod. (real)"-:&lt;/i&gt;</property>
+                    <property name="label" translatable="yes">&lt;i&gt;Método de cálculo de peso de los geotextiles --columna "kg prod. (real)"--:&lt;/i&gt;</property>
                     <property name="use_markup">True</property>
                   </widget>
                   <packing>
