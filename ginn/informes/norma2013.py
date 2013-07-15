@@ -77,8 +77,14 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True, lang = "es"):
         # 0.- ¿En qué formato viene? Si es el antiguo (datos en diccionario) 
         #     me quedo con el objeto de pclases en sí.
         if isinstance(rollo, dict):
-            productoVenta = rollo['productoVenta']
-            if not productoVenta and rollo['objeto']:
+            try:
+                productoVenta = rollo['productoVenta']
+            except KeyError:
+                # Si no me lo mandan en el diccionario, tiene que traer 
+                # el objeto rollo. Los partes mandan producto en dicccionario 
+                # porque a veces se genera etiqueta antes de crear el objeto 
+                # en la BD. Si viene de la consulta del listado de rollos, 
+                # como el rollo ya existe, me viene en el objeto toda la info.
                 productoVenta = rollo['objeto'].productoVenta
             numpartida = utils.parse_numero(rollo['partida'])
             numrollo = int(rollo['nrollo'])
