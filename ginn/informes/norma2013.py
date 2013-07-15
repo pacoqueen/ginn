@@ -78,6 +78,8 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True, lang = "es"):
         #     me quedo con el objeto de pclases en sí.
         if isinstance(rollo, dict):
             productoVenta = rollo['productoVenta']
+            if not productoVenta and rollo['objeto']:
+                productoVenta = rollo['objeto'].productoVenta
             numpartida = utils.parse_numero(rollo['partida'])
             numrollo = int(rollo['nrollo'])
         else:
