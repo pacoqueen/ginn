@@ -1928,7 +1928,7 @@ class Silo(SQLObject, PRPCTOO):
                     try:
                         stock_almacen_ppal = [s for s 
                                         in carga.productoCompra.stocksAlmacen
-                                        if s.almacen.ppal][0]
+                                        if s.almacen.principal][0]
                     except IndexError:
                         stock_almacen_ppal = StockAlmacen(
                                 almacen = Almacen.get_almacen_principal(), 
