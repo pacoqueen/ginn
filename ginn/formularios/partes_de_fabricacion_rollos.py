@@ -69,6 +69,7 @@
 
 from ventana import Ventana
 from formularios import utils
+from formularios import reports
 import pygtk
 pygtk.require('2.0')
 import gtk, time 
@@ -183,7 +184,6 @@ def imprimir_etiqueta_de_rollo_defectuoso(rollo):
     Imprime una etiqueta de rollo defectuoso correspondiente 
     al objeto rollo/rolloDefectuoso recibido.
     """
-    from formularios import reports
     producto = rollo.productoVenta
     if isinstance(rollo, pclases.RolloDefectuoso):
         elemento = {'descripcion': producto.nombre,
@@ -2756,7 +2756,6 @@ class PartesDeFabricacionRollos(Ventana):
     
     def imprimir(self, boton):
         self.guardar(None)
-        from formularios import reports
         parte = self.objeto
         ws = ('e_fecha', 'e_grsm2', 'sp_merma', 'e_partida', 'e_articulo', 
               'e_ancho', 'e_long_rollo', 'e_hora_ini', 'e_hora_fin', 
@@ -2848,7 +2847,6 @@ class PartesDeFabricacionRollos(Ventana):
             rollos_defecto.append(model[path][1])
             rollos_defecto.sort()
         rollos_defecto = ', '.join(rollos_defecto)
-        from formularios import reports
         entrada, mostrar_marcado = self._dialogo_entrada(
             titulo = 'ETIQUETAS', 
             texto = "Introduzca el número de rollo o el rango (usando '-') "
@@ -3143,7 +3141,10 @@ class PartesDeFabricacionRollos(Ventana):
         ventana_pesaje = crear_ventana_pesaje(self,  # @UnusedVariable
                             padre = self.wids['ventana'], 
                             rollo = rollo, 
-                            objeto_ventana_parte = self)
+                            objeto_ventana_parte = self, 
+                            debug = self.usuario 
+                                        and self.usuario.usuario == "admin" 
+                                        and pclases.DEBUG)
 
     def consumir_manual(self, boton):
         """
@@ -3502,7 +3503,7 @@ def cambiar_marcado_ce(ch_defectuoso, ch_marcado, e_numrollo):
         codigo_proximo_rollo = pclases.Rollo._queryOne("SELECT ultimo_codigo_rollo_mas_uno();")[0]
         e_numrollo.set_text(codigo_proximo_rollo)
 
-def get_puerto_serie():
+def get_puerto_serie(debug = False):
     """
     Devuelve un objeto de pyserial con el puerto correspondiente abierto. 
     None si no se pudo abrir.
@@ -3519,12 +3520,18 @@ def get_puerto_serie():
                            padre = None)
         return None
     if os.name == "posix":
-        for numpuerto in range(16):
-            try:
-                com = serial.Serial("/dev/ttyS%d" % numpuerto)
-                break
-            except:
-                com = None
+        if debug:
+            netcat = "x-terminal-emulator -e 'nc -lv 2666'"
+            os.system(netcat)
+            time.sleep(3)
+            com = serial.serial_for_url("socket://localhost:2666")
+        else:
+            for numpuerto in range(16):
+                try:
+                    com = serial.Serial("/dev/ttyS%d" % numpuerto)
+                    break
+                except:
+                    com = None
     else:
         for numpuerto in [2] + range(3, 16) + [1]:
             try:
@@ -3562,7 +3569,6 @@ def imprimir_etiqueta(articulo, marcado_ce, ventana_parte, defectuoso = False):
     else:
         if (articulo.rollo.numrollo > ventana_parte.ultima_etiqueta 
             or ventana_parte.ultima_etiqueta == None):
-            from formularios import reports
             rollos = []
             producto = articulo.productoVenta
             try:
@@ -3706,15 +3712,16 @@ def get_proximo_codigo_a_crear(e_numrollo):
         print 'partes_de_fabricacion_rollos::get_proximo_codigo_a_crear -> No se pudo determinar el tipo de rollo a crear. Creo uno "normal": %s.' % (codigo_proximo_rollo)
     return codigo_proximo_rollo
 
-def crear_ventana_pesaje(ventana_parte, padre = None, rollo = None, objeto_ventana_parte = None):
+def crear_ventana_pesaje(ventana_parte, padre = None, rollo = None, 
+                         objeto_ventana_parte = None, debug = False):
     """
     Crea una ventana de pesaje.
     Necesita python-serial.
-    Se usa "COM1" como puerto si el sistema es MS-Windows. "/dev/ttyS0" o "/dev/ttyS1" (por este orden) 
-    si el sistema es GNU/Linux.
+    Se usa "COM1" como puerto si el sistema es MS-Windows. "/dev/ttyS0" o 
+    "/dev/ttyS1" (por este orden) si el sistema es GNU/Linux.
     """
     import gobject
-    com = get_puerto_serie()
+    com = get_puerto_serie(debug)
     # DEBUG: print com
     if com != None:
         (ventana, 

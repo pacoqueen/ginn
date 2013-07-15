@@ -15,6 +15,7 @@ from tempfile import gettempdir
 from formularios.utils import float2str
 from framework import pclases
 from collections import defaultdict
+from formularios import utils
 
 def etiqueta_rollos_norma13(rollos, mostrar_marcado = True):
     """
@@ -72,14 +73,20 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True):
         # 0.- ¿En qué formato viene? Si es el antiguo (datos en diccionario) 
         #     me quedo con el objeto de pclases en sí.
         if isinstance(rollo, dict):
-            rollo = rollo['objeto']
+            productoVenta = rollo['productoVenta']
+            numpartida = utils.parse_numero(rollo['partida'])
+            numrollo = int(rollo['nrollo'])
+        else:
+            productoVenta = rollo.productoVenta
+            numpartida = rollo.partida.numpartida
+            numrollo = rollo.numrollo
         #   1.- Empresa
         try:
             empresa = pclases.DatosDeLaEmpresa.select()[0]
             data["02 fabricado_por"] = _data["02 fabricado_por"] % (
                                                                 empresa.nombre)
             # Si hay distribuidor, este texto cambia.
-            distribuidor = rollo.productoVenta.camposEspecificosRollo.cliente
+            distribuidor = productoVenta.camposEspecificosRollo.cliente
             if distribuidor:
                 data["03 direccion1"] = "Distribuido por: %s" % (
                                                         distribuidor.nombre)
@@ -99,7 +106,7 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True):
             data["04 direccion2"] = ""
             data["05 telefono"] = ""
     #   2.- Producto
-        producto = rollo.productoVenta
+        producto = productoVenta
         if producto.annoCertificacion != None:
             data["06 año_certif"] = "%02d" % producto.annoCertificacion
         else:
@@ -111,8 +118,8 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True):
         else:
             data["14 uso"] = ""
     #   3.- Rollo
-        data["16 codigo"] = _data["16 codigo"] % (rollo.partida.numpartida, 
-                                                  rollo.numrollo)
+        data["16 codigo"] = _data["16 codigo"] % (numpartida, 
+                                                  numrollo)
         data["17 caracteristicas"] = _data["17 caracteristicas"] % (
             producto.camposEspecificosRollo.gramos, 
             float2str(producto.camposEspecificosRollo.ancho, 
@@ -161,11 +168,11 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True):
     return nomarchivo
 
 def helene_laanest(texto):
-    """
-    En honor a la profe de inglés, recibe el texto (solo hay dos o tres 
-    posibles) y lo devuelve en inglés. Es una cutrada, pero los requisitos 
-    han llegado tarde. Muy tarde.
-    """
+    # En honor a la profe de inglés, 
+    """recibe el texto (solo hay dos o tres 
+    posibles) y lo devuelve en inglés.""" 
+    # Es una cutrada, pero los requisitos 
+    # han llegado tarde. Muy tarde.
     translate_table = defaultdict(lambda: texto)
     translate_table["Drenaje, filtración, refuerzo y separación"] \
             = "Drainage, filtration, reinforcement and separation"
@@ -232,7 +239,13 @@ def etiqueta_rollos_norma13_en(rollos, mostrar_marcado = True):
         # 0.- ¿En qué formato viene? Si es el antiguo (datos en diccionario) 
         #     me quedo con el objeto de pclases en sí.
         if isinstance(rollo, dict):
-            rollo = rollo['objeto']
+            productoVenta = rollo['productoVenta']
+            numpartida = utils.parse_numero(rollo['partida'])
+            numrollo = int(rollo['nrollo'])
+        else:
+            productoVenta = rollo.productoVenta
+            numpartida = rollo.partida.numpartida
+            numrollo = rollo.numrollo
         #   1.- Empresa
         try:
             empresa = pclases.DatosDeLaEmpresa.select()[0]
@@ -259,7 +272,7 @@ def etiqueta_rollos_norma13_en(rollos, mostrar_marcado = True):
             data["04 direccion2"] = ""
             data["05 telefono"] = ""
     #   2.- Producto
-        producto = rollo.productoVenta
+        producto = productoVenta
         if producto.annoCertificacion != None:
             data["06 año_certif"] = "%02d" % producto.annoCertificacion
         else:
@@ -271,8 +284,8 @@ def etiqueta_rollos_norma13_en(rollos, mostrar_marcado = True):
         else:
             data["14 uso"] = ""
     #   3.- Rollo
-        data["16 codigo"] = _data["16 codigo"] % (rollo.partida.numpartida, 
-                                                  rollo.numrollo)
+        data["16 codigo"] = _data["16 codigo"] % (numpartida, 
+                                                  numrollo)
         data["17 caracteristicas"] = _data["17 caracteristicas"] % (
             producto.camposEspecificosRollo.gramos, 
             float2str(producto.camposEspecificosRollo.ancho, 
