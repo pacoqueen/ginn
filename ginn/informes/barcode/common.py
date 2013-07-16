@@ -161,12 +161,12 @@ class Barcode(Flowable):
         Necesita los archivos de fuentes usados en EANBarCode.
         """
         import Image, ImageFont, ImageDraw
-        from informes.barcode.EANBarCode import decodeFontFile, courB08_pil, courB08_pbm
+        from informes.barcode.EANBarCode import decodeFontFile, courB08_pil, courB08_pbm, FDEST_PIL, FDEST_PBM
         
         # Fuente:
-        decodeFontFile(courB08_pil ,"courB08.pil")
-        decodeFontFile(courB08_pbm ,"courB08.pbm")
-        font = ImageFont.load("courB08.pil")
+        decodeFontFile(courB08_pil, FDEST_PIL)
+        decodeFontFile(courB08_pbm, FDEST_PBM)
+        font = ImageFont.load(FDEST_PIL)
         # Imagen:
         im = Image.new("1", map(int, (self.width, self.height + 15)))
         # Lienzo:

@@ -863,12 +863,16 @@ class FacturasVenta(Ventana):
         if total_pagado < total_vencido:
             self.wids['e_total_pagado'].modify_base(gtk.STATE_NORMAL,
                 self.wids['e_total_pagado'].get_colormap().alloc_color("red"))
+            self.wids['e_total_pagado'].modify_text(gtk.STATE_NORMAL, None)
         elif total_pagado == total_vencido:
             self.wids['e_total_pagado'].modify_base(gtk.STATE_NORMAL,
               self.wids['e_total_pagado'].get_colormap().alloc_color("white"))
+            self.wids['e_total_pagado'].modify_text(gtk.STATE_NORMAL, None)
         else:
             self.wids['e_total_pagado'].modify_base(gtk.STATE_NORMAL,
               self.wids['e_total_pagado'].get_colormap().alloc_color("blue"))
+            self.wids['e_total_pagado'].modify_text(gtk.STATE_NORMAL,
+              self.wids['e_total_pagado'].get_colormap().alloc_color("white"))
         # COMPRUEBO SI LOS VENCIMIENTOS COINCIDEN
         total_fra = utils._float(
             self.wids['e_total'].get_text().replace("€", ""))

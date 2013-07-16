@@ -55,6 +55,11 @@ entre otros pequeños detalles:
 través de parte del módulo common/printing de GNUe (framework GNU Enterprise)
 """
 
+import os
+
+FDEST_PIL = os.path.join(os.path.dirname(os.path.realpath(__file__)), "courB08.pil")
+FDEST_PBM = os.path.join(os.path.dirname(os.path.realpath(__file__)), "courB08.pbm")
+
 # courbB08.pil PIL Font file uuencoded
 courB08_pil ="""eJztl91rFkcUxp+Zt7vGFYzVtiJKICgYlLRWkaBBVGgDraFGCH5gsQp+QMBqabAVRYJYAlakCkoh
 CpYgxaLkIu1NvLBeSAStglpqL6xQAsVe2AuL5u2buH3mzGaYPf9AKWTl8d3nl7MzZ2bnazvea9+9
@@ -196,8 +201,8 @@ class EanBarCode:
             return Image.open(value+'.eps'), value
         else:
             # Create a missing font file
-            decodeFontFile(courB08_pil ,"courB08.pil")
-            decodeFontFile(courB08_pbm ,"courB08.pbm")
+            decodeFontFile(courB08_pil, FDEST_PIL)
+            decodeFontFile(courB08_pbm, FDEST_PBM)
             # Get the bar code list
             bits = self.makeCode(value)
             # Get thee bar code with the checksum added
@@ -208,7 +213,7 @@ class EanBarCode:
             position = 8
             im = Image.new("1",(len(bits)+position,height))
             # Load font
-            font = ImageFont.load("courB08.pil")
+            font = ImageFont.load(FDEST_PIL)
             # Create drawer
             draw = ImageDraw.Draw(im)
             # Erase image
@@ -238,7 +243,6 @@ class EanBarCode:
         """
         from string import lower, upper
         from tempfile import gettempdir
-        import os
         im, code = self.getImagePIL(value, height, extension)
         # Save the result image
         nombre = "%s.%s" % (code, lower(extension))

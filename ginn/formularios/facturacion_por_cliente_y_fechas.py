@@ -685,12 +685,13 @@ class FacturacionPorClienteYFechas(Ventana):
         # Nueva consulta CESCE (jpedrero)
         if f.cliente.riesgoAsegurado != -1:
             modelcesce = self.wids['tv_cesce'].get_model()
+            fdp = None
             for v in f.vencimientosCobro:
                 modelcesce.append(("", 
                                    f.cliente.cif, 
                                    "", 
                                    utils.str_fecha(f.fecha), 
-                                   utils.float2str(f.importeTotal), 
+                                   utils.float2str(v.importe), 
                                    v.observaciones, 
                                    utils.str_fecha(v.fecha), 
                                    f.numfactura, 
@@ -783,7 +784,7 @@ class FacturacionPorClienteYFechas(Ventana):
     def abrir_factura(self, tv, path, view_column):
         model = tv.get_model()
         idfactura = model[path][-1]
-        if idfactura > 0 and model[path][0] != "":
+        if idfactura > 0 and (model[path][0] != "" or tv.name == "tv_cesce"):
             if model[path][0].startswith("A"):    # Es una factura de abono
                 frabono = pclases.FacturaDeAbono.get(idfactura)
                 if frabono.abono:
@@ -795,23 +796,11 @@ class FacturacionPorClienteYFechas(Ventana):
                 ventana = prefacturas.Prefacturas(fra, self.usuario)  # @UnusedVariable
             else:
                 fra = pclases.FacturaVenta.get(idfactura)
-                try:
-                    from formularios import facturas_venta
-                except ImportError:
-                    from os.path import join as pathjoin
-                    from sys import path
-                    path.insert(0, pathjoin("..", "formularios"))
-                    from formularios import facturas_venta
+                from formularios import facturas_venta
                 ventana = facturas_venta.FacturasVenta(fra, self.usuario)  # @UnusedVariable
         elif idfactura > 0 and model[path][0] == "":    # Es cliente.
             cliente = pclases.Cliente.get(idfactura)
-            try:
-                from formularios import clientes
-            except ImportError:
-                from os.path import join as pathjoin
-                from sys import path
-                path.insert(0, pathjoin("..", "formularios"))
-                from formularios import clientes
+            from formularios import clientes
             ventana_clientes = clientes.Clientes(cliente, self.usuario)  # @UnusedVariable
 
 
