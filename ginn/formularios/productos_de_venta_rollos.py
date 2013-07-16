@@ -380,7 +380,9 @@ class ProductosDeVentaRollos(Ventana):
         except:
             producto = None     
         self.objeto = producto
+        #self.wids['b_guardar'].set_sensitive(False)
         self.actualizar_ventana()
+        self.wids['b_guardar'].set_sensitive(False)
 
     def ir_a_anterior(self,widget):
         """
