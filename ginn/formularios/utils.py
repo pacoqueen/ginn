@@ -902,14 +902,15 @@ def construir_tabla(titulo, padre, filas, cabeceras):
     return tabla, contenedor, de
 
 def dialogo_resultado(filas, 
-                      titulo='', 
-                      padre=None, 
-                      cabeceras=['Id', 'Código', 'Descripción'], 
-                      multi=False,
-                      func_change=lambda *args, **kwargs: None, 
+                      titulo = '', 
+                      padre = None, 
+                      cabeceras = ['Id', 'Código', 'Descripción'], 
+                      multi = False,
+                      func_change = lambda *args, **kwargs: None, 
                       maximizar = False, 
                       defecto = [], 
-                      texto = ""):
+                      texto = "", 
+                      abrir_en_ventana_nueva = None):
     """
     Muestra un cuadro de diálogo modal con una tabla. En
     la tabla se mostrarán tantas filas como items pasados
@@ -937,6 +938,9 @@ def dialogo_resultado(filas,
     de ellos (si lo hay). Los índices se refieren a la lista de valores
     recibidos en el parámetro "filas", que coinciden con el orden de 
     las filas en el model del TreeView. 
+    abrir_en_ventana_nueva puede recibir una clase derivada de Ventana y 
+    un usuario. En ese caso se crea un botón que abre el elemento 
+    seleccionado en una nueva ventana de la clase.
     """
     # DONE: No sé si pasa solo en el equipo de desarrollo o también en 
     #       producción. No me he dado cuenta hasta ahora. El valor 
@@ -963,6 +967,22 @@ def dialogo_resultado(filas,
         ca.pack_start(label, expand = False)
         ca.reorder_child(label, 0)
         label.show()
+    if abrir_en_ventana_nueva:
+        boton_abrir_en_ventana_nueva = gtk.Button("Abrir en ventana nueva")
+        try:
+            aa = de.get_action_area()
+        except AttributeError: # PyGTK es menor a la versión 2.14
+            aa = de.vbox
+        aa.pack_end(boton_abrir_en_ventana_nueva, expand = False)
+        boton_abrir_en_ventana_nueva.show()
+        def abrir_aparte(boton, tabla, clase_ventana, clase_pclases, usuario):
+            model, paths = tabla.get_selection().get_selected_rows()
+            for p in paths:
+                ide = model[p][0]
+                o = clase_pclases.get(ide)
+                v = clase_ventana(objeto = o, usuario = usuario)
+        boton_abrir_en_ventana_nueva.connect("clicked", 
+                abrir_aparte, tabla, *abrir_en_ventana_nueva)
     ## ----------- Si el Tree debe ser de selcción múltiple:
     if multi:
         tabla.get_selection().set_mode(gtk.SELECTION_MULTIPLE)

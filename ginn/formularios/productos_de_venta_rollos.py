@@ -452,12 +452,16 @@ class ProductosDeVentaRollos(Ventana):
         for r in resultados:
             filas_res.append((r.id, r.codigo, r.nombre, r.descripcion))
         idproducto = utils.dialogo_resultado(filas_res,
-                                             titulo = 'Seleccione producto',
-                                             cabeceras = ('ID Interno', 
-                                                          'Código', 
-                                                          'Nombre', 
-                                                          'Descripción'), 
-                                             padre = self.wids['ventana'])
+                        titulo = 'Seleccione producto',
+                        cabeceras = ('ID Interno', 
+                                     'Código', 
+                                     'Nombre', 
+                                     'Descripción'), 
+                        padre = self.wids['ventana'], 
+                        abrir_en_ventana_nueva = 
+                            (ProductosDeVentaRollos, 
+                             pclases.ProductoVenta, 
+                             self.usuario))
         if idproducto < 0:
             return None
         else:
@@ -847,19 +851,23 @@ class ProductosDeVentaRollos(Ventana):
         """
         producto = self.objeto
         a_buscar = utils.dialogo_entrada(titulo = "BUSCAR PRODUCTO", 
-                                         texto = "Introduzca código, nombre o descripción de producto:", 
-                                         padre = self.wids['ventana']) 
+            texto = "Introduzca código, nombre o descripción de producto:", 
+            padre = self.wids['ventana']) 
         if a_buscar != None:
             try:
                 ida_buscar = int(a_buscar)
             except ValueError:
                 ida_buscar = -1
-            criterio = pclases.OR(pclases.ProductoVenta.q.codigo.contains(a_buscar),
-                                    pclases.ProductoVenta.q.descripcion.contains(a_buscar),
-                                    pclases.ProductoVenta.q.nombre.contains(a_buscar),
-                                    pclases.ProductoVenta.q.id == ida_buscar)
-            linea = pclases.LineaDeProduccion.select(pclases.LineaDeProduccion.q.nombre.contains('geotextiles'))[0]
-            criterio = pclases.AND(criterio, pclases.ProductoVenta.q.camposEspecificosRolloID != None, pclases.ProductoVenta.q.lineaDeProduccionID == linea.id)
+            criterio = pclases.OR(
+                    pclases.ProductoVenta.q.codigo.contains(a_buscar),
+                    pclases.ProductoVenta.q.descripcion.contains(a_buscar),
+                    pclases.ProductoVenta.q.nombre.contains(a_buscar),
+                    pclases.ProductoVenta.q.id == ida_buscar)
+            linea = pclases.LineaDeProduccion.select(
+                pclases.LineaDeProduccion.q.nombre.contains('geotextiles'))[0]
+            criterio = pclases.AND(criterio, 
+                    pclases.ProductoVenta.q.camposEspecificosRolloID != None, 
+                    pclases.ProductoVenta.q.lineaDeProduccionID == linea.id)
             resultados = pclases.ProductoVenta.select(criterio)
             if resultados.count() > 1:
                     ## Refinar los resultados
