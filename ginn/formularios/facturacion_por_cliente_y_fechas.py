@@ -37,18 +37,23 @@
 ## DONE:
 ## + Añadir abonos con factura de abono generada y pendientes de 
 ##   descontar en una factura de venta o pagaré.
+## TODO:
+## + Ventana de progreso. Tarda más de lo que debería y parece 
+##   como si se hubiera colgado.
 ###################################################################
 
-from ventana import Ventana
-from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk
-from framework import pclases
 import mx.DateTime
+from framework import pclases
 from informes import geninformes
+from informes.treeview2pdf import treeview2pdf
 from informes.treeview2csv import treeview2csv
 from formularios.reports import abrir_pdf, abrir_csv
+from formularios.ventana_progreso import VentanaProgreso
+from formularios import utils
+from formularios.ventana import Ventana
 
 import re
 rex_importe_fras = re.compile("[\(\[].*[\]\)]")
@@ -401,7 +406,7 @@ class FacturacionPorClienteYFechas(Ventana):
                     False, True, False, None), 
                 ("Fecha factura", 'gobject.TYPE_STRING', 
                     False, True, False, None), 
-                ("Importe", 'gobject.TYPE_FLOAT', 
+                ("Importe", 'gobject.TYPE_STRING', 
                     False, True, False, None), 
                 ("Forma de pago", 'gobject.TYPE_STRING', 
                     False, True, False, None), 
@@ -411,6 +416,7 @@ class FacturacionPorClienteYFechas(Ventana):
                     False, True, False, None), 
                 ('ID', 'gobject.TYPE_INT64', False, False, False, None))
         utils.preparar_listview(self.wids['tv_cesce'], cols)
+        self.wids['tv_cesce'].get_column(4).get_cell_renderers()[0].set_property("xalign", 1)
         self.wids['tv_cesce'].connect("row-activated", self.abrir_factura)
         hoy = mx.DateTime.localtime()
         fini = mx.DateTime.DateTimeFrom(day = 1, 
@@ -498,6 +504,8 @@ class FacturacionPorClienteYFechas(Ventana):
         return fechaini, fechafin
 
     def rellenar_tabla_facturas(self):
+        vpro = VentanaProgreso(padre = self.wids['ventana'])
+        vpro.mostrar()
         idcliente = utils.combo_get_value(self.wids['cbe_cliente'])
         fechaini, fechafin = self.leer_fechas()
         if idcliente >= 0 and fechaini and fechafin:
@@ -518,7 +526,11 @@ class FacturacionPorClienteYFechas(Ventana):
                 idscliente = [c.id for c in pclases.Cliente.select()]
             else:
                 idscliente = [idcliente]
+            i = 0.0
             for idcliente in idscliente:
+                i += 1
+                vpro.set_valor(i / len(idscliente), 
+                               "%d %%" % (i / len(idscliente) * 100))
                 (total, pendiente, cobrado, total_pagares, pendiente_pagares, 
                  cobrado_pagares, total_otros, pendiente_otros, 
                  cobrado_otros, total_vencimientos, 
@@ -530,12 +542,15 @@ class FacturacionPorClienteYFechas(Ventana):
                                             total_cobrado_strict, model, 
                                             fechaini, fechafin, subtotal, 
                                             nodos_clientes)
+            vpro.set_valor("100 %")
             self.rellenar_pies(total, pendiente, cobrado, total_pagares, 
                                pendiente_pagares, cobrado_pagares, 
                                total_otros, pendiente_otros, cobrado_otros, 
                                total_vencimientos, total_cobrado_strict)
             # XXX 
+            vpro.set_valor("Creando agrupaciones...")
             self.invertir_agrupaciones_cliente_fechas()
+        vpro.ocultar()
 
     def invertir_agrupaciones_cliente_fechas(self):
         """
@@ -669,17 +684,17 @@ class FacturacionPorClienteYFechas(Ventana):
                          nodos_clientes):
         # Nueva consulta CESCE (jpedrero)
         if f.cliente.riesgoAsegurado != -1:
-            model = self.wids['tv_cesce'].get_model()
+            modelcesce = self.wids['tv_cesce'].get_model()
             for v in f.vencimientosCobro:
-                model.append(("", 
-                              f.cliente.cif, 
-                              "", 
-                              utils.str_fecha(f.fecha), 
-                              f.importeTotal, 
-                              v.observaciones, 
-                              utils.str_fecha(v.fecha), 
-                              f.numfactura, 
-                              f.id))
+                modelcesce.append(("", 
+                                   f.cliente.cif, 
+                                   "", 
+                                   utils.str_fecha(f.fecha), 
+                                   utils.float2str(f.importeTotal), 
+                                   v.observaciones, 
+                                   utils.str_fecha(v.fecha), 
+                                   f.numfactura, 
+                                   f.id))
         # Los otros dos TreeViews, más complejos:
         fecha = f.fecha
         mes = utils.corregir_nombres_fecha(fecha.strftime("%B '%y"))
@@ -811,6 +826,11 @@ class FacturacionPorClienteYFechas(Ventana):
             tv = self.wids['tv_facturas']
         elif self.wids['notebook1'].get_current_page() == 1:
             tv = self.wids['tv_cliente']
+        elif self.wids['notebook1'].get_current_page() == 2:
+            tv = self.wids['tv_cesce']
+            abrir_pdf(treeview2pdf(tv, 
+                titulo = "Facturas de clientes con crédito concedido"))
+            return
         else:
             return
         model = tv.get_model()
@@ -847,6 +867,8 @@ class FacturacionPorClienteYFechas(Ventana):
             tv = self.wids['tv_facturas']
         elif self.wids['notebook1'].get_current_page() == 1:
             tv = self.wids['tv_cliente']
+        elif self.wids['notebook1'].get_current_page() == 2:
+            tv = self.wids['tv_cesce']
         else:
             return
         abrir_csv(treeview2csv(tv))
