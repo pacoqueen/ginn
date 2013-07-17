@@ -1,0 +1,3 @@
+[submodule "ginn/lib/PyPDF2"]
+	path = ginn/lib/PyPDF2
+	url = git@github.com:pacoqueen/PyPDF2.git
