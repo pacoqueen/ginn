@@ -733,7 +733,10 @@ class CRM_SeguimientoImpagos(Ventana):
                             last_evento.texto)
                     else:
                         last_evento = ""
-                    model[path][5] = last_evento
+                    try:
+                        model[path][5] = last_evento
+                    except IndexError:  # El path ya no existe en el model.
+                        pass
                 elif ide < 0:   # Ahora los ide negativos son de abonos, no clientes.
                     fda = pclases.FacturaDeAbono.get(-ide)
                     a = fda.abono

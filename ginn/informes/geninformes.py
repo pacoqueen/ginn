@@ -9532,16 +9532,35 @@ def producido_produccion(datos, fecha = None, grafico = None):
     return imprimir2(archivo, titulo, campos, datos, fecha, (1, 2, ),
                      graficos = graficos)
 
-def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
+def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None, 
+                                fichdestino = None):
     """
     Crea etiquetas para los rollos de
     un parte de la línea de geotextil.
     Una por etiqueta del tamaño estándar de la impresora GEMINI: 12.55 x 8.4.
     «hook» es una función con la misma interfaz que esta para generar 
     etiquetas alternativas según la configuración del producto.
+    fichdestino puede ser un nombre de fichero al que agregar más etiquetas. No 
+    funciona si además lleva un hook de etiquetas especiales excepto para 
+    añadir etiquetas de rollos defectuosos.
     """
     if hook:
+        rollos_defectuosos = []
+        def es_defectuoso(rollo):
+            if isinstance(rollo, dict):
+                try:
+                    return rollo['defectuoso']
+                except KeyError:
+                    rollo = rollo['objeto']
+            return isinstance(rollo, pclases.RolloDefectuoso)
+        for r in rollos[:]:
+            if es_defectuoso(r):
+                rollos.remove(r)
+                rollos_defectuosos.append(r)
         nomarchivo = hook(rollos, mostrar_marcado)
+        if rollos_defectuosos:
+            nomarchivo = etiquetasRollosEtiquetadora(
+                    rollos_defectuosos, False, fichdestino = nomarchivo)
     else:   # Etiqueta de geotextiles por defecto
         # Voy a tratar de reescribir esto regla en mano a ver si consigo 
         # uadrarlo bien en la etiquetadora GEMINI.
@@ -9553,8 +9572,11 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
         height = 8.4 * cm
 
         # Creo la hoja
-        nomarchivo = os.path.join(gettempdir(),
-            "etiqRollos_%s.pdf" % give_me_the_name_baby())
+        if not fichdestino:
+            nomarchivo = os.path.join(gettempdir(),
+                "etiqRollos_%s.pdf" % give_me_the_name_baby())
+        else:
+            nomarchivo = fichdestino
         c = canvas.Canvas(nomarchivo, pagesize = (width, height))
 
         for rollo in rollos:
