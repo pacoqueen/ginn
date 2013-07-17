@@ -9555,8 +9555,18 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
                 rollos_defectuosos.append(r)
         nomarchivo = hook(rollos, mostrar_marcado)
         if rollos_defectuosos:
-            nomarchivo = etiquetasRollosEtiquetadora(
-                    rollos_defectuosos, False, fichdestino = nomarchivo)
+            nomarchivo_defectuosos = etiquetasRollosEtiquetadora(
+                    rollos_defectuosos, False)
+            from lib.PyPDF2 import PyPDF2
+            buenos = open(nomarchivo, "rb")
+            defectuosos = open(nomarchivo_defectuosos, "rb")
+            merger = PyPDF2.PdfFileMerger()
+            merger.append(buenos)
+            merger.append(defectuosos)
+            combinado = os.path.join(gettempdir(),
+                "etiquetas_combo_%s.pdf" % give_me_the_name_baby())
+            merger.write(open(combinado, "wb"))
+            nomarchivo = combinado
     else:   # Etiqueta de geotextiles por defecto
         # Voy a tratar de reescribir esto regla en mano a ver si consigo 
         # cuadrarlo bien en la etiquetadora GEMINI.
