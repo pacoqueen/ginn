@@ -60,7 +60,7 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True, lang = "es"):
                  "Geotextil no tejido de polipropileno 100% virgen", 
              "14 uso": "Uso: %s", 
              "15 blanco3": "",      # Separador 
-             "16 codigo": "Partida: %d Rollo: %d", 
+             "16 codigo": "Partida: %d Rollo: %s", 
              "17 caracteristicas": "Gramaje: %d g/m² Ancho: %s m Largo: %d m" 
             }
     if lang == "en":
@@ -87,7 +87,7 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True, lang = "es"):
                 # como el rollo ya existe, me viene en el objeto toda la info.
                 productoVenta = rollo['objeto'].productoVenta
             numpartida = utils.parse_numero(rollo['partida'])
-            numrollo = int(rollo['nrollo'])
+            numrollo = rollo['nrollo']
         else:
             productoVenta = rollo.productoVenta
             numpartida = rollo.partida.numpartida
