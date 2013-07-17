@@ -1,0 +1,3 @@
+[submodule "ginn/lib/PyPDF2"]
+	path = ginn/lib/PyPDF2
+	url = git@github.com:knowah/PyPDF2.git

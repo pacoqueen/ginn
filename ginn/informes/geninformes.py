@@ -9532,17 +9532,13 @@ def producido_produccion(datos, fecha = None, grafico = None):
     return imprimir2(archivo, titulo, campos, datos, fecha, (1, 2, ),
                      graficos = graficos)
 
-def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None, 
-                                fichdestino = None):
+def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
     """
     Crea etiquetas para los rollos de
     un parte de la línea de geotextil.
     Una por etiqueta del tamaño estándar de la impresora GEMINI: 12.55 x 8.4.
     «hook» es una función con la misma interfaz que esta para generar 
     etiquetas alternativas según la configuración del producto.
-    fichdestino puede ser un nombre de fichero al que agregar más etiquetas. No 
-    funciona si además lleva un hook de etiquetas especiales excepto para 
-    añadir etiquetas de rollos defectuosos.
     """
     if hook:
         rollos_defectuosos = []
@@ -9563,7 +9559,7 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None,
                     rollos_defectuosos, False, fichdestino = nomarchivo)
     else:   # Etiqueta de geotextiles por defecto
         # Voy a tratar de reescribir esto regla en mano a ver si consigo 
-        # uadrarlo bien en la etiquetadora GEMINI.
+        # cuadrarlo bien en la etiquetadora GEMINI.
         global linea, tm, lm, rm, bm
         x, y = lm, tm  # @UnusedVariable
         global linea
@@ -9572,13 +9568,9 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None,
         height = 8.4 * cm
 
         # Creo la hoja
-        if not fichdestino:
-            nomarchivo = os.path.join(gettempdir(),
+        nomarchivo = os.path.join(gettempdir(),
                 "etiqRollos_%s.pdf" % give_me_the_name_baby())
-        else:
-            nomarchivo = fichdestino
         c = canvas.Canvas(nomarchivo, pagesize = (width, height))
-
         for rollo in rollos:
             rectangulo(c, (0.3 * cm, 0.3 * cm),
                           (width - 0.3 * cm, height - 0.3 * cm))

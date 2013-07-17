@@ -7,7 +7,7 @@ este formato de etiqueta para geotextiles y geocem.
 """
 
 import os, textwrap
-from informes.geninformes import give_me_the_name_baby, rectangulo, escribe
+from informes.geninformes import give_me_the_name_baby, rectangulo
 from informes.geninformes import el_encogedor_de_fuentes_de_doraemon
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import cm
@@ -174,8 +174,8 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True, lang = "es"):
         for linea in lineas:
             try:
                 dato = data[linea]
-            except KeyError: # Si no está en los valores asignados, busco en 
-                             # los originales. Deben ser datos fijos.
+            except KeyError:    # Si no está en los valores asignados, busco  
+                                # en los originales. Deben ser datos fijos.
                 dato = _data[linea]
             if dato is None:
                 dato = ""
