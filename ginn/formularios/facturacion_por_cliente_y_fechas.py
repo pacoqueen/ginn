@@ -398,7 +398,9 @@ class FacturacionPorClienteYFechas(Ventana):
             self.wids['tv_cliente'].get_column(2))
         self.wids['tv_cliente'].connect("row-activated", self.abrir_factura)
         self.colorear(self.wids['tv_cliente'])
-        cols = (("Suplemento", 'gobject.TYPE_STRING', 
+        cols = (("Cliente", "gobject.TYPE_STRING", 
+                    False, True, False, None), 
+                ("Suplemento", 'gobject.TYPE_STRING', 
                     False, True, False, None), 
                 ("NIF", 'gobject.TYPE_STRING', 
                     False, True, True, None), 
@@ -687,7 +689,8 @@ class FacturacionPorClienteYFechas(Ventana):
             modelcesce = self.wids['tv_cesce'].get_model()
             fdp = None
             for v in f.vencimientosCobro:
-                modelcesce.append(("", 
+                modelcesce.append((f.cliente.nombre, 
+                                   "", 
                                    f.cliente.cif, 
                                    "", 
                                    utils.str_fecha(f.fecha), 
