@@ -120,6 +120,12 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True, lang = "es"):
                                                    empresa.pais))
                 data["05 telefono"] = _data["05 telefono"] % (empresa.telefono,
                                                               empresa.email)
+            # Para los clientes sin teléfono o sin email:
+            data["05 telefono"] = data["05 telefono"].strip()
+            if data["05 telefono"].startswith(","):
+                data["05 telefono"] = data["05 telefono"][1:]
+            if data["05 telefono"].endswith(","):
+                data["05 telefono"] = data["05 telefono"][:-1]
         except IndexError:
             data["02 fabricado_por"] = ""
             data["03 direccion1"] = ""
