@@ -6,11 +6,11 @@ A partir del 1 de julio de 2013 entra una normativa nueva que obliga a
 este formato de etiqueta para geotextiles y geocem.
 """
 
+import os, textwrap
 from informes.geninformes import give_me_the_name_baby, rectangulo, escribe
 from informes.geninformes import el_encogedor_de_fuentes_de_doraemon
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import cm
-import os
 from tempfile import gettempdir
 from formularios.utils import float2str
 from framework import pclases
@@ -94,22 +94,26 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True, lang = "es"):
             numrollo = rollo.numrollo
         #   1.- Empresa
         try:
-            empresa = pclases.DatosDeLaEmpresa.select()[0]
-            data["02 fabricado_por"] = _data["02 fabricado_por"] % (
-                                                                empresa.nombre)
             # Si hay distribuidor, este texto cambia.
             distribuidor = productoVenta.camposEspecificosRollo.cliente
             if distribuidor:
                 if lang == "en":
-                    data["03 direccion1"] = helene_laanest(
+                    data["02 fabricado_por"] = helene_laanest(
                             "Distribuido por: %s") % (distribuidor.nombre)
                 else:
-                    data["03 direccion1"] = "Distribuido por: %s" % (
+                    data["02 fabricado_por"] = "Distribuido por: %s" % (
                                                         distribuidor.nombre)
-                data["04 direccion2"] = distribuidor.get_direccion_completa()
+                d = distribuidor.get_direccion_completa()
+                dircompleta = textwrap.wrap(d, 
+                        (len(d) + max([len(w) for w in d.split()])) / 2)
+                data["03 direccion1"] = dircompleta[0]
+                data["04 direccion2"] = dircompleta[1]
                 data["05 telefono"] = _data["05 telefono"] % (
                         distribuidor.telefono, distribuidor.email)
             else:   # Sigo con los datos de "propia empresa". Distribuyo yo.
+                empresa = pclases.DatosDeLaEmpresa.select()[0]
+                data["02 fabricado_por"] = _data["02 fabricado_por"] % (
+                                                                empresa.nombre)
                 data["03 direccion1"] = empresa.direccion + ", " + empresa.cp
                 data["04 direccion2"] = ", ".join((empresa.ciudad, 
                                                    empresa.provincia, 
@@ -221,7 +225,7 @@ def etiqueta_rollos_norma13_en(rollos, mostrar_marcado = True):
 if __name__ == "__main__":
     from formularios.reports import abrir_pdf
     for p in pclases.ProductoVenta.select():
-        if "GEOTESAN" in p.nombre and " 21 " in p.descripcion and p.articulos:
+        if "EkoTex" in p.nombre and " 06 " in p.descripcion and p.articulos:
             rollos = [a.rollo for a in p.articulos[:2]]
             break
     abrir_pdf(etiqueta_rollos_norma13(rollos, False))
