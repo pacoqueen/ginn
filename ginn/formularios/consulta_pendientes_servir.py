@@ -40,6 +40,8 @@ import mx.DateTime
 from framework import pclases
 from informes import geninformes
 from formularios.crm_seguimiento_impagos import show_fecha
+from informes.treeview2csv import treeview2csv
+from formularios.reports import abrir_csv
 
 def buscar_pendiente_servir(cliente = None, fini = None, ffin = None, 
                             padre = None, wids = None):
@@ -332,6 +334,7 @@ class PendientesServir(Ventana):
                        'e_fechaini/focus-out-event': show_fecha, 
                        'e_fechafin/focus-out-event': show_fecha, 
                        'b_imprimir/clicked': self.imprimir, 
+                       'b_exportar/clicked': self.exportar_a_csv, 
                        'cbe_cliente/changed': self.cambiar_cliente} 
         self.add_connections(connections)
         self.inicializar_ventana()
@@ -518,6 +521,22 @@ class PendientesServir(Ventana):
         if self.opped != None and self.opped != []:
             reports.abrir_pdf(geninformes.pendiente_servir("otros", 
                                self.opped, self.oppro, nombrecliente))
+
+    def exportar_a_csv(self, boton):
+        """
+        Exporta a formato CSV el TreeView "por pedido" de la página del 
+        notebook actual.
+        """
+        if self.wids['notebook1'].get_current_page() == 0:
+            tv = self.wids['tv_fibra_por_pedido']
+        elif self.wids['notebook1'].get_current_page() == 1:
+            tv = self.wids['tv_gtx_por_pedido']
+        elif self.wids['notebook1'].get_current_page() == 2:
+            tv = self.wids['tv_otros_por_pedido']
+        else:
+            return
+        abrir_csv(treeview2csv(tv))
+
 
 
 if __name__ == '__main__':
