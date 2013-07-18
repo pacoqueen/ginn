@@ -148,6 +148,14 @@ class ProductosDeVentaBalas(Ventana):
             condicion = (condicion and
                 producto.annoCertificacion 
                     == self.wids['sp_anno_certificacion'].get_value_as_int())
+        cliente = utils.combo_get_value(self.wids['cbe_cliente'])
+        if cliente == 0:
+            cliente = None
+        try:
+            cliente_objeto = self.objeto.camposEspecificosBala.cliente.id
+        except AttributeError:
+            cliente_objeto = None
+        condicion = (condicion and cliente_objeto == cliente)
         return not condicion    # Concición verifica que sea igual
 
     def aviso_actualizacion(self):
@@ -179,6 +187,17 @@ class ProductosDeVentaBalas(Ventana):
                 ('Precio', 'gobject.TYPE_FLOAT', False, True, False, None),
                 ('ID', 'gobject.TYPE_INT64', False, False, False, None))
         utils.preparar_listview(self.wids['tv_tarifas'], cols)
+        try:
+            dde_nombre = pclases.DatosDeLaEmpresa.select()[0].nombre
+        except IndexError:
+            dde_nombre = ""
+        clientes = ((0, dde_nombre), )
+        for cliente in pclases.Cliente.select(
+                pclases.Cliente.q.inhabilitado == False, 
+                orderBy = "nombre"):
+            clientes += ((cliente.id, "%s (%s)" % (cliente.nombre, 
+                                                   cliente.cif)), )
+        utils.rellenar_lista(self.wids['cbe_cliente'], clientes)
 
     def activar_widgets(self, s, chequear_permisos = True):
         """
@@ -192,7 +211,7 @@ class ProductosDeVentaBalas(Ventana):
               'e_precio', 'e_minimo', 'e_stock', 'b_contar', 'e_dtex', 
               'e_corte', 'e_color','chk_antiuv','b_borrar', 'b_fichas', 
               'b_articulos','b_tarifas','e_arancel', 'e_prodestandar', 
-              'cb_material', 'expander2', 'ch_reciclada') 
+              'cb_material', 'expander2', 'ch_reciclada', 'cbe_cliente') 
         for w in ws:
             self.wids[w].set_sensitive(s)
         if chequear_permisos:
@@ -201,6 +220,8 @@ class ProductosDeVentaBalas(Ventana):
             self.wids['ch_reciclada'].set_sensitive(False)  
             # Una vez se ha fabricado algo no puedo dejar que cambie la fibra a reciclada y viceversa, puesto que entonces me
             # alteraría el cálculo de stock, la forma de dar de alta más balas, etiquetas etc...
+        if self.objeto and not self.objeto.es_bolsa():
+            self.wids['cbe_cliente'].set_sensitive(False)
     
 
     def ir_a_primero(self):
@@ -305,8 +326,16 @@ class ProductosDeVentaBalas(Ventana):
         for r in resultados:
             filas_res.append((r.id, r.codigo, r.nombre, r.descripcion))
         idproducto = utils.dialogo_resultado(filas_res,
-                                             titulo = 'Seleccione producto',
-                                             cabeceras = ('ID Interno', 'Código', 'Nombre', 'Descripción'))
+                        titulo = 'Seleccione producto',
+                        cabeceras = ('ID Interno', 
+                                     'Código', 
+                                     'Nombre', 
+                                     'Descripción'), 
+                        padre = self.wids['ventana'], 
+                        abrir_en_ventana_nueva = 
+                            (ProductosDeVentaBalas, 
+                             pclases.ProductoVenta, 
+                             self.usuario))
         if idproducto < 0:
             return None
         else:
@@ -320,6 +349,7 @@ class ProductosDeVentaBalas(Ventana):
         hay que tener cuidado de no llamar a 
         esta función en ese caso.
         """
+        self.wids['b_guardar'].set_sensitive(False)
         producto = self.objeto
         linea = pclases.LineaDeProduccion.select(
             pclases.LineaDeProduccion.q.nombre.contains('fibra'))[0]
@@ -377,8 +407,12 @@ class ProductosDeVentaBalas(Ventana):
         # self.wids['e_stock'].set_text('Pulsar botón "Contar stock"')
         self.mostrar_especificos()
         self.rellenar_tabla_tarifas()
-        self.objeto.make_swap()
         self.wids['e_cajasPale'].set_sensitive(not self.objeto.articulos)
+        try:
+            cliente = campos.cliente.id
+        except AttributeError:
+            cliente = 0
+        utils.combo_set_from_db(self.wids['cbe_cliente'], cliente)
         # Nuevos campos de etiquetas norma13:
         if self.objeto.annoCertificacion is None:
             self.wids['sp_anno_certificacion'].set_text("")
@@ -416,6 +450,8 @@ class ProductosDeVentaBalas(Ventana):
         else:
             self.wids['b_anterior'].set_sensitive(anteriores)
             self.wids['b_siguiente'].set_sensitive(siguientes)
+        self.wids['b_guardar'].set_sensitive(False)
+        self.objeto.make_swap()
 
     def change_anno_cert(self, ch_no_anno):
         self.wids['sp_anno_certificacion'].set_sensitive(
@@ -589,16 +625,19 @@ class ProductosDeVentaBalas(Ventana):
         """
         producto = self.objeto
         a_buscar = utils.dialogo_entrada(
-                "Introduzca código o descripción de producto:") 
+                "Introduzca código, nombre o descripción de producto:") 
         if a_buscar != None:
             try:
                 ida_buscar = int(a_buscar)
             except ValueError:
                 ida_buscar = -1
-            criterio = pclases.OR(pclases.ProductoVenta.q.codigo.contains(a_buscar),
-                                            pclases.ProductoVenta.q.descripcion.contains(a_buscar),
-                                            pclases.ProductoVenta.q.id == ida_buscar)
-            criterio = pclases.AND(criterio, pclases.ProductoVenta.q.camposEspecificosBalaID != None)
+            criterio = pclases.OR(
+                    pclases.ProductoVenta.q.codigo.contains(a_buscar),
+                    pclases.ProductoVenta.q.nombre.contains(a_buscar),
+                    pclases.ProductoVenta.q.descripcion.contains(a_buscar),
+                    pclases.ProductoVenta.q.id == ida_buscar)
+            criterio = pclases.AND(criterio, 
+                    pclases.ProductoVenta.q.camposEspecificosBalaID != None)
             resultados = pclases.ProductoVenta.select(criterio)
             if resultados.count() > 1:
                     ## Refinar los resultados
@@ -731,13 +770,17 @@ class ProductosDeVentaBalas(Ventana):
         else:
             producto.annoCertificacion \
                     = self.wids['sp_anno_certificacion'].get_value_as_int()
+        cliente = utils.combo_get_value(self.wids['cbe_cliente'])
+        if cliente == 0:
+            cliente = None
+        producto.camposEspecificosBala.clienteID = cliente
         # Fuerzo la actualización de la BD y no espero a que SQLObject lo 
         # haga por mí:
         producto.syncUpdate()
         # Vuelvo a activar el notificador
         producto.notificador.activar(self.aviso_actualizacion)
-        self.actualizar_ventana()
         self.wids['b_guardar'].set_sensitive(False)
+        self.actualizar_ventana()
 
     def borrar_producto(self, widget):
         """

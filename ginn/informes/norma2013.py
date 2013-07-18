@@ -227,8 +227,176 @@ def etiqueta_rollos_norma13_en(rollos, mostrar_marcado = True):
     """
     return etiqueta_rollos_norma13(rollos, mostrar_marcado, lang = "en")
 
+def crear_etiquetas_pales(pales, mostrar_marcado = True, lang = "es"):
+    """
+    Construye una etiqueta por cada objeto palé recibido y las devuelve 
+    en un solo PDF.
+    Si lang = "en", etiqueta en inglés. Si "es", en castellano.
+    """
+    # Voy a tratar de reescribir esto regla en mano a ver si consigo 
+    # cuadrarlo bien en la etiquetadora GEMINI.
+    alto = 12.55 * cm
+    ancho = 8.4 * cm
 
-if __name__ == "__main__":
+    # Creo la hoja
+    nomarchivo = os.path.join(gettempdir(),
+        "etiq_pale13_%s_%s.pdf" % (lang, give_me_the_name_baby()))
+    c = canvas.Canvas(nomarchivo, pagesize = (ancho, alto))
+    
+    # Medidas:
+    logo = (3.8 * cm * 0.75, 2.8 * cm * 0.75)
+    margen = 0.1 * cm
+    marcado = (((ancho - logo[0]) / 2) - margen, (alto - margen - logo[1] - 2))
+    
+    # Imágenes:
+    logo_marcado = os.path.abspath(os.path.join(os.path.dirname(__file__), 
+                                   "..", "imagenes", "CE.png"))
+
+    # Datos fijos:
+    _data = {# "00 logo_marcado": None, 
+             "01 texto_marcado": "1035",    # Fijo
+             "02 fabricado_por": "Fabricado por: %s", 
+             "03 direccion1": None, 
+             "04 direccion2": None, 
+             "05 telefono": "Tfno: %s, %s", 
+             "06 año_certif": None, 
+             "07 blanco1": "",      # Separador
+             "08 dni": None, 
+             "09 iso1": "EN 14889-2:2008",  # Fijo
+             "10 iso2": "",     # Fijo
+             "11 blanco2": "",      # Separador
+             "12 producto": None, 
+             "13 descripcion": "", 
+             "14 uso": None, 
+             "15 blanco3": "",      # Separador 
+             "16 codigo": "%s %s",  # Código de palé y código de lote.
+             "17 caracteristicas": None     # Descripción del producto.
+            }
+    if lang == "en":
+        for k in _data:
+            _data[k] = helene_laanest(_data[k])
+    estilos = defaultdict(lambda: ("Helvetica", 9)) # Helvética a 9 por defecto
+    estilos["02 fabricado_por"] = ("Helvetica-Bold", 11)
+    estilos["12 producto"] = ("Helvetica-Bold", 17)
+    estilos["16 codigo"] = ("Helvetica-Bold", 17)
+    estilos["17 caracteristicas"] = ("Helvetica-Bold", 13)
+    data = {}
+    # Datos de la BD dependientes del palé 
+    for pale in pales:
+        # 0.- ¿En qué formato viene? Si es el antiguo (datos en diccionario) 
+        #     me quedo con el objeto de pclases en sí.
+        productoVenta = pale.productoVenta
+        numpartida = pale.partidaCem.codigo
+        numpale = pale.codigo
+        #   1.- Empresa
+        try:
+            # Si hay distribuidor, este texto cambia.
+            distribuidor = pale.productoVenta.camposEspecificosBala.cliente
+            if distribuidor:
+                if lang == "en":
+                    data["02 fabricado_por"] = helene_laanest(
+                            "Distribuido por: %s") % (distribuidor.nombre)
+                else:
+                    data["02 fabricado_por"] = "Distribuido por: %s" % (
+                                                        distribuidor.nombre)
+                d = distribuidor.get_direccion_completa()
+                dircompleta = textwrap.wrap(d, 
+                        (len(d) + max([len(w) for w in d.split()])) / 2)
+                data["03 direccion1"] = dircompleta[0]
+                data["04 direccion2"] = dircompleta[1]
+                data["05 telefono"] = _data["05 telefono"] % (
+                        distribuidor.telefono, distribuidor.email)
+            else:   # Sigo con los datos de "propia empresa". Distribuyo yo.
+                empresa = pclases.DatosDeLaEmpresa.select()[0]
+                data["02 fabricado_por"] = _data["02 fabricado_por"] % (
+                                                                empresa.nombre)
+                data["03 direccion1"] = empresa.direccion + ", " + empresa.cp
+                data["04 direccion2"] = ", ".join((empresa.ciudad, 
+                                                   empresa.provincia, 
+                                                   empresa.pais))
+                data["05 telefono"] = _data["05 telefono"] % (empresa.telefono,
+                                                              empresa.email)
+            # Para los clientes sin teléfono o sin email:
+            data["05 telefono"] = data["05 telefono"].strip()
+            if data["05 telefono"].startswith(","):
+                data["05 telefono"] = data["05 telefono"][1:]
+            if data["05 telefono"].endswith(","):
+                data["05 telefono"] = data["05 telefono"][:-1]
+        except IndexError:
+            data["02 fabricado_por"] = ""
+            data["03 direccion1"] = ""
+            data["04 direccion2"] = ""
+            data["05 telefono"] = ""
+    #   2.- Producto
+        producto = productoVenta
+        if producto.annoCertificacion != None:
+            data["06 año_certif"] = "%02d" % producto.annoCertificacion
+        else:
+            data["06 año_certif"] = ""
+        data["08 dni"] = producto.dni
+        data["12 producto"] = producto.nombre
+        if producto.uso:
+            if lang == "en":
+                produso = helene_laanest(producto.uso)
+            else:
+                produso = producto.uso
+            produso = textwrap.wrap(produso, 
+                    (len(produso) + max([len(w) for w in produso.split()])) / 2)
+            data["14 uso"] = produso[0]
+            data["15 blanco3"] = produso[1]     # Era un separador, pero 
+                                                # necesito el espacio.
+        else:
+            data["14 uso"] = ""
+    #   3.- Palé 
+        data["16 codigo"] = _data["16 codigo"] % (numpartida, 
+                                                  numpale)
+        data["17 caracteristicas"] = producto.descripcion
+
+        rectangulo(c, (margen, margen),
+                      (ancho - margen, alto - margen))
+        if mostrar_marcado: 
+            c.drawImage(logo_marcado, 
+                        marcado[0], 
+                        marcado[1],
+                        width = logo[0], height = logo[1])
+        else:
+            data["01 texto_marcado"] = ""
+        lineas = _data.keys()
+        lineas.sort()
+        # Posición y estilo de la primera línea.
+        tamfuente = estilos[lineas[0]][1]
+        y = alto - logo[1] - 0.1 * cm - tamfuente
+        # ¿Cuánto me desplazaré de línea a línea?
+        offset_y = (y - margen) / len(lineas)
+        for linea in lineas:
+            try:
+                dato = data[linea]
+            except KeyError:    # Si no está en los valores asignados, busco  
+                                # en los originales. Deben ser datos fijos.
+                dato = _data[linea]
+            if dato is None:
+                dato = ""
+            c.setFont(*estilos[linea])
+            #c.drawCentredString((ancho / 2), 
+            #                    y, 
+            #                    escribe(dato))
+            el_encogedor_de_fuentes_de_doraemon(c, 
+                                                fuente = estilos[linea][0], 
+                                                tamannoini = estilos[linea][1],
+                                                xini = margen, 
+                                                xfin = ancho - margen, 
+                                                y = y, 
+                                                texto = dato, 
+                                                alineacion = 0)
+            y -= offset_y
+        c.showPage()
+    c.save()
+    return nomarchivo
+
+def crear_etiquetas_cajas(cajas, mostrar_marcado = True):
+    pass
+
+def test_rollos():
     from formularios.reports import abrir_pdf
     for p in pclases.ProductoVenta.select():
         if "EkoTex" in p.nombre and " 06 " in p.descripcion and p.articulos:
@@ -236,4 +404,24 @@ if __name__ == "__main__":
             break
     abrir_pdf(etiqueta_rollos_norma13(rollos, False))
     abrir_pdf(etiqueta_rollos_norma13_en(rollos))
+
+def test_pales():
+    from formularios.reports import abrir_pdf
+    pales = pclases.Pale.select()[:2]
+    abrir_pdf(crear_etiquetas_pales(pales, False))
+    import time
+    time.sleep(1)
+    abrir_pdf(crear_etiquetas_pales(pales))
+
+def test_cajas():
+    from formularios.reports import abrir_pdf
+    cajas = pclases.Caja.select()[:2]
+    abrir_pdf(crear_etiquetas_cajas(cajas, False))
+    import time
+    time.sleep(1)
+    abrir_pdf(crear_etiquetas_cajas(cajas))
+
+if __name__ == "__main__":
+    test_pales()
+    test_cajas()
 

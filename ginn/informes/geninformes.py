@@ -7798,37 +7798,42 @@ def chequeCaixa(cantidad, destinatario, euros, fecha):
 
     return nomarchivo
 
-def generar_etiqueta_pale(pales, tipo = 0):
+def generar_etiqueta_pale(pales, tipo = 3):
     """
     Genera una etiqueta por cada palé recibido (o del único recibido si el 
     parámetro no es una lista) del tipo especificado:
     0: Etiqueta completa
     1: Etiqueta sin nombre empresa.
     2: Etiqueta mínima.
+    ---
+    3: Etiqueta normativa 2013
     """
     # 0.- Compruebo parámetros.
     if not isinstance(pales, (list, tuple)):
         pales = [pales]
-    rangotipos = range(0, 3)
+    rangotipos = range(0, 4)
     if not tipo in rangotipos:
         raise ValueError, "El tipo debe estar en el rango %s." % rangotipos
-    # 1.- Preparo el lienzo.
-    ancho = 12.55 * cm
-    alto = 8.4 * cm
-    nomarchivo = os.path.join(gettempdir(),
-                              "etiq_pale_%s_%d.pdf" % (give_me_the_name_baby(), 
-                                                       tipo))
-    c = canvas.Canvas(nomarchivo, pagesize = (ancho, alto))
-    for pale in pales:
-        # 1.1.- Preparo datos en función del tipo de etiqueta.
-        data = generar_data_pale(pale, tipo)
-        # 1.2.- Imprimo datos en canvas. (Las medidas van en función del tipo 
-        #       y se determinan dentro de la función).
-        pintar_data_pale(c, data, ancho, alto, tipo)
-        # 1.3.- Guardo canvas.
-        c.showPage()
-    # 2.- Guardo canvas y devuelvo nombre de archivo generado.
-    c.save()
+    if 0 <= tipo <= 2:
+        # 1.- Preparo el lienzo.
+        ancho = 12.55 * cm
+        alto = 8.4 * cm
+        nomarchivo = os.path.join(gettempdir(),
+                                  "etiq_pale_%s_%d.pdf" % (give_me_the_name_baby(), 
+                                                           tipo))
+        c = canvas.Canvas(nomarchivo, pagesize = (ancho, alto))
+        for pale in pales:
+            # 1.1.- Preparo datos en función del tipo de etiqueta.
+            data = generar_data_pale(pale, tipo)
+            # 1.2.- Imprimo datos en canvas. (Las medidas van en función del tipo 
+            #       y se determinan dentro de la función).
+            pintar_data_pale(c, data, ancho, alto, tipo)
+            # 1.3.- Guardo canvas.
+            c.showPage()
+        # 2.- Guardo canvas y devuelvo nombre de archivo generado.
+        c.save()
+    elif tipo == 3:
+        nomarchivo = norma2013.crear_etiquetas_pales(pales)
     return nomarchivo
 
 def calcular_posiciones_etiqueta_pale(ancho, alto, tipo = 0):

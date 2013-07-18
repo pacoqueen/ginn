@@ -322,7 +322,11 @@ CREATE TABLE campos_especificos_bala(
     gramos_bolsa INT DEFAULT NULL,    -- Solo aplicable a bolsas de Geocem.
     bolsas_caja INT DEFAULT NULL,     -- Solo aplicable a bolsas de Geocem.
     -- NEW! 20/02/2010
-    cajas_pale INT DEFAULT NULL       -- Solo aplicable a Geocem embolsado.
+    cajas_pale INT DEFAULT NULL,      -- Solo aplicable a Geocem embolsado.
+    cliente_id INT REFERENCES cliente DEFAULT NULL  -- Este producto se 
+        -- distribuye a través de un cliente y debe llevar sus datos en 
+        -- la etiqueta de las cajas de fibra embolsada. No se suele usar en 
+        -- fibra normal.
 );
 
 CREATE TABLE marcado_ce(
@@ -1264,11 +1268,9 @@ CREATE TABLE campos_especificos_rollo(
     -- (aunque guardaré valores absolutos por "tradición").
     -- OJO: Antes de actualizar en clientes, ejecutar esto:
     -- ALTER TABLE campos_especificos_rollo ADD COLUMN estandar_prueba_piramidal FLOAT DEFAULT 0.0; ALTER TABLE campos_especificos_rollo ADD COLUMN tolerancia_prueba_piramidal FLOAT DEFAULT 0.0; ALTER TABLE campos_especificos_rollo ADD COLUMN tolerancia_prueba_piramidal_sup FLOAT DEFAULT 0.0; ALTER TABLE marcado_ce ADD COLUMN estandar_prueba_piramidal FLOAT DEFAULT 0.0; ALTER TABLE marcado_ce ADD COLUMN tolerancia_prueba_piramidal FLOAT DEFAULT 0.0; ALTER TABLE marcado_ce ADD COLUMN tolerancia_prueba_piramidal_sup FLOAT DEFAULT 0.0; ALTER TABLE partida ADD COLUMN piramidal FLOAT DEFAULT 0; CREATE TABLE prueba_piramidal(id SERIAL PRIMARY KEY, partida_id INT REFERENCES partida, fecha DATE DEFAULT CURRENT_DATE, resultado FLOAT DEFAULT 0.0);
-
     estandar_prueba_piramidal FLOAT DEFAULT 0.0, 
     tolerancia_prueba_piramidal FLOAT DEFAULT 0.0, 
     tolerancia_prueba_piramidal_sup FLOAT DEFAULT 0.0,
-    
     -- NEW! 07/11/2011: Nueva tabla y campo de modelo de etiquetas.
     --                  NULL imprime la etiqueta genérica de geninformes.
     modelo_etiqueta_id INT REFERENCES modelo_etiqueta DEFAULT NULL, 

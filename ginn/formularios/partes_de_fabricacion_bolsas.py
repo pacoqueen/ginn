@@ -1885,6 +1885,12 @@ def imprimir_etiquetas_pales(pales, padre = None, mostrar_dialogo = True):
     cuadro de diálogo.
     """
     global MEMENTO_MORI
+    # Para la normativa del 1 de julio de 2013 fuerzo a que siempre se 
+    # saquen ya las etiquetas con el nuevo formato. Pero como puede haber una 
+    # vuelta atrás, voy a permitir la posibilidad (aunque no en GUI, solo 
+    # programáticamente) de seguir sacando etiquetas antiguas.
+    MEMENTO_MORI = 3    # Opción inexistente en el diálogo pero reconocible por 
+                        # la función que va a generar las etiquetas.
     if MEMENTO_MORI is None:    # Nunca ha elegido una opción:
         mostrar_dialogo = True
     else:
@@ -1911,7 +1917,7 @@ def imprimir_etiquetas_pales(pales, padre = None, mostrar_dialogo = True):
         if que_imprimir == 0 or que_imprimir == 2:
             filetiqpale = geninformes.generar_etiqueta_pale(pales, tipo)
             mandar_a_imprimir_con_ghostscript(filetiqpale) 
-        if que_imprimir == 1 or que_imprimir ==2:
+        if que_imprimir == 1 or que_imprimir == 2:
             cajas = []
             for p in pales:
                 cajas += p.cajas[:]
