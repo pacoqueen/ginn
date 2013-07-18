@@ -51,6 +51,7 @@ pygtk.require('2.0')
 import gtk, time 
 from framework import pclases
 import mx.DateTime
+import datetime
 from informes import geninformes
 from utils import _float as float
 from ventana_progreso import VentanaActividad, VentanaProgreso
@@ -1183,6 +1184,12 @@ class PartesDeFabricacionBolsas(Ventana):
         # Actualizo los datos del objeto
         for campo in valores:
             try:
+                if (isinstance(valores[campo], mx.DateTime.DateTimeDelta) and 
+                    isinstance(getattr(self.objeto, campo), datetime.time):
+                    # Hay un bug con el mx de Python 2.7 en Windows y tengo 
+                    # que hacer esta conversión a mano:
+                    valores[campo] = datetime.time(valores[campo].hour, 
+                                                   valores[campo].minute)
                 setattr(self.objeto, campo, valores[campo])
             except ValueError:
                 if isinstance(valores[campo], mx.DateTime.DateTimeDeltaType):
