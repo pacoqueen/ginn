@@ -43,6 +43,7 @@ import pygtk
 pygtk.require('2.0')
 import os
 import sys
+import tempfile
 from formularios import utils
 from informes.geninformes import give_me_the_name_baby
 
@@ -112,7 +113,7 @@ def mandar_a_imprimir_con_ghostscript(fichero, rotate = False):
     """
     if rotate:
         from lib.PyPDF2 import PyPDF2
-        fichrotado = os.path.join(os.path.gettempdir(), 
+        fichrotado = os.path.join(tempfile.gettempdir(), 
                                   "gs_rotated_%s.pdf" % give_me_the_name_baby()
                                  )
         rotado = PyPDF2.PdfFileWriter()
