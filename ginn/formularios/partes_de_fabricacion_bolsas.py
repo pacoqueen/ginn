@@ -1930,8 +1930,25 @@ def imprimir_etiquetas_pales(pales, padre = None, mostrar_dialogo = True):
         if que_imprimir == 0 or que_imprimir == 2:
             tipo = 3    # Opción inexistente en el diálogo pero reconocible 
                         # por la función que va a generar las etiquetas.
+
+            # BACKTRACKING a etiqueta antigua hasta que arreglemos la etiquetadora de la línea de cemento.
+            tipo = MEMENTO_MORI['tipo']
+            if tipo is None:
+                tipo = utils.dialogo_radio(titulo = "SELECCIONAR ETIQUETA", 
+                    texto = "Seleccione el tipo de etiqueta a generar:", 
+                    ops = [(0, "Mínima (solo código de palé, partida y "
+                               "marcado CE)"), 
+                           (1, "Neutra (incluye datos de producto)"), 
+                           (2, "Completa (incluye el nombre de la empresa)")], 
+                    padre = padre, 
+                    valor_por_defecto = 1)
+            if tipo != None:
+                MEMENTO_MORI['tipo'] = tipo
+            else:
+                return
+            # EOBACKTRACK: Descomentar el rotate = True cuando volvamos a usar las etiquetas nuevas.
             filetiqpale = geninformes.generar_etiqueta_pale(pales, tipo)
-            mandar_a_imprimir_con_ghostscript(filetiqpale, rotate = True) 
+            mandar_a_imprimir_con_ghostscript(filetiqpale) #, rotate = True) 
         if que_imprimir == 1 or que_imprimir == 2:
             tipo = MEMENTO_MORI['tipo']
             if tipo is None:
