@@ -146,15 +146,32 @@ def build_datos_por_producto(por_producto):
             total_por_producto_existencias += kilos
             total_por_producto_existencias_A += kilos_A
             total_por_producto_existencias_B += kilos_B
-            datos.append((producto,
-                          pendiente, 
-                          existencias,
-                          bultos,
-                          kilos_A, 
-                          bultos_A, 
-                          kilos_B, 
-                          bultos_B, 
-                          ide))
+            data = [producto,
+                    pendiente, 
+                    existencias,
+                    bultos,
+                    kilos_A, 
+                    bultos_A, 
+                    kilos_B, 
+                    bultos_B, 
+                    ide]
+            # Para exportar a Excel con kilos/hora y pesos teóricos pendientes 
+            # y reales en existencias.
+# PORASQUI: Esto no funciona. Peta.
+            if hasattr(p, "es_rollo") and p.es_rollo():
+                prodestandar = p.prodestandar
+                cer = p.camposEspecificosRollo
+                pdte_teorico = cer.get_peso_teorico() * por_producto[p] # por_producto[p] eq. a pendiente
+                # Esto es muuuuy lento. Lo cambio por teórico.
+                #stock_kg_reales = sum([a.peso for a in 
+                #  p._get_articulos_en_fecha_en_almacen(
+                #      mx.DateTime.today(), 
+                #      tipo = pclases.Rollo)])
+                stock_kg = cer.get_peso_teorico() * kilos
+                data.insert(3, prodestandar)
+                data.insert(5, pdte_teorico)
+                data.insert(7, stock_kg)
+            datos.append(data)
         else:
             datos.append((producto, 
                           pendiente, 
@@ -425,7 +442,7 @@ class PendientesServir(Ventana):
         """
         self.wids['ventana'].resize(800, 600)
         self.ffped = self.fppro = self.gpped = self.gppro = None
-        cols = (('Pedido', 'gobject.TYPE_STRING', False, True, True, None), 
+        cols = [('Pedido', 'gobject.TYPE_STRING', False, True, True, None), 
                 ('Fecha', 'gobject.TYPE_STRING', False, True, False, None), 
                 ('Cliente', 'gobject.TYPE_STRING', False, True, False, None), 
                 ('Producto', 'gobject.TYPE_STRING', False, True, False, None), 
@@ -438,10 +455,16 @@ class PendientesServir(Ventana):
                     False, True, False, None), 
                 ("Forma de cobro", "gobject.TYPE_STRING", 
                     False, True, False, None), 
-                ('IDPedido', 'gobject.TYPE_INT64', False, False, False, None))
+                ('IDPedido', 'gobject.TYPE_INT64', False, False, False, None)]
         utils.preparar_listview(self.wids['tv_fibra_por_pedido'], cols)
-        utils.preparar_listview(self.wids['tv_gtx_por_pedido'], cols)
         utils.preparar_listview(self.wids['tv_otros_por_pedido'], cols)
+        cols.insert(5, ("Kg (teórico)", "gobject.TYPE_STRING", 
+                        False, True, False, None))
+        cols.insert(7, ("Kg (reales)", "gobject.TYPE_STRING", 
+                        False, True, False, None))
+        cols.insert(4, ("Prod. estándar", "gobject.TYPE_STRING", 
+                        False, True, False, None))
+        utils.preparar_listview(self.wids['tv_gtx_por_pedido'], cols)
         self.wids['tv_fibra_por_pedido'].connect("row-activated", self.abrir_pedido)
         self.wids['tv_gtx_por_pedido'].connect("row-activated", self.abrir_pedido)
         self.wids['tv_otros_por_pedido'].connect("row-activated", self.abrir_pedido)
