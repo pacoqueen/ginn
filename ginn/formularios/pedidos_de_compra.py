@@ -880,13 +880,13 @@ class PedidosDeCompra(Ventana):
                         nombreproveedor = ''
                     filas_res.append((r.id, r.numpedido, nombreproveedor, 
                                       [r.fecha and r.fecha.strftime('%d/%m/%Y') or ''][0]))
-                    idpedido = utils.dialogo_resultado(filas_res, 
-                                                       titulo = 'Seleccione pedido',
-                                                       cabeceras = ('ID Interno', 'Número de pedido', 'Proveedor', 'Fecha'))
-                    if idpedido < 0:
-                        return
-                    resultados = [pclases.PedidoCompra.get(idpedido)]
-                    # Se supone que la comprensión es más rápida que PedidoCompra.get(id)
+                idpedido = utils.dialogo_resultado(filas_res, 
+                                                   titulo = 'Seleccione pedido',
+                                                   cabeceras = ('ID Interno', 'Número de pedido', 'Proveedor', 'Fecha'))
+                if idpedido < 0:
+                    return
+                resultados = [pclases.PedidoCompra.get(idpedido)]
+                # Se supone que la comprensión es más rápida que PedidoCompra.get(id)
             elif resultados.count() < 1:
                 ## Sin resultados de búsqueda
                 utils.dialogo_info('SIN RESULTADOS', 'La búsqueda no produjo resultados.\nAsegúrese de haber introducido un número de pedido.')
