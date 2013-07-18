@@ -1184,8 +1184,10 @@ class PartesDeFabricacionBolsas(Ventana):
         # Actualizo los datos del objeto
         for campo in valores:
             try:
-                if (isinstance(valores[campo], mx.DateTime.DateTimeDelta) and 
-                    isinstance(getattr(self.objeto, campo), datetime.time)):
+                if (isinstance(valores[campo], 
+                               type(mx.DateTime.DateTimeDelta(0))) and 
+                    isinstance(getattr(self.objeto, campo), 
+                               type(datetime.time()))):
                     # Hay un bug con el mx de Python 2.7 en Windows y tengo 
                     # que hacer esta conversión a mano:
                     valores[campo] = datetime.time(valores[campo].hour, 
