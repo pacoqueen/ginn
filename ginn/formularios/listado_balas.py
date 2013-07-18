@@ -34,18 +34,18 @@
 ##
 ###################################################################
 
-from framework import pclases
-from informes import geninformes
-from ventana import Ventana
 import gtk
 import time
 import datetime
 import mx.DateTime
 import pygtk
+pygtk.require('2.0')
 import re
 import sys
+from formularios.ventana import Ventana
 from formularios import utils
-pygtk.require('2.0')
+from framework import pclases
+from informes import geninformes
 
 rexpcajas = re.compile("\([\d]+/[\d]+\)")
 
@@ -571,10 +571,13 @@ class ListadoBalas(Ventana):
         """
         filas_res = []
         for r in resultados:
-            filas_res.append((r.id, r.codigo, r.descripcion))
+            filas_res.append((r.id, r.codigo, r.nombre, r.descripcion))
         idproducto = utils.dialogo_resultado(filas_res,
                                              titulo = 'Seleccione producto',
-                                             cabeceras = ('ID Interno', 'Código', 'Descripción'), 
+                                             cabeceras = ('ID Interno', 
+                                                          'Código', 
+                                                          'Nombre', 
+                                                          'Descripción'), 
                                              padre = self.wids['ventana'])
         if idproducto < 0:
             return None
@@ -586,12 +589,13 @@ class ListadoBalas(Ventana):
         Pide el código de un producto y busca todos las unidades de ese producto
         """
         a_buscar = utils.dialogo_entrada(titulo = 'INTRODUZCA DATOS', 
-                    texto = 'Introduzca el código o descripción\n'
+                    texto = 'Introduzca el código, nombre o descripción\n'
                             'del producto que desea listar:', 
                     padre = self.wids['ventana'])
         if a_buscar != None:
             criterio = pclases.OR(
                 pclases.ProductoVenta.q.codigo.contains(a_buscar),
+                pclases.ProductoVenta.q.nombre.contains(a_buscar),
                 pclases.ProductoVenta.q.descripcion.contains(a_buscar))
             criterio = pclases.AND(criterio, 
                 pclases.ProductoVenta.q.camposEspecificosBalaID != None)

@@ -499,9 +499,6 @@ Será eliminado en próximas versiones.</property>
               </packing>
             </child>
             <child>
-              <placeholder/>
-            </child>
-            <child>
               <widget class="GtkComboBoxEntry" id="cbe_dni">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -523,6 +520,9 @@ Será eliminado en próximas versiones.</property>
                 <property name="bottom_attach">7</property>
                 <property name="y_options">GTK_EXPAND</property>
               </packing>
+            </child>
+            <child>
+              <placeholder/>
             </child>
           </widget>
           <packing>

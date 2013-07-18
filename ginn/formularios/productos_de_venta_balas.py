@@ -625,8 +625,10 @@ class ProductosDeVentaBalas(Ventana):
         """
         producto = self.objeto
         a_buscar = utils.dialogo_entrada(
-                "Introduzca código, nombre o descripción de producto:") 
+                "Introduzca código, nombre o descripción de producto:", 
+                padre = self.wids['ventana']) 
         if a_buscar != None:
+            a_buscar = a_buscar.strip()
             try:
                 ida_buscar = int(a_buscar)
             except ValueError:

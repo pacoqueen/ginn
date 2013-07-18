@@ -79,7 +79,10 @@ def copy2(entry1, evento, entry2, sumar = 0):
         else:
             entry2.set_text(str((num + sumar) % 24))
 
-MEMENTO_MORI = None
+MEMENTO_MORI = {'tipo': None, 
+                'que_imprimir': None}   # Tipo de etiqueta y qué imprimir 
+                # (caja, palé o palé + cajas) hasta que cierren la ventana 
+                # o cambien de parte.
 
 class PartesDeFabricacionBolsas(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -166,9 +169,12 @@ class PartesDeFabricacionBolsas(Ventana):
 
     def anterior(self, boton = None):
         if self.objeto:
-            siguiente = self.objeto.anterior()
-            if siguiente:
-                self.objeto = siguiente
+            anterior = self.objeto.anterior()
+            if anterior:
+                self.objeto = anterior
+                # Reinicio preferencias de etiqueta.
+                global MEMENTO_MORI
+                MEMENTO_MORI = {'que_imprimir': None, 'tipo': None}
                 self.actualizar_ventana()
             else:
                 utils.dialogo_info(titulo = "NO MÁS PARTES", 
@@ -177,9 +183,12 @@ class PartesDeFabricacionBolsas(Ventana):
 
     def siguiente(self, boton = None):
         if self.objeto:
-            anterior = self.objeto.siguiente()
-            if anterior:
-                self.objeto = anterior
+            siguiente = self.objeto.siguiente()
+            if siguiente:
+                self.objeto = siguiente 
+                # Reinicio preferencias de etiqueta.
+                global MEMENTO_MORI
+                MEMENTO_MORI = {'que_imprimir': None, 'tipo': None}
                 self.actualizar_ventana()
             else:
                 utils.dialogo_info(titulo = "NO MÁS PARTES", 
@@ -1148,6 +1157,9 @@ class PartesDeFabricacionBolsas(Ventana):
             # Y activo la función de notificación:
             partedeproduccion.notificador.activar(self.aviso_actualizacion)
             self.objeto = partedeproduccion
+            # Reinicio preferencias de etiqueta.
+            global MEMENTO_MORI
+            MEMENTO_MORI = {'que_imprimir': None, 'tipo': None}
             self.actualizar_ventana()
 
     def guardar(self, widget):
@@ -1889,23 +1901,12 @@ def imprimir_etiquetas_pales(pales, padre = None, mostrar_dialogo = True):
     # saquen ya las etiquetas con el nuevo formato. Pero como puede haber una 
     # vuelta atrás, voy a permitir la posibilidad (aunque no en GUI, solo 
     # programáticamente) de seguir sacando etiquetas antiguas.
-    MEMENTO_MORI = 3    # Opción inexistente en el diálogo pero reconocible por 
-                        # la función que va a generar las etiquetas.
-    if MEMENTO_MORI is None:    # Nunca ha elegido una opción:
+    if MEMENTO_MORI['que_imprimir'] is None:    # Nunca ha elegido una opción:
         mostrar_dialogo = True
     else:
-        tipo = MEMENTO_MORI
+        que_imprimir = MEMENTO_MORI['que_imprimir']
+        mostrar_dialogo = False
     if mostrar_dialogo:
-        tipo = utils.dialogo_radio(titulo = "SELECCIONAR ETIQUETA", 
-            texto = "Seleccione el tipo de etiqueta a generar:", 
-            ops = [(0, "Mínima (solo código de palé, partida y marcado CE)"), 
-                   (1, "Neutra (incluye datos de producto)"), 
-                   (2, "Completa (incluye el nombre de la empresa)")], 
-            padre = padre, 
-            valor_por_defecto = 1)
-    if tipo != None:
-        MEMENTO_MORI = tipo
-        from formularios.reports import mandar_a_imprimir_con_ghostscript
         que_imprimir = utils.dialogo_radio(
             titulo = "SELECCIONAR TIPO IMPRESIÓN", 
             texto = "Seleccione qué imprimir:", 
@@ -1914,10 +1915,27 @@ def imprimir_etiquetas_pales(pales, padre = None, mostrar_dialogo = True):
                    (2, "Etiquetas de palé y cajas")], 
             padre = padre, 
             valor_por_defecto = 2)
+    if que_imprimir != None:
+        MEMENTO_MORI['que_imprimir'] = que_imprimir
+        from formularios.reports import mandar_a_imprimir_con_ghostscript
         if que_imprimir == 0 or que_imprimir == 2:
+            tipo = 3    # Opción inexistente en el diálogo pero reconocible 
+                        # por la función que va a generar las etiquetas.
             filetiqpale = geninformes.generar_etiqueta_pale(pales, tipo)
             mandar_a_imprimir_con_ghostscript(filetiqpale) 
         if que_imprimir == 1 or que_imprimir == 2:
+            tipo = MEMENTO_MORI['tipo']
+            if tipo is None:
+                tipo = utils.dialogo_radio(titulo = "SELECCIONAR ETIQUETA", 
+                    texto = "Seleccione el tipo de etiqueta a generar:", 
+                    ops = [(0, "Mínima (solo código de palé, partida y "
+                               "marcado CE)"), 
+                           (1, "Neutra (incluye datos de producto)"), 
+                           (2, "Completa (incluye el nombre de la empresa)")], 
+                    padre = padre, 
+                    valor_por_defecto = 1)
+            if tipo != None:
+                MEMENTO_MORI['tipo'] = tipo
             cajas = []
             for p in pales:
                 cajas += p.cajas[:]

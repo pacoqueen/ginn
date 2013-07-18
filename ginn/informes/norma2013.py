@@ -126,6 +126,8 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True, lang = "es"):
                 data["05 telefono"] = data["05 telefono"][1:]
             if data["05 telefono"].endswith(","):
                 data["05 telefono"] = data["05 telefono"][:-1]
+            if len(data["05 telefono"]) <= 7: 
+                data["05 telefono"] = ""
         except IndexError:
             data["02 fabricado_por"] = ""
             data["03 direccion1"] = ""
@@ -263,12 +265,12 @@ def crear_etiquetas_pales(pales, mostrar_marcado = True, lang = "es"):
              "07 blanco1": "",      # Separador
              "08 dni": None, 
              "09 iso1": "EN 14889-2:2008",  # Fijo
-             "10 iso2": "",     # Fijo
              "11 blanco2": "",      # Separador
              "12 producto": None, 
              "13 descripcion": "", 
              "14 uso": None, 
              "15 blanco3": "",      # Separador 
+             "16 1 separador": "",     # Fijo
              "16 codigo": "%s %s",  # Código de palé y código de lote.
              "17 caracteristicas": None     # Descripción del producto.
             }
@@ -322,6 +324,8 @@ def crear_etiquetas_pales(pales, mostrar_marcado = True, lang = "es"):
                 data["05 telefono"] = data["05 telefono"][1:]
             if data["05 telefono"].endswith(","):
                 data["05 telefono"] = data["05 telefono"][:-1]
+            if len(data["05 telefono"]) <= 7: 
+                data["05 telefono"] = ""
         except IndexError:
             data["02 fabricado_por"] = ""
             data["03 direccion1"] = ""
@@ -393,9 +397,6 @@ def crear_etiquetas_pales(pales, mostrar_marcado = True, lang = "es"):
     c.save()
     return nomarchivo
 
-def crear_etiquetas_cajas(cajas, mostrar_marcado = True):
-    pass
-
 def test_rollos():
     from formularios.reports import abrir_pdf
     for p in pclases.ProductoVenta.select():
@@ -408,20 +409,11 @@ def test_rollos():
 def test_pales():
     from formularios.reports import abrir_pdf
     pales = pclases.Pale.select()[:2]
-    abrir_pdf(crear_etiquetas_pales(pales, False))
-    import time
-    time.sleep(1)
     abrir_pdf(crear_etiquetas_pales(pales))
-
-def test_cajas():
-    from formularios.reports import abrir_pdf
-    cajas = pclases.Caja.select()[:2]
-    abrir_pdf(crear_etiquetas_cajas(cajas, False))
     import time
     time.sleep(1)
-    abrir_pdf(crear_etiquetas_cajas(cajas))
+    abrir_pdf(crear_etiquetas_pales(pales, lang = "en"))
 
 if __name__ == "__main__":
     test_pales()
-    test_cajas()
 

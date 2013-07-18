@@ -7833,6 +7833,7 @@ def generar_etiqueta_pale(pales, tipo = 3):
         # 2.- Guardo canvas y devuelvo nombre de archivo generado.
         c.save()
     elif tipo == 3:
+        from informes import norma2013
         nomarchivo = norma2013.crear_etiquetas_pales(pales)
     return nomarchivo
 
