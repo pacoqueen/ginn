@@ -44,6 +44,7 @@ pygtk.require('2.0')
 import os
 import sys
 from formularios import utils
+from informes.geninformes import give_me_the_name_baby
 
 def abrir_pdf(pdf):
     """
@@ -95,7 +96,7 @@ def abrir_csv(csv, ventana_padre = None):
         # OJO: Esto no es independiente de la plataforma:
         os.startfile(csv)  # @UndefinedVariable
 
-def mandar_a_imprimir_con_ghostscript(fichero):
+def mandar_a_imprimir_con_ghostscript(fichero, rotate = False):
     """
     Lanza un trabajo de impresión a través de acrobat reader.
     Usa parámetros no documentados y oficialmente no soportados 
@@ -109,6 +110,17 @@ def mandar_a_imprimir_con_ghostscript(fichero):
     impresora).
     ¡MENTIRA COCHINA! Lo hace a través de Ghostscript.
     """
+    if rotate:
+        from lib.PyPDF2 import PyPDF2
+        fichrotado = os.path.join(os.path.gettempdir(), 
+                                  "gs_rotated_%s.pdf" % give_me_the_name_baby()
+                                 )
+        rotado = PyPDF2.PdfFileWriter()
+        original = PyPDF2.PdfFileReader(open(fichero, "rb"))
+        for page in range(original.getNumPages()):
+            rotado.addPage(original.getPage(page).rotateClockwise(270))
+        rotado.write(open(fichrotado, "wb"))
+        fichero = fichrotado
     # OJO: Ruta al reader harcoded !!!
     #    comando = """"C:\\Archivos de programa\\Adobe\\Acrobat 6.0\\Reader\\AcroRd32.exe" /t "%s" GEMINI2 """ % (fichero)
     #    comando = """start /B AcroRd32 /t "%s" CAB """ % (fichero)

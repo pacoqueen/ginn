@@ -1238,14 +1238,14 @@ class PartesDeFabricacionBolsas(Ventana):
             'A continuación seleccione la hora de inicio de la incidencia.', 
             padre = self.wids['ventana'])
         horaini = utils.mostrar_hora(time.localtime()[3], 0, 0, 'HORA INICIO')
-        if horaini == None:
+        if not horaini:
             return
         utils.dialogo_info('HORA FIN', 
             'A continuación seleccione la hora de finalización de la incide'\
             'ncia.', 
             padre = self.wids['ventana'])
         horafin = utils.mostrar_hora(time.localtime()[3], 0, 0, 'HORA FIN')
-        if horafin == None: 
+        if not horafin: 
             return
         self.objeto.sync()
         horaini = mx.DateTime.DateTimeFrom(year = self.objeto.fecha.year, 
@@ -1922,7 +1922,7 @@ def imprimir_etiquetas_pales(pales, padre = None, mostrar_dialogo = True):
             tipo = 3    # Opción inexistente en el diálogo pero reconocible 
                         # por la función que va a generar las etiquetas.
             filetiqpale = geninformes.generar_etiqueta_pale(pales, tipo)
-            mandar_a_imprimir_con_ghostscript(filetiqpale) 
+            mandar_a_imprimir_con_ghostscript(filetiqpale, rotate = True) 
         if que_imprimir == 1 or que_imprimir == 2:
             tipo = MEMENTO_MORI['tipo']
             if tipo is None:
