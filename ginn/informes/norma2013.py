@@ -248,10 +248,7 @@ def crear_etiquetas_pales(pales, mostrar_marcado = True, lang = "es"):
     # Medidas:
     logo = (3.8 * cm * 0.75, 2.8 * cm * 0.75)
     margen = 0.1 * cm
-    # XXX: Pruebas a 60 mm
-    #marcado = (((ancho - logo[0]) / 2) - margen, (alto - margen - logo[1] - 2))
-    marcado = (((6*cm - logo[0]) / 2) - margen, (alto - margen - logo[1] - 2))
-    # EOPruebas a 60 mm
+    marcado = (((ancho - logo[0]) / 2) - margen, (alto - margen - logo[1] - 2))
     
     # Imágenes:
     logo_marcado = os.path.abspath(os.path.join(os.path.dirname(__file__), 
@@ -274,9 +271,6 @@ def crear_etiquetas_pales(pales, mostrar_marcado = True, lang = "es"):
              "14 uso": None, 
              "15 blanco3": "",      # Separador 
              "16 1 separador": "",     # Fijo
-            # XXX: Pruebas 60 mm
-             "16 2 separador": "",  # El de arriba lo usaré para datos, necesito otro nuevo separador para las pruebas.
-            # XXX: EOPruebas 60 mm
              "16 codigo": "%s %s",  # Código de palé y código de lote.
              "17 caracteristicas": None     # Descripción del producto.
             }
@@ -352,36 +346,19 @@ def crear_etiquetas_pales(pales, mostrar_marcado = True, lang = "es"):
             else:
                 produso = producto.uso
             produso = textwrap.wrap(produso, 
-                    # XXX: Pruebas 60 mm
-                    # (len(produso) + max([len(w) for w in produso.split()])) / 2)
-                    (len(produso) + max([len(w) for w in produso.split()])) / 3)
-                    # XXX: EOPruebas 60 mm
+                    (len(produso) + max([len(w) for w in produso.split()])) / 2)
             data["14 uso"] = produso[0]
             data["15 blanco3"] = produso[1]     # Era un separador, pero 
                                                 # necesito el espacio.
-            # XXX: Pruebas 60 mm
-            data["16 1 separador"] = produso[2]     # Era un separador, pero 
-            # XXX: EOPruebas 60 mm
         else:
             data["14 uso"] = ""
     #   3.- Palé 
         data["16 codigo"] = _data["16 codigo"] % (numpartida, 
                                                   numpale)
-        # XXX: Pruebas 60 mm
-        #data["17 caracteristicas"] = producto.descripcion
-        descripcion = textwrap.wrap(producto.descripcion, 
-                    (len(producto.descripcion) + max([len(w) for w in producto.descripcion.split()])) / 2)
-        data["17 caracteristicas"] = descripcion[0]
-        _data["18 caracteristicas"] = ""    # Para que haga hueco en la última línea.
-        data["18 caracteristicas"] = descripcion[1]
-        # XXX: EOPruebas 60 mm
+        data["17 caracteristicas"] = producto.descripcion
 
         rectangulo(c, (margen, margen),
                       (ancho - margen, alto - margen))
-        # XXX: Pruebas con 60 mm de ancho
-        rectangulo(c, (margen, margen),
-                      (6.0 * cm - margen, alto - margen))
-        # XXX: EOPruebas con 60 mm de ancho
         if mostrar_marcado: 
             c.drawImage(logo_marcado, 
                         marcado[0], 
@@ -412,10 +389,7 @@ def crear_etiquetas_pales(pales, mostrar_marcado = True, lang = "es"):
                                                 fuente = estilos[linea][0], 
                                                 tamannoini = estilos[linea][1],
                                                 xini = margen, 
-                                        # XXX: Pruebas con 60 mm de ancho
-                                                #xfin = ancho - margen, 
-                                                xfin = 6 * cm - margen, 
-                                        # XXX: EOPruebas con 60 mm de ancho
+                                                xfin = ancho - margen, 
                                                 y = y, 
                                                 texto = dato, 
                                                 alineacion = 0)
