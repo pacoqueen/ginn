@@ -697,10 +697,14 @@ def escribir_barra_estado(wid, texto, logger = None, txt_log = ""):
     texto = eliminar_dobles_espacios(texto)
     wid.push(wid.get_context_id(texto), texto)
     if logger != None:
-        if "error" in txt_log.lower():
-            logger.error("%s: %s" % (txt_log, texto))
-        else:
-            logger.warning("%s: %s" % (txt_log, texto))
+        try:
+            if "error" in txt_log.lower():
+                logger.error("%s: %s" % (txt_log, texto))
+            else:
+                logger.warning("%s: %s" % (txt_log, texto))
+        except IOError:
+            pass    # El fichero de log se ha cerrado por algún motivo. Mutis 
+                    # por el foro.
 
 def tipo_gobject(valor):
     """
