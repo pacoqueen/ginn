@@ -283,10 +283,11 @@ def crear_etiquetas_pales(pales, mostrar_marcado = True, lang = "es"):
     if lang == "en":
         for k in _data:
             _data[k] = helene_laanest(_data[k])
-    estilos = defaultdict(lambda: ("Helvetica-Bold", 11)) # Helvética a 9 por defecto
+    estilos = defaultdict(lambda: ("Helvetica-Bold", 11)) # Helvética a 11 por defecto
+    estilos["01 texto_marcado"] = ("Times-Bold", 9)
     estilos["02 fabricado_por"] = ("Helvetica-Bold", 13)
-    estilos["12 producto"] = ("Helvetica-Bold", 17)
-    estilos["16 codigo"] = ("Helvetica-Bold", 17)
+    estilos["12 producto"] = ("Courier-Bold", 17)
+    estilos["16 codigo"] = ("Courier-Bold", 17)
     estilos["17 caracteristicas"] = ("Helvetica-Bold", 15)
     data = {}
     # Datos de la BD dependientes del palé 

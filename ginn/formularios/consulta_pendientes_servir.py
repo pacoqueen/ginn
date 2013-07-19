@@ -155,22 +155,6 @@ def build_datos_por_producto(por_producto):
                     kilos_B, 
                     bultos_B, 
                     ide]
-            # Para exportar a Excel con kilos/hora y pesos teóricos pendientes 
-            # y reales en existencias.
-# PORASQUI: Esto no funciona. Peta.
-            if hasattr(p, "es_rollo") and p.es_rollo():
-                prodestandar = p.prodestandar
-                cer = p.camposEspecificosRollo
-                pdte_teorico = cer.get_peso_teorico() * por_producto[p] # por_producto[p] eq. a pendiente
-                # Esto es muuuuy lento. Lo cambio por teórico.
-                #stock_kg_reales = sum([a.peso for a in 
-                #  p._get_articulos_en_fecha_en_almacen(
-                #      mx.DateTime.today(), 
-                #      tipo = pclases.Rollo)])
-                stock_kg = cer.get_peso_teorico() * kilos
-                data.insert(3, prodestandar)
-                data.insert(5, pdte_teorico)
-                data.insert(7, stock_kg)
             datos.append(data)
         else:
             datos.append((producto, 
@@ -245,16 +229,33 @@ def build_datos_por_pedido(fibra_o_gtx):
                         fdp = ""
                     if (not hasattr(producto, "controlExistencias") 
                         or producto.controlExistencias):
-                        datos.append((numpedido,
-                                      fechapedido,
-                                      cliente, 
-                                      str_producto,
-                                      str_pendiente, 
-                                      str_existencias, 
-                                      str_fechaentrega, 
-                                      textoentrega or "", 
-                                      fdp, 
-                                      ide))
+                        data = [numpedido,
+                                fechapedido,
+                                cliente, 
+                                str_producto,
+                                str_pendiente, 
+                                str_existencias, 
+                                str_fechaentrega, 
+                                textoentrega or "", 
+                                fdp, 
+                                ide]
+                        # Para exportar a Excel con kilos/hora y pesos 
+                        # teóricos pendientes y reales en existencias.
+                        if hasattr(producto, "es_rollo") and producto.es_rollo():
+                            p = producto
+                            prodestandar = p.prodestandar
+                            cer = p.camposEspecificosRollo
+                            pdte_teorico = cer.get_peso_teorico() * pendiente
+                            # Esto es muuuuy lento. Lo cambio por teórico.
+                            #stock_kg_reales = sum([a.peso for a in 
+                            #  p._get_articulos_en_fecha_en_almacen(
+                            #      mx.DateTime.today(), 
+                            #      tipo = pclases.Rollo)])
+                            stock_kg = cer.get_peso_teorico() * p.get_stock()
+                            data.insert(4, utils.float2str(prodestandar))
+                            data.insert(6, utils.float2str(pdte_teorico))
+                            data.insert(8, utils.float2str(stock_kg))
+                        datos.append(data)
                     else:
                         datos.append((numpedido, 
                                       fechapedido, 
@@ -458,13 +459,17 @@ class PendientesServir(Ventana):
                 ('IDPedido', 'gobject.TYPE_INT64', False, False, False, None)]
         utils.preparar_listview(self.wids['tv_fibra_por_pedido'], cols)
         utils.preparar_listview(self.wids['tv_otros_por_pedido'], cols)
-        cols.insert(5, ("Kg (teórico)", "gobject.TYPE_STRING", 
-                        False, True, False, None))
-        cols.insert(7, ("Kg (reales)", "gobject.TYPE_STRING", 
-                        False, True, False, None))
         cols.insert(4, ("Prod. estándar", "gobject.TYPE_STRING", 
                         False, True, False, None))
+        cols.insert(6, ("Kg (teóricos)", "gobject.TYPE_STRING", 
+                        False, True, False, None))
+        cols.insert(8, ("Kg (teóricos)", "gobject.TYPE_STRING", 
+                        False, True, False, None))
         utils.preparar_listview(self.wids['tv_gtx_por_pedido'], cols)
+        for ncol in range(4, 9):
+            col = self.wids['tv_gtx_por_pedido'].get_column(ncol)
+            for cell in col.get_cell_renderers():
+                cell.set_property("xalign", 1)
         self.wids['tv_fibra_por_pedido'].connect("row-activated", self.abrir_pedido)
         self.wids['tv_gtx_por_pedido'].connect("row-activated", self.abrir_pedido)
         self.wids['tv_otros_por_pedido'].connect("row-activated", self.abrir_pedido)
@@ -484,7 +489,7 @@ class PendientesServir(Ventana):
         self.colorear(self.wids['tv_gtx_por_producto'])
         self.colorear(self.wids['tv_otros_por_producto'])
         self.colorear(self.wids['tv_fibra_por_pedido'])
-        self.colorear(self.wids['tv_gtx_por_pedido'])
+        #self.colorear(self.wids['tv_gtx_por_pedido'])
         self.colorear(self.wids['tv_otros_por_pedido'])
         utils.rellenar_lista(self.wids['cbe_cliente'], [(0, "Todos los clientes")] + [(c.id, c.nombre) for c in pclases.Cliente.select(orderBy="nombre")])
         def iter_cliente_seleccionado(completion, model, itr):
@@ -508,10 +513,6 @@ class PendientesServir(Ventana):
         servir es superior a las existencias en almacén.
         """
         def cell_func(column, cell, model, itr, numcol):
-            """
-            Si la fila corresponde a una factura cobrada en un pagaré, colorea la 
-            fila completa con un color generado a partir del número de pagaré.
-            """
             if "-->" in model[itr][0] or "-->" in model[itr][3]:
                 cell.set_property("cell-background", "IndianRed3")
             elif "->" in model[itr][0] or "->" in model[itr][3]:

@@ -403,13 +403,21 @@ def unittest():
     assert tb1 is tb2
     assert ta1 is not tb1
 
+
+def es_macro(txt):
+    """
+    Devuelve True si txt no tiene formato de MACRO (todo mayúsculas).
+    """
+    return txt == txt.upper()
+
 def guess_class(modulo):
     # Lo mismo es mejor con esto: http://docs.python.org/2/library/imp.html
     exec "from formularios import " + modulo
     exec "moduler = " + modulo
     clases = [c for c in dir(moduler) if c[0].isupper()  # @UndefinedVariable
                                         and c != "Ventana" 
-                                        and c != "VentanaGenerica"]
+                                        and c != "VentanaGenerica"
+                                        and not es_macro(c)]
     return clases[0]
     
     
