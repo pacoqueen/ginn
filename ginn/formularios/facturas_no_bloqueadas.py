@@ -50,7 +50,8 @@ from formularios import ventana_progreso
 class FacturasNoBloqueadas(Ventana):
     def __init__(self, objeto = None, usuario = None):
         self.usuario = usuario
-        Ventana.__init__(self, 'facturas_no_bloqueadas.glade', objeto, usuario = usuario)
+        Ventana.__init__(self, 'facturas_no_bloqueadas.glade', objeto, 
+                         usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_editar/clicked': self.abrir_factura,
                        'b_actualizar/clicked': self.actualizar}
@@ -65,25 +66,31 @@ class FacturasNoBloqueadas(Ventana):
                 ('ID', 'gobject.TYPE_INT64', False, False, False, None))
         utils.preparar_listview(self.wids['tv_facturas'], cols)
         if self.usuario != None:
-            ventanas_con_permiso = [p.ventana.fichero for p in self.usuario.permisos if p.permiso] # and p.escritura]    # STILL UNIMPLEMENTED
+            ventanas_con_permiso = [p.ventana.fichero 
+                    for p in self.usuario.permisos if p.permiso] 
+                                    # and p.escritura]    # STILL UNIMPLEMENTED
         else:
-            ventanas_con_permiso = ["facturas_venta.py", ]  # Si lo arranco desde consola, que me deje editarlo todo. 
+            ventanas_con_permiso = ["facturas_venta.py", ]  # Si lo arranco 
+                                    # desde consola, que me deje editarlo todo.
         if 'facturas_venta.py' in ventanas_con_permiso:
             self.wids['b_editar'].set_sensitive(True)
-            self.wids['tv_facturas'].connect("row-activated", self.abrir_factura_tv)
+            self.wids['tv_facturas'].connect("row-activated", 
+                                             self.abrir_factura_tv)
         else: 
             self.wids['b_editar'].set_sensitive(False)
             self.wids['b_editar'].hide()
-        cols = (('Nº Albarán', 'gobject.TYPE_STRING', False, True, True, None), 
+        cols = (('Nº Albarán', 'gobject.TYPE_STRING', False, True, True, None),
                 ('Fecha', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Cliente', 'gobject.TYPE_STRING', False, True, False, None),
-                ('¿Parcialmente facturado?', 'gobject.TYPE_BOOLEAN', False, True, False, None),
+                ('¿Parcialmente facturado?', 'gobject.TYPE_BOOLEAN', 
+                    False, True, False, None),
                 ('Producto', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Cantidad', 'gobject.TYPE_STRING', False, True, False, None), 
                 ('Bultos', 'gobject.TYPE_STRING', False, True, False, None), 
                 ('ID', 'gobject.TYPE_INT64', False, False, False, None))
         utils.preparar_treeview(self.wids['tv_albaranes'], cols)
-        self.wids['tv_albaranes'].connect("row-activated", self.abrir_albaran_tv)
+        self.wids['tv_albaranes'].connect("row-activated", 
+                                          self.abrir_albaran_tv)
         self.rellenar_facturas()
         self.rellenar_albaranes_no_facturados()
         gtk.main()
@@ -95,16 +102,29 @@ class FacturasNoBloqueadas(Ventana):
         """
         Rellena el model de albaranes no facturados.
         """
-        ldvs_sin_facturar = pclases.LineaDeVenta.select(pclases.AND(pclases.LineaDeVenta.q.albaranSalidaID != None, 
-                                                                    pclases.LineaDeVenta.q.facturaVentaID == None, 
-                                                                    pclases.LineaDeVenta.q.prefacturaID == None))
+        vpro = ventana_progreso.VentanaProgreso(padre = self.wids['ventana'])
+        vpro.mostrar()
+        vpro.set_valor(0, "Recuperando albaranes no internos y facturables")
+        ldvs_sin_facturar = pclases.LineaDeVenta.select(
+                pclases.AND(pclases.LineaDeVenta.q.albaranSalidaID == pclases.AlbaranSalida.q.id, 
+                            pclases.AlbaranSalida.q.facturable == True, 
+                            pclases.LineaDeVenta.q.facturaVentaID == None, 
+                            pclases.LineaDeVenta.q.prefacturaID == None))
         albaranes_no_facturados = []
+        tot = ldvs_sin_facturar.count()
+        i = 0.0
         for ldv in ldvs_sin_facturar:
-            if ldv.albaranSalida.facturable and ldv.albaranSalida not in albaranes_no_facturados:
+            i += 1
+            vpro.set_valor(i / tot, 
+                    "Recuperando albaranes no internos y facturables")
+            if (ldv.albaranSalida not in albaranes_no_facturados
+                    and not ldv.albaranSalida.es_interno() 
+                ):
                 albaranes_no_facturados.append(ldv.albaranSalida)
         model = self.wids['tv_albaranes'].get_model()
         model.clear()
         self.wids['tv_albaranes'].set_model(None)
+        vpro.set_valor(1.0, "Mostrando albaranes pendientes de facturar")
         for a in albaranes_no_facturados:
             padre = model.append(None, (a.numalbaran,
                                         utils.str_fecha(a.fecha), 
@@ -114,15 +134,19 @@ class FacturasNoBloqueadas(Ventana):
                                         "",
                                         "", 
                                         a.id))
-            for ldv in [ldv for ldv in a.lineasDeVenta if ldv.facturaVentaID == None or ldv.prefacturaID == None]:
-                model.append(padre, ("", 
-                                     "", 
-                                     "", 
-                                     "", 
-                                     ldv.producto and ldv.producto.descripcion or "-", 
-                                     ldv.get_str_cantidad(), 
-                                     ldv.get_str_bultos(),
-                                     ldv.id))
+            for ldv in [ldv for ldv in a.lineasDeVenta 
+                             if ldv.facturaVentaID == None 
+                                or ldv.prefacturaID == None]:
+                model.append(padre, 
+                        ("", 
+                         "", 
+                         "", 
+                         "", 
+                         ldv.producto and ldv.producto.descripcion or "-", 
+                         ldv.get_str_cantidad(), 
+                         ldv.get_str_bultos(),
+                         ldv.id))
+        vpro.ocultar()
         self.wids['tv_albaranes'].set_model(model)
 
     def rellenar_facturas(self):
@@ -136,43 +160,51 @@ class FacturasNoBloqueadas(Ventana):
         vpro = ventana_progreso.VentanaProgreso(padre = self.wids['ventana'])
         vpro.mostrar()
         i = 0.0
-        facturas = pclases.FacturaVenta.select(pclases.FacturaVenta.q.bloqueada == False, orderBy = "id")
-        prefacturas = pclases.Prefactura.select(pclases.Prefactura.q.bloqueada == False, orderBy = "id")
+        facturas = pclases.FacturaVenta.select(
+                pclases.FacturaVenta.q.bloqueada == False, orderBy = "id")
+        prefacturas = pclases.Prefactura.select(
+                pclases.Prefactura.q.bloqueada == False, orderBy = "id")
         tot = facturas.count() + prefacturas.count()
         for factura in facturas:
-            vpro.set_valor(i/tot, 'Recuperando factura %s...' % (factura.numfactura))
+            vpro.set_valor(i/tot, 
+                           'Recuperando factura %s...' % (factura.numfactura))
             i += 1
             if factura.vencimientosCobro == []:
                 motivo = "Sin vencimientos."
-            elif factura.cliente.cif == None or factura.cliente.cif.strip() == "":
+            elif (factura.cliente.cif == None 
+                    or factura.cliente.cif.strip() == ""):
                 motivo = "Cliente sin CIF."
             else:
                 motivo = "Factura no bloqueada."
             model.append((factura.numfactura,
                           utils.str_fecha(factura.fecha),
                           factura.cliente and factura.cliente.nombre or "-",
-                          "%s €" % (utils.float2str(factura.calcular_total())), 
-                          ", ".join([a.numalbaran for a in factura.get_albaranes()]),
+                          "%s €" % (utils.float2str(factura.calcular_total())),
+                          ", ".join([a.numalbaran 
+                                     for a in factura.get_albaranes()]),
                           factura.bloqueada,
                           motivo,
                           factura.id))
         for factura in prefacturas:
-            vpro.set_valor(i/tot, 'Recuperando factura %s...' % (factura.numfactura))
+            vpro.set_valor(i/tot, 
+                           'Recuperando factura %s...' % (factura.numfactura))
             i += 1
             if factura.vencimientosCobro == []:
                 motivo = "Sin vencimientos."
-            elif factura.cliente.cif == None or factura.cliente.cif.strip() == "":
+            elif (factura.cliente.cif == None 
+                    or factura.cliente.cif.strip() == ""):
                 motivo = "Cliente sin CIF."
             else:
                 motivo = "Factura no bloqueada."
-            model.append((factura.numfactura,
-                          utils.str_fecha(factura.fecha),
-                          factura.cliente and factura.cliente.nombre or "-",
-                          "%s €" % (utils.float2str(factura.calcular_total())), 
-                          ", ".join([a.numalbaran for a in factura.get_albaranes()]),
-                          factura.bloqueada,
-                          motivo,
-                          factura.id))
+            model.append(
+                (factura.numfactura,
+                 utils.str_fecha(factura.fecha),
+                 factura.cliente and factura.cliente.nombre or "-",
+                 "%s €" % (utils.float2str(factura.calcular_total())), 
+                 ", ".join([a.numalbaran for a in factura.get_albaranes()]),
+                 factura.bloqueada,
+                 motivo,
+                 factura.id))
         self.wids['tv_facturas'].set_model(model)
         self.wids['tv_facturas'].thaw_child_notify()
         vpro.ocultar()
@@ -184,7 +216,8 @@ class FacturasNoBloqueadas(Ventana):
     def abrir_factura(self, b):
         model, itr = self.wids['tv_facturas'].get_selection().get_selected()
         if itr != None:
-            self.abrir_factura_tv(self.wids['tv_facturas'], model.get_path(itr), None)
+            self.abrir_factura_tv(self.wids['tv_facturas'], 
+                                  model.get_path(itr), None)
 
     def abrir_albaran_tv(self, treeview, path, view_column):
         """
@@ -210,10 +243,15 @@ class FacturasNoBloqueadas(Ventana):
         path es el path que ocupa en el model.
         """
         model = self.wids['tv_facturas'].get_model()
-        model[path][5] = True               # OJO: Directamente se marca como bloqueado. 
-                # En las facturas se asegura que no se cierre hasta que la casilla esté marcada.
-        if not utils.abrir_factura_venta(model[path][-1], model[path][0], self.usuario):
-            utils.abrir_prefactura(model[path][-1], model[path][0], self.usuario)
+        model[path][5] = True # OJO: Directamente se marca como bloqueado. 
+                # En las facturas se asegura que no se cierre hasta que 
+                # la casilla esté marcada.
+        if not utils.abrir_factura_venta(model[path][-1], 
+                                         model[path][0], 
+                                         self.usuario):
+            utils.abrir_prefactura(model[path][-1], 
+                                   model[path][0], 
+                                   self.usuario)
 
     def bloquear(self, cell, path):
         """

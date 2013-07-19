@@ -439,7 +439,11 @@ class FacturasVenta(Ventana):
                                                          'Fecha', 
                                                          'Cliente', 
                                                          'Pdte. cobro'), 
-                                            padre = self.wids['ventana'])
+                                            padre = self.wids['ventana'], 
+                                            abrir_en_ventana_nueva = 
+                                                    (FacturasVenta, 
+                                                     pclases.FacturaVenta, 
+                                                     self.usuario))
         if idfactura < 0:
             return None
         else:
