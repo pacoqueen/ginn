@@ -245,13 +245,13 @@ def build_datos_por_pedido(fibra_o_gtx):
                             p = producto
                             prodestandar = p.prodestandar
                             cer = p.camposEspecificosRollo
-                            pdte_teorico = cer.gramos / 1.000 * pendiente
+                            pdte_teorico = cer.gramos / 1000.0 * pendiente
                             # Esto es muuuuy lento. Lo cambio por teórico.
                             #stock_kg_reales = sum([a.peso for a in 
                             #  p._get_articulos_en_fecha_en_almacen(
                             #      mx.DateTime.today(), 
                             #      tipo = pclases.Rollo)])
-                            stock_kg = cer.gramos / 1.000 * p.get_stock()
+                            stock_kg = cer.gramos / 1000.0 * p.get_stock()
                             data.insert(4, utils.float2str(prodestandar))
                             data.insert(6, utils.float2str(pdte_teorico))
                             data.insert(8, utils.float2str(stock_kg))
