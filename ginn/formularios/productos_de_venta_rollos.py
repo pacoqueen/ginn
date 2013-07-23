@@ -329,6 +329,39 @@ class ProductosDeVentaRollos(Ventana):
             clientes += ((cliente.id, "%s (%s)" % (cliente.nombre, 
                                                    cliente.cif)), )
         utils.rellenar_lista(self.wids['cbe_cliente'], clientes)
+        # Tabla de equivalencia (CWT: jmadrid)
+        nts = (("NT 10",  "2008", "0001 - GEOTEXTIL - 20130701"),
+               ("NT 11",  "2004", "0002 - GEOTEXTIL - 20130701"), 
+               ("NT 12",  "2004", "0003 - GEOTEXTIL - 20130701"), 
+               ("NT 13",  "2004", "0004 - GEOTEXTIL - 20130701"), 
+               ("NT 14",  "2008", "0005 - GEOTEXTIL - 20130701"), 
+               ("NT 120", "2013", "0006 - GEOTEXTIL - 20130701"), 
+               ("NT 15",  "2004", "0007 - GEOTEXTIL - 20130701"), 
+               ("NT 155", "2011", "0008 - GEOTEXTIL - 20130701"), 
+               ("NT 17",  "2004", "0009 - GEOTEXTIL - 20130701"), 
+               ("NT 175", "2004", "0010 - GEOTEXTIL - 20130701"), 
+               ("NT 18",  "2008", "0011 - GEOTEXTIL - 20130701"), 
+               ("NT 21",  "2004", "0012 - GEOTEXTIL - 20130701"), 
+               ("NT 23",  "2004", "0013 - GEOTEXTIL - 20130701"), 
+               ("NT 235", "2011", "0014 - GEOTEXTIL - 20130701"), 
+               ("NT 25",  "2008", "0015 - GEOTEXTIL - 20130701"), 
+               ("NT 30",  "2004", "0016 - GEOTEXTIL - 20130701"), 
+               ("NT 305", "2011", "0017 - GEOTEXTIL - 20130701"), 
+               ("NT 35",  "2004", "0018 - GEOTEXTIL - 20130701"), 
+               ("NT 40",  "2004", "0019 - GEOTEXTIL - 20130701"), 
+               ("NT 46",  "2004", "0020 - GEOTEXTIL - 20130701"), 
+               ("NT 58",  "2004", "0021 - GEOTEXTIL - 20130701"), 
+               ("NT 69",  "2008", "0022 - GEOTEXTIL - 20130701"), 
+               ("NT 70",  "2008", "0023 - GEOTEXTIL - 20130701"), 
+               ("NT 80",  "2009", "0024 - GEOTEXTIL - 20130701"), 
+               ("NT 85",  "2013", "0025 - GEOTEXTIL - 20130701"), 
+               ("NT 200", "2008", "0026 - GEOTEXTIL - 20130701"), 
+              )
+        txthint = "Si no está seguro de qué valor usar, puede consultar esta"\
+                  " tabla:\n\tProd:\t\taño cert.\t\tdni\n"
+        txthint += "\n".join(["\t%s:\t\t%s\t\t%s" % tupla for tupla in nts])
+        self.wids['cbe_dni'].set_tooltip_markup(txthint)
+        self.wids['sp_anno_certificacion'].set_tooltip_markup(txthint)
 
     def activar_widgets(self, s, chequear_permisos = True):
         """
