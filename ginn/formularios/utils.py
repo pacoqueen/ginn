@@ -1237,8 +1237,9 @@ def combo_get_value(widget):
     itr = widget.get_active_iter()
     try:
         return list_model.get_value(itr, 0)
-    except TypeError:  # itr es None en vez de un GtkTreeIter
-        return None
+    except (AttributeError, TypeError):  # itr es None en vez de un GtkTreeIter
+        return None     # o bien el propio model es None porque el combo 
+                        # todavía se está construyendo o eliminando.
 
 def buscar_indice_texto(combo, texto):
     """ No tengo mucho tiempo que perder. Hasta que encuentre
