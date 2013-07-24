@@ -215,7 +215,11 @@ class Menu:
                                         padre = ventana, 
                                         icono = gtk.STOCK_QUIT))
             if not res: 
-                self.logger.warning("LOGOUT: %s" % (self.usuario.usuario))
+                try:
+                    self.logger.warning("LOGOUT: %s" % (self.usuario.usuario))
+                except IOError:
+                    pass    # El fichero de log se ha cerrado por algún 
+                            # motivo. Mutis por el foro.
         return res
 
     def construir_ventana(self):
