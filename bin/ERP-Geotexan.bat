@@ -10,7 +10,7 @@ set GINNDRIVE=L:
 set GINNPATH=%GINNDRIVE%\ginn
 set GINNEXE=%GINNPATH%\main.py
 set GINNCONF=%GINNPATH%\framework\ginn.conf
-set GINNHOST=192.168.1.100 	& REM bacall.geotexan.es
+set GINNHOST=192.168.1.100& REM bacall.geotexan.es
 set GINNSHARE="\\%GINNHOST%\compartido\ginn"
 ECHO ON 
 
