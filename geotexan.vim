@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 24 julio 2013 at 15:23:28.
+" Created by session.vim 1.5 on 25 julio 2013 at 21:08:34.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -58,7 +58,7 @@ badd +547 ~/workspace/CICAN/src/formularios/menu.py
 badd +105 ginn/formularios/launcher.py
 badd +155 ginn/formularios/empleados.py
 badd +38 ginn/formularios/resultados_geotextiles.py
-badd +218 ginn/formularios/menu.py
+badd +230 ginn/formularios/menu.py
 badd +142 ginn/formularios/autenticacion.py
 badd +11926 ginn/informes/geninformes.py
 badd +233 ginn/informes/informe_certificado_calidad.py
@@ -77,7 +77,7 @@ badd +382 ginn/informes/presupuesto2.py
 badd +367 ginn/formularios/tarifas_de_precios.py
 badd +88 ginn/formularios/logviewer.py
 badd +724 ginn/formularios/facturas_compra.py
-badd +705 ginn/formularios/utils.py
+badd +4395 ginn/formularios/utils.py
 badd +648 ginn/formularios/resultados_fibra.py
 badd +812 ginn/formularios/albaranes_de_entrada.py
 badd +1134 ginn/formularios/consulta_ventas.py
@@ -89,11 +89,11 @@ badd +46 ginn/formularios/gtkexcepthook.py
 badd +512 ginn/framework/seeker.py
 badd +13 ginn/formularios/crm_seguimiento_impagos.py
 badd +203 ginn/formularios/productos.py
-badd +49 ginn/formularios/trazabilidad_articulos.py
+badd +1064 ginn/formularios/trazabilidad_articulos.py
 badd +363 ginn/formularios/consulta_pagos.py
 badd +611 ginn/formularios/consulta_vencimientos_pago.py
-badd +64 ginn/formularios/trazabilidad.py
-badd +15873 ginn/framework/pclases/__init__.py
+badd +500 ginn/formularios/trazabilidad.py
+badd +9324 ginn/framework/pclases/__init__.py
 badd +398 ginn/framework/pclases/superfacturaventa.py
 badd +4 ginn/framework/pclases/facturaventa.py
 badd +647 ginn/formularios/consulta_mensual_nominas.py
@@ -107,9 +107,10 @@ badd +7 ~/.vim/ftplugin/python.vim
 badd +921 ginn/formularios/listado_balas.py
 badd +254 ginn/formularios/consulta_pendientes_servir.py
 badd +130 ginn/formularios/facturas_no_bloqueadas.py
+badd +0 ginn/formularios/consumo_balas_partida.py
 args formularios/auditviewer.py
-set lines=44 columns=111
-edit ginn/formularios/menu.py
+set lines=66 columns=111
+edit ginn/formularios/consumo_balas_partida.py
 set splitbelow splitright
 wincmd _ | wincmd |
 vsplit
@@ -129,10 +130,7 @@ wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
-wincmd _ | wincmd |
-split
-8wincmd k
-wincmd w
+7wincmd k
 wincmd w
 wincmd w
 wincmd w
@@ -145,24 +143,22 @@ set nosplitright
 wincmd t
 set winheight=1 winwidth=1
 exe 'vert 1resize ' . ((&columns * 30 + 55) / 111)
-exe '2resize ' . ((&lines * 26 + 22) / 44)
+exe '2resize ' . ((&lines * 1 + 33) / 66)
 exe 'vert 2resize ' . ((&columns * 80 + 55) / 111)
-exe '3resize ' . ((&lines * 1 + 22) / 44)
+exe '3resize ' . ((&lines * 1 + 33) / 66)
 exe 'vert 3resize ' . ((&columns * 80 + 55) / 111)
-exe '4resize ' . ((&lines * 1 + 22) / 44)
+exe '4resize ' . ((&lines * 1 + 33) / 66)
 exe 'vert 4resize ' . ((&columns * 80 + 55) / 111)
-exe '5resize ' . ((&lines * 1 + 22) / 44)
+exe '5resize ' . ((&lines * 1 + 33) / 66)
 exe 'vert 5resize ' . ((&columns * 80 + 55) / 111)
-exe '6resize ' . ((&lines * 1 + 22) / 44)
+exe '6resize ' . ((&lines * 50 + 33) / 66)
 exe 'vert 6resize ' . ((&columns * 80 + 55) / 111)
-exe '7resize ' . ((&lines * 1 + 22) / 44)
+exe '7resize ' . ((&lines * 1 + 33) / 66)
 exe 'vert 7resize ' . ((&columns * 80 + 55) / 111)
-exe '8resize ' . ((&lines * 1 + 22) / 44)
+exe '8resize ' . ((&lines * 1 + 33) / 66)
 exe 'vert 8resize ' . ((&columns * 80 + 55) / 111)
-exe '9resize ' . ((&lines * 1 + 22) / 44)
+exe '9resize ' . ((&lines * 1 + 33) / 66)
 exe 'vert 9resize ' . ((&columns * 80 + 55) / 111)
-exe '10resize ' . ((&lines * 1 + 22) / 44)
-exe 'vert 10resize ' . ((&columns * 80 + 55) / 111)
 argglobal
 enew
 file __Tag_List__
@@ -184,24 +180,16 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-149
+345
 normal! zo
-187
+620
 normal! zo
-212
-normal! zo
-218
-normal! zo
-221
-normal! zo
-222
-normal! zo
-let s:l = 218 - ((12 * winheight(0) + 13) / 26)
+let s:l = 624 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-218
-normal! 020|
+624
+normal! 053|
 wincmd w
 argglobal
 edit ginn/formularios/partes_de_fabricacion_bolsas.py
@@ -336,29 +324,6 @@ normal! zt
 normal! 024|
 wincmd w
 argglobal
-edit ginn/formularios/utils.py
-setlocal fdm=indent
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=99
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-688
-normal! zo
-700
-normal! zo
-701
-normal! zo
-let s:l = 707 - ((0 * winheight(0) + 0) / 1)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-707
-normal! 022|
-wincmd w
-argglobal
 edit ginn/formularios/ventana.py
 setlocal fdm=indent
 setlocal fde=0
@@ -465,535 +430,533 @@ normal! zo
 normal! zo
 4986
 normal! zo
-5805
+5090
 normal! zo
-5961
+5177
 normal! zo
-5971
+5807
 normal! zo
-6104
+5963
 normal! zo
-6230
+5973
 normal! zo
-6245
+6106
 normal! zo
-6252
+6232
 normal! zo
-6252
+6247
 normal! zo
-6252
+6254
 normal! zo
-6252
+6254
 normal! zo
-6252
+6254
 normal! zo
-6252
+6254
 normal! zo
-6252
+6254
 normal! zo
-6252
+6254
 normal! zo
-6255
+6254
 normal! zo
-6255
+6254
 normal! zo
-6255
+6257
 normal! zo
-6255
+6257
 normal! zo
-6255
+6257
 normal! zo
-6255
+6257
 normal! zo
-6255
+6257
 normal! zo
-6255
+6257
 normal! zo
-6255
+6257
 normal! zo
-6275
+6257
 normal! zo
-6391
+6257
 normal! zo
-6399
+6277
 normal! zo
-6415
+6393
 normal! zo
-6446
+6401
 normal! zo
-6469
+6417
 normal! zo
-6476
+6448
 normal! zo
-6494
+6471
 normal! zo
-6501
+6478
 normal! zo
-6509
+6496
 normal! zo
-6536
+6503
 normal! zo
-6536
+6511
 normal! zo
-6536
+6538
 normal! zo
-6536
+6538
 normal! zo
-6536
+6538
 normal! zo
-6554
+6538
 normal! zo
-6560
+6538
 normal! zo
-6560
+6556
 normal! zo
-6579
+6562
 normal! zo
-6587
+6562
 normal! zo
-6587
+6581
 normal! zo
-6591
+6589
 normal! zo
-6595
+6589
 normal! zo
-6612
+6593
 normal! zo
-6613
+6597
 normal! zo
-6613
+6614
 normal! zo
-6619
+6615
 normal! zo
-6624
+6615
 normal! zo
-6645
+6621
 normal! zo
-6658
+6626
 normal! zo
-6677
+6647
 normal! zo
-6683
+6660
 normal! zo
-6687
+6679
 normal! zo
-6691
+6685
 normal! zo
-6706
+6689
 normal! zo
-6714
+6693
 normal! zo
-6726
+6708
 normal! zo
-6734
+6716
 normal! zo
-6740
+6728
 normal! zo
-6740
+6736
 normal! zo
-6740
+6742
 normal! zo
-6740
+6742
 normal! zo
-6740
+6742
 normal! zo
-6740
+6742
 normal! zo
-6740
+6742
 normal! zo
-6752
+6742
 normal! zo
-6758
+6742
 normal! zo
-6766
+6754
 normal! zo
-6779
+6760
 normal! zo
-6785
+6768
 normal! zo
-7539
+6781
 normal! zo
-8178
+6787
 normal! zo
-8178
+7541
 normal! zo
-8178
+8180
 normal! zo
-8178
+8180
 normal! zo
-8178
+8180
 normal! zo
-8178
+8180
 normal! zo
-8178
+8180
 normal! zo
-8206
+8180
 normal! zo
-8213
+8180
 normal! zo
-8220
+8208
 normal! zo
-9016
+8215
 normal! zo
-9376
+8222
 normal! zo
-10516
+9018
 normal! zo
-10698
+9379
 normal! zo
-10707
+10519
 normal! zo
-10726
+10701
 normal! zo
-10779
+10710
 normal! zo
-10794
+10729
 normal! zo
-10835
+10782
 normal! zo
-11418
+10797
 normal! zo
-11418
+10838
 normal! zo
-11418
+11421
 normal! zo
-11623
+11421
 normal! zo
-11623
+11421
 normal! zo
-11623
+11626
 normal! zo
-11623
+11626
 normal! zo
-11654
+11626
+normal! zo
+11626
 normal! zo
 11657
 normal! zo
-11658
+11660
 normal! zo
-11666
+11661
 normal! zo
-11670
+11669
 normal! zo
-11671
+11673
 normal! zo
-12004
+11674
 normal! zo
-12004
+12007
 normal! zo
-12004
+12007
 normal! zo
-12004
+12007
 normal! zo
-12004
+12007
 normal! zo
-12040
+12007
 normal! zo
-12041
+12043
 normal! zo
-12042
+12044
 normal! zo
-12062
+12045
 normal! zo
-12088
+12065
 normal! zo
-12089
+12091
 normal! zo
-12183
+12092
 normal! zo
-12184
+12186
 normal! zo
-12223
+12187
 normal! zo
-12224
+12226
 normal! zo
-12302
+12227
 normal! zo
-12302
+12305
 normal! zo
-12302
+12305
 normal! zo
-12302
+12305
 normal! zo
-12302
+12305
 normal! zo
-12302
+12305
 normal! zo
-12302
+12305
 normal! zo
-12302
+12305
 normal! zo
-12314
+12305
 normal! zo
-12329
+12317
 normal! zo
-12331
+12332
 normal! zo
-12336
+12334
 normal! zo
-12341
+12339
 normal! zo
-12342
+12344
 normal! zo
-12342
+12345
 normal! zo
-12342
+12345
 normal! zo
-12377
+12345
 normal! zo
-12377
+12380
 normal! zo
-12416
+12380
 normal! zo
-12417
+12419
 normal! zo
-12418
+12420
 normal! zo
-12434
+12421
 normal! zo
-12478
+12437
 normal! zo
-12479
+12481
 normal! zo
-12539
+12482
 normal! zo
-12540
+12542
 normal! zo
-12600
+12543
 normal! zo
-12601
+12603
 normal! zo
-12741
-normal! zo
-12742
-normal! zo
-12743
+12604
 normal! zo
 12744
 normal! zo
-12744
+12745
 normal! zo
-12764
+12746
 normal! zo
-12765
+12747
 normal! zo
-12766
+12747
 normal! zo
-12766
+12767
 normal! zo
-12778
+12768
 normal! zo
-12779
+12769
 normal! zo
-12780
+12769
 normal! zo
-12780
+12781
 normal! zo
-12797
+12782
 normal! zo
-12798
+12783
 normal! zo
-12799
-normal! zo
-12800
+12783
 normal! zo
 12800
 normal! zo
-12821
+12801
 normal! zo
-12822
+12802
 normal! zo
-12823
+12803
 normal! zo
-12823
+12803
 normal! zo
-12835
+12824
 normal! zo
-12836
+12825
 normal! zo
-12837
+12826
 normal! zo
-12837
+12826
 normal! zo
-12913
+12838
 normal! zo
-12914
+12839
 normal! zo
-12915
+12840
+normal! zo
+12840
 normal! zo
 12916
 normal! zo
-12916
+12917
 normal! zo
-12937
+12918
 normal! zo
-12938
+12919
 normal! zo
-12939
+12919
 normal! zo
-12939
+12940
 normal! zo
-12951
+12941
 normal! zo
-12952
+12942
 normal! zo
-12953
+12942
 normal! zo
-12953
+12954
 normal! zo
-12969
+12955
 normal! zo
-12970
+12956
 normal! zo
-12971
-normal! zo
-12972
+12956
 normal! zo
 12972
 normal! zo
-12993
+12973
 normal! zo
-12994
+12974
 normal! zo
-12995
+12975
 normal! zo
-12995
+12975
 normal! zo
-13007
+12996
 normal! zo
-13008
+12997
 normal! zo
-13009
+12998
 normal! zo
-13009
+12998
 normal! zo
-13093
+13010
 normal! zo
-13095
+13011
+normal! zo
+13012
+normal! zo
+13012
 normal! zo
 13096
 normal! zo
-13097
+13098
 normal! zo
-13097
+13099
 normal! zo
-13108
+13100
 normal! zo
-13109
+13100
 normal! zo
-13110
+13111
 normal! zo
-13110
+13112
 normal! zo
-13125
+13113
 normal! zo
-13126
-normal! zo
-13127
+13113
 normal! zo
 13128
 normal! zo
-13128
+13129
 normal! zo
-13139
+13130
 normal! zo
-13140
+13131
 normal! zo
-13141
+13131
 normal! zo
-13141
+13142
 normal! zo
-13762
+13143
 normal! zo
-13773
+13144
 normal! zo
-13784
+13144
 normal! zo
-13803
+13765
 normal! zo
-13854
+13776
 normal! zo
-13891
+13787
 normal! zo
-13892
+13806
 normal! zo
-14055
+13857
 normal! zo
-14097
+13894
 normal! zo
-14925
+13895
 normal! zo
-14929
+14058
 normal! zo
-14929
+14100
 normal! zo
-14929
+14928
 normal! zo
-14929
+14932
 normal! zo
-14929
+14932
 normal! zo
-14944
+14932
 normal! zo
-14963
+14932
 normal! zo
-14975
+14932
 normal! zo
-14978
+14947
 normal! zo
-14978
-normal! zo
-14978
+14966
 normal! zo
 14978
 normal! zo
-14986
+14981
 normal! zo
-15010
+14981
 normal! zo
-15018
+14981
 normal! zo
-15020
+14981
 normal! zo
-15033
+14989
 normal! zo
-15042
+15013
 normal! zo
-15053
+15021
 normal! zo
-15054
+15023
 normal! zo
-15063
+15036
 normal! zo
-15063
+15045
 normal! zo
-15070
+15056
 normal! zo
-15079
+15057
 normal! zo
-15083
+15066
 normal! zo
-15084
+15066
 normal! zo
-15096
+15073
 normal! zo
-15115
+15082
 normal! zo
-15137
+15086
 normal! zo
-15142
+15087
 normal! zo
-15143
+15099
 normal! zo
-15143
+15118
+normal! zo
+15140
+normal! zo
+15145
 normal! zo
 15146
 normal! zo
-15147
+15146
 normal! zo
-15147
-normal! zo
-15147
+15149
 normal! zo
 15150
 normal! zo
@@ -1001,195 +964,195 @@ normal! zo
 normal! zo
 15150
 normal! zo
-15154
+15153
 normal! zo
-15154
+15153
 normal! zo
-15154
+15153
 normal! zo
-15154
+15157
 normal! zo
-15154
+15157
 normal! zo
-15154
+15157
 normal! zo
-15154
+15157
 normal! zo
-15154
+15157
 normal! zo
-15154
+15157
 normal! zo
-15159
+15157
 normal! zo
-15187
+15157
 normal! zo
-15207
+15157
 normal! zo
-15214
+15162
+normal! zo
+15190
+normal! zo
+15210
 normal! zo
 15217
 normal! zo
 15220
 normal! zo
-15239
+15223
 normal! zo
-15260
+15242
 normal! zo
-15278
+15263
 normal! zo
-15285
+15281
 normal! zo
-15299
+15288
 normal! zo
-15314
+15302
 normal! zo
-15333
+15317
 normal! zo
-15344
+15336
 normal! zo
-15356
+15347
 normal! zo
-15374
+15359
 normal! zo
-15384
+15377
 normal! zo
-15389
+15387
 normal! zo
-15389
+15392
 normal! zo
-15389
+15392
 normal! zo
-15389
+15392
 normal! zo
-15389
+15392
 normal! zo
-15389
+15392
 normal! zo
-15389
+15392
 normal! zo
-15389
+15392
 normal! zo
-15389
+15392
 normal! zo
-15389
+15392
 normal! zo
-15389
+15392
 normal! zo
-15391
+15392
 normal! zo
-15391
+15394
 normal! zo
-15391
+15394
 normal! zo
-15395
+15394
 normal! zo
-15396
+15398
 normal! zo
-15404
+15399
 normal! zo
-15418
+15407
 normal! zo
-15434
+15421
 normal! zo
-15443
+15437
 normal! zo
-15451
+15446
 normal! zo
 15454
 normal! zo
-15459
+15457
 normal! zo
-15473
+15462
 normal! zo
-15483
+15476
 normal! zo
-15487
+15486
 normal! zo
-15492
+15490
 normal! zo
-15498
+15495
 normal! zo
-15504
+15501
 normal! zo
-15504
+15507
 normal! zo
-15504
+15507
 normal! zo
-15506
+15507
 normal! zo
-15506
+15509
 normal! zo
-15506
+15509
 normal! zo
-15512
+15509
 normal! zo
-15516
+15515
 normal! zo
-15517
+15519
 normal! zo
-15517
+15520
 normal! zo
-15517
+15520
 normal! zo
-15517
+15520
 normal! zo
-15517
+15520
 normal! zo
-15517
+15520
 normal! zo
-15524
+15520
 normal! zo
-15525
+15527
 normal! zo
-15525
+15528
 normal! zo
-15537
+15528
 normal! zo
-15537
+15540
 normal! zo
-15537
+15540
 normal! zo
-15567
-normal! zo
-15568
-normal! zo
-15568
-normal! zo
-15568
-normal! zo
-15568
-normal! zo
-15568
-normal! zo
-15568
+15540
 normal! zo
 15570
 normal! zo
-15575
+15571
 normal! zo
-15581
+15571
 normal! zo
-15588
+15571
 normal! zo
-15589
+15571
 normal! zo
-15589
+15571
+normal! zo
+15571
+normal! zo
+15573
+normal! zo
+15578
+normal! zo
+15584
+normal! zo
+15591
 normal! zo
 15592
 normal! zo
-15597
+15592
 normal! zo
-15603
+15595
 normal! zo
-15614
+15600
 normal! zo
-15631
+15606
 normal! zo
-15642
+15617
 normal! zo
-15643
-normal! zo
-15643
+15634
 normal! zo
 15645
 normal! zo
@@ -1197,86 +1160,92 @@ normal! zo
 normal! zo
 15646
 normal! zo
-15652
+15648
 normal! zo
-15653
+15649
 normal! zo
-15654
-normal! zo
-15655
+15649
 normal! zo
 15655
 normal! zo
-15655
+15656
 normal! zo
-15655
+15657
 normal! zo
-15661
+15658
 normal! zo
-15662
+15658
 normal! zo
-15663
+15658
 normal! zo
-15663
+15658
 normal! zo
-15663
+15664
 normal! zo
-15663
+15665
 normal! zo
-15670
+15666
 normal! zo
-15681
+15666
 normal! zo
-15688
+15666
 normal! zo
-15735
+15666
 normal! zo
-15794
+15673
 normal! zo
-15832
+15684
 normal! zo
-15847
+15691
 normal! zo
-15858
+15738
 normal! zo
-15858
+15797
 normal! zo
-17659
+15835
 normal! zo
-17666
+15850
 normal! zo
-17671
+15861
 normal! zo
-17671
+15861
 normal! zo
-17671
+17662
 normal! zo
-18360
+17669
 normal! zo
-18381
+17674
 normal! zo
-18543
+17674
 normal! zo
-18701
+17674
 normal! zo
-18744
+18363
 normal! zo
-19113
+18384
 normal! zo
-19201
+18546
 normal! zo
-19219
+18704
 normal! zo
-19580
+18747
 normal! zo
-19738
+19116
 normal! zo
-let s:l = 15860 - ((0 * winheight(0) + 0) / 1)
+19204
+normal! zo
+19222
+normal! zo
+19583
+normal! zo
+19741
+normal! zo
+let s:l = 5209 - ((45 * winheight(0) + 25) / 50)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-15860
-normal! 034|
+5209
+normal! 022|
 wincmd w
 argglobal
 edit ginn/formularios/ventana.py
@@ -1625,26 +1594,24 @@ normal! zt
 2293
 normal! 037|
 wincmd w
-2wincmd w
+6wincmd w
 exe 'vert 1resize ' . ((&columns * 30 + 55) / 111)
-exe '2resize ' . ((&lines * 26 + 22) / 44)
+exe '2resize ' . ((&lines * 1 + 33) / 66)
 exe 'vert 2resize ' . ((&columns * 80 + 55) / 111)
-exe '3resize ' . ((&lines * 1 + 22) / 44)
+exe '3resize ' . ((&lines * 1 + 33) / 66)
 exe 'vert 3resize ' . ((&columns * 80 + 55) / 111)
-exe '4resize ' . ((&lines * 1 + 22) / 44)
+exe '4resize ' . ((&lines * 1 + 33) / 66)
 exe 'vert 4resize ' . ((&columns * 80 + 55) / 111)
-exe '5resize ' . ((&lines * 1 + 22) / 44)
+exe '5resize ' . ((&lines * 1 + 33) / 66)
 exe 'vert 5resize ' . ((&columns * 80 + 55) / 111)
-exe '6resize ' . ((&lines * 1 + 22) / 44)
+exe '6resize ' . ((&lines * 50 + 33) / 66)
 exe 'vert 6resize ' . ((&columns * 80 + 55) / 111)
-exe '7resize ' . ((&lines * 1 + 22) / 44)
+exe '7resize ' . ((&lines * 1 + 33) / 66)
 exe 'vert 7resize ' . ((&columns * 80 + 55) / 111)
-exe '8resize ' . ((&lines * 1 + 22) / 44)
+exe '8resize ' . ((&lines * 1 + 33) / 66)
 exe 'vert 8resize ' . ((&columns * 80 + 55) / 111)
-exe '9resize ' . ((&lines * 1 + 22) / 44)
+exe '9resize ' . ((&lines * 1 + 33) / 66)
 exe 'vert 9resize ' . ((&columns * 80 + 55) / 111)
-exe '10resize ' . ((&lines * 1 + 22) / 44)
-exe 'vert 10resize ' . ((&columns * 80 + 55) / 111)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
@@ -1659,6 +1626,6 @@ let &so = s:so_save | let &siso = s:siso_save
 doautoall SessionLoadPost
 unlet SessionLoad
 tabnext 1
-2wincmd w
+6wincmd w
 
 " vim: ft=vim ro nowrap smc=128
