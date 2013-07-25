@@ -9318,9 +9318,10 @@ class Articulo(SQLObject, PRPCTOO):
                         pc, 
                         None))
         # ... y ordenar por fecha.
-        res.sort(lambda t1, t2: (t1[0] < t2[0] and -1) 
-                                or (t1[0] > t2[0] and 1) 
-                                or 0)
+        res.sort(utils.comparar_como_fechahora) 
+        #res.sort(lambda t1, t2: (t1[0] < t2[0] and -1) 
+        #                        or (t1[0] > t2[0] and 1) 
+        #                        or 0)
         return res
 
     def es_rollo(self):
