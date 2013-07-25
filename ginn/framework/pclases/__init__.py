@@ -5193,6 +5193,8 @@ class PartidaCarga(SQLObject, PRPCTOO):
         fecha_albaran_interno = self.get_fecha_inicio() 
         if not fecha_albaran_interno:
             fecha_albaran_interno = self.fecha
+        if not isinstance(numalbaran, str):
+            numalbaran = str(numalbaran)
         albaran = AlbaranSalida(numalbaran = numalbaran, 
                                 transportista = None, 
                                 cliente = cliente, 
