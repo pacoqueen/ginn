@@ -196,7 +196,6 @@ class ConsumoBalasPartida(Ventana):
         Comprueba si el usuario tiene permiso para escritura o nuevo y 
         deshabilita o habilita los botones según sea el caso.
         """
-        # TODO: OJO. No compruebo si self.objeto != None.
         if self.usuario:
             try:
                 ventana = pclases.Ventana.select(pclases.Ventana.q.fichero == "consumo_balas_partida.py")[0]     # OJO: HARCODED
@@ -227,10 +226,12 @@ class ConsumoBalasPartida(Ventana):
                         self.wids[w].set_sensitive(True)
             # print permiso.nuevo, permiso.escritura
             self.wids['b_albaran'].set_sensitive(
-                len(self.objeto.get_balas_sin_albaran_interno()) > 0
+                self.objeto 
+                and len(self.objeto.get_balas_sin_albaran_interno()) > 0
                 and (permiso.nuevo or permiso.escritura))
         else:
             self.wids['b_albaran'].set_sensitive(
+                self.objeto and 
                 len(self.objeto.get_balas_sin_albaran_interno()) > 0)
  
     def rellenar_partidas_gtx(self):
