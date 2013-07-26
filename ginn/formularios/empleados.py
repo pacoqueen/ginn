@@ -368,6 +368,7 @@ class Empleados(Ventana):
         # Añadido: Si el empleado no tiene alta como trabajador, deshabilito 
         # el botón de permisos.
         self.wids['b_ausencias'].set_sensitive(self.objeto.activo)
+        self.wids['b_categoria'].set_sensitive(self.objeto.categoriaLaboral != None)
 
     def build_label(self, nombrecampo):
         """

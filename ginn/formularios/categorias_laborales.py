@@ -48,6 +48,7 @@ try:
     from psycopg import ProgrammingError as psycopg_ProgrammingError
 except ImportError:
     from psycopg2 import ProgrammingError as psycopg_ProgrammingError
+from formularios import utils 
 
 
 class CategoriasLaborales(Ventana):
@@ -135,9 +136,9 @@ class CategoriasLaborales(Ventana):
             self.logger.error(txt_error)
             valor_ventana = 0.0
         try:
-            valor_ventana = float(valor_ventana)
+            valor_ventana = utils._float(valor_ventana)
         except ValueError:
-            txt_error = "categorias_laborales.py: No se pudo convertir %s(%s) a float." % (col, valor_ventana)
+            txt_error = "categorias_laborales.py: No se pudo convertir %s (%s) a float." % (col, valor_ventana)
             print txt_error
             self.logger.error(txt_error)
             valor_ventana = 0.0
@@ -447,7 +448,7 @@ class CategoriasLaborales(Ventana):
         elif isinstance(tipocampo, pclases.SOCol):      # Clase base, casi seguro Float: el widget es un entry
             res = w.get_text()
             try:
-                res = float(res)
+                res = utils._float(res)
             except ValueError:
 #                txt = "categorias_laborales.py: No se pudo convertir el valor %s de %s para %s <%s>." \
 #                       % (res, w, nombrecampo, tipocampo)
