@@ -581,8 +581,12 @@ CREATE TABLE categoria_laboral(
     dias_convenio INT DEFAULT 2,     -- Por defecto y por convenio laboral: 2
     dias_asuntos_propios INT DEFAULT 2, -- Por defecto 2 al año. Remunerados.
     salario_base FLOAT DEFAULT 0.0, 
-    precio_hora_regular FLOAT DEFAULT 0.0 -- NEW! 16/09/2008. Necesario para
+    precio_hora_regular FLOAT DEFAULT 0.0,-- NEW! 16/09/2008. Necesario para
                                           -- calcular costes de líneas.
+    fecha DATE DEFAULT NULL     -- Fecha de entrada en vigor de los precios 
+                                -- para esta categoría laboral. Útil a la 
+                                -- hora de calcular nóminas según la fecha 
+                                -- en que se haga la consulta.
 );
 
 ---------------

@@ -615,7 +615,6 @@ class Empleados(Ventana):
         empleado.notificador.set_func(self.aviso_actualizacion)
         self.actualizar_ventana()
         self.wids['b_guardar'].set_sensitive(False)
-      
 
     def imprimir_listado(self, widget):
         """

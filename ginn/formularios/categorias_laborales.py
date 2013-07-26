@@ -50,6 +50,7 @@ except ImportError:
     from psycopg2 import ProgrammingError as psycopg_ProgrammingError
 from formularios import utils 
 
+# TODO: PORASQUI: Tengo que manejar el nuevo campo de fecha para usar diferentes precios por hora, extra, noche, etc. A partir del 1 de julio hay un precio nuevo por noche PARA CADA TRABAJADOR. Un primer paso es hacerlo para categoría laboral. Ya me quebraré la cabeza para hacerlo también por trabajador. Se trata de no romper la compatibilidad hacia atrás y que una consulta hoy de hace 1 año salga igual que cuando se pidió hace un año.
 
 class CategoriasLaborales(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -562,7 +563,6 @@ class CategoriasLaborales(Ventana):
         categoria_laboral.notificador.set_func(self.aviso_actualizacion)
         self.actualizar_ventana()
         self.wids['b_guardar'].set_sensitive(False)
-
 
 
 if __name__ == '__main__':
