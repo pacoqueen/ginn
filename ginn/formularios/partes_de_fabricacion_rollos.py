@@ -1724,13 +1724,36 @@ class PartesDeFabricacionRollos(Ventana):
         self.wids['b_guardar'].set_sensitive(False)
 
     def borrar_parte(self, boton):
-        if not utils.dialogo('Se va a intentar eliminar el parte actual.\nSi hay operaciones complejas implicadas se cancelará el borrado.\nDe cualquier forma, no se aconseja eliminar ningún parte que ya tenga rollos relacionadas.\n¿Está seguro de borrar el parte actual?', 'ELIMINAR PARTE', padre = self.wids['ventana']): return
+        if not utils.dialogo('Se va a intentar eliminar el parte actual.\n'
+                             'Si hay operaciones complejas implicadas se '
+                             'cancelará el borrado.\n'
+                             'De cualquier forma, no se aconseja eliminar '
+                             'ningún parte que ya tenga rollos relacionadas.\n'
+                             '¿Está seguro de borrar el parte actual?', 
+                             'ELIMINAR PARTE', 
+                             padre = self.wids['ventana']): 
+            return
         partedeproduccion = self.objeto
         partedeproduccion.notificador.desactivar()
         try:
-            partedeproduccion.destroy(ventana = __file__)
+            if (partedeproduccion.articulos 
+                    or partedeproduccion.horasTrabajadas
+                    or pdp.descuentosDeMaterial 
+                    or pdp.consumos):
+                utils.dialogo_info(titulo = "PARTE NO VACÍO", 
+                        texto = "El parte no está vacío y no se eliminará.\n"
+                                "Quite primero toda la producción, consumos,\n"
+                                "material de desecho y empleados relacionados"
+                                "\n antes de volver a intentarlo.", 
+                        padre = self.wids['ventana'])
+            else:
+                partedeproduccion.destroy(ventana = __file__)
         except:
-            utils.dialogo_info('PARTE NO BORRADO', 'El parte no se eliminó.\nSi tiene rollos o empleados asociados, trate primero de eliminarlos y vuelva a intentarlo.', padre = self.wids['ventana'])
+            utils.dialogo_info('PARTE NO BORRADO', 
+                    'El parte no se eliminó.\nSi tiene rollos o empleados '
+                    'asociados, trate primero de eliminarlos y vuelva a '
+                    'intentarlo.', 
+                    padre = self.wids['ventana'])
             return
         self.ir_a_primero()
 
