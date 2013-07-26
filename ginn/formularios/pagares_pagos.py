@@ -628,8 +628,21 @@ class PagaresPagos(Ventana):
             vto = None
         return vto
 
+    def actualizar_fecha_vto(self):
+        """
+        Ajusta la fecha de vencimiento del pagaré a la mayor de todos los 
+        vencimientos cubiertos.
+        """
+        try:
+            fechamax = max([p.fecha for p in self.objeto.pagos])
+        except (ValueError, AttributeError): # No hay pagaré o no cubre nada.
+            pass
+        else:
+            self.wids['e_fechav'].set_text(utils.str_fecha(fechamax))
+
     def add_pago(self, b):
-        # NOTA: Los abonos recibidos no se meten en el programa, en todo caso se cuentan como una factura negativa.
+        # NOTA: Los abonos recibidos no se meten en el programa, en todo 
+        # caso se cuentan como una factura negativa.
         pagare = self.objeto
         idproveedor = utils.combo_get_value(self.wids['cbe_proveedor'])
         if idproveedor > 0:
@@ -649,7 +662,9 @@ class PagaresPagos(Ventana):
                             fecha = vencimiento.fecha,
                             importe = vencimiento.importe,
                             proveedor = proveedor,
-                            observaciones = 'Cubierto por el pagaré con fecha %s.' % (utils.str_fecha(self.objeto.fechaEmision)))
+                            observaciones = 'Cubierto por el pagaré con fecha'
+                                            ' %s.' % (
+                                    utils.str_fecha(self.objeto.fechaEmision)))
         pclases.Auditoria.nuevo(pago, self.usuario, __file__)
         if pagare.pagado == pagare.cantidad:
             pagare.pagado = sum([c.importe for c in pagare.pagos])
@@ -657,6 +672,7 @@ class PagaresPagos(Ventana):
         else:
             pagare.cantidad = sum([c.importe for c in pagare.pagos])
         self.actualizar_ventana()
+        self.actualizar_fecha_vto()
         
     def drop_pago(self, b):
         pagare = self.objeto
@@ -674,6 +690,7 @@ class PagaresPagos(Ventana):
             if pagare.pagado > pagare.cantidad:
                 pagare.pagado = pagare.cantidad
             self.actualizar_ventana()
+            self.actualizar_fecha_vto()
 
     def add_manual(self, boton):
         """
@@ -727,6 +744,7 @@ class PagaresPagos(Ventana):
                     else:
                         pagare.cantidad = sum([c.importe for c in pagare.pagos])
                     self.actualizar_ventana()
+                    self.actualizar_fecha_vto()
 
     def cambiar_fechav(self, b):
         self.wids['e_fechav'].set_text(utils.str_fecha(utils.mostrar_calendario(padre = self.wids['ventana'])))
