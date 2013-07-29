@@ -11272,11 +11272,13 @@ def escribir_info_cmr(c, a, m, f, lugar_entrega = "", transportista = "",
 def cmr_control(c, m, f):
     rectangulo(c, m[0], m[1], texto = 'DOCUMENTO DE CONTROL',
                alinTxtX = 'centro', alinTxtY = 'arriba', doble = False)
-    rectangulo(c, m[0], m[1], texto = 'Orden FOM/238/2003',
+    #rectangulo(c, m[0], m[1], texto = 'Orden FOM/238/2003', # Orden BOE 5/7/13
+    rectangulo(c, m[0], m[1], texto = 'Orden FOM/2861/2012',
                alinTxtX = 'centro', alinTxtY = 'centro', doble = False)
 
 def cmr_rte(c, m, f):
-    rectangulo(c, m[0], m[1], texto = 'Remitente (nombre y domicilio)',
+    # rectangulo(c, m[0], m[1], texto = 'Remitente (nombre y domicilio)',
+    rectangulo(c, m[0], m[1], texto = 'Cargador contractual',
                alinTxtX = None, alinTxtY = 'arriba', doble = False)
     offset = 0.5*cm
     c.line(m[0][0], m[0][1] - offset, m[1][0], m[0][1] - offset)
@@ -11454,7 +11456,8 @@ def cmr_num(c, m, f, a):
 
 def cmr_etransp(c, m, f, a, transportista):
     rectangulo(c, m[0], m[1],
-               texto = 'Empresa transportista (nombre y domicilio)',
+               # texto = 'Empresa transportista (nombre y domicilio)',
+               texto = 'Transportista efectivo (nombre y domicilio)',
                alinTxtX = None, alinTxtY = 'arriba', doble = False)
     offset = 0.5*cm
     c.line(m[0][0], m[0][1] - offset, m[1][0], m[0][1] - offset)
