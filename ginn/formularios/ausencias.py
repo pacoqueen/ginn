@@ -47,6 +47,7 @@ import gtk, time
 from framework import pclases
 from informes import geninformes
 import mx.DateTime
+import datetime
 
 class Ausencias(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -181,7 +182,10 @@ class Ausencias(Ventana):
                                        texto = "Las bajas médicas no pueden solaparse entre sí, elija otra fecha.", 
                                        padre = self.wids['ventana'])
                     return
-                fechaintermedia += mx.DateTime.oneDay
+                if isinstance(fechaintermedia, datetime.date):
+                    fechaintermedia += datetime.timedelta(1)
+                else:
+                    fechaintermedia += mx.DateTime.oneDay
         baja.fechaFin = fecha
         if baja.fechaInicio > baja.fechaFin:
             baja.fechaInicio, baja.fechaFin = baja.fechaFin, baja.fechaInicio
