@@ -42,6 +42,7 @@ import gtk, time
 from framework import pclases
 import mx.DateTime
 from formularios import ventana_progreso
+from formularios.ventana_progreso import VentanaActividad
 import re
 
 
@@ -78,6 +79,25 @@ class ConsultaCobros(Ventana):
         col = self.wids['tv_datos'].get_column(3)
         for cell in col.get_cell_renderers():
             cell.set_property("xalign", 1)
+        cols = (("Cliente", "gobject.TYPE_STRING", 
+                    False, True, False, None), 
+                ("Suplemento", 'gobject.TYPE_STRING', 
+                    False, True, False, None), 
+                ("NIF", 'gobject.TYPE_STRING', 
+                    False, True, True, None), 
+                ("Código Cesce", 'gobject.TYPE_STRING', 
+                    False, True, False, None), 
+                ("Importe cobrado", 'gobject.TYPE_STRING', 
+                    False, True, False, None), 
+                ("Fecha cobro", 'gobject.TYPE_STRING', 
+                    False, True, False, None), 
+                ("Número factura", 'gobject.TYPE_STRING', 
+                    False, True, False, None), 
+                ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
+        utils.preparar_listview(self.wids['tv_cesce'], cols)
+        self.wids['tv_cesce'].get_column(4).get_cell_renderers()[0].set_property("xalign", 1)
+        self.wids['tv_cesce'].connect("row-activated", abrir_factura, 
+                                                       self.usuario)
         temp = time.localtime()
         self.fin = str(temp[0])+'/'+str(temp[1])+'/'+str(temp[2])
         self.wids['e_fechafin'].set_text(utils.str_fecha(temp))
@@ -95,43 +115,16 @@ class ConsultaCobros(Ventana):
         """
         from informes.treeview2csv import treeview2csv
         from formularios.reports import abrir_csv
-        tv = self.wids['tv_datos']
+        if self.wids['notebook1'].get_current_page() == 0:
+            tv = self.wids['tv_datos']
+        else:
+            tv = self.wids['tv_cesce']
         abrir_csv(treeview2csv(tv))
 
     def chequear_cambios(self):
         pass
 
-    def corregir_nombres_fecha(self, s):
-        """
-        Porque todo hombre debe enfrentarse al menos una 
-        vez en su vida a dos tipos de sistemas operativos: 
-        los que tienen en cuenta las locales y los que se 
-        lo pasan por el forro.
-        """
-        trans = {'Monday': 'lunes',
-                 'Tuesday': 'martes',
-                 'Wednesday': 'miércoles',
-                 'Thursday': 'jueves',
-                 'Friday': 'viernes',
-                 'Saturday': 'sábado',
-                 'Sunday': 'domingo',
-                 'January': 'enero',
-                 'February': 'febrero',
-                 'March': 'marzo',
-                 'April': 'abril',
-                 'May': 'mayo',
-                 'June': 'junio',
-                 'July': 'julio',
-                 'August': 'agosto',
-                 'September': 'septiembre',
-                 'October': 'octubre',
-                 'November': 'noviembre',
-                 'December': 'diciembre'}
-        for in_english in trans:
-            s = s.replace(in_english, trans[in_english])
-        return s
-
-    def rellenar_tabla(self, elementos):
+    def rellenar_tabla(self, elementos, vpro):
         """
         Rellena el model con los items de la consulta.
         Elementos es un diccionario con objetos fecha como claves y 
@@ -143,11 +136,14 @@ class ConsultaCobros(Ventana):
         model.clear()
         cobros = 0
         vencimientos = 0
+        vpro.mover()
         for fecha in elementos:
+            vpro.mover()
             sumvtos = 0 
             frasvtos = []
             cobrosvencimientos = elementos[fecha]
             for p in cobrosvencimientos['vencimientos']:
+                vpro.mover()
                 if p.facturaVenta != None:
                     frasvtos.append("%s(%s)" % (p.facturaVenta.numfactura, 
                         p.facturaVenta.cliente and p.facturaVenta.cliente.nombre or ""))
@@ -156,11 +152,13 @@ class ConsultaCobros(Ventana):
                         p.prefactura.cliente and p.prefactura.cliente.nombre or ""))
                 sumvtos += p.importe
             for p in cobrosvencimientos['logic']:
+                vpro.mover()
                 sumvtos += p['importe']
                 frasvtos.append(p['codigo'])
             sumcobros = 0 
             frascobros = []
             for p in cobrosvencimientos['cobros']:
+                vpro.mover()
                 if p.facturaVenta != None:
                     frascobros.append("%s(%s)" % (p.facturaVenta.numfactura, 
                         p.facturaVenta.cliente and p.facturaVenta.cliente.nombre or ""))
@@ -178,7 +176,8 @@ class ConsultaCobros(Ventana):
             fras = ", ".join([f[:f.index("(")] for f in frasvtos])
             vtos = ", ".join([f[:f.index("(")] for f in frascobros])
             MAX_LINEA = 50
-            # padre = model.append(None, (self.corregir_nombres_fecha(fecha.strftime('%A, %d de %B de %Y')), 
+            # padre = model.append(None, (corregir_nombres_fecha(fecha.strftime('%A, %d de %B de %Y')), 
+            vpro.mover()
             padre = model.append(None, (utils.str_fecha(fecha), 
                                         utils.float2str(sumvtos), 
                                         len(fras) > MAX_LINEA 
@@ -191,6 +190,7 @@ class ConsultaCobros(Ventana):
                                         ""))
             for i in xrange(max(len(cobrosvencimientos['cobros']), 
                                 len(cobrosvencimientos['vencimientos'])+len(cobrosvencimientos['logic']))):
+                vpro.mover()
                 if i < len(cobrosvencimientos['cobros']):
                     p = cobrosvencimientos['cobros'][i]
                     if p.facturaVenta != None:
@@ -264,11 +264,15 @@ class ConsultaCobros(Ventana):
 
         
     def buscar(self,boton):
+        vpro = VentanaActividad(texto = "Buscando cobros...")
+        vpro.mostrar()
+        vpro.mover()
         if not self.inicio:
             cobros = pclases.Cobro.select(pclases.Cobro.q.fecha <= self.fin, orderBy = 'fecha')
         else:
             cobros = pclases.Cobro.select(pclases.AND(pclases.Cobro.q.fecha >= self.inicio,
                                                       pclases.Cobro.q.fecha <= self.fin), orderBy = 'fecha')
+        vpro.mover()
         if not self.inicio:
             vencimientos = pclases.VencimientoCobro.select(pclases.VencimientoCobro.q.fecha <= self.fin, 
                                                            orderBy = 'fecha')
@@ -276,12 +280,16 @@ class ConsultaCobros(Ventana):
             vencimientos = pclases.VencimientoCobro.select(
                                 pclases.AND(pclases.VencimientoCobro.q.fecha >= self.inicio,
                                               pclases.VencimientoCobro.q.fecha <= self.fin), orderBy = 'fecha')
+        vpro.mover()
         elementos = {}
+        vpro.mover()
         for item in cobros:
+            vpro.mover()
             if item.fecha not in elementos:
                 elementos[item.fecha] = {'cobros': [], 'vencimientos': [], 'logic': []}
             elementos[item.fecha]['cobros'].append(item)
         for item in vencimientos:
+            vpro.mover()
             if item.fecha not in elementos:
                 elementos[item.fecha] = {'cobros': [], 'vencimientos': [], 'logic': []}
             elementos[item.fecha]['vencimientos'].append(item)
@@ -289,7 +297,32 @@ class ConsultaCobros(Ventana):
         #     if item['fecha'] not in elementos:
         #         elementos[item['fecha']] = {'cobros': [], 'vencimientos': [], 'logic': []}
         #     elementos[item['fecha']]['logic'].append(item)
-        self.rellenar_tabla(elementos)
+        self.rellenar_tabla(elementos, vpro)
+        self.rellenar_cesce(cobros, vpro)
+        vpro.ocultar()
+
+    def rellenar_cesce(self, cobros, vpro):
+        self.wids['notebook1'].set_current_page(1)
+        model = self.wids['tv_cesce'].get_model()
+        model.clear()
+        vpro.mover()
+        for c in cobros:
+            vpro.mover()
+            numfactura = c.get_numfactura()
+            if not numfactura:
+                try:
+                    numfactura = c.get_factura_o_prefactura().numfactura
+                except AttributeError:
+                    numfactura = ""
+            if c.cliente and c.cliente.riesgoAsegurado != -1: 
+                model.append((c.cliente and c.cliente.nombre or "", 
+                              "", # Suplemento. Vacío (al menos de momento)
+                              c.cliente and c.cliente.cif or "", 
+                              "", # Código CESCE. Vacío
+                              utils.float2str(c.importe), 
+                              utils.str_fecha(c.fecha), 
+                              numfactura, 
+                              c.puid))
         
     def buscar_vencimientos_logic(self, fechaini, fechafin):
         """
@@ -383,7 +416,64 @@ class ConsultaCobros(Ventana):
         from formularios.reports import abrir_pdf
         strdiaini = self.wids['e_fechainicio'].get_text()
         strdiafin = self.wids['e_fechafin'].get_text()
-        abrir_pdf(treeview2pdf(self.wids['tv_datos'], titulo = "Vencimientos y cobros por fecha", fecha = "Del %s al %s" % (strdiaini, strdiafin)))
+        if self.wids['notebook1'].get_current_page() == 0:
+            abrir_pdf(treeview2pdf(self.wids['tv_datos'], titulo = "Vencimientos y cobros por fecha", fecha = "Del %s al %s" % (strdiaini, strdiafin)))
+        else:
+            abrir_pdf(treeview2pdf(self.wids['tv_cesce'], titulo = "Cobros de clientes asegurados", fecha = "Del %s al %s" % (strdiaini, strdiafin)))
+
+
+def corregir_nombres_fecha(s):
+    """
+    Porque todo hombre debe enfrentarse al menos una 
+    vez en su vida a dos tipos de sistemas operativos: 
+    los que tienen en cuenta las locales y los que se 
+    lo pasan por el forro.
+    """
+    trans = {'Monday': 'lunes',
+             'Tuesday': 'martes',
+             'Wednesday': 'miércoles',
+             'Thursday': 'jueves',
+             'Friday': 'viernes',
+             'Saturday': 'sábado',
+             'Sunday': 'domingo',
+             'January': 'enero',
+             'February': 'febrero',
+             'March': 'marzo',
+             'April': 'abril',
+             'May': 'mayo',
+             'June': 'junio',
+             'July': 'julio',
+             'August': 'agosto',
+             'September': 'septiembre',
+             'October': 'octubre',
+             'November': 'noviembre',
+             'December': 'diciembre'}
+    for in_english in trans:
+        s = s.replace(in_english, trans[in_english])
+    return s
+
+def abrir_factura(tv, path, view_column, usuario):
+    model = tv.get_model()
+    puidcobro = model[path][-1]
+    if puidcobro:
+        cobro = pclases.getObjetoPUID(puidcobro)
+        if cobro.facturaVenta:
+            fra = cobro.facturaVenta
+            from formularios import facturas_venta
+            ventana = facturas_venta.FacturasVenta(fra, usuario)  # @UnusedVariable
+        elif cobro.facturaDeAbono: 
+            from formularios import abonos_venta
+            v = abonos_venta.AbonosVenta(cobro.facturaDeAbono, usuario = usuario)  # @UnusedVariable
+        elif cobro.prefactura: 
+            fra = cobro.prefactura
+            from formularios import prefacturas
+            ventana = prefacturas.Prefacturas(fra, usuario)  # @UnusedVariable
+        else:
+            utils.dialogo_info("OPERACIÓN NO SOPORTADA", 
+                    texto = "No sé qué hacer con «%s».\n"
+                            "Contacte con el administrador de la "
+                            "aplicación." % puidcobro, 
+                    padre = self.wids['ventana'])
 
 
 if __name__ == '__main__':
