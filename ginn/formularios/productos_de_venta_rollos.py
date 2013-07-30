@@ -360,8 +360,14 @@ class ProductosDeVentaRollos(Ventana):
         txthint = "Si no está seguro de qué valor usar, puede consultar esta"\
                   " tabla:\n\tProd:\t\taño cert.\t\tdni\n"
         txthint += "\n".join(["\t%s:\t\t%s\t\t%s" % tupla for tupla in nts])
-        self.wids['cbe_dni'].set_tooltip_markup(txthint)
-        self.wids['sp_anno_certificacion'].set_tooltip_markup(txthint)
+        self.wids['cbe_dni'].set_tooltip_markup(
+                "<small>" + txthint + "</small>")
+        self.wids['sp_anno_certificacion'].set_tooltip_markup(
+                "<small>" + txthint + "</small>")
+        self.wids['cbe_uso'].set_tooltip_text(
+            "Hasta NT 18: Drenaje, filtración, refuerzo y separación.\n"
+            "NT 21 en adelante: Drenaje, filtración, refuerzo, separación "
+            "y protección.")
 
     def activar_widgets(self, s, chequear_permisos = True):
         """
