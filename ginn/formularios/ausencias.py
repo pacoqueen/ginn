@@ -428,7 +428,7 @@ class Ausencias(Ventana):
                     else:
                         fechaincrementada = fecha + (mx.DateTime.oneDay * i)
                     ausencia = pclases.Ausencia(empleado = self.objeto, 
-                                                fecha = fecha_incrementada, 
+                                                fecha = fechaincrementada, 
                                                 motivo = motivo)
                     pclases.Auditoria.nuevo(ausencia, self.usuario, __file__)
                 self.actualizar_ventana()
