@@ -47,6 +47,7 @@ import gtk, time
 from framework import pclases
 from informes import geninformes
 import mx.DateTime
+import datetime
 
 class Ausencias(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -149,7 +150,10 @@ class Ausencias(Ventana):
                                        texto = "Las bajas médicas no pueden solaparse entre sí, elija otra fecha.", 
                                        padre = self.wids['ventana'])
                     return
-                fechaintermedia += mx.DateTime.oneDay
+                if isinstance(fechaintermedia, datetime.date):
+                    fechaintermedia += datetime.timedelta(1)
+                else:
+                    fechaintermedia += mx.DateTime.oneDay
         baja.fechaInicio = fecha
         if baja.fechaInicio > baja.fechaFin:
             baja.fechaInicio, baja.fechaFin = baja.fechaFin, baja.fechaInicio
@@ -181,7 +185,10 @@ class Ausencias(Ventana):
                                        texto = "Las bajas médicas no pueden solaparse entre sí, elija otra fecha.", 
                                        padre = self.wids['ventana'])
                     return
-                fechaintermedia += mx.DateTime.oneDay
+                if isinstance(fechaintermedia, datetime.date):
+                    fechaintermedia += datetime.timedelta(1)
+                else:
+                    fechaintermedia += mx.DateTime.oneDay
         baja.fechaFin = fecha
         if baja.fechaInicio > baja.fechaFin:
             baja.fechaInicio, baja.fechaFin = baja.fechaFin, baja.fechaInicio
@@ -416,8 +423,12 @@ class Ausencias(Ventana):
             try:
                 duracion = int(duracion)
                 for i in range(duracion):
+                    if isinstance(fecha, datetime.date):
+                        fechaincrementada = fecha + (datetime.timedelta(i))
+                    else:
+                        fechaincrementada = fecha + (mx.DateTime.oneDay * i)
                     ausencia = pclases.Ausencia(empleado = self.objeto, 
-                                                fecha = fecha + (mx.DateTime.oneDay * i), 
+                                                fecha = fecha_incrementada, 
                                                 motivo = motivo)
                     pclases.Auditoria.nuevo(ausencia, self.usuario, __file__)
                 self.actualizar_ventana()
