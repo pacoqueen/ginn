@@ -49,6 +49,7 @@ try:
 except ImportError:
     from psycopg2 import ProgrammingError as psycopg_ProgrammingError
 from formularios import utils 
+import mx
 
 # TODO: PORASQUI: Tengo que manejar el nuevo campo de fecha para usar diferentes precios por hora, extra, noche, etc. A partir del 1 de julio hay un precio nuevo por noche PARA CADA TRABAJADOR. Un primer paso es hacerlo para categoría laboral. Ya me quebraré la cabeza para hacerlo también por trabajador. Se trata de no romper la compatibilidad hacia atrás y que una consulta hoy de hace 1 año salga igual que cuando se pidió hace un año.
 
@@ -66,14 +67,54 @@ class CategoriasLaborales(Ventana):
                        'b_guardar/clicked': self.guardar,
                        'b_buscar/clicked': self.buscar_categoria_laboral,
                        'b_borrar/clicked': self.borrar_categoria_laboral,
+                       'b_add_fecha/clicked': self.add_fecha, 
+                       'b_drop_fecha/clicked': self.drop_fecha, 
                        }
         self.add_connections(connections)
+        self.fecha_handler = self.wids['cb_fecha'].connect("changed", 
+                                                           self.fecha_changed)
         self.inicializar_ventana()
         if self.objeto == None:
             self.ir_a_primero()
         else:
             self.ir_a(objeto)
         gtk.main()
+
+    def add_fecha(self, boton):
+        fecha = utils.mostrar_calendario(padre = self.wids['ventana'])
+        fecha = mx.DateTime.DateFrom(year = fecha[-1], 
+                                     month = fecha[1], 
+                                     day = fecha[0])
+        fechas_existentes = [item[1] for item 
+                in self.wids['cb_fecha'].get_model()]
+        if utils.str_fecha(fecha) not in fechas_existentes:
+            self.objeto = self.objeto.clone(fecha = fecha)
+            self.actualizar_ventana()
+        else:
+            utils.dialogo_info(titulo = "FECHA INCORRECTA", 
+                    texto = "Ya existe la fecha de inicio de validez.", 
+                    padre = self.wids['ventana'])
+    
+    def drop_fecha(self, boton):
+        if not self.objeto.fecha:
+            utils.dialogo_info(titulo = "FECHA NO SELECCIONADA", 
+                    texto = "No ha seleccionado una fecha.\n"
+                            "Para eliminar la categoría completa, use\n"
+                            "el botón «Eliminar» de la parte inferior\n"
+                            "de la ventana.", 
+                    padre = self.wids['ventana'])
+        else:
+            codigo = self.objeto.codigo
+            self.objeto.destroy(ventana = __file__)
+            self.objeto = pclases.CategoriaLaboral.select(pclases.AND(
+                pclases.CategoriaLaboral.q.codigo == codigo, 
+                pclases.CategoriaLaboral.q.fecha == None))[0]
+            self.actualizar_ventana()
+    
+    def fecha_changed(self, boton):
+        ide = utils.combo_get_value(self.wids['cb_fecha'])
+        self.objeto = pclases.CategoriaLaboral.get(ide)
+        self.actualizar_ventana()
 
     def activar_widgets(self, s):
         """
@@ -247,7 +288,10 @@ class CategoriasLaborales(Ventana):
 
         condicion = True
         for col in categoria_laboral.sqlmeta.columns:
-            condicion = condicion and self.comparar_campo(col, categoria_laboral.sqlmeta.columns[col])
+            if col == "fecha":
+                continue
+            condicion = condicion and self.comparar_campo(col, 
+                    categoria_laboral.sqlmeta.columns[col])
         return not condicion    # Concición verifica que sea igual
 
     def aviso_actualizacion(self):
@@ -304,7 +348,7 @@ class CategoriasLaborales(Ventana):
         Redimensiona «t» y crea dentro los widgets necesarios para
         mostrar y editar los campos de «objeto».
         """
-        numcampos = len(self.objeto.sqlmeta.columns)
+        numcampos = len(self.objeto.sqlmeta.columns) - 1 # por el campo fecha
         if numcampos % 2 != 0:
             numwidgets = numcampos + 1
         else:
@@ -315,7 +359,10 @@ class CategoriasLaborales(Ventana):
         icol = 0
         irow = 0
         for col in self.objeto.sqlmeta.columns:
-            if not isinstance(self.objeto.sqlmeta.columns[col], pclases.SOBoolCol):
+            if col == "fecha":
+                continue
+            if not isinstance(self.objeto.sqlmeta.columns[col], 
+                              pclases.SOBoolCol):
                 # Los checkboxes llevan su propio label.
                 label = self.build_label(col)
                 self.wids['t'].attach(label, icol, icol+1, irow, irow+1)
@@ -328,6 +375,14 @@ class CategoriasLaborales(Ventana):
                 icol = 0
                 irow += 1
         self.wids['t'].show_all()
+        categorias = pclases.CategoriaLaboral.selectBy(
+                codigo = self.objeto.codigo)
+        fechas = [(c.id, utils.str_fecha(c.fecha)) for c in categorias]
+        utils.rellenar_lista(self.wids['cb_fecha'], fechas)
+        self.wids['cb_fecha'].disconnect(self.fecha_handler)
+        utils.combo_set_from_db(self.wids['cb_fecha'], self.objeto.id)
+        self.fecha_handler = self.wids['cb_fecha'].connect("changed", 
+                                                           self.fecha_changed)
         self.objeto.make_swap()
 
     def build_label(self, nombrecampo):
@@ -474,14 +529,34 @@ class CategoriasLaborales(Ventana):
         y avisará al usuario.
         """
         categoria_laboral = self.objeto
-        if not utils.dialogo('Se borrará la categoria laboral actual.\n¿Está seguro?', 'BORRAR CATEGORÍA LABORAL'):
+        if not utils.dialogo('Se borrará la categoria laboral actual.\n'
+                '¿Está seguro?', 
+                'BORRAR CATEGORÍA LABORAL', 
+                padre = self.wids['ventana']):
             return
-        if categoria_laboral != None: categoria_laboral.notificador.set_func(lambda : None)
+        if categoria_laboral != None: 
+            categoria_laboral.notificador.set_func(lambda : None)
         try:
-            categoria_laboral.destroy(ventana = __file__)
+            codigo = categoria_laboral.codigo
+            for e in categoria_laboral.empleados:
+                e.categoriaLaboral = None
+                e.sync()
+            if categoria_laboral.destroy(ventana = __file__):
+                # Y ahora todas las relacionadas por fecha.
+                for c in pclases.CategoriaLaboral.selectBy(codigo = codigo):
+                    if c != categoria_laboral:
+                        c.destroy(ventana = __file__)
+            else:
+                raise ValueError, "Categoría en uso. No borrado en cascada para evitar eliminar empleados."
         except:
-            utils.dialogo_info('CATEGORÍA LABORAL NO ELIMINADA', 'La categoria laboral está implicada en operaciones que impiden su borrado.\n(Por ejemplo, puede estar aún relacionada con empleados.)')
-        self.ir_a_primero()
+            utils.dialogo_info('CATEGORÍA LABORAL NO ELIMINADA', 
+                    'La categoria laboral está implicada en operaciones que '
+                    'impiden su borrado.\n'
+                    '(Por ejemplo, puede estar aún relacionada con '
+                    'empleados.)', 
+                    padre = self.wids['ventana'])
+        else:
+            self.ir_a_primero()
 
     def crear_nuevo_categoria_laboral(self, widget):
         """
@@ -495,7 +570,10 @@ class CategoriasLaborales(Ventana):
         if categoria_laboral!=None:
             categoria_laboral.notificador.set_func(lambda : None)
         categoria_laboral = pclases.CategoriaLaboral(
-                lineaDeProduccionID = None, codigo = '', puesto = '')
+                lineaDeProduccionID = None, 
+                codigo = '', 
+                puesto = '', 
+                fecha = None)
         pclases.Auditoria.nuevo(categoria_laboral, self.usuario, __file__)
         utils.dialogo_info(titulo = 'NUEVA CATEGORÍA LABORAL CREADA',
                            texto = 'Introduzca los datos de la categoria laboral.\nRecuerde pulsar el botón GUARDAR cuando termine.\n',
@@ -515,11 +593,16 @@ class CategoriasLaborales(Ventana):
         """
         categoria_laboral = self.objeto
         objetobak = self.objeto
-        a_buscar = utils.dialogo_entrada("Introduzca nombre o código del puesto.")
+        a_buscar = utils.dialogo_entrada(
+                "Introduzca nombre o código del puesto.", 
+                padre = self.wids['ventana'])
         if a_buscar != None:
-            criterio = pclases.OR(pclases.CategoriaLaboral.q.codigo.contains(a_buscar),
-                                    pclases.CategoriaLaboral.q.puesto.contains(a_buscar))
-            resultados = pclases.CategoriaLaboral.select(criterio)
+            criterio = pclases.OR(
+                    pclases.CategoriaLaboral.q.codigo.contains(a_buscar),
+                    pclases.CategoriaLaboral.q.puesto.contains(a_buscar))
+            resultados = pclases.CategoriaLaboral.select(pclases.AND(
+                criterio, 
+                pclases.CategoriaLaboral.q.fecha == None))
             if resultados.count() > 1:
                 ## Refinar los resultados
                 idcategoria_laboral = self.refinar_resultados_busqueda(resultados)
@@ -552,6 +635,8 @@ class CategoriasLaborales(Ventana):
         categoria_laboral.notificador.set_func(lambda: None)
         # Actualizo los datos del objeto
         for col in categoria_laboral.sqlmeta.columns:
+            if col == "fecha":
+                continue
             valor = self.get_valor(self.wids[col], col, categoria_laboral.sqlmeta.columns[col])
             try:
                 categoria_laboral._SO_setValue(col, valor, None, None)

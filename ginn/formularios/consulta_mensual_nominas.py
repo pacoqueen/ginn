@@ -421,8 +421,8 @@ class ConsultaMensualNominas(Ventana):
                 i += 1
                 continue
             vpro.set_valor(i/tot, 'Consultando personal indirecto...')
-            if e.categoriaLaboral:
-                catlab = e.categoriaLaboral.codigo or e.categoriaLaboral.puesto
+            if e.get_categoriaLaboral_vigente():
+                catlab = e.get_categoriaLaboral_vigente().codigo or e.get_categoriaLaboral_vigente().puesto
             else:
                 catlab = "N/A"
             fila = [e.apellidos + ", " + e.nombre, 
@@ -439,8 +439,8 @@ class ConsultaMensualNominas(Ventana):
             coste_horas = 0.0
             if e.nomina != 0:
                 coste_horas = e.nomina
-            elif e.categoriaLaboral:
-                coste_horas = e.categoriaLaboral.salarioBase
+            elif e.get_categoriaLaboral_vigente():
+                coste_horas = e.get_categoriaLaboral_vigente().salarioBase
             coste_horas * meses
             fila += [coste_horas,
                      0.0, 
@@ -691,7 +691,7 @@ def convertir_a_filas(empleados, padre = None):
         i += 1
         # Cálculo de datos
         e = empleado    # Por abreviar
-        cat = empleado.categoriaLaboral
+        cat = empleado.get_categoriaLaboral_vigente()
         if not cat:
             catlab = "N/A"
             jefeturno = 0.0 
