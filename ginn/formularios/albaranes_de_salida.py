@@ -1949,7 +1949,14 @@ class AlbaranesDeSalida(Ventana):
         # Actualizo los datos del objeto
         albaran.almacenOrigenID = idalmo
         albaran.almacenDestinoID = idalmd
-        albaran.numalbaran = numalbaran
+        try:
+            albaran.numalbaran = numalbaran
+        except Exception, msg:
+            utils.dialogo_info(titulo = "ERROR AL GUARDAR NÚMERO DE ALBARÁN", 
+                    texto = "Ocurrió un error al guardar el número de albarán."
+                            "\nCompruebe que el número de albarán no está\n"
+                            "duplicado.", 
+                    padre = self.wids['ventana'])
         albaran.bloqueado = self.wids['ch_bloqueado'].get_active()
         albaran.facturable = self.wids['ch_facturable'].get_active()
         albaran.motivo = self.wids['e_motivo'].get_text()
