@@ -98,13 +98,18 @@ class ConsultaCobros(Ventana):
         self.wids['tv_cesce'].get_column(4).get_cell_renderers()[0].set_property("xalign", 1)
         self.wids['tv_cesce'].connect("row-activated", abrir_factura, 
                                                        self.usuario)
-        temp = time.localtime()
-        self.fin = str(temp[0])+'/'+str(temp[1])+'/'+str(temp[2])
-        self.wids['e_fechafin'].set_text(utils.str_fecha(temp))
-        tempinicio = mx.DateTime.localtime() - mx.DateTime.oneDay * 30
-        tempinicio = utils.str_fecha(tempinicio)
-        self.inicio = tempinicio
-        self.wids['e_fechainicio'].set_text(tempinicio)
+        tempfecha = mx.DateTime.today()
+        self.fin = mx.DateTime.DateFrom(day = -1, 
+                                        month = tempfecha.month, 
+                                        year = tempfecha.year)
+        self.fin = utils.asegurar_fecha_positiva(self.fin)
+        self.inicio = mx.DateTime.DateTimeFrom(day = 1, 
+                                               month = self.fin.month, 
+                                               year = self.fin.year)
+        self.inicio = utils.str_fecha(self.inicio)
+        self.fin = utils.str_fecha(self.fin)
+        self.wids['e_fechafin'].set_text(self.fin)
+        self.wids['e_fechainicio'].set_text(self.inicio)
         self.wids['e_estimados'].set_property('visible', False)
         self.wids['label8'].set_property('visible', False)
         gtk.main()
@@ -238,16 +243,18 @@ class ConsultaCobros(Ventana):
         self.wids['e_vencimientos'].set_text("%s €" % utils.float2str(vencimientos))
         
     def set_inicio(self,boton):
-        temp = utils.mostrar_calendario(padre = self.wids['ventana'])
-        self.wids['e_fechainicio'].set_text(utils.str_fecha(temp))
-        self.inicio = str(temp[2])+'/'+str(temp[1])+'/'+str(temp[0])
+        self.inicio = utils.mostrar_calendario(
+                fecha_defecto = self.wids['e_fechainicio'].get_text(), 
+                padre = self.wids['ventana'])
+        self.inicio = utils.str_fecha(self.inicio)
+        self.wids['e_fechainicio'].set_text(self.inicio)
 
-
-    def set_fin(self,boton):
-        temp = utils.mostrar_calendario(padre = self.wids['ventana'])
-        self.wids['e_fechafin'].set_text(utils.str_fecha(temp))
-        self.fin = str(temp[2])+'/'+str(temp[1])+'/'+str(temp[0])
-
+    def set_fin(self, boton):
+        self.fin = utils.mostrar_calendario(
+                fecha_defecto = self.wids['e_fechafin'].get_text(), 
+                padre = self.wids['ventana'])
+        self.fin = utils.str_fecha(self.fin)
+        self.wids['e_fechafin'].set_text(self.fin)
 
     def por_fecha(self,e1,e2):
         """
@@ -268,18 +275,23 @@ class ConsultaCobros(Ventana):
         vpro.mostrar()
         vpro.mover()
         if not self.inicio:
-            cobros = pclases.Cobro.select(pclases.Cobro.q.fecha <= self.fin, orderBy = 'fecha')
+            cobros = pclases.Cobro.select(pclases.Cobro.q.fecha <= self.fin, 
+                                          orderBy = 'fecha')
         else:
-            cobros = pclases.Cobro.select(pclases.AND(pclases.Cobro.q.fecha >= self.inicio,
-                                                      pclases.Cobro.q.fecha <= self.fin), orderBy = 'fecha')
+            cobros = pclases.Cobro.select(pclases.AND(
+                    pclases.Cobro.q.fecha >= self.inicio,
+                    pclases.Cobro.q.fecha <= self.fin), 
+                orderBy = 'fecha')
         vpro.mover()
         if not self.inicio:
-            vencimientos = pclases.VencimientoCobro.select(pclases.VencimientoCobro.q.fecha <= self.fin, 
-                                                           orderBy = 'fecha')
-        else:
             vencimientos = pclases.VencimientoCobro.select(
-                                pclases.AND(pclases.VencimientoCobro.q.fecha >= self.inicio,
-                                              pclases.VencimientoCobro.q.fecha <= self.fin), orderBy = 'fecha')
+                    pclases.VencimientoCobro.q.fecha <= self.fin, 
+                    orderBy = 'fecha')
+        else:
+            vencimientos = pclases.VencimientoCobro.select(pclases.AND(
+                    pclases.VencimientoCobro.q.fecha >= self.inicio,
+                    pclases.VencimientoCobro.q.fecha <= self.fin), 
+                orderBy = 'fecha')
         vpro.mover()
         elementos = {}
         vpro.mover()
