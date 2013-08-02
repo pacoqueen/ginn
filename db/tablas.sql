@@ -3488,58 +3488,37 @@ CREATE FUNCTION cobro_esta_cobrado(idcobro INTEGER,
         END;
     $$ LANGUAGE plpgsql; -- NEW 26/06/2013
 
-CREATE OR REPLACE FUNCTION fra_documentada(idfra INTEGER, 
-                                           fecha DATE DEFAULT CURRENT_DATE)
-    -- Devuelve el importe de la factura cubierto por documentos de cobro.
-    RETURNS FLOAT
-    AS $$
-        SELECT COALESCE(SUM(importe), 0)
-          FROM cobro 
-         WHERE factura_venta_id = $1
-               AND fecha >= $2;
-    $$ LANGUAGE SQL;    -- NEW! 28/06/2013
-
-CREATE OR REPLACE FUNCTION fra_vencida(idfra INTEGER, 
-                                       fecha DATE DEFAULT CURRENT_DATE)
-    -- Devuelve el importe de la factura vencida en la fecha recibida.
-    -- Cobrada o no.
-    RETURNS FLOAT
-    AS $$
-        SELECT COALESCE(SUM(importe), 0)
-          FROM vencimiento_cobro 
-         WHERE factura_venta_id = $1
-               AND fecha >= $2;
-    $$ LANGUAGE SQL;    -- NEW! 28/06/2013
-
 CREATE OR REPLACE FUNCTION fra_cobrada(idfra INTEGER, 
                                        fecha DATE DEFAULT CURRENT_DATE)
-    -- Devuelve el importe de la factura cobrado hasta la fecha indicada.
-    -- El cobro se hace efectivo al momento en el caso de que no sea pagaré o 
-    -- confirming. En esos dos casos el cobro se hace efectivo en el momento 
-    -- en que se negocian o llega el vencimiento (pendiente = FALSE).
-    -- El total de una factura se compone del importe cobrado, el importe 
-    -- pendiente no vencido y el importe impagado (pdte. vencido).
+    -- Devuelve TRUE si el importe de los vencimientos es igual al importe 
+    -- de los cobros en la fecha recibida. AUNQUE SEA CERO.
+    RETURNS BOOLEAN
+    AS $BODY$
+    DECLARE
+        cobrado FLOAT;
+        vencido FLOAT;
+    BEGIN
+        SELECT COALESCE(SUM(importe), 0) INTO cobrado FROM cobro WHERE cobro.factura_venta_id = $1 AND cobro_esta_cobrado(cobro.id, $2) > 0;
+        SELECT COALESCE(SUM(importe), 0) INTO vencido FROM vencimiento_cobro WHERE vencimiento_cobro.factura_venta_id = $1 AND vencimiento_cobro.fecha >= $2;
+        RETURN cobrado >= vencido;
+    END;
+    $BODY$ LANGUAGE plpgsql;    -- NEW! 1/08/2013
+
+-- PORASQUI: Queda el resto de estados de factura.
+CREATE OR REPLACE FUNCTION fra_no_documentada(idfra INTEGER, 
+                                              fecha DATE DEFAULT CURRENT_DATE)
+    -- Devuelve el importe de la factura no cubierto por un documento de 
+    -- cobro o un cobro en sí mismo. No se tiene en cuenta si el cobro 
+    -- ya se ha hecho efectivo o no. Si no queda nada por documentar, entonces 
+    -- el importe devuelto debería ser 0 (eq. FALSE).
     RETURNS FLOAT
     AS $$
-        SELECT COALESCE(SUM(cobro_esta_cobrado(id, $2)), 0)
+        SELECT COALESCE(SUM(importe), 0)
           FROM cobro 
-         WHERE factura_venta_id = $1;
+         WHERE factura_venta_id = $1
+               AND fecha >= $2;
     $$ LANGUAGE SQL;    -- NEW! 28/06/2013
 
-CREATE OR REPLACE FUNCTION fra_pendiente(idfra INTEGER, 
-                                         fecha DATE DEFAULT CURRENT_DATE)
-    -- Devuelve el importe de la factura no vencida ni cobrada o documentada.
-    -- PORASQUI
-    RETURNS FLOAT
-    AS $$
-    $$ LANGUAGE SQL;    -- NEW! 28/06/2013
-
-CREATE OR REPLACE FUNCTION fra_impagada(idfra INTEGER, 
-                                        fecha DATE DEFAULT CURRENT_DATE)
-    -- Devuelve el importe de la factura vencida y no cobrada ni documentada.
-    RETURNS FLOAT
-    AS $$
-    $$ LANGUAGE SQL;    -- NEW! 28/06/2013
 
 -------------------------------------------------------------------------------
 
