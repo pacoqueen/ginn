@@ -3488,37 +3488,106 @@ CREATE FUNCTION cobro_esta_cobrado(idcobro INTEGER,
         END;
     $$ LANGUAGE plpgsql; -- NEW 26/06/2013
 
+CREATE OR REPLACE FUNCTION calcular_importe_cobrado_factura_venta(idfra INTEGER, 
+								  fecha DATE DEFAULT CURRENT_DATE)
+    -- Devuelve el importe cobrado en fecha para la factura cuyo id se recibe.
+    RETURNS FLOAT
+    AS $$
+        SELECT COALESCE(SUM(importe), 0) FROM cobro WHERE cobro.factura_venta_id = $1 AND cobro_esta_cobrado(cobro.id, $2) <> 0;
+    $$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION calcular_importe_vencido_factura_venta(idfra INTEGER, 
+                                                                  fecha DATE DEFAULT CURRENT_DATE)
+    RETURNS FLOAT
+    AS $$
+        SELECT COALESCE(SUM(importe), 0) FROM vencimiento_cobro WHERE vencimiento_cobro.factura_venta_id = $1 AND vencimiento_cobro.fecha < $2;
+    $$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION calcular_importe_no_vencido_factura_venta(idfra INTEGER, 
+                                                                     fecha DATE DEFAULT CURRENT_DATE)
+    RETURNS FLOAT
+    AS $$
+        SELECT COALESCE(SUM(importe), 0) FROM vencimiento_cobro WHERE vencimiento_cobro.factura_venta_id = $1 AND vencimiento_cobro.fecha >= $2;
+    $$ LANGUAGE SQL;
+
 CREATE OR REPLACE FUNCTION fra_cobrada(idfra INTEGER, 
                                        fecha DATE DEFAULT CURRENT_DATE)
     -- Devuelve TRUE si el importe de los vencimientos es igual al importe 
-    -- de los cobros en la fecha recibida. AUNQUE SEA CERO.
+    -- de los cobros en la fecha recibida.
     RETURNS BOOLEAN
     AS $BODY$
     DECLARE
         cobrado FLOAT;
         vencido FLOAT;
+        no_vencido FLOAT;
     BEGIN
-        SELECT COALESCE(SUM(importe), 0) INTO cobrado FROM cobro WHERE cobro.factura_venta_id = $1 AND cobro_esta_cobrado(cobro.id, $2) > 0;
-        SELECT COALESCE(SUM(importe), 0) INTO vencido FROM vencimiento_cobro WHERE vencimiento_cobro.factura_venta_id = $1 AND vencimiento_cobro.fecha >= $2;
-        RETURN cobrado >= vencido;
+        SELECT calcular_importe_cobrado_factura_venta($1, $2) INTO cobrado;
+        SELECT calcular_importe_vencido_factura_venta($1, $2) INTO vencido;
+        SELECT calcular_importe_no_vencido_factura_venta($1, $2) INTO no_vencido;
+        RETURN cobrado != 0 AND ABS(cobrado) >= ABS(vencido + no_vencido);
     END;
     $BODY$ LANGUAGE plpgsql;    -- NEW! 1/08/2013
 
--- PORASQUI: Queda el resto de estados de factura.
 CREATE OR REPLACE FUNCTION fra_no_documentada(idfra INTEGER, 
                                               fecha DATE DEFAULT CURRENT_DATE)
-    -- Devuelve el importe de la factura no cubierto por un documento de 
-    -- cobro o un cobro en sí mismo. No se tiene en cuenta si el cobro 
-    -- ya se ha hecho efectivo o no. Si no queda nada por documentar, entonces 
-    -- el importe devuelto debería ser 0 (eq. FALSE).
-    RETURNS FLOAT
+    -- Fra. no documentada es la que no ha vencido ni tiene cobros porque todavía 
+    -- no ha llegado ni un triste pagaré.
+    RETURNS BOOLEAN
     AS $$
-        SELECT COALESCE(SUM(importe), 0)
-          FROM cobro 
-         WHERE factura_venta_id = $1
-               AND fecha >= $2;
-    $$ LANGUAGE SQL;    -- NEW! 28/06/2013
+    DECLARE
+        cobrado FLOAT;
+        vencido FLOAT;
+        no_vencido FLOAT;
+    BEGIN
+        SELECT calcular_importe_cobrado_factura_venta($1, $2) INTO cobrado;
+        SELECT calcular_importe_vencido_factura_venta($1, $2) INTO vencido;
+        SELECT calcular_importe_no_vencido_factura_venta($1, $2) INTO no_vencido;
+        RETURN cobrado = 0 and vencido = 0;     -- OJO: Si tiene cobros o está vencida pero la factura tiene importe CERO, entonces va a clasificarse como NO DOCUMENTADA.
+    END;
+    $$ LANGUAGE plpgsql;        -- NEW! 2/08/2013
 
+CREATE OR REPLACE FUNCTION fra_no_vencida(idfra INTEGER, 
+                                          fecha DATE DEFAULT CURRENT_DATE)
+    RETURNS BOOLEAN
+    AS $$
+    DECLARE
+        cobrado FLOAT;
+        vencido FLOAT;
+        no_vencido FLOAT;
+    BEGIN
+        SELECT calcular_importe_cobrado_factura_venta($1, $2) INTO cobrado;
+        SELECT calcular_importe_vencido_factura_venta($1, $2) INTO vencido;
+        SELECT calcular_importe_no_vencido_factura_venta($1, $2) INTO no_vencido;
+        RETURN NOT fra_no_documentada($1, $2)   -- Está documentada, pero
+               AND vencido = 0;                 -- no ha vencido. Porque si ha vencido algo
+                                                -- entonces la factura está cobrada o impagada.
+    END;
+    $$ LANGUAGE plpgsql;        -- NEW! 2/08/2013
+
+CREATE OR REPLACE FUNCTION fra_impagada(idfra INTEGER, 
+                                        fecha DATE DEFAULT CURRENT_DATE)
+    RETURNS BOOLEAN
+    AS $$
+    DECLARE
+        cobrado FLOAT;
+        vencido FLOAT;
+    BEGIN
+        SELECT calcular_importe_cobrado_factura_venta($1, $2) INTO cobrado;
+        SELECT calcular_importe_vencido_factura_venta($1, $2) INTO vencido;
+        RETURN cobrado >= 0 and cobrado < vencido;
+    END;
+    $$ LANGUAGE plpgsql;        -- NEW! 2/08/2013
+
+CREATE OR REPLACE FUNCTION fra_abono(idfra INTEGER, 
+                                     fecha DATE DEFAULT CURRENT_DATE)
+    -- Por compatibilidad con pclases. Pero en realidad ninguna factura de venta 
+    -- es de abono. Las de abono van en otra tabla.
+    RETURNS BOOLEAN
+    AS $$
+    BEGIN
+        RETURN FALSE;
+    END;
+    $$ LANGUAGE plpgsql;        -- NEW! 2/08/2013
 
 -------------------------------------------------------------------------------
 

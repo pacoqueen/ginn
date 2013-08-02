@@ -480,7 +480,7 @@ class SuperFacturaVenta:
             pass    # No es factura de abono.
         return tuple(proveedores)
 
-    def get_str_estado(self, cache = {}):
+    def get_str_estado(self, cache = {}, fecha = mx.DateTime.today()):
         """
         Si la factura está en el diccionario de caché recibido (por su puid) 
         entonces no consulta el estado en la BD.
@@ -495,12 +495,33 @@ class SuperFacturaVenta:
             if VERBOSE: 
                 print "pclases.py::SuperFacturaVenta.get_str_estado -> HIT!"
         except KeyError:
-            estado = self.get_estado()
+            estado = self.get_estado(fecha)
+        str_estado = ESTADOS[estado]
+        return str_estado
+
+    def UNOPTIMIZED_get_str_estado(self, 
+                                   cache = {}, 
+                                   fecha = mx.DateTime.today()):
+        """
+        Si la factura está en el diccionario de caché recibido (por su puid) 
+        entonces no consulta el estado en la BD.
+        """
+        ESTADOS = ("No documentada", 
+                   "Documentada no vencida", 
+                   "Impagada", 
+                   "Cobrada", 
+                   "Pendiente de abonar")
+        try:
+            estado = cache[self.puid]
+            if VERBOSE: 
+                print "pclases.py::SuperFacturaVenta.get_str_estado -> HIT!"
+        except KeyError:
+            estado = self.UNOPTIMIZED_get_estado(fecha)
         str_estado = ESTADOS[estado]
         return str_estado
 
     # 20100927: Nueva clasificación de facturas:
-    def get_estado(self, fecha = mx.DateTime.today()):
+    def UNOPTIMIZED_get_estado(self, fecha = mx.DateTime.today()):
         """
         Devuelve el estado de la factura:
         0: No documentada ni vencida: Ningún documento de pago relacionado.
@@ -560,6 +581,52 @@ class SuperFacturaVenta:
         # Si no es nada de lo anterior, está impagada.
         else:
             return FRA_IMPAGADA
+
+    def get_estado(self, fecha = mx.DateTime.today()):
+        """
+        Devuelve el estado de la factura:
+        0: No documentada ni vencida: Ningún documento de pago relacionado.
+           FRA_NO_DOCUMENTADA
+        1: Documentada no vencida: Tiene documento de pago y éste todavía 
+                                   no ha vencido. Se toma en cuenta la fecha 
+                                   de vencimiento del doc. de pago, no la de 
+                                   la factura.
+           FRA_NO_VENCIDA
+        2: Impagada: Los vencimientos de la factura han cumplido y no se ha 
+                     cobrado, con o sin documento de pago de por medio.
+           FRA_IMPAGADA
+        3: Cobrada: Toda la factura está cobrada.
+           FRA_COBRADA
+        4: Pendiente de abonar: Así estarán todos los abonos antes de 
+                                descontarlos en un cobro o en un nuevo pedido.
+                                No contarán para el cálculo del crédito.
+           FRA_ABONO
+        Para que una factura esté en un estado, todos los vencimientos de la 
+        misma deben estar en ese estado.
+        """
+        # Cobrada por completo:
+        # Todos los vencimientos tienen un cobro y ese cobro:
+        #  - No es pagaré ni confirming.
+        #  - O bien, es pagaré o confirming y no están pendientes.
+        from facturaventa import FacturaVenta
+        from facturadeabono import FacturaDeAbono
+        from prefactura import Prefactura
+        if isinstance(self, (Prefactura, FacturaDeAbono)):
+            return self.UNOPTIMIZED_get_estado(fecha = fecha)
+        else:
+            sqlfuncs = (("fra_no_documentada", FRA_NO_DOCUMENTADA), 
+                        ("fra_no_vencida", FRA_NO_VENCIDA), 
+                        ("fra_impagada", FRA_IMPAGADA), 
+                        ("fra_cobrada", FRA_COBRADA), 
+                        ("fra_abono", FRA_ABONO)) 
+            for sqlfunc, estado in sqlfuncs:
+                if FacturaVenta._connection.queryOne("SELECT %s(%d, '%s');" 
+                            % (sqlfunc, self.id, fecha.strftime("%Y-%m-%d")) 
+                        )[0]:
+                    return estado
+        raise ValueError, "La factura «%s» no tiene estado. La función sin optimizar dice que es «%s»." % (self.get_puid(), 
+                           self.UNOPTIMIZED_get_str_estado(fecha = fecha))
+        # return UNOPTIMIZED_get_estado(fecha = fecha)
 
     def calcular_importe_no_documentado(self, fecha = mx.DateTime.today()):
         """
