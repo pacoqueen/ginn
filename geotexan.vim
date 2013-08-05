@@ -1,9 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-<<<<<<< HEAD
-" Created by session.vim 1.5 on 29 julio 2013 at 14:51:06.
-=======
-" Created by session.vim 1.5 on 02 agosto 2013 at 19:15:50.
->>>>>>> blade-runner
+" Created by session.vim 1.5 on 05 agosto 2013 at 14:25:07.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -54,7 +50,7 @@ badd +525 ginn/formularios/recibos.py
 badd +2258 ginn/formularios/productos_de_venta_rollos.py
 badd +507 ginn/formularios/productos_de_venta_rollos_geocompuestos.py
 badd +578 ginn/formularios/productos_de_venta_especial.py
-badd +1608 ginn/formularios/partes_de_fabricacion_balas.py
+badd +903 ginn/formularios/partes_de_fabricacion_balas.py
 badd +1957 ginn/formularios/partes_de_fabricacion_bolsas.py
 badd +121 ginn/formularios/partes_de_fabricacion_rollos.py
 badd +550 ginn/formularios/proveedores.py
@@ -72,15 +68,9 @@ badd +404 ginn/framework/configuracion.py
 badd +4 bin/ginn.sh
 badd +10 ginn/main.py
 badd +21 ginn/formularios/ventana.py
-<<<<<<< HEAD
-badd +663 ginn/formularios/pedidos_de_venta.py
-badd +1294 db/tablas.sql
-badd +2869 ginn/formularios/albaranes_de_salida.py
-=======
 badd +2310 ginn/formularios/pedidos_de_venta.py
 badd +1 db/tablas.sql
 badd +1958 ginn/formularios/albaranes_de_salida.py
->>>>>>> blade-runner
 badd +1 ginn/formularios/presupuesto.py
 badd +9 ginn/formularios/presupuestos.py
 badd +382 ginn/informes/presupuesto2.py
@@ -104,7 +94,7 @@ badd +363 ginn/formularios/consulta_pagos.py
 badd +13 ginn/formularios/consulta_vencimientos_pago.py
 badd +500 ginn/formularios/trazabilidad.py
 badd +19438 ginn/framework/pclases/__init__.py
-badd +398 ginn/framework/pclases/superfacturaventa.py
+badd +598 ginn/framework/pclases/superfacturaventa.py
 badd +4 ginn/framework/pclases/facturaventa.py
 badd +689 ginn/formularios/consulta_mensual_nominas.py
 badd +269 ginn/informes/treeview2pdf.py
@@ -117,21 +107,14 @@ badd +7 ~/.vim/ftplugin/python.vim
 badd +921 ginn/formularios/listado_balas.py
 badd +254 ginn/formularios/consulta_pendientes_servir.py
 badd +130 ginn/formularios/facturas_no_bloqueadas.py
-<<<<<<< HEAD
-badd +1 ginn/formularios/consumo_balas_partida.py
-badd +27 ginn/informes/albaran_porte.py
-args formularios/auditviewer.py
-set lines=66 columns=111
-edit ginn/informes/geninformes.py
-=======
 badd +221 ginn/formularios/consumo_balas_partida.py
 badd +553 ginn/formularios/categorias_laborales.py
 badd +411 ginn/formularios/nominas.py
-badd +0 ginn/framework/pclases/cliente.py
+badd +539 ginn/framework/pclases/cliente.py
+badd +0 ginn/formularios/consulta_cobros.py
 args formularios/auditviewer.py
 set lines=69 columns=111
 edit ginn/framework/pclases/cliente.py
->>>>>>> blade-runner
 set splitbelow splitright
 wincmd _ | wincmd |
 vsplit
@@ -149,17 +132,7 @@ wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
-<<<<<<< HEAD
-wincmd _ | wincmd |
-split
-wincmd _ | wincmd |
-split
-8wincmd k
-wincmd w
-wincmd w
-=======
 6wincmd k
->>>>>>> blade-runner
 wincmd w
 wincmd w
 wincmd w
@@ -171,35 +144,20 @@ set nosplitright
 wincmd t
 set winheight=1 winwidth=1
 exe 'vert 1resize ' . ((&columns * 30 + 55) / 111)
-<<<<<<< HEAD
-exe '2resize ' . ((&lines * 48 + 33) / 66)
-=======
-exe '2resize ' . ((&lines * 31 + 34) / 69)
->>>>>>> blade-runner
+exe '2resize ' . ((&lines * 28 + 34) / 69)
 exe 'vert 2resize ' . ((&columns * 80 + 55) / 111)
-exe '3resize ' . ((&lines * 1 + 34) / 69)
+exe '3resize ' . ((&lines * 28 + 34) / 69)
 exe 'vert 3resize ' . ((&columns * 80 + 55) / 111)
 exe '4resize ' . ((&lines * 1 + 34) / 69)
 exe 'vert 4resize ' . ((&columns * 80 + 55) / 111)
-exe '5resize ' . ((&lines * 25 + 34) / 69)
+exe '5resize ' . ((&lines * 1 + 34) / 69)
 exe 'vert 5resize ' . ((&columns * 80 + 55) / 111)
-<<<<<<< HEAD
-exe '6resize ' . ((&lines * 1 + 33) / 66)
-=======
 exe '6resize ' . ((&lines * 1 + 34) / 69)
->>>>>>> blade-runner
 exe 'vert 6resize ' . ((&columns * 80 + 55) / 111)
 exe '7resize ' . ((&lines * 1 + 34) / 69)
 exe 'vert 7resize ' . ((&columns * 80 + 55) / 111)
 exe '8resize ' . ((&lines * 1 + 34) / 69)
 exe 'vert 8resize ' . ((&columns * 80 + 55) / 111)
-<<<<<<< HEAD
-exe '9resize ' . ((&lines * 1 + 33) / 66)
-exe 'vert 9resize ' . ((&columns * 80 + 55) / 111)
-exe '10resize ' . ((&lines * 1 + 33) / 66)
-exe 'vert 10resize ' . ((&columns * 80 + 55) / 111)
-=======
->>>>>>> blade-runner
 argglobal
 enew
 file __Tag_List__
@@ -221,90 +179,103 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-<<<<<<< HEAD
-11273
-normal! zo
-11281
-normal! zo
-11429
-normal! zo
-11458
-normal! zo
-11460
-normal! zo
-let s:l = 11460 - ((45 * winheight(0) + 24) / 48)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-11460
-normal! 067|
-wincmd w
-argglobal
-edit ginn/formularios/consumo_balas_partida.py
-setlocal fdm=indent
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=99
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-346
-normal! zo
-let s:l = 633 - ((0 * winheight(0) + 0) / 1)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-633
-normal! 0
-wincmd w
-argglobal
-edit ginn/formularios/partes_de_fabricacion_bolsas.py
-setlocal fdm=indent
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=99
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-89
-normal! zo
-768
-normal! zo
-778
-normal! zo
-1789
-normal! zo
-1801
-normal! zo
-1819
-normal! zo
-1828
-normal! zo
-1853
-normal! zo
-1858
-normal! zo
-1861
-normal! zo
-1862
-normal! zo
-1862
-=======
 53
->>>>>>> blade-runner
 normal! zo
 429
 normal! zo
-491
+429
 normal! zo
-let s:l = 448 - ((23 * winheight(0) + 15) / 31)
+429
+normal! zo
+429
+normal! zo
+429
+normal! zo
+429
+normal! zo
+429
+normal! zo
+454
+normal! zo
+457
+normal! zo
+487
+normal! zo
+499
+normal! zo
+499
+normal! zo
+499
+normal! zo
+499
+normal! zo
+499
+normal! zo
+499
+normal! zo
+499
+normal! zo
+504
+normal! zo
+511
+normal! zo
+524
+normal! zo
+529
+normal! zo
+531
+normal! zo
+531
+normal! zo
+531
+normal! zo
+531
+normal! zo
+531
+normal! zo
+531
+normal! zo
+531
+normal! zo
+531
+normal! zo
+531
+normal! zo
+let s:l = 502 - ((18 * winheight(0) + 14) / 28)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-448
-normal! 09|
+502
+normal! 038|
+wincmd w
+argglobal
+edit ginn/formularios/consulta_cobros.py
+setlocal fdm=indent
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=99
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+50
+normal! zo
+317
+normal! zo
+322
+normal! zo
+330
+normal! zo
+331
+normal! zo
+331
+normal! zo
+let s:l = 323 - ((0 * winheight(0) + 14) / 28)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+323
+normal! 039|
 wincmd w
 argglobal
 edit db/tablas.sql
@@ -542,12 +513,16 @@ normal! zo
 normal! zo
 3582
 normal! zo
-let s:l = 3545 - ((0 * winheight(0) + 0) / 1)
+3593
+normal! zo
+3602
+normal! zo
+let s:l = 3601 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-3545
-normal! 0170|
+3601
+normal! 024|
 wincmd w
 argglobal
 edit ginn/formularios/ventana.py
@@ -579,117 +554,6 @@ exe s:l
 normal! zt
 140
 normal! 021|
-wincmd w
-argglobal
-edit ginn/framework/pclases/superfacturaventa.py
-setlocal fdm=indent
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=99
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-38
-normal! zo
-43
-normal! zo
-317
-normal! zo
-357
-normal! zo
-484
-normal! zo
-503
-normal! zo
-503
-normal! zo
-503
-normal! zo
-503
-normal! zo
-503
-normal! zo
-503
-normal! zo
-510
-normal! zo
-515
-normal! zo
-586
-normal! zo
-591
-normal! zo
-591
-normal! zo
-591
-normal! zo
-591
-normal! zo
-591
-normal! zo
-596
-normal! zo
-596
-normal! zo
-601
-normal! zo
-601
-normal! zo
-601
-normal! zo
-601
-normal! zo
-601
-normal! zo
-617
-normal! zo
-618
-normal! zo
-618
-normal! zo
-623
-normal! zo
-624
-normal! zo
-624
-normal! zo
-628
-normal! zo
-628
-normal! zo
-628
-normal! zo
-632
-normal! zo
-640
-normal! zo
-650
-normal! zo
-659
-normal! zo
-679
-normal! zo
-687
-normal! zo
-708
-normal! zo
-716
-normal! zo
-797
-normal! zo
-803
-normal! zo
-<<<<<<< HEAD
-let s:l = 5209 - ((0 * winheight(0) + 0) / 1)
-=======
-let s:l = 607 - ((10 * winheight(0) + 12) / 25)
->>>>>>> blade-runner
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-607
-normal! 09|
 wincmd w
 argglobal
 edit ginn/formularios/ventana.py
@@ -862,35 +726,20 @@ normal! 061|
 wincmd w
 2wincmd w
 exe 'vert 1resize ' . ((&columns * 30 + 55) / 111)
-<<<<<<< HEAD
-exe '2resize ' . ((&lines * 48 + 33) / 66)
-=======
-exe '2resize ' . ((&lines * 31 + 34) / 69)
->>>>>>> blade-runner
+exe '2resize ' . ((&lines * 28 + 34) / 69)
 exe 'vert 2resize ' . ((&columns * 80 + 55) / 111)
-exe '3resize ' . ((&lines * 1 + 34) / 69)
+exe '3resize ' . ((&lines * 28 + 34) / 69)
 exe 'vert 3resize ' . ((&columns * 80 + 55) / 111)
 exe '4resize ' . ((&lines * 1 + 34) / 69)
 exe 'vert 4resize ' . ((&columns * 80 + 55) / 111)
-exe '5resize ' . ((&lines * 25 + 34) / 69)
+exe '5resize ' . ((&lines * 1 + 34) / 69)
 exe 'vert 5resize ' . ((&columns * 80 + 55) / 111)
-<<<<<<< HEAD
-exe '6resize ' . ((&lines * 1 + 33) / 66)
-=======
 exe '6resize ' . ((&lines * 1 + 34) / 69)
->>>>>>> blade-runner
 exe 'vert 6resize ' . ((&columns * 80 + 55) / 111)
 exe '7resize ' . ((&lines * 1 + 34) / 69)
 exe 'vert 7resize ' . ((&columns * 80 + 55) / 111)
 exe '8resize ' . ((&lines * 1 + 34) / 69)
 exe 'vert 8resize ' . ((&columns * 80 + 55) / 111)
-<<<<<<< HEAD
-exe '9resize ' . ((&lines * 1 + 33) / 66)
-exe 'vert 9resize ' . ((&columns * 80 + 55) / 111)
-exe '10resize ' . ((&lines * 1 + 33) / 66)
-exe 'vert 10resize ' . ((&columns * 80 + 55) / 111)
-=======
->>>>>>> blade-runner
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf

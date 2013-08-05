@@ -503,6 +503,8 @@ class Cliente(SQLObject, PRPCTOO):
         credito = Cliente._connection.queryOne(
             "SELECT calcular_credito_disponible(%d, '%s', %f)" % (
                 self.id, fecha.strftime("%Y-%m-%d"), base))[0]
+        if credito == 'Infinity':
+            credito = sys.maxint
         return credito
 
     def calcular_credito_disponible(self, 
