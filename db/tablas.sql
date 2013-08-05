@@ -3410,7 +3410,7 @@ CREATE FUNCTION caja_es_clase_b(INT)
            AND producto_venta.campos_especificos_bala_id = ceb.id 
     ;'; -- NEW 11/09/2009
 
-CREATE FUNCTION cobro_esta_cobrado(idcobro INTEGER, 
+CREATE OR REPLACE FUNCTION cobro_esta_cobrado(idcobro INTEGER, 
                                    fecha DATE DEFAULT CURRENT_DATE)
     -- Recibe un ID de cobro y una fecha.
     -- Devuelve el importe cobrado en esa fecha, que depende de:
@@ -3588,6 +3588,54 @@ CREATE OR REPLACE FUNCTION fra_abono(idfra INTEGER,
         RETURN FALSE;
     END;
     $$ LANGUAGE plpgsql;        -- NEW! 2/08/2013
+
+CREATE OR REPLACE FUNCTION calcular_importe_factura_venta(idfra INTEGER)
+    -- Devuelve el importe total de la factura A PARTIR DE LOS VENCIMIENTOS. Si no tiene 
+    -- vencimientos asumo que la factura está incompleta, algún usuario está trabajando 
+    -- en ella o lo que sea y no la tengo en cuenta para nada.
+    RETURNS FLOAT
+    AS $$
+        SELECT COALESCE(SUM(importe), 0) FROM vencimiento_cobro WHERE vencimiento_cobro.factura_venta_id = $1;
+    $$ LANGUAGE SQL;    -- NEW! 5/08/2013
+
+CREATE OR REPLACE FUNCTION calcular_credito_disponible(idcliente INTEGER, 
+                                                       fecha DATE DEFAULT CURRENT_DATE, 
+                                                       base FLOAT DEFAULT 0.0)
+     -- Devuelve el crédito del cliente cuyo id se recibe. La cantidad "base" se resta 
+     -- al crédito para el cálculo de crédito en el momento de formalizar un pedido. La 
+     -- "base" debería ser el importe del pedido en ese momento y de ese modo saber si 
+     -- el pedido se podría servir con el crédito actual. Por ejemplo: un pedido de 1.5k €
+     -- (base) no podrá servirse si el crédito es de 1K.
+     RETURNS FLOAT
+     AS $$
+     DECLARE
+        sin_documentar FLOAT;
+        sin_vencer FLOAT;
+        riesgo_concedido FLOAT;
+        fraventa RECORD;
+        credito FLOAT;
+     BEGIN
+        SELECT cliente.riesgo_concedido FROM cliente WHERE cliente.id = $1 INTO riesgo_concedido;
+        IF riesgo_concedido = -1 THEN
+            credito := 'Infinity'; 
+        ELSE
+            sin_documentar := 0;
+            sin_vencer := 0;
+            FOR fraventa IN SELECT * FROM factura_venta WHERE factura_venta.cliente_id = $1 LOOP
+                IF fra_impagada(fraventa.id, $2) THEN
+                    -- OPTIMIZACIÓN. Si alguna factura está impagada, crédito 0. No sigo.
+                    RETURN 0;
+                ELSIF fra_no_documentada(fraventa.id, $2) THEN
+                    sin_documentar := sin_documentar + calcular_importe_factura_venta(fraventa.id);
+                ELSIF fra_no_vencida(fraventa.id, $2) THEN
+                    sin_vencer := sin_vencer + calcular_importe_factura_venta(fraventa.id);
+                END IF;
+            END LOOP;
+            credito := riesgo_concedido - (sin_documentar + sin_vencer) - base;
+        END IF;
+        RETURN credito;
+     END;
+     $$ LANGUAGE plpgsql;    -- NEW! 5/08/2013
 
 -------------------------------------------------------------------------------
 

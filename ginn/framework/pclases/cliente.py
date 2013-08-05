@@ -425,7 +425,7 @@ class Cliente(SQLObject, PRPCTOO):
                 expired = False
         return expired
 
-    def _calcular_credito_disponible(self, 
+    def UNOPTIMIZED_calcular_credito_disponible(self, 
                                      impagado = None, 
                                      sin_documentar = None, 
                                      sin_vencer = None, 
@@ -444,10 +444,6 @@ class Cliente(SQLObject, PRPCTOO):
         por ejemplo, 11k € y se va a sacar una factura de 11.5k €, SOBREPASA 
         el límite y no debería dejar sacarla.
         """
-# PORASQUI: Llevarme las funciones de superfactura al lado del servidor ¡HACE QUE TARDE MÁS! Probar en bacall por si es cosa de nostromo.
-        # TODO: Esto, ahora que se usa intensivamente en pedidos y albaranes, 
-        # hay que optimizarlo. Seriamente, además. Con clientes como CETCO es 
-        # isufrible esperar a los "actualizar_ventana".
         if DEBUG and VERBOSE:
             print "SOY EL PUTO CALCULAR_CREDITO SIN CACHÉ"
         if DEBUG:
@@ -499,6 +495,16 @@ class Cliente(SQLObject, PRPCTOO):
         # XXX 
         return credito
 
+    def _calcular_credito_disponible(self, 
+                                     base = 0.0, 
+                                     fecha = None):
+        if not fecha:
+            fecha = mx.DateTime.today()
+        credito = Cliente._connection.queryOne(
+            "SELECT calcular_credito_disponible(%d, '%s', %f)" % (
+                self.id, fecha.strftime("%Y-%m-%d"), base))[0]
+        return credito
+
     def calcular_credito_disponible(self, 
                                     impagado = None, 
                                     sin_documentar = None, 
@@ -517,10 +523,15 @@ class Cliente(SQLObject, PRPCTOO):
                                           sin_documentar, 
                                           sin_vencer, 
                                           base)): # (sort of) fallo de caché
-            credito = self._calcular_credito_disponible(impagado, 
+            if (impagado != None or sin_documentar != None 
+                    or sin_vencer != None):     # Aprovecho los precálculos
+                credito = self.UNOPTIMIZED_calcular_credito_disponible(
+                                                        impagado, 
                                                         sin_documentar, 
                                                         sin_vencer, 
                                                         base)
+            else:
+                credito = self._calcular_credito_disponible(base)
             self.__actualizar_cache_credito(credito, impagado, sin_documentar, 
                                             sin_vencer, base)
         return self.valorcache
