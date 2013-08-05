@@ -444,6 +444,7 @@ class Cliente(SQLObject, PRPCTOO):
         por ejemplo, 11k € y se va a sacar una factura de 11.5k €, SOBREPASA 
         el límite y no debería dejar sacarla.
         """
+# PORASQUI: Llevarme las funciones de superfactura al lado del servidor ¡HACE QUE TARDE MÁS! Probar en bacall por si es cosa de nostromo.
         # TODO: Esto, ahora que se usa intensivamente en pedidos y albaranes, 
         # hay que optimizarlo. Seriamente, además. Con clientes como CETCO es 
         # isufrible esperar a los "actualizar_ventana".

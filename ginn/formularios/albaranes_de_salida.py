@@ -698,7 +698,8 @@ class AlbaranesDeSalida(Ventana):
             # Optimizando, que es gerundio:
                 #articulo += p.get_bolsas_en_almacen(self.objeto.almacenOrigen)
                 articulo += p.get_cajas_en_almacen(self.objeto.almacenOrigen)
-                print __file__, len(articulo)
+                if pclases.VERBOSE:
+                    print __file__, len(articulo)
         elif tipocodigo == "J": # Una caja suelta de fibra de cemento
             cajas = pclases.Caja.select(pclases.Caja.q.codigo == "J%d"%codigo)
             articulo = []

@@ -51,7 +51,6 @@ except ImportError:
 from formularios import utils 
 import mx
 
-# TODO: PORASQUI: Tengo que manejar el nuevo campo de fecha para usar diferentes precios por hora, extra, noche, etc. A partir del 1 de julio hay un precio nuevo por noche PARA CADA TRABAJADOR. Un primer paso es hacerlo para categoría laboral. Ya me quebraré la cabeza para hacerlo también por trabajador. Se trata de no romper la compatibilidad hacia atrás y que una consulta hoy de hace 1 año salga igual que cuando se pidió hace un año.
 
 class CategoriasLaborales(Ventana):
     def __init__(self, objeto = None, usuario = None):
