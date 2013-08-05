@@ -1,4 +1,7 @@
-﻿CREATE OR REPLACE FUNCTION cobro_esta_cobrado(idcobro INTEGER, 
+﻿-- 05/08/2013
+-- Parche para crear funciones de cálculo de crédito 
+
+CREATE OR REPLACE FUNCTION cobro_esta_cobrado(idcobro INTEGER, 
                                    fecha DATE DEFAULT CURRENT_DATE)
     -- Recibe un ID de cobro y una fecha.
     -- Devuelve el importe cobrado en esa fecha, que depende de:
