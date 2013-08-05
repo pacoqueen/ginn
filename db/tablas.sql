@@ -581,8 +581,12 @@ CREATE TABLE categoria_laboral(
     dias_convenio INT DEFAULT 2,     -- Por defecto y por convenio laboral: 2
     dias_asuntos_propios INT DEFAULT 2, -- Por defecto 2 al año. Remunerados.
     salario_base FLOAT DEFAULT 0.0, 
-    precio_hora_regular FLOAT DEFAULT 0.0 -- NEW! 16/09/2008. Necesario para
+    precio_hora_regular FLOAT DEFAULT 0.0,-- NEW! 16/09/2008. Necesario para
                                           -- calcular costes de líneas.
+    fecha DATE DEFAULT NULL     -- Fecha de entrada en vigor de los precios 
+                                -- para esta categoría laboral. Útil a la 
+                                -- hora de calcular nóminas según la fecha 
+                                -- en que se haga la consulta.
 );
 
 ---------------
@@ -3406,7 +3410,7 @@ CREATE FUNCTION caja_es_clase_b(INT)
            AND producto_venta.campos_especificos_bala_id = ceb.id 
     ;'; -- NEW 11/09/2009
 
-CREATE FUNCTION cobro_esta_cobrado(idcobro INTEGER, 
+CREATE OR REPLACE FUNCTION cobro_esta_cobrado(idcobro INTEGER, 
                                    fecha DATE DEFAULT CURRENT_DATE)
     -- Recibe un ID de cobro y una fecha.
     -- Devuelve el importe cobrado en esa fecha, que depende de:
@@ -3484,58 +3488,154 @@ CREATE FUNCTION cobro_esta_cobrado(idcobro INTEGER,
         END;
     $$ LANGUAGE plpgsql; -- NEW 26/06/2013
 
-CREATE OR REPLACE FUNCTION fra_documentada(idfra INTEGER, 
-                                           fecha DATE DEFAULT CURRENT_DATE)
-    -- Devuelve el importe de la factura cubierto por documentos de cobro.
+CREATE OR REPLACE FUNCTION calcular_importe_cobrado_factura_venta(idfra INTEGER, 
+								  fecha DATE DEFAULT CURRENT_DATE)
+    -- Devuelve el importe cobrado en fecha para la factura cuyo id se recibe.
     RETURNS FLOAT
     AS $$
-        SELECT COALESCE(SUM(importe), 0)
-          FROM cobro 
-         WHERE factura_venta_id = $1
-               AND fecha >= $2;
-    $$ LANGUAGE SQL;    -- NEW! 28/06/2013
+        SELECT COALESCE(SUM(importe), 0) FROM cobro WHERE cobro.factura_venta_id = $1 AND cobro_esta_cobrado(cobro.id, $2) <> 0;
+    $$ LANGUAGE SQL;
 
-CREATE OR REPLACE FUNCTION fra_vencida(idfra INTEGER, 
-                                       fecha DATE DEFAULT CURRENT_DATE)
-    -- Devuelve el importe de la factura vencida en la fecha recibida.
-    -- Cobrada o no.
+CREATE OR REPLACE FUNCTION calcular_importe_vencido_factura_venta(idfra INTEGER, 
+                                                                  fecha DATE DEFAULT CURRENT_DATE)
     RETURNS FLOAT
     AS $$
-        SELECT COALESCE(SUM(importe), 0)
-          FROM vencimiento_cobro 
-         WHERE factura_venta_id = $1
-               AND fecha >= $2;
-    $$ LANGUAGE SQL;    -- NEW! 28/06/2013
+        SELECT COALESCE(SUM(importe), 0) FROM vencimiento_cobro WHERE vencimiento_cobro.factura_venta_id = $1 AND vencimiento_cobro.fecha < $2;
+    $$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION calcular_importe_no_vencido_factura_venta(idfra INTEGER, 
+                                                                     fecha DATE DEFAULT CURRENT_DATE)
+    RETURNS FLOAT
+    AS $$
+        SELECT COALESCE(SUM(importe), 0) FROM vencimiento_cobro WHERE vencimiento_cobro.factura_venta_id = $1 AND vencimiento_cobro.fecha >= $2;
+    $$ LANGUAGE SQL;
 
 CREATE OR REPLACE FUNCTION fra_cobrada(idfra INTEGER, 
                                        fecha DATE DEFAULT CURRENT_DATE)
-    -- Devuelve el importe de la factura cobrado hasta la fecha indicada.
-    -- El cobro se hace efectivo al momento en el caso de que no sea pagaré o 
-    -- confirming. En esos dos casos el cobro se hace efectivo en el momento 
-    -- en que se negocian o llega el vencimiento (pendiente = FALSE).
-    -- El total de una factura se compone del importe cobrado, el importe 
-    -- pendiente no vencido y el importe impagado (pdte. vencido).
-    RETURNS FLOAT
-    AS $$
-        SELECT COALESCE(SUM(cobro_esta_cobrado(id, $2)), 0)
-          FROM cobro 
-         WHERE factura_venta_id = $1;
-    $$ LANGUAGE SQL;    -- NEW! 28/06/2013
+    -- Devuelve TRUE si el importe de los vencimientos es igual al importe 
+    -- de los cobros en la fecha recibida.
+    RETURNS BOOLEAN
+    AS $BODY$
+    DECLARE
+        cobrado FLOAT;
+        vencido FLOAT;
+        no_vencido FLOAT;
+    BEGIN
+        SELECT calcular_importe_cobrado_factura_venta($1, $2) INTO cobrado;
+        SELECT calcular_importe_vencido_factura_venta($1, $2) INTO vencido;
+        SELECT calcular_importe_no_vencido_factura_venta($1, $2) INTO no_vencido;
+        RETURN cobrado != 0 AND ABS(cobrado) >= ABS(vencido + no_vencido);
+    END;
+    $BODY$ LANGUAGE plpgsql;    -- NEW! 1/08/2013
 
-CREATE OR REPLACE FUNCTION fra_pendiente(idfra INTEGER, 
-                                         fecha DATE DEFAULT CURRENT_DATE)
-    -- Devuelve el importe de la factura no vencida ni cobrada o documentada.
-    -- PORASQUI
-    RETURNS FLOAT
+CREATE OR REPLACE FUNCTION fra_no_documentada(idfra INTEGER, 
+                                              fecha DATE DEFAULT CURRENT_DATE)
+    -- Fra. no documentada es la que no ha vencido ni tiene cobros porque todavía 
+    -- no ha llegado ni un triste pagaré.
+    RETURNS BOOLEAN
     AS $$
-    $$ LANGUAGE SQL;    -- NEW! 28/06/2013
+    DECLARE
+        cobrado FLOAT;
+        vencido FLOAT;
+        no_vencido FLOAT;
+    BEGIN
+        SELECT calcular_importe_cobrado_factura_venta($1, $2) INTO cobrado;
+        SELECT calcular_importe_vencido_factura_venta($1, $2) INTO vencido;
+        SELECT calcular_importe_no_vencido_factura_venta($1, $2) INTO no_vencido;
+        RETURN cobrado = 0 and vencido = 0;     -- OJO: Si tiene cobros o está vencida pero la factura tiene importe CERO, entonces va a clasificarse como NO DOCUMENTADA.
+    END;
+    $$ LANGUAGE plpgsql;        -- NEW! 2/08/2013
+
+CREATE OR REPLACE FUNCTION fra_no_vencida(idfra INTEGER, 
+                                          fecha DATE DEFAULT CURRENT_DATE)
+    RETURNS BOOLEAN
+    AS $$
+    DECLARE
+        cobrado FLOAT;
+        vencido FLOAT;
+        no_vencido FLOAT;
+    BEGIN
+        SELECT calcular_importe_cobrado_factura_venta($1, $2) INTO cobrado;
+        SELECT calcular_importe_vencido_factura_venta($1, $2) INTO vencido;
+        SELECT calcular_importe_no_vencido_factura_venta($1, $2) INTO no_vencido;
+        RETURN NOT fra_no_documentada($1, $2)   -- Está documentada, pero
+               AND vencido = 0;                 -- no ha vencido. Porque si ha vencido algo
+                                                -- entonces la factura está cobrada o impagada.
+    END;
+    $$ LANGUAGE plpgsql;        -- NEW! 2/08/2013
 
 CREATE OR REPLACE FUNCTION fra_impagada(idfra INTEGER, 
                                         fecha DATE DEFAULT CURRENT_DATE)
-    -- Devuelve el importe de la factura vencida y no cobrada ni documentada.
+    RETURNS BOOLEAN
+    AS $$
+    DECLARE
+        cobrado FLOAT;
+        vencido FLOAT;
+    BEGIN
+        SELECT calcular_importe_cobrado_factura_venta($1, $2) INTO cobrado;
+        SELECT calcular_importe_vencido_factura_venta($1, $2) INTO vencido;
+        RETURN cobrado >= 0 and cobrado < vencido;
+    END;
+    $$ LANGUAGE plpgsql;        -- NEW! 2/08/2013
+
+CREATE OR REPLACE FUNCTION fra_abono(idfra INTEGER, 
+                                     fecha DATE DEFAULT CURRENT_DATE)
+    -- Por compatibilidad con pclases. Pero en realidad ninguna factura de venta 
+    -- es de abono. Las de abono van en otra tabla.
+    RETURNS BOOLEAN
+    AS $$
+    BEGIN
+        RETURN FALSE;
+    END;
+    $$ LANGUAGE plpgsql;        -- NEW! 2/08/2013
+
+CREATE OR REPLACE FUNCTION calcular_importe_factura_venta(idfra INTEGER)
+    -- Devuelve el importe total de la factura A PARTIR DE LOS VENCIMIENTOS. Si no tiene 
+    -- vencimientos asumo que la factura está incompleta, algún usuario está trabajando 
+    -- en ella o lo que sea y no la tengo en cuenta para nada.
     RETURNS FLOAT
     AS $$
-    $$ LANGUAGE SQL;    -- NEW! 28/06/2013
+        SELECT COALESCE(SUM(importe), 0) FROM vencimiento_cobro WHERE vencimiento_cobro.factura_venta_id = $1;
+    $$ LANGUAGE SQL;    -- NEW! 5/08/2013
+
+CREATE OR REPLACE FUNCTION calcular_credito_disponible(idcliente INTEGER, 
+                                                       fecha DATE DEFAULT CURRENT_DATE, 
+                                                       base FLOAT DEFAULT 0.0)
+     -- Devuelve el crédito del cliente cuyo id se recibe. La cantidad "base" se resta 
+     -- al crédito para el cálculo de crédito en el momento de formalizar un pedido. La 
+     -- "base" debería ser el importe del pedido en ese momento y de ese modo saber si 
+     -- el pedido se podría servir con el crédito actual. Por ejemplo: un pedido de 1.5k €
+     -- (base) no podrá servirse si el crédito es de 1K.
+     RETURNS FLOAT
+     AS $$
+     DECLARE
+        sin_documentar FLOAT;
+        sin_vencer FLOAT;
+        riesgo_concedido FLOAT;
+        fraventa RECORD;
+        credito FLOAT;
+     BEGIN
+        SELECT cliente.riesgo_concedido FROM cliente WHERE cliente.id = $1 INTO riesgo_concedido;
+        IF riesgo_concedido = -1 THEN
+            credito := 'Infinity'; 
+        ELSE
+            sin_documentar := 0;
+            sin_vencer := 0;
+            FOR fraventa IN SELECT * FROM factura_venta WHERE factura_venta.cliente_id = $1 LOOP
+                IF fra_impagada(fraventa.id, $2) THEN
+                    -- OPTIMIZACIÓN. Si alguna factura está impagada, crédito 0. No sigo.
+                    RETURN 0;
+                ELSIF fra_no_documentada(fraventa.id, $2) THEN
+                    sin_documentar := sin_documentar + calcular_importe_factura_venta(fraventa.id);
+                ELSIF fra_no_vencida(fraventa.id, $2) THEN
+                    sin_vencer := sin_vencer + calcular_importe_factura_venta(fraventa.id);
+                END IF;
+            END LOOP;
+            credito := riesgo_concedido - (sin_documentar + sin_vencer) - base;
+        END IF;
+        RETURN credito;
+     END;
+     $$ LANGUAGE plpgsql;    -- NEW! 5/08/2013
 
 -------------------------------------------------------------------------------
 

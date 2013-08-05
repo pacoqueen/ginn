@@ -433,6 +433,7 @@ class PRPCTOO:
     def destroy(self, usuario = None, ventana = None):
         # Si no se especifica usuario se determinará a través de logged_user, 
         # que se instancia al crear cada ventana.
+        res = True
         try:
             descripcion = self.get_info()
         except Exception, msg:  # Seguro que vengo de destroy_en_cascada
@@ -443,7 +444,7 @@ class PRPCTOO:
         try:
             self.destroySelf()
         except Exception, msg: # IntegrityError:
-            pass    # «a lo» rollback
+            res = False     # «a lo» rollback
             if DEBUG:   
                 print "pclases:destroy: Objeto no borrado\n\t%s"\
                       "\n\tExcepción: %s" % (
@@ -451,6 +452,7 @@ class PRPCTOO:
         else:
             Auditoria.borrado(puid, usuario, ventana, descripcion)
             del self
+        return res
 
     def copyto(self, obj, eliminar = False):
         """
@@ -16510,6 +16512,25 @@ class Empleado(SQLObject, PRPCTOO):
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
+
+    def get_categoriaLaboral_vigente(self, fecha = mx.DateTime.today()):
+        """
+        Devuelve la categoría laboral vigente según fecha o None.
+        """
+        res = None
+        if self.categoriaLaboral:
+            codigo = self.categoriaLaboral.codigo
+            cats = [c for c in CategoriaLaboral.selectBy(codigo = codigo)
+                    if c.fecha]
+            cats.sort(key = lambda c: c.fecha)
+            res = CategoriaLaboral.select(AND(
+                CategoriaLaboral.q.codigo == codigo, 
+                CategoriaLaboral.q.fecha == None))[0] # Por defecto
+            for c in cats:
+                if c.fecha and c.fecha > fecha:
+                    break
+                res = c
+        return res
 
     def get_nombre_completo(self):
         """

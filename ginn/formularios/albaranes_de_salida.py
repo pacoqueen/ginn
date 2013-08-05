@@ -698,7 +698,8 @@ class AlbaranesDeSalida(Ventana):
             # Optimizando, que es gerundio:
                 #articulo += p.get_bolsas_en_almacen(self.objeto.almacenOrigen)
                 articulo += p.get_cajas_en_almacen(self.objeto.almacenOrigen)
-                print __file__, len(articulo)
+                if pclases.VERBOSE:
+                    print __file__, len(articulo)
         elif tipocodigo == "J": # Una caja suelta de fibra de cemento
             cajas = pclases.Caja.select(pclases.Caja.q.codigo == "J%d"%codigo)
             articulo = []
@@ -1949,7 +1950,14 @@ class AlbaranesDeSalida(Ventana):
         # Actualizo los datos del objeto
         albaran.almacenOrigenID = idalmo
         albaran.almacenDestinoID = idalmd
-        albaran.numalbaran = numalbaran
+        try:
+            albaran.numalbaran = numalbaran
+        except Exception, msg:
+            utils.dialogo_info(titulo = "ERROR AL GUARDAR NÚMERO DE ALBARÁN", 
+                    texto = "Ocurrió un error al guardar el número de albarán."
+                            "\nCompruebe que el número de albarán no está\n"
+                            "duplicado.", 
+                    padre = self.wids['ventana'])
         albaran.bloqueado = self.wids['ch_bloqueado'].get_active()
         albaran.facturable = self.wids['ch_facturable'].get_active()
         albaran.motivo = self.wids['e_motivo'].get_text()

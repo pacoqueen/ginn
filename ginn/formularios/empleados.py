@@ -166,7 +166,7 @@ class Empleados(Ventana):
                 # base. Se asume flotante por eliminación. O, escucha que te 
                 # diga, o que sea un decimal.Decimal
                 try:
-                    valor_campo = float(valor_campo)
+                    valor_campo = utils._float(valor_campo)
                 except TypeError:
                     res = False
             res = valor_ventana == valor_campo
@@ -368,6 +368,7 @@ class Empleados(Ventana):
         # Añadido: Si el empleado no tiene alta como trabajador, deshabilito 
         # el botón de permisos.
         self.wids['b_ausencias'].set_sensitive(self.objeto.activo)
+        self.wids['b_categoria'].set_sensitive(self.objeto.categoriaLaboral != None)
 
     def build_label(self, nombrecampo):
         """
@@ -416,7 +417,12 @@ class Empleados(Ventana):
             clase = getattr(pclases, ajena)
             COLUMNATEXTO = 'nombre'     # XXX: Cambiar si no tiene una columna "nombre"
             try:
-                contenido = [(r.id, r._SO_getValue(COLUMNATEXTO)) for r in clase.select(orderBy='id')]
+                if clase == pclases.CategoriaLaboral:
+                    # HACK: Las categorías laborales ahora van con fechas y es 
+                    # una movida.
+                    contenido = [(r.id, r._SO_getValue(COLUMNATEXTO)) for r in clase.select(orderBy='id') if not r.fecha]
+                else:
+                    contenido = [(r.id, r._SO_getValue(COLUMNATEXTO)) for r in clase.select(orderBy='id')]
             except KeyError:
                 COLUMNATEXTO = 'puesto'     # XXX: Cambiar si no tiene una columna "puesto"
                 contenido = [(r.id, r._SO_getValue(COLUMNATEXTO)) for r in clase.select(orderBy='id')]
@@ -490,7 +496,7 @@ class Empleados(Ventana):
             # Clase base, casi seguro Float: el widget es un entry
             res = w.get_text()
             try:
-                res = float(res)
+                res = utils._float(res)
             except ValueError:
                 txt = "El valor «%s» no es correcto. Introduzca un número." % (
                     res)
@@ -614,7 +620,6 @@ class Empleados(Ventana):
         empleado.notificador.set_func(self.aviso_actualizacion)
         self.actualizar_ventana()
         self.wids['b_guardar'].set_sensitive(False)
-      
 
     def imprimir_listado(self, widget):
         """

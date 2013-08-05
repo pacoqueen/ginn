@@ -372,9 +372,9 @@ class Nominas(Ventana):
                                 'id': ht.empleado.id})
                 pos = aux[ht.empleado.id]['pos']
                 # Cálculo de las horas nocturnas:
-                #if ht.partedeproduccion.horainicio >= ininoche and \
+                #if ht.parteDeProduccion.horainicio >= ininoche and \
                 #    ht.partedeproduccion.horafin <= finnoche:
-                if ht.partedeproduccion.es_nocturno():
+                if ht.parteDeProduccion.es_nocturno():
                     # OJO: Nunca se dará un parte que cubra dos franjas horarias de dos turnos
                     # diferentes, por tanto, si por ejemplo un empleado hace 2 horas de un parte de 6
                     # o las 6 horas son completas de noche (y por lo tanto las 2 del trabajador) o son 
@@ -387,16 +387,20 @@ class Nominas(Ventana):
                 # Si la hora de inicio del parte es inferior a esa, se considerará del día 
                 # anterior a efectos de horas extras.
                 try:
-                    anterior_finnoche=ht.partedeproduccion.horainicio<finnoche
+                    anterior_finnoche=ht.parteDeProduccion.horainicio<finnoche
                 except TypeError:   # horainicio es datetime.time
                     horainicio_parte = mx.DateTime.DateTimeDeltaFrom(
-                        hours = ht.partedeproduccion.horainicio.hour, 
-                        minutes = ht.partedeproduccion.horainicio.minute)
+                        hours = ht.parteDeProduccion.horainicio.hour, 
+                        minutes = ht.parteDeProduccion.horainicio.minute)
                     anterior_finnoche = horainicio_parte < finnoche
                 if anterior_finnoche:
-                    dia = (ht.partedeproduccion.fecha - mx.DateTime.oneDay)
+                    try:
+                        dia = (ht.parteDeProduccion.fecha - mx.DateTime.oneDay)
+                    except TypeError:
+                        dia = (ht.parteDeProduccion.fecha 
+                                - datetime.timedelta(1))
                 else:
-                    dia = ht.partedeproduccion.fecha
+                    dia = ht.parteDeProduccion.fecha
                 if dia not in aux[ht.empleado.id]['fechas']:
                     aux[ht.empleado.id]['fechas'][dia] = mx.DateTime.DateTimeDelta(0)
                 try:
@@ -423,9 +427,9 @@ class Nominas(Ventana):
                 # fdia = mx.DateTime.DateTimeFrom(year = int(dia.split('-')[0]), month = int(dia.split('-')[1]), day = int(dia.split('-')[2])) 
                 fdia = dia
                 try:
-                    calendario = ht.empleado.categoriaLaboral and \
-                                 ht.empleado.categoriaLaboral.lineaDeProduccion and \
-                                 [c for c in ht.empleado.categoriaLaboral.lineaDeProduccion.calendariosLaborales if \
+                    calendario = ht.empleado.get_categoriaLaboral_vigente() and \
+                                 ht.empleado.get_categoriaLaboral_vigente().lineaDeProduccion and \
+                                 [c for c in ht.empleado.get_categoriaLaboral_vigente().lineaDeProduccion.calendariosLaborales if \
                                     c.mesAnno.month == fdia.month and c.mesAnno.year == fdia.year][0] or\
                                  None
                 except IndexError:
@@ -541,9 +545,9 @@ class Nominas(Ventana):
             # Cálculo de festivos y sábados:
             fdia = mx.DateTime.DateTimeFrom(year = int(dia.split('-')[0]), month = int(dia.split('-')[1]), day = int(dia.split('-')[2])) 
             try:
-                calendario = ht.empleado.categoriaLaboral and \
-                             ht.empleado.categoriaLaboral.lineaDeProduccion and \
-                             [c for c in ht.empleado.categoriaLaboral.lineaDeProduccion.calendariosLaborales if \
+                calendario = ht.empleado.get_categoriaLaboral_vigente() and \
+                             ht.empleado.get_categoriaLaboral_vigente().lineaDeProduccion and \
+                             [c for c in ht.empleado.get_categoriaLaboral_vigente().lineaDeProduccion.calendariosLaborales if \
                                 c.mesAnno.month == fdia.month and c.mesAnno.year == fdia.year][0] or\
                              None
             except IndexError:
@@ -641,14 +645,14 @@ class Nominas(Ventana):
     
     def calcular_plusJefeTurno(self, e):
         try:
-            return e.categoriaLaboral.precioPlusJefeTurno
+            return e.get_categoriaLaboral_vigente().precioPlusJefeTurno
         except AttributeError:
             return 0
     
     def calcular_plusFestivo(self, e, empleado):
         try:
             horas_en_festivo = empleado['festivos'].hours
-            return e.categoriaLaboral.precioPlusFestivo * horas_en_festivo
+            return e.get_categoriaLaboral_vigente().precioPlusFestivo * horas_en_festivo
         except AttributeError:
             return 0
      
@@ -657,21 +661,21 @@ class Nominas(Ventana):
         Para que afecte sólo a fibra debe estar bien configurado en la categoría laboral.
         """
         try:
-            return e.categoriaLaboral.precioPlusTurnicidad
+            return e.get_categoriaLaboral_vigente().precioPlusTurnicidad
         except AttributeError:
             return 0
      
     def calcular_plusMantenimientoSabados(self, e, empleado):
         try:
             horas_en_sabado = empleado['sabados'].hours
-            return e.categoriaLaboral.precioPlusMantenimientoSabados * horas_en_sabado
+            return e.get_categoriaLaboral_vigente().precioPlusMantenimientoSabados * horas_en_sabado
         except AttributeError:
             return 0
      
     def calcular_totalHorasExtra(self, e, empleado):
         try:
-            return (e.categoriaLaboral.precioHoraExtra * empleado['extra'].hours) + \
-                    (e.categoriaLaboral.precioHoraNocturnidad * empleado['extra_n'].hours)
+            return (e.get_categoriaLaboral_vigente().precioHoraExtra * empleado['extra'].hours) + \
+                    (e.get_categoriaLaboral_vigente().precioHoraNocturnidad * empleado['extra_n'].hours)
         except AttributeError:
             return 0
      
@@ -685,8 +689,8 @@ class Nominas(Ventana):
         """
         if empleado['noche'].hours > 0:
             try:
-                #res = e.categoriaLaboral.precioPlusNocturnidad * ceil((empleado['noche'].hours / 8.0))
-                precio_hora_noche = e.categoriaLaboral.precioPlusNocturnidad / 8.0
+                #res = e.get_categoriaLaboral_vigente().precioPlusNocturnidad * ceil((empleado['noche'].hours / 8.0))
+                precio_hora_noche = e.get_categoriaLaboral_vigente().precioPlusNocturnidad / 8.0
                 res = empleado['noche'].hours * precio_hora_noche
             except AttributeError:
                 res = 0
@@ -765,7 +769,7 @@ class Nominas(Ventana):
             model.clear()
             for nomina in nominas:
                 model.append(("%s, %s" % (nomina.empleado.apellidos, nomina.empleado.nombre), 
-                              nomina.empleado.categoriaLaboral and nomina.empleado.categoriaLaboral.puesto or "", 
+                              nomina.empleado.get_categoriaLaboral_vigente() and nomina.empleado.get_categoriaLaboral_vigente().puesto or "", 
                               utils.float2str(nomina.gratificacion, 3, autodec = True), 
                               utils.float2str(nomina.plusJefeTurno, 3, autodec = True), 
                               utils.float2str(nomina.plusNoAbsentismo, 3, autodec = True), 

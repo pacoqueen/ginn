@@ -324,10 +324,15 @@ class Ausencias(Ventana):
         empleado = self.objeto
         if empleado != None:
             self.wids['e_centro'].set_text(empleado.centroTrabajo and empleado.centroTrabajo.nombre or '')
-            self.wids['e_dias_convenio'].set_text(empleado.categoriaLaboral 
-                                                    and "%d" % (empleado.categoriaLaboral.diasConvenio) or '')
-            self.wids['e_dias_asuntos_propios'].set_text(empleado.categoriaLaboral 
-                                                    and "%d" % (empleado.categoriaLaboral.diasAsuntosPropios) or '')
+            categoriaLaboral = empleado.get_categoriaLaboral_vigente()
+            # TODO: Vigente... vigente hoy. ¿Pero qué pasa si cambio de año?
+            # ¿Y si hay cambios de días de convenio durante el mismo año?
+            # De momento lo dejo así, porque la lógica me dice que no se
+            # viaja en el tiempo para pedir días de años anteriores.
+            self.wids['e_dias_convenio'].set_text(categoriaLaboral 
+                and "%d" % (categoriaLaboral.diasConvenio) or '')
+            self.wids['e_dias_asuntos_propios'].set_text(categoriaLaboral 
+                and "%d" % (categoriaLaboral.diasAsuntosPropios) or '')
             anno = self.wids['sp_anno'].get_value()
             diasConvenioRestantes = empleado.get_diasConvenioRestantes(anno)
             self.wids['e_dc_restantes'].set_text('%d' % diasConvenioRestantes)
