@@ -469,6 +469,7 @@ def parse_params():
     else:
         password = opts.password
     # Fichero de configuración
+    opts.config = opts.config.strip()
     if not os.path.exists(opts.config):
         config = os.path.join(
                 os.path.abspath(os.path.dirname(os.path.realpath(__file__))), 

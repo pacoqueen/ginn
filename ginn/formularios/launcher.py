@@ -73,16 +73,21 @@ def run(modulo, clase, usuario, fconfig, obj_puid = None):
         else:
             comando = "export PYTHONPATH=$PYTHONPATH:" + ruta + "; " 
             interprete = ""
-        comando += interprete + " " 
-        comando += os.path.join(ruta, "formularios", modulo + ".py")
-        args = [] # ["-u %s" % usuario, "-c %s" % fconfig] 
+        comando += interprete 
+        args = os.path.join(ruta, "formularios", modulo + ".py")
         if not isinstance(usuario, str):
             usuario = usuario.usuario   # Debe ser instancia de pclases
-        comando += " -u %s -c %s" % (usuario, fconfig) 
+        args += ["-u %s" % usuario, "-c %s" % fconfig] 
         if obj_puid:
-            comando += " -o %s" % obj_puid
-        # print comando
+            args.append(" -o %s" % obj_puid)
+        # print comando, args
         subprocess.Popen([comando] + args, shell = True)
+        # OJO: Si no funciona y Windows dice que 
+        # "La ruta de acceso no es válida", comprueba antes que nada que el 
+        # fichero de log de formularios existe y es accesible para escritura 
+        # para todos los usuarios. Para depurar, lo mejor es que 
+        # ejecutes el launcher directamente. Sin menú. Tal que así:
+        # Q:\ginn\formularios>C:\Python27\python.exe launcher.py -u admin -p adadmin -w bancos.py
     except Exception, msg:     # fallback @UnusedVariable
         # TODO: Esto debería ir al logger o algo:
         #print "launcher.py:", msg
