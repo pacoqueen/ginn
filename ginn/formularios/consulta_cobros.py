@@ -298,18 +298,23 @@ class ConsultaCobros(Ventana):
         for item in cobros:
             vpro.mover()
             if item.fecha not in elementos:
-                elementos[item.fecha] = {'cobros': [], 'vencimientos': [], 'logic': []}
+                elementos[item.fecha] = {'cobros': [], 
+                                         'vencimientos': [], 
+                                         'logic': []}
             elementos[item.fecha]['cobros'].append(item)
         for item in vencimientos:
             vpro.mover()
             if item.fecha not in elementos:
-                elementos[item.fecha] = {'cobros': [], 'vencimientos': [], 'logic': []}
+                elementos[item.fecha] = {'cobros': [], 
+                                         'vencimientos': [], 
+                                         'logic': []}
             elementos[item.fecha]['vencimientos'].append(item)
         # for item in self.buscar_vencimientos_logic(self.inicio, self.fin):
         #     if item['fecha'] not in elementos:
         #         elementos[item['fecha']] = {'cobros': [], 'vencimientos': [], 'logic': []}
         #     elementos[item['fecha']]['logic'].append(item)
         self.rellenar_tabla(elementos, vpro)
+        # PORASQUI: Ver el correo de Javi. Hay que meter los cobros reales entre las fechas de la consulta. Así que cuando es pagaré o confirming, no me puedo fiar de la fecha del registro cobro. Tengo que buscar por la fechaCobrado del objeto pagaré o confirming.
         self.rellenar_cesce(cobros, vpro)
         vpro.ocultar()
 
