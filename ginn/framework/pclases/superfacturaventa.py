@@ -615,9 +615,9 @@ class SuperFacturaVenta:
             return self.UNOPTIMIZED_get_estado(fecha = fecha)
         else:
             sqlfuncs = (("fra_no_documentada", FRA_NO_DOCUMENTADA), 
+                        ("fra_cobrada", FRA_COBRADA), 
                         ("fra_no_vencida", FRA_NO_VENCIDA), 
                         ("fra_impagada", FRA_IMPAGADA), 
-                        ("fra_cobrada", FRA_COBRADA), 
                         ("fra_abono", FRA_ABONO)) 
             for sqlfunc, estado in sqlfuncs:
                 if FacturaVenta._connection.queryOne("SELECT %s(%d, '%s');" 
