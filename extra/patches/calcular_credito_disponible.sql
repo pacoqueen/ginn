@@ -240,8 +240,9 @@ CREATE OR REPLACE FUNCTION fra_no_vencida(idfra INTEGER,
         SELECT calcular_importe_vencido_factura_venta($1, $2) INTO vencido;
         SELECT calcular_importe_no_vencido_factura_venta($1, $2) INTO no_vencido;
         RETURN NOT fra_no_documentada($1, $2)   -- Está documentada, pero
-               AND vencido = 0;                 -- no ha vencido. Porque si ha vencido algo
+               AND vencido = 0                  -- no ha vencido. Porque si ha vencido algo
                                                 -- entonces la factura está cobrada o impagada.
+               AND cobrado = 0;     -- A no ser que se haya adelantado el cobro.
     END;
     $$ LANGUAGE plpgsql;        -- NEW! 2/08/2013
 
