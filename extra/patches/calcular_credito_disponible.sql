@@ -1,4 +1,5 @@
-﻿-- 05/08/2013
+
+-- 05/08/2013
 -- Parche para crear funciones de cálculo de crédito 
 
 CREATE OR REPLACE FUNCTION cobro_esta_cobrado(idcobro INTEGER, 
