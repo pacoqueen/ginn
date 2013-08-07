@@ -23,46 +23,49 @@ CREATE OR REPLACE FUNCTION cobro_esta_cobrado(idcobro INTEGER,
         BEGIN
             -- Selecciono el cobro en cuestión:
             SELECT * INTO registro_cobro FROM cobro WHERE id = idcobro;
-            -- Buscar si es pagaré, confirming u otra cosa:
+            -- Buscar si es pagaré, confirming u otra cosa. Aquí ya 
+            -- me aseguro de que esté recibido mirando la fecha.
             IF NOT (registro_cobro.pagare_cobro_id IS NULL) THEN
                 SELECT * INTO registro_pagare_cobro 
                   FROM pagare_cobro 
-                 WHERE pagare_cobro.id = registro_cobro.pagare_cobro_id;
+                 WHERE pagare_cobro.id = registro_cobro.pagare_cobro_id 
+                   AND pagare_cobro.fecha_recepcion <= fecha;
                 -- Si tiene fecha de cobro y ya ha pasado, he cobrado lo 
                 -- que indique el pagaré (que puede ser 0 si está pendiente,  
                 -- solo una parte del pagaré por error de alguien o lo que 
                 -- sea, o completo --cuando se pone el pendiente=FALSE, el 
                 -- cobrado se iguala al importe total del pagaré--).
                 IF (NOT (registro_pagare_cobro.fecha_cobrado IS NULL))
-                   AND fecha >= registro_pagare_cobro.fecha_cobrado THEN
+                    AND fecha >= registro_pagare_cobro.fecha_cobrado THEN
                     cobrado := registro_pagare_cobro.cobrado;
-                -- Si no, pero no ha vencido todavía (y lo he recibido) 
-                ELSIF registro_pagare_cobro.fecha_cobro > fecha
-                      AND registro_pagare_cobro.fecha_recepcion <= fecha THEN
-                    cobrado := registro_pagare_cobro.cantidad;
+                -- Si no tiene fecha de cobrado o ésta todavía no ha llegado 
+                -- según la recibida, está documentado, pero no cobrado.
+                -- O si no tiene fecha de cobrado en abosulto. Que estaría 
+                -- no documentado.
                 ELSE
                     cobrado := 0.0;
                 END IF;
             ELSIF NOT (registro_cobro.confirming_id IS NULL) THEN
                 -- Si es un confirming, lo cuento como cobrado si no está 
                 -- pendiente o si ya lo he recibido, ya que si no responde 
-                -- el cliente, responderá el banco.
+                -- el cliente, responderá el banco. Pero lo cuento como 
+                -- cobrado solo si se ha indicado una fecha de cobro. Ya que 
+                -- si se negocia o se cobra, este campo estará informado.
+                -- Y si no está informado, es que es un importe documentado 
+                -- (si no no existiría el registro) pero no cobrado ni 
+                -- negociado. Estaría impagado/vencido.
                 SELECT * INTO registro_confirming
                   FROM confirming 
-                 WHERE confirming.id = registro_cobro.confirming_id;
-                IF registro_confirming.fecha_recepcion <= fecha THEN
-                    -- Recibido
-                    IF registro_confirming.fecha_cobrado IS NOT NULL
-                        AND registro_confirming.fecha_cobrado > fecha THEN
-                        -- Recibido y vencido.
-                        cobrado := registro_confirming.cobrado;
-                        -- .cobrado puede ser 0.0 si está pendiente en la app.
-                    ELSE
-                        -- Recibido y no vencido.
-                        cobrado := registro_confirming.cantidad;
-                    END IF;
+                 WHERE confirming.id = registro_cobro.confirming_id 
+                   AND confirming.fecha_recepcion <= fecha;
+                IF (NOT (registro_confirming.fecha_cobrado IS NULL))
+                    AND fecha >= registro_confirming.fecha_cobrado THEN
+                    cobrado := registro_confirming.cobrado;
+                -- Si no tiene fecha de cobrado o ésta todavía no ha llegado 
+                -- según la recibida, está documentado, pero no cobrado.
+                -- O si no tiene fecha de cobrado en abosulto. Que estaría 
+                -- no documentado.
                 ELSE
-                    -- No recibido
                     cobrado := 0.0;
                 END IF;
             ELSE
@@ -75,9 +78,71 @@ CREATE OR REPLACE FUNCTION cobro_esta_cobrado(idcobro INTEGER,
                     cobrado := 0.0;
                 END IF;
             END IF;
-            return cobrado;
+            RETURN cobrado;
         END;
-    $$ LANGUAGE plpgsql; -- NEW 26/06/2013
+    $$ LANGUAGE plpgsql; -- NEW 26/06/2013 MODIFICADO 0/08/2013
+
+CREATE OR REPLACE FUNCTION cobro_esta_documentado(idcobro INTEGER, 
+                                   fecha DATE DEFAULT CURRENT_DATE)
+    -- Recibe un ID de cobro y una fecha.
+    -- Devuelve el importe documentado PERO NO COBRADO/VENCIDO en esa fecha, 
+    -- que depende de:
+    --  * Si es una transferencia, efectivo, cheque o cualquier otra cosa 
+    --    que no sea un confirming o un pagaré; se cuenta como cobrado en 
+    --    cuanto se alcanza la fecha de cobro. Nunca está documentado.
+    --  * Si es un confirming o un pagaré cuentan como documentados si 
+    --    no tienen informado el campo fecha_cobrado.
+    RETURNS FLOAT
+    AS $$
+        DECLARE
+            registro_cobro cobro%ROWTYPE;
+            registro_pagare_cobro pagare_cobro%ROWTYPE;
+            registro_confirming confirming%ROWTYPE;
+            documentado FLOAT;
+        BEGIN
+            -- Selecciono el cobro en cuestión:
+            SELECT * INTO registro_cobro FROM cobro WHERE id = idcobro;
+            -- Buscar si es pagaré, confirming u otra cosa:
+            IF NOT (registro_cobro.pagare_cobro_id IS NULL) THEN
+                SELECT * INTO registro_pagare_cobro 
+                  FROM pagare_cobro 
+                 WHERE pagare_cobro.id = registro_cobro.pagare_cobro_id;
+                -- Si no tiene fecha de cobro o tiene pero es posterior 
+                -- a la fecha consultada, está documentado. Si es posterior 
+                -- estaría cobrado y si no tiene y dependiendo de la 
+                -- fecha del vencimiento, impagado. Contando siempre con que 
+                -- se haya recibido en la fecha indicada.
+                IF (registro_pagare_cobro.fecha_cobrado IS NULL OR 
+                    registro_pagare_cobro.fecha_cobrado > fecha)
+                   AND registro_pagare_cobro.fecha_recepcion <= fecha THEN
+                    documentado := registro_pagare_cobro.cantidad;
+                ELSE
+                    documentado := 0.0;
+                END IF;
+            ELSIF NOT (registro_cobro.confirming_id IS NULL) THEN
+                SELECT * INTO registro_confirming 
+                  FROM confirming
+                 WHERE confirming.id = registro_cobro.confirming_id;
+                -- Si no tiene fecha de cobro o tiene pero es posterior 
+                -- a la fecha consultada, está documentado. Si es posterior 
+                -- estaría cobrado y si no tiene y dependiendo de la 
+                -- fecha del vencimiento, impagado.
+                IF (registro_confirming.fecha_cobrado IS NULL OR 
+                    registro_confirming.fecha_cobrado > fecha) 
+                   AND registro_confirming.fecha_recepcion <= fecha THEN
+                    documentado := registro_confirming.cantidad;
+                ELSE
+                    documentado := 0.0;
+                END IF;
+            ELSE
+                -- Es un cobro que no implica efectos futuribles 
+                -- (transferencia, contado, etc.). No llega a tener nunca 
+                -- un documento de cobro.
+                documentado := 0.0;
+            END IF;
+            RETURN documentado;
+        END;
+    $$ LANGUAGE plpgsql; -- NEW 7/08/2013
 
 CREATE OR REPLACE FUNCTION calcular_importe_cobrado_factura_venta(idfra INTEGER, 
 								  fecha DATE DEFAULT CURRENT_DATE)
@@ -87,18 +152,38 @@ CREATE OR REPLACE FUNCTION calcular_importe_cobrado_factura_venta(idfra INTEGER,
         SELECT COALESCE(SUM(importe), 0) FROM cobro WHERE cobro.factura_venta_id = $1 AND cobro_esta_cobrado(cobro.id, $2) <> 0;
     $$ LANGUAGE SQL;
 
-CREATE OR REPLACE FUNCTION calcular_importe_vencido_factura_venta(idfra INTEGER, 
-                                                                  fecha DATE DEFAULT CURRENT_DATE)
+CREATE OR REPLACE FUNCTION calcular_importe_documentado_factura_venta(
+                                idfra INTEGER, 
+                                fecha DATE DEFAULT CURRENT_DATE)
+    -- Indica el importe documentado y no vencido ni cobrado de la factura.
     RETURNS FLOAT
     AS $$
-        SELECT COALESCE(SUM(importe), 0) FROM vencimiento_cobro WHERE vencimiento_cobro.factura_venta_id = $1 AND vencimiento_cobro.fecha < $2;
+        SELECT COALESCE(SUM(importe), 0) 
+          FROM cobro 
+         WHERE cobro.factura_venta_id = $1 
+           AND cobro_esta_documentado(cobro.id, $2) <> 0;
+    $$ LANGUAGE SQL;    -- NEW! 7/08/2013
+
+CREATE OR REPLACE FUNCTION calcular_importe_vencido_factura_venta(
+                                idfra INTEGER, 
+                                fecha DATE DEFAULT CURRENT_DATE)
+    RETURNS FLOAT
+    AS $$
+        SELECT COALESCE(SUM(importe), 0) 
+          FROM vencimiento_cobro 
+         WHERE vencimiento_cobro.factura_venta_id = $1 
+           AND vencimiento_cobro.fecha < $2;
     $$ LANGUAGE SQL;
 
-CREATE OR REPLACE FUNCTION calcular_importe_no_vencido_factura_venta(idfra INTEGER, 
-                                                                     fecha DATE DEFAULT CURRENT_DATE)
+CREATE OR REPLACE FUNCTION calcular_importe_no_vencido_factura_venta(
+                                idfra INTEGER, 
+                                fecha DATE DEFAULT CURRENT_DATE)
     RETURNS FLOAT
     AS $$
-        SELECT COALESCE(SUM(importe), 0) FROM vencimiento_cobro WHERE vencimiento_cobro.factura_venta_id = $1 AND vencimiento_cobro.fecha >= $2;
+        SELECT COALESCE(SUM(importe), 0) 
+          FROM vencimiento_cobro 
+         WHERE vencimiento_cobro.factura_venta_id = $1 
+           AND vencimiento_cobro.fecha >= $2;
     $$ LANGUAGE SQL;
 
 CREATE OR REPLACE FUNCTION fra_cobrada(idfra INTEGER, 
@@ -121,21 +206,25 @@ CREATE OR REPLACE FUNCTION fra_cobrada(idfra INTEGER,
 
 CREATE OR REPLACE FUNCTION fra_no_documentada(idfra INTEGER, 
                                               fecha DATE DEFAULT CURRENT_DATE)
-    -- Fra. no documentada es la que no ha vencido ni tiene cobros porque todavía 
-    -- no ha llegado ni un triste pagaré.
+    -- Fra. no documentada es la que no ha vencido ni tiene cobros porque 
+    -- todavía no ha llegado ni un triste pagaré.
     RETURNS BOOLEAN
     AS $$
     DECLARE
         cobrado FLOAT;
         vencido FLOAT;
         no_vencido FLOAT;
+        documentado FLOAT;
     BEGIN
+        SELECT calcular_importe_documentado_factura_venta($1, $2) INTO documentado;
         SELECT calcular_importe_cobrado_factura_venta($1, $2) INTO cobrado;
         SELECT calcular_importe_vencido_factura_venta($1, $2) INTO vencido;
         SELECT calcular_importe_no_vencido_factura_venta($1, $2) INTO no_vencido;
-        RETURN cobrado = 0 and vencido = 0;     -- OJO: Si tiene cobros o está vencida pero la factura tiene importe CERO, entonces va a clasificarse como NO DOCUMENTADA.
+        RETURN cobrado = 0 AND vencido = 0 AND documentado = 0;     
+            -- OJO: Si tiene cobros o está vencida pero la factura tiene 
+            -- importe CERO, entonces va a clasificarse como NO DOCUMENTADA.
     END;
-    $$ LANGUAGE plpgsql;        -- NEW! 2/08/2013
+    $$ LANGUAGE plpgsql;        -- NEW! 2/08/2013 MODIFIED 7/08/2013
 
 CREATE OR REPLACE FUNCTION fra_no_vencida(idfra INTEGER, 
                                           fecha DATE DEFAULT CURRENT_DATE)
@@ -157,15 +246,19 @@ CREATE OR REPLACE FUNCTION fra_no_vencida(idfra INTEGER,
 
 CREATE OR REPLACE FUNCTION fra_impagada(idfra INTEGER, 
                                         fecha DATE DEFAULT CURRENT_DATE)
+    -- Factura impagada es la que ha vencido y ese importe (o parte) vencido 
+    -- supera el documentado más el cobrado.
     RETURNS BOOLEAN
     AS $$
     DECLARE
         cobrado FLOAT;
         vencido FLOAT;
+        documentado FLOAT;
     BEGIN
         SELECT calcular_importe_cobrado_factura_venta($1, $2) INTO cobrado;
         SELECT calcular_importe_vencido_factura_venta($1, $2) INTO vencido;
-        RETURN cobrado >= 0 and cobrado < vencido;
+        SELECT calcular_importe_documentado_factura_venta($1, $2) INTO documentado;
+        RETURN cobrado + documentado >= 0 and cobrado + documentado < vencido;
     END;
     $$ LANGUAGE plpgsql;        -- NEW! 2/08/2013
 
@@ -187,7 +280,7 @@ CREATE OR REPLACE FUNCTION calcular_importe_factura_venta(idfra INTEGER)
     RETURNS FLOAT
     AS $$
         SELECT COALESCE(SUM(importe), 0) FROM vencimiento_cobro WHERE vencimiento_cobro.factura_venta_id = $1;
-    $$ LANGUAGE SQL;
+    $$ LANGUAGE SQL;    -- NEW! 5/08/2013
 
 CREATE OR REPLACE FUNCTION calcular_credito_disponible(idcliente INTEGER, 
                                                        fecha DATE DEFAULT CURRENT_DATE, 
@@ -226,4 +319,6 @@ CREATE OR REPLACE FUNCTION calcular_credito_disponible(idcliente INTEGER,
         END IF;
         RETURN credito;
      END;
-     $$ LANGUAGE plpgsql;
+     $$ LANGUAGE plpgsql;    -- NEW! 5/08/2013
+
+
