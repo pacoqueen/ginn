@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 07 agosto 2013 at 23:36:27.
+" Created by session.vim 1.5 on 13 agosto 2013 at 12:34:00.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -69,7 +69,7 @@ badd +4 bin/ginn.sh
 badd +10 ginn/main.py
 badd +27 ginn/formularios/ventana.py
 badd +2310 ginn/formularios/pedidos_de_venta.py
-badd +3653 db/tablas.sql
+badd +3647 db/tablas.sql
 badd +1958 ginn/formularios/albaranes_de_salida.py
 badd +1 ginn/formularios/presupuesto.py
 badd +9 ginn/formularios/presupuestos.py
@@ -94,7 +94,7 @@ badd +363 ginn/formularios/consulta_pagos.py
 badd +13 ginn/formularios/consulta_vencimientos_pago.py
 badd +500 ginn/formularios/trazabilidad.py
 badd +2887 ginn/framework/pclases/__init__.py
-badd +618 ginn/framework/pclases/superfacturaventa.py
+badd +611 ginn/framework/pclases/superfacturaventa.py
 badd +4 ginn/framework/pclases/facturaventa.py
 badd +689 ginn/formularios/consulta_mensual_nominas.py
 badd +269 ginn/informes/treeview2pdf.py
@@ -268,7 +268,7 @@ normal! zo
 normal! zo
 105
 normal! zo
-let s:l = 80 - ((2 * winheight(0) + 8) / 17)
+let s:l = 80 - ((0 * winheight(0) + 8) / 17)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
