@@ -3638,19 +3638,27 @@ CREATE OR REPLACE FUNCTION fra_no_documentada(idfra INTEGER,
 CREATE OR REPLACE FUNCTION fra_no_vencida(idfra INTEGER, 
                                           fecha DATE DEFAULT CURRENT_DATE)
     RETURNS BOOLEAN
+    -- Devuelve TRUE (no vencida o documentada no vencida) si:
+    --   * no ha vencido nada de la factura.
+    --   * lo que ha vencido está documentado y los vencimientos de 
+    --     los documentos no han vencido.
     AS $$
     DECLARE
         cobrado FLOAT;
         vencido FLOAT;
         no_vencido FLOAT;
+        documentado FLOAT;
     BEGIN
         SELECT calcular_importe_cobrado_factura_venta($1, $2) INTO cobrado;
         SELECT calcular_importe_vencido_factura_venta($1, $2) INTO vencido;
         SELECT calcular_importe_no_vencido_factura_venta($1, $2) INTO no_vencido;
+        SELECT calcular_importe_documentado_factura_venta($1, $2) INTO documentado;
         RETURN NOT fra_no_documentada($1, $2)   -- Está documentada, pero
-               AND vencido = 0                  -- no ha vencido. Porque si ha vencido algo
-                                                -- entonces la factura está cobrada o impagada.
-               AND cobrado = 0;     -- A no ser que se haya adelantado el cobro.
+               AND ((vencido = 0 -- no ha vencido. Porque si ha vencido algo
+                                -- entonces la factura está cobrada o impagada.
+                     AND cobrado = 0) -- A no ser que se haya adelantado 
+                                      -- el cobro.
+                    OR (vencido = documentado));
     END;
     $$ LANGUAGE plpgsql;        -- NEW! 2/08/2013
 
