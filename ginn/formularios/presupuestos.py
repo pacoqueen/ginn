@@ -55,23 +55,23 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         self.usuario = usuario
         self.clase = pclases.Presupuesto
-        self.dic_campos = {"clienteID": "cbe_cliente", 
+        self.dic_campos = {"comercialID": "cb_comercial", 
                            "fecha": "e_fecha", 
-                           "personaContacto": "e_persona_contacto", 
-                           "nombrecliente": "e_cliente", 
+                           "adjudicada": "ch_adjudicada", 
+                           "clienteID": "cbe_cliente", 
+                           "cif": "e_cif", 
+                           #"nombrecliente": "e_cliente", 
                            "direccion": "e_direccion", 
+                           "cp": "e_cp", 
                            "ciudad": "e_ciudad", 
                            "provincia": "e_provincia", 
-                           "cp": "e_cp", 
                            "pais": "e_pais", 
                            "telefono": "e_telefono", 
-                           "fax": "e_fax", 
-                           "texto": "txt_texto", 
-                           "despedida": "txt_despedida", 
-                           "validez": "sp_validez", 
-                           "numpresupuesto": "e_numpresupuesto", 
-                           "comercialID": "cbe_comercial", 
-                           "obra": "e_obra",  
+                           "email": "e_email", 
+                           "obraID": "cbe_obra", 
+                           "formaDePagoID": "cb_forma_cobro", 
+                           "texto": "txt_condiciones", 
+                           "observaciones": "txt_observaciones"  
                           }
         Ventana.__init__(self, 'presupuestos.glade', objeto, 
                          usuario = self.usuario)
@@ -81,17 +81,10 @@ class Presupuestos(Ventana, VentanaGenerica):
                        'b_actualizar/clicked': self.actualizar_ventana,
                        'b_guardar/clicked': self.guardar,
                        'b_buscar/clicked': self.buscar, 
-                       'ch_aceptado/clicked': self.mostrar_aceptado, 
-                       'b_add_producto/clicked': self.add_ldp, 
-                       'b_drop_producto/clicked': self.drop_ldp, 
-                       'b_add_servicio/clicked': self.add_srv, 
-                       'b_drop_servicio/clicked': self.drop_srv,
                        'b_fecha/clicked': self.fecha,  
-                       'b_imprimir/clicked': self.imprimir, 
-                       'b_aceptar_presupuesto/clicked': self.hacer_pedido,  
-                       'b_presupuesto/clicked': self.imprimir_presupuesto, 
-                       "cbe_cliente/changed": self.cambiar_datos_cliente, 
-                       'sp_validez/value-changed': self.comprobar_plural
+                       #'b_imprimir/clicked': self.imprimir, 
+                       #'b_pedido/clicked': self.hacer_pedido,  
+                       #"cbe_cliente/changed": self.cambiar_datos_cliente, 
                       }  
         self.add_connections(connections)
         self.inicializar_ventana()
@@ -103,21 +96,14 @@ class Presupuestos(Ventana, VentanaGenerica):
             self.activar_widgets(False) # Para evitar manos rápidas al abrir.
         gtk.main()
 
-    def comprobar_plural(self, sp):
-        """
-        Si el valor del sp es 0 cambia el label por "N/A".
-        Si es 1, pone "mes" y si es otra cosa, "meses".
-        """
-        valor = sp.get_value()
-        if not valor:
-            self.wids['l_meses'].set_text("N/A")
-        elif valor == 1:
-            self.wids['l_meses'].set_text("mes")
-        else:
-            self.wids['l_meses'].set_text("meses")
-    
     def fecha(self, w):
-        self.wids['e_fecha'].set_text(utils.str_fecha(utils.mostrar_calendario(fecha_defecto = self.objeto and self.objeto.fecha or None, padre = self.wids['ventana'])))
+        self.wids['e_fecha'].set_text(
+                utils.str_fecha(
+                    utils.mostrar_calendario(
+                        fecha_defecto = self.objeto 
+                                            and self.objeto.fecha 
+                                             or None, 
+                        padre = self.wids['ventana'])))
 
     def cambiar_datos_cliente(self, cbe):
         """
@@ -274,7 +260,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         Elimina las LDPs seleccionadas del presupuesto.
         """
-        model, paths = self.wids['tv_ldps'].get_selection().get_selected_rows()
+        model, paths = self.wids['tv_contenido'].get_selection().get_selected_rows()
         fallo = False
         if  paths != None and paths != []:
             for path in paths:
@@ -366,8 +352,6 @@ class Presupuestos(Ventana, VentanaGenerica):
         if self.objeto == None:
             igual = True
         else:
-            self.wids['sp_validez'].update()    # Por si ha tecleado en vez 
-                            # de usar los botones de incremento y decremento.
             igual = self.objeto != None
             for colname in self.dic_campos:
                 col = self.clase.sqlmeta.columns[colname]
@@ -411,86 +395,13 @@ class Presupuestos(Ventana, VentanaGenerica):
                 ('Descripción', 'gobject.TYPE_STRING', False,True,True, None),
                 ('Precio', 'gobject.TYPE_STRING', True, True, False, 
                     self.cambiar_precio_ldp),
-                ('Descuento', 'gobject.TYPE_STRING', True, True, False, 
-                    self.cambiar_descuento_ldp),
                 ('Subtotal', 'gobject.TYPE_STRING', False, True, False, None),
-                ('Aceptado', 'gobject.TYPE_BOOLEAN', False, True, False, None), 
-                ('En pedido', 'gobject.TYPE_STRING', False, True, False, None),
+                #('Aceptado', 'gobject.TYPE_BOOLEAN', False, True, False, None), 
+                #('En pedido', 'gobject.TYPE_STRING', False, True, False, None),
                 ('ID', 'gobject.TYPE_INT64', False, False, False, None))
-        utils.preparar_listview(self.wids['tv_ldps'], cols)
-        self.wids['tv_ldps'].get_selection().set_mode(gtk.SELECTION_MULTIPLE)
-        cols = (('Cantidad', 'gobject.TYPE_STRING', True, True, False, 
-                    self.editar_cantidad_srv),
-                ('Concepto', 'gobject.TYPE_STRING', True, True, True, 
-                    self.editar_concepto_srv),
-                ('Precio', 'gobject.TYPE_STRING', True, True, False, 
-                    self.editar_precio_srv),
-                ('Descuento', 'gobject.TYPE_STRING', True, True, False, 
-                    self.cambiar_descuento_srv),
-                ('Subtotal', 'gobject.TYPE_STRING', False, True, False, None),
-                ('Aceptado', 'gobject.TYPE_BOOLEAN', False, True, False, None), 
-                ('En', 'gobject.TYPE_STRING', False, True, False, None), 
-                ('ID', 'gobject.TYPE_INT64', False, False, False, None))
-        utils.preparar_listview(self.wids['tv_servicios'], cols)
-        self.wids['tv_servicios'].get_selection().set_mode(gtk.SELECTION_MULTIPLE)
+        utils.preparar_listview(self.wids['tv_contenido'], cols)
+        self.wids['tv_contenido'].get_selection().set_mode(gtk.SELECTION_MULTIPLE)
     
-    def editar_cantidad_srv(self, cell, path, texto):
-        """
-        Cambia la cantidad del servicio.
-        """
-        try:
-            cantidad = utils._float(texto)
-        except ValueError:
-            utils.dialogo_info(titulo = "ERROR", 
-                               texto = 'El texto "%s" no es un número.' % (texto), 
-                               padre = self.wids['ventana'])
-        else:
-            model = self.wids['tv_servicios'].get_model()
-            srv = pclases.Servicio.get(model[path][-1])
-            srv.cantidad = cantidad
-            self.rellenar_tablas()
-    
-    def editar_concepto_srv(self, cell, path, texto):
-        """
-        Cambia el concepto del servicio.
-        """
-        model = self.wids['tv_servicios'].get_model()
-        srv = pclases.Servicio.get(model[path][-1])
-        srv.concepto = texto
-        self.rellenar_tablas()
-    
-    def editar_precio_srv(self, cell, path, texto):
-        """
-        Cambia el precio del servicio.
-        """
-        try:
-            precio = utils._float(texto)
-        except ValueError:
-            utils.dialogo_info(titulo = "ERROR", 
-                               texto = 'El texto "%s" no es un número.' % (texto), 
-                               padre = self.wids['ventana'])
-        else:
-            model = self.wids['tv_servicios'].get_model()
-            srv = pclases.Servicio.get(model[path][-1])
-            srv.precio = precio
-            self.rellenar_tablas()
-    
-    def cambiar_descuento_srv(self, cell, path, texto):
-        """
-        Cambia el descuento del servicio.
-        """
-        try:
-            descuento = utils.parse_porcentaje(texto, fraccion = True)
-        except ValueError:
-            utils.dialogo_info(titulo = "ERROR", 
-                               texto = 'El texto "%s" no es un número.'%texto, 
-                               padre = self.wids['ventana'])
-        else:
-            model = self.wids['tv_servicios'].get_model()
-            srv = pclases.Servicio.get(model[path][-1])
-            srv.descuento = descuento
-            self.rellenar_tablas()
-  
     def cambiar_precio_ldp(self, cell, path, texto):
         """
         Cambia el precio de la LDP conforme al texto recibido.
@@ -502,7 +413,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                                texto = 'El texto "%s" no es un número.' % (texto), 
                                padre = self.wids['ventana'])
         else:
-            model = self.wids['tv_ldps'].get_model()
+            model = self.wids['tv_contenido'].get_model()
             ldp = pclases.LineaDePedido.get(model[path][-1])
             if ldp.precio != precio:
                 ldp.precio = precio
@@ -526,43 +437,6 @@ class Presupuestos(Ventana, VentanaGenerica):
                         ldv.precio = ldp.precio
             self.rellenar_tablas()
 
-    def cambiar_descuento_ldp(self, cell, path, texto):
-        """
-        Cambia el descuento de la LDP conforme al texto recibido.
-        """
-        try:
-            descuento = utils.parse_porcentaje(texto, fraccion = True)
-        except:
-            utils.dialogo_info(titulo = "ERROR", 
-                               texto = 'El texto "%s" no es un número válido.' 
-                                    % (texto), 
-                               padre = self.wids['ventana'])
-        else:
-            model = self.wids['tv_ldps'].get_model()
-            ldp = pclases.LineaDePedido.get(model[path][-1])
-            if ldp.descuento != descuento:
-                ldp.descuento = descuento
-                if ldp.get_lineas_de_venta() != [] \
-                   and utils.dialogo(
-                        titulo = "¿CAMBIAR PRODUCTOS SERVIDOS?", 
-                                 texto = """
-                Al cambiar el descuento de una parte del presupuesto ofertado, 
-                se cambian automáticamente los precios de los pedidos      
-                involucrados. También puede cambiar los albaranes y facturas 
-                si el pedido ya ha sido servido. 
-                                                                            
-                ¿Desea cambiar el descuento de todos los artículos servidos   
-                de este producto?                                         
-                                                                         
-                Si lo hace, se cambiará también en la factura en caso de 
-                que se haya facturado el albarán o albaranes             
-                correspondientes.                                         
-                """, 
-                        padre = self.wids['ventana']):
-                    for ldv in ldp.get_lineas_de_venta():
-                        ldv.descuento = ldp.descuento
-            self.rellenar_tablas()
-
     def cambiar_cantidad_ldp(self, cell, path, texto):
         """
         Cambia la cantidad de la LDP conforme al texto recibido.
@@ -574,7 +448,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                                texto = 'El texto "%s" no es un número.' % (texto), 
                                padre = self.wids['ventana'])
         else:
-            model = self.wids['tv_ldps'].get_model()
+            model = self.wids['tv_contenido'].get_model()
             ldp = pclases.LineaDePedido.get(model[path][-1])
             ldp.cantidad = cantidad
             self.rellenar_tablas()
@@ -596,10 +470,9 @@ class Presupuestos(Ventana, VentanaGenerica):
 
         if self.objeto == None:
             s = False
-        ws = tuple(['b_aceptar_presupuesto', "e_total", "ch_aceptado", 
-                    "tv_ldps", "tv_servicios", "b_borrar", "b_imprimir", 
-                    "b_presupuesto", "e_descuento"] 
-                    + [self.dic_campos[k] for k in self.dic_campos.keys()])
+        ws = tuple(['b_pedido', "table1",  
+                    "tv_contenido", "b_add", "b_drop", 
+                   ] + [self.dic_campos[k] for k in self.dic_campos.keys()])
         for w in ws:
             try:
                 self.wids[w].set_sensitive(s)
@@ -616,8 +489,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             else:
                 permisos_ventana_pedidos = self.usuario.get_permiso(ventana_pedidos)
                 permiso_nuevos_pedidos = permisos_ventana_pedidos.nuevo
-        aceptado_completo = self.wids['ch_aceptado'].get_active() and not self.wids['ch_aceptado'].get_inconsistent()
-        self.wids['b_aceptar_presupuesto'].set_sensitive(
+        self.wids['b_pedido'].set_sensitive(
             self.objeto != None 
             and not aceptado_completo 
             and permiso_nuevos_pedidos 
@@ -637,13 +509,12 @@ class Presupuestos(Ventana, VentanaGenerica):
                 (r.id, r.numpresupuesto != None and r.numpresupuesto or "", 
                  utils.str_fecha(r.fecha), 
                  r.cliente and r.cliente.nombre or "-", 
-                 r.personaContacto, 
                  r.comercial and r.comercial.empleado.nombre + " " + r.comercial.empleado.apellidos or "Sin comercial relacionado"))
         idpresupuesto = utils.dialogo_resultado(filas_res,
                             titulo = 'SELECCIONE OFERTA',
                             cabeceras = ('ID', 'Número', 'Fecha', 
                                          'Nombre cliente', 
-                                         'Persona de contacto', "Comercial"), 
+                                         "Comercial"), 
                             padre = self.wids['ventana'])
         if idpresupuesto < 0:
             return None
@@ -672,16 +543,14 @@ class Presupuestos(Ventana, VentanaGenerica):
             comerciales = pclases.Comercial.select() 
         if self.objeto.comercial and self.objeto.comercial not in comerciales:
             comerciales.append(self.objeto.comercial)
-        utils.rellenar_lista(self.wids['cbe_comercial'], 
+        utils.rellenar_lista(self.wids['cb_comercial'], 
             [(c.id, c.empleado and c.empleado.get_nombre_completo() 
-                or "ERR_INC_BD") 
+                or "Comercial desconocido (%s)" % c.puid) 
               for c in comerciales] + [(-1, "Sin comercial relacionado")]) 
         presupuesto = self.objeto
         for nombre_col in self.dic_campos:
             if nombre_col == "comercialID" and not presupuesto.comercial:
-                self.wids['cbe_comercial'].child.set_text(
-                    "Sin comercial relacionado")
-                self.wids['cbe_comercial'].set_active(-1)
+                self.wids['cb_comercial'].set_active(-1)
             else:
                 self.escribir_valor(presupuesto.sqlmeta.columns[nombre_col], 
                                     getattr(presupuesto, nombre_col), 
@@ -697,36 +566,13 @@ class Presupuestos(Ventana, VentanaGenerica):
         Rellena la información de los TreeViews.
         """
         total = 0.0
-        total += self.rellenar_tabla_ldps()
-        total += self.rellenar_tabla_servicios()
+        total += self.rellenar_tabla()
         total *= (1 - self.objeto.descuento)
         self.wids['e_total'].set_text("%s €" % (utils.float2str(total)))
         self.mostrar_aceptado()
 
-    def mostrar_aceptado(self, ch = None):
-        """
-        Muestra la marca en el checkbox o lo pone en estado inconsistente 
-        en función del grado de aceptación por el cliente del presupuesto.
-        (Se determina mirando si las líneas de pedido y servicios tienen 
-        pedido de venta relacionado).
-        """
-        aceptadas = len([ldp for ldp in self.objeto.lineasDePedido 
-                         if ldp.pedidoVenta != None]) \
-                    + len([srv for srv in self.objeto.servicios 
-                           if srv.pedidoVenta != None])
-        ofertadas = len(self.objeto.lineasDePedido) + len(self.objeto.servicios)
-        if aceptadas == 0:
-            self.wids['ch_aceptado'].set_active(False)
-            self.wids['ch_aceptado'].set_inconsistent(False)
-        elif aceptadas < ofertadas:
-            self.wids['ch_aceptado'].set_inconsistent(True)
-        else:
-            self.wids['ch_aceptado'].set_active(True)
-            self.wids['ch_aceptado'].set_inconsistent(False)
-        self.activar_widgets(True)
-
-    def rellenar_tabla_ldps(self):
-        model = self.wids['tv_ldps'].get_model()
+    def rellenar_tabla(self):
+        model = self.wids['tv_contenido'].get_model()
         model.clear()
         total = 0.0
         ldps = self.objeto.lineasDePedido[:]
@@ -739,36 +585,12 @@ class Presupuestos(Ventana, VentanaGenerica):
                             and ldp.productoVenta.descripcion 
                             or ldp.productoCompra.descripcion, 
                           utils.float2str(ldp.precio, 3, autodec = True), 
-                          "%s %%" % utils.float2str(ldp.descuento*100, 
-                                                    autodec = True), 
                           utils.float2str(subtotal),
-                          ldp.pedidoVenta != None,
-                          ldp.pedidoVenta and ldp.pedidoVenta.numpedido or "", 
+                          #ldp.pedidoVenta != None,
+                          #ldp.pedidoVenta and ldp.pedidoVenta.numpedido or "", 
                           ldp.id))
         return total
     
-    def rellenar_tabla_servicios(self):
-        model = self.wids['tv_servicios'].get_model()
-        model.clear()
-        total = 0.0
-        srvs = self.objeto.servicios[:]
-        srvs.sort(lambda x, y: int(x.id - y.id))
-        for srv in srvs:
-            subtotal = srv.get_subtotal()
-            total += subtotal
-            model.append((utils.float2str(srv.cantidad), 
-                          srv.concepto, 
-                          utils.float2str(srv.precio, 3, autodec = True), 
-                          "%s %%" % utils.float2str(srv.descuento * 100, 
-                                                    autodec = True), 
-                          utils.float2str(subtotal), 
-                          srv.pedidoVenta != None or srv.albaranSalida != None or srv.get_factura_o_prefactura() != None,
-                          (srv.pedidoVenta and srv.pedidoVenta.numpedido) \
-                            or (srv.albaranSalida and srv.albaranSalida.numalbaran) \
-                            or (srv.get_factura_o_prefactura() and srv.get_factura_o_prefacture().numfactura) or "", 
-                          srv.id))
-        return total
-
     def nuevo(self, widget):
         """
         Función callback del botón b_nuevo.
@@ -780,58 +602,36 @@ class Presupuestos(Ventana, VentanaGenerica):
         presupuesto_anterior = self.objeto
         if presupuesto_anterior != None:
             presupuesto_anterior.notificador.desactivar()
-        idcliente = buscar_cliente(self.wids['ventana'])
-        if idcliente:
-            cliente = pclases.Cliente.get(idcliente)
-            cliente.sync()
-            texto = "Muy Srs. Ntros.:\n\n    En relación con su petición de oferta...\n\n    El precio del producto es:"
-            despedida = "Muchas gracias y no dude en llamarnos para cualquier duda o problema.\n\nUn saludo,"
-            presupuestos = pclases.Presupuesto.select(orderBy = "-fecha")
-            if presupuestos.count() >= 1:
-                presupuestos = pclases.Presupuesto.select(
-                    pclases.Presupuesto.q.fecha == presupuestos[0].fecha)
-                presupuestos = [p for p in presupuestos 
-                                if p.numpresupuesto != None]
-                presupuestos.sort(lambda p1, p2: 
-                                    p1.numpresupuesto - p2.numpresupuesto)
-            try:
-                numpresupuesto = presupuestos[0].numpresupuesto
-                if numpresupuesto != None:
-                    numpresupuesto += 1
-            except IndexError:
-                numpresupuesto = None
-            comercial = None
-            if self.usuario and self.usuario.empleados:
-                comerciales = []
-                for e in self.usuario.empleados:
-                    for c in e.comerciales:
-                        comerciales.append(c)
-                if comerciales:
-                    comercial = comerciales[-1]
-            presupuesto = pclases.Presupuesto(
-                clienteID = cliente.id,
-                fecha = mx.DateTime.localtime(), 
-                personaContacto = cliente.contacto, 
-                nombrecliente = cliente.nombre, 
-                direccion = cliente.direccion, 
-                ciudad = cliente.ciudad, 
-                provincia = cliente.provincia, 
-                cp = cliente.cp, 
-                pais = cliente.pais, 
-                telefono = cliente.telefono, 
-                fax = cliente.fax, 
-                texto = texto, 
-                despedida = despedida, 
-                numpresupuesto = numpresupuesto, 
-                comercial = comercial)
-            pclases.Auditoria.nuevo(presupuesto, self.usuario, __file__)
-            utils.dialogo_info('NUEVA OFERTA CREADA', 
-                               'Nuevo presupuesto creado con éxito.\n\nRepase los valores por defecto antes de imprimir la carta de oferta.', 
-                               padre = self.wids['ventana'])
-            presupuesto.notificador.activar(self.aviso_actualizacion)
-            self.objeto = presupuesto
-            self.activar_widgets(True)
-            self.actualizar_ventana(objeto_anterior = presupuesto_anterior)
+        comercial = None
+        if self.usuario and self.usuario.empleados:
+            comerciales = []
+            for e in self.usuario.empleados:
+                for c in e.comerciales:
+                    comerciales.append(c)
+            if comerciales:
+                comercial = comerciales[-1]
+        presupuesto = pclases.Presupuesto(
+            clienteID = None,
+            fecha = mx.DateTime.localtime(), 
+            nombrecliente = "", 
+            direccion = "", 
+            ciudad = "", 
+            provincia = "", 
+            cp = "", 
+            pais = "", 
+            telefono = "", 
+            fax = "", 
+            texto = "", 
+            despedida = "", 
+            comercial = comercial)
+        pclases.Auditoria.nuevo(presupuesto, self.usuario, __file__)
+        utils.dialogo_info('NUEVA OFERTA CREADA', 
+                           'Nuevo presupuesto creado con éxito.\n\nRepase los valores por defecto antes de imprimir la carta de oferta.', 
+                           padre = self.wids['ventana'])
+        presupuesto.notificador.activar(self.aviso_actualizacion)
+        self.objeto = presupuesto
+        self.activar_widgets(True)
+        self.actualizar_ventana(objeto_anterior = presupuesto_anterior)
 
     def buscar(self, widget):
         """
@@ -956,16 +756,6 @@ class Presupuestos(Ventana, VentanaGenerica):
             self.objeto = None
             self.ir_a_primero()
 
-def buscar_cliente(padre = None):
-    """
-    Ventana de diálogo para seleccionar un cliente.
-    """
-    clientes = [(c.id, c.nombre) for c in pclases.Cliente.select(orderBy='nombre') if not c.inhabilitado]
-    idcliente = utils.dialogo_combo('SELECCIONE CLIENTE',
-                                    'Seleccione un cliente. Si no encuentra el cliente buscado, verifique\nque existe en la aplicación mediante la ventana de clientes.',
-                                    clientes, 
-                                    padre = padre)
-    return idcliente
 
 if __name__ == "__main__":
     p = Presupuestos()

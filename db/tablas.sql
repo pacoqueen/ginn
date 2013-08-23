@@ -1417,7 +1417,16 @@ CREATE TABLE presupuesto(
     numpresupuesto INT DEFAULT NULL,    -- NEW! 31/07/2008
     descuento FLOAT DEFAULT 0.0,        -- NEW! 31/07/2008 Dto. global en %
     comercial_id INT REFERENCES comercial DEFAULT NULL,-- NEW! 30/12/2008
-    obra TEXT DEFAULT ''    --- NEW! 27/02/2009
+    obra TEXT DEFAULT '',   --- NEW! 27/02/2009
+    -- Campos añadidos para el nuevo módulo de comerciales: NEW! 23/08/2013
+    estudio BOOLEAN DEFAULT NULL, 
+    adjudicada BOOLEAN DEFAULT FALSE, 
+    cif TEXT DEFAULT '', 
+    email TEXT DEFAULT '', 
+    forma_de_pago_id INT REFERENCES forma_de_pago DEFAULT NULL, 
+    observaciones TEXT DEFAULT '', 
+    obra_id INT REFERENCES obra DEFAULT NULL 
+    -- ALTER TABLE presupuesto ADD COLUMN estudio BOOLEAN DEFAULT NULL; ALTER TABLE presupuesto ADD COLUMN adjudicada BOOLEAN DEFAULT FALSE; ALTER TABLE presupuesto ADD COLUMN cif TEXT DEFAULT ''; ALTER TABLE presupuesto ADD COLUMN email TEXT DEFAULT ''; ALTER TABLE presupuesto ADD COLUMN forma_de_pago_id INT REFERENCES forma_de_pago DEFAULT NULL; ALTER TABLE presupuesto ADD COLUMN observaciones TEXT DEFAULT ''; ALTER TABLE presupuesto ADD COLUMN obra_id INT REFERENCES obra DEFAULT NULL;
 );
 
 --------------------
