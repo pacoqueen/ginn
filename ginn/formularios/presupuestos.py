@@ -60,7 +60,6 @@ class Presupuestos(Ventana, VentanaGenerica):
                            "adjudicada": "ch_adjudicada", 
                            "clienteID": "cbe_cliente", 
                            "cif": "e_cif", 
-                           #"nombrecliente": "e_cliente", 
                            "direccion": "e_direccion", 
                            "cp": "e_cp", 
                            "ciudad": "e_ciudad", 
@@ -235,7 +234,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             if cantidad == None:
                 break
             if isinstance(producto, pclases.ProductoCompra):
-                ldp = pclases.LineaDePedido(pedidoVenta = None, 
+                ldp = pclases.LineaDePresupuesto(pedidoVenta = None, 
                                             productoVenta = None, 
                                             productoCompra = producto, 
                                             cantidad = cantidad, 
@@ -245,7 +244,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                                             textoEntrega = "", 
                                             presupuesto = self.objeto)
             elif isinstance(producto, pclases.ProductoVenta):
-                ldp = pclases.LineaDePedido(pedidoVenta = None, 
+                ldp = pclases.LineaDePresupuesto(pedidoVenta = None, 
                                             productoVenta = producto, 
                                             cantidad = cantidad, 
                                             precio = precio, 
@@ -265,7 +264,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         if  paths != None and paths != []:
             for path in paths:
                 idldp = model[path][-1]
-                ldp = pclases.LineaDePedido.get(idldp)
+                ldp = pclases.LineaDePresupuesto.get(idldp)
                 if ldp.pedidoVenta == None:
                     try:
                         ldp.destroy(ventana = __file__)
@@ -358,10 +357,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 try:
                     valor_ventana = self.leer_valor(col, self.dic_campos[colname])
                 except (ValueError, mx.DateTime.RangeError, TypeError):
-                    if colname == "numpresupuesto":
-                        valor_ventana = None
-                    else:
-                        igual = False
+                    igual = False
                 valor_objeto = getattr(self.objeto, col.name)
                 if colname == "comercialID" and valor_ventana == -1:
                         valor_ventana = None
@@ -370,10 +366,6 @@ class Presupuestos(Ventana, VentanaGenerica):
                 igual = igual and (valor_ventana == valor_objeto)
                 if not igual:
                     break
-            igual = (igual 
-                      and "%s %%" % utils.float2str(self.objeto.descuento*100, 
-                                                    autodec = True) 
-                        == self.wids['e_descuento'].get_text())
         return not igual
     
     def inicializar_ventana(self):
@@ -414,7 +406,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                                padre = self.wids['ventana'])
         else:
             model = self.wids['tv_contenido'].get_model()
-            ldp = pclases.LineaDePedido.get(model[path][-1])
+            ldp = pclases.LineaDePresupuesto.get(model[path][-1])
             if ldp.precio != precio:
                 ldp.precio = precio
                 if ldp.get_lineas_de_venta() != [] \
@@ -449,7 +441,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                                padre = self.wids['ventana'])
         else:
             model = self.wids['tv_contenido'].get_model()
-            ldp = pclases.LineaDePedido.get(model[path][-1])
+            ldp = pclases.LineaDePresupuesto.get(model[path][-1])
             ldp.cantidad = cantidad
             self.rellenar_tablas()
 
@@ -491,7 +483,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 permiso_nuevos_pedidos = permisos_ventana_pedidos.nuevo
         self.wids['b_pedido'].set_sensitive(
             self.objeto != None 
-            and not aceptado_completo 
+            # and not aceptado_completo 
             and permiso_nuevos_pedidos 
             and self.objeto.esta_vigente())
 
@@ -506,13 +498,13 @@ class Presupuestos(Ventana, VentanaGenerica):
         filas_res = []
         for r in resultados:
             filas_res.append(
-                (r.id, r.numpresupuesto != None and r.numpresupuesto or "", 
+                (r.id, 
                  utils.str_fecha(r.fecha), 
                  r.cliente and r.cliente.nombre or "-", 
                  r.comercial and r.comercial.empleado.nombre + " " + r.comercial.empleado.apellidos or "Sin comercial relacionado"))
         idpresupuesto = utils.dialogo_resultado(filas_res,
                             titulo = 'SELECCIONE OFERTA',
-                            cabeceras = ('ID', 'Número', 'Fecha', 
+                            cabeceras = ('ID', 'Fecha', 
                                          'Nombre cliente', 
                                          "Comercial"), 
                             padre = self.wids['ventana'])
@@ -529,6 +521,9 @@ class Presupuestos(Ventana, VentanaGenerica):
         hay que tener cuidado de no llamar a 
         esta función en ese caso.
         """
+        fdps = [(fdp.id, fdp.toString()) 
+                for fdp in pclases.FormaDePago.select(orderBy = "plazo")]
+        utils.rellenar_lista(self.wids['cb_forma_cobro'], fdps)
         utils.rellenar_lista(self.wids['cbe_cliente'], 
             [(p.id, p.nombre) for p in 
             pclases.Cliente.select(orderBy = "nombre") if not p.inhabilitado]) 
@@ -547,6 +542,12 @@ class Presupuestos(Ventana, VentanaGenerica):
             [(c.id, c.empleado and c.empleado.get_nombre_completo() 
                 or "Comercial desconocido (%s)" % c.puid) 
               for c in comerciales] + [(-1, "Sin comercial relacionado")]) 
+        if self.objeto.cliente:
+            obras = [(o.id, o.get_str_obra()) 
+                     for o in self.objeto.cliente.obras]
+        else:
+            obras = []
+        utils.rellenar_lista(self.wids['cbe_obra'], obras)
         presupuesto = self.objeto
         for nombre_col in self.dic_campos:
             if nombre_col == "comercialID" and not presupuesto.comercial:
@@ -555,9 +556,6 @@ class Presupuestos(Ventana, VentanaGenerica):
                 self.escribir_valor(presupuesto.sqlmeta.columns[nombre_col], 
                                     getattr(presupuesto, nombre_col), 
                                     self.dic_campos[nombre_col])
-        # El descuento global aparte, que lleva porcentaje
-        self.wids['e_descuento'].set_text("%s %%" 
-            % utils.float2str(self.objeto.descuento*100, autodec = True))
         self.rellenar_tablas()
         self.objeto.make_swap()
 
@@ -566,16 +564,15 @@ class Presupuestos(Ventana, VentanaGenerica):
         Rellena la información de los TreeViews.
         """
         total = 0.0
-        total += self.rellenar_tabla()
+        total += self.rellenar_contenido()
         total *= (1 - self.objeto.descuento)
         self.wids['e_total'].set_text("%s €" % (utils.float2str(total)))
-        self.mostrar_aceptado()
 
-    def rellenar_tabla(self):
+    def rellenar_contenido(self):
         model = self.wids['tv_contenido'].get_model()
         model.clear()
         total = 0.0
-        ldps = self.objeto.lineasDePedido[:]
+        ldps = self.objeto.lineasDePresupuesto[:]
         ldps.sort(lambda x, y: int(x.id - y.id))
         for ldp in ldps:
             subtotal = ldp.get_subtotal()
@@ -653,8 +650,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             criterio = pclases.OR(
                     pclases.Presupuesto.q.nombrecliente.contains(a_buscar),
                     pclases.Presupuesto.q.personaContacto.contains(a_buscar),
-                    pclases.Presupuesto.q.id == ida_buscar, 
-                    pclases.Presupuesto.q.numpresupuesto == ida_buscar)
+                    pclases.Presupuesto.q.id == ida_buscar)
             resultados = pclases.Presupuesto.select(criterio)
             if resultados.count() > 1:
                     ## Refinar los resultados
@@ -696,6 +692,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         # Desactivo el notificador momentáneamente
         self.objeto.notificador.activar(lambda: None)
+        errores = []
         # Actualizo los datos del objeto
         for colname in self.dic_campos:
             col = self.clase.sqlmeta.columns[colname]
@@ -705,33 +702,22 @@ class Presupuestos(Ventana, VentanaGenerica):
                     valor_ventana = None
                 setattr(self.objeto, colname, valor_ventana)
             except (ValueError, mx.DateTime.RangeError, TypeError):
-                if colname == "numpresupuesto":
-                    txt = self.wids[self.dic_campos[colname]].get_text()
-                    if txt.strip() != "":
-                        utils.dialogo_info(titulo = "NÚMERO INCORRECTO", 
-                                texto = "El texto «%s» es incorrecto."\
-                                           "\n\nDebe usar solo números." % txt, 
-                                padre = self.wids['ventana'])
-                    else:
-                        setattr(self.objeto, colname, None)
-                pass    # TODO: Avisar al usuario o algo. El problema es que no hay una forma "limpia" de obtener el valor que ha fallado.
-        try:
-            dto = utils.parse_porcentaje(self.wids['e_descuento'].get_text(), 
-                                         fraccion = True)
-        except (TypeError, ValueError):
-            utils.dialogo_info(titulo = "VALOR INCORRECTO", 
-                               texto = "Escriba un valor correcto par"\
-                                       "a el porcentaje de descuento global", 
-                               padre = self.wids['ventana'])
-        else:
-            self.objeto.descuento = dto
-        # Fuerzo la actualización de la BD y no espero a que SQLObject lo haga por mí:
+                
+                errores.append(colname)
+        # Fuerzo la actualización de la BD y no espero a que SQLObject lo 
+        # haga por mí:
         self.objeto.syncUpdate()
         self.objeto.sync()
         # Vuelvo a activar el notificador
         self.objeto.notificador.activar(self.aviso_actualizacion)
         self.actualizar_ventana()
         self.wids['b_guardar'].set_sensitive(False)
+        if errores:
+            utils.dialogo_info(titulo = "ERRORES AL GUARDAR", 
+                    texto = "Se produjo un error al intentar guardar\n"
+                            "los valores para los siguientes campos:\n"
+                            + "\n - ".join(errores), 
+                    padre = self.wids['ventana'])
 
     def borrar(self, widget):
         """

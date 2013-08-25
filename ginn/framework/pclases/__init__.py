@@ -723,6 +723,7 @@ class FormaDePago(SQLObject, PRPCTOO):
         fromDatabase = True
     #------------------------- documentoDePagoID = ForeignKey('DocumentoDePago')
     pedidosVenta = MultipleJoin('PedidoVenta')
+    presupuestos = MultipleJoin('Presupuesto')
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -10061,12 +10062,22 @@ class PedidoVenta(SQLObject, PRPCTOO):
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
+class LineaDePresupuesto(SQLObject, PRPCTOO):
+    class sqlmeta:
+        fromDatabase = True
+
+    def _init(self, *args, **kw):
+        starter(self, *args, **kw)
+
+cont, tiempo = print_verbose(cont, total, tiempo)
+
 class Presupuesto(SQLObject, PRPCTOO):
     class sqlmeta:
         fromDatabase = True
     #----------------------------------------- clienteID = ForeignKey('Cliente')
     lineasDePedido = MultipleJoin('LineaDePedido')
     servicios = MultipleJoin('Servicio')
+    lineasDePresupuesto = MultipleJoin('LineaDePresupuesto')
     #------------------------------------- comercialID = ForeignKey("Comercial")
 
     def _init(self, *args, **kw):
@@ -14940,7 +14951,7 @@ class Obra(SQLObject, PRPCTOO):
                            intermediateTable = 'obra__cliente')
     abonos = MultipleJoin('Abono')
     pedidosVenta = MultipleJoin('PedidoVenta')
-
+    presupuestos = MultipleJoin('Presupuesto')
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
