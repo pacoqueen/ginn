@@ -34,7 +34,8 @@ import gtk, time
 from framework import pclases
 import mx.DateTime
 from formularios import ventana_progreso
-    
+import datetime    
+
 
 class ConsultaControlHoras(Ventana):
     inicio = None
@@ -190,10 +191,13 @@ class ConsultaControlHoras(Ventana):
         pass
 
     def set_inicio(self, boton):
-        temp = utils.mostrar_calendario(
-            fecha_defecto = utils.parse_fecha(
-                self.wids['e_fechainicio'].get_text()), 
-            padre = self.wids['ventana'])
+        try:
+            temp = utils.mostrar_calendario(
+                fecha_defecto = utils.parse_fecha(
+                    self.wids['e_fechainicio'].get_text()), 
+                padre = self.wids['ventana'])
+        except ValueError:
+            temp = datetime.date.today().timetuple()[:3][::-1]
         self.inicio = mx.DateTime.DateTimeFrom(*temp[::-1])
         self.wids['e_fechainicio'].set_text(utils.str_fecha(self.inicio))
 
