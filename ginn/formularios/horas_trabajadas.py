@@ -344,7 +344,7 @@ class HorasTrabajadas(Ventana):
                                 'id': ht.empleado.id})
                 pos = aux[ht.empleado.id]['pos']
                 # Cálculo de las horas nocturnas:
-                if ht.partedeproduccion.es_nocturno():
+                if ht.parteDeProduccion.es_nocturno():
                     # OJO: Nunca se dará un parte que cubra dos franjas horarias de dos turnos
                     # diferentes, por tanto, si por ejemplo un empleado hace 2 horas de un parte de 6
                     # o las 6 horas son completas de noche (y por lo tanto las 2 del trabajador) o son 
@@ -358,15 +358,18 @@ class HorasTrabajadas(Ventana):
                 # anterior a efectos de horas extras.
                 # Compruebo qué tipo de fechas estoy manejando y preparo 
                 # la variable de hora de fin de noche.
-                if isinstance(ht.partedeproduccion.horainicio, datetime.time):
+                if isinstance(ht.parteDeProduccion.horainicio, datetime.time):
                     finnoche = datetime.time(hour = 6)
                 else:
                     finnoche = mx.DateTime.DateTimeDeltaFrom(hours = 6, 
                                                              minutes = 0)
-                if ht.partedeproduccion.horainicio < finnoche:
-                    dia = (ht.partedeproduccion.fecha - mx.DateTime.oneDay)
+                if ht.parteDeProduccion.horainicio < finnoche:
+                    try:
+                        dia = (ht.parteDeProduccion.fecha - mx.DateTime.oneDay)
+                    except TypeError:
+                        dia = (ht.parteDeProduccion.fecha - datetime.timedelta(1))
                 else:
-                    dia = ht.partedeproduccion.fecha
+                    dia = ht.parteDeProduccion.fecha
                 if dia not in aux[ht.empleado.id]['fechas']:
                     aux[ht.empleado.id]['fechas'][dia] = mx.DateTime.DateTimeDelta(0)
                 if aux[ht.empleado.id]['fechas'][dia] + ht.horas > mx.DateTime.DateTimeDeltaFrom(hours = 8):
@@ -518,7 +521,9 @@ class HorasTrabajadas(Ventana):
         from formularios.reports import abrir_pdf
         strdiaini = self.wids['e_fecha_ini'].get_text()
         strdiafin = self.wids['e_fecha_fin'].get_text()
-        abrir_pdf(treeview2pdf(self.wids['tv_horas'], titulo = "Horas trabajadas", fecha = "Del %s al %s" % (strdiaini, strdiafin)))
+        abrir_pdf(treeview2pdf(self.wids['tv_horas'], 
+            titulo = "Horas trabajadas", 
+            fecha = "Del %s al %s" % (strdiaini, strdiafin)))
     
     def exportar(self, boton):
         """

@@ -35,7 +35,7 @@ from framework import pclases
 import mx.DateTime
 from formularios import ventana_progreso
 import datetime    
-
+import gobject
 
 class ConsultaControlHoras(Ventana):
     inicio = None
