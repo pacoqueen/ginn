@@ -390,6 +390,9 @@ class Presupuestos(Ventana, VentanaGenerica):
                 if colname == "clienteID" and valor_ventana == None:
                     valor_ventana = self.wids['cbe_cliente'].child.get_text()
                     valor_objeto = self.objeto.nombrecliente
+                if colname == "obraID" and valor_ventana == None:
+                    valor_ventana = self.wids['cbe_obra'].child.get_text()
+                    valor_objeto = self.objeto.nombreobra
                 igual = igual and (valor_ventana == valor_objeto)
                 if not igual:
                     if pclases.DEBUG and pclases.VERBOSE:
@@ -528,11 +531,13 @@ class Presupuestos(Ventana, VentanaGenerica):
                 (r.id, 
                  utils.str_fecha(r.fecha), 
                  r.cliente and r.cliente.nombre or r.nombrecliente, 
+                 r.obra and r.obra.nombre or r.nombreobra, 
                  r.comercial and r.comercial.empleado.nombre + " " + r.comercial.empleado.apellidos or "Sin comercial relacionado"))
         idpresupuesto = utils.dialogo_resultado(filas_res,
                             titulo = 'SELECCIONE OFERTA',
                             cabeceras = ('ID', 'Fecha', 
                                          'Nombre cliente', 
+                                         'Obra', 
                                          "Comercial"), 
                             padre = self.wids['ventana'])
         if idpresupuesto < 0:
@@ -582,6 +587,9 @@ class Presupuestos(Ventana, VentanaGenerica):
             elif nombre_col == "clienteID" and not presupuesto.cliente:
                 self.wids['cbe_cliente'].child.set_text(
                         presupuesto.nombrecliente)
+            elif nombre_col == "obraID" and not presupuesto.obra:
+                self.wids['cbe_obra'].child.set_text(
+                        presupuesto.nombreobra)
             else:
                 self.escribir_valor(presupuesto.sqlmeta.columns[nombre_col], 
                                     getattr(presupuesto, nombre_col), 
@@ -717,6 +725,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             clienteID = None,
             fecha = mx.DateTime.localtime(), 
             nombrecliente = "", 
+            nombreobra = "", 
             direccion = "", 
             ciudad = "", 
             provincia = "", 
@@ -746,8 +755,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         presupuesto = self.objeto
         a_buscar = utils.dialogo_entrada(titulo = "BUSCAR OFERTA", 
-                                texto = "Introduzca número o nombre "\
-                                        "del cliente:", 
+                                texto = "Introduzca número, nombre "\
+                                        "del cliente u obra:", 
                                 padre = self.wids['ventana']) 
         if a_buscar != None:
             try:
@@ -756,6 +765,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 ida_buscar = -1
             criterio = pclases.OR(
                     pclases.Presupuesto.q.nombrecliente.contains(a_buscar),
+                    pclases.Presupuesto.q.nombreobra.contains(a_buscar),
                     pclases.Presupuesto.q.personaContacto.contains(a_buscar),
                     pclases.Presupuesto.q.id == ida_buscar)
             resultados = pclases.Presupuesto.select(criterio)
@@ -809,11 +819,24 @@ class Presupuestos(Ventana, VentanaGenerica):
                 if valor_ventana == -1 and colname == "comercialID":
                     valor_ventana = None
                 if valor_ventana == None and colname == "clienteID":
+                    self.objeto.cliente = None
                     valor_ventana = self.wids['cbe_cliente'].child.get_text()
                     colname = "nombrecliente"
+                if valor_ventana == None and colname == "obraID":
+                    self.objeto.obra = None
+                    valor_ventana = self.wids['cbe_obra'].child.get_text()
+                    colname = "nombreobra"
                 setattr(self.objeto, colname, valor_ventana)
             except (ValueError, mx.DateTime.RangeError, TypeError):
                 errores.append(colname)
+        try:
+            self.objeto.nombrecliente = self.objeto.cliente.nombre
+        except AttributeError:  # El cliente no se ha dado de alta todavía.
+            pass
+        try:
+            self.objeto.nombreobra = self.objeto.obra.nombre
+        except AttributeError:  # La obra no se ha dado de alta todavía.
+            pass
         # Fuerzo la actualización de la BD y no espero a que SQLObject lo 
         # haga por mí:
         self.objeto.syncUpdate()
