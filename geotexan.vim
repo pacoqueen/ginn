@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 25 agosto 2013 at 09:11:53.
+" Created by session.vim 1.5 on 26 agosto 2013 at 15:03:54.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -93,7 +93,7 @@ badd +1064 ginn/formularios/trazabilidad_articulos.py
 badd +363 ginn/formularios/consulta_pagos.py
 badd +13 ginn/formularios/consulta_vencimientos_pago.py
 badd +500 ginn/formularios/trazabilidad.py
-badd +2887 ginn/framework/pclases/__init__.py
+badd +1 ginn/framework/pclases/__init__.py
 badd +611 ginn/framework/pclases/superfacturaventa.py
 badd +4 ginn/framework/pclases/facturaventa.py
 badd +689 ginn/formularios/consulta_mensual_nominas.py
@@ -115,6 +115,8 @@ badd +1 ginn/formularios/consulta_cobros.py
 badd +628 ginn/formularios/pagares_cobros.py
 badd +24 extra/patches/calcular_credito_disponible.sql
 badd +301 ginn/formularios/pclase2tv.py
+badd +474 ginn/formularios/consulta_control_horas.py
+badd +533 ginn/formularios/horas_trabajadas.py
 args formularios/auditviewer.py
 set lines=44 columns=111
 edit ginn/framework/pclases/__init__.py
@@ -149,9 +151,9 @@ set winheight=1 winwidth=1
 exe 'vert 1resize ' . ((&columns * 30 + 55) / 111)
 exe '2resize ' . ((&lines * 1 + 22) / 44)
 exe 'vert 2resize ' . ((&columns * 80 + 55) / 111)
-exe '3resize ' . ((&lines * 16 + 22) / 44)
+exe '3resize ' . ((&lines * 30 + 22) / 44)
 exe 'vert 3resize ' . ((&columns * 80 + 55) / 111)
-exe '4resize ' . ((&lines * 15 + 22) / 44)
+exe '4resize ' . ((&lines * 1 + 22) / 44)
 exe 'vert 4resize ' . ((&columns * 80 + 55) / 111)
 exe '5resize ' . ((&lines * 1 + 22) / 44)
 exe 'vert 5resize ' . ((&columns * 80 + 55) / 111)
@@ -190,12 +192,12 @@ silent! normal zo
 silent! normal zo
 10213
 silent! normal zo
-let s:l = 10072 - ((0 * winheight(0) + 0) / 1)
+let s:l = 10080 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-10072
-normal! 0
+10080
+normal! 042l
 wincmd w
 argglobal
 edit db/tablas.sql
@@ -213,6 +215,16 @@ silent! normal zo
 silent! normal zo
 292
 silent! normal zo
+292
+silent! normal zo
+292
+silent! normal zo
+292
+silent! normal zo
+292
+silent! normal zo
+292
+silent! normal zo
 1337
 silent! normal zo
 1391
@@ -221,17 +233,131 @@ silent! normal zo
 silent! normal zo
 3445
 silent! normal zo
+3445
+silent! normal zo
+3445
+silent! normal zo
+3445
+silent! normal zo
+3445
+silent! normal zo
+3445
+silent! normal zo
+3445
+silent! normal zo
 3526
+silent! normal zo
+3526
+silent! normal zo
+3526
+silent! normal zo
+3526
+silent! normal zo
+3526
+silent! normal zo
+3526
+silent! normal zo
+3526
+silent! normal zo
+3596
+silent! normal zo
+3596
+silent! normal zo
+3596
+silent! normal zo
+3596
+silent! normal zo
+3596
+silent! normal zo
+3596
 silent! normal zo
 3596
 silent! normal zo
 3630
 silent! normal zo
+3630
+silent! normal zo
+3630
+silent! normal zo
+3630
+silent! normal zo
+3630
+silent! normal zo
+3630
+silent! normal zo
+3630
+silent! normal zo
+3630
+silent! normal zo
+3648
+silent! normal zo
+3648
+silent! normal zo
+3648
+silent! normal zo
+3648
+silent! normal zo
+3648
+silent! normal zo
+3648
+silent! normal zo
+3648
+silent! normal zo
+3648
+silent! normal zo
+3648
+silent! normal zo
 3648
 silent! normal zo
 3670
 silent! normal zo
+3670
+silent! normal zo
+3670
+silent! normal zo
+3670
+silent! normal zo
+3670
+silent! normal zo
+3670
+silent! normal zo
+3670
+silent! normal zo
+3670
+silent! normal zo
+3670
+silent! normal zo
 3697
+silent! normal zo
+3697
+silent! normal zo
+3697
+silent! normal zo
+3697
+silent! normal zo
+3697
+silent! normal zo
+3697
+silent! normal zo
+3697
+silent! normal zo
+3697
+silent! normal zo
+3697
+silent! normal zo
+3715
+silent! normal zo
+3715
+silent! normal zo
+3715
+silent! normal zo
+3715
+silent! normal zo
+3715
+silent! normal zo
+3715
+silent! normal zo
+3715
 silent! normal zo
 3715
 silent! normal zo
@@ -239,7 +365,29 @@ silent! normal zo
 silent! normal zo
 3735
 silent! normal zo
-let s:l = 1451 - ((11 * winheight(0) + 8) / 16)
+3735
+silent! normal zo
+3735
+silent! normal zo
+3735
+silent! normal zo
+3735
+silent! normal zo
+3735
+silent! normal zo
+3735
+silent! normal zo
+3735
+silent! normal zo
+3735
+silent! normal zo
+3735
+silent! normal zo
+3735
+silent! normal zo
+3735
+silent! normal zo
+let s:l = 1451 - ((21 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -384,10 +532,6 @@ silent! normal zo
 silent! normal zo
 466
 silent! normal zo
-468
-silent! normal zo
-468
-silent! normal zo
 491
 silent! normal zo
 500
@@ -440,6 +584,10 @@ silent! normal zo
 silent! normal zo
 626
 silent! normal zo
+626
+silent! normal zo
+626
+silent! normal zo
 634
 silent! normal zo
 646
@@ -460,7 +608,7 @@ silent! normal zo
 silent! normal zo
 723
 silent! normal zo
-let s:l = 444 - ((6 * winheight(0) + 7) / 15)
+let s:l = 444 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -519,12 +667,12 @@ silent! normal zo
 silent! normal zo
 336
 silent! normal zo
-let s:l = 317 - ((0 * winheight(0) + 0) / 1)
+let s:l = 318 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-317
-normal! 010l
+318
+normal! 017l
 wincmd w
 argglobal
 edit ginn/formularios/ventana.py
@@ -703,13 +851,13 @@ normal! zt
 1753
 normal! 036l
 wincmd w
-3wincmd w
+5wincmd w
 exe 'vert 1resize ' . ((&columns * 30 + 55) / 111)
 exe '2resize ' . ((&lines * 1 + 22) / 44)
 exe 'vert 2resize ' . ((&columns * 80 + 55) / 111)
-exe '3resize ' . ((&lines * 16 + 22) / 44)
+exe '3resize ' . ((&lines * 30 + 22) / 44)
 exe 'vert 3resize ' . ((&columns * 80 + 55) / 111)
-exe '4resize ' . ((&lines * 15 + 22) / 44)
+exe '4resize ' . ((&lines * 1 + 22) / 44)
 exe 'vert 4resize ' . ((&columns * 80 + 55) / 111)
 exe '5resize ' . ((&lines * 1 + 22) / 44)
 exe 'vert 5resize ' . ((&columns * 80 + 55) / 111)
@@ -733,6 +881,6 @@ let &so = s:so_save | let &siso = s:siso_save
 doautoall SessionLoadPost
 unlet SessionLoad
 tabnext 1
-3wincmd w
+5wincmd w
 
 " vim: ft=vim ro nowrap smc=128

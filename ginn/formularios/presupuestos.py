@@ -70,7 +70,8 @@ class Presupuestos(Ventana, VentanaGenerica):
                            "obraID": "cbe_obra", 
                            "formaDePagoID": "cb_forma_cobro", 
                            "texto": "txt_condiciones", 
-                           "observaciones": "txt_observaciones"  
+                           "observaciones": "txt_observaciones", 
+                           "estudio": "rb_estudio", 
                           }
         Ventana.__init__(self, 'presupuestos.glade', objeto, 
                          usuario = self.usuario)
@@ -81,6 +82,14 @@ class Presupuestos(Ventana, VentanaGenerica):
                        'b_guardar/clicked': self.guardar,
                        'b_buscar/clicked': self.buscar, 
                        'b_fecha/clicked': self.fecha,  
+                       'rb_pedido/clicked': 
+                          lambda rb: 
+                            map(lambda item: item.set_inconsistent(False), 
+                                rb.get_group()), 
+                       'rb_estudio/clicked': 
+                          lambda rb: 
+                            map(lambda item: item.set_inconsistent(False), 
+                                rb.get_group()), 
                        #'b_imprimir/clicked': self.imprimir, 
                        #'b_pedido/clicked': self.hacer_pedido,  
                        #"cbe_cliente/changed": self.cambiar_datos_cliente, 
@@ -365,6 +374,10 @@ class Presupuestos(Ventana, VentanaGenerica):
                     valor_objeto = utils.abs_mxfecha(valor_objeto)
                 igual = igual and (valor_ventana == valor_objeto)
                 if not igual:
+                    if pclases.DEBUG and pclases.VERBOSE:
+                        print "colname:", colname
+                        print "\tvalor_ventana:", valor_ventana
+                        print "\tvalor_objeto:", valor_objeto
                     break
         return not igual
     

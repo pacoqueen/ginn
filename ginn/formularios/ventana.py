@@ -153,12 +153,17 @@ class Ventana:
                          os.path.dirname(os.path.realpath(__file__)), 
                          '..', 'imagenes', "logo.xpm"))
                 self.wids['ventana'].set_icon(logo_xpm)
-            self.wids['barra_estado'] = gtk.Statusbar()
-            label_statusbar = self.wids['barra_estado'].get_children()[0].child
+            self.wids['barra_estado'] = barrastado = gtk.Statusbar()
+            try:
+                label_statusbar = barrastado.get_children()[0].child.children()[0]
+            except:
+                label_statusbar = barrastado.get_children()[0].child
             font = pango.FontDescription("Monospace oblique 7")
             label_statusbar.modify_font(font)
             label_statusbar.modify_fg(gtk.STATE_NORMAL, 
                 label_statusbar.get_colormap().alloc_color("darkgray"))
+            if self.usuario.nivel == 0:
+                self.add_debug_admin_controls(barrastado)
             contenido_anterior = self.wids['ventana'].get_child()
             self.wids['ventana'].remove(contenido_anterior)
             self.wids['contenedor_exterior'] = gtk.VBox()
@@ -253,6 +258,33 @@ class Ventana:
         # Mejor al final, que esto también provocaba falsos positivos al 
         # argar ventanas con objetos inicializados en self.objeto.
         self.make_funciones_ociosas()
+
+    def add_debug_admin_controls(self, barrastado):
+        from framework import pclases
+        hbox_barrastado = barrastado.children()[0].children()[0]
+        ch_pclasesdebug = gtk.CheckButton(label = "DEBUG")
+        ch_pclasesverbose = gtk.CheckButton(label = "VERBOSE")
+        hbox_barrastado.pack_start(ch_pclasesdebug, expand = False)
+        hbox_barrastado.pack_start(ch_pclasesverbose, expand = False)
+        ch_pclasesdebug.child.modify_font(pango.FontDescription("sans oblique 8"))
+        ch_pclasesverbose.child.modify_font(pango.FontDescription("sans oblique 8"))
+        ch_pclasesdebug.set_active(pclases.DEBUG)
+        ch_pclasesverbose.set_active(pclases.VERBOSE)
+        def check_pclases_status(chdebug, chverbose):
+            chdebug.set_active(pclases.DEBUG)
+            chverbose.set_active(pclases.VERBOSE)
+            return True 
+        def fd(b):
+            pclases.DEBUG = b.get_active()
+        def fv(b):
+            pclases.VERBOSE = b.get_active()
+        ch_pclasesdebug.connect("toggled", fd)
+        ch_pclasesverbose.connect("toggled", fv)
+        ch_pclasesdebug.show()
+        ch_pclasesverbose.show()
+        import gobject
+        gobject.timeout_add(1000, check_pclases_status, ch_pclasesdebug, 
+                                                        ch_pclasesverbose)
 
     def suspender(self, widget):
         """
