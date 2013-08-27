@@ -461,10 +461,19 @@ class VentanaGenerica(Ventana):
                     raise e
             widget.set_text(valor)
         elif isinstance(col, pclases.SOBoolCol):
-            if isinstance(widget, gtk.RadioButton) and valor is None:
-                widget.set_inconsistent(True)
-            else:
+            if isinstance(widget, gtk.RadioButton):
+                map(lambda w: w.set_inconsistent(valor is None), 
+                    widget.get_group())
+                if valor == False:
+                    # La forma de hacerlo es poner otro control del mismo 
+                    # grupo de radiobuttons a True.
+                    for w in widget.get_group():
+                        if w != widget:
+                            w.set_active(True)
+            try:
                 widget.set_active(valor)
+            except TypeError:
+                pass    # valor es None. No toco nada.
         elif isinstance(col, pclases.SODateCol):
             try:
                 valor = utils.str_fecha(valor)
