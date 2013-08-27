@@ -66,7 +66,8 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="xalign">1</property>
-                        <property name="label" translatable="yes">Oferta </property>
+                        <property name="label" translatable="yes">&lt;b&gt;Oferta &lt;/b&gt;</property>
+                        <property name="use_markup">True</property>
                       </widget>
                       <packing>
                         <property name="expand">True</property>
@@ -144,9 +145,11 @@
                       <widget class="GtkEntry" id="e_numero">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="tooltip" translatable="yes">Número secuencial asignado automáticamente. No es personalizable.</property>
                         <property name="editable">False</property>
                         <property name="has_frame">False</property>
                         <property name="invisible_char">•</property>
+                        <property name="xalign">1</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">True</property>
@@ -237,7 +240,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="xalign">1</property>
-                        <property name="label" translatable="yes">Estado </property>
+                        <property name="label" translatable="yes">Estado: </property>
                       </widget>
                       <packing>
                         <property name="expand">True</property>
@@ -265,7 +268,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="xalign">1</property>
-                        <property name="label" translatable="yes">Control de riesgo </property>
+                        <property name="label" translatable="yes">Control de riesgo: </property>
                       </widget>
                       <packing>
                         <property name="expand">True</property>
@@ -931,7 +934,7 @@
                   <widget class="GtkLabel" id="label7">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">&lt;b&gt;Datos del cliente &lt;/b&gt;</property>
+                    <property name="label" translatable="yes">&lt;u&gt;Datos del cliente&lt;/u&gt; </property>
                     <property name="use_markup">True</property>
                   </widget>
                   <packing>
@@ -1200,7 +1203,7 @@
                   <widget class="GtkLabel" id="label8">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">&lt;b&gt;Contenido de la oferta&lt;/b&gt;</property>
+                    <property name="label" translatable="yes">&lt;u&gt;Contenido de la oferta&lt;/u&gt; </property>
                     <property name="use_markup">True</property>
                   </widget>
                   <packing>

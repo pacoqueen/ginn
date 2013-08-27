@@ -9837,7 +9837,7 @@ class PedidoVenta(SQLObject, PRPCTOO):
         if validable:
             importe_pedido = self.calcular_importe_total(iva = True)
             if self.cliente and self.cliente.calcular_credito_disponible(
-                    base = importe_pedido) <= 0:
+                    base = importe_pedido) < 0:
                 validable = CLIENTE_DEUDOR
         return validable
 
@@ -10099,7 +10099,7 @@ class Presupuesto(SQLObject, PRPCTOO):
                 pedidos.append(srvpedidoVenta)
         return pedidos
 
-    def calcular_total(self):
+    def calcular_total(self, iva = True):
         """
         Calcula el total del presupuesto, con IVA y demás incluido.
         Devuelve un FixedPoint (a casi todos los efectos, se comporta como 
@@ -10107,16 +10107,19 @@ class Presupuesto(SQLObject, PRPCTOO):
         De todas formas, pasa bien por el utils.float2str).
         """
         subtotal = self.calcular_subtotal() 
-        tot_iva = self.calcular_total_iva(subtotal)
+        if iva:
+            tot_iva = self.calcular_total_iva(subtotal)
+        else:
+            iva = 0.0
         irpf = self.calcular_total_irpf(subtotal)
         total = subtotal + tot_iva + irpf
         return total
     
-    def calcular_importe_total(self):
+    def calcular_importe_total(self, iva = True):
         """
         Calcula y devuelve el importe total, incluyendo IVA, de la factura.
         """
-        return self.calcular_total()
+        return self.calcular_total(iva)
 
     importeTotal = property(calcular_importe_total, doc = calcular_importe_total.__doc__)
 
@@ -10206,6 +10209,90 @@ class Presupuesto(SQLObject, PRPCTOO):
         hoy = mx.DateTime.localtime()
         fecha_limite = self.calcular_fecha_limite()
         return (not self.validez) or hoy <= fecha_limite
+
+    def get_estado_validacion(self):
+        """
+        Devuelve el estado de la validación del pedido en el momento de 
+        llamar a la función. Puede ser:
+            NO_VALIDABLE: El cliente todavía no tiene ficha.
+            VALIDABLE: Cumple todos los requisitos de validación automática.
+            PLAZO_EXCESIVO: La forma de pago seleccionada en el pedido supera 
+                            los 120 días.
+            SIN_FORMA_DE_PAGO: El pedido no tiene forma de pago definida.
+            PRECIO_INSUFICIENTE: Algún precio por kilo en las líneas del 
+                                 pedido está por encima del mínimo configurado 
+                                 por familia de productos.
+            CLIENTE_DEUDOR: El cliente no tiene crédito suficiente. 
+        """
+        # Debería tener las condiciones en un solo sitio. Los pedidos y 
+        # presupuestos siguen el mismo criterio, pero están especificados por 
+        # duplicado en una función en cada clase.
+        validable = VALIDABLE
+        for ldp in self.lineasDePresupuesto:
+            try:
+                precioMinimo = ldp.producto.precioMinimo
+            except AttributeError: # Es un producto que no existe o un servicio
+                precioMinimo = None
+            precioKilo = ldp.precioKilo
+            if (precioMinimo != None and precioKilo != None 
+                    and precioKilo < precioMinimo):
+                validable = PRECIO_INSUFICIENTE
+                break
+        if validable:
+            if not self.cliente:
+                validable = NO_VALIDABLE
+        if validable:
+            fdp = self.formaDePago
+            if not fdp:
+                validable = SIN_FORMA_DE_PAGO
+            elif fdp.plazo > 120:
+                validable = PLAZO_EXCESIVO
+        if validable:
+            importe_presupuesto = self.calcular_importe_total(iva = True)
+            if self.cliente and self.cliente.calcular_credito_disponible(
+                    base = importe_presupuesto) < 0:
+                validable = CLIENTE_DEUDOR
+        return validable
+
+    def get_str_estado(self):
+        """
+        Devuelve una cadena de texto con el estado de la oferta y el motivo, 
+        en su caso, del impedimento de pasarlo a pedido.
+        """
+        txtestado = None
+        estado_validacion = self.get_estado_validacion()
+        if estado_validacion == VALIDABLE:
+            txtestado = "Validado"
+            if self.usuario:
+                txtestado += " (%s)" % self.usuario.usuario
+        elif estado_validacion == NO_VALIDABLE: 
+            txtestado = "Necesita validación manual: "\
+                        "Cliente sin alta en la aplicación."
+        elif estado_validacion == PLAZO_EXCESIVO: 
+            txtestado = "Necesita validación manual: "\
+                        "El plazo de la forma de pago es excesivo."
+        elif estado_validacion == SIN_FORMA_DE_PAGO: 
+            txtestado = "Necesita validación manual: "\
+                        "No se ha seleccionado forma de pago para la oferta."
+        elif estado_validacion == CLIENTE_DEUDOR:            
+            txtestado = "Necesita validación manual: "\
+                        "Cliente con crédito insuficiente."
+        elif estado_validacion == PRECIO_INSUFICIENTE:
+            txtestado = "Necesita validación manual: "\
+                        "Ventas por debajo de precio mínimo definido."
+            for ldp in self.lineasDePedido:
+                precioMinimo = ldp.producto.precioMinimo
+                precioKilo = ldp.precioKilo
+                if (precioMinimo != None and precioKilo != None 
+                        and precioKilo < precioMinimo):
+                    txtestado = "Necesita validación manual: "\
+                                "ventas por debajo de precio\n"\
+                                "(%s < %s)." % (
+                                    utils.float2str(precioKilo), 
+                                    utils.float2str(precioMinimo))
+                    break
+        return txtestado
+
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 

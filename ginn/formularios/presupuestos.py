@@ -45,6 +45,9 @@ import gtk, mx.DateTime
 from framework import pclases
 from framework.seeker import VentanaGenerica 
 from pedidos_de_venta import preguntar_precio
+from formularios.ventana_progreso import VentanaActividad
+import gobject
+import sys
 
 class Presupuestos(Ventana, VentanaGenerica):
     def __init__(self, objeto = None, usuario = None):
@@ -90,9 +93,9 @@ class Presupuestos(Ventana, VentanaGenerica):
                           lambda rb: 
                             map(lambda item: item.set_inconsistent(False), 
                                 rb.get_group()), 
-                       #'b_imprimir/clicked': self.imprimir, 
-                       #'b_pedido/clicked': self.hacer_pedido,  
-                       #"cbe_cliente/changed": self.cambiar_datos_cliente, 
+                       'b_imprimir/clicked': self.imprimir, 
+                       'b_pedido/clicked': self.hacer_pedido,  
+                       "cbe_cliente/changed": self.cambiar_datos_cliente, 
                       }  
         self.add_connections(connections)
         self.inicializar_ventana()
@@ -105,12 +108,14 @@ class Presupuestos(Ventana, VentanaGenerica):
         gtk.main()
 
     def fecha(self, w):
+        try:
+            provisional = utils.parse_fecha(self.wids['e_fecha'].get_text())
+        except:
+            provisional = self.objeto and self.objeto.fecha or None
         self.wids['e_fecha'].set_text(
                 utils.str_fecha(
                     utils.mostrar_calendario(
-                        fecha_defecto = self.objeto 
-                                            and self.objeto.fecha 
-                                             or None, 
+                        fecha_defecto = provisional, 
                         padre = self.wids['ventana'])))
 
     def cambiar_datos_cliente(self, cbe):
@@ -122,10 +127,10 @@ class Presupuestos(Ventana, VentanaGenerica):
         if not idcliente:
             return
         cliente = pclases.Cliente.get(idcliente)
-        if not self.wids["e_persona_contacto"].get_text():
-            self.wids["e_persona_contacto"].set_text(cliente.contacto.strip())
-        if not self.wids["e_cliente"].get_text():
-            self.wids["e_cliente"].set_text(cliente.nombre)
+        #if not self.wids["e_persona_contacto"].get_text():
+        #    self.wids["e_persona_contacto"].set_text(cliente.contacto.strip())
+        #if not self.wids["e_cliente"].get_text():
+        #    self.wids["e_cliente"].set_text(cliente.nombre)
         if not self.wids["e_direccion"].get_text():
             self.wids["e_direccion"].set_text(cliente.direccion)
         if not self.wids["e_ciudad"].get_text():
@@ -138,14 +143,18 @@ class Presupuestos(Ventana, VentanaGenerica):
             self.wids["e_pais"].set_text(cliente.pais)
         if not self.wids["e_telefono"].get_text():
             self.wids["e_telefono"].set_text(cliente.telefono)
-        if not self.wids["e_fax"].get_text():
-            self.wids["e_fax"].set_text(cliente.fax)
+        #if not self.wids["e_fax"].get_text():
+        #    self.wids["e_fax"].set_text(cliente.fax)
 
     def hacer_pedido(self, boton):
         """
         Crea un pedido con el cliente del presupuesto y como contenido 
         las líneas de pedido y servicios del mismo.
         """
+        utils.dialogo_info(titulo = "NO IMPLEMENTADO", 
+                texto = "Característica en desarrollo.", 
+                padre = self.wids['ventana'])
+        return
         numpedido = utils.dialogo_entrada(texto = 'Introduzca un número de pedido.', titulo = 'NÚMERO DE PEDIDO', padre = self.wids['ventana'])
         if numpedido != None:
             existe = pclases.PedidoVenta.select(
@@ -335,10 +344,15 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         Genera y abre el PDF de la carta de oferta.
         """
+        utils.dialogo_info(titulo = "NO IMPLEMENTADO", 
+                texto = "Característica en desarrollo.", 
+                padre = self.wids['ventana'])
+        return
         if self.objeto != None:
             from informes import geninformes
             from formularios.reports import abrir_pdf
             abrir_pdf(geninformes.generar_pdf_presupuesto(self.objeto))
+        self.imprimir_presupuesto(boton)
 
     def imprimir_presupuesto(self, boton):
         """
@@ -364,7 +378,8 @@ class Presupuestos(Ventana, VentanaGenerica):
             for colname in self.dic_campos:
                 col = self.clase.sqlmeta.columns[colname]
                 try:
-                    valor_ventana = self.leer_valor(col, self.dic_campos[colname])
+                    valor_ventana = self.leer_valor(col, 
+                                                    self.dic_campos[colname])
                 except (ValueError, mx.DateTime.RangeError, TypeError):
                     igual = False
                 valor_objeto = getattr(self.objeto, col.name)
@@ -372,6 +387,9 @@ class Presupuestos(Ventana, VentanaGenerica):
                         valor_ventana = None
                 if isinstance(col, pclases.SODateCol):
                     valor_objeto = utils.abs_mxfecha(valor_objeto)
+                if colname == "clienteID" and valor_ventana == None:
+                    valor_ventana = self.wids['cbe_cliente'].child.get_text()
+                    valor_objeto = self.objeto.nombrecliente
                 igual = igual and (valor_ventana == valor_objeto)
                 if not igual:
                     if pclases.DEBUG and pclases.VERBOSE:
@@ -381,12 +399,17 @@ class Presupuestos(Ventana, VentanaGenerica):
                     break
         return not igual
     
+    def reset_cache_credito(self):
+        self.cache_credito = None
+
     def inicializar_ventana(self):
         """
         Inicializa los controles de la ventana, estableciendo sus
         valores por defecto, deshabilitando los innecesarios,
         rellenando los combos, formateando el TreeView -si lo hay-...
         """
+        self.reset_cache_credito()
+        gobject.timeout_add(5 * 60 * 1000, self.reset_cache_credito)
         # Inicialmente no se muestra NADA. Sólo se le deja al
         # usuario la opción de buscar o crear nuevo.
         self.activar_widgets(False)
@@ -483,17 +506,8 @@ class Presupuestos(Ventana, VentanaGenerica):
                 self.wids[w].set_sensitive(s)
             except:
                 print w
-        if self.usuario == None:
-            permiso_nuevos_pedidos = True
-        else:
-            try:
-                ventana_pedidos = pclases.Ventana.select(pclases.Ventana.q.fichero == "pedidos_de_venta.py")[0]
-            except IndexError:
-                self.logger.error("presupuestos::activar_widgets -> Ventana de pedidos de venta no encontrada en la BD.")
-                permiso_nuevos_pedidos = False
-            else:
-                permisos_ventana_pedidos = self.usuario.get_permiso(ventana_pedidos)
-                permiso_nuevos_pedidos = permisos_ventana_pedidos.nuevo
+        permiso_nuevos_pedidos = calcular_permiso_nuevos_pedidos(
+                                    self.usuario, self.logger)
         self.wids['b_pedido'].set_sensitive(
             self.objeto != None 
             # and not aceptado_completo 
@@ -513,7 +527,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             filas_res.append(
                 (r.id, 
                  utils.str_fecha(r.fecha), 
-                 r.cliente and r.cliente.nombre or "-", 
+                 r.cliente and r.cliente.nombre or r.nombrecliente, 
                  r.comercial and r.comercial.empleado.nombre + " " + r.comercial.empleado.apellidos or "Sin comercial relacionado"))
         idpresupuesto = utils.dialogo_resultado(filas_res,
                             titulo = 'SELECCIONE OFERTA',
@@ -564,13 +578,92 @@ class Presupuestos(Ventana, VentanaGenerica):
         presupuesto = self.objeto
         for nombre_col in self.dic_campos:
             if nombre_col == "comercialID" and not presupuesto.comercial:
-                self.wids['cb_comercial'].set_active(-1)
+                utils.combo_set_from_db(self.wids['cb_comercial'], -1)
+            elif nombre_col == "clienteID" and not presupuesto.cliente:
+                self.wids['cbe_cliente'].child.set_text(
+                        presupuesto.nombrecliente)
             else:
                 self.escribir_valor(presupuesto.sqlmeta.columns[nombre_col], 
                                     getattr(presupuesto, nombre_col), 
                                     self.dic_campos[nombre_col])
         self.rellenar_tablas()
+        # Algunos campos "especialitos":
+        self.wids['e_numero'].set_text(str(presupuesto.id))
+        # Comprobar riesgo
+        self.comprobar_riesgo_cliente()
         self.objeto.make_swap()
+
+    def comprobar_riesgo_cliente(self):
+        """
+        Actualiza el icono de estado de riesgo del cliente del presupuesto.
+        """
+        self.objeto.notificador.desactivar()
+        vpro = VentanaActividad(self.wids['ventana'], 
+                                "Comprobando condiciones de riesgo...")
+        vpro.mostrar()
+        vpro.mover()
+        if self.objeto.cliente:
+            if self.cache_credito == None:
+                vpro.mover()
+                importe_presupuesto = self.objeto.calcular_importe_total(
+                                    iva = True)
+                vpro.mover()
+                self.cache_credito = self.objeto.cliente.\
+                        calcular_credito_disponible(base = importe_presupuesto)
+            if self.cache_credito < 0:
+                vpro.mover()
+                color = self.wids['cbe_cliente'].child.get_colormap().\
+                            alloc_color("IndianRed1")
+            else:
+                color = self.wids['cbe_cliente'].child.get_colormap().\
+                            alloc_color("Light Green")
+            if self.objeto.get_estado_validacion() == pclases.VALIDABLE:
+                iconostockstado = gtk.STOCK_YES
+            else:
+                iconostockstado = gtk.STOCK_STOP
+        else:
+            color = None
+            iconostockstado = gtk.STOCK_DIALOG_WARNING
+        vpro.mover()
+        self.wids['cbe_cliente'].child.modify_base(gtk.STATE_NORMAL, color)
+        vpro.mover()
+        txtestado = self.objeto.get_str_estado()
+        self.wids['iconostado'].set_from_stock(iconostockstado, 
+                                               gtk.ICON_SIZE_DND)
+        self.wids['iconostado'].set_tooltip_text(txtestado)
+        self.wids['b_pedido'].set_sensitive(
+                iconostockstado == gtk.STOCK_YES
+                and calcular_permiso_nuevos_pedidos(self.usuario, self.logger))
+        self.actualizar_tooltip_de_cliente()
+        vpro.ocultar()
+        self.objeto.notificador.activar(self.aviso_actualizacion)        
+
+    def actualizar_tooltip_de_cliente(self):
+        idcliente = utils.combo_get_value(self.wids['cbe_cliente'])
+        if idcliente and idcliente != -1:
+            cliente = pclases.Cliente.get(idcliente)
+            cliente.sync()
+            if self.cache_credito == None:
+                importe_pedido = self.objeto.calcular_importe_total(iva = True)
+                self.cache_credito = cliente.\
+                        calcular_credito_disponible(base = importe_pedido)
+            credito = self.cache_credito
+            if credito == sys.maxint:   # ¿maxint, te preguntarás? Ver 
+                                        # docstring de calcular_credito
+                                        # y respuesta hallarás.
+                strcredito = "∞"
+            else:
+                strcredito = utils.float2str(credito)
+            strfdp = cliente.textoformacobro
+        else:
+            strcredito = "Nuevo cliente. Sin datos de control de riesgo."
+            strfdp = "No tiene"
+        self.wids['cbe_cliente'].set_tooltip_text(
+            "Crédito disponible (incluyendo el importe del presente"
+            " presupuesto): %s\n"
+            % strcredito)
+        self.wids['cb_forma_cobro'].set_tooltip_text(
+                "Forma de pago por defecto del cliente:\n%s" % strfdp)
 
     def rellenar_tablas(self):
         """
@@ -636,7 +729,8 @@ class Presupuestos(Ventana, VentanaGenerica):
             comercial = comercial)
         pclases.Auditoria.nuevo(presupuesto, self.usuario, __file__)
         utils.dialogo_info('NUEVA OFERTA CREADA', 
-                           'Nuevo presupuesto creado con éxito.\n\nRepase los valores por defecto antes de imprimir la carta de oferta.', 
+                           'Nuevo presupuesto creado con éxito.\n\n'
+                           'Campos obligatorios marcados en negrita.', 
                            padre = self.wids['ventana'])
         presupuesto.notificador.activar(self.aviso_actualizacion)
         self.objeto = presupuesto
@@ -652,8 +746,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         presupuesto = self.objeto
         a_buscar = utils.dialogo_entrada(titulo = "BUSCAR OFERTA", 
-                                texto = "Introduzca identificador, nombre "\
-                                        "del cliente o persona de contacto:", 
+                                texto = "Introduzca número o nombre "\
+                                        "del cliente:", 
                                 padre = self.wids['ventana']) 
         if a_buscar != None:
             try:
@@ -696,6 +790,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             presupuesto.notificador.activar(self.aviso_actualizacion)
             self.activar_widgets(True)
         self.objeto = presupuesto
+        self.reset_cache_credito()
         self.actualizar_ventana()
 
     def guardar(self, widget):
@@ -713,9 +808,11 @@ class Presupuestos(Ventana, VentanaGenerica):
                 valor_ventana = self.leer_valor(col, self.dic_campos[colname])
                 if valor_ventana == -1 and colname == "comercialID":
                     valor_ventana = None
+                if valor_ventana == None and colname == "clienteID":
+                    valor_ventana = self.wids['cbe_cliente'].child.get_text()
+                    colname = "nombrecliente"
                 setattr(self.objeto, colname, valor_ventana)
             except (ValueError, mx.DateTime.RangeError, TypeError):
-                
                 errores.append(colname)
         # Fuerzo la actualización de la BD y no espero a que SQLObject lo 
         # haga por mí:
@@ -754,6 +851,22 @@ class Presupuestos(Ventana, VentanaGenerica):
                 return
             self.objeto = None
             self.ir_a_primero()
+
+
+def calcular_permiso_nuevos_pedidos(usuario, logger = None):
+    if usuario == None:
+        permiso_nuevos_pedidos = True
+    else:
+        try:
+            ventana_pedidos = pclases.Ventana.select(pclases.Ventana.q.fichero == "pedidos_de_venta.py")[0]
+        except IndexError:
+            if logger:
+                logger.error("presupuestos::activar_widgets -> Ventana de pedidos de venta no encontrada en la BD.")
+            permiso_nuevos_pedidos = False
+        else:
+            permisos_ventana_pedidos = usuario.get_permiso(ventana_pedidos)
+            permiso_nuevos_pedidos = permisos_ventana_pedidos.nuevo
+    return permiso_nuevos_pedidos
 
 
 if __name__ == "__main__":
