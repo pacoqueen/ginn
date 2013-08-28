@@ -150,6 +150,8 @@ class Presupuestos(Ventana, VentanaGenerica):
             self.wids["e_telefono"].set_text(cliente.telefono)
         #if not self.wids["e_fax"].get_text():
         #    self.wids["e_fax"].set_text(cliente.fax)
+        if not self.wids['e_cif'].get_text().strip():
+            self.wids['e_cif'].set_text(cliente.cif)
 
     def hacer_pedido(self, boton):
         """
@@ -553,7 +555,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         utils.rellenar_lista(self.wids['cb_forma_cobro'], fdps)
         utils.rellenar_lista(self.wids['cbe_cliente'], 
             [(p.id, p.nombre) for p in 
-            pclases.Cliente.select(orderBy = "nombre") if not p.inhabilitado]) 
+             pclases.Cliente.select(orderBy = "nombre") if not p.inhabilitado]) 
             # Lo pongo aquí por si crea un cliente nuevo sin cerrar esta 
             # ventana y lo quiere usar.
         comerciales = []
