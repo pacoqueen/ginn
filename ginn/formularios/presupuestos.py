@@ -529,13 +529,17 @@ class Presupuestos(Ventana, VentanaGenerica):
                  r.comercial 
                     and r.comercial.empleado.nombre 
                             + " " + r.comercial.empleado.apellidos 
-                    or "Sin comercial relacionado"))
+                    or "Sin comercial relacionado",
+                r.estudio and "Estudio" or "Pedido", 
+                r.adjudicada))
         idpresupuesto = utils.dialogo_resultado(filas_res,
                             titulo = 'SELECCIONE OFERTA',
                             cabeceras = ('ID', 'Fecha', 
                                          'Nombre cliente', 
                                          'Obra', 
-                                         "Comercial"), 
+                                         "Comercial", 
+                                         "Tipo", 
+                                         "Adjudicada"), 
                             padre = self.wids['ventana'])
         if idpresupuesto < 0:
             return None
@@ -756,11 +760,21 @@ class Presupuestos(Ventana, VentanaGenerica):
         la ventana de resultados.
         """
         presupuesto = self.objeto
+        txtestudio = "Buscar solamente ofertas de estudio"
+        txtpedido = "Buscar solamente ofertas de pedido"
+        txtadjudicadas = "Buscar solamente ofertas adjudicadas"
+        opciones_estudio_adjudicadas = {txtestudio: False, 
+                                        txtpedido: True, 
+                                        txtadjudicadas: False}
         a_buscar = utils.dialogo_entrada(titulo = "BUSCAR OFERTA", 
                                 texto = "Introduzca número, nombre "\
                                         "del cliente u obra:", 
-                                padre = self.wids['ventana']) 
+                                padre = self.wids['ventana'], 
+                                opciones = opciones_estudio_adjudicadas) 
         if a_buscar != None:
+            solopedido = opciones_estudio_adjudicadas[txtpedido]
+            soloestudio = opciones_estudio_adjudicadas[txtestudio]
+            adjudicadas = opciones_estudio_adjudicadas[txtadjudicadas]
             try:
                 ida_buscar = int(a_buscar)
             except ValueError:
@@ -770,6 +784,15 @@ class Presupuestos(Ventana, VentanaGenerica):
                     pclases.Presupuesto.q.nombreobra.contains(a_buscar),
                     pclases.Presupuesto.q.personaContacto.contains(a_buscar),
                     pclases.Presupuesto.q.id == ida_buscar)
+            if solopedido:
+                criterio = pclases.AND(criterio, 
+                                       pclases.Presupuesto.q.estudio == False)
+            elif soloestudio:
+                criterio = pclases.AND(criterio, 
+                                       pclases.Presupuesto.q.estudio == True)
+            if adjudicadas:
+                criterio = pclases.AND(criterio, 
+                                    pclases.Presupuesto.q.adjudicada == True)
             resultados = pclases.Presupuesto.select(criterio)
             if resultados.count() > 1:
                     ## Refinar los resultados
