@@ -1425,8 +1425,9 @@ CREATE TABLE presupuesto(
     email TEXT DEFAULT '', 
     forma_de_pago_id INT REFERENCES forma_de_pago DEFAULT NULL, 
     observaciones TEXT DEFAULT '', 
-    obra_id INT REFERENCES obra DEFAULT NULL 
-    -- ALTER TABLE presupuesto ADD COLUMN estudio BOOLEAN DEFAULT NULL; ALTER TABLE presupuesto ADD COLUMN adjudicada BOOLEAN DEFAULT FALSE; ALTER TABLE presupuesto ADD COLUMN cif TEXT DEFAULT ''; ALTER TABLE presupuesto ADD COLUMN email TEXT DEFAULT ''; ALTER TABLE presupuesto ADD COLUMN forma_de_pago_id INT REFERENCES forma_de_pago DEFAULT NULL; ALTER TABLE presupuesto ADD COLUMN observaciones TEXT DEFAULT ''; ALTER TABLE presupuesto ADD COLUMN obra_id INT REFERENCES obra DEFAULT NULL; ALTER TABLE presupuesto RENAME COLUMN obra TO nombreobra;
+    obra_id INT REFERENCES obra DEFAULT NULL, 
+    usuario_id INT REFERENCES usuario DEFAULT NULL, -- Usuario que ha validado.
+    -- ALTER TABLE presupuesto ADD COLUMN estudio BOOLEAN DEFAULT NULL; ALTER TABLE presupuesto ADD COLUMN adjudicada BOOLEAN DEFAULT FALSE; ALTER TABLE presupuesto ADD COLUMN cif TEXT DEFAULT ''; ALTER TABLE presupuesto ADD COLUMN email TEXT DEFAULT ''; ALTER TABLE presupuesto ADD COLUMN forma_de_pago_id INT REFERENCES forma_de_pago DEFAULT NULL; ALTER TABLE presupuesto ADD COLUMN observaciones TEXT DEFAULT ''; ALTER TABLE presupuesto ADD COLUMN obra_id INT REFERENCES obra DEFAULT NULL; ALTER TABLE presupuesto RENAME COLUMN obra TO nombreobra; ALTER TABLE presupuesto ADD COLUMN usuario_id INT REFERENCES usuario DEFAULT NULL;
 );
 
 ----------------------------------
@@ -1449,6 +1450,7 @@ CREATE TABLE linea_de_presupuesto(
     notas TEXT DEFAULT '' 
 );  --    NEW! 24/08/2013
     -- GRANT ALL ON linea_de_presupuesto TO geotexan;
+    -- GRANT ALL ON linea_de_presupuesto_id_seq TO geotexan;
 
 
 --------------------

@@ -515,7 +515,12 @@ def attach_menu_notas(tv, clase, usuario, col = None):
         columna.pack_end(cell, False)
         def check_notas(columna, cell, model, itr):
             try:
-                objeto = clase.get(model[itr][-1])
+                uid = model[itr][-1]
+                if isinstance(uid, str):
+                    from framework import pclases
+                    objeto = pclases.getObjetoPUID(uid)
+                else:
+                    objeto = clase.get(uid)
             # except pclases.SQLObjectNotFound:
             except Exception:  
                 # Casi con total seguridad es un pclases.SQLObjectNotFound, pero paso de importar pclases aquí solo para eso.

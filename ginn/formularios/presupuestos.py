@@ -34,7 +34,7 @@
 ###################################################################
 ## Changelog:
 ## 15 de marzo de 2007 -> Inicio 
-## 
+## 26 de agosto de 2013 -> A brand new version
 ###################################################################
 
 from ventana import Ventana
@@ -48,6 +48,8 @@ from pedidos_de_venta import preguntar_precio
 from formularios.ventana_progreso import VentanaActividad
 import gobject
 import sys
+import pango
+from formularios import postomatic
 
 class Presupuestos(Ventana, VentanaGenerica):
     def __init__(self, objeto = None, usuario = None):
@@ -95,7 +97,10 @@ class Presupuestos(Ventana, VentanaGenerica):
                                 rb.get_group()), 
                        'b_imprimir/clicked': self.imprimir, 
                        'b_pedido/clicked': self.hacer_pedido,  
+                       'b_enviar/clicked': self.enviar_por_correo, 
                        "cbe_cliente/changed": self.cambiar_datos_cliente, 
+                       "b_add/clicked": self.add_ldp, 
+                       "b_drop/clicked": self.drop_ldp 
                       }  
         self.add_connections(connections)
         self.inicializar_ventana()
@@ -133,15 +138,15 @@ class Presupuestos(Ventana, VentanaGenerica):
         #    self.wids["e_cliente"].set_text(cliente.nombre)
         if not self.wids["e_direccion"].get_text():
             self.wids["e_direccion"].set_text(cliente.direccion)
-        if not self.wids["e_ciudad"].get_text():
+        #if not self.wids["e_ciudad"].get_text():
             self.wids["e_ciudad"].set_text(cliente.ciudad)
-        if not self.wids["e_provincia"].get_text():
+        #if not self.wids["e_provincia"].get_text():
             self.wids["e_provincia"].set_text(cliente.provincia)
-        if not self.wids["e_cp"].get_text():
+        #if not self.wids["e_cp"].get_text():
             self.wids["e_cp"].set_text(cliente.cp)
-        if not self.wids["e_pais"].get_text():
+        #if not self.wids["e_pais"].get_text():
             self.wids["e_pais"].set_text(cliente.pais)
-        if not self.wids["e_telefono"].get_text():
+        #if not self.wids["e_telefono"].get_text():
             self.wids["e_telefono"].set_text(cliente.telefono)
         #if not self.wids["e_fax"].get_text():
         #    self.wids["e_fax"].set_text(cliente.fax)
@@ -252,23 +257,18 @@ class Presupuestos(Ventana, VentanaGenerica):
             if cantidad == None:
                 break
             if isinstance(producto, pclases.ProductoCompra):
-                ldp = pclases.LineaDePresupuesto(pedidoVenta = None, 
+                ldp = pclases.LineaDePresupuesto(
                                             productoVenta = None, 
                                             productoCompra = producto, 
                                             cantidad = cantidad, 
                                             precio = precio, 
-                                            descuento = 0, 
-                                            fechaEntrega = None, 
-                                            textoEntrega = "", 
                                             presupuesto = self.objeto)
             elif isinstance(producto, pclases.ProductoVenta):
-                ldp = pclases.LineaDePresupuesto(pedidoVenta = None, 
+                ldp = pclases.LineaDePresupuesto(
                                             productoVenta = producto, 
+                                            productoCompra = None, 
                                             cantidad = cantidad, 
                                             precio = precio, 
-                                            descuento = 0, 
-                                            fechaEntrega = None, 
-                                            textoEntrega = "", 
                                             presupuesto = self.objeto)
             pclases.Auditoria.nuevo(ldp, self.usuario, __file__)
         self.rellenar_tablas()
@@ -277,69 +277,36 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         Elimina las LDPs seleccionadas del presupuesto.
         """
-        model, paths = self.wids['tv_contenido'].get_selection().get_selected_rows()
-        fallo = False
-        if  paths != None and paths != []:
-            for path in paths:
-                idldp = model[path][-1]
-                ldp = pclases.LineaDePresupuesto.get(idldp)
-                if ldp.pedidoVenta == None:
+        sel = self.wids['tv_contenido'].get_selection()
+        model, paths = sel.get_selected_rows()
+        if utils.dialogo(titulo = "ELIMINAR LÍNEAS DE PRESUPUESTO", 
+                texto = "Se van a eliminar %d líneas de presupuesto.\n"
+                        "¿Está seguro?" % len(paths), 
+                padre = self.wids['ventana']):
+            fallos = []
+            if  paths != None and paths != []:
+                for path in paths:
+                    ldp = pclases.getObjetoPUID(model[path][-1])
                     try:
+                        puid = ldp.puid
                         ldp.destroy(ventana = __file__)
-                    except:
-                        fallo = True
-                else:
-                    fallo = True
-            self.rellenar_tablas()
-            if fallo:
-                utils.dialogo_info(titulo = "ERROR", 
-                                   texto = "Algunas líneas no se pudieron eliminar por estar relacionadas con pedidos que han supuesto la aceptación del presupuesto.", 
-                                   padre = self.wids['ventana']) 
-    
-    def add_srv(self, boton):
-        """
-        Añade un servicio al presupuesto. 
-        """
-        if self.objeto != None:
-            concepto = utils.dialogo_entrada(titulo = "CONCEPTO", 
-                                             texto = "Introduzca el concepto del servicio o transporte:", 
-                                             padre = self.wids['ventana'])
-            if concepto != None:
-                srv = pclases.Servicio(pedidoVenta = None, 
-                                       facturaVenta = None, 
-                                       albaranSalida = None, 
-                                       concepto = concepto, 
-                                       cantidad = 0, 
-                                       precio = 0, 
-                                       descuento = 0, 
-                                       presupuesto = self.objeto)
-                pclases.Auditoria.nuevo(srv, self.usuario, __file__)
+                    except Exception, msg:
+                        fallos.append((puid, msg))
+                        if pclases.DEBUG:
+                            print "presupuestos.py::drop_ldp -> "\
+                                  "No se pudo eliminar la línea de "\
+                                  "presupuesto. Mensaje de la excepción:", msg
                 self.rellenar_tablas()
-    
-    def drop_srv(self, boton):
-        """
-        Elimina los servicios seleccionados del presupuesto. 
-        """
-        model, paths = self.wids['tv_servicios'].get_selection().get_selected_rows()
-        fallo = False
-        if  paths != None and paths != []:
-            for path in paths:
-                idsrv = model[path][-1]
-                srv = pclases.Servicio.get(idsrv)
-                if srv.pedidoVenta == None and srv.albaranSalida == None and srv.get_factura_o_prefactura() == None:
-                    try:
-                        srv.destroy(ventana = __file__)
-                    except:
-                        fallo = True
-                else:
-                    fallo = True
-            self.rellenar_tablas()
-            if fallo:
-                utils.dialogo_info(titulo = "ERROR", 
-                                   texto = "Algunos transportes no se pudieron eliminar por estar relacionados con pedidos,\nalbaranes o facturas que han supuesto la aceptación del presupuesto.", 
-                                   padre = self.wids['ventana']) 
-
-    
+                if fallos:
+                    for fallo, msg in fallos:
+                        self.logger.error("presupuestos::drop_ldp -> "
+                                "%s no se pudo eliminar. Excepción: %s." % (
+                                    fallo, msg))
+                    utils.dialogo_info(titulo = "ERROR", 
+                        texto = "%d líneas no se pudieron eliminar." 
+                                                                % len(fallo),
+                        padre = self.wids['ventana']) 
+        
     def imprimir(self, boton):
         """
         Genera y abre el PDF de la carta de oferta.
@@ -347,6 +314,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         utils.dialogo_info(titulo = "NO IMPLEMENTADO", 
                 texto = "Característica en desarrollo.", 
                 padre = self.wids['ventana'])
+        # TODO
         return
         if self.objeto != None:
             from informes import geninformes
@@ -358,6 +326,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         Imprime el presupuesto en formato "factura" en lugar de carta.
         """
+        # TODO
         if self.objeto != None:
             modulo = pclases.config.get_modelo_presupuesto()
             import importlib
@@ -365,6 +334,16 @@ class Presupuestos(Ventana, VentanaGenerica):
             #exec "import %s as presupuesto" % modulo
             from formularios.reports import abrir_pdf
             abrir_pdf(presupuesto.go_from_presupuesto(self.objeto))  # @UndefinedVariable
+
+    def enviar_por_correo(self, boton):
+        """
+        Envía por correo el PDF del presupuesto desde la cuenta del 
+        comerial o de la genérica "pedidos@...".
+        """
+        # TODO
+        utils.dialogo_info(titulo = "NO IMPLEMENTADO", 
+                texto = "Característica en desarrollo.", 
+                padre = self.wids['ventana'])
 
     def es_diferente(self):
         """
@@ -429,14 +408,25 @@ class Presupuestos(Ventana, VentanaGenerica):
                 ('Subtotal', 'gobject.TYPE_STRING', False, True, False, None),
                 #('Aceptado', 'gobject.TYPE_BOOLEAN', False, True, False, None), 
                 #('En pedido', 'gobject.TYPE_STRING', False, True, False, None),
-                ('ID', 'gobject.TYPE_INT64', False, False, False, None))
+                ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_listview(self.wids['tv_contenido'], cols)
+        for ncol in (0, 2, 3):
+            col = self.wids['tv_contenido'].get_column(ncol)
+            for cell in col.get_cell_renderers():
+                cell.set_property('xalign', 1.0)
+        col = self.wids['tv_contenido'].get_column(1)
+        col.set_expand(True)
         self.wids['tv_contenido'].get_selection().set_mode(gtk.SELECTION_MULTIPLE)
+        postomatic.attach_menu_notas(self.wids['tv_contenido'], 
+                                     pclases.LineaDePresupuesto, 
+                                     self.usuario, 
+                                     1)
     
     def cambiar_precio_ldp(self, cell, path, texto):
         """
         Cambia el precio de la LDP conforme al texto recibido.
         """
+        # TODO: Y auditoría
         try:
             precio = utils._float(texto)
         except:
@@ -445,7 +435,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                                padre = self.wids['ventana'])
         else:
             model = self.wids['tv_contenido'].get_model()
-            ldp = pclases.LineaDePresupuesto.get(model[path][-1])
+            ldp = pclases.getObjetoPUID(model[path][-1])
             if ldp.precio != precio:
                 ldp.precio = precio
                 if ldp.get_lineas_de_venta() != [] \
@@ -472,6 +462,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         Cambia la cantidad de la LDP conforme al texto recibido.
         """
+        # TODO: Y auditoría
         try:
             cantidad = utils._float(texto)
         except:
@@ -480,7 +471,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                                padre = self.wids['ventana'])
         else:
             model = self.wids['tv_contenido'].get_model()
-            ldp = pclases.LineaDePresupuesto.get(model[path][-1])
+            ldp = pclases.getObjetoPUID(model[path][-1])
             ldp.cantidad = cantidad
             self.rellenar_tablas()
 
@@ -513,6 +504,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                                     self.usuario, self.logger)
         self.wids['b_pedido'].set_sensitive(
             self.objeto != None 
+            and not self.objeto.estudio
             # and not aceptado_completo 
             and permiso_nuevos_pedidos 
             and self.objeto.esta_vigente())
@@ -532,7 +524,10 @@ class Presupuestos(Ventana, VentanaGenerica):
                  utils.str_fecha(r.fecha), 
                  r.cliente and r.cliente.nombre or r.nombrecliente, 
                  r.obra and r.obra.nombre or r.nombreobra, 
-                 r.comercial and r.comercial.empleado.nombre + " " + r.comercial.empleado.apellidos or "Sin comercial relacionado"))
+                 r.comercial 
+                    and r.comercial.empleado.nombre 
+                            + " " + r.comercial.empleado.apellidos 
+                    or "Sin comercial relacionado"))
         idpresupuesto = utils.dialogo_resultado(filas_res,
                             titulo = 'SELECCIONE OFERTA',
                             cabeceras = ('ID', 'Fecha', 
@@ -677,10 +672,15 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         Rellena la información de los TreeViews.
         """
-        total = 0.0
-        total += self.rellenar_contenido()
-        total *= (1 - self.objeto.descuento)
-        self.wids['e_total'].set_text("%s €" % (utils.float2str(total)))
+        subtotal = self.rellenar_contenido()
+        #total *= (1 - self.objeto.descuento)
+        self.wids['e_subtotal'].set_text("%s €" % utils.float2str(subtotal))
+        importe_iva = self.objeto.calcular_total_iva(subtotal)
+        self.wids['e_total_iva'].set_text("%s €" % utils.float2str(
+            importe_iva))
+        total = subtotal + importe_iva
+        self.wids['e_total'].set_text("%s €" % utils.float2str(total))
+        self.wids['e_total'].modify_font(pango.FontDescription("bold"))
 
     def rellenar_contenido(self):
         model = self.wids['tv_contenido'].get_model()
@@ -689,7 +689,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         ldps = self.objeto.lineasDePresupuesto[:]
         ldps.sort(lambda x, y: int(x.id - y.id))
         for ldp in ldps:
-            subtotal = ldp.get_subtotal()
+            subtotal = ldp.get_subtotal(iva = False)
             total += subtotal
             model.append((utils.float2str(ldp.cantidad), 
                           ldp.productoVenta 
@@ -699,7 +699,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                           utils.float2str(subtotal),
                           #ldp.pedidoVenta != None,
                           #ldp.pedidoVenta and ldp.pedidoVenta.numpedido or "", 
-                          ldp.id))
+                          ldp.puid))
         return total
     
     def nuevo(self, widget):
@@ -816,13 +816,13 @@ class Presupuestos(Ventana, VentanaGenerica):
             col = self.clase.sqlmeta.columns[colname]
             try:
                 valor_ventana = self.leer_valor(col, self.dic_campos[colname])
-                if valor_ventana == -1 and colname == "comercialID":
+                if colname == "comercialID" and valor_ventana == -1:
                     valor_ventana = None
-                if valor_ventana == None and colname == "clienteID":
+                if colname == "clienteID" and valor_ventana == None:
                     self.objeto.cliente = None
                     valor_ventana = self.wids['cbe_cliente'].child.get_text()
                     colname = "nombrecliente"
-                if valor_ventana == None and colname == "obraID":
+                if colname == "obraID" and valor_ventana == None:
                     self.objeto.obra = None
                     valor_ventana = self.wids['cbe_obra'].child.get_text()
                     colname = "nombreobra"
