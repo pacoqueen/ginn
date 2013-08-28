@@ -10224,11 +10224,13 @@ class Presupuesto(SQLObject, PRPCTOO):
         de pedido + servicios - descuento.
         No cuenta IVA.
         """
-        total_ldvs = sum([utils.ffloat((l.cantidad * l.precio) * (1 - l.descuento)) for l in self.lineasDePedido])
-        total_srvs = sum([utils.ffloat((s.precio * s.cantidad) * (1 - s.descuento)) for s in self.servicios])
-        subtotal = total_ldvs + total_srvs
-        if incluir_descuento:
-            subtotal *= 1 - self.descuento
+        #total_ldvs = sum([utils.ffloat((l.cantidad * l.precio) * (1 - l.descuento)) for l in self.lineasDePedido])
+        #total_srvs = sum([utils.ffloat((s.precio * s.cantidad) * (1 - s.descuento)) for s in self.servicios])
+        #subtotal = total_ldvs + total_srvs
+        subtotal = sum([utils.ffloat(s.precio * s.cantidad) 
+                        for s in self.lineasDePresupuesto])
+        #if incluir_descuento:
+        #    subtotal *= 1 - self.descuento
         return subtotal
 
     def calcular_base_imponible(self):
@@ -10358,7 +10360,7 @@ class Presupuesto(SQLObject, PRPCTOO):
                         "Presupuesto sin cliente."
         elif estado_validacion == PRECIO_INSUFICIENTE:
             txtestado = "Necesita validación manual: "\
-                        "Ventas por debajo de precio mínimo definido."
+                        "Productos por debajo de precio mínimo definido."
             for ldp in self.lineasDePedido:
                 precioMinimo = ldp.producto.precioMinimo
                 precioKilo = ldp.precioKilo
@@ -10371,6 +10373,13 @@ class Presupuesto(SQLObject, PRPCTOO):
                                     utils.float2str(precioMinimo))
                     break
         return txtestado
+
+    def get_str_tipo(self):
+        if self.estudio is None:
+            return "Indeterminado"
+        if self.estudio:
+            return "Estudio"
+        return "Pedido"
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 

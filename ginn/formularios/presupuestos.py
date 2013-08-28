@@ -128,6 +128,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         Machaca la información de los entries de los datos del cliente 
         del presupuesto si están vacíos.
         """
+        self.reset_cache_credito()
         idcliente = utils.combo_get_value(cbe)
         if not idcliente:
             return
@@ -246,6 +247,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         Añade una línea de pedido al presupuesto.
         """
+        self.reset_cache_credito()
         productos = utils.buscar_producto_general(self.wids['ventana'])
         for producto in productos:
             try:
@@ -279,6 +281,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         Elimina las LDPs seleccionadas del presupuesto.
         """
+        self.reset_cache_credito()
         sel = self.wids['tv_contenido'].get_selection()
         model, paths = sel.get_selected_rows()
         if utils.dialogo(titulo = "ELIMINAR LÍNEAS DE PRESUPUESTO", 
@@ -428,6 +431,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         Cambia el precio de la LDP conforme al texto recibido.
         """
+        self.reset_cache_credito()
         # TODO: Y auditoría
         try:
             precio = utils._float(texto)
@@ -464,6 +468,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         Cambia la cantidad de la LDP conforme al texto recibido.
         """
+        self.reset_cache_credito()
         # TODO: Y auditoría
         try:
             cantidad = utils._float(texto)
@@ -530,8 +535,14 @@ class Presupuestos(Ventana, VentanaGenerica):
                     and r.comercial.empleado.nombre 
                             + " " + r.comercial.empleado.apellidos 
                     or "Sin comercial relacionado",
-                r.estudio and "Estudio" or "Pedido", 
-                r.adjudicada))
+                r.get_str_tipo(), 
+                r.adjudicada, 
+                "Clic aquí para evaluar."))
+        def mostrar_info_presupuesto(tv):
+            model, itr = tv.get_selection().get_selected()
+            if itr and model[itr][-1].startswith("Clic aquí"):
+                oferta = pclases.Presupuesto.get(model[itr][0])
+                model[itr][-1] = oferta.get_str_estado()
         idpresupuesto = utils.dialogo_resultado(filas_res,
                             titulo = 'SELECCIONE OFERTA',
                             cabeceras = ('ID', 'Fecha', 
@@ -539,8 +550,10 @@ class Presupuestos(Ventana, VentanaGenerica):
                                          'Obra', 
                                          "Comercial", 
                                          "Tipo", 
-                                         "Adjudicada"), 
-                            padre = self.wids['ventana'])
+                                         "Adjudicada", 
+                                         "Test de validación"), 
+                            padre = self.wids['ventana'], 
+                            func_change = mostrar_info_presupuesto)
         if idpresupuesto < 0:
             return None
         else:
@@ -599,7 +612,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         # Algunos campos "especialitos":
         self.wids['e_numero'].set_text(str(presupuesto.id))
         # Comprobar riesgo
-        self.comprobar_riesgo_cliente()
+        #self.comprobar_riesgo_cliente() # <-- Ya lo hago en el rellenar_tablas
         self.objeto.make_swap()
 
     def comprobar_riesgo_cliente(self):
@@ -687,6 +700,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         total = subtotal + importe_iva
         self.wids['e_total'].set_text("%s €" % utils.float2str(total))
         self.wids['e_total'].modify_font(pango.FontDescription("bold"))
+        self.comprobar_riesgo_cliente()
 
     def rellenar_contenido(self):
         model = self.wids['tv_contenido'].get_model()
@@ -716,6 +730,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         en la ventana para que puedan ser editados el resto
         de campos que no se hayan pedido aquí.
         """
+        self.reset_cache_credito()
         presupuesto_anterior = self.objeto
         if presupuesto_anterior != None:
             presupuesto_anterior.notificador.desactivar()
@@ -898,6 +913,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 self.actualizar_ventana()
                 return
             self.objeto = None
+            self.reset_cache_credito()
             self.ir_a_primero()
 
 
