@@ -396,7 +396,7 @@ def go_from_presupuesto(presupuesto):
 
     nomarchivo = os.path.join(gettempdir(), 
                               "presupuesto_%s.pdf" % give_me_the_name_baby())
-    go("Presupuesto %s (%s)" % (presupuesto.cliente.nombre, 
+    go("Presupuesto %s (%s)" % (presupuesto.nombrecliente, 
                                 utils.str_fecha(presupuesto.fecha)), 
        nomarchivo, 
        lineas_empresa, 

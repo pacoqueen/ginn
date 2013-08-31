@@ -36,10 +36,12 @@ if gtk.pygtk_version < (2, 0):
 from velocimetro import Velocimetro
 from starhscale import StarHScale
 from marquee_label import MarqueeLabel
+from cellrendererautocomplete import CellRendererAutoComplete
 # Registro la clase como un widget Gtk
 gobject.type_register(StarHScale)
 gobject.type_register(Velocimetro)
 gobject.type_register(MarqueeLabel)
+gobject.type_register(CellRendererAutoComplete)
 
-__all__ = ["Velocimetro", "StarHScale", "MarqueeLabel"]
+__all__ = ["Velocimetro", "StarHScale", "MarqueeLabel", "CellRendererAutoComplete"]
 

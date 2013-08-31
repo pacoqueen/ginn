@@ -50,6 +50,7 @@ import gobject
 import sys
 import pango
 from formularios import postomatic
+from formularios.custom_widgets import CellRendererAutoComplete
 
 class Presupuestos(Ventana, VentanaGenerica):
     def __init__(self, objeto = None, usuario = None):
@@ -248,34 +249,49 @@ class Presupuestos(Ventana, VentanaGenerica):
         Añade una línea de pedido al presupuesto.
         """
         self.reset_cache_credito()
-        productos = utils.buscar_producto_general(self.wids['ventana'])
-        for producto in productos:
-            try:
-                tarifa = self.objeto.cliente.tarifa
-                precio = tarifa.obtener_precio(producto)
-            except:
-                precio = producto.preciopordefecto
-            if precio == 0:
-                precio = preguntar_precio(producto, self.wids['ventana'])
-            cantidad = self.seleccionar_cantidad(producto)
-            if cantidad == None:
-                break
-            if isinstance(producto, pclases.ProductoCompra):
-                ldp = pclases.LineaDePresupuesto(
-                                            productoVenta = None, 
-                                            productoCompra = producto, 
-                                            cantidad = cantidad, 
-                                            precio = precio, 
-                                            presupuesto = self.objeto)
-            elif isinstance(producto, pclases.ProductoVenta):
-                ldp = pclases.LineaDePresupuesto(
-                                            productoVenta = producto, 
-                                            productoCompra = None, 
-                                            cantidad = cantidad, 
-                                            precio = precio, 
-                                            presupuesto = self.objeto)
-            pclases.Auditoria.nuevo(ldp, self.usuario, __file__)
+        #productos = utils.buscar_producto_general(self.wids['ventana'])
+        #for producto in productos:
+        #    try:
+        #        tarifa = self.objeto.cliente.tarifa
+        #        precio = tarifa.obtener_precio(producto)
+        #    except:
+        #        precio = producto.preciopordefecto
+        #    if precio == 0:
+        #        precio = preguntar_precio(producto, self.wids['ventana'])
+        #    cantidad = self.seleccionar_cantidad(producto)
+        #    if cantidad == None:
+        #        break
+        #    if isinstance(producto, pclases.ProductoCompra):
+        #        ldp = pclases.LineaDePresupuesto(
+        #                                    productoVenta = None, 
+        #                                    productoCompra = producto, 
+        #                                    cantidad = cantidad, 
+        #                                    precio = precio, 
+        #                                    presupuesto = self.objeto)
+        #    elif isinstance(producto, pclases.ProductoVenta):
+        #        ldp = pclases.LineaDePresupuesto(
+        #                                    productoVenta = producto, 
+        #                                    productoCompra = None, 
+        #                                    cantidad = cantidad, 
+        #                                    precio = precio, 
+        #                                    presupuesto = self.objeto)
+        ldp = pclases.LineaDePresupuesto(productoVenta = None, 
+                                         productoCompra = None, 
+                                         cantidad = 0, 
+                                         precio = 0,
+                                         presupuesto = self.objeto)
+        pclases.Auditoria.nuevo(ldp, self.usuario, __file__)
         self.rellenar_tablas()
+        model = self.wids['tv_contenido'].get_model()
+        itr = model.get_iter_first()
+        while itr:
+            if model[itr][-1] == ldp.puid:
+                path = self.wids['tv_contenido'].get_model().get_path(itr)
+                break
+            itr = model.iter_next(itr)
+        col = self.wids['tv_contenido'].get_column(1)
+        self.wids['tv_contenido'].grab_focus()
+        self.wids['tv_contenido'].set_cursor(path, col, True)
     
     def drop_ldp(self, boton):
         """
@@ -316,22 +332,16 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         Genera y abre el PDF de la carta de oferta.
         """
-        utils.dialogo_info(titulo = "NO IMPLEMENTADO", 
-                texto = "Característica en desarrollo.", 
-                padre = self.wids['ventana'])
-        # TODO
-        return
-        if self.objeto != None:
-            from informes import geninformes
-            from formularios.reports import abrir_pdf
-            abrir_pdf(geninformes.generar_pdf_presupuesto(self.objeto))
+        #if self.objeto != None:
+        #    from informes import geninformes
+        #    from formularios.reports import abrir_pdf
+        #    abrir_pdf(geninformes.generar_pdf_presupuesto(self.objeto))
         self.imprimir_presupuesto(boton)
 
     def imprimir_presupuesto(self, boton):
         """
         Imprime el presupuesto en formato "factura" en lugar de carta.
         """
-        # TODO
         if self.objeto != None:
             modulo = pclases.config.get_modelo_presupuesto()
             import importlib
@@ -421,18 +431,89 @@ class Presupuestos(Ventana, VentanaGenerica):
                 cell.set_property('xalign', 1.0)
         col = self.wids['tv_contenido'].get_column(1)
         col.set_expand(True)
-        self.wids['tv_contenido'].get_selection().set_mode(gtk.SELECTION_MULTIPLE)
+        self.wids['tv_contenido'].get_selection().set_mode(
+                                                        gtk.SELECTION_MULTIPLE)
+        # Convierto descripción en un entry con autocompletado.
+        col.clear()
+        liststore_productos = gtk.ListStore(str, str)
+        for p in pclases.ProductoVenta.select(orderBy = "descripcion"):
+            liststore_productos.append((p.descripcion, p.puid))
+        for p in pclases.ProductoCompra.select(orderBy = "descripcion"):
+            liststore_productos.append((p.descripcion, p.puid))
+        #cellrenderer_combo = gtk.CellRendererCombo()
+        #cellrenderer_combo.set_property("editable", True)
+        #cellrenderer_combo.set_property("model", liststore_productos)
+        #cellrenderer_combo.set_property("text-column", 0)
+        #column_combo = col # Ya está instanciado col arriba a la columna que es
+        #column_combo.pack_start(cellrenderer_combo, True)
+        #column_combo.pack_start(cellrenderer_text, True)
+        #column_combo.add_attribute(cellrenderer_combo, "text", 1)
+        #cellrenderer_combo.connect("edited", 
+        #                           self.update_prod_lpd, 
+        #                           liststore_productos, 
+        #                           1, 
+        #                           self.wids['tv_contenido'].get_model())
+        completion = gtk.EntryCompletion()
+        completion.set_model(liststore_productos)
+        completion.set_text_column(0)
+        completion.set_match_func(match_producto, 0)
+        cellrenderer_text = CellRendererAutoComplete(completion)
+        cellrenderer_text.set_property("editable", True)
+        cellrenderer_text.connect("edited", 
+                                   self.update_prod_lpd, 
+                                   liststore_productos, 
+                                   1, 
+                                   self.wids['tv_contenido'].get_model())
+        col.pack_start(cellrenderer_text, True)
+        col.add_attribute(cellrenderer_text, "text", 1)
+        cellrenderer_text.set_property("text", 1)
+        # Notas en cada línea de presupuesto.
         postomatic.attach_menu_notas(self.wids['tv_contenido'], 
                                      pclases.LineaDePresupuesto, 
                                      self.usuario, 
                                      1)
-    
+
+    def update_prod_lpd(self, wid, path, text, model, ncol, model_tv):
+        puidldp = model_tv[path][-1]
+        ldp = pclases.getObjetoPUID(puidldp)
+        ldp.descripcion = text
+        # LEEEEEENTO
+        # Si he tecleado un producto de compra o de venta, actualizo el 
+        # registro como corresponde.
+        producto = None
+        for desc, puid in model:
+            if text == desc:
+                producto = pclases.getObjetoPUID(puid)
+                break
+        ldp.productoCompra = ldp.productoVenta = None
+        if isinstance(producto, pclases.ProductoCompra):
+            ldp.productoCompra = producto
+        elif isinstance(producto, pclases.ProductoVenta):
+            ldp.productoVenta = producto
+        model_tv[path][ncol] = ldp.get_descripcion_producto() 
+        # Pongo precio por defecto:
+        if not ldp.precio:
+            try:
+                tarifa = self.objeto.cliente.tarifa
+                precio = tarifa.obtener_precio(producto)
+            except:
+                try:
+                    precio = ldp.producto.preciopordefecto
+                except AttributeError: 
+                    precio = 0
+            ldp.precio = precio
+            model_tv[path][2] = utils.float2str(ldp.precio, 3, autodec = True)
+        # TODO: Si es rollo, poner una cantidad múltiplo de sus m²
+        # Sigo con el foco en la cantidad.
+        col = self.wids['tv_contenido'].get_column(0)
+        self.wids['tv_contenido'].grab_focus()
+        self.wids['tv_contenido'].set_cursor(path, col, True)
+
     def cambiar_precio_ldp(self, cell, path, texto):
         """
         Cambia el precio de la LDP conforme al texto recibido.
         """
         self.reset_cache_credito()
-        # TODO: Y auditoría
         try:
             precio = utils._float(texto)
         except:
@@ -444,32 +525,16 @@ class Presupuestos(Ventana, VentanaGenerica):
             ldp = pclases.getObjetoPUID(model[path][-1])
             if ldp.precio != precio:
                 ldp.precio = precio
-                if ldp.get_lineas_de_venta() != [] \
-                   and utils.dialogo(titulo = "¿CAMBIAR PRECIO PRODUCTOS SERVIDOS?", 
-                                 texto = """
-                Al cambiar el precio de una parte del presupuesto ofertado,             
-                se cambian automáticamente los precios de los pedidos                   
-                involucrados. También puede cambiar los albaranes y facturas            
-                si el pedido ya ha sido servido.                                        
-                                                                                        
-                ¿Desea cambiar el precio de todos los artículos servidos                
-                de este producto?                                                       
-                                                                                        
-                Si lo hace, se cambiará también en la factura en caso de                
-                que se haya facturado el albarán o albaranes                            
-                correspondientes.                                                       
-                """, 
-                                padre = self.wids['ventana']):
-                    for ldv in ldp.get_lineas_de_venta():
-                        ldv.precio = ldp.precio
-            self.rellenar_tablas()
+                pclases.Auditoria.modificado(ldp, self.usuario, __file__)
+                self.rellenar_tablas()
+                # Vuelvo al botón de añadir líneas.
+                self.wids['b_add'].grab_focus()
 
     def cambiar_cantidad_ldp(self, cell, path, texto):
         """
         Cambia la cantidad de la LDP conforme al texto recibido.
         """
         self.reset_cache_credito()
-        # TODO: Y auditoría
         try:
             cantidad = utils._float(texto)
         except:
@@ -479,8 +544,14 @@ class Presupuestos(Ventana, VentanaGenerica):
         else:
             model = self.wids['tv_contenido'].get_model()
             ldp = pclases.getObjetoPUID(model[path][-1])
+            # TODO: Si es rollo, avisar si no es una cantidad múltiple de sus metros cuadrados.
             ldp.cantidad = cantidad
+            pclases.Auditoria.modificado(ldp, self.usuario, __file__)
             self.rellenar_tablas()
+            # Sigo con el foco en el precio.
+            col = self.wids['tv_contenido'].get_column(2)
+            self.wids['tv_contenido'].grab_focus()
+            self.wids['tv_contenido'].set_cursor(path, col, True)
 
     def activar_widgets(self, s):
         """
@@ -561,7 +632,7 @@ class Presupuestos(Ventana, VentanaGenerica):
 
     def rellenar_widgets(self):
         """
-        Introduce la información de el presupuesto actual
+        Introduce la información del presupuesto actual
         en los widgets.
         No se chequea que sea != None, así que
         hay que tener cuidado de no llamar a 
@@ -712,9 +783,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             subtotal = ldp.get_subtotal(iva = False)
             total += subtotal
             model.append((utils.float2str(ldp.cantidad), 
-                          ldp.productoVenta 
-                            and ldp.productoVenta.descripcion 
-                            or ldp.productoCompra.descripcion, 
+                          ldp.get_descripcion_producto(), 
                           utils.float2str(ldp.precio, 3, autodec = True), 
                           utils.float2str(subtotal),
                           #ldp.pedidoVenta != None,
@@ -931,6 +1000,14 @@ def calcular_permiso_nuevos_pedidos(usuario, logger = None):
             permisos_ventana_pedidos = usuario.get_permiso(ventana_pedidos)
             permiso_nuevos_pedidos = permisos_ventana_pedidos.nuevo
     return permiso_nuevos_pedidos
+
+def match_producto(completion, key, itr, ncol):
+    model = completion.get_model()
+    text = model.get_value(itr, ncol)
+    #if text.startswith(key):
+    if key.upper() in text.upper():
+        return True
+    return False
 
 
 if __name__ == "__main__":

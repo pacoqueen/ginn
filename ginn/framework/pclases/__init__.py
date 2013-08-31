@@ -10069,6 +10069,15 @@ class LineaDePresupuesto(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
+    def get_descripcion_producto(self):
+        if self.productoVenta:
+            desc = self.productoVenta.descripcion
+        elif self.productoCompra:
+            desc = self.productoCompra.descripcion
+        else:
+            desc = self.descripcion
+        return desc
+
     def get_subtotal(self, iva = False):
         """
         Devuelve el subtotal de esta línea de presupuesto.
