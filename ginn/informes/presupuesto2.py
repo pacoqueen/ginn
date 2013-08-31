@@ -310,6 +310,10 @@ def go(titulo,
     """
     doc = SimpleDocTemplate(ruta_archivo, title = titulo)
     encabezado = build_encabezado(lineas_datos_empresa)
+    try:
+        nombrecliente = datos_cliente[0].replace(" ", "_")
+    except:
+        nombrecliente = ""
     datos_cliente = build_datos_cliente(datos_cliente)
     entradilla = build_entradilla(fecha_entradilla, numpresupuesto)
     texto = build_texto(texto)
@@ -337,6 +341,21 @@ def go(titulo,
     story = utils.aplanar([i for i in story if i])
     _dibujar_logo = lambda c, d: dibujar_logo(c, d, ruta_logo)
     doc.build(story, onFirstPage = _dibujar_logo)
+    # Agrego condiciones generales:
+    from lib.PyPDF2 import PyPDF2
+    pdf_presupuesto = open(ruta_archivo, "rb")
+    pdf_condiciones = open(
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), 
+                     "condiciones_generales.pdf"), 
+        "rb")
+    merger = PyPDF2.PdfFileMerger()
+    merger.append(pdf_presupuesto)
+    merger.append(pdf_condiciones)
+    combinado = os.path.join(gettempdir(),
+                "oferta_%s_%s.pdf" % (nombrecliente, 
+                                      give_me_the_name_baby()))
+    merger.write(open(combinado, "wb"))
+    ruta_archivo = combinado
     return ruta_archivo
 
 def go_from_presupuesto(presupuesto):
@@ -355,7 +374,9 @@ def go_from_presupuesto(presupuesto):
                           "Telf.: %s" % (dde.telefono)]
         if dde.fax:
             lineas_empresa.append("Fax: %s" % (dde.fax))
-        if dde.email:
+        if presupuesto.comercial and presupuesto.comercial.correoe:
+            lineas_empresa.append(presupuesto.comercial.correoe)
+        else:
             lineas_empresa.append(dde.email)
     except IndexError:
         lineas_empresa = []
@@ -444,8 +465,9 @@ def go_from_presupuesto(presupuesto):
         condicionado = "Condiciones particulares:\n" + presupuesto.texto
     else:
         condicionado = None
-    go("Presupuesto %s (%s)" % (presupuesto.nombrecliente, 
-                                utils.str_fecha(presupuesto.fecha)), 
+    nomarchivo = go(
+      "Presupuesto %s (%s)" % (presupuesto.nombrecliente, 
+                               utils.str_fecha(presupuesto.fecha)), 
        nomarchivo, 
        lineas_empresa, 
        datos_cliente, 
