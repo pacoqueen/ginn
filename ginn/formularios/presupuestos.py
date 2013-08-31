@@ -544,7 +544,25 @@ class Presupuestos(Ventana, VentanaGenerica):
         else:
             model = self.wids['tv_contenido'].get_model()
             ldp = pclases.getObjetoPUID(model[path][-1])
-            # TODO: Si es rollo, avisar si no es una cantidad múltiple de sus metros cuadrados.
+            # Si es rollo, ajusto al múltiplo de rollos completos.
+            if ldp.productoVenta and ldp.productoVenta.es_rollo():
+                cer = ldp.productoVenta.camposEspecificosRollo
+                resto = cantidad % cer.metrosCuadrados
+                if resto:
+                    nueva_cantidad = cantidad + cer.metrosCuadrados - resto
+                    if utils.dialogo(titulo = "¿CANTIDAD INCORRECTA?", 
+                            texto = "El producto %s se vende por múltiplos "
+                                    "de %s m².\nHa teclado %s.\n\n"
+                                    "¿Corregir la cantidad a %s?" % (
+                                        ldp.productoVenta.descripcion, 
+                                        utils.float2str(cer.metrosCuadrados, 
+                                                        autodec = True), 
+                                        utils.float2str(cantidad, 
+                                                        autodec = True), 
+                                        utils.float2str(nueva_cantidad, 
+                                                        autodec = True)), 
+                            padre = self.wids['ventana']):
+                        cantidad = nueva_cantidad
             ldp.cantidad = cantidad
             pclases.Auditoria.modificado(ldp, self.usuario, __file__)
             self.rellenar_tablas()

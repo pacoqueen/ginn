@@ -76,24 +76,32 @@ def build_tabla_contenido(data):
         if isinstance(d, (list, tuple)):
             fila = d[:4]
         elif isinstance(d, pclases.LineaDePedido):
+            # OBSOLETO. No debería entrar nunca aquí.
             fila = (utils.float2str(d.cantidad, autodec = True), 
                     d.producto.descripcion, 
                     d.calcular_precio_unitario_coherente(precision = 2), 
                     utils.float2str(d.get_subtotal()
                                     + (d.precio * d.descuento * d.cantidad)))
         elif isinstance(d, pclases.Servicio):
+            # OBSOLETO. No debería entrar nunca aquí.
             fila = (utils.float2str(d.cantidad, autodec = True), 
                     d.concepto, 
                     utils.float2str(d.precio), 
                     utils.float2str(d.get_subtotal()
                                     + (d.precio * d.descuento * d.cantidad)))
+        elif isinstance(d, pclases.LineaDePresupuesto):
+            fila = (utils.float2str(d.cantidad, autodec = True), 
+                    # TODO: Añadir unidades del producto.
+                    d.descripcion, 
+                    utils.float2str(d.precio), 
+                    utils.float2str(d.get_subtotal()))
         _fila = (fila[0], 
                  Paragraph(escribe(fila[1]), estilos["Normal"]),
                  Paragraph(escribe(fila[2]), estilo_numeros_tabla),
                  Paragraph(escribe(fila[3]), estilo_numeros_tabla),
                 )
         datos.append(_fila)
-        if d.descuento:
+        if hasattr(d, "descuento") and d.descuento:
             fila_descuento = ("", 
                               "Descuento %s %%" 
                                 % utils.float2str(d.descuento * 100, 
@@ -265,6 +273,23 @@ def build_validez(validez):
     a_derecha.fontSize = 8
     return Paragraph(txt_validez, a_derecha)
 
+def build_condicionado(condicionado):
+    a_derecha = ParagraphStyle("A derecha", 
+                                parent = estilos["Normal"])
+    a_derecha.alignment = enums.TA_LEFT
+    a_derecha.fontName = "Courier"
+    a_derecha.fontSize = 13
+    texto_condicionado = "Condiciones particulares: " + condicionado
+    return Paragraph(texto_condicionado, a_derecha)
+
+def build_texto_riesgo(texto_riesgo):
+    a_derecha = ParagraphStyle("A derecha", 
+                                parent = estilos["Normal"])
+    a_derecha.alignment = enums.TA_RIGHT
+    a_derecha.fontName = "Courier"
+    a_derecha.fontSize = 8
+    return Paragraph(texto_riesgo, a_derecha)
+
 def go(titulo, 
        ruta_archivo, 
        lineas_datos_empresa, 
@@ -276,6 +301,8 @@ def go(titulo,
        despedida = None, 
        ruta_logo = None, 
        validez = None, 
+       condicionado = None, 
+       texto_riesgo = None, 
        numpresupuesto = ""):
     """
     Recibe el título del documento y la ruta completa del archivo.
@@ -293,15 +320,20 @@ def go(titulo,
              datos_cliente, 
              entradilla, 
              Spacer(1, 0.2 * cm), 
-             texto, 
-             Spacer(1, 0.2 * cm), 
              contenido, 
              Spacer(1, 0.25 * cm), 
              totales, 
              Spacer(1, 2 * cm), 
+             texto, 
+             Spacer(1, 0.2 * cm), 
              despedida]
-    if validez:
-        story.insert(9, build_validez(validez))
+    #if validez:
+        #story.insert(9, build_validez(validez))
+    if texto_riesgo:
+        story.insert(-4, build_texto_riesgo(texto_riesgo))
+    #if condicionado: # El condicionado es el texto en sí.
+    #    story.insert(-2, Spacer(1, 2 * cm))
+    #    story.insert(-2, build_condicionado(condicionado))
     story = utils.aplanar([i for i in story if i])
     _dibujar_logo = lambda c, d: dibujar_logo(c, d, ruta_logo)
     doc.build(story, onFirstPage = _dibujar_logo)
@@ -327,7 +359,8 @@ def go_from_presupuesto(presupuesto):
             lineas_empresa.append(dde.email)
     except IndexError:
         lineas_empresa = []
-    lineas_contenido = presupuesto.lineasDePedido + presupuesto.servicios
+    #lineas_contenido = presupuesto.lineasDePedido + presupuesto.servicios
+    lineas_contenido = presupuesto.lineasDePresupuesto 
     datos_cliente = []
     if presupuesto.personaContacto != "":
         datos_cliente.append("A la atención de %s" % (presupuesto.personaContacto))
@@ -393,9 +426,24 @@ def go_from_presupuesto(presupuesto):
         validez = presupuesto.validez
     else:
         validez = None
-
+    if presupuesto.texto:
+        condiciones = presupuesto.texto + "\n"
+    else:
+        condiciones = None
+    # Condiciones "blandas" del presupuesto
+    if (not presupuesto.cliente 
+        or presupuesto.cliente.calcular_credito_disponible(
+            base = presupuesto.calcular_importe_total(iva = True)) <= 0):
+        texto_riesgo = "Esta operación está sujeta a la concesión de "\
+                       "crédito por parte de %s." % dde.nombre
+    else:
+        texto_riesgo = None
     nomarchivo = os.path.join(gettempdir(), 
                               "presupuesto_%s.pdf" % give_me_the_name_baby())
+    if presupuesto.texto:
+        condicionado = "Condiciones particulares:\n" + presupuesto.texto
+    else:
+        condicionado = None
     go("Presupuesto %s (%s)" % (presupuesto.nombrecliente, 
                                 utils.str_fecha(presupuesto.fecha)), 
        nomarchivo, 
@@ -404,17 +452,19 @@ def go_from_presupuesto(presupuesto):
        lineas_contenido, 
        fecha_entradilla, 
        totales, 
-       presupuesto.texto, 
+       condicionado, 
        presupuesto.despedida, 
        ruta_logo = logo, 
        validez = validez, 
-       numpresupuesto = presupuesto.numpresupuesto)
+       texto_riesgo = texto_riesgo, 
+       #numpresupuesto = presupuesto.numpresupuesto)
+       numpresupuesto = presupuesto.id)
     return nomarchivo
 
 
 if __name__ == "__main__":
     try:
-        go_from_presupuesto(pclases.Presupuesto.select()[0])
+        go_from_presupuesto(pclases.Presupuesto.select()[-1])
     except:
         lineas_contenido = [(1.234, "Una cosa "*20, "1.245", `1.234*1.245`), 
                             (1, "Grñai mama", "1", "0.25"), 
@@ -455,3 +505,4 @@ if __name__ == "__main__":
            texto, 
            despedida, 
            ruta_logo = "../imagenes/dorsia.png")
+
