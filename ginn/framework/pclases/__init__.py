@@ -10316,26 +10316,26 @@ class Presupuesto(SQLObject, PRPCTOO):
                     and precioKilo < precioMinimo):
                 validable = PRECIO_INSUFICIENTE
                 break
-        if validable:
-            if not self.cliente:
-                validable = NO_VALIDABLE
-        if validable:
+        if validable == VALIDABLE:
             fdp = self.formaDePago
             if not fdp:
                 validable = SIN_FORMA_DE_PAGO
             elif fdp.plazo > 120:
                 validable = PLAZO_EXCESIVO
-        if validable:
+        if validable == VALIDABLE:
+            if not self.cif.strip():
+                validable = SIN_CIF
+        if validable == VALIDABLE:
             importe_presupuesto = self.calcular_importe_total(iva = True)
             if self.cliente and self.cliente.calcular_credito_disponible(
                     base = importe_presupuesto) < 0:
                 validable = CLIENTE_DEUDOR
-        if validable:
-            if not self.cif.strip():
-                validable = SIN_CIF
-        if validable:
+        if validable == VALIDABLE:
             if not self.cliente and not self.nombrecliente:
                 validable = SIN_CLIENTE
+        if validable == VALIDABLE:
+            if not self.cliente:
+                validable = NO_VALIDABLE
         return validable
 
     def get_str_estado(self):
@@ -10382,6 +10382,26 @@ class Presupuesto(SQLObject, PRPCTOO):
                                     utils.float2str(precioMinimo))
                     break
         return txtestado
+
+    @property
+    def validable(self):
+        return self.get_estado_validacion() == VALIDABLE
+
+    @property
+    def validado(self):
+        return self.usuario and True or False
+
+    @validado.setter
+    def validado(self, usuario):
+        if not usuario:
+            self.usuario = None
+            self.fechaValidacion = None
+        elif isinstance(usuario, Usuario):
+            self.usuario = usuario
+            self.fechaValidacion = datetime.datetime.now()
+        else:
+            raise ValueError, "El parámetro de validación de presupuesto "\
+                              "debe ser un usuario de pclases o False."
 
     def get_str_tipo(self):
         if self.estudio is None:

@@ -51,6 +51,9 @@ import sys
 import pango
 from formularios import postomatic
 from formularios.custom_widgets import CellRendererAutoComplete
+import datetime
+
+NIVEL_VALIDACION = 1
 
 class Presupuestos(Ventana, VentanaGenerica):
     def __init__(self, objeto = None, usuario = None):
@@ -77,7 +80,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                            "formaDePagoID": "cb_forma_cobro", 
                            "texto": "txt_condiciones", 
                            "observaciones": "txt_observaciones", 
-                           "estudio": "rb_estudio", 
+                           "estudio": "rb_estudio" 
                           }
         Ventana.__init__(self, 'presupuestos.glade', objeto, 
                          usuario = self.usuario)
@@ -97,11 +100,14 @@ class Presupuestos(Ventana, VentanaGenerica):
                             map(lambda item: item.set_inconsistent(False), 
                                 rb.get_group()), 
                        'b_imprimir/clicked': self.imprimir, 
+                       'b_carta/clicked': self.imprimir_carta_compromiso, 
                        'b_pedido/clicked': self.hacer_pedido,  
                        'b_enviar/clicked': self.enviar_por_correo, 
                        "cbe_cliente/changed": self.cambiar_datos_cliente, 
                        "b_add/clicked": self.add_ldp, 
-                       "b_drop/clicked": self.drop_ldp 
+                       "b_drop/clicked": self.drop_ldp, 
+                       "ch_validado/toggled": self.validar, 
+                       "tv_contenido/query-tooltip": self.tooltip_query
                       }  
         self.add_connections(connections)
         self.inicializar_ventana()
@@ -109,9 +115,92 @@ class Presupuestos(Ventana, VentanaGenerica):
             self.ir_a_primero()
         else:
             self.ir_a(objeto)
-        if self.usuario and self.usuario.nivel >= 4:
-            self.activar_widgets(False) # Para evitar manos rápidas al abrir.
+        #if self.usuario and self.usuario.nivel >= 4:
+        #    self.activar_widgets(False) # Para evitar manos rápidas al abrir.
         gtk.main()
+
+    def validar(self, ch):
+        """
+        Si está validado:
+            - Deja el presupuesto como indica el check. Sea quien sea. Si 
+              estamos rellenando los widgets, ch estará marcado o desmarcado en
+              función del valor de la oferta. Si le ha dado el usuario, el ch 
+              tiene el nuevo valor de validación (opuesto en este instante a 
+              lo que guarda self.objeto.validado).
+        Si no está validado: 
+            - Si el usuario tiene nivel: valida y guarda el usuario.
+            - Si el usuario no tiene nivel: no valida y muestra aviso.
+        """
+        if self.objeto.validado == ch.get_active():     # Estoy rellenando. No 
+            # hay edición del usuario. No compruebo nada.
+            pass 
+        else:   # El usuario está desvalidando o intentando validar.
+            self.objeto.notificador.desactivar()
+            vpro = VentanaActividad(self.wids['ventana'], 
+                                    "Comprobando permisos validación...")
+            vpro.mostrar()
+            vpro.mover()
+            tmphndlr = self.handlers_id['ch_validado']['toggled'][-1] # -1? r-u-sure?
+            vpro.mover()
+            if ((not self.usuario or self.usuario.nivel > NIVEL_VALIDACION)
+                    and ch.get_active() # = estoy intentando validar
+                    and not self.objeto.validable):     # Pero no puedo
+                vpro.mover()
+                ch.disconnect(tmphndlr)
+                ch.set_active(False)
+                self.objeto.validado = False
+                vpro.mover()
+                self.objeto.syncUpdate()
+                pclases.Auditoria.modificado(self.objeto, 
+                    self.usuario, __file__, 
+                    "Se impide intento de validación en presupuesto %d por %s." 
+                        % (self.objeto.id, 
+                           self.usuario and self.usuario.usuario or "¡NADIE!"))
+                vpro.mover()
+                vpro.ocultar()
+                utils.dialogo_info("PERMISOS INSUFICIENTES", 
+                        texto = "No posee privilegios suficientes para validar "
+                                "la oferta con las condiciones actuales.", 
+                        padre = self.wids['ventana'])
+            else:   # Estoy "desvalidando", tengo permisos o es validable.
+                vpro.mover()
+                ch.disconnect(tmphndlr)
+                vpro.mover()
+                if ch.get_active():     # Estoy validando
+                    if self.usuario:
+                        self.objeto.validado = self.usuario
+                        pclases.Auditoria.modificado(self.objeto, 
+                            self.usuario, __file__, 
+                            "Presupuesto %d validado por %s." 
+                                % (self.objeto.id, 
+                                   self.objeto.usuario.usuario))
+                else:   # Estoy invalidando
+                    self.objeto.validado = False
+                    pclases.Auditoria.modificado(self.objeto, 
+                        self.usuario, __file__, 
+                        "Presupuesto %d invalidado por %s." 
+                            % (self.objeto.id, 
+                               self.usuario and self.usuario.usuario 
+                               or "¡NADIE!"))
+                vpro.mover()
+                self.objeto.syncUpdate()
+                self.objeto.swap['usuarioID'] = self.objeto.usuarioID
+                fv = self.objeto.fechaValidacion
+                if fv:
+                    fv_aprox = datetime.datetime(fv.year, fv.month, fv.day, 
+                                                 fv.hour, fv.minute, fv.second)
+                else:
+                    fv_aprox = None
+                self.objeto.swap['fechaValidacion'] = fv_aprox
+                vpro.mover()
+                self.refresh_validado()  # Equivale a 
+                    # rellenar_widgets pero solo la parte del checkbox.
+                vpro.mover()
+                vpro.ocultar()
+            tmphndlr = ch.connect("toggled", self.validar)
+            self.handlers_id['ch_validado']['toggled'].append(tmphndlr)
+            self.objeto.notificador.activar(self.aviso_actualizacion)
+            self.wids['b_actualizar'].set_sensitive(False) # Falsos positivos.
 
     def fecha(self, w):
         try:
@@ -160,25 +249,68 @@ class Presupuestos(Ventana, VentanaGenerica):
         Crea un pedido con el cliente del presupuesto y como contenido 
         las líneas de pedido y servicios del mismo.
         """
-        utils.dialogo_info(titulo = "NO IMPLEMENTADO", 
-                texto = "Característica en desarrollo.", 
+        if self.objeto and self.objeto.get_pedidos():
+            utils.dialogo_info(titulo = "NO SE PUEDE CONVERTIR A PEDIDO", 
+                    texto = "La oferta ya se encuentra vinculada a "
+                            "los pedidos: %s" % (
+                                ", ".join([p.numpedido 
+                                           for p in self.objeto.get_pedidos()]
+                                         )),
+                    padre = self.wids['ventana'])
+            return
+        numpedido = utils.dialogo_entrada(
+                texto = 'Introduzca un número de pedido.', 
+                titulo = 'NÚMERO DE PEDIDO', 
                 padre = self.wids['ventana'])
-        return
-        numpedido = utils.dialogo_entrada(texto = 'Introduzca un número de pedido.', titulo = 'NÚMERO DE PEDIDO', padre = self.wids['ventana'])
         if numpedido != None:
             existe = pclases.PedidoVenta.select(
                 pclases.PedidoVenta.q.numpedido == numpedido)
             if existe.count() > 0:
-                if utils.dialogo(titulo = "PEDIDO YA EXISTE", texto = "El número de pedido ya existe. ¿Desea agregar la oferta?", padre = self.wids['ventana']):
+                if utils.dialogo(titulo = "PEDIDO YA EXISTE", 
+                        texto = "El número de pedido ya existe. "\
+                                "¿Desea agregar la oferta?", 
+                        padre = self.wids['ventana']):
                     nuevopedido = existe[0]
                     if nuevopedido.cerrado:
                         utils.dialogo_info(titulo = "PEDIDO CERRADO", 
-                                           texto = "El pedido %s está cerrado y no admite cambios. Corrija esta situación antes de volver a intentarlo.", 
-                                           padre = self.wids['ventana'])
+                            texto = "El pedido %s está cerrado y no admite "
+                                    "cambios. Corrija esta situación antes "
+                                    "de volver a intentarlo.", 
+                            padre = self.wids['ventana'])
                         nuevopedido = None
                 else:
                     nuevopedido = None
             else:
+                if not self.objeto.cliente:
+                    self.objeto.cliente = pclases.Cliente(
+                            nombre = self.objeto.nombrecliente, 
+                            cif = self.objeto.cif, 
+                            direccion = self.objeto.direccion, 
+                            ciudad = self.objeto.ciudad, 
+                            provincia = self.objeto.provincia, 
+                            pais = self.objeto.pais, 
+                            cp = self.objeto.cp, 
+                            telefono = self.objeto.telefono, 
+                            email = self.objeto.email,
+                            vencimientos = self.objeto.formaDePago.toString(), 
+                            formadepago = self.objeto.formaDePago.toString())
+                    pclases.Auditoria.nuevo(self.objeto.cliente, 
+                                            self.usuario, __file__)
+                if not self.objeto.obra:
+                    if self.objeto.nombreobra:
+                        self.objeto.obra = pclases.Obra(
+                                nombre = self.objeto.nombreobra, 
+                                direccion = self.objeto.direccion, 
+                                cp = self.objeto.cp, 
+                                ciudad = self.objeto.ciudad, 
+                                provincia = self.objeto.provincia, 
+                                observaciones = "Creada automáticamente desde presupuesto.", 
+                                pais = self.objeto.pais, 
+                                generica = False)
+                        pclases.Auditoria.nuevo(self.objeto.obra, 
+                                                self.usuario, __file__)
+                    else:
+                        self.objeto.obra = self.objeto.cliente.get_obra_generica()
                 nuevopedido = pclases.PedidoVenta(cliente=self.objeto.cliente, 
                                         fecha = mx.DateTime.localtime(), 
                                         numpedido = numpedido,
@@ -188,18 +320,36 @@ class Presupuestos(Ventana, VentanaGenerica):
                                         bloqueado = True,
                                         cerrado = False, 
                                         comercial = self.objeto.comercial, 
-                                        obra = self.objeto.obra)
+                                        obra = self.objeto.obra, 
+                                        formaDePago = self.objeto.formaDePago)
                 pclases.Auditoria.nuevo(nuevopedido, self.usuario, __file__)
+                self.actualizar_ventana()
             if nuevopedido != None:
-                for ldp in self.objeto.lineasDePedido:
-                    if ldp.pedidoVenta == None:
-                        ldp.pedidoVenta = nuevopedido
-                for srv in self.objeto.servicios:
-                    if srv.pedidoVenta == None:
-                        srv.pedidoVenta = nuevopedido
+                for ldp in self.objeto.lineasDePresupuesto:
+                    productoCompra = ldp.productoCompra
+                    productoVenta = ldp.productoVenta
+                    if productoCompra or productoVenta:
+                        nldp = pclases.LineaDePedido(pedidoVenta = nuevopedido,
+                                productoCompra = productoCompra, 
+                                productoVenta = productoVenta, 
+                                notas = ldp.notas, 
+                                precio = ldp.precio, 
+                                cantidad = ldp.cantidad, 
+                                presupuesto = self.objeto)
+                        pclases.Auditoria.nuevo(nldp, self.usuario, __file__)
+                    else:   # Creo servicio entonces
+                        nsrv = pclases.Servicio(pedidoVenta = nuevopedido, 
+                                cantidad = ldp.cantidad,
+                                precio = ldp.precio, 
+                                concepto = ldp.descripcion, 
+                                notas = ldp.notas, 
+                                presupuesto = self.objeto)
+                        pclases.Auditoria.nuevo(nsrv, self.usuario, __file__)
                 self.actualizar_ventana()
                 from formularios import pedidos_de_venta
-                ventanapedido = pedidos_de_venta.PedidosDeVenta(objeto = nuevopedido, usuario = self.usuario)  # @UnusedVariable
+                ventanapedido = pedidos_de_venta.PedidosDeVenta(    # @UnusedVariable
+                        objeto = nuevopedido, 
+                        usuario = self.usuario)
 
     def seleccionar_cantidad(self, producto):
         """
@@ -246,7 +396,7 @@ class Presupuestos(Ventana, VentanaGenerica):
     
     def add_ldp(self, boton):
         """
-        Añade una línea de pedido al presupuesto.
+        Añade una línea de presupuesto a la oferta.
         """
         self.reset_cache_credito()
         #productos = utils.buscar_producto_general(self.wids['ventana'])
@@ -349,6 +499,17 @@ class Presupuestos(Ventana, VentanaGenerica):
             #exec "import %s as presupuesto" % modulo
             from formularios.reports import abrir_pdf
             abrir_pdf(presupuesto.go_from_presupuesto(self.objeto))  # @UndefinedVariable
+
+    def imprimir_carta_compromiso(self, boton):
+
+        # TODO
+        utils.dialogo_info(titulo = "NO IMPLEMENTADO", 
+                texto = "Característica en desarrollo.", 
+                padre = self.wids['ventana'])
+        return 
+        from formularios.reports import abrir_pdf
+        from informes import carta_compromiso
+        abrir_pdf(carta_compromiso.go_from_presupuesto(self.objeto))  # @UndefinedVariable
 
     def enviar_por_correo(self, boton):
         """
@@ -472,6 +633,27 @@ class Presupuestos(Ventana, VentanaGenerica):
                                      pclases.LineaDePresupuesto, 
                                      self.usuario, 
                                      1)
+        self.wids['tv_contenido'].set_tooltip_column(1)
+        self.wids['tv_contenido'].connect("query-tooltip", self.tooltip_query)
+
+    def tooltip_query(self, treeview, x, y, mode, tooltip):
+        y_offset = treeview.get_bin_window().get_position()[1]
+        path = treeview.get_path_at_pos(x, y - y_offset)
+        if path:
+            treepath, column = path[:2]  # @UnusedVariable
+            model = treeview.get_model()
+            itr = model.get_iter(treepath)
+            ldp = pclases.getObjetoPUID(model[itr][-1])
+            precioKilo = ldp.precioKilo
+            if precioKilo != None:
+                texto = "%s € / kg; Mínimo: %s" % (
+                        utils.float2str(precioKilo), 
+                        ldp.producto.precioMinimo)
+                tooltip.set_text(texto)
+                return True     # Muestra ya el tooltip
+        return False    # No muestra tooltip.
+
+
 
     def update_prod_lpd(self, wid, path, text, model, ncol, model_tv):
         puidldp = model_tv[path][-1]
@@ -589,21 +771,36 @@ class Presupuestos(Ventana, VentanaGenerica):
         if self.objeto == None:
             s = False
         ws = tuple(['b_pedido', "table1",  
-                    "tv_contenido", "b_add", "b_drop", 
+                    "tv_contenido", "b_add", "b_drop", "rb_pedido",  
                    ] + [self.dic_campos[k] for k in self.dic_campos.keys()])
         for w in ws:
             try:
                 self.wids[w].set_sensitive(s)
             except:
                 print w
+        # Botón de hacer pedidos. Solo para ofertas de pedido validadas y si 
+        # el usuario puede hacerlo.
         permiso_nuevos_pedidos = calcular_permiso_nuevos_pedidos(
                                     self.usuario, self.logger)
         self.wids['b_pedido'].set_sensitive(
             self.objeto != None 
             and not self.objeto.estudio
             # and not aceptado_completo 
+            and self.objeto.validado
             and permiso_nuevos_pedidos 
             and self.objeto.esta_vigente())
+        # Botones de imprimir y enviar por correo. Todas las ofertas de 
+        # estudio y las de pedido que cumplan las restricciones "duras".
+        puede_imprimir = True
+        if self.objeto and not self.objeto.estudio:
+            estado = self.objeto.get_estado_validacion()
+            if estado in (pclases.PLAZO_EXCESIVO, 
+                          pclases.SIN_FORMA_DE_PAGO, 
+                          pclases.PRECIO_INSUFICIENTE):
+                puede_imprimir = False
+        self.wids['b_imprimir'].set_sensitive(puede_imprimir)
+        self.wids['b_carta'].set_sensitive(puede_imprimir)
+        self.wids['b_enviar'].set_sensitive(puede_imprimir)
 
     def refinar_resultados_busqueda(self, resultados):
         """
@@ -669,14 +866,20 @@ class Presupuestos(Ventana, VentanaGenerica):
             for e in self.usuario.empleados:
                 for c in e.comerciales:
                     comerciales.append(c)
-        if not comerciales or (self.usuario and self.usuario.nivel <= 2):
+        if not comerciales or (self.usuario 
+                               and self.usuario.nivel <= NIVEL_VALIDACION):
             comerciales = pclases.Comercial.select() 
         if self.objeto.comercial and self.objeto.comercial not in comerciales:
             comerciales.append(self.objeto.comercial)
-        utils.rellenar_lista(self.wids['cb_comercial'], 
-            [(c.id, c.empleado and c.empleado.get_nombre_completo() 
+        opciones_comerciales = [
+            (c.id, c.empleado and c.empleado.get_nombre_completo() 
                 or "Comercial desconocido (%s)" % c.puid) 
-              for c in comerciales] + [(-1, "Sin comercial relacionado")]) 
+            for c in comerciales]
+        # CWT: Si no soy admin o equivalente, no puedo usar la opción de S/C
+        if not self.usuario or self.usuario.nivel <= NIVEL_VALIDACION: 
+            opciones_comerciales += [(-1, "Sin comercial relacionado")]
+        utils.rellenar_lista(self.wids['cb_comercial'], 
+                opciones_comerciales)
         if self.objeto.cliente:
             obras = [(o.id, o.get_str_obra()) 
                      for o in self.objeto.cliente.obras]
@@ -702,7 +905,18 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.wids['e_numero'].set_text(str(presupuesto.id))
         # Comprobar riesgo
         #self.comprobar_riesgo_cliente() # <-- Ya lo hago en el rellenar_tablas
+        self.refresh_validado()
         self.objeto.make_swap()
+
+    def refresh_validado(self):
+        ch = self.wids['ch_validado']
+        ch.set_active(self.objeto and self.objeto.usuario and 1 or 0)
+        if self.objeto and self.objeto.usuario:
+            ch.set_label("Validado por %s (%s)" % (
+                self.objeto.usuario.usuario, 
+                utils.str_fechahora(self.objeto.fechaValidacion)))
+        else:
+            ch.set_label("No validado")
 
     def comprobar_riesgo_cliente(self):
         """
@@ -745,6 +959,15 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.wids['b_pedido'].set_sensitive(
                 iconostockstado == gtk.STOCK_YES
                 and calcular_permiso_nuevos_pedidos(self.usuario, self.logger))
+        # TODO:
+        # El equivalente a la validación automática es validarlo yo mismo.
+        # Pero tengo que cuidarme de que no lo hayan validado ya antes. En ese 
+        # caso no cambio nada a no ser que cambie algún precio o algo.
+        # if iconostockstado == gtk.STOCK_YES: 
+        #         # Equivalente  a volver a llamar a la evaluación.
+        #     self.objeto.validado = self.usuario
+        # else:
+        #     self.objeto.validado = None
         self.actualizar_tooltip_de_cliente()
         vpro.ocultar()
         self.objeto.notificador.activar(self.aviso_actualizacion)        
@@ -895,6 +1118,16 @@ class Presupuestos(Ventana, VentanaGenerica):
             if adjudicadas:
                 criterio = pclases.AND(criterio, 
                                     pclases.Presupuesto.q.adjudicada == True)
+            permiso_nuevos_pedidos = calcular_permiso_nuevos_pedidos(
+                                        self.usuario, self.logger)
+            if not(permiso_nuevos_pedidos 
+                   or (self.usuario 
+                       and self.usuario.nivel <= NIVEL_VALIDACION)):
+                subcrit = []
+                for yo_as_comercial in self.usuario.get_comerciales():
+                    subcrit.append(
+                        pclases.Presupuesto.q.comercialID==yo_as_comercial.id)
+                criterio = pclases.AND(criterio, pclases.OR(*subcrit))
             resultados = pclases.Presupuesto.select(criterio)
             if resultados.count() > 1:
                     ## Refinar los resultados

@@ -1427,7 +1427,8 @@ CREATE TABLE presupuesto(
     observaciones TEXT DEFAULT '', 
     obra_id INT REFERENCES obra DEFAULT NULL, 
     usuario_id INT REFERENCES usuario DEFAULT NULL, -- Usuario que ha validado.
-    -- ALTER TABLE presupuesto ADD COLUMN estudio BOOLEAN DEFAULT NULL; ALTER TABLE presupuesto ADD COLUMN adjudicada BOOLEAN DEFAULT FALSE; ALTER TABLE presupuesto ADD COLUMN cif TEXT DEFAULT ''; ALTER TABLE presupuesto ADD COLUMN email TEXT DEFAULT ''; ALTER TABLE presupuesto ADD COLUMN forma_de_pago_id INT REFERENCES forma_de_pago DEFAULT NULL; ALTER TABLE presupuesto ADD COLUMN observaciones TEXT DEFAULT ''; ALTER TABLE presupuesto ADD COLUMN obra_id INT REFERENCES obra DEFAULT NULL; ALTER TABLE presupuesto RENAME COLUMN obra TO nombreobra; ALTER TABLE presupuesto ADD COLUMN usuario_id INT REFERENCES usuario DEFAULT NULL;
+    fecha_validacion TIMESTAMP DEFAULT NULL
+    -- ALTER TABLE presupuesto ADD COLUMN estudio BOOLEAN DEFAULT NULL; ALTER TABLE presupuesto ADD COLUMN adjudicada BOOLEAN DEFAULT FALSE; ALTER TABLE presupuesto ADD COLUMN cif TEXT DEFAULT ''; ALTER TABLE presupuesto ADD COLUMN email TEXT DEFAULT ''; ALTER TABLE presupuesto ADD COLUMN forma_de_pago_id INT REFERENCES forma_de_pago DEFAULT NULL; ALTER TABLE presupuesto ADD COLUMN observaciones TEXT DEFAULT ''; ALTER TABLE presupuesto ADD COLUMN obra_id INT REFERENCES obra DEFAULT NULL; ALTER TABLE presupuesto RENAME COLUMN obra TO nombreobra; ALTER TABLE presupuesto ADD COLUMN usuario_id INT REFERENCES usuario DEFAULT NULL; ALTER TABLE presupuesto ADD COLUMN fecha_validacion TIMESTAMP DEFAULT NULL;  
 );
 
 ----------------------------------

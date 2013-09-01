@@ -63,6 +63,7 @@ def run(modulo, clase, usuario, fconfig, obj_puid = None):
     la ventana en cuestión.
     """
     try:
+        assert sys.platform != "linux2"     # TODO: ¿Por qué ahora no me funca el popen en linux?
         import subprocess
         ruta = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
         if sys.platform[:3] == "win":
@@ -74,7 +75,7 @@ def run(modulo, clase, usuario, fconfig, obj_puid = None):
             comando = "export PYTHONPATH=$PYTHONPATH:" + ruta + "; " 
             interprete = ""
         comando += interprete 
-        args = os.path.join(ruta, "formularios", modulo + ".py")
+        args = [os.path.join(ruta, "formularios", modulo + ".py")]
         if not isinstance(usuario, str):
             usuario = usuario.usuario   # Debe ser instancia de pclases
         args += ["-u %s" % usuario, "-c %s" % fconfig] 
@@ -90,7 +91,7 @@ def run(modulo, clase, usuario, fconfig, obj_puid = None):
         # Q:\ginn\formularios>C:\Python27\python.exe launcher.py -u admin -p adadmin -w bancos.py
     except Exception, msg:     # fallback @UnusedVariable
         # TODO: Esto debería ir al logger o algo:
-        #print "launcher.py:", msg
+        # print "launcher.py:", msg
         exec "import %s" % modulo
         v = eval('%s.%s' % (modulo, clase))
         if obj_puid:
