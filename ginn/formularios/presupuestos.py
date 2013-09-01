@@ -120,6 +120,49 @@ class Presupuestos(Ventana, VentanaGenerica):
         #    self.activar_widgets(False) # Para evitar manos rápidas al abrir.
         gtk.main()
 
+    def enviar_correo_de_riesgo(self):
+        """
+        Si el cliente está en riesgo, aviso por correo para que se vaya 
+        preparando el personal de CRM.
+        """
+        # CWT
+        if self.usuario and self.objeto.cliente:
+            # En pclases ya hay una cutrecaché que hace que dos llamadas 
+            # consecutivas al cálculo de crédito solo consuman el tiempo 
+            # de CPU de una llamada.
+            importe_presupuesto = self.objeto.calcular_importe_total(
+                                    iva = True)
+            credito = self.objeto.cliente.\
+                        calcular_credito_disponible(
+                                base = importe_presupuesto)
+            if credito < 0:
+                # TODO: Y que no se haya enviado ya antes. Si no, no veas 
+                # la paliza de correos que van a llegar cada vez que guarde 
+                # un valor de la ventana.
+                servidor = self.usuario.smtpserver
+                smtpuser = self.usuario.smtpuser
+                smtppass = self.usuario.smtppassword
+                rte = self.usuario.email
+                from formularios.utils import enviar_correoe
+                # TODO: OJO: HARDCODED
+                dests = ["epalomo@geotexan.com"]
+                #dests = ["informatica@geotexan.com"]
+                # Correo de riesgo de cliente
+                texto = "Se ha creado la oferta %d "\
+                        "para el cliente %s que está en riesgo: crédito"\
+                        "disponible: %s. Importe del presupuesto: %s." % (
+                            self.objeto.id, 
+                            self.objeto.nombrecliente, 
+                            utils.float2str(credito), 
+                            utils.float2str(importe_presupuesto))
+                enviar_correoe(rte, 
+                               dests,
+                               "Alerta de oferta sin crédito", 
+                               texto, 
+                               servidor = servidor, 
+                               usuario = smtpuser, 
+                               password = smtppass)
+
     def enviar_correo_adjudicada(self, ch):
         if ch.get_active() != self.objeto.adjudicada:   # Es el usuario el 
                                                         # que ha hecho clic.
@@ -1303,10 +1346,14 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.objeto.notificador.activar(lambda: None)
         errores = []
         # Actualizo los datos del objeto
+        ha_cambiado_el_cliente = False
         for colname in self.dic_campos:
             col = self.clase.sqlmeta.columns[colname]
             try:
                 valor_ventana = self.leer_valor(col, self.dic_campos[colname])
+                if (colname == "clienteID" 
+                        and valor_ventana != self.objeto.cliente):
+                    ha_cambiado_el_cliente = True
                 if colname == "comercialID" and valor_ventana == -1:
                     valor_ventana = None
                 if colname == "clienteID" and valor_ventana == None:
@@ -1343,6 +1390,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.actualizar_ventana()
         self.wids['b_guardar'].set_sensitive(False)
         pclases.Auditoria.modificado(self.objeto, self.usuario, __file__)
+        if ha_cambiado_el_cliente:
+            self.enviar_correo_de_riesgo()
         if errores:
             utils.dialogo_info(titulo = "ERRORES AL GUARDAR", 
                     texto = "Se produjo un error al intentar guardar\n"
