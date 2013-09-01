@@ -162,7 +162,7 @@ class Ventana:
             label_statusbar.modify_font(font)
             label_statusbar.modify_fg(gtk.STATE_NORMAL, 
                 label_statusbar.get_colormap().alloc_color("darkgray"))
-            if self.usuario.nivel == 0:
+            if self.usuario and self.usuario.nivel == 0:
                 self.add_debug_admin_controls(barrastado)
             contenido_anterior = self.wids['ventana'].get_child()
             self.wids['ventana'].remove(contenido_anterior)
