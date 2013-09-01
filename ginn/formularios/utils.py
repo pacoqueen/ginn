@@ -2436,7 +2436,8 @@ def enviar_correoe(remitente,
     OJO: Si el servidor es gmail, como solo admite autenticación por SSL, se 
     machaca el valor del parámetro «ssl» a True.
     """
-    if servidor.endswith("gmail.com") or servidor.endswith("google.com"):
+    if (servidor.endswith("gmail.com") or servidor.endswith("google.com") 
+        or servidor.endswith("googlemail.com")):
         ssl = True
     #print "remitente", remitente
     #print "destinos", destinos
@@ -2490,7 +2491,10 @@ def enviar_correoe(remitente,
         #print part
     try:
         from socket import error as socket_error
-        smtp = smtplib.SMTP(servidor)
+        if not ssl:
+            smtp = smtplib.SMTP(servidor)
+        else:
+            smtp = smtplib.SMTP(servidor, 587)
     except socket_error, msg:
         dialogo_info(titulo = "ERROR CONECTANDO A SERVIDOR SMTP", 
                      texto = "Ocurrió el siguiente error al conectar al "

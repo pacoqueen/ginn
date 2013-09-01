@@ -108,7 +108,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                        "b_drop/clicked": self.drop_ldp, 
                        "ch_validado/toggled": self.validar, 
                        "tv_contenido/query-tooltip": self.tooltip_query, 
-                       'ch_adjudicada/clicked': self.enviar_correo_adjudicada,
+                       'ch_adjudicada/toggled': self.enviar_correo_adjudicada,
                       }  
         self.add_connections(connections)
         self.inicializar_ventana()
@@ -121,7 +121,109 @@ class Presupuestos(Ventana, VentanaGenerica):
         gtk.main()
 
     def enviar_correo_adjudicada(self, ch):
-        print ch.get_active()
+        if ch.get_active() != self.objeto.adjudicada:   # Es el usuario el 
+                                                        # que ha hecho clic.
+            if ch.get_active():     # Lo está intentando poner a True
+                if utils.dialogo(titulo = "¿ADJUDICAR OFERTA?", 
+                    texto = "Si considera la oferta como adjudicada se\n"
+                            "iniciará la parte del proceso de paso a \n"
+                            "pedido que permitan las condiciones de \n"
+                            "validación.\n\n"
+                            "¿Continuar?", 
+                    padre = self.wids['ventana']):
+                    self.objeto.adjudicada = True
+                    self.objeto.syncUpdate()
+                    self.objeto.make_swap()
+                    servidor = self.usuario.smtpserver
+                    smtpuser = self.usuario.smtpuser
+                    smtppass = self.usuario.smtppassword
+                    rte = self.usuario.email
+                    from formularios.utils import enviar_correoe
+                    # TODO: OJO: HARDCODED
+                    dests = ["epalomo@geotexan.com"]
+                    #dests = ["informatica@geotexan.com"]
+                    if not self.objeto.cliente:
+                        # Correo de alta del cliente
+                        texto = "Se ha adjudicado la oferta %d. "\
+                            "Se debe de dar de alta al cliente:\n"\
+                            "\tNombre: %s\n"\
+                            "\tCIF: %s\n"\
+                            "\tDireccion: %s\n"\
+                            "\tCódigo postal: %s\n"\
+                            "\tCiudad: %s\n"\
+                            "\tProvincia: %s\n"\
+                            "\tPaís: %s\n"\
+                            "\tTeléfono: %s\n"\
+                            "\tCorreo electrónico: %s\n" % (
+                                    self.objeto.id, 
+                                    self.objeto.nombrecliente, 
+                                    self.objeto.cif, 
+                                    self.objeto.direccion, 
+                                    self.objeto.cp, 
+                                    self.objeto.ciudad, 
+                                    self.objeto.provincia, 
+                                    self.objeto.pais, 
+                                    self.objeto.telefono, 
+                                    self.objeto.email)
+                        enviar_correoe(rte, 
+                                       dests,
+                                       "Alta de nuevo cliente", 
+                                       texto, 
+                                       servidor = servidor, 
+                                       usuario = smtpuser, 
+                                       password = smtppass)
+                    if not self.objeto.obra:
+                        # Correo de alta de la obra
+                        texto = "Se ha adjudicado la oferta %d. "\
+                            "Se debe de dar de alta la obra %s "\
+                            "en el cliente %s con los siguientes datos:\n"\
+                            "\tDireccion: %s\n"\
+                            "\tCódigo postal: %s\n"\
+                            "\tCiudad: %s\n"\
+                            "\tProvincia: %s\n"\
+                            "\tPaís: %s\n" % (
+                                    self.objeto.id, 
+                                    self.objeto.nombreobra, 
+                                    self.objeto.nombrecliente, 
+                                    self.objeto.direccion, 
+                                    self.objeto.cp, 
+                                    self.objeto.ciudad, 
+                                    self.objeto.provincia, 
+                                    self.objeto.pais, 
+                                    )
+                        enviar_correoe(rte, 
+                                       dests,
+                                       "Alta de nueva obra", 
+                                       texto, 
+                                       servidor = servidor, 
+                                       usuario = smtpuser, 
+                                       password = smtppass)
+                    # Correo de adjudicación de oferta.
+                    texto = "Se ha adjudicado la oferta %d del comercial %s"\
+                            " al cliente %s por importe de %s €." % (
+                                self.objeto.id, 
+                                self.objeto.comercial 
+                                and self.objeto.comercial.get_nombre_completo()
+                                 or "¡NADIE!", 
+                                self.objeto.nombrecliente, 
+                                utils.float2str(
+                                    self.objeto.calcular_importe_total()))
+                    enviar_correoe(rte, 
+                                   dests,
+                                   "Alta de nueva obra", 
+                                   texto, 
+                                   servidor = servidor, 
+                                   usuario = smtpuser, 
+                                   password = smtppass)
+                else:
+                    self.objeto.adjudicada = False
+                    self.objeto.syncUpdate()
+                    self.objeto.make_swap()
+                    ch.set_active(False)
+            else:
+                self.objeto.adjudicada = False
+                self.objeto.syncUpdate()
+                self.objeto.make_swap()
 
     def validar(self, ch):
         """

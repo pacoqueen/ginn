@@ -10428,6 +10428,15 @@ class Comercial(SQLObject, PRPCTOO):
         except AttributeError:
             return ""
 
+    def get_usuario(self):
+        """
+        Devuelve el usuario asociado a este comercial.
+        """
+        try:
+            return self.empleado.usuario
+        except AttributeError:
+            return None
+
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 class CamposEspecificos(SQLObject, PRPCTOO):
