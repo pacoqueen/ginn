@@ -82,7 +82,9 @@ def run(modulo, clase, usuario, fconfig, obj_puid = None):
         if obj_puid:
             args.append(" -o %s" % obj_puid)
         # print comando, args
-        subprocess.Popen([comando] + args, shell = True)
+        #subprocess.Popen([comando] + args, shell = True)
+        # Ahora no sé por qué esto de arriba no va. Esto de abajo parece que sí
+        subprocess.Popen(" ".join([comando] + args), shell = True)
         # OJO: Si no funciona y Windows dice que 
         # "La ruta de acceso no es válida", comprueba antes que nada que el 
         # fichero de log de formularios existe y es accesible para escritura 
