@@ -1725,6 +1725,7 @@ class Clientes(Ventana):
             self.objeto.notificador.set_func(self.aviso_actualizacion)
             self.actualizar_ventana(objeto_anterior = anterior, 
                                     deep_refresh = False)
+            check_presupuestos_sin_cliente(self.objeto, self.wids['ventana'])
             utils.dialogo_info(titulo = 'CLIENTE CREADO', 
                 texto = 'Inserte el resto de la información del cliente.', 
                 padre = self.wids['ventana'])
@@ -2176,6 +2177,26 @@ def copy_to_clipboard(texto):
             clipboard.store()
         except:    # pyGTK < 2.6
             pass
+
+def check_presupuestos_sin_cliente(cliente, ventana_padre = None):
+    """
+    Comprueba si el cliente que se acaba de dar de alta es porque se le 
+    ha creado un presupuesto. En ese caso hay que relacionarlos.
+    """
+    from formularios.ventana_progreso import VentanaProgreso
+    vpro = VentanaProgreso(padre = ventana_padre)
+    vpro.mostrar()
+    sincliente = pclases.Presupuesto.select(
+            pclases.Presupuesto.q.cliente == None)
+    tot = sincliente.count()
+    i = 0.0
+    for p in sincliente:
+        vpro.set_valor(i / tot, "Comprobando ofertas con cliente pendiente...")
+        if p.nombrecliente == cliente.nombre:
+            p.cliente = cliente
+            p.syncUpdate()
+        i += 1
+    vpro.ocultar()
 
 
 if __name__ == '__main__':

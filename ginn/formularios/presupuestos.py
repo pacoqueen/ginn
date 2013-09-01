@@ -715,6 +715,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         valores por defecto, deshabilitando los innecesarios,
         rellenando los combos, formateando el TreeView -si lo hay-...
         """
+        self.solicitudes_validacion = {}
         self.reset_cache_credito()
         gobject.timeout_add(5 * 60 * 1000, self.reset_cache_credito)
         # Inicialmente no se muestra NADA. Sólo se le deja al
@@ -1392,12 +1393,47 @@ class Presupuestos(Ventana, VentanaGenerica):
         pclases.Auditoria.modificado(self.objeto, self.usuario, __file__)
         if ha_cambiado_el_cliente:
             self.enviar_correo_de_riesgo()
+        if self.solicitar_validacion():
+            self.enviar_correo_solicitud_validacion()
         if errores:
             utils.dialogo_info(titulo = "ERRORES AL GUARDAR", 
                     texto = "Se produjo un error al intentar guardar\n"
                             "los valores para los siguientes campos:\n"
                             + "\n - ".join(errores), 
                     padre = self.wids['ventana'])
+
+    def solicitar_validacion(self):
+        """
+        Comprueba que no se haya solicitado ya la validación por correo. En 
+        otro caso envía el correo de solicitud.
+        """
+        if (self.objeto 
+                and not self.objeto.validado
+                and self.objeto.id not in self.solicitudes_validacion):
+            dests = self.select_correo_validador()
+            if not isinstance(dests, (list, tuple)):
+                dests = [dests]
+            self.solicitudes_validacion[self.objeto.id] = dests
+            servidor = self.usuario.smtpserver
+            smtpuser = self.usuario.smtpuser
+            smtppass = self.usuario.smtppassword
+            rte = self.usuario.email
+            from formularios.utils import enviar_correoe
+            # TODO: Habría que comprobar que la oferta está completa. Porque 
+            # la primera vez que guardan casi seguro que no se valida auto.
+            # dests = ["informatica@geotexan.com"]
+            # Correo de riesgo de cliente
+            texto = "Se ha creado la oferta %d "\
+                    "para el cliente %s que necesita validación manual." % (
+                            self.objeto.id, 
+                            self.objeto.nombrecliente)
+            enviar_correoe(rte, 
+                           dests,
+                           "Alerta de validación manual de oferta", 
+                           texto, 
+                           servidor = servidor, 
+                           usuario = smtpuser, 
+                           password = smtppass)
 
     def borrar(self, widget):
         """
@@ -1453,6 +1489,24 @@ class Presupuestos(Ventana, VentanaGenerica):
                     self.objeto = None
         self.actualizar_ventana()
         
+    def select_correo_validador(self):
+        """
+        Devuelve un correo de usuario con permisos de validación que 
+        no sea admin. Uno diferente en cada llamada.
+        """
+        round_robin = [u.email 
+                for u in pclases.Usuario.select(
+                    pclases.Usuario.q.nivel <= NIVEL_VALIDACION)
+                if u.usuario != "admin"]
+        if not hasattr(self, "ultimo_validador"):
+            self.ultimo_validador = validador = round_robin[0]
+        else:
+            posultimo = round_robin.index(self.ultimo_validador)
+            posvalidador = posultimo + 1
+            if posvalidador >= len(round_robin):
+                posvalidador = 0
+            self.ultimo_validador = validador = round_robin[posvalidador]
+        return validador
 
 
 def calcular_permiso_nuevos_pedidos(usuario, logger = None):
@@ -1469,6 +1523,7 @@ def calcular_permiso_nuevos_pedidos(usuario, logger = None):
             permisos_ventana_pedidos = usuario.get_permiso(ventana_pedidos)
             permiso_nuevos_pedidos = permisos_ventana_pedidos.nuevo
     return permiso_nuevos_pedidos
+    
 
 def match_producto(completion, key, itr, ncol):
     model = completion.get_model()
