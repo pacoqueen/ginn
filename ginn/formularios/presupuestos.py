@@ -904,6 +904,12 @@ class Presupuestos(Ventana, VentanaGenerica):
                           pclases.SIN_FORMA_DE_PAGO, 
                           pclases.PRECIO_INSUFICIENTE):
                 puede_imprimir = False
+        if (not self.objeto.lineasDePresupuesto 
+            or not self.objeto.cif
+            or not self.objeto.direccion
+            or not self.objeto.email
+            or not self.objeto.telefono):
+            puede_imprimir = False
         self.wids['b_imprimir'].set_sensitive(puede_imprimir)
         self.wids['b_carta'].set_sensitive(puede_imprimir)
         self.wids['b_enviar'].set_sensitive(puede_imprimir)
@@ -1311,6 +1317,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.objeto.notificador.activar(self.aviso_actualizacion)
         self.actualizar_ventana()
         self.wids['b_guardar'].set_sensitive(False)
+        pclases.Auditoria.modificado(self.objeto, self.usuario, __file__)
         if errores:
             utils.dialogo_info(titulo = "ERRORES AL GUARDAR", 
                     texto = "Se produjo un error al intentar guardar\n"
