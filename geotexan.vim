@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 28 agosto 2013 at 15:05:59.
+" Created by session.vim 1.5 on 01 septiembre 2013 at 20:43:08.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -43,7 +43,7 @@ badd +39 ginn/formularios/historico_existencias.py
 badd +46 ginn/formularios/consulta_incidencias.py
 badd +392 ginn/formularios/consulta_producido.py
 badd +1 ginn/__init__.py
-badd +1175 ginn/formularios/clientes.py
+badd +2198 ginn/formularios/clientes.py
 badd +991 ginn/formularios/productos_compra.py
 badd +310 ginn/formularios/productos_de_venta_balas.py
 badd +525 ginn/formularios/recibos.py
@@ -68,19 +68,19 @@ badd +479 ginn/framework/configuracion.py
 badd +4 bin/ginn.sh
 badd +10 ginn/main.py
 badd +280 ginn/formularios/ventana.py
-badd +822 ginn/formularios/pedidos_de_venta.py
+badd +1851 ginn/formularios/pedidos_de_venta.py
 badd +1452 db/tablas.sql
 badd +1958 ginn/formularios/albaranes_de_salida.py
 badd +1 ginn/formularios/presupuesto.py
 badd +9 ginn/formularios/presupuestos.py
-badd +382 ginn/informes/presupuesto2.py
+badd +382 ginn/informes/carta_compromiso.py
 badd +367 ginn/formularios/tarifas_de_precios.py
 badd +88 ginn/formularios/logviewer.py
 badd +724 ginn/formularios/facturas_compra.py
-badd +1126 ginn/formularios/utils.py
+badd +2443 ginn/formularios/utils.py
 badd +648 ginn/formularios/resultados_fibra.py
 badd +812 ginn/formularios/albaranes_de_entrada.py
-badd +1134 ginn/formularios/consulta_ventas.py
+badd +1329 ginn/formularios/consulta_ventas.py
 badd +37 ginn/formularios/__init__.py
 badd +907 ginn/formularios/pagares_pagos.py
 badd +331 ginn/formularios/ausencias.py
@@ -93,7 +93,7 @@ badd +1064 ginn/formularios/trazabilidad_articulos.py
 badd +363 ginn/formularios/consulta_pagos.py
 badd +13 ginn/formularios/consulta_vencimientos_pago.py
 badd +500 ginn/formularios/trazabilidad.py
-badd +9810 ginn/framework/pclases/__init__.py
+badd +1 ginn/framework/pclases/__init__.py
 badd +611 ginn/framework/pclases/superfacturaventa.py
 badd +4 ginn/framework/pclases/facturaventa.py
 badd +689 ginn/formularios/consulta_mensual_nominas.py
@@ -120,8 +120,12 @@ badd +533 ginn/formularios/horas_trabajadas.py
 badd +550 ginn/formularios/horas_trabajadas_dia.py
 badd +1 ginn/formularios/pedidos_de_compra.glade
 badd +523 ginn/formularios/postomatic.py
+badd +20 ginn/formularios/custom_widgets/cellrendererautocomplete.py
+badd +47 ginn/formularios/custom_widgets/__init__.py
+badd +1 ginn/informes/presupuesto2.py
+badd +61 ginn/informes/albaran_multipag.py
 args formularios/auditviewer.py
-set lines=44 columns=111
+set lines=68 columns=111
 edit ginn/framework/pclases/__init__.py
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -140,7 +144,16 @@ wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
-6wincmd k
+wincmd _ | wincmd |
+split
+wincmd _ | wincmd |
+split
+wincmd _ | wincmd |
+split
+9wincmd k
+wincmd w
+wincmd w
+wincmd w
 wincmd w
 wincmd w
 wincmd w
@@ -152,20 +165,26 @@ set nosplitright
 wincmd t
 set winheight=1 winwidth=1
 exe 'vert 1resize ' . ((&columns * 30 + 55) / 111)
-exe '2resize ' . ((&lines * 3 + 22) / 44)
+exe '2resize ' . ((&lines * 1 + 34) / 68)
 exe 'vert 2resize ' . ((&columns * 80 + 55) / 111)
-exe '3resize ' . ((&lines * 1 + 22) / 44)
+exe '3resize ' . ((&lines * 1 + 34) / 68)
 exe 'vert 3resize ' . ((&columns * 80 + 55) / 111)
-exe '4resize ' . ((&lines * 28 + 22) / 44)
+exe '4resize ' . ((&lines * 1 + 34) / 68)
 exe 'vert 4resize ' . ((&columns * 80 + 55) / 111)
-exe '5resize ' . ((&lines * 1 + 22) / 44)
+exe '5resize ' . ((&lines * 1 + 34) / 68)
 exe 'vert 5resize ' . ((&columns * 80 + 55) / 111)
-exe '6resize ' . ((&lines * 1 + 22) / 44)
+exe '6resize ' . ((&lines * 26 + 34) / 68)
 exe 'vert 6resize ' . ((&columns * 80 + 55) / 111)
-exe '7resize ' . ((&lines * 1 + 22) / 44)
+exe '7resize ' . ((&lines * 5 + 34) / 68)
 exe 'vert 7resize ' . ((&columns * 80 + 55) / 111)
-exe '8resize ' . ((&lines * 1 + 22) / 44)
+exe '8resize ' . ((&lines * 6 + 34) / 68)
 exe 'vert 8resize ' . ((&columns * 80 + 55) / 111)
+exe '9resize ' . ((&lines * 5 + 34) / 68)
+exe 'vert 9resize ' . ((&columns * 80 + 55) / 111)
+exe '10resize ' . ((&lines * 6 + 34) / 68)
+exe 'vert 10resize ' . ((&columns * 80 + 55) / 111)
+exe '11resize ' . ((&lines * 5 + 34) / 68)
+exe 'vert 11resize ' . ((&columns * 80 + 55) / 111)
 argglobal
 enew
 file __Tag_List__
@@ -188,293 +207,271 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 641
-silent! normal zo
+normal! zo
 722
-silent! normal zo
+normal! zo
 2052
-silent! normal zo
+normal! zo
 2160
-silent! normal zo
+normal! zo
 2160
-silent! normal zo
+normal! zo
 2160
-silent! normal zo
+normal! zo
 2160
-silent! normal zo
+normal! zo
 2430
-silent! normal zo
+normal! zo
 6451
-silent! normal zo
+normal! zo
 6731
-silent! normal zo
+normal! zo
 6757
-silent! normal zo
+normal! zo
 6829
-silent! normal zo
+normal! zo
 6942
-silent! normal zo
+normal! zo
 7223
-silent! normal zo
+normal! zo
 7544
-silent! normal zo
+normal! zo
 8511
-silent! normal zo
+normal! zo
 8524
-silent! normal zo
+normal! zo
 8525
-silent! normal zo
+normal! zo
 8526
-silent! normal zo
+normal! zo
 9716
-silent! normal zo
+normal! zo
 9756
-silent! normal zo
+normal! zo
 9763
-silent! normal zo
+normal! zo
 9796
-silent! normal zo
+normal! zo
 9809
-silent! normal zo
+normal! zo
 9812
-silent! normal zo
+normal! zo
 9825
-silent! normal zo
+normal! zo
 9828
-silent! normal zo
+normal! zo
 9838
-silent! normal zo
+normal! zo
 9840
-silent! normal zo
+normal! zo
 9872
-silent! normal zo
+normal! zo
 10066
-silent! normal zo
-10076
-silent! normal zo
-10082
-silent! normal zo
-10086
-silent! normal zo
-10113
-silent! normal zo
-10127
-silent! normal zo
-10142
-silent! normal zo
-10161
-silent! normal zo
-10181
-silent! normal zo
-10182
-silent! normal zo
-10183
-silent! normal zo
-10183
-silent! normal zo
-10183
-silent! normal zo
-10183
-silent! normal zo
-10183
-silent! normal zo
-10183
-silent! normal zo
-10183
-silent! normal zo
-10183
-silent! normal zo
-10183
-silent! normal zo
-10072
-silent! normal zo
+normal! zo
 10073
-silent! normal zo
-10078
-silent! normal zo
-10084
-silent! normal zo
-10086
-silent! normal zo
-10094
-silent! normal zo
-10105
-silent! normal zo
-10119
-silent! normal zo
-10138
-silent! normal zo
-10150
-silent! normal zo
-10156
-silent! normal zo
-10160
-silent! normal zo
-10166
-silent! normal zo
-10190
-silent! normal zo
-10198
-silent! normal zo
+normal! zo
+10082
+normal! zo
+10087
+normal! zo
+10095
+normal! zo
+10103
+normal! zo
+10114
+normal! zo
+10128
+normal! zo
+10147
+normal! zo
+10159
+normal! zo
+10165
+normal! zo
+10169
+normal! zo
+10175
+normal! zo
+10199
+normal! zo
 10207
-silent! normal zo
-10222
-silent! normal zo
+normal! zo
+10216
+normal! zo
 10231
-silent! normal zo
-10231
-silent! normal zo
-10231
-silent! normal zo
-10243
-silent! normal zo
-10263
-silent! normal zo
-10264
-silent! normal zo
-10265
-silent! normal zo
-10265
-silent! normal zo
-10265
-silent! normal zo
-10265
-silent! normal zo
-10265
-silent! normal zo
-10265
-silent! normal zo
-10265
-silent! normal zo
-10265
-silent! normal zo
-10265
-silent! normal zo
-10282
-silent! normal zo
-10285
-silent! normal zo
-10288
-silent! normal zo
-10288
-silent! normal zo
-10288
-silent! normal zo
+normal! zo
+10240
+normal! zo
+10240
+normal! zo
+10240
+normal! zo
+10252
+normal! zo
+10272
+normal! zo
+10273
+normal! zo
+10274
+normal! zo
+10274
+normal! zo
+10274
+normal! zo
+10274
+normal! zo
+10274
+normal! zo
+10274
+normal! zo
+10274
+normal! zo
+10274
+normal! zo
+10274
+normal! zo
 10291
-silent! normal zo
-10291
-silent! normal zo
-10291
-silent! normal zo
-10291
-silent! normal zo
-10301
-silent! normal zo
-10307
-silent! normal zo
-10311
-silent! normal zo
-10314
-silent! normal zo
+normal! zo
+10294
+normal! zo
+10297
+normal! zo
+10297
+normal! zo
+10297
+normal! zo
+10300
+normal! zo
+10300
+normal! zo
+10300
+normal! zo
+10300
+normal! zo
+10310
+normal! zo
+10316
+normal! zo
 10320
-silent! normal zo
-10322
-silent! normal zo
-10325
-silent! normal zo
-10328
-silent! normal zo
-10333
-silent! normal zo
-10340
-silent! normal zo
-10344
-silent! normal zo
-10345
-silent! normal zo
-10345
-silent! normal zo
-10347
-silent! normal zo
-10348
-silent! normal zo
-10348
-silent! normal zo
-10350
-silent! normal zo
-10351
-silent! normal zo
-10351
-silent! normal zo
+normal! zo
+10326
+normal! zo
+10329
+normal! zo
+10331
+normal! zo
+10334
+normal! zo
+10337
+normal! zo
+10342
+normal! zo
+10349
+normal! zo
 10353
-silent! normal zo
+normal! zo
 10354
-silent! normal zo
+normal! zo
 10354
-silent! normal zo
+normal! zo
 10356
-silent! normal zo
+normal! zo
 10357
-silent! normal zo
+normal! zo
 10357
-silent! normal zo
+normal! zo
 10359
-silent! normal zo
+normal! zo
 10360
-silent! normal zo
+normal! zo
 10360
-silent! normal zo
+normal! zo
 10362
-silent! normal zo
+normal! zo
 10363
-silent! normal zo
+normal! zo
 10363
-silent! normal zo
+normal! zo
 10365
-silent! normal zo
+normal! zo
+10366
+normal! zo
+10366
+normal! zo
 10368
-silent! normal zo
-10370
-silent! normal zo
-10370
-silent! normal zo
-10370
-silent! normal zo
+normal! zo
+10369
+normal! zo
+10369
+normal! zo
+10371
+normal! zo
+10372
+normal! zo
+10372
+normal! zo
+10374
+normal! zo
 10377
-silent! normal zo
-10378
-silent! normal zo
-10387
-silent! normal zo
-10388
-silent! normal zo
-10397
-silent! normal zo
-13974
-silent! normal zo
-13993
-silent! normal zo
-14381
-silent! normal zo
-15377
-silent! normal zo
-15429
-silent! normal zo
-15489
-silent! normal zo
-15889
-silent! normal zo
-17729
-silent! normal zo
-18305
-silent! normal zo
-19545
-silent! normal zo
-let s:l = 10231 - ((2 * winheight(0) + 1) / 3)
+normal! zo
+10379
+normal! zo
+10379
+normal! zo
+10379
+normal! zo
+10396
+normal! zo
+10403
+normal! zo
+10404
+normal! zo
+10404
+normal! zo
+10404
+normal! zo
+10407
+normal! zo
+10416
+normal! zo
+10426
+normal! zo
+10431
+normal! zo
+10434
+normal! zo
+14012
+normal! zo
+14031
+normal! zo
+14419
+normal! zo
+15415
+normal! zo
+15467
+normal! zo
+15527
+normal! zo
+15701
+normal! zo
+15927
+normal! zo
+16912
+normal! zo
+17767
+normal! zo
+18083
+normal! zo
+18343
+normal! zo
+19583
+normal! zo
+let s:l = 10330 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-10231
-normal! 023l
+10330
+normal! 046|
 wincmd w
 argglobal
 edit db/tablas.sql
@@ -486,227 +483,125 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-194
-silent! normal zo
-286
-silent! normal zo
-292
-silent! normal zo
-292
-silent! normal zo
-292
-silent! normal zo
-292
-silent! normal zo
-292
-silent! normal zo
-292
-silent! normal zo
-1337
-silent! normal zo
 1391
-silent! normal zo
-1982
-silent! normal zo
-3528
-silent! normal zo
-3528
-silent! normal zo
-3517
-silent! normal zo
-3500
-silent! normal zo
-3528
-silent! normal zo
-3528
-silent! normal zo
-3528
-silent! normal zo
-3528
-silent! normal zo
-3534
-silent! normal zo
-3539
-silent! normal zo
-3545
-silent! normal zo
-3549
-silent! normal zo
-3565
-silent! normal zo
-3610
-silent! normal zo
-3610
-silent! normal zo
-3610
-silent! normal zo
-3610
-silent! normal zo
-3610
-silent! normal zo
-3610
-silent! normal zo
-3610
-silent! normal zo
-3650
-silent! normal zo
-3650
-silent! normal zo
-3650
-silent! normal zo
-3650
-silent! normal zo
-3650
-silent! normal zo
-3650
-silent! normal zo
-3650
-silent! normal zo
-3650
-silent! normal zo
-3650
-silent! normal zo
-3650
-silent! normal zo
-3656
-silent! normal zo
-3660
-silent! normal zo
-3660
-silent! normal zo
-3660
-silent! normal zo
-3660
-silent! normal zo
-3660
-silent! normal zo
-3662
-silent! normal zo
-3662
-silent! normal zo
-3662
-silent! normal zo
-3661
-silent! normal zo
-3672
-silent! normal zo
-3672
-silent! normal zo
-3672
-silent! normal zo
-3672
-silent! normal zo
-3672
-silent! normal zo
-3672
-silent! normal zo
-3672
-silent! normal zo
-3672
-silent! normal zo
-3672
-silent! normal zo
-3685
-silent! normal zo
-3690
-silent! normal zo
-3691
-silent! normal zo
-3691
-silent! normal zo
-3691
-silent! normal zo
-3691
-silent! normal zo
-3693
-silent! normal zo
-3693
-silent! normal zo
-3693
-silent! normal zo
-3699
-silent! normal zo
-3699
-silent! normal zo
-3699
-silent! normal zo
-3699
-silent! normal zo
-3699
-silent! normal zo
-3699
-silent! normal zo
-3699
-silent! normal zo
-3699
-silent! normal zo
-3699
-silent! normal zo
-3717
-silent! normal zo
-3717
-silent! normal zo
-3717
-silent! normal zo
-3717
-silent! normal zo
-3717
-silent! normal zo
-3717
-silent! normal zo
-3717
-silent! normal zo
-3717
-silent! normal zo
-3723
-silent! normal zo
-3726
-silent! normal zo
-3729
-silent! normal zo
-3728
-silent! normal zo
-3737
-silent! normal zo
-3737
-silent! normal zo
-3737
-silent! normal zo
-3737
-silent! normal zo
-3737
-silent! normal zo
-3737
-silent! normal zo
-3737
-silent! normal zo
-3737
-silent! normal zo
-3737
-silent! normal zo
-3737
-silent! normal zo
-3737
-silent! normal zo
-3737
-silent! normal zo
-3753
-silent! normal zo
-3757
-silent! normal zo
-3760
-silent! normal zo
-3845
-silent! normal zo
-3867
-silent! normal zo
-3867
-silent! normal zo
-let s:l = 1432 - ((0 * winheight(0) + 0) / 1)
+normal! zo
+1619
+normal! zo
+1675
+normal! zo
+1726
+normal! zo
+1753
+normal! zo
+1789
+normal! zo
+1820
+normal! zo
+1983
+normal! zo
+let s:l = 1415 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1432
+1415
+normal! 065|
+wincmd w
+argglobal
+edit ginn/informes/presupuesto2.py
+setlocal fdm=indent
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=99
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+294
+normal! zo
+347
+normal! zo
+350
+normal! zo
+351
+normal! zo
+351
+normal! zo
+357
+normal! zo
+357
+normal! zo
+357
+normal! zo
+358
+normal! zo
+358
+normal! zo
+358
+normal! zo
+358
+normal! zo
+364
+normal! zo
+364
+normal! zo
+364
+normal! zo
+364
+normal! zo
+364
+normal! zo
+let s:l = 384 - ((0 * winheight(0) + 0) / 1)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+384
+normal! 030|
+wincmd w
+argglobal
+edit ginn/informes/carta_compromiso.py
+setlocal fdm=indent
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=99
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+60
+normal! zo
+150
+normal! zo
+170
+normal! zo
+185
+normal! zo
+190
+normal! zo
+279
+normal! zo
+282
+normal! zo
+282
+normal! zo
+293
+normal! zo
+293
+normal! zo
+293
+normal! zo
+293
+normal! zo
+293
+normal! zo
+311
+normal! zo
+314
+normal! zo
+let s:l = 66 - ((0 * winheight(0) + 0) / 1)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+66
 normal! 0
 wincmd w
 argglobal
@@ -719,712 +614,816 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-55
-silent! normal zo
-56
-silent! normal zo
-64
-silent! normal zo
-64
-silent! normal zo
-64
-silent! normal zo
-84
-silent! normal zo
-84
-silent! normal zo
-84
-silent! normal zo
-91
-silent! normal zo
-92
-silent! normal zo
+59
+normal! zo
+60
+normal! zo
+68
+normal! zo
+68
+normal! zo
+68
+normal! zo
+88
+normal! zo
+88
+normal! zo
+88
+normal! zo
 95
-silent! normal zo
+normal! zo
 96
-silent! normal zo
-116
-silent! normal zo
-121
-silent! normal zo
-121
-silent! normal zo
-122
-silent! normal zo
-127
-silent! normal zo
-154
-silent! normal zo
-158
-silent! normal zo
-163
-silent! normal zo
-168
-silent! normal zo
+normal! zo
+99
+normal! zo
+100
+normal! zo
+104
+normal! zo
+104
+normal! zo
+104
+normal! zo
+104
+normal! zo
+124
+normal! zo
+133
+normal! zo
+134
+normal! zo
+134
+normal! zo
+134
+normal! zo
+134
+normal! zo
+134
+normal! zo
+136
+normal! zo
+136
+normal! zo
+136
+normal! zo
+137
+normal! zo
+148
+normal! zo
+152
+normal! zo
+152
+normal! zo
+159
+normal! zo
+159
+normal! zo
+167
+normal! zo
+169
+normal! zo
+170
+normal! zo
 171
-silent! normal zo
+normal! zo
 172
-silent! normal zo
-174
-silent! normal zo
-175
-silent! normal zo
-175
-silent! normal zo
-175
-silent! normal zo
-181
-silent! normal zo
-182
-silent! normal zo
-182
-silent! normal zo
-182
-silent! normal zo
-182
-silent! normal zo
-182
-silent! normal zo
-193
-silent! normal zo
-194
-silent! normal zo
-197
-silent! normal zo
-204
-silent! normal zo
-219
-silent! normal zo
-224
-silent! normal zo
+normal! zo
+190
+normal! zo
+191
+normal! zo
+201
+normal! zo
+212
+normal! zo
+212
+normal! zo
+220
+normal! zo
+221
+normal! zo
+228
+normal! zo
+238
+normal! zo
+238
+normal! zo
+245
+normal! zo
+245
+normal! zo
+245
+normal! zo
+245
+normal! zo
+246
+normal! zo
+246
+normal! zo
 247
-silent! normal zo
-253
-silent! normal zo
-264
-silent! normal zo
-265
-silent! normal zo
-265
-silent! normal zo
-265
-silent! normal zo
-265
-silent! normal zo
-265
-silent! normal zo
-265
-silent! normal zo
-271
-silent! normal zo
+normal! zo
+255
+normal! zo
+255
+normal! zo
 272
-silent! normal zo
-272
-silent! normal zo
-272
-silent! normal zo
-272
-silent! normal zo
-272
-silent! normal zo
-272
-silent! normal zo
-281
-silent! normal zo
-288
-silent! normal zo
-288
-silent! normal zo
+normal! zo
+287
+normal! zo
 289
-silent! normal zo
-293
-silent! normal zo
-294
-silent! normal zo
-299
-silent! normal zo
-301
-silent! normal zo
-306
-silent! normal zo
-307
-silent! normal zo
-308
-silent! normal zo
-308
-silent! normal zo
+normal! zo
+289
+normal! zo
+289
+normal! zo
+289
+normal! zo
+289
+normal! zo
+295
+normal! zo
+304
+normal! zo
 311
-silent! normal zo
+normal! zo
+311
+normal! zo
 312
-silent! normal zo
-312
-silent! normal zo
-312
-silent! normal zo
-312
-silent! normal zo
-312
-silent! normal zo
-312
-silent! normal zo
-312
-silent! normal zo
-312
-silent! normal zo
-312
-silent! normal zo
-316
-silent! normal zo
+normal! zo
+315
+normal! zo
+319
+normal! zo
 320
-silent! normal zo
-331
-silent! normal zo
-344
-silent! normal zo
-350
-silent! normal zo
-354
-silent! normal zo
+normal! zo
+322
+normal! zo
+327
+normal! zo
+329
+normal! zo
+339
+normal! zo
+340
+normal! zo
+340
+normal! zo
+340
+normal! zo
+340
+normal! zo
+340
+normal! zo
+340
+normal! zo
+341
+normal! zo
+341
+normal! zo
+341
+normal! zo
+341
+normal! zo
+341
+normal! zo
+341
+normal! zo
+355
+normal! zo
+360
+normal! zo
+360
+normal! zo
 361
-silent! normal zo
-363
-silent! normal zo
-365
-silent! normal zo
+normal! zo
 366
-silent! normal zo
-366
-silent! normal zo
-366
-silent! normal zo
-366
-silent! normal zo
-366
-silent! normal zo
-366
-silent! normal zo
-366
-silent! normal zo
-393
-silent! normal zo
-409
-silent! normal zo
-409
-silent! normal zo
+normal! zo
+397
+normal! zo
+402
+normal! zo
+403
+normal! zo
+403
+normal! zo
+404
+normal! zo
+404
+normal! zo
+405
+normal! zo
+406
+normal! zo
+411
+normal! zo
+415
+normal! zo
+418
+normal! zo
 419
-silent! normal zo
+normal! zo
+419
+normal! zo
+420
+normal! zo
+424
+normal! zo
+425
+normal! zo
 426
-silent! normal zo
-426
-silent! normal zo
-426
-silent! normal zo
-426
-silent! normal zo
-426
-silent! normal zo
-426
-silent! normal zo
-428
-silent! normal zo
-428
-silent! normal zo
-428
-silent! normal zo
-428
-silent! normal zo
-428
-silent! normal zo
-428
-silent! normal zo
-431
-silent! normal zo
-437
-silent! normal zo
-439
-silent! normal zo
-440
-silent! normal zo
-440
-silent! normal zo
-440
-silent! normal zo
-443
-silent! normal zo
-446
-silent! normal zo
+normal! zo
+433
+normal! zo
+434
+normal! zo
+435
+normal! zo
+447
+normal! zo
+447
+normal! zo
+447
+normal! zo
+447
+normal! zo
+447
+normal! zo
 449
-silent! normal zo
-449
-silent! normal zo
-449
-silent! normal zo
-462
-silent! normal zo
-462
-silent! normal zo
-462
-silent! normal zo
-468
-silent! normal zo
-476
-silent! normal zo
+normal! zo
+450
+normal! zo
+451
+normal! zo
+460
+normal! zo
+460
+normal! zo
+460
+normal! zo
+460
+normal! zo
+460
+normal! zo
+464
+normal! zo
+464
+normal! zo
+464
+normal! zo
+464
+normal! zo
+464
+normal! zo
 477
-silent! normal zo
-477
-silent! normal zo
-477
-silent! normal zo
-486
-silent! normal zo
-503
-silent! normal zo
-503
-silent! normal zo
-511
-silent! normal zo
-511
-silent! normal zo
-511
-silent! normal zo
-511
-silent! normal zo
-511
-silent! normal zo
-511
-silent! normal zo
-520
-silent! normal zo
-529
-silent! normal zo
-530
-silent! normal zo
-535
-silent! normal zo
-536
-silent! normal zo
+normal! zo
+478
+normal! zo
+481
+normal! zo
+482
+normal! zo
+490
+normal! zo
+491
+normal! zo
+500
+normal! zo
+504
+normal! zo
+519
+normal! zo
+524
+normal! zo
 547
-silent! normal zo
-547
-silent! normal zo
-547
-silent! normal zo
-542
-silent! normal zo
-547
-silent! normal zo
-547
-silent! normal zo
-547
-silent! normal zo
-547
-silent! normal zo
-547
-silent! normal zo
-549
-silent! normal zo
-549
-silent! normal zo
-563
-silent! normal zo
-571
-silent! normal zo
-574
-silent! normal zo
-580
-silent! normal zo
-581
-silent! normal zo
-588
-silent! normal zo
-592
-silent! normal zo
-593
-silent! normal zo
-599
-silent! normal zo
-602
-silent! normal zo
+normal! zo
+578
+normal! zo
+578
+normal! zo
+578
+normal! zo
+578
+normal! zo
+578
+normal! zo
+578
+normal! zo
+578
+normal! zo
+587
+normal! zo
+596
+normal! zo
 603
-silent! normal zo
-605
-silent! normal zo
-606
-silent! normal zo
+normal! zo
+603
+normal! zo
+604
+normal! zo
 608
-silent! normal zo
+normal! zo
 609
-silent! normal zo
-609
-silent! normal zo
-609
-silent! normal zo
-609
-silent! normal zo
-619
-silent! normal zo
-624
-silent! normal zo
-624
-silent! normal zo
-624
-silent! normal zo
-624
-silent! normal zo
-624
-silent! normal zo
-628
-silent! normal zo
-629
-silent! normal zo
-631
-silent! normal zo
-631
-silent! normal zo
-631
-silent! normal zo
-631
-silent! normal zo
-634
-silent! normal zo
-636
-silent! normal zo
-638
-silent! normal zo
-638
-silent! normal zo
-640
-silent! normal zo
+normal! zo
+614
+normal! zo
+616
+normal! zo
+621
+normal! zo
+622
+normal! zo
+623
+normal! zo
+623
+normal! zo
+626
+normal! zo
+627
+normal! zo
+627
+normal! zo
+627
+normal! zo
+627
+normal! zo
+627
+normal! zo
+627
+normal! zo
+627
+normal! zo
+627
+normal! zo
+627
+normal! zo
 641
-silent! normal zo
-641
-silent! normal zo
-654
-silent! normal zo
-654
-silent! normal zo
-654
-silent! normal zo
-654
-silent! normal zo
-654
-silent! normal zo
-654
-silent! normal zo
-654
-silent! normal zo
-654
-silent! normal zo
-657
-silent! normal zo
+normal! zo
+645
+normal! zo
+651
+normal! zo
+651
+normal! zo
+651
+normal! zo
+651
+normal! zo
+651
+normal! zo
+651
+normal! zo
+651
+normal! zo
+651
+normal! zo
+651
+normal! zo
+655
+normal! zo
+656
+normal! zo
 664
-silent! normal zo
-666
-silent! normal zo
-669
-silent! normal zo
-671
-silent! normal zo
-688
-silent! normal zo
+normal! zo
+670
+normal! zo
+674
+normal! zo
+681
+normal! zo
+683
+normal! zo
+685
+normal! zo
+686
+normal! zo
+686
+normal! zo
+686
+normal! zo
+686
+normal! zo
+686
+normal! zo
+686
+normal! zo
+686
+normal! zo
 691
-silent! normal zo
-706
-silent! normal zo
-712
-silent! normal zo
-715
-silent! normal zo
-715
-silent! normal zo
-715
-silent! normal zo
-726
-silent! normal zo
-739
-silent! normal zo
-741
-silent! normal zo
-762
-silent! normal zo
-762
-silent! normal zo
-762
-silent! normal zo
-771
-silent! normal zo
-782
-silent! normal zo
-782
-silent! normal zo
-782
-silent! normal zo
-782
-silent! normal zo
-782
-silent! normal zo
-782
-silent! normal zo
-782
-silent! normal zo
-785
-silent! normal zo
-785
-silent! normal zo
-785
-silent! normal zo
-785
-silent! normal zo
-785
-silent! normal zo
-785
-silent! normal zo
-786
-silent! normal zo
+normal! zo
+713
+normal! zo
+730
+normal! zo
+730
+normal! zo
+740
+normal! zo
+746
+normal! zo
+746
+normal! zo
+746
+normal! zo
+746
+normal! zo
+746
+normal! zo
+746
+normal! zo
+746
+normal! zo
+746
+normal! zo
+746
+normal! zo
+746
+normal! zo
+746
+normal! zo
+774
+normal! zo
+774
+normal! zo
+774
+normal! zo
+774
+normal! zo
+774
+normal! zo
+783
+normal! zo
+783
+normal! zo
+783
+normal! zo
+783
+normal! zo
+783
+normal! zo
+783
+normal! zo
+783
+normal! zo
+783
+normal! zo
+783
+normal! zo
+783
+normal! zo
+783
+normal! zo
+783
+normal! zo
 790
-silent! normal zo
-798
-silent! normal zo
-803
-silent! normal zo
-804
-silent! normal zo
-804
-silent! normal zo
-804
-silent! normal zo
-804
-silent! normal zo
-806
-silent! normal zo
-807
-silent! normal zo
-807
-silent! normal zo
-807
-silent! normal zo
-807
-silent! normal zo
+normal! zo
+793
+normal! zo
+799
+normal! zo
+800
+normal! zo
 809
-silent! normal zo
-810
-silent! normal zo
-810
-silent! normal zo
-810
-silent! normal zo
-810
-silent! normal zo
-814
-silent! normal zo
-814
-silent! normal zo
-824
-silent! normal zo
-824
-silent! normal zo
-825
-silent! normal zo
-825
-silent! normal zo
-825
-silent! normal zo
-835
-silent! normal zo
-836
-silent! normal zo
-836
-silent! normal zo
-836
-silent! normal zo
-847
-silent! normal zo
+normal! zo
+817
+normal! zo
+828
+normal! zo
+832
+normal! zo
+845
+normal! zo
 856
-silent! normal zo
-858
-silent! normal zo
+normal! zo
+866
+normal! zo
+877
+normal! zo
+881
+normal! zo
+884
+normal! zo
+886
+normal! zo
+886
+normal! zo
+887
+normal! zo
+887
+normal! zo
 889
-silent! normal zo
-890
-silent! normal zo
-890
-silent! normal zo
+normal! zo
 891
-silent! normal zo
-896
-silent! normal zo
-905
-silent! normal zo
-909
-silent! normal zo
-911
-silent! normal zo
-911
-silent! normal zo
-911
-silent! normal zo
-921
-silent! normal zo
+normal! zo
+891
+normal! zo
+891
+normal! zo
+893
+normal! zo
+893
+normal! zo
+893
+normal! zo
+895
+normal! zo
+895
+normal! zo
+895
+normal! zo
+907
+normal! zo
 924
-silent! normal zo
-927
-silent! normal zo
-939
-silent! normal zo
-934
-silent! normal zo
-950
-silent! normal zo
-962
-silent! normal zo
-968
-silent! normal zo
-971
-silent! normal zo
-971
-silent! normal zo
-971
-silent! normal zo
-973
-silent! normal zo
-973
-silent! normal zo
-973
-silent! normal zo
-973
-silent! normal zo
+normal! zo
+924
+normal! zo
+949
+normal! zo
+951
+normal! zo
+951
+normal! zo
+955
+normal! zo
+966
+normal! zo
 975
-silent! normal zo
-982
-silent! normal zo
-984
-silent! normal zo
-1006
-silent! normal zo
-1006
-silent! normal zo
-1006
-silent! normal zo
-1014
-silent! normal zo
-1022
-silent! normal zo
-1022
-silent! normal zo
-1022
-silent! normal zo
-1022
-silent! normal zo
-1022
-silent! normal zo
-1022
-silent! normal zo
-1023
-silent! normal zo
-1026
-silent! normal zo
-1031
-silent! normal zo
-1038
-silent! normal zo
-1038
-silent! normal zo
-1048
-silent! normal zo
-1048
-silent! normal zo
-1049
-silent! normal zo
-1049
-silent! normal zo
-1049
-silent! normal zo
-1059
-silent! normal zo
-1060
-silent! normal zo
-1060
-silent! normal zo
-1060
-silent! normal zo
-1070
-silent! normal zo
-1078
-silent! normal zo
-1080
-silent! normal zo
-1085
-silent! normal zo
-1086
-silent! normal zo
-1088
-silent! normal zo
-1089
-silent! normal zo
-1089
-silent! normal zo
-1090
-silent! normal zo
-1096
-silent! normal zo
+normal! zo
+976
+normal! zo
+981
+normal! zo
+988
+normal! zo
+993
+normal! zo
+993
+normal! zo
+993
+normal! zo
+993
+normal! zo
+993
+normal! zo
+995
+normal! zo
+995
+normal! zo
+1009
+normal! zo
+1017
+normal! zo
+1030
+normal! zo
+1030
+normal! zo
+1030
+normal! zo
+1030
+normal! zo
+1035
+normal! zo
+1042
+normal! zo
+1051
+normal! zo
+1057
+normal! zo
+1072
+normal! zo
+1075
+normal! zo
+1082
+normal! zo
+1094
+normal! zo
 1097
-silent! normal zo
+normal! zo
 1097
-silent! normal zo
+normal! zo
 1097
-silent! normal zo
-1097
-silent! normal zo
-1097
-silent! normal zo
-1097
-silent! normal zo
+normal! zo
 1099
-silent! normal zo
+normal! zo
 1100
-silent! normal zo
-1100
-silent! normal zo
-1100
-silent! normal zo
-1100
-silent! normal zo
+normal! zo
 1101
-silent! normal zo
+normal! zo
+1103
+normal! zo
+1103
+normal! zo
+1103
+normal! zo
+1103
+normal! zo
+1106
+normal! zo
+1106
+normal! zo
+1107
+normal! zo
+1109
+normal! zo
+1111
+normal! zo
+1111
+normal! zo
+1113
+normal! zo
 1114
-silent! normal zo
-1123
-silent! normal zo
-1127
-silent! normal zo
-1129
-silent! normal zo
-1129
-silent! normal zo
-1129
-silent! normal zo
-1137
-silent! normal zo
-1142
-silent! normal zo
-1142
-silent! normal zo
-1142
-silent! normal zo
-1142
-silent! normal zo
-1142
-silent! normal zo
-1142
-silent! normal zo
-1142
-silent! normal zo
-let s:l = 543 - ((11 * winheight(0) + 14) / 28)
+normal! zo
+1114
+normal! zo
+1148
+normal! zo
+1150
+normal! zo
+1153
+normal! zo
+1155
+normal! zo
+1172
+normal! zo
+1175
+normal! zo
+1190
+normal! zo
+1196
+normal! zo
+1199
+normal! zo
+1199
+normal! zo
+1208
+normal! zo
+1221
+normal! zo
+1245
+normal! zo
+1245
+normal! zo
+1245
+normal! zo
+1254
+normal! zo
+1265
+normal! zo
+1265
+normal! zo
+1265
+normal! zo
+1265
+normal! zo
+1265
+normal! zo
+1265
+normal! zo
+1265
+normal! zo
+1268
+normal! zo
+1268
+normal! zo
+1268
+normal! zo
+1268
+normal! zo
+1268
+normal! zo
+1268
+normal! zo
+1269
+normal! zo
+1273
+normal! zo
+1281
+normal! zo
+1289
+normal! zo
+1292
+normal! zo
+1293
+normal! zo
+1293
+normal! zo
+1293
+normal! zo
+1293
+normal! zo
+1295
+normal! zo
+1295
+normal! zo
+1295
+normal! zo
+1295
+normal! zo
+1295
+normal! zo
+1295
+normal! zo
+1297
+normal! zo
+1301
+normal! zo
+1307
+normal! zo
+1307
+normal! zo
+1328
+normal! zo
+1340
+normal! zo
+1352
+normal! zo
+1354
+normal! zo
+1356
+normal! zo
+1369
+normal! zo
+1372
+normal! zo
+1406
+normal! zo
+1411
+normal! zo
+1427
+normal! zo
+1427
+normal! zo
+1428
+normal! zo
+1431
+normal! zo
+1431
+normal! zo
+1439
+normal! zo
+1448
+normal! zo
+1455
+normal! zo
+1465
+normal! zo
+1466
+normal! zo
+1469
+normal! zo
+1470
+normal! zo
+1470
+normal! zo
+1471
+normal! zo
+1471
+normal! zo
+1471
+normal! zo
+1471
+normal! zo
+1471
+normal! zo
+1471
+normal! zo
+1471
+normal! zo
+1477
+normal! zo
+1479
+normal! zo
+1482
+normal! zo
+1482
+normal! zo
+1482
+normal! zo
+1482
+normal! zo
+1492
+normal! zo
+1493
+normal! zo
+1498
+normal! zo
+1498
+normal! zo
+1504
+normal! zo
+1513
+normal! zo
+1516
+normal! zo
+1519
+normal! zo
+1529
+normal! zo
+let s:l = 1413 - ((23 * winheight(0) + 13) / 26)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-543
-normal! 043l
+1413
+normal! 040|
 wincmd w
 argglobal
 edit ginn/formularios/consulta_cobros.py
@@ -1437,53 +1436,53 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 50
-silent! normal zo
+normal! zo
 274
-silent! normal zo
+normal! zo
 299
-silent! normal zo
+normal! zo
 301
-silent! normal zo
+normal! zo
 302
-silent! normal zo
+normal! zo
 302
-silent! normal zo
+normal! zo
 302
-silent! normal zo
+normal! zo
 302
-silent! normal zo
+normal! zo
 302
-silent! normal zo
+normal! zo
 306
-silent! normal zo
+normal! zo
 308
-silent! normal zo
+normal! zo
 309
-silent! normal zo
+normal! zo
 309
-silent! normal zo
+normal! zo
 309
-silent! normal zo
+normal! zo
 309
-silent! normal zo
+normal! zo
 309
-silent! normal zo
+normal! zo
 322
-silent! normal zo
+normal! zo
 327
-silent! normal zo
+normal! zo
 335
-silent! normal zo
+normal! zo
 336
-silent! normal zo
+normal! zo
 336
-silent! normal zo
-let s:l = 318 - ((0 * winheight(0) + 0) / 1)
+normal! zo
+let s:l = 318 - ((0 * winheight(0) + 2) / 5)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 318
-normal! 017l
+normal! 018|
 wincmd w
 argglobal
 edit ginn/formularios/ventana.py
@@ -1495,12 +1494,47 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 1 - ((0 * winheight(0) + 0) / 1)
+let s:l = 1 - ((0 * winheight(0) + 3) / 6)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 1
 normal! 0
+wincmd w
+argglobal
+edit ginn/framework/configuracion.py
+setlocal fdm=indent
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=99
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+415
+normal! zo
+418
+normal! zo
+418
+normal! zo
+418
+normal! zo
+418
+normal! zo
+418
+normal! zo
+418
+normal! zo
+418
+normal! zo
+418
+normal! zo
+let s:l = 422 - ((3 * winheight(0) + 2) / 5)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+422
+normal! 075|
 wincmd w
 argglobal
 edit ginn/formularios/launcher.py
@@ -1513,23 +1547,23 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 34
-silent! normal zo
+normal! zo
 51
-silent! normal zo
+normal! zo
 66
-silent! normal zo
-69
-silent! normal zo
-94
-silent! normal zo
-105
-silent! normal zo
-let s:l = 80 - ((0 * winheight(0) + 0) / 1)
+normal! zo
+70
+normal! zo
+95
+normal! zo
+106
+normal! zo
+let s:l = 111 - ((2 * winheight(0) + 3) / 6)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-80
-normal! 043l
+111
+normal! 041|
 wincmd w
 argglobal
 edit ginn/formularios/partes_de_fabricacion_rollos.py
@@ -1542,128 +1576,134 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 229
-silent! normal zo
+normal! zo
 230
-silent! normal zo
+normal! zo
 262
-silent! normal zo
+normal! zo
 262
-silent! normal zo
+normal! zo
 339
-silent! normal zo
+normal! zo
 340
-silent! normal zo
+normal! zo
 345
-silent! normal zo
+normal! zo
 350
-silent! normal zo
+normal! zo
 351
-silent! normal zo
+normal! zo
 356
-silent! normal zo
+normal! zo
 362
-silent! normal zo
+normal! zo
 467
-silent! normal zo
+normal! zo
 579
-silent! normal zo
+normal! zo
 595
-silent! normal zo
+normal! zo
 725
-silent! normal zo
+normal! zo
 734
-silent! normal zo
+normal! zo
 834
-silent! normal zo
+normal! zo
 850
-silent! normal zo
+normal! zo
 850
-silent! normal zo
+normal! zo
 850
-silent! normal zo
+normal! zo
 850
-silent! normal zo
+normal! zo
 961
-silent! normal zo
+normal! zo
 966
-silent! normal zo
+normal! zo
 1531
-silent! normal zo
+normal! zo
 1727
-silent! normal zo
+normal! zo
 1728
-silent! normal zo
+normal! zo
 1728
-silent! normal zo
+normal! zo
 1728
-silent! normal zo
+normal! zo
 1728
-silent! normal zo
+normal! zo
 1739
-silent! normal zo
+normal! zo
 1740
-silent! normal zo
+normal! zo
 1744
-silent! normal zo
+normal! zo
 1744
-silent! normal zo
+normal! zo
 1745
-silent! normal zo
+normal! zo
 1752
-silent! normal zo
+normal! zo
 1753
-silent! normal zo
+normal! zo
 1804
-silent! normal zo
+normal! zo
 3253
-silent! normal zo
+normal! zo
 3260
-silent! normal zo
+normal! zo
 3265
-silent! normal zo
+normal! zo
 3272
-silent! normal zo
+normal! zo
 3276
-silent! normal zo
+normal! zo
 3281
-silent! normal zo
+normal! zo
 3282
-silent! normal zo
+normal! zo
 3282
-silent! normal zo
+normal! zo
 3282
-silent! normal zo
+normal! zo
 3288
-silent! normal zo
+normal! zo
 3293
-silent! normal zo
+normal! zo
 3294
-silent! normal zo
+normal! zo
 3299
-silent! normal zo
-let s:l = 1753 - ((0 * winheight(0) + 0) / 1)
+normal! zo
+let s:l = 1753 - ((0 * winheight(0) + 2) / 5)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 1753
-normal! 036l
+normal! 037|
 wincmd w
-4wincmd w
+6wincmd w
 exe 'vert 1resize ' . ((&columns * 30 + 55) / 111)
-exe '2resize ' . ((&lines * 3 + 22) / 44)
+exe '2resize ' . ((&lines * 1 + 34) / 68)
 exe 'vert 2resize ' . ((&columns * 80 + 55) / 111)
-exe '3resize ' . ((&lines * 1 + 22) / 44)
+exe '3resize ' . ((&lines * 1 + 34) / 68)
 exe 'vert 3resize ' . ((&columns * 80 + 55) / 111)
-exe '4resize ' . ((&lines * 28 + 22) / 44)
+exe '4resize ' . ((&lines * 1 + 34) / 68)
 exe 'vert 4resize ' . ((&columns * 80 + 55) / 111)
-exe '5resize ' . ((&lines * 1 + 22) / 44)
+exe '5resize ' . ((&lines * 1 + 34) / 68)
 exe 'vert 5resize ' . ((&columns * 80 + 55) / 111)
-exe '6resize ' . ((&lines * 1 + 22) / 44)
+exe '6resize ' . ((&lines * 26 + 34) / 68)
 exe 'vert 6resize ' . ((&columns * 80 + 55) / 111)
-exe '7resize ' . ((&lines * 1 + 22) / 44)
+exe '7resize ' . ((&lines * 5 + 34) / 68)
 exe 'vert 7resize ' . ((&columns * 80 + 55) / 111)
-exe '8resize ' . ((&lines * 1 + 22) / 44)
+exe '8resize ' . ((&lines * 6 + 34) / 68)
 exe 'vert 8resize ' . ((&columns * 80 + 55) / 111)
+exe '9resize ' . ((&lines * 5 + 34) / 68)
+exe 'vert 9resize ' . ((&columns * 80 + 55) / 111)
+exe '10resize ' . ((&lines * 6 + 34) / 68)
+exe 'vert 10resize ' . ((&columns * 80 + 55) / 111)
+exe '11resize ' . ((&lines * 5 + 34) / 68)
+exe 'vert 11resize ' . ((&columns * 80 + 55) / 111)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
@@ -1678,6 +1718,6 @@ let &so = s:so_save | let &siso = s:siso_save
 doautoall SessionLoadPost
 unlet SessionLoad
 tabnext 1
-4wincmd w
+6wincmd w
 
 " vim: ft=vim ro nowrap smc=128
