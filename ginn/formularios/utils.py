@@ -2210,6 +2210,8 @@ def recortar(txt, maxim = 30):
 def _float(x): #, precision = 2):
     #if isinstance(x, float):
     #    x = float2str(x, precision)
+    if isinstance(x, str) and x.startswith("."):
+        x = "0" + x
     if isinstance(x, str) and (',' in x):
         x = x.replace(".", "")
         x = x.replace(",", ".")
@@ -2434,7 +2436,8 @@ def enviar_correoe(remitente,
     OJO: Si el servidor es gmail, como solo admite autenticación por SSL, se 
     machaca el valor del parámetro «ssl» a True.
     """
-    if servidor.endswith("gmail.com") or servidor.endswith("google.com"):
+    if (servidor.endswith("gmail.com") or servidor.endswith("google.com") 
+        or servidor.endswith("googlemail.com")):
         ssl = True
     #print "remitente", remitente
     #print "destinos", destinos
@@ -2488,7 +2491,10 @@ def enviar_correoe(remitente,
         #print part
     try:
         from socket import error as socket_error
-        smtp = smtplib.SMTP(servidor)
+        if not ssl:
+            smtp = smtplib.SMTP(servidor)
+        else:
+            smtp = smtplib.SMTP(servidor, 587)
     except socket_error, msg:
         dialogo_info(titulo = "ERROR CONECTANDO A SERVIDOR SMTP", 
                      texto = "Ocurrió el siguiente error al conectar al "
@@ -4183,7 +4189,8 @@ def set_fecha(entry):
     fecha = mostrar_calendario(fecha_defecto = defecto, padre = ventana_padre)
     entry.set_text(str_fecha(fecha))
 
-def cambiar_por_combo(tv, numcol, opts, clase, campo, ventana_padre = None):
+def cambiar_por_combo(tv, numcol, opts, clase, campo, ventana_padre = None, 
+                      entry = False):
     """
     Cambia el cell de la columna «numcoll» del TreeView «tv» por un combo con 
     las opciones recibidas en «opts», que deben respetar el formato 
@@ -4210,9 +4217,17 @@ def cambiar_por_combo(tv, numcol, opts, clase, campo, ventana_padre = None):
     cellcombo.set_property("model", model)
     cellcombo.set_property("text-column", 0)
     cellcombo.set_property("editable", True)
-    cellcombo.set_property("has-entry", False)
+    cellcombo.set_property("has-entry", entry)
     # Función callback para la señal "editado"
-    def guardar_combo(cell, path, text, model_tv, numcol, model_combo):
+    def guardar_combo(cell, path, text, model_tv, numcol, model_combo, 
+                      entry = False):
+        """
+        Si el texto escrito se corresponde con algo del model, guarda 
+        el entero del store en la clave ajena. Si no, deja el texto 
+        escrito y pone la clave ajena a None. Si entry es True, entonces 
+        permitirá meter un texto libre sin que dé error por no encontrar el 
+        elemento en el store.
+        """
         # Es lento, pero no encuentro otra cosa:
         idct = None
         for i in xrange(len(model_combo)):
@@ -4221,23 +4236,34 @@ def cambiar_por_combo(tv, numcol, opts, clase, campo, ventana_padre = None):
                 idct = ide
                 break
         if idct == None:
-            dialogo_info(titulo = "ERROR COMBO", 
-                texto = "Ocurrió un error inesperado guardando el valor.\n\n"
-                        "Contacte con los desarrolladores de la aplicación\n"
-                        "(Vea el diálogo «Acerca de...» desde el menú "
-                        "principal.)", 
-                padre = ventana_padre)
+            if not entry:
+                dialogo_info(titulo = "ERROR COMBO", 
+                  texto = "Ocurrió un error inesperado guardando el valor.\n\n"
+                          "Contacte con los desarrolladores de la aplicación\n"
+                          "(Vea el diálogo «Acerca de...» desde el menú "
+                          "principal.)", 
+                  padre = ventana_padre)
+            else:
+                try:
+                    objeto_a_actualizar = clase.get(model_tv[path][-1])
+                except ValueError:
+                    objeto_a_actualizar = pclases.getObjetoPUID(
+                                                    model_tv[path][-1])
+                setattr(objeto_a_actualizar, campo, valor)
         else:
             valor = getObjetoPUID(idct)
             try:
                 objeto_a_actualizar = clase.get(model_tv[path][-1])
             except SQLObjectNotFound:
                 pass    # El objeto fue eliminado de la base de datos. Ignoro.
+            except ValueError:  # Es un PUID
+                objeto_a_actualizar = pclases.getObjetoPUID(model_tv[path][-1])
             else:
                 setattr(objeto_a_actualizar, campo, valor)
             model_tv[path][numcol] = text
             #self.actualizar_ventana()
-    cellcombo.connect("edited", guardar_combo, tv.get_model(), numcol, model)
+    cellcombo.connect("edited", guardar_combo, tv.get_model(), numcol, model, 
+                                               entry)
     column.pack_start(cellcombo)
     column.set_attributes(cellcombo, text = numcol)
 

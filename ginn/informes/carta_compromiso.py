@@ -22,7 +22,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA  #
 ###############################################################################
 
-# FORK de presupuesto.py para adaptarlo a otro formato. 
+# Carta de compromiso imprimible desde presupuestos. 
 
 
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
@@ -56,86 +56,13 @@ def dibujar_logo(canvas, doc, ruta_logo):
                          ancho_proporcional, 
                          nuevo_alto)
 
-def build_tabla_contenido(data):
-    """
-    Construye la tabla del contenido del presupuesto.
-    """
-    estilo_cabecera_tabla = ParagraphStyle("Cabecera tabla", 
-                                           parent=estilos["Heading3"])
-    estilo_cabecera_tabla.fontName = "Times-Bold"
-    estilo_cabecera_tabla.alignment = enums.TA_CENTER
-    estilo_numeros_tabla = ParagraphStyle("Números tabla", 
-                                           parent=estilos["Normal"])
-    estilo_numeros_tabla.alignment = enums.TA_RIGHT
-    datos = [(Paragraph("Cantidad", estilo_cabecera_tabla), 
-              Paragraph(escribe("Descripción"), estilo_cabecera_tabla), 
-              Paragraph("Precio", estilo_cabecera_tabla), 
-              Paragraph("Importe", estilo_cabecera_tabla))
-            ]
-    for d in data:
-        if isinstance(d, (list, tuple)):
-            fila = d[:4]
-        elif isinstance(d, pclases.LineaDePedido):
-            # OBSOLETO. No debería entrar nunca aquí.
-            fila = (utils.float2str(d.cantidad, autodec = True), 
-                    d.producto.descripcion, 
-                    d.calcular_precio_unitario_coherente(precision = 2), 
-                    utils.float2str(d.get_subtotal()
-                                    + (d.precio * d.descuento * d.cantidad)))
-        elif isinstance(d, pclases.Servicio):
-            # OBSOLETO. No debería entrar nunca aquí.
-            fila = (utils.float2str(d.cantidad, autodec = True), 
-                    d.concepto, 
-                    utils.float2str(d.precio), 
-                    utils.float2str(d.get_subtotal()
-                                    + (d.precio * d.descuento * d.cantidad)))
-        elif isinstance(d, pclases.LineaDePresupuesto):
-            fila = (utils.float2str(d.cantidad, autodec = True), 
-                    # TODO: Añadir unidades del producto.
-                    d.descripcion, 
-                    utils.float2str(d.precio), 
-                    utils.float2str(d.get_subtotal()))
-        _fila = (fila[0], 
-                 Paragraph(escribe(fila[1]), estilos["Normal"]),
-                 Paragraph(escribe(fila[2]), estilo_numeros_tabla),
-                 Paragraph(escribe(fila[3]), estilo_numeros_tabla),
-                )
-        datos.append(_fila)
-        if hasattr(d, "descuento") and d.descuento:
-            fila_descuento = ("", 
-                              "Descuento %s %%" 
-                                % utils.float2str(d.descuento * 100, 
-                                                  autodec = True), 
-                              utils.float2str(-d.precio * d.descuento), 
-                              utils.float2str(-d.precio*d.descuento*d.cantidad))
-            _fila = (fila_descuento[0], 
-                     Paragraph(escribe(fila_descuento[1]),estilo_numeros_tabla),
-                     Paragraph(escribe(fila_descuento[2]),estilo_numeros_tabla),
-                     Paragraph(escribe(fila_descuento[3]),estilo_numeros_tabla),
-                    )
-            datos.append(_fila)
-    tabla = Table(datos, 
-                  colWidths = (PAGE_WIDTH * 0.1, 
-                               PAGE_WIDTH * 0.45, 
-                               PAGE_WIDTH * 0.15, 
-                               PAGE_WIDTH * 0.2), 
-                  repeatRows = 1)
-    tabla.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey), 
-        ("LINEBEFORE", (0, 0), (-1, -1), 0.25, colors.black),
-        ("LINEBELOW", (0, 0), (-1, 0), 1.0, colors.black), 
-        ("LINEBELOW", (0, "splitlast"), (-1, "splitlast"), 1.0, colors.black), 
-        ("BOX", (0, 0), (-1, -1), 1.0, colors.black),
-        ("VALIGN", (0, 0), (-1, 0), "CENTER"), 
-        ("VALIGN", (0, 0), (0, -1), "TOP"), 
-        ("ALIGN", (0, 0), (-1, 0), "CENTER"), 
-        ("ALIGN", (-3, 1), (-1, -1), "RIGHT"), 
-        #("ALIGN", (0, 1), (0, -1), "DECIMAL"), <- No puedo cambiar 
-        #                               el pivotChar de "." a ",". No me vale.
-        ("ALIGN", (0, 1), (0, -1), "CENTER"), 
-        ("RIGHTPADDING", (0, 1), (0, -1), 0.75 * cm), 
-        ]))
-    return tabla
+def dibujar_pie(canvas, doc, lineas_empresa):
+    nlinea = 0
+    for linea in lineas_empresa:
+        canvas.drawCenteredString(PAGE_WIDTH / 2, 
+                                  PAGE_HEIGHT - 4 * cm - (nlinea * 15), 
+                                  linea)
+        nlinea += 1
 
 def build_encabezado(datos_empresa = []):
     """
@@ -219,149 +146,42 @@ def build_texto(texto):
             res.extend([espacio, i])
     return res
 
-def build_tabla_totales(dic_totales):
-    """
-    Construye una tabla con los totales del presupuesto.
-    La tabla tiene dos columnas. En la primera están las claves del 
-    diccionario «dic_totales». En la segunda los valores correspondientes.
-    La última fila de la tabla estará en negrita.
-    Si el diccionario de totales trae una clave "orden" (que debería) se 
-    seguirá ese orden para mostrarlos en las filas.
-    """
-    try:
-        claves = dic_totales["orden"]
-    except KeyError:
-        claves = dic_totales.keys()
-    datos = []
-    for clave in claves:
-        datos += [["", clave, dic_totales[clave]]]
-    datos[-1][1] = Paragraph("<b>%s</b>" % datos[-1][1], 
-                             estilos["BodyText"])
-    a_derecha = ParagraphStyle("A derecha", 
-                                parent = estilos["BodyText"])
-    a_derecha.alignment = enums.TA_RIGHT
-    datos[-1][-1] = Paragraph("<b>%s</b>" % datos[-1][-1], 
-                              a_derecha)
-    tabla = Table(datos, 
-                  colWidths = (PAGE_WIDTH * 0.55,   # HACK: Para que ocupe lo  
-                               PAGE_WIDTH * 0.15,   # mismo que la otra. 
-                               PAGE_WIDTH * 0.2))   # Si no, RL la centra.
-    tabla.setStyle(TableStyle([
-        ("BOX", (1, 0), (-1, -1), 1.0, colors.black),
-        ("INNERGRID", (1, 0), (-1, -1), 0.25, colors.black), 
-        ("ALIGN", (1, 0), (-2, -1), "LEFT"), 
-        ("ALIGN", (-1, 0), (-1, -1), "RIGHT"), 
-        ]))
-    return tabla
-
-def build_validez(validez):
-    txt_validez = "OFERTA VÁLIDA POR %s DESDE LA FECHA DE ESTE PRESUPUESTO"
-    if validez == 1:
-        mes = "UN MES"
-    else:
-        from formularios.numerals import numerals
-        txt_meses = numerals(validez, 
-                             moneda = "", 
-                             fraccion = "", 
-                             autoomitir = True).upper()
-        mes = "%s MESES" % txt_meses
-    txt_validez = txt_validez % (mes)
-    a_derecha = ParagraphStyle("A derecha", 
-                                parent = estilos["Normal"])
-    a_derecha.alignment = enums.TA_RIGHT
-    a_derecha.fontName = "Courier"
-    a_derecha.fontSize = 8
-    return Paragraph(txt_validez, a_derecha)
-
-def build_condicionado(condicionado):
-    a_derecha = ParagraphStyle("A derecha", 
-                                parent = estilos["Normal"])
-    a_derecha.alignment = enums.TA_LEFT
-    a_derecha.fontName = "Courier"
-    a_derecha.fontSize = 13
-    texto_condicionado = "Condiciones particulares: " + condicionado
-    return Paragraph(texto_condicionado, a_derecha)
-
-def build_texto_riesgo(texto_riesgo):
-    a_derecha = ParagraphStyle("A derecha", 
-                                parent = estilos["Normal"])
-    a_derecha.alignment = enums.TA_RIGHT
-    a_derecha.fontName = "Courier"
-    a_derecha.fontSize = 8
-    return Paragraph(texto_riesgo, a_derecha)
-
 def go(titulo, 
        ruta_archivo, 
        lineas_datos_empresa, 
        datos_cliente, 
-       lineas_contenido, 
-       fecha_entradilla, 
-       totales = {}, 
-       texto = None, 
-       despedida = None, 
+       ref_obra, 
+       datos_comercial, 
+       fecha = None, 
        ruta_logo = None, 
-       validez = None, 
-       condicionado = None, 
-       texto_riesgo = None, 
-       numpresupuesto = "", 
-       incluir_condicionado_general = True):
+      ):
     """
     Recibe el título del documento y la ruta completa del archivo.
-    Si validez != None escribe una frase con la validez del presupuesto.
     """
     doc = SimpleDocTemplate(ruta_archivo, title = titulo)
-    encabezado = build_encabezado(lineas_datos_empresa)
-    try:
-        nombrecliente = datos_cliente[0].replace(" ", "_")
-    except:
-        nombrecliente = ""
-    datos_cliente = build_datos_cliente(datos_cliente)
-    entradilla = build_entradilla(fecha_entradilla, numpresupuesto)
-    texto = build_texto(texto)
-    contenido = build_tabla_contenido(lineas_contenido)
-    totales = build_tabla_totales(totales)
-    despedida = build_texto(despedida)
+    # Secciones
+    encabezado = build_encabezado(lineas_datos_empresa) # Logos y "título"
+    datos_cliente = build_datos_cliente(datos_cliente)  # Datos del cliente
+    par_fecha = build_fecha(fecha)  # Fecha a la derecha
+    datos_obra = build_datos_obra(ref_obra) # Cuadro con datos de la obra
+    texto = build_texto()   # Texto fijo
+    despedida = build_despedida(datos_comercial)    # Atentamente...
     story = [encabezado, 
              datos_cliente, 
-             entradilla, 
+             par_fecha, 
              Spacer(1, 0.2 * cm), 
-             contenido, 
+             datos_obra, 
              Spacer(1, 0.25 * cm), 
-             totales, 
-             Spacer(1, 2 * cm), 
              texto, 
-             Spacer(1, 0.2 * cm), 
+             Spacer(1, 2 * cm), 
              despedida]
-    #if validez:
-        #story.insert(9, build_validez(validez))
-    if texto_riesgo:
-        story.insert(-4, build_texto_riesgo(texto_riesgo))
-    #if condicionado: # El condicionado es el texto en sí.
-    #    story.insert(-2, Spacer(1, 2 * cm))
-    #    story.insert(-2, build_condicionado(condicionado))
     story = utils.aplanar([i for i in story if i])
     _dibujar_logo = lambda c, d: dibujar_logo(c, d, ruta_logo)
-    doc.build(story, onFirstPage = _dibujar_logo)
-    # Agrego condiciones generales:
-    if incluir_condicionado_general:
-        from lib.PyPDF2 import PyPDF2
-        pdf_presupuesto = open(ruta_archivo, "rb")
-        pdf_condiciones = open(
-            os.path.join(os.path.dirname(os.path.abspath(__file__)), 
-                         "condiciones_generales.pdf"), 
-            "rb")
-        merger = PyPDF2.PdfFileMerger()
-        merger.append(pdf_presupuesto)
-        merger.append(pdf_condiciones)
-        combinado = os.path.join(gettempdir(),
-                    "oferta_%s_%s.pdf" % (nombrecliente, 
-                                          give_me_the_name_baby()))
-        merger.write(open(combinado, "wb"))
-        ruta_archivo = combinado
+    _dibujar_pie = lambda c, d: dibujar_pie(c, d, lineas_datos_empresa)
+    doc.build(story, onFirstPage = _dibujar_logo, onLastPage = _dibujar_pie)
     return ruta_archivo
 
-def go_from_presupuesto(presupuesto, 
-                        incluir_condicionado_general = True):
+def go_from_presupuesto(presupuesto):
     """
     Construye el PDF a partir de un objeto presupuesto y no de sus datos 
     sueltos.

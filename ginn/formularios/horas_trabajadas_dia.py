@@ -408,9 +408,9 @@ class HorasTrabajadasDia(Ventana):
                     'extra_n': mx.DateTime.DateTimeDelta(0),# Horas extras noche
                     'noche': mx.DateTime.DateTimeDelta(0),  # Horas noche
                     'total': mx.DateTime.DateTimeDelta(0),  # Horas totales
-                    # 'horainicio': ht.partedeproduccion.horainicio,
+                    # 'horainicio': ht.parteDeProduccion.horainicio,
                         # Hora de inicio del primer parte
-                    # 'horafin': ht.partedeproduccion.horafin,
+                    # 'horafin': ht.parteDeProduccion.horafin,
                         # Hora fin del último parte del trabajador
                     'horainicio': None, # Hora de inicio del primer parte
                     'horafin': None,  # Hora fin del último parte del trabajador
@@ -495,17 +495,17 @@ class HorasTrabajadasDia(Ventana):
                 #   6:00, en lugar de poner horainicio y horafin a 22:00 y 6:00
                 #   respectivamente, pone como horainicio 5:00 y como horafin 
                 #   6:00. Sin embargo, el cómputo de horas sí es correcto.
-                if res[pos]['horainicio'] == None or res[pos]['horainicio'] > ht.partedeproduccion.fechahorainicio:
-                    res[pos]['horainicio'] = ht.partedeproduccion.fechahorainicio
-                if res[pos]['horafin'] == None or res[pos]['horafin'] < ht.partedeproduccion.fechahorafin or \
-                    ht.partedeproduccion.fechahorafin < res[pos]['fechahorainicio']:  # Es del día siguiente
-                    res[pos]['horafin'] = ht.partedeproduccion.fechahorafin
-                if ht.partedeproduccion not in res[pos]['partes']:
-                    res[pos]['partes'].append(ht.partedeproduccion)
+                if res[pos]['horainicio'] == None or res[pos]['horainicio'] > ht.parteDeProduccion.fechahorainicio:
+                    res[pos]['horainicio'] = ht.parteDeProduccion.fechahorainicio
+                if res[pos]['horafin'] == None or res[pos]['horafin'] < ht.parteDeProduccion.fechahorafin or \
+                    ht.parteDeProduccion.fechahorafin < res[pos]['fechahorainicio']:  # Es del día siguiente
+                    res[pos]['horafin'] = ht.parteDeProduccion.fechahorafin
+                if ht.parteDeProduccion not in res[pos]['partes']:
+                    res[pos]['partes'].append(ht.parteDeProduccion)
                 # Cálculo de las horas nocturnas:
-                #if ht.partedeproduccion.horainicio >= ininoche and \
-                #    ht.partedeproduccion.horafin <= finnoche:
-                if ht.partedeproduccion.es_nocturno():
+                #if ht.parteDeProduccion.horainicio >= ininoche and \
+                #    ht.parteDeProduccion.horafin <= finnoche:
+                if ht.parteDeProduccion.es_nocturno():
                     # OJO: Nunca se dará un parte que cubra dos franjas 
                     # horarias de dos turnos diferentes, por tanto, si por 
                     # ejemplo un empleado hace 2 horas de un parte de 6
@@ -523,10 +523,10 @@ class HorasTrabajadasDia(Ventana):
                 # las 6:00. 
                 # Si la hora de inicio del parte es inferior a esa, se 
                 # considerará del día anterior a efectos de horas extras.
-                if ht.partedeproduccion.horainicio < finnoche:
-                    dia = (ht.partedeproduccion.fecha - mx.DateTime.oneDay)
+                if ht.parteDeProduccion.horainicio < finnoche:
+                    dia = (ht.parteDeProduccion.fecha - mx.DateTime.oneDay)
                 else:
-                    dia = ht.partedeproduccion.fecha
+                    dia = ht.parteDeProduccion.fecha
                 if dia not in aux[ht.empleado.id]['fechas']:
                     aux[ht.empleado.id]['fechas'][dia] = mx.DateTime.DateTimeDelta(0)
                 if aux[ht.empleado.id]['fechas'][dia] + ht.horas > mx.DateTime.DateTimeDeltaFrom(hours = 8):
@@ -545,7 +545,7 @@ class HorasTrabajadasDia(Ventana):
                 else:
                     res[pos]['horas'] += ht.horas - extra
                     res[pos]['extra'] += extra
-                if ht.partedeproduccion.es_de_balas():
+                if ht.parteDeProduccion.es_de_balas():
                     res[pos]['fib'] += ht.horas
                 else:   
                     # PLAN: Hasta se que abra la línea de geocompuestos, 

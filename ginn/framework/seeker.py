@@ -348,7 +348,8 @@ class VentanaGenerica(Ventana):
                 valor = widget.get_text()
             except AttributeError:      # Puede ser un TextView
                 buff = widget.get_buffer()
-                valor = buff.get_text(buff.get_start_iter(), buff.get_end_iter())
+                valor = buff.get_text(buff.get_start_iter(), 
+                                      buff.get_end_iter())
         elif isinstance(col, pclases.SOIntCol):
             if isinstance(widget, gtk.SpinButton):
                 valor = widget.get_value()
@@ -384,7 +385,11 @@ class VentanaGenerica(Ventana):
                                 print "Excepción %s capturada al convertir %s a flotante." % (e, valor)
                             raise e
         elif isinstance(col, pclases.SOBoolCol):
-            valor = widget.get_active()
+            if (isinstance(widget, gtk.RadioButton) 
+                and widget.get_inconsistent()):
+                valor = None
+            else:
+                valor = widget.get_active()
         elif isinstance(col, pclases.SODateCol):
             valor = widget.get_text()
             try:
@@ -456,7 +461,19 @@ class VentanaGenerica(Ventana):
                     raise e
             widget.set_text(valor)
         elif isinstance(col, pclases.SOBoolCol):
-            widget.set_active(valor)
+            if isinstance(widget, gtk.RadioButton):
+                map(lambda w: w.set_inconsistent(valor is None), 
+                    widget.get_group())
+                if valor == False:
+                    # La forma de hacerlo es poner otro control del mismo 
+                    # grupo de radiobuttons a True.
+                    for w in widget.get_group():
+                        if w != widget:
+                            w.set_active(True)
+            try:
+                widget.set_active(valor)
+            except TypeError:
+                pass    # valor es None. No toco nada.
         elif isinstance(col, pclases.SODateCol):
             try:
                 valor = utils.str_fecha(valor)

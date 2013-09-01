@@ -235,7 +235,6 @@ class PedidosDeVenta(Ventana):
                             % (self.objeto.numpedido, 
                                self.usuario and self.usuario.usuario 
                                or "¡NADIE!"))
-
                 vpro.mover()
                 self.objeto.syncUpdate()
                 self.objeto.swap['validado'] = self.objeto.validado
@@ -1006,7 +1005,6 @@ class PedidosDeVenta(Ventana):
                 tooltip.set_text(texto)
                 return True     # Muestra ya el tooltip
         return False    # No muestra tooltip.
-
 
     def abrir_producto_from_ldp(self,tv, path, view_column):
         """
@@ -1846,6 +1844,14 @@ class PedidosDeVenta(Ventana):
         en la ventana para que puedan ser editados el resto
         de campos que no se hayan self.objeto aquí.
         """
+        if self.usuario and self.usuario.nivel > NIVEL_VALIDACION:
+            utils.dialogo_info(titulo = "PRIVILEGIOS INSUFICIENTES", 
+                texto = "Para crear un pedido manualmente debe tener\n"
+                        "un nivel de permisos suficiente.\n\n"
+                        "Use la ventana de presupuestos para crear un\n"
+                        "pedido a partir de una oferta.", 
+                padre = self.wids['ventana'])
+            return
         ultimo_pedido_mas_uno = str(
             pclases.PedidoVenta.get_siguiente_numero_numpedido())
         numpedido = utils.dialogo_entrada(

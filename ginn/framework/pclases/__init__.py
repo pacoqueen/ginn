@@ -638,7 +638,7 @@ GESTION, CARTERA, DESCONTADO, IMPAGADO, COBRADO = range(5)
 
 # Estados de validación de pedidos
 NO_VALIDABLE, VALIDABLE, PLAZO_EXCESIVO, SIN_FORMA_DE_PAGO, \
-        PRECIO_INSUFICIENTE, CLIENTE_DEUDOR = range(6)
+        PRECIO_INSUFICIENTE, CLIENTE_DEUDOR, SIN_CIF, SIN_CLIENTE = range(8)
 
 # VERBOSE MODE
 total = 158 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
@@ -723,6 +723,7 @@ class FormaDePago(SQLObject, PRPCTOO):
         fromDatabase = True
     #------------------------- documentoDePagoID = ForeignKey('DocumentoDePago')
     pedidosVenta = MultipleJoin('PedidoVenta')
+    presupuestos = MultipleJoin('Presupuesto')
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -9836,7 +9837,7 @@ class PedidoVenta(SQLObject, PRPCTOO):
         if validable:
             importe_pedido = self.calcular_importe_total(iva = True)
             if self.cliente and self.cliente.calcular_credito_disponible(
-                    base = importe_pedido) <= 0:
+                    base = importe_pedido) < 0:
                 validable = CLIENTE_DEUDOR
         return validable
 
@@ -10061,12 +10062,94 @@ class PedidoVenta(SQLObject, PRPCTOO):
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
+class LineaDePresupuesto(SQLObject, PRPCTOO):
+    class sqlmeta:
+        fromDatabase = True
+
+    def _init(self, *args, **kw):
+        starter(self, *args, **kw)
+
+    def get_descripcion_producto(self):
+        if self.productoVenta:
+            desc = self.productoVenta.descripcion
+        elif self.productoCompra:
+            desc = self.productoCompra.descripcion
+        else:
+            desc = self.descripcion
+        return desc
+
+    def get_subtotal(self, iva = False):
+        """
+        Devuelve el subtotal de esta línea de presupuesto.
+        """
+        subtotal = self.cantidad * self.precio
+        if iva:
+            try:
+                subtotal *= self.presupuesto.cliente.iva
+            except AttributeError:
+                raise ValueError, "pclases::LineaDePresupuesto::calcular_subtotal -> La LDP ID %s no tiene cliente del que obtener el IVA."
+        return subtotal
+
+    @property
+    def precioKilo(self):
+        """
+        Devuelve el precio por kilo de la línea de pedido siempre que sea 
+        posible. None si no lo puede calcular.
+        """
+        res = None
+        # TODO: De momento solo para geotextiles.
+        if hasattr(self.producto, "es_rollo") and self.producto.es_rollo():
+            # El precio es por metro cuadrado. Tengo que hacer la conversión:
+            gramos_m2 = self.producto.camposEspecificosRollo.gramos
+            m2 = self.producto.camposEspecificosRollo.metrosCuadrados
+            kilos = gramos_m2 / 1000.0 * m2
+            try:
+                res = self.precio * m2 / kilos
+            except ZeroDivisionError:
+                res = None 
+        return res
+
+    @property
+    def producto(self):
+        """
+        Devuelve el objeto producto relacionado con la línea de venta, sea 
+        del tipo que sea (productoVenta o productoCompra). None si no hay 
+        ningún producto relacionado.
+        """
+        res = None
+        if self.productoVenta != None:
+            res = self.productoVenta
+        elif self.productoCompra != None:
+            res = self.productoCompra
+        return res
+
+    @producto.setter
+    def producto(self, producto):
+        """
+        Comprueba qué tipo de producto es el del parámetro "producto" 
+        recibido e instancia el atributo adecuado poniendo a 
+        None el del tipo de producto que no corresponda.
+        Si la clase del objeto no es ninguna de las soportadas por 
+        la línea de venta, lanzará una excepción TypeError.
+        """
+        if isinstance(producto, ProductoVenta):
+            self.productoVenta = producto
+            self.productoCompra = None
+        elif isinstance(producto, ProductoCompra):
+            self.productoVenta = None
+            self.productoCompra = producto
+        else:
+            raise TypeError
+
+cont, tiempo = print_verbose(cont, total, tiempo)
+
 class Presupuesto(SQLObject, PRPCTOO):
     class sqlmeta:
         fromDatabase = True
     #----------------------------------------- clienteID = ForeignKey('Cliente')
     lineasDePedido = MultipleJoin('LineaDePedido')
     servicios = MultipleJoin('Servicio')
+    lineasDePresupuesto = MultipleJoin('LineaDePresupuesto')
     #------------------------------------- comercialID = ForeignKey("Comercial")
 
     def _init(self, *args, **kw):
@@ -10088,7 +10171,7 @@ class Presupuesto(SQLObject, PRPCTOO):
                 pedidos.append(srvpedidoVenta)
         return pedidos
 
-    def calcular_total(self):
+    def calcular_total(self, iva = True):
         """
         Calcula el total del presupuesto, con IVA y demás incluido.
         Devuelve un FixedPoint (a casi todos los efectos, se comporta como 
@@ -10096,16 +10179,19 @@ class Presupuesto(SQLObject, PRPCTOO):
         De todas formas, pasa bien por el utils.float2str).
         """
         subtotal = self.calcular_subtotal() 
-        tot_iva = self.calcular_total_iva(subtotal)
+        if iva:
+            tot_iva = self.calcular_total_iva(subtotal)
+        else:
+            iva = 0.0
         irpf = self.calcular_total_irpf(subtotal)
         total = subtotal + tot_iva + irpf
         return total
     
-    def calcular_importe_total(self):
+    def calcular_importe_total(self, iva = True):
         """
         Calcula y devuelve el importe total, incluyendo IVA, de la factura.
         """
-        return self.calcular_total()
+        return self.calcular_total(iva)
 
     importeTotal = property(calcular_importe_total, doc = calcular_importe_total.__doc__)
 
@@ -10116,10 +10202,13 @@ class Presupuesto(SQLObject, PRPCTOO):
         if subtotal == None:
             subtotal = self.calcular_subtotal()
         try:
-            dde = DatosDeLaEmpresa.select()[0]
-            iva = dde.iva
-        except IndexError:
-            iva = 0.21
+            iva = self.cliente.get_iva_norm()
+        except AttributeError:
+            try:
+                dde = DatosDeLaEmpresa.select()[0]
+                iva = dde.iva
+            except IndexError:
+                iva = 0.21
         total_iva = utils.ffloat(subtotal) * iva 
         return total_iva
     
@@ -10144,11 +10233,13 @@ class Presupuesto(SQLObject, PRPCTOO):
         de pedido + servicios - descuento.
         No cuenta IVA.
         """
-        total_ldvs = sum([utils.ffloat((l.cantidad * l.precio) * (1 - l.descuento)) for l in self.lineasDePedido])
-        total_srvs = sum([utils.ffloat((s.precio * s.cantidad) * (1 - s.descuento)) for s in self.servicios])
-        subtotal = total_ldvs + total_srvs
-        if incluir_descuento:
-            subtotal *= 1 - self.descuento
+        #total_ldvs = sum([utils.ffloat((l.cantidad * l.precio) * (1 - l.descuento)) for l in self.lineasDePedido])
+        #total_srvs = sum([utils.ffloat((s.precio * s.cantidad) * (1 - s.descuento)) for s in self.servicios])
+        #subtotal = total_ldvs + total_srvs
+        subtotal = sum([utils.ffloat(s.precio * s.cantidad) 
+                        for s in self.lineasDePresupuesto])
+        #if incluir_descuento:
+        #    subtotal *= 1 - self.descuento
         return subtotal
 
     def calcular_base_imponible(self):
@@ -10196,6 +10287,129 @@ class Presupuesto(SQLObject, PRPCTOO):
         fecha_limite = self.calcular_fecha_limite()
         return (not self.validez) or hoy <= fecha_limite
 
+    def get_estado_validacion(self):
+        """
+        Devuelve el estado de la validación del pedido en el momento de 
+        llamar a la función. Puede ser:
+            NO_VALIDABLE: El cliente todavía no tiene ficha.
+            VALIDABLE: Cumple todos los requisitos de validación automática.
+            PLAZO_EXCESIVO: La forma de pago seleccionada en el pedido supera 
+                            los 120 días.
+            SIN_FORMA_DE_PAGO: El pedido no tiene forma de pago definida.
+            PRECIO_INSUFICIENTE: Algún precio por kilo en las líneas del 
+                                 pedido está por encima del mínimo configurado 
+                                 por familia de productos.
+            CLIENTE_DEUDOR: El cliente no tiene crédito suficiente. 
+            SIN_CIF: No se ha informado del CIF del cliente.
+        """
+        # Debería tener las condiciones en un solo sitio. Los pedidos y 
+        # presupuestos siguen el mismo criterio, pero están especificados por 
+        # duplicado en una función en cada clase.
+        validable = VALIDABLE
+        for ldp in self.lineasDePresupuesto:
+            try:
+                precioMinimo = ldp.producto.precioMinimo
+            except AttributeError: # Es un producto que no existe o un servicio
+                precioMinimo = None
+            precioKilo = ldp.precioKilo
+            if (precioMinimo != None and precioKilo != None 
+                    and precioKilo < precioMinimo):
+                validable = PRECIO_INSUFICIENTE
+                break
+        if validable == VALIDABLE:
+            fdp = self.formaDePago
+            if not fdp:
+                validable = SIN_FORMA_DE_PAGO
+            elif fdp.plazo > 120:
+                validable = PLAZO_EXCESIVO
+        if validable == VALIDABLE:
+            if not self.cif.strip():
+                validable = SIN_CIF
+        if validable == VALIDABLE:
+            importe_presupuesto = self.calcular_importe_total(iva = True)
+            if self.cliente and self.cliente.calcular_credito_disponible(
+                    base = importe_presupuesto) < 0:
+                validable = CLIENTE_DEUDOR
+        if validable == VALIDABLE:
+            if not self.cliente and not self.nombrecliente:
+                validable = SIN_CLIENTE
+        if validable == VALIDABLE:
+            if not self.cliente:
+                validable = NO_VALIDABLE
+        return validable
+
+    def get_str_estado(self):
+        """
+        Devuelve una cadena de texto con el estado de la oferta y el motivo, 
+        en su caso, del impedimento de pasarlo a pedido.
+        """
+        txtestado = None
+        estado_validacion = self.get_estado_validacion()
+        if estado_validacion == VALIDABLE:
+            txtestado = "Presupuesto válido"
+            if self.usuario:
+                txtestado += " (%s)" % self.usuario.usuario
+        elif estado_validacion == NO_VALIDABLE: 
+            txtestado = "Necesita validación manual: "\
+                        "Cliente sin alta en la aplicación."
+        elif estado_validacion == PLAZO_EXCESIVO: 
+            txtestado = "Necesita validación manual: "\
+                        "El plazo de la forma de pago es excesivo."
+        elif estado_validacion == SIN_FORMA_DE_PAGO: 
+            txtestado = "Necesita validación manual: "\
+                        "No se ha seleccionado forma de pago para la oferta."
+        elif estado_validacion == CLIENTE_DEUDOR:            
+            txtestado = "Necesita validación manual: "\
+                        "Cliente con crédito insuficiente."
+        elif estado_validacion == SIN_CIF:
+            txtestado = "Necesita validación manual: "\
+                        "CIF no presente."
+        elif estado_validacion == SIN_CLIENTE:
+            txtestado = "Necesita validación manual: "\
+                        "Presupuesto sin cliente."
+        elif estado_validacion == PRECIO_INSUFICIENTE:
+            txtestado = "Necesita validación manual: "\
+                        "Productos por debajo de precio mínimo definido."
+            for ldp in self.lineasDePedido:
+                precioMinimo = ldp.producto.precioMinimo
+                precioKilo = ldp.precioKilo
+                if (precioMinimo != None and precioKilo != None 
+                        and precioKilo < precioMinimo):
+                    txtestado = "Necesita validación manual: "\
+                                "ventas por debajo de precio\n"\
+                                "(%s < %s)." % (
+                                    utils.float2str(precioKilo), 
+                                    utils.float2str(precioMinimo))
+                    break
+        return txtestado
+
+    @property
+    def validable(self):
+        return self.get_estado_validacion() == VALIDABLE
+
+    @property
+    def validado(self):
+        return self.usuario and True or False
+
+    @validado.setter
+    def validado(self, usuario):
+        if not usuario:
+            self.usuario = None
+            self.fechaValidacion = None
+        elif isinstance(usuario, Usuario):
+            self.usuario = usuario
+            self.fechaValidacion = datetime.datetime.now()
+        else:
+            raise ValueError, "El parámetro de validación de presupuesto "\
+                              "debe ser un usuario de pclases o False."
+
+    def get_str_tipo(self):
+        if self.estudio is None:
+            return "Indeterminado"
+        if self.estudio:
+            return "Estudio"
+        return "Pedido"
+
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 class Comercial(SQLObject, PRPCTOO):
@@ -10213,6 +10427,15 @@ class Comercial(SQLObject, PRPCTOO):
             return self.empleado.get_nombre_completo()
         except AttributeError:
             return ""
+
+    def get_usuario(self):
+        """
+        Devuelve el usuario asociado a este comercial.
+        """
+        try:
+            return self.empleado.usuario
+        except AttributeError:
+            return None
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
@@ -14940,7 +15163,7 @@ class Obra(SQLObject, PRPCTOO):
                            intermediateTable = 'obra__cliente')
     abonos = MultipleJoin('Abono')
     pedidosVenta = MultipleJoin('PedidoVenta')
-
+    presupuestos = MultipleJoin('Presupuesto')
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -17550,6 +17773,7 @@ class Usuario(SQLObject, PRPCTOO):
     empleados = MultipleJoin("Empleado")
     auditorias = MultipleJoin("Auditoria")
     pedidosVenta = MultipleJoin("PedidoVenta")
+    presupuestos = MultipleJoin("Presupuesto")
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)

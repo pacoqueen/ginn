@@ -417,6 +417,9 @@ def guess_class(modulo):
     clases = [c for c in dir(moduler) if c[0].isupper()  # @UndefinedVariable
                                         and c != "Ventana" 
                                         and c != "VentanaGenerica"
+                                        and c != "VentanaActividad"
+                                        and c != "VentanaProgreso"
+                                        and c != "CellRendererAutoComplete"
                                         and not es_macro(c)]
     return clases[0]
     

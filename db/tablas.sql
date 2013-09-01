@@ -1417,8 +1417,42 @@ CREATE TABLE presupuesto(
     numpresupuesto INT DEFAULT NULL,    -- NEW! 31/07/2008
     descuento FLOAT DEFAULT 0.0,        -- NEW! 31/07/2008 Dto. global en %
     comercial_id INT REFERENCES comercial DEFAULT NULL,-- NEW! 30/12/2008
-    obra TEXT DEFAULT ''    --- NEW! 27/02/2009
+    nombreobra TEXT DEFAULT '',   --- NEW! 27/02/2009 UPDATED 24/08/2013
+    -- Campos añadidos para el nuevo módulo de comerciales: NEW! 23/08/2013
+    estudio BOOLEAN DEFAULT NULL, 
+    adjudicada BOOLEAN DEFAULT FALSE, 
+    cif TEXT DEFAULT '', 
+    email TEXT DEFAULT '', 
+    forma_de_pago_id INT REFERENCES forma_de_pago DEFAULT NULL, 
+    observaciones TEXT DEFAULT '', 
+    obra_id INT REFERENCES obra DEFAULT NULL, 
+    usuario_id INT REFERENCES usuario DEFAULT NULL, -- Usuario que ha validado.
+    fecha_validacion TIMESTAMP DEFAULT NULL
+    -- ALTER TABLE presupuesto ADD COLUMN estudio BOOLEAN DEFAULT NULL; ALTER TABLE presupuesto ADD COLUMN adjudicada BOOLEAN DEFAULT FALSE; ALTER TABLE presupuesto ADD COLUMN cif TEXT DEFAULT ''; ALTER TABLE presupuesto ADD COLUMN email TEXT DEFAULT ''; ALTER TABLE presupuesto ADD COLUMN forma_de_pago_id INT REFERENCES forma_de_pago DEFAULT NULL; ALTER TABLE presupuesto ADD COLUMN observaciones TEXT DEFAULT ''; ALTER TABLE presupuesto ADD COLUMN obra_id INT REFERENCES obra DEFAULT NULL; ALTER TABLE presupuesto RENAME COLUMN obra TO nombreobra; ALTER TABLE presupuesto ADD COLUMN usuario_id INT REFERENCES usuario DEFAULT NULL; ALTER TABLE presupuesto ADD COLUMN fecha_validacion TIMESTAMP DEFAULT NULL;  
 );
+
+----------------------------------
+-- Líneas de ofertas a clientes --
+----------------------------------
+CREATE TABLE linea_de_presupuesto(
+    id SERIAL PRIMARY KEY,
+    presupuesto_id INT REFERENCES pedido_venta,
+    producto_venta_id INT REFERENCES producto_venta DEFAULT NULL,
+    producto_compra_id INT REFERENCES producto_compra DEFAULT NULL,
+    descripcion TEXT DEFAULT '',  -- Texto libre para crear servicios al pasar
+    -- a pedido, que puede ser la descripción de un producto también si 
+    -- la línea se corresponde con un producto.
+    fechahora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    cantidad FLOAT,
+    precio FLOAT DEFAULT 0.0,
+    -- descuento FLOAT DEFAULT 0.0,
+    -- fecha_entrega DATE DEFAULT CURRENT_DATE,
+    -- texto_entrega TEXT DEFAULT '',
+    notas TEXT DEFAULT '' 
+);  --    NEW! 24/08/2013
+    -- GRANT ALL ON linea_de_presupuesto TO geotexan;
+    -- GRANT ALL ON linea_de_presupuesto_id_seq TO geotexan;
+
 
 --------------------
 -- Albarán salida --

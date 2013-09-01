@@ -296,6 +296,8 @@ class Pclase2tv:
         sumarán y se devolverán en el mismo orden.
         *args y **kw son parámetros adicionales que se pasarán al filtro.
         """
+        # PLAN: Esto se podría optimizar según esta receta:
+        # http://www.sqlobject.org/FAQ.html#efficient
         res = []
         for colsum in sumatorios:  # @UnusedVariable
             res.append(0.0)
