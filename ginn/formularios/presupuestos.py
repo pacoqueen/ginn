@@ -113,7 +113,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.add_connections(connections)
         self.inicializar_ventana()
         if self.objeto == None:
-            self.ir_a_primero()
+            self.ir_a_primero_de_los_mios() 
         else:
             self.ir_a(objeto)
         #if self.usuario and self.usuario.nivel >= 4:
@@ -888,13 +888,16 @@ class Presupuestos(Ventana, VentanaGenerica):
         # el usuario puede hacerlo.
         permiso_nuevos_pedidos = calcular_permiso_nuevos_pedidos(
                                     self.usuario, self.logger)
+        iconostockstado = self.wids['iconostado'].get_stock()
         self.wids['b_pedido'].set_sensitive(
-            self.objeto != None 
-            and not self.objeto.estudio
-            # and not aceptado_completo 
-            and self.objeto.validado
-            and permiso_nuevos_pedidos 
-            and self.objeto.esta_vigente())
+            (self.objeto 
+             and permiso_nuevos_pedidos 
+             and self.objeto.esta_vigente() 
+             and not self.objeto.estudio
+             and iconostockstado == gtk.STOCK_YES
+             and 1) 
+            or 0)
+              # and not aceptado_completo 
         # Botones de imprimir y enviar por correo. Todas las ofertas de 
         # estudio y las de pedido que cumplan las restricciones "duras".
         puede_imprimir = True
@@ -904,11 +907,12 @@ class Presupuestos(Ventana, VentanaGenerica):
                           pclases.SIN_FORMA_DE_PAGO, 
                           pclases.PRECIO_INSUFICIENTE):
                 puede_imprimir = False
-        if (not self.objeto.lineasDePresupuesto 
-            or not self.objeto.cif
-            or not self.objeto.direccion
-            or not self.objeto.email
-            or not self.objeto.telefono):
+        if (self.objeto and (
+                not self.objeto.lineasDePresupuesto 
+                or not self.objeto.cif
+                or not self.objeto.direccion
+                or not self.objeto.email
+                or not self.objeto.telefono)):
             puede_imprimir = False
         self.wids['b_imprimir'].set_sensitive(puede_imprimir)
         self.wids['b_carta'].set_sensitive(puede_imprimir)
@@ -1028,56 +1032,68 @@ class Presupuestos(Ventana, VentanaGenerica):
                 self.objeto.usuario.usuario, 
                 utils.str_fechahora(self.objeto.fechaValidacion)))
         else:
-            ch.set_label("No validado")
+            ch.set_label("No validado (clic para validar)")
 
     def comprobar_riesgo_cliente(self):
         """
         Actualiza el icono de estado de riesgo del cliente del presupuesto.
         """
+        if not self.objeto:
+            return
         self.objeto.notificador.desactivar()
         vpro = VentanaActividad(self.wids['ventana'], 
                                 "Comprobando condiciones de riesgo...")
         vpro.mostrar()
         vpro.mover()
-        if self.objeto.cliente:
-            if self.cache_credito == None:
-                vpro.mover()
-                importe_presupuesto = self.objeto.calcular_importe_total(
-                                    iva = True)
-                vpro.mover()
-                self.cache_credito = self.objeto.cliente.\
-                        calcular_credito_disponible(base = importe_presupuesto)
-            if self.cache_credito < 0:
-                vpro.mover()
-                color = self.wids['cbe_cliente'].child.get_colormap().\
-                            alloc_color("IndianRed1")
-            else:
-                color = self.wids['cbe_cliente'].child.get_colormap().\
-                            alloc_color("Light Green")
-            if self.objeto.get_estado_validacion() == pclases.VALIDABLE:
-                iconostockstado = gtk.STOCK_YES
-            else:
-                iconostockstado = gtk.STOCK_STOP
+        txtestado = self.objeto.get_str_estado()
+        if self.objeto.validado:    # True si ya validado manualmente.
+            iconostockstado = gtk.STOCK_YES
+            txtestado = "Validado por %s" % self.objeto.usuario.nombre
+            color = None    # Me da igual. Ya está validado. No voy a 
+                            # comprobar el crédito ni nada de eso.
         else:
-            color = None
-            iconostockstado = gtk.STOCK_DIALOG_WARNING
+            if self.objeto.cliente:
+                if self.cache_credito == None:
+                    vpro.mover()
+                    importe_presupuesto = self.objeto.calcular_importe_total(
+                                        iva = True)
+                    vpro.mover()
+                    self.cache_credito = self.objeto.cliente.\
+                            calcular_credito_disponible(
+                                    base = importe_presupuesto)
+                if self.cache_credito < 0:
+                    vpro.mover()
+                    color = self.wids['cbe_cliente'].child.get_colormap().\
+                                alloc_color("IndianRed1")
+                else:
+                    color = self.wids['cbe_cliente'].child.get_colormap().\
+                                alloc_color("Light Green")
+                if self.objeto.get_estado_validacion() == pclases.VALIDABLE:
+                    iconostockstado = gtk.STOCK_YES
+                else:
+                    iconostockstado = gtk.STOCK_STOP
+            else:
+                color = None
+                iconostockstado = gtk.STOCK_DIALOG_WARNING
         vpro.mover()
         self.wids['cbe_cliente'].child.modify_base(gtk.STATE_NORMAL, color)
         vpro.mover()
-        txtestado = self.objeto.get_str_estado()
         self.wids['iconostado'].set_from_stock(iconostockstado, 
                                                gtk.ICON_SIZE_DND)
         self.wids['iconostado'].set_tooltip_text(txtestado)
-        self.wids['b_pedido'].set_sensitive(
-                iconostockstado == gtk.STOCK_YES
-                and calcular_permiso_nuevos_pedidos(self.usuario, self.logger))
-        # TODO:
+        # Esto de abajo uya se hace en desactivar_widgets
+        #self.wids['b_pedido'].set_sensitive(
+        #        iconostockstado == gtk.STOCK_YES
+        #        and calcular_permiso_nuevos_pedidos(self.usuario, self.logger))
         # El equivalente a la validación automática es validarlo yo mismo.
         # Pero tengo que cuidarme de que no lo hayan validado ya antes. En ese 
         # caso no cambio nada a no ser que cambie algún precio o algo.
-        # if iconostockstado == gtk.STOCK_YES: 
+        if iconostockstado == gtk.STOCK_YES and not self.objeto.validado: 
         #         # Equivalente  a volver a llamar a la evaluación.
-        #     self.objeto.validado = self.usuario
+            self.objeto.validado = self.usuario
+            # Y si no lo dejo como estaba. No validado o validado por algún 
+            # otro. Si modifico algo ya se invalidará y volverá a autovalidar
+            # si es el caso.
         # else:
         #     self.objeto.validado = None
         self.actualizar_tooltip_de_cliente()
@@ -1178,7 +1194,8 @@ class Presupuestos(Ventana, VentanaGenerica):
             fax = "", 
             texto = "", 
             despedida = "", 
-            comercial = comercial)
+            comercial = comercial, 
+            validez = 0)
         pclases.Auditoria.nuevo(presupuesto, self.usuario, __file__)
         utils.dialogo_info('NUEVA OFERTA CREADA', 
                            'Nuevo presupuesto creado con éxito.\n\n'
@@ -1219,7 +1236,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             criterio = pclases.OR(
                     pclases.Presupuesto.q.nombrecliente.contains(a_buscar),
                     pclases.Presupuesto.q.nombreobra.contains(a_buscar),
-                    pclases.Presupuesto.q.personaContacto.contains(a_buscar),
+                    #pclases.Presupuesto.q.personaContacto.contains(a_buscar),
                     pclases.Presupuesto.q.id == ida_buscar)
             if solopedido:
                 criterio = pclases.AND(criterio, 
@@ -1280,6 +1297,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         Guarda el contenido de los entry y demás widgets de entrada
         de datos en el objeto y lo sincroniza con la BD.
         """
+        # Si guardo es que algo he modificado. Por tanto quito validación.
+        self.objeto.validado = False
         # Desactivo el notificador momentáneamente
         self.objeto.notificador.activar(lambda: None)
         errores = []
@@ -1298,6 +1317,12 @@ class Presupuestos(Ventana, VentanaGenerica):
                     self.objeto.obra = None
                     valor_ventana = self.wids['cbe_obra'].child.get_text()
                     colname = "nombreobra"
+                if colname == "cif":
+                    _valor_ventana = utils.parse_cif(valor_ventana)
+                    if _valor_ventana != valor_ventana:
+                        #raise ValueError, "CIF incorrecto."
+                        errores.append("CIF (formato incorrecto)")
+                    valor_ventana = _valor_ventana
                 setattr(self.objeto, colname, valor_ventana)
             except (ValueError, mx.DateTime.RangeError, TypeError):
                 errores.append(colname)
@@ -1334,7 +1359,10 @@ class Presupuestos(Ventana, VentanaGenerica):
         y avisará al usuario.
         """
         presupuesto = self.objeto
-        if utils.dialogo('¿Eliminar el presupuesto?\n\n\nATENCIÓN: Tenga en cuenta que si el presupuesto está aceptado se eliminará también \nla parte correspondiente de los pedidos relacionados con el mismo, etc...\n\n\nSI NO ESTÁ SEGURO, RESPONDA «NO».', 'BORRAR', padre = self.wids['ventana']):
+        if utils.dialogo('¿Eliminar el presupuesto?\n\n\n'
+                'SI NO ESTÁ SEGURO, RESPONDA «NO».', 
+                'BORRAR', 
+                padre = self.wids['ventana']):
             presupuesto.notificador.desactivar()
             try:
                 presupuesto.destroy_en_cascada(ventana = __file__)
@@ -1347,7 +1375,35 @@ class Presupuestos(Ventana, VentanaGenerica):
                 return
             self.objeto = None
             self.reset_cache_credito()
+            self.ir_a_primero_de_los_mios()
+
+    def ir_a_primero_de_los_mios(self):
+        if not self.usuario:
             self.ir_a_primero()
+        else:
+            if (self.usuario.nivel <= NIVEL_VALIDACION 
+                    or calcular_permiso_nuevos_pedidos(self.usuario, 
+                                                       self.logger)):
+                try:
+                    self.objeto = pclases.Presupuesto.select(orderBy="-id")[0]
+                except IndexError:
+                    self.objeto = None
+            else:
+                criterio = []
+                for yo_as_comercial in self.usuario.get_comerciales():
+                    criterio.append(
+                        pclases.Presupuesto.q.comercialID==yo_as_comercial.id)
+                presupuestos = pclases.Presupuesto.select(pclases.AND(
+                                    pclases.Presupuesto.q.comercialID != None,
+                                    pclases.OR(*criterio)), 
+                                orderBy = "-id")
+                #print presupuestos.count()
+                try:
+                    self.objeto = presupuestos[0]
+                except IndexError:
+                    self.objeto = None
+        self.actualizar_ventana()
+        
 
 
 def calcular_permiso_nuevos_pedidos(usuario, logger = None):
