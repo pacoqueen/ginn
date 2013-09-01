@@ -107,7 +107,8 @@ class Presupuestos(Ventana, VentanaGenerica):
                        "b_add/clicked": self.add_ldp, 
                        "b_drop/clicked": self.drop_ldp, 
                        "ch_validado/toggled": self.validar, 
-                       "tv_contenido/query-tooltip": self.tooltip_query
+                       "tv_contenido/query-tooltip": self.tooltip_query, 
+                       'ch_adjudicada/clicked': self.enviar_correo_adjudicada,
                       }  
         self.add_connections(connections)
         self.inicializar_ventana()
@@ -118,6 +119,9 @@ class Presupuestos(Ventana, VentanaGenerica):
         #if self.usuario and self.usuario.nivel >= 4:
         #    self.activar_widgets(False) # Para evitar manos rápidas al abrir.
         gtk.main()
+
+    def enviar_correo_adjudicada(self, ch):
+        print ch.get_active()
 
     def validar(self, ch):
         """
