@@ -56,6 +56,18 @@ def dibujar_logo(canvas, doc, ruta_logo):
                          ancho_proporcional, 
                          nuevo_alto)
 
+def dibujar_dir_fiscal(canvas, doc, dir_fiscal):
+    if dir_fiscal:
+        canvas.saveState()
+        canvas.rotate(90)
+        canvas.setFont("Helvetica", 7)
+        canvas.drawCentredString(PAGE_HEIGHT / 2, 
+                                 -0.5*cm,
+                                 dir_fiscal, 
+                                 )
+        canvas.rotate(-90)
+        canvas.restoreState()
+
 def build_tabla_contenido(data):
     """
     Construye la tabla del contenido del presupuesto.
@@ -312,7 +324,7 @@ def go(titulo,
        numpresupuesto = "", 
        incluir_condicionado_general = True, 
        forma_de_pago = None, 
-       dir_facturacion = None):
+       dir_fiscal = None):
     """
     Recibe el título del documento y la ruta completa del archivo.
     Si validez != None escribe una frase con la validez del presupuesto.
@@ -352,7 +364,12 @@ def go(titulo,
     #    story.insert(-2, build_condicionado(condicionado))
     story = utils.aplanar([i for i in story if i])
     _dibujar_logo = lambda c, d: dibujar_logo(c, d, ruta_logo)
-    doc.build(story, onFirstPage = _dibujar_logo)
+    _dibujar_dir_fiscal = lambda c, d: dibujar_dir_fiscal(c, d, dir_fiscal)
+    def dibujar_logo_y_dir_fiscal(c, d):
+        _dibujar_logo(c, d)
+        _dibujar_dir_fiscal(c, d)
+    doc.build(story, onFirstPage = dibujar_logo_y_dir_fiscal, 
+                     onLaterPages = _dibujar_dir_fiscal)
     # Agrego condiciones generales:
     if incluir_condicionado_general:
         from lib.PyPDF2 import PyPDF2
@@ -392,10 +409,11 @@ def go_from_presupuesto(presupuesto,
             lineas_empresa.append(presupuesto.comercial.correoe)
         else:
             lineas_empresa.append(dde.email)
-        dir_fiscal = "Datos fiscales: %s %s %s" % (
+        dir_fiscal = "Datos fiscales: %s %s %s %s" % (
                 dde.nombre, 
-                dde.get_dirfacturacion_completa(), 
-                dde.str_cif_o_nif())
+                dde.get_dir_facturacion_completa(), 
+                dde.str_cif_o_nif(), 
+                dde.cif)
     except IndexError:
         lineas_empresa = []
         dir_fiscal = ""
