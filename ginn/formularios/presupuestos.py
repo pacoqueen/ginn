@@ -1036,7 +1036,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         opciones_comerciales = [
             (c.id, c.empleado and c.empleado.get_nombre_completo() 
                 or "Comercial desconocido (%s)" % c.puid) 
-            for c in comerciales]
+            for c in comerciales
+            if c.empleado.activo]
         # CWT: Si no soy admin o equivalente, no puedo usar la opción de S/C
         if not self.usuario or self.usuario.nivel <= NIVEL_VALIDACION: 
             opciones_comerciales += [(-1, "Sin comercial relacionado")]

@@ -17972,6 +17972,26 @@ class DatosDeLaEmpresa(SQLObject, PRPCTOO):
         except IndexError:
             return ""
 
+    def get_dir_facturacion_completa(self):
+        res = "" 
+        if self.dirfacturacion:
+            res = self.dirfacturacion
+        if self.cp:
+            res += "; %s" % self.cpfacturacion
+        if self.ciudadfacturacion and self.provinciafacturacion:
+            if self.ciudadfacturacion == self.provinciafacturacion:
+                res += " - %s" % self.provinciafacturacion
+            else:
+                res += " - %s (%s)" % (self.ciudadfacturacion, 
+                                       self.provinciafacturacion)
+        elif self.ciudadfacturacion:
+            res += " - %s" % self.ciudadfacturacion
+        elif self.provinciafacturacion:
+            res += " - %s" % self.provinciafacturacion
+        elif self.paisfacturacion:
+            res += ". %s" % self.paisfacturacion
+        return res
+
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 class LogicMovimientos(SQLObject, PRPCTOO):

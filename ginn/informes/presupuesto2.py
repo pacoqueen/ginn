@@ -311,7 +311,8 @@ def go(titulo,
        texto_riesgo = None, 
        numpresupuesto = "", 
        incluir_condicionado_general = True, 
-       forma_de_pago = None):
+       forma_de_pago = None, 
+       dir_facturacion = None):
     """
     Recibe el título del documento y la ruta completa del archivo.
     Si validez != None escribe una frase con la validez del presupuesto.
@@ -391,13 +392,19 @@ def go_from_presupuesto(presupuesto,
             lineas_empresa.append(presupuesto.comercial.correoe)
         else:
             lineas_empresa.append(dde.email)
+        dir_fiscal = "Datos fiscales: %s %s %s" % (
+                dde.nombre, 
+                dde.get_dirfacturacion_completa(), 
+                dde.str_cif_o_nif())
     except IndexError:
         lineas_empresa = []
+        dir_fiscal = ""
     #lineas_contenido = presupuesto.lineasDePedido + presupuesto.servicios
     lineas_contenido = presupuesto.lineasDePresupuesto 
     datos_cliente = []
     if presupuesto.personaContacto != "":
-        datos_cliente.append("A la atención de %s" % (presupuesto.personaContacto))
+        datos_cliente.append("A la atención de %s" % (
+            presupuesto.personaContacto))
     datos_cliente.append(presupuesto.nombrecliente)
     datos_cliente.append(presupuesto.direccion)
     listadireccion = [presupuesto.cp, presupuesto.ciudad]
@@ -498,7 +505,8 @@ def go_from_presupuesto(presupuesto,
        texto_riesgo = texto_riesgo, 
        #numpresupuesto = presupuesto.numpresupuesto)
        numpresupuesto = presupuesto.id, 
-       forma_de_pago = fdp)
+       forma_de_pago = fdp, 
+       dir_fiscal = dir_fiscal)
     return nomarchivo
 
 
