@@ -10311,7 +10311,10 @@ class Presupuesto(SQLObject, PRPCTOO):
                 precioMinimo = round(ldp.producto.precioMinimo, 3)
             except AttributeError: # Es un producto que no existe o un servicio
                 precioMinimo = None
-            precioKilo = round(ldp.precioKilo, 3)
+            try:
+                precioKilo = round(ldp.precioKilo, 3)
+            except TypeError:   # Es None
+                precioKilo = None
             if (precioMinimo != None and precioKilo != None 
                     and precioKilo < precioMinimo):
                 validable = PRECIO_INSUFICIENTE

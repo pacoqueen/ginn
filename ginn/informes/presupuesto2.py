@@ -90,11 +90,16 @@ def build_tabla_contenido(data):
                     utils.float2str(d.get_subtotal()
                                     + (d.precio * d.descuento * d.cantidad)))
         elif isinstance(d, pclases.LineaDePresupuesto):
-            fila = (utils.float2str(d.cantidad, autodec = True), 
+            try:
+                unidad = d.producto.unidad
+            except AttributeError:
+                unidad = ""
+            fila = (utils.float2str(d.cantidad, autodec = True) + " " + unidad, 
                     # TODO: Añadir unidades del producto.
                     d.descripcion, 
-                    utils.float2str(d.precio), 
-                    utils.float2str(d.get_subtotal()))
+                    utils.float2str(d.precio) + " €" 
+                        + (unidad and "/" + unidad or ""), 
+                    utils.float2str(d.get_subtotal()) + " €")
         _fila = (fila[0], 
                  Paragraph(escribe(fila[1]), estilos["Normal"]),
                  Paragraph(escribe(fila[2]), estilo_numeros_tabla),
@@ -235,13 +240,14 @@ def build_tabla_totales(dic_totales):
     datos = []
     for clave in claves:
         datos += [["", clave, dic_totales[clave]]]
-    datos[-1][1] = Paragraph("<b>%s</b>" % datos[-1][1], 
-                             estilos["BodyText"])
     a_derecha = ParagraphStyle("A derecha", 
                                 parent = estilos["BodyText"])
     a_derecha.alignment = enums.TA_RIGHT
-    datos[-1][-1] = Paragraph("<b>%s</b>" % datos[-1][-1], 
+    # Pongo total en negrita
+    datos[2][-1] = Paragraph("<b>%s</b>" % datos[2][-1], 
                               a_derecha)
+    datos[2][1] = Paragraph("<b>%s</b>" % datos[2][1], 
+                             estilos["BodyText"])
     tabla = Table(datos, 
                   colWidths = (PAGE_WIDTH * 0.55,   # HACK: Para que ocupe lo  
                                PAGE_WIDTH * 0.15,   # mismo que la otra. 
@@ -412,11 +418,11 @@ def go_from_presupuesto(presupuesto,
                          "IVA %d%%" % (iva * 100), 
                          "TOTAL"], 
                "Base imponible":
-                    utils.float2str(presupuesto.calcular_base_imponible()), 
+                    utils.float2str(presupuesto.calcular_base_imponible())+" €",
                "IVA %d%%" % (iva * 100): 
-                    utils.float2str(presupuesto.calcular_total_iva()), 
+                    utils.float2str(presupuesto.calcular_total_iva())+" €", 
                "TOTAL": 
-                    utils.float2str(presupuesto.calcular_importe_total())
+                    utils.float2str(presupuesto.calcular_importe_total())+" €", 
                }
     if presupuesto.descuento:
         fila_descuento = "Descuento %s %%" % (
