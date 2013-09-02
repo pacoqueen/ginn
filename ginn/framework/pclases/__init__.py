@@ -10289,7 +10289,7 @@ class Presupuesto(SQLObject, PRPCTOO):
 
     def get_estado_validacion(self):
         """
-        Devuelve el estado de la validación del pedido en el momento de 
+        Devuelve el estado de la validación del presupuesto en el momento de 
         llamar a la función. Puede ser:
             NO_VALIDABLE: El cliente todavía no tiene ficha.
             VALIDABLE: Cumple todos los requisitos de validación automática.
@@ -10308,10 +10308,10 @@ class Presupuesto(SQLObject, PRPCTOO):
         validable = VALIDABLE
         for ldp in self.lineasDePresupuesto:
             try:
-                precioMinimo = ldp.producto.precioMinimo
+                precioMinimo = round(ldp.producto.precioMinimo, 3)
             except AttributeError: # Es un producto que no existe o un servicio
                 precioMinimo = None
-            precioKilo = ldp.precioKilo
+            precioKilo = round(ldp.precioKilo, 3)
             if (precioMinimo != None and precioKilo != None 
                     and precioKilo < precioMinimo):
                 validable = PRECIO_INSUFICIENTE

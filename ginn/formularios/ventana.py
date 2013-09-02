@@ -235,6 +235,20 @@ class Ventana:
                     except KeyError:
                         self.salir(None, mostrar_ventana = False)
                         # NAV plagiarism one more time!
+                elif (event.keyval == gtk.gdk.keyval_from_name('d') 
+                        and event.state & gtk.gdk.CONTROL_MASK 
+                        and event.state & gtk.gdk.MOD1_MASK
+                        and self.usuario and self.usuario.nivel == 0):
+                    # Ctrl + Alt + d
+                    self.ch_pclasesdebug.set_active(
+                            not self.ch_pclasesdebug.get_active())
+                elif (event.keyval == gtk.gdk.keyval_from_name('v') 
+                        and event.state & gtk.gdk.CONTROL_MASK 
+                        and event.state & gtk.gdk.MOD1_MASK
+                        and self.usuario and self.usuario.nivel == 0):
+                    # Ctrl + Alt + v
+                    self.ch_pclasesverbose.set_active(
+                            not self.ch_pclasesverbose.get_active())
                 else:
                     # DONE: Aquí debería hacer algo para propagar el evento, 
                     #       porque si no la barra de menú superior no 
@@ -262,14 +276,16 @@ class Ventana:
     def add_debug_admin_controls(self, barrastado):
         from framework import pclases
         hbox_barrastado = barrastado.children()[0].children()[0]
-        ch_pclasesdebug = gtk.CheckButton(label = "DEBUG")
-        ch_pclasesverbose = gtk.CheckButton(label = "VERBOSE")
-        hbox_barrastado.pack_start(ch_pclasesdebug, expand = False)
-        hbox_barrastado.pack_start(ch_pclasesverbose, expand = False)
-        ch_pclasesdebug.child.modify_font(pango.FontDescription("sans oblique 8"))
-        ch_pclasesverbose.child.modify_font(pango.FontDescription("sans oblique 8"))
-        ch_pclasesdebug.set_active(pclases.DEBUG)
-        ch_pclasesverbose.set_active(pclases.VERBOSE)
+        self.ch_pclasesdebug = gtk.CheckButton(label = "DEBUG")
+        self.ch_pclasesverbose = gtk.CheckButton(label = "VERBOSE")
+        hbox_barrastado.pack_start(self.ch_pclasesdebug, expand = False)
+        hbox_barrastado.pack_start(self.ch_pclasesverbose, expand = False)
+        self.ch_pclasesdebug.child.modify_font(
+                pango.FontDescription("sans oblique 8"))
+        self.ch_pclasesverbose.child.modify_font(
+                pango.FontDescription("sans oblique 8"))
+        self.ch_pclasesdebug.set_active(pclases.DEBUG)
+        self.ch_pclasesverbose.set_active(pclases.VERBOSE)
         def check_pclases_status(chdebug, chverbose):
             chdebug.set_active(pclases.DEBUG)
             chverbose.set_active(pclases.VERBOSE)
@@ -278,13 +294,13 @@ class Ventana:
             pclases.DEBUG = b.get_active()
         def fv(b):
             pclases.VERBOSE = b.get_active()
-        ch_pclasesdebug.connect("toggled", fd)
-        ch_pclasesverbose.connect("toggled", fv)
-        ch_pclasesdebug.show()
-        ch_pclasesverbose.show()
+        self.ch_pclasesdebug.connect("toggled", fd)
+        self.ch_pclasesverbose.connect("toggled", fv)
+        self.ch_pclasesdebug.show()
+        self.ch_pclasesverbose.show()
         import gobject
-        gobject.timeout_add(1000, check_pclases_status, ch_pclasesdebug, 
-                                                        ch_pclasesverbose)
+        gobject.timeout_add(1000, check_pclases_status, self.ch_pclasesdebug, 
+                                                        self.ch_pclasesverbose)
 
     def suspender(self, widget):
         """
