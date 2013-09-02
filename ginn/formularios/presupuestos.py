@@ -932,7 +932,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         # el usuario puede hacerlo.
         permiso_nuevos_pedidos = calcular_permiso_nuevos_pedidos(
                                     self.usuario, self.logger)
-        iconostockstado = self.wids['iconostado'].get_stock()
+        iconostockstado = self.wids['iconostado'].get_stock()[0]
         self.wids['b_pedido'].set_sensitive(
             (self.objeto 
              and permiso_nuevos_pedidos 
@@ -945,19 +945,21 @@ class Presupuestos(Ventana, VentanaGenerica):
         # Botones de imprimir y enviar por correo. Todas las ofertas de 
         # estudio y las de pedido que cumplan las restricciones "duras".
         puede_imprimir = True
-        if self.objeto and not self.objeto.estudio:
-            estado = self.objeto.get_estado_validacion()
-            if estado in (pclases.PLAZO_EXCESIVO, 
-                          pclases.SIN_FORMA_DE_PAGO, 
-                          pclases.PRECIO_INSUFICIENTE):
+        if self.objeto and not self.objeto.validado:
+            # Si está validado, se puede imprimir sin problemas.
+            if self.objeto and not self.objeto.estudio:
+                estado = self.objeto.get_estado_validacion()
+                if estado in (pclases.PLAZO_EXCESIVO, 
+                              pclases.SIN_FORMA_DE_PAGO, 
+                              pclases.PRECIO_INSUFICIENTE):
+                    puede_imprimir = False
+            if (self.objeto and (
+                    not self.objeto.lineasDePresupuesto 
+                    or not self.objeto.cif
+                    or not self.objeto.direccion
+                    or not self.objeto.email
+                    or not self.objeto.telefono)):
                 puede_imprimir = False
-        if (self.objeto and (
-                not self.objeto.lineasDePresupuesto 
-                or not self.objeto.cif
-                or not self.objeto.direccion
-                or not self.objeto.email
-                or not self.objeto.telefono)):
-            puede_imprimir = False
         self.wids['b_imprimir'].set_sensitive(puede_imprimir)
         self.wids['b_carta'].set_sensitive(puede_imprimir)
         self.wids['b_enviar'].set_sensitive(puede_imprimir)
