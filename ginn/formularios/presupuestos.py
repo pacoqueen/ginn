@@ -1496,19 +1496,22 @@ class Presupuestos(Ventana, VentanaGenerica):
         Devuelve un correo de usuario con permisos de validación que 
         no sea admin. Uno diferente en cada llamada.
         """
-        round_robin = [u.email 
-                for u in pclases.Usuario.select(
-                    pclases.Usuario.q.nivel <= NIVEL_VALIDACION)
-                if u.usuario != "admin"]
-        if not hasattr(self, "ultimo_validador"):
-            self.ultimo_validador = validador = round_robin[0]
-        else:
-            posultimo = round_robin.index(self.ultimo_validador)
-            posvalidador = posultimo + 1
-            if posvalidador >= len(round_robin):
-                posvalidador = 0
-            self.ultimo_validador = validador = round_robin[posvalidador]
-        return validador
+        # TODO: OJO: HARCODED
+        return ["nzumer@geotexan.com", "efigueroa@geotexan.com"]
+        # CWT: Nada de RR. Correo a ambos.
+        #round_robin = [u.email 
+        #        for u in pclases.Usuario.select(
+        #            pclases.Usuario.q.nivel <= NIVEL_VALIDACION)
+        #        if u.usuario != "admin"]
+        #if not hasattr(self, "ultimo_validador"):
+        #    self.ultimo_validador = validador = round_robin[0]
+        #else:
+        #    posultimo = round_robin.index(self.ultimo_validador)
+        #    posvalidador = posultimo + 1
+        #    if posvalidador >= len(round_robin):
+        #        posvalidador = 0
+        #    self.ultimo_validador = validador = round_robin[posvalidador]
+        #return validador
 
 
 def calcular_permiso_nuevos_pedidos(usuario, logger = None):

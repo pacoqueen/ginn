@@ -310,7 +310,8 @@ def go(titulo,
        condicionado = None, 
        texto_riesgo = None, 
        numpresupuesto = "", 
-       incluir_condicionado_general = True):
+       incluir_condicionado_general = True, 
+       forma_de_pago = None):
     """
     Recibe el título del documento y la ruta completa del archivo.
     Si validez != None escribe una frase con la validez del presupuesto.
@@ -327,6 +328,7 @@ def go(titulo,
     contenido = build_tabla_contenido(lineas_contenido)
     totales = build_tabla_totales(totales)
     despedida = build_texto(despedida)
+    forma_pago = build_texto(forma_de_pago)
     story = [encabezado, 
              datos_cliente, 
              entradilla, 
@@ -334,6 +336,8 @@ def go(titulo,
              contenido, 
              Spacer(1, 0.25 * cm), 
              totales, 
+             Spacer(1, 1 * cm),
+             forma_pago, 
              Spacer(1, 2 * cm), 
              texto, 
              Spacer(1, 0.2 * cm), 
@@ -341,7 +345,7 @@ def go(titulo,
     #if validez:
         #story.insert(9, build_validez(validez))
     if texto_riesgo:
-        story.insert(-4, build_texto_riesgo(texto_riesgo))
+        story.insert(-6, build_texto_riesgo(texto_riesgo))
     #if condicionado: # El condicionado es el texto en sí.
     #    story.insert(-2, Spacer(1, 2 * cm))
     #    story.insert(-2, build_condicionado(condicionado))
@@ -474,6 +478,10 @@ def go_from_presupuesto(presupuesto,
         condicionado = "Condiciones particulares:\n" + presupuesto.texto
     else:
         condicionado = None
+    try:
+        fdp = "Forma de pago: %s" % presupuesto.formaDePago.toString()
+    except AttributeError:
+        fdp = ""
     nomarchivo = go(
       "Presupuesto %s (%s)" % (presupuesto.nombrecliente, 
                                utils.str_fecha(presupuesto.fecha)), 
@@ -489,7 +497,8 @@ def go_from_presupuesto(presupuesto,
        validez = validez, 
        texto_riesgo = texto_riesgo, 
        #numpresupuesto = presupuesto.numpresupuesto)
-       numpresupuesto = presupuesto.id)
+       numpresupuesto = presupuesto.id, 
+       forma_de_pago = fdp)
     return nomarchivo
 
 
