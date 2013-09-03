@@ -10205,10 +10205,10 @@ class Presupuesto(SQLObject, PRPCTOO):
         try:
             iva = self.cliente.get_iva_norm()
         except AttributeError:
-            try:
-                dde = DatosDeLaEmpresa.select()[0]
-                iva = dde.iva
-            except IndexError:
+            if (self.pais and self.pais.upper() 
+                    not in ("ESPAÑA", "ESPAñA", "SPAIN")):
+                iva = 0
+            else:
                 iva = 0.21
         total_iva = utils.ffloat(subtotal) * iva 
         return total_iva

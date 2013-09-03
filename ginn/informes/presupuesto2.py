@@ -452,10 +452,13 @@ def go_from_presupuesto(presupuesto,
         datos_cliente.append("Ref. obra: <b>%s</b>" % ref_obra)
     fecha_entradilla = utils.str_fecha(presupuesto.fecha)
     try:
-        dde = pclases.DatosDeLaEmpresa.select()[0]
-        iva = dde.iva
-    except IndexError:
-        iva = 0.21
+        iva = presupuesto.cliente.get_iva_norm()
+    except AttributeError:
+        if (presupuesto.pais and presupuesto.pais.upper() 
+                not in ("ESPAÑA", "ESPAñA", "SPAIN")):
+            iva = 0
+        else:
+            iva = 0.21
     totales = {"orden": ["Base imponible", 
                          "IVA %d%%" % (iva * 100), 
                          "TOTAL"], 
