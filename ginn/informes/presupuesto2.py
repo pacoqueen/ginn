@@ -324,7 +324,8 @@ def go(titulo,
        numpresupuesto = "", 
        incluir_condicionado_general = True, 
        forma_de_pago = None, 
-       dir_fiscal = None):
+       dir_fiscal = None, 
+       firma_comercial = None):
     """
     Recibe el título del documento y la ruta completa del archivo.
     Si validez != None escribe una frase con la validez del presupuesto.
@@ -342,6 +343,7 @@ def go(titulo,
     totales = build_tabla_totales(totales)
     despedida = build_texto(despedida)
     forma_pago = build_texto(forma_de_pago)
+    comercial = build_texto(firma_comercial)
     story = [encabezado, 
              datos_cliente, 
              entradilla, 
@@ -354,11 +356,13 @@ def go(titulo,
              Spacer(1, 2 * cm), 
              texto, 
              Spacer(1, 0.2 * cm), 
-             despedida]
+             despedida, 
+             Spacer(1, 1 * cm), 
+             comercial]
     #if validez:
         #story.insert(9, build_validez(validez))
     if texto_riesgo:
-        story.insert(-6, build_texto_riesgo(texto_riesgo))
+        story.insert(-8, build_texto_riesgo(texto_riesgo))
     #if condicionado: # El condicionado es el texto en sí.
     #    story.insert(-2, Spacer(1, 2 * cm))
     #    story.insert(-2, build_condicionado(condicionado))
@@ -507,6 +511,15 @@ def go_from_presupuesto(presupuesto,
         fdp = "Forma de pago: %s" % presupuesto.formaDePago.toString()
     except AttributeError:
         fdp = ""
+    if presupuesto.comercial:
+        firma_comercial = "%s %s\n%s\n%s\n%s" % (
+                presupuesto.comercial.empleado.nombre, 
+                presupuesto.comercial.empleado.apellidos, 
+                presupuesto.comercial.cargo, 
+                presupuesto.comercial.telefono, 
+                presupuesto.comercial.correoe)
+    else:
+        firma_comercial = ""
     nomarchivo = go(
       "Presupuesto %s (%s)" % (presupuesto.nombrecliente, 
                                utils.str_fecha(presupuesto.fecha)), 
@@ -524,7 +537,8 @@ def go_from_presupuesto(presupuesto,
        #numpresupuesto = presupuesto.numpresupuesto)
        numpresupuesto = presupuesto.id, 
        forma_de_pago = fdp, 
-       dir_fiscal = dir_fiscal)
+       dir_fiscal = dir_fiscal, 
+       firma_comercial = firma_comercial)
     return nomarchivo
 
 

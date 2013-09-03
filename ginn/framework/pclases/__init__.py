@@ -10309,7 +10309,8 @@ class Presupuesto(SQLObject, PRPCTOO):
         for ldp in self.lineasDePresupuesto:
             try:
                 precioMinimo = round(ldp.producto.precioMinimo, 3)
-            except AttributeError: # Es un producto que no existe o un servicio
+            except (AttributeError, TypeError): # Es un producto que no existe,
+                    # no tiene precio mínimo su familia o un es un servicio.
                 precioMinimo = None
             try:
                 precioKilo = round(ldp.precioKilo, 3)
