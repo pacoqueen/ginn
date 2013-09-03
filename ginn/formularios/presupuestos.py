@@ -1016,7 +1016,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         esta función en ese caso.
         """
         fdps = [(fdp.id, fdp.toString()) 
-                for fdp in pclases.FormaDePago.select(orderBy = "plazo")]
+                for fdp in pclases.FormaDePago.select(
+                    orderBy = "documento_de_pago_id, plazo")]
         utils.rellenar_lista(self.wids['cb_forma_cobro'], fdps)
         utils.rellenar_lista(self.wids['cbe_cliente'], 
             [(p.id, p.nombre) for p in 
