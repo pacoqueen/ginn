@@ -931,7 +931,10 @@ class Presupuestos(Ventana, VentanaGenerica):
             try:
                 self.wids[w].set_sensitive(s)
             except:
-                print w
+                self.logger.error("presupuestos::activar_widgets -> "
+                                  "Widget %s no encontrado." % w)
+                if pclases.DEBUG:
+                    print w
         # Botón de hacer pedidos. Solo para ofertas de pedido validadas y si 
         # el usuario puede hacerlo.
         permiso_nuevos_pedidos = calcular_permiso_nuevos_pedidos(
@@ -949,6 +952,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         # Botones de imprimir y enviar por correo. Todas las ofertas de 
         # estudio y las de pedido que cumplan las restricciones "duras".
         puede_imprimir = True
+        puede_adjudicarse = True
         if self.objeto and not self.objeto.validado:
             # Si está validado, se puede imprimir sin problemas.
             if self.objeto and not self.objeto.estudio:
@@ -957,6 +961,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                               pclases.SIN_FORMA_DE_PAGO, 
                               pclases.PRECIO_INSUFICIENTE):
                     puede_imprimir = False
+                    puede_adjudicar = False
             if (self.objeto and (
                     not self.objeto.lineasDePresupuesto 
                     or not self.objeto.cif
@@ -967,6 +972,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.wids['b_imprimir'].set_sensitive(puede_imprimir)
         self.wids['b_carta'].set_sensitive(puede_imprimir)
         self.wids['b_enviar'].set_sensitive(puede_imprimir)
+        self.wids['ch_adjudicada'].set_sensitive(puede_adjudicarse)
 
     def refinar_resultados_busqueda(self, resultados):
         """
@@ -1528,7 +1534,8 @@ def calcular_permiso_nuevos_pedidos(usuario, logger = None):
             ventana_pedidos = pclases.Ventana.select(pclases.Ventana.q.fichero == "pedidos_de_venta.py")[0]
         except IndexError:
             if logger:
-                logger.error("presupuestos::activar_widgets -> Ventana de pedidos de venta no encontrada en la BD.")
+                logger.error("presupuestos::calcular_permiso_nuevos_pedidos "
+                    "-> Ventana de pedidos de venta no encontrada en la BD.")
             permiso_nuevos_pedidos = False
         else:
             permisos_ventana_pedidos = usuario.get_permiso(ventana_pedidos)

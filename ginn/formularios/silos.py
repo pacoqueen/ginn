@@ -177,10 +177,11 @@ class Silos(Ventana):
         for carga in silo.cargasSilo:
             vpro.set_valor(i/tot, 'Analizando cargas...')
             i += 1
-            if carga.fechaCarga not in datos:
-                datos[carga.fechaCarga] = {'cargas': [carga, ], 'descargas': []}
+            fechaCarga = utils.convertir_a_fechahora(carga.fechaCarga)
+            if fechaCarga not in datos:
+                datos[fechaCarga] = {'cargas': [carga, ], 'descargas': []}
             else:
-                datos[carga.fechaCarga]['cargas'].append(carga)
+                datos[fechaCarga]['cargas'].append(carga)
         for descarga in silo.consumos:
             vpro.set_valor(i/tot, 'Analizando consumos...')
             i += 1
@@ -208,7 +209,8 @@ class Silos(Ventana):
         i = 0.0
         tot = len(cd_fechas)
         datos = []
-        fechas = [utils.convertir_a_fechahora(f) for f in cd_fechas.keys()]
+        fechas = cd_fechas.keys()
+        fechas.sort()
         total_cargado = 0
         total_descargado = 0
         for fecha in fechas:
