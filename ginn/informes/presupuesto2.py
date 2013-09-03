@@ -107,9 +107,9 @@ def build_tabla_contenido(data):
             except AttributeError:
                 unidad = ""
             fila = (utils.float2str(d.cantidad, autodec = True) + " " + unidad, 
-                    # TODO: Añadir unidades del producto.
                     d.descripcion, 
-                    utils.float2str(d.precio) + " €" 
+                    utils.float2str(d.precio, precision = 3, 
+                                    autodec = True) + " €" 
                         + (unidad and "/" + unidad or ""), 
                     utils.float2str(d.get_subtotal()) + " €")
         _fila = (fila[0], 
