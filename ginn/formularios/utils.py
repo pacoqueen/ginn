@@ -1877,8 +1877,7 @@ def ejecutar_interprete(source, *arguments, **keywords):
 
 def parse_fecha(txt):
     """
-    Devuelve un mx.DateTime con la fecha de
-    txt.
+    Devuelve un mx.DateTime con la fecha de txt.
     Si no está en formato dd{-/\s}mm{/-\s}yy[yy] lanza una
     excepción.
     Reconoce también textos especiales para interpretar fechas:

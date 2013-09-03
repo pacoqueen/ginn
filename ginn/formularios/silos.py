@@ -208,8 +208,7 @@ class Silos(Ventana):
         i = 0.0
         tot = len(cd_fechas)
         datos = []
-        fechas = cd_fechas.keys()
-        fechas.sort(utils.comparar_como_fechahora)
+        fechas = [utils.convertir_a_fechahora(f) for f in cd_fechas.keys()]
         total_cargado = 0
         total_descargado = 0
         for fecha in fechas:
