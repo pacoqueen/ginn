@@ -1974,7 +1974,7 @@ def parse_fechahora(txt):
     excepción.
     """
     try:
-        if isinstance(txt, datetime.datetime):
+        if isinstance(txt, (datetime.datetime, datetime.date)):
             txt = txt.strftime("%d/%m/%Y %H:%M:%S")
     except ImportError:
         pass
