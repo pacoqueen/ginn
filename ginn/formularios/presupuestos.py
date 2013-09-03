@@ -149,7 +149,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 #dests = ["informatica@geotexan.com"]
                 # Correo de riesgo de cliente
                 texto = "Se ha creado la oferta %d "\
-                        "para el cliente %s que está en riesgo: crédito"\
+                        "para el cliente %s, que está en riesgo: crédito "\
                         "disponible: %s. Importe del presupuesto: %s." % (
                             self.objeto.id, 
                             self.objeto.nombrecliente, 
@@ -253,7 +253,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                                     self.objeto.calcular_importe_total()))
                     enviar_correoe(rte, 
                                    dests,
-                                   "Alta de nueva obra", 
+                                   "Alta de nueva adjudicación de oferta", 
                                    texto, 
                                    servidor = servidor, 
                                    usuario = smtpuser, 
@@ -589,8 +589,9 @@ class Presupuestos(Ventana, VentanaGenerica):
                 break
             itr = model.iter_next(itr)
         col = self.wids['tv_contenido'].get_column(1)
-        self.wids['tv_contenido'].grab_focus()
-        self.wids['tv_contenido'].set_cursor(path, col, True)
+        # TODO: Me da algunos problemillas en Windows. Desactivo de momento...
+        #self.wids['tv_contenido'].grab_focus()
+        #self.wids['tv_contenido'].set_cursor(path, col, True)
     
     def drop_ldp(self, boton):
         """
@@ -838,8 +839,9 @@ class Presupuestos(Ventana, VentanaGenerica):
         # TODO: Si es rollo, poner una cantidad múltiplo de sus m²
         # Sigo con el foco en la cantidad.
         col = self.wids['tv_contenido'].get_column(0)
-        self.wids['tv_contenido'].grab_focus()
-        self.wids['tv_contenido'].set_cursor(path, col, True)
+        # TODO: Me da algunos problemillas en Windows. Desactivo de momento...
+        #self.wids['tv_contenido'].grab_focus()
+        #self.wids['tv_contenido'].set_cursor(path, col, True)
 
     def cambiar_precio_ldp(self, cell, path, texto):
         """
@@ -860,7 +862,9 @@ class Presupuestos(Ventana, VentanaGenerica):
                 pclases.Auditoria.modificado(ldp, self.usuario, __file__)
                 self.rellenar_tablas()
                 # Vuelvo al botón de añadir líneas.
-                self.wids['b_add'].grab_focus()
+                # TODO: Me da algunos problemillas en Windows. 
+                # Desactivo el forzado de mover el foco de momento...
+                #self.wids['b_add'].grab_focus()
 
     def cambiar_cantidad_ldp(self, cell, path, texto):
         """
@@ -1038,7 +1042,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             (c.id, c.empleado and c.empleado.get_nombre_completo() 
                 or "Comercial desconocido (%s)" % c.puid) 
             for c in comerciales
-            if c.empleado.activo]
+            if c.empleado.activo or c == self.objeto.comercial]
         # CWT: Si no soy admin o equivalente, no puedo usar la opción de S/C
         if not self.usuario or self.usuario.nivel <= NIVEL_VALIDACION: 
             opciones_comerciales += [(-1, "Sin comercial relacionado")]
