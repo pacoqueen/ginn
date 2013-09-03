@@ -19,7 +19,7 @@ class CellRendererAutoComplete(gtk.CellRendererText):
         if not self.get_property('editable'):
             return
         entry = gtk.Entry()
-        entry.set_text("PRUEBONES")
+        entry.set_text("")
         entry.set_completion(self.completion)
         entry.connect('editing-done', self.editing_done, path)
         entry.show()
