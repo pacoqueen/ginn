@@ -4813,7 +4813,8 @@ class Proveedor(SQLObject, PRPCTOO):
             depf = unicode(de.paisfacturacion.strip())
             res = cpf != "" and depf.lower() != cpf.lower()
         except IndexError:
-            res = cpf != "" and cpf.lower() != unicode("españa")
+            res = (cpf != "" and cpf.lower() != unicode("españa") 
+                             and cpf.lower() != unicode("spain"))
         return res
 
     extranjero = property(es_extranjero)

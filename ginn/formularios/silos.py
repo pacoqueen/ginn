@@ -178,6 +178,11 @@ class Silos(Ventana):
             vpro.set_valor(i/tot, 'Analizando cargas...')
             i += 1
             fechaCarga = utils.convertir_a_fechahora(carga.fechaCarga)
+            if not fechaCarga:
+                self.logger.error("silos::leer_datos_cargas_descargas -> "
+                    "La carga %s tiene una fecha no válida: %s" % (
+                        carga.puid, carga.fechaCarga))
+                continue
             if fechaCarga not in datos:
                 datos[fechaCarga] = {'cargas': [carga, ], 'descargas': []}
             else:
@@ -186,9 +191,14 @@ class Silos(Ventana):
             vpro.set_valor(i/tot, 'Analizando consumos...')
             i += 1
             if descarga.parteDeProduccionID != None:
-                fecha = descarga.parteDeProduccion.fecha
+                fecha = utils.convertir_a_fechahora(
+                            descarga.parteDeProduccion.fecha)
             else:
-                fecha = None
+                #fecha = None
+                self.logger.error("silos::leer_datos_cargas_descargas -> "
+                    "La descarga %s no tiene fecha porque no tiene parte"
+                    "de producción." % (descarga.puid))
+                continue
             if fecha not in datos:
                 datos[fecha] = {'cargas': [], 'descargas': [descarga, ]}
             else:

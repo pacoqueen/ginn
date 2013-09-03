@@ -68,7 +68,8 @@ class AuditViewer(Ventana):
                        'b_actualizar/clicked': self.rellenar_widgets}
         self.add_connections(connections)
         self.wids['e_fechaini'].set_text(utils.str_fecha(
-            restar_semana(mx.DateTime.today())))
+            # restar_semana(mx.DateTime.today())))
+            mx.DateTime.today() - mx.DateTime.oneDay))
         self.wids['hbox1'].set_property("visible", False)
         self.wids['filtro_fecha'].set_visible(True)
         cols = (('Usuario', 'gobject.TYPE_STRING', False, True, False, None),

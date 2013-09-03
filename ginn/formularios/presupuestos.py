@@ -470,7 +470,10 @@ class Presupuestos(Ventana, VentanaGenerica):
                                         cerrado = False, 
                                         comercial = self.objeto.comercial, 
                                         obra = self.objeto.obra, 
-                                        formaDePago = self.objeto.formaDePago)
+                                        formaDePago = self.objeto.formaDePago, 
+                                        validado = self.objeto.validado 
+                                            and True or False, 
+                                        usuario = self.objeto.validado)
                 pclases.Auditoria.nuevo(nuevopedido, self.usuario, __file__)
                 self.actualizar_ventana()
             if nuevopedido != None:
@@ -1155,6 +1158,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         # else:
         #     self.objeto.validado = None
         self.actualizar_tooltip_de_cliente()
+        # FIXME: A veces no se oculta la ventana de progreso en el ordenador de Rafa. ¿Porcuá?
         vpro.ocultar()
         self.objeto.notificador.activar(self.aviso_actualizacion)        
 
