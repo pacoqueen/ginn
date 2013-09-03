@@ -961,7 +961,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                               pclases.SIN_FORMA_DE_PAGO, 
                               pclases.PRECIO_INSUFICIENTE):
                     puede_imprimir = False
-                    puede_adjudicar = False
+                    puede_adjudicarse = False
             if (self.objeto and (
                     not self.objeto.lineasDePresupuesto 
                     or not self.objeto.cif
