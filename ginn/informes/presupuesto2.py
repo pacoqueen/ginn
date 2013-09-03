@@ -357,7 +357,7 @@ def go(titulo,
              texto, 
              Spacer(1, 0.2 * cm), 
              despedida, 
-             Spacer(1, 1 * cm), 
+             Spacer(1, 0.5 * cm), 
              comercial]
     #if validez:
         #story.insert(9, build_validez(validez))
@@ -409,10 +409,13 @@ def go_from_presupuesto(presupuesto,
                           "Telf.: %s" % (dde.telefono)]
         if dde.fax:
             lineas_empresa.append("Fax: %s" % (dde.fax))
-        if presupuesto.comercial and presupuesto.comercial.correoe:
-            lineas_empresa.append(presupuesto.comercial.correoe)
-        else:
+        if dde.email:
             lineas_empresa.append(dde.email)
+        elif presupuesto.comercial and presupuesto.comercial.correoe:
+            lineas_empresa.append(presupuesto.comercial.correoe)
+        if dde.web:
+            lineas_empresa.append('<a href=http://%s>%s</a>' % (
+                dde.web, dde.web))
         dir_fiscal = "Datos fiscales: %s %s %s %s" % (
                 dde.nombre, 
                 dde.get_dir_facturacion_completa(), 
@@ -441,6 +444,12 @@ def go_from_presupuesto(presupuesto,
         datos_cliente.append("Tlf.: %s" % (presupuesto.telefono))
     if presupuesto.fax.strip() != "":
         datos_cliente.append("Fax.: %s" % (presupuesto.fax))
+    if presupuesto.obra or presupuesto.nombreobra.strip():
+        try:
+            ref_obra = presupuesto.obra.obra.get_str_obra()
+        except AttributeError:
+            ref_obra = presupuesto.nombreobra
+        datos_cliente.append("Ref. obra: <b>%s</b>" % ref_obra)
     fecha_entradilla = utils.str_fecha(presupuesto.fecha)
     try:
         dde = pclases.DatosDeLaEmpresa.select()[0]
@@ -512,12 +521,21 @@ def go_from_presupuesto(presupuesto,
     except AttributeError:
         fdp = ""
     if presupuesto.comercial:
-        firma_comercial = "%s %s\n%s\n%s\n%s" % (
-                presupuesto.comercial.empleado.nombre, 
-                presupuesto.comercial.empleado.apellidos, 
-                presupuesto.comercial.cargo, 
-                presupuesto.comercial.telefono, 
-                presupuesto.comercial.correoe)
+        firma_comercial = '<b>%s %s</b>\n<i>%s</i>\n%s\n<u>'\
+                          '<a href="mailto:%s">%s</a></u>'\
+                          '<b> </b>' % (
+                presupuesto.comercial.empleado.nombre
+                    and presupuesto.comercial.empleado.nombre or "", 
+                presupuesto.comercial.empleado.apellidos 
+                    and presupuesto.comercial.empleado.apellidos or "", 
+                presupuesto.comercial.cargo
+                    and presupuesto.comercial.cargo or "", 
+                presupuesto.comercial.telefono 
+                    and presupuesto.comercial.telefono or "", 
+                presupuesto.comercial.correoe 
+                    and presupuesto.comercial.correoe or "", 
+                presupuesto.comercial.correoe 
+                    and presupuesto.comercial.correoe or "")
     else:
         firma_comercial = ""
     nomarchivo = go(

@@ -2893,7 +2893,8 @@ CREATE TABLE datos_de_la_empresa(
     iva FLOAT DEFAULT 0.21, -- IVA soportado por defecto, sin contar R.E.
     ped_compra_texto_fijo TEXT DEFAULT 'ROGAMOS NOS REMITAN COPIA DE ESTE PEDIDO SELLADO Y FIRMADO POR UDS.',   -- Sólo lo puede editar el usuario de nivel 0 (admin).
     ped_compra_texto_editable TEXT DEFAULT 'ESTA MERCANCIA SE DEBE ENTREGAR CON ALBARAN DE GEOTEXAN S.A. Y ENVIARNOS COPIA DEL MISMO CON LA FIRMA Y SELLO DE RECIBIDO POR EL CLIENTE. ESTO ES CONDICIÓN IMPRESCINDIBLE PARA LA TRAMITACIÓN DE SU FACTURA.', -- Se puede editar por cualquiera con permiso de escritura en pedidos de compra.
-    ped_compra_texto_editable_con_nivel1 TEXT DEFAULT 'PAGO A 120 DÍAS F.F. PAGO LOS 25.' -- Solo lo puede editar en perdidos de compra los usuarios con nivel 0 ó 1.
+    ped_compra_texto_editable_con_nivel1 TEXT DEFAULT 'PAGO A 120 DÍAS F.F. PAGO LOS 25.', -- Solo lo puede editar en perdidos de compra los usuarios con nivel 0 ó 1.
+    web TEXT DEFAULT ''
 );
 
 ----------------------------------------------
