@@ -1190,6 +1190,7 @@
                                               <widget class="GtkTextView" id="txt_observaciones">
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">True</property>
+                                                <property name="wrap_mode">word</property>
                                               </widget>
                                             </child>
                                           </widget>
