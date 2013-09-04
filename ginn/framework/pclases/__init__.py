@@ -10403,7 +10403,13 @@ class Presupuesto(SQLObject, PRPCTOO):
             self.fechaValidacion = None
         elif isinstance(usuario, Usuario):
             self.usuario = usuario
-            self.fechaValidacion = datetime.datetime.now()
+            fv = datetime.datetime.now()
+            if fv:
+                fv_aprox = datetime.datetime(fv.year, fv.month, fv.day, 
+                                             fv.hour, fv.minute, fv.second)
+            else:
+                fv_aprox = None
+            self.fechaValidacion = fv
         else:
             raise ValueError, "El parámetro de validación de presupuesto "\
                               "debe ser un usuario de pclases o False."

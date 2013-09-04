@@ -954,8 +954,8 @@ class Presupuestos(Ventana, VentanaGenerica):
               # and not aceptado_completo 
         # Botones de imprimir y enviar por correo. Todas las ofertas de 
         # estudio y las de pedido que cumplan las restricciones "duras".
-        puede_imprimir = True
-        puede_adjudicarse = True
+        puede_imprimir = self.objeto and self.objeto.estudio != None and 1 or 0 #True
+        puede_adjudicarse = self.objeto and self.objeto.estudio != None and 1 or 0 #True
         if self.objeto and not self.objeto.validado:
             # Si está validado, se puede imprimir sin problemas.
             if self.objeto and not self.objeto.estudio:
