@@ -1436,7 +1436,7 @@ CREATE TABLE presupuesto(
 ----------------------------------
 CREATE TABLE linea_de_presupuesto(
     id SERIAL PRIMARY KEY,
-    presupuesto_id INT REFERENCES pedido_venta,
+    presupuesto_id INT REFERENCES presupuesto,
     producto_venta_id INT REFERENCES producto_venta DEFAULT NULL,
     producto_compra_id INT REFERENCES producto_compra DEFAULT NULL,
     descripcion TEXT DEFAULT '',  -- Texto libre para crear servicios al pasar

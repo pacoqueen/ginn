@@ -10288,6 +10288,28 @@ class Presupuesto(SQLObject, PRPCTOO):
         fecha_limite = self.calcular_fecha_limite()
         return (not self.validez) or hoy <= fecha_limite
 
+    def check_validacion_precios(self):
+        """
+        Comprueba la restricción del precio mínimo. Si se incumple devuelve 
+        False. Si la supera, True.
+        """
+        res = True
+        for ldp in self.lineasDePresupuesto:
+            try:
+                precioMinimo = round(ldp.producto.precioMinimo, 3)
+            except (AttributeError, TypeError): # Es un producto que no existe,
+                    # no tiene precio mínimo su familia o un es un servicio.
+                precioMinimo = None
+            try:
+                precioKilo = round(ldp.precioKilo, 3)
+            except TypeError:   # Es None
+                precioKilo = None
+            if (precioMinimo != None and precioKilo != None 
+                    and precioKilo < precioMinimo):
+                res = False
+                break
+        return res
+
     def get_estado_validacion(self):
         """
         Devuelve el estado de la validación del presupuesto en el momento de 
@@ -10307,20 +10329,8 @@ class Presupuesto(SQLObject, PRPCTOO):
         # presupuestos siguen el mismo criterio, pero están especificados por 
         # duplicado en una función en cada clase.
         validable = VALIDABLE
-        for ldp in self.lineasDePresupuesto:
-            try:
-                precioMinimo = round(ldp.producto.precioMinimo, 3)
-            except (AttributeError, TypeError): # Es un producto que no existe,
-                    # no tiene precio mínimo su familia o un es un servicio.
-                precioMinimo = None
-            try:
-                precioKilo = round(ldp.precioKilo, 3)
-            except TypeError:   # Es None
-                precioKilo = None
-            if (precioMinimo != None and precioKilo != None 
-                    and precioKilo < precioMinimo):
-                validable = PRECIO_INSUFICIENTE
-                break
+        if not self.check_validacion_precios():
+            validable = PRECIO_INSUFICIENTE
         if validable == VALIDABLE:
             fdp = self.formaDePago
             if not fdp:

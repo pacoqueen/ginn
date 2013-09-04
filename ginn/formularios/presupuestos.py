@@ -298,6 +298,8 @@ class Presupuestos(Ventana, VentanaGenerica):
                 ch.disconnect(tmphndlr)
                 ch.set_active(False)
                 self.objeto.validado = False
+                self.objeto.swap['usuarioID'] = None
+                self.objeto.swap['fechaValidacion'] = None
                 vpro.mover()
                 self.objeto.syncUpdate()
                 pclases.Auditoria.modificado(self.objeto, 
@@ -318,6 +320,14 @@ class Presupuestos(Ventana, VentanaGenerica):
                 if ch.get_active():     # Estoy validando
                     if self.usuario:
                         self.objeto.validado = self.usuario
+                        self.objeto.swap['usuarioID'] = self.objeto.usuario
+                        fv = self.objeto.fechaValidacion
+                        if fv:
+                            fv_aprox = datetime.datetime(fv.year, fv.month, 
+                                    fv.day, fv.hour, fv.minute, fv.second)
+                        else:
+                            fv_aprox = None
+                        self.objeto.swap['fechaValidacion'] = fv_aprox
                         pclases.Auditoria.modificado(self.objeto, 
                             self.usuario, __file__, 
                             "Presupuesto %d validado por %s." 
@@ -325,6 +335,8 @@ class Presupuestos(Ventana, VentanaGenerica):
                                    self.objeto.usuario.usuario))
                 else:   # Estoy invalidando
                     self.objeto.validado = False
+                    self.objeto.swap['usuarioID'] = None
+                    self.objeto.swap['fechaValidacion'] = None
                     pclases.Auditoria.modificado(self.objeto, 
                         self.usuario, __file__, 
                         "Presupuesto %d invalidado por %s." 
@@ -855,15 +867,22 @@ class Presupuestos(Ventana, VentanaGenerica):
             precio = utils._float(texto)
         except:
             utils.dialogo_info(titulo = "ERROR", 
-                               texto = 'El texto "%s" no es un número.' % (texto), 
-                               padre = self.wids['ventana'])
+                texto = 'El texto "%s" no es un número.' % (texto), 
+                padre = self.wids['ventana'])
         else:
             model = self.wids['tv_contenido'].get_model()
             ldp = pclases.getObjetoPUID(model[path][-1])
             if ldp.precio != precio:
                 ldp.precio = precio
+                # Y compruebo la restricción de precio mínimo.
+                if not self.objeto.check_validacion_precios():
+                    self.objeto.validado = False
+                    self.objeto.sync()
+                    self.objeto.swap['fechaValidacion'] = None
+                    self.objeto.swap['usuarioID'] = None
                 pclases.Auditoria.modificado(ldp, self.usuario, __file__)
                 self.rellenar_tablas()
+                self.refresh_validado()
                 # Vuelvo al botón de añadir líneas.
                 # TODO: Me da algunos problemillas en Windows. 
                 # Desactivo el forzado de mover el foco de momento...
@@ -878,8 +897,8 @@ class Presupuestos(Ventana, VentanaGenerica):
             cantidad = utils._float(texto)
         except:
             utils.dialogo_info(titulo = "ERROR", 
-                               texto = 'El texto "%s" no es un número.' % (texto), 
-                               padre = self.wids['ventana'])
+                texto = 'El texto "%s" no es un número.' % (texto), 
+                padre = self.wids['ventana'])
         else:
             model = self.wids['tv_contenido'].get_model()
             ldp = pclases.getObjetoPUID(model[path][-1])
@@ -947,7 +966,10 @@ class Presupuestos(Ventana, VentanaGenerica):
             (self.objeto 
              and permiso_nuevos_pedidos 
              and self.objeto.esta_vigente() 
-             and not self.objeto.estudio
+             #and not self.objeto.estudio
+             and self.objeto.estudio == False # Mejor así, porque puede ser 
+                # None para estado indeterminado y en ese caso tampoco puede 
+                # pasar a pedido. 
              and iconostockstado == gtk.STOCK_YES
              and 1) 
             or 0)
@@ -1152,6 +1174,14 @@ class Presupuestos(Ventana, VentanaGenerica):
         if iconostockstado == gtk.STOCK_YES and not self.objeto.validado: 
         #         # Equivalente  a volver a llamar a la evaluación.
             self.objeto.validado = self.usuario
+            self.objeto.swap['usuarioID'] = self.objeto.usuario
+            fv = self.objeto.fechaValidacion
+            if fv:
+                fv_aprox = datetime.datetime(fv.year, fv.month, fv.day, 
+                                             fv.hour, fv.minute, fv.second)
+            else:
+                fv_aprox = None
+            self.objeto.swap['fechaValidacion'] = fv_aprox
             # Y si no lo dejo como estaba. No validado o validado por algún 
             # otro. Si modifico algo ya se invalidará y volverá a autovalidar
             # si es el caso.
@@ -1361,6 +1391,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         # Si guardo es que algo he modificado. Por tanto quito validación.
         self.objeto.validado = False
+        self.objeto.swap['usuarioID'] = None
+        self.objeto.swap['fechaValidacion'] = None
         # Desactivo el notificador momentáneamente
         self.objeto.notificador.activar(lambda: None)
         errores = []
