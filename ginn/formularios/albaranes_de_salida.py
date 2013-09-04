@@ -4130,10 +4130,11 @@ class AlbaranesDeSalida(Ventana):
             for incr in vtos:
                 fechavto = mx.DateTime.DateFrom(factura.fecha) + (incr * mx.DateTime.oneDay)
                 vto = pclases.VencimientoCobro(fecha = fechavto,
-                                               importe = cantidad,
-                                               facturaVenta = factura, 
-                                               observaciones = str_formapago, 
-                                               cuentaOrigen = factura.cliente and factura.cliente.cuentaOrigen or None)
+                        importe = float(cantidad),
+                        facturaVenta = factura, 
+                        observaciones = str_formapago, 
+                        cuentaOrigen = factura.cliente 
+                            and factura.cliente.cuentaOrigen or None)
                 pclases.Auditoria.nuevo(vto, self.usuario, __file__)
                 if diaest:
 # XXX 24/05/06
