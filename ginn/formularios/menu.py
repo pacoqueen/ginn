@@ -506,7 +506,8 @@ class Menu:
         def key_pressed(widget, event):
             # Abro ventanas también con espacio y ENTER porque he desactivado 
             # el item-activated.
-            if event.keyval == gtk.gdk.keyval_from_name("Return"):
+            if (event.keyval == gtk.gdk.keyval_from_name("Return")
+                or event.keyval == gtk.gdk.keyval_from_name("KP_Enter")):
                 try:
                     paths = widget.get_selected_items()
                     path = paths[0]

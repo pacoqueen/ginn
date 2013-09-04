@@ -80,7 +80,8 @@ class Presupuestos(Ventana, VentanaGenerica):
                            "formaDePagoID": "cb_forma_cobro", 
                            "texto": "txt_condiciones", 
                            "observaciones": "txt_observaciones", 
-                           "estudio": "rb_estudio" 
+                           "estudio": "rb_estudio", 
+                           "personaContacto": "e_persona_contacto", 
                           }
         Ventana.__init__(self, 'presupuestos.glade', objeto, 
                          usuario = self.usuario)
@@ -197,7 +198,8 @@ class Presupuestos(Ventana, VentanaGenerica):
                             "\tProvincia: %s\n"\
                             "\tPaís: %s\n"\
                             "\tTeléfono: %s\n"\
-                            "\tCorreo electrónico: %s\n" % (
+                            "\tCorreo electrónico: %s\n"\
+                            "\tPersona de contacto: %s" % (
                                     self.objeto.id, 
                                     self.objeto.nombrecliente, 
                                     self.objeto.cif, 
@@ -207,7 +209,8 @@ class Presupuestos(Ventana, VentanaGenerica):
                                     self.objeto.provincia, 
                                     self.objeto.pais, 
                                     self.objeto.telefono, 
-                                    self.objeto.email)
+                                    self.objeto.email, 
+                                    self.objeto.personaContacto)
                         enviar_correoe(rte, 
                                        dests,
                                        "Alta de nuevo cliente", 
@@ -384,8 +387,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         if not idcliente:
             return
         cliente = pclases.Cliente.get(idcliente)
-        #if not self.wids["e_persona_contacto"].get_text():
-        #    self.wids["e_persona_contacto"].set_text(cliente.contacto.strip())
+        if not self.wids["e_persona_contacto"].get_text():
+            self.wids["e_persona_contacto"].set_text(cliente.contacto.strip())
         #if not self.wids["e_cliente"].get_text():
         #    self.wids["e_cliente"].set_text(cliente.nombre)
         if not self.wids["e_direccion"].get_text():
@@ -404,6 +407,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         #    self.wids["e_fax"].set_text(cliente.fax)
         if not self.wids['e_cif'].get_text().strip():
             self.wids['e_cif'].set_text(cliente.cif)
+        if not self.wids['e_persona_contacto'].get_text().strip():
+            self.wids['e_persona_contacto'].set_text(cliente.contacto)
 
     def hacer_pedido(self, boton):
         """
@@ -454,7 +459,8 @@ class Presupuestos(Ventana, VentanaGenerica):
                             telefono = self.objeto.telefono, 
                             email = self.objeto.email,
                             vencimientos = self.objeto.formaDePago.toString(), 
-                            formadepago = self.objeto.formaDePago.toString())
+                            formadepago = self.objeto.formaDePago.toString(), 
+                            contacto = self.objeto.personaContacto)
                     pclases.Auditoria.nuevo(self.objeto.cliente, 
                                             self.usuario, __file__)
                 if not self.objeto.obra:
@@ -1020,12 +1026,13 @@ class Presupuestos(Ventana, VentanaGenerica):
                     or "Sin comercial relacionado",
                 r.get_str_tipo(), 
                 r.adjudicada, 
-                "Clic aquí para evaluar."))
+                "Clic aquí para evaluar.", 
+                r.personaContacto))
         def mostrar_info_presupuesto(tv):
             model, itr = tv.get_selection().get_selected()
-            if itr and model[itr][-1].startswith("Clic aquí"):
+            if itr and model[itr][-2].startswith("Clic aquí"):
                 oferta = pclases.Presupuesto.get(model[itr][0])
-                model[itr][-1] = oferta.get_str_estado()
+                model[itr][-2] = oferta.get_str_estado()
         idpresupuesto = utils.dialogo_resultado(filas_res,
                             titulo = 'SELECCIONE OFERTA',
                             cabeceras = ('ID', 'Fecha', 
@@ -1034,7 +1041,8 @@ class Presupuestos(Ventana, VentanaGenerica):
                                          "Comercial", 
                                          "Tipo", 
                                          "Adjudicada", 
-                                         "Test de validación"), 
+                                         "Test de validación", 
+                                         "Contacto"), 
                             padre = self.wids['ventana'], 
                             func_change = mostrar_info_presupuesto)
         if idpresupuesto < 0:
@@ -1328,7 +1336,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             criterio = pclases.OR(
                     pclases.Presupuesto.q.nombrecliente.contains(a_buscar),
                     pclases.Presupuesto.q.nombreobra.contains(a_buscar),
-                    #pclases.Presupuesto.q.personaContacto.contains(a_buscar),
+                    pclases.Presupuesto.q.personaContacto.contains(a_buscar),
                     pclases.Presupuesto.q.id == ida_buscar)
             if solopedido:
                 criterio = pclases.AND(criterio, 
