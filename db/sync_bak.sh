@@ -11,3 +11,5 @@ dropdb bak_ginn
 createdb -E UTF8 -O geotexan bak_ginn "Copia de ginn para desarrollo y pruebas" && pg_restore -d bak_ginn $FDEST
 echo "Copia completada"
 
+find /tmp/*.ginn.dump -not -anewer $FDEST -exec rm '{}'
+
