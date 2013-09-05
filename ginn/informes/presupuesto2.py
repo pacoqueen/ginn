@@ -427,10 +427,10 @@ def go_from_presupuesto(presupuesto,
     #lineas_contenido = presupuesto.lineasDePedido + presupuesto.servicios
     lineas_contenido = presupuesto.lineasDePresupuesto 
     datos_cliente = []
+    datos_cliente.append(presupuesto.nombrecliente)
     if presupuesto.personaContacto != "":
         datos_cliente.append("A la atención de %s" % (
             presupuesto.personaContacto))
-    datos_cliente.append(presupuesto.nombrecliente)
     datos_cliente.append(presupuesto.direccion)
     listadireccion = [presupuesto.cp, presupuesto.ciudad]
     if presupuesto.ciudad.strip() != presupuesto.provincia.strip():
