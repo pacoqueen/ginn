@@ -491,7 +491,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                                         formaDePago = self.objeto.formaDePago, 
                                         validado = self.objeto.validado 
                                             and True or False, 
-                                        usuario = self.objeto.validado)
+                                        usuario = self.objeto.usuario)
                 pclases.Auditoria.nuevo(nuevopedido, self.usuario, __file__)
                 self.actualizar_ventana()
             if nuevopedido != None:
