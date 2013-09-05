@@ -610,9 +610,8 @@ class Presupuestos(Ventana, VentanaGenerica):
                 break
             itr = model.iter_next(itr)
         col = self.wids['tv_contenido'].get_column(1)
-        # TODO: Me da algunos problemillas en Windows. Desactivo de momento...
-        #self.wids['tv_contenido'].grab_focus()
-        #self.wids['tv_contenido'].set_cursor(path, col, True)
+        self.wids['tv_contenido'].grab_focus()
+        self.wids['tv_contenido'].set_cursor(path, col, True)
     
     def drop_ldp(self, boton):
         """
@@ -857,12 +856,11 @@ class Presupuestos(Ventana, VentanaGenerica):
                     precio = 0
             ldp.precio = precio
             model_tv[path][2] = utils.float2str(ldp.precio, 3, autodec = True)
-        # TODO: Si es rollo, poner una cantidad múltiplo de sus m²
+        # TODO: Si es rollo, poner una cantidad por defecto múltiplo de sus m²
         # Sigo con el foco en la cantidad.
         col = self.wids['tv_contenido'].get_column(0)
-        # TODO: Me da algunos problemillas en Windows. Desactivo de momento...
-        #self.wids['tv_contenido'].grab_focus()
-        #self.wids['tv_contenido'].set_cursor(path, col, True)
+        self.wids['tv_contenido'].grab_focus()
+        self.wids['tv_contenido'].set_cursor(path, col, True)
 
     def cambiar_precio_ldp(self, cell, path, texto):
         """
@@ -890,9 +888,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 self.rellenar_tablas()
                 self.refresh_validado()
                 # Vuelvo al botón de añadir líneas.
-                # TODO: Me da algunos problemillas en Windows. 
-                # Desactivo el forzado de mover el foco de momento...
-                #self.wids['b_add'].grab_focus()
+                self.wids['b_add'].grab_focus()
 
     def cambiar_cantidad_ldp(self, cell, path, texto):
         """
