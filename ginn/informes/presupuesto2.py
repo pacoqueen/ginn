@@ -426,6 +426,7 @@ def go_from_presupuesto(presupuesto,
         dir_fiscal = ""
     #lineas_contenido = presupuesto.lineasDePedido + presupuesto.servicios
     lineas_contenido = presupuesto.lineasDePresupuesto 
+    lineas_contenido.sort(key = lambda: ldp.cantidad)
     datos_cliente = []
     datos_cliente.append(presupuesto.nombrecliente)
     if presupuesto.personaContacto != "":

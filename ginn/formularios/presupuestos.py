@@ -770,7 +770,9 @@ class Presupuestos(Ventana, VentanaGenerica):
         liststore_productos = gtk.ListStore(str, str)
         for p in pclases.ProductoVenta.select(orderBy = "descripcion"):
             liststore_productos.append((p.descripcion, p.puid))
-        for p in pclases.ProductoCompra.select(orderBy = "descripcion"):
+        for p in pclases.ProductoCompra.select(
+                pclases.ProductoCompra.q.obsoleto == False, 
+                orderBy = "descripcion"):
             liststore_productos.append((p.descripcion, p.puid))
         #cellrenderer_combo = gtk.CellRendererCombo()
         #cellrenderer_combo.set_property("editable", True)
