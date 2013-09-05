@@ -809,6 +809,17 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.wids['tv_contenido'].set_tooltip_column(1)
         self.wids['tv_contenido'].connect("query-tooltip", self.tooltip_query)
 
+    def fin_edicion_cellrenderers(self, cell, nextwidget = None, 
+                                  nextpath = None, nextcol = None):
+        cell.stop_editing(False)
+        self.rellenar_tablas()
+        self.refresh_validado()
+        if nextwidget != None:
+            nextwidget.grab_focus()
+        if nextpath != None and nextcol != None:
+            self.wids['tv_contenido'].set_cursor(nextpath, nextcol, True)
+        return False
+
     def tooltip_query(self, treeview, x, y, mode, tooltip):
         y_offset = treeview.get_bin_window().get_position()[1]
         path = treeview.get_path_at_pos(x, y - y_offset)
@@ -826,9 +837,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 return True     # Muestra ya el tooltip
         return False    # No muestra tooltip.
 
-
-
-    def update_prod_lpd(self, wid, path, text, model, ncol, model_tv):
+    def update_prod_lpd(self, cell, path, text, model, ncol, model_tv):
         puidldp = model_tv[path][-1]
         ldp = pclases.getObjetoPUID(puidldp)
         ldp.descripcion = text
@@ -861,8 +870,10 @@ class Presupuestos(Ventana, VentanaGenerica):
         # TODO: Si es rollo, poner una cantidad por defecto múltiplo de sus m²
         # Sigo con el foco en la cantidad.
         col = self.wids['tv_contenido'].get_column(0)
-        self.wids['tv_contenido'].grab_focus()
-        self.wids['tv_contenido'].set_cursor(path, col, True)
+        #self.wids['tv_contenido'].grab_focus()
+        #self.wids['tv_contenido'].set_cursor(path, col, True)
+        gobject.idle_add(self.fin_edicion_cellrenderers, cell, 
+                self.wids['tv_contenido'], path, col)
 
     def cambiar_precio_ldp(self, cell, path, texto):
         """
@@ -887,10 +898,12 @@ class Presupuestos(Ventana, VentanaGenerica):
                     self.objeto.swap['fechaValidacion'] = None
                     self.objeto.swap['usuarioID'] = None
                 pclases.Auditoria.modificado(ldp, self.usuario, __file__)
-                self.rellenar_tablas()
-                self.refresh_validado()
+                gobject.idle_add(self.fin_edicion_cellrenderers, cell, 
+                                 self.wids['b_add'])
+                #self.rellenar_tablas()
+                #self.refresh_validado()
                 # Vuelvo al botón de añadir líneas.
-                self.wids['b_add'].grab_focus()
+                #self.wids['b_add'].grab_focus()
 
     def cambiar_cantidad_ldp(self, cell, path, texto):
         """
@@ -930,8 +943,10 @@ class Presupuestos(Ventana, VentanaGenerica):
             self.rellenar_tablas()
             # Sigo con el foco en el precio.
             col = self.wids['tv_contenido'].get_column(2)
-            self.wids['tv_contenido'].grab_focus()
-            self.wids['tv_contenido'].set_cursor(path, col, True)
+            #self.wids['tv_contenido'].grab_focus()
+            #self.wids['tv_contenido'].set_cursor(path, col, True)
+            gobject.idle_add(self.fin_edicion_cellrenderers, cell, 
+                             self.wids['tv_contenido'], path, col)
 
     def activar_widgets(self, s):
         """
