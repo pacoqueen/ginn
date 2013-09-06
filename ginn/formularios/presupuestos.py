@@ -1414,7 +1414,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         txtpedido = "Buscar solamente ofertas de pedido"
         txtadjudicadas = "Buscar solamente ofertas adjudicadas"
         opciones_estudio_adjudicadas = {txtestudio: False, 
-                                        txtpedido: True, 
+                                        txtpedido: False, 
                                         txtadjudicadas: False}
         a_buscar = utils.dialogo_entrada(titulo = "BUSCAR OFERTA", 
                                 texto = "Introduzca número, nombre "\
