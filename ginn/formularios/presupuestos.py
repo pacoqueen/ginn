@@ -448,78 +448,119 @@ class Presupuestos(Ventana, VentanaGenerica):
                     nuevopedido = None
             else:
                 if not self.objeto.cliente:
-                    self.objeto.cliente = pclases.Cliente(
-                            nombre = self.objeto.nombrecliente, 
-                            cif = self.objeto.cif, 
-                            direccion = self.objeto.direccion, 
-                            ciudad = self.objeto.ciudad, 
-                            provincia = self.objeto.provincia, 
-                            pais = self.objeto.pais, 
-                            cp = self.objeto.cp, 
-                            telefono = self.objeto.telefono, 
-                            email = self.objeto.email,
-                            vencimientos = self.objeto.formaDePago.toString(), 
-                            formadepago = self.objeto.formaDePago.toString(), 
-                            contacto = self.objeto.personaContacto)
-                    pclases.Auditoria.nuevo(self.objeto.cliente, 
-                                            self.usuario, __file__)
+                    self.objeto.cliente = self.crear_cliente()
                 if not self.objeto.obra:
                     if self.objeto.nombreobra:
-                        self.objeto.obra = pclases.Obra(
-                                nombre = self.objeto.nombreobra, 
-                                direccion = self.objeto.direccion, 
-                                cp = self.objeto.cp, 
-                                ciudad = self.objeto.ciudad, 
-                                provincia = self.objeto.provincia, 
-                                observaciones = "Creada automáticamente desde presupuesto.", 
-                                pais = self.objeto.pais, 
-                                generica = False)
-                        pclases.Auditoria.nuevo(self.objeto.obra, 
-                                                self.usuario, __file__)
+                        self.objeto.obra = self.crear_obra()
                     else:
-                        self.objeto.obra = self.objeto.cliente.get_obra_generica()
-                nuevopedido = pclases.PedidoVenta(cliente=self.objeto.cliente, 
-                                        fecha = mx.DateTime.localtime(), 
-                                        numpedido = numpedido,
-                                        iva = self.objeto.cliente.iva,
-                                        descuento = 0,
-                                        transporteACargo = False,
-                                        bloqueado = True,
-                                        cerrado = False, 
-                                        comercial = self.objeto.comercial, 
-                                        obra = self.objeto.obra, 
-                                        formaDePago = self.objeto.formaDePago, 
-                                        validado = self.objeto.validado 
-                                            and True or False, 
-                                        usuario = self.objeto.usuario)
-                pclases.Auditoria.nuevo(nuevopedido, self.usuario, __file__)
+                        self.objeto.obra=self.objeto.cliente.get_obra_generica()
+                nuevopedido = self.crear_pedido(numpedido)
                 self.actualizar_ventana()
             if nuevopedido != None:
                 for ldp in self.objeto.lineasDePresupuesto:
-                    productoCompra = ldp.productoCompra
-                    productoVenta = ldp.productoVenta
-                    if productoCompra or productoVenta:
-                        nldp = pclases.LineaDePedido(pedidoVenta = nuevopedido,
-                                productoCompra = productoCompra, 
-                                productoVenta = productoVenta, 
-                                notas = ldp.notas, 
-                                precio = ldp.precio, 
-                                cantidad = ldp.cantidad, 
-                                presupuesto = self.objeto)
-                        pclases.Auditoria.nuevo(nldp, self.usuario, __file__)
-                    else:   # Creo servicio entonces
-                        nsrv = pclases.Servicio(pedidoVenta = nuevopedido, 
-                                cantidad = ldp.cantidad,
-                                precio = ldp.precio, 
-                                concepto = ldp.descripcion, 
-                                notas = ldp.notas, 
-                                presupuesto = self.objeto)
-                        pclases.Auditoria.nuevo(nsrv, self.usuario, __file__)
+                    self.add_ldp_a_pedido(ldp, nuevopedido)
                 self.actualizar_ventana()
-                from formularios import pedidos_de_venta
-                ventanapedido = pedidos_de_venta.PedidosDeVenta(    # @UnusedVariable
-                        objeto = nuevopedido, 
-                        usuario = self.usuario)
+                self.abrir_pedido(nuevopedido)
+
+    def abrir_pedido(self, nuevopedido):
+        from formularios import pedidos_de_venta
+        ventanapedido = pedidos_de_venta.PedidosDeVenta(    # @UnusedVariable
+                objeto = nuevopedido, 
+                usuario = self.usuario)
+
+    def add_ldp_a_pedido(self, ldp, nuevopedido):
+        productoCompra = ldp.productoCompra
+        productoVenta = ldp.productoVenta
+        if productoCompra or productoVenta:
+            nldp = pclases.LineaDePedido(pedidoVenta = nuevopedido,
+                    productoCompra = productoCompra, 
+                    productoVenta = productoVenta, 
+                    notas = ldp.notas, 
+                    precio = ldp.precio, 
+                    cantidad = ldp.cantidad, 
+                    presupuesto = self.objeto)
+            pclases.Auditoria.nuevo(nldp, self.usuario, __file__)
+        else:   # Creo servicio entonces
+            nsrv = pclases.Servicio(pedidoVenta = nuevopedido, 
+                    cantidad = ldp.cantidad,
+                    precio = ldp.precio, 
+                    concepto = ldp.descripcion, 
+                    notas = ldp.notas, 
+                    presupuesto = self.objeto)
+            pclases.Auditoria.nuevo(nsrv, self.usuario, __file__)
+
+    def crear_pedido(self, numpedido):
+        obra = self.objeto.obra
+        try:
+            ciuObra = obra.ciudad
+            cpObra = obra.cp
+            dirObra = obra.direccion
+            nomObra = obra.nombre
+            paiObra = obra.pais 
+            if not paiObra:
+                try:
+                    paiObra = self.objeto.cliente.pais
+                except AttributeError:
+                    paiObra = ""
+            proObra = obra.provincia
+        except AttributeError, msg:
+            if pclases.DEBUG:
+                print "presupuestos.py::crear_pedido -> AttributeError:", msg
+            ciuObra = cpObra = dirObra = nomObra = paiObra = proObra = ""
+        nuevopedido = pclases.PedidoVenta(cliente = self.objeto.cliente, 
+                                fecha = mx.DateTime.localtime(), 
+                                numpedido = numpedido,
+                                iva = self.objeto.cliente.iva,
+                                descuento = 0,
+                                transporteACargo = False,
+                                bloqueado = True,
+                                cerrado = False, 
+                                comercial = self.objeto.comercial, 
+                                obra = self.objeto.obra, 
+                                formaDePago = self.objeto.formaDePago, 
+                                validado = self.objeto.validado 
+                                    and True or False, 
+                                usuario = self.objeto.usuario, 
+                                ciudadCorrespondencia = ciuObra, 
+                                cpCorrespondencia = cpObra, 
+                                direccionCorrespondencia = dirObra, 
+                                nombreCorrespondencia = nomObra, 
+                                paisCorrespondencia = paiObra, 
+                                provinciaCorrespondencia = proObra)
+        pclases.Auditoria.nuevo(nuevopedido, self.usuario, __file__)
+        return nuevopedido
+
+    def crear_obra(self):
+        obra = pclases.Obra(
+                nombre = self.objeto.nombreobra, 
+                direccion = self.objeto.direccion, 
+                cp = self.objeto.cp, 
+                ciudad = self.objeto.ciudad, 
+                provincia = self.objeto.provincia, 
+                observaciones = "Creada automáticamente desde presupuesto.", 
+                pais = self.objeto.pais, 
+                generica = False)
+        pclases.Auditoria.nuevo(obra, 
+                                self.usuario, __file__)
+        return obra
+
+    def crear_cliente(self):
+        cliente = pclases.Cliente(
+                nombre = self.objeto.nombrecliente, 
+                cif = self.objeto.cif, 
+                direccion = self.objeto.direccion, 
+                ciudad = self.objeto.ciudad, 
+                provincia = self.objeto.provincia, 
+                pais = self.objeto.pais, 
+                cp = self.objeto.cp, 
+                telefono = self.objeto.telefono, 
+                email = self.objeto.email,
+                vencimientos = self.objeto.formaDePago.toString(), 
+                formadepago = self.objeto.formaDePago.toString(), 
+                contacto = self.objeto.personaContacto)
+        pclases.Auditoria.nuevo(cliente, 
+                                self.usuario, __file__)
+        return cliente
 
     def seleccionar_cantidad(self, producto):
         """
@@ -978,25 +1019,55 @@ class Presupuestos(Ventana, VentanaGenerica):
                     print w
         # Botón de hacer pedidos. Solo para ofertas de pedido validadas y si 
         # el usuario puede hacerlo.
+        txt_puede_hacer_pedido = "Crea un pedido automáticamente con el "\
+                                 "contenido de la oferta."
         permiso_nuevos_pedidos = calcular_permiso_nuevos_pedidos(
                                     self.usuario, self.logger)
         iconostockstado = self.wids['iconostado'].get_stock()[0]
-        self.wids['b_pedido'].set_sensitive(
-            (self.objeto 
-             and permiso_nuevos_pedidos 
-             and self.objeto.esta_vigente() 
-             #and not self.objeto.estudio
-             and self.objeto.estudio == False # Mejor así, porque puede ser 
-                # None para estado indeterminado y en ese caso tampoco puede 
-                # pasar a pedido. 
-             and iconostockstado == gtk.STOCK_YES
-             and 1) 
-            or 0)
-              # and not aceptado_completo 
+        puede_hacer_pedido = self.objeto 
+        if not puede_hacer_pedido:
+            txt_puede_hacer_pedido = "No hay presupuesto activo."
+        else:
+            puede_hacer_pedido = permiso_nuevos_pedidos 
+            if not puede_hacer_pedido:
+                txt_puede_hacer_pedido="No tiene permisos para hacer pedidos."
+            else:
+                puede_hacer_pedido = self.objeto.esta_vigente() 
+                if not puede_hacer_pedido:
+                    txt_puede_hacer_pedido = "Presupuesto obsoleto."
+                else:
+                    puede_hacer_pedido = self.objeto.estudio == False
+                    #and not self.objeto.estudio
+                    # Mejor así, porque puede ser 
+                    # None para estado indeterminado y en ese caso tampoco 
+                    # puede pasar a pedido. 
+                    if not puede_hacer_pedido:
+                        txt_puede_hacer_pedido = "No se permiten pedidos "\
+                                                 "de ofertas para estudio."
+                    else:
+                        puede_hacer_pedido = iconostockstado == gtk.STOCK_YES
+                        if not puede_hacer_pedido:
+                            txt_puede_hacer_pedido = "La oferta debe estar "\
+                                    "validada para poder pasarla a pedido."
+        puede_hacer_pedido = puede_hacer_pedido and 1 or 0   
+            # and not aceptado_completo # <- Esto se chequea después. No hace falta
+        self.wids['b_pedido'].set_sensitive(puede_hacer_pedido)
+        self.wids['b_pedido'].set_tooltip_text(txt_puede_hacer_pedido)
         # Botones de imprimir y enviar por correo. Todas las ofertas de 
         # estudio y las de pedido que cumplan las restricciones "duras".
-        puede_imprimir = self.objeto and self.objeto.estudio != None and 1 or 0 #True
-        puede_adjudicarse = self.objeto and self.objeto.estudio != None and 1 or 0 #True
+        txt_puede_imprimir = "Genera un PDF del presupuesto actual para "\
+                        "imprimir, guardar o enviar por correo electrónico."
+        puede_imprimir = ((self.objeto 
+                           and self.objeto.estudio != None 
+                           and 1) or 0) 
+        if not puede_imprimir:
+            txt_puede_imprimir = "Debe seleccionar el tipo de oferta."
+        txt_puede_adjudicarse = "Marca la oferta como adjudicada."
+        puede_adjudicarse = ((self.objeto 
+                              and self.objeto.estudio != None 
+                              and 1) or 0)
+        if not puede_adjudicarse:
+            txt_puede_adjudicarse = "Debe seleccionar el tipo de oferta."
         if self.objeto and not self.objeto.validado:
             # Si está validado, se puede imprimir sin problemas.
             if self.objeto and not self.objeto.estudio:
@@ -1005,7 +1076,11 @@ class Presupuestos(Ventana, VentanaGenerica):
                               pclases.SIN_FORMA_DE_PAGO, 
                               pclases.PRECIO_INSUFICIENTE):
                     puede_imprimir = False
+                    txt_puede_imprimir = "Compruebe que la oferta tiene "\
+                            "forma de pago y que cumple las restricciones "\
+                            "de plazo y precio mínimo."
                     puede_adjudicarse = False
+                    txt_puede_adjudicarse = txt_puede_imprimir
             if (self.objeto and (
                     not self.objeto.lineasDePresupuesto 
                     or not self.objeto.cif
@@ -1013,10 +1088,18 @@ class Presupuestos(Ventana, VentanaGenerica):
                     or not self.objeto.email
                     or not self.objeto.telefono)):
                 puede_imprimir = False
+                txt_puede_imprimir = "Compruebe que el contenido de la oferta"\
+                        " no está vacío y que ha rellenado al menos los "\
+                        "campos: CIF, dirección, correo electrónico y "\
+                        "teléfono."
         self.wids['b_imprimir'].set_sensitive(puede_imprimir)
         self.wids['b_carta'].set_sensitive(puede_imprimir)
         self.wids['b_enviar'].set_sensitive(puede_imprimir)
         self.wids['ch_adjudicada'].set_sensitive(puede_adjudicarse)
+        self.wids['b_imprimir'].set_tooltip_text(txt_puede_imprimir)
+        self.wids['b_carta'].set_tooltip_text(txt_puede_imprimir)
+        self.wids['b_enviar'].set_tooltip_text(txt_puede_imprimir)
+        self.wids['ch_adjudicada'].set_tooltip_text(txt_puede_adjudicarse)
 
     def refinar_resultados_busqueda(self, resultados):
         """

@@ -407,12 +407,14 @@ class PedidosDeVenta(Ventana):
             cp_correspondencia = obra.cp
             ciudad_correspondencia = obra.ciudad
             provincia_correspondencia = obra.provincia
+            pais_correspondencia = obra.pais
             idcliente = utils.combo_get_value(self.wids['cbe_cliente'])
-            try:
-                cliente = pclases.Cliente.get(idcliente)
-                pais_correspondencia = cliente.pais
-            except AttributeError:
-                pais_correspondencia = ""
+            if not pais_correspondencia:
+                try:
+                    cliente = pclases.Cliente.get(idcliente)
+                    pais_correspondencia = cliente.pais
+                except AttributeError:
+                    pais_correspondencia = ""
             self.wids['e_nombreCorrespondencia'].set_text(
                 nombre_correspondencia)
             self.wids['e_direccionCorrespondencia'].set_text(
