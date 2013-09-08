@@ -849,6 +849,50 @@ class Presupuestos(Ventana, VentanaGenerica):
                                      1)
         self.wids['tv_contenido'].set_tooltip_column(1)
         self.wids['tv_contenido'].connect("query-tooltip", self.tooltip_query)
+        cols = (('Presupuesto','gobject.TYPE_STRING',False,True,True,None), 
+                ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
+        utils.preparar_listview(self.wids['tv_presupuestos'], cols)
+        self.wids['tv_presupuestos'].set_model(gtk.ListStore(str, str, str))
+        col = self.wids['tv_presupuestos'].get_column(0)
+        celltext = col.get_cell_renderers()[0]
+        self.wids['tv_presupuestos'].remove_column(col)
+        col = gtk.TreeViewColumn("Presupuesto")
+        self.wids['tv_presupuestos'].insert_column(col, 0)
+        cellpb = gtk.CellRendererPixbuf()
+        col.pack_start(cellpb, False)
+        col.pack_start(celltext, True)
+        col.set_attributes(cellpb, stock_id = 0)
+        col.set_attributes(celltext, text = 1)
+        self.wids['tv_presupuestos'].connect("cursor-changed", 
+                self.cambiar_presupuesto_activo)
+        self.colorear_presupuestos()
+
+    def colorear_presupuestos(self):
+        def cell_func(column, cell, model, itr, i):
+            try:
+                presupuesto = pclases.getObjetoPUID(model[itr][-1])
+            except (AttributeError, pclases.SQLObjectNotFound):
+                color = None
+            else:
+                if presupuesto.estudio == None: # Indeterminado
+                    color = "Indian Red"
+                elif presupuesto.estudio:
+                    color = "light yellow"
+                else:                       # De pedido
+                    color = "light green"
+            cell.set_property("cell-background", color)
+        cols = self.wids['tv_presupuestos'].get_columns()
+        for i in xrange(len(cols)):
+            column = cols[i]
+            cells = column.get_cell_renderers()
+            for cell in cells:
+                column.set_cell_data_func(cell, cell_func, i)
+
+    def cambiar_presupuesto_activo(self, tv):
+        model, itr = tv.get_selection().get_selected()
+        puid = model[itr][-1]
+        self.objeto = pclases.getObjetoPUID(puid)
+        self.ir_a(self.objeto) 
 
     def fin_edicion_cellrenderers(self, cell, nextwidget = None, 
                                   nextpath = None, nextcol = None):
@@ -1210,6 +1254,35 @@ class Presupuestos(Ventana, VentanaGenerica):
         #self.comprobar_riesgo_cliente() # <-- Ya lo hago en el rellenar_tablas
         self.refresh_validado()
         self.objeto.make_swap()
+        # Y ahora la lista de presupuestos.
+        self.rellenar_lista_presupuestos()
+
+    def rellenar_lista_presupuestos(self):
+        model = self.wids['tv_presupuestos'].get_model()
+        model.clear()
+        if not self.usuario:
+            presupuestos = pclases.Presupuesto.select()
+        else:
+            if (self.usuario.nivel <= NIVEL_VALIDACION 
+                    or calcular_permiso_nuevos_pedidos(self.usuario, 
+                                                       self.logger)):
+                presupuestos = pclases.Presupuesto.select(orderBy="-id")
+            else:
+                criterio = []
+                for yo_as_comercial in self.usuario.get_comerciales():
+                    criterio.append(
+                        pclases.Presupuesto.q.comercialID==yo_as_comercial.id)
+                presupuestos = pclases.Presupuesto.select(pclases.AND(
+                                    pclases.Presupuesto.q.comercialID != None,
+                                    pclases.OR(*criterio)), 
+                                orderBy = "-id")
+        for p in presupuestos:
+            itr = model.append((p.validado and gtk.STOCK_YES or gtk.STOCK_NO, 
+                                p.id, 
+                                p.puid))
+            if self.objeto and self.objeto.id == p.id:
+                path = model.get_path(itr)
+                self.wids['tv_presupuestos'].get_selection().select_path(path)
 
     def refresh_validado(self):
         ch = self.wids['ch_validado']

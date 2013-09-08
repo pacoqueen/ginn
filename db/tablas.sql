@@ -95,7 +95,7 @@ CREATE TABLE tarifa(
 -- Tipos de proveedores --
 --------------------------
 CREATE TABLE tipo_de_proveedor(
-    id INT SERIAL PRIMARY KEY, 
+    id SERIAL PRIMARY KEY, 
     descripcion TEXT
 );
 
@@ -302,6 +302,121 @@ CREATE TABLE tipo_material_bala(
     codigo TEXT
 );
 
+-------------------------------------------------
+-- Tabla de cuentas origen para transferencias --
+-------------------------------------------------
+-- No necesita relacionarse con ningún         --
+-- registro como ocurre con las cuentas        --
+-- destino porque pertenecen a la propia       --
+-- empresa, que siempre es la misma (el primer --
+-- -y único- registro de la tabla              --
+-- datos_de_la_empresa).                       --
+-------------------------------------------------
+-- NEW! 21/02/07 --
+-------------------
+CREATE TABLE cuenta_origen(
+    id SERIAL PRIMARY KEY,
+    nombre TEXT DEFAULT '',
+    banco TEXT DEFAULT '',
+    ccc TEXT DEFAULT '',
+    observaciones TEXT DEFAULT '',
+    contacto TEXT DEFAULT '',     -- NEW! 27/02/2007. Persona de contacto en
+                                  -- el banco para los faxes de transferencia.
+    fax TEXT DEFAULT '',          -- NEW! 27/02/2007.
+    telefono TEXT DEFAULT ''      -- NEW! 27/02/2007.
+);
+
+------------------------------------------------
+-- Contador de números de factura por cliente --
+------------------------------------------------
+CREATE TABLE contador(
+    id SERIAL PRIMARY KEY,
+    prefijo TEXT DEFAULT '',
+    sufijo TEXT DEFAULT '',
+    contador INT8
+);
+
+----------------------
+-- Tipos de cliente --
+----------------------
+CREATE TABLE tipo_de_cliente(
+    id SERIAL PRIMARY KEY, 
+    descripcion TEXT
+);
+
+--------------
+-- Clientes --
+--------------
+CREATE TABLE cliente(
+    id SERIAL PRIMARY KEY,
+    tarifa_id INT REFERENCES tarifa DEFAULT NULL,
+    contador_id INT REFERENCES contador DEFAULT NULL,
+    telefono TEXT DEFAULT '',
+    nombre TEXT DEFAULT '',
+    cif TEXT DEFAULT '',
+    direccion TEXT DEFAULT '',
+    pais TEXT DEFAULT '',
+    ciudad TEXT DEFAULT '',
+    provincia TEXT DEFAULT '',
+    cp TEXT DEFAULT '',
+    iva FLOAT DEFAULT 0.21,
+    direccionfacturacion TEXT DEFAULT '',
+    paisfacturacion TEXT DEFAULT '',
+    ciudadfacturacion TEXT DEFAULT '',
+    provinciafacturacion TEXT DEFAULT '',
+    cpfacturacion TEXT DEFAULT '',
+    nombref TEXT DEFAULT '',        -- Nombre de facturación (por si difiere
+                                    -- del del cliente en la factura).
+    email TEXT DEFAULT '',          -- Dirección (o direcciones separadas por
+                                    -- coma) de correo electrónico.
+    contacto TEXT DEFAULT '',
+    observaciones TEXT DEFAULT '',
+    vencimientos TEXT DEFAULT '',
+    formadepago TEXT DEFAULT '',
+    documentodepago TEXT DEFAULT '',
+    diadepago TEXT DEFAULT '',  -- El día en que se harán los pagos realmente
+                                -- (independientemente de lo que marque
+                                -- el vencimiento, el pago se puede hacer días
+                                -- antes o días después, en un día del
+                                -- mes fijo) P.ej: El vencimiento cumple el 15
+                                -- de enero pero siempre se le paga al
+                                -- proveedor los días 5 de cada mes.
+                                -- De momento es texto (aunque en teoría sería
+                                -- un INT) para contemplar la posibilidad
+                                -- de meter días concatenados con comas -por
+                                -- ejemplo- y así expresar que se le
+                                -- pagan -por ejemplo one more time- los días
+                                -- 5 y 20 de cada mes.
+    inhabilitado BOOLEAN DEFAULT FALSE, -- NEW! 08/10/06
+    motivo TEXT DEFAULT '',     -- NEW! 08/10/06. Si está inhabilitado no se
+        -- permitirá hacerle más pedidos de venta. (CWT)
+    cliente_id INT REFERENCES cliente DEFAULT NULL, -- NEW! 25/10/2006.
+        -- Comercial que actúa como intermediario con el cliente.
+    porcentaje FLOAT DEFAULT 0.0,                   -- NEW! 25/10/2006.
+        -- Porcentaje de comisión de la facturación que se lleva.
+    enviar_correo_albaran BOOLEAN DEFAULT FALSE,    -- NEW! 25/10/2006. Si
+        -- TRUE, se envía por correo-e el PDF del albarán Geotexan.
+    enviar_correo_factura BOOLEAN DEFAULT FALSE,    -- NEW! 25/10/2006. Si
+        -- TRUE, se envía por correo-e el PDF de la factura.
+    enviar_correo_packing BOOLEAN DEFAULT FALSE,    -- NEW! 25/10/2006. Si
+        -- TRUE, se envía por correo-e el PDF del packing list.
+    fax TEXT DEFAULT '',                            -- NEW! 25/10/2006.
+        -- Incomprensiblemente, lleva el fax en la ventana
+        -- ¡meses! y todavía no estaba en la tabla.
+    proveedor_id INT REFERENCES proveedor DEFAULT NULL, -- Si el cliente es
+        -- comercial de otros clientes, debe relacionarse con
+        -- un proveedor que actúe como proveedor de servicios para las
+        -- facturas de compra de las comisiones a pagar.
+    cuenta_origen_id INT REFERENCES cuenta_origen DEFAULT NULL,-- NEW! 26/02/07
+        -- Cuenta bancaria _destino_ por defecto para transferencias.
+    riesgo_asegurado FLOAT DEFAULT -1.0, -- NEW! 06/11/2008. -1 = Indefinido
+    riesgo_concedido FLOAT DEFAULT -1.0, -- NEW! 06/11/2008. -1 = Indefinido
+    packing_list_con_codigo BOOLEAN DEFAULT FALSE,  -- NEW! 27/02/2009
+    facturar_con_albaran BOOLEAN DEFAULT TRUE,      -- NEW! 02/03/2009
+    copias_factura INT DEFAULT 0,   -- Sin incluir la original. NEW! 09/07/2009
+    tipo_de_cliente_id INT REFERENCES tipo_de_cliente DEFAULT NULL
+);
+
 ---------------------------------
 -- Campos específicos de balas --
 ---------------------------------
@@ -327,6 +442,111 @@ CREATE TABLE campos_especificos_bala(
         -- distribuye a través de un cliente y debe llevar sus datos en 
         -- la etiqueta de las cajas de fibra embolsada. No se suele usar en 
         -- fibra normal.
+);
+
+------------------------------------------------
+-- Campos específicos de productos especiales --
+------------------------------------------------
+-- NEW! 23/11/06                              --
+------------------------------------------------------------
+-- Campos específicos de productos de venta "especiales". --
+-- Son productos que no están relacionados con artículos  --
+-- de almacén. Por tanto las existencias se guardan como  --
+-- campo "absoluto" no calculado.                         --
+------------------------------------------------------------
+CREATE TABLE campos_especificos_especial(
+    id SERIAL PRIMARY KEY,
+    stock FLOAT DEFAULT 0.0,    -- Existencias en kg, m, m², ud...
+    existencias INT DEFAULT 0,  -- Bultos
+    unidad TEXT DEFAULT '',
+    observaciones TEXT DEFAULT ''
+);
+
+-----------------------------------------------
+-- Tabla de funciones para generar etiquetas --
+-----------------------------------------------
+CREATE TABLE modelo_etiqueta(
+    id SERIAL PRIMARY KEY, 
+    nombre TEXT,    -- Nombre descriptivo de la etiqueta.
+    modulo TEXT,    -- Módulo (fichero python sin extensión) donde reside 
+                    -- la función que se invocará para generar la etiqueta.
+                    -- El módulo se importará desde el directorio «informes».
+    funcion TEXT    -- Nombre de la función que devolverá un PDF con las 
+                    -- etiquetas.
+);
+
+----------------------------------
+-- Campos específicos de rollos --
+----------------------------------
+CREATE TABLE campos_especificos_rollo(
+    id SERIAL PRIMARY KEY,
+    gramos INT DEFAULT 0,
+    codigo_composan TEXT DEFAULT '',
+    ancho FLOAT DEFAULT 0.0,
+    diametro INT DEFAULT 0,
+    rollos_por_camion INT DEFAULT 0,
+    metros_lineales INT DEFAULT 0,
+    peso_embalaje FLOAT DEFAULT 0.0,
+    ----- TOLERANCIAS EN PRUEBAS SOBRE GEOTEXTILES sobre estándar -----
+    estandar_prueba_gramaje FLOAT DEFAULT 0.0,
+    tolerancia_prueba_gramaje FLOAT DEFAULT 0.0,
+    estandar_prueba_longitudinal FLOAT DEFAULT 0.0,
+        -- Resistencia longitudinal
+    tolerancia_prueba_longitudinal FLOAT DEFAULT 0.0,
+        -- Resistencia longitudinal
+    estandar_prueba_alargamiento_longitudinal FLOAT DEFAULT 0.0,
+    tolerancia_prueba_alargamiento_longitudinal FLOAT DEFAULT 0.0,
+    estandar_prueba_transversal FLOAT DEFAULT 0.0,
+        -- Resistencia transversal
+    tolerancia_prueba_transversal FLOAT DEFAULT 0.0,
+        -- Resistencia transversal
+    estandar_prueba_alargamiento_transversal FLOAT DEFAULT 0.0,
+    tolerancia_prueba_alargamiento_transversal FLOAT DEFAULT 0.0,
+    estandar_prueba_compresion FLOAT DEFAULT 0.0,           -- CBR
+    tolerancia_prueba_compresion FLOAT DEFAULT 0.0,         -- CBR
+    estandar_prueba_perforacion FLOAT DEFAULT 0.0,
+    tolerancia_prueba_perforacion FLOAT DEFAULT 0.0,
+    estandar_prueba_espesor FLOAT DEFAULT 0.0,
+    tolerancia_prueba_espesor FLOAT DEFAULT 0.0,
+    estandar_prueba_permeabilidad FLOAT DEFAULT 0.0,
+    tolerancia_prueba_permeabilidad FLOAT DEFAULT 0.0,
+    estandar_prueba_poros FLOAT DEFAULT 0.0,
+    tolerancia_prueba_poros FLOAT DEFAULT 0.0,
+    -- Tolerancias superiores (las anteries son la tolerancia normal -1 ver la
+    -- tolerancia en la hoja de marcado- o la tolerancia inferior -en los
+    -- valores que son +/- en el cuadro de marcado-.
+    tolerancia_prueba_gramaje_sup FLOAT DEFAULT 0.0,    -- Gramaje
+    tolerancia_prueba_longitudinal_sup FLOAT DEFAULT 0.0,
+        -- Resistencia longitudinal
+    tolerancia_prueba_alargamiento_longitudinal_sup FLOAT DEFAULT 0.0,
+        -- Alargamiento longitudinal
+    tolerancia_prueba_transversal_sup FLOAT DEFAULT 0.0,
+        -- Resistencia transversal
+    tolerancia_prueba_alargamiento_transversal_sup FLOAT DEFAULT 0.0,
+        -- Alargamiento transversal
+    tolerancia_prueba_compresion_sup FLOAT DEFAULT 0.0,     -- CBR
+    tolerancia_prueba_perforacion_sup FLOAT DEFAULT 0.0,    -- Cono
+    tolerancia_prueba_espesor_sup FLOAT DEFAULT 0.0,        -- Espesor
+    tolerancia_prueba_permeabilidad_sup FLOAT DEFAULT 0.0,  -- Permeabilidad
+    tolerancia_prueba_poros_sup FLOAT DEFAULT 0.0,          -- Porometría
+    ficha_fabricacion TEXT DEFAULT '',      -- NEW! 20/01/08.
+    c BOOLEAN DEFAULT FALSE,   -- Si True, es rollo «C» con anchos, largos y
+                               -- grosores heterogéneos e ignorables.
+    -- NEW! 13/06/2011: Nueva prueba para certificado de calidad ASQUAL
+    -- Resistencia al punzonado piramidal (NF G38-019) KN y tolerancia en % 
+    -- (aunque guardaré valores absolutos por "tradición").
+    -- OJO: Antes de actualizar en clientes, ejecutar esto:
+    -- ALTER TABLE campos_especificos_rollo ADD COLUMN estandar_prueba_piramidal FLOAT DEFAULT 0.0; ALTER TABLE campos_especificos_rollo ADD COLUMN tolerancia_prueba_piramidal FLOAT DEFAULT 0.0; ALTER TABLE campos_especificos_rollo ADD COLUMN tolerancia_prueba_piramidal_sup FLOAT DEFAULT 0.0; ALTER TABLE marcado_ce ADD COLUMN estandar_prueba_piramidal FLOAT DEFAULT 0.0; ALTER TABLE marcado_ce ADD COLUMN tolerancia_prueba_piramidal FLOAT DEFAULT 0.0; ALTER TABLE marcado_ce ADD COLUMN tolerancia_prueba_piramidal_sup FLOAT DEFAULT 0.0; ALTER TABLE partida ADD COLUMN piramidal FLOAT DEFAULT 0; CREATE TABLE prueba_piramidal(id SERIAL PRIMARY KEY, partida_id INT REFERENCES partida, fecha DATE DEFAULT CURRENT_DATE, resultado FLOAT DEFAULT 0.0);
+    estandar_prueba_piramidal FLOAT DEFAULT 0.0, 
+    tolerancia_prueba_piramidal FLOAT DEFAULT 0.0, 
+    tolerancia_prueba_piramidal_sup FLOAT DEFAULT 0.0,
+    -- NEW! 07/11/2011: Nueva tabla y campo de modelo de etiquetas.
+    --                  NULL imprime la etiqueta genérica de geninformes.
+    modelo_etiqueta_id INT REFERENCES modelo_etiqueta DEFAULT NULL, 
+    cliente_id INT REFERENCES cliente DEFAULT NULL  -- Este producto se 
+        -- fabrica específicamente para un cliente y sus etiquetas serán 
+        -- la que indique "modelo_etiqueta_id" pero con los datos de 
+        -- distribuidor de "cliente_id".
 );
 
 CREATE TABLE marcado_ce(
@@ -385,24 +605,6 @@ CREATE TABLE marcado_ce(
     estandar_prueba_piramidal FLOAT DEFAULT 0.0, 
     tolerancia_prueba_piramidal FLOAT DEFAULT 0.0, 
     tolerancia_prueba_piramidal_sup FLOAT DEFAULT 0.0
-);
-
-------------------------------------------------
--- Campos específicos de productos especiales --
-------------------------------------------------
--- NEW! 23/11/06                              --
-------------------------------------------------------------
--- Campos específicos de productos de venta "especiales". --
--- Son productos que no están relacionados con artículos  --
--- de almacén. Por tanto las existencias se guardan como  --
--- campo "absoluto" no calculado.                         --
-------------------------------------------------------------
-CREATE TABLE campos_especificos_especial(
-    id SERIAL PRIMARY KEY,
-    stock FLOAT DEFAULT 0.0,    -- Existencias en kg, m, m², ud...
-    existencias INT DEFAULT 0,  -- Bultos
-    unidad TEXT DEFAULT '',
-    observaciones TEXT DEFAULT ''
 );
 
 ------------------------
@@ -1080,208 +1282,6 @@ CREATE TABLE incidencia(
     horainicio TIMESTAMP DEFAULT LOCALTIMESTAMP(0),
     horafin TIMESTAMP DEFAULT LOCALTIMESTAMP(0),
     observaciones TEXT DEFAULT ''
-);
-
-------------------------------------------------
--- Contador de números de factura por cliente --
-------------------------------------------------
-CREATE TABLE contador(
-    id SERIAL PRIMARY KEY,
-    prefijo TEXT DEFAULT '',
-    sufijo TEXT DEFAULT '',
-    contador INT8
-);
-
--------------------------------------------------
--- Tabla de cuentas origen para transferencias --
--------------------------------------------------
--- No necesita relacionarse con ningún         --
--- registro como ocurre con las cuentas        --
--- destino porque pertenecen a la propia       --
--- empresa, que siempre es la misma (el primer --
--- -y único- registro de la tabla              --
--- datos_de_la_empresa).                       --
--------------------------------------------------
--- NEW! 21/02/07 --
--------------------
-CREATE TABLE cuenta_origen(
-    id SERIAL PRIMARY KEY,
-    nombre TEXT DEFAULT '',
-    banco TEXT DEFAULT '',
-    ccc TEXT DEFAULT '',
-    observaciones TEXT DEFAULT '',
-    contacto TEXT DEFAULT '',     -- NEW! 27/02/2007. Persona de contacto en
-                                  -- el banco para los faxes de transferencia.
-    fax TEXT DEFAULT '',          -- NEW! 27/02/2007.
-    telefono TEXT DEFAULT ''      -- NEW! 27/02/2007.
-);
-
-----------------------
--- Tipos de cliente --
-----------------------
-CREATE TABLE tipo_de_cliente(
-    id SERIAL PRIMARY KEY, 
-    descripcion TEXT
-);
-
---------------
--- Clientes --
---------------
-CREATE TABLE cliente(
-    id SERIAL PRIMARY KEY,
-    tarifa_id INT REFERENCES tarifa DEFAULT NULL,
-    contador_id INT REFERENCES contador DEFAULT NULL,
-    telefono TEXT DEFAULT '',
-    nombre TEXT DEFAULT '',
-    cif TEXT DEFAULT '',
-    direccion TEXT DEFAULT '',
-    pais TEXT DEFAULT '',
-    ciudad TEXT DEFAULT '',
-    provincia TEXT DEFAULT '',
-    cp TEXT DEFAULT '',
-    iva FLOAT DEFAULT 0.21,
-    direccionfacturacion TEXT DEFAULT '',
-    paisfacturacion TEXT DEFAULT '',
-    ciudadfacturacion TEXT DEFAULT '',
-    provinciafacturacion TEXT DEFAULT '',
-    cpfacturacion TEXT DEFAULT '',
-    nombref TEXT DEFAULT '',        -- Nombre de facturación (por si difiere
-                                    -- del del cliente en la factura).
-    email TEXT DEFAULT '',          -- Dirección (o direcciones separadas por
-                                    -- coma) de correo electrónico.
-    contacto TEXT DEFAULT '',
-    observaciones TEXT DEFAULT '',
-    vencimientos TEXT DEFAULT '',
-    formadepago TEXT DEFAULT '',
-    documentodepago TEXT DEFAULT '',
-    diadepago TEXT DEFAULT '',  -- El día en que se harán los pagos realmente
-                                -- (independientemente de lo que marque
-                                -- el vencimiento, el pago se puede hacer días
-                                -- antes o días después, en un día del
-                                -- mes fijo) P.ej: El vencimiento cumple el 15
-                                -- de enero pero siempre se le paga al
-                                -- proveedor los días 5 de cada mes.
-                                -- De momento es texto (aunque en teoría sería
-                                -- un INT) para contemplar la posibilidad
-                                -- de meter días concatenados con comas -por
-                                -- ejemplo- y así expresar que se le
-                                -- pagan -por ejemplo one more time- los días
-                                -- 5 y 20 de cada mes.
-    inhabilitado BOOLEAN DEFAULT FALSE, -- NEW! 08/10/06
-    motivo TEXT DEFAULT '',     -- NEW! 08/10/06. Si está inhabilitado no se
-        -- permitirá hacerle más pedidos de venta. (CWT)
-    cliente_id INT REFERENCES cliente DEFAULT NULL, -- NEW! 25/10/2006.
-        -- Comercial que actúa como intermediario con el cliente.
-    porcentaje FLOAT DEFAULT 0.0,                   -- NEW! 25/10/2006.
-        -- Porcentaje de comisión de la facturación que se lleva.
-    enviar_correo_albaran BOOLEAN DEFAULT FALSE,    -- NEW! 25/10/2006. Si
-        -- TRUE, se envía por correo-e el PDF del albarán Geotexan.
-    enviar_correo_factura BOOLEAN DEFAULT FALSE,    -- NEW! 25/10/2006. Si
-        -- TRUE, se envía por correo-e el PDF de la factura.
-    enviar_correo_packing BOOLEAN DEFAULT FALSE,    -- NEW! 25/10/2006. Si
-        -- TRUE, se envía por correo-e el PDF del packing list.
-    fax TEXT DEFAULT '',                            -- NEW! 25/10/2006.
-        -- Incomprensiblemente, lleva el fax en la ventana
-        -- ¡meses! y todavía no estaba en la tabla.
-    proveedor_id INT REFERENCES proveedor DEFAULT NULL, -- Si el cliente es
-        -- comercial de otros clientes, debe relacionarse con
-        -- un proveedor que actúe como proveedor de servicios para las
-        -- facturas de compra de las comisiones a pagar.
-    cuenta_origen_id INT REFERENCES cuenta_origen DEFAULT NULL,-- NEW! 26/02/07
-        -- Cuenta bancaria _destino_ por defecto para transferencias.
-    riesgo_asegurado FLOAT DEFAULT -1.0, -- NEW! 06/11/2008. -1 = Indefinido
-    riesgo_concedido FLOAT DEFAULT -1.0, -- NEW! 06/11/2008. -1 = Indefinido
-    packing_list_con_codigo BOOLEAN DEFAULT FALSE,  -- NEW! 27/02/2009
-    facturar_con_albaran BOOLEAN DEFAULT TRUE,      -- NEW! 02/03/2009
-    copias_factura INT DEFAULT 0,   -- Sin incluir la original. NEW! 09/07/2009
-    tipo_de_cliente_id INT REFERENCES tipo_de_cliente DEFAULT NULL
-);
-
------------------------------------------------
--- Tabla de funciones para generar etiquetas --
------------------------------------------------
-CREATE TABLE modelo_etiqueta(
-    id SERIAL PRIMARY KEY, 
-    nombre TEXT,    -- Nombre descriptivo de la etiqueta.
-    modulo TEXT,    -- Módulo (fichero python sin extensión) donde reside 
-                    -- la función que se invocará para generar la etiqueta.
-                    -- El módulo se importará desde el directorio «informes».
-    funcion TEXT    -- Nombre de la función que devolverá un PDF con las 
-                    -- etiquetas.
-);
-
-----------------------------------
--- Campos específicos de rollos --
-----------------------------------
-CREATE TABLE campos_especificos_rollo(
-    id SERIAL PRIMARY KEY,
-    gramos INT DEFAULT 0,
-    codigo_composan TEXT DEFAULT '',
-    ancho FLOAT DEFAULT 0.0,
-    diametro INT DEFAULT 0,
-    rollos_por_camion INT DEFAULT 0,
-    metros_lineales INT DEFAULT 0,
-    peso_embalaje FLOAT DEFAULT 0.0,
-    ----- TOLERANCIAS EN PRUEBAS SOBRE GEOTEXTILES sobre estándar -----
-    estandar_prueba_gramaje FLOAT DEFAULT 0.0,
-    tolerancia_prueba_gramaje FLOAT DEFAULT 0.0,
-    estandar_prueba_longitudinal FLOAT DEFAULT 0.0,
-        -- Resistencia longitudinal
-    tolerancia_prueba_longitudinal FLOAT DEFAULT 0.0,
-        -- Resistencia longitudinal
-    estandar_prueba_alargamiento_longitudinal FLOAT DEFAULT 0.0,
-    tolerancia_prueba_alargamiento_longitudinal FLOAT DEFAULT 0.0,
-    estandar_prueba_transversal FLOAT DEFAULT 0.0,
-        -- Resistencia transversal
-    tolerancia_prueba_transversal FLOAT DEFAULT 0.0,
-        -- Resistencia transversal
-    estandar_prueba_alargamiento_transversal FLOAT DEFAULT 0.0,
-    tolerancia_prueba_alargamiento_transversal FLOAT DEFAULT 0.0,
-    estandar_prueba_compresion FLOAT DEFAULT 0.0,           -- CBR
-    tolerancia_prueba_compresion FLOAT DEFAULT 0.0,         -- CBR
-    estandar_prueba_perforacion FLOAT DEFAULT 0.0,
-    tolerancia_prueba_perforacion FLOAT DEFAULT 0.0,
-    estandar_prueba_espesor FLOAT DEFAULT 0.0,
-    tolerancia_prueba_espesor FLOAT DEFAULT 0.0,
-    estandar_prueba_permeabilidad FLOAT DEFAULT 0.0,
-    tolerancia_prueba_permeabilidad FLOAT DEFAULT 0.0,
-    estandar_prueba_poros FLOAT DEFAULT 0.0,
-    tolerancia_prueba_poros FLOAT DEFAULT 0.0,
-    -- Tolerancias superiores (las anteries son la tolerancia normal -1 ver la
-    -- tolerancia en la hoja de marcado- o la tolerancia inferior -en los
-    -- valores que son +/- en el cuadro de marcado-.
-    tolerancia_prueba_gramaje_sup FLOAT DEFAULT 0.0,    -- Gramaje
-    tolerancia_prueba_longitudinal_sup FLOAT DEFAULT 0.0,
-        -- Resistencia longitudinal
-    tolerancia_prueba_alargamiento_longitudinal_sup FLOAT DEFAULT 0.0,
-        -- Alargamiento longitudinal
-    tolerancia_prueba_transversal_sup FLOAT DEFAULT 0.0,
-        -- Resistencia transversal
-    tolerancia_prueba_alargamiento_transversal_sup FLOAT DEFAULT 0.0,
-        -- Alargamiento transversal
-    tolerancia_prueba_compresion_sup FLOAT DEFAULT 0.0,     -- CBR
-    tolerancia_prueba_perforacion_sup FLOAT DEFAULT 0.0,    -- Cono
-    tolerancia_prueba_espesor_sup FLOAT DEFAULT 0.0,        -- Espesor
-    tolerancia_prueba_permeabilidad_sup FLOAT DEFAULT 0.0,  -- Permeabilidad
-    tolerancia_prueba_poros_sup FLOAT DEFAULT 0.0,          -- Porometría
-    ficha_fabricacion TEXT DEFAULT '',      -- NEW! 20/01/08.
-    c BOOLEAN DEFAULT FALSE,   -- Si True, es rollo «C» con anchos, largos y
-                               -- grosores heterogéneos e ignorables.
-    -- NEW! 13/06/2011: Nueva prueba para certificado de calidad ASQUAL
-    -- Resistencia al punzonado piramidal (NF G38-019) KN y tolerancia en % 
-    -- (aunque guardaré valores absolutos por "tradición").
-    -- OJO: Antes de actualizar en clientes, ejecutar esto:
-    -- ALTER TABLE campos_especificos_rollo ADD COLUMN estandar_prueba_piramidal FLOAT DEFAULT 0.0; ALTER TABLE campos_especificos_rollo ADD COLUMN tolerancia_prueba_piramidal FLOAT DEFAULT 0.0; ALTER TABLE campos_especificos_rollo ADD COLUMN tolerancia_prueba_piramidal_sup FLOAT DEFAULT 0.0; ALTER TABLE marcado_ce ADD COLUMN estandar_prueba_piramidal FLOAT DEFAULT 0.0; ALTER TABLE marcado_ce ADD COLUMN tolerancia_prueba_piramidal FLOAT DEFAULT 0.0; ALTER TABLE marcado_ce ADD COLUMN tolerancia_prueba_piramidal_sup FLOAT DEFAULT 0.0; ALTER TABLE partida ADD COLUMN piramidal FLOAT DEFAULT 0; CREATE TABLE prueba_piramidal(id SERIAL PRIMARY KEY, partida_id INT REFERENCES partida, fecha DATE DEFAULT CURRENT_DATE, resultado FLOAT DEFAULT 0.0);
-    estandar_prueba_piramidal FLOAT DEFAULT 0.0, 
-    tolerancia_prueba_piramidal FLOAT DEFAULT 0.0, 
-    tolerancia_prueba_piramidal_sup FLOAT DEFAULT 0.0,
-    -- NEW! 07/11/2011: Nueva tabla y campo de modelo de etiquetas.
-    --                  NULL imprime la etiqueta genérica de geninformes.
-    modelo_etiqueta_id INT REFERENCES modelo_etiqueta DEFAULT NULL, 
-    cliente_id INT REFERENCES cliente DEFAULT NULL  -- Este producto se 
-        -- fabrica específicamente para un cliente y sus etiquetas serán 
-        -- la que indique "modelo_etiqueta_id" pero con los datos de 
-        -- distribuidor de "cliente_id".
 );
 
 ------------------------------------
@@ -2490,7 +2490,7 @@ CREATE TABLE confirming(
 CREATE TABLE efecto(
     id SERIAL PRIMARY KEY, 
     pagare_cobro_id INT REFERENCES pagare_cobro DEFAULT NULL, 
-    confirming_id INT REFERENCES confirming DEFAULT NULL
+    confirming_id INT REFERENCES confirming DEFAULT NULL,
     cuenta_bancaria_cliente_id INT REFERENCES cuenta_bancaria_cliente DEFAULT NULL, 
     -- Ya me traeré a esta tabla campos comunes a confirming y pagarés para 
     -- optimizar las búsquedas con criterio más que nada.
@@ -3203,14 +3203,6 @@ CREATE TABLE concepto_presupuesto_anual(
     inmutable BOOLEAN DEFAULT FALSE
 );
 
-CREATE TABLE vencimiento_valor_presupuesto_anual(
-    id SERIAL PRIMARY KEY,
-    valor_presupuesto_anual_id INT REFERENCES valor_presupuesto_anual,
-    fecha DATE NOT NULL, 
-    -- El importe será un campo calculado.
-    documento_de_pago_id INT REFERENCES documento_de_pago
-);
-
 CREATE TABLE valor_presupuesto_anual(
     id SERIAL PRIMARY KEY, 
     concepto_presupuesto_anual_id INT REFERENCES concepto_presupuesto_anual NOT NULL, 
@@ -3221,6 +3213,14 @@ CREATE TABLE valor_presupuesto_anual(
                                 -- proveedores de granza, por ejemplo).
 );
 
+CREATE TABLE vencimiento_valor_presupuesto_anual(
+    id SERIAL PRIMARY KEY,
+    valor_presupuesto_anual_id INT REFERENCES valor_presupuesto_anual,
+    fecha DATE NOT NULL, 
+    -- El importe será un campo calculado.
+    documento_de_pago_id INT REFERENCES documento_de_pago
+);
+
 --------------------------------------------------------------
 -- Tabla para guardar usuario, fecha y hora de creación,    --
 -- modificación o eliminación de un objeto.                 --
@@ -3229,7 +3229,7 @@ CREATE TABLE auditoria(
     id SERIAL PRIMARY KEY, 
     usuario_id INT REFERENCES usuario,  -- FK al usuario 
     ventana_id INT REFERENCES ventana,  -- FK ventana desde donde se ha hecho.
-    puid TEXT,          -- Me lo tiene que dar la capa superior.
+    dbpuid TEXT,        -- Me lo tiene que dar la capa superior.
     action TEXT,        -- creación, modificación o borrado
     ip TEXT DEFAULT NULL,   -- IP desde la que realizó la acción
     hostname TEXT DEFAULT NULL, -- Si es posible, el nombre de la máquina.
