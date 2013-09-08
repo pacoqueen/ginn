@@ -777,6 +777,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         valores por defecto, deshabilitando los innecesarios,
         rellenando los combos, formateando el TreeView -si lo hay-...
         """
+        self.wids['iconostado'].set_from_stock(gtk.STOCK_INFO, 
+                                               gtk.ICON_SIZE_DND)
         self.solicitudes_validacion = {}
         self.reset_cache_credito()
         gobject.timeout_add(5 * 60 * 1000, self.reset_cache_credito)
@@ -852,7 +854,9 @@ class Presupuestos(Ventana, VentanaGenerica):
         cols = (('Presupuesto','gobject.TYPE_STRING',False,True,True,None), 
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_listview(self.wids['tv_presupuestos'], cols)
-        self.wids['tv_presupuestos'].set_model(gtk.ListStore(str, str, str))
+        self.wids['tv_presupuestos'].set_model(
+                gtk.ListStore(str, str, str, str))
+        self.wids['tv_presupuestos'].set_tooltip_column(2)
         col = self.wids['tv_presupuestos'].get_column(0)
         celltext = col.get_cell_renderers()[0]
         self.wids['tv_presupuestos'].remove_column(col)
@@ -1279,7 +1283,11 @@ class Presupuestos(Ventana, VentanaGenerica):
         for p in presupuestos:
             itr = model.append((p.validado and gtk.STOCK_YES or gtk.STOCK_NO, 
                                 p.id, 
-                                p.puid))
+                                p.nombrecliente.strip() 
+                                    and p.nombrecliente.replace("&", "&amp;")
+                                    or "Oferta sin cliente", 
+                                    # Columna oculta. Para el tooltip
+                                p.puid))        # Oculta. Para el get.
             if self.objeto and self.objeto.id == p.id:
                 path = model.get_path(itr)
                 self.wids['tv_presupuestos'].get_selection().select_path(path)
