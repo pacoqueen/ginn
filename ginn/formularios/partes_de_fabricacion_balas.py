@@ -1519,8 +1519,12 @@ class PartesDeFabricacionBalas(Ventana):
             if (incidencia.horafin - incidencia.horainicio).days > 1:
                 incidencia.horainicio + mx.DateTime.oneDay
             while incidencia.horainicio < self.objeto.fechahorainicio: # El parte está en la franja de medianoche y la incidencia comienza después de las 12.
-                incidencia.horainicio += mx.DateTime.oneDay   # Debe llevar la fecha del día siguiente.
-                incidencia.horafin += mx.DateTime.oneDay
+                try:
+                    incidencia.horainicio += mx.DateTime.oneDay   # Debe llevar la fecha del día siguiente.
+                    incidencia.horafin += mx.DateTime.oneDay
+                except TypeError:   # Es un datetime
+                    incidencia.horainicio += datetime.timedelta(1)
+                    incidencia.horafin += datetime.timedelta(1)
         except (ValueError, IndexError):
             utils.dialogo_info('HORA INCORRECTA', 'La fecha y hora deben respetar el formato inicial.\nSe va a reestablecer el valor antiguo,\na continuación trate de editar este valor conservando su formato.', padre = self.wids['ventana'])
             return
