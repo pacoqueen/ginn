@@ -638,7 +638,8 @@ GESTION, CARTERA, DESCONTADO, IMPAGADO, COBRADO = range(5)
 
 # Estados de validación de pedidos
 NO_VALIDABLE, VALIDABLE, PLAZO_EXCESIVO, SIN_FORMA_DE_PAGO, \
-        PRECIO_INSUFICIENTE, CLIENTE_DEUDOR, SIN_CIF, SIN_CLIENTE = range(8)
+        PRECIO_INSUFICIENTE, CLIENTE_DEUDOR, SIN_CIF, SIN_CLIENTE, \
+        COND_PARTICULARES = range(9)
 
 # VERBOSE MODE
 total = 158 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
@@ -10194,7 +10195,8 @@ class Presupuesto(SQLObject, PRPCTOO):
         """
         return self.calcular_total(iva)
 
-    importeTotal = property(calcular_importe_total, doc = calcular_importe_total.__doc__)
+    importeTotal = property(calcular_importe_total, 
+                            doc = calcular_importe_total.__doc__)
 
     def calcular_total_iva(self, subtotal = None):
         """
@@ -10310,6 +10312,15 @@ class Presupuesto(SQLObject, PRPCTOO):
                 break
         return res
 
+    @property
+    def condicionesParticulares(self):
+        return self.texto
+    
+    @condicionesParticulares.setter
+    def condicionesParticulares(self, txt):
+        self.texto = txt
+        self.syncUpdate()
+
     def get_estado_validacion(self):
         """
         Devuelve el estado de la validación del presupuesto en el momento de 
@@ -10324,13 +10335,17 @@ class Presupuesto(SQLObject, PRPCTOO):
                                  por familia de productos.
             CLIENTE_DEUDOR: El cliente no tiene crédito suficiente. 
             SIN_CIF: No se ha informado del CIF del cliente.
+            COND_PARTICULARES: Lleva condiciones particulares y requiere 
+                               por CWT que se valide manualmente.
         """
         # Debería tener las condiciones en un solo sitio. Los pedidos y 
         # presupuestos siguen el mismo criterio, pero están especificados por 
         # duplicado en una función en cada clase.
         validable = VALIDABLE
-        if not self.check_validacion_precios():
-            validable = PRECIO_INSUFICIENTE
+        if self.condicionesParticulares:
+            validable = COND_PARTICULARES
+        if validable == VALIDABLE and not self.check_validacion_precios():
+                validable = PRECIO_INSUFICIENTE
         if validable == VALIDABLE:
             fdp = self.formaDePago
             if not fdp:

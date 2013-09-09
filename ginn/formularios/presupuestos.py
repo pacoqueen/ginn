@@ -867,7 +867,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_listview(self.wids['tv_presupuestos'], cols)
         self.wids['tv_presupuestos'].set_model(
-                gtk.ListStore(str, str, str, str, str))
+                gtk.ListStore(str, str, str, str, str, str))
         self.wids['tv_presupuestos'].set_tooltip_column(3)
         col = self.wids['tv_presupuestos'].get_column(0)
         celltext = col.get_cell_renderers()[0]
@@ -876,14 +876,17 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.wids['tv_presupuestos'].insert_column(col, 0)
         cellpb = gtk.CellRendererPixbuf()
         cellpb2 = gtk.CellRendererPixbuf()
+        cellpb3 = gtk.CellRendererPixbuf()
         col.pack_start(cellpb, False)
         col.pack_start(cellpb2, False)
-        col.pack_start(celltext, True)
+        col.pack_start(celltext, False)
+        col.pack_start(cellpb3, True)
         col.set_attributes(cellpb, stock_id = 0)
         col.set_attributes(cellpb2, stock_id = 1)
         col.set_attributes(celltext, text = 2)
-        self.wids['tv_presupuestos'].connect("cursor-changed", 
-                self.cambiar_presupuesto_activo)
+        col.set_attributes(cellpb3, stock_id = 4)
+        self.hndlr_presup = self.wids['tv_presupuestos'].connect(
+                "cursor-changed", self.cambiar_presupuesto_activo)
         self.colorear_presupuestos()
 
     def colorear_presupuestos(self):
@@ -910,8 +913,10 @@ class Presupuestos(Ventana, VentanaGenerica):
     def cambiar_presupuesto_activo(self, tv):
         model, itr = tv.get_selection().get_selected()
         puid = model[itr][-1]
-        self.objeto = pclases.getObjetoPUID(puid)
-        self.ir_a(self.objeto) 
+        presupuesto_seleccionado = pclases.getObjetoPUID(puid)
+        if self.objeto != presupuesto_seleccionado:
+            self.objeto = presupuesto_seleccionado
+            self.ir_a(self.objeto) 
 
     def fin_edicion_cellrenderers(self, cell, nextwidget = None, 
                                   nextpath = None, nextcol = None):
@@ -1113,7 +1118,8 @@ class Presupuestos(Ventana, VentanaGenerica):
                             txt_puede_hacer_pedido = "La oferta debe estar "\
                                     "validada para poder pasarla a pedido."
         puede_hacer_pedido = puede_hacer_pedido and 1 or 0   
-            # and not aceptado_completo # <- Esto se chequea después. No hace falta
+            # and not aceptado_completo # <- Esto se chequea después. No hace 
+                                        # falta
         self.wids['b_pedido'].set_sensitive(puede_hacer_pedido)
         self.wids['b_pedido'].set_tooltip_text(txt_puede_hacer_pedido)
         # Botones de imprimir y enviar por correo. Todas las ofertas de 
@@ -1277,6 +1283,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.rellenar_lista_presupuestos()
 
     def rellenar_lista_presupuestos(self):
+        self.wids['tv_presupuestos'].disconnect(self.hndlr_presup)
         model = self.wids['tv_presupuestos'].get_model()
         if not self.usuario:
             presupuestos = pclases.Presupuesto.select()
@@ -1297,20 +1304,25 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.wids['tv_presupuestos'].freeze_child_notify()
         model.clear()
         for p in presupuestos:
-            fila = (p.cerrado and gtk.STOCK_DIALOG_AUTHENTICATION or None,
+            fila = [p.cerrado and gtk.STOCK_DIALOG_AUTHENTICATION or None,
                     p.validado and gtk.STOCK_YES or gtk.STOCK_NO, 
                     p.id, 
                     p.nombrecliente.strip() 
                         and p.nombrecliente.replace("&", "&amp;")
                         or "Oferta sin cliente", 
                         # Columna oculta. Para el tooltip
-                    p.puid)        # Oculta. Para el get.
+                    p.adjudicada and gtk.STOCK_APPLY or None, 
+                    p.puid]        # Oculta. Para el get.
+            if p.adjudicada:
+                fila[3] += " (oferta adjudicada)"
             itr = model.append(fila)
             if self.objeto and self.objeto.id == p.id:
                 path = model.get_path(itr)
                 self.wids['tv_presupuestos'].get_selection().select_path(path)
         self.wids['tv_presupuestos'].thaw_child_notify()
         self.wids['tv_presupuestos'].scroll_to_cell(path)
+        self.hndlr_presup = self.wids['tv_presupuestos'].connect(
+                            "cursor-changed", self.cambiar_presupuesto_activo)
 
     def refresh_validado(self):
         ch = self.wids['ch_validado']
@@ -1369,7 +1381,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.wids['iconostado'].set_from_stock(iconostockstado, 
                                                gtk.ICON_SIZE_DND)
         self.wids['iconostado'].set_tooltip_text(txtestado)
-        # Esto de abajo uya se hace en desactivar_widgets
+        # Esto de abajo ya se hace en desactivar_widgets
         #self.wids['b_pedido'].set_sensitive(
         #        iconostockstado == gtk.STOCK_YES
         #        and calcular_permiso_nuevos_pedidos(self.usuario, self.logger))
