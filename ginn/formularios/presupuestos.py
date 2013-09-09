@@ -82,6 +82,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                            "observaciones": "txt_observaciones", 
                            "estudio": "rb_estudio", 
                            "personaContacto": "e_persona_contacto", 
+                           'cerrado': "ch_cerrado"
                           }
         Ventana.__init__(self, 'presupuestos.glade', objeto, 
                          usuario = self.usuario)
@@ -110,6 +111,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                        "ch_validado/toggled": self.validar, 
                        "tv_contenido/query-tooltip": self.tooltip_query, 
                        'ch_adjudicada/toggled': self.enviar_correo_adjudicada,
+                       'ch_cerrado/clicked': self.cerrar_presupuesto 
                       }  
         self.add_connections(connections)
         self.inicializar_ventana()
@@ -120,6 +122,16 @@ class Presupuestos(Ventana, VentanaGenerica):
         #if self.usuario and self.usuario.nivel >= 4:
         #    self.activar_widgets(False) # Para evitar manos rápidas al abrir.
         gtk.main()
+
+    def cerrar_presupuesto(self, ch_button):
+        """
+        Marca el presupuesto como cerrado guardando antes los posibles cambios.
+        Permite que se envíen los correos de validación.
+        """
+        self.objeto.cerrado = ch_button.get_active()
+        self.objeto.syncUpdate()
+        self.guardar(None)
+        #self.actualizar_ventana()  # En guardar ya actualiza ventana.
 
     def enviar_correo_de_riesgo(self):
         """
@@ -855,7 +867,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_listview(self.wids['tv_presupuestos'], cols)
         self.wids['tv_presupuestos'].set_model(
-                gtk.ListStore(str, str, str, str))
+                gtk.ListStore(str, str, str, str, str))
         self.wids['tv_presupuestos'].set_tooltip_column(2)
         col = self.wids['tv_presupuestos'].get_column(0)
         celltext = col.get_cell_renderers()[0]
@@ -863,10 +875,13 @@ class Presupuestos(Ventana, VentanaGenerica):
         col = gtk.TreeViewColumn("Presupuesto")
         self.wids['tv_presupuestos'].insert_column(col, 0)
         cellpb = gtk.CellRendererPixbuf()
+        cellpb2 = gtk.CellRendererPixbuf()
         col.pack_start(cellpb, False)
+        col.pack_start(cellpb2, False)
         col.pack_start(celltext, True)
         col.set_attributes(cellpb, stock_id = 0)
-        col.set_attributes(celltext, text = 1)
+        col.set_attributes(cellpb2, stock_id = 1)
+        col.set_attributes(celltext, text = 2)
         self.wids['tv_presupuestos'].connect("cursor-changed", 
                 self.cambiar_presupuesto_activo)
         self.colorear_presupuestos()
@@ -1281,7 +1296,9 @@ class Presupuestos(Ventana, VentanaGenerica):
                                     pclases.OR(*criterio)), 
                                 orderBy = "-id")
         for p in presupuestos:
-            itr = model.append((p.validado and gtk.STOCK_YES or gtk.STOCK_NO, 
+            itr = model.append((p.cerrado and gtk.STOCK_DIALOG_AUTHENTICATION 
+                                    or None,
+                                p.validado and gtk.STOCK_YES or gtk.STOCK_NO, 
                                 p.id, 
                                 p.nombrecliente.strip() 
                                     and p.nombrecliente.replace("&", "&amp;")
@@ -1626,9 +1643,11 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.actualizar_ventana()
         self.wids['b_guardar'].set_sensitive(False)
         pclases.Auditoria.modificado(self.objeto, self.usuario, __file__)
-        if ha_cambiado_el_cliente:
+        # Correos electrónicos de alarmas, altas y demás. Ahora compruebo 
+        # primero que lo hayan marcado así los DELEGADOS (sic) comerciales.
+        if self.objeto.cerrado and ha_cambiado_el_cliente:
             self.enviar_correo_de_riesgo()
-        if self.solicitar_validacion():
+        if self.objeto.cerrado and self.solicitar_validacion():
             self.enviar_correo_solicitud_validacion()
         if errores:
             utils.dialogo_info(titulo = "ERRORES AL GUARDAR", 

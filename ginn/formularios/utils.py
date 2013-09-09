@@ -4042,6 +4042,8 @@ def parse_cif(cif = None):
     'FR64 384 813 341 00029' 
     >>> parse_cif("1234567890")
     '1234567890'
+    >>> parse_cif("DKR2013-E3577")
+    'DKR2013-E3577'
     """
     # [Update: 29/05/2012] Javi me pasa estos formatos, que son con los que 
     #                      ellos normalmente trabajan:
@@ -4075,6 +4077,11 @@ def parse_cif(cif = None):
         samples['_Gibraltar'] = '12345'
         samples['_Francia'] = 'FR64 384 813 341 00029'
         samples['_Polonia'] = '1234567890'
+        samples['_Senegal'] = 'DKR2013-E3577'   # No conozco exactamente 
+                        # el formato. Al parecer allí el equivalente es un 
+                        # número C.C. (Compte Contribuable). Pero no 
+                        # encuentro más información. Este es el único ejemplo 
+                        # que tengo.
         res = {}
         aciertos = 0
         for pais in samples:
@@ -4085,23 +4092,26 @@ def parse_cif(cif = None):
                 aciertos * 100.0 / len(samples.keys()))
     else:
         # PLAN: Chequear que si el CIF/NIF es "españolo", que sea correcto. La 
-        # letra es fácil de sacar (y hasta podría metérsela en caso de que solo 
-        # hubiera 8 números sin letra). La comprobación de NIF de Hacienda no la 
-        # conozco, pero debe andar por algún lado, porque el programa de ayuda 
-        # del 349 detecta NIF incorrectos.
+        # letra es fácil de sacar (y hasta podría metérsela en caso de que solo
+        # hubiera 8 números sin letra). La comprobación de NIF de Hacienda no 
+        # la conozco, pero debe andar por algún lado, porque el programa de 
+        # ayuda del 349 detecta NIF incorrectos.
         cif = str(cif).upper().strip()
         letras = string.letters[string.letters.index("A"):]
         numeros = "0123456789"
-        if cif.startswith("FR"):
+        if cif.startswith("FR") or cif.startswith("DKR"):
             cif = cif.replace("\t", " ")
             while "  " in cif:
                 cif = cif.replace("  ", " ")
-            especiales = " "    # El espacio, de momento, y por culpa del FR.
+            especiales = " -"   # El espacio, de momento, y por culpa del FR.
+                                # También el guión por culpa de Senegal (Dakar)
         else:
             especiales = ""
         cif = "".join([l for l in cif if l in letras or l in numeros 
                                                      or l in especiales])
         rex = re.compile(
+                         "(DKR[0-9]{4}-[A-Z][0-9]{4})"
+                         "|"
                          "(FR[0-9]{2}\s[0-9]{3}\s[0-9]{3}\s[0-9]{3}\s[0-9]{5})"
                          "|"
                          '(DE[0-9]{9})'
