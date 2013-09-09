@@ -1278,7 +1278,6 @@ class Presupuestos(Ventana, VentanaGenerica):
 
     def rellenar_lista_presupuestos(self):
         model = self.wids['tv_presupuestos'].get_model()
-        model.clear()
         if not self.usuario:
             presupuestos = pclases.Presupuesto.select()
         else:
@@ -1295,6 +1294,8 @@ class Presupuestos(Ventana, VentanaGenerica):
                                     pclases.Presupuesto.q.comercialID != None,
                                     pclases.OR(*criterio)), 
                                 orderBy = "-id")
+        self.wids['tv_presupuestos'].freeze_child_notify()
+        model.clear()
         for p in presupuestos:
             itr = model.append((p.cerrado and gtk.STOCK_DIALOG_AUTHENTICATION 
                                     or None,
@@ -1308,6 +1309,8 @@ class Presupuestos(Ventana, VentanaGenerica):
             if self.objeto and self.objeto.id == p.id:
                 path = model.get_path(itr)
                 self.wids['tv_presupuestos'].get_selection().select_path(path)
+        self.wids['tv_presupuestos'].thaw_child_notify()
+        self.wids['tv_presupuestos'].scroll_to_cell(path)
 
     def refresh_validado(self):
         ch = self.wids['ch_validado']
