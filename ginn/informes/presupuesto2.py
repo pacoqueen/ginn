@@ -109,7 +109,7 @@ def build_tabla_contenido(data):
             fila = (utils.float2str(d.cantidad, autodec = True) + " " + unidad, 
                     d.descripcion, 
                     utils.float2str(d.precio, precision = 3, 
-                                    autodec = True) + " €" 
+                                    autodec = 2) + " €" 
                         + (unidad and "/" + unidad or ""), 
                     utils.float2str(d.get_subtotal()) + " €")
         _fila = (fila[0], 
