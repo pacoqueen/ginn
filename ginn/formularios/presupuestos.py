@@ -868,7 +868,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         utils.preparar_listview(self.wids['tv_presupuestos'], cols)
         self.wids['tv_presupuestos'].set_model(
                 gtk.ListStore(str, str, str, str, str))
-        self.wids['tv_presupuestos'].set_tooltip_column(2)
+        self.wids['tv_presupuestos'].set_tooltip_column(3)
         col = self.wids['tv_presupuestos'].get_column(0)
         celltext = col.get_cell_renderers()[0]
         self.wids['tv_presupuestos'].remove_column(col)
@@ -1297,15 +1297,15 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.wids['tv_presupuestos'].freeze_child_notify()
         model.clear()
         for p in presupuestos:
-            itr = model.append((p.cerrado and gtk.STOCK_DIALOG_AUTHENTICATION 
-                                    or None,
-                                p.validado and gtk.STOCK_YES or gtk.STOCK_NO, 
-                                p.id, 
-                                p.nombrecliente.strip() 
-                                    and p.nombrecliente.replace("&", "&amp;")
-                                    or "Oferta sin cliente", 
-                                    # Columna oculta. Para el tooltip
-                                p.puid))        # Oculta. Para el get.
+            fila = (p.cerrado and gtk.STOCK_DIALOG_AUTHENTICATION or None,
+                    p.validado and gtk.STOCK_YES or gtk.STOCK_NO, 
+                    p.id, 
+                    p.nombrecliente.strip() 
+                        and p.nombrecliente.replace("&", "&amp;")
+                        or "Oferta sin cliente", 
+                        # Columna oculta. Para el tooltip
+                    p.puid)        # Oculta. Para el get.
+            itr = model.append(fila)
             if self.objeto and self.objeto.id == p.id:
                 path = model.get_path(itr)
                 self.wids['tv_presupuestos'].get_selection().select_path(path)
