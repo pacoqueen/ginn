@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
-#                          Diego Muñoz Escalante.                             #
-# (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
+# Copyright (C) 2005-2013  Francisco José Rodríguez Bogado                    #
+#                          <frbogado@geotexan.com>                            #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
 #                                                                             #
@@ -128,7 +127,9 @@ class Presupuestos(Ventana, VentanaGenerica):
         Marca el presupuesto como cerrado guardando antes los posibles cambios.
         Permite que se envíen los correos de validación.
         """
-        self.objeto.cerrado = ch_button.get_active()
+        print " ========== Soy cerrar presupuesto !!!!!!!!!!!!!!!!!"
+        cerrar = ch_button.get_active()
+        self.objeto.cerrado = cerrar 
         self.objeto.syncUpdate()
         self.guardar(None)
         #self.actualizar_ventana()  # En guardar ya actualiza ventana.
@@ -392,18 +393,19 @@ class Presupuestos(Ventana, VentanaGenerica):
     def cambiar_datos_cliente(self, cbe):
         """
         Machaca la información de los entries de los datos del cliente 
-        del presupuesto si están vacíos.
+        del presupuesto si está vacío en campo NIF y se ha seleccionado 
+        un cliente del desplegable.
         """
         self.reset_cache_credito()
         idcliente = utils.combo_get_value(cbe)
         if not idcliente:
             return
         cliente = pclases.Cliente.get(idcliente)
-        if not self.wids["e_persona_contacto"].get_text():
-            self.wids["e_persona_contacto"].set_text(cliente.contacto.strip())
         #if not self.wids["e_cliente"].get_text():
         #    self.wids["e_cliente"].set_text(cliente.nombre)
-        if not self.wids["e_direccion"].get_text():
+        if not self.wids['e_cif'].get_text().strip():
+            self.wids['e_cif'].set_text(cliente.cif)
+        #if not self.wids["e_direccion"].get_text():
             self.wids["e_direccion"].set_text(cliente.direccion)
         #if not self.wids["e_ciudad"].get_text():
             self.wids["e_ciudad"].set_text(cliente.ciudad)
@@ -417,9 +419,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             self.wids["e_telefono"].set_text(cliente.telefono)
         #if not self.wids["e_fax"].get_text():
         #    self.wids["e_fax"].set_text(cliente.fax)
-        if not self.wids['e_cif'].get_text().strip():
-            self.wids['e_cif'].set_text(cliente.cif)
-        if not self.wids['e_persona_contacto'].get_text().strip():
+        #if not self.wids['e_persona_contacto'].get_text().strip():
             self.wids['e_persona_contacto'].set_text(cliente.contacto)
 
     def hacer_pedido(self, boton):
@@ -471,7 +471,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             if nuevopedido != None:
                 for ldp in self.objeto.lineasDePresupuesto:
                     self.add_ldp_a_pedido(ldp, nuevopedido)
-                self.actualizar_ventana()
+                #self.actualizar_ventana()
                 self.abrir_pedido(nuevopedido)
 
     def abrir_pedido(self, nuevopedido):
@@ -557,21 +557,28 @@ class Presupuestos(Ventana, VentanaGenerica):
         return obra
 
     def crear_cliente(self):
-        cliente = pclases.Cliente(
-                nombre = self.objeto.nombrecliente, 
-                cif = self.objeto.cif, 
-                direccion = self.objeto.direccion, 
-                ciudad = self.objeto.ciudad, 
-                provincia = self.objeto.provincia, 
-                pais = self.objeto.pais, 
-                cp = self.objeto.cp, 
-                telefono = self.objeto.telefono, 
-                email = self.objeto.email,
-                vencimientos = self.objeto.formaDePago.toString(), 
-                formadepago = self.objeto.formaDePago.toString(), 
-                contacto = self.objeto.personaContacto)
-        pclases.Auditoria.nuevo(cliente, 
-                                self.usuario, __file__)
+        """
+        Crea (o recupera) el cliente del presupuesto y lo devuelve.
+        """
+        try:
+            cliente = pclases.Cliente.selectBy(
+                        nombre = self.objeto.nombrecliente.strip())[0]
+        except IndexError:
+            cliente = pclases.Cliente(
+                    nombre = self.objeto.nombrecliente, 
+                    cif = self.objeto.cif, 
+                    direccion = self.objeto.direccion, 
+                    ciudad = self.objeto.ciudad, 
+                    provincia = self.objeto.provincia, 
+                    pais = self.objeto.pais, 
+                    cp = self.objeto.cp, 
+                    telefono = self.objeto.telefono, 
+                    email = self.objeto.email,
+                    vencimientos = self.objeto.formaDePago.toString(), 
+                    formadepago = self.objeto.formaDePago.toString(), 
+                    contacto = self.objeto.personaContacto)
+            pclases.Auditoria.nuevo(cliente, 
+                                    self.usuario, __file__)
         return cliente
 
     def seleccionar_cantidad(self, producto):
@@ -917,11 +924,12 @@ class Presupuestos(Ventana, VentanaGenerica):
 
     def cambiar_presupuesto_activo(self, tv):
         model, itr = tv.get_selection().get_selected()
-        puid = model[itr][-1]
-        presupuesto_seleccionado = pclases.getObjetoPUID(puid)
-        if self.objeto != presupuesto_seleccionado:
-            self.objeto = presupuesto_seleccionado
-            self.ir_a(self.objeto) 
+        if itr:
+            puid = model[itr][-1]
+            presupuesto_seleccionado = pclases.getObjetoPUID(puid)
+            if self.objeto != presupuesto_seleccionado:
+                self.objeto = presupuesto_seleccionado
+                self.ir_a(self.objeto) 
 
     def fin_edicion_cellrenderers(self, cell, nextwidget = None, 
                                   nextpath = None, nextcol = None):
@@ -1273,6 +1281,10 @@ class Presupuestos(Ventana, VentanaGenerica):
             elif nombre_col == "obraID" and not presupuesto.obra:
                 self.wids['cbe_obra'].child.set_text(
                         presupuesto.nombreobra)
+            elif nombre_col == "cerrado":
+                # Inexplicable bug. Si lo hago con self.escribir_valor, hace 
+                # llamada recursiva y machaca el cliente. WTF?!
+                self.wids['ch_cerrado'].set_active(self.objeto.cerrado)
             else:
                 self.escribir_valor(presupuesto.sqlmeta.columns[nombre_col], 
                                     getattr(presupuesto, nombre_col), 
@@ -1285,10 +1297,12 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.refresh_validado()
         self.objeto.make_swap()
         # Y ahora la lista de presupuestos.
+        self.wids['tv_presupuestos'].disconnect(self.hndlr_presup)
         self.rellenar_lista_presupuestos()
+        self.hndlr_presup = self.wids['tv_presupuestos'].connect(
+                            "cursor-changed", self.cambiar_presupuesto_activo)
 
     def rellenar_lista_presupuestos(self):
-        self.wids['tv_presupuestos'].disconnect(self.hndlr_presup)
         model = self.wids['tv_presupuestos'].get_model()
         if not self.usuario:
             presupuestos = pclases.Presupuesto.select()
@@ -1328,14 +1342,13 @@ class Presupuestos(Ventana, VentanaGenerica):
             itr = model.append(fila)
             if self.objeto and self.objeto.id == p.id:
                 path = model.get_path(itr)
-                self.wids['tv_presupuestos'].get_selection().select_path(path)
         self.wids['tv_presupuestos'].thaw_child_notify()
-        try:
-            self.wids['tv_presupuestos'].scroll_to_cell(path)
-        except UnboundLocalError:
-            pass
-        self.hndlr_presup = self.wids['tv_presupuestos'].connect(
-                            "cursor-changed", self.cambiar_presupuesto_activo)
+        # PORASQUI: Lo desactivo porque tengo que buscar una manera mejor de 
+        # marcar el presupuesto activo sin borrar, repoblar y redibujar
+        # el model. Más que nada porque la primera llamada viene con la 
+        # variable path sin instanciar. ¿Porcuá? Dunno.
+        #self.wids['tv_presupuestos'].scroll_to_cell(path)
+        #self.wids['tv_presupuestos'].get_selection().select_path(path)
 
     def refresh_validado(self):
         ch = self.wids['ch_validado']
@@ -1592,8 +1605,13 @@ class Presupuestos(Ventana, VentanaGenerica):
                     # actual por este resultado.)
             elif resultados.count() < 1:
                     ## Sin resultados de búsqueda
-                    utils.dialogo_info('SIN RESULTADOS', 'La búsqueda no produjo resultados.\nPruebe a cambiar el texto buscado o déjelo en blanco para ver una lista completa.\n(Atención: Ver la lista completa puede resultar lento si el número de elementos es muy alto)',
-                                       padre = self.wids['ventana'])
+                    utils.dialogo_info('SIN RESULTADOS', 
+                            'La búsqueda no produjo resultados.\nPruebe a '
+                            'cambiar el texto buscado o déjelo en blanco '
+                            'para ver una lista completa.\n(Atención: '
+                            'Ver la lista completa puede resultar lento si '
+                            'el número de elementos es muy alto)',
+                            padre = self.wids['ventana'])
                     return
             ## Un único resultado
             # Primero anulo la función de actualización
@@ -1604,8 +1622,10 @@ class Presupuestos(Ventana, VentanaGenerica):
                 presupuesto = resultados[0]
             except IndexError:
                 utils.dialogo_info(titulo = "ERROR", 
-                                   texto = "Se produjo un error al recuperar la información.\nCierre y vuelva a abrir la ventana antes de volver a intentarlo.", 
-                                   padre = self.wids['texto'])
+                    texto = "Se produjo un error al recuperar la información."
+                            "\nCierre y vuelva a abrir la ventana antes de "
+                            "volver a intentarlo.", 
+                    padre = self.wids['texto'])
                 return
             # Y activo la función de notificación:
             presupuesto.notificador.activar(self.aviso_actualizacion)
