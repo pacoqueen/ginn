@@ -1402,7 +1402,10 @@ class PartesDeFabricacionRollos(Ventana):
             self.wids['e_ancho'].set_text('')
             self.wids['e_long_rollo'].set_text('')
         else:
-            self.wids['e_articulo'].set_text(producto.nombre)
+            # self.wids['e_articulo'].set_text(producto.nombre)
+            self.wids['e_articulo'].set_text(producto.descripcion) # CWT: Para
+                # evitar ambigüedades con el color (que va en el campo 
+                # descripción)
             ce = producto.camposEspecificosRollo
             self.wids['e_grsm2'].set_text(ce and str(ce.gramos) or '')
             self.wids['e_ancho'].set_text(ce and str(ce.ancho) or '')
