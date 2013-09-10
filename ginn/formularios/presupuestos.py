@@ -867,7 +867,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_listview(self.wids['tv_presupuestos'], cols)
         self.wids['tv_presupuestos'].set_model(
-                gtk.ListStore(str, str, str, str, str, str))
+                gtk.ListStore(str, str, str, str, str, str, str))
         self.wids['tv_presupuestos'].set_tooltip_column(3)
         col = self.wids['tv_presupuestos'].get_column(0)
         celltext = col.get_cell_renderers()[0]
@@ -877,16 +877,21 @@ class Presupuestos(Ventana, VentanaGenerica):
         cellpb = gtk.CellRendererPixbuf()
         cellpb2 = gtk.CellRendererPixbuf()
         cellpb3 = gtk.CellRendererPixbuf()
+        cellpb4 = gtk.CellRendererPixbuf()
         col.pack_start(cellpb, False)
         col.pack_start(cellpb2, False)
         col.pack_start(celltext, False)
         col.pack_start(cellpb3, True)
+        col.pack_start(cellpb4, True)
         col.set_attributes(cellpb, stock_id = 0)
         col.set_attributes(cellpb2, stock_id = 1)
         col.set_attributes(celltext, text = 2)
         col.set_attributes(cellpb3, stock_id = 4)
+        col.set_attributes(cellpb4, stock_id = 5)
         self.hndlr_presup = self.wids['tv_presupuestos'].connect(
                 "cursor-changed", self.cambiar_presupuesto_activo)
+        w, h = self.wids['tv_presupuestos'].size_request()
+        self.wids['tv_presupuestos'].set_size_request(int(w*1.25), h)
         self.colorear_presupuestos()
 
     def colorear_presupuestos(self):
@@ -1312,15 +1317,23 @@ class Presupuestos(Ventana, VentanaGenerica):
                         or "Oferta sin cliente", 
                         # Columna oculta. Para el tooltip
                     p.adjudicada and gtk.STOCK_APPLY or None, 
+                    p.get_pedidos() and gtk.STOCK_CONNECT or None, 
                     p.puid]        # Oculta. Para el get.
             if p.adjudicada:
                 fila[3] += " (oferta adjudicada)"
+            pedidos = p.get_pedidos()
+            if pedidos:
+                fila[3] += " Servido en pedido %s" % (
+                        ", ".join([p.numpedido for p in pedidos]))
             itr = model.append(fila)
             if self.objeto and self.objeto.id == p.id:
                 path = model.get_path(itr)
                 self.wids['tv_presupuestos'].get_selection().select_path(path)
         self.wids['tv_presupuestos'].thaw_child_notify()
-        self.wids['tv_presupuestos'].scroll_to_cell(path)
+        try:
+            self.wids['tv_presupuestos'].scroll_to_cell(path)
+        except UnboundLocalError:
+            pass
         self.hndlr_presup = self.wids['tv_presupuestos'].connect(
                             "cursor-changed", self.cambiar_presupuesto_activo)
 
