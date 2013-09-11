@@ -1173,11 +1173,13 @@ class Presupuestos(Ventana, VentanaGenerica):
                 estado = self.objeto.get_estado_validacion()
                 if estado in (pclases.PLAZO_EXCESIVO, 
                               pclases.SIN_FORMA_DE_PAGO, 
-                              pclases.PRECIO_INSUFICIENTE):
+                              pclases.PRECIO_INSUFICIENTE, 
+                              pclases.COND_PARTICULARES):
                     puede_imprimir = False
                     txt_puede_imprimir = "Compruebe que la oferta tiene "\
-                            "forma de pago y que cumple las restricciones "\
-                            "de plazo y precio mínimo."
+                            "forma de pago, que cumple las restricciones "\
+                            "de plazo y precio mínimo y que no tiene "\
+                            "condiciones particulares."
                     puede_adjudicarse = False
                     txt_puede_adjudicarse = txt_puede_imprimir
             if (self.objeto and (
