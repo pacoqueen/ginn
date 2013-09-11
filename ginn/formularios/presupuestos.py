@@ -1222,10 +1222,11 @@ class Presupuestos(Ventana, VentanaGenerica):
                 r.get_str_tipo(), 
                 r.adjudicada, 
                 "Clic aquí para evaluar.", 
-                r.personaContacto))
+                r.personaContacto, 
+                ", ".join([p.numpedido for p in r.get_pedidos()])))
         def mostrar_info_presupuesto(tv):
             model, itr = tv.get_selection().get_selected()
-            if (itr and model[itr][-2] 
+            if (itr and hasattr(model[itr][-2], "startswith")
                     and model[itr][-2].startswith("Clic aquí")):
                 oferta = pclases.Presupuesto.get(model[itr][0])
                 model[itr][-2] = oferta.get_str_estado()
@@ -1238,7 +1239,8 @@ class Presupuestos(Ventana, VentanaGenerica):
                                          "Tipo", 
                                          "Adjudicada", 
                                          "Test de validación", 
-                                         "Contacto"), 
+                                         "Contacto", 
+                                         "Pedido"), 
                             padre = self.wids['ventana'], 
                             func_change = mostrar_info_presupuesto)
         if idpresupuesto < 0:
@@ -1327,6 +1329,9 @@ class Presupuestos(Ventana, VentanaGenerica):
             print "  <<< ::::::::::::::::: rellenar_widgets ::::::::::::::::::"
 
     def rellenar_lista_presupuestos(self):
+        if not "tv_presupuestos" in self.wids.keys():
+            # Se está creando la ventana. Cancelo y que me vuelva a llamar.
+            return True 
         if pclases.DEBUG:
             print "rellenar_lista_presupuestos: begin"
         try:
