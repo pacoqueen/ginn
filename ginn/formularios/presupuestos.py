@@ -937,7 +937,7 @@ class Presupuestos(Ventana, VentanaGenerica):
 
     def cambiar_presupuesto_activo(self, tv):
         if pclases.DEBUG:
-            print "   --------------------------> Soy cambiar_presupuesto_activo"
+            print "   ------------------------> Soy cambiar_presupuesto_activo"
         model, itr = tv.get_selection().get_selected()
         if itr:
             puid = model[itr][-1]
@@ -945,8 +945,8 @@ class Presupuestos(Ventana, VentanaGenerica):
             if self.objeto != presupuesto_seleccionado:
                 if pclases.DEBUG:
                     print "  -----------------> ", presupuesto_seleccionado.id
-                self.objeto = presupuesto_seleccionado
-                self.ir_a(self.objeto) 
+                self.reset_cache_credito()
+                self.ir_a(presupuesto_seleccionado) 
 
     def fin_edicion_cellrenderers(self, cell, nextwidget = None, 
                                   nextpath = None, nextcol = None):
@@ -1383,13 +1383,22 @@ class Presupuestos(Ventana, VentanaGenerica):
                                     pclases.Presupuesto.q.comercialID != None,
                                     pclases.OR(*criterio)), 
                                 orderBy = "-id")
-        # Ta tengo los objetos. Ahora a rellenar en la interfaz.
+        # Ya tengo los objetos. Ahora a rellenar en la interfaz.
         model = self.wids['tv_presupuestos'].get_model()
-        #self.wids['tv_presupuestos'].freeze_child_notify()
-        model.clear()
+        self.wids['tv_presupuestos'].freeze_child_notify()
+        # model.clear()
+        # Primero me hago una copia del model en un diccionario accesible por
+        # el id del presupuesto.
+        modelo = dic_presupuestos_from_model(self.wids['tv_presupuestos'])
         for p in presupuestos:
             # CWT: No deben salir los presupuestos ya servidos
             if p.get_pedidos():
+                try:
+                    itr = modelo.pop(p.puid)
+                except KeyError:
+                    pass
+                else:
+                    model.remove(itr)
                 continue
             fila = [p.cerrado and gtk.STOCK_DIALOG_AUTHENTICATION or None,
                     p.validado and gtk.STOCK_YES or gtk.STOCK_NO, 
@@ -1407,10 +1416,21 @@ class Presupuestos(Ventana, VentanaGenerica):
             if pedidos:
                 fila[3] += " Servido en pedido %s" % (
                         ", ".join([p.numpedido for p in pedidos]))
-            itr = model.append(fila)
+            try:
+                itr = modelo.pop(p.puid)
+            except KeyError:
+                itr = model.append(fila)
+            else:
+                update_fila(model, itr, fila)
             if self.objeto and self.objeto.id == p.id:
                 path = model.get_path(itr)
-        #self.wids['tv_presupuestos'].thaw_child_notify()
+        # Si me ha quedado algo en "modelo", son filas que no se corresponden 
+        # con ningun presupuesto que deba aparecer en el TV. Lo quito:
+        for puid in modelo:
+            itr = modelo[puid]
+            model.remove(itr)
+        # Y por fin acabé de actualizar el TreeView.
+        self.wids['tv_presupuestos'].thaw_child_notify()
         # PORASQUI: Lo desactivo porque tengo que buscar una manera mejor de 
         # marcar el presupuesto activo sin borrar, repoblar y redibujar
         # el model. Más que nada porque la primera llamada viene con la 
@@ -1441,6 +1461,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         if not self.objeto:
             return
+        if pclases.DEBUG:
+            print "Soy comprobar_riesgo_cliente. Objeto activo:",self.objeto.id
         self.objeto.notificador.desactivar()
         vpro = VentanaActividad(self.wids['ventana'], 
                                 "Comprobando condiciones de riesgo...")
@@ -1922,6 +1944,22 @@ def match_producto(completion, key, itr, ncol):
         return True
     return False
 
+
+def dic_presupuestos_from_model(tv):
+    model = tv.get_model()
+    itr = model.get_iter_first()
+    res = {}
+    while itr:
+        puid = model[itr][-1]
+        res[puid] = itr
+        itr = model.iter_next(itr)
+    return res
+
+def update_fila(model, itr, fila):
+    i = 0
+    for field in fila:
+        model[itr][i] = fila[i]
+        i += 1
 
 if __name__ == "__main__":
     p = Presupuestos()
