@@ -1330,18 +1330,21 @@ class Presupuestos(Ventana, VentanaGenerica):
         if not self.usuario:
             presupuestos = pclases.Presupuesto.select()
         else:
+            # CWT: No deben salir presupuestos de estudio ni los que ya 
+            # hayan sido convertidos a pedido. Tampoco los validados. Solo 
+            # pendiente de validar.
             if (self.usuario.nivel <= NIVEL_VALIDACION 
                     or calcular_permiso_nuevos_pedidos(self.usuario, 
                                                        self.logger)):
-                presupuestos = pclases.Presupuesto.select(orderBy="-id")
+                presupuestos = pclases.Presupuesto.select(pclases.AND(
+                                    pclases.Presupuesto.q.estudio == False, 
+                                    pclases.Presupuesto.q.usuarioID == None), 
+                                orderBy="-id")
             else:
                 criterio = []
                 for yo_as_comercial in self.usuario.get_comerciales():
                     criterio.append(
                         pclases.Presupuesto.q.comercialID==yo_as_comercial.id)
-                # CWT: No deben salir presupuestos de estudio ni los que ya 
-                # hayan sido convertidos a pedido. Tampoco los validados. Solo 
-                # pendiente de validar.
                 presupuestos = pclases.Presupuesto.select(pclases.AND(
                                     pclases.Presupuesto.q.estudio == False, 
                                     pclases.Presupuesto.q.usuarioID == None, 
