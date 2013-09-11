@@ -912,7 +912,6 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.wids['tv_presupuestos'].set_size_request(int(w*1.25), h)
         self.colorear_presupuestos()
         self.rellenar_lista_presupuestos()  # El inicial lo hago yo.
-        gobject.timeout_add(3000, self.rellenar_lista_presupuestos)
 
     def colorear_presupuestos(self):
         def cell_func(column, cell, model, itr, i):
@@ -1323,6 +1322,10 @@ class Presupuestos(Ventana, VentanaGenerica):
     def rellenar_lista_presupuestos(self):
         if pclases.DEBUG:
             print "rellenar_lista_presupuestos: begin"
+        try:
+            gobject.source_remove(self.hndlr_listado)
+        except UnboundLocalError:
+            pass    # Primera vez.
         self.wids['tv_presupuestos'].disconnect(self.hndlr_presup)
         if not self.usuario:
             presupuestos = pclases.Presupuesto.select()
@@ -1381,6 +1384,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         #self.wids['tv_presupuestos'].get_selection().select_path(path)
         self.hndlr_presup = self.wids['tv_presupuestos'].connect(
                             "cursor-changed", self.cambiar_presupuesto_activo)
+        self.hndlr_listado = gobject.timeout_add(5000, 
+                self.rellenar_lista_presupuestos)
         if pclases.DEBUG:
             print "rellenar_lista_presupuestos: end"
         return True     # Para que siga llamándome indefinidamente.
