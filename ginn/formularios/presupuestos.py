@@ -1299,12 +1299,10 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.refresh_validado()
         self.objeto.make_swap()
         # Y ahora la lista de presupuestos.
-        self.wids['tv_presupuestos'].disconnect(self.hndlr_presup)
         self.rellenar_lista_presupuestos()
-        self.hndlr_presup = self.wids['tv_presupuestos'].connect(
-                            "cursor-changed", self.cambiar_presupuesto_activo)
 
     def rellenar_lista_presupuestos(self):
+        self.wids['tv_presupuestos'].disconnect(self.hndlr_presup)
         model = self.wids['tv_presupuestos'].get_model()
         if not self.usuario:
             presupuestos = pclases.Presupuesto.select()
@@ -1357,6 +1355,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         # variable path sin instanciar. ¿Porcuá? Dunno.
         #self.wids['tv_presupuestos'].scroll_to_cell(path)
         #self.wids['tv_presupuestos'].get_selection().select_path(path)
+        self.hndlr_presup = self.wids['tv_presupuestos'].connect(
+                            "cursor-changed", self.cambiar_presupuesto_activo)
 
     def refresh_validado(self):
         ch = self.wids['ch_validado']
