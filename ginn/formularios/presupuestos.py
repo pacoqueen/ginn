@@ -110,7 +110,6 @@ class Presupuestos(Ventana, VentanaGenerica):
                        "ch_validado/toggled": self.validar, 
                        "tv_contenido/query-tooltip": self.tooltip_query, 
                        'ch_adjudicada/toggled': self.enviar_correo_adjudicada,
-                       'ch_cerrado/clicked': self.cerrar_presupuesto 
                       }  
         self.add_connections(connections)
         self.inicializar_ventana()
@@ -906,6 +905,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         col.set_attributes(celltext, text = 2)
         col.set_attributes(cellpb3, stock_id = 4)
         col.set_attributes(cellpb4, stock_id = 5)
+        self.hndlr_cerrado = self.wids['ch_cerrado'].connect('clicked', 
+                self.cerrar_presupuesto )
         self.hndlr_presup = self.wids['tv_presupuestos'].connect(
                 "cursor-changed", self.cambiar_presupuesto_activo)
         w, h = self.wids['tv_presupuestos'].size_request()
@@ -1300,9 +1301,14 @@ class Presupuestos(Ventana, VentanaGenerica):
                 self.wids['cbe_obra'].child.set_text(
                         presupuesto.nombreobra)
             elif nombre_col == "cerrado":
+                # En WIN el set_active IMPLICA un clicked del chbutton. Tengo 
+                # que desconectarlo temporalmente.
+                self.wids['ch_cerrado'].disconnect(self.hndlr_cerrado)
                 # Inexplicable bug. Si lo hago con self.escribir_valor, hace 
                 # llamada recursiva y machaca el cliente. WTF?!
                 self.wids['ch_cerrado'].set_active(self.objeto.cerrado)
+                self.hndlr_cerrado = self.wids['ch_cerrado'].connect('clicked',
+                    self.cerrar_presupuesto )
             else:
                 self.escribir_valor(presupuesto.sqlmeta.columns[nombre_col], 
                                     getattr(presupuesto, nombre_col), 
