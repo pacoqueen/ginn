@@ -127,14 +127,21 @@ class Presupuestos(Ventana, VentanaGenerica):
         Marca el presupuesto como cerrado guardando antes los posibles cambios.
         Permite que se envíen los correos de validación.
         """
+        if pclases.DEBUG:
+            print "Soy cerrar presupuesto... BEGIN"
         cerrar = ch_button.get_active()
-        self.objeto.cerrado = cerrar 
-        self.objeto.syncUpdate()
-        # En lugar de guardar con todo lo que conlleva, guardo solo este campo
-        self.objeto.swap['cerrado'] = self.objeto.cerrado
-        #self.guardar(None)
-        #self.actualizar_ventana()  # En guardar ya actualiza ventana.
-        self.rellenar_lista_presupuestos()
+        if self.objeto.cerrado == cerrar: #Actualizando. No ha sido el usuario.
+            pass
+        else:
+            self.objeto.cerrado = cerrar 
+            self.objeto.syncUpdate()
+            # En lugar de guardar con todo lo que conlleva, guardo solo este campo
+            self.objeto.swap['cerrado'] = self.objeto.cerrado
+            #self.guardar(None)
+            #self.actualizar_ventana()  # En guardar ya actualiza ventana.
+            # self.rellenar_lista_presupuestos()
+        if pclases.DEBUG:
+            print "Soy cerrar presupuesto... END"
 
     def enviar_correo_de_riesgo(self):
         """
@@ -610,7 +617,8 @@ class Presupuestos(Ventana, VentanaGenerica):
                     txt = """Introduzca la cantidad:"""
             else:
                 txterror = """presupuestos::seleccionar_cantidad -> ERROR: El producto de venta ID %d no es bala ni rollo. Verificar.""" % (producto.id)
-                print txterror
+                if pclases.DEBUG:
+                    print txterror
                 self.logger.error(txterror)
                 txt = """Introduzca la cantidad:"""
         elif isinstance(producto, pclases.ProductoCompra):
@@ -876,12 +884,13 @@ class Presupuestos(Ventana, VentanaGenerica):
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_listview(self.wids['tv_presupuestos'], cols)
         self.wids['tv_presupuestos'].set_model(
+                # Cerrada, Validada, Número, Cliente, Adjudicada, Pedido, PUID
                 gtk.ListStore(str, str, str, str, str, str, str))
         self.wids['tv_presupuestos'].set_tooltip_column(3)
         col = self.wids['tv_presupuestos'].get_column(0)
         celltext = col.get_cell_renderers()[0]
         self.wids['tv_presupuestos'].remove_column(col)
-        col = gtk.TreeViewColumn("Presupuesto")
+        col = gtk.TreeViewColumn("Pdtes. validación")
         self.wids['tv_presupuestos'].insert_column(col, 0)
         cellpb = gtk.CellRendererPixbuf()
         cellpb2 = gtk.CellRendererPixbuf()
@@ -902,6 +911,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         w, h = self.wids['tv_presupuestos'].size_request()
         self.wids['tv_presupuestos'].set_size_request(int(w*1.25), h)
         self.colorear_presupuestos()
+        self.rellenar_lista_presupuestos()  # El inicial lo hago yo.
+        gobject.timeout_add(3000, self.rellenar_lista_presupuestos)
 
     def colorear_presupuestos(self):
         def cell_func(column, cell, model, itr, i):
@@ -925,11 +936,15 @@ class Presupuestos(Ventana, VentanaGenerica):
                 column.set_cell_data_func(cell, cell_func, i)
 
     def cambiar_presupuesto_activo(self, tv):
+        if pclases.DEBUG:
+            print "   --------------------------> Soy cambiar_presupuesto_activo"
         model, itr = tv.get_selection().get_selected()
         if itr:
             puid = model[itr][-1]
             presupuesto_seleccionado = pclases.getObjetoPUID(puid)
             if self.objeto != presupuesto_seleccionado:
+                if pclases.DEBUG:
+                    print "  -----------------> ", presupuesto_seleccionado.id
                 self.objeto = presupuesto_seleccionado
                 self.ir_a(self.objeto) 
 
@@ -1238,6 +1253,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         hay que tener cuidado de no llamar a 
         esta función en ese caso.
         """
+        if pclases.DEBUG:
+            print "  >>> ::::::::::::::::: rellenar_widgets ::::::::::::::::::"
         fdps = [(fdp.id, fdp.toString()) 
                 for fdp in pclases.FormaDePago.select(
                     orderBy = "documento_de_pago_id, plazo")]
@@ -1299,12 +1316,14 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.refresh_validado()
         self.objeto.make_swap()
         # Y ahora la lista de presupuestos.
-        self.rellenar_lista_presupuestos()
+        #self.rellenar_lista_presupuestos()
+        if pclases.DEBUG:
+            print "  <<< ::::::::::::::::: rellenar_widgets ::::::::::::::::::"
 
     def rellenar_lista_presupuestos(self):
-        print "rellenar_lista_presupuestos: begin"
+        if pclases.DEBUG:
+            print "rellenar_lista_presupuestos: begin"
         self.wids['tv_presupuestos'].disconnect(self.hndlr_presup)
-        model = self.wids['tv_presupuestos'].get_model()
         if not self.usuario:
             presupuestos = pclases.Presupuesto.select()
         else:
@@ -1318,13 +1337,17 @@ class Presupuestos(Ventana, VentanaGenerica):
                     criterio.append(
                         pclases.Presupuesto.q.comercialID==yo_as_comercial.id)
                 # CWT: No deben salir presupuestos de estudio ni los que ya 
-                # hayan sido convertidos a pedido. ¿?
+                # hayan sido convertidos a pedido. Tampoco los validados. Solo 
+                # pendiente de validar.
                 presupuestos = pclases.Presupuesto.select(pclases.AND(
                                     pclases.Presupuesto.q.estudio == False, 
+                                    pclases.Presupuesto.q.usuarioID == None, 
                                     pclases.Presupuesto.q.comercialID != None,
                                     pclases.OR(*criterio)), 
                                 orderBy = "-id")
-        self.wids['tv_presupuestos'].freeze_child_notify()
+        # Ta tengo los objetos. Ahora a rellenar en la interfaz.
+        model = self.wids['tv_presupuestos'].get_model()
+        #self.wids['tv_presupuestos'].freeze_child_notify()
         model.clear()
         for p in presupuestos:
             # CWT: No deben salir los presupuestos ya servidos
@@ -1349,7 +1372,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             itr = model.append(fila)
             if self.objeto and self.objeto.id == p.id:
                 path = model.get_path(itr)
-        self.wids['tv_presupuestos'].thaw_child_notify()
+        #self.wids['tv_presupuestos'].thaw_child_notify()
         # PORASQUI: Lo desactivo porque tengo que buscar una manera mejor de 
         # marcar el presupuesto activo sin borrar, repoblar y redibujar
         # el model. Más que nada porque la primera llamada viene con la 
@@ -1358,7 +1381,9 @@ class Presupuestos(Ventana, VentanaGenerica):
         #self.wids['tv_presupuestos'].get_selection().select_path(path)
         self.hndlr_presup = self.wids['tv_presupuestos'].connect(
                             "cursor-changed", self.cambiar_presupuesto_activo)
-        print "rellenar_lista_presupuestos: end"
+        if pclases.DEBUG:
+            print "rellenar_lista_presupuestos: end"
+        return True     # Para que siga llamándome indefinidamente.
 
     def refresh_validado(self):
         ch = self.wids['ch_validado']
