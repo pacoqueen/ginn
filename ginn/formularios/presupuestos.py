@@ -1169,7 +1169,8 @@ class Presupuestos(Ventana, VentanaGenerica):
             txt_puede_adjudicarse = "Debe seleccionar el tipo de oferta."
         if self.objeto and not self.objeto.validado:
             # Si está validado, se puede imprimir sin problemas.
-            if self.objeto and not self.objeto.estudio:
+            if self.objeto and self.objeto.estudio == False:
+                # En ofertas de pedido...
                 estado = self.objeto.get_estado_validacion()
                 if estado in (pclases.PLAZO_EXCESIVO, 
                               pclases.SIN_FORMA_DE_PAGO, 
@@ -1180,7 +1181,11 @@ class Presupuestos(Ventana, VentanaGenerica):
                             "forma de pago, que cumple las restricciones "\
                             "de plazo y precio mínimo y que no tiene "\
                             "condiciones particulares."
-                    puede_adjudicarse = False
+                    if estado != pclases.COND_PARTICULARES:
+                        # Una oferta con condiciones particulares sí que puede 
+                        # adjudicarse. Solo que para imprimirla antes le 
+                        # habrán tenido que dar el visto bueno.
+                        puede_adjudicarse = False
                     txt_puede_adjudicarse = txt_puede_imprimir
             if (self.objeto and (
                     not self.objeto.lineasDePresupuesto 
@@ -1188,6 +1193,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                     or not self.objeto.direccion
                     or not self.objeto.email
                     or not self.objeto.telefono)):
+                # Para todas las ofertas... 
                 puede_imprimir = False
                 txt_puede_imprimir = "Compruebe que el contenido de la oferta"\
                         " no está vacío y que ha rellenado al menos los "\

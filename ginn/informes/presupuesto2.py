@@ -132,8 +132,8 @@ def build_tabla_contenido(data):
                     )
             datos.append(_fila)
     tabla = Table(datos, 
-                  colWidths = (PAGE_WIDTH * 0.1, 
-                               PAGE_WIDTH * 0.45, 
+                  colWidths = (PAGE_WIDTH * 0.13, 
+                               PAGE_WIDTH * 0.42, 
                                PAGE_WIDTH * 0.15, 
                                PAGE_WIDTH * 0.2), 
                   repeatRows = 1)
