@@ -1324,7 +1324,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             print "rellenar_lista_presupuestos: begin"
         try:
             gobject.source_remove(self.hndlr_listado)
-        except UnboundLocalError:
+        except AttributeError:
             pass    # Primera vez.
         self.wids['tv_presupuestos'].disconnect(self.hndlr_presup)
         if not self.usuario:
