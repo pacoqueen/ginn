@@ -127,12 +127,14 @@ class Presupuestos(Ventana, VentanaGenerica):
         Marca el presupuesto como cerrado guardando antes los posibles cambios.
         Permite que se envíen los correos de validación.
         """
-        print " ========== Soy cerrar presupuesto !!!!!!!!!!!!!!!!!"
         cerrar = ch_button.get_active()
         self.objeto.cerrado = cerrar 
         self.objeto.syncUpdate()
-        self.guardar(None)
+        # En lugar de guardar con todo lo que conlleva, guardo solo este campo
+        self.objeto.swap['cerrado'] = self.objeto.cerrado
+        #self.guardar(None)
         #self.actualizar_ventana()  # En guardar ya actualiza ventana.
+        self.rellenar_lista_presupuestos()
 
     def enviar_correo_de_riesgo(self):
         """
@@ -1316,13 +1318,19 @@ class Presupuestos(Ventana, VentanaGenerica):
                 for yo_as_comercial in self.usuario.get_comerciales():
                     criterio.append(
                         pclases.Presupuesto.q.comercialID==yo_as_comercial.id)
+                # CWT: No deben salir presupuestos de estudio ni los que ya 
+                # hayan sido convertidos a pedido. ¿?
                 presupuestos = pclases.Presupuesto.select(pclases.AND(
+                                    pclases.Presupuesto.q.estudio == False, 
                                     pclases.Presupuesto.q.comercialID != None,
                                     pclases.OR(*criterio)), 
                                 orderBy = "-id")
         self.wids['tv_presupuestos'].freeze_child_notify()
         model.clear()
         for p in presupuestos:
+            # CWT: No deben salir los presupuestos ya servidos
+            if p.get_pedidos():
+                continue
             fila = [p.cerrado and gtk.STOCK_DIALOG_AUTHENTICATION or None,
                     p.validado and gtk.STOCK_YES or gtk.STOCK_NO, 
                     p.id, 
