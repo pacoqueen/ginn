@@ -1302,6 +1302,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.rellenar_lista_presupuestos()
 
     def rellenar_lista_presupuestos(self):
+        print "rellenar_lista_presupuestos: begin"
         self.wids['tv_presupuestos'].disconnect(self.hndlr_presup)
         model = self.wids['tv_presupuestos'].get_model()
         if not self.usuario:
@@ -1357,6 +1358,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         #self.wids['tv_presupuestos'].get_selection().select_path(path)
         self.hndlr_presup = self.wids['tv_presupuestos'].connect(
                             "cursor-changed", self.cambiar_presupuesto_activo)
+        print "rellenar_lista_presupuestos: end"
 
     def refresh_validado(self):
         ch = self.wids['ch_validado']
