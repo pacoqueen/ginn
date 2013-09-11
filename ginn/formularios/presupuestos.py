@@ -1431,7 +1431,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             model.remove(itr)
         # Y por fin acabé de actualizar el TreeView.
         self.wids['tv_presupuestos'].thaw_child_notify()
-        # PORASQUI: Lo desactivo porque tengo que buscar una manera mejor de 
+        # Lo desactivo porque tengo una manera mejor de 
         # marcar el presupuesto activo sin borrar, repoblar y redibujar
         # el model. Más que nada porque la primera llamada viene con la 
         # variable path sin instanciar. ¿Porcuá? Dunno.
