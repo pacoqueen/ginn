@@ -1278,6 +1278,15 @@ class Presupuestos(Ventana, VentanaGenerica):
              pclases.Cliente.select(orderBy = "nombre") if not p.inhabilitado]) 
             # Lo pongo aquí por si crea un cliente nuevo sin cerrar esta 
             # ventana y lo quiere usar.
+        # SANTABÁRBARA
+        # Me aseguro de que si el cliente existe y es lo que tengo escrito, 
+        # la asociación esté bien hecha.
+        try:
+            self.objeto.cliente = pclases.Cliente.selectBy(
+                    nombre = self.objeto.nombrecliente)[0]
+        except IndexError:
+            pass    # Es cliente totally new. No pasa nada.
+        # EOSANTABÁRBARA
         comerciales = []
         if self.usuario and self.usuario.empleados:
             for e in self.usuario.empleados:
@@ -1552,6 +1561,14 @@ class Presupuestos(Ventana, VentanaGenerica):
         for ldp in ldps:
             subtotal = ldp.get_subtotal(iva = False)
             total += subtotal
+            # SANTABÁRBARA: Esto "reenlaza" si hiciera falta el 
+            # producto{Compra|Venta} según la descripción guardada. Por si 
+            # acaso...
+            if ldp._link_producto():
+                if pclases.DEBUG:
+                    print "Línea de presupuesto %d enlazada con %s." % (
+                            ldp.id, ldp.producto.puid)
+            # EOSANTABÁRBARA 
             model.append((utils.float2str(ldp.cantidad), 
                           ldp.get_descripcion_producto(), 
                           utils.float2str(ldp.precio, 3, autodec = True), 

@@ -10143,6 +10143,30 @@ class LineaDePresupuesto(SQLObject, PRPCTOO):
         else:
             raise TypeError
 
+    def _link_producto(self):
+        """
+        Localiza un producto de venta o de compra cuya descripción sea 
+        igual a la guardada y crea el enlace correspondiente entre registros.
+        Devuelve True si hace algún cambio en el registro.
+        """
+        res = False
+        self.sync()
+        if not self.productoCompra and not self.productoVenta:
+            try:
+                self.producto = ProductoVenta.selectBy(
+                        descripcion = self.descripcion)[0]
+                res = True
+            except IndexError:
+                try:
+                    self.producto = ProductoCompra.selectBy(
+                            descripcion = self.descripcion)[0]
+                    res = True
+                except IndexError:
+                    pass
+        if res:
+            self.syncUpdate()
+        return res
+
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 class Presupuesto(SQLObject, PRPCTOO):
