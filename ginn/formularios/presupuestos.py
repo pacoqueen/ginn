@@ -1100,8 +1100,11 @@ class Presupuestos(Ventana, VentanaGenerica):
             es_mismo_comercial = (self.objeto.comercial 
                                   in self.usuario.get_comerciales())
             #print es_mismo_comercial
-            s = s and es_mismo_comercial
-
+            # Excepción: que tenga nivel chachi de validar aunque 
+            # tenga también perfil comercial. Si así también puede editar 
+            # ofertas de otros comerciales. 
+            if self.usuario.nivel > NIVEL_VALIDACION:
+                s = s and es_mismo_comercial
         if self.objeto == None:
             s = False
         ws = tuple(['b_pedido', "table1",  
