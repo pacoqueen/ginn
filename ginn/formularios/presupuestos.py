@@ -1225,7 +1225,8 @@ class Presupuestos(Ventana, VentanaGenerica):
                 r.personaContacto))
         def mostrar_info_presupuesto(tv):
             model, itr = tv.get_selection().get_selected()
-            if itr and model[itr][-2].startswith("Clic aquí"):
+            if (itr and model[itr][-2] 
+                    and model[itr][-2].startswith("Clic aquí")):
                 oferta = pclases.Presupuesto.get(model[itr][0])
                 model[itr][-2] = oferta.get_str_estado()
         idpresupuesto = utils.dialogo_resultado(filas_res,
