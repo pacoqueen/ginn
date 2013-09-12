@@ -910,9 +910,48 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.hndlr_presup = self.wids['tv_presupuestos'].connect(
                 "cursor-changed", self.cambiar_presupuesto_activo)
         w, h = self.wids['tv_presupuestos'].size_request()
-        self.wids['tv_presupuestos'].set_size_request(int(w*1.25), h)
+        self.wids['tv_presupuestos'].set_size_request(w, h)
         self.colorear_presupuestos()
         self.rellenar_lista_presupuestos()  # El inicial lo hago yo.
+        cols = (('Usuario', 'gobject.TYPE_STRING', False, True, False, None),
+                ('Ventana', 'gobject.TYPE_STRING', False, True, False, None),
+                ('«dbpuid»', 'gobject.TYPE_STRING', False, True, False, None), 
+                ('Acción', 'gobject.TYPE_STRING', False, True, False, None), 
+                ('IP', 'gobject.TYPE_STRING', False, True, False, None), 
+                ('«hostname»', 
+                    'gobject.TYPE_STRING', False, True, False, None), 
+                ('«fechahora»', 'gobject.TYPE_STRING', False, True, True, None),
+                ('Descripción', 
+                    'gobject.TYPE_STRING', False, True, False, None), 
+                ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
+        utils.preparar_listview(self.wids['tv_auditoria'], cols)
+        self.colorear_historial(self.wids['tv_auditoria'])
+
+    def colorear_historial(self, tv):
+        """
+        Asocia una función al treeview para resaltar las acciones.
+        """
+        def cell_func(column, cell, model, itr, numcol):
+            tipo = model[itr][3]
+            if tipo == "create":
+                color = "green"
+            elif tipo == "drop":
+                color = "red"
+            elif tipo == "update": 
+                color = "light blue"
+            else:
+                # Cualquier otra cosa 
+                color = None
+            #cell.set_property("cell-background", color)
+            cell.set_property("background", color)
+        cols = tv.get_columns()
+        for i in xrange(len(cols)): 
+            column = cols[i]
+            cells = column.get_cell_renderers()
+            for cell in cells:
+                column.set_cell_data_func(cell, cell_func, i)
+                # Aprovecho para cambiar el tamaño de la fuente:
+                cell.set_property("font-desc", pango.FontDescription("sans 7"))
 
     def colorear_presupuestos(self):
         def cell_func(column, cell, model, itr, i):
@@ -1345,6 +1384,9 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.objeto.make_swap()
         # Y ahora la lista de presupuestos.
         #self.rellenar_lista_presupuestos()
+        # Para finalizar, el pedido al que se ha convertido
+        self.wids['e_pedido'].set_text(", ".join(
+            [p.numpedido for p in presupuesto.get_pedidos()]))
         if pclases.DEBUG:
             print "  <<< ::::::::::::::::: rellenar_widgets ::::::::::::::::::"
 
@@ -1573,6 +1615,69 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.wids['e_total'].set_text("%s €" % utils.float2str(total))
         self.wids['e_total'].modify_font(pango.FontDescription("bold"))
         self.comprobar_riesgo_cliente()
+        # Y ahora el historial, que no afecta a nada.
+        self.rellenar_historial()
+
+    def rellenar_historial(self):
+        """
+        Busca todos los registros de auditoría de la oferta y los introduce 
+        en la tabla debidamente formateados y coloreados.
+        """
+        w = self.wids['tv_auditoria']
+        model = w.get_model()
+        w.freeze_child_notify()
+        w.set_model(None)
+        model.clear()
+        last_iter = None
+        if self.objeto:
+            audits = pclases.Auditoria.select(
+                    pclases.Auditoria.q.dbpuid == self.objeto.puid, 
+                    orderBy = "fechahora")
+            self.lines_added = []
+            for a in audits:
+                last_iter = self.agregar_linea_auditoria(model, linea)
+        w.set_model(model)
+        w.thaw_child_notify()
+        self.mover_a_ultima_fila(last_iter)
+
+    def agregar_linea_auditoria(self, model, linea):
+        """
+        Inserta en el model la línea recibida.
+        """
+        lpuid = linea.get_puid()
+        if lpuid not in self.lines_added:
+            added = model.append(
+                            (linea.usuario and linea.usuario.usuario or "", 
+                             linea.ventana and linea.ventana.fichero or "", 
+                             linea.dbpuid, 
+                             linea.action, 
+                             linea.ip, 
+                             linea.hostname, 
+                             linea.fechahora.strftime("%Y%m%d %H%M%S"), 
+                             linea.descripcion, 
+                             linea.get_puid()))
+            self.lines_added.append(lpuid)
+            return added
+
+    def mover_a_ultima_fila(self, last_iter):
+        """
+        Mueve el TreeView del historial a la última fila.
+        """
+        sel = self.wids['tv_auditoria'].get_selection()
+        model, selected = sel.get_selected()
+        # Me muevo al final si ya estaba en el final o si no estoy  
+        # investigando nada (no tengo nada seleccionado en el treeview).
+        vscroll = self.wids['tv_auditoria'].parent.get_vscrollbar()\
+                                                            .get_adjustment()
+        pos_scroll = vscroll.value
+        abajo = vscroll.upper - vscroll.page_size
+        if not selected or pos_scroll == abajo:
+            try:
+                self.wids['tv_adutoria'].scroll_to_cell(
+                                                    model.get_path(last_iter),
+                                                    use_align = True)
+            except TypeError:   # last_iter no es un iter. Debe ser None.
+                pass
 
     def rellenar_contenido(self):
         model = self.wids['tv_contenido'].get_model()

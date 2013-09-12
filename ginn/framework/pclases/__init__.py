@@ -10181,6 +10181,51 @@ class Presupuesto(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
+    def get_ofertado_por_producto(self):
+        """
+        Devuelve un diccionario de productos y cantidad solicitada total.
+        """
+        # TODO
+        res = {}
+        return res
+
+    def get_pedido_por_producto(self):
+        """
+        Devuelve un diccionario de productos y cantidad total pasada a pedido.
+        """
+        # TODO
+        res = {}
+        return res
+
+    def get_servido_por_producto(self):
+        """
+        Devuelve un diccionario de productos y cantidad total servida en 
+        albaranes a través de pedido.
+        """
+        # TODO
+        res = {}
+        return res
+
+    def get_facturado_por_producto(self):
+        """
+        Devuelve un diccionario de productos y cantidad total facturada en 
+        facturas a través de albaranes y pedidos.
+        """
+        # TODO
+        res = {}
+        return res
+
+    def get_pendiente_pasar_a_pedido(self):
+        """
+        Devuelve un diccionario de productos con las cantidades pendientes 
+        de pasar a pedido. Si un producto ya se ha pasado por completo según 
+        las cantidades de las líneas de presupuesto, no lo añade al 
+        diccionario.
+        """
+        # TODO
+        res = {}
+        return res
+
     def get_pedidos(self):
         """
         Devuelve los pedidos relacionados con el presupuesto 

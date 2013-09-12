@@ -747,6 +747,10 @@ class Ventana:
         caso, solo se sincronizarán los atributos directos del objeto (campos 
         de su tabla, vamos, nada de registros relacionados por claves ajenas).
         """
+        # TODO: ¿Sería conveniente deshabilitar el notificador del objeto 
+        # mientras relleno y deshabilitar el botón de guardar hasta que 
+        # termine? ¿Me quitaría tantos falsos positivos e información 
+        # machacada involuntariamente por el diálogo de "¿desea guardar?"?
         from framework.pclases import DEBUG, SQLObjectNotFound
         if DEBUG:
             import time
