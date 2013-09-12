@@ -121,6 +121,15 @@ class Presupuestos(Ventana, VentanaGenerica):
         #    self.activar_widgets(False) # Para evitar manos rápidas al abrir.
         gtk.main()
 
+    def detectar_cambio_pagina_notebook(self, nb, page, page_num):
+        if page_num == 1:
+            if not self.usuario or self.usuario.nivel > 0:
+                nb.set_current_page(0)
+                utils.dialogo_info(titulo = "NECESITA PERMISOS ADICIONALES", 
+                        texto = "Solo los administradores pueden ver esta "
+                                "información.", 
+                        padre = self.wids['ventana'])
+
     def cerrar_presupuesto(self, ch_button):
         """
         Marca el presupuesto como cerrado guardando antes los posibles cambios.
@@ -926,6 +935,8 @@ class Presupuestos(Ventana, VentanaGenerica):
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_listview(self.wids['tv_auditoria'], cols)
         self.colorear_historial(self.wids['tv_auditoria'])
+        self.wids['nb'].connect_after("switch-page", 
+                self.detectar_cambio_pagina_notebook)
 
     def colorear_historial(self, tv):
         """
@@ -1635,7 +1646,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                     orderBy = "fechahora")
             self.lines_added = []
             for a in audits:
-                last_iter = self.agregar_linea_auditoria(model, linea)
+                last_iter = self.agregar_linea_auditoria(model, a)
         w.set_model(model)
         w.thaw_child_notify()
         self.mover_a_ultima_fila(last_iter)
@@ -1653,7 +1664,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                              linea.action, 
                              linea.ip, 
                              linea.hostname, 
-                             linea.fechahora.strftime("%Y%m%d %H%M%S"), 
+                             utils.str_fechahora(linea.fechahora), 
                              linea.descripcion, 
                              linea.get_puid()))
             self.lines_added.append(lpuid)
@@ -1673,7 +1684,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         abajo = vscroll.upper - vscroll.page_size
         if not selected or pos_scroll == abajo:
             try:
-                self.wids['tv_adutoria'].scroll_to_cell(
+                self.wids['tv_auditoria'].scroll_to_cell(
                                                     model.get_path(last_iter),
                                                     use_align = True)
             except TypeError:   # last_iter no es un iter. Debe ser None.
