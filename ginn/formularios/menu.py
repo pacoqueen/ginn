@@ -547,7 +547,7 @@ class Menu:
     def abrir_ventana_usuario(self, archivo):
         self.ventana.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
         exec "import %s" % archivo
-        gobject.timeout_add(5000, self.volver_a_cursor_original)
+        gobject.timeout_add(10000, self.volver_a_cursor_original)
         if archivo == "usuarios": 
             from formularios import usuarios
             v = usuarios.Usuarios(self.get_usuario())  # @UnusedVariable
