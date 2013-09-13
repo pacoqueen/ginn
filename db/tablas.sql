@@ -1432,8 +1432,10 @@ CREATE TABLE presupuesto(
     cerrado BOOLEAN DEFAULT FALSE,  -- Para indicar que ya se ha terminado de 
                                     -- introducir información y queda listo 
                                     -- para validar (si fuera necesario).
-    impresiones INT DEFAULT 0, 
-    envios INT DEFAULT 0
+    -- Algunos contadores que considero interesantes y pueden hacer falta:
+    impresiones INT DEFAULT 0,  -- Número de veces que ha generado el PDF
+    envios INT DEFAULT 0,       -- Número de veces que ha enviado la oferta.
+    version INT DEFAULT 1       -- Veces que ha guardado el presupuesto.
 );
 
 ----------------------------------

@@ -10185,16 +10185,34 @@ class Presupuesto(SQLObject, PRPCTOO):
         """
         Devuelve un diccionario de productos y cantidad solicitada total.
         """
-        # TODO
         res = {}
+        for ldp in self.lineasDePresupuesto:
+            producto = ldp.producto
+            if not producto:
+                producto = ldp.descripcion
+            try:
+                res[producto] += ldp.cantidad
+            except KeyError:
+                res[producto] = ldp.cantidad
         return res
 
     def get_pedido_por_producto(self):
         """
         Devuelve un diccionario de productos y cantidad total pasada a pedido.
         """
-        # TODO
         res = {}
+        for ldp in self.lineasDePedido:
+            producto = ldp.producto
+            try:
+                res[producto] += ldp.cantidad
+            except KeyError:
+                res[producto] = ldp.cantidad
+        for srv in self.servicios:
+            concepto = srv.concepto
+            try:
+                res[concepto] += srv.cantidad
+            except KeyError:
+                res[concepto] = srv.cantidad
         return res
 
     def get_servido_por_producto(self):
@@ -10202,8 +10220,9 @@ class Presupuesto(SQLObject, PRPCTOO):
         Devuelve un diccionario de productos y cantidad total servida en 
         albaranes a través de pedido.
         """
-        # TODO
         res = {}
+# PORASQUI
+        # TODO: Tengo que tirar ahora de líneas de venta...
         return res
 
     def get_facturado_por_producto(self):
