@@ -1393,7 +1393,11 @@ class Presupuestos(Ventana, VentanaGenerica):
                                     pclases.Presupuesto.q.estudio == False, 
                                     pclases.Presupuesto.q.usuarioID == None)
         # Ya tengo montados todos los criterios de selección. A JUGAAAAR:
-        criterios = pclases.AND(mas_criterios_de_busqueda, criterio_comercial)
+        if criterio_comercial:
+            criterios = pclases.AND(mas_criterios_de_busqueda, 
+                                    criterio_comercial)
+        else:
+            criterios = mas_criterios_de_busqueda
         print criterios, type(criterios)
         presupuestos = pclases.Presupuesto.select(pclases.AND(criterios), 
                                                   orderBy = "-id")
