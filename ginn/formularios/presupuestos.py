@@ -1227,6 +1227,12 @@ class Presupuestos(Ventana, VentanaGenerica):
                      for o in self.objeto.cliente.obras]
         else:
             obras = []
+        if (self.objeto.obra 
+                and self.objeto.obra.id not in [o[0] for o in obras]):
+            # Por si acaso no está la obra del presupuesto entre las del 
+            # cliente por no estar la lista actualizada o lo que sea. 
+            obras.append((self.objeto.obra.id, 
+                          self.objeto.obra.get_str_obra()))
         utils.rellenar_lista(self.wids['cbe_obra'], obras)
         presupuesto = self.objeto
         for nombre_col in self.dic_campos:
@@ -1341,7 +1347,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         return True     # Para que siga llamándome indefinidamente.
 
     def buscar_presupuestos_accesibles(self, solo_pdte = False, 
-                                       mas_criterios_de_busqueda = None):
+                                       mas_criterios_de_busqueda = []):
         """
         Busca los presupuestos a los que puede acceder el usuario de la 
         ventana.
@@ -1351,54 +1357,47 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         # Primero determino si busco entre los presupuestos de todos los 
         # comerciales o solo los míos.
-        if not self.usuario:
-            if solo_pdte:
-                presupuestos = pclases.Presupuesto.select(
-                        pclases.Presupuesto.q.estudio == False)
-            else:
-                presupuestos = pclases.Presupuesto.select()
-        else:
-            # CWT: No deben salir presupuestos de estudio ni los que ya 
-            # hayan sido convertidos a pedido. Tampoco los validados. Solo 
-            # pendiente de validar.
-            if (self.usuario.nivel <= NIVEL_VALIDACION 
-                    or calcular_permiso_nuevos_pedidos(self.usuario, 
-                                                       self.logger)):
-                if solo_pdte:
-                    presupuestos = pclases.Presupuesto.select(pclases.AND(
+        if not self.usuario:    # Todos los presupuestos
+            criterio_comercial = []
+        elif (self.usuario.nivel <= NIVEL_VALIDACION 
+                or calcular_permiso_nuevos_pedidos(self.usuario, self.logger)):
+                # Todos los presupuestos también.
+            criterio_comercial = []
+        else:   # Soy usuario normal y corriente. Solo los míos y los de 
+                # aquellos usuarios con menor nivel que yo.
+            criterio_comercial = []
+            for yo_as_comercial in self.usuario.get_comerciales():
+                criterio_comercial.append(
+                    pclases.Presupuesto.q.comercialID==yo_as_comercial.id)
+            # Peeeeeero si tengo nivel 4 (el resto de comerciales tiene 5)
+            # entonces debo dejar ver las ofertas de los demás porque soy 
+            # el director de delegados comerciales. En realidad busco los 
+            # que estén por debajo de mi nivel, así puedo establecer 
+            # jerarquías en el futuro.
+            for c in pclases.Comercial.select(pclases.AND(
+                pclases.Empleado.q.usuarioID == pclases.Usuario.q.id, 
+                pclases.Comercial.q.empleadoID == pclases.Empleado.q.id, 
+                pclases.Usuario.q.nivel > self.usuario.nivel)):
+                criterio_comercial.append(
+                        pclases.Presupuesto.q.comercialID == c.id)
+            criterio_comercial = pclases.OR(*criterio_comercial)
+        # Ahora vamos con el criterio de "solo de pedidos pendientes de validar
+        if solo_pdte:
+            if mas_criterios_de_busqueda:
+                mas_criterios_de_busqueda = pclases.AND(
+                                    mas_criterios_de_busqueda, 
                                     pclases.Presupuesto.q.estudio == False, 
-                                    pclases.Presupuesto.q.usuarioID == None), 
-                                orderBy="-id")
-                else:
-                    presupuestos = pclases.Presupuesto.select(
-                                pclases.Presupuesto.q.usuarioID == None, 
-                                orderBy="-id")
+                                    pclases.Presupuesto.q.usuarioID == None)
             else:
-                criterio_comercial = []
-                for yo_as_comercial in self.usuario.get_comerciales():
-                    criterio_comercial.append(
-                        pclases.Presupuesto.q.comercialID==yo_as_comercial.id)
-                # Peeeeeero si tengo nivel 4 (el resto de comerciales tiene 5)
-                # entonces debo dejar ver las ofertas de los demás porque soy 
-                # el director de delegados comerciales. En realidad busco los 
-                # que estén por debajo de mi nivel, así puedo establecer 
-                # jerarquías en el futuro.
-                for c in pclases.Comercial.select(pclases.AND(
-                    pclases.Empleado.q.usuarioID == pclases.Usuario.q.id, 
-                    pclases.Usuario.q.nivel > self.usuario.nivel, 
-                    pclases.Comercial.q.empleadoID == pclases.Empleado.q.id)):
-                    criterio_comercial.append(
-                            pclases.Presupuesto.q.comercialID == c.id)
-                and_criterios = [pclases.Presupuesto.q.usuarioID == None, 
-                                 pclases.Presupuesto.q.comercialID != None]
-                if solo_pdte:
-                    and_criterios.append(pclases.Presupuesto.q.estudio == False)
-                if mas_criterios_de_busqueda:
-                    and_criterios.append(mas_criterios_de_busqueda)
-                presupuestos = pclases.Presupuesto.select(pclases.AND(
-                                    pclases.OR(*criterio_comercial), 
-                                    *and_criterios), 
-                                orderBy = "-id")
+                mas_criterios_de_busqueda = pclases.AND(
+                                    pclases.Presupuesto.q.estudio == False, 
+                                    pclases.Presupuesto.q.usuarioID == None)
+        # Ya tengo montados todos los criterios de selección. A JUGAAAAR:
+        criterios = pclases.AND(mas_criterios_de_busqueda, criterio_comercial)
+        print criterios, type(criterios)
+        presupuestos = pclases.Presupuesto.select(pclases.AND(criterios), 
+                                                  orderBy = "-id")
+        print presupuestos.count()
         return presupuestos
 
     def refresh_validado(self):
@@ -1716,8 +1715,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             #        subcrit.append(
             #            pclases.Presupuesto.q.comercialID==yo_as_comercial.id)
             #    criterio = pclases.AND(criterio, pclases.OR(*subcrit))
-            resultados = pclases.Presupuesto.select(criterio)
-            print resultados.count()
+            #resultados = pclases.Presupuesto.select(criterio)
             resultados = self.buscar_presupuestos_accesibles(
                                         mas_criterios_de_busqueda = criterio)
             if resultados.count() > 1:
