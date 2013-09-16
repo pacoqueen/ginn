@@ -68,7 +68,7 @@ from framework.configuracion import ConfigConexion, parse_params
 from formularios import custom_widgets
 from formularios.ventana import install_bug_hook
 
-__version__ = '5.2.3 (beta)'
+__version__ = '5.3.1 (beta)'
 __version_info__ = tuple(
     [int(num) for num in __version__.split()[0].split('.')] + 
     [txt.replace("(", "").replace(")", "") for txt in __version__.split()[1:]]
@@ -396,7 +396,7 @@ class Menu:
             # estén en favoritos.
             stats = [s for s in stats 
                      if usuario.get_permiso(s.ventana) 
-                         and usuario.get_permiso(s.ventana).permiso][:6]
+                         and usuario.get_permiso(s.ventana).permiso][:9]
             stats.sort(lambda s1, s2: (s1.ultimaVez > s2.ultimaVez and -1) 
                                       or (s1.ultimaVez < s2.ultimaVez and 1) 
                                       or 0)
