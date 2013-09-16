@@ -10221,8 +10221,22 @@ class Presupuesto(SQLObject, PRPCTOO):
         albaranes a través de pedido.
         """
         res = {}
-# PORASQUI
-        # TODO: Tengo que tirar ahora de líneas de venta...
+        for ldp in self.lineasDePedido:
+            if not ldp.albaraneada:   # No se ha servido
+                continue
+            producto = ldp.producto
+            try:
+                res[producto] += ldp.cantidad
+            except KeyError:
+                res[producto] = ldp.cantidad
+        for srv in self.servicios:
+            if not srv.albaranSalida:   # No se ha servido
+                continue
+            concepto = srv.concepto
+            try:
+                res[concepto] += srv.cantidad
+            except KeyError:
+                res[concepto] = srv.cantidad
         return res
 
     def get_facturado_por_producto(self):

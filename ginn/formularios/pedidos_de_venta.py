@@ -533,14 +533,14 @@ class PedidosDeVenta(Ventana):
         idsrv = model[itr][-1]
         srv = pclases.Servicio.get(idsrv)
         if (srv.albaranSalida != None or srv.facturaVenta != None 
-            or srv.prefactura != None):
+            or srv.prefactura != None or srv.presupuesto != None):
             txt =  """
             La línea seleccionada corresponde a un servicio que         
-            ya ha sido vinculado con un albarán o incluso ya            
-            se ha facturado.                                            
+            viene de una oferta, ya ha sido vinculado con un 
+            albarán o incluso ya se ha facturado.
             Compruébelo y elimine primero el servicio del               
             albarán o factura y vuelva a intentarlo.
-            """ % (srv.albaranSalida.numalbaran)
+            """ 
             utils.dialogo_info(titulo = 'NO SE PUDO ELIMINAR',
                                texto = txt, 
                                padre = self.wids['ventana'])
