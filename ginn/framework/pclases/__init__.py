@@ -10222,13 +10222,11 @@ class Presupuesto(SQLObject, PRPCTOO):
         """
         res = {}
         for ldp in self.lineasDePedido:
-            if not ldp.albaraneada:   # No se ha servido
-                continue
             producto = ldp.producto
             try:
-                res[producto] += ldp.cantidad
+                res[producto] += ldp.get_cantidad_servida()
             except KeyError:
-                res[producto] = ldp.cantidad
+                res[producto] = ldp.get_cantidad_servida()
         for srv in self.servicios:
             if not srv.albaranSalida:   # No se ha servido
                 continue
@@ -10244,8 +10242,22 @@ class Presupuesto(SQLObject, PRPCTOO):
         Devuelve un diccionario de productos y cantidad total facturada en 
         facturas a través de albaranes y pedidos.
         """
-        # TODO
         res = {}
+        for ldp in self.lineasDePedido:
+            for ldv in ldp.get_lineas_de_venta():
+                producto = ldp.producto
+                try:
+                    res[producto] += ldv.cantidad
+                except KeyError:
+                    res[producto] = ldv.cantidad
+        for srv in self.servicios:
+            if not srv.facturaVenta:   # No se ha facturado
+                continue
+            concepto = srv.concepto
+            try:
+                res[concepto] += srv.cantidad
+            except KeyError:
+                res[concepto] = srv.cantidad
         return res
 
     def get_pendiente_pasar_a_pedido(self):
