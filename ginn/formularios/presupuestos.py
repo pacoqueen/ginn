@@ -1398,10 +1398,8 @@ class Presupuestos(Ventana, VentanaGenerica):
                                     criterio_comercial)
         else:
             criterios = mas_criterios_de_busqueda
-        print criterios, type(criterios)
         presupuestos = pclases.Presupuesto.select(pclases.AND(criterios), 
                                                   orderBy = "-id")
-        print presupuestos.count()
         return presupuestos
 
     def refresh_validado(self):
