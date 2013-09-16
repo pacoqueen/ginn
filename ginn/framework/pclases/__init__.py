@@ -10262,13 +10262,19 @@ class Presupuesto(SQLObject, PRPCTOO):
 
     def get_pendiente_pasar_a_pedido(self):
         """
-        Devuelve un diccionario de productos con las cantidades pendientes 
-        de pasar a pedido. Si un producto ya se ha pasado por completo según 
-        las cantidades de las líneas de presupuesto, no lo añade al 
-        diccionario.
+        Devuelve un diccionario de productos (o descripciones de productos) 
+        con las cantidades pendientes de pasar a pedido. Si un producto ya 
+        se ha pasado por completo según las cantidades de las líneas de 
+        presupuesto, no lo añade al diccionario.
         """
-        # TODO
-        res = {}
+        res = self.get_ofertado_por_producto()
+        dic_pedido = self.get_pedido_por_producto()
+        for p in dic_pedido:
+            if p in res:    # Y si no se ha presupuestado, viene de otro lado 
+                            # o se ha creado a mano. Lo ignoro.
+                res[p] -= dic_pedido[p]
+                if res[p] <= 0:     # Lo retiro del resultado por contrato.
+                    res.pop(p)
         return res
 
     def get_pedidos(self):
