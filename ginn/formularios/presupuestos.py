@@ -698,6 +698,9 @@ class Presupuestos(Ventana, VentanaGenerica):
                         print "\tvalor_ventana:", valor_ventana
                         print "\tvalor_objeto:", valor_objeto
                     break
+                    # TODO: PLAN: ¿Y si en vez de un break, cojo, sigo 
+                    # sigo analizando y marco en algún color los campos 
+                    # diferentes?
         return not igual
     
     def reset_cache_credito(self):
@@ -1395,7 +1398,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         ventana.
         Si "solo_pdte" es True, elimina de la lista de resultados los 
         presupuestos de estudio y los que no tengan informado el campo; solo 
-        buscará entre las ofertas de pedido que estén pendientes de validar.
+        buscará entre las ofertas de pedido que estén pendientes de 
+        validación para imprimir.
         """
         # Primero determino si busco entre los presupuestos de todos los 
         # comerciales o solo los míos.
@@ -1442,6 +1446,17 @@ class Presupuestos(Ventana, VentanaGenerica):
             criterios = mas_criterios_de_busqueda
         presupuestos = pclases.Presupuesto.select(pclases.AND(criterios), 
                                                   orderBy = "-id")
+        # CWT: Solo los no validados PERO CON LA VALIDACIÓN QUE IMPIDE IMPRIMIR
+        if solo_pdte:
+            _presupuestos = []
+            for p in presupuestos:
+                estado = p.get_estado_validacion()
+                if estado in (pclases.PLAZO_EXCESIVO, 
+                              pclases.SIN_FORMA_DE_PAGO, 
+                              pclases.PRECIO_INSUFICIENTE, 
+                              pclases.COND_PARTICULARES):
+                    _presupuestos.append(p)
+                presupuestos = pclases.SQLlist(_presupuestos)
         return presupuestos
 
     def refresh_validado(self):
