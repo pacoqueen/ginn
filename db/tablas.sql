@@ -3675,13 +3675,13 @@ CREATE OR REPLACE FUNCTION fra_no_documentada(idfra INTEGER,
         RETURN (cobrado = 0 AND vencido = 0 AND documentado = 0) 
             -- OJO: Si tiene cobros o está vencida pero la factura tiene 
             -- importe CERO, entonces va a clasificarse como NO DOCUMENTADA.
-            OR (documentado < vencido + no_vencido);
+            OR (cobrado + documentado < vencido + no_vencido); 
             -- Vencido + No vencido = TOTAL factura. Si se ha documentado 
             -- menos que el total de la factura, es que tiene parte pendiente 
             -- de documentar. Así que la factura está no documentada, supongo, 
             -- aunque solo sea parcialmente.
     END;
-    $$ LANGUAGE plpgsql;        -- NEW! 2/08/2013 MODIFIED 7/08/2013
+    $$ LANGUAGE plpgsql; -- NEW! 2/08/2013 MODIFIED 7/08/2013 UPDATED 17/09/2013
 
 CREATE OR REPLACE FUNCTION fra_no_vencida(idfra INTEGER, 
                                           fecha DATE DEFAULT CURRENT_DATE)
