@@ -3658,7 +3658,8 @@ CREATE OR REPLACE FUNCTION fra_cobrada(idfra INTEGER,
 CREATE OR REPLACE FUNCTION fra_no_documentada(idfra INTEGER, 
                                               fecha DATE DEFAULT CURRENT_DATE)
     -- Fra. no documentada es la que no ha vencido ni tiene cobros porque 
-    -- todavía no ha llegado ni un triste pagaré.
+    -- todavía no ha llegado ni un triste pagaré. O si ha llegado, no cubre 
+    -- el total de la factura.
     RETURNS BOOLEAN
     AS $$
     DECLARE
@@ -3671,9 +3672,14 @@ CREATE OR REPLACE FUNCTION fra_no_documentada(idfra INTEGER,
         SELECT calcular_importe_cobrado_factura_venta($1, $2) INTO cobrado;
         SELECT calcular_importe_vencido_factura_venta($1, $2) INTO vencido;
         SELECT calcular_importe_no_vencido_factura_venta($1, $2) INTO no_vencido;
-        RETURN cobrado = 0 AND vencido = 0 AND documentado = 0;     
+        RETURN (cobrado = 0 AND vencido = 0 AND documentado = 0) 
             -- OJO: Si tiene cobros o está vencida pero la factura tiene 
             -- importe CERO, entonces va a clasificarse como NO DOCUMENTADA.
+            OR (documentado < vencido + no_vencido);
+            -- Vencido + No vencido = TOTAL factura. Si se ha documentado 
+            -- menos que el total de la factura, es que tiene parte pendiente 
+            -- de documentar. Así que la factura está no documentada, supongo, 
+            -- aunque solo sea parcialmente.
     END;
     $$ LANGUAGE plpgsql;        -- NEW! 2/08/2013 MODIFIED 7/08/2013
 
@@ -3775,7 +3781,9 @@ CREATE OR REPLACE FUNCTION calcular_credito_disponible(idcliente INTEGER,
                     -- OPTIMIZACIÓN. Si alguna factura está impagada, crédito 0. No sigo.
                     RETURN 0;
                 ELSIF fra_no_documentada(fraventa.id, $2) THEN
-                    sin_documentar := sin_documentar + calcular_importe_factura_venta(fraventa.id);
+                    sin_documentar := sin_documentar + calcular_importe_factura_venta(fraventa.id); -- Esto no es exactamente así. Puede estar parcialmente 
+                    -- documentada; pero me agarro al caso general en aras 
+                    -- de la velocidad computacional.
                 ELSIF fra_no_vencida(fraventa.id, $2) THEN
                     sin_vencer := sin_vencer + calcular_importe_factura_venta(fraventa.id);
                 END IF;

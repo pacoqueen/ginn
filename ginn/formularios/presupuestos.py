@@ -135,6 +135,43 @@ class Presupuestos(Ventana, VentanaGenerica):
                         texto = "Solo los administradores pueden ver esta "
                                 "información.", 
                         padre = self.wids['ventana'])
+            else:
+                self.rellenar_tablas_historial()
+
+    def rellenar_tablas_historial(self):
+        model = self.wids[tv].get_model()
+        model.clear()
+        if self.objeto:
+            ofertado = self.objeto.get_ofertado_por_producto()
+            pedido = self.objeto.get_pedido_por_producto()
+            servido = self.objeto.get_servido_por_producto()
+            facturado = self.objeto.get_facturado_por_producto()
+            pendiente = self.objeto.get_pendiente_pasar_a_pedido()
+            for p in ofertado:
+                ofer = ofertado[p]
+                try:
+                    pedi = pedido.pop(p)
+                except KeyError:
+                    pedi = 0.0
+                try:
+                    serv = servido.pop(p)
+                except KeyError:
+                    serv = 0.0
+                try:
+                    fact = facturado.pop(p)
+                except KeyError:
+                    fact = 0.0
+                try:
+                    pdte = pendiente.pop(p)
+                except KeyError:
+                    pdte = 0.0
+                try:
+                    desc = p.descripcion
+                except AttributeError:
+                    desc = p
+                fila = (desc, ofer, pedi, serv, fact, pdte, "")
+                model.append((fila))
+# PORASQUI: TODO: Si queda algo en los diccionarios de pedido, servido, etc... añadirlo también al model.
 
     def cerrar_presupuesto(self, ch_button):
         """
@@ -802,6 +839,14 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.colorear_historial(self.wids['tv_auditoria'])
         self.wids['nb'].connect_after("switch-page", 
                 self.detectar_cambio_pagina_notebook)
+        cols = (("Producto", "gobject.TYPE_STRING", False, True, True, None), 
+                ("Ofertado", "gobject.TYPE_FLOAT", False, False, True, None), 
+                ("Pedido", "gobject.TYPE_FLOAT", False, False, True, None), 
+                ("Servido", "gobject.TYPE_FLOAT", False, False, True, None), 
+                ("Facturado", "gobject.TYPE_FLOAT", False, False, True, None), 
+                ("Pendiente", "gobject.TYPE_FLOAT", False, False, True, None), 
+                ("PUID", "gobject.TYPE_STRING", False, False, False, None))
+        utils.preparar_listview(self.wids["tv_ofertado"], cols)
 
     def colorear_historial(self, tv):
         """
