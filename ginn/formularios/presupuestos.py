@@ -110,6 +110,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                        "ch_validado/toggled": self.validar, 
                        "tv_contenido/query-tooltip": self.tooltip_query, 
                        'ch_adjudicada/toggled': self.enviar_correo_adjudicada,
+                       'b_credito/clicked': self.enviar_solicitud_credito, 
                       }  
         self.add_connections(connections)
         self.inicializar_ventana()
@@ -137,9 +138,19 @@ class Presupuestos(Ventana, VentanaGenerica):
                         padre = self.wids['ventana'])
             else:
                 self.rellenar_tablas_historial()
+        elif page_num == 2:
+            # TODO: PORASQUI
+            utils.dialogo_info(titulo = "NO IMPLEMENTADO", 
+                    texto = "Funcionalidad en desarrollo.", 
+                    padre = self.wids['ventana'])
+
+    def enviar_solicitud_credito(self, boton):
+        utils.dialogo_info(titulo = "NO IMPLEMENTADO", 
+                texto = "Característica en desarrollo.", 
+                padre = self.wids['ventana'])
 
     def rellenar_tablas_historial(self):
-        model = self.wids[tv].get_model()
+        model = self.wids['tv_ofertado'].get_model()
         model.clear()
         if self.objeto:
             ofertado = self.objeto.get_ofertado_por_producto()
@@ -148,30 +159,15 @@ class Presupuestos(Ventana, VentanaGenerica):
             facturado = self.objeto.get_facturado_por_producto()
             pendiente = self.objeto.get_pendiente_pasar_a_pedido()
             for p in ofertado:
-                ofer = ofertado[p]
-                try:
-                    pedi = pedido.pop(p)
-                except KeyError:
-                    pedi = 0.0
-                try:
-                    serv = servido.pop(p)
-                except KeyError:
-                    serv = 0.0
-                try:
-                    fact = facturado.pop(p)
-                except KeyError:
-                    fact = 0.0
-                try:
-                    pdte = pendiente.pop(p)
-                except KeyError:
-                    pdte = 0.0
-                try:
-                    desc = p.descripcion
-                except AttributeError:
-                    desc = p
-                fila = (desc, ofer, pedi, serv, fact, pdte, "")
+                fila = build_fila_historial(ofertado, pedido, servido, 
+                                            facturado, pendiente, p)
                 model.append((fila))
-# PORASQUI: TODO: Si queda algo en los diccionarios de pedido, servido, etc... añadirlo también al model.
+            # Si ha quedado algo pedido pero no ofertado, o servido no 
+            # ofertado, etc. ahora es el momento de mostrarlo:
+            for dic in (pedido, servido, facturado, pendiente):
+                for p in dic.keys()[:]:
+                    fila = build_fila_historial(ofertado, pedido, servido, 
+                                                facturado, pendiente, p)
 
     def cerrar_presupuesto(self, ch_button):
         """
@@ -2198,6 +2194,38 @@ def crear_cliente(presupuesto, usuario):
                 contacto = presupuesto.personaContacto)
         pclases.Auditoria.nuevo(cliente, usuario, __file__)
     return cliente
+
+
+def build_fila_historial(ofertado, pedido, servido, facturado, pendiente, 
+                         producto):
+    try:
+        ofer = ofertado[producto]
+    except KeyError:
+        ofer = 0.0
+    try:
+        pedi = pedido.pop(producto)
+    except KeyError:
+        pedi = 0.0
+    try:
+        serv = servido.pop(producto)
+    except KeyError:
+        serv = 0.0
+    try:
+        fact = facturado.pop(producto)
+    except KeyError:
+        fact = 0.0
+    try:
+        pdte = pendiente.pop(producto)
+    except KeyError:
+        pdte = 0.0
+    try:
+        desc = producto.descripcion
+        puid = producto.puid
+    except AttributeError:
+        desc = producto
+        puid = ""
+    fila = (desc, ofer, pedi, serv, fact, pdte, puid)
+    return fila
 
 
 if __name__ == "__main__":

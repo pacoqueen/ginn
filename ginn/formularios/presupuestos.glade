@@ -1622,7 +1622,7 @@
                           <widget class="GtkTable" id="table3">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="n_rows">8</property>
+                            <property name="n_rows">9</property>
                             <property name="n_columns">4</property>
                             <child>
                               <widget class="GtkLabel" id="label42">
@@ -2825,6 +2825,21 @@
                                 <property name="right_attach">4</property>
                                 <property name="top_attach">7</property>
                                 <property name="bottom_attach">8</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkButton" id="b_credito">
+                                <property name="label" translatable="yes">Enviar solicitud por correo electrónico</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">True</property>
+                                <property name="use_action_appearance">False</property>
+                              </widget>
+                              <packing>
+                                <property name="right_attach">4</property>
+                                <property name="top_attach">8</property>
+                                <property name="bottom_attach">9</property>
+                                <property name="x_options">GTK_EXPAND</property>
                               </packing>
                             </child>
                             <child>

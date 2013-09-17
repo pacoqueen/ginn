@@ -3075,7 +3075,11 @@ class Cobro(SQLObject, PRPCTOO):
                   entonces devuelve None (caso altamente improbable).
         """
         vencimiento = None
-        vtoscobros = self.facturaVenta.emparejar_vencimientos()
+        try:
+            vtoscobros = self.get_factura_o_prefactura().emparejar_vencimientos()
+        except AttributeError:
+            # Es una factura de abono
+            vtoscobros = self.facturaDeAbono.emparejar_vencimientos()
         doc = Cobro._parse_docpago(self.observaciones)
         if not doc:
             for vto in vtoscobros['vtos']:
