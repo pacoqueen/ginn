@@ -389,7 +389,17 @@ class ConsultaProductividad(Ventana):
         # XXX
         if partes != []:
             # total = total / len(partes)    
-            total = sum([r[-2] for r in self.wids['tv_datos'].get_model() if r.parent == None]) / len([r for r in self.wids['tv_datos'].get_model() if r.parent == None])
+            numeradores = [r[-2] 
+                           for r in self.wids['tv_datos'].get_model() 
+                           if r.parent == None]
+            denominadores = [r 
+                             for r in self.wids['tv_datos'].get_model() 
+                             if r.parent == None]
+            # ¿Los peores nombres de variables de la historia?
+            try:
+                total = sum(numeradores) / len(denominadores)
+            except ZeroDivisionError:
+                total = 0.0
             # Campos especiales de "Sólo balas"
             if self.wids['r_balas'].get_active():
                 self.wids['label7'].set_text('Kilos producidos:')
