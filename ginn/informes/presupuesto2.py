@@ -507,9 +507,13 @@ def go_from_presupuesto(presupuesto,
     else:
         condiciones = None
     # Condiciones "blandas" del presupuesto
-    if (not presupuesto.cliente 
-        or presupuesto.cliente.calcular_credito_disponible(
-            base = presupuesto.calcular_importe_total(iva = True)) <= 0):
+    # CWT: Se debe imprimir en todos los presupuestos, por si a la hora de 
+    # formalizarlo como pedido se ha quedado sin crédito por alguna operación 
+    # anterior al pedido y posterior a la oferta.
+    #if (not presupuesto.cliente 
+    #    or presupuesto.cliente.calcular_credito_disponible(
+    #        base = presupuesto.calcular_importe_total(iva = True)) <= 0):
+    if True:
         texto_riesgo = "Esta operación está sujeta a la concesión de "\
                        "crédito por parte de %s." % dde.nombre
     else:

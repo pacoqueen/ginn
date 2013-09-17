@@ -145,6 +145,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                     padre = self.wids['ventana'])
 
     def enviar_solicitud_credito(self, boton):
+        # TODO
         utils.dialogo_info(titulo = "NO IMPLEMENTADO", 
                 texto = "Característica en desarrollo.", 
                 padre = self.wids['ventana'])
