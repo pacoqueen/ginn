@@ -4342,19 +4342,22 @@ def dividir_cadena(s, trozos = 2):
         cadena2 = pivote + cadena2
     return cadena1, cadena2
 
-def sanitize(cad):
+def sanitize(cad, strict = False):
     """@todo: Cambia caracteres "problemáticos" por equivalentes en la 
     cadena para evitar errores en nombres de fichero, menús de glade...
+    Si se usa el modo estricto (strict = True) cambia también caracteres 
+    problemáticos en nombres de fichero (coma, retorno de carro y contrabarra).
 
     :cad: Cadena de texto
     :returns: Cadena de texto con caracteres reemplazados.
 
     """
-    equivalencias = ((r"'", u"'"), 
-                     (r"/", u"-"), 
-                     (",", "_"), 
-                     ("\n", "_"), 
-                     ("\\", "_"))
+    equivalencias = [(r"'", u"'"), 
+                     (r"/", u"-")] 
+    if strict:
+        equivalencias += [(",", "_"), 
+                          ("\n", "_"), 
+                          ("\\", "_")]
     for mala, buena in equivalencias:
         cad = cad.replace(mala, buena)
     return cad

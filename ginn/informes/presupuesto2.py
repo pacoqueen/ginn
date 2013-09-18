@@ -388,8 +388,8 @@ def go(titulo,
         merger.append(pdf_condiciones)
         combinado = os.path.join(gettempdir(),
                     "oferta_%d_%s_%s.pdf" % (numpresupuesto, 
-                                             sanitize(nombrecliente), 
-                                             give_me_the_name_baby()))
+                        sanitize(nombrecliente, strict = True), 
+                        give_me_the_name_baby()))
         merger.write(open(combinado, "wb"))
         ruta_archivo = combinado
     return ruta_archivo
