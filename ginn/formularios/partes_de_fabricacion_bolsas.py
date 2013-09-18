@@ -93,6 +93,11 @@ class PartesDeFabricacionBolsas(Ventana):
         self.NIVEL_POR_LOTES = 2    # Mínimo nivel (o máximo, según se vea) 
                                     # para poder crear palés por lote.
         self.objeto = objeto
+        if not isinstance(usuario, pclases.Usuario):
+            try:
+                usuario = pclases.Usuario.selectBy(usuario = usuario)[0]
+            except IndexError:
+                usuario = None
         self.usuario = usuario
         self.producto = None    # Producto relacionado con el parte. 
         self.__lecturaescritura = objeto and objeto.id or None
@@ -1905,12 +1910,12 @@ def imprimir_etiquetas_pales(pales, padre = None, mostrar_dialogo = True):
     hay opción globar guardada, se ignora el parámetro y se muestra el 
     cuadro de diálogo.
     """
-# PORASQUI: Activar las etiquetas de palé. Las de caja no se van a imprimir.
     global MEMENTO_MORI
     # Para la normativa del 1 de julio de 2013 fuerzo a que siempre se 
     # saquen ya las etiquetas con el nuevo formato. Pero como puede haber una 
     # vuelta atrás, voy a permitir la posibilidad (aunque no en GUI, solo 
     # programáticamente) de seguir sacando etiquetas antiguas.
+    MEMENTO_MORI['que_imprimir'] = 0
     if MEMENTO_MORI['que_imprimir'] is None:    # Nunca ha elegido una opción:
         mostrar_dialogo = True
     else:
@@ -1933,7 +1938,8 @@ def imprimir_etiquetas_pales(pales, padre = None, mostrar_dialogo = True):
                         # por la función que va a generar las etiquetas.
 
             # BACKTRACKING a etiqueta antigua hasta que arreglemos la etiquetadora de la línea de cemento.
-            #tipo = MEMENTO_MORI['tipo']
+            #tipo = MEMENTO_MORI['tipo'] # <- 18/09/2013: Pasamos a la nueva. 
+                                         # Ya no permito seleccionar otra.
             if tipo is None:
                 tipo = utils.dialogo_radio(titulo = "SELECCIONAR ETIQUETA", 
                     texto = "Seleccione el tipo de etiqueta a generar:", 

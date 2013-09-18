@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado                    #
+# Copyright (C) 2005-2013  Francisco José Rodríguez Bogado                    #
 #                          (pacoqueen@users.sourceforge.net)                  #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
@@ -36,6 +36,7 @@ from framework import pclases
 from formularios import utils
 from informes.geninformes import give_me_the_name_baby, escribe
 from tempfile import gettempdir
+from formularios.utils import sanitize
 
 
 PAGE_HEIGHT = defaultPageSize[1]; PAGE_WIDTH = defaultPageSize[0]
@@ -386,8 +387,9 @@ def go(titulo,
         merger.append(pdf_presupuesto)
         merger.append(pdf_condiciones)
         combinado = os.path.join(gettempdir(),
-                    "oferta_%s_%s.pdf" % (nombrecliente, 
-                                          give_me_the_name_baby()))
+                    "oferta_%d_%s_%s.pdf" % (numpresupuesto, 
+                                             sanitize(nombrecliente), 
+                                             give_me_the_name_baby()))
         merger.write(open(combinado, "wb"))
         ruta_archivo = combinado
     return ruta_archivo
