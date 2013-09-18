@@ -1905,6 +1905,7 @@ def imprimir_etiquetas_pales(pales, padre = None, mostrar_dialogo = True):
     hay opción globar guardada, se ignora el parámetro y se muestra el 
     cuadro de diálogo.
     """
+# PORASQUI: Activar las etiquetas de palé. Las de caja no se van a imprimir.
     global MEMENTO_MORI
     # Para la normativa del 1 de julio de 2013 fuerzo a que siempre se 
     # saquen ya las etiquetas con el nuevo formato. Pero como puede haber una 
@@ -1932,7 +1933,7 @@ def imprimir_etiquetas_pales(pales, padre = None, mostrar_dialogo = True):
                         # por la función que va a generar las etiquetas.
 
             # BACKTRACKING a etiqueta antigua hasta que arreglemos la etiquetadora de la línea de cemento.
-            tipo = MEMENTO_MORI['tipo']
+            #tipo = MEMENTO_MORI['tipo']
             if tipo is None:
                 tipo = utils.dialogo_radio(titulo = "SELECCIONAR ETIQUETA", 
                     texto = "Seleccione el tipo de etiqueta a generar:", 
@@ -1948,7 +1949,8 @@ def imprimir_etiquetas_pales(pales, padre = None, mostrar_dialogo = True):
                 return
             # EOBACKTRACK: Descomentar el rotate = True cuando volvamos a usar las etiquetas nuevas.
             filetiqpale = geninformes.generar_etiqueta_pale(pales, tipo)
-            mandar_a_imprimir_con_ghostscript(filetiqpale) #, rotate = True) 
+            mandar_a_imprimir_con_ghostscript(filetiqpale#) 
+                                              , rotate = True) 
         if que_imprimir == 1 or que_imprimir == 2:
             tipo = MEMENTO_MORI['tipo']
             if tipo is None:
