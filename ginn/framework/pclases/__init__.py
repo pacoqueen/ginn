@@ -15551,24 +15551,6 @@ class Estado(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
-# Si no existen el par de estados que deberían existir, los creo sobre la 
-# marcha:
-try:
-    Estado.get(1)
-except SQLObjectNotFound:
-    print "Creando estado de alarmas 1..."
-    Estado(id = 1, descripcion = "No leída", pendiente = True)
-try:
-    Estado.get(2)
-except SQLObjectNotFound:
-    print "Creando estado de alarmas 2..."
-    Estado(id = 2, descripcion = "En espera", pendiente = True)
-try:
-    Estado.get(3)
-except SQLObjectNotFound:
-    print "Creando estado de alarmas 3..."
-    Estado(id = 3, descripcion = "Cerrada", pendiente = False)
-
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 class Servicio(SQLObject, PRPCTOO, Venta):
@@ -20663,6 +20645,26 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 from cliente import *
 
 ##############################################################################
+
+# Si no existen el par de estados que deberían existir, los creo sobre la 
+# marcha:
+try:
+    Estado.get(1)
+except SQLObjectNotFound:
+    print "Creando estado de alarmas 1..."
+    Estado(id = 1, descripcion = "No leída", pendiente = True)
+try:
+    Estado.get(2)
+except SQLObjectNotFound:
+    print "Creando estado de alarmas 2..."
+    Estado(id = 2, descripcion = "En espera", pendiente = True)
+try:
+    Estado.get(3)
+except SQLObjectNotFound:
+    print "Creando estado de alarmas 3..."
+    Estado(id = 3, descripcion = "Cerrada", pendiente = False)
+
+
 
 # HACK:
 # autocommit en algunas versiones es un boolean y sqlobject intenta 

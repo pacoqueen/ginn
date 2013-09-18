@@ -111,6 +111,8 @@ class Presupuestos(Ventana, VentanaGenerica):
                        "tv_contenido/query-tooltip": self.tooltip_query, 
                        'ch_adjudicada/toggled': self.enviar_correo_adjudicada,
                        'b_credito/clicked': self.enviar_solicitud_credito, 
+                       "b_atras/clicked": self.atras, 
+                       "b_adelante/clicked": self.adelante
                       }  
         self.add_connections(connections)
         self.inicializar_ventana()
@@ -121,6 +123,30 @@ class Presupuestos(Ventana, VentanaGenerica):
         #if self.usuario and self.usuario.nivel >= 4:
         #    self.activar_widgets(False) # Para evitar manos rápidas al abrir.
         gtk.main()
+
+    def atras(self, boton):
+        if self.objeto:
+            presupuestos_anteriores = self.buscar_presupuestos_accesibles(
+                    mas_criterios_de_busqueda = 
+                        pclases.Presupuesto.q.id < self.objeto.id)
+            try:
+                anterior = presupuestos_anteriores[-1]
+                self.reset_cache_credito()
+                self.ir_a(anterior)
+            except IndexError:
+                boton.set_sensitive(False)
+
+    def adelante(self, boton):
+        if self.objeto:
+            try:
+                presupuestos_siguientes = self.buscar_presupuestos_accesibles(
+                    mas_criterios_de_busqueda = 
+                        pclases.Presupuesto.q.id > self.objeto.id)
+                siguiente = presupuestos_siguientes[0]
+                self.reset_cache_credito()
+                self.ir_a(siguiente)
+            except IndexError:
+                boton.set_sensitive(False)
 
     def hacer_y_abrir_pedido(self, boton):
         pedido = hacer_pedido(self.objeto, self.usuario, self.wids['ventana'])
@@ -1234,6 +1260,18 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         if pclases.DEBUG:
             print "  >>> ::::::::::::::::: rellenar_widgets ::::::::::::::::::"
+        # Botones atrás/adelante. ¿Hay anterior y siguiente?
+        presupuestos_anteriores = self.buscar_presupuestos_accesibles(
+                    mas_criterios_de_busqueda = 
+                        pclases.Presupuesto.q.id < self.objeto.id)
+        presupuestos_siguientes = self.buscar_presupuestos_accesibles(
+                    mas_criterios_de_busqueda = 
+                        pclases.Presupuesto.q.id > self.objeto.id)
+        hay_anterior = presupuestos_anteriores.count() > 0
+        self.wids['b_atras'].set_sensitive(hay_anterior)
+        hay_siguiente = presupuestos_siguientes.count() > 0
+        self.wids['b_adelante'].set_sensitive(hay_siguiente)
+        # Formas de pago
         fdps = [(fdp.id, fdp.toString()) 
                 for fdp in pclases.FormaDePago.select(
                     orderBy = "documento_de_pago_id, plazo")]
@@ -1405,6 +1443,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         presupuestos de estudio y los que no tengan informado el campo; solo 
         buscará entre las ofertas de pedido que estén pendientes de 
         validación para imprimir.
+        El resultado se devuelve **ordenado por id**.
         """
         # Primero determino si busco entre los presupuestos de todos los 
         # comerciales o solo los míos.
