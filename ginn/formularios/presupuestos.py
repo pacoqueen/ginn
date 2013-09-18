@@ -216,8 +216,10 @@ class Presupuestos(Ventana, VentanaGenerica):
                 rte = self.usuario.email
                 from formularios.utils import enviar_correoe
                 # TODO: OJO: HARDCODED
-                dests = ["epalomo@geotexan.com"]
-                #dests = ["informatica@geotexan.com"]
+                if self.usuario and self.usuario.id == 1:
+                    dests = ["informatica@geotexan.com"]
+                else:
+                    dests = ["epalomo@geotexan.com"]
                 # Correo de riesgo de cliente
                 texto = "Se ha creado la oferta %d "\
                         "para el cliente %s, que está en riesgo: crédito "\
@@ -254,7 +256,10 @@ class Presupuestos(Ventana, VentanaGenerica):
                     rte = self.usuario.email
                     from formularios.utils import enviar_correoe
                     # TODO: OJO: HARDCODED
-                    dests = ["epalomo@geotexan.com"]
+                    if self.usuario and self.usuario.id == 1:
+                        dests = ["informatica@geotexan.com"]
+                    else:
+                        dests = ["epalomo@geotexan.com"]
                     #dests = ["informatica@geotexan.com"]
                     if not self.objeto.cliente:
                         # Correo de alta del cliente
@@ -1984,7 +1989,10 @@ class Presupuestos(Ventana, VentanaGenerica):
         no sea admin. Uno diferente en cada llamada.
         """
         # TODO: OJO: HARCODED
-        return ["nzumer@geotexan.com", "efigueroa@geotexan.com"]
+        if self.usuario and self.usuario.id == 1:
+            return ["informatica@geotexan.com"]
+        else:
+            return ["nzumer@geotexan.com", "efigueroa@geotexan.com"]
         # CWT: Nada de RR. Correo a ambos.
         #round_robin = [u.email 
         #        for u in pclases.Usuario.select(
