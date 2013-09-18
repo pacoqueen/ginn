@@ -1915,7 +1915,8 @@ def imprimir_etiquetas_pales(pales, padre = None, mostrar_dialogo = True):
     # saquen ya las etiquetas con el nuevo formato. Pero como puede haber una 
     # vuelta atrás, voy a permitir la posibilidad (aunque no en GUI, solo 
     # programáticamente) de seguir sacando etiquetas antiguas.
-    MEMENTO_MORI['que_imprimir'] = 0
+    MEMENTO_MORI['que_imprimir'] = 0 # Ya no se harán etiquetas de caja. Con 
+                                        # la norma 2013 solo etiquetas de palé.
     if MEMENTO_MORI['que_imprimir'] is None:    # Nunca ha elegido una opción:
         mostrar_dialogo = True
     else:

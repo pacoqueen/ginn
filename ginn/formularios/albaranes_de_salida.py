@@ -2944,6 +2944,8 @@ class AlbaranesDeSalida(Ventana):
                 # recibir copia en la ventana de clientes (eso se usaría para 
                 # las ventas hechas directamente a él, no a sus clientes).
                 correoe_cliente += " %s" % self.objeto.cliente.cliente.email
+        else:
+            correoe_cliente = ""
         correoe = utils.dialogo_entrada(
                     titulo = "¿ENVIAR ALBARÁN POR CORREO ELECTRÓNICO?", 
                     texto = """
