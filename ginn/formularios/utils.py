@@ -4351,7 +4351,10 @@ def sanitize(cad):
 
     """
     equivalencias = ((r"'", u"'"), 
-                     (r"/", u"-"))
+                     (r"/", u"-"), 
+                     (",", "_"), 
+                     ("\n", "_"), 
+                     ("\\", "_"))
     for mala, buena in equivalencias:
         cad = cad.replace(mala, buena)
     return cad
