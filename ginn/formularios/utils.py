@@ -4044,6 +4044,8 @@ def parse_cif(cif = None):
     '1234567890'
     >>> parse_cif("DKR2013-E3577")
     'DKR2013-E3577'
+    >>> parse_cif("12345678")
+    '12345678'
     """
     # [Update: 29/05/2012] Javi me pasa estos formatos, que son con los que 
     #                      ellos normalmente trabajan:
@@ -4082,6 +4084,7 @@ def parse_cif(cif = None):
                         # número C.C. (Compte Contribuable). Pero no 
                         # encuentro más información. Este es el único ejemplo 
                         # que tengo.
+        samples['_Marruecos'] = "12345678"
         res = {}
         aciertos = 0
         for pais in samples:
@@ -4159,6 +4162,8 @@ def parse_cif(cif = None):
                          "([0-9]{10})"
                          "|"
                          "([0-9]{9})"
+                         "|"
+                         "([0-9]{8})"
                          "|"
                          "([0-9]{5})"
                         )
