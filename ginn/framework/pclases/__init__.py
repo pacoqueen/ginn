@@ -304,10 +304,13 @@ class PRPCTOO:
         self.cursor = self.conexion.cursor()
         if DEBUG: print [self.cursor!=None and self.cursor or "El cursor devuelto es None."][0], self.conexion, len(self.conexion.cursors)
 
-    def make_swap(self):
+    def make_swap(self, campo = None):
         # Antes del sync voy a copiar los datos a un swap temporal, para 
         # poder comparar:
-        for campo in self.sqlmeta.columns:
+        if not campo:
+            for campo in self.sqlmeta.columns:
+                self.swap[campo] = getattr(self, campo)
+        else:
             self.swap[campo] = getattr(self, campo)
         
     def diff(self):

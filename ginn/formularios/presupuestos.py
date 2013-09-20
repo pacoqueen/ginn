@@ -648,6 +648,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         #    abrir_pdf(geninformes.generar_pdf_presupuesto(self.objeto))
         try:
             self.objeto.impresiones += 1
+            self.objeto.make_swap('impresiones')
         except AttributeError:
             pass
         else:
@@ -685,6 +686,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         try:
             self.objeto.envios += 1
+            self.objeto.make_swap('envios')
         except AttributeError:
             pass
         else:
@@ -1933,6 +1935,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                             + "\n - ".join(errores), 
                     padre = self.wids['ventana'])
         self.objeto.version += 1
+        self.objeto.make_swap("version")
         pclases.Auditoria.modificado(self.objeto, self.usuario, __file__, 
                 "Nueva versión %d." % self.objeto.version)
 
