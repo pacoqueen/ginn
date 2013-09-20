@@ -538,8 +538,11 @@ class ProductosDeVentaBalas(Ventana):
         # de esos números.
         codsproducto = [int(p.codigo[-4:-1]) for p in prods]
         codsproducto.sort()
-        for i in xrange(300, 400):  # OJO: Códigos hardcoded. Para balas se 
+        #for i in xrange(300, 400):  # OJO: Códigos hardcoded. Para balas se 
                                     # han asignado los códigos 300 a 399.
+        for i in xrange(1000):  # Ya no hay división entre fibra y geotextiles 
+            # a la hora de asignar códigos EAN. Se han agotado los de fibra y 
+            # "liberamos" el resto de los 500 (o así) que nos quedan.
             try:
                 if not i in codsproducto:
                     return "%03d" % i

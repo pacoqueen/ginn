@@ -817,7 +817,12 @@ class ProductosDeVentaRollos(Ventana):
             pclases.ProductoVenta.q.codigo.startswith('843603219'))
         codsproducto = [p.codigo[-4:-1] for p in prods]
         codsproducto.sort()
-        for i in xrange(1000):  # Si el subcódigo de producto del EAN-13 está duplicado esto no funcionará.
+        #for i in xrange(1000):  # Si el subcódigo de producto del EAN-13 está duplicado esto no funcionará.
+        # Del 300 al 399 es para fibra
+        #for i in range(300) + range(400, 1000):  # Si el subcódigo de producto del EAN-13 está duplicado esto no funcionará.
+        for i in xrange(1000):  # Ya no hay división entre fibra y geotextiles 
+            # a la hora de asignar códigos EAN. Se han agotado los de fibra y 
+            # "liberamos" el resto de los 500 (o así) que nos quedan.
                                 # Añadida restricción UNIQUE en la BD para evitarlo.
             # print i, int(codsproducto[i])
             try:

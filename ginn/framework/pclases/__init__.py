@@ -10449,8 +10449,8 @@ class Presupuesto(SQLObject, PRPCTOO):
         """
         Devuelve el estado de la validación del presupuesto en el momento de 
         llamar a la función. Puede ser:
-            NO_VALIDABLE: El cliente todavía no tiene ficha.
             VALIDABLE: Cumple todos los requisitos de validación automática.
+            NO_VALIDABLE: El cliente todavía no tiene ficha.
             PLAZO_EXCESIVO: La forma de pago seleccionada en el pedido supera 
                             los 120 días.
             SIN_FORMA_DE_PAGO: El pedido no tiene forma de pago definida.
@@ -10921,6 +10921,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
     historialesExistenciasA = MultipleJoin('HistorialExistenciasA')
     historialesExistenciasB = MultipleJoin('HistorialExistenciasB')
     historialesExistenciasC = MultipleJoin('HistorialExistenciasC')
+    lineasDePresupuesto = MultipleJoin("LineaDePresupuesto")
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)

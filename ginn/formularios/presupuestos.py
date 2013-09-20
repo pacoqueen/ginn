@@ -848,7 +848,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         col.set_attributes(cellpb3, stock_id = 4)
         col.set_attributes(cellpb4, stock_id = 5)
         self.hndlr_cerrado = self.wids['ch_cerrado'].connect('clicked', 
-                self.cerrar_presupuesto )
+                self.cerrar_presupuesto)
         self.hndlr_presup = self.wids['tv_presupuestos'].connect(
                 "cursor-changed", self.cambiar_presupuesto_activo)
         w, h = self.wids['tv_presupuestos'].size_request()
@@ -1305,6 +1305,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 or "Comercial desconocido (%s)" % c.puid) 
             for c in comerciales
             if c.empleado.activo or c == self.objeto.comercial]
+        opciones_comerciales.sort(key = lambda i: i[1])
         # CWT: Si no soy admin o equivalente, no puedo usar la opción de S/C
         if not self.usuario or self.usuario.nivel <= NIVEL_VALIDACION: 
             opciones_comerciales += [(-1, "Sin comercial relacionado")]
@@ -1340,7 +1341,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 # llamada recursiva y machaca el cliente. WTF?!
                 self.wids['ch_cerrado'].set_active(self.objeto.cerrado)
                 self.hndlr_cerrado = self.wids['ch_cerrado'].connect('clicked',
-                    self.cerrar_presupuesto )
+                    self.cerrar_presupuesto)
             else:
                 self.escribir_valor(presupuesto.sqlmeta.columns[nombre_col], 
                                     getattr(presupuesto, nombre_col), 
