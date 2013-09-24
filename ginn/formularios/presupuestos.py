@@ -692,7 +692,9 @@ class Presupuestos(Ventana, VentanaGenerica):
         else:
             pclases.Auditoria.modificado(self.objeto, self.usuario, __file__, 
                     "Lanzado envío n.º %d" % self.objeto.envios)
-        # TODO
+        #from formularios import mail_sender
+        #ventana_correo = mail_sender.MailSender()
+        # TODO: PORASQUI
         utils.dialogo_info(titulo = "NO IMPLEMENTADO", 
                 texto = "Característica en desarrollo.", 
                 padre = self.wids['ventana'])
