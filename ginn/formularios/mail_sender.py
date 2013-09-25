@@ -36,20 +36,139 @@
 ## 
 ###################################################################
 
+import os
 import pygtk
 pygtk.require('2.0')
 import gtk
 from formularios.utils import enviar_correoe
+from widgets import Widgets
 
 class MailSender:
     def __init__(self):
-        pass
+        self.resultado_envio = False    # Inicialmente es así.
+        fich_glade = os.path.join(os.path.dirname(os.path.abspath(__file__)), 
+                                  "mail_sender.glade")
+        self.wids = Widgets(fich_glade)
+        self.wids['ventana'].connect("destroy", gtk.main_quit)
+        self.wids['ventana'].connect("delete-event", self.salir)
+        self.wids['b_cancelar'].connect("clicked", self.salir, None)
+        self.wids['b_aceptar'].connect("clicked", self.enviar)
+        # PLAN: No estaría mal que se chequeara si están los campos rellenos 
+        # y activar el Aceptar únicamente si los obligatorios lo están.
+        self.wids['b_aceptar'].set_sensitive(True)
+
+    def salir(self, boton, evento):
+        self.wids['ventana'].destroy()
 
     def run(self):
-        return False
+        self.wids['ventana'].show_all()
+        self.wids['spinner'].stop()
+        self.wids['spinner'].set_property("visible", False)
+        gtk.main()
+        return self.resultado_envio
+
+    def set_servidor(self, servidor):
+        self.smtpserver = servidor
+
+    def set_usuario(self, smtpusuario):
+        self.smtpuser = smtpusuario
+
+    def set_password(self, smtppassword):
+        self.smtppwd = smtppassword
+
+    def set_from(self, direccion):
+        self.remitente = direccion
+
+    def set_to(self, direccion):
+        self.wids['e_para'].set_text(direccion)
+
+    def set_copia(self, copia):
+        self.wids['ch_copia'].set_active(copia)
+    
+    def set_asunto(self, asunto):
+        self.wids['e_asunto'].set_text(asunto)
+
+    def set_texto(self, texto):
+        self.wids['txt_texto'].get_buffer().set_text(texto)
+
+    def set_adjunto(self, adjunto):
+        ruta_adjunto = os.path.abspath(adjunto)
+        self.wids['e_adjunto'].set_text(ruta_adjunto)
+
+    def _cargar_remintente(self):
+        # TODO: Check y tal...
+        return self.remitente
+
+    def _cargar_destinatarios(self):
+        para = self.wids['e_para'].get_text()
+        paras = para.replace(";", " ").replace(",", " ").split()
+        # TODO: Check y tal...
+        return paras
+
+    def _cargar_asunto(self):
+        asunto = self.wids['e_asunto'].get_text()
+        # TODO: Check y tal...
+        return asunto
+
+    def _cargar_texto(self):
+        buf = self.wids['txt_texto'].get_buffer()
+        texto = buf.get_slice(*buf.get_bounds())
+        # TODO: Check y tal...
+        return texto
+
+    def _cargar_adjuntos(self):
+        f = self.wids['e_adjunto'].get_text()
+        # TODO: Check y tal...
+        return f
+
+    def set_smtpconf(self, servidor, puerto, usuario, contrasenna, ssl = True):
+        """
+        De momento el puerto y SSL se ignora. Ya se encarga el enviar_correoe 
+        de chequear todo eso.
+        """
+        self.set_servidor(servidor)
+        self.set_usuario(usuario)
+        self.set_password(contrasenna)
+
+    def enviar(self, boton):
+        self.wids['spinner'].start()
+        self.wids['spinner'].set_property("visible", True)
+        rte = self._cargar_remitente()
+        tos = self._cargar_destinatarios()
+        asunto = self._get_asunto()
+        texto = self._get_texto()
+        adjuntos = self._get_adjuntos()
+        servidor = self.smtpserver
+        usuario = self.smtpuser
+        password = self.smtppwd
+        res = enviar_correoe(rte, tos, asunto, texto, adjuntos, servidor,  
+                             usuario, password)
+        if res:
+            # TODO: PORASQUI: Mostrar ventana de diálogo de OK y devolver True.
+            self.resultado_envio = True
+        else:
+            # TODO: PORASQUI: Mostrar ventana de diálogo de "lacagaste" y seguir en la ventana.
+            self.resultado_envio = False
+        self.wids['spinner'].stop()
+        self.wids['spinner'].set_property("visible", True)
 
 def main():
     ventana_mail_sender = MailSender()
+    ventana_mail_sender.set_from("frbogado@geotexan.com")
+    ventana_mail_sender.set_to("informatica@geotexan.com")
+    ventana_mail_sender.set_copia(True)
+    ventana_mail_sender.set_asunto("Test")
+    ventana_mail_sender.set_texto("""She comes in colors ev'rywhere;
+She combs her hair
+She's like a rainbow
+Coming, colors in the air
+Oh, everywhere
+She comes in colors """)
+    ventana_mail_sender.set_adjunto(__file__)
+# TODO: PORASQUI: MUCHO OJO CON ESTO, NO PUEDO SUBIR ESTA INFORMACIÓN A GITHUB!!!
+    ventana_mail_sender.set_smtpconf("smtp.googlemail.com", 465, 
+                                     "practicas.geotexan@gmail.com", 
+                                     "20mesa20")
     resultado = ventana_mail_sender.run()
     if resultado:
         print "El correo fue enviado correctamente."

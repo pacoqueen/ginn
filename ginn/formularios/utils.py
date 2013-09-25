@@ -4354,6 +4354,9 @@ def sanitize(cad, strict = False):
     problemáticos en nombres de fichero (coma, retorno de carro y contrabarra).
 
     :cad: Cadena de texto
+    :strict: Booleano. Si True reemplaza también comas, puntos, etc. Ojo 
+             si lo que se recibe es un nombre de fichero completo porque 
+             le quitará la extensión al sustituir el punto.
     :returns: Cadena de texto con caracteres reemplazados.
 
     """
@@ -4362,7 +4365,8 @@ def sanitize(cad, strict = False):
     if strict:
         equivalencias += [(",", "_"), 
                           ("\n", "_"), 
-                          ("\\", "_")]
+                          ("\\", "_"), 
+                          (".", "")]
     for mala, buena in equivalencias:
         cad = cad.replace(mala, buena)
     return cad
