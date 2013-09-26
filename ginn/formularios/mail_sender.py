@@ -168,7 +168,7 @@ She comes in colors """)
 # TODO: PORASQUI: MUCHO OJO CON ESTO, NO PUEDO SUBIR ESTA INFORMACIÓN A GITHUB!!!
     ventana_mail_sender.set_smtpconf("smtp.googlemail.com", 465, 
                                      "practicas.geotexan@gmail.com", 
-                                     "20mesa20")
+                                     "02mesa20")
     resultado = ventana_mail_sender.run()
     if resultado:
         print "El correo fue enviado correctamente."
