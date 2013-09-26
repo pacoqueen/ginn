@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 24 septiembre 2013 at 17:42:32.
+" Created by session.vim 1.5 on 25 septiembre 2013 at 17:31:45.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -52,7 +52,7 @@ badd +507 ginn/formularios/productos_de_venta_rollos_geocompuestos.py
 badd +578 ginn/formularios/productos_de_venta_especial.py
 badd +1 ginn/formularios/partes_de_fabricacion_balas.py
 badd +1931 ginn/formularios/partes_de_fabricacion_bolsas.py
-badd +1406 ginn/formularios/partes_de_fabricacion_rollos.py
+badd +3390 ginn/formularios/partes_de_fabricacion_rollos.py
 badd +550 ginn/formularios/proveedores.py
 badd +547 ~/workspace/CICAN/src/formularios/menu.py
 badd +117 ginn/formularios/launcher.py
@@ -60,7 +60,7 @@ badd +464 ginn/formularios/empleados.py
 badd +38 ginn/formularios/resultados_geotextiles.py
 badd +230 ginn/formularios/menu.py
 badd +142 ginn/formularios/autenticacion.py
-badd +7934 ginn/informes/geninformes.py
+badd +4852 ginn/informes/geninformes.py
 badd +233 ginn/informes/informe_certificado_calidad.py
 badd +1518 informes/geninformes.py
 badd +2714 ginn/formularios/facturas_venta.py
@@ -128,7 +128,8 @@ badd +192 ginn/formularios/silos.py
 badd +1 ginn/framework/__init__.py
 badd +1 ginn/formularios/vencimientos_pendientes_por_cliente.glade
 badd +416 ginn/formularios/consulta_productividad.py
-badd +0 ginn/formularios/mail_sender.py
+badd +1 ginn/formularios/mail_sender.py
+badd +1239 ginn/formularios/abonos_venta.py
 args formularios/auditviewer.py
 set lines=44 columns=111
 edit ginn/framework/pclases/__init__.py
@@ -258,6 +259,36 @@ silent! normal zo
 silent! normal zo
 7830
 silent! normal zo
+7830
+silent! normal zo
+7830
+silent! normal zo
+7830
+silent! normal zo
+7830
+silent! normal zo
+7830
+silent! normal zo
+7830
+silent! normal zo
+7972
+silent! normal zo
+7972
+silent! normal zo
+7972
+silent! normal zo
+7972
+silent! normal zo
+7972
+silent! normal zo
+7972
+silent! normal zo
+7972
+silent! normal zo
+7972
+silent! normal zo
+7972
+silent! normal zo
 7972
 silent! normal zo
 9725
@@ -299,6 +330,20 @@ silent! normal zo
 14947
 silent! normal zo
 15051
+silent! normal zo
+15051
+silent! normal zo
+15142
+silent! normal zo
+15142
+silent! normal zo
+15142
+silent! normal zo
+15142
+silent! normal zo
+15142
+silent! normal zo
+15142
 silent! normal zo
 15142
 silent! normal zo
@@ -417,14 +462,30 @@ setlocal fdn=20
 setlocal fen
 2419
 silent! normal zo
+2419
+silent! normal zo
+2419
+silent! normal zo
 2506
 silent! normal zo
-let s:l = 2482 - ((0 * winheight(0) + 0) / 1)
+4351
+silent! normal zo
+4358
+silent! normal zo
+4366
+silent! normal zo
+4367
+silent! normal zo
+4367
+silent! normal zo
+4367
+silent! normal zo
+let s:l = 4445 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-2482
-normal! 021l
+4445
+normal! 0
 wincmd w
 argglobal
 edit ginn/formularios/mail_sender.py
@@ -442,12 +503,12 @@ silent! normal zo
 silent! normal zo
 167
 silent! normal zo
-let s:l = 150 - ((10 * winheight(0) + 11) / 22)
+let s:l = 149 - ((10 * winheight(0) + 11) / 22)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-150
-normal! 019l
+149
+normal! 012l
 wincmd w
 argglobal
 edit ginn/formularios/presupuestos.py
@@ -619,6 +680,18 @@ silent! normal zo
 silent! normal zo
 1443
 silent! normal zo
+1443
+silent! normal zo
+1443
+silent! normal zo
+1443
+silent! normal zo
+1443
+silent! normal zo
+1443
+silent! normal zo
+1443
+silent! normal zo
 1458
 silent! normal zo
 1463
@@ -727,6 +800,8 @@ silent! normal zo
 silent! normal zo
 2009
 silent! normal zo
+2009
+silent! normal zo
 2016
 silent! normal zo
 2058
@@ -749,12 +824,12 @@ silent! normal zo
 silent! normal zo
 2251
 silent! normal zo
-let s:l = 686 - ((0 * winheight(0) + 0) / 1)
+let s:l = 698 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-686
-normal! 010l
+698
+normal! 032l
 wincmd w
 argglobal
 edit ginn/formularios/consulta_cobros.py
@@ -928,12 +1003,12 @@ silent! normal zo
 silent! normal zo
 687
 silent! normal zo
-let s:l = 121 - ((0 * winheight(0) + 0) / 1)
+let s:l = 126 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-121
-normal! 0
+126
+normal! 010l
 wincmd w
 6wincmd w
 exe 'vert 1resize ' . ((&columns * 30 + 55) / 111)

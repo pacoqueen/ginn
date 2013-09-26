@@ -2141,13 +2141,24 @@ def hacer_pedido(presupuesto, usuario, ventana_padre = None):
                 nuevopedido = None
         else:
             if not presupuesto.cliente:
-                presupuesto.cliente = crear_cliente(presupuesto, usuario)
-            if not presupuesto.obra:
-                if presupuesto.nombreobra:
-                    presupuesto.obra = crear_obra(presupuesto, usuario)
+                presupuesto.cliente = buscar_cliente(presupuesto, usuario)
+                if not presupuesto.cliente:
+                    # PLAN: Sugerir clientes con nombres parecidos o 
+                    # permitir que se creen si tiene permiso.
+                    nuevopedido = None
+                    utils.dialogo_info(titulo = "CLIENTE NO EXISTE", 
+                            texto = "Asegúrese de que el cliente\n"
+                                    "«%s»\n"
+                                    "existe y está correctamente escrito.", 
+                            padre = self.wids['ventana'])
                 else:
-                    presupuesto.obra=presupuesto.cliente.get_obra_generica()
-            nuevopedido = crear_pedido(presupuesto, numpedido, usuario)
+                    if not presupuesto.obra:
+                        if presupuesto.nombreobra:
+                            presupuesto.obra = crear_obra(presupuesto, usuario)
+                        else:
+                            customer = presupuesto.cliente
+                            presupuesto.obra = customer.get_obra_generica()
+                    nuevopedido = crear_pedido(presupuesto, numpedido, usuario)
         if nuevopedido != None:
             for ldp in presupuesto.lineasDePresupuesto:
                 add_ldp_a_pedido(presupuesto, ldp, nuevopedido, usuario)
@@ -2236,11 +2247,12 @@ def crear_obra(presupuesto, usuario):
             observaciones = "Creada automáticamente desde presupuesto.", 
             pais = presupuesto.pais, 
             generica = False)
+    obra.addCliente(presupuesto.cliente)
     pclases.Auditoria.nuevo(obra, usuario, __file__)
     return obra
 
 
-def crear_cliente(presupuesto, usuario):
+def buscar_cliente(presupuesto, usuario, crear_si_no_existe = False):
     """
     Crea (o recupera) el cliente del presupuesto y lo devuelve.
     """
@@ -2248,7 +2260,8 @@ def crear_cliente(presupuesto, usuario):
         cliente = pclases.Cliente.selectBy(
                     nombre = presupuesto.nombrecliente.strip())[0]
     except IndexError:
-        cliente = pclases.Cliente(
+        if crear_si_no_existe:
+            cliente = pclases.Cliente(
                 nombre = presupuesto.nombrecliente, 
                 cif = presupuesto.cif, 
                 direccion = presupuesto.direccion, 
@@ -2261,7 +2274,9 @@ def crear_cliente(presupuesto, usuario):
                 vencimientos = presupuesto.formaDePago.toString(), 
                 formadepago = presupuesto.formaDePago.toString(), 
                 contacto = presupuesto.personaContacto)
-        pclases.Auditoria.nuevo(cliente, usuario, __file__)
+            pclases.Auditoria.nuevo(cliente, usuario, __file__)
+        else:
+            cliente = None
     return cliente
 
 
