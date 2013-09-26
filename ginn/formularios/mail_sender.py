@@ -67,6 +67,9 @@ class MailSender:
         gtk.main()
         return self.resultado_envio
 
+    def cerrar(self):
+        self.salir(None, None)
+
     def set_servidor(self, servidor):
         self.smtpserver = servidor
 
@@ -95,7 +98,7 @@ class MailSender:
         ruta_adjunto = os.path.abspath(adjunto)
         self.wids['e_adjunto'].set_text(ruta_adjunto)
 
-    def _cargar_remintente(self):
+    def _cargar_remitente(self):
         # TODO: Check y tal...
         return self.remitente
 
@@ -121,6 +124,23 @@ class MailSender:
         # TODO: Check y tal...
         return f
 
+    def _get_asunto(self):
+        asunto = self.wids['e_asunto'].get_text()
+        return asunto
+
+    def _get_texto(self):
+        buf = self.wids['txt_texto'].get_buffer()
+        texto = buf.get_text(*buf.get_bounds())
+        return texto
+
+    def _get_adjuntos(self):
+        """
+        Devuelve una lista de nombres de fichero para adjuntar.
+        """
+        txt_adjuntos = self.wids['e_adjunto'].get_text()
+        adjuntos = txt_adjuntos.replace(",", " ").replace(";", " ").split()
+        return adjuntos
+    
     def set_smtpconf(self, servidor, puerto, usuario, contrasenna, ssl = True):
         """
         De momento el puerto y SSL se ignora. Ya se encarga el enviar_correoe 
@@ -141,6 +161,8 @@ class MailSender:
         servidor = self.smtpserver
         usuario = self.smtpuser
         password = self.smtppwd
+        if self.wids['ch_copia'].get_active():
+            tos.append(rte)
         res = enviar_correoe(rte, tos, asunto, texto, adjuntos, servidor,  
                              usuario, password)
         if res:
@@ -165,10 +187,9 @@ Coming, colors in the air
 Oh, everywhere
 She comes in colors """)
     ventana_mail_sender.set_adjunto(__file__)
-# TODO: PORASQUI: MUCHO OJO CON ESTO, NO PUEDO SUBIR ESTA INFORMACIÓN A GITHUB!!!
     ventana_mail_sender.set_smtpconf("smtp.googlemail.com", 465, 
                                      "practicas.geotexan@gmail.com", 
-                                     "02mesa20")
+                                     "")
     resultado = ventana_mail_sender.run()
     if resultado:
         print "El correo fue enviado correctamente."

@@ -130,7 +130,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                     mas_criterios_de_busqueda = 
                         pclases.Presupuesto.q.id < self.objeto.id)
             try:
-                anterior = presupuestos_anteriores[-1]
+                anterior = presupuestos_anteriores[0]
                 self.reset_cache_credito()
                 self.ir_a(anterior)
             except IndexError:
@@ -142,7 +142,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 presupuestos_siguientes = self.buscar_presupuestos_accesibles(
                     mas_criterios_de_busqueda = 
                         pclases.Presupuesto.q.id > self.objeto.id)
-                siguiente = presupuestos_siguientes[0]
+                siguiente = presupuestos_siguientes[-1]
                 self.reset_cache_credito()
                 self.ir_a(siguiente)
             except IndexError:
@@ -661,12 +661,9 @@ class Presupuestos(Ventana, VentanaGenerica):
         Imprime el presupuesto en formato "factura" en lugar de carta.
         """
         if self.objeto != None:
-            modulo = pclases.config.get_modelo_presupuesto()
-            import importlib
-            presupuesto = importlib.import_module("." + modulo, "informes")
-            #exec "import %s as presupuesto" % modulo
+            pdf_presupuesto = generar_pdf_presupuesto(self.objeto)
             from formularios.reports import abrir_pdf
-            abrir_pdf(presupuesto.go_from_presupuesto(self.objeto))  # @UndefinedVariable
+            abrir_pdf(pdf_presupuesto)  # @UndefinedVariable
 
     def imprimir_carta_compromiso(self, boton):
 
@@ -692,12 +689,46 @@ class Presupuestos(Ventana, VentanaGenerica):
         else:
             pclases.Auditoria.modificado(self.objeto, self.usuario, __file__, 
                     "Lanzado envío n.º %d" % self.objeto.envios)
-        #from formularios import mail_sender
-        #ventana_correo = mail_sender.MailSender()
-        # TODO: PORASQUI
-        utils.dialogo_info(titulo = "NO IMPLEMENTADO", 
-                texto = "Característica en desarrollo.", 
-                padre = self.wids['ventana'])
+        pdf_presupuesto = generar_pdf_presupuesto(self.objeto)
+        from formularios import mail_sender
+        ventana_correo = mail_sender.MailSender()
+        try:
+            ventana_correo.set_from(self.usuario.email)
+            if not self.usuario or self.usuario.id == 1:
+                # Safety check. No sea que haciendo pruebas se me vaya un 
+                # correo a quien no debe.
+                ventana_correo.set_from("informatica@geotexan.com")
+            ventana_correo.set_to(self.objeto.email)
+            texto_correo = "<p>Se le adjunta oferta solicitada.</p> <br><br>"
+            texto_correo += self.objeto.comercial.get_firma_html()
+            ventana_correo.set_asunto("Geotexan: Oferta %d" % self.objeto.id)
+            ventana_correo.set_adjunto(pdf_presupuesto)
+            ventana_correo.set_smtpconf(self.usuario.smtpserver, 
+                                        465,    # TODO: OJO: HARCODED!
+                                        self.usuario.smtpuser, 
+                                        self.usuario.smtppassword)
+        except AttributeError:
+            utils.dialogo_info(titulo = "CONFIGURACIÓN INCORRECTA", 
+                    texto = "Existe un problema con su configuración"
+                            " de correo electrónico.\nConsulte al "
+                            "administrador de la aplicación o complete"
+                            " la información en sus datos de usuario.", 
+                    padre = self.wids['ventana'])
+        else:
+            ventana_correo.set_copia(True)
+            ventana_correo.set_texto(texto_correo)
+            enviado = ventana_correo.run()
+            ventana_correo.cerrar()
+            if not enviado:
+                utils.dialogo_info(titulo = "ERROR EN ENVÍO", 
+                        texto = "Ocurrió un error al enviar el correo.\n"
+                                "Asegúrese de que su antivirus no está "
+                                "bloqueando los correos salientes y "
+                                "vuelva a intentarlo más tarde.", 
+                        padre = self.wids['ventana'])
+        #utils.dialogo_info(titulo = "NO IMPLEMENTADO", 
+        #        texto = "Característica en desarrollo.", 
+        #        padre = self.wids['ventana'])
 
     def es_diferente(self):
         """
@@ -1928,7 +1959,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         # primero que lo hayan marcado así los DELEGADOS (sic) comerciales.
         if self.objeto.cerrado and ha_cambiado_el_cliente:
             self.enviar_correo_de_riesgo()
-        if self.objeto.cerrado and self.solicitar_validacion():
+        if self.objeto.cerrado and self.debe_solicitar_validacion():
             self.enviar_correo_solicitud_validacion()
         if errores:
             utils.dialogo_info(titulo = "ERRORES AL GUARDAR", 
@@ -1941,38 +1972,40 @@ class Presupuestos(Ventana, VentanaGenerica):
         pclases.Auditoria.modificado(self.objeto, self.usuario, __file__, 
                 "Nueva versión %d." % self.objeto.version)
 
-    def solicitar_validacion(self):
+    def debe_solicitar_validacion(self):
         """
         Comprueba que no se haya solicitado ya la validación por correo. En 
         otro caso envía el correo de solicitud.
         """
-        if (self.objeto 
+        return (self.objeto 
                 and not self.objeto.validado
-                and self.objeto.id not in self.solicitudes_validacion):
-            dests = self.select_correo_validador()
-            if not isinstance(dests, (list, tuple)):
-                dests = [dests]
-            self.solicitudes_validacion[self.objeto.id] = dests
-            servidor = self.usuario.smtpserver
-            smtpuser = self.usuario.smtpuser
-            smtppass = self.usuario.smtppassword
-            rte = self.usuario.email
-            from formularios.utils import enviar_correoe
-            # TODO: Habría que comprobar que la oferta está completa. Porque 
-            # la primera vez que guardan casi seguro que no se valida auto.
-            # dests = ["informatica@geotexan.com"]
-            # Correo de riesgo de cliente
-            texto = "Se ha creado la oferta %d "\
-                    "para el cliente %s que necesita validación manual." % (
-                            self.objeto.id, 
-                            self.objeto.nombrecliente)
-            enviar_correoe(rte, 
-                           dests,
-                           "Alerta de validación manual de oferta", 
-                           texto, 
-                           servidor = servidor, 
-                           usuario = smtpuser, 
-                           password = smtppass)
+                and self.objeto.id not in self.solicitudes_validacion)
+    
+    def enviar_correo_solicitud_validacion(self):
+        dests = self.select_correo_validador()
+        if not isinstance(dests, (list, tuple)):
+            dests = [dests]
+        self.solicitudes_validacion[self.objeto.id] = dests
+        servidor = self.usuario.smtpserver
+        smtpuser = self.usuario.smtpuser
+        smtppass = self.usuario.smtppassword
+        rte = self.usuario.email
+        from formularios.utils import enviar_correoe
+        # TODO: Habría que comprobar que la oferta está completa. Porque 
+        # la primera vez que guardan casi seguro que no se valida auto.
+        # dests = ["informatica@geotexan.com"]
+        # Correo de riesgo de cliente
+        texto = "Se ha creado la oferta %d "\
+                "para el cliente %s que necesita validación manual." % (
+                        self.objeto.id, 
+                        self.objeto.nombrecliente)
+        enviar_correoe(rte, 
+                       dests,
+                       "Alerta de validación manual de oferta", 
+                       texto, 
+                       servidor = servidor, 
+                       usuario = smtpuser, 
+                       password = smtppass)
 
     def borrar(self, widget):
         """
@@ -2034,7 +2067,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         no sea admin. Uno diferente en cada llamada.
         """
         # TODO: OJO: HARCODED
-        if self.usuario and self.usuario.id == 1:
+        if not self.usuario or self.usuario.id == 1:
             return ["informatica@geotexan.com"]
         else:
             return ["nzumer@geotexan.com", "efigueroa@geotexan.com"]
@@ -2311,6 +2344,13 @@ def build_fila_historial(ofertado, pedido, servido, facturado, pendiente,
     fila = (desc, ofer, pedi, serv, fact, pdte, puid)
     return fila
 
+def generar_pdf_presupuesto(objeto_presupuesto):
+    modulo = pclases.config.get_modelo_presupuesto()
+    import importlib
+    presupuesto = importlib.import_module("." + modulo, "informes")
+    #exec "import %s as presupuesto" % modulo
+    pdf_presupuesto = presupuesto.go_from_presupuesto(objeto_presupuesto)
+    return pdf_presupuesto
 
 if __name__ == "__main__":
     p = Presupuestos()

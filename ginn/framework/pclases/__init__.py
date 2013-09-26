@@ -10600,6 +10600,22 @@ class Comercial(SQLObject, PRPCTOO):
         except AttributeError:
             return None
 
+    def get_firma_html(self):
+        try:
+            firma_comercial = '<b>%s %s</b><br><i>%s</i><br>'\
+                              '%s<br>'\
+                              '<u><a href="mailto:%s">%s</a></u>'\
+                              '<b> </b>' % (
+                self.empleado.nombre and self.empleado.nombre or "", 
+                self.empleado.apellidos and self.empleado.apellidos or "", 
+                self.cargo and self.cargo or "", 
+                self.telefono and self.telefono or "", 
+                self.correoe and self.correoe or "", 
+                self.correoe and self.correoe or "")
+        except AttributeError:
+            firma_comercial = ""
+        return firma_comercial
+        
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 class CamposEspecificos(SQLObject, PRPCTOO):

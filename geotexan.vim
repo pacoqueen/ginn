@@ -1,9 +1,9 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 25 septiembre 2013 at 17:31:45.
+" Created by session.vim 1.5 on 26 septiembre 2013 at 13:20:00.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
-silent! set guifont=Droid\ Sans\ Mono\ Slashed\ 10
+silent! set guifont=Inconsolata
 if exists('g:syntax_on') != 1 | syntax on | endif
 if exists('g:did_load_filetypes') != 1 | filetype on | endif
 if exists('g:did_load_ftplugin') != 1 | filetype plugin on | endif
@@ -11,7 +11,7 @@ if exists('g:did_indent_on') != 1 | filetype indent on | endif
 if &background != 'dark'
 	set background=dark
 endif
-if !exists('g:colors_name') || g:colors_name != 'desert' | colorscheme desert | endif
+if !exists('g:colors_name') || g:colors_name != 'solarized' | colorscheme solarized | endif
 call setqflist([])
 let SessionLoad = 1
 if &cp | set nocp | endif
@@ -63,7 +63,7 @@ badd +142 ginn/formularios/autenticacion.py
 badd +4852 ginn/informes/geninformes.py
 badd +233 ginn/informes/informe_certificado_calidad.py
 badd +1518 informes/geninformes.py
-badd +2714 ginn/formularios/facturas_venta.py
+badd +2733 ginn/formularios/facturas_venta.py
 badd +419 ginn/framework/configuracion.py
 badd +4 bin/ginn.sh
 badd +10 ginn/main.py
@@ -128,7 +128,7 @@ badd +192 ginn/formularios/silos.py
 badd +1 ginn/framework/__init__.py
 badd +1 ginn/formularios/vencimientos_pendientes_por_cliente.glade
 badd +416 ginn/formularios/consulta_productividad.py
-badd +1 ginn/formularios/mail_sender.py
+badd +164 ginn/formularios/mail_sender.py
 badd +1239 ginn/formularios/abonos_venta.py
 args formularios/auditviewer.py
 set lines=44 columns=111
@@ -174,27 +174,27 @@ set nosplitright
 wincmd t
 set winheight=1 winwidth=1
 exe 'vert 1resize ' . ((&columns * 30 + 55) / 111)
-exe '2resize ' . ((&lines * 1 + 22) / 44)
+exe '2resize ' . ((&lines * 3 + 22) / 44)
 exe 'vert 2resize ' . ((&columns * 80 + 55) / 111)
-exe '3resize ' . ((&lines * 1 + 22) / 44)
+exe '3resize ' . ((&lines * 3 + 22) / 44)
 exe 'vert 3resize ' . ((&columns * 80 + 55) / 111)
-exe '4resize ' . ((&lines * 1 + 22) / 44)
+exe '4resize ' . ((&lines * 3 + 22) / 44)
 exe 'vert 4resize ' . ((&columns * 80 + 55) / 111)
-exe '5resize ' . ((&lines * 1 + 22) / 44)
+exe '5resize ' . ((&lines * 3 + 22) / 44)
 exe 'vert 5resize ' . ((&columns * 80 + 55) / 111)
-exe '6resize ' . ((&lines * 22 + 22) / 44)
+exe '6resize ' . ((&lines * 3 + 22) / 44)
 exe 'vert 6resize ' . ((&columns * 80 + 55) / 111)
-exe '7resize ' . ((&lines * 1 + 22) / 44)
+exe '7resize ' . ((&lines * 3 + 22) / 44)
 exe 'vert 7resize ' . ((&columns * 80 + 55) / 111)
-exe '8resize ' . ((&lines * 1 + 22) / 44)
+exe '8resize ' . ((&lines * 3 + 22) / 44)
 exe 'vert 8resize ' . ((&columns * 80 + 55) / 111)
-exe '9resize ' . ((&lines * 1 + 22) / 44)
+exe '9resize ' . ((&lines * 3 + 22) / 44)
 exe 'vert 9resize ' . ((&columns * 80 + 55) / 111)
-exe '10resize ' . ((&lines * 1 + 22) / 44)
+exe '10resize ' . ((&lines * 3 + 22) / 44)
 exe 'vert 10resize ' . ((&columns * 80 + 55) / 111)
-exe '11resize ' . ((&lines * 1 + 22) / 44)
+exe '11resize ' . ((&lines * 3 + 22) / 44)
 exe 'vert 11resize ' . ((&columns * 80 + 55) / 111)
-exe '12resize ' . ((&lines * 1 + 22) / 44)
+exe '12resize ' . ((&lines * 2 + 22) / 44)
 exe 'vert 12resize ' . ((&columns * 80 + 55) / 111)
 argglobal
 enew
@@ -369,7 +369,7 @@ silent! normal zo
 silent! normal zo
 19883
 silent! normal zo
-let s:l = 663 - ((0 * winheight(0) + 0) / 1)
+let s:l = 663 - ((0 * winheight(0) + 1) / 3)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -416,7 +416,7 @@ silent! normal zo
 silent! normal zo
 314
 silent! normal zo
-let s:l = 352 - ((0 * winheight(0) + 0) / 1)
+let s:l = 352 - ((0 * winheight(0) + 1) / 3)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -443,7 +443,7 @@ silent! normal zo
 silent! normal zo
 733
 silent! normal zo
-let s:l = 814 - ((0 * winheight(0) + 0) / 1)
+let s:l = 814 - ((0 * winheight(0) + 1) / 3)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -480,12 +480,12 @@ silent! normal zo
 silent! normal zo
 4367
 silent! normal zo
-let s:l = 4445 - ((0 * winheight(0) + 0) / 1)
+let s:l = 4443 - ((0 * winheight(0) + 1) / 3)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-4445
-normal! 0
+4443
+normal! 011l
 wincmd w
 argglobal
 edit ginn/formularios/mail_sender.py
@@ -503,12 +503,26 @@ silent! normal zo
 silent! normal zo
 167
 silent! normal zo
-let s:l = 149 - ((10 * winheight(0) + 11) / 22)
+170
+silent! normal zo
+170
+silent! normal zo
+170
+silent! normal zo
+170
+silent! normal zo
+170
+silent! normal zo
+170
+silent! normal zo
+170
+silent! normal zo
+let s:l = 1 - ((0 * winheight(0) + 1) / 3)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-149
-normal! 012l
+1
+normal! 0
 wincmd w
 argglobal
 edit ginn/formularios/presupuestos.py
@@ -816,20 +830,58 @@ silent! normal zo
 silent! normal zo
 2121
 silent! normal zo
-2188
+2125
 silent! normal zo
-2230
+2128
 silent! normal zo
-2244
+2129
 silent! normal zo
-2251
+2129
 silent! normal zo
-let s:l = 698 - ((0 * winheight(0) + 0) / 1)
+2134
+silent! normal zo
+2143
+silent! normal zo
+2144
+silent! normal zo
+2148
+silent! normal zo
+2150
+silent! normal zo
+2150
+silent! normal zo
+2151
+silent! normal zo
+2155
+silent! normal zo
+2156
+silent! normal zo
+2163
+silent! normal zo
+2199
+silent! normal zo
+2213
+silent! normal zo
+2241
+silent! normal zo
+2256
+silent! normal zo
+2260
+silent! normal zo
+2261
+silent! normal zo
+2261
+silent! normal zo
+2263
+silent! normal zo
+2264
+silent! normal zo
+let s:l = 2154 - ((0 * winheight(0) + 1) / 3)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-698
-normal! 032l
+2154
+normal! 020l
 wincmd w
 argglobal
 edit ginn/formularios/consulta_cobros.py
@@ -883,7 +935,7 @@ silent! normal zo
 silent! normal zo
 336
 silent! normal zo
-let s:l = 320 - ((0 * winheight(0) + 0) / 1)
+let s:l = 320 - ((0 * winheight(0) + 1) / 3)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -904,7 +956,7 @@ setlocal fen
 silent! normal zo
 277
 silent! normal zo
-let s:l = 1 - ((0 * winheight(0) + 0) / 1)
+let s:l = 1 - ((0 * winheight(0) + 1) / 3)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -923,7 +975,7 @@ setlocal fdn=20
 setlocal fen
 38
 silent! normal zo
-let s:l = 621 - ((0 * winheight(0) + 0) / 1)
+let s:l = 621 - ((0 * winheight(0) + 1) / 3)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -948,7 +1000,7 @@ silent! normal zo
 silent! normal zo
 70
 silent! normal zo
-let s:l = 97 - ((0 * winheight(0) + 0) / 1)
+let s:l = 97 - ((0 * winheight(0) + 1) / 3)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -1003,7 +1055,7 @@ silent! normal zo
 silent! normal zo
 687
 silent! normal zo
-let s:l = 126 - ((0 * winheight(0) + 0) / 1)
+let s:l = 126 - ((0 * winheight(0) + 1) / 2)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -1012,27 +1064,27 @@ normal! 010l
 wincmd w
 6wincmd w
 exe 'vert 1resize ' . ((&columns * 30 + 55) / 111)
-exe '2resize ' . ((&lines * 1 + 22) / 44)
+exe '2resize ' . ((&lines * 3 + 22) / 44)
 exe 'vert 2resize ' . ((&columns * 80 + 55) / 111)
-exe '3resize ' . ((&lines * 1 + 22) / 44)
+exe '3resize ' . ((&lines * 3 + 22) / 44)
 exe 'vert 3resize ' . ((&columns * 80 + 55) / 111)
-exe '4resize ' . ((&lines * 1 + 22) / 44)
+exe '4resize ' . ((&lines * 3 + 22) / 44)
 exe 'vert 4resize ' . ((&columns * 80 + 55) / 111)
-exe '5resize ' . ((&lines * 1 + 22) / 44)
+exe '5resize ' . ((&lines * 3 + 22) / 44)
 exe 'vert 5resize ' . ((&columns * 80 + 55) / 111)
-exe '6resize ' . ((&lines * 22 + 22) / 44)
+exe '6resize ' . ((&lines * 3 + 22) / 44)
 exe 'vert 6resize ' . ((&columns * 80 + 55) / 111)
-exe '7resize ' . ((&lines * 1 + 22) / 44)
+exe '7resize ' . ((&lines * 3 + 22) / 44)
 exe 'vert 7resize ' . ((&columns * 80 + 55) / 111)
-exe '8resize ' . ((&lines * 1 + 22) / 44)
+exe '8resize ' . ((&lines * 3 + 22) / 44)
 exe 'vert 8resize ' . ((&columns * 80 + 55) / 111)
-exe '9resize ' . ((&lines * 1 + 22) / 44)
+exe '9resize ' . ((&lines * 3 + 22) / 44)
 exe 'vert 9resize ' . ((&columns * 80 + 55) / 111)
-exe '10resize ' . ((&lines * 1 + 22) / 44)
+exe '10resize ' . ((&lines * 3 + 22) / 44)
 exe 'vert 10resize ' . ((&columns * 80 + 55) / 111)
-exe '11resize ' . ((&lines * 1 + 22) / 44)
+exe '11resize ' . ((&lines * 3 + 22) / 44)
 exe 'vert 11resize ' . ((&columns * 80 + 55) / 111)
-exe '12resize ' . ((&lines * 1 + 22) / 44)
+exe '12resize ' . ((&lines * 2 + 22) / 44)
 exe 'vert 12resize ' . ((&columns * 80 + 55) / 111)
 tabnext 1
 if exists('s:wipebuf')
