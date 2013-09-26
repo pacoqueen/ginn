@@ -694,13 +694,18 @@ class Presupuestos(Ventana, VentanaGenerica):
         ventana_correo = mail_sender.MailSender()
         try:
             ventana_correo.set_from(self.usuario.email)
+            ventana_correo.set_to(self.objeto.email)
             if not self.usuario or self.usuario.id == 1:
                 # Safety check. No sea que haciendo pruebas se me vaya un 
                 # correo a quien no debe.
-                ventana_correo.set_from("informatica@geotexan.com")
-            ventana_correo.set_to(self.objeto.email)
-            texto_correo = "<p>Se le adjunta oferta solicitada.</p> <br><br>"
-            texto_correo += self.objeto.comercial.get_firma_html()
+                ventana_correo.set_to("informatica@geotexan.com")
+            # PLAN: Nada de HTML de momento...
+            #texto_correo = "<html><head></head><body>"
+            #texto_correo += "<p>Se le adjunta oferta solicitada.</p> <br><br>"
+            #texto_correo += self.objeto.comercial.get_firma_html()
+            #texto_correo += "</body></html>"
+            texto_correo = "Se le adjunta oferta solicitada.\n\n\n"
+            texto_correo += self.objeto.comercial.get_firma()
             ventana_correo.set_asunto("Geotexan: Oferta %d" % self.objeto.id)
             ventana_correo.set_adjunto(pdf_presupuesto)
             ventana_correo.set_smtpconf(self.usuario.smtpserver, 

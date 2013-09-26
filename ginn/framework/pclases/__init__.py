@@ -10616,6 +10616,20 @@ class Comercial(SQLObject, PRPCTOO):
             firma_comercial = ""
         return firma_comercial
         
+    def get_firma(self):
+        try:
+            firma_comercial = '%s %s\n%s\n'\
+                              '%s\n'\
+                              '%s' % (
+                self.empleado.nombre and self.empleado.nombre or "", 
+                self.empleado.apellidos and self.empleado.apellidos or "", 
+                self.cargo and self.cargo or "", 
+                self.telefono and self.telefono or "", 
+                self.correoe and self.correoe or "")
+        except AttributeError:
+            firma_comercial = ""
+        return firma_comercial
+
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 class CamposEspecificos(SQLObject, PRPCTOO):

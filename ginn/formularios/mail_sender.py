@@ -58,7 +58,10 @@ class MailSender:
         self.wids['b_aceptar'].set_sensitive(True)
 
     def salir(self, boton, evento):
-        self.wids['ventana'].destroy()
+        try:
+            self.wids['ventana'].destroy()
+        except KeyError:    # La ventana ya se ha destruido. Me olvido ya.
+            pass
 
     def run(self):
         self.wids['ventana'].show_all()
@@ -68,6 +71,8 @@ class MailSender:
         return self.resultado_envio
 
     def cerrar(self):
+        self.resultado_envio = True     # Porque ha cancelado la ventana. 
+            # Me da igual si se ha enviado realmente o no; pero no ha fallado.
         self.salir(None, None)
 
     def set_servidor(self, servidor):
@@ -153,6 +158,7 @@ class MailSender:
     def enviar(self, boton):
         self.wids['spinner'].start()
         self.wids['spinner'].set_property("visible", True)
+        while gtk.events_pending(): gtk.main_iteration(False)
         rte = self._cargar_remitente()
         tos = self._cargar_destinatarios()
         asunto = self._get_asunto()
@@ -163,16 +169,19 @@ class MailSender:
         password = self.smtppwd
         if self.wids['ch_copia'].get_active():
             tos.append(rte)
+        # TODO: Esto debería ir en un hilo aparte.
         res = enviar_correoe(rte, tos, asunto, texto, adjuntos, servidor,  
                              usuario, password)
         if res:
             # TODO: PORASQUI: Mostrar ventana de diálogo de OK y devolver True.
             self.resultado_envio = True
+            self.wids['b_aceptar'].set_sensitive(False)
+            self.wids['b_cancelar'].set_label("Cerrar")
         else:
             # TODO: PORASQUI: Mostrar ventana de diálogo de "lacagaste" y seguir en la ventana.
             self.resultado_envio = False
         self.wids['spinner'].stop()
-        self.wids['spinner'].set_property("visible", True)
+        self.wids['spinner'].set_property("visible", False)
 
 def main():
     ventana_mail_sender = MailSender()
