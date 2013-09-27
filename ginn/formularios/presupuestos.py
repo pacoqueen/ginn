@@ -2180,23 +2180,23 @@ def hacer_pedido(presupuesto, usuario, ventana_padre = None):
         else:
             if not presupuesto.cliente:
                 presupuesto.cliente = buscar_cliente(presupuesto, usuario)
-                if not presupuesto.cliente:
-                    # PLAN: Sugerir clientes con nombres parecidos o 
-                    # permitir que se creen si tiene permiso.
-                    nuevopedido = None
-                    utils.dialogo_info(titulo = "CLIENTE NO EXISTE", 
-                            texto = "Asegúrese de que el cliente\n"
-                                    "«%s»\n"
-                                    "existe y está correctamente escrito.", 
-                            padre = self.wids['ventana'])
-                else:
-                    if not presupuesto.obra:
-                        if presupuesto.nombreobra:
-                            presupuesto.obra = crear_obra(presupuesto, usuario)
-                        else:
-                            customer = presupuesto.cliente
-                            presupuesto.obra = customer.get_obra_generica()
-                    nuevopedido = crear_pedido(presupuesto, numpedido, usuario)
+            if not presupuesto.cliente:
+                # PLAN: Sugerir clientes con nombres parecidos o 
+                # permitir que se creen si tiene permiso.
+                nuevopedido = None
+                utils.dialogo_info(titulo = "CLIENTE NO EXISTE", 
+                        texto = "Asegúrese de que el cliente\n"
+                                "«%s»\n"
+                                "existe y está correctamente escrito.", 
+                        padre = self.wids['ventana'])
+            else:
+                if not presupuesto.obra:
+                    if presupuesto.nombreobra:
+                        presupuesto.obra = crear_obra(presupuesto, usuario)
+                    else:
+                        customer = presupuesto.cliente
+                        presupuesto.obra = customer.get_obra_generica()
+                nuevopedido = crear_pedido(presupuesto, numpedido, usuario)
         if nuevopedido != None:
             for ldp in presupuesto.lineasDePresupuesto:
                 add_ldp_a_pedido(presupuesto, ldp, nuevopedido, usuario)

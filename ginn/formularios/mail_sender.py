@@ -36,6 +36,12 @@
 ## 
 ###################################################################
 
+
+# TODO: PORASQUI: ¿Y si dejo un borrador en el buzón del usuario? Con un botón 
+# aparte del de enviar para que elija si quiere enviarlo directamente o 
+# terminar de editarlo en su cliente de correo. Y ya que estamos... ¿Y si lo 
+# mando a Google Drive usando su API?
+
 import os
 import pygtk
 pygtk.require('2.0')
@@ -73,6 +79,9 @@ class MailSender:
     def cerrar(self):
         self.resultado_envio = True     # Porque ha cancelado la ventana. 
             # Me da igual si se ha enviado realmente o no; pero no ha fallado.
+            # TODO: No me acaba de convencer. La invocadora debe saber si al 
+            # final ha salido un correo o no. Ya sea por cancelar o porque 
+            # de verdad ha fallado.
         self.salir(None, None)
 
     def set_servidor(self, servidor):
