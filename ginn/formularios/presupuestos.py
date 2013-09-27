@@ -1413,15 +1413,25 @@ class Presupuestos(Ventana, VentanaGenerica):
             gobject.source_remove(self.hndlr_listado)
         except AttributeError:
             pass    # Primera vez.
+        if pclases.DEBUG:
+            print "rellenar_lista_presupuestos: Desconectando señal..."
         self.wids['tv_presupuestos'].disconnect(self.hndlr_presup)
+        if pclases.DEBUG:
+            print "rellenar_lista_presupuestos: Buscando presupuestos..."
         presupuestos = self.buscar_presupuestos_accesibles(solo_pdte = True)
         # Ya tengo los objetos. Ahora a rellenar en la interfaz.
+        if pclases.DEBUG:
+            print "rellenar_lista_presupuestos: Congelando TreeView..."
         model = self.wids['tv_presupuestos'].get_model()
         self.wids['tv_presupuestos'].freeze_child_notify()
         # model.clear()
         # Primero me hago una copia del model en un diccionario accesible por
         # el id del presupuesto.
+        if pclases.DEBUG:
+            print "rellenar_lista_presupuestos: Generando diccionario..."
         modelo = dic_presupuestos_from_model(self.wids['tv_presupuestos'])
+        if pclases.DEBUG:
+            print "rellenar_lista_presupuestos: Refrescando Model..."
         for p in presupuestos:
             # CWT: No deben salir los presupuestos ya servidos
             if p.get_pedidos():
@@ -1458,10 +1468,14 @@ class Presupuestos(Ventana, VentanaGenerica):
                 path = model.get_path(itr)
         # Si me ha quedado algo en "modelo", son filas que no se corresponden 
         # con ningun presupuesto que deba aparecer en el TV. Lo quito:
+        if pclases.DEBUG:
+            print "rellenar_lista_presupuestos: Eliminando residuos..."
         for puid in modelo:
             itr = modelo[puid]
             model.remove(itr)
         # Y por fin acabé de actualizar el TreeView.
+        if pclases.DEBUG:
+            print "rellenar_lista_presupuestos: Descongelando TreeView..."
         self.wids['tv_presupuestos'].thaw_child_notify()
         # Lo desactivo porque tengo una manera mejor de 
         # marcar el presupuesto activo sin borrar, repoblar y redibujar
@@ -1469,6 +1483,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         # variable path sin instanciar. ¿Porcuá? Dunno.
         #self.wids['tv_presupuestos'].scroll_to_cell(path)
         #self.wids['tv_presupuestos'].get_selection().select_path(path)
+        if pclases.DEBUG:
+            print "rellenar_lista_presupuestos: Conectando señales..."
         self.hndlr_presup = self.wids['tv_presupuestos'].connect(
                             "cursor-changed", self.cambiar_presupuesto_activo)
         self.hndlr_listado = gobject.timeout_add(10000, 
