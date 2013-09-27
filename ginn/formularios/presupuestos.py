@@ -51,6 +51,7 @@ import pango
 from formularios import postomatic
 from formularios.custom_widgets import CellRendererAutoComplete
 import datetime
+import time
 
 NIVEL_VALIDACION = 1
 
@@ -1406,6 +1407,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             # Se está creando la ventana. Cancelo y que me vuelva a llamar.
             return True 
         if pclases.DEBUG:
+            ahora = time.time()
             print "rellenar_lista_presupuestos: begin"
         try:
             gobject.source_remove(self.hndlr_listado)
@@ -1469,10 +1471,11 @@ class Presupuestos(Ventana, VentanaGenerica):
         #self.wids['tv_presupuestos'].get_selection().select_path(path)
         self.hndlr_presup = self.wids['tv_presupuestos'].connect(
                             "cursor-changed", self.cambiar_presupuesto_activo)
-        self.hndlr_listado = gobject.timeout_add(5000, 
+        self.hndlr_listado = gobject.timeout_add(10000, 
                 self.rellenar_lista_presupuestos)
         if pclases.DEBUG:
-            print "rellenar_lista_presupuestos: end"
+            print "rellenar_lista_presupuestos: end (", 
+            print time.time() - ahora, "segundos )"
         return True     # Para que siga llamándome indefinidamente.
 
     def buscar_presupuestos_accesibles(self, solo_pdte = False, 
