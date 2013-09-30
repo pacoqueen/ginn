@@ -10334,8 +10334,9 @@ class Presupuesto(SQLObject, PRPCTOO):
         try:
             iva = self.cliente.get_iva_norm()
         except AttributeError:
-            if (self.pais and self.pais.upper() 
-                    not in ("ESPAÑA", "ESPAñA", "SPAIN")):
+            espanna = ("ESPAÑA", "ESPAñA", "SPAIN", "ESPANA", "ESP", "ES", 
+                       "ESPANNA")
+            if (self.pais and self.pais.upper() not in espanna):
                 iva = 0
             else:
                 iva = 0.21
