@@ -913,6 +913,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         im_refresh = gtk.Image()
         im_refresh.set_from_stock(gtk.STOCK_REFRESH, gtk.ICON_SIZE_MENU)
         hbox.add(im_refresh)
+        hbox.set_tooltip_text("Pulse para actualizar la lista.")
         hbox.set_spacing(3)
         hbox.show_all()
         col = gtk.TreeViewColumn()
@@ -1510,6 +1511,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             print "rellenar_lista_presupuestos: Conectando señales..."
         self.hndlr_presup = self.wids['tv_presupuestos'].connect(
                             "cursor-changed", self.cambiar_presupuesto_activo)
+        # TODO: PORASQUI. Habilitar si consigo acelerar la búsqueda.
         #self.hndlr_listado = gobject.timeout_add(10000, 
         #        self.rellenar_lista_presupuestos)
         if pclases.DEBUG:
@@ -1588,7 +1590,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             tot = presupuestos.count()
             for p in presupuestos:
                 i += 1
-                vpro.set_valor(i / tot)
+                vpro.set_valor(i / tot, None)
                 estado = p.get_estado_validacion()
                 if estado in (pclases.PLAZO_EXCESIVO, 
                               pclases.SIN_FORMA_DE_PAGO, 
