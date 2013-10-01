@@ -45,6 +45,7 @@ from framework import pclases
 from framework.seeker import VentanaGenerica 
 from pedidos_de_venta import preguntar_precio
 from formularios.ventana_progreso import VentanaActividad
+from formularios.ventana_progreso import VentanaProgreso
 import gobject
 import sys
 import pango
@@ -114,7 +115,9 @@ class Presupuestos(Ventana, VentanaGenerica):
                        'b_credito/clicked': self.enviar_solicitud_credito, 
                        "b_atras/clicked": self.atras, 
                        "b_adelante/clicked": self.adelante, 
-                       'ev_iconostado/button-release-event': self.mostrar_ttip, 
+                       'ev_iconostado/button-release-event': self.mostrar_ttip,
+                       'b_refresh_tv_presupuestos/clicked': 
+                            self.actualizar_manualmente_lista_presupuestos, 
                       }  
         self.add_connections(connections)
         self.inicializar_ventana()
@@ -125,6 +128,9 @@ class Presupuestos(Ventana, VentanaGenerica):
         #if self.usuario and self.usuario.nivel >= 4:
         #    self.activar_widgets(False) # Para evitar manos rápidas al abrir.
         gtk.main()
+
+    def actualizar_manualmente_lista_presupuestos(self, boton):
+        self.rellenar_lista_presupuestos()
 
     def mostrar_ttip(self, widget, event):
         utils.dialogo_info(titulo = "ESTADO DE LA OFERTA", 
@@ -1511,6 +1517,9 @@ class Presupuestos(Ventana, VentanaGenerica):
         validación para imprimir.
         El resultado se devuelve **ordenado por id**.
         """
+        vpro = VentanaProgreso(padre = self.wids['ventana'])
+        vpro.mostrar()
+        vpro.set_valor(0, "Buscando ofertas accesibles por el usuario...")
         # Primero determino si busco entre los presupuestos de todos los 
         # comerciales o solo los míos.
         if not self.usuario:    # Todos los presupuestos
@@ -1564,14 +1573,19 @@ class Presupuestos(Ventana, VentanaGenerica):
         # ventana tarda tanto. A VER CÓMO LO HACEMOS.
         if solo_pdte:
             _presupuestos = []
+            i = 0.0
+            tot = presupuestos.count()
             for p in presupuestos:
+                i += 1
+                vpro.set_valor(i / tot)
                 estado = p.get_estado_validacion()
                 if estado in (pclases.PLAZO_EXCESIVO, 
                               pclases.SIN_FORMA_DE_PAGO, 
                               pclases.PRECIO_INSUFICIENTE, 
                               pclases.COND_PARTICULARES):
                     _presupuestos.append(p)
-                presupuestos = pclases.SQLlist(_presupuestos)
+            presupuestos = pclases.SQLlist(_presupuestos)
+        vpro.ocultar()
         return presupuestos
 
     def refresh_validado(self):
