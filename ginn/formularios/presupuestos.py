@@ -1590,7 +1590,9 @@ class Presupuestos(Ventana, VentanaGenerica):
             tot = presupuestos.count()
             for p in presupuestos:
                 i += 1
-                vpro.set_valor(i / tot, None)
+                vpro.set_valor(i / tot, 
+                    "Buscando ofertas accesibles por el usuario... (%d - %s)" 
+                        % (p.id, p.nombrecliente))
                 estado = p.get_estado_validacion()
                 if estado in (pclases.PLAZO_EXCESIVO, 
                               pclases.SIN_FORMA_DE_PAGO, 

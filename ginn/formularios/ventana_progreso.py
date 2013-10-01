@@ -67,7 +67,8 @@ class VentanaProgreso:
         self._ventana = gtk.Window()
         self._ventana.set_title('POR FAVOR, ESPERE')
         self._ventana.set_modal(True)
-        self._ventana.set_transient_for(padre)
+        self._padre = padre
+        self._ventana.set_transient_for(self._padre)
         self._ventana.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
         self.__pbar = gtk.ProgressBar()
         self._vbox = gtk.VBox()
@@ -99,10 +100,22 @@ class VentanaProgreso:
         self._ventana.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
         self._ventana.show()
         self.__visible = True
+        try:
+            self._padre.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+        except AttributeError:
+            pass    # O no tiene padre, o no es una ventana.
+        self._ventana.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+        while gtk.events_pending():
+            gtk.main_iteration(False)
 
     def ocultar(self):
         self._ventana.hide()
         self.__visible = False
+        if self._padre:
+            self._padre.window.set_cursor(None)
+        self._ventana.window.set_cursor(None)
+        while gtk.events_pending():
+            gtk.main_iteration(False)
 
     def set_valor(self, valor, texto = ''):
         """
@@ -268,7 +281,8 @@ class VentanaActividad:
         self._ventana = gtk.Window()
         self._ventana.set_title('POR FAVOR, ESPERE')
         self._ventana.set_modal(True)
-        self._ventana.set_transient_for(padre)
+        self._padre = padre
+        self._ventana.set_transient_for(self._padre)
         self._ventana.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
         self.__pbar = gtk.ProgressBar()
         self.__pbar.set_pulse_step(0.01)
@@ -301,10 +315,24 @@ class VentanaActividad:
         self._ventana.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
         self._ventana.show()
         self.__visible = True
+        try:
+            self._padre.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+        except AttributeError:
+            pass    # O no tiene padre, o no es una ventana.
+        self._ventana.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+        while gtk.events_pending():
+            gtk.main_iteration(False)
 
     def ocultar(self):
         self._ventana.hide()
         self.__visible = False
+        try:
+            self._padre.window.set_cursor(None)
+        except AttributeError:
+            pass    # O no tiene padre, o no es una ventana.
+        self._ventana.window.set_cursor(None)
+        while gtk.events_pending():
+            gtk.main_iteration(False)
 
     def actualizar(self):
         return self.__seguir_actualizando
