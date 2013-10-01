@@ -1525,9 +1525,9 @@ class Presupuestos(Ventana, VentanaGenerica):
         Busca los presupuestos a los que puede acceder el usuario de la 
         ventana.
         Si "solo_pdte" es True, elimina de la lista de resultados los 
-        presupuestos de estudio y los que no tengan informado el campo; solo 
+        presupuestos de estudio y los que no tengan informado ese campo; solo 
         buscará entre las ofertas de pedido que estén pendientes de 
-        validación para imprimir.
+        validación para imprimir (y por ende, no pasadas a pedido).
         El resultado se devuelve **ordenado por id**.
         """
         vpro = VentanaProgreso(padre = self.wids['ventana'])
@@ -1592,7 +1592,11 @@ class Presupuestos(Ventana, VentanaGenerica):
                 i += 1
                 vpro.set_valor(i / tot, 
                     "Buscando ofertas accesibles por el usuario... (%d - %s)" 
-                        % (p.id, p.nombrecliente))
+                        % (p.id, p.nombrecliente), 
+                    force_actualizar = True)
+                if p.get_pedidos():
+                    continue    # Si ya se ha servido, validado o no, ya no 
+                                # está pendiente de nada. Ya siguió su curso.
                 estado = p.get_estado_validacion()
                 if estado in (pclases.PLAZO_EXCESIVO, 
                               pclases.SIN_FORMA_DE_PAGO, 

@@ -117,7 +117,7 @@ class VentanaProgreso:
         while gtk.events_pending():
             gtk.main_iteration(False)
 
-    def set_valor(self, valor, texto = ''):
+    def set_valor(self, valor, texto = '', force_actualizar = False):
         """
         Si texto es None se respeta el que ya estuviera establecido.
         """
@@ -128,6 +128,8 @@ class VentanaProgreso:
         self.mostrar_tiempo(valor, 
                             actualizar_label_tiempo = self.tiempo_estable())
         self.__valor = valor
+        if force_actualizar:
+            self.actualizar()
         while gtk.events_pending():
             gtk.main_iteration(False)
 
