@@ -116,8 +116,6 @@ class Presupuestos(Ventana, VentanaGenerica):
                        "b_atras/clicked": self.atras, 
                        "b_adelante/clicked": self.adelante, 
                        'ev_iconostado/button-release-event': self.mostrar_ttip,
-                       'b_refresh_tv_presupuestos/clicked': 
-                            self.actualizar_manualmente_lista_presupuestos, 
                       }  
         self.add_connections(connections)
         self.inicializar_ventana()
@@ -129,7 +127,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         #    self.activar_widgets(False) # Para evitar manos rápidas al abrir.
         gtk.main()
 
-    def actualizar_manualmente_lista_presupuestos(self, boton):
+    def actualizar_manualmente_lista_presupuestos(self, boton_o_tv):
         self.rellenar_lista_presupuestos()
 
     def mostrar_ttip(self, widget, event):
@@ -874,40 +872,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                                      1)
         self.wids['tv_contenido'].set_tooltip_column(1)
         self.wids['tv_contenido'].connect("query-tooltip", self.tooltip_query)
-        cols = (('Presupuesto','gobject.TYPE_STRING',False,True,True,None), 
-                ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
-        utils.preparar_listview(self.wids['tv_presupuestos'], cols)
-        self.wids['tv_presupuestos'].set_model(
-                # Cerrada, Validada, Número, Cliente, Adjudicada, Pedido, PUID
-                gtk.ListStore(str, str, str, str, str, str, str))
-        self.wids['tv_presupuestos'].set_tooltip_column(3)
-        col = self.wids['tv_presupuestos'].get_column(0)
-        celltext = col.get_cell_renderers()[0]
-        self.wids['tv_presupuestos'].remove_column(col)
-        col = gtk.TreeViewColumn("Pdtes. validación")
-        self.wids['tv_presupuestos'].insert_column(col, 0)
-        cellpb = gtk.CellRendererPixbuf()
-        cellpb2 = gtk.CellRendererPixbuf()
-        cellpb3 = gtk.CellRendererPixbuf()
-        cellpb4 = gtk.CellRendererPixbuf()
-        col.pack_start(cellpb, False)
-        col.pack_start(cellpb2, False)
-        col.pack_start(celltext, False)
-        col.pack_start(cellpb3, True)
-        col.pack_start(cellpb4, True)
-        col.set_attributes(cellpb, stock_id = 0)
-        col.set_attributes(cellpb2, stock_id = 1)
-        col.set_attributes(celltext, text = 2)
-        col.set_attributes(cellpb3, stock_id = 4)
-        col.set_attributes(cellpb4, stock_id = 5)
-        self.hndlr_cerrado = self.wids['ch_cerrado'].connect('clicked', 
-                self.cerrar_presupuesto)
-        self.hndlr_presup = self.wids['tv_presupuestos'].connect(
-                "cursor-changed", self.cambiar_presupuesto_activo)
-        w, h = self.wids['tv_presupuestos'].size_request()
-        self.wids['tv_presupuestos'].set_size_request(w, h)
-        self.colorear_presupuestos()
-        self.rellenar_lista_presupuestos()  # El inicial lo hago yo.
+        self.build_tv_presupuestos_no_validados()
         cols = (('Usuario', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Ventana', 'gobject.TYPE_STRING', False, True, False, None),
                 ('«dbpuid»', 'gobject.TYPE_STRING', False, True, False, None), 
@@ -931,6 +896,52 @@ class Presupuestos(Ventana, VentanaGenerica):
                 ("Pendiente", "gobject.TYPE_FLOAT", False, False, True, None), 
                 ("PUID", "gobject.TYPE_STRING", False, False, False, None))
         utils.preparar_listview(self.wids["tv_ofertado"], cols)
+
+    def build_tv_presupuestos_no_validados(self):
+        cols = (('Presupuesto','gobject.TYPE_STRING',False,True,True,None), 
+                ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
+        utils.preparar_listview(self.wids['tv_presupuestos'], cols)
+        self.wids['tv_presupuestos'].set_model(
+                # Cerrada, Validada, Número, Cliente, Adjudicada, Pedido, PUID
+                gtk.ListStore(str, str, str, str, str, str, str))
+        self.wids['tv_presupuestos'].set_tooltip_column(3)
+        col = self.wids['tv_presupuestos'].get_column(0)
+        celltext = col.get_cell_renderers()[0]
+        self.wids['tv_presupuestos'].remove_column(col)
+        hbox = gtk.HBox()
+        hbox.add(gtk.Label("Pdtes. validación"))
+        im_refresh = gtk.Image()
+        im_refresh.set_from_stock(gtk.STOCK_REFRESH, gtk.ICON_SIZE_MENU)
+        hbox.add(im_refresh)
+        hbox.set_spacing(3)
+        hbox.show_all()
+        col = gtk.TreeViewColumn()
+        col.set_widget(hbox)
+        col.set_clickable(True)
+        col.connect("clicked", self.actualizar_manualmente_lista_presupuestos)
+        self.wids['tv_presupuestos'].insert_column(col, 0)
+        cellpb = gtk.CellRendererPixbuf()
+        cellpb2 = gtk.CellRendererPixbuf()
+        cellpb3 = gtk.CellRendererPixbuf()
+        cellpb4 = gtk.CellRendererPixbuf()
+        col.pack_start(cellpb, False)
+        col.pack_start(cellpb2, False)
+        col.pack_start(celltext, False)
+        col.pack_start(cellpb3, True)
+        col.pack_start(cellpb4, True)
+        col.set_attributes(cellpb, stock_id = 0)
+        col.set_attributes(cellpb2, stock_id = 1)
+        col.set_attributes(celltext, text = 2)
+        col.set_attributes(cellpb3, stock_id = 4)
+        col.set_attributes(cellpb4, stock_id = 5)
+        self.hndlr_cerrado = self.wids['ch_cerrado'].connect('clicked', 
+                self.cerrar_presupuesto)
+        self.hndlr_presup = self.wids['tv_presupuestos'].connect(
+                "cursor-changed", self.cambiar_presupuesto_activo)
+        w, h = self.wids['tv_presupuestos'].size_request()
+        self.wids['tv_presupuestos'].set_size_request(w, h)
+        self.colorear_presupuestos()
+        self.rellenar_lista_presupuestos()  # El inicial lo hago yo.
 
     def colorear_historial(self, tv):
         """
@@ -1499,8 +1510,8 @@ class Presupuestos(Ventana, VentanaGenerica):
             print "rellenar_lista_presupuestos: Conectando señales..."
         self.hndlr_presup = self.wids['tv_presupuestos'].connect(
                             "cursor-changed", self.cambiar_presupuesto_activo)
-        self.hndlr_listado = gobject.timeout_add(10000, 
-                self.rellenar_lista_presupuestos)
+        #self.hndlr_listado = gobject.timeout_add(10000, 
+        #        self.rellenar_lista_presupuestos)
         if pclases.DEBUG:
             print "rellenar_lista_presupuestos: end (", 
             print time.time() - ahora, "segundos )"
