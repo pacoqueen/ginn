@@ -1508,10 +1508,18 @@ class PedidosDeVenta(Ventana):
                           "%s %%" % (utils.float2str(ldv.descuento * 100)), 
                           ldvtotal,
                           bultos,
-                          ldv.albaranSalida and ldv.albaranSalida.numalbaran or "",
-                          ldv.albaranSalida and utils.str_fecha(ldv.albaranSalida.fecha) or "", 
-                          (ldv.facturaVenta and ldv.facturaVenta.numfactura) or (ldv.prefactura and ldv.prefactura.numfactura) or "",
-                          (ldv.facturaVenta and utils.str_fecha(ldv.facturaVenta.fecha)) or (ldv.prefactura and utils.str_fecha(ldv.prefactura.fecha)) or "", 
+                          ldv.albaranSalida 
+                            and ldv.albaranSalida.numalbaran or "",
+                          ldv.albaranSalida 
+                            and utils.str_fecha(ldv.albaranSalida.fecha) or "", 
+                          (ldv.facturaVenta and ldv.facturaVenta.numfactura) 
+                            or (ldv.prefactura and ldv.prefactura.numfactura) 
+                            or "",
+                          (ldv.facturaVenta 
+                              and utils.str_fecha(ldv.facturaVenta.fecha)) 
+                            or (ldv.prefactura 
+                                and utils.str_fecha(ldv.prefactura.fecha)) 
+                            or "", 
                           ldv.id))
             subtotal += ldvtotal
             if hasattr(ldv.producto, "get_stock"):

@@ -2284,7 +2284,8 @@ def add_ldp_a_pedido(presupuesto, ldp, nuevopedido, usuario):
                 notas = ldp.notas, 
                 precio = ldp.precio, 
                 cantidad = ldp.cantidad, 
-                presupuesto = presupuesto)
+                presupuesto = presupuesto, 
+                fechaEntrega = None)
         pclases.Auditoria.nuevo(nldp, usuario, __file__)
     else:   # Creo servicio entonces
         nsrv = pclases.Servicio(pedidoVenta = nuevopedido, 
