@@ -1293,10 +1293,10 @@ class Presupuestos(Ventana, VentanaGenerica):
                 ", ".join([p.numpedido for p in r.get_pedidos()])))
         def mostrar_info_presupuesto(tv):
             model, itr = tv.get_selection().get_selected()
-            if (itr and hasattr(model[itr][-2], "startswith")
-                    and model[itr][-2].startswith("Clic aquí")):
+            if (itr and hasattr(model[itr][-3], "startswith")
+                    and model[itr][-3].startswith("Clic aquí")):
                 oferta = pclases.Presupuesto.get(model[itr][0])
-                model[itr][-2] = oferta.get_str_estado()
+                model[itr][-3] = oferta.get_str_estado()
         idpresupuesto = utils.dialogo_resultado(filas_res,
                             titulo = 'SELECCIONE OFERTA',
                             cabeceras = ('ID', 'Fecha', 
