@@ -113,7 +113,8 @@ class Presupuestos(Ventana, VentanaGenerica):
                        'ch_adjudicada/toggled': self.enviar_correo_adjudicada,
                        'b_credito/clicked': self.enviar_solicitud_credito, 
                        "b_atras/clicked": self.atras, 
-                       "b_adelante/clicked": self.adelante
+                       "b_adelante/clicked": self.adelante, 
+                       'ev_iconostado/button-release-event': self.mostrar_ttip, 
                       }  
         self.add_connections(connections)
         self.inicializar_ventana()
@@ -124,6 +125,11 @@ class Presupuestos(Ventana, VentanaGenerica):
         #if self.usuario and self.usuario.nivel >= 4:
         #    self.activar_widgets(False) # Para evitar manos rápidas al abrir.
         gtk.main()
+
+    def mostrar_ttip(self, widget, event):
+        utils.dialogo_info(titulo = "ESTADO DE LA OFERTA", 
+                texto = self.wids['iconostado'].get_tooltip_text(), 
+                padre = self.wids['ventana'])
 
     def atras(self, boton):
         if self.objeto:
