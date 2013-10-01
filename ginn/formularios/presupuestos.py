@@ -518,7 +518,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             self.wids["e_telefono"].set_text(cliente.telefono)
         #if not self.wids["e_fax"].get_text():
         #    self.wids["e_fax"].set_text(cliente.fax)
-        #if not self.wids['e_persona_contacto'].get_text().strip():
+        if not self.wids['e_persona_contacto'].get_text().strip():
             self.wids['e_persona_contacto'].set_text(cliente.contacto)
 
     def seleccionar_cantidad(self, producto):
@@ -1532,7 +1532,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         vpro = VentanaProgreso(padre = self.wids['ventana'])
         vpro.mostrar()
-        vpro.set_valor(0, "Buscando ofertas accesibles por el usuario...")
+        vpro.set_valor(0, "Buscando ofertas visibles...")
         # Primero determino si busco entre los presupuestos de todos los 
         # comerciales o solo los míos.
         if not self.usuario:    # Todos los presupuestos
@@ -1591,7 +1591,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             for p in presupuestos:
                 i += 1
                 vpro.set_valor(i / tot, 
-                    "Buscando ofertas accesibles por el usuario... (%d - %s)" 
+                    "Buscando ofertas visibles... (%d - %s)" 
                         % (p.id, p.nombrecliente), 
                     force_actualizar = True)
                 if p.get_pedidos():
