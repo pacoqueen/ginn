@@ -131,9 +131,16 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.rellenar_lista_presupuestos()
 
     def mostrar_ttip(self, widget, event):
-        utils.dialogo_info(titulo = "ESTADO DE LA OFERTA", 
-                texto = self.wids['iconostado'].get_tooltip_text(), 
-                padre = self.wids['ventana'])
+        texto_tooltip = self.wids['iconostado'].get_tooltip_text()
+        if not texto_tooltip:
+            try:
+                texto_tooltip = self.objeto.get_str_estado()
+            except AttributeError:
+                texto_tooltip = None
+        if texto_tooltip:
+            utils.dialogo_info(titulo = "ESTADO DE LA OFERTA", 
+                    texto = texto_tooltip, 
+                    padre = self.wids['ventana'])
 
     def atras(self, boton):
         if self.objeto:

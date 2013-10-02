@@ -45,6 +45,7 @@ CVS/*
 
 # Temporales de vi
 .*.swp
+.*.swo
 
 # Aptana/Eclipse
 .project
