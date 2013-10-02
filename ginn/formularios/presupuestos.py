@@ -1594,7 +1594,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                     "Buscando ofertas visibles... (%d - %s)" 
                         % (p.id, p.nombrecliente), 
                     force_actualizar = True)
-                if p.get_pedidos():
+                if p.esta_servido():
                     continue    # Si ya se ha servido, validado o no, ya no 
                                 # está pendiente de nada. Ya siguió su curso.
                 estado = p.get_estado_validacion()

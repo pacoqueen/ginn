@@ -10300,6 +10300,14 @@ class Presupuesto(SQLObject, PRPCTOO):
                 pedidos.append(srvpedidoVenta)
         return pedidos
 
+    def esta_servido(self):
+        """
+        Devuelve True con que tan solo se haya servido una parte del pedido.
+        En realidad lo único que hace es ver si tiene líneas de pedido o 
+        servicios asociados a la oferta.
+        """
+        return self.lineasDePedido or self.servicios
+
     def calcular_total(self, iva = True):
         """
         Calcula el total del presupuesto, con IVA y demás incluido.
