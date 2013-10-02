@@ -10481,7 +10481,7 @@ class Presupuesto(SQLObject, PRPCTOO):
         if self.condicionesParticulares:
             validable = COND_PARTICULARES
         if validable == VALIDABLE and not self.check_validacion_precios():
-                validable = PRECIO_INSUFICIENTE
+            validable = PRECIO_INSUFICIENTE
         if validable == VALIDABLE:
             fdp = self.formaDePago
             if not fdp:
@@ -10547,6 +10547,9 @@ class Presupuesto(SQLObject, PRPCTOO):
                                     utils.float2str(precioKilo), 
                                     utils.float2str(precioMinimo))
                     break
+        elif estado_validacion == COND_PARTICULARES:
+            txtestado = "Necesita validación manual: "\
+                        "La oferta presenta condiciones particulares."
         return txtestado
 
     @property
