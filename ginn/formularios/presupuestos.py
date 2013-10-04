@@ -2242,7 +2242,8 @@ def hacer_pedido(presupuesto, usuario, ventana_padre = None):
                     utils.dialogo_info(titulo = "PEDIDO CERRADO", 
                         texto = "El pedido %s está cerrado y no admite "
                                 "cambios. Corrija esta situación antes "
-                                "de volver a intentarlo.", 
+                                "de volver a intentarlo." % (
+                                    nuevopedido.numpedido), 
                         padre = ventana_padre)
                     nuevopedido = None
             else:
