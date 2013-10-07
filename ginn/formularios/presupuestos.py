@@ -2259,7 +2259,7 @@ def hacer_pedido(presupuesto, usuario, ventana_padre = None):
                         texto = "Asegúrese de que el cliente\n"
                                 "«%s»\n"
                                 "existe y está correctamente escrito.", 
-                        padre = self.wids['ventana'])
+                        padre = ventana_padre)
             else:
                 if not presupuesto.obra:
                     if presupuesto.nombreobra:
