@@ -1676,7 +1676,12 @@ class FacturasDeEntrada(Ventana):
             # Al escribirlo no parecía tan lioso. Lo juro.
         if idvto > 0:   # Es -1 si no había.
             vto = pclases.VencimientoPago.get(idvto)
-            vto.fecha = fecha
+            try:
+                vto.fecha = fecha
+            except ValueError:
+                utils.dialogo_info(titulo = "ERROR EN FECHA", 
+                        texto = "Compruebe que ha escrito una fecha válida.", 
+                        padre = self.wids['ventana'])
         elif idvto == -1:   
             # Para el resto de valores rebota-rebota y en tu culo explota.
             factura = self.objeto
