@@ -3755,12 +3755,14 @@ CREATE OR REPLACE FUNCTION calcular_importe_factura_venta(idfra INTEGER)
 
 CREATE OR REPLACE FUNCTION calcular_credito_disponible(idcliente INTEGER, 
                                                        fecha DATE DEFAULT CURRENT_DATE, 
-                                                       base FLOAT DEFAULT 0.0)
+                                                       base FLOAT DEFAULT 0.0, 
+                                                       devil BOOLEAN DEFAULT TRUE)
      -- Devuelve el crédito del cliente cuyo id se recibe. La cantidad "base" se resta 
      -- al crédito para el cálculo de crédito en el momento de formalizar un pedido. La 
      -- "base" debería ser el importe del pedido en ese momento y de ese modo saber si 
      -- el pedido se podría servir con el crédito actual. Por ejemplo: un pedido de 1.5k €
      -- (base) no podrá servirse si el crédito es de 1K.
+     -- devil (because premature optimization is the root of all evil): Si TRUE usa las optimizaciones de crédito. Si FALSE las ignora; y así puedo comparar si el resultado es el mismo en los dos casos.
      RETURNS FLOAT
      AS $$
      DECLARE
@@ -3773,12 +3775,18 @@ CREATE OR REPLACE FUNCTION calcular_credito_disponible(idcliente INTEGER,
         SELECT cliente.riesgo_concedido FROM cliente WHERE cliente.id = $1 INTO riesgo_concedido;
         IF riesgo_concedido = -1 THEN
             credito := 'Infinity'; 
+        ELSIF devil = TRUE AND riesgo_concedido = 0 THEN   -- CWT: 10/10/2013 OPTIMIZACIÓN. 
+                -- Si el crédito es cero, y como no cuento los abonos, ni me 
+                -- molesto en calcular nada. Disponible: cero.
+            credito := 0; 
         ELSE
             sin_documentar := 0;
             sin_vencer := 0;
+            -- Inicialización del crédito. Por si no entra en el bucle.
+            credito := riesgo_concedido - (sin_documentar + sin_vencer) - base;
             FOR fraventa IN SELECT * FROM factura_venta WHERE factura_venta.cliente_id = $1 LOOP
                 IF fra_impagada(fraventa.id, $2) THEN
-                    -- OPTIMIZACIÓN. Si alguna factura está impagada, crédito 0. No sigo.
+                    -- PSEUDOOPTIMIZACIÓN. Si alguna factura está impagada, crédito 0. No sigo.
                     RETURN 0;
                 ELSIF fra_no_documentada(fraventa.id, $2) THEN
                     sin_documentar := sin_documentar + calcular_importe_factura_venta(fraventa.id); -- Esto no es exactamente así. Puede estar parcialmente 
@@ -3787,8 +3795,20 @@ CREATE OR REPLACE FUNCTION calcular_credito_disponible(idcliente INTEGER,
                 ELSIF fra_no_vencida(fraventa.id, $2) THEN
                     sin_vencer := sin_vencer + calcular_importe_factura_venta(fraventa.id);
                 END IF;
+                IF devil = TRUE THEN
+                    -- OPTIMIZACIÓN: 10/10/2013. CWT: Si durante el cálculo llego 
+                    -- a cero, paro. Dejo de seguir calculando. Lo mismo da que 
+                    -- tenga cero como que tenga menos quince mil. No se le va a 
+                    -- servir nada.
+                    credito := riesgo_concedido - (sin_documentar + sin_vencer) - base;
+                    IF credito < 0 THEN
+                        RETURN 0;
+                    END IF;
+                END IF; 
             END LOOP;
-            credito := riesgo_concedido - (sin_documentar + sin_vencer) - base;
+            IF NOT devil THEN
+                credito := riesgo_concedido - (sin_documentar + sin_vencer) - base;
+            END IF; 
         END IF;
         RETURN credito;
      END;
