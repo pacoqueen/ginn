@@ -1518,9 +1518,9 @@ class Presupuestos(Ventana, VentanaGenerica):
             print "rellenar_lista_presupuestos: Conectando señales..."
         self.hndlr_presup = self.wids['tv_presupuestos'].connect(
                             "cursor-changed", self.cambiar_presupuesto_activo)
-        # TODO: PORASQUI. Habilitar si consigo acelerar la búsqueda.
-        #self.hndlr_listado = gobject.timeout_add(10000, 
-        #        self.rellenar_lista_presupuestos)
+        # DONE: Habilitar si consigo acelerar la búsqueda.
+        self.hndlr_listado = gobject.timeout_add(3 * 60 * 1000, 
+                self.rellenar_lista_presupuestos)
         if pclases.DEBUG:
             print "rellenar_lista_presupuestos: end (", 
             print time.time() - ahora, "segundos )"
