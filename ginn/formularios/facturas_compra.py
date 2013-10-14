@@ -690,7 +690,7 @@ class FacturasDeEntrada(Ventana):
             tabla = self.wids['tv_ldvs']
         if factura != None:
             lineas = factura.lineasDeCompra[:]
-            lineas.sort(key = lambda l: l.id)
+            #lineas.sort(key = lambda l: l.id)
             model = self.wids['tv_ldvs'].get_model()
             model.clear()
             for l in lineas:
