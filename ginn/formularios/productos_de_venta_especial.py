@@ -409,12 +409,12 @@ class ProductosDeVentaEspecial(Ventana):
         de error por pantalla y devolverá
         999.
         """
-        prods = pclases.ProductoVenta.select(pclases.AND(
-            pclases.OR(
-                pclases.ProductoVenta.q.camposEspecificosBalaID !=None, 
-                pclases.ProductoVenta.q.camposEspecificosRolloID !=None, 
-                pclases.ProductoVenta.q.camposEspecificosEspecialID !=None), 
-            pclases.ProductoVenta.q.codigo.startswith('843603219')))
+        prods = pclases.ProductoVenta.select(#pclases.AND(
+            #pclases.OR(
+            #    pclases.ProductoVenta.q.camposEspecificosBalaID !=None, 
+            #    pclases.ProductoVenta.q.camposEspecificosRolloID !=None, 
+            #    pclases.ProductoVenta.q.camposEspecificosEspecialID !=None), 
+            pclases.ProductoVenta.q.codigo.startswith('843603219'))#)
         codsproducto = [p.codigo[-4:-1] for p in prods]
         codsproducto.sort()
         #for i in range(300) + range(400, 1000):  # Si el subcódigo de producto del EAN-13 está duplicado esto no funcionará.

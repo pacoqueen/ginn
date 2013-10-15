@@ -378,7 +378,8 @@ class ProductosDeVentaRollosGeocompuestos(Ventana):
         de error por pantalla y devolverá
         999.
         """
-        prods = pclases.ProductoVenta.select(pclases.AND(pclases.ProductoVenta.q.camposEspecificosRolloID !=None, pclases.ProductoVenta.q.codigo.startswith('843603219')))
+        prods = pclases.ProductoVenta.select(#pclases.AND(pclases.ProductoVenta.q.camposEspecificosRolloID !=None, 
+                pclases.ProductoVenta.q.codigo.startswith('843603219'))#)
         codsproducto = [p.codigo[-4:-1] for p in prods]
         codsproducto.sort()
         for i in xrange(1000):

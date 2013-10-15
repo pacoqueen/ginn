@@ -527,12 +527,12 @@ class ProductosDeVentaBalas(Ventana):
         de error por pantalla y devolverá
         999.
         """
-        prods = pclases.ProductoVenta.select(pclases.AND(
-            pclases.OR(
-                pclases.ProductoVenta.q.camposEspecificosBalaID !=None, 
-                pclases.ProductoVenta.q.camposEspecificosRolloID !=None, 
-                pclases.ProductoVenta.q.camposEspecificosEspecialID !=None), 
-            pclases.ProductoVenta.q.codigo.startswith('843603219')))
+        prods = pclases.ProductoVenta.select(#pclases.AND(
+            #pclases.OR(
+            #    pclases.ProductoVenta.q.camposEspecificosBalaID !=None, 
+            #    pclases.ProductoVenta.q.camposEspecificosRolloID !=None, 
+            #    pclases.ProductoVenta.q.camposEspecificosEspecialID !=None), 
+            pclases.ProductoVenta.q.codigo.startswith('843603219'))#)
         # Incluyo todo tipo de productos porque aunque la fibra esté limitada 
         # al rango 300~400, el resto no, y al crearlos ha podido pillar uno 
         # de esos números.
