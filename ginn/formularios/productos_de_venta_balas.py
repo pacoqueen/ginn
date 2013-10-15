@@ -615,7 +615,7 @@ class ProductosDeVentaBalas(Ventana):
                         "disponibles. Pulse Aceptar para enviar un mensaje\n"
                         "de error por correo al desarrollador." % msg, 
                 padre = self.wids['ventana'])
-            #raise Exception(msg)
+            raise IntegrityError(msg)
         else:
             pclases.Auditoria.nuevo(producto, self.usuario, __file__)
             self._objetoreciencreado = producto
