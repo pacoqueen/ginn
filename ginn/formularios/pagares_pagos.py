@@ -449,7 +449,7 @@ class PagaresPagos(Ventana):
             diasemana = self.objeto.fechaPago.weekday()
         while diasemana >= 5:   # NOTA: La fecha de pago debe caer entre lunes y viernes.
             #self.objeto.fechaPago += mx.DateTime.oneDay
-            self.objeto.fechaPago += datetime.timedelta()
+            self.objeto.fechaPago += datetime.timedelta(1)
             try:
                 diasemana = self.objeto.fechaPago.day_of_week
             except AttributeError:  # No es un mx. Es un datetime.
