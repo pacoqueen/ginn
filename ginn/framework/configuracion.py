@@ -421,6 +421,8 @@ def guess_class(modulo):
                                         and c != "VentanaProgreso"
                                         and c != "CellRendererAutoComplete"
                                         and c != "EanBarCode"
+                                        and c != "DuplicateEntryError"
+                                        and c != "IntegrityError"
                                         and not es_macro(c)]
     return clases[0]
     

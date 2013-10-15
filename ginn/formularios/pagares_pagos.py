@@ -446,6 +446,10 @@ class PagaresPagos(Ventana):
         while diasemana >= 5:   # NOTA: La fecha de pago debe caer entre lunes y viernes.
             #self.objeto.fechaPago += mx.DateTime.oneDay
             self.objeto.fechaPago += datetime.timedelta()
+            try:
+                diasemana = self.objeto.fechaPago.day_of_week
+            except AttributeError:  # No es un mx. Es un datetime.
+                diasemana = self.objeto.fechaPago.weekday()
         # Fuerzo la actualización de la BD y no espero a que SQLObject lo haga por mí:
         pagare.syncUpdate()
         # Vuelvo a activar el notificador

@@ -48,7 +48,7 @@ try:
     from psycopg import ProgrammingError as psycopg_ProgrammingError
 except ImportError:
     from psycopg2 import ProgrammingError as psycopg_ProgrammingError
-
+from sqlobject.dberrors import DuplicateEntryError, IntegrityError
 
 class ProductosDeVentaBalas(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -596,7 +596,8 @@ class ProductosDeVentaBalas(Ventana):
             pclases.LineaDeProduccion.q.nombre.contains('fibra'))[0]
             # Por defecto se va a crear como producto de la línea de fibras. 
             # Al guardar se cambiará a la línea de embolsado si fuera el caso.
-        producto = pclases.ProductoVenta(lineaDeProduccion = linea,
+        try:
+            producto = pclases.ProductoVenta(lineaDeProduccion = linea,
                                     camposEspecificosRollo = None,
                                     camposEspecificosBala = campos, 
                                     codigo = self.generar_codigo_ean(), 
@@ -605,19 +606,30 @@ class ProductosDeVentaBalas(Ventana):
                                     preciopordefecto = 0, 
                                     minimo = 0,
                                     arancel = '')
-        pclases.Auditoria.nuevo(producto, self.usuario, __file__)
-        self._objetoreciencreado = producto
-        utils.dialogo_info('PRODUCTO CREADO', 
+        #except (DuplicateEntryError, IntegrityError), msg:
+        except Exception, msg:
+            utils.dialogo_info(titulo = "ERROR AL CREAR PRODUCTO", 
+                texto = "Se produjo el siguiente error al crear el producto:"
+                        "\n\n%s\n\n"
+                        "Probablemente se deba a que no quedan códigos EAN\n"
+                        "disponibles. Pulse Aceptar para enviar un mensaje\n"
+                        "de error por correo al desarrollador." % msg, 
+                padre = self.wids['ventana'])
+            #raise Exception(msg)
+        else:
+            pclases.Auditoria.nuevo(producto, self.usuario, __file__)
+            self._objetoreciencreado = producto
+            utils.dialogo_info('PRODUCTO CREADO', 
                            'Se ha creado un producto nuevo.\nA continuación '
                            'complete la información del producto y guarde '
                            'los cambios.\n\nNO OLVIDE INTRODUCIR LA '
                            'FORMULACIÓN PARA EL CONSUMO AUTOMÁTICO DE '
                            'MATERIALES EN LA VENTANA CORRESPONDIENTE.', 
                            padre = self.wids['ventana'])
-        producto.notificador.activar(self.aviso_actualizacion)
-        self.objeto = producto
-        self.activar_widgets(True)
-        self.actualizar_ventana()
+            producto.notificador.activar(self.aviso_actualizacion)
+            self.objeto = producto
+            self.activar_widgets(True)
+            self.actualizar_ventana()
 
     def buscar_producto(self, widget):
         """
