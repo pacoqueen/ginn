@@ -438,6 +438,10 @@ class PagaresPagos(Ventana):
             while diasemana >= 5:
                 # self.objeto.fechaEmision += mx.DateTime.oneDay
                 self.objeto.fechaEmision += datetime.timedelta(1)
+                try:
+                    diasemana = self.objeto.fechaEmision.day_of_week
+                except AttributeError:  # No es un mx. Es un datetime.
+                    diasemana = self.objeto.fechaEmision.weekday()
             self.objeto.fechaPago = self.objeto.fechaEmision
         try:
             diasemana = self.objeto.fechaPago.day_of_week
