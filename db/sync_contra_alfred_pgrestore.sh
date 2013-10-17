@@ -1,6 +1,7 @@
 #!/bin/sh
 
-HOST=alfred
+# HOST=alfred
+HOST=bacall
 
 if [ $# -eq 1 ]; then   # TODO: Detectar si es tar.bz2 o el .pgdump
     FPGDUMP=$1
