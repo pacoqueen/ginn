@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 18 octubre 2013 at 14:51:02.
+" Created by session.vim 1.5 on 21 octubre 2013 at 17:10:27.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -41,7 +41,7 @@ badd +77 ginn/framework/pclases.py
 badd +201 ginn/formularios/historico_existencias_compra.py
 badd +39 ginn/formularios/historico_existencias.py
 badd +46 ginn/formularios/consulta_incidencias.py
-badd +392 ginn/formularios/consulta_producido.py
+badd +353 ginn/formularios/consulta_producido.py
 badd +1 ginn/__init__.py
 badd +127 ginn/formularios/clientes.py
 badd +991 ginn/formularios/productos_compra.py
@@ -52,7 +52,7 @@ badd +382 ginn/formularios/productos_de_venta_rollos_geocompuestos.py
 badd +417 ginn/formularios/productos_de_venta_especial.py
 badd +1 ginn/formularios/partes_de_fabricacion_balas.py
 badd +901 ginn/formularios/partes_de_fabricacion_bolsas.py
-badd +3390 ginn/formularios/partes_de_fabricacion_rollos.py
+badd +749 ginn/formularios/partes_de_fabricacion_rollos.py
 badd +550 ginn/formularios/proveedores.py
 badd +547 ~/workspace/CICAN/src/formularios/menu.py
 badd +117 ginn/formularios/launcher.py
@@ -60,7 +60,7 @@ badd +464 ginn/formularios/empleados.py
 badd +38 ginn/formularios/resultados_geotextiles.py
 badd +230 ginn/formularios/menu.py
 badd +142 ginn/formularios/autenticacion.py
-badd +4852 ginn/informes/geninformes.py
+badd +1115 ginn/informes/geninformes.py
 badd +233 ginn/informes/informe_certificado_calidad.py
 badd +1518 informes/geninformes.py
 badd +2733 ginn/formularios/facturas_venta.py
@@ -132,9 +132,13 @@ badd +212 ginn/formularios/mail_sender.py
 badd +1239 ginn/formularios/abonos_venta.py
 badd +131 ginn/formularios/ventana_progreso.py
 badd +1047 ginn/formularios/control_personal.py
+badd +195 ginn/formularios/listado_rollos.py
+badd +66 ginn/formularios/consulta_existenciasRollos.py
+badd +91 ginn/formularios/listado_rollos_defectuosos.py
+badd +0 ginn/formularios/consulta_global.py
 args formularios/auditviewer.py
 set lines=41 columns=106
-edit db/tablas.sql
+edit ginn/formularios/consulta_global.py
 set splitbelow splitright
 wincmd _ | wincmd |
 vsplit
@@ -158,7 +162,10 @@ wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
-9wincmd k
+wincmd _ | wincmd |
+split
+10wincmd k
+wincmd w
 wincmd w
 wincmd w
 wincmd w
@@ -173,7 +180,7 @@ set nosplitright
 wincmd t
 set winheight=1 winwidth=1
 exe 'vert 1resize ' . ((&columns * 25 + 53) / 106)
-exe '2resize ' . ((&lines * 1 + 20) / 41)
+exe '2resize ' . ((&lines * 19 + 20) / 41)
 exe 'vert 2resize ' . ((&columns * 80 + 53) / 106)
 exe '3resize ' . ((&lines * 1 + 20) / 41)
 exe 'vert 3resize ' . ((&columns * 80 + 53) / 106)
@@ -185,14 +192,16 @@ exe '6resize ' . ((&lines * 1 + 20) / 41)
 exe 'vert 6resize ' . ((&columns * 80 + 53) / 106)
 exe '7resize ' . ((&lines * 1 + 20) / 41)
 exe 'vert 7resize ' . ((&columns * 80 + 53) / 106)
-exe '8resize ' . ((&lines * 20 + 20) / 41)
+exe '8resize ' . ((&lines * 1 + 20) / 41)
 exe 'vert 8resize ' . ((&columns * 80 + 53) / 106)
 exe '9resize ' . ((&lines * 1 + 20) / 41)
 exe 'vert 9resize ' . ((&columns * 80 + 53) / 106)
 exe '10resize ' . ((&lines * 1 + 20) / 41)
 exe 'vert 10resize ' . ((&columns * 80 + 53) / 106)
-exe '11resize ' . ((&lines * 2 + 20) / 41)
+exe '11resize ' . ((&lines * 1 + 20) / 41)
 exe 'vert 11resize ' . ((&columns * 80 + 53) / 106)
+exe '12resize ' . ((&lines * 1 + 20) / 41)
+exe 'vert 12resize ' . ((&columns * 80 + 53) / 106)
 argglobal
 enew
 file __Tag_List__
@@ -206,6 +215,35 @@ setlocal fdn=20
 setlocal fen
 wincmd w
 argglobal
+setlocal fdm=indent
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=99
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+82
+silent! normal zo
+248
+silent! normal zo
+363
+silent! normal zo
+369
+silent! normal zo
+437
+silent! normal zo
+759
+silent! normal zo
+let s:l = 3496 - ((10 * winheight(0) + 9) / 19)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+3496
+normal! 026l
+wincmd w
+argglobal
+edit db/tablas.sql
 setlocal fdm=indent
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -436,12 +474,12 @@ silent! normal zo
 silent! normal zo
 3799
 silent! normal zo
-let s:l = 3756 - ((0 * winheight(0) + 0) / 1)
+let s:l = 3759 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-3756
-normal! 0
+3759
+normal! 05l
 wincmd w
 argglobal
 edit ginn/framework/pclases/cliente.py
@@ -505,11 +543,11 @@ silent! normal zo
 silent! normal zo
 530
 silent! normal zo
-let s:l = 504 - ((0 * winheight(0) + 0) / 1)
+let s:l = 498 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-504
+498
 normal! 020l
 wincmd w
 argglobal
@@ -551,6 +589,18 @@ silent! normal zo
 silent! normal zo
 3320
 silent! normal zo
+4072
+silent! normal zo
+4401
+silent! normal zo
+4440
+silent! normal zo
+4440
+silent! normal zo
+4440
+silent! normal zo
+4440
+silent! normal zo
 4733
 silent! normal zo
 4746
@@ -559,18 +609,26 @@ silent! normal zo
 silent! normal zo
 4778
 silent! normal zo
+9035
+silent! normal zo
+9108
+silent! normal zo
+9375
+silent! normal zo
+10954
+silent! normal zo
 15243
 silent! normal zo
 15256
 silent! normal zo
 15266
 silent! normal zo
-let s:l = 4753 - ((0 * winheight(0) + 0) / 1)
+let s:l = 20531 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-4753
-normal! 0101l
+20531
+normal! 076l
 wincmd w
 argglobal
 edit ginn/informes/carta_compromiso.py
@@ -898,12 +956,12 @@ silent! normal zo
 silent! normal zo
 2290
 silent! normal zo
-let s:l = 1607 - ((12 * winheight(0) + 10) / 20)
+let s:l = 1608 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1607
-normal! 048l
+1608
+normal! 016l
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -960,16 +1018,16 @@ silent! normal zo
 silent! normal zo
 108
 silent! normal zo
-let s:l = 60 - ((1 * winheight(0) + 1) / 2)
+let s:l = 60 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 60
 normal! 021l
 wincmd w
-8wincmd w
+2wincmd w
 exe 'vert 1resize ' . ((&columns * 25 + 53) / 106)
-exe '2resize ' . ((&lines * 1 + 20) / 41)
+exe '2resize ' . ((&lines * 19 + 20) / 41)
 exe 'vert 2resize ' . ((&columns * 80 + 53) / 106)
 exe '3resize ' . ((&lines * 1 + 20) / 41)
 exe 'vert 3resize ' . ((&columns * 80 + 53) / 106)
@@ -981,14 +1039,16 @@ exe '6resize ' . ((&lines * 1 + 20) / 41)
 exe 'vert 6resize ' . ((&columns * 80 + 53) / 106)
 exe '7resize ' . ((&lines * 1 + 20) / 41)
 exe 'vert 7resize ' . ((&columns * 80 + 53) / 106)
-exe '8resize ' . ((&lines * 20 + 20) / 41)
+exe '8resize ' . ((&lines * 1 + 20) / 41)
 exe 'vert 8resize ' . ((&columns * 80 + 53) / 106)
 exe '9resize ' . ((&lines * 1 + 20) / 41)
 exe 'vert 9resize ' . ((&columns * 80 + 53) / 106)
 exe '10resize ' . ((&lines * 1 + 20) / 41)
 exe 'vert 10resize ' . ((&columns * 80 + 53) / 106)
-exe '11resize ' . ((&lines * 2 + 20) / 41)
+exe '11resize ' . ((&lines * 1 + 20) / 41)
 exe 'vert 11resize ' . ((&columns * 80 + 53) / 106)
+exe '12resize ' . ((&lines * 1 + 20) / 41)
+exe 'vert 12resize ' . ((&columns * 80 + 53) / 106)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
@@ -1003,6 +1063,6 @@ let &so = s:so_save | let &siso = s:siso_save
 doautoall SessionLoadPost
 unlet SessionLoad
 tabnext 1
-8wincmd w
+2wincmd w
 
 " vim: ft=vim ro nowrap smc=128

@@ -20526,6 +20526,9 @@ class ValorPresupuestoAnual(SQLObject, PRPCTOO):
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 
+# TODO: Esto tengo que diferirlo porque durante la carga de pclases no puedo 
+#       crear objetos. Da error. Sobre todo si la carga es indirecta desde 
+#       el menú y tras una primera ejecución del programa con la BD limpia.
 # Con esto me aseguro de que existen los tipos de proveedor mínimos necesarios.
 TipoDeProveedor.check_defaults()
 TipoDeCliente.check_defaults()
