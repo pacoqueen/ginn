@@ -86,6 +86,11 @@ class ListadoRollosDefectuosos(Ventana):
         rollosdef = pclases.RolloDefectuoso.select()
         por_producto = {}
         for rd in rollosdef:
+            # Ignoro rollos defectuosos fuera del rango.
+            if self.inicio and rd.fechahora < self.inicio:
+                continue
+            if self.fin and rd.fechahora > self.fin:
+                continue
             prod = rd.articulo.productoVenta
             if prod not in por_producto:
                 por_producto[prod] = [rd]
