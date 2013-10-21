@@ -4746,6 +4746,11 @@ class TipoDeProveedor(SQLObject, PRPCTOO):
         """
         Comprueba que existen --y si no, los crea-- los tipos por defecto.
         """
+        # FIXME: La creación dentro del AssertionError no funciona. Al hacerlo 
+        # con una base de datos limpia, peta. Dice que el ID del objeto 
+        # recién insertado no existe. Supongo que es en la línea de Auditoria.
+        # Tal vez necesite un commit explícito antes o algo.
+        # insert into tipo_de_proveedor("descripcion") values('Granza'); insert into tipo_de_proveedor("descripcion") values('Comercializados'); insert into tipo_de_proveedor("descripcion") values('Transporte'); insert into tipo_de_proveedor("descripcion") values('Repuestos'); insert into tipo_de_proveedor("descripcion") values('Suministros');  insert into tipo_de_proveedor("descripcion") values('Materiales'); insert into tipo_de_proveedor("descripcion") values('Resto');
         tipos = ("Granza", "Comercializados", "Transporte", "Repuestos", 
                  "Suministros", "Materiales", "Resto")
         for t in tipos:
@@ -15251,6 +15256,11 @@ class TipoDeCliente(SQLObject, PRPCTOO):
         """
         Comprueba que existen --y si no, los crea-- los tipos por defecto.
         """
+        # FIXME: La creación dentro del AssertionError no funciona. Al hacerlo 
+        # con una base de datos limpia, peta. Dice que el ID del objeto 
+        # recién insertado no existe. Supongo que es en la línea de Auditoria.
+        # Tal vez necesite un commit explícito antes o algo.
+        # INSERT INTO tipo_de_cliente("descripcion") VALUES ('Industrial'), ('General'), ('Fibra'), ('Geocem'), ('Comercializado');
         tipos = ("Industrial", "General", "Fibra", "Geocem", "Comercializado")
         for t in tipos:
             try: 

@@ -35,6 +35,7 @@
 #       el doble o tienen vencimientos a 0; porque son sospechosas de haberse 
 #       creado un cobro accidentalmente al agregar la misma factura a varios 
 #       pagarés o cosas así cuando originalmente solo tenían un vencimiento.
+# TODO: No funciona con el launcher nuevo. Adaptar.
 ###############################################################################
 # Para volcado de resultados ejecutar con:
 # ./checklist_window.py 2>&1 | tee > ../../fixes/salida_check_`date +%Y_%m_%d_%H_%M`.txt
@@ -339,7 +340,10 @@ class ChecklistWindow:
     Pero con hilos. Vivo al límite.
     """
 
-    def __init__(self, tareas, titulo = "PROGRESO"):
+    def __init__(self, tareas, titulo = "PROGRESO", usuario = None):
+        # Recibo el usuario por compatibilidad. En realidad no se usa.
+        # TODO: Aunque ya que lo recibo... ¿y si compruebo que sea admin y si 
+        # no lo es, lo mando a la venta del nabo?
         """
         tareas es un diccionario que contiene al menos el nombre de la tarea y la función a ejecutar.
         Se ejecutan todas en paralelo en nuevos hilos. No estaría mal una estructura auxiliar que definiera 

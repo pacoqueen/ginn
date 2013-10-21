@@ -423,6 +423,10 @@ def guess_class(modulo):
                                         and c != "EanBarCode"
                                         and c != "DuplicateEntryError"
                                         and c != "IntegrityError"
+                                        and c != "Test"
+                                        and c != "ThreadSample"
+                                        and c != "TareaSimple"
+                                        and c != "Tarea"
                                         and not es_macro(c)]
     return clases[0]
     
