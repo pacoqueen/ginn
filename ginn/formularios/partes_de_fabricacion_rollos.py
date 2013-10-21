@@ -737,13 +737,29 @@ class PartesDeFabricacionRollos(Ventana):
                 dtdelta = mx.DateTime.DateTimeDelta(0, int(newtext), 0)
                 newtext = utils.str_hora_corta(dtdelta)
             if dtdelta > self.objeto.get_duracion():
-                utils.dialogo_info(titulo = "TIEMPO INCORRECTO", texto = "El tiempo trabajado no puede superar la\nduración del parte de producción.", padre = self.wids['ventana'])
+                utils.dialogo_info(titulo = "TIEMPO INCORRECTO", 
+                        texto = "El tiempo trabajado no puede superar la\n"
+                                "duración del parte de producción.", 
+                        padre = self.wids['ventana'])
                 return
-            ht.horas = newtext 
-            ht.sync(); ht.syncUpdate()
-            model[path][3] = ht.horas.strftime('%H:%M')
+            try:
+                ht.horas = newtext 
+            except Exception, msg:
+                # Seguramente un sqlobject.dberros.DataError por minutos > 60.
+                utils.dialogo_info(titulo = "ERROR", 
+                        texto = "No se pudo modificar el tiempo trabajado.\n"
+                                "Compruebe que el siguiente texto introducido"
+                                " es correcto:\n\n\t%s" % newtext, 
+                        padre = self.wids['ventana'])
+                return
+            else:
+                ht.sync(); ht.syncUpdate()
+                model[path][3] = ht.horas.strftime('%H:%M')
         except (ValueError, TypeError):
-            utils.dialogo_info(titulo = "ERROR", texto = 'El texto "%s" no representa el formato horario.' % newtext, padre = self.wids['ventana'])
+            utils.dialogo_info(titulo = "ERROR", 
+                    texto = 'El texto "%s" no representa el formato horario.' 
+                                                                    % newtext,
+                    padre = self.wids['ventana'])
 
     def cambiar_peso_bala(self, cell, path, newtext):
         """ DEPRECATED """
