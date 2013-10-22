@@ -189,10 +189,10 @@ class RollosC(Ventana):
                                              valor_por_defecto = "0")
                 try:
                     peso = utils._float(peso)
-                except ValueError:
+                except (ValueError, TypeError):
                     utils.dialogo_info(titulo = "ERROR", 
-                                       texto = "El valor tecleado %s no es correcto." % (peso), 
-                                       padre = self.wids['ventana'])
+                        texto = "El valor tecleado %s no es correcto." % peso, 
+                        padre = self.wids['ventana'])
                     peso = 0
             nuevo_rollo = self.crear_objeto_rollo(producto, peso)
             if nuevo_rollo == None:
