@@ -36,6 +36,8 @@
 ## 9 de enero de 2006 -> Separo productos de venta del resto.
 ## 23 de enero de 2006 -> Portado a clase.
 ###################################################################
+# TODO: ¿Qué tal un autocompletado en uso y dni como en los geotextiles?
+###################################################################
 
 from ventana import Ventana
 from formularios import utils
