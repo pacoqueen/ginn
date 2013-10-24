@@ -809,7 +809,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                                                gtk.ICON_SIZE_DND)
         self.solicitudes_validacion = {}
         self.reset_cache_credito()
-        gobject.timeout_add(5 * 60 * 1000, self.reset_cache_credito)
+        gobject.timeout_add(3 * 60 * 1000, self.reset_cache_credito)
         # Inicialmente no se muestra NADA. Sólo se le deja al
         # usuario la opción de buscar o crear nuevo.
         self.activar_widgets(False)
@@ -1519,7 +1519,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.hndlr_presup = self.wids['tv_presupuestos'].connect(
                             "cursor-changed", self.cambiar_presupuesto_activo)
         # DONE: Habilitar si consigo acelerar la búsqueda.
-        self.hndlr_listado = gobject.timeout_add(3 * 60 * 1000, 
+        self.hndlr_listado = gobject.timeout_add(10 * 60 * 1000, 
                 self.rellenar_lista_presupuestos)
         if pclases.DEBUG:
             print "rellenar_lista_presupuestos: end (", 

@@ -927,8 +927,13 @@ class PartesDeFabricacionRollos(Ventana):
         """
         self.wids['sp_merma'].set_value(self.objeto.merma * 100)
         # Added 4/6/2006. Consumo de plástico alternativo:
-        self.wids['e_plastico'].set_text(
-            self.plastico and self.plastico.descripcion or "SIN ENVOLVER")
+        try:
+            self.wids['e_plastico'].set_text(
+                self.plastico and self.plastico.descripcion or "SIN ENVOLVER")
+        except KeyError:
+            pass    # Por lo que sea, este Entry ya no está disponible. 
+                    # Intento seguir actualizando. Si no puedo, ya atenderé 
+                    # la excepción más adelante o en la invocadora.
         # DONE: BUG: Creo que aquí. Al darle a NUEVO no se borra la información del lote y artículo del parte anterior.
         #  (Sospecho que lo del artículo es por no poner self.articulo = None y el lote ¿por no borrar el e_lote?)
         # It's not a bug, it's a feature!
