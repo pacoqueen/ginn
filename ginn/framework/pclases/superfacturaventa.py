@@ -624,9 +624,20 @@ class SuperFacturaVenta:
                             % (sqlfunc, self.id, fecha.strftime("%Y-%m-%d")) 
                         )[0]:
                     return estado
-        raise ValueError, "La factura «%s» no tiene estado. La función sin optimizar dice que es «%s»." % (self.get_puid(), 
-                           self.UNOPTIMIZED_get_str_estado(fecha = fecha))
-        # return UNOPTIMIZED_get_estado(fecha = fecha)
+        # FIXME: Hasta ahora prefería que se me enviase un correo de error 
+        #        para los casos extremos (factura con un vencimiento 
+        #        compensado y otro documentado pendiente de vencer, como en 
+        #        el caso de la factura X130787 --FacturaVenta:10463--, por 
+        #        ejemplo). Pero como se va a acabar llamando al UNOPTIMIZED...
+        #        para lanzar la excepción y pierdo la optimización, para eso 
+        #        devuelvo el resultado y vuelco a log o me mando el correo 
+        #        igualmente para enterarme y estudiar el caso concreto. 
+        #        Arf. Arf. Arf. **Y eso es justamente lo que me queda por 
+        #        hacer aquí: enviarme una notificación de alguna manera.  
+        estado = self.UNOPTIMIZED_get_estado(fecha = fecha)
+        #str_estado = self.UNOPTIMIZED_get_str_estado(fecha = fecha)
+        # raise ValueError, "La factura «%s» no tiene estado. La función sin optimizar dice que es «%s»." % (self.get_puid(), str_estado)
+        return estado
 
     def calcular_importe_no_documentado(self, fecha = mx.DateTime.today()):
         """
