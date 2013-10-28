@@ -63,8 +63,8 @@ def buscar_partes(fini, ffin):
     return pdps_gtx
         
 def main():
-    fini = mx.DateTime.DateFrom(2013, 9, 2)
-    ffin = mx.DateTime.DateFrom(2013, 10, 28)
+    fini = mx.DateTime.DateFrom(2013, 9, 1)
+    ffin = mx.DateTime.DateFrom(2013, 10, 29)
     pdps = buscar_partes(fini, ffin)
     sys.stderr.write("Encontrados %d partes de producción. Volcando..." % 
             len(pdps))
