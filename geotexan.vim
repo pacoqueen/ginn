@@ -1,9 +1,9 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 24 octubre 2013 at 21:32:36.
+" Created by session.vim 1.5 on 25 octubre 2013 at 14:48:33.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
-silent! set guifont=Inconsolata\ 13
+silent! set guifont=Inconsolata\ 11
 if exists('g:syntax_on') != 1 | syntax on | endif
 if exists('g:did_load_filetypes') != 1 | filetype on | endif
 if exists('g:did_load_ftplugin') != 1 | filetype plugin on | endif
@@ -52,7 +52,7 @@ badd +382 ginn/formularios/productos_de_venta_rollos_geocompuestos.py
 badd +417 ginn/formularios/productos_de_venta_especial.py
 badd +1 ginn/formularios/partes_de_fabricacion_balas.py
 badd +901 ginn/formularios/partes_de_fabricacion_bolsas.py
-badd +937 ginn/formularios/partes_de_fabricacion_rollos.py
+badd +749 ginn/formularios/partes_de_fabricacion_rollos.py
 badd +550 ginn/formularios/proveedores.py
 badd +547 ~/workspace/CICAN/src/formularios/menu.py
 badd +117 ginn/formularios/launcher.py
@@ -63,11 +63,11 @@ badd +142 ginn/formularios/autenticacion.py
 badd +1115 ginn/informes/geninformes.py
 badd +233 ginn/informes/informe_certificado_calidad.py
 badd +1518 informes/geninformes.py
-badd +161 ginn/formularios/facturas_venta.py
+badd +2733 ginn/formularios/facturas_venta.py
 badd +419 ginn/framework/configuracion.py
 badd +4 bin/ginn.sh
 badd +10 ginn/main.py
-badd +465 ginn/formularios/ventana.py
+badd +292 ginn/formularios/ventana.py
 badd +1680 ginn/formularios/pedidos_de_venta.py
 badd +3766 db/tablas.sql
 badd +700 ginn/formularios/albaranes_de_salida.py
@@ -93,9 +93,9 @@ badd +1064 ginn/formularios/trazabilidad_articulos.py
 badd +363 ginn/formularios/consulta_pagos.py
 badd +13 ginn/formularios/consulta_vencimientos_pago.py
 badd +500 ginn/formularios/trazabilidad.py
-badd +3296 ginn/framework/pclases/__init__.py
+badd +1 ginn/framework/pclases/__init__.py
 badd +828 ginn/framework/pclases/superfacturaventa.py
-badd +242 ginn/framework/pclases/facturaventa.py
+badd +61 ginn/framework/pclases/facturaventa.py
 badd +689 ginn/formularios/consulta_mensual_nominas.py
 badd +269 ginn/informes/treeview2pdf.py
 badd +129 ginn/formularios/balas_cable.py
@@ -137,15 +137,10 @@ badd +66 ginn/formularios/consulta_existenciasRollos.py
 badd +91 ginn/formularios/listado_rollos_defectuosos.py
 badd +3498 ginn/formularios/consulta_global.py
 badd +195 ginn/formularios/rollos_c.py
-badd +481 ginn/formularios/crm_detalles_factura.py
 args formularios/auditviewer.py
-set lines=57 columns=105
+set lines=41 columns=80
 edit db/tablas.sql
 set splitbelow splitright
-wincmd _ | wincmd |
-vsplit
-1wincmd h
-wincmd w
 wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
@@ -175,37 +170,15 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe 'vert 1resize ' . ((&columns * 24 + 52) / 105)
-exe '2resize ' . ((&lines * 20 + 28) / 57)
-exe 'vert 2resize ' . ((&columns * 80 + 52) / 105)
-exe '3resize ' . ((&lines * 20 + 28) / 57)
-exe 'vert 3resize ' . ((&columns * 80 + 52) / 105)
-exe '4resize ' . ((&lines * 1 + 28) / 57)
-exe 'vert 4resize ' . ((&columns * 80 + 52) / 105)
-exe '5resize ' . ((&lines * 1 + 28) / 57)
-exe 'vert 5resize ' . ((&columns * 80 + 52) / 105)
-exe '6resize ' . ((&lines * 1 + 28) / 57)
-exe 'vert 6resize ' . ((&columns * 80 + 52) / 105)
-exe '7resize ' . ((&lines * 1 + 28) / 57)
-exe 'vert 7resize ' . ((&columns * 80 + 52) / 105)
-exe '8resize ' . ((&lines * 1 + 28) / 57)
-exe 'vert 8resize ' . ((&columns * 80 + 52) / 105)
-exe '9resize ' . ((&lines * 1 + 28) / 57)
-exe 'vert 9resize ' . ((&columns * 80 + 52) / 105)
-exe '10resize ' . ((&lines * 1 + 28) / 57)
-exe 'vert 10resize ' . ((&columns * 80 + 52) / 105)
-argglobal
-enew
-file __Tag_List__
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=9999
-setlocal fml=0
-setlocal fdn=20
-setlocal fen
-wincmd w
+exe '1resize ' . ((&lines * 1 + 20) / 41)
+exe '2resize ' . ((&lines * 23 + 20) / 41)
+exe '3resize ' . ((&lines * 1 + 20) / 41)
+exe '4resize ' . ((&lines * 1 + 20) / 41)
+exe '5resize ' . ((&lines * 1 + 20) / 41)
+exe '6resize ' . ((&lines * 1 + 20) / 41)
+exe '7resize ' . ((&lines * 1 + 20) / 41)
+exe '8resize ' . ((&lines * 1 + 20) / 41)
+exe '9resize ' . ((&lines * 1 + 20) / 41)
 argglobal
 setlocal fdm=indent
 setlocal fde=0
@@ -215,12 +188,16 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 3671 - ((9 * winheight(0) + 10) / 20)
+3687
+normal! zo
+3702
+normal! zo
+let s:l = 3715 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-3671
-normal! 019|
+3715
+normal! 05|
 wincmd w
 argglobal
 edit ginn/framework/pclases/superfacturaventa.py
@@ -234,16 +211,30 @@ setlocal fdn=20
 setlocal fen
 38
 normal! zo
+451
+normal! zo
+484
+normal! zo
+489
+normal! zo
+503
+normal! zo
+510
+normal! zo
 586
 normal! zo
-632
+617
 normal! zo
-let s:l = 610 - ((5 * winheight(0) + 10) / 20)
+623
+normal! zo
+624
+normal! zo
+let s:l = 479 - ((0 * winheight(0) + 11) / 23)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-610
-normal! 045|
+479
+normal! 08|
 wincmd w
 argglobal
 edit ginn/framework/pclases/__init__.py
@@ -278,8 +269,6 @@ normal! zo
 2253
 normal! zo
 3169
-normal! zo
-3299
 normal! zo
 3320
 normal! zo
@@ -317,12 +306,12 @@ normal! zo
 normal! zo
 15266
 normal! zo
-let s:l = 3298 - ((0 * winheight(0) + 0) / 1)
+let s:l = 3292 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-3298
-normal! 09|
+3292
+normal! 027|
 wincmd w
 argglobal
 edit ginn/informes/carta_compromiso.py
@@ -342,7 +331,7 @@ normal! zt
 normal! 0
 wincmd w
 argglobal
-edit ginn/formularios/facturas_venta.py
+edit ginn/formularios/ventana.py
 setlocal fdm=indent
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -351,20 +340,12 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-104
-normal! zo
-147
-normal! zo
-1659
-normal! zo
-1701
-normal! zo
-let s:l = 511 - ((0 * winheight(0) + 0) / 1)
+let s:l = 818 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-511
-normal! 09|
+818
+normal! 013|
 wincmd w
 argglobal
 edit ginn/formularios/presupuestos.py
@@ -676,12 +657,12 @@ normal! zo
 normal! zo
 2290
 normal! zo
-let s:l = 1522 - ((0 * winheight(0) + 0) / 1)
+let s:l = 730 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1522
-normal! 047|
+730
+normal! 051|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -738,33 +719,23 @@ normal! zo
 normal! zo
 108
 normal! zo
-let s:l = 64 - ((0 * winheight(0) + 0) / 1)
+let s:l = 60 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-64
-normal! 025|
+60
+normal! 022|
 wincmd w
 2wincmd w
-exe 'vert 1resize ' . ((&columns * 24 + 52) / 105)
-exe '2resize ' . ((&lines * 20 + 28) / 57)
-exe 'vert 2resize ' . ((&columns * 80 + 52) / 105)
-exe '3resize ' . ((&lines * 20 + 28) / 57)
-exe 'vert 3resize ' . ((&columns * 80 + 52) / 105)
-exe '4resize ' . ((&lines * 1 + 28) / 57)
-exe 'vert 4resize ' . ((&columns * 80 + 52) / 105)
-exe '5resize ' . ((&lines * 1 + 28) / 57)
-exe 'vert 5resize ' . ((&columns * 80 + 52) / 105)
-exe '6resize ' . ((&lines * 1 + 28) / 57)
-exe 'vert 6resize ' . ((&columns * 80 + 52) / 105)
-exe '7resize ' . ((&lines * 1 + 28) / 57)
-exe 'vert 7resize ' . ((&columns * 80 + 52) / 105)
-exe '8resize ' . ((&lines * 1 + 28) / 57)
-exe 'vert 8resize ' . ((&columns * 80 + 52) / 105)
-exe '9resize ' . ((&lines * 1 + 28) / 57)
-exe 'vert 9resize ' . ((&columns * 80 + 52) / 105)
-exe '10resize ' . ((&lines * 1 + 28) / 57)
-exe 'vert 10resize ' . ((&columns * 80 + 52) / 105)
+exe '1resize ' . ((&lines * 1 + 20) / 41)
+exe '2resize ' . ((&lines * 23 + 20) / 41)
+exe '3resize ' . ((&lines * 1 + 20) / 41)
+exe '4resize ' . ((&lines * 1 + 20) / 41)
+exe '5resize ' . ((&lines * 1 + 20) / 41)
+exe '6resize ' . ((&lines * 1 + 20) / 41)
+exe '7resize ' . ((&lines * 1 + 20) / 41)
+exe '8resize ' . ((&lines * 1 + 20) / 41)
+exe '9resize ' . ((&lines * 1 + 20) / 41)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
