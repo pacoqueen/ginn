@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 25 octubre 2013 at 14:48:33.
+" Created by session.vim 1.5 on 28 octubre 2013 at 17:17:16.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -69,7 +69,7 @@ badd +4 bin/ginn.sh
 badd +10 ginn/main.py
 badd +292 ginn/formularios/ventana.py
 badd +1680 ginn/formularios/pedidos_de_venta.py
-badd +3766 db/tablas.sql
+badd +1 db/tablas.sql
 badd +700 ginn/formularios/albaranes_de_salida.py
 badd +170 ginn/formularios/presupuesto.py
 badd +2236 ginn/formularios/presupuestos.py
@@ -94,7 +94,7 @@ badd +363 ginn/formularios/consulta_pagos.py
 badd +13 ginn/formularios/consulta_vencimientos_pago.py
 badd +500 ginn/formularios/trazabilidad.py
 badd +1 ginn/framework/pclases/__init__.py
-badd +828 ginn/framework/pclases/superfacturaventa.py
+badd +494 ginn/framework/pclases/superfacturaventa.py
 badd +61 ginn/framework/pclases/facturaventa.py
 badd +689 ginn/formularios/consulta_mensual_nominas.py
 badd +269 ginn/informes/treeview2pdf.py
@@ -129,7 +129,7 @@ badd +1 ginn/framework/__init__.py
 badd +1 ginn/formularios/vencimientos_pendientes_por_cliente.glade
 badd +416 ginn/formularios/consulta_productividad.py
 badd +212 ginn/formularios/mail_sender.py
-badd +1239 ginn/formularios/abonos_venta.py
+badd +1143 ginn/formularios/abonos_venta.py
 badd +131 ginn/formularios/ventana_progreso.py
 badd +1047 ginn/formularios/control_personal.py
 badd +195 ginn/formularios/listado_rollos.py
@@ -138,7 +138,7 @@ badd +91 ginn/formularios/listado_rollos_defectuosos.py
 badd +3498 ginn/formularios/consulta_global.py
 badd +195 ginn/formularios/rollos_c.py
 args formularios/auditviewer.py
-set lines=41 columns=80
+set lines=42 columns=80
 edit db/tablas.sql
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -155,10 +155,7 @@ wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
-wincmd _ | wincmd |
-split
-8wincmd k
-wincmd w
+7wincmd k
 wincmd w
 wincmd w
 wincmd w
@@ -170,15 +167,14 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 1 + 20) / 41)
-exe '2resize ' . ((&lines * 23 + 20) / 41)
-exe '3resize ' . ((&lines * 1 + 20) / 41)
-exe '4resize ' . ((&lines * 1 + 20) / 41)
-exe '5resize ' . ((&lines * 1 + 20) / 41)
-exe '6resize ' . ((&lines * 1 + 20) / 41)
-exe '7resize ' . ((&lines * 1 + 20) / 41)
-exe '8resize ' . ((&lines * 1 + 20) / 41)
-exe '9resize ' . ((&lines * 1 + 20) / 41)
+exe '1resize ' . ((&lines * 25 + 21) / 42)
+exe '2resize ' . ((&lines * 1 + 21) / 42)
+exe '3resize ' . ((&lines * 1 + 21) / 42)
+exe '4resize ' . ((&lines * 1 + 21) / 42)
+exe '5resize ' . ((&lines * 1 + 21) / 42)
+exe '6resize ' . ((&lines * 1 + 21) / 42)
+exe '7resize ' . ((&lines * 1 + 21) / 42)
+exe '8resize ' . ((&lines * 2 + 21) / 42)
 argglobal
 setlocal fdm=indent
 setlocal fde=0
@@ -190,51 +186,30 @@ setlocal fdn=20
 setlocal fen
 3687
 normal! zo
+3687
+normal! zo
+3687
+normal! zo
+3687
+normal! zo
+3687
+normal! zo
+3687
+normal! zo
+3687
+normal! zo
+3687
+normal! zo
+3687
+normal! zo
 3702
 normal! zo
-let s:l = 3715 - ((0 * winheight(0) + 0) / 1)
+let s:l = 703 - ((16 * winheight(0) + 12) / 25)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-3715
-normal! 05|
-wincmd w
-argglobal
-edit ginn/framework/pclases/superfacturaventa.py
-setlocal fdm=indent
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=99
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-38
-normal! zo
-451
-normal! zo
-484
-normal! zo
-489
-normal! zo
-503
-normal! zo
-510
-normal! zo
-586
-normal! zo
-617
-normal! zo
-623
-normal! zo
-624
-normal! zo
-let s:l = 479 - ((0 * winheight(0) + 11) / 23)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-479
-normal! 08|
+703
+normal! 031|
 wincmd w
 argglobal
 edit ginn/framework/pclases/__init__.py
@@ -719,23 +694,21 @@ normal! zo
 normal! zo
 108
 normal! zo
-let s:l = 60 - ((0 * winheight(0) + 0) / 1)
+let s:l = 60 - ((0 * winheight(0) + 1) / 2)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 60
 normal! 022|
 wincmd w
-2wincmd w
-exe '1resize ' . ((&lines * 1 + 20) / 41)
-exe '2resize ' . ((&lines * 23 + 20) / 41)
-exe '3resize ' . ((&lines * 1 + 20) / 41)
-exe '4resize ' . ((&lines * 1 + 20) / 41)
-exe '5resize ' . ((&lines * 1 + 20) / 41)
-exe '6resize ' . ((&lines * 1 + 20) / 41)
-exe '7resize ' . ((&lines * 1 + 20) / 41)
-exe '8resize ' . ((&lines * 1 + 20) / 41)
-exe '9resize ' . ((&lines * 1 + 20) / 41)
+exe '1resize ' . ((&lines * 25 + 21) / 42)
+exe '2resize ' . ((&lines * 1 + 21) / 42)
+exe '3resize ' . ((&lines * 1 + 21) / 42)
+exe '4resize ' . ((&lines * 1 + 21) / 42)
+exe '5resize ' . ((&lines * 1 + 21) / 42)
+exe '6resize ' . ((&lines * 1 + 21) / 42)
+exe '7resize ' . ((&lines * 1 + 21) / 42)
+exe '8resize ' . ((&lines * 2 + 21) / 42)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
@@ -750,6 +723,6 @@ let &so = s:so_save | let &siso = s:siso_save
 doautoall SessionLoadPost
 unlet SessionLoad
 tabnext 1
-2wincmd w
+1wincmd w
 
 " vim: ft=vim ro nowrap smc=128

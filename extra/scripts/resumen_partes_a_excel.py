@@ -66,7 +66,7 @@ def main():
     fini = mx.DateTime.DateFrom(2013, 9, 1)
     ffin = mx.DateTime.DateFrom(2013, 10, 29)
     pdps = buscar_partes(fini, ffin)
-    sys.stderr.write("Encontrados %d partes de producción. Volcando..." % 
+    sys.stderr.write("Encontrados %d partes de producción. Volcando...\n" % 
             len(pdps))
     csvfile = csv.writer(sys.stdout)
     csvfile.writerow(("Descripción", 
