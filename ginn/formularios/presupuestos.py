@@ -1368,6 +1368,16 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         if pclases.DEBUG:
             print "  >>> ::::::::::::::::: rellenar_widgets ::::::::::::::::::"
+        # Autobloqueo antes de nada.
+        if (self.objeto and self.objeto.get_pedidos() 
+                and not self.objeto.bloqueado):
+            self.wids['ch_bloqueado'].disconnect(self.hndlr_bloqueado)
+            self.objeto.make_swap("bloqueado")
+            self.objeto.bloqueado = True
+            self.objeto.syncUpdate()
+            self.wids['ch_bloqueado'].set_active(self.objeto.bloqueado)
+            self.hndlr_bloqueado = self.wids['ch_bloqueado'].connect('clicked', 
+                    self.bloquear)
         # Botones atrás/adelante. ¿Hay anterior y siguiente?
         presupuestos_anteriores = self.buscar_presupuestos_accesibles(
                     mas_criterios_de_busqueda = 
