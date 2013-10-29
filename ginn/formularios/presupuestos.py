@@ -53,6 +53,7 @@ from formularios import postomatic
 from formularios.custom_widgets import CellRendererAutoComplete
 import datetime
 import time
+from formularios.utils import enviar_correoe
 
 NIVEL_VALIDACION = 1
 
@@ -266,7 +267,6 @@ class Presupuestos(Ventana, VentanaGenerica):
                 smtpuser = self.usuario.smtpuser
                 smtppass = self.usuario.smtppassword
                 rte = self.usuario.email
-                from formularios.utils import enviar_correoe
                 # TODO: OJO: HARDCODED
                 if self.usuario and self.usuario.id == 1:
                     dests = ["informatica@geotexan.com"]
@@ -306,7 +306,6 @@ class Presupuestos(Ventana, VentanaGenerica):
                     smtpuser = self.usuario.smtpuser
                     smtppass = self.usuario.smtppassword
                     rte = self.usuario.email
-                    from formularios.utils import enviar_correoe
                     # TODO: OJO: HARDCODED
                     if self.usuario and self.usuario.id == 1:
                         dests = ["informatica@geotexan.com"]
@@ -494,6 +493,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                             "Presupuesto %d validado por %s." 
                                 % (self.objeto.id, 
                                    self.objeto.usuario.usuario))
+                        self.enviar_correo_notificacion_validado()
                 else:   # Estoy invalidando
                     self.objeto.validado = False
                     self.objeto.swap['usuarioID'] = None
@@ -2114,6 +2114,39 @@ class Presupuestos(Ventana, VentanaGenerica):
         return (self.objeto 
                 and not self.objeto.validado
                 and self.objeto.id not in self.solicitudes_validacion)
+
+    def enviar_correo_notificacion_validado(self):
+        """
+        Envía un correo de notificación de validación de la oferta al 
+        comercial implicado. Pero solo si el comercial y el usuario que ha 
+        validado no son el mismo.
+        """
+        if self.usuario and self.objeto:
+            comeciales = [c for c in self.usuario.get_comerciales() 
+                          if c != self.objeto.comercial]
+            servidor = self.usuario.smtpserver
+            smtpuser = self.usuario.smtpuser
+            smtppass = self.usuario.smtppassword
+            rte = self.usuario.email
+            # TODO: OJO: HARDCODED
+            if self.usuario and self.usuario.id == 1:
+                dests = ["informatica@geotexan.com"]
+            else:
+                dests = [comercial.correoe for comercial in comerciales]
+            # Correo de riesgo de cliente
+            texto = "%s ha validado la oferta %d "\
+                    "para el cliente %s de fecha %s." % (
+                        self.objeto.usuario.nombre, 
+                        self.objeto.id, 
+                        self.objeto.nombrecliente, 
+                        utils.str_fecha(self.objeto.fecha))
+            enviar_correoe(rte, 
+                           dests,
+                           "Oferta %d validada." & self.objeto.id, 
+                           texto, 
+                           servidor = servidor, 
+                           usuario = smtpuser, 
+                           password = smtppass)
     
     def enviar_correo_solicitud_validacion(self):
         dests = self.select_correo_validador()
@@ -2124,7 +2157,6 @@ class Presupuestos(Ventana, VentanaGenerica):
         smtpuser = self.usuario.smtpuser
         smtppass = self.usuario.smtppassword
         rte = self.usuario.email
-        from formularios.utils import enviar_correoe
         # TODO: Habría que comprobar que la oferta está completa. Porque 
         # la primera vez que guardan casi seguro que no se valida auto.
         # dests = ["informatica@geotexan.com"]
