@@ -83,7 +83,9 @@ class Presupuestos(Ventana, VentanaGenerica):
                            "observaciones": "txt_observaciones", 
                            "estudio": "rb_estudio", 
                            "personaContacto": "e_persona_contacto", 
-                           'cerrado': "ch_cerrado"
+                           'cerrado': "ch_cerrado", 
+                           "rechazado": "ch_denegado", 
+                           "motivo": "e_motivo"
                           }
         Ventana.__init__(self, 'presupuestos.glade', objeto, 
                          usuario = self.usuario)
@@ -116,6 +118,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                        "b_atras/clicked": self.atras, 
                        "b_adelante/clicked": self.adelante, 
                        'ev_iconostado/button-release-event': self.mostrar_ttip,
+                       "ch_denegado/toggled": self.actualizar_editable_motivo, 
                       }  
         self.add_connections(connections)
         self.inicializar_ventana()
@@ -129,6 +132,11 @@ class Presupuestos(Ventana, VentanaGenerica):
 
     def actualizar_manualmente_lista_presupuestos(self, boton_o_tv):
         self.rellenar_lista_presupuestos()
+
+    def actualizar_editable_motivo(self, ch):
+        self.wids['e_motivo'].set_sensitive(ch.get_active())
+        self.wids['b_pedido'].set_sensitive(
+                self.wids['b_pedido'].get_sensitive() and not ch.get_active())
 
     def mostrar_ttip(self, widget, event):
         texto_tooltip = self.wids['iconostado'].get_tooltip_text()
@@ -1309,6 +1317,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.wids['b_carta'].set_tooltip_text(txt_puede_imprimir)
         self.wids['b_enviar'].set_tooltip_text(txt_puede_imprimir)
         self.wids['ch_adjudicada'].set_tooltip_text(txt_puede_adjudicarse)
+        self.actualizar_editable_motivo(self.wids['ch_denegado'])
 
     def refinar_resultados_busqueda(self, resultados):
         """
