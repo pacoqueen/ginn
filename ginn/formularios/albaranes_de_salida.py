@@ -2935,6 +2935,10 @@ class AlbaranesDeSalida(Ventana):
                                    self.usuario, 
                                    self.logger, 
                                    self.wids['ventana'])
+                # Finalmente, envío un correo al comercial. Es la mejor parte 
+                # donde hacerlo para evitar que le llegue más de un correo por 
+                # el mismo albarán.
+                self.enviar_correo_notificacion_facturado(nomarchivo_factura)
         if self.objeto.cliente:
             correoe_cliente = self.objeto.cliente.email
             if self.objeto.cliente.cliente != None: 
@@ -2986,7 +2990,46 @@ class AlbaranesDeSalida(Ventana):
         #                     texto = txt, 
         #                     padre = self.wids['ventana']):
         #        self.add_comision(None)
-        
+
+    def enviar_correo_notificacion_facturado(self, nomfich_pdf_factura):
+        """
+        Envía un correo de notificación de la factura al comercial implicado. 
+        """
+        if self.usuario and self.objeto:
+            comeciales = [c for c in self.usuario.get_comerciales() 
+                          if c != self.objeto.comercial]
+            servidor = self.usuario.smtpserver
+            smtpuser = self.usuario.smtpuser
+            smtppass = self.usuario.smtppassword
+            rte = self.usuario.email
+            # TODO: OJO: HARDCODED
+            if self.usuario and self.usuario.id == 1:
+                dests = ["informatica@geotexan.com"]
+            else:
+                dests = [comercial.correoe for comercial in comerciales]
+            # Correo de riesgo de cliente
+            texto = "%s ha generado la factura %s de la oferta %s "\
+                    "para el cliente %s desde el albarán %s." % (
+                        self.usuario and self.usuario.nombre or "Se", 
+                        self.objeto.numalbaran, 
+                        ", ".join([str(p.id) 
+                            for p in self.objeto.get_presupuestos()]), 
+                        self.objeto.cliente and self.objeto.nombre or "", 
+                        self.objeto.numalbaran)
+            utils.enviar_correoe(rte, 
+                                 dests,
+                                 "Factura %s de %s generada." % (
+                                    ", ".join([f.numfactura 
+                                        for f in self.objeto.get_facturas()]), 
+                                    self.objeto.cliente 
+                                        and self.objeto.cliente.nombre 
+                                        or "cliente"), 
+                                texto, 
+                                adjuntos = [nomfich_pdf_factura], 
+                                servidor = servidor, 
+                                usuario = smtpuser, 
+                                password = smtppass)
+    
     def imprimir_cmr(self):
         lugar_entrega = utils.dialogo_entrada(titulo = "CMR", texto = "Lugar de entrega:", padre = self.wids['ventana'], textview = True, 
                                               valor_por_defecto = self.objeto.nombre + "\n" + self.objeto.direccion + "\n" + 

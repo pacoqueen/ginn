@@ -210,15 +210,22 @@ def build_datos_cliente(datos_cliente = []):
     datos_c.append(Spacer(1, 1*cm))
     return datos_c
 
-def build_entradilla(fecha, numpresupuesto):
+def build_entradilla(fecha, numpresupuesto, para_estudio):
     """
     Construye la frase de entradilla. Básicamente la palabra "Presupuesto" 
     y la fecha del mismo.
     """
-    return Paragraph("<b><u>Presupuesto%s%s.</u> %s</b>" % (
-                        numpresupuesto != None and " " or "", 
+    if para_estudio:
+        texto_estudio = " para estudio de obra" 
+    else:
+        texto_estudio = "" 
+    return Paragraph("<b><u>Presupuesto%s%s%s.</u> %s</b>" % (
+                        texto_estudio, 
+                        numpresupuesto != None and " n.º " or "", 
                         numpresupuesto != None and numpresupuesto or "", 
-                        fecha), estilos["Normal"])
+                        #fecha), estilos["Normal"])
+                        fecha), 
+                     estilos["Heading2"])
 
 def build_texto(texto):
     """
@@ -302,12 +309,16 @@ def build_condicionado(condicionado):
     return Paragraph(texto_condicionado, a_derecha)
 
 def build_texto_riesgo(texto_riesgo):
-    a_derecha = ParagraphStyle("A derecha", 
-                                parent = estilos["Normal"])
-    a_derecha.alignment = enums.TA_RIGHT
-    a_derecha.fontName = "Courier"
-    a_derecha.fontSize = 8
-    return Paragraph(texto_riesgo, a_derecha)
+    # a_derecha = ParagraphStyle("A derecha", 
+    #                             parent = estilos["Normal"])
+    # a_derecha.alignment = enums.TA_RIGHT
+    # a_derecha.fontName = "Courier"
+    # a_derecha.fontSize = 8
+    estilo_texto = ParagraphStyle("Texto", 
+                                  parent = estilos["Normal"])
+    estilo_texto.alignment = enums.TA_JUSTIFY
+    estilo_texto.firstLineIndent = 24
+    return Paragraph(texto_riesgo, estilo_texto) # , a_derecha)     # CWT
 
 def go(titulo, 
        ruta_archivo, 
@@ -326,7 +337,8 @@ def go(titulo,
        incluir_condicionado_general = True, 
        forma_de_pago = None, 
        dir_fiscal = None, 
-       firma_comercial = None):
+       firma_comercial = None, 
+       para_estudio = False):
     """
     Recibe el título del documento y la ruta completa del archivo.
     Si validez != None escribe una frase con la validez del presupuesto.
@@ -338,7 +350,8 @@ def go(titulo,
     except:
         nombrecliente = ""
     datos_cliente = build_datos_cliente(datos_cliente)
-    entradilla = build_entradilla(fecha_entradilla, numpresupuesto)
+    entradilla = build_entradilla(fecha_entradilla, numpresupuesto, 
+                                  para_estudio)
     texto = build_texto(texto)
     contenido = build_tabla_contenido(lineas_contenido)
     totales = build_tabla_totales(totales)
@@ -566,7 +579,8 @@ def go_from_presupuesto(presupuesto,
        numpresupuesto = presupuesto.id, 
        forma_de_pago = fdp, 
        dir_fiscal = dir_fiscal, 
-       firma_comercial = firma_comercial)
+       firma_comercial = firma_comercial, 
+       para_estudio = presupuesto.estudio == False)
     return nomarchivo
 
 

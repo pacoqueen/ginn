@@ -1318,6 +1318,10 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.wids['b_enviar'].set_tooltip_text(txt_puede_imprimir)
         self.wids['ch_adjudicada'].set_tooltip_text(txt_puede_adjudicarse)
         self.actualizar_editable_motivo(self.wids['ch_denegado'])
+        # CWT: Si ya se había seleccionado el tipo de oferta y era de pedido, 
+        # no permitir cambiarla.
+        if self.objeto and self.objeto.estudio: 
+            self.wids['hbox_radiobutton'].set_sensitive(False)
 
     def refinar_resultados_busqueda(self, resultados):
         """
@@ -2142,7 +2146,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                         utils.str_fecha(self.objeto.fecha))
             enviar_correoe(rte, 
                            dests,
-                           "Oferta %d validada." & self.objeto.id, 
+                           "Oferta %d validada." % self.objeto.id, 
                            texto, 
                            servidor = servidor, 
                            usuario = smtpuser, 

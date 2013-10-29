@@ -10074,6 +10074,17 @@ class PedidoVenta(SQLObject, PRPCTOO):
                     facturas.append(f)
         return facturas
 
+    def get_presupuestos(self):
+        """
+        Devuelve los presupuestos relacionados con el pedido actual.
+        """
+        presupuestos = []
+        for ldp in self.lineasDePedido:
+            presupuesto = ldp.presupuesto
+            if presupuesto and ldp.presupuesto not in presupuestos:
+                presupuestos.append(presupuesto)
+        return presupuestos
+
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 class LineaDePresupuesto(SQLObject, PRPCTOO):
@@ -14460,6 +14471,17 @@ class AlbaranSalida(SQLObject, PRPCTOO):
             if pedido and pedido not in res:
                 res.append(pedido)
         return res
+    
+    def get_presupuestos(self):
+        """
+        Devuelve los presupuestos relacionados con el albarán actual.
+        """
+        presupuestos = []
+        for pedido in self.get_pedidos():
+            for presupuesto in pedido.get_presupuestos():
+                if presupuesto not in presupuestos:
+                    presupuestos.append(presupuesto)
+        return presupuestos
 
     def es_de_repuestos(self):
         """

@@ -68,7 +68,7 @@
                             <property name="label_xalign">0</property>
                             <property name="shadow_type">out</property>
                             <child>
-                              <widget class="GtkHBox" id="hbox3">
+                              <widget class="GtkHBox" id="hbox_radiobutton">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <child>
