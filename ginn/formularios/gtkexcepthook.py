@@ -36,6 +36,7 @@
 import inspect, linecache, pydoc, sys, os# , traceback
 from cStringIO import StringIO
 from smtplib import SMTP, SMTPException
+import datetime
 
 import locale
 if locale.getlocale()[0] is None:
@@ -210,6 +211,18 @@ def _info(exctyp, value, tb):
             message = 'From: %s"\nTo: %s\nSubject: Geotex-INN -- Excepción capturada.\n\n%s'%(
                 email, "Soporte G-INN", trace.getvalue())
             vpro.mover()
+            # Aparte de enviarlo por correo, si tengo consola, vuelco.
+            try:
+                sys.stderr.write("\n")
+                sys.stderr.write("="*80)
+                sys.stderr.write(datetime.datetime.now().strftime(
+                    "%Y%m%d %H:%M:%S").center(80))
+                sys.stderr.write("="*80)
+                sys.stderr.write("\n")
+                sys.stderr.write(message)
+                sys.stderr.write("\n")
+            except:
+                pass
             s = SMTP()
             vpro.mover()
             try:

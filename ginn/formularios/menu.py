@@ -68,7 +68,7 @@ from framework.configuracion import ConfigConexion, parse_params
 from formularios import custom_widgets
 from formularios.ventana import install_bug_hook
 
-__version__ = '5.3.5 (beta)'
+__version__ = '5.5.1 (codename Ringo)'
 __version_info__ = tuple(
     [int(num) for num in __version__.split()[0].split('.')] + 
     [txt.replace("(", "").replace(")", "") for txt in __version__.split()[1:]]

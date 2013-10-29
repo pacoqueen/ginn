@@ -390,6 +390,33 @@ class Presupuestos(Ventana, VentanaGenerica):
                 self.objeto.syncUpdate()
                 self.objeto.make_swap()
 
+    def bloquear(self, ch):
+        """
+        Bloquea el presupuesto impidiendo modificaciones excepto para los 
+        usuarios con nivel suficiente.
+        """
+        puede_bloquear = (self.usuario 
+                                and self.usuario.nivel <= NIVEL_VALIDACION)
+        if self.objeto.bloqueado == ch.get_active():
+            pass
+        else:
+            self.objeto.notificador.desactivar()
+            if puede_bloquear:  # Y desbloquear, claro.
+                self.objeto.bloqueado = ch.get_active()
+                self.objeto.make_swap("bloqueado")
+                pclases.Auditoria.modificado(self.objeto, 
+                    self.usuario, __file__, 
+                    "Usuario %s (des)bloqueó presupuesto %d." 
+                        % (self.usuario and self.usuario.usuario or "¡NADIE!", 
+                           self.objeto.id))
+                ch.set_active(self.objeto.bloqueado)
+                self.guardar(None)  # Por si hay algo pendiente.
+                # Y que se vea realmente con qué valores ha bloqueado.
+                self.actualizar_ventana()
+            else:
+                ch.set_active(self.objeto.bloqueado)
+            self.objeto.notificador.activar(self.aviso_actualizacion)
+
     def validar(self, ch):
         """
         Si está validado:
@@ -404,7 +431,11 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         if self.objeto.validado == ch.get_active():     # Estoy rellenando. No 
             # hay edición del usuario. No compruebo nada.
-            pass 
+            pass    # OJO porque aquí puede haber BUG. ¿Qué pasa si estoy 
+                    # moviéndome de un objeto ya validado a otro no  
+                    # validado? Entraría por la otra rama del if confundiendo 
+                    # una posible validación del usuario con una simple 
+                    # actialización del widget en la ventana.
         else:   # El usuario está desvalidando o intentando validar.
             self.objeto.notificador.desactivar()
             vpro = VentanaActividad(self.wids['ventana'], 
@@ -944,6 +975,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         col.set_attributes(cellpb4, stock_id = 5)
         self.hndlr_cerrado = self.wids['ch_cerrado'].connect('clicked', 
                 self.cerrar_presupuesto)
+        self.hndlr_bloqueado = self.wids['ch_bloqueado'].connect('clicked', 
+                self.bloquear)
         self.hndlr_presup = self.wids['tv_presupuestos'].connect(
                 "cursor-changed", self.cambiar_presupuesto_activo)
         w, h = self.wids['tv_presupuestos'].size_request()
@@ -1168,6 +1201,9 @@ class Presupuestos(Ventana, VentanaGenerica):
             # ofertas de otros comerciales. 
             if self.usuario.nivel > NIVEL_VALIDACION:
                 s = s and es_mismo_comercial
+        puede_bloquear = (self.usuario 
+                                and self.usuario.nivel <= NIVEL_VALIDACION)
+        s = self.objeto and (puede_bloquear or not self.objeto.bloqueado)
         if self.objeto == None:
             s = False
         ws = tuple(['b_pedido', "table1",  
@@ -1430,6 +1466,10 @@ class Presupuestos(Ventana, VentanaGenerica):
         # Para finalizar, el pedido al que se ha convertido
         self.wids['e_pedido'].set_text(", ".join(
             [p.numpedido for p in presupuesto.get_pedidos()]))
+        self.wids['ch_bloqueado'].disconnect(self.hndlr_bloqueado)
+        self.wids['ch_bloqueado'].set_active(self.objeto.bloqueado)
+        self.hndlr_bloqueado = self.wids['ch_bloqueado'].connect('clicked', 
+                self.bloquear)
         if pclases.DEBUG:
             print "  <<< ::::::::::::::::: rellenar_widgets ::::::::::::::::::"
 

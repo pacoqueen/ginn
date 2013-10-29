@@ -1435,7 +1435,10 @@ CREATE TABLE presupuesto(
     -- Algunos contadores que considero interesantes y pueden hacer falta:
     impresiones INT DEFAULT 0,  -- Número de veces que ha generado el PDF
     envios INT DEFAULT 0,       -- Número de veces que ha enviado la oferta.
-    version INT DEFAULT 1       -- Veces que ha guardado el presupuesto.
+    version INT DEFAULT 1,      -- Veces que ha guardado el presupuesto.
+    bloqueado BOOLEAN DEFAULT FALSE,    -- Si bloqueado no se puede modificar.
+    rechazado BOOLEAN DEFAULT FALSE,    -- ¿Hace falta explicarlo?
+    motivo TEXT DEFAULT ''
 );
 
 ----------------------------------

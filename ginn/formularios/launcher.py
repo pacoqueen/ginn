@@ -77,7 +77,7 @@ def run(modulo, clase, usuario, fconfig, obj_puid = None):
         comando += interprete 
         args = [os.path.join(ruta, "formularios", modulo + ".py")]
         if not isinstance(usuario, str):
-            usuario = usuario.usuario   # Debe ser instancia de pclases
+            usuario = usuario.usuario   # Debe de ser instancia de pclases
         args += ["-u %s" % usuario, "-c %s" % fconfig] 
         if obj_puid:
             args.append(" -o %s" % obj_puid)
