@@ -87,6 +87,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                            'cerrado': "ch_cerrado", 
                            "rechazado": "ch_denegado", 
                            "motivo": "e_motivo"
+                           # Ficha de solicitud de crédito:
                           }
         Ventana.__init__(self, 'presupuestos.glade', objeto, 
                          usuario = self.usuario)

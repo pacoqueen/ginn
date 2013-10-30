@@ -1987,124 +1987,260 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_cif">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="editable">False</property>
+                                            <property name="has_frame">False</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">1</property>
+                                            <property name="right_attach">6</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_nombre">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="editable">False</property>
+                                            <property name="has_frame">False</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">1</property>
+                                            <property name="right_attach">6</property>
+                                            <property name="top_attach">1</property>
+                                            <property name="bottom_attach">2</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_ute">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">1</property>
+                                            <property name="right_attach">6</property>
+                                            <property name="top_attach">2</property>
+                                            <property name="bottom_attach">3</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_obra">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="editable">False</property>
+                                            <property name="has_frame">False</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">1</property>
+                                            <property name="right_attach">6</property>
+                                            <property name="top_attach">3</property>
+                                            <property name="bottom_attach">4</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_licitador">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">1</property>
+                                            <property name="right_attach">6</property>
+                                            <property name="top_attach">4</property>
+                                            <property name="bottom_attach">5</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_dirfiscal">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">1</property>
+                                            <property name="right_attach">6</property>
+                                            <property name="top_attach">5</property>
+                                            <property name="bottom_attach">6</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_cpfiscal">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">1</property>
+                                            <property name="right_attach">2</property>
+                                            <property name="top_attach">6</property>
+                                            <property name="bottom_attach">7</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_telefonofiscal">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">1</property>
+                                            <property name="right_attach">2</property>
+                                            <property name="top_attach">7</property>
+                                            <property name="bottom_attach">8</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_contactofiscal">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">1</property>
+                                            <property name="right_attach">4</property>
+                                            <property name="top_attach">8</property>
+                                            <property name="bottom_attach">9</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_poblacionfiscal">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">3</property>
+                                            <property name="right_attach">4</property>
+                                            <property name="top_attach">6</property>
+                                            <property name="bottom_attach">7</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_faxfiscal">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">3</property>
+                                            <property name="right_attach">4</property>
+                                            <property name="top_attach">7</property>
+                                            <property name="bottom_attach">8</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_provinciafiscal">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">5</property>
+                                            <property name="right_attach">6</property>
+                                            <property name="top_attach">6</property>
+                                            <property name="bottom_attach">7</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_emailfiscal">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">5</property>
+                                            <property name="right_attach">6</property>
+                                            <property name="top_attach">8</property>
+                                            <property name="bottom_attach">9</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_movilfiscal">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">5</property>
+                                            <property name="right_attach">6</property>
+                                            <property name="top_attach">7</property>
+                                            <property name="bottom_attach">8</property>
+                                          </packing>
                                         </child>
                                       </widget>
                                     </child>
@@ -2133,7 +2269,7 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <child>
-                                  <widget class="GtkCheckButton" id="ch_apertura">
+                                  <widget class="GtkCheckButton" id="ch_cred_apertura">
                                     <property name="label" translatable="yes">Apertura</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
@@ -2148,7 +2284,7 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <widget class="GtkCheckButton" id="ch_aumento">
+                                  <widget class="GtkCheckButton" id="ch_cred_aumento">
                                     <property name="label" translatable="yes">Aumento crédito</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
@@ -2163,7 +2299,7 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <widget class="GtkCheckButton" id="ch_solicitud">
+                                  <widget class="GtkCheckButton" id="ch_cred_solicitud">
                                     <property name="label" translatable="yes">Solicitud de crédito</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
@@ -2301,28 +2437,144 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_telefonocontratos">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">1</property>
+                                            <property name="right_attach">2</property>
+                                            <property name="top_attach">2</property>
+                                            <property name="bottom_attach">3</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_emailcontratos">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">3</property>
+                                            <property name="right_attach">4</property>
+                                            <property name="top_attach">2</property>
+                                            <property name="bottom_attach">3</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_dircontratos">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">1</property>
+                                            <property name="right_attach">2</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_cpcontratos">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">1</property>
+                                            <property name="right_attach">2</property>
+                                            <property name="top_attach">1</property>
+                                            <property name="bottom_attach">2</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_provinciacontratos">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">3</property>
+                                            <property name="right_attach">4</property>
+                                            <property name="top_attach">1</property>
+                                            <property name="bottom_attach">2</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_contactocontratos">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">1</property>
+                                            <property name="right_attach">2</property>
+                                            <property name="top_attach">3</property>
+                                            <property name="bottom_attach">4</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_poblacioncontratos">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">3</property>
+                                            <property name="right_attach">4</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_movilcontratos">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">3</property>
+                                            <property name="right_attach">4</property>
+                                            <property name="top_attach">3</property>
+                                            <property name="bottom_attach">4</property>
+                                          </packing>
                                         </child>
                                       </widget>
                                     </child>
@@ -2436,34 +2688,110 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_dirobra">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">1</property>
+                                            <property name="right_attach">4</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_cpobra">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">1</property>
+                                            <property name="right_attach">2</property>
+                                            <property name="top_attach">1</property>
+                                            <property name="bottom_attach">2</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_provinciaobra">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">1</property>
+                                            <property name="right_attach">2</property>
+                                            <property name="top_attach">2</property>
+                                            <property name="bottom_attach">3</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_contactoobra">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">1</property>
+                                            <property name="right_attach">4</property>
+                                            <property name="top_attach">3</property>
+                                            <property name="bottom_attach">4</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_poblacionobra">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">3</property>
+                                            <property name="right_attach">4</property>
+                                            <property name="top_attach">1</property>
+                                            <property name="bottom_attach">2</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_movilobra">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">3</property>
+                                            <property name="right_attach">4</property>
+                                            <property name="top_attach">2</property>
+                                            <property name="bottom_attach">3</property>
+                                          </packing>
                                         </child>
                                       </widget>
                                     </child>
@@ -2566,7 +2894,22 @@
                                               </packing>
                                             </child>
                                             <child>
-                                              <placeholder/>
+                                              <widget class="GtkEntry" id="e_cred_entidad">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">True</property>
+                                                <property name="max_length">4</property>
+                                                <property name="invisible_char">•</property>
+                                                <property name="invisible_char_set">True</property>
+                                                <property name="primary_icon_activatable">False</property>
+                                                <property name="secondary_icon_activatable">False</property>
+                                                <property name="primary_icon_sensitive">True</property>
+                                                <property name="secondary_icon_sensitive">True</property>
+                                              </widget>
+                                              <packing>
+                                                <property name="expand">True</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">1</property>
+                                              </packing>
                                             </child>
                                           </widget>
                                           <packing>
@@ -2592,7 +2935,22 @@
                                               </packing>
                                             </child>
                                             <child>
-                                              <placeholder/>
+                                              <widget class="GtkEntry" id="e_cred_oficina">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">True</property>
+                                                <property name="max_length">4</property>
+                                                <property name="invisible_char">•</property>
+                                                <property name="invisible_char_set">True</property>
+                                                <property name="primary_icon_activatable">False</property>
+                                                <property name="secondary_icon_activatable">False</property>
+                                                <property name="primary_icon_sensitive">True</property>
+                                                <property name="secondary_icon_sensitive">True</property>
+                                              </widget>
+                                              <packing>
+                                                <property name="expand">True</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">1</property>
+                                              </packing>
                                             </child>
                                           </widget>
                                           <packing>
@@ -2620,7 +2978,22 @@
                                               </packing>
                                             </child>
                                             <child>
-                                              <placeholder/>
+                                              <widget class="GtkEntry" id="e_cred_digitocontrol">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">True</property>
+                                                <property name="max_length">2</property>
+                                                <property name="invisible_char">•</property>
+                                                <property name="invisible_char_set">True</property>
+                                                <property name="primary_icon_activatable">False</property>
+                                                <property name="secondary_icon_activatable">False</property>
+                                                <property name="primary_icon_sensitive">True</property>
+                                                <property name="secondary_icon_sensitive">True</property>
+                                              </widget>
+                                              <packing>
+                                                <property name="expand">True</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">1</property>
+                                              </packing>
                                             </child>
                                           </widget>
                                           <packing>
@@ -2648,7 +3021,22 @@
                                               </packing>
                                             </child>
                                             <child>
-                                              <placeholder/>
+                                              <widget class="GtkEntry" id="e_cred_numcuenta">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">True</property>
+                                                <property name="max_length">10</property>
+                                                <property name="invisible_char">•</property>
+                                                <property name="invisible_char_set">True</property>
+                                                <property name="primary_icon_activatable">False</property>
+                                                <property name="secondary_icon_activatable">False</property>
+                                                <property name="primary_icon_sensitive">True</property>
+                                                <property name="secondary_icon_sensitive">True</property>
+                                              </widget>
+                                              <packing>
+                                                <property name="expand">True</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">1</property>
+                                              </packing>
                                             </child>
                                           </widget>
                                           <packing>
@@ -2656,6 +3044,43 @@
                                             <property name="right_attach">4</property>
                                             <property name="top_attach">4</property>
                                             <property name="bottom_attach">5</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <widget class="GtkEntry" id="e_cred_fdp">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">1</property>
+                                            <property name="right_attach">4</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <widget class="GtkScrolledWindow" id="scrolledwindow7">
+                                            <property name="height_request">50</property>
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="hscrollbar_policy">automatic</property>
+                                            <property name="vscrollbar_policy">automatic</property>
+                                            <child>
+                                              <widget class="GtkTextView" id="txt_cred_entidades">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">True</property>
+                                                <property name="wrap_mode">word</property>
+                                              </widget>
+                                            </child>
+                                          </widget>
+                                          <packing>
+                                            <property name="right_attach">4</property>
+                                            <property name="top_attach">2</property>
+                                            <property name="bottom_attach">3</property>
                                           </packing>
                                         </child>
                                         <child>
@@ -2677,34 +3102,58 @@
                                           <placeholder/>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_diapago1">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">1</property>
+                                            <property name="right_attach">2</property>
+                                            <property name="top_attach">5</property>
+                                            <property name="bottom_attach">6</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_diapago2">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">2</property>
+                                            <property name="right_attach">3</property>
+                                            <property name="top_attach">5</property>
+                                            <property name="bottom_attach">6</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_diapago3">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">3</property>
+                                            <property name="right_attach">4</property>
+                                            <property name="top_attach">5</property>
+                                            <property name="bottom_attach">6</property>
+                                          </packing>
                                         </child>
                                       </widget>
                                     </child>
@@ -2766,10 +3215,42 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkEntry" id="e_cred_credsolicitado">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="invisible_char">•</property>
+                                            <property name="invisible_char_set">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">1</property>
+                                            <property name="right_attach">2</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <widget class="GtkScrolledWindow" id="scrolledwindow8">
+                                            <property name="height_request">50</property>
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="hscrollbar_policy">automatic</property>
+                                            <property name="vscrollbar_policy">automatic</property>
+                                            <child>
+                                              <widget class="GtkTextView" id="txt_cred_observaciones">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">True</property>
+                                                <property name="wrap_mode">word</property>
+                                              </widget>
+                                            </child>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">1</property>
+                                            <property name="right_attach">2</property>
+                                            <property name="top_attach">1</property>
+                                            <property name="bottom_attach">2</property>
+                                          </packing>
                                         </child>
                                       </widget>
                                     </child>
@@ -2828,7 +3309,49 @@
                                               </packing>
                                             </child>
                                             <child>
-                                              <placeholder/>
+                                              <widget class="GtkHBox" id="hbox3">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">False</property>
+                                                <child>
+                                                  <widget class="GtkCheckButton" id="ch_cred_vb_comercial">
+                                                    <property name="visible">True</property>
+                                                    <property name="sensitive">False</property>
+                                                    <property name="can_focus">True</property>
+                                                    <property name="receives_default">False</property>
+                                                    <property name="use_action_appearance">False</property>
+                                                    <property name="draw_indicator">True</property>
+                                                  </widget>
+                                                  <packing>
+                                                    <property name="expand">False</property>
+                                                    <property name="fill">True</property>
+                                                    <property name="position">0</property>
+                                                  </packing>
+                                                </child>
+                                                <child>
+                                                  <widget class="GtkEntry" id="e_cred_vb_nombrecomercial">
+                                                    <property name="visible">True</property>
+                                                    <property name="can_focus">True</property>
+                                                    <property name="editable">False</property>
+                                                    <property name="has_frame">False</property>
+                                                    <property name="invisible_char">•</property>
+                                                    <property name="invisible_char_set">True</property>
+                                                    <property name="primary_icon_activatable">False</property>
+                                                    <property name="secondary_icon_activatable">False</property>
+                                                    <property name="primary_icon_sensitive">True</property>
+                                                    <property name="secondary_icon_sensitive">True</property>
+                                                  </widget>
+                                                  <packing>
+                                                    <property name="expand">True</property>
+                                                    <property name="fill">True</property>
+                                                    <property name="position">1</property>
+                                                  </packing>
+                                                </child>
+                                              </widget>
+                                              <packing>
+                                                <property name="expand">True</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">1</property>
+                                              </packing>
                                             </child>
                                           </widget>
                                           <packing>
@@ -2854,7 +3377,48 @@
                                               </packing>
                                             </child>
                                             <child>
-                                              <placeholder/>
+                                              <widget class="GtkHBox" id="hbox17">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">False</property>
+                                                <child>
+                                                  <widget class="GtkCheckButton" id="ch_cred_vb_admon">
+                                                    <property name="visible">True</property>
+                                                    <property name="can_focus">True</property>
+                                                    <property name="receives_default">False</property>
+                                                    <property name="use_action_appearance">False</property>
+                                                    <property name="draw_indicator">True</property>
+                                                  </widget>
+                                                  <packing>
+                                                    <property name="expand">False</property>
+                                                    <property name="fill">True</property>
+                                                    <property name="position">0</property>
+                                                  </packing>
+                                                </child>
+                                                <child>
+                                                  <widget class="GtkEntry" id="e_cred_vb_nombreadmon">
+                                                    <property name="visible">True</property>
+                                                    <property name="can_focus">True</property>
+                                                    <property name="editable">False</property>
+                                                    <property name="has_frame">False</property>
+                                                    <property name="invisible_char">•</property>
+                                                    <property name="invisible_char_set">True</property>
+                                                    <property name="primary_icon_activatable">False</property>
+                                                    <property name="secondary_icon_activatable">False</property>
+                                                    <property name="primary_icon_sensitive">True</property>
+                                                    <property name="secondary_icon_sensitive">True</property>
+                                                  </widget>
+                                                  <packing>
+                                                    <property name="expand">True</property>
+                                                    <property name="fill">True</property>
+                                                    <property name="position">1</property>
+                                                  </packing>
+                                                </child>
+                                              </widget>
+                                              <packing>
+                                                <property name="expand">True</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">1</property>
+                                              </packing>
                                             </child>
                                           </widget>
                                           <packing>
@@ -2915,16 +3479,78 @@
                                               </packing>
                                             </child>
                                             <child>
-                                              <placeholder/>
+                                              <widget class="GtkEntry" id="e_cred_asegurado">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">True</property>
+                                                <property name="max_length">2</property>
+                                                <property name="invisible_char">•</property>
+                                                <property name="invisible_char_set">True</property>
+                                                <property name="primary_icon_activatable">False</property>
+                                                <property name="secondary_icon_activatable">False</property>
+                                                <property name="primary_icon_sensitive">True</property>
+                                                <property name="secondary_icon_sensitive">True</property>
+                                              </widget>
+                                              <packing>
+                                                <property name="left_attach">1</property>
+                                                <property name="right_attach">2</property>
+                                              </packing>
                                             </child>
                                             <child>
-                                              <placeholder/>
+                                              <widget class="GtkEntry" id="e_cred_fechaasegurado">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">True</property>
+                                                <property name="max_length">2</property>
+                                                <property name="invisible_char">•</property>
+                                                <property name="invisible_char_set">True</property>
+                                                <property name="primary_icon_activatable">False</property>
+                                                <property name="secondary_icon_activatable">False</property>
+                                                <property name="primary_icon_sensitive">True</property>
+                                                <property name="secondary_icon_sensitive">True</property>
+                                              </widget>
+                                              <packing>
+                                                <property name="left_attach">1</property>
+                                                <property name="right_attach">2</property>
+                                                <property name="top_attach">1</property>
+                                                <property name="bottom_attach">2</property>
+                                              </packing>
                                             </child>
                                             <child>
-                                              <placeholder/>
+                                              <widget class="GtkEntry" id="e_cred_concedido">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">True</property>
+                                                <property name="max_length">2</property>
+                                                <property name="invisible_char">•</property>
+                                                <property name="invisible_char_set">True</property>
+                                                <property name="primary_icon_activatable">False</property>
+                                                <property name="secondary_icon_activatable">False</property>
+                                                <property name="primary_icon_sensitive">True</property>
+                                                <property name="secondary_icon_sensitive">True</property>
+                                              </widget>
+                                              <packing>
+                                                <property name="left_attach">1</property>
+                                                <property name="right_attach">2</property>
+                                                <property name="top_attach">2</property>
+                                                <property name="bottom_attach">3</property>
+                                              </packing>
                                             </child>
                                             <child>
-                                              <placeholder/>
+                                              <widget class="GtkEntry" id="e_cred_fechaconcedido">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">True</property>
+                                                <property name="max_length">2</property>
+                                                <property name="invisible_char">•</property>
+                                                <property name="invisible_char_set">True</property>
+                                                <property name="primary_icon_activatable">False</property>
+                                                <property name="secondary_icon_activatable">False</property>
+                                                <property name="primary_icon_sensitive">True</property>
+                                                <property name="secondary_icon_sensitive">True</property>
+                                              </widget>
+                                              <packing>
+                                                <property name="left_attach">1</property>
+                                                <property name="right_attach">2</property>
+                                                <property name="top_attach">3</property>
+                                                <property name="bottom_attach">4</property>
+                                              </packing>
                                             </child>
                                           </widget>
                                           <packing>
@@ -2935,13 +3561,23 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
+                                          <widget class="GtkScrolledWindow" id="scrolledwindow9">
+                                            <property name="height_request">50</property>
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="hscrollbar_policy">automatic</property>
+                                            <property name="vscrollbar_policy">automatic</property>
+                                            <child>
+                                              <widget class="GtkTextView" id="txt_cred_condiciones">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">True</property>
+                                                <property name="wrap_mode">word</property>
+                                              </widget>
+                                            </child>
+                                          </widget>
+                                          <packing>
+                                            <property name="right_attach">3</property>
+                                          </packing>
                                         </child>
                                       </widget>
                                     </child>
@@ -2981,10 +3617,47 @@
                               </packing>
                             </child>
                             <child>
-                              <placeholder/>
+                              <widget class="GtkEntry" id="e_cred_fecha">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="invisible_char">•</property>
+                                <property name="primary_icon_activatable">False</property>
+                                <property name="secondary_icon_activatable">False</property>
+                                <property name="primary_icon_sensitive">True</property>
+                                <property name="secondary_icon_sensitive">True</property>
+                              </widget>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="right_attach">2</property>
+                              </packing>
                             </child>
                             <child>
-                              <placeholder/>
+                              <widget class="GtkAlignment" id="alignment27">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="yalign">0</property>
+                                <property name="yscale">0</property>
+                                <child>
+                                  <widget class="GtkEntry" id="e_cred_comercial">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="editable">False</property>
+                                    <property name="has_frame">False</property>
+                                    <property name="invisible_char">•</property>
+                                    <property name="invisible_char_set">True</property>
+                                    <property name="primary_icon_activatable">False</property>
+                                    <property name="secondary_icon_activatable">False</property>
+                                    <property name="primary_icon_sensitive">True</property>
+                                    <property name="secondary_icon_sensitive">True</property>
+                                  </widget>
+                                </child>
+                              </widget>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="right_attach">2</property>
+                                <property name="top_attach">1</property>
+                                <property name="bottom_attach">2</property>
+                              </packing>
                             </child>
                           </widget>
                         </child>
