@@ -53,12 +53,12 @@ ALTER TABLE presupuesto ADD COLUMN cred_usuario_id INT REFERENCES usuario;
 ALTER TABLE presupuesto ADD COLUMN cred_condiciones TEXT DEFAULT ''; 
 
 CREATE TABLE zona(
-    id INT SERIAL PRIMARY KEY, 
+    id SERIAL PRIMARY KEY, 
     nombre TEXT DEFAULT ''
-)
+);
 CREATE TABLE area(
-    id INT SERIAL PRIMARY KEY, 
+    id SERIAL PRIMARY KEY, 
     zona_id INT REFERENCES zona DEFAULT NULL, 
     nombre TEXT DEFAULT ''
-)
+);
 ALTER TABLE comercial ADD COLUMN zona_id INT REFERENCES zona DEFAULT NULL; 

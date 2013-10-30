@@ -50,6 +50,22 @@ CREATE OPERATOR +^ (PROCEDURE='xor', LEFTARG = BOOL, RIGHTARG = BOOL);
 
 ---- TABLAS ------
 
+----------------------------
+-- Zonas de los delegados --
+----------------------------
+CREATE TABLE zona(
+    id SERIAL PRIMARY KEY, 
+    nombre TEXT DEFAULT ''
+);
+-------------------------------------------------------------
+-- Áreas (subzonas) de las zonas de delegados comerciales. -- 
+-------------------------------------------------------------
+CREATE TABLE area(
+    id SERIAL PRIMARY KEY, 
+    zona_id INT REFERENCES zona DEFAULT NULL, 
+    nombre TEXT DEFAULT ''
+);
+
 ------------------------------------------------------------------------------
 -- Tabla de formas de pago/cobro.                                           --
 -- Ya iba siendo hora de unificarlas. De momento se usará en pedidos de     --
@@ -1005,7 +1021,8 @@ CREATE TABLE comercial(
                                 -- específico que CategoriaLaboral. 
                                 -- NEW! 27/01/2009
     telefono TEXT DEFAULT '',   -- NEW! 27/01/2009
-    correoe TEXT DEFAULT ''     -- NEW! 27/01/2009
+    correoe TEXT DEFAULT '',    -- NEW! 27/01/2009
+    zona_id INT REFERENCES zona DEFAULT NULL    -- NEW! 30/10/2013
 );
 
 -------------------------------------

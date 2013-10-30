@@ -645,7 +645,7 @@ NO_VALIDABLE, VALIDABLE, PLAZO_EXCESIVO, SIN_FORMA_DE_PAGO, \
         COND_PARTICULARES = range(9)
 
 # VERBOSE MODE
-total = 158 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
+total = 160 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
             # Más bien grep " = print_verbose(" pclases.py | grep -v \# | wc -l
 cont = 0
 tiempo = time.time()
@@ -662,6 +662,22 @@ def print_verbose(cont, total, antes):
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 ##############
+
+class Area(SQLObject, PRPCTOO):
+    class sqlmeta:
+        fromDatabase = True
+
+    def _init(self, *args, **kw):
+        starter(self, *args, **kw)
+
+class Zona(SQLObject, PRPCTOO):
+    class sqlmeta:
+        fromDatabase = True
+    areas = MultipleJoin("Area")
+    comerciales = MultipleJoin("Comercial")
+
+    def _init(self, *args, **kw):
+        starter(self, *args, **kw)
 
 class DocumentoDePago(SQLObject, PRPCTOO):
     class sqlmeta:
