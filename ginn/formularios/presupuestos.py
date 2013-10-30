@@ -694,7 +694,11 @@ class Presupuestos(Ventana, VentanaGenerica):
                         self.enviar_correo_notificacion_validado()
                 else:   # Estoy invalidando
                     self.objeto.validado = False
+                    self.objeto.adjudicada = False
+                    self.wids['ch_adjudicada'].set_active(
+                            self.objeto.adjudicada)
                     self.objeto.swap['usuarioID'] = None
+                    self.objeto.swap['adjudicada'] = None
                     self.objeto.swap['fechaValidacion'] = None
                     pclases.Auditoria.modificado(self.objeto, 
                         self.usuario, __file__, 
