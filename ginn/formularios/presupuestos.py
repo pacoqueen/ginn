@@ -174,12 +174,16 @@ class Presupuestos(Ventana, VentanaGenerica):
                        "b_drop/clicked": self.drop_ldp, 
                        "ch_validado/toggled": self.validar, 
                        "tv_contenido/query-tooltip": self.tooltip_query, 
-                       'ch_adjudicada/toggled': self.enviar_correo_adjudicada,
+                       'ch_adjudicada/toggled': self.adjudicar,
                        'b_credito/clicked': self.enviar_solicitud_credito, 
                        "b_atras/clicked": self.atras, 
                        "b_adelante/clicked": self.adelante, 
                        'ev_iconostado/button-release-event': self.mostrar_ttip,
                        "ch_denegado/toggled": self.actualizar_editable_motivo, 
+                       "ch_cred_vb_admon/clicked": self.conceder_credito, 
+                       "e_cred_entidad/changed": self.actualizar_dc, 
+                       "e_cred_oficina/changed": self.actualizar_dc, 
+                       "e_cred_numcuenta/changed": self.actualizar_dc
                       }  
         self.add_connections(connections)
         self.inicializar_ventana()
@@ -190,6 +194,21 @@ class Presupuestos(Ventana, VentanaGenerica):
         #if self.usuario and self.usuario.nivel >= 4:
         #    self.activar_widgets(False) # Para evitar manos rápidas al abrir.
         gtk.main()
+
+    def actualizar_dc(self, entry_llamante):
+        ent = self.wids['e_cred_entidad'].get_text()
+        ofi = self.wids['e_cred_oficina'].get_text()
+        cue = self.wids['e_cred_numcuenta'].get_text()
+        try:
+            dc = utils.calcCC(ent, ofi, cue)
+        except (TypeError, ValueError):
+            dc = None
+        if dc:
+            self.objeto.credDigitocontrol = dc
+            self.objeto.syncUpdate()
+            self.objeto.make_swap("credDigitocontrol")
+        self.wids["e_cred_digitocontrol"].set_text(
+                self.objeto.credDigitocontrol)
 
     def actualizar_manualmente_lista_presupuestos(self, boton_o_tv):
         self.rellenar_lista_presupuestos()
@@ -251,17 +270,84 @@ class Presupuestos(Ventana, VentanaGenerica):
                         padre = self.wids['ventana'])
             else:
                 self.rellenar_tablas_historial()
-        elif page_num == 2:
-            # TODO: PORASQUI
-            utils.dialogo_info(titulo = "NO IMPLEMENTADO", 
-                    texto = "Funcionalidad en desarrollo.", 
-                    padre = self.wids['ventana'])
 
     def enviar_solicitud_credito(self, boton):
-        # TODO
-        utils.dialogo_info(titulo = "NO IMPLEMENTADO", 
-                texto = "Característica en desarrollo.", 
+        # Comprobación de campos obligatorios:
+        falta_alguno = False
+        if (self.objeto.credApertura == self.objeto.credAumento == 
+                self.objeto.credSolicitud == False):
+            falta_alguno = True
+            color = gtk.gdk.color_parse("Red")
+        else:
+            color = None
+        self.wids["ch_cred_apertura"].modify_base(gtk.STATE_NORMAL, color)
+        self.wids["ch_cred_aumento"].modify_base(gtk.STATE_NORMAL, color)
+        self.wids["ch_cred_solicitud"].modify_base(gtk.STATE_NORMAL, color)
+        for obligatorio, wid in (("credFecha", "e_cred_fecha"), 
+                                 ("credUsuario", "e_cred_comercial"), 
+                                 (("cif", "e_cred_cif")), 
+                                 (("nombrecliente", "e_cred_nombre")), 
+                                 (("credUte", "e_cred_ute")), 
+                                 (("nombreobra", "e_cred_obra")), 
+                                 (("credLicitador", "e_cred_licitador")), 
+                                 (("credDirfiscal", "e_cred_dirfiscal")), 
+                                 (("credCpfiscal", "e_cred_cpfiscal")), 
+                                 (("credPoblacionfiscal", 
+                                    "e_cred_poblacionfiscal")), 
+                                 (("credProvinciafiscal", 
+                                     "e_cred_provinciafiscal")), 
+                                 (("credTelefonofiscal", 
+                                     "e_cred_telefonofiscal")), 
+                                 (("credFaxfiscal", "e_cred_faxfiscal")), 
+                                 (("credMovilfiscal", "e_cred_movilfiscal")), 
+                                 (("credContactofiscal", 
+                                     "e_cred_contactofiscal")), 
+                                 (("credFdp", "e_cred_fdp")), 
+                                 (("credEntidades", "txt_cred_entidades")), 
+                                 (("credDiapago1", "e_cred_diapago1")), 
+                                 ("credCredsolicitado", 
+                                     "e_cred_credsolicitado")):
+            valor = getattr(self.objeto, obligatorio)
+            if valor is None or (isinstance(valor, str) 
+                                 and valor.strip() == ""):
+                falta_alguno = True
+                color = gtk.gdk.color_parse("Red")
+            else:
+                color = None
+            self.wids[wid].modify_base(gtk.STATE_NORMAL, color)
+        if falta_alguno:
+            utils.dialogo_info(titulo = "CAMPOS REQUERIDOS", 
+                texto = "Debe completar los campos obligatorios"
+                        " marcados en rojo.", 
                 padre = self.wids['ventana'])
+            return 
+        # TODO: Falta comprobar campos obligatorios.
+        self.objeto.notificador.desactivar()
+        self.objeto.credVecesSolicitado += 1
+        try:
+            nombrecomercial = self.usuario.nombre
+        except AttributeError:
+            try:
+                nombrecomercial = self.objeto.comercial.get_nombre_completo()
+            except AttributeError:
+                self.objeto.credVbNombrecomercial = ""
+        self.objeto.credVbNombrecomercial = nombrecomercial 
+        self.objeto.syncUpdate()
+        self.objeto.make_swap("credVecesSolicitado")
+        self.objeto.make_swap("credVbNombrecomercial")
+        self.objeto.notificador.activar(self.aviso_actualizacion)
+        # TODO: PLAN: De momento envío una captura de pantalla del formulario.
+        # Si solo es para imprimir, debería valer. Ya me entretendré en 
+        # hacerme un módulo para convertir un gtk.Table en ODS o algo.
+        # O mejor... rellenar las casillas del ods que saqué a partir del xls 
+        # original.
+        envio_ok = self.enviar_correo_solicitud_credito()
+        if not envio_ok:
+            utils.dialogo_info(titulo = "ERROR AL ENVIAR SOLICITUD", 
+                    texto = "Ocurrió un error al enviar la notificación \n"
+                            "por correo electrónico.", 
+                    padre = self.wids['ventana'])
+        self.actualizar_ventana()
 
     def rellenar_tablas_historial(self):
         model = self.wids['tv_ofertado'].get_model()
@@ -304,12 +390,50 @@ class Presupuestos(Ventana, VentanaGenerica):
         if pclases.DEBUG:
             print "Soy cerrar presupuesto... END"
 
+    def enviar_correo_solicitud_credito(self, nomfich_solicitud = None):
+        """
+        Envía un correo de solicitud de crédito al usuario correspondiente.
+        """
+        ok = False
+        if self.usuario and self.objeto:
+            servidor = self.usuario.smtpserver
+            smtpuser = self.usuario.smtpuser
+            smtppass = self.usuario.smtppassword
+            rte = self.usuario.email
+            # TODO: OJO: HARDCODED
+            if self.usuario and self.usuario.id == 1:
+                dests = ["informatica@geotexan.com"]
+            else:
+                dests = ["epalomo@geotexan.com", "jpedrero@geotexan.com"]
+            # Correo de riesgo de cliente
+            texto = "%s ha solicitado crédito para el cliente %s "\
+                    "a través de la oferta %d." % (
+                        self.usuario and self.usuario.nombre or "Se", 
+                        self.objeto.cliente and self.objeto.nombre or "", 
+                        self.objeto.id)
+            if nomfich_solicitud: 
+                adjunto = [nomfich_solicitud]
+            else: 
+                adjunto = []
+            ok = utils.enviar_correoe(rte, 
+                                      dests,
+                                      "Solicitud de crédito %s" % (
+                                        self.wids['e_cred_nombre'].get_text()),
+                                      texto, 
+                                      adjuntos = adjunto, 
+                                      servidor = servidor, 
+                                      usuario = smtpuser, 
+                                      password = smtppass)
+        return ok
+    
     def enviar_correo_de_riesgo(self):
         """
         Si el cliente está en riesgo, aviso por correo para que se vaya 
         preparando el personal de CRM.
         """
-        # CWT
+        # CWT: Deshabilitado. Se sustituye solo por el envío voluntario de 
+        # solicitud de crédito por parte del usuario.
+        return 
         if self.usuario and self.objeto.cliente:
             # En pclases ya hay una cutrecaché que hace que dos llamadas 
             # consecutivas al cálculo de crédito solo consuman el tiempo 
@@ -348,7 +472,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                                usuario = smtpuser, 
                                password = smtppass)
 
-    def enviar_correo_adjudicada(self, ch):
+    def adjudicar(self, ch):
         if ch.get_active() != self.objeto.adjudicada:   # Es el usuario el 
                                                         # que ha hecho clic.
             if ch.get_active():     # Lo está intentando poner a True
@@ -362,91 +486,15 @@ class Presupuestos(Ventana, VentanaGenerica):
                     self.objeto.adjudicada = True
                     self.objeto.syncUpdate()
                     self.objeto.make_swap()
-                    servidor = self.usuario.smtpserver
-                    smtpuser = self.usuario.smtpuser
-                    smtppass = self.usuario.smtppassword
-                    rte = self.usuario.email
-                    # TODO: OJO: HARDCODED
-                    if self.usuario and self.usuario.id == 1:
-                        dests = ["informatica@geotexan.com"]
-                    else:
-                        dests = ["epalomo@geotexan.com"]
-                    #dests = ["informatica@geotexan.com"]
-                    if not self.objeto.cliente:
-                        # Correo de alta del cliente
-                        texto = "Se ha adjudicado la oferta %d. "\
-                            "Se debe de dar de alta al cliente:\n"\
-                            "\tNombre: %s\n"\
-                            "\tCIF: %s\n"\
-                            "\tDireccion: %s\n"\
-                            "\tCódigo postal: %s\n"\
-                            "\tCiudad: %s\n"\
-                            "\tProvincia: %s\n"\
-                            "\tPaís: %s\n"\
-                            "\tTeléfono: %s\n"\
-                            "\tCorreo electrónico: %s\n"\
-                            "\tPersona de contacto: %s" % (
-                                    self.objeto.id, 
-                                    self.objeto.nombrecliente, 
-                                    self.objeto.cif, 
-                                    self.objeto.direccion, 
-                                    self.objeto.cp, 
-                                    self.objeto.ciudad, 
-                                    self.objeto.provincia, 
-                                    self.objeto.pais, 
-                                    self.objeto.telefono, 
-                                    self.objeto.email, 
-                                    self.objeto.personaContacto)
-                        enviar_correoe(rte, 
-                                       dests,
-                                       "Alta de nuevo cliente", 
-                                       texto, 
-                                       servidor = servidor, 
-                                       usuario = smtpuser, 
-                                       password = smtppass)
-                    if not self.objeto.obra:
-                        # Correo de alta de la obra
-                        texto = "Se ha adjudicado la oferta %d. "\
-                            "Se debe de dar de alta la obra %s "\
-                            "en el cliente %s con los siguientes datos:\n"\
-                            "\tDireccion: %s\n"\
-                            "\tCódigo postal: %s\n"\
-                            "\tCiudad: %s\n"\
-                            "\tProvincia: %s\n"\
-                            "\tPaís: %s\n" % (
-                                    self.objeto.id, 
-                                    self.objeto.nombreobra, 
-                                    self.objeto.nombrecliente, 
-                                    self.objeto.direccion, 
-                                    self.objeto.cp, 
-                                    self.objeto.ciudad, 
-                                    self.objeto.provincia, 
-                                    self.objeto.pais, 
-                                    )
-                        enviar_correoe(rte, 
-                                       dests,
-                                       "Alta de nueva obra", 
-                                       texto, 
-                                       servidor = servidor, 
-                                       usuario = smtpuser, 
-                                       password = smtppass)
-                    # Correo de adjudicación de oferta.
-                    texto = "Se ha adjudicado la oferta %d del comercial %s"\
-                            " al cliente %s por importe de %s €." % (
-                                self.objeto.id, 
-                                self.objeto.comercial 
-                                and self.objeto.comercial.get_nombre_completo()
-                                 or "¡NADIE!", 
-                                self.objeto.nombrecliente, 
-                                utils.float2str(
-                                    self.objeto.calcular_importe_total()))
-                    enviar_correoe(rte, 
-                                   dests,
-                                   "Alta de nueva adjudicación de oferta", 
-                                   texto, 
-                                   servidor = servidor, 
-                                   usuario = smtpuser, 
-                                   password = smtppass)
+                    self.enviar_correo_adjudicada(ch)
+                    if (not self.objeto.cliente 
+                            or self.comprobar_riesgo_cliente() < 0):
+                        utils.dialogo_info(titulo = "SOLICITE CRÉDITO", 
+                            texto = "El cliente es nuevo o no tiene crédito "
+                                    "disponible.\n\nSolicite una ampliación o "
+                                    "apertura.", 
+                            padre = self.wids['ventana'])
+                        self.wids['nb'].set_current_page(2)
                 else:
                     self.objeto.adjudicada = False
                     self.objeto.syncUpdate()
@@ -456,6 +504,96 @@ class Presupuestos(Ventana, VentanaGenerica):
                 self.objeto.adjudicada = False
                 self.objeto.syncUpdate()
                 self.objeto.make_swap()
+
+    def enviar_correo_adjudicada(self, ch):
+        # CWT: Deshabilitado. Se sustituye solo por el correo de solicitud 
+        # de crédito.
+        return
+        servidor = self.usuario.smtpserver
+        smtpuser = self.usuario.smtpuser
+        smtppass = self.usuario.smtppassword
+        rte = self.usuario.email
+        # TODO: OJO: HARDCODED
+        if self.usuario and self.usuario.id == 1:
+            dests = ["informatica@geotexan.com"]
+        else:
+            dests = ["epalomo@geotexan.com"]
+        #dests = ["informatica@geotexan.com"]
+        if not self.objeto.cliente:
+            # Correo de alta del cliente
+            texto = "Se ha adjudicado la oferta %d. "\
+                "Se debe de dar de alta al cliente:\n"\
+                "\tNombre: %s\n"\
+                "\tCIF: %s\n"\
+                "\tDireccion: %s\n"\
+                "\tCódigo postal: %s\n"\
+                "\tCiudad: %s\n"\
+                "\tProvincia: %s\n"\
+                "\tPaís: %s\n"\
+                "\tTeléfono: %s\n"\
+                "\tCorreo electrónico: %s\n"\
+                "\tPersona de contacto: %s" % (
+                        self.objeto.id, 
+                        self.objeto.nombrecliente, 
+                        self.objeto.cif, 
+                        self.objeto.direccion, 
+                        self.objeto.cp, 
+                        self.objeto.ciudad, 
+                        self.objeto.provincia, 
+                        self.objeto.pais, 
+                        self.objeto.telefono, 
+                        self.objeto.email, 
+                        self.objeto.personaContacto)
+            enviar_correoe(rte, 
+                           dests,
+                           "Alta de nuevo cliente", 
+                           texto, 
+                           servidor = servidor, 
+                           usuario = smtpuser, 
+                           password = smtppass)
+        if not self.objeto.obra:
+            # Correo de alta de la obra
+            texto = "Se ha adjudicado la oferta %d. "\
+                "Se debe de dar de alta la obra %s "\
+                "en el cliente %s con los siguientes datos:\n"\
+                "\tDireccion: %s\n"\
+                "\tCódigo postal: %s\n"\
+                "\tCiudad: %s\n"\
+                "\tProvincia: %s\n"\
+                "\tPaís: %s\n" % (
+                        self.objeto.id, 
+                        self.objeto.nombreobra, 
+                        self.objeto.nombrecliente, 
+                        self.objeto.direccion, 
+                        self.objeto.cp, 
+                        self.objeto.ciudad, 
+                        self.objeto.provincia, 
+                        self.objeto.pais, 
+                        )
+            enviar_correoe(rte, 
+                           dests,
+                           "Alta de nueva obra", 
+                           texto, 
+                           servidor = servidor, 
+                           usuario = smtpuser, 
+                           password = smtppass)
+        # Correo de adjudicación de oferta.
+        texto = "Se ha adjudicado la oferta %d del comercial %s"\
+                " al cliente %s por importe de %s €." % (
+                    self.objeto.id, 
+                    self.objeto.comercial 
+                    and self.objeto.comercial.get_nombre_completo()
+                     or "¡NADIE!", 
+                    self.objeto.nombrecliente, 
+                    utils.float2str(
+                        self.objeto.calcular_importe_total()))
+        enviar_correoe(rte, 
+                       dests,
+                       "Alta de nueva adjudicación de oferta", 
+                       texto, 
+                       servidor = servidor, 
+                       usuario = smtpuser, 
+                       password = smtppass)
 
     def bloquear(self, ch):
         """
@@ -584,6 +722,109 @@ class Presupuestos(Ventana, VentanaGenerica):
             self.objeto.notificador.activar(self.aviso_actualizacion)
             self.wids['b_actualizar'].set_sensitive(False) # Falsos positivos.
 
+    def conceder_credito(self, ch):
+        """
+        Si ya está condedido:
+            - Deja el presupuesto como indica el check. Sea quien sea. Si 
+              estamos rellenando los widgets, ch estará marcado o desmarcado en
+              función del valor de la oferta. Si le ha dado el usuario, el ch 
+              tiene el nuevo valor de concesión (opuesto en este instante a 
+              lo que guarda self.objeto...).
+        Si no está concedido: 
+            - Si el usuario tiene nivel: concede y guarda el usuario.
+            - Si el usuario no tiene nivel: no concede y muestra aviso.
+        """
+        if (self.objeto.credUsuario != None) == ch.get_active():     # Estoy rellenando. No 
+            # hay edición del usuario. No compruebo nada.
+            pass    # OJO porque aquí puede haber BUG. ¿Qué pasa si estoy 
+                    # moviéndome de un objeto ya concedido a otro no  
+                    # concedido? Entraría por la otra rama del if confundiendo 
+                    # una posible concesión del usuario con una simple 
+                    # actialización del widget en la ventana.
+        else:   # El usuario está cancilando o intentando conceder.
+            self.objeto.notificador.desactivar()
+            vpro = VentanaActividad(self.wids['ventana'], 
+                                    "Comprobando permisos...")
+            vpro.mostrar()
+            vpro.mover()
+            tmphndlr = self.handlers_id['ch_cred_vb_admon']['clicked'][-1] # -1? r-u-sure?
+            vpro.mover()
+            if ((not self.usuario or self.usuario.nivel > NIVEL_VALIDACION)
+                    and ch.get_active() # = estoy intentando conceder
+                    ): 
+                vpro.mover()
+                ch.disconnect(tmphndlr)
+                ch.set_active(False)
+                self.objeto.credVbNombreadmon = "" 
+                self.objeto.credUsuario = None
+                self.objeto.credFechaconcedido = None
+                self.objeto.make_swap("credVbNombreadmon")
+                self.objeto.make_swap("credUsuario")
+                self.objeto.make_swap('credFechaconcedido')
+                vpro.mover()
+                self.objeto.syncUpdate()
+                pclases.Auditoria.modificado(self.objeto, 
+                    self.usuario, __file__, 
+                    "Se impide intento de concesión de crédito en presupuesto %d por %s." 
+                        % (self.objeto.id, 
+                           self.usuario and self.usuario.usuario or "¡NADIE!"))
+                vpro.mover()
+                vpro.ocultar()
+                utils.dialogo_info("PERMISOS INSUFICIENTES", 
+                        texto = "No posee privilegios suficientes para "
+                                "conceder crédito al cliente.", 
+                        padre = self.wids['ventana'])
+            else:   # Estoy cancelando o tengo permisos para conceder crédito.
+                vpro.mover()
+                ch.disconnect(tmphndlr)
+                vpro.mover()
+                if ch.get_active():     # Estoy concediendo
+                    if self.usuario:
+                        self.objeto.credVbNombreadmon = self.usuario.nombre
+                        self.objeto.credUsuario = self.usuario
+                        self.objeto.make_swap("credVbNombreadmon")
+                        self.objeto.make_swap("credUsuario")
+                        self.objeto.credFechaconcedido = datetime.date.today()
+                        self.objeto.make_swap("credFechaconcedido")
+                        pclases.Auditoria.modificado(self.objeto, 
+                            self.usuario, __file__, 
+                            "Concedida solicitud de crédito para el "
+                            "presupuesto %d por %s." 
+                                % (self.objeto.id, 
+                                   self.objeto.credUsuario.usuario))
+                        # XXX: PLAN: Todavía no han dicho nada. Pero lo harán:
+                        # self.enviar_correo_notificacion_credito_concedido()
+                else:   # Estoy cancelando el crédito
+                    self.objeto.credVbNombreadmon = ""
+                    self.objeto.credUsuario = None
+                    self.objeto.credFechaconcedido = None
+                    self.objeto.make_swap("credVbNombreadmon")
+                    self.objeto.make_swap("credUsuario")
+                    self.objeto.make_swap("credFechaconcedido")
+                    pclases.Auditoria.modificado(self.objeto, 
+                        self.usuario, __file__, 
+                        "Crédito %d cancelado por %s." 
+                            % (self.objeto.id, 
+                               self.usuario and self.usuario.usuario 
+                               or "¡NADIE!"))
+                vpro.mover()
+                self.objeto.syncUpdate()
+                self.objeto.make_swap("credVbNombreadmon")
+                self.objeto.make_swap("credFechaconcedido")
+                vpro.mover()
+                self.wids["ch_cred_vb_admon"].set_active(
+                        self.objeto.credUsuario != None and 1 or 0)
+                self.wids["e_cred_vb_nombreadmon"].set_text(
+                        self.objeto.credVbNombreadmon or "")
+                self.wids["e_cred_fechaconcedido"].set_text(
+                    utils.str_fecha(self.objeto.credFechaconcedido))
+                vpro.mover()
+                vpro.ocultar()
+            tmphndlr = ch.connect("clicked", self.conceder_credito)
+            self.handlers_id['ch_cred_vb_admon']['clicked'].append(tmphndlr)
+            self.objeto.notificador.activar(self.aviso_actualizacion)
+            self.wids['b_actualizar'].set_sensitive(False) # Falsos positivos.
+
     def fecha(self, w):
         try:
             provisional = utils.parse_fecha(self.wids['e_fecha'].get_text())
@@ -608,6 +849,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         cliente = pclases.Cliente.get(idcliente)
         #if not self.wids["e_cliente"].get_text():
         #    self.wids["e_cliente"].set_text(cliente.nombre)
+        # TODO: Hacer lo mismo con la dirección del formulario de crédito.
         if not self.wids['e_cif'].get_text().strip():
             self.wids['e_cif'].set_text(cliente.cif)
         #if not self.wids["e_direccion"].get_text():
@@ -888,10 +1130,17 @@ class Presupuestos(Ventana, VentanaGenerica):
                         print "colname:", colname
                         print "\tvalor_ventana:", valor_ventana
                         print "\tvalor_objeto:", valor_objeto
-                    break
-                    # TODO: PLAN: ¿Y si en vez de un break, cojo, sigo 
-                    # sigo analizando y marco en algún color los campos 
-                    # diferentes?
+                    #break
+                # DONE: PLAN: ¿Y si en vez de un break, cojo, sigo 
+                # sigo analizando y marco en algún color los campos 
+                # diferentes?
+                if valor_ventana != valor_objeto:
+                    color = gtk.gdk.color_parse("Light Blue")
+                else:
+                    color = None
+                self.wids[self.dic_campos[colname]].modify_base(
+                        gtk.STATE_NORMAL, 
+                        color)
         return not igual
     
     def reset_cache_credito(self):
@@ -1381,10 +1630,25 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.wids['b_enviar'].set_tooltip_text(txt_puede_imprimir)
         self.wids['ch_adjudicada'].set_tooltip_text(txt_puede_adjudicarse)
         self.actualizar_editable_motivo(self.wids['ch_denegado'])
+        self.wids['txt_cred_motivo_rechazo'].set_sensitive(
+                not self.wids['ch_cred_vb_admon'].get_active())
         # CWT: Si ya se había seleccionado el tipo de oferta y era de pedido, 
         # no permitir cambiarla.
         if self.objeto and self.objeto.estudio: 
             self.wids['hbox_radiobutton'].set_sensitive(False)
+        # Si el crédito ya se ha aprobado, bloqueo todo menos eso.
+        if self.objeto and self.objeto.credUsuario:
+            for w in self.wids.keys():
+                if (("_cred_" in w and w != "ch_cred_vb_admon") 
+                        or (w == "b_credito")):
+                    self.wids[w].set_sensitive(False)
+        # Aparte, si el usuario no tiene nivel para conceder crédito le 
+        # impido tocar lo concedido y sus fechas.
+        if self.usuario and self.usuario.nivel > NIVEL_VALIDACION:
+            self.wids['e_cred_asegurado'].set_sensitive(False)
+            self.wids['e_cred_fechaasegurado'].set_sensitive(False)
+            self.wids['e_cred_concedido'].set_sensitive(False)
+            self.wids['e_cred_fechaconcedido'].set_sensitive(False)
 
     def refinar_resultados_busqueda(self, resultados):
         """
@@ -1556,6 +1820,20 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.wids['ch_bloqueado'].set_active(self.objeto.bloqueado)
         self.hndlr_bloqueado = self.wids['ch_bloqueado'].connect('clicked', 
                 self.bloquear)
+        # Y ahora los "autocalculados" de la petición de crédito.
+        self.wids['ch_cred_vb_comercial'].set_active(
+                self.objeto.credVecesSolicitado > 0)
+        self.wids["ch_cred_vb_admon"].set_active(
+                self.objeto.credUsuarioID != None)
+        # El nombre se guarda en un campo de texto al hacer clic en el check.
+        self.wids["e_cred_cif"].set_text(self.objeto.cif)
+        self.wids["e_cred_nombre"].set_text(self.objeto.nombrecliente)
+        self.wids["e_cred_obra"].set_text(self.objeto.nombreobra)
+        try:
+            nombre_del_comercial = self.objeto.comercial.get_nombre_completo()
+        except AttributeError: 
+            nombre_del_comercial = ""
+        self.wids["e_cred_comercial"].set_text(nombre_del_comercial)
         if pclases.DEBUG:
             print "  <<< ::::::::::::::::: rellenar_widgets ::::::::::::::::::"
 
@@ -1826,6 +2104,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         # FIXME: A veces no se oculta la ventana de progreso en el ordenador de Rafa. ¿Porcuá?
         vpro.ocultar()
         self.objeto.notificador.activar(self.aviso_actualizacion)        
+        return self.cache_credito
 
     def actualizar_tooltip_de_cliente(self):
         idcliente = utils.combo_get_value(self.wids['cbe_cliente'])

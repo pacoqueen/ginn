@@ -1753,11 +1753,11 @@
                     <property name="hscrollbar_policy">automatic</property>
                     <property name="vscrollbar_policy">automatic</property>
                     <child>
-                      <widget class="GtkViewport" id="viewport1">
+                      <widget class="GtkViewport" id="vp_form_credito">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <child>
-                          <widget class="GtkTable" id="table3">
+                          <widget class="GtkTable" id="form_credito">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="n_rows">9</property>
@@ -2981,7 +2981,9 @@
                                               <widget class="GtkEntry" id="e_cred_digitocontrol">
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">True</property>
+                                                <property name="editable">False</property>
                                                 <property name="max_length">2</property>
+                                                <property name="has_frame">False</property>
                                                 <property name="invisible_char">•</property>
                                                 <property name="invisible_char_set">True</property>
                                                 <property name="primary_icon_activatable">False</property>
@@ -3084,24 +3086,6 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
-                                        <child>
                                           <widget class="GtkEntry" id="e_cred_diapago1">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
@@ -3154,6 +3138,24 @@
                                             <property name="top_attach">5</property>
                                             <property name="bottom_attach">6</property>
                                           </packing>
+                                        </child>
+                                        <child>
+                                          <placeholder/>
+                                        </child>
+                                        <child>
+                                          <placeholder/>
+                                        </child>
+                                        <child>
+                                          <placeholder/>
+                                        </child>
+                                        <child>
+                                          <placeholder/>
+                                        </child>
+                                        <child>
+                                          <placeholder/>
+                                        </child>
+                                        <child>
+                                          <placeholder/>
                                         </child>
                                       </widget>
                                     </child>

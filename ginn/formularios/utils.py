@@ -4373,6 +4373,7 @@ def sanitize(cad, strict = False):
         cad = cad.replace(mala, buena)
     return cad
 
+
 if __name__=="__main__":
     print dialogo_radio(titulo='Seleccione una opción', 
                 texto='Selecciona una opción del radiobutton y tal y cual.', 
