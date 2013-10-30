@@ -3420,6 +3420,40 @@
                                                 <property name="position">1</property>
                                               </packing>
                                             </child>
+                                            <child>
+                                              <widget class="GtkLabel" id="label39">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">False</property>
+                                                <property name="label" translatable="yes">&lt;small&gt;O motivo de rechazo en otro caso:&lt;/small&gt;</property>
+                                                <property name="use_markup">True</property>
+                                              </widget>
+                                              <packing>
+                                                <property name="expand">True</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">2</property>
+                                              </packing>
+                                            </child>
+                                            <child>
+                                              <widget class="GtkScrolledWindow" id="scrolledwindow10">
+                                                <property name="height_request">50</property>
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">True</property>
+                                                <property name="hscrollbar_policy">automatic</property>
+                                                <property name="vscrollbar_policy">automatic</property>
+                                                <child>
+                                                  <widget class="GtkTextView" id="txt_cred_motivo_rechazo">
+                                                    <property name="visible">True</property>
+                                                    <property name="can_focus">True</property>
+                                                    <property name="wrap_mode">word</property>
+                                                  </widget>
+                                                </child>
+                                              </widget>
+                                              <packing>
+                                                <property name="expand">True</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">3</property>
+                                              </packing>
+                                            </child>
                                           </widget>
                                           <packing>
                                             <property name="left_attach">1</property>
@@ -3482,7 +3516,6 @@
                                               <widget class="GtkEntry" id="e_cred_asegurado">
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">True</property>
-                                                <property name="max_length">2</property>
                                                 <property name="invisible_char">•</property>
                                                 <property name="invisible_char_set">True</property>
                                                 <property name="primary_icon_activatable">False</property>
@@ -3499,7 +3532,6 @@
                                               <widget class="GtkEntry" id="e_cred_fechaasegurado">
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">True</property>
-                                                <property name="max_length">2</property>
                                                 <property name="invisible_char">•</property>
                                                 <property name="invisible_char_set">True</property>
                                                 <property name="primary_icon_activatable">False</property>
@@ -3518,7 +3550,6 @@
                                               <widget class="GtkEntry" id="e_cred_concedido">
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">True</property>
-                                                <property name="max_length">2</property>
                                                 <property name="invisible_char">•</property>
                                                 <property name="invisible_char_set">True</property>
                                                 <property name="primary_icon_activatable">False</property>
@@ -3537,7 +3568,6 @@
                                               <widget class="GtkEntry" id="e_cred_fechaconcedido">
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">True</property>
-                                                <property name="max_length">2</property>
                                                 <property name="invisible_char">•</property>
                                                 <property name="invisible_char_set">True</property>
                                                 <property name="primary_icon_activatable">False</property>

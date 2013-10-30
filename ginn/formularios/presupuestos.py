@@ -86,8 +86,67 @@ class Presupuestos(Ventana, VentanaGenerica):
                            "personaContacto": "e_persona_contacto", 
                            'cerrado': "ch_cerrado", 
                            "rechazado": "ch_denegado", 
-                           "motivo": "e_motivo"
+                           "motivo": "e_motivo", 
                            # Ficha de solicitud de crédito:
+                           "credUte": "e_cred_ute", 
+                           "credLicitador": "e_cred_licitador", 
+                           "credDirfiscal": "e_cred_dirfiscal", 
+                           "credCpfiscal": "e_cred_cpfiscal", 
+                           "credTelefonofiscal": "e_cred_telefonofiscal", 
+                           "credContactofiscal": "e_cred_contactofiscal", 
+                           "credPoblacionfiscal": "e_cred_poblacionfiscal", 
+                           "credFaxfiscal": "e_cred_faxfiscal", 
+                           "credProvinciafiscal": "e_cred_provinciafiscal", 
+                           "credEmailfiscal": "e_cred_emailfiscal", 
+                           "credMovilfiscal": "e_cred_movilfiscal", 
+                           "credTelefonocontratos":"e_cred_telefonocontratos",
+                           "credEmailcontratos": "e_cred_emailcontratos", 
+                           "credDircontratos": "e_cred_dircontratos", 
+                           "credCpcontratos": "e_cred_cpcontratos", 
+                           "credProvinciacontratos": 
+                                                   "e_cred_provinciacontratos",
+                           "credContactocontratos":"e_cred_contactocontratos",
+                           "credPoblacioncontratos": 
+                                                   "e_cred_poblacioncontratos", 
+                           "credMovilcontratos": "e_cred_movilcontratos", 
+                           "credDirobra": "e_cred_dirobra", 
+                           "credCpobra": "e_cred_cpobra", 
+                           "credProvinciaobra": "e_cred_provinciaobra", 
+                           "credContactoobra": "e_cred_contactoobra", 
+                           "credPoblacionobra": "e_cred_poblacionobra", 
+                           "credMovilobra": "e_cred_movilobra", 
+                           "credEntidad": "e_cred_entidad", 
+                           "credOficina": "e_cred_oficina", 
+                           "credDigitocontrol": "e_cred_digitocontrol", 
+                           "credNumcuenta": "e_cred_numcuenta", 
+                           "credFdp": "e_cred_fdp", 
+                           "credDiapago1": "e_cred_diapago1", 
+                           "credDiapago2": "e_cred_diapago2", 
+                           "credDiapago3": "e_cred_diapago3", 
+                           "credCredsolicitado": "e_cred_credsolicitado", 
+                           "credVbNombrecomercial":
+                               "e_cred_vb_nombrecomercial", 
+                           "credVbNombreadmon":
+                               "e_cred_vb_nombreadmon", 
+                           "credAsegurado":
+                               "e_cred_asegurado", 
+                           "credFechaasegurado": "e_cred_fechaasegurado", 
+                           "credConcedido": "e_cred_concedido", 
+                           "credFechaconcedido": "e_cred_fechaconcedido", 
+                           "credFecha": "e_cred_fecha", 
+                           "credApertura": "ch_cred_apertura", 
+                           "credAumento": "ch_cred_aumento", 
+                           "credSolicitud": "ch_cred_solicitud", 
+                           "credEntidades": "txt_cred_entidades", 
+                           "credObservaciones": "txt_cred_observaciones", 
+                           "credCondiciones": "txt_cred_condiciones", 
+                           "credMotivoRechazo": "txt_cred_motivo_rechazo", 
+                           # "ch_cred_vb_comercial", Activado si presupuesto.usuario
+                           # "ch_cred_vb_admon", Activado si presupuesto.cred_usuario
+                           # "e_cred_cif", Mismo que el presupuesto.cliente.cif
+                           # "e_cred_nombre", Mismo que el presupuesto.cliente.nombrecliente
+                           # "e_cred_obra", Mismo que presupuesto.nombreobra
+                           # "e_cred_comercial", Mismo que presupuesto.comercial
                           }
         Ventana.__init__(self, 'presupuestos.glade', objeto, 
                          usuario = self.usuario)
@@ -813,7 +872,10 @@ class Presupuestos(Ventana, VentanaGenerica):
                 if colname == "comercialID" and valor_ventana == -1:
                         valor_ventana = None
                 if isinstance(col, pclases.SODateCol):
-                    valor_objeto = utils.abs_mxfecha(valor_objeto)
+                    try:
+                        valor_objeto = utils.abs_mxfecha(valor_objeto)
+                    except AttributeError: # Fecha es None
+                        valor_objeto = None
                 if colname == "clienteID" and valor_ventana == None:
                     valor_ventana = self.wids['cbe_cliente'].child.get_text()
                     valor_objeto = self.objeto.nombrecliente

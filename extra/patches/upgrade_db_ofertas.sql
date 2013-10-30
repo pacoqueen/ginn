@@ -49,4 +49,6 @@ ALTER TABLE presupuesto ADD COLUMN cred_entidades TEXT DEFAULT '';
 ALTER TABLE presupuesto ADD COLUMN cred_observaciones TEXT DEFAULT '';
 ALTER TABLE presupuesto ADD COLUMN cred_veces_solicitado INT DEFAULT 0;
 ALTER TABLE presupuesto ADD COLUMN cred_motivo_rechazo TEXT DEFAULT '';
+ALTER TABLE presupuesto ADD COLUMN cred_usuario_id INT REFERENCES usuario;
+ALTER TABLE presupuesto ADD COLUMN cred_condiciones TEXT DEFAULT ''; 
 

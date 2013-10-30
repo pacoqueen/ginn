@@ -1439,7 +1439,8 @@ CREATE TABLE presupuesto(
     bloqueado BOOLEAN DEFAULT FALSE,    -- Si bloqueado no se puede modificar.
     rechazado BOOLEAN DEFAULT FALSE,    -- ¿Hace falta explicarlo?
     motivo TEXT DEFAULT '', 
-    cred_apertura BOOLEAN DEFAULT FALSE,
+    -- Campos para la solicitud de crédito:
+    cred_apertura BOOLEAN DEFAULT FALSE,    -- Tipo de crédito a solicitar
     cred_aumento BOOLEAN DEFAULT FALSE,
     cred_solicitud BOOLEAN DEFAULT FALSE,
     cred_ute TEXT DEFAULT '',
@@ -1487,6 +1488,9 @@ CREATE TABLE presupuesto(
     cred_observaciones TEXT DEFAULT '',
     cred_veces_solicitado INT DEFAULT 0,
     cred_motivo_rechazo TEXT DEFAULT ''
+    cred_usuario_id INT REFERENCES usuario DEFAULT NULL, -- ID del usuario 
+        -- que ha aprobado el crédito.
+    cred_condiciones TEXT DEFAULT ''
 );
 
 ----------------------------------

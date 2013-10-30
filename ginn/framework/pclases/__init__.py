@@ -17993,7 +17993,11 @@ class Usuario(SQLObject, PRPCTOO):
     empleados = MultipleJoin("Empleado")
     auditorias = MultipleJoin("Auditoria")
     pedidosVenta = MultipleJoin("PedidoVenta")
-    presupuestos = MultipleJoin("Presupuesto")
+    presupuestos = MultipleJoin("Presupuesto", 
+            joinColumn = "usuario_id")
+    #credPresupuestos = MultipleJoin("Presupuestos", 
+    #        joinColumn = "cred_usuario_id")
+    # It does not work. And I don't know why.
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
