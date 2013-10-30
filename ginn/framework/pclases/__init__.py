@@ -17997,7 +17997,7 @@ class Usuario(SQLObject, PRPCTOO):
             joinColumn = "usuario_id")
     #credPresupuestos = MultipleJoin("Presupuestos", 
     #        joinColumn = "cred_usuario_id")
-    # It does not work. And I don't know why.
+    # TODO: XXX: FIXME: It does not work. And I don't know why.
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)

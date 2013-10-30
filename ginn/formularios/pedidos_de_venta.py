@@ -1782,6 +1782,10 @@ class PedidosDeVenta(Ventana):
                                 "presupuesto.\n\n¿Está seguro de querer "
                                 "cambiarlo?", 
                         padre = self.wids['ventana']):
+                    # TODO: FIXME: OJO porque esto desvincula al pedido del 
+                    # presupuesto. Pronto se cambiará para que no se permita 
+                    # hacer y si se hace, que invalide ambos. Pero seguirán 
+                    # estando entrelazados.
                     ldporiginal = ldp
                     ldp = ldporiginal.clone(presupuesto = None)
                     ldporiginal.pedidoVenta = None

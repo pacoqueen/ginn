@@ -2078,6 +2078,41 @@ class AlbaranesDeSalida(Ventana):
             return
         pedido.sync()   # Por si ha habido cambios y no 
                         # ha saltado el fallo de caché.
+        # Primera comprobación, que el pedido no lleve más de lo ofertado. 
+        # Decido hacerlo aquí y no en comprobar las cantidades en la propia 
+        # ventana de los pedidos ante cada cambio o incluso mejor que justo 
+        # antes de imprimir, así doy más tiempo al usuario a corregirlo.
+        prods_pedidos = {}
+        for presupuesto in pedido.get_presupuestos():
+            pedido_en_presupuesto = presupuesto.get_pedido_por_producto()
+            for producto in pedido_en_presupuesto:
+                try:
+                    prods_pedidos[producto] = pedido_en_presupuesto[producto]
+                except: 
+                    prods_pedidos[producto] = pedido_en_presupuesto[producto]
+            for ldp in presupuesto.lineasDePresupuesto:
+                producto = ldp.producto 
+                if not producto:    # Es servicio, clasifico por descripción.
+                    producto = ldp.descripcion
+                try:
+                    prods_pedidos[producto] -= ldp.cantidad
+                except: 
+                    prods_pedidos[producto] = -ldp.cantidad
+        # Y ahora por fin cotejo las cantidades.
+        for producto in prods_pedidos:
+            if prods_pedidos[producto] > 0:
+                utils.dialogo_info(titulo = "PEDIDO EXCEDE OFERTA", 
+                        texto = "En el pedido %s la cantidad de %s \n"
+                                "excede en %s a la ofertada en %s." % (
+                                    pedido.numpedido, 
+                                    isinstance(producto, str) and producto or 
+                                        producto.descripcion, 
+                                    utils.float2str(prods_pedidos[producto]), 
+                                    ", ".join([str(p.id) for p 
+                                               in pedido.get_presupuestos()])), 
+                        padre = self.wids['ventana'])
+                return
+        # Ahora compruebo validación del pedido.
         if not pedido.validado:
             utils.dialogo_info(titulo = "PEDIDO NO VALIDADO", 
                     texto = "El pedido contiene ventas por debajo del precio\n"

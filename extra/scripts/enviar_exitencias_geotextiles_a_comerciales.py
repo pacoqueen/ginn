@@ -29,7 +29,7 @@ from framework import pclases
 from formularios.consulta_existenciasRollos import ConsultaExistenciasRollos
 from formularios.utils import enviar_correoe
 
-pclases.DEBUG = True
+#pclases.DEBUG = True
 
 def main():
     consulta = ConsultaExistenciasRollos(gui = False)
