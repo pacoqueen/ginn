@@ -63,6 +63,7 @@ class ConsultaExistenciasRollos(Ventana):
                 ruta_csv = tempfile.NamedTemporaryFile(suffix = ".csv").name
             else:
                 csv = False
+                ruta_csv = None
         else:
             csv = False
             ruta_csv = None
