@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado                    #
-#                          (pacoqueen@users.sourceforge.net)                  #
+# Copyright (C) 2005-2013  Francisco José Rodríguez Bogado                    #
+#                          <frbogado@geotexan.com>                            #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
 #                                                                             #
@@ -51,7 +51,7 @@ def dibujar_logo(canvas, doc, ruta_logo):
         nuevo_alto = min(3 * cm, alto)
         ancho_proporcional = ancho * (nuevo_alto / alto)
         canvas.drawImage(ruta_logo, 
-                         PAGE_WIDTH - 3 * cm - ancho_proporcional, 
+                         (PAGE_WIDTH / 2) - ancho_proporcional, 
                          PAGE_HEIGHT - 2 * cm - nuevo_alto, 
                          ancho_proporcional, 
                          nuevo_alto)
@@ -76,7 +76,11 @@ def build_encabezado(datos_empresa = []):
     estilo_encabezado.alignment = enums.TA_JUSTIFY
     estilo_encabezado.spaceAfter = 0
     estilo_encabezado.spaceBefore = 4
-    datos_empresa[0] = datos_empresa[0].upper()
+    try:
+        datos_empresa[0] = datos_empresa[0].upper()
+    except TypeError:
+        datos_empresa = list(datos_empresa)
+        datos_empresa[0] = datos_empresa[0].upper()
     for linea in datos_empresa:
         if linea is datos_empresa[0]:
             estilo_encabezado.fontSize += 3
@@ -129,21 +133,27 @@ def build_entradilla(fecha, numpresupuesto):
                         numpresupuesto != None and numpresupuesto or "", 
                         fecha), estilos["Normal"])
 
-def build_texto(texto):
-    """
-    El texto que encabeza la tabla.
-    """
+def build_fecha(fecha):
     res = None
-    if texto:
+    if fecha:
         estilo_texto = ParagraphStyle("Texto", 
                                       parent = estilos["Normal"])
-        estilo_texto.alignment = enums.TA_JUSTIFY
-        estilo_texto.firstLineIndent = 24
-        _res = [Paragraph(escribe(i), estilo_texto) for i in texto.split("\n")]
-        espacio = Spacer(1, 0.25*cm)
-        res = [_res[0]]
-        for i in _res[1:]:
-            res.extend([espacio, i])
+        estilo_texto.alignment = enums.TA_RIGHT
+        res = Paragraph(escribe("Fecha: %s" % (utils.str_fecha(fecha))), 
+                        estilo_texto)
+    return res
+
+def build_datos_obra(obra):
+    """
+    Un cuadro con la referencia recibida de la obra dentro.
+    """
+    res = None
+    if obra:
+        estilo_texto = ParagraphStyle("Texto", 
+                                      parent = estilos["Normal"])
+        estilo_texto.alignment = enums.TA_RIGHT
+        res = [Paragraph(escribe("REF. OBRA:"), estilo_texto), 
+               Paragraph(escribe(obra), estilo_texto)]
     return res
 
 def go(titulo, 
@@ -164,21 +174,16 @@ def go(titulo,
     datos_cliente = build_datos_cliente(datos_cliente)  # Datos del cliente
     par_fecha = build_fecha(fecha)  # Fecha a la derecha
     datos_obra = build_datos_obra(ref_obra) # Cuadro con datos de la obra
-    texto = build_texto()   # Texto fijo
-    despedida = build_despedida(datos_comercial)    # Atentamente...
     story = [encabezado, 
              datos_cliente, 
              par_fecha, 
              Spacer(1, 0.2 * cm), 
-             datos_obra, 
-             Spacer(1, 0.25 * cm), 
-             texto, 
-             Spacer(1, 2 * cm), 
-             despedida]
+             datos_obra]
     story = utils.aplanar([i for i in story if i])
     _dibujar_logo = lambda c, d: dibujar_logo(c, d, ruta_logo)
     _dibujar_pie = lambda c, d: dibujar_pie(c, d, lineas_datos_empresa)
-    doc.build(story, onFirstPage = _dibujar_logo, onLastPage = _dibujar_pie)
+    doc.build(story, onFirstPage = _dibujar_logo, onLaterPages = _dibujar_pie)
+# PORASQUI
     return ruta_archivo
 
 def go_from_presupuesto(presupuesto):
@@ -289,21 +294,14 @@ def go_from_presupuesto(presupuesto):
     else:
         condicionado = None
     nomarchivo = go(
-      "Presupuesto %s (%s)" % (presupuesto.nombrecliente, 
-                               utils.str_fecha(presupuesto.fecha)), 
+      "Carta compromiso", 
        nomarchivo, 
        lineas_empresa, 
        datos_cliente, 
-       lineas_contenido, 
+       ref_obra, 
+       datos_comercial, 
        fecha_entradilla, 
-       totales, 
-       condicionado, 
-       presupuesto.despedida, 
-       ruta_logo = logo, 
-       validez = validez, 
-       texto_riesgo = texto_riesgo, 
-       #numpresupuesto = presupuesto.numpresupuesto)
-       numpresupuesto = presupuesto.id)
+       ruta_logo = logo)  
     return nomarchivo
 
 
@@ -311,9 +309,6 @@ if __name__ == "__main__":
     try:
         go_from_presupuesto(pclases.Presupuesto.select()[-1])
     except:
-        lineas_contenido = [(1.234, "Una cosa "*20, "1.245", `1.234*1.245`), 
-                            (1, "Grñai mama", "1", "0.25"), 
-                            ("0,25", "Otra cosa", "1", "0.25")] * 7
         lineas_empresa = ("American woman, co.", 
                           "Johnny Cash", 
                           "Alabama - 3213", 
@@ -322,32 +317,22 @@ if __name__ == "__main__":
                          "los lunes se levanta a partir de las 2.", 
                          "con el sol", 
                          "qué calor")
-        totales = {"Base imponible": "100.50 €", 
-                   "IVA 21%": 100.5 * 0.21, 
-                   "TOTAL": 100.5 * 1.21, 
-                   "orden": ("Base imponible", "IVA 16%", "TOTAL")}
-        texto = """Estimado señor Floppy:
-                    Es un placer decirle a la cara que usted apesta.
-                    No te digo «na» y te lo digo «to».
-
-
-                    Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Curabitur eu odio. Ut dapibus. In quis diam mattis est volutpat luctus. Quisque pharetra diam vel mauris. Etiam blandit gravida augue. Phasellus justo dolor, porta vehicula, sagittis sed, viverra vitae, velit. Ut lorem nibh, volutpat at, faucibus sit amet, dapibus sit amet, est. Nunc iaculis nunc at risus. Phasellus porta felis. Suspendisse lorem leo, faucibus ut, aliquam sed, faucibus id, lorem. Nulla aliquet, sapien eu pulvinar suscipit, turpis purus varius metus, eu dignissim est orci luctus neque. Nam scelerisque elit eu nisi. Aenean tincidunt. Sed adipiscing eros ut magna. Proin varius. In hac habitasse platea dictumst.
-        """
-        despedida = """
-        Firmado:
-
-            Al Bundy.
-        """
+        ref_obra = '“Modernización de las instalaciones de riego de la '\
+                   'Comunidad de Regantes “Vega Campo-Baza”, en el T.M. '\
+                   'de Baza (Granada)”'
+        datos_comercial = ("Perlita de Huelva", 
+                           "Arte puro", 
+                           "Huelva", 
+                           "+00 123 456 789")
         import time
         fecha_entradilla = utils.str_fecha(time.localtime())
         go("Presupuesto", 
            "/tmp/presupuesto.pdf", 
            lineas_empresa, 
            datos_cliente, 
-           lineas_contenido, 
+           ref_obra, 
+           datos_comercial, 
            fecha_entradilla, 
-           totales, 
-           texto, 
-           despedida, 
-           ruta_logo = "../imagenes/dorsia.png")
+           ruta_logo = os.path.join(
+               os.path.dirname(__file__), "..", "imagenes", "dorsia.png"))
 
