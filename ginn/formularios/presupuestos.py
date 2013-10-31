@@ -2703,7 +2703,8 @@ def hacer_pedido(presupuesto, usuario, ventana_padre = None):
                 utils.dialogo_info(titulo = "CLIENTE NO EXISTE", 
                         texto = "Asegúrese de que el cliente\n"
                                 "«%s»\n"
-                                "existe y está correctamente escrito.", 
+                                "existe y está correctamente escrito." % (
+                                    presupuesto.nombrecliente), 
                         padre = ventana_padre)
             else:
                 if not presupuesto.obra:
