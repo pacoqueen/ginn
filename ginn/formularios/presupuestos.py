@@ -1030,11 +1030,6 @@ class Presupuestos(Ventana, VentanaGenerica):
 
     def imprimir_carta_compromiso(self, boton):
 
-        # TODO
-        utils.dialogo_info(titulo = "NO IMPLEMENTADO", 
-                texto = "Característica en desarrollo.", 
-                padre = self.wids['ventana'])
-        return 
         from formularios.reports import abrir_pdf
         from informes import carta_compromiso
         abrir_pdf(carta_compromiso.go_from_presupuesto(self.objeto))  # @UndefinedVariable

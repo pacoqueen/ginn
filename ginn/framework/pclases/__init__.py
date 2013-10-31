@@ -18150,13 +18150,19 @@ class DatosDeLaEmpresa(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
-    def get_ruta_completa_logo(self):
+    def get_ruta_completa_logo(self, logo = None):
         """
         Devuelve la ruta completa al logotipo de datos de la empresa.
         Si no tiene logo, devuelve None.
+        Si logo es distinto a None (un nombre de fichero), devuelve la ruta 
+        para ese logo según la estructura de directorios de la aplicación.
         """
-        im = os.path.join(os.path.dirname(os.path.realpath(__file__)), 
-                          "..", "..", "imagenes", self.logo)
+        if not logo:
+            im = os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+                              "..", "..", "imagenes", self.logo)
+        else:
+            im = os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+                              "..", "..", "imagenes", logo)
         return os.path.abspath(im)
 
     @classmethod
