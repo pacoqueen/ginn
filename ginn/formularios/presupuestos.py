@@ -272,6 +272,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 self.rellenar_tablas_historial()
 
     def enviar_solicitud_credito(self, boton):
+        self.guardar(None)  # Por si acaso, primero guardo
         # Comprobación de campos obligatorios:
         falta_alguno = False
         if (self.objeto.credApertura == self.objeto.credAumento == 
@@ -284,27 +285,27 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.wids["ch_cred_aumento"].modify_base(gtk.STATE_NORMAL, color)
         self.wids["ch_cred_solicitud"].modify_base(gtk.STATE_NORMAL, color)
         for obligatorio, wid in (("credFecha", "e_cred_fecha"), 
-                                 ("credUsuario", "e_cred_comercial"), 
-                                 (("cif", "e_cred_cif")), 
-                                 (("nombrecliente", "e_cred_nombre")), 
-                                 (("credUte", "e_cred_ute")), 
-                                 (("nombreobra", "e_cred_obra")), 
-                                 (("credLicitador", "e_cred_licitador")), 
-                                 (("credDirfiscal", "e_cred_dirfiscal")), 
-                                 (("credCpfiscal", "e_cred_cpfiscal")), 
-                                 (("credPoblacionfiscal", 
-                                    "e_cred_poblacionfiscal")), 
-                                 (("credProvinciafiscal", 
-                                     "e_cred_provinciafiscal")), 
-                                 (("credTelefonofiscal", 
-                                     "e_cred_telefonofiscal")), 
-                                 (("credFaxfiscal", "e_cred_faxfiscal")), 
-                                 (("credMovilfiscal", "e_cred_movilfiscal")), 
-                                 (("credContactofiscal", 
-                                     "e_cred_contactofiscal")), 
-                                 (("credFdp", "e_cred_fdp")), 
-                                 (("credEntidades", "txt_cred_entidades")), 
-                                 (("credDiapago1", "e_cred_diapago1")), 
+                                 ("comercial", "e_cred_comercial"), 
+                                 ("cif", "e_cred_cif"), 
+                                 ("nombrecliente", "e_cred_nombre"), 
+                                 ("credUte", "e_cred_ute"), 
+                                 ("nombreobra", "e_cred_obra"), 
+                                 ("credLicitador", "e_cred_licitador"), 
+                                 ("credDirfiscal", "e_cred_dirfiscal"), 
+                                 ("credCpfiscal", "e_cred_cpfiscal"), 
+                                 ("credPoblacionfiscal", 
+                                   "e_cred_poblacionfiscal"), 
+                                 ("credProvinciafiscal", 
+                                    "e_cred_provinciafiscal"), 
+                                 ("credTelefonofiscal", 
+                                    "e_cred_telefonofiscal"), 
+                                 ("credFaxfiscal", "e_cred_faxfiscal"), 
+                                 ("credMovilfiscal", "e_cred_movilfiscal"), 
+                                 ("credContactofiscal", 
+                                    "e_cred_contactofiscal"), 
+                                 ("credFdp", "e_cred_fdp"), 
+                                 ("credEntidades", "txt_cred_entidades"), 
+                                 ("credDiapago1", "e_cred_diapago1"), 
                                  ("credCredsolicitado", 
                                      "e_cred_credsolicitado")):
             valor = getattr(self.objeto, obligatorio)
@@ -409,7 +410,8 @@ class Presupuestos(Ventana, VentanaGenerica):
             texto = "%s ha solicitado crédito para el cliente %s "\
                     "a través de la oferta %d." % (
                         self.usuario and self.usuario.nombre or "Se", 
-                        self.objeto.cliente and self.objeto.nombre or "", 
+                        self.objeto.cliente and self.objeto.cliente.nombre 
+                            or self.objeto.nombrecliente, 
                         self.objeto.id)
             if nomfich_solicitud: 
                 adjunto = [nomfich_solicitud]
@@ -1136,7 +1138,14 @@ class Presupuestos(Ventana, VentanaGenerica):
                 if valor_ventana != valor_objeto:
                     color = gtk.gdk.color_parse("Light Blue")
                 else:
-                    color = None
+                    color = self.wids[
+                            self.dic_campos[colname]].style.base[
+                                gtk.STATE_NORMAL]
+                    # Si estaba marcado en rojo por algún motivo (campo 
+                    # obligatorio en el crédito, por ejemplo) lo dejo como 
+                    # estaba. Si no, lo vuelvo a poner en blanquito.
+                    if color != gtk.gdk.color_parse("Red"):
+                        color = None
                 self.wids[self.dic_campos[colname]].modify_base(
                         gtk.STATE_NORMAL, 
                         color)
