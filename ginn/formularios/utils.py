@@ -2457,6 +2457,8 @@ def enviar_correoe(remitente,
     assert type(adjuntos) is list
 
     ok = False
+    if not destinos:
+        return False
 
     msg = MIMEMultipart()
     # XXX
@@ -4370,6 +4372,7 @@ def sanitize(cad, strict = False):
     for mala, buena in equivalencias:
         cad = cad.replace(mala, buena)
     return cad
+
 
 if __name__=="__main__":
     print dialogo_radio(titulo='Seleccione una opción', 

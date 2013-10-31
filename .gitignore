@@ -1,6 +1,7 @@
 last-session.txt
 *.lock
 *.py[co]
+.~lock.*#
 
 # Packages
 *.egg

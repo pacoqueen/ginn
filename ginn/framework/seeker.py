@@ -395,9 +395,12 @@ class VentanaGenerica(Ventana):
             try:
                 valor = utils.parse_fecha(valor)
             except Exception, e:
-                if pclases.DEBUG:
-                    print "Excepción %s capturada al convertir %s a fecha." % (e, valor)
-                raise e
+                if valor.strip() == "":
+                    valor = None  # Devuelvo nada. En algunos casos es válido.
+                else:
+                    if pclases.DEBUG:
+                        print "Excepción %s capturada al convertir %s a fecha." % (e, valor)
+                    raise e
         elif isinstance(col, pclases.SOForeignKey):
             valor = utils.combo_get_value(widget)
         else:
@@ -478,9 +481,12 @@ class VentanaGenerica(Ventana):
             try:
                 valor = utils.str_fecha(valor)
             except Exception, e:
-                if pclases.DEBUG:
-                    print "Excepción %s capturada al convertir %s de fecha a cadena." % (e, valor)
-                raise e
+                if valor == None:
+                    valor = ""  # A veces es válido que sea fecha o nada.
+                else:
+                    if pclases.DEBUG:
+                        print "Excepción %s capturada al convertir %s de fecha a cadena." % (e, valor)
+                    raise e
             widget.set_text(valor)
         elif isinstance(col, pclases.SOForeignKey):
             utils.combo_set_from_db(widget, valor)

@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado                    #
-#                          (pacoqueen@users.sourceforge.net)                  #
+# Copyright (C) 2005-2013  Francisco José Rodríguez Bogado                    #
+#                          <frbogado@geotexan.com>                            #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
 #                                                                             #
@@ -25,7 +25,8 @@
 # Carta de compromiso imprimible desde presupuestos. 
 
 
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, \
+                               TableStyle, XBox
 import Image
 from reportlab.rl_config import defaultPageSize
 from reportlab.lib import colors, enums
@@ -41,65 +42,101 @@ from tempfile import gettempdir
 PAGE_HEIGHT = defaultPageSize[1]; PAGE_WIDTH = defaultPageSize[0]
 estilos = getSampleStyleSheet()
 
-def dibujar_logo(canvas, doc, ruta_logo):
+def dibujar_logo(canvas, doc, ruta_logo, lineas_datos_empresa, datos_fiscales, 
+                 logo_marcado = None):
     """
     Dibuja el logotipo de la empresa en la página de «canvas».
+    También dibuja el pie porque se hace con onLaterPages, que no es llamada 
+    en la primera página. Así que aquí hay que hacer las dos cosas.
     """
     if ruta_logo:
         im = Image.open(ruta_logo)
         ancho, alto = im.size
-        nuevo_alto = min(3 * cm, alto)
+        nuevo_alto = min(5 * cm, alto)
         ancho_proporcional = ancho * (nuevo_alto / alto)
         canvas.drawImage(ruta_logo, 
-                         PAGE_WIDTH - 3 * cm - ancho_proporcional, 
+                         (PAGE_WIDTH - ancho_proporcional) / 2, 
                          PAGE_HEIGHT - 2 * cm - nuevo_alto, 
                          ancho_proporcional, 
                          nuevo_alto)
+    if logo_marcado:
+        im = Image.open(logo_marcado)
+        ancho, alto = im.size
+        nuevo_alto = min(2.5 * cm, alto)
+        ancho_proporcional = ancho * (nuevo_alto / alto)
+        canvas.drawImage(logo_marcado, 
+                         PAGE_WIDTH - 6 * cm, 
+                         PAGE_HEIGHT - 2 * cm - nuevo_alto, 
+                         ancho_proporcional, 
+                         nuevo_alto)
+        canvas.saveState()
+        canvas.setFont("Helvetica", 8)
+        # OJO: HARCODED (como en todos los PDF que llevan marcado CE)
+        texto_marcado = 'CE 1035-CPD-ES033858'  # Ojito: el de rollos, que es 
+            # el que tenía puesto José Manuel Hurtado. Todas las críticas al 
+            # formato, a él. He copiado tal cual su carta de compromiso. 
+        canvas.drawCentredString(PAGE_WIDTH - 6*cm + (ancho_proporcional / 2), 
+                                 PAGE_HEIGHT - 2*cm - nuevo_alto - 8, 
+                                 escribe(texto_marcado))
+        canvas.restoreState()
+    dibujar_pie(canvas, doc, lineas_datos_empresa, datos_fiscales)
 
-def dibujar_pie(canvas, doc, lineas_empresa):
+def dibujar_pie(canvas, doc, lineas_empresa, datos_fiscales):
     nlinea = 0
-    for linea in lineas_empresa:
-        canvas.drawCenteredString(PAGE_WIDTH / 2, 
-                                  PAGE_HEIGHT - 4 * cm - (nlinea * 15), 
-                                  linea)
+    canvas.saveState()
+    for linea in lineas_empresa[::-1]:
+        if nlinea == len(lineas_empresa) - 1:
+            canvas.setFont("Helvetica-Bold", 12)
+        else:
+            canvas.setFont("Helvetica", 11)
+        canvas.drawCentredString(PAGE_WIDTH / 2, 
+                                 2 * cm + (nlinea * 15), 
+                                 linea)
         nlinea += 1
+    # Y ahora los datos fiscales en el lateral
+    canvas.rotate(90)
+    canvas.setFont("Helvetica", 8)
+    canvas.drawCentredString(PAGE_HEIGHT / 2, 
+                             -1.5*cm, 
+                             datos_fiscales)
+    canvas.rotate(-90)
+    canvas.restoreState()
 
 def build_encabezado(datos_empresa = []):
     """
     Devuelve una lista de "Flowables" de reportlab con los datos de la empresa. 
     Los datos de la empresa se reciben como una lista de textos.
     """
-    cabecera = []
-    estilo_encabezado = ParagraphStyle("Encabezado", 
-                                       parent = estilos["Heading2"])
-    estilo_encabezado.rightIndent = PAGE_WIDTH * 0.25
-    estilo_encabezado.alignment = enums.TA_JUSTIFY
-    estilo_encabezado.spaceAfter = 0
-    estilo_encabezado.spaceBefore = 4
-    datos_empresa[0] = datos_empresa[0].upper()
-    for linea in datos_empresa:
-        if linea is datos_empresa[0]:
-            estilo_encabezado.fontSize += 3
-        p = Paragraph(escribe(linea), estilo_encabezado) 
-        cabecera.append(p)
-        estilo_encabezado.fontSize -= 1
-        if estilo_encabezado.spaceAfter > -4:
-            estilo_encabezado.spaceAfter -= 1
-        estilo_encabezado.spaceBefore = estilo_encabezado.spaceAfter
-        if linea is datos_empresa[0]:
-            estilo_encabezado.fontSize -= 3
+    estilo = ParagraphStyle("empepinao", parent = estilos["Heading1"])
+    estilo.fontSize += 2
+    estilo.alignment = enums.TA_CENTER
+    cabecera = Paragraph("<u>CARTA COMPROMISO</u>", estilo)
     return cabecera
+
+def build_despedida(datos_comercial = []):
+    estilo = ParagraphStyle("despedida", parent = estilos["Normal"])
+    estilo.fontSize += 4
+    par = [Paragraph("<b>Atentamente:</b>", estilo)]
+    estilo.fontSize -= 2
+    estilo.spaceAfter = 4
+    par.append(Spacer(1, 0.3 * cm))
+    for linea in datos_comercial:
+        if datos_comercial.index(linea) == 1:
+            linea = "<b>%s</b>" % linea
+        par.append(Paragraph(linea, estilo))
+    return par
 
 def build_datos_cliente(datos_cliente = []):
     """
     Devuelve una lista de Flowables con las líneas recibidas como texto.
     """
-    datos_c = [Spacer(1, 1*cm)]
+    datos_c = [Spacer(1, 1*cm), Paragraph("CLIENTE:", estilos["Heading2"])]
     estilo_datos_c = ParagraphStyle("Cliente", 
-                                    parent = estilos["Heading3"])
+                                    parent = estilos["Heading2"])
     estilo_datos_c.alignment = enums.TA_LEFT
     estilo_datos_c.spaceAfter = estilo_datos_c.spaceBefore = 2
     #estilo_datos_c.leftIndent = 0.5*cm
+    filas_cliente = []
     if datos_cliente:
         try:
             datos_cliente[0] = "<strong>%s</strong>" % datos_cliente[0]
@@ -115,36 +152,56 @@ def build_datos_cliente(datos_cliente = []):
         else:
             estilo_datos_c.fontSize = tamanno_predeterminado
         p = Paragraph(escribe(linea), estilo_datos_c) 
-        datos_c.append(p)
+        filas_cliente.append([p])
+    tabla = Table(filas_cliente)
+    tabla.setStyle(TableStyle([
+        ("BOX", (0, 0), (-1, -1), 1.0, colors.black)
+        ]))
+    datos_c.append(tabla)
     datos_c.append(Spacer(1, 1*cm))
     return datos_c
 
-def build_entradilla(fecha, numpresupuesto):
-    """
-    Construye la frase de entradilla. Básicamente la palabra "Presupuesto" 
-    y la fecha del mismo.
-    """
-    return Paragraph("<b><u>Presupuesto%s%s.</u> %s</b>" % (
-                        numpresupuesto != None and " " or "", 
-                        numpresupuesto != None and numpresupuesto or "", 
-                        fecha), estilos["Normal"])
-
-def build_texto(texto):
-    """
-    El texto que encabeza la tabla.
-    """
+def build_fecha(fecha):
     res = None
-    if texto:
+    if fecha:
         estilo_texto = ParagraphStyle("Texto", 
                                       parent = estilos["Normal"])
-        estilo_texto.alignment = enums.TA_JUSTIFY
-        estilo_texto.firstLineIndent = 24
-        _res = [Paragraph(escribe(i), estilo_texto) for i in texto.split("\n")]
-        espacio = Spacer(1, 0.25*cm)
-        res = [_res[0]]
-        for i in _res[1:]:
-            res.extend([espacio, i])
+        estilo_texto.alignment = enums.TA_RIGHT
+        estilo_texto.fontSize += 2
+        if not isinstance(fecha, str):
+            fecha = utils.str_fecha(fecha)
+        res = Paragraph(escribe("Fecha: %s" % fecha), 
+                        estilo_texto)
     return res
+
+def build_datos_obra(obra):
+    """
+    Un cuadro con la referencia recibida de la obra dentro.
+    """
+    res = None
+    if obra:
+        estilo_texto = ParagraphStyle("Obra", 
+                                      parent = estilos["Heading2"])
+        tabla = Table([[Paragraph(escribe(obra), estilo_texto)]])
+        tabla.setStyle(TableStyle([
+            ("BOX", (0, 0), (-1, -1), 1.0, colors.black)
+            ]))
+        res = [Paragraph(escribe("REF. OBRA:"), estilos["Heading2"]), 
+                #XBox(PAGE_WIDTH, 2*cm, text = escribe(obra))]
+               tabla]
+    return res
+
+def build_texto():
+    estilo = ParagraphStyle("Texto", 
+                            parent = estilos["Normal"])
+    estilo.fontSize += 2
+    estilo.alignment = enums.TA_JUSTIFY
+    par = Paragraph("Sirva por la presente formalizar nuestro compromiso de "
+            "colaboración con su empresa, caso de ser la adjudicataria de las"
+            " obras y los trabajos anteriormente mencionados, de acuerdo con"
+            " las especificaciones de proyecto y condiciones de nuestra "
+            "oferta.", estilo)
+    return par
 
 def go(titulo, 
        ruta_archivo, 
@@ -154,31 +211,39 @@ def go(titulo,
        datos_comercial, 
        fecha = None, 
        ruta_logo = None, 
+       datos_fiscales = "", 
+       logo_marcado = None
       ):
     """
     Recibe el título del documento y la ruta completa del archivo.
     """
     doc = SimpleDocTemplate(ruta_archivo, title = titulo)
     # Secciones
-    encabezado = build_encabezado(lineas_datos_empresa) # Logos y "título"
+    encabezado = build_encabezado() # Logos y "título"
     datos_cliente = build_datos_cliente(datos_cliente)  # Datos del cliente
     par_fecha = build_fecha(fecha)  # Fecha a la derecha
     datos_obra = build_datos_obra(ref_obra) # Cuadro con datos de la obra
-    texto = build_texto()   # Texto fijo
-    despedida = build_despedida(datos_comercial)    # Atentamente...
-    story = [encabezado, 
+    texto = build_texto()   # El texto es fijo.
+    despedida = build_despedida(datos_comercial)
+    story = [Spacer(1, 4 * cm), 
+             encabezado, 
              datos_cliente, 
              par_fecha, 
              Spacer(1, 0.2 * cm), 
              datos_obra, 
-             Spacer(1, 0.25 * cm), 
+             Spacer(1, 0.4 * cm), 
              texto, 
-             Spacer(1, 2 * cm), 
-             despedida]
+             Spacer(1, 1 * cm), 
+             despedida
+            ]
     story = utils.aplanar([i for i in story if i])
-    _dibujar_logo = lambda c, d: dibujar_logo(c, d, ruta_logo)
-    _dibujar_pie = lambda c, d: dibujar_pie(c, d, lineas_datos_empresa)
-    doc.build(story, onFirstPage = _dibujar_logo, onLastPage = _dibujar_pie)
+    _dibujar_logo = lambda c, d: dibujar_logo(c, d, ruta_logo, 
+                                              lineas_datos_empresa, 
+                                              datos_fiscales, 
+                                              logo_marcado)
+    _dibujar_pie = lambda c, d: dibujar_pie(c, d, lineas_datos_empresa, 
+                                            datos_fiscales)
+    doc.build(story, onFirstPage = _dibujar_logo) #, onLaterPages = _dibujar_pie)
     return ruta_archivo
 
 def go_from_presupuesto(presupuesto):
@@ -189,25 +254,29 @@ def go_from_presupuesto(presupuesto):
     try:
         dde = pclases.DatosDeLaEmpresa.select()[0]
         lineas_empresa = [dde.nombre, 
-                          dde.direccion, 
-                          "%s %s (%s), %s" % (dde.cp, 
-                                              dde.ciudad, 
-                                              dde.provincia, 
-                                              dde.pais), 
-                          "Telf.: %s" % (dde.telefono)]
-        if dde.fax:
-            lineas_empresa.append("Fax: %s" % (dde.fax))
-        if presupuesto.comercial and presupuesto.comercial.correoe:
-            lineas_empresa.append(presupuesto.comercial.correoe)
-        else:
-            lineas_empresa.append(dde.email)
+                          dde.direccion + "%s %s (%s), %s" % (dde.cp, 
+                                                              dde.ciudad, 
+                                                              dde.provincia, 
+                                                              dde.pais), 
+                          "T.: %s F.: %s" % (dde.telefono, dde.fax), 
+                          "W.: %s E.: %s" % (dde.web, dde.email)]
+        #if dde.fax:
+        #    lineas_empresa.append("Fax: %s" % (dde.fax))
+        #if presupuesto.comercial and presupuesto.comercial.correoe:
+        #    lineas_empresa.append(presupuesto.comercial.correoe)
+        #else:
+        #    lineas_empresa.append(dde.email)
+        datos_fiscales = " ".join(("Datos fiscales:", 
+                                   dde.nombre.upper(), 
+                                   dde.get_dir_facturacion_completa()))
     except IndexError:
         lineas_empresa = []
+        datos_fiscales = ""
     #lineas_contenido = presupuesto.lineasDePedido + presupuesto.servicios
     lineas_contenido = presupuesto.lineasDePresupuesto 
     datos_cliente = []
-    if presupuesto.personaContacto != "":
-        datos_cliente.append("A la atención de %s" % (presupuesto.personaContacto))
+    #if presupuesto.personaContacto != "":
+    #    datos_cliente.append("A la atención de %s" % (presupuesto.personaContacto))
     datos_cliente.append(presupuesto.nombrecliente)
     datos_cliente.append(presupuesto.direccion)
     listadireccion = [presupuesto.cp, presupuesto.ciudad]
@@ -264,8 +333,13 @@ def go_from_presupuesto(presupuesto):
     try:
         dde = pclases.DatosDeLaEmpresa.select()[0]
         logo = dde.get_ruta_completa_logo()
+        if dde.bvqi:
+            logo_marcado = dde.get_ruta_completa_logo(dde.logoiso1)
+        else:
+            logo_marcado = None
     except IndexError:
         logo = None
+        logo_marcado = None
     if presupuesto.validez:
         validez = presupuesto.validez
     else:
@@ -288,22 +362,22 @@ def go_from_presupuesto(presupuesto):
         condicionado = "Condiciones particulares:\n" + presupuesto.texto
     else:
         condicionado = None
+    ref_obra = presupuesto.nombreobra
+    try:
+        datos_comercial = presupuesto.comercial.get_firma().split("\n")
+    except AttributeError:
+        datos_comercial = ""
     nomarchivo = go(
-      "Presupuesto %s (%s)" % (presupuesto.nombrecliente, 
-                               utils.str_fecha(presupuesto.fecha)), 
+      "Carta compromiso", 
        nomarchivo, 
        lineas_empresa, 
        datos_cliente, 
-       lineas_contenido, 
+       ref_obra, 
+       datos_comercial, 
        fecha_entradilla, 
-       totales, 
-       condicionado, 
-       presupuesto.despedida, 
        ruta_logo = logo, 
-       validez = validez, 
-       texto_riesgo = texto_riesgo, 
-       #numpresupuesto = presupuesto.numpresupuesto)
-       numpresupuesto = presupuesto.id)
+       datos_fiscales = datos_fiscales, 
+       logo_marcado = logo_marcado)  
     return nomarchivo
 
 
@@ -311,9 +385,6 @@ if __name__ == "__main__":
     try:
         go_from_presupuesto(pclases.Presupuesto.select()[-1])
     except:
-        lineas_contenido = [(1.234, "Una cosa "*20, "1.245", `1.234*1.245`), 
-                            (1, "Grñai mama", "1", "0.25"), 
-                            ("0,25", "Otra cosa", "1", "0.25")] * 7
         lineas_empresa = ("American woman, co.", 
                           "Johnny Cash", 
                           "Alabama - 3213", 
@@ -322,32 +393,23 @@ if __name__ == "__main__":
                          "los lunes se levanta a partir de las 2.", 
                          "con el sol", 
                          "qué calor")
-        totales = {"Base imponible": "100.50 €", 
-                   "IVA 21%": 100.5 * 0.21, 
-                   "TOTAL": 100.5 * 1.21, 
-                   "orden": ("Base imponible", "IVA 16%", "TOTAL")}
-        texto = """Estimado señor Floppy:
-                    Es un placer decirle a la cara que usted apesta.
-                    No te digo «na» y te lo digo «to».
-
-
-                    Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Curabitur eu odio. Ut dapibus. In quis diam mattis est volutpat luctus. Quisque pharetra diam vel mauris. Etiam blandit gravida augue. Phasellus justo dolor, porta vehicula, sagittis sed, viverra vitae, velit. Ut lorem nibh, volutpat at, faucibus sit amet, dapibus sit amet, est. Nunc iaculis nunc at risus. Phasellus porta felis. Suspendisse lorem leo, faucibus ut, aliquam sed, faucibus id, lorem. Nulla aliquet, sapien eu pulvinar suscipit, turpis purus varius metus, eu dignissim est orci luctus neque. Nam scelerisque elit eu nisi. Aenean tincidunt. Sed adipiscing eros ut magna. Proin varius. In hac habitasse platea dictumst.
-        """
-        despedida = """
-        Firmado:
-
-            Al Bundy.
-        """
+        ref_obra = '“Modernización de las instalaciones de riego de la '\
+                   'Comunidad de Regantes “Vega Campo-Baza”, en el T.M. '\
+                   'de Baza (Granada)”'
+        datos_comercial = ("Perlita de Huelva", 
+                           "Arte puro", 
+                           "Huelva", 
+                           "+00 123 456 789")
         import time
         fecha_entradilla = utils.str_fecha(time.localtime())
         go("Presupuesto", 
            "/tmp/presupuesto.pdf", 
            lineas_empresa, 
            datos_cliente, 
-           lineas_contenido, 
+           ref_obra, 
+           datos_comercial, 
            fecha_entradilla, 
-           totales, 
-           texto, 
-           despedida, 
-           ruta_logo = "../imagenes/dorsia.png")
+           ruta_logo = os.path.join(
+               os.path.dirname(__file__), "..", "imagenes", "dorsia.png"), 
+           datos_fiscales = "DATOS FISCALES " * 5)
 

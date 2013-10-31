@@ -2078,6 +2078,41 @@ class AlbaranesDeSalida(Ventana):
             return
         pedido.sync()   # Por si ha habido cambios y no 
                         # ha saltado el fallo de caché.
+        # Primera comprobación, que el pedido no lleve más de lo ofertado. 
+        # Decido hacerlo aquí y no en comprobar las cantidades en la propia 
+        # ventana de los pedidos ante cada cambio o incluso mejor que justo 
+        # antes de imprimir, así doy más tiempo al usuario a corregirlo.
+        prods_pedidos = {}
+        for presupuesto in pedido.get_presupuestos():
+            pedido_en_presupuesto = presupuesto.get_pedido_por_producto()
+            for producto in pedido_en_presupuesto:
+                try:
+                    prods_pedidos[producto] = pedido_en_presupuesto[producto]
+                except: 
+                    prods_pedidos[producto] = pedido_en_presupuesto[producto]
+            for ldp in presupuesto.lineasDePresupuesto:
+                producto = ldp.producto 
+                if not producto:    # Es servicio, clasifico por descripción.
+                    producto = ldp.descripcion
+                try:
+                    prods_pedidos[producto] -= ldp.cantidad
+                except: 
+                    prods_pedidos[producto] = -ldp.cantidad
+        # Y ahora por fin cotejo las cantidades.
+        for producto in prods_pedidos:
+            if prods_pedidos[producto] > 0:
+                utils.dialogo_info(titulo = "PEDIDO EXCEDE OFERTA", 
+                        texto = "En el pedido %s la cantidad de %s \n"
+                                "excede en %s a la ofertada en %s." % (
+                                    pedido.numpedido, 
+                                    isinstance(producto, str) and producto or 
+                                        producto.descripcion, 
+                                    utils.float2str(prods_pedidos[producto]), 
+                                    ", ".join([str(p.id) for p 
+                                               in pedido.get_presupuestos()])), 
+                        padre = self.wids['ventana'])
+                return
+        # Ahora compruebo validación del pedido.
         if not pedido.validado:
             utils.dialogo_info(titulo = "PEDIDO NO VALIDADO", 
                     texto = "El pedido contiene ventas por debajo del precio\n"
@@ -2935,6 +2970,10 @@ class AlbaranesDeSalida(Ventana):
                                    self.usuario, 
                                    self.logger, 
                                    self.wids['ventana'])
+                # Finalmente, envío un correo al comercial. Es la mejor parte 
+                # donde hacerlo para evitar que le llegue más de un correo por 
+                # el mismo albarán.
+                self.enviar_correo_notificacion_facturado(nomarchivo_factura)
         if self.objeto.cliente:
             correoe_cliente = self.objeto.cliente.email
             if self.objeto.cliente.cliente != None: 
@@ -2986,7 +3025,46 @@ class AlbaranesDeSalida(Ventana):
         #                     texto = txt, 
         #                     padre = self.wids['ventana']):
         #        self.add_comision(None)
-        
+
+    def enviar_correo_notificacion_facturado(self, nomfich_pdf_factura):
+        """
+        Envía un correo de notificación de la factura al comercial implicado. 
+        """
+        if self.usuario and self.objeto:
+            comeciales = [c for c in self.usuario.get_comerciales() 
+                          if c != self.objeto.comercial]
+            servidor = self.usuario.smtpserver
+            smtpuser = self.usuario.smtpuser
+            smtppass = self.usuario.smtppassword
+            rte = self.usuario.email
+            # TODO: OJO: HARDCODED
+            if self.usuario and self.usuario.id == 1:
+                dests = ["informatica@geotexan.com"]
+            else:
+                dests = [comercial.correoe for comercial in comerciales]
+            # Correo de riesgo de cliente
+            texto = "%s ha generado la factura %s de la oferta %s "\
+                    "para el cliente %s desde el albarán %s." % (
+                        self.usuario and self.usuario.nombre or "Se", 
+                        self.objeto.numalbaran, 
+                        ", ".join([str(p.id) 
+                            for p in self.objeto.get_presupuestos()]), 
+                        self.objeto.cliente and self.objeto.nombre or "", 
+                        self.objeto.numalbaran)
+            utils.enviar_correoe(rte, 
+                                 dests,
+                                 "Factura %s de %s generada." % (
+                                    ", ".join([f.numfactura 
+                                        for f in self.objeto.get_facturas()]), 
+                                    self.objeto.cliente 
+                                        and self.objeto.cliente.nombre 
+                                        or "cliente"), 
+                                texto, 
+                                adjuntos = [nomfich_pdf_factura], 
+                                servidor = servidor, 
+                                usuario = smtpuser, 
+                                password = smtppass)
+    
     def imprimir_cmr(self):
         lugar_entrega = utils.dialogo_entrada(titulo = "CMR", texto = "Lugar de entrega:", padre = self.wids['ventana'], textview = True, 
                                               valor_por_defecto = self.objeto.nombre + "\n" + self.objeto.direccion + "\n" + 

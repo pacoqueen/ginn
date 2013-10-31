@@ -50,6 +50,22 @@ CREATE OPERATOR +^ (PROCEDURE='xor', LEFTARG = BOOL, RIGHTARG = BOOL);
 
 ---- TABLAS ------
 
+----------------------------
+-- Zonas de los delegados --
+----------------------------
+CREATE TABLE zona(
+    id SERIAL PRIMARY KEY, 
+    nombre TEXT DEFAULT ''
+);
+-------------------------------------------------------------
+-- Áreas (subzonas) de las zonas de delegados comerciales. -- 
+-------------------------------------------------------------
+CREATE TABLE area(
+    id SERIAL PRIMARY KEY, 
+    zona_id INT REFERENCES zona DEFAULT NULL, 
+    nombre TEXT DEFAULT ''
+);
+
 ------------------------------------------------------------------------------
 -- Tabla de formas de pago/cobro.                                           --
 -- Ya iba siendo hora de unificarlas. De momento se usará en pedidos de     --
@@ -1005,7 +1021,8 @@ CREATE TABLE comercial(
                                 -- específico que CategoriaLaboral. 
                                 -- NEW! 27/01/2009
     telefono TEXT DEFAULT '',   -- NEW! 27/01/2009
-    correoe TEXT DEFAULT ''     -- NEW! 27/01/2009
+    correoe TEXT DEFAULT '',    -- NEW! 27/01/2009
+    zona_id INT REFERENCES zona DEFAULT NULL    -- NEW! 30/10/2013
 );
 
 -------------------------------------
@@ -1435,7 +1452,62 @@ CREATE TABLE presupuesto(
     -- Algunos contadores que considero interesantes y pueden hacer falta:
     impresiones INT DEFAULT 0,  -- Número de veces que ha generado el PDF
     envios INT DEFAULT 0,       -- Número de veces que ha enviado la oferta.
-    version INT DEFAULT 1       -- Veces que ha guardado el presupuesto.
+    version INT DEFAULT 1,      -- Veces que ha guardado el presupuesto.
+    bloqueado BOOLEAN DEFAULT FALSE,    -- Si bloqueado no se puede modificar.
+    rechazado BOOLEAN DEFAULT FALSE,    -- ¿Hace falta explicarlo?
+    motivo TEXT DEFAULT '', 
+    -- Campos para la solicitud de crédito:
+    cred_apertura BOOLEAN DEFAULT FALSE,    -- Tipo de crédito a solicitar
+    cred_aumento BOOLEAN DEFAULT FALSE,
+    cred_solicitud BOOLEAN DEFAULT FALSE,
+    cred_ute TEXT DEFAULT '',
+    cred_licitador TEXT DEFAULT '',
+    cred_dirfiscal TEXT DEFAULT '',
+    cred_cpfiscal TEXT DEFAULT '',
+    cred_telefonofiscal TEXT DEFAULT '',
+    cred_contactofiscal TEXT DEFAULT '',
+    cred_poblacionfiscal TEXT DEFAULT '',
+    cred_faxfiscal TEXT DEFAULT '',
+    cred_provinciafiscal TEXT DEFAULT '',
+    cred_emailfiscal TEXT DEFAULT '',
+    cred_movilfiscal TEXT DEFAULT '',
+    cred_telefonocontratos TEXT DEFAULT '',
+    cred_emailcontratos TEXT DEFAULT '',
+    cred_dircontratos TEXT DEFAULT '',
+    cred_cpcontratos TEXT DEFAULT '',
+    cred_provinciacontratos TEXT DEFAULT '',
+    cred_contactocontratos TEXT DEFAULT '',
+    cred_poblacioncontratos TEXT DEFAULT '',
+    cred_movilcontratos TEXT DEFAULT '',
+    cred_dirobra TEXT DEFAULT '',
+    cred_cpobra TEXT DEFAULT '',
+    cred_provinciaobra TEXT DEFAULT '',
+    cred_contactoobra TEXT DEFAULT '',
+    cred_poblacionobra TEXT DEFAULT '',
+    cred_movilobra TEXT DEFAULT '',
+    cred_entidad TEXT DEFAULT '',
+    cred_oficina TEXT DEFAULT '',
+    cred_digitocontrol TEXT DEFAULT '',
+    cred_numcuenta TEXT DEFAULT '',
+    cred_fdp TEXT DEFAULT '',
+    cred_diapago1 TEXT DEFAULT '',
+    cred_diapago2 TEXT DEFAULT '',
+    cred_diapago3 TEXT DEFAULT '',
+    cred_credsolicitado FLOAT DEFAULT NULL,
+    cred_vb_nombrecomercial TEXT DEFAULT '',
+    cred_vb_nombreadmon TEXT DEFAULT '',
+    cred_asegurado FLOAT DEFAULT NULL,
+    cred_fechaasegurado DATE DEFAULT NULL,
+    cred_concedido FLOAT DEFAULT NULL,
+    cred_fechaconcedido DATE DEFAULT NULL,
+    cred_fecha DATE DEFAULT NULL,
+    cred_entidades TEXT DEFAULT '',
+    cred_observaciones TEXT DEFAULT '',
+    cred_veces_solicitado INT DEFAULT 0,
+    cred_motivo_rechazo TEXT DEFAULT ''
+    cred_usuario_id INT REFERENCES usuario DEFAULT NULL, -- ID del usuario 
+        -- que ha aprobado el crédito.
+    cred_condiciones TEXT DEFAULT ''
 );
 
 ----------------------------------

@@ -645,7 +645,7 @@ NO_VALIDABLE, VALIDABLE, PLAZO_EXCESIVO, SIN_FORMA_DE_PAGO, \
         COND_PARTICULARES = range(9)
 
 # VERBOSE MODE
-total = 158 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
+total = 160 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
             # Más bien grep " = print_verbose(" pclases.py | grep -v \# | wc -l
 cont = 0
 tiempo = time.time()
@@ -662,6 +662,22 @@ def print_verbose(cont, total, antes):
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 ##############
+
+class Area(SQLObject, PRPCTOO):
+    class sqlmeta:
+        fromDatabase = True
+
+    def _init(self, *args, **kw):
+        starter(self, *args, **kw)
+
+class Zona(SQLObject, PRPCTOO):
+    class sqlmeta:
+        fromDatabase = True
+    areas = MultipleJoin("Area")
+    comerciales = MultipleJoin("Comercial")
+
+    def _init(self, *args, **kw):
+        starter(self, *args, **kw)
 
 class DocumentoDePago(SQLObject, PRPCTOO):
     class sqlmeta:
@@ -10074,6 +10090,17 @@ class PedidoVenta(SQLObject, PRPCTOO):
                     facturas.append(f)
         return facturas
 
+    def get_presupuestos(self):
+        """
+        Devuelve los presupuestos relacionados con el pedido actual.
+        """
+        presupuestos = []
+        for ldp in self.lineasDePedido:
+            presupuesto = ldp.presupuesto
+            if presupuesto and ldp.presupuesto not in presupuestos:
+                presupuestos.append(presupuesto)
+        return presupuestos
+
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 class LineaDePresupuesto(SQLObject, PRPCTOO):
@@ -14460,6 +14487,17 @@ class AlbaranSalida(SQLObject, PRPCTOO):
             if pedido and pedido not in res:
                 res.append(pedido)
         return res
+    
+    def get_presupuestos(self):
+        """
+        Devuelve los presupuestos relacionados con el albarán actual.
+        """
+        presupuestos = []
+        for pedido in self.get_pedidos():
+            for presupuesto in pedido.get_presupuestos():
+                if presupuesto not in presupuestos:
+                    presupuestos.append(presupuesto)
+        return presupuestos
 
     def es_de_repuestos(self):
         """
@@ -17971,7 +18009,11 @@ class Usuario(SQLObject, PRPCTOO):
     empleados = MultipleJoin("Empleado")
     auditorias = MultipleJoin("Auditoria")
     pedidosVenta = MultipleJoin("PedidoVenta")
-    presupuestos = MultipleJoin("Presupuesto")
+    presupuestos = MultipleJoin("Presupuesto", 
+            joinColumn = "usuario_id")
+    #credPresupuestos = MultipleJoin("Presupuestos", 
+    #        joinColumn = "cred_usuario_id")
+    # TODO: XXX: FIXME: It does not work. And I don't know why.
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -18108,13 +18150,19 @@ class DatosDeLaEmpresa(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
-    def get_ruta_completa_logo(self):
+    def get_ruta_completa_logo(self, logo = None):
         """
         Devuelve la ruta completa al logotipo de datos de la empresa.
         Si no tiene logo, devuelve None.
+        Si logo es distinto a None (un nombre de fichero), devuelve la ruta 
+        para ese logo según la estructura de directorios de la aplicación.
         """
-        im = os.path.join(os.path.dirname(os.path.realpath(__file__)), 
-                          "..", "..", "imagenes", self.logo)
+        if not logo:
+            im = os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+                              "..", "..", "imagenes", self.logo)
+        else:
+            im = os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+                              "..", "..", "imagenes", logo)
         return os.path.abspath(im)
 
     @classmethod
