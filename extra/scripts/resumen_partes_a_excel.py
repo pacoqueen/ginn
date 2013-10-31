@@ -22,8 +22,10 @@ def volcar_info(pdp, csv):
     prod_estandar_parte = pdp.prodestandar
     prod_estandar_producto = producto and producto.prodestandar or ""
     fecha = utils.str_fecha(pdp.fecha)
-    horaini = utils.str_hora_corta(pdp.horainicio)
-    horafin = utils.str_hora_corta(pdp.horafin)
+    #horaini = utils.str_hora_corta(pdp.horainicio)
+    #horafin = utils.str_hora_corta(pdp.horafin)
+    horaini = utils.str_fechahora(pdp.fechahorainicio)
+    horafin = utils.str_fechahora(pdp.fechahorafin)
     produccion_m2 = pdp.get_produccion()[0]
     produccion_kg = sum([a.peso_sin for a in pdp.articulos])
     productividad = pdp.calcular_productividad()
@@ -57,8 +59,9 @@ def calcular_tiempo_trabajado(parte):
 
 def buscar_partes(fini, ffin):
     pdps = pclases.ParteDeProduccion.select(pclases.AND(
-        pclases.ParteDeProduccion.q.fechahorainicio >= fini, 
-        pclases.ParteDeProduccion.q.fechahorafin <= ffin))
+            pclases.ParteDeProduccion.q.fechahorainicio >= fini, 
+            pclases.ParteDeProduccion.q.fechahorafin <= ffin), 
+        orderBy = "fechahorainicio")
     pdps_gtx = [p for p in pdps if p.es_de_rollos()]
     return pdps_gtx
         
