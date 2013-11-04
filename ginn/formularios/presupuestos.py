@@ -1126,7 +1126,12 @@ class Presupuestos(Ventana, VentanaGenerica):
                 if colname == "obraID" and valor_ventana == None:
                     valor_ventana = self.wids['cbe_obra'].child.get_text()
                     valor_objeto = self.objeto.nombreobra
-                igual = igual and (valor_ventana == valor_objeto)
+                if not valor_ventana and valor_objeto:
+                    igual = False
+                elif valor_ventana and not valor_objeto:
+                    igual = False
+                else:
+                    igual = igual and (valor_ventana == valor_objeto)
                 if not igual:
                     if pclases.DEBUG and pclases.VERBOSE:
                         print "colname:", colname
@@ -1136,7 +1141,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 # DONE: PLAN: ¿Y si en vez de un break, cojo, sigo 
                 # sigo analizando y marco en algún color los campos 
                 # diferentes?
-                if valor_ventana != valor_objeto:
+                if ((not valor_ventana and valor_objeto) or (valor_ventana and not valor_objeto) or (valor_ventana != valor_objeto)):
                     color = gtk.gdk.color_parse("Light Blue")
                 else:
                     color = self.wids[
