@@ -1109,7 +1109,8 @@ class Presupuestos(Ventana, VentanaGenerica):
                 try:
                     valor_ventana = self.leer_valor(col, 
                                                     self.dic_campos[colname])
-                except (ValueError, mx.DateTime.RangeError, TypeError):
+                except (ValueError, mx.DateTime.RangeError, TypeError, 
+                        AttributeError):
                     igual = False
                 valor_objeto = getattr(self.objeto, col.name)
                 if colname == "comercialID" and valor_ventana == -1:
