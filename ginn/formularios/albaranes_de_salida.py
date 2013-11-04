@@ -3031,7 +3031,7 @@ class AlbaranesDeSalida(Ventana):
         Envía un correo de notificación de la factura al comercial implicado. 
         """
         if self.usuario and self.objeto:
-            comeciales = [c for c in self.usuario.get_comerciales() 
+            comerciales = [c for c in self.usuario.get_comerciales() 
                           if c != self.objeto.comercial]
             servidor = self.usuario.smtpserver
             smtpuser = self.usuario.smtpuser
