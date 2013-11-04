@@ -1141,7 +1141,9 @@ class Presupuestos(Ventana, VentanaGenerica):
                 # DONE: PLAN: ¿Y si en vez de un break, cojo, sigo 
                 # sigo analizando y marco en algún color los campos 
                 # diferentes?
-                if ((not valor_ventana and valor_objeto) or (valor_ventana and not valor_objeto) or (valor_ventana != valor_objeto)):
+                if ((not valor_ventana and valor_objeto) 
+                        or (valor_ventana and not valor_objeto) 
+                        or (valor_ventana != valor_objeto)):
                     color = gtk.gdk.color_parse("Light Blue")
                 else:
                     color = self.wids[
