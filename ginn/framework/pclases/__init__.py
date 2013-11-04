@@ -14292,6 +14292,17 @@ class AlbaranSalida(SQLObject, PRPCTOO):
         starter(self, *args, **kw)
 
     @property
+    def comercial(self):
+        """
+        Devuelve EL comercial relacionado con el pedido del que procede el 
+        albarán de salida.
+        """
+        for p in self.get_pedidos():
+            if p.comercial:
+                return p.comercial
+        return None
+
+    @property
     def provincia(self):
         """
         Devuelve la provincia de la dirección de envío del albarán. Por 
