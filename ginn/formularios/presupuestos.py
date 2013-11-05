@@ -215,8 +215,12 @@ class Presupuestos(Ventana, VentanaGenerica):
 
     def actualizar_editable_motivo(self, ch):
         self.wids['e_motivo'].set_sensitive(ch.get_active())
+        try:
+            b_pedido_activado = self.wids['b_pedido'].get_sensitive()
+        except AttributeError:
+            b_pedido_activado = self.wids['b_pedido'].get_property("sensitive")
         self.wids['b_pedido'].set_sensitive(
-                self.wids['b_pedido'].get_sensitive() and not ch.get_active())
+                b_pedido_activado and not ch.get_active())
 
     def mostrar_ttip(self, widget, event):
         texto_tooltip = self.wids['iconostado'].get_tooltip_text()
