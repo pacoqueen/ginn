@@ -3035,7 +3035,7 @@ class AlbaranesDeSalida(Ventana):
             #               if c != self.objeto.comercial]
             # Esto de aquí arriba no tiene sentido ninguno. ¿Lo tuvo alguna 
             # vez? Lo dejo comentado por interés arqueológico.
-            comerciales = [self.objeto.comercial]
+            comerciales=self.objeto.comercial and [self.objeto.comercial] or []
             servidor = self.usuario.smtpserver
             smtpuser = self.usuario.smtpuser
             smtppass = self.usuario.smtppassword
