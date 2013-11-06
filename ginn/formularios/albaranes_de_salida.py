@@ -3031,8 +3031,11 @@ class AlbaranesDeSalida(Ventana):
         Envía un correo de notificación de la factura al comercial implicado. 
         """
         if self.usuario and self.objeto:
-            comerciales = [c for c in self.usuario.get_comerciales() 
-                          if c != self.objeto.comercial]
+            #comerciales = [c for c in self.usuario.get_comerciales() 
+            #               if c != self.objeto.comercial]
+            # Esto de aquí arriba no tiene sentido ninguno. ¿Lo tuvo alguna 
+            # vez? Lo dejo comentado por interés arqueológico.
+            comerciales = [self.objeto.comercial]
             servidor = self.usuario.smtpserver
             smtpuser = self.usuario.smtpuser
             smtppass = self.usuario.smtppassword

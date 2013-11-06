@@ -147,26 +147,6 @@ class ConsultaOfertas(Ventana):
         self.por_provincia = defaultdict(lambda: [])
         gtk.main()
     
-    def exportar(self, boton):
-        """
-        Exporta el contenido del TreeView a un fichero csv.
-        """
-        from informes.treeview2csv import treeview2csv
-        from formularios.reports import abrir_csv
-        if self.wids['notebook1'].get_current_page() == 0:
-            tv = self.wids['tv_datos']
-        elif self.wids['notebook1'].get_current_page() == 1:
-            tv = self.wids['tv_cliente']
-        elif self.wids['notebook1'].get_current_page() == 2:
-            tv = self.wids['tv_producto']
-        elif self.wids['notebook1'].get_current_page() == 3:
-            tv = self.wids['tv_comercial']
-        elif self.wids['notebook1'].get_current_page() == 4:
-            tv = self.wids['tv_provincia']
-        else:
-            return
-        abrir_csv(treeview2csv(tv))
-
     def colorear(self, tv):
         def cell_func(column, cell, model, itr, i):
             try:
@@ -196,7 +176,7 @@ class ConsultaOfertas(Ventana):
         """
         model = tv.get_model()
         puid = model[path][-1]
-        objeto = pclases.getObjectPUID(puid)
+        objeto = pclases.getObjetoPUID(puid)
         if isinstance(objeto, pclases.Cliente):
             from formularios.clientes import Clientes as NuevaVentana
         elif isinstance(objeto, pclases.Presupuesto):
@@ -246,6 +226,11 @@ class ConsultaOfertas(Ventana):
         Dadas fecha de inicio y de fin, busca todas las ofertas 
         (de pedido) entre esas dos fechas.
         """
+        self.por_oferta = {} # defaultdict(lambda: [])
+        self.por_producto = defaultdict(lambda: [])
+        self.por_cliente = defaultdict(lambda: [])
+        self.por_comercial = defaultdict(lambda: [])
+        self.por_provincia = defaultdict(lambda: [])
         total_ofertas = 0.0
         total_pedidos = 0.0
         ratio = None
@@ -292,7 +277,7 @@ class ConsultaOfertas(Ventana):
                 self.por_producto[ldp.producto].append(ldp)
             self.por_cliente[p.cliente].append(p)
             self.por_comercial[p.comercial].append(p)
-            self.por_provincia[p.provincia].append(p)
+            self.por_provincia[p.provincia.upper()].append(p)
             importe_total = p.calcular_importe_total()
             total_ofertas += importe_total
             if p.get_pedidos():
@@ -330,12 +315,15 @@ class ConsultaOfertas(Ventana):
             vpro.set_valor(i/tot, "Mostrando listado de ofertas... (%d)" % p.id)
             presupuesto = self.por_oferta[p]  # Él mismo en la práctica.
             pedidos = presupuesto.get_pedidos()
+            nombreobra = (presupuesto.obra and presupuesto.obra.nombre 
+                          or presupuesto.nombreobra)
+            #if len(nombreobra) > 33:
+            #    nombreobra = nombreobra[:33] + "..."
             fila = (str(presupuesto.id), 
                     utils.str_fecha(presupuesto.fecha), 
                     presupuesto.cliente and presupuesto.cliente.nombre 
                         or presupuesto.nombrecliente, 
-                    presupuesto.obra and presupuesto.obra.nombre 
-                        or presupuesto.nombreobra, 
+                    nombreobra, 
                     presupuesto.comercial 
                         and presupuesto.comercial.get_nombre_completo()
                         or "Sin comercial relacionado", 
@@ -744,71 +732,81 @@ class ConsultaOfertas(Ventana):
             self.graficar_por_comercial()
         elif page_num == 4:
             self.graficar_por_provincia()
-# PORASQUI
+
+    def exportar(self, boton):
+        """
+        Exporta el contenido del TreeView a un fichero csv.
+        """
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
+        if self.wids['notebook1'].get_current_page() == 0:
+            tv = self.wids['tv_datos']
+        elif self.wids['notebook1'].get_current_page() == 1:
+            tv = self.wids['tv_cliente']
+        elif self.wids['notebook1'].get_current_page() == 2:
+            tv = self.wids['tv_producto']
+        elif self.wids['notebook1'].get_current_page() == 3:
+            tv = self.wids['tv_comercial']
+        elif self.wids['notebook1'].get_current_page() == 4:
+            tv = self.wids['tv_provincia']
+        else:
+            return
+        abrir_csv(treeview2csv(tv))
 
     def imprimir(self, boton):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        # TODO
         from formularios import reports
-        datos = []
-        model = self.wids['tv_datos'].get_model()
-        for itr in model:
-            datos.append((itr[0],  itr[1],  itr[2],  itr[3],  itr[4], 
-                          itr[5],  itr[6],  itr[7],  itr[8],  itr[9], 
-                          itr[10], itr[11], itr[12], itr[13]))
-            hijos = itr.iterchildren()
-            if hijos != None:
-                for hijo in hijos:
-                    datos.append((hijo[0], hijo[1], hijo[2], hijo[3], hijo[4], 
-                                  hijo[5], hijo[6], hijo[7], hijo[8], hijo[9], 
-                                  hijo[10], hijo[11], hijo[12], hijo[13]))
-            datos.append(("---", "---", "---", "---", "---", "---", "---", 
-                          "---", "---", "---", "---", "---", "---", "---"))
-        datos.append(("", "", "", "", "", "", "", "", "", "", "", "", "", ""))
-        if self.metros_totales != 0:
-            metros_totales = "TOTAL m² de geotextiles: %s " % (
-                                utils.float2str(self.metros_totales))
-        else:
-            metros_totales = ""
-        if self.kilos_totales != 0:
-            kilos_totales = "TOTAL kg de fibra: %s " % (
-                                utils.float2str(self.kilos_totales))
-        else:
-            kilos_totales = ""
-        total_importe = self.wids['e_total'].get_text()
-        datos.append(("" , "IMPORTE TOTAL: %s " % (total_importe), 
-                      "", "", "", "%s" % (metros_totales), "", "", 
-                      "%s" % (kilos_totales), "", "", "", ""))
-        if not self.inicio:            
-            fechaInforme = 'Hasta ' + utils.str_fecha(
-                                        time.strptime(self.fin, "%Y/%m/%d"))
-        else:
-            fechaInforme = (utils.str_fecha(
-                time.strptime(self.inicio, "%Y/%m/%d")) + ' - ' 
-                + utils.str_fecha(time.strptime(self.fin, "%Y/%m/%d")))
-        if datos != []:
-            reports.abrir_pdf(geninformes.ofertas(datos, fechaInforme))
         from informes.treeview2pdf import treeview2pdf
         if self.wids['notebook1'].get_current_page() == 0:
-            self.wids['notebook1'].next_page()
-            self.wids['notebook1'].realize()
-            while gtk.events_pending(): gtk.main_iteration(False)
-            self.wids['notebook1'].prev_page()
-        reports.abrir_pdf(treeview2pdf(self.wids['tv_producto'], 
-                                        titulo = "Ofertas por producto", 
-                                        fecha = fechaInforme))
-        reports.abrir_pdf(treeview2pdf(self.wids['tv_cliente'], 
-                                        titulo = "Facturas por cliente", 
-                                        fecha = fechaInforme))
-        reports.abrir_pdf(treeview2pdf(self.wids['tv_comercial'], 
-                                    titulo = "Ofertas facturadas por comercial",
-                                    fecha = fechaInforme))
-        reports.abrir_pdf(treeview2pdf(self.wids['tv_provincia'], 
-                        titulo = "Ofertas facturadas según provincia de origen",
-                        fecha = fechaInforme))
-
+            tv = self.wids['tv_datos']
+            titulo = "Ofertas"
+            totales = [5, 9]
+            extra_data = [["---"] * 9, 
+                          ["", "", "", "", "", "", "", 
+                           "Total ofertado", 
+                           self.wids['e_total_ofertas'].get_text()]
+                         ]
+        elif self.wids['notebook1'].get_current_page() == 1:
+            tv = self.wids['tv_cliente']
+            titulo = "Ofertas por cliente"
+            totales = []
+            extra_data = []
+        elif self.wids['notebook1'].get_current_page() == 2:
+            tv = self.wids['tv_producto']
+            titulo = "Ofertas por producto"
+            totales = []
+            extra_data = []
+        elif self.wids['notebook1'].get_current_page() == 3:
+            tv = self.wids['tv_comercial']
+            titulo = "Ofertas por comercial"
+            totales = []
+            extra_data = []
+        elif self.wids['notebook1'].get_current_page() == 4:
+            tv = self.wids['tv_provincia']
+            titulo = "Ofertas por provincia"
+            totales = []
+            extra_data = []
+        else:
+            return
+        if self.inicio:
+            titulo += " desde %s" % utils.str_fecha(self.inicio)
+        if self.fin:
+            titulo += " hasta %s" % utils.str_fecha(self.fin)
+        import tempfile 
+        ruta_grafico = tempfile.NamedTemporaryFile(suffix = ".png").name
+        win = self.wids['eventbox_chart'].window
+        ancho, alto = win.get_size()
+        pb = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8, ancho, alto)
+        captura = pb.get_from_drawable(win, win.get_colormap(), 0, 0, 0, 0, 
+                                       ancho, alto)
+        captura.save(ruta_grafico, "png")
+        reports.abrir_pdf(treeview2pdf(tv, 
+                                       titulo = titulo, 
+                                       numcols_a_totalizar = totales, 
+                                       graficos = [ruta_grafico], 
+                                       extra_data = extra_data))
 
 
 if __name__ == '__main__':
