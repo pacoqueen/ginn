@@ -104,7 +104,7 @@ class ConsultaLibroIVA(Ventana):
         if isinstance(fra, pclases.FacturaVenta):
             from formularios import facturas_venta
             v = facturas_venta.FacturasVenta(fra, usuario = self.usuario)  # @UnusedVariable
-        elif isinstance(fra. pclases.FacturaDeAbono):
+        elif isinstance(fra, pclases.FacturaDeAbono):
             a = fra.abono
             from formularios import abonos_venta
             v = abonos_venta.AbonosVenta(a, usuario = self.usuario)  # @UnusedVariable

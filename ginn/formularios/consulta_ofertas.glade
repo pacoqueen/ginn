@@ -130,7 +130,7 @@
                 <child>
                   <widget class="GtkLabel" id="label12">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">Almac&#xE9;n: </property>
+                    <property name="label" translatable="yes">Agente comercial: </property>
                   </widget>
                   <packing>
                     <property name="expand">False</property>
@@ -139,7 +139,7 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkComboBoxEntry" id="cbe_almacen">
+                  <widget class="GtkComboBoxEntry" id="cbe_comercial">
                     <property name="visible">True</property>
                   </widget>
                   <packing>
@@ -408,7 +408,7 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkEntry" id="e_total">
+                      <widget class="GtkEntry" id="e_total_ofertas">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="editable">False</property>
@@ -438,7 +438,7 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkEntry" id="e_total_kilos">
+                      <widget class="GtkEntry" id="e_total_pedidos">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="editable">False</property>
@@ -468,7 +468,7 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkEntry" id="e_total_metros">
+                      <widget class="GtkEntry" id="e_ratio">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="editable">False</property>

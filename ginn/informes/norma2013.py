@@ -416,5 +416,5 @@ def test_pales():
     abrir_pdf(crear_etiquetas_pales(pales, lang = "en"))
 
 if __name__ == "__main__":
-    test_pales()
+    test_rollos()
 

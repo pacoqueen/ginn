@@ -39,6 +39,7 @@ import mx.DateTime
 from informes import geninformes
 import pango 
 from lib import charting
+from collections import defaultdict
 
 
 class ConsultaOfertas(Ventana):
@@ -64,8 +65,9 @@ class ConsultaOfertas(Ventana):
                 ('Cliente',   'gobject.TYPE_STRING', False, True, False, None),
                 ('Obra',      'gobject.TYPE_STRING', False, True, False, None),
                 ('Comercial', 'gobject.TYPE_STRING', False, True, False, None),
-                ('Tipo',      'gobject.TYPE_STRING', False, True, False, None),
-                ('Adjudicada','gobject.TYPE_STRING', False, True, False, None),
+                #('Tipo',      'gobject.TYPE_STRING', False, True, False, None),
+                # CWT: Solo ofertas de pedido. Nada de estudio.
+                ('Adjudicada','gobject.TYPE_BOOLEAN', False, True, False, None),
                 ('Estado',    'gobject.TYPE_STRING', False, True, False, None),
                 ('Contacto',  'gobject.TYPE_STRING', False, True, False, None),
                 ('Pedido',    'gobject.TYPE_STRING', False, True, False, None),
@@ -86,9 +88,7 @@ class ConsultaOfertas(Ventana):
         getcoltvpro(2).get_cell_renderers()[0].set_property('xalign', 1) 
         cols = (('Cliente', 'gobject.TYPE_STRING', False, True, True, None),
                 ('CIF',     'gobject.TYPE_STRING', False, True, False, None),
-                ('Fecha',   'gobject.TYPE_STRING', False, True, False, None),
                 ('Importe', 'gobject.TYPE_STRING', False, True, False, None),
-                ('Oferta',  'gobject.TYPE_STRING', False, True, False, None),
                 ('Forma de cobro', 
                             'gobject.TYPE_STRING', False, True, False, None),
                 ('PUID',    'gobject.TYPE_STRING', False, False, False, None))
@@ -102,66 +102,48 @@ class ConsultaOfertas(Ventana):
         self.wids['e_fechainicio'].set_text(utils.str_fecha(self.inicio))
         self.fin = time.localtime()
         self.wids['e_fechafin'].set_text(utils.str_fecha(self.fin))
-        self.metros_totales = 0.0
-        self.kilos_totales = 0.0
         opciones = [(c.id, c.nombre) 
                     for c in pclases.Cliente.select(orderBy = "nombre")]
         opciones.insert(0, (-1, "Todos"))
         utils.rellenar_lista(self.wids['cbe_cliente'], opciones)
         utils.combo_set_from_db(self.wids['cbe_cliente'], -1)
-        opciones = [(c.id, c.nombre) 
-                    for c in pclases.Almacen.select(
-                        pclases.Almacen.q.activo == True, 
-                        orderBy = "id")]
+        opciones = [(c.id, c.get_nombre_completo()) 
+                    for c in pclases.Comercial.select()
+                    if c.empleado and c.empleado.activo]
+        opciones.sort(key = lambda c: c[1])
         opciones.insert(0, (-1, "Todos"))
-        utils.rellenar_lista(self.wids['cbe_almacen'], opciones)
-        utils.combo_set_from_db(self.wids['cbe_almacen'], -1)
-        hay_fibra = pclases.CamposEspecificosBala.select().count() > 0
-        self.wids['label7'].set_property("visible", hay_fibra)
-        self.wids['e_total_kilos'].set_property("visible", hay_fibra)
-        hay_gtx = pclases.CamposEspecificosRollo.select().count() > 0
-        self.wids['label8'].set_property("visible", hay_gtx)
-        self.wids['e_total_metros'].set_property("visible", hay_gtx)
-        self.por_tarifa = {}
-        self.por_cliente = {}
-        self.por_comercial = {}
-        self.por_provincia = {}
+        utils.rellenar_lista(self.wids['cbe_comercial'], opciones)
+        utils.combo_set_from_db(self.wids['cbe_comercial'], -1)
         cols = (('Comercial', 'gobject.TYPE_STRING', False, True, True, None),
-                ('Forma de pago', 'gobject.TYPE_STRING', 
-                    False, True, False, None),
-                ('Facturación del comercial\n(IVA incl.)', 
-                    'gobject.TYPE_STRING', False, True, False, None),
-                ('Beneficio', 'gobject.TYPE_STRING', False, True, False, None),
-                ('Total facturado\n(IVA incl.)', 'gobject.TYPE_STRING', 
-                    False, True, False, None),
-                ('Cobro real', 'gobject.TYPE_STRING', 
-                    False, True, False, None),  # XXX
-                ('Id', 'gobject.TYPE_STRING', False, False, False, None))
+                ('Cliente',   'gobject.TYPE_STRING', False, True, False, None),
+                ('Forma de pago', 
+                              'gobject.TYPE_STRING', False, True, False, None),
+                ('Importe',   'gobject.TYPE_STRING', False, True, False, None),
+                ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_treeview(self.wids['tv_comercial'], cols)
         tv = self.wids['tv_comercial']
-        tv.get_column(2).get_cell_renderers()[0].set_property('xalign', 1) 
         tv.get_column(3).get_cell_renderers()[0].set_property('xalign', 1) 
-        tv.get_column(4).get_cell_renderers()[0].set_property('xalign', 1) 
-        tv.connect("row-activated", self.abrir_factura_o_comercial)
-        self.wids['ch_servicios'].set_active(True)  # Por defecto lo voy a 
-            # activar para que se vean las ofertas totales en la nueva pestaña
-            # por cliente.
+        tv.connect("row-activated", self.abrir_objeto)
         cols = (('Provincia', 'gobject.TYPE_STRING', False, True, True, None),
+                ('Comercial', 'gobject.TYPE_STRING', False, True, False, None),
+                ('Cliente',   'gobject.TYPE_STRING', False, True, False, None),
+                ('Forma de pago', 
+                              'gobject.TYPE_STRING', False, True, False, None),
+                ('Importe',   'gobject.TYPE_STRING', False, True, False, None),
                 ('Forma de pago', 'gobject.TYPE_STRING', 
                     False, True, False, None),
-                ('Asignable al provincia\n(IVA incl.)', 
-                    'gobject.TYPE_STRING', False, True, False, None),
-                ('Beneficio', 'gobject.TYPE_STRING', False, True, False, None),
-                ('Total facturado\n(IVA incl.)', 'gobject.TYPE_STRING', 
-                    False, True, False, None),
-                ('Cobro real', 'gobject.TYPE_STRING', 
-                    False, True, False, None),  # XXX
-                ('Id', 'gobject.TYPE_STRING', False, False, False, None))
+                ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_treeview(self.wids['tv_provincia'], cols)
         tv = self.wids['tv_provincia']
-        tv.get_column(2).get_cell_renderers()[0].set_property('xalign', 1) 
-        tv.get_column(3).get_cell_renderers()[0].set_property('xalign', 1) 
-        tv.connect("row-activated", self.abrir_oferta)
+        tv.get_column(4).get_cell_renderers()[0].set_property('xalign', 1) 
+        tv.connect("row-activated", self.abrir_objeto)
+        self.wids['notebook1'].set_tooltip("Ofertas **de pedido** que "
+                "cumplen los criterios seleccionados.")
+        self.por_oferta = defaultdict(lambda: [])
+        self.por_producto = defaultdict(lambda: [])
+        self.por_cliente = defaultdict(lambda: [])
+        self.por_comercial = defaultdict(lambda: [])
+        self.por_provincia = defaultdict(lambda: [])
         gtk.main()
     
     def exportar(self, boton):
@@ -184,189 +166,195 @@ class ConsultaOfertas(Ventana):
             return
         abrir_csv(treeview2csv(tv))
 
-    def colorear(self, tv):
-        def cell_func(column, cell, model, itr, numcol):
-            if (((model[itr][2] and model[itr][2].startswith("-")) 
-                 or (model[itr][3] and model[itr][3].startswith("-"))) 
-                and (model[itr][4] and model[itr][4].startswith("-"))):
-                cell.set_property("foreground", "red")
+    def colorear(self):
+        def cell_func(column, cell, model, itr, i):
+            try:
+                presupuesto = pclases.getObjetoPUID(model[itr][-1])
+            except (AttributeError, pclases.SQLObjectNotFound):
+                color = None
             else:
-                cell.set_property("foreground", None)
-            if (model[itr][2] and model[itr][2].startswith('[') 
-                    and model[itr][2].endswith(']')):
-                cell.set_property("style-set", True)
-                cell.set_property("style", pango.STYLE_ITALIC)
-            else:
-                cell.set_property("style-set", False)
-        cols = tv.get_columns()
+                if presupuesto.estudio == None: # Indeterminado
+                    color = "Indian Red"
+                elif presupuesto.estudio:
+                    color = "light yellow"
+                else:                       # De pedido
+                    color = "light green"
+            cell.set_property("cell-background", color)
+        cols = self.wids['tv_presupuestos'].get_columns()
         for i in xrange(len(cols)):
             column = cols[i]
             cells = column.get_cell_renderers()
             for cell in cells:
                 column.set_cell_data_func(cell, cell_func, i)
 
-    def abrir_factura_o_cliente(self, tv, path, view_column):
+    def abrir_objeto(self, tv, path, view_column):
         """
-        Abre la factura o el cliente según corresponda.
+        Abre el presupuesto, producto o cliente según corresponda.
         """
         model = tv.get_model()
-        ide = model[path][-1]
-        if ide > 0 and model[path].parent == None:   # Es cliente.
-            from formularios import clientes
-            cliente = pclases.Cliente.get(ide)
-            v = clientes.Clientes(cliente)  # @UnusedVariable
-        elif ide > 0 and model[path].parent != None: # Es factura.
-            factura = pclases.FacturaOferta.get(ide)
-            from formularios import facturas_venta
-            v = facturas_venta.FacturasOferta(factura)  # @UnusedVariable
+        puid = model[path][-1]
+        objeto = pclases.getObjectPUID(puid)
+        if isinstance(objeto, pclases.Cliente):
+            from formularios.clientes import Clientes as NuevaVentana
+        elif isinstance(objeto, pclases.Presupuesto):
+            from formularios.presupuestos import Presupuestos as NuevaVentana
+        elif isinstance(objeto, pclases.ProductoVenta):
+            if objeto.es_rollo():
+                from formularios.productos_de_venta_rollos \
+                        import ProductosDeVentaRollos as NuevaVentana
+            elif objeto.es_fibra():
+                from formularios.productos_de_venta_balas \
+                        import ProductosDeVentaBalas as NuevaVentana
+            else:
+                # PLAN: Y ya iré contemplando más casos si van haciendo falta.
+                return
+        elif isinstance(objeto, pclases.ProductoCompra):
+            from formularios.productos_compra \
+                    import ProductosCompra as NuevaVentana
+        elif isinstance(objeto, pclaes.PedidoVenta):
+            from formularios.pedidos_de_venta \
+                    import PedidosDeVenta as NuevaVentana
+        elif isinstance(objeto, pclases.LineaDePresupuesto):
+            objeto = objeto.presupuesto
+            from formularios.presupuestos import Presupuestos as NuevaVentana
+        else:
+            return  # Si no es nada de lo que pueda abrir, pasando del temita.
+        v = NuevaVentana(usuario = self.usuario, objeto = objeto)
     
-    def abrir_factura_o_comercial(self, tv, path, view_column):
-        """
-        Abre la factura o la ficha del comercial, según corresponda.
-        """
-        model = tv.get_model()
-        ide = model[path][-1]
-        if ide > 0 and ide != '0' and model[path].parent == None: # Es comercial.
-            comercial = pclases.Comercial.get(ide)
-            empleado = comercial.empleado
-            from formularios import empleados
-            v = empleados.Empleados(empleado)  # @UnusedVariable
-        elif ide != "" and model[path].parent != None: # Es factura.
-            factura = pclases.getObjetoPUID(ide)
-            if isinstance(factura, pclases.FacturaOferta):
-                from formularios import facturas_venta
-                v = facturas_venta.FacturasOferta(factura,  # @UnusedVariable
-                                                 usuario = self.usuario)
-            elif isinstance(factura, pclases.FacturaDeAbono):
-                from formularios import abonos_venta
-                v = abonos_venta.AbonosOferta(factura, usuario = self.usuario)  # @UnusedVariable
-
-    def abrir_oferta(self, tv, path, view_column):
-        """
-        Abre la factura o la ficha del provincia, según corresponda.
-        """
-        model = tv.get_model()
-        ide = model[path][-1]
-        if ide > 0 and ide != '0' and model[path].parent == None: # Es provincia.
-            provincia = pclases.provincia.get(ide)
-            from formularios import proveedores
-            v = proveedores.Proveedores(proveedor)  # @UnusedVariable
-        elif ide != "" and model[path].parent != None: # Es factura.
-            factura = pclases.getObjetoPUID(ide)
-            if isinstance(factura, pclases.FacturaOferta):
-                from formularios import facturas_venta
-                v = facturas_venta.FacturasOferta(factura,  # @UnusedVariable
-                                                 usuario = self.usuario)
-            elif isinstance(factura, pclases.FacturaDeAbono):
-                from formularios import abonos_venta
-                v = abonos_venta.AbonosOferta(factura, usuario = self.usuario)  # @UnusedVariable
-
-    def abrir_oferta(self, tv, path, view_column):
-        """
-        Si la fila seleccionada es una tarifa, abre la tarifa. Si es 
-        un producto, abre el producto.
-        """
-        model = tv.get_model()
-        ide = model[path][-1]
-        if ide > 0 and model[path].parent == None:   # Es tarifa.
-            from formularios import tarifas_de_precios
-            tarifa = pclases.Tarifa.get(ide)
-            v = tarifas_de_precios.TarifasDePrecios(tarifa)  # @UnusedVariable
-        elif ide > 0 and model[path].parent != None: # Es producto
-            ldv = pclases.LineaDeOferta.get(ide)
-            producto = ldv.producto
-            if isinstance(producto, pclases.ProductoOferta):
-                if producto.es_rollo():
-                    from formularios import productos_de_venta_rollos
-                    v = productos_de_venta_rollos.ProductosDeOfertaRollos(  # @UnusedVariable
-                            producto)
-                elif producto.es_bala() or producto.es_bigbag():
-                    from formularios import productos_de_venta_balas
-                    v = productos_de_venta_balas.ProductosDeOfertaBalas(  # @UnusedVariable
-                            producto)
-
     def chequear_cambios(self):
         pass
 
-    def rellenar_tabla_por_tarifa(self, items, items_abono, servicios):
+    def set_inicio(self, boton):
+        temp = utils.mostrar_calendario(titulo = "SELECCIONE FECHA DE INICIO", 
+                padre = self.wids['ventana'], 
+                fecha_defecto = self.inicio)
+        self.inicio = mx.DateTime.DateFrom(*temp[::-1])
+        self.wids['e_fechainicio'].set_text(utils.str_fecha(self.inicio))
+
+    def set_fin(self, boton):
+        temp = utils.mostrar_calendario(titulo = "SELECCIONE FECHA DE FIN", 
+                padre = self.wids['ventana'], 
+                fecha_defecto = self.fin)
+        self.fin = mx.DateTime.DateFrom(*temp[::-1])
+        self.wids['e_fechafin'].set_text(utils.str_fecha(self.fin))
+
+    def buscar(self, boton):
         """
-        Rellena el model con los items de la consulta
+        Dadas fecha de inicio y de fin, busca todas las ofertas 
+        (de pedido) entre esas dos fechas.
+        """
+        total_ofertas = 0.0
+        total_pedidos = 0.0
+        ratio = None
+        from ventana_progreso import VentanaProgreso
+        vpro = VentanaProgreso(padre = self.wids['ventana'])
+        vpro.mostrar()
+        if pclases.DEBUG:
+            print "self.inicio", self.inicio, "self.fin", self.fin
+        vpro.set_valor(0.0, "Buscando ofertas de pedido...")
+        criterios = [pclases.Presupuesto.q.estudio == False]
+        idcliente = utils.combo_get_value(self.wids['cbe_cliente'])
+        if idcliente != -1:
+            criterios.append(pclases.Presupuesto.q.clienteID == idcliente)
+        idcomercial = utils.combo_get_value(self.wids['cbe_comercial'])
+        if idcomercial != -1:
+            criterios.append(pclases.Presupuesto.q.comercialID == idcomercial)
+        if self.inicio:
+            criterios.append(pclases.Presupuesto.q.fecha >= self.inicio)
+        if self.fin:
+            criterios.append(pclases.Presupuesto.q.fecha <= self.fin)
+        if not criterios:
+            presupuestos = pclases.Presupuesto.select(orderBy = id)
+        elif len(criterios) == 1:
+            presupuestos = pclases.Presupuesto.select(criterios[0], 
+                                                      orderBy = id)
+        else:
+            presupuestos = pclases.Presupuesto.select(pclases.AND(*criterios), 
+                                                      orderBy = id)
+        tot = presupuestos.count()
+        i = 0.0
+        convertidos = 0
+        for p in presupuestos:
+            vpro.set_valor(i/tot, "Clasificando ofertas de pedido...")
+            self.por_oferta[p].append(p)
+            for ldp in p.lineasDePresupuesto:
+                self.por_producto[ldp.producto].append(ldp)
+            self.por_cliente[p.cliente].append(p)
+            self.por_comercial[p.comercial].append(p)
+            self.por_provincia[p.provincia].append(p)
+            importe_total = p.calcular_importe_total()
+            total_ofertas += importe_total
+            if p.get_pedidos():
+                total_pedidos += importe_total
+                convertidos += 1
+            i += 1
+        try:
+            ratio = 100.0 * convertidos / tot
+        except ZeroDivisionError:
+            ratio = None
+        self.rellenar_tabla_por_oferta(vpro)
+        self.rellenar_tabla_por_producto(vpro)
+        self.rellenar_tabla_por_cliente(vpro)
+        self.rellenar_tabla_por_comercial(vpro)
+        self.rellenar_tabla_por_provincia(vpro)
+        vpro.ocultar()
+        self.wids['e_total_ofertas'].set_text("%s €" % (
+            utils.float2str(total_ofertas)))
+        self.wids['e_total_pedidos'].set_text("%s €" % (
+            utils.float2str(total_pedidos)))
+        self.wids['e_ratio'].set_text("%s %%" % (ratio != None 
+            and utils.float2str(ratio, precision = 2) or "-"))
+
+    def rellenar_tabla_por_oferta(self, vpro):
+        """
+        Rellena el model de la lista de ofertas. Recibe la ventana de progreso.
         """ 
         model = self.wids['tv_datos'].get_model()
         model.clear()
-        total = 0.0
-        self.metros_totales = 0.0
-        self.kilos_totales = 0.0
-        self.por_tarifa = {}
-        idalmacen = utils.combo_get_value(self.wids['cbe_almacen'])
-        if idalmacen == -1:
-            almacen = None
-        else:
-            almacen = pclases.Almacen.get(idalmacen)
-        for i in items_abono['lineasDeDevolucion']:
-            if not almacen or i.get_almacen() == almacen:
-                tarifa, total = self.procesar_ldd(i, self.por_tarifa, model, 
-                                                  total)
-        for i in items_abono['lineasDeAbono']:
-            if not almacen or i.get_almacen() == almacen:
-                tarifa, total = self.procesar_lda(i, self.por_tarifa, model, 
-                                                  total)
-        for i in items:
-            if not almacen or i.get_almacen() == almacen:
-                tarifa, total = self.procesar_ldv(i, self.por_tarifa, model, 
-                                                  total)
-        for srv in servicios:
-            if not almacen or i.get_almacen() == almacen:
-                tarifa, total = self.procesar_srv(srv, self.por_tarifa, model, 
-                                                  total)
-        for tarifa in self.por_tarifa:
-            model[self.por_tarifa[tarifa]['nodo']][4] = \
-                "%s €" % (utils.float2str(self.por_tarifa[tarifa]['total'], 3))
-            if self.por_tarifa[tarifa]['metros'] != 0:
-                total_gtx = "GTX.: %s m² (%d rollos), %s kg" % (
-                    utils.float2str(self.por_tarifa[tarifa]['metros'], 2), 
-                    self.por_tarifa[tarifa]['rollos'], 
-                    utils.float2str(self.por_tarifa[tarifa]['kilos_gtx'], 2))
-            else:
-                total_gtx = ""
-            if self.por_tarifa[tarifa]['kilos'] != 0:
-                kilos_fibra = utils.float2str(
-                                self.por_tarifa[tarifa]['kilos'], 2)
-                total_fib = "FIBRA: %s kg" % (kilos_fibra)
-            else:
-                total_fib = ""
-            if self.por_tarifa[tarifa]['kilos_cable'] != 0:
-                kilos_cable = self.por_tarifa[tarifa]['kilos_cable']
-                kilos_cable = utils.float2str(kilos_cable, 2)
-                total_cab = "FIBRA C: %s kg" % (kilos_cable)
-            else:
-                total_cab = ""
-            txt_totales = "; ".join(
-                [i for i in (total_gtx, total_fib, total_cab) if i])
-            model[self.por_tarifa[tarifa]['nodo']][5] = txt_totales 
-        self.wids['e_total'].set_text("%s € " % (utils.float2str(total)))
-        total_kilos = "%s kg" % (utils.float2str(self.kilos_totales))
-        total_fibra_c = sum([self.por_tarifa[t]['kilos_cable'] 
-                             for t in self.por_tarifa])
-        if total_fibra_c:
-            total_kilos += " + %s kg C" % (
-                utils.float2str(total_fibra_c, 2))
-        self.wids['e_total_kilos'].set_text(total_kilos)
-        total_metros = "%s m²" % (utils.float2str(self.metros_totales))
-        self.wids['e_total_metros'].set_text(total_metros)
+        tot = len(self.por_oferta.keys())
+        i = 0.0
+        vpro.set_valor(i/tot, "Mostrando listado de ofertas...")
+        self.pedidos_generados = []
+        for p in self.por_oferta:
+            vpro.set_valor(i/tot, "Mostrando listado de ofertas... (%d)" % p.id)
+            presupuesto = self.por_oferta[p]  # Él mismo en la práctica.
+            pedidos = presupuesto.get_pedidos()
+            fila = (str(presupuesto.id), 
+                    utils.str_fecha(presupuesto.fecha), 
+                    presupuesto.cliente and presupuesto.cliente.nombre 
+                        or presupuesto.nombrecliente, 
+                    presupuesto.obra and presupuesto.obra 
+                        or presupuesto.nombreobra, 
+                    presupuesto.comercial 
+                        and presupuesto.comercial.get_nombre_completo()
+                        or "Sin comercial relacionado", 
+                    presupuesto.adjudicada, 
+                    presupuesto.get_str_estado(), 
+                    presupuesto.personaContacto, 
+                    ", ".join(pedidos), 
+                    utils.float2str(presupuesto.calcular_importe_total()), 
+                    presupuesto.puid)
+            self.pedidos_generados += [ped for ped in pedidos 
+                                       if ped not in self.pedidos_generados]
+            model.append(fila)
+            i += 1
         # Y ahora la gráfica.
-        datachart = []
-        for t in self.por_tarifa:
-            datachart.append([t and t.nombre or "Sin tarifa", 
-                              self.por_tarifa[t]['total'], 
-                              t and 3 or 7])
+        self.graficar_por_oferta()
+    
+    def graficar_por_oferta(self):
+        datachart = []  # Cada fila: Descripción, cantidad, color (7 = gris
+                        #                                          0 = amarillo
+                        #                                          3 = verde)
+        datachart = [["Ofertas", len(self.por_oferta), 3], 
+                     ["Pedidos", len(self.pedidos_generados), 0]]
         try:
             oldchart = self.wids['eventbox_chart'].get_child()
             if oldchart != None:
                 #self.wids['eventbox_chart'].remove(oldchart)
                 chart = oldchart
             else:
-                chart = charting.Chart(orient = "horizontal")
+                chart = charting.Chart(orient = "horizontal", 
+                                       values_on_bars = True)
                 self.wids['eventbox_chart'].add(chart)
             datachart.sort(lambda fila1, fila2: (fila1[0] < fila2[0] and -1) 
                                                  or (fila1[0] > fila2[0] and 1)
@@ -374,1058 +362,327 @@ class ConsultaOfertas(Ventana):
             chart.plot(datachart)
             self.wids['eventbox_chart'].show_all()
         except Exception, msg:
-            txt = "consulta_ofertas.py::rellenar_tabla_por_tarifa -> "\
+            txt = "consulta_ofertas.py::graficar_por_oferta -> "\
+                  "Error al dibujar gráfica (charting): %s" % msg
+            print txt
+            self.logger.error(txt)
+
+    def rellenar_tabla_por_producto(self, vpro):
+        """
+        Rellena el model de la lista de ofertas. Recibe la ventana de progreso.
+        """ 
+        model = self.wids['tv_producto'].get_model()
+        model.clear()
+        tot = sum([len(self.por_producto[k]) 
+                   for k in self.por_producto.keys()])
+        i = 0.0
+        vpro.set_valor(i/tot, "Mostrando ofertas por producto...")
+        padres = {}
+        for producto in self.por_producto:
+            for ldp in self.por_producto[producto]: # ldp=linea_de_presupuesto
+                vpro.set_valor(i/tot, "Mostrando ofertas por producto... (%d)" 
+                                                        % ldp.presupuesto.id)
+                try:
+                    padre = padres[producto]
+                except KeyError:
+                    try:
+                        nombre_producto = producto.descripcion
+                        puid = producto.puid
+                    except AttributeError:
+                        nombre_producto = producto
+                        puid = None
+                    padres[producto] = model.append(None, 
+                            (nombre_producto, "0.0", "0.0", puid))
+                ofertado = ldp.cantidad
+                try:
+                    # FIXME: Si dos ofertas se han pasado al mismo pedido 
+                    # entonces a dos líneas de presupuesto le corresponde la 
+                    # misma línea de pedido. Por tanto la cantidad pedida se 
+                    # duplicará. ¿Es así?
+                    pedido=ldp.presupuesto.get_pedido_por_producto()[producto]
+                except KeyError:
+                    pedido = 0.0
+                fila = ("Presupuesto %d" % ldp.presupuesto.id, 
+                        utils.float2str(ofertado), 
+                        utils.float2str(pedido), 
+                        ldp.puid)
+                model.append(padre, fila)
+                # Actualizo totales fila padre.
+                model[padre][1] = utils.float2str(
+                        utils._float(model[padre][1]) + ofertado)
+                model[padre][2] = utils.float2str(
+                        utils._float(model[padre][2]) + pedido)
+                i += 1
+        # Y ahora la gráfica.
+        self.graficar_por_producto()
+
+    def graficar_por_producto(self):
+        datachart = []
+        model = self.wids['tv_producto'].get_model()
+        try:
+            maximo_producto = max([utils._float(f[1]) for f in model])
+        except ValueError:  # empty sequence
+            maximo_producto = 0
+        for fila in model:
+            if utils._float(fila[2]) == maximo_producto:
+                color = 0
+            if (fila[-1] == None or isintance(pclases.getObjetoPUID(fila[-1]), 
+                                              pclases.Servicio)):
+                    # Productos que no están dados de alta, no 
+                    # tengo el puid de producto o es servicio.
+                color = 7
+            else:
+                color = 3
+            datachart.append([fila[0], utils._float(fila[2]), color])
+        # Filtro y me quedo con el TOP5:
+        datachart.sort(lambda c1, c2: int(c2[2] - c1[2]))
+        _datachart = datachart[:5]
+        _datachart.append(("Resto", sum([c[1] for c in datachart[5:]])))
+        datachart = _datachart
+        try:
+            oldchart = self.wids['eventbox_chart'].get_child()
+            if oldchart != None:
+                self.wids['eventbox_chart'].remove(oldchart)
+                #chart = oldchart
+            #else:
+            chart = charting.Chart(orient = "vertical", 
+                                       values_on_bars = True)
+            self.wids['eventbox_chart'].add(chart)
+            chart.plot(datachart)
+            self.wids['eventbox_chart'].show_all()
+        except Exception, msg:
+            txt = "consulta_ofertas.py::graficar_por_producto -> "\
+                  "Error al dibujar gráfica (charting): %s" % msg
+            print txt
+            self.logger.error(txt)
+
+    def rellenar_tabla_por_cliente(self, vpro):
+        """
+        Rellena el model de la lista de ofertas clasificada por cliente. 
+        Recibe la ventana de progreso.
+        """ 
+        model = self.wids['tv_cliente'].get_model()
+        model.clear()
+        tot = sum([len(self.por_producto[k]) 
+                   for k in self.por_producto.keys()])
+        i = 0.0
+        vpro.set_valor(i/tot, "Mostrando ofertas por cliente...")
+        padres = {}
+        for cliente in self.por_cliente:
+            for presupuesto in self.por_cliente[cliente]: 
+                vpro.set_valor(i/tot, "Mostrando ofertas por cliente... (%d)" 
+                                                        % presupuesto.id)
+                try:
+                    padre = padres[cliente]
+                except KeyError:
+                    try:
+                        nombre_cliente = cliente.descripcion
+                        cif = cliente.cif
+                        puid = cliente.puid
+                    except AttributeError:
+                        nombre_cliente = presupuesto.nombrecliente 
+                        cif = presupuesto.cif
+                        puid = None
+                    padres[cliente] = model.append(None, 
+                            (nombre_cliente, 
+                             cif, 
+                             "0.0", 
+                             "", 
+                             puid))
+                importe = presupuesto.calcular_importe_total()
+                fila = ("Presupuesto %d" % presupuesto.id, 
+                        utils.str_fecha(presupuesto.fecha),
+                        utils.float2str(importe), 
+                        presupuesto.formaDePago 
+                            and presupuesto.formaDePago.toString() or "", 
+                        presupuesto.puid)
+                model.append(padre, fila)
+                # Actualizo totales fila padre.
+                model[padre][2] = utils.float2str(
+                        utils._float(model[padre][2]) + importe)
+                i += 1
+        # Y ahora la gráfica.
+        self.graficar_por_cliente()
+
+    def graficar_por_cliente(self):
+        datachart = []
+        model = self.wids['tv_cliente'].get_model()
+        try:
+            maximo_cliente = max([utils._float(f[1]) 
+                                  for f in model]) # if f[0]!="Sin cliente"])
+        except ValueError:  # empty sequence
+            maximo_cliente = 0
+        for fila in model:
+            if fila[0] == None:     # Cliente no dado de alta. No tiene PUID.
+                color = 7
+            elif utils._float(fila[2]) == maximo_cliente:
+                color = 0
+            else:
+                color = 3
+            datachart.append([fila[0], utils._float(fila[2]), color])
+        # Filtro y me quedo con el TOP5:
+        datachart.sort(lambda c1, c2: int(c2[2] - c1[2]))
+        _datachart = datachart[:5]
+        _datachart.append(("Resto", sum([c[1] for c in datachart[5:]])))
+        datachart = _datachart
+        try:
+            oldchart = self.wids['eventbox_chart'].get_child()
+            if oldchart != None:
+                self.wids['eventbox_chart'].remove(oldchart)
+                #chart = oldchart
+            #else:
+            chart = charting.Chart(orient = "horizontal", 
+                                       values_on_bars = True)
+            self.wids['eventbox_chart'].add(chart)
+            chart.plot(datachart)
+            self.wids['eventbox_chart'].show_all()
+        except Exception, msg:
+            txt = "consulta_ofertas.py::graficar_por_cliente -> "\
+                  "Error al dibujar gráfica (charting): %s" % msg
+            print txt
+            self.logger.error(txt)
+
+    def rellenar_tabla_por_comercial(self, vpro):
+        """
+        Rellena el model de la lista de ofertas clasificada por comercial. 
+        Recibe la ventana de progreso.
+        """ 
+        model = self.wids['tv_comercial'].get_model()
+        model.clear()
+        tot = sum([len(self.por_producto[k]) 
+                   for k in self.por_producto.keys()])
+        i = 0.0
+        vpro.set_valor(i/tot, "Mostrando ofertas por comercial...")
+        padres = {}
+        for comercial in self.por_comercial:
+            for presupuesto in self.por_comercial[comercial]: 
+                vpro.set_valor(i/tot, "Mostrando ofertas por comercial... (%d)" 
+                                                        % presupuesto.id)
+                try:
+                    padre = padres[comercial]
+                except KeyError:
+                    try:
+                        nombre_comercial = comercial.get_nombre_completo()
+                        puid = comercial.puid
+                    except AttributeError:
+                        nombre_comercial = "Sin comercial relacionado"
+                        puid = None
+# PORASQUI: Me queda montar la fila con el nombre del cliente además del comercial, etc.
+                    padres[comercial] = model.append(None, 
+                            (nombre_comercial, 
+                             cif, 
+                             "0.0", 
+                             "", 
+                             puid))
+                importe = presupuesto.calcular_importe_total()
+                fila = ("Presupuesto %d" % presupuesto.id, 
+                        utils.str_fecha(presupuesto.fecha),
+                        utils.float2str(importe), 
+                        presupuesto.formaDePago 
+                            and presupuesto.formaDePago.toString() or "", 
+                        presupuesto.puid)
+                model.append(padre, fila)
+                # Actualizo totales fila padre.
+                model[padre][2] = utils.float2str(
+                        utils._float(model[padre][2]) + importe)
+                i += 1
+        # Y ahora la gráfica.
+        self.graficar_por_comercial()
+
+    def graficar_por_comercial(self):
+        datachart = []
+        model = self.wids['tv_comercial'].get_model()
+        try:
+            maximo_comercial = max([utils._float(f[1]) for f in model 
+                                  if f[0]!="Sin comercial relacionado"])
+        except ValueError:  # empty sequence
+            maximo_comercial = 0
+        for fila in model:
+            if fila[0] == None:     # Cliente no dado de alta. No tiene PUID.
+                color = 7
+            elif utils._float(fila[2]) == maximo_comercial:
+                color = 0
+            else:
+                color = 3
+            datachart.append([fila[0], utils._float(fila[2]), color])
+        datachart.sort(lambda c1, c2: int(c2[2] - c1[2]))
+        #_datachart = datachart[:5]
+        #_datachart.append(("Resto", sum([c[1] for c in datachart[5:]])))
+        #datachart = _datachart
+        try:
+            oldchart = self.wids['eventbox_chart'].get_child()
+            if oldchart != None:
+                self.wids['eventbox_chart'].remove(oldchart)
+                #chart = oldchart
+            #else:
+            chart = charting.Chart(orient = "horizontal", 
+                                       values_on_bars = True)
+            self.wids['eventbox_chart'].add(chart)
+            chart.plot(datachart)
+            self.wids['eventbox_chart'].show_all()
+        except Exception, msg:
+            txt = "consulta_ofertas.py::graficar_por_comercial -> "\
+                  "Error al dibujar gráfica (charting): %s" % msg
+            print txt
+            self.logger.error(txt)
+
+### PORASQUI: Me falta el rellenar...por_provincia.
+
+    def graficar_por_provincia(self):
+        datachart = []
+        model = self.wids['tv_provincia'].get_model()
+        try:
+            maxima_provincia = max([utils._float(f[1]) for f in model]) 
+        except ValueError:  # empty sequence
+            maxima_provincia = 0
+        for fila in model:
+            if fila[0] == "No especificada" or fila[0].strip == "": 
+                color = 7
+            elif utils._float(fila[2]) == maxima_provincia:
+                color = 0
+            else:
+                color = 3
+            datachart.append([fila[0], utils._float(fila[2]), color])
+        # Filtro y me quedo con el TOP5:
+        datachart.sort(lambda c1, c2: int(c2[2] - c1[2]))
+        _datachart = datachart[:5]
+        _datachart.append(("Resto", sum([c[1] for c in datachart[5:]])))
+        datachart = _datachart
+        try:
+            oldchart = self.wids['eventbox_chart'].get_child()
+            if oldchart != None:
+                self.wids['eventbox_chart'].remove(oldchart)
+                #chart = oldchart
+            #else:
+            chart = charting.Chart(orient = "horizontal", 
+                                       values_on_bars = True)
+            self.wids['eventbox_chart'].add(chart)
+            chart.plot(datachart)
+            self.wids['eventbox_chart'].show_all()
+        except Exception, msg:
+            txt = "consulta_ofertas.py::graficar_por_provincia -> "\
                   "Error al dibujar gráfica (charting): %s" % msg
             print txt
             self.logger.error(txt)
 
     def cambiar_grafica(self, nb, page, page_num):
         if page_num == 0:
-            # Y ahora la gráfica.
-            datachart = []
-            for t in self.por_tarifa:
-                datachart.append([t and t.nombre or "Sin tarifa", 
-                                  self.por_tarifa[t]['total'], 
-                                  t and 3 or 7])
-            try:
-                oldchart = self.wids['eventbox_chart'].get_child()
-                if oldchart != None:
-                    self.wids['eventbox_chart'].remove(oldchart)
-                    #chart = oldchart
-                #else:
-                chart = charting.Chart(orient = "horizontal")
-                self.wids['eventbox_chart'].add(chart)
-                datachart.sort(
-                    lambda fila1, fila2: (fila1[0] < fila2[0] and -1) 
-                                         or (fila1[0] > fila2[0] and 1) 
-                                         or 0)
-                chart.plot(datachart)
-                self.wids['eventbox_chart'].show_all()
-            except Exception, msg:
-                txt = "consulta_ofertas.py::cambiar_grafica -> "\
-                      "Error al dibujar gráfica (charting): %s" % msg
-                print txt
-                self.logger.error(txt)
+            self.graficar_por_oferta()
         elif page_num == 1:
-            # Y ahora la gráfica.
-            datachart = []
-            for t in self.por_cliente:
-                datachart.append([t and t.nombre or "Sin cliente", 
-                                  sum([f.calcular_importe_total() for f 
-                                       in self.por_cliente[t]]), 
-                                  t and 3 or 8])
-            # Filtro y me quedo con el TOP5:
-            datachart.sort(lambda c1, c2: int(c2[1] - c1[1]))
-            _datachart = datachart[:5]
-            _datachart.append(("Resto", sum([c[1] for c in datachart[5:]]), 7))
-            datachart = _datachart
-            try:
-                oldchart = self.wids['eventbox_chart'].get_child()
-                if oldchart != None:
-                    self.wids['eventbox_chart'].remove(oldchart)
-                    #chart = oldchart
-                #else:
-                chart = charting.Chart(orient = "horizontal", 
-                                           values_on_bars = True)
-                self.wids['eventbox_chart'].add(chart)
-                chart.plot(datachart)
-                self.wids['eventbox_chart'].show_all()
-            except Exception, msg:
-                txt = "consulta_ofertas.py::cambiar_gragica -> "\
-                      "Error al dibujar gráfica (charting): %s" % msg
-                print txt
-                self.logger.error(txt)
-        elif page_num == 3:
-            # Y ahora la gráfica.
-            datachart = []
-            model = self.wids['tv_comercial'].get_model()
-            try:
-                maximo_ofertas = max([utils._float(f[1]) 
-                                     for f in model if f[0]!="Sin comercial"])
-            except ValueError:  # empty sequence
-                maximo_ofertas = 0
-            for fila in model:
-                if fila[0] == "Sin comercial":
-                    color = 7
-                elif utils._float(fila[2]) == maximo_ofertas:
-                    color = 0
-                else:
-                    color = 3
-                datachart.append([fila[0], utils._float(fila[2]), color])
-            # Filtro y me quedo con el TOP5:
-            datachart.sort(lambda c1, c2: int(c2[2] - c1[2]))
-            #_datachart = datachart[:5]
-            #_datachart.append(("Resto", sum([c[1] for c in datachart[5:]])))
-            #datachart = _datachart
-            try:
-                oldchart = self.wids['eventbox_chart'].get_child()
-                if oldchart != None:
-                    self.wids['eventbox_chart'].remove(oldchart)
-                    #chart = oldchart
-                #else:
-                chart = charting.Chart(orient = "horizontal", 
-                                           values_on_bars = True)
-                self.wids['eventbox_chart'].add(chart)
-                chart.plot(datachart)
-                self.wids['eventbox_chart'].show_all()
-            except Exception, msg:
-                txt = "consulta_ofertas.py::cambiar_gragica -> "\
-                      "Error al dibujar gráfica (charting): %s" % msg
-                print txt
-                self.logger.error(txt)
+            self.graficar_por_cliente()
+        elif page_num == 2:
+            self.graficar_por_producto()
+        elif page_num == 3: 
+            self.graficar_por_comercial()
         elif page_num == 4:
-            # Y ahora la gráfica.
-            datachart = []
-            model = self.wids['tv_provincia'].get_model()
-            try:
-                maximo_ofertas = max([utils._float(f[1]) 
-                                     for f in model if f[0]!="Sin proveedor"])
-            except ValueError:  # empty sequence
-                maximo_ofertas = 0
-            for fila in model:
-                if fila[0] == "Sin provincia":
-                    color = 7
-                elif utils._float(fila[2]) == maximo_ofertas:
-                    color = 0
-                else:
-                    color = 3
-                datachart.append([fila[0], utils._float(fila[2]), color])
-            # Filtro y me quedo con el TOP5:
-            datachart.sort(lambda c1, c2: int(c2[2] - c1[2]))
-            #_datachart = datachart[:5]
-            #_datachart.append(("Resto", sum([c[1] for c in datachart[5:]])))
-            #datachart = _datachart
-            try:
-                oldchart = self.wids['eventbox_chart'].get_child()
-                if oldchart != None:
-                    self.wids['eventbox_chart'].remove(oldchart)
-                    #chart = oldchart
-                #else:
-                chart = charting.Chart(orient = "horizontal", 
-                                           values_on_bars = True)
-                self.wids['eventbox_chart'].add(chart)
-                chart.plot(datachart)
-                self.wids['eventbox_chart'].show_all()
-            except Exception, msg:
-                txt = "consulta_ofertas.py::cambiar_gragica -> "\
-                      "Error al dibujar gráfica (charting): %s" % msg
-                print txt
-                self.logger.error(txt)
- 
-    def procesar_lda(self, lda, por_tarifa, model, total):
-        precio = lda.precio * (1 - lda.descuento)
-            # Lo pongo en negativo porque es dinero que se ha devuelto/pagado.
-        total_ldv = lda.cantidad * precio 
-        tarifa = lda.get_tarifa()
-        kilos = kilos_gtx = kilos_cable = metros = rollos = 0  # @UnusedVariable
-        if lda.productoOferta and lda.productoOferta.es_rollo():
-            metros = lda.cantidad
-            try:
-                rollos = int(lda.cantidad /  # @UnusedVariable
-                    lda.productoOferta.camposEspecificosRollo.metros_cuadrados)
-            except ZeroDivisionError:
-                rollos = 0  # @UnusedVariable
-            kilos_gtx = ((metros *  # @UnusedVariable
-                lda.productoOferta.camposEspecificosRollo.gramos) / 1000.0)
-        elif lda.productoOferta and (lda.productoOferta.es_bala() 
-                                    or lda.productoOferta.es_bigbag()):
-            kilos = lda.cantidad  # @UnusedVariable
-        elif lda.productoOferta and (lda.productoOferta.es_bala_cable()):
-            kilos_cable = lda.cantidad  # @UnusedVariable
-        else:       # ldv.producto es un pclases.ProductoCompra. No puedo 
-                    # medir sus metros, kilos ni bultos
-            pass
-        if tarifa not in self.por_tarifa:
-            padre = model.append(None,
-                                    ("", 
-                                     tarifa and tarifa.nombre or "Sin tarifa",
-                                     "",
-                                     "", 
-                                     "%s €" % (utils.float2str(0, 3)),
-                                     "", 
-                                     "", 
-                                     "", 
-                                     "",
-                                     "",
-                                     "", 
-                                     "",
-                                     "", # XXX 
-                                     tarifa and tarifa.id or 0))
-            self.por_tarifa[tarifa] = {'nodo': padre, 
-                                  'ldvs': [lda, ], 
-                                  'total': total_ldv, 
-                                  'metros': 0, 
-                                  'kilos': 0, 
-                                  'rollos': 0, 
-                                  'kilos_gtx': 0, 
-                                  'kilos_cable': 0}
-                # Los kg y metros no deben computar para el total, ya se 
-                # cuentan en la factura correspondiente. El importe en 
-                # euros, sin embargo, sí que hay que contarlo.
-        else:
-            self.por_tarifa[tarifa]['ldvs'].append(lda)
-            self.por_tarifa[tarifa]['total'] += total_ldv
-            padre = self.por_tarifa[tarifa]['nodo']
-        if lda.pedidoOfertaID == None:
-            pedido = ''
-        else:
-            pedido = lda.pedidoOferta.numpedido
-        fra = lda.facturaOferta or lda.prefactura
-        if fra == None:
-            factura = ""
-            fdp = ""
-            fdpreal = ""
-        #    if pedido != "":
-        #        fdp = pedido.formaDePago and pedido.formaDePago.toString() or ""
-        #    else:
-        #        fdp = ""
-        else:
-            factura = fra.numfactura
-            try:
-                fdp = fra.vencimientosCobro[0].observaciones
-            except (AttributeError, IndexError):
-                fdp = ""
-            fdpreal = fra.get_str_cobro_real()
-        if lda.albaranSalida != None and lda.albaranSalida.cliente != None:
-            cliente = lda.albaranSalida.cliente.nombre
-        elif fra != None and fra.cliente != None:
-            cliente = fra.cliente.nombre
-        elif lda.pedidoOferta != None and lda.pedidoOferta.cliente != None:
-            cliente = lda.pedidoOferta.cliente.nombre
-        else:
-            cliente = ""
-        destino = lda.albaranSalida and lda.albaranSalida.nombre or cliente
-        total = total + (precio * lda.cantidad)
-        if lda.productoOferta and lda.productoOferta.es_rollo():
-            metros_o_kilos = "m²"
-            try:
-                bultos = "(%s rollos)" % (int(lda.cantidad / 
-                    lda.productoOferta.camposEspecificosRollo.metros_cuadrados))
-            except ZeroDivisionError:
-                bultos = ""
-        elif lda.productoOferta and (lda.productoOferta.es_bala() 
-                                    or lda.productoOferta.es_bigbag()):
-            metros_o_kilos = "kg"
-            bultos = "(N/A)"
-        else:
-            metros_o_kilos = ""
-            bultos = ""
-        cantidad = "%s %s" % (utils.float2str(lda.cantidad, 1), metros_o_kilos)
-        transporte = ""     # En abonos nole.
-        comerciales = (lda.facturaOferta 
-            and lda.facturaOferta.dividir_total_por_comercial().keys() or [])
-        comerciales = [c.get_nombre_completo() for c in comerciales if c]
-        comercial = "; ".join(comerciales)
-        model.append(padre, 
-            (utils.str_fecha((lda.facturaOfertaID and lda.facturaOferta.fecha) 
-                              or (lda.prefacturaID and lda.prefactura.fecha)
-                        or (lda.albaranSalidaID and lda.albaranSalida.fecha) 
-                            or (lda.pedidoOfertaID and lda.pedidoOferta.fecha)),
-             lda.producto.descripcion,
-             "[%s %s]" % (cantidad, bultos),
-             "%s €" % (utils.float2str(precio, 3)),
-             "%s €" % (utils.float2str(total_ldv, 3)),
-             cliente, 
-             pedido,
-             comercial, 
-             lda.albaranSalidaID and lda.albaranSalida.numalbaran or "",
-             transporte, 
-             destino, 
-             factura,
-             fdp, 
-             fdpreal, 
-             lda.id))
-        return tarifa, total
-
-    def procesar_ldd(self, ldd, por_tarifa, model, total):
-        precio = -ldd.precio * (1 - ldd.descuento)
-            # Lo pongo en negativo porque es dinero que se ha devuelto/pagado.
-        total_ldv = precio # ldd.cantidad * precio  
-            # En las LDD el precio es el precio del artículo completo (la 
-            # unidad), no por m² ni kg.
-        tarifa = ldd.get_tarifa()
-        kilos = kilos_gtx = kilos_cable = metros = rollos = 0
-        if ldd.productoOferta and ldd.productoOferta.es_rollo():
-            metros = ldd.cantidad
-            try:
-                rollos = int(ldd.cantidad / 
-                    ldd.productoOferta.camposEspecificosRollo.metros_cuadrados)
-            except ZeroDivisionError:
-                rollos = 0
-            kilos_gtx = ((metros * 
-                          ldd.productoOferta.camposEspecificosRollo.gramos) 
-                         / 1000.0)
-        elif ldd.productoOferta and (ldd.productoOferta.es_bala() 
-                                    or ldd.productoOferta.es_bigbag()):
-            kilos = ldd.cantidad
-        elif ldd.productoOferta and (ldd.productoOferta.es_bala_cable()):
-            kilos_cable += ldd.cantidad
-        else:       # ldv.producto es un pclases.ProductoCompra. No puedo 
-                    # medir sus metros, kilos ni bultos
-            pass
-        if tarifa not in self.por_tarifa:
-            padre = model.append(None, 
-                                    ("", 
-                                     tarifa and tarifa.nombre or "Sin tarifa",
-                                     "",
-                                     "", 
-                                     "%s €" % (utils.float2str(0, 3)),
-                                     "", 
-                                     "", 
-                                     "", 
-                                     "",
-                                     "",
-                                     "", 
-                                     "",
-                                     "", 
-                                     "",    # XXX
-                                     tarifa and tarifa.id or 0))
-            self.por_tarifa[tarifa] = {'nodo': padre, 
-                                  'ldvs': [ldd, ], 
-                                  'total': total_ldv, 
-                                  'metros': metros, 
-                                  'kilos': kilos, 
-                                  'rollos': rollos, 
-                                  'kilos_gtx': kilos_gtx, 
-                                  'kilos_cable': kilos_cable}
-        else:
-            self.por_tarifa[tarifa]['ldvs'].append(ldd)
-            self.por_tarifa[tarifa]['total'] += total_ldv
-            self.por_tarifa[tarifa]['metros'] += metros
-            self.por_tarifa[tarifa]['kilos'] += kilos
-            self.por_tarifa[tarifa]['rollos'] += rollos
-            self.por_tarifa[tarifa]['kilos_gtx'] += kilos_gtx
-            self.por_tarifa[tarifa]['kilos_cable'] += kilos_cable
-            padre = self.por_tarifa[tarifa]['nodo']
-        if ldd.pedidoOfertaID == None:
-            pedido = ''
-        else:
-            pedido = ldd.pedidoOferta.numpedido
-        fra = ldd.facturaOferta or ldd.prefactura
-        if fra == None:
-            factura = ""
-            fdp = ""
-            fdpreal = ""
-            #if pedido != "":
-            #    fdp = pedido.formaDePago and pedido.formaDePago.toString() or ""
-            #else:
-            #    fdp = ""
-        else:
-            factura = fra.numfactura
-            try:
-                fdp = fra.vencimientosCobro[0].observaciones
-            except (IndexError, AttributeError):
-                fdp = ""
-            fdpreal = fra.get_str_cobro_real()
-        if ldd.albaranSalida != None and ldd.albaranSalida.cliente != None:
-            cliente = ldd.albaranSalida.cliente.nombre
-        elif fra != None and fra.cliente != None:
-            cliente = fra.cliente.nombre
-        elif ldd.pedidoOferta != None and ldd.pedidoOferta.cliente != None:
-            cliente = ldd.pedidoOferta.cliente.nombre
-        else:
-            cliente = ""
-        destino = ldd.albaranSalida and ldd.albaranSalida.nombre or cliente
-        total = total + precio # * ldd.cantidad)  # El precio en la LDD ya es 
-        # el subtotal. Es el precio de la unidad completa, no en m² ni kg.
-        if ldd.productoOferta and ldd.productoOferta.es_rollo():
-            metros_o_kilos = "m²"
-            try:
-                bultos = "(%s rollos)" % (int(ldd.cantidad / 
-                    ldd.productoOferta.camposEspecificosRollo.metros_cuadrados))
-            except ZeroDivisionError:
-                bultos = ""
-            self.metros_totales += ldd.cantidad
-        elif ldd.productoOferta and (ldd.productoOferta.es_bala() 
-                                    or ldd.productoOferta.es_bigbag()):
-            metros_o_kilos = "kg"
-            bultos = "(N/A)"
-            self.kilos_totales += ldd.cantidad
-        else:
-            metros_o_kilos = ""
-            bultos = ""
-        cantidad = "%s %s" % (utils.float2str(ldd.cantidad, 1), metros_o_kilos)
-        transporte = ""     # En abonos nole.
-        comerciales = (ldd.facturaOferta 
-            and ldd.facturaOferta.dividir_total_por_comercial().keys() or [])
-        comerciales = [c.get_nombre_completo() for c in comerciales if c]
-        comercial = "; ".join(comerciales)
-        model.append(padre, 
-            (utils.str_fecha((ldd.facturaOfertaID and ldd.facturaOferta.fecha) 
-                        or (ldd.prefacturaID and ldd.prefactura.fecha)
-                        or (ldd.albaranSalidaID and ldd.albaranSalida.fecha) 
-                        or (ldd.pedidoOfertaID and ldd.pedidoOferta.fecha)),
-             ldd.producto.descripcion,
-             "%s %s" % (cantidad, bultos),
-             "%s €" % (utils.float2str(precio, 3)),
-             "%s €" % (utils.float2str(total_ldv, 3)),
-             cliente, 
-             pedido,
-             comercial, 
-             ldd.albaranSalidaID and ldd.albaranSalida.numalbaran or "",
-             transporte, 
-             destino, 
-             factura,
-             fdp, 
-             fdpreal, 
-             ldd.id))
-        return tarifa, total
-
-    def procesar_ldv(self, i, por_tarifa, model, total):
-        precio = i.precio * (1 - i.descuento)
-        total_ldv = i.cantidad * precio
-        tarifa = i.get_tarifa()
-        kilos_cable = kilos = metros = rollos = kilos_gtx = 0
-        if i.productoOferta and i.productoOferta.es_rollo():
-            metros = i.cantidad
-            try:
-                rollos = int(i.cantidad / 
-                    i.productoOferta.camposEspecificosRollo.metros_cuadrados)
-            except ZeroDivisionError:
-                rollos = 0
-            kilos_gtx = (metros 
-                * i.productoOferta.camposEspecificosRollo.gramos) / 1000.0
-        elif i.productoOferta and (i.productoOferta.es_bala() 
-                                  or i.productoOferta.es_bigbag()):
-            kilos = i.cantidad
-        elif i.productoOferta and i.productoOferta.es_bala_cable():
-            kilos_cable = i.cantidad
-        else:       # ldv.producto es un pclases.ProductoCompra. 
-                    # No puedo medir sus metros, kilos ni bultos
-            pass
-        if tarifa not in self.por_tarifa:
-            padre = model.append(None, 
-                                    ("", 
-                                     tarifa and tarifa.nombre or "Sin tarifa",
-                                     "",
-                                     "", 
-                                     "%s €" % (utils.float2str(0, 3)),
-                                     "", 
-                                     "",
-                                     "",
-                                     "", 
-                                     "", 
-                                     "", 
-                                     "", 
-                                     "",
-                                     "",    # XXX
-                                     tarifa and tarifa.id or 0))
-            self.por_tarifa[tarifa] = {'nodo': padre, 
-                                  'ldvs': [i, ], 
-                                  'total': total_ldv, 
-                                  'metros': metros, 
-                                  'kilos': kilos, 
-                                  'rollos': rollos, 
-                                  'kilos_gtx': kilos_gtx, 
-                                  'kilos_cable': kilos_cable}
-        else:
-            self.por_tarifa[tarifa]['ldvs'].append(i)
-            self.por_tarifa[tarifa]['total'] += total_ldv
-            self.por_tarifa[tarifa]['metros'] += metros
-            self.por_tarifa[tarifa]['kilos'] += kilos
-            self.por_tarifa[tarifa]['rollos'] += rollos
-            self.por_tarifa[tarifa]['kilos_gtx'] += kilos_gtx
-            self.por_tarifa[tarifa]['kilos_cable'] += kilos_cable
-            padre = self.por_tarifa[tarifa]['nodo']
-        if i.pedidoOfertaID == None:
-            pedido = ''
-        else:
-            pedido = i.pedidoOferta.numpedido
-        fra = i.facturaOferta or i.prefactura
-        if fra == None:
-            factura = ""
-            fdp = fdpreal = ""
-            #if pedido != "":
-            #    fdp = pedido.formaDePago and pedido.formaDePago.toString() or ""
-            #else:
-            #    fdp = ""
-        else:
-            factura = fra.numfactura
-            try:
-                fdp = fra.vencimientosCobro[0].observaciones
-            except (IndexError, AttributeError):
-                fdp = ""
-            fdpreal = fra.get_str_cobro_real()
-        if i.albaranSalida != None and i.albaranSalida.cliente != None:
-            cliente = i.albaranSalida.cliente.nombre
-        elif fra != None and fra.cliente != None:
-            cliente = fra.cliente.nombre
-        elif i.pedidoOferta != None and i.pedidoOferta.cliente != None:
-            cliente = i.pedidoOferta.cliente.nombre
-        else:
-            cliente = ""
-        destino = (i.albaranSalida and i.albaranSalida.nombre 
-                   and i.albaranSalida.nombre or cliente)
-        total = total + (precio * i.cantidad)
-        if i.productoOferta and i.productoOferta.es_rollo():
-            metros_o_kilos = "m²"
-            try:
-                bultos = "(%s rollos)" % (int(i.cantidad 
-                    / i.productoOferta.camposEspecificosRollo.metros_cuadrados))
-            except ZeroDivisionError:
-                bultos = ""
-            self.metros_totales += i.cantidad
-        elif i.productoOferta and (i.productoOferta.es_bala() 
-                                  or i.productoOferta.es_bigbag()):
-            metros_o_kilos = "kg"
-            bultos = "(N/A)"
-            self.kilos_totales += i.cantidad
-        else:
-            metros_o_kilos = ""
-            bultos = ""
-        cantidad = "%s %s" % (utils.float2str(i.cantidad, 1), metros_o_kilos)
-        sumtransportes = (i.albaranSalida and 
-                          sum([t.precio 
-                               for t in i.albaranSalida.transportesACuenta])
-                          or None)
-        transporte = (sumtransportes 
-                      and "%s €" % utils.float2str(sumtransportes) 
-                      or "")
-        comerciales = (i.facturaOferta 
-            and i.facturaOferta.dividir_total_por_comercial().keys() or [])
-        comerciales = [c.get_nombre_completo() for c in comerciales if c]
-        comercial = "; ".join(comerciales)
-        model.append(padre, 
-            (utils.str_fecha((i.facturaOfertaID and i.facturaOferta.fecha) 
-                            or (i.prefacturaID and i.prefactura.fecha)
-                            or (i.albaranSalidaID and i.albaranSalida.fecha) 
-                            or (i.pedidoOfertaID and i.pedidoOferta.fecha)),
-             i.producto.descripcion,
-             "%s %s" % (cantidad, bultos),
-             "%s €" % (utils.float2str(precio, 3)),
-             "%s €" % (utils.float2str(total_ldv, 3)),
-             cliente, 
-             pedido,
-             comercial, 
-             i.albaranSalidaID and i.albaranSalida.numalbaran or "",
-             transporte, 
-             destino, 
-             factura,
-             fdp, 
-             fdpreal, 
-             i.id))
-        return tarifa, total
-        
-    def procesar_srv(self, i, por_tarifa, model, total):
-        precio = i.precio * (1 - i.descuento)
-        total_ldv = i.cantidad * precio
-        tarifa = None
-        kilos_cable = kilos = metros = rollos = kilos_gtx = 0
-        if tarifa not in self.por_tarifa:
-            padre = model.append(None, 
-                                    ("", 
-                                     tarifa and tarifa.nombre or "Sin tarifa",
-                                     "",
-                                     "", 
-                                     "%s €" % (utils.float2str(0, 3)),
-                                     "", 
-                                     "",
-                                     "",
-                                     "",
-                                     "",
-                                     "", 
-                                     "",
-                                     "", 
-                                     "", # XXX
-                                     tarifa and tarifa.id or 0))
-            self.por_tarifa[tarifa] = {'nodo': padre, 
-                                  'ldvs': [i, ], 
-                                  'total': total_ldv, 
-                                  'metros': metros, 
-                                  'kilos': kilos, 
-                                  'rollos': rollos, 
-                                  'kilos_gtx': kilos_gtx, 
-                                  'kilos_cable': kilos_cable}
-        else:
-            self.por_tarifa[tarifa]['ldvs'].append(i)
-            self.por_tarifa[tarifa]['total'] += total_ldv
-            self.por_tarifa[tarifa]['metros'] += metros
-            self.por_tarifa[tarifa]['kilos'] += kilos
-            self.por_tarifa[tarifa]['rollos'] += rollos
-            self.por_tarifa[tarifa]['kilos_gtx'] += kilos_gtx
-            self.por_tarifa[tarifa]['kilos_cable'] += kilos_cable
-            padre = self.por_tarifa[tarifa]['nodo']
-        if i.pedidoOfertaID == None:
-            pedido = ''
-        else:
-            pedido = i.pedidoOferta.numpedido
-        fra = i.facturaOferta or i.prefactura
-        if fra == None:
-            fdp = factura = fdpreal = ""
-            #if pedido != "":
-            #    fdp = pedido.formaDePago and pedido.formaDePago.toString() or ""
-            #else:
-            #    fdp = ""
-        else:
-            factura = fra.numfactura
-            try:
-                fdp = fra.vencimientosCobro[0].observaciones
-            except (IndexError, AttributeError):
-                fdp = ""
-            fdpreal = fra.get_str_cobro_real()
-        if i.albaranSalida != None and i.albaranSalida.cliente != None:
-            cliente = i.albaranSalida.cliente.nombre
-        elif fra != None and fra.cliente != None:
-            cliente = fra.cliente.nombre
-        elif i.pedidoOferta != None and i.pedidoOferta.cliente != None:
-            cliente = i.pedidoOferta.cliente.nombre
-        else:
-            cliente = ""
-        destino = i.albaranSalida and i.albaranSalida.nombre or cliente
-        total = total + (precio * i.cantidad)
-        cantidad = utils.float2str(i.cantidad, autodec = True)
-        sumtransportes = (i.albaranSalida and 
-                          sum([t.precio 
-                               for t in i.albaranSalida.transportesACuenta])
-                          or None)
-        transporte = (sumtransportes 
-                      and "%s €" % utils.float2str(sumtransportes) 
-                      or "")
-        comerciales = (i.facturaOferta 
-            and i.facturaOferta.dividir_total_por_comercial().keys() or [])
-        comerciales = [c.get_nombre_completo() for c in comerciales if c]
-        comercial = "; ".join(comerciales)
-        model.append(padre, 
-            (utils.str_fecha((i.facturaOfertaID and i.facturaOferta.fecha) 
-                            or (i.prefacturaID and i.prefactura.fecha)
-                            or (i.albaranSalidaID and i.albaranSalida.fecha) 
-                            or (i.pedidoOfertaID and i.pedidoOferta.fecha)),
-             i.concepto,
-             cantidad,
-             "%s €" % (utils.float2str(precio, 3)),
-             "%s €" % (utils.float2str(total_ldv, 3)),
-             cliente, 
-             pedido,
-             comercial, 
-             i.albaranSalidaID and i.albaranSalida.numalbaran or "",
-             transporte, 
-             destino, 
-             factura,
-             fdp, 
-             fdpreal, 
-             -i.id))
-        return tarifa, total
-        
-    def set_inicio(self, boton):
-        temp = utils.mostrar_calendario(padre = self.wids['ventana'])
-        self.wids['e_fechainicio'].set_text(utils.str_fecha(temp))
-        self.inicio = str(temp[2])+'/'+str(temp[1])+'/'+str(temp[0])
-
-    def set_fin(self, boton):
-        temp = utils.mostrar_calendario(padre = self.wids['ventana'])
-        self.wids['e_fechafin'].set_text(utils.str_fecha(temp))
-        self.fin = str(temp[2])+'/'+str(temp[1])+'/'+str(temp[0])
-
-    def por_fecha(self, e1, e2):
-        """
-        Permite ordenar una lista de objetos por fecha (deben tener un 
-        atributo fecha).
-        """
-        if e1.fecha < e2.fecha:
-            return -1
-        elif e1.fecha > e2.fecha:
-            return 1
-        else:
-            return 0
-
-        
-    def buscar(self, boton):
-        """
-        Dadas fecha de inicio y de fin, busca todas las ofertas 
-        (facturadas) entre esas dos fechas.
-        """
-        from ventana_progreso import VentanaProgreso
-        vpro = VentanaProgreso(padre = self.wids['ventana'])
-        vpro.mostrar()
-        # print self.fin, self.inicio
-        vpro.set_valor(0.0, "Analizando facturas y abonos...")
-        idcliente = utils.combo_get_value(self.wids['cbe_cliente'])
-        if idcliente == -1:
-            idcliente = None
-        # El listado de ofertas se hace a partir de facturas. Para hacerlo con 
-        # albaranes, bueno, you know, cambiar la consulta y tal.
-        self.resultado = []
-        self.resultado_abonos = {'lineasDeAbono': [], 'lineasDeDevolucion': []}
-        servicios = []
-        if not self.inicio:
-            if idcliente != None:
-                facturas = pclases.FacturaOferta.select(
-                    pclases.AND(pclases.FacturaOferta.q.fecha <= self.fin, 
-                                pclases.FacturaOferta.q.clienteID == idcliente),
-                    orderBy = 'fecha')
-                prefacturas = pclases.Prefactura.select(
-                    pclases.AND(pclases.Prefactura.q.fecha <= self.fin, 
-                                pclases.Prefactura.q.clienteID == idcliente), 
-                    orderBy = 'fecha')
-                facturasDeAbono = pclases.FacturaDeAbono.select(
-                    pclases.FacturaDeAbono.q.fecha <= self.fin, 
-                    orderBy = 'fecha')
-                vpro.set_valor(0.1, "Analizando facturas y abonos...")
-                facturasDeAbono = [f for f in facturasDeAbono 
-                                    if f.abono 
-                                       and f.abono.clienteID == idcliente]
-            else:
-                facturas = pclases.FacturaOferta.select(
-                    pclases.FacturaOferta.q.fecha <= self.fin, 
-                    orderBy = 'fecha')
-                prefacturas = pclases.Prefactura.select(
-                    pclases.Prefactura.q.fecha <= self.fin, 
-                    orderBy = 'fecha')
-                facturasDeAbono = pclases.FacturaDeAbono.select(
-                    pclases.FacturaDeAbono.q.fecha <= self.fin, 
-                    orderBy = 'fecha')
-                vpro.set_valor(0.1, "Analizando facturas y abonos...")
-                facturasDeAbono = [f for f in facturasDeAbono if f.abono]
-        else:
-            if idcliente != None:
-                facturas = pclases.FacturaOferta.select(
-                    pclases.AND(pclases.FacturaOferta.q.fecha >= self.inicio,
-                                pclases.FacturaOferta.q.fecha <= self.fin, 
-                                pclases.FacturaOferta.q.clienteID == idcliente),
-                    orderBy='fecha')
-                prefacturas = pclases.Prefactura.select(
-                    pclases.AND(pclases.Prefactura.q.fecha >= self.inicio,
-                                pclases.Prefactura.q.fecha <= self.fin, 
-                                pclases.Prefactura.q.clienteID == idcliente), 
-                    orderBy='fecha')
-                facturasDeAbono = pclases.FacturaDeAbono.select(
-                    pclases.AND(pclases.FacturaDeAbono.q.fecha <= self.fin, 
-                                pclases.FacturaDeAbono.q.fecha >= self.inicio),
-                    orderBy = 'fecha')
-                vpro.set_valor(0.1, "Analizando facturas y abonos...")
-                facturasDeAbono = [f for f in facturasDeAbono 
-                                    if f.abono 
-                                       and f.abono.clienteID == idcliente]
-            else:
-                facturas = pclases.FacturaOferta.select(
-                    pclases.AND(pclases.FacturaOferta.q.fecha >= self.inicio,
-                                pclases.FacturaOferta.q.fecha <= self.fin), 
-                    orderBy='fecha')
-                prefacturas = pclases.Prefactura.select(
-                    pclases.AND(pclases.Prefactura.q.fecha >= self.inicio,
-                                pclases.Prefactura.q.fecha <= self.fin), 
-                    orderBy='fecha')
-                facturasDeAbono = pclases.FacturaDeAbono.select(
-                    pclases.AND(pclases.FacturaDeAbono.q.fecha <= self.fin, 
-                                pclases.FacturaDeAbono.q.fecha >= self.inicio),
-                    orderBy = 'fecha')
-                vpro.set_valor(0.1, "Analizando facturas y abonos...")
-                facturasDeAbono = [f for f in facturasDeAbono if f.abono]
-        vpro.set_valor(0.3, "Analizando facturas y abonos...")
-        facturas = list(facturas) + list(prefacturas)
-        facturas.sort(self.por_fecha)
-        vpro.set_valor(0.5, "Analizando facturas y abonos...")
-        for f in facturas:
-            for linea in f.lineasDeOferta:
-                self.resultado.append(linea)
-            if self.wids['ch_servicios'].get_active():
-                for srv in f.servicios:
-                    servicios.append(srv)
-        facturasDeAbono.sort(self.por_fecha)
-        vpro.set_valor(0.7, "Analizando facturas y abonos...")
-        for f in facturasDeAbono:
-            abono = f.abono
-            for lda in abono.lineasDeAbono:
-                if (lda.lineaDeOferta != None 
-                    and not self.wids['ch_servicios'].get_active()):
-                    # Filtro las que son ajuste de precio de servicios.
-                    self.resultado_abonos['lineasDeAbono'].append(lda)
-            for ldd in abono.lineasDeDevolucion:
-                self.resultado_abonos['lineasDeDevolucion'].append(ldd)
-        vpro.set_valor(0.9, "Analizando facturas y abonos...")
-        vpro.ocultar()
-        self.rellenar_tabla_por_tarifa(self.resultado, 
-                                       self.resultado_abonos, 
-                                       servicios)
-        self.rellenar_tabla_por_producto(self.resultado, 
-                                         self.resultado_abonos, 
-                                         servicios)
-        self.rellenar_tabla_clientes(self.resultado, 
-                                     self.resultado_abonos, 
-                                     servicios)
-        self.rellenar_tabla_comerciales(self.resultado, 
-                                        self.resultado_abonos, 
-                                        servicios)
-        self.rellenar_tabla_provincias(self.resultado, 
-                                       self.resultado_abonos, 
-                                       servicios)
-
-    def rellenar_tabla_clientes(self, resultado, resultado_abonos, servicios):
-        # TODO: Faltan los abonos. Caso CETCO cuando consulto desde agosto.
-        idalmacen = utils.combo_get_value(self.wids['cbe_almacen'])
-        if idalmacen == -1:
-            almacen = None
-        else:
-            almacen = pclases.Almacen.get(idalmacen)
-        self.por_cliente = {}
-        for linea in resultado:
-            if not almacen or linea.get_almacen() == almacen:
-                cliente = linea.get_cliente()
-                factura = linea.get_factura_o_prefactura()
-                if cliente not in self.por_cliente:
-                    self.por_cliente[cliente] = [factura]
-                else:
-                    if factura not in self.por_cliente[cliente]:
-                        self.por_cliente[cliente] += [factura]
-        for srv in servicios:
-            if not almacen or srv.get_almacen() == almacen:
-                cliente = srv.get_cliente()
-                factura = srv.get_factura_o_prefactura()
-                if cliente not in self.por_cliente:
-                    self.por_cliente[cliente] = [factura]
-                else:
-                    if factura not in self.por_cliente[cliente]:
-                        self.por_cliente[cliente] += [factura]
-        model = self.wids['tv_cliente'].get_model()
-        model.clear()
-        for cliente in self.por_cliente:
-            padre = model.append(None, 
-                                 (cliente and cliente.nombre or "SIN CLIENTE", 
-                                  "", 
-                                  "", 
-                                  utils.float2str(
-                                    sum([f.calcular_importe_total() 
-                                       for f in self.por_cliente[cliente]
-                                       if not f is None])), 
-                                  "",
-                                  "", 
-                                  "",   # XXX
-                                  cliente and cliente.id or 0))
-            for factura in self.por_cliente[cliente]:
-                # TODO: Si tiene varios vencimientos, combinar textos. 
-                try:
-                    fdp = factura.vencimientosCobro[0].observaciones
-                except (IndexError, AttributeError):
-                    fdp = ""    # Solo fdp confirmada en la factura.
-                    #try:
-                    #    fdp = factura.get_pedidos()[0].formaDePago.toString()
-                    #except (IndexError, AttributeError):
-                        #try:
-                        #    fdp = factura.cliente.get_texto_forma_cobro()
-                        #except (IndexError, AttributeError):
-                        #    ftp = ""
-                try:
-                    fdpreal = factura.get_str_cobro_real()
-                    model.append(padre, 
-                            ("", 
-                             factura.cliente.cif, 
-                             utils.str_fecha(factura.fecha), 
-                             utils.float2str(factura.calcular_importe_total()), 
-                             factura.numfactura, 
-                             fdp, 
-                             fdpreal, 
-                             factura.id))
-                except AttributeError:  # ¿Factura es None?
-                    txt = "El cliente %s tiene servicios o ofertas "\
-                          "sin factura. Sin embargo se ha intentado mostrar"\
-                          " información de una factura en la consulta, "\
-                          "obteniendo 'None' desde un servicio o una ldv."\
-                          "No debería ser una línea de abono. Se tratan"\
-                          "en otra función diferente."\
-                          "Contenido del diccionario 'self.por_cliente': %s"\
-                            % (cliente.nombre, self.por_cliente)
-                    self.logger.warning(txt)
-                    print txt
-
-    def rellenar_tabla_comerciales(self, resultado, resultado_abonos, 
-                                   servicios):
-        idalmacen = utils.combo_get_value(self.wids['cbe_almacen'])
-        if idalmacen == -1:
-            almacen = None
-        else:
-            almacen = pclases.Almacen.get(idalmacen)
-        self.por_comercial = {}
-        for linea in resultado:
-            if not almacen or linea.get_almacen() == almacen:
-                comercial = linea.get_comercial()
-                factura = linea.get_factura_o_prefactura()
-                if comercial not in self.por_comercial:
-                    self.por_comercial[comercial] = [factura]
-                else:
-                    if factura not in self.por_comercial[comercial]:
-                        self.por_comercial[comercial] += [factura]
-        for srv in servicios:
-            if not almacen or srv.get_almacen() == almacen:
-                comercial = srv.get_comercial()
-                factura = srv.get_factura_o_prefactura()
-                if comercial not in self.por_comercial:
-                    self.por_comercial[comercial] = [factura]
-                else:
-                    if factura not in self.por_comercial[comercial]:
-                        self.por_comercial[comercial] += [factura]
-        for lda in resultado_abonos['lineasDeAbono']:
-            if not almacen or lda.get_almacen() == almacen:
-                comercial = lda.get_comercial()
-                factura = lda.facturaOferta    # De abono, en realidad
-                if comercial not in self.por_comercial:
-                    self.por_comercial[comercial] = [factura]
-        for ldd in resultado_abonos['lineasDeDevolucion']:
-            if not almacen or ldd.get_almacen() == almacen:
-                comercial = ldd.comercial
-                factura = ldd.facturaOferta  # De abono, en realidad
-                if comercial not in self.por_comercial:
-                    self.por_comercial[comercial] = [factura]
-        model = self.wids['tv_comercial'].get_model()
-        model.clear()
-        for comercial in self.por_comercial:
-            if comercial:
-                nombre_comercial = "%s %s" % (comercial.empleado.nombre, 
-                                              comercial.empleado.apellidos)
-            else:
-                nombre_comercial = "Sin comercial"
-            padre = model.append(None, 
-                                 (nombre_comercial, 
-                                  "", 
-                                  "0.0", 
-                                  "0.0", 
-                                  "0.0", 
-                                  "", # XXX
-                                  comercial and comercial.id or 0))
-            for factura in self.por_comercial[comercial]:
-                # Porque una factura puede tener varios comerciales, es 
-                # necesario volver a dividir para obtener de nuevo el 
-                # diccionario. Doble de CPU, pero es lo que hay de momento.
-                facturado = factura.dividir_total_por_comercial()[comercial]
-                beneficio=factura.dividir_beneficio_por_comercial()[comercial]
-                totfactura = factura.calcular_importe_total()
-                fdpreal = factura.get_str_cobro_real()
-                model.append(padre, 
-                             (factura.numfactura, 
-                              factura.vencimientosCobro 
-                                and factura.vencimientosCobro[0].observaciones 
-                                or "", 
-                              utils.float2str(facturado), 
-                              utils.float2str(beneficio), 
-                              utils.float2str(totfactura), 
-                              fdpreal, 
-                              factura.get_puid()))
-                model[padre][2] = utils.float2str(
-                                    utils._float(model[padre][2]) + facturado)
-                model[padre][3] = utils.float2str(
-                                    utils._float(model[padre][3]) + beneficio)
-                model[padre][4] = utils.float2str(
-                                    utils._float(model[padre][4]) + totfactura)
-
-    def rellenar_tabla_provincias(self, resultado, resultado_abonos, 
-                                   servicios):
-        idalmacen = utils.combo_get_value(self.wids['cbe_almacen'])
-        if idalmacen == -1:
-            almacen = None
-        else:
-            almacen = pclases.Almacen.get(idalmacen)
-        self.por_provincias = {}
-        for linea in resultado:
-            if not almacen or linea.get_almacen() == almacen:
-                provincia = linea.get_provincia()
-                factura = linea.get_factura_o_prefactura()
-                if provincia not in self.por_provincia:
-                    self.por_provincia[provincia] = [factura]
-                else:
-                    if factura not in self.por_provincia[provincia]:
-                        self.por_provincia[provincia] += [factura]
-        for srv in servicios:
-            if not almacen or srv.get_almacen() == almacen:
-                provincia = srv.get_provincia()
-                factura = srv.get_factura_o_prefactura()
-                if provincia not in self.por_provincia:
-                    self.por_provincia[provincia] = [factura]
-                else:
-                    if factura not in self.por_provincia[provincia]:
-                        self.por_provincia[provincia] += [factura]
-        for lda in resultado_abonos['lineasDeAbono']:
-            if not almacen or lda.get_almacen() == almacen:
-                provincia = lda.get_provincia()
-                factura = lda.facturaOferta    # De abono, en realidad
-                if provincia not in self.por_provincia:
-                    self.por_provincia[provincia] = [factura]
-        for ldd in resultado_abonos['lineasDeDevolucion']:
-            if not almacen or ldd.get_almacen() == almacen:
-                provincia = ldd.provincia
-                factura = ldd.facturaOferta  # De abono, en realidad
-                if provincia not in self.por_provincia:
-                    self.por_provincia[provincia] = [factura]
-        model = self.wids['tv_provincia'].get_model()
-        model.clear()
-        for provincia in self.por_provincia:
-            if provincia:
-                nombre_provincia = provincia.nombre
-            else:
-                nombre_provincia = "Sin provincia"
-            padre = model.append(None, 
-                                 (nombre_provincia, 
-                                  "", 
-                                  "0.0", 
-                                  "0.0", 
-                                  "0.0", 
-                                  "",   # XXX
-                                  provincia and provincia.id or 0))
-            for factura in self.por_provincia[provincia]:
-                # Porque una factura puede tener varios provincias, es 
-                # necesario volver a dividir para obtener de nuevo el 
-                # diccionario. Doble de CPU, pero es lo que hay de momento.
-                facturado = factura.dividir_total_por_provincia()[provincia]
-                beneficio=factura.dividir_beneficio_por_provincia()[provincia]
-                totfactura = factura.calcular_importe_total()
-                fdpreal = factura.get_str_cobro_real()
-                model.append(padre, 
-                             (factura.numfactura, 
-                              factura.vencimientosCobro 
-                                and factura.vencimientosCobro[0].observaciones 
-                                or "", 
-                              utils.float2str(facturado), 
-                              utils.float2str(beneficio), 
-                              utils.float2str(totfactura), 
-                              fdpreal, 
-                              factura.get_puid()))
-                model[padre][2] = utils.float2str(
-                                    utils._float(model[padre][2]) + facturado)
-                model[padre][3] = utils.float2str(
-                                    utils._float(model[padre][3]) + beneficio)
-                model[padre][4] = utils.float2str(
-                                    utils._float(model[padre][4]) + totfactura)
-
-    def rellenar_tabla_por_producto(self, 
-                                    resultado, 
-                                    resultado_abonos, 
-                                    servicios):
-        idalmacen = utils.combo_get_value(self.wids['cbe_almacen'])
-        if idalmacen == -1:
-            almacen = None
-        else:
-            almacen = pclases.Almacen.get(idalmacen)
-        por_producto = {}
-        for linea in resultado:
-            if not almacen or linea.get_almacen() == almacen:
-                producto = linea.producto.descripcion
-                subtotal = linea.get_subtotal(iva = False)
-                cantidad = linea.cantidad
-                if producto not in por_producto:
-                    por_producto[producto] = [cantidad, subtotal]
-                else:
-                    por_producto[producto][0] += cantidad
-                    por_producto[producto][1] += subtotal
-        for srv in servicios:
-            if not almacen or srv.get_almacen() == almacen:
-                producto = srv.concepto
-                subtotal = srv.get_subtotal(iva = False)
-                cantidad = srv.cantidad
-                if producto not in por_producto:
-                    por_producto[producto] = [cantidad, subtotal]
-                else:
-                    por_producto[producto][0] += cantidad
-                    por_producto[producto][1] += subtotal
-        model = self.wids['tv_producto'].get_model()
-        model.clear()
-        for desc in por_producto:
-            model.append((desc, 
-                          utils.float2str(por_producto[desc][0], autodec=True),
-                          utils.float2str(por_producto[desc][1]), 
-                          0))
+            self.graficar_por_provincia()
+# PORASQUI
 
     def imprimir(self, boton):
         """
         Prepara la vista preliminar para la impresión del informe
         """
+        # TODO
         from formularios import reports
         datos = []
         model = self.wids['tv_datos'].get_model()
@@ -1483,6 +740,7 @@ class ConsultaOfertas(Ventana):
         reports.abrir_pdf(treeview2pdf(self.wids['tv_provincia'], 
                         titulo = "Ofertas facturadas según provincia de origen",
                         fecha = fechaInforme))
+
 
 
 if __name__ == '__main__':
