@@ -28,6 +28,10 @@
 ## NOTAS:
 ##  
 ###################################################################
+## TODO:
+## * ¿Filtro para que solo se puedan ver las ofertas del usuario 
+##   que ha abierto la ventana?
+###################################################################
 
 from ventana import Ventana
 from formularios import utils
@@ -76,13 +80,13 @@ class ConsultaOfertas(Ventana):
         tv = self.wids['tv_datos']
         utils.preparar_listview(tv, cols)
         tv.connect("row-activated", self.abrir_objeto)
-        tv.get_column(10).get_cell_renderers()[0].set_property('xalign', 1) 
+        tv.get_column(9).get_cell_renderers()[0].set_property('xalign', 1) 
         self.colorear(tv)
         cols = (('Producto', 'gobject.TYPE_STRING', False, True, True, None),
                 ('Ofertado', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Pedido',   'gobject.TYPE_STRING', False, True, False, None), 
                 ('PUID',     'gobject.TYPE_STRING', False, False, False, None))
-        utils.preparar_listview(self.wids['tv_producto'], cols)
+        utils.preparar_treeview(self.wids['tv_producto'], cols)
         getcoltvpro = self.wids['tv_producto'].get_column
         getcoltvpro(1).get_cell_renderers()[0].set_property('xalign', 1) 
         getcoltvpro(2).get_cell_renderers()[0].set_property('xalign', 1) 
@@ -93,7 +97,7 @@ class ConsultaOfertas(Ventana):
                             'gobject.TYPE_STRING', False, True, False, None),
                 ('PUID',    'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_treeview(self.wids['tv_cliente'], cols)
-        cell = self.wids['tv_cliente'].get_column(3).get_cell_renderers()[0]
+        cell = self.wids['tv_cliente'].get_column(2).get_cell_renderers()[0]
         cell.set_property('xalign', 1) 
         self.wids['tv_cliente'].connect("row-activated", self.abrir_objeto)
         self.inicio = mx.DateTime.DateTimeFrom(day = 1, 
@@ -130,16 +134,13 @@ class ConsultaOfertas(Ventana):
                 ('Forma de pago', 
                               'gobject.TYPE_STRING', False, True, False, None),
                 ('Importe',   'gobject.TYPE_STRING', False, True, False, None),
-                ('Forma de pago', 'gobject.TYPE_STRING', 
-                    False, True, False, None),
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_treeview(self.wids['tv_provincia'], cols)
         tv = self.wids['tv_provincia']
         tv.get_column(4).get_cell_renderers()[0].set_property('xalign', 1) 
         tv.connect("row-activated", self.abrir_objeto)
-        self.wids['notebook1'].set_tooltip("Ofertas **de pedido** que "
-                "cumplen los criterios seleccionados.")
-        self.por_oferta = defaultdict(lambda: [])
+        self.wids['ventana'].set_title("Consulta de ofertas de pedido")
+        self.por_oferta = {} # defaultdict(lambda: [])
         self.por_producto = defaultdict(lambda: [])
         self.por_cliente = defaultdict(lambda: [])
         self.por_comercial = defaultdict(lambda: [])
@@ -166,21 +167,23 @@ class ConsultaOfertas(Ventana):
             return
         abrir_csv(treeview2csv(tv))
 
-    def colorear(self):
+    def colorear(self, tv):
         def cell_func(column, cell, model, itr, i):
             try:
                 presupuesto = pclases.getObjetoPUID(model[itr][-1])
             except (AttributeError, pclases.SQLObjectNotFound):
                 color = None
             else:
-                if presupuesto.estudio == None: # Indeterminado
+                if presupuesto.rechazado: 
                     color = "Indian Red"
-                elif presupuesto.estudio:
-                    color = "light yellow"
-                else:                       # De pedido
+                elif presupuesto.get_pedidos(): # FIXME: Esto es muy lento.
                     color = "light green"
+                elif presupuesto.validado:
+                    color = "light yellow"
+                else:
+                    color = None
             cell.set_property("cell-background", color)
-        cols = self.wids['tv_presupuestos'].get_columns()
+        cols = tv.get_columns()
         for i in xrange(len(cols)):
             column = cols[i]
             cells = column.get_cell_renderers()
@@ -264,19 +267,27 @@ class ConsultaOfertas(Ventana):
         if self.fin:
             criterios.append(pclases.Presupuesto.q.fecha <= self.fin)
         if not criterios:
-            presupuestos = pclases.Presupuesto.select(orderBy = id)
+            presupuestos = pclases.Presupuesto.select(orderBy = "id")
         elif len(criterios) == 1:
             presupuestos = pclases.Presupuesto.select(criterios[0], 
-                                                      orderBy = id)
+                                                      orderBy = "id")
         else:
             presupuestos = pclases.Presupuesto.select(pclases.AND(*criterios), 
-                                                      orderBy = id)
+                                                      orderBy = "id")
         tot = presupuestos.count()
         i = 0.0
         convertidos = 0
         for p in presupuestos:
             vpro.set_valor(i/tot, "Clasificando ofertas de pedido...")
-            self.por_oferta[p].append(p)
+            if p in self.por_oferta and pclases.DEBUG:
+                txt = "consulta_ofertas.py::buscar -> "\
+                      "El presupuesto %s aparece dos veces en la consulta." % (
+                              p.puid)
+                try:
+                    sys.stdout.write(txt + "\n")
+                except:
+                    self.logger.warning(txt)
+            self.por_oferta[p] = p
             for ldp in p.lineasDePresupuesto:
                 self.por_producto[ldp.producto].append(ldp)
             self.por_cliente[p.cliente].append(p)
@@ -323,7 +334,7 @@ class ConsultaOfertas(Ventana):
                     utils.str_fecha(presupuesto.fecha), 
                     presupuesto.cliente and presupuesto.cliente.nombre 
                         or presupuesto.nombrecliente, 
-                    presupuesto.obra and presupuesto.obra 
+                    presupuesto.obra and presupuesto.obra.nombre 
                         or presupuesto.nombreobra, 
                     presupuesto.comercial 
                         and presupuesto.comercial.get_nombre_completo()
@@ -331,7 +342,7 @@ class ConsultaOfertas(Ventana):
                     presupuesto.adjudicada, 
                     presupuesto.get_str_estado(), 
                     presupuesto.personaContacto, 
-                    ", ".join(pedidos), 
+                    ", ".join([pedido.numpedido for pedido in pedidos]), 
                     utils.float2str(presupuesto.calcular_importe_total()), 
                     presupuesto.puid)
             self.pedidos_generados += [ped for ped in pedidos 
@@ -339,14 +350,15 @@ class ConsultaOfertas(Ventana):
             model.append(fila)
             i += 1
         # Y ahora la gráfica.
-        self.graficar_por_oferta()
+        if self.wids['notebook1'].get_current_page() == 0:
+            self.graficar_por_oferta()
     
     def graficar_por_oferta(self):
         datachart = []  # Cada fila: Descripción, cantidad, color (7 = gris
                         #                                          0 = amarillo
                         #                                          3 = verde)
-        datachart = [["Ofertas", len(self.por_oferta), 3], 
-                     ["Pedidos", len(self.pedidos_generados), 0]]
+        datachart = [["Ofertas", len(self.por_oferta), 0], 
+                     ["Pedidos", len(self.pedidos_generados), 3]]
         try:
             oldchart = self.wids['eventbox_chart'].get_child()
             if oldchart != None:
@@ -389,9 +401,9 @@ class ConsultaOfertas(Ventana):
                         nombre_producto = producto.descripcion
                         puid = producto.puid
                     except AttributeError:
-                        nombre_producto = producto
+                        nombre_producto = producto or ""
                         puid = None
-                    padres[producto] = model.append(None, 
+                    padre = padres[producto] = model.append(None, 
                             (nombre_producto, "0.0", "0.0", puid))
                 ofertado = ldp.cantidad
                 try:
@@ -414,7 +426,8 @@ class ConsultaOfertas(Ventana):
                         utils._float(model[padre][2]) + pedido)
                 i += 1
         # Y ahora la gráfica.
-        self.graficar_por_producto()
+        if self.wids['notebook1'].get_current_page() == 1:
+            self.graficar_por_producto()
 
     def graficar_por_producto(self):
         datachart = []
@@ -424,18 +437,19 @@ class ConsultaOfertas(Ventana):
         except ValueError:  # empty sequence
             maximo_producto = 0
         for fila in model:
-            if utils._float(fila[2]) == maximo_producto:
+            if utils._float(fila[1]) == maximo_producto:
                 color = 0
-            if (fila[-1] == None or isintance(pclases.getObjetoPUID(fila[-1]), 
-                                              pclases.Servicio)):
+            if (fila[-1] == None or isinstance(pclases.getObjetoPUID(fila[-1]),
+                                               pclases.Servicio)):
                     # Productos que no están dados de alta, no 
                     # tengo el puid de producto o es servicio.
                 color = 7
             else:
                 color = 3
-            datachart.append([fila[0], utils._float(fila[2]), color])
+            nombre_corto = fila[0].replace("GEOTESAN", "")  # OJO: HARCODED
+            datachart.append([nombre_corto, utils._float(fila[1]), color])
         # Filtro y me quedo con el TOP5:
-        datachart.sort(lambda c1, c2: int(c2[2] - c1[2]))
+        datachart.sort(lambda c1, c2: int(c2[1] - c1[1]))
         _datachart = datachart[:5]
         _datachart.append(("Resto", sum([c[1] for c in datachart[5:]])))
         datachart = _datachart
@@ -483,7 +497,7 @@ class ConsultaOfertas(Ventana):
                         nombre_cliente = presupuesto.nombrecliente 
                         cif = presupuesto.cif
                         puid = None
-                    padres[cliente] = model.append(None, 
+                    padre = padres[cliente] = model.append(None, 
                             (nombre_cliente, 
                              cif, 
                              "0.0", 
@@ -502,13 +516,14 @@ class ConsultaOfertas(Ventana):
                         utils._float(model[padre][2]) + importe)
                 i += 1
         # Y ahora la gráfica.
-        self.graficar_por_cliente()
+        if self.wids['notebook1'].get_current_page() == 2:
+            self.graficar_por_cliente()
 
     def graficar_por_cliente(self):
         datachart = []
         model = self.wids['tv_cliente'].get_model()
         try:
-            maximo_cliente = max([utils._float(f[1]) 
+            maximo_cliente = max([utils._float(f[2]) 
                                   for f in model]) # if f[0]!="Sin cliente"])
         except ValueError:  # empty sequence
             maximo_cliente = 0
@@ -521,7 +536,7 @@ class ConsultaOfertas(Ventana):
                 color = 3
             datachart.append([fila[0], utils._float(fila[2]), color])
         # Filtro y me quedo con el TOP5:
-        datachart.sort(lambda c1, c2: int(c2[2] - c1[2]))
+        datachart.sort(lambda c1, c2: int(c2[1] - c1[1]))
         _datachart = datachart[:5]
         _datachart.append(("Resto", sum([c[1] for c in datachart[5:]])))
         datachart = _datachart
@@ -567,45 +582,46 @@ class ConsultaOfertas(Ventana):
                     except AttributeError:
                         nombre_comercial = "Sin comercial relacionado"
                         puid = None
-# PORASQUI: Me queda montar la fila con el nombre del cliente además del comercial, etc.
-                    padres[comercial] = model.append(None, 
+                    padre = padres[comercial] = model.append(None, 
                             (nombre_comercial, 
-                             cif, 
-                             "0.0", 
                              "", 
+                             "", 
+                             "0.0", 
                              puid))
                 importe = presupuesto.calcular_importe_total()
                 fila = ("Presupuesto %d" % presupuesto.id, 
-                        utils.str_fecha(presupuesto.fecha),
-                        utils.float2str(importe), 
+                        presupuesto.cliente and presupuesto.cliente.nombre 
+                            or presupuesto.nombrecliente,
                         presupuesto.formaDePago 
                             and presupuesto.formaDePago.toString() or "", 
+                        utils.float2str(importe), 
                         presupuesto.puid)
                 model.append(padre, fila)
                 # Actualizo totales fila padre.
-                model[padre][2] = utils.float2str(
-                        utils._float(model[padre][2]) + importe)
+                model[padre][3] = utils.float2str(
+                        utils._float(model[padre][3]) + importe)
                 i += 1
         # Y ahora la gráfica.
-        self.graficar_por_comercial()
+        if self.wids['notebook1'].get_current_page() == 3:
+            self.graficar_por_comercial()
 
     def graficar_por_comercial(self):
         datachart = []
         model = self.wids['tv_comercial'].get_model()
         try:
-            maximo_comercial = max([utils._float(f[1]) for f in model 
-                                  if f[0]!="Sin comercial relacionado"])
+            maximo_comercial = max([utils._float(f[3]) for f in model 
+                                    if f[0]!="Sin comercial relacionado"])
         except ValueError:  # empty sequence
             maximo_comercial = 0
         for fila in model:
             if fila[0] == None:     # Cliente no dado de alta. No tiene PUID.
                 color = 7
-            elif utils._float(fila[2]) == maximo_comercial:
+            elif utils._float(fila[3]) == maximo_comercial:
                 color = 0
             else:
                 color = 3
-            datachart.append([fila[0], utils._float(fila[2]), color])
-        datachart.sort(lambda c1, c2: int(c2[2] - c1[2]))
+            datachart.append([fila[0], utils._float(fila[3]), color])
+        datachart.sort(lambda c1, c2: int(c2[1] - c1[1]))
         #_datachart = datachart[:5]
         #_datachart.append(("Resto", sum([c[1] for c in datachart[5:]])))
         #datachart = _datachart
@@ -616,7 +632,7 @@ class ConsultaOfertas(Ventana):
                 #chart = oldchart
             #else:
             chart = charting.Chart(orient = "horizontal", 
-                                       values_on_bars = True)
+                                   values_on_bars = True)
             self.wids['eventbox_chart'].add(chart)
             chart.plot(datachart)
             self.wids['eventbox_chart'].show_all()
@@ -626,25 +642,77 @@ class ConsultaOfertas(Ventana):
             print txt
             self.logger.error(txt)
 
-### PORASQUI: Me falta el rellenar...por_provincia.
+    def rellenar_tabla_por_provincia(self, vpro):
+        """
+        Rellena el model de la lista de ofertas clasificada por comercial. 
+        Recibe la ventana de progreso.
+        """ 
+        model = self.wids['tv_provincia'].get_model()
+        model.clear()
+        tot = sum([len(self.por_producto[k]) 
+                   for k in self.por_producto.keys()])
+        i = 0.0
+        vpro.set_valor(i/tot, "Mostrando ofertas por provincia...")
+        padres = {}
+        for provincia in self.por_provincia:
+            for presupuesto in self.por_provincia[provincia]: 
+                vpro.set_valor(i/tot, "Mostrando ofertas por provincia... (%d)" 
+                                                        % presupuesto.id)
+                try:
+                    padre = padres[provincia]
+                except KeyError:
+                    padre = padres[provincia] = model.append(None, 
+                            (provincia, 
+                             "", 
+                             "", 
+                             "", 
+                             "0.0", 
+                             None))
+                importe = presupuesto.calcular_importe_total()
+                try:
+                    comercial = presupuesto.comercial
+                    nombre_comercial = comercial.get_nombre_completo()
+                except AttributeError:
+                    nombre_comercial = "Sin comercial relacionado"
+                fila = ("Presupuesto %d" % presupuesto.id, 
+                        nombre_comercial, 
+                        presupuesto.cliente and presupuesto.cliente.nombre 
+                            or presupuesto.nombrecliente,
+                        presupuesto.formaDePago 
+                            and presupuesto.formaDePago.toString() or "", 
+                        utils.float2str(importe), 
+                        presupuesto.puid)
+                model.append(padre, fila)
+                # Actualizo totales fila padre.
+                model[padre][4] = utils.float2str(
+                        utils._float(model[padre][4]) + importe)
+                if nombre_comercial not in model[padre][1]:
+                    if not model[padre][1]:
+                        model[padre][1] = nombre_comercial
+                    else:
+                        model[padre][1] += ", " + nombre_comercial
+                i += 1
+        # Y ahora la gráfica.
+        if self.wids['notebook1'].get_current_page() == 4:
+            self.graficar_por_provincia()
 
     def graficar_por_provincia(self):
         datachart = []
         model = self.wids['tv_provincia'].get_model()
         try:
-            maxima_provincia = max([utils._float(f[1]) for f in model]) 
+            maxima_provincia = max([utils._float(f[4]) for f in model]) 
         except ValueError:  # empty sequence
             maxima_provincia = 0
         for fila in model:
             if fila[0] == "No especificada" or fila[0].strip == "": 
                 color = 7
-            elif utils._float(fila[2]) == maxima_provincia:
+            elif utils._float(fila[4]) == maxima_provincia:
                 color = 0
             else:
                 color = 3
-            datachart.append([fila[0], utils._float(fila[2]), color])
+            datachart.append([fila[0], utils._float(fila[4]), color])
         # Filtro y me quedo con el TOP5:
-        datachart.sort(lambda c1, c2: int(c2[2] - c1[2]))
+        datachart.sort(lambda c1, c2: int(c2[1] - c1[1]))
         _datachart = datachart[:5]
         _datachart.append(("Resto", sum([c[1] for c in datachart[5:]])))
         datachart = _datachart
