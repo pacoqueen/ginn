@@ -100,14 +100,21 @@ class ConsultaLibroIVA(Ventana):
         """
         model = tv.get_model()
         puid = model[path][-1]
+        print puid
         fra = pclases.getObjetoPUID(puid)
         if isinstance(fra, pclases.FacturaVenta):
             from formularios import facturas_venta
             v = facturas_venta.FacturasVenta(fra, usuario = self.usuario)  # @UnusedVariable
         elif isinstance(fra, pclases.FacturaDeAbono):
             a = fra.abono
-            from formularios import abonos_venta
-            v = abonos_venta.AbonosVenta(a, usuario = self.usuario)  # @UnusedVariable
+            if a:
+                from formularios import abonos_venta
+                v = abonos_venta.AbonosVenta(a, usuario = self.usuario)  # @UnusedVariable
+            else:
+                txt = "consulta_libro_iva.py::abrir_factura -> "\
+                      "Factura de abono con PUID %s no tiene abono "\
+                      "relacionado." % (fra.puid)
+                self.logger.warning(txt)
 
     def chequear_cambios(self):
         pass
