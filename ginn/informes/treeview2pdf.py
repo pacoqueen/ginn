@@ -61,7 +61,13 @@ def treeview2pdf(tv, titulo = None, fecha = None, apaisado = None,
     campos, pdf_apaisado, cols_a_derecha, cols_centradas=get_campos_from_tv(tv)
     datos = get_datos_from_tv(tv)
     totales = dict(zip(numcols_a_totalizar, len(numcols_a_totalizar) * [0]))
-    for fila in datos:
+    for fila in datos:  # Si es un TreeView solo sumaré los totales de primer 
+                        # nivel. Los hijos se marcan con ">" al inicio.
+        try:
+            if fila[0].startswith(">"):
+                continue
+        except AttributeError:
+            pass    # Aquí no ha pasado nada. 
         for numcol in totales:
             try:
                 totales[numcol] += utils.parse_float(fila[numcol])
