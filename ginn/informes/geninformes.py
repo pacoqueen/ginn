@@ -6598,7 +6598,7 @@ def imprimir2(archivo,
     # TODO: Comprobar que no se sale de los márgenes ni de la página, que se
     # pasa de página si no cabe, que se incrementa el número de páginas, etc...
         linea = linea - alto
-        hoja.drawImage(imagen, lm, linea - 1 * cm)
+        hoja.drawImage(imagen, (rm - lm - ancho) / 2, linea - 1 * cm)
     # Ponemos el pie
     pie(hoja, actualPagina, paginas, apaisado = apaisado)
     # Salvamos la página
@@ -6689,15 +6689,15 @@ def get_ancho_alto(imagen, limitev = None, limiteh = None):
         return (0, 0)
     ancho, alto = i.size
     ratio = float(alto) / ancho
-    if limiteh:
+    if limiteh and ancho > limiteh:
         ancho = int(limiteh)
         alto = int(ancho * ratio)
-    if limitev:
-        if alto > limitev:
-            alto = int(limitev)
-            ancho = int((1 / ratio) * alto)
-    i = i.resize((ancho, alto), Image.BICUBIC)
-    i.save(imagen)
+    if limitev and alto > limitev:
+        alto = int(limitev)
+        ancho = int((1 / ratio) * alto)
+    if (ancho, alto) != i.size: # Si ha cambiado, toca redimensionar.
+        i = i.resize((ancho, alto), Image.BICUBIC)
+        i.save(imagen)
     return i.size
 
 def etiquetasRollos(rollos, mostrar_marcado):

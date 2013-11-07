@@ -83,13 +83,16 @@ class ConsultaOfertas(Ventana):
         tv.get_column(9).get_cell_renderers()[0].set_property('xalign', 1) 
         self.colorear(tv)
         cols = (('Producto', 'gobject.TYPE_STRING', False, True, True, None),
-                ('Ofertado', 'gobject.TYPE_STRING', False, True, False, None),
-                ('Pedido',   'gobject.TYPE_STRING', False, True, False, None), 
+                ('Cantidad Ofertada', 
+                             'gobject.TYPE_STRING', False, True, False, None),
+                ('Cantidad pedida',   
+                             'gobject.TYPE_STRING', False, True, False, None), 
                 ('PUID',     'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_treeview(self.wids['tv_producto'], cols)
         getcoltvpro = self.wids['tv_producto'].get_column
         getcoltvpro(1).get_cell_renderers()[0].set_property('xalign', 1) 
         getcoltvpro(2).get_cell_renderers()[0].set_property('xalign', 1) 
+        self.wids['tv_producto'].connect("row-activated", self.abrir_objeto)
         cols = (('Cliente', 'gobject.TYPE_STRING', False, True, True, None),
                 ('CIF',     'gobject.TYPE_STRING', False, True, False, None),
                 ('Importe', 'gobject.TYPE_STRING', False, True, False, None),
@@ -156,7 +159,8 @@ class ConsultaOfertas(Ventana):
             else:
                 if presupuesto.rechazado: 
                     color = "Indian Red"
-                elif presupuesto.get_pedidos(): # FIXME: Esto es muy lento.
+                #elif presupuesto.get_pedidos(): # FIXME: Esto es muy lento.
+                elif model[itr][8]: # Esta es la columna de los pedidos.
                     color = "light green"
                 elif presupuesto.validado:
                     color = "light yellow"
@@ -194,7 +198,7 @@ class ConsultaOfertas(Ventana):
         elif isinstance(objeto, pclases.ProductoCompra):
             from formularios.productos_compra \
                     import ProductosCompra as NuevaVentana
-        elif isinstance(objeto, pclaes.PedidoVenta):
+        elif isinstance(objeto, pclases.PedidoVenta):
             from formularios.pedidos_de_venta \
                     import PedidosDeVenta as NuevaVentana
         elif isinstance(objeto, pclases.LineaDePresupuesto):
@@ -274,7 +278,8 @@ class ConsultaOfertas(Ventana):
                     self.logger.warning(txt)
             self.por_oferta[p] = p
             for ldp in p.lineasDePresupuesto:
-                self.por_producto[ldp.producto].append(ldp)
+                producto = ldp.producto or ldp.descripcion
+                self.por_producto[producto].append(ldp)
             self.por_cliente[p.cliente].append(p)
             self.por_comercial[p.comercial].append(p)
             self.por_provincia[p.provincia.upper()].append(p)
@@ -319,6 +324,8 @@ class ConsultaOfertas(Ventana):
                           or presupuesto.nombreobra)
             #if len(nombreobra) > 33:
             #    nombreobra = nombreobra[:33] + "..."
+            if len(nombreobra) > 80:
+                nombreobra = utils.wrap(nombreobra, 80)
             fila = (str(presupuesto.id), 
                     utils.str_fecha(presupuesto.fecha), 
                     presupuesto.cliente and presupuesto.cliente.nombre 
@@ -762,32 +769,78 @@ class ConsultaOfertas(Ventana):
         if self.wids['notebook1'].get_current_page() == 0:
             tv = self.wids['tv_datos']
             titulo = "Ofertas"
-            totales = [5, 9]
-            extra_data = [["---"] * 9, 
-                          ["", "", "", "", "", "", "", 
-                           "Total ofertado", 
-                           self.wids['e_total_ofertas'].get_text()]
+            totales = [9]
+            extra_data = [["", "", "===", "===", "===", 
+                           "===", "===", "===", "===", ""], 
+                          ["", "", 
+                           "Ratio de conversión:", 
+                           self.wids['e_ratio'].get_text(), 
+                           "Total ofertado:", 
+                           "", 
+                           self.wids['e_total_ofertas'].get_text(), 
+                           "Total pedido:", 
+                           self.wids['e_total_pedidos'].get_text(), 
+                           ""]
                          ]
         elif self.wids['notebook1'].get_current_page() == 1:
             tv = self.wids['tv_cliente']
             titulo = "Ofertas por cliente"
-            totales = []
-            extra_data = []
+            totales = [2]
+            extra_data = [["==="] * 4, 
+                          ["", 
+                           "Total ofertado:", 
+                           self.wids['e_total_ofertas'].get_text(),
+                           ""], 
+                          ["", 
+                           "Total pedido:", 
+                           self.wids['e_total_pedidos'].get_text(), 
+                           ""], 
+                          ["", 
+                           "Ratio de conversión:", 
+                           self.wids['e_ratio'].get_text(), ""]
+                         ]
         elif self.wids['notebook1'].get_current_page() == 2:
             tv = self.wids['tv_producto']
             titulo = "Ofertas por producto"
-            totales = []
-            extra_data = []
+            totales = [1, 2]
+            extra_data = [["", "===", "==="], 
+                          ["", 
+                           "Total ofertado:", 
+                           self.wids['e_total_ofertas'].get_text()], 
+                          ["", 
+                           "Total pedido:", 
+                           self.wids['e_total_pedidos'].get_text()], 
+                          ["", 
+                           "Ratio de conversión:", 
+                           self.wids['e_ratio'].get_text()]
+                         ]
         elif self.wids['notebook1'].get_current_page() == 3:
             tv = self.wids['tv_comercial']
             titulo = "Ofertas por comercial"
-            totales = []
-            extra_data = []
+            totales = [3]
+            extra_data = [["===", "===", "", ""], 
+                          ["Total ofertado:", 
+                           self.wids['e_total_ofertas'].get_text(), "", ""], 
+                          ["Total pedido:", 
+                           self.wids['e_total_pedidos'].get_text(), "", ""], 
+                          ["Ratio de conversión:", 
+                           self.wids['e_ratio'].get_text(), "", ""]
+                         ]
         elif self.wids['notebook1'].get_current_page() == 4:
             tv = self.wids['tv_provincia']
             titulo = "Ofertas por provincia"
-            totales = []
-            extra_data = []
+            totales = [4]
+            extra_data = [["===", "===", "", "", ""], 
+                          ["Total ofertado:", 
+                           self.wids['e_total_ofertas'].get_text(), 
+                           "", "", ""], 
+                          ["Total pedido:", 
+                           self.wids['e_total_pedidos'].get_text(), 
+                           "", "", ""], 
+                          ["Ratio de conversión:", 
+                           self.wids['e_ratio'].get_text(), 
+                           "", "", ""]
+                         ]
         else:
             return
         if self.inicio:
@@ -801,7 +854,12 @@ class ConsultaOfertas(Ventana):
         pb = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8, ancho, alto)
         captura = pb.get_from_drawable(win, win.get_colormap(), 0, 0, 0, 0, 
                                        ancho, alto)
-        captura.save(ruta_grafico, "png")
+        # Por algún motivo, que tendrá que ver con los dpi, ppp o cualquiera 
+        # sabe qué complejo cálculo gráfico, la imagen sale muy grande en el 
+        # PDF. La reduzco cutremente:
+        escalado = captura.scale_simple(int(ancho * 0.75), int(alto * 0.75), 
+                                        gtk.gdk.INTERP_TILES)
+        escalado.save(ruta_grafico, "png")
         reports.abrir_pdf(treeview2pdf(tv, 
                                        titulo = titulo, 
                                        numcols_a_totalizar = totales, 

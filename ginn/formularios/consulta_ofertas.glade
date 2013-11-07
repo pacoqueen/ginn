@@ -447,7 +447,7 @@
                     <child>
                       <widget class="GtkLabel" id="label8">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">Ratio #pedidos/#ofertas: </property>
+                        <property name="label" translatable="yes">Razón #pedidos/#ofertas: </property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>

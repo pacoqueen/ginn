@@ -63,10 +63,12 @@ def treeview2pdf(tv, titulo = None, fecha = None, apaisado = None,
     totales = dict(zip(numcols_a_totalizar, len(numcols_a_totalizar) * [0]))
     for fila in datos:  # Si es un TreeView solo sumaré los totales de primer 
                         # nivel. Los hijos se marcan con ">" al inicio.
+        print fila[0]
         try:
-            if fila[0].startswith(">"):
+            # PORASQUI: Me tengo que saltar los hijos del treeview, pero no sé cómo detectarlos porque trae el formato inline.
+            if fila[0].startswith(">") or fila[0].split("]")[1].startswith(">"):
                 continue
-        except AttributeError:
+        except (AttributeError, IndexError):
             pass    # Aquí no ha pasado nada. 
         for numcol in totales:
             try:
