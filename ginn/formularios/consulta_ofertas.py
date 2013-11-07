@@ -700,7 +700,7 @@ class ConsultaOfertas(Ventana):
                     if not model[padre][1]:
                         model[padre][1] = nombre_comercial
                     else:
-                        model[padre][1] += ", " + nombre_comercial
+                        model[padre][1] += "; " + nombre_comercial
                 i += 1
         # Y ahora la gráfica.
         if self.wids['notebook1'].get_current_page() == 4:
