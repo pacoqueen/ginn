@@ -1077,6 +1077,8 @@ def mostrar_calendario(fecha_defecto = time.localtime()[:3][::-1],
             fecha_defecto = fecha_defecto.tuple()[:3][::-1]
         except:
             fecha_defecto = time.localtime()[::3][:-1]
+    elif isinstance(fecha_defecto, type(time.localtime())):
+        fecha_defecto = fecha_defecto[:3][::-1]
     elif isinstance(fecha_defecto, (tuple, list)) and len(fecha_defecto) < 3:
         fecha_defecto = fecha_defecto[:3]
     elif not fecha_defecto:
