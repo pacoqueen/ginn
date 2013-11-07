@@ -314,7 +314,10 @@ class ConsultaOfertas(Ventana):
         model.clear()
         tot = len(self.por_oferta.keys())
         i = 0.0
-        vpro.set_valor(i/tot, "Mostrando listado de ofertas...")
+        try:
+            vpro.set_valor(i/tot, "Mostrando listado de ofertas...")
+        except ZeroDivisionError:
+            return  # No hay ofertas que mostrar.
         self.pedidos_generados = []
         for p in self.por_oferta:
             vpro.set_valor(i/tot, "Mostrando listado de ofertas... (%d)" % p.id)
@@ -383,7 +386,10 @@ class ConsultaOfertas(Ventana):
         tot = sum([len(self.por_producto[k]) 
                    for k in self.por_producto.keys()])
         i = 0.0
-        vpro.set_valor(i/tot, "Mostrando ofertas por producto...")
+        try:
+            vpro.set_valor(i/tot, "Mostrando ofertas por producto...")
+        except ZeroDivisionError:
+            return  # No hay ofertas.
         padres = {}
         for producto in self.por_producto:
             for ldp in self.por_producto[producto]: # ldp=linea_de_presupuesto
@@ -475,7 +481,10 @@ class ConsultaOfertas(Ventana):
         tot = sum([len(self.por_producto[k]) 
                    for k in self.por_producto.keys()])
         i = 0.0
-        vpro.set_valor(i/tot, "Mostrando ofertas por cliente...")
+        try:
+            vpro.set_valor(i/tot, "Mostrando ofertas por cliente...")
+        except ZeroDivisionError:
+            return  # No hay ofertas que mostrar.
         padres = {}
         for cliente in self.por_cliente:
             for presupuesto in self.por_cliente[cliente]: 
@@ -562,7 +571,10 @@ class ConsultaOfertas(Ventana):
         tot = sum([len(self.por_producto[k]) 
                    for k in self.por_producto.keys()])
         i = 0.0
-        vpro.set_valor(i/tot, "Mostrando ofertas por comercial...")
+        try:
+            vpro.set_valor(i/tot, "Mostrando ofertas por comercial...")
+        except ZeroDivisionError:
+            return  # No hay ofertas que mostrar
         padres = {}
         for comercial in self.por_comercial:
             for presupuesto in self.por_comercial[comercial]: 
@@ -647,7 +659,10 @@ class ConsultaOfertas(Ventana):
         tot = sum([len(self.por_producto[k]) 
                    for k in self.por_producto.keys()])
         i = 0.0
-        vpro.set_valor(i/tot, "Mostrando ofertas por provincia...")
+        try:
+            vpro.set_valor(i/tot, "Mostrando ofertas por provincia...")
+        except ZeroDivisionError:
+            return  # No hay ofertas que mostrar
         padres = {}
         for provincia in self.por_provincia:
             for presupuesto in self.por_provincia[provincia]: 

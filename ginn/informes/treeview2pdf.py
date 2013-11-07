@@ -62,21 +62,33 @@ def treeview2pdf(tv, titulo = None, fecha = None, apaisado = None,
     datos = get_datos_from_tv(tv)
     totales = dict(zip(numcols_a_totalizar, len(numcols_a_totalizar) * [0]))
     for fila in datos:  # Si es un TreeView solo sumaré los totales de primer 
-                        # nivel. Los hijos se marcan con ">" al inicio.
-        print fila[0]
+                    # nivel. Los hijos se marcan con ">" al inicio del texto.
         try:
-            # PORASQUI: Me tengo que saltar los hijos del treeview, pero no sé cómo detectarlos porque trae el formato inline.
-            if fila[0].startswith(">") or fila[0].split("]")[1].startswith(">"):
+            if (fila and 
+                    (fila[0].startswith(">") 
+                        or ("]" in fila[0] 
+                            and fila[0].split("]")[1].startswith(">")))):
                 continue
         except (AttributeError, IndexError):
             pass    # Aquí no ha pasado nada. 
         for numcol in totales:
+            # Primero hay que limpiar de formato el texto.
+            valor_a_parsear = fila[numcol]
             try:
-                totales[numcol] += utils.parse_float(fila[numcol])
+                valor_a_parsear = valor_a_parsear.split("]")[1]
+            except IndexError:
+                pass
+            if valor_a_parsear in ("---", "==="):
+                continue
+            try:
+                valor_a_sumar = utils.parse_float(valor_a_parsear)
             except ValueError:  # ¿No hay dato en esa fila? Entonces cuento 
                                 # instancias.
-                totales[numcol] += 1
+                valor_a_sumar = 1
                 #print fila, numcol, fila[numcol]
+            if pclases.DEBUG:
+                print "+", fila[numcol], "=", valor_a_sumar
+            totales[numcol] += valor_a_sumar
     if totales and datos:
         last_i = len(datos) - 1  # Apuntará a la última línea no nula
         while (last_i > 0 
