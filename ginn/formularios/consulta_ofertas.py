@@ -44,7 +44,6 @@ from informes import geninformes
 import pango 
 from lib import charting
 from collections import defaultdict
-from presupuestos import NIVEL_VALIDACION
 
 class ConsultaOfertas(Ventana):
         
@@ -109,25 +108,35 @@ class ConsultaOfertas(Ventana):
         self.wids['e_fechainicio'].set_text(utils.str_fecha(self.inicio))
         self.fin = time.localtime()
         self.wids['e_fechafin'].set_text(utils.str_fecha(self.fin))
+        ### Combo clientes
         opciones = [(c.id, c.nombre) 
                     for c in pclases.Cliente.select(orderBy = "nombre")]
         opciones.insert(0, (-1, "Todos"))
         utils.rellenar_lista(self.wids['cbe_cliente'], opciones)
         utils.combo_set_from_db(self.wids['cbe_cliente'], -1)
-        if self.usuario and self.usuario.nivel > NIVEL_VALIDACION:
-            opciones = [(c.id, c.get_nombre_completo()) 
-                        for c in pclases.Comercial.select()
-                        if c.empleado and c.empleado.activo 
-                        and c in self.usuario.comerciales]
-        else:   # Nivel guapo. Todos los comerciales activos.
-            opciones = [(c.id, c.get_nombre_completo()) 
-                        for c in pclases.Comercial.select()
-                        if c.empleado and c.empleado.activo]
+        ### Combo comerciales
+        comerciales_que_puedo_ver = [c for c 
+                in pclases.Comercial.select(pclases.AND(
+            pclases.Comercial.q.empleadoID == pclases.Empleado.q.id, 
+            pclases.Empleado.q.usuarioID == pclases.Usuario.q.id, 
+            pclases.Usuario.q.nivel > self.usuario.nivel))]
+        for c in self.usuario.comerciales: # Los que están por debajo de mi 
+                            # nivel (0 = máximo, 5 = mínimo) más y myself.
+            comerciales_que_puedo_ver.append(c)
+        opciones = [(c.id, c.get_nombre_completo()) 
+                    for c in pclases.Comercial.select()
+                    if c.empleado and c.empleado.activo 
+                    and c in comerciales_que_puedo_ver]
+        todos_los_comerciales = [c for c in 
+                pclases.Comercial.select() if c.empleado.activo]
         opciones.sort(key = lambda c: c[1])
-        if self.usuario and self.usuario.nivel <= NIVEL_VALIDACION:
+        if len(comerciales_que_puedo_ver) > 1:  # Con el esquema de permisos 
+            # actual lo único que puedo hacer es asumir que si puede ver las 
+            # ofertas de alguien más que no sea él mismo, entonces es que 
+            # tiene permisos "de facto" para ver todas las ofertas.
             opciones.insert(0, (-1, "Todos"))
         utils.rellenar_lista(self.wids['cbe_comercial'], opciones)
-        if self.usuario and self.usuario.nivel <= NIVEL_VALIDACION:
+        if -1 in [item[0] for item in self.wids['cbe_comercial'].get_model()]:
             utils.combo_set_from_db(self.wids['cbe_comercial'], -1)
         else:
             utils.combo_set_from_db(self.wids['cbe_comercial'], 
