@@ -44,7 +44,7 @@ from informes import geninformes
 import pango 
 from lib import charting
 from collections import defaultdict
-
+from presupuestos import NIVEL_VALIDACION
 
 class ConsultaOfertas(Ventana):
         
@@ -114,13 +114,25 @@ class ConsultaOfertas(Ventana):
         opciones.insert(0, (-1, "Todos"))
         utils.rellenar_lista(self.wids['cbe_cliente'], opciones)
         utils.combo_set_from_db(self.wids['cbe_cliente'], -1)
-        opciones = [(c.id, c.get_nombre_completo()) 
-                    for c in pclases.Comercial.select()
-                    if c.empleado and c.empleado.activo]
+        if self.usuario and self.usuario.nivel > NIVEL_VALIDACION:
+            opciones = [(c.id, c.get_nombre_completo()) 
+                        for c in pclases.Comercial.select()
+                        if c.empleado and c.empleado.activo 
+                        and c in self.usuario.comerciales]
+        else:   # Nivel guapo. Todos los comerciales activos.
+            opciones = [(c.id, c.get_nombre_completo()) 
+                        for c in pclases.Comercial.select()
+                        if c.empleado and c.empleado.activo]
         opciones.sort(key = lambda c: c[1])
-        opciones.insert(0, (-1, "Todos"))
+        if self.usuario and self.usuario.nivel <= NIVEL_VALIDACION:
+            opciones.insert(0, (-1, "Todos"))
         utils.rellenar_lista(self.wids['cbe_comercial'], opciones)
-        utils.combo_set_from_db(self.wids['cbe_comercial'], -1)
+        if self.usuario and self.usuario.nivel <= NIVEL_VALIDACION:
+            utils.combo_set_from_db(self.wids['cbe_comercial'], -1)
+        else:
+            utils.combo_set_from_db(self.wids['cbe_comercial'], 
+                    self.usuario.comerciales 
+                        and self.usuario.comerciales[0].id or None)
         cols = (('Comercial', 'gobject.TYPE_STRING', False, True, True, None),
                 ('Cliente',   'gobject.TYPE_STRING', False, True, False, None),
                 ('Forma de pago', 

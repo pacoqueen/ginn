@@ -18029,6 +18029,16 @@ class Usuario(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
+    @property
+    def comerciales(self):
+        """
+        Devuelve lista de comerciales con los que opera el usuario.
+        """
+        res = []
+        for e in self.empleados:
+            res += e.comerciales
+        return res
+
     def get_permiso(self, ventana):
         """
         Devuelve el registro permiso del usuario sobre 
