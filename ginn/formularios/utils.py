@@ -4352,15 +4352,17 @@ def dividir_cadena(s, trozos = 2):
     return cadena1, cadena2
 
 def sanitize(cad, strict = False):
-    """@todo: Cambia caracteres "problemáticos" por equivalentes en la 
+    """
+    Cambia caracteres "problemáticos" por equivalentes en la 
     cadena para evitar errores en nombres de fichero, menús de glade...
     Si se usa el modo estricto (strict = True) cambia también caracteres 
-    problemáticos en nombres de fichero (coma, retorno de carro y contrabarra).
+    problemáticos en nombres de fichero (coma, retorno de carro, tildes
+    y contrabarra).
 
     :cad: Cadena de texto
-    :strict: Booleano. Si True reemplaza también comas, puntos, etc. Ojo 
-             si lo que se recibe es un nombre de fichero completo porque 
-             le quitará la extensión al sustituir el punto.
+    :strict: Booleano. Si True reemplaza también comas, puntos, etc. Ojo que
+             si lo que se recibe es un nombre de fichero completo porque le 
+             quitará la extensión al sustituir el punto.
     :returns: Cadena de texto con caracteres reemplazados.
 
     """
@@ -4373,6 +4375,8 @@ def sanitize(cad, strict = False):
                           (".", "")]
     for mala, buena in equivalencias:
         cad = cad.replace(mala, buena)
+    if strict:
+        cad = filtrar_tildes(cad)
     return cad
 
 
