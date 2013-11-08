@@ -189,7 +189,7 @@ class ConsultaOfertas(Ventana):
                 if presupuesto.rechazado: 
                     color = "Indian Red"
                 #elif presupuesto.get_pedidos(): # FIXME: Esto es muy lento.
-                elif model[itr][8]: # Esta es la columna de los pedidos.
+                elif model[itr][11]: # Esta es la columna de los pedidos.
                     color = "light green"
                 elif presupuesto.validado:
                     color = "light yellow"
@@ -350,7 +350,9 @@ class ConsultaOfertas(Ventana):
         except ZeroDivisionError:
             return  # No hay ofertas que mostrar.
         self.pedidos_generados = []
-        for p in self.por_oferta:
+        presupuestos = self.por_oferta.keys()
+        presupuestos.sort(key = lambda p: p.id, reverse = True)
+        for p in presupuestos:
             vpro.set_valor(i/tot, "Mostrando listado de ofertas... (%d)" % p.id)
             presupuesto = self.por_oferta[p]  # Él mismo en la práctica.
             pedidos = presupuesto.get_pedidos()
