@@ -1653,6 +1653,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 not self.wids['ch_cred_vb_admon'].get_active())
         # CWT: Si ya se había seleccionado el tipo de oferta y era de pedido, 
         # no permitir cambiarla.
+        print "========>", self.objeto and str(self.objeto.id) + "; estudio: " + str(self.objeto.estudio)
         if self.objeto and self.objeto.estudio: 
             self.wids['hbox_radiobutton'].set_sensitive(False)
         # Si el crédito ya se ha aprobado, bloqueo todo menos eso.

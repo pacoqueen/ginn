@@ -63,23 +63,31 @@ class ConsultaOfertas(Ventana):
                        'b_exportar/clicked': self.exportar, 
                        'notebook1/switch-page': self.cambiar_grafica}
         self.add_connections(connections)
-        cols = (('Número',    'gobject.TYPE_STRING', False, True, True, None),
+        cols = (('Número',   'gobject.TYPE_STRING', False, True, True, None),#0
                 ('Fecha',     'gobject.TYPE_STRING', False, True, False, None),
                 ('Cliente',   'gobject.TYPE_STRING', False, True, False, None),
+                ('Producto',  'gobject.TYPE_STRING', False, True, False, None),
+                ('Cantidad',  'gobject.TYPE_STRING', False, True, False, None),
+                ('Precio', 'gobject.TYPE_STRING', False, True, False, None), #5
+                ('€/kg',  'gobject.TYPE_STRING', False, True, False, None),
                 ('Obra',      'gobject.TYPE_STRING', False, True, False, None),
                 ('Comercial', 'gobject.TYPE_STRING', False, True, False, None),
                 #('Tipo',      'gobject.TYPE_STRING', False, True, False, None),
                 # CWT: Solo ofertas de pedido. Nada de estudio.
                 ('Adjudicada','gobject.TYPE_BOOLEAN', False, True, False, None),
-                ('Estado',    'gobject.TYPE_STRING', False, True, False, None),
-                ('Contacto',  'gobject.TYPE_STRING', False, True, False, None),
+                ('Estado', 'gobject.TYPE_STRING', False, True, False, None),#10
+                #('Contacto',  'gobject.TYPE_STRING', False, True, False, None),
                 ('Pedido',    'gobject.TYPE_STRING', False, True, False, None),
-                ('Importe',   'gobject.TYPE_STRING', False, True, False, None),
+                ('Importe (s/IVA)',   
+                              'gobject.TYPE_STRING', False, True, False, None),
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
         tv = self.wids['tv_datos']
         utils.preparar_listview(tv, cols)
         tv.connect("row-activated", self.abrir_objeto)
-        tv.get_column(9).get_cell_renderers()[0].set_property('xalign', 1) 
+        tv.get_column(4).get_cell_renderers()[0].set_property('xalign', 1) 
+        tv.get_column(5).get_cell_renderers()[0].set_property('xalign', 1) 
+        tv.get_column(6).get_cell_renderers()[0].set_property('xalign', 1) 
+        tv.get_column(12).get_cell_renderers()[0].set_property('xalign', 1) 
         self.colorear(tv)
         cols = (('Producto', 'gobject.TYPE_STRING', False, True, True, None),
                 ('Cantidad Ofertada', 
@@ -306,7 +314,9 @@ class ConsultaOfertas(Ventana):
             self.por_provincia[p.provincia.upper()].append(p)
             importe_total = p.calcular_importe_total()
             total_ofertas += importe_total
-            if p.get_pedidos():
+            if p.get_pedidos(): # Se asume que se convierte siempre la oferta 
+                                # completa, por tanto cuento el importe total 
+                                # del presupuesto en lugar operar con el pedido
                 total_pedidos += importe_total
                 convertidos += 1
             i += 1
@@ -344,29 +354,56 @@ class ConsultaOfertas(Ventana):
             vpro.set_valor(i/tot, "Mostrando listado de ofertas... (%d)" % p.id)
             presupuesto = self.por_oferta[p]  # Él mismo en la práctica.
             pedidos = presupuesto.get_pedidos()
+            self.pedidos_generados += [ped for ped in pedidos 
+                                       if ped not in self.pedidos_generados]
+            cadena_pedidos=", ".join([pedido.numpedido for pedido in pedidos])
             nombreobra = (presupuesto.obra and presupuesto.obra.nombre 
                           or presupuesto.nombreobra)
             #if len(nombreobra) > 33:
             #    nombreobra = nombreobra[:33] + "..."
             if len(nombreobra) > 80:
                 nombreobra = utils.wrap(nombreobra, 80)
-            fila = (str(presupuesto.id), 
-                    utils.str_fecha(presupuesto.fecha), 
-                    presupuesto.cliente and presupuesto.cliente.nombre 
-                        or presupuesto.nombrecliente, 
-                    nombreobra, 
-                    presupuesto.comercial 
-                        and presupuesto.comercial.get_nombre_completo()
-                        or "Sin comercial relacionado", 
-                    presupuesto.adjudicada, 
-                    presupuesto.get_str_estado(), 
-                    presupuesto.personaContacto, 
-                    ", ".join([pedido.numpedido for pedido in pedidos]), 
-                    utils.float2str(presupuesto.calcular_importe_total()), 
-                    presupuesto.puid)
-            self.pedidos_generados += [ped for ped in pedidos 
-                                       if ped not in self.pedidos_generados]
-            model.append(fila)
+            nombre_comercial = (presupuesto.comercial 
+                            and presupuesto.comercial.get_nombre_completo()
+                            or "Sin comercial relacionado")
+            estado = presupuesto.get_str_estado().replace("\n", " ")
+            if presupuesto.validado:
+                estado += " (%s)" % presupuesto.get_str_validacion()
+            total_presupuesto = presupuesto.calcular_importe_total()
+            for ldp in presupuesto.lineasDePresupuesto:
+                if ldp.productoVenta:
+                    #unidad = " " + ldp.productoVenta.unidad
+                    nombre_producto = ldp.productoVenta.descripcion
+                    try:
+                        precio_kilo = utils.float2str(ldp.precioKilo)
+                    except ValueError:  # No tiene
+                        precio_kilo = "" 
+                else:
+                    #unidad = ""
+                    nombre_producto = ldp.descripcion
+                    precio_kilo = ""
+                cantidad = utils.float2str(ldp.cantidad) 
+                    #+ unidad Me jode poder operar si exporto a hoja de cálculo
+                precio_unitario = utils.float2str(ldp.precio)
+                fila = ("%d (%s € IVA incl.)" % (presupuesto.id, 
+                            utils.float2str(total_presupuesto)), 
+                        utils.str_fecha(presupuesto.fecha), 
+                        presupuesto.cliente and presupuesto.cliente.nombre 
+                            or presupuesto.nombrecliente, 
+                        nombre_producto, 
+                        cantidad, 
+                        precio_unitario, 
+                        precio_kilo, 
+                        nombreobra, 
+                        nombre_comercial, 
+                        presupuesto.adjudicada, 
+                        estado, 
+                        # presupuesto.personaContacto, # CWT: Ya no
+                        cadena_pedidos, 
+                        #utils.float2str(presupuesto.calcular_importe_total()),
+                        utils.float2str(ldp.get_subtotal()), 
+                        presupuesto.puid)
+                model.append(fila)
             i += 1
         # Y ahora la gráfica.
         if self.wids['notebook1'].get_current_page() == 0:
@@ -805,7 +842,7 @@ class ConsultaOfertas(Ventana):
         if self.wids['notebook1'].get_current_page() == 0:
             tv = self.wids['tv_datos']
             titulo = "Ofertas"
-            totales = [9]
+            totales = [12]
             extra_data = [["", "", "===", "===", "===", 
                            "===", "===", "===", "===", ""], 
                           ["", "", 

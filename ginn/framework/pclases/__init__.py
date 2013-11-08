@@ -10584,6 +10584,17 @@ class Presupuesto(SQLObject, PRPCTOO):
                         "La oferta presenta condiciones particulares."
         return txtestado
 
+    def get_str_validacion(self):
+        """
+        Devuelve, si está validado, una cadena con la persona y fecha en que 
+        validó.
+        """
+        res = ""
+        if self.validado:
+            res = "Validado por %s el %s." % (self.usuario.nombre, 
+                        utils.str_fechahora(self.fechaValidacion))
+        return res
+
     @property
     def validable(self):
         return self.get_estado_validacion() == VALIDABLE
