@@ -126,6 +126,24 @@ class Ventana:
         if (not hasattr(self, "usuario") 
             or not isinstance(self.usuario, pclases.Usuario)):
             self.usuario = self.__usuario
+        # TODO: Aquí siempre llega con objeto = None. Eso es porque en 
+        # formularios/*.py se instancia la ventana sin parámetros. El 
+        # usuario lo coge con el truco de logged_user. Pero lo demás, por 
+        # mucho que parsee los parámetros en el launcher, a la ventana 
+        # siempre se le invoca sin parámetros y por tanto con todo a None 
+        # (usuario se machaca después con el correcto que devuelve 
+        # logged_user).
+        if not objeto:
+            from framework.configuracion import parse_params
+            (usuario, contrasenna, modulo, clase, config, verbose, debug, 
+             puid) = parse_params()
+            if pclases.DEBUG:
+                print "ventana.py:__init__ ->", puid
+            objeto = puid
+        if isinstance(objeto, str):
+            objeto = self.objeto = pclases.getObjetoPUID(objeto)
+        elif isinstance(objeto, pclases.SQLObject):
+            self.objeto = objeto
         self._is_fullscreen = False
         # Logger no es "pickable". http://mail.python.org/pipermail/python-bugs-list/2011-December/154441.html
         self.logger = get_ginn_logger()

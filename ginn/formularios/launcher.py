@@ -63,9 +63,10 @@ def run(modulo, clase, usuario, fconfig, obj_puid = None):
     la ventana en cuestión.
     """
     try:
-        assert sys.platform != "linux2"     # TODO: ¿Por qué ahora no me funca el popen en linux?
+        #assert sys.platform != "linux2"     # DONE: ¿Por qué ahora no me funca el popen en linux?
         import subprocess
-        ruta = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
+        ruta = os.path.realpath(os.path.join(os.path.dirname(
+            os.path.realpath(__file__)), '..'))
         if sys.platform[:3] == "win":
             comando = "set PYTHONPATH=%PYTHONPATH%;" + ruta + " & " 
             interprete = guess_interprete()
@@ -97,8 +98,11 @@ def run(modulo, clase, usuario, fconfig, obj_puid = None):
         exec "import %s" % modulo
         v = eval('%s.%s' % (modulo, clase))
         if obj_puid:
-            from framework import pclases
-            objeto = pclases.getObjetoPUID(puid)
+            if isinstance(obj_puid, str):
+                from framework import pclases
+                objeto = pclases.getObjetoPUID(puid)
+            else:
+                objeto = obj_puid
             v(usuario = usuario, objeto = objeto)
         else:
             v(usuario = usuario)
