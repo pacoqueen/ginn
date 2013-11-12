@@ -1,3 +1,6 @@
 [submodule "ginn/lib/PyPDF2"]
 	path = ginn/lib/PyPDF2
 	url = git@github.com:pacoqueen/PyPDF2.git
+[submodule "ginn/lib/lxml"]
+	path = ginn/lib/lxml
+	url = git@github.com:lxml/lxml.git
