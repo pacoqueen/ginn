@@ -346,7 +346,9 @@ class Presupuestos(Ventana, VentanaGenerica):
         # hacerme un módulo para convertir un gtk.Table en ODS o algo.
         # O mejor... rellenar las casillas del ods que saqué a partir del xls 
         # original.
-        envio_ok = self.enviar_correo_solicitud_credito()
+        fich_sol_ods = rellenar_plantilla_credito(self.objeto)
+        envio_ok = self.enviar_correo_solicitud_credito(
+                                            nomfich_solicitud = fich_sol_ods)
         if not envio_ok:
             utils.dialogo_info(titulo = "ERROR AL ENVIAR SOLICITUD", 
                     texto = "Ocurrió un error al enviar la notificación \n"
@@ -2880,6 +2882,7 @@ def build_fila_historial(ofertado, pedido, servido, facturado, pendiente,
     fila = (desc, ofer, pedi, serv, fact, pdte, puid)
     return fila
 
+
 def generar_pdf_presupuesto(objeto_presupuesto):
     modulo = pclases.config.get_modelo_presupuesto()
     import importlib
@@ -2887,6 +2890,23 @@ def generar_pdf_presupuesto(objeto_presupuesto):
     #exec "import %s as presupuesto" % modulo
     pdf_presupuesto = presupuesto.go_from_presupuesto(objeto_presupuesto)
     return pdf_presupuesto
+
+
+def rellenar_plantilla_credito(presupuesto):
+    from lib.ezodf import ezodf
+    import os
+    from tempfile import NamedTemporaryFile
+    ruta_final = NamedTemporaryFile(suffix = ".ods").name
+    plantilla = ezodf.opendoc(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+                         "..", "informes", "solicitud_credito.ods"))
+    ## Relleno los campos. Prepararsus que no son pocos:
+    hoja = plantilla.sheets[0]
+    hoja["B5"].set_value(utils.str_fecha(presupuesto.credFecha))
+    ## Y por fin guardo y devuelvo la ruta.
+    plantilla.saveas(ruta_final)
+    return ruta_final
+
 
 if __name__ == "__main__":
     p = Presupuestos()
