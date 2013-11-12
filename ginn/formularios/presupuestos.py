@@ -2893,7 +2893,11 @@ def generar_pdf_presupuesto(objeto_presupuesto):
 
 
 def rellenar_plantilla_credito(presupuesto):
-    from lib.ezodf import ezodf
+    try:
+        from lib.ezodf import ezodf
+    except ImportError:
+        from lib.lxml.src import lxml
+        from lib.ezodf import ezodf
     import os
     from tempfile import NamedTemporaryFile
     ruta_final = NamedTemporaryFile(suffix = ".ods").name
