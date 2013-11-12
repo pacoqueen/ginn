@@ -31,7 +31,10 @@ MIMETYPES = {
     'oth': "application/vnd.oasis.opendocument.text-web",
 }
 
-FILE_EXT_FOR_MIMETYPE = { mimetype:ext for ext, mimetype in MIMETYPES.items() }
+try:
+    FILE_EXT_FOR_MIMETYPE = { mimetype:ext for ext, mimetype in MIMETYPES.items() }
+except SyntaxError:     # Python <2.7
+    FILE_EXT_FOR_MIMETYPE = dict([(MIMETYPES[ext], ext) for ext in MIMETYPES])
 
 ANIM_NS ="urn:oasis:names:tc:opendocument:xmlns:animation:1.0"
 DB_NS = "urn:oasis:names:tc:opendocument:xmlns:database:1.0"
