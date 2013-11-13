@@ -341,12 +341,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.objeto.make_swap("credVecesSolicitado")
         self.objeto.make_swap("credVbNombrecomercial")
         self.objeto.notificador.activar(self.aviso_actualizacion)
-        # TODO: PLAN: De momento envío una captura de pantalla del formulario.
-        # Si solo es para imprimir, debería valer. Ya me entretendré en 
-        # hacerme un módulo para convertir un gtk.Table en ODS o algo.
-        # O mejor... rellenar las casillas del ods que saqué a partir del xls 
-        # original.
-        fich_sol_ods = rellenar_plantilla_credito(self.objeto)
+        fich_sol_ods = self.rellenar_plantilla_credito()
         envio_ok = self.enviar_correo_solicitud_credito(
                                             nomfich_solicitud = fich_sol_ods)
         if not envio_ok:
@@ -401,20 +396,27 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         Envía un correo de solicitud de crédito al usuario correspondiente.
         """
+        vpro = VentanaActividad(self.wids['ventana'], 
+                "Enviando solicitud por correo electrónico.")
+        vpro.mostrar()
+        vpro.mover()
         ok = False
         if self.usuario and self.objeto:
+            vpro.mover()
             servidor = self.usuario.smtpserver
             smtpuser = self.usuario.smtpuser
             smtppass = self.usuario.smtppassword
             rte = self.usuario.email
+            vpro.mover()
             # TODO: OJO: HARDCODED
             if self.usuario and self.usuario.id == 1:
                 dests = ["informatica@geotexan.com"]
             else:
                 dests = ["epalomo@geotexan.com", "jpedrero@geotexan.com"]
+            vpro.mover()
             # Correo de riesgo de cliente
             texto = "%s ha solicitado crédito para el cliente %s "\
-                    "a través de la oferta %d." % (
+                    "a través de la oferta %d. Se adjunta formulario." % (
                         self.usuario and self.usuario.nombre or "Se", 
                         self.objeto.cliente and self.objeto.cliente.nombre 
                             or self.objeto.nombrecliente, 
@@ -423,6 +425,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 adjunto = [nomfich_solicitud]
             else: 
                 adjunto = []
+            vpro.mover()
             ok = utils.enviar_correoe(rte, 
                                       dests,
                                       "Solicitud de crédito %s" % (
@@ -432,6 +435,8 @@ class Presupuestos(Ventana, VentanaGenerica):
                                       servidor = servidor, 
                                       usuario = smtpuser, 
                                       password = smtppass)
+            vpro.mover()
+        vpro.ocultar()
         return ok
     
     def enviar_correo_de_riesgo(self):
@@ -2622,6 +2627,108 @@ class Presupuestos(Ventana, VentanaGenerica):
         #return validador
 
 
+    def rellenar_plantilla_credito(self):
+        vpro = VentanaProgreso(padre = self.wids['ventana'])
+        vpro.set_valor(0, "Rellenado plantilla...")
+        vpro.mostrar()
+        from lib.odfpy.contrib.odscell.odscell import updateCells, parseCell
+        import os
+        from tempfile import NamedTemporaryFile
+        import shutil
+        # Cargo la plantilla y creo una tabla para trabajar en ella que al 
+        # principio contendrá lo mismo que la plantilla.
+        plantilla = os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+                             "..", "informes", "solicitud_credito.ods")
+        ruta_final = NamedTemporaryFile(suffix = ".ods").name
+        shutil.copy(plantilla, ruta_final)
+        ## Relleno los campos. Prepararsus que no son pocos:
+        celfields = {"B4": self.wids['e_cred_fecha'].get_text(), 
+                     "O5": self.objeto.credApertura and "X" or " ", 
+                     "O6": self.objeto.credAumento and "X" or "", 
+                     "O7": self.objeto.credSolicitud and "X" or "", 
+                     "B6": self.wids['e_cred_comercial'].get_text(), 
+                    # Apartado de datos fiscales.
+                     "B12": self.wids['e_cred_cif'].get_text(), 
+                     "B14": self.wids['e_cred_nombre'].get_text(), 
+                     "B16": self.wids['e_cred_ute'].get_text(), 
+                     "B18": self.wids['e_cred_obra'].get_text(), 
+                     "B20": self.wids['e_cred_licitador'].get_text(), 
+                     "B22": self.wids['e_cred_dirfiscal'].get_text(), 
+                     "B24": self.wids['e_cred_cpfiscal'].get_text(), 
+                     "F24": self.wids['e_cred_poblacionfiscal'].get_text(), 
+                     "N24": self.wids['e_cred_provinciafiscal'].get_text(), 
+                     "B26": self.wids['e_cred_telefonofiscal'].get_text(), 
+                     "G26": self.wids['e_cred_faxfiscal'].get_text(), 
+                     "N26": self.wids['e_cred_movilfiscal'].get_text(), 
+                     "B28": self.wids['e_cred_contactofiscal'].get_text(), 
+                     "N28": self.wids['e_cred_emailfiscal'].get_text(), 
+                    # Apartado de envío de facturas y contratos. 
+                     "B33": self.wids['e_cred_dircontratos'].get_text(), 
+                     "B35": self.wids['e_cred_cpcontratos'].get_text(), 
+                     "F35": self.wids['e_cred_poblacioncontratos'].get_text(), 
+                     "N35": self.wids['e_cred_provinciacontratos'].get_text(), 
+                     "B37": self.wids['e_cred_telefonocontratos'].get_text(), 
+                     "L37": self.wids['e_cred_emailcontratos'].get_text(), 
+                     "B39": self.wids['e_cred_contactocontratos'].get_text(), 
+                     "N39": self.wids['e_cred_movilcontratos'].get_text(),  
+                    # Apartado de dirección de obra (envío de materiales)
+                     "B44": self.wids['e_cred_dirobra'].get_text(), 
+                     "B46": self.wids['e_cred_cpobra'].get_text(), 
+                     "F46": self.wids['e_cred_poblacionobra'].get_text(), 
+                     "N46": self.wids['e_cred_provinciaobra'].get_text(), 
+                     "B48": self.wids['e_cred_movilobra'].get_text(), 
+                     "B50": self.wids['e_cred_contactoobra'].get_text(), 
+                    # Apartado de datos de pago 
+                     "D55": self.wids['e_cred_fdp'].get_text(), 
+                     "A59": self.wids['txt_cred_entidades'].get_buffer(
+                         ).get_text(
+                             *self.wids['txt_cred_entidades'].get_buffer(
+                                 ).get_bounds()),
+                     "A67": self.wids['e_cred_entidad'].get_text(), 
+                     "D67": self.wids['e_cred_oficina'].get_text(), 
+                     "I67": self.wids['e_cred_digitocontrol'].get_text(), 
+                     "L67": self.wids['e_cred_numcuenta'].get_text(), 
+                     "G69": self.wids['e_cred_diapago1'].get_text(), 
+                     "H69": self.wids['e_cred_diapago2'].get_text(), 
+                     "I69": self.wids['e_cred_diapago3'].get_text(), 
+                    # Apartado de riesgos cliente
+                     "B74": self.wids['e_cred_credsolicitado'].get_text(), 
+                     "A77": self.wids['txt_cred_observaciones'].get_buffer(
+                        ).get_text(
+                            *self.wids['txt_cred_observaciones'].get_buffer(
+                                ).get_bounds()),
+                     "A82": self.wids['txt_cred_condiciones'].get_buffer(
+                             ).get_text(
+                                *self.wids['txt_cred_condiciones'].get_buffer(
+                                    ).get_bounds()),
+                    # Apartado de vistos buenos
+                     "A93": self.wids['e_cred_vb_nombrecomercial'].get_text(), 
+                     "F93": self.wids['e_cred_vb_nombreadmon'].get_text(), 
+                     "R90": self.wids['e_cred_asegurado'].get_text(), 
+                     "R92": self.wids['e_cred_fechaasegurado'].get_text(), 
+                     "R94": self.wids['e_cred_concedido'].get_text(), 
+                     "R96": self.wids['e_cred_fechaconcedido'].get_text(), 
+                    }
+        tot = len(celfields.keys())
+        i = 0.0
+        for cell in celfields:
+            i += 1
+            vpro.set_valor(i/tot, "Rellenando plantilla...")
+            valor = celfields[cell]
+            #valor = valor.encode("iso-8859-15")
+            updateCells(ruta_final, 
+                                0,      # Índice de la hoja dentro del .ods
+                                parseCell(cell)[1],     # row
+                                parseCell(cell)[0],     # col
+                                1,  # Número de celdas consecutivas a cambiar X
+                                1,  # Número de celdas consecutivas a cambiar Y
+                                [valor])    # Espera un iterable
+        ## Y por fin guardo y devuelvo la ruta.
+        vpro.set_valor(1.0, 
+                "Enviando plantilla por correo. Por favor, aguarde.")
+        vpro.ocultar()
+        return ruta_final
+
 def calcular_permiso_nuevos_pedidos(usuario, logger = None):
     if usuario == None:
         permiso_nuevos_pedidos = True
@@ -2890,29 +2997,6 @@ def generar_pdf_presupuesto(objeto_presupuesto):
     #exec "import %s as presupuesto" % modulo
     pdf_presupuesto = presupuesto.go_from_presupuesto(objeto_presupuesto)
     return pdf_presupuesto
-
-
-def rellenar_plantilla_credito(presupuesto):
-    from lib.simple_odspy.simpleodspy.sodsspreadsheet import SodsSpreadSheet
-    from lib.simple_odspy.simpleodspy.sodsods import SodsOds
-    import os
-    from tempfile import NamedTemporaryFile
-    # Cargo la plantilla y creo una tabla para trabajar en ella que al 
-    # principio contendrá lo mismo que la plantilla.
-    hoja = SodsSpreadSheet(i_max = 97)
-    plantilla = SodsOds(hoja, i_max = 97)
-    plantilla.load(
-            os.path.join(os.path.dirname(os.path.realpath(__file__)), 
-                         "..", "informes", "solicitud_credito.ods"))
-    ## Relleno los campos. Prepararsus que no son pocos:
-    print hoja.getCell("B5").text
-    print hoja.getCell("A40").text
-    #hoja.setValue("B5", utils.str_fecha(presupuesto.credFecha))
-    hoja.getCell("B5").text = utils.str_fecha(presupuesto.credFecha)
-    ## Y por fin guardo y devuelvo la ruta.
-    ruta_final = NamedTemporaryFile(suffix = ".ods").name
-    plantilla.save(ruta_final)
-    return ruta_final
 
 
 if __name__ == "__main__":
