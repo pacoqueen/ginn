@@ -1,9 +1,9 @@
 [submodule "ginn/lib/PyPDF2"]
 	path = ginn/lib/PyPDF2
 	url = git@github.com:pacoqueen/PyPDF2.git
-[submodule "ginn/lib/simple-odspy"]
-	path = ginn/lib/simple-odspy
-	url = git@github.com:pacoqueen/simple-odspy.git
+[submodule "ginn/lib/simple_odspy"]
+	path = ginn/lib/simple_odspy
+	url = git@github.com:pacoqueen/simple_odspy.git
 [submodule "ginn/lib/odfpy"]
 	path = ginn/lib/odfpy
 	url = git@github.com:pacoqueen/odfpy.git
