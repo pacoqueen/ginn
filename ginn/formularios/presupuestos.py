@@ -2893,22 +2893,25 @@ def generar_pdf_presupuesto(objeto_presupuesto):
 
 
 def rellenar_plantilla_credito(presupuesto):
-    try:
-        from lib.ezodf import ezodf
-    except ImportError:
-        from lib.lxml.src import lxml
-        from lib.ezodf import ezodf
+    from lib.simple_odspy.simpleodspy.sodsspreadsheet import SodsSpreadSheet
+    from lib.simple_odspy.simpleodspy.sodsods import SodsOds
     import os
     from tempfile import NamedTemporaryFile
-    ruta_final = NamedTemporaryFile(suffix = ".ods").name
-    plantilla = ezodf.opendoc(
+    # Cargo la plantilla y creo una tabla para trabajar en ella que al 
+    # principio contendrá lo mismo que la plantilla.
+    hoja = SodsSpreadSheet(i_max = 97)
+    plantilla = SodsOds(hoja, i_max = 97)
+    plantilla.load(
             os.path.join(os.path.dirname(os.path.realpath(__file__)), 
                          "..", "informes", "solicitud_credito.ods"))
     ## Relleno los campos. Prepararsus que no son pocos:
-    hoja = plantilla.sheets[0]
-    hoja["B5"].set_value(utils.str_fecha(presupuesto.credFecha))
+    print hoja.getCell("B5").text
+    print hoja.getCell("A40").text
+    #hoja.setValue("B5", utils.str_fecha(presupuesto.credFecha))
+    hoja.getCell("B5").text = utils.str_fecha(presupuesto.credFecha)
     ## Y por fin guardo y devuelvo la ruta.
-    plantilla.saveas(ruta_final)
+    ruta_final = NamedTemporaryFile(suffix = ".ods").name
+    plantilla.save(ruta_final)
     return ruta_final
 
 
