@@ -4,3 +4,6 @@
 [submodule "ginn/lib/simple-odspy"]
 	path = ginn/lib/simple-odspy
 	url = git@github.com:pacoqueen/simple-odspy.git
+[submodule "ginn/lib/odfpy"]
+	path = ginn/lib/odfpy
+	url = git@github.com:pacoqueen/odfpy.git
