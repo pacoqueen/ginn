@@ -2006,13 +2006,15 @@ def parse_hora(txt):
         if len(txt) <= 2:
             txt = txt + "00"
         txt = txt[:-2] + ":" + txt[-2:]
-    valores = txt.split(":")
+    valores = [v.strip() != "" and v or "0" for v in txt.split(":")]
     if len(valores) == 3:
         hora, minuto, segundo = map(_float, valores)
     else:
         segundo = 0
         hora, minuto = map(_float, valores)
-    return mx.DateTime.DateTimeDeltaFrom(hours = hora, minutes = minuto, seconds = segundo)
+    return mx.DateTime.DateTimeDeltaFrom(hours = hora, 
+                                         minutes = minuto, 
+                                         seconds = segundo)
 
 def round_banquero(numero, precision = 2):
     """
