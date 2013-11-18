@@ -450,7 +450,10 @@ def go_from_presupuesto(presupuesto,
     datos_cliente.append(presupuesto.direccion)
     listadireccion = [presupuesto.cp, presupuesto.ciudad]
     if presupuesto.ciudad.strip() != presupuesto.provincia.strip():
-        listadireccion.append(presupuesto.provincia)
+        if presupuesto.ciudad.strip():
+            listadireccion.append("(" + presupuesto.provincia + ")")
+        else: 
+            listadireccion.append(presupuesto.provincia)
     listadireccion.append(presupuesto.pais)
     segunda_linea_direccion = " ".join([token.strip() 
                                         for token in listadireccion 
