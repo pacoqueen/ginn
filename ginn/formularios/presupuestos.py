@@ -416,7 +416,8 @@ class Presupuestos(Ventana, VentanaGenerica):
             vpro.mover()
             # Correo de riesgo de cliente
             texto = "%s ha solicitado crédito para el cliente %s "\
-                    "a través de la oferta %d. Se adjunta formulario." % (
+                    "a través de la oferta %d. Se adjunta copia del "\
+                    "formulario." % (
                         self.usuario and self.usuario.nombre or "Se", 
                         self.objeto.cliente and self.objeto.cliente.nombre 
                             or self.objeto.nombrecliente, 
@@ -2642,81 +2643,96 @@ class Presupuestos(Ventana, VentanaGenerica):
         ruta_final = NamedTemporaryFile(suffix = ".ods").name
         shutil.copy(plantilla, ruta_final)
         ## Relleno los campos. Prepararsus que no son pocos:
-        celfields = {"B4": self.wids['e_cred_fecha'].get_text(), 
-                     "O5": self.objeto.credApertura and "X" or " ", 
-                     "O6": self.objeto.credAumento and "X" or "", 
-                     "O7": self.objeto.credSolicitud and "X" or "", 
-                     "B6": self.wids['e_cred_comercial'].get_text(), 
+        celfields = {"B3": self.wids['e_cred_fecha'].get_text(), 
+                     # HACK: Las celdas vacías consecutivas cuentan como 1 sola
+                     #"F4": self.objeto.credApertura and "X" or " ", 
+                     "D4": self.objeto.credApertura and "X" or " ", 
+                     # HACK: Las celdas vacías consecutivas cuentan como 1 sola
+                     #"F5": self.objeto.credAumento and "X" or " ", 
+                     "E5": self.objeto.credAumento and "X" or " ", 
+                     "F6": self.objeto.credSolicitud and "X" or " ", 
+                     "B5": self.wids['e_cred_comercial'].get_text(), 
                     # Apartado de datos fiscales.
-                     "B12": self.wids['e_cred_cif'].get_text(), 
-                     "B14": self.wids['e_cred_nombre'].get_text(), 
-                     "B16": self.wids['e_cred_ute'].get_text(), 
-                     "B18": self.wids['e_cred_obra'].get_text(), 
-                     "B20": self.wids['e_cred_licitador'].get_text(), 
-                     "B22": self.wids['e_cred_dirfiscal'].get_text(), 
-                     "B24": self.wids['e_cred_cpfiscal'].get_text(), 
-                     "F24": self.wids['e_cred_poblacionfiscal'].get_text(), 
-                     "N24": self.wids['e_cred_provinciafiscal'].get_text(), 
-                     "B26": self.wids['e_cred_telefonofiscal'].get_text(), 
-                     "G26": self.wids['e_cred_faxfiscal'].get_text(), 
-                     "N26": self.wids['e_cred_movilfiscal'].get_text(), 
-                     "B28": self.wids['e_cred_contactofiscal'].get_text(), 
-                     "N28": self.wids['e_cred_emailfiscal'].get_text(), 
+                     "B10": self.wids['e_cred_cif'].get_text(), 
+                     "B12": self.wids['e_cred_nombre'].get_text(), 
+                     "B14": self.wids['e_cred_ute'].get_text(), 
+                     "B16": self.wids['e_cred_obra'].get_text(), 
+                     "B18": self.wids['e_cred_licitador'].get_text(), 
+                     "B20": self.wids['e_cred_dirfiscal'].get_text(), 
+                     "B22": self.wids['e_cred_cpfiscal'].get_text(), 
+                     "D22": self.wids['e_cred_poblacionfiscal'].get_text(), 
+                     "F22": self.wids['e_cred_provinciafiscal'].get_text(), 
+                     "B24": self.wids['e_cred_telefonofiscal'].get_text(), 
+                     "D24": self.wids['e_cred_faxfiscal'].get_text(), 
+                     "F24": self.wids['e_cred_movilfiscal'].get_text(), 
+                     "B26": self.wids['e_cred_contactofiscal'].get_text(), 
+                     # HACK: Las celdas vacías consecutivas cuentan como 1 sola
+                     #"F26": self.wids['e_cred_emailfiscal'].get_text(), 
+                     "E26": self.wids['e_cred_emailfiscal'].get_text(), 
                     # Apartado de envío de facturas y contratos. 
-                     "B33": self.wids['e_cred_dircontratos'].get_text(), 
-                     "B35": self.wids['e_cred_cpcontratos'].get_text(), 
-                     "F35": self.wids['e_cred_poblacioncontratos'].get_text(), 
-                     "N35": self.wids['e_cred_provinciacontratos'].get_text(), 
-                     "B37": self.wids['e_cred_telefonocontratos'].get_text(), 
-                     "L37": self.wids['e_cred_emailcontratos'].get_text(), 
-                     "B39": self.wids['e_cred_contactocontratos'].get_text(), 
-                     "N39": self.wids['e_cred_movilcontratos'].get_text(),  
+                     "B30": self.wids['e_cred_dircontratos'].get_text(), 
+                     "B32": self.wids['e_cred_cpcontratos'].get_text(), 
+                     "D32": self.wids['e_cred_poblacioncontratos'].get_text(), 
+                     "F32": self.wids['e_cred_provinciacontratos'].get_text(), 
+                     "B34": self.wids['e_cred_telefonocontratos'].get_text(), 
+                     "D34": self.wids['e_cred_emailcontratos'].get_text(), 
+                     "B36": self.wids['e_cred_contactocontratos'].get_text(), 
+                     # HACK: Las celdas vacías consecutivas cuentan como 1 sola
+                     #"F36": self.wids['e_cred_movilcontratos'].get_text(),  
+                     "E36": self.wids['e_cred_movilcontratos'].get_text(),  
                     # Apartado de dirección de obra (envío de materiales)
-                     "B44": self.wids['e_cred_dirobra'].get_text(), 
-                     "B46": self.wids['e_cred_cpobra'].get_text(), 
-                     "F46": self.wids['e_cred_poblacionobra'].get_text(), 
-                     "N46": self.wids['e_cred_provinciaobra'].get_text(), 
-                     "B48": self.wids['e_cred_movilobra'].get_text(), 
-                     "B50": self.wids['e_cred_contactoobra'].get_text(), 
+                     "B40": self.wids['e_cred_dirobra'].get_text(), 
+                     "B42": self.wids['e_cred_cpobra'].get_text(), 
+                     "D42": self.wids['e_cred_poblacionobra'].get_text(), 
+                     "F42": self.wids['e_cred_provinciaobra'].get_text(), 
+                     "B44": self.wids['e_cred_movilobra'].get_text(), 
+                     "B46": self.wids['e_cred_contactoobra'].get_text(), 
                     # Apartado de datos de pago 
-                     "D55": self.wids['e_cred_fdp'].get_text(), 
-                     "A59": self.wids['txt_cred_entidades'].get_buffer(
+                     "B50": self.wids['e_cred_fdp'].get_text(), 
+                     "A53": self.wids['txt_cred_entidades'].get_buffer(
                          ).get_text(
                              *self.wids['txt_cred_entidades'].get_buffer(
                                  ).get_bounds()),
-                     "A67": self.wids['e_cred_entidad'].get_text(), 
-                     "D67": self.wids['e_cred_oficina'].get_text(), 
-                     "I67": self.wids['e_cred_digitocontrol'].get_text(), 
-                     "L67": self.wids['e_cred_numcuenta'].get_text(), 
-                     "G69": self.wids['e_cred_diapago1'].get_text(), 
-                     "H69": self.wids['e_cred_diapago2'].get_text(), 
-                     "I69": self.wids['e_cred_diapago3'].get_text(), 
+                     "A57": self.wids['e_cred_entidad'].get_text(), 
+                     "B57": self.wids['e_cred_oficina'].get_text(), 
+                     "C57": self.wids['e_cred_digitocontrol'].get_text(), 
+                     "D57": self.wids['e_cred_numcuenta'].get_text(), 
+                     "B59": self.wids['e_cred_diapago1'].get_text(), 
+                     "C59": self.wids['e_cred_diapago2'].get_text(), 
+                     "D59": self.wids['e_cred_diapago3'].get_text(), 
                     # Apartado de riesgos cliente
-                     "B74": self.wids['e_cred_credsolicitado'].get_text(), 
-                     "A77": self.wids['txt_cred_observaciones'].get_buffer(
+                     "B63": str(int(utils._float(
+                             self.wids['e_cred_credsolicitado'].get_text()))), 
+                     "A66": self.wids['txt_cred_observaciones'].get_buffer(
                         ).get_text(
                             *self.wids['txt_cred_observaciones'].get_buffer(
                                 ).get_bounds()),
-                     "A82": self.wids['txt_cred_condiciones'].get_buffer(
+                     "A69": self.wids['txt_cred_condiciones'].get_buffer(
                              ).get_text(
                                 *self.wids['txt_cred_condiciones'].get_buffer(
                                     ).get_bounds()),
                     # Apartado de vistos buenos
-                     "A93": self.wids['e_cred_vb_nombrecomercial'].get_text(), 
-                     "F93": self.wids['e_cred_vb_nombreadmon'].get_text(), 
-                     "R90": self.wids['e_cred_asegurado'].get_text(), 
-                     "R92": self.wids['e_cred_fechaasegurado'].get_text(), 
-                     "R94": self.wids['e_cred_concedido'].get_text(), 
-                     "R96": self.wids['e_cred_fechaconcedido'].get_text(), 
+                     "A74": self.wids['e_cred_vb_nombrecomercial'].get_text(), 
+                     "C72": self.wids['e_cred_vb_nombreadmon'].get_text(), 
+                     "F71": str(int(utils._float(
+                         self.wids['e_cred_asegurado'].get_text()))), 
+                     "F73": self.wids['e_cred_fechaasegurado'].get_text(), 
+                     "F75": str(int(utils._float(
+                         self.wids['e_cred_concedido'].get_text()))), 
+                     # HACK: Las celdas vacías consecutivas cuentan como 1 sola
+                     #"F77": self.wids['e_cred_fechaconcedido'].get_text(), 
+                     "E77": self.wids['e_cred_fechaconcedido'].get_text(), 
                     }
-        tot = len(celfields.keys())
+        celdas = celfields.keys()
+        celdas.sort(cmp = cmp_celdas_lrtd)
+        tot = len(celdas)
         i = 0.0
         for cell in celfields:
             i += 1
             vpro.set_valor(i/tot, "Rellenando plantilla...")
-            valor = celfields[cell]
-            #valor = valor.encode("iso-8859-15")
-            updateCells(ruta_final, 
+            valor = prepare_for_ods(celfields[cell])
+            if valor:
+                updateCells(ruta_final, 
                                 0,      # Índice de la hoja dentro del .ods
                                 parseCell(cell)[1],     # row
                                 parseCell(cell)[0],     # col
@@ -2997,6 +3013,36 @@ def generar_pdf_presupuesto(objeto_presupuesto):
     #exec "import %s as presupuesto" % modulo
     pdf_presupuesto = presupuesto.go_from_presupuesto(objeto_presupuesto)
     return pdf_presupuesto
+
+def prepare_for_ods(cadena):
+    """
+    Pepara la cadena para ser incluída en una hoja de cálculo en ODF (.ods).
+    """
+    valor = cadena
+    #valor = valor.encode("iso-8859-15")
+    valor = valor.replace("\n", " ").strip()
+    return valor
+
+def cmp_celdas_lrtd(a, b):
+    """
+    Compara las cadenas a y b teniendo en cuenta que son etiquetas de celdas 
+    de la forma Xnn donde X es la columna y nn un entero con la fila. Devuelve 
+    -1 si a es menor que b. Se considera el orden de izquierda a derecha y 
+    de arriba a abajo, por ejemplo: A2 < A5 < B1
+    """
+    # FIXME: Muy chapucero y teniendo en cuenta que no vamos a encontrar más 
+    # de Z columnas.
+    cola = a[0].upper()
+    colb = b[0].upper()
+    if cola < colb:
+        res = -1
+    elif cola > colb:
+        res = 1
+    else:
+        fila = int(a[1:])
+        filb = int(b[1:])
+        res = fila - filb
+    return res
 
 
 if __name__ == "__main__":
