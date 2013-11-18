@@ -276,7 +276,8 @@ class Presupuestos(Ventana, VentanaGenerica):
                 self.rellenar_tablas_historial()
 
     def enviar_solicitud_credito(self, boton):
-        self.guardar(None)  # Por si acaso, primero guardo
+        if self.wids['b_guardar'].get_property("active"):
+            self.guardar(None)  # Por si acaso, primero guardo
         # Comprobación de campos obligatorios:
         falta_alguno = False
         if (self.objeto.credApertura == self.objeto.credAumento == 
@@ -326,7 +327,6 @@ class Presupuestos(Ventana, VentanaGenerica):
                         " marcados en rojo.", 
                 padre = self.wids['ventana'])
             return 
-        # TODO: Falta comprobar campos obligatorios.
         self.objeto.notificador.desactivar()
         self.objeto.credVecesSolicitado += 1
         try:
@@ -2652,7 +2652,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             credasegurado = str(int(utils._float(
                          self.wids['e_cred_asegurado'].get_text())))
         except ValueError:
-            credsolicitado = ""
+            credasegurado  = ""
         try:
             credconcedido = str(int(utils._float(
                          self.wids['e_cred_concedido'].get_text())))
