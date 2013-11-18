@@ -396,6 +396,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         Envía un correo de solicitud de crédito al usuario correspondiente.
         """
+        # TODO: PORASQUI: El Excel de serie (al menos hasta la versión 2007 no abre los ods. Enviar versión también en PDF o HTML y un enlace al conversor para que se lo instale quien quiera.
         vpro = VentanaActividad(self.wids['ventana'], 
                 "Enviando solicitud por correo electrónico.")
         vpro.mostrar()
