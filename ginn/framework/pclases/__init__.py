@@ -9867,7 +9867,7 @@ class PedidoVenta(SQLObject, PRPCTOO):
         if validable:
             importe_pedido = self.calcular_importe_total(iva = True)
             if self.cliente and self.cliente.calcular_credito_disponible(
-                    base = importe_pedido) < 0:
+                    base = importe_pedido) <= 0:
                 validable = CLIENTE_DEUDOR
         return validable
 
@@ -10527,7 +10527,7 @@ class Presupuesto(SQLObject, PRPCTOO):
         if validable == VALIDABLE:
             importe_presupuesto = self.calcular_importe_total(iva = True)
             if self.cliente and self.cliente.calcular_credito_disponible(
-                    base = importe_presupuesto) < 0:
+                    base = importe_presupuesto) <= 0:
                 validable = CLIENTE_DEUDOR
         if validable == VALIDABLE:
             if not self.cliente and not self.nombrecliente:

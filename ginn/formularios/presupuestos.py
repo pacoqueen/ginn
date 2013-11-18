@@ -457,7 +457,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             credito = self.objeto.cliente.\
                         calcular_credito_disponible(
                                 base = importe_presupuesto)
-            if credito < 0:
+            if credito <= 0:
                 # TODO: Y que no se haya enviado ya antes. Si no, no veas 
                 # la paliza de correos que van a llegar cada vez que guarde 
                 # un valor de la ventana.
@@ -502,7 +502,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                     self.objeto.make_swap()
                     self.enviar_correo_adjudicada(ch)
                     if (not self.objeto.cliente 
-                            or self.comprobar_riesgo_cliente() < 0):
+                            or self.comprobar_riesgo_cliente() <= 0):
                         utils.dialogo_info(titulo = "SOLICITE CRÉDITO", 
                             texto = "El cliente es nuevo o no tiene crédito "
                                     "disponible.\n\nSolicite una ampliación o "
@@ -2086,7 +2086,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                     self.cache_credito = self.objeto.cliente.\
                             calcular_credito_disponible(
                                     base = importe_presupuesto)
-                if self.cache_credito < 0:
+                if self.cache_credito <= 0:
                     vpro.mover()
                     color = self.wids['cbe_cliente'].child.get_colormap().\
                                 alloc_color("IndianRed1")
