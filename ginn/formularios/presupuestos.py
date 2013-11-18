@@ -276,7 +276,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 self.rellenar_tablas_historial()
 
     def enviar_solicitud_credito(self, boton):
-        if self.wids['b_guardar'].get_property("active"):
+        if self.wids['b_guardar'].get_property("sensitive"):
             self.guardar(None)  # Por si acaso, primero guardo
         # Comprobación de campos obligatorios:
         falta_alguno = False
