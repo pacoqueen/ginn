@@ -2413,6 +2413,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         de datos en el objeto y lo sincroniza con la BD.
         """
         # Si guardo es que algo he modificado. Por tanto quito validación.
+        # TODO: Esto no es así, en teoría las modificaciones en la solicitud 
+        # de crédito no deberían invalidar la oferta... ¿o sí?
         self.objeto.validado = False
         self.objeto.swap['usuarioID'] = None
         self.objeto.swap['fechaValidacion'] = None

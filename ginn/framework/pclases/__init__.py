@@ -639,10 +639,10 @@ PREFIJO_BOLSA = "K"
 # Estados de pagarés/confirming
 GESTION, CARTERA, DESCONTADO, IMPAGADO, COBRADO = range(5)
 
-# Estados de validación de pedidos
+# Estados de validación de pedidos y ofertas
 NO_VALIDABLE, VALIDABLE, PLAZO_EXCESIVO, SIN_FORMA_DE_PAGO, \
         PRECIO_INSUFICIENTE, CLIENTE_DEUDOR, SIN_CIF, SIN_CLIENTE, \
-        COND_PARTICULARES = range(9)
+        COND_PARTICULARES, COMERCIALIZADO = range(10)
 
 # VERBOSE MODE
 total = 160 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
@@ -10505,6 +10505,7 @@ class Presupuesto(SQLObject, PRPCTOO):
             SIN_CIF: No se ha informado del CIF del cliente.
             COND_PARTICULARES: Lleva condiciones particulares y requiere 
                                por CWT que se valide manualmente.
+            COMERCIALIZADO: Lleva comercializados (ProductoCompra).
         """
         # Debería tener las condiciones en un solo sitio. Los pedidos y 
         # presupuestos siguen el mismo criterio, pero están especificados por 
@@ -10534,7 +10535,21 @@ class Presupuesto(SQLObject, PRPCTOO):
         if validable == VALIDABLE:
             if not self.cliente:
                 validable = NO_VALIDABLE
+        if validable == VALIDABLE:
+            if self._lleva_comercializado():
+                validable = COMERCIALIZADO
         return validable
+
+    def _lleva_comercializado(self):
+        """
+        True si alguna línea de presupuesto lleva comercializados.
+        """
+        res = False
+        for ldp in self.lineasDePresupuesto:
+            if isinstance(ldp.producto, ProductoCompra):
+                res = True
+                break
+        return res
 
     def get_str_estado(self):
         """
@@ -10582,6 +10597,9 @@ class Presupuesto(SQLObject, PRPCTOO):
         elif estado_validacion == COND_PARTICULARES:
             txtestado = "Necesita validación manual: "\
                         "La oferta presenta condiciones particulares."
+        elif estado_validacion == COMERCIALIZADO:
+            txtestado = "Necesita validación manual: "\
+                        "La oferta contiene comercializados."
         return txtestado
 
     def get_str_validacion(self):
