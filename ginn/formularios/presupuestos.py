@@ -2643,6 +2643,21 @@ class Presupuestos(Ventana, VentanaGenerica):
         ruta_final = NamedTemporaryFile(suffix = ".ods").name
         shutil.copy(plantilla, ruta_final)
         ## Relleno los campos. Prepararsus que no son pocos:
+        try:
+            credsolicitado = str(int(utils._float(
+                             self.wids['e_cred_credsolicitado'].get_text())))
+        except ValueError:
+            credsolicitado = ""
+        try:
+            credasegurado = str(int(utils._float(
+                         self.wids['e_cred_asegurado'].get_text())))
+        except ValueError:
+            credsolicitado = ""
+        try:
+            credconcedido = str(int(utils._float(
+                         self.wids['e_cred_concedido'].get_text())))
+        except ValueError:
+            credconcedido = ""
         celfields = {"B3": self.wids['e_cred_fecha'].get_text(), 
                      # HACK: Las celdas vacías consecutivas cuentan como 1 sola
                      #"F4": self.objeto.credApertura and "X" or " ", 
@@ -2701,8 +2716,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                      "C59": self.wids['e_cred_diapago2'].get_text(), 
                      "D59": self.wids['e_cred_diapago3'].get_text(), 
                     # Apartado de riesgos cliente
-                     "B63": str(int(utils._float(
-                             self.wids['e_cred_credsolicitado'].get_text()))), 
+                     "B63": credsolicitado, 
                      "A66": self.wids['txt_cred_observaciones'].get_buffer(
                         ).get_text(
                             *self.wids['txt_cred_observaciones'].get_buffer(
@@ -2714,11 +2728,9 @@ class Presupuestos(Ventana, VentanaGenerica):
                     # Apartado de vistos buenos
                      "A74": self.wids['e_cred_vb_nombrecomercial'].get_text(), 
                      "C72": self.wids['e_cred_vb_nombreadmon'].get_text(), 
-                     "F71": str(int(utils._float(
-                         self.wids['e_cred_asegurado'].get_text()))), 
+                     "F71": credasegurado, 
                      "F73": self.wids['e_cred_fechaasegurado'].get_text(), 
-                     "F75": str(int(utils._float(
-                         self.wids['e_cred_concedido'].get_text()))), 
+                     "F75": credconcedido, 
                      # HACK: Las celdas vacías consecutivas cuentan como 1 sola
                      #"F77": self.wids['e_cred_fechaconcedido'].get_text(), 
                      "E77": self.wids['e_cred_fechaconcedido'].get_text(), 
