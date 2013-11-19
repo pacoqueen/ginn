@@ -443,7 +443,10 @@ def go_from_presupuesto(presupuesto,
     lineas_contenido = presupuesto.lineasDePresupuesto 
     lineas_contenido.sort(key = lambda ldp: ldp.id)
     datos_cliente = []
-    datos_cliente.append(presupuesto.nombrecliente)
+    nombre_cliente = presupuesto.nombrecliente
+    cif = presupuesto.cliente and presupuesto.cliente.cif or presupuesto.cif
+    nombre_cliente += " (%s)" % cif
+    datos_cliente.append(nombre_cliente)
     if presupuesto.personaContacto != "":
         datos_cliente.append("A la atención de %s" % (
             presupuesto.personaContacto))
