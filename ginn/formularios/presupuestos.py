@@ -2020,11 +2020,6 @@ class Presupuestos(Ventana, VentanaGenerica):
         presupuestos = pclases.Presupuesto.select(pclases.AND(criterios), 
                                                   orderBy = "-id")
         # CWT: Solo los no validados PERO CON LA VALIDACIÓN QUE IMPIDE IMPRIMIR
-        # PORASQUI:
-        # TODO: Aquí está "la tostá". Como haya un presupuesto de Composán, 
-        # Cetco o alguno de estos en los que el calcular_crédito tarda más 
-        # de 30 segundos... ventana congelada. Por eso la primera carga de la 
-        # ventana tarda tanto. A VER CÓMO LO HACEMOS.
         if solo_pdte:
             _presupuestos = []
             i = 0.0
