@@ -54,7 +54,8 @@ class ConsultaOfertasPendientesValidar(Ventana):
         el que se muestra por defecto).
         """
         self.usuario = usuario
-        Ventana.__init__(self, 'consulta_ofertas.glade', objeto, self.usuario)
+        Ventana.__init__(self, 'consulta_ofertas_pendientes_validar.glade', 
+                         objeto, self.usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_buscar/clicked': self.buscar,
                        'b_imprimir/clicked': self.imprimir,
@@ -80,10 +81,8 @@ class ConsultaOfertasPendientesValidar(Ventana):
         tv.connect("row-activated", self.abrir_objeto)
         tv.get_column(6).get_cell_renderers()[0].set_property('xalign', 1) 
         self.colorear(tv)
-        self.inicio = mx.DateTime.DateTimeFrom(day = 1, 
-                                        month = mx.DateTime.localtime().month, 
-                                        year = mx.DateTime.localtime().year)
-        self.wids['e_fechainicio'].set_text(utils.str_fecha(self.inicio))
+        self.inicio = None
+        self.wids['e_fechainicio'].set_text("")
         self.fin = time.localtime()
         self.wids['e_fechafin'].set_text(utils.str_fecha(self.fin))
         ### Combo clientes
@@ -308,9 +307,10 @@ class ConsultaOfertasPendientesValidar(Ventana):
                 chart = charting.Chart(orient = "horizontal", 
                                        values_on_bars = True)
                 self.wids['eventbox_chart'].add(chart)
-            datachart.sort(lambda fila1, fila2: (fila1[0] < fila2[0] and -1) 
-                                                 or (fila1[0] > fila2[0] and 1)
-                                                 or 0)
+            datachart.sort(lambda fila1, fila2: (fila1[1] < fila2[1] and -1) 
+                                                 or (fila1[1] > fila2[1] and 1)
+                                                 or 0, 
+                           reverse = True)
             chart.plot(datachart)
             self.wids['eventbox_chart'].show_all()
         except Exception, msg:
@@ -342,23 +342,23 @@ class ConsultaOfertasPendientesValidar(Ventana):
             titulo += " desde %s" % utils.str_fecha(self.inicio)
         if self.fin:
             titulo += " hasta %s" % utils.str_fecha(self.fin)
-        import tempfile 
-        ruta_grafico = tempfile.NamedTemporaryFile(suffix = ".png").name
-        win = self.wids['eventbox_chart'].window
-        ancho, alto = win.get_size()
-        pb = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8, ancho, alto)
-        captura = pb.get_from_drawable(win, win.get_colormap(), 0, 0, 0, 0, 
-                                       ancho, alto)
+        #import tempfile 
+        #ruta_grafico = tempfile.NamedTemporaryFile(suffix = ".png").name
+        #win = self.wids['eventbox_chart'].window
+        #ancho, alto = win.get_size()
+        #pb = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8, ancho, alto)
+        #captura = pb.get_from_drawable(win, win.get_colormap(), 0, 0, 0, 0, 
+        #                               ancho, alto)
         # Por algún motivo, que tendrá que ver con los dpi, ppp o cualquiera 
         # sabe qué complejo cálculo gráfico, la imagen sale muy grande en el 
         # PDF. La reduzco cutremente:
-        escalado = captura.scale_simple(int(ancho * 0.75), int(alto * 0.75), 
-                                        gtk.gdk.INTERP_TILES)
-        escalado.save(ruta_grafico, "png")
+        #escalado = captura.scale_simple(int(ancho * 0.75), int(alto * 0.75), 
+        #                                gtk.gdk.INTERP_TILES)
+        #escalado.save(ruta_grafico, "png")
         reports.abrir_pdf(treeview2pdf(tv, 
                                        titulo = titulo, 
                                        numcols_a_totalizar = totales, 
-                                       graficos = [ruta_grafico], 
+                                       #graficos = [ruta_grafico], 
                                        extra_data = extra_data))
 
 
