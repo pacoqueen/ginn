@@ -384,7 +384,11 @@ class ConsultaOfertasEstudio(Ventana):
         datachart = []  # Cada fila: Descripción, cantidad, color (7 = gris
                         #                                          0 = amarillo
                         #                                          3 = verde)
-        datachart = [["Ofertas", len(self.por_oferta), 0]] 
+        datachart = [["De estudio", len(self.por_oferta), 1], 
+                     #["De pedido", self.de_pedido, 3], 
+                     #["Indeterminado", self.indeterminadas, 7], 
+                     #["Total", self.total, 0]
+                    ] 
         try:
             oldchart = self.wids['eventbox_chart'].get_child()
             if oldchart != None:
@@ -469,7 +473,7 @@ class ConsultaOfertasEstudio(Ventana):
         # Filtro y me quedo con el TOP5:
         datachart.sort(lambda c1, c2: int(c2[1] - c1[1]))
         _datachart = datachart[:5]
-        _datachart.append(("Resto", sum([c[1] for c in datachart[5:]])))
+        _datachart.append(("Resto", sum([c[1] for c in datachart[5:]]), 7))
         datachart = _datachart
         try:
             oldchart = self.wids['eventbox_chart'].get_child()
@@ -559,7 +563,7 @@ class ConsultaOfertasEstudio(Ventana):
         # Filtro y me quedo con el TOP5:
         datachart.sort(lambda c1, c2: int(c2[1] - c1[1]))
         _datachart = datachart[:5]
-        _datachart.append(("Resto", sum([c[1] for c in datachart[5:]])))
+        _datachart.append(("Resto", sum([c[1] for c in datachart[5:]]), 7))
         datachart = _datachart
         try:
             oldchart = self.wids['eventbox_chart'].get_child()
@@ -634,7 +638,7 @@ class ConsultaOfertasEstudio(Ventana):
         model = self.wids['tv_comercial'].get_model()
         try:
             maximo_comercial = max([utils._float(f[3]) for f in model 
-                                    if f[0]!="Sin comercial relacionado"])
+                                    if f[0] != "Sin comercial relacionado"])
         except ValueError:  # empty sequence
             maximo_comercial = 0
         for fila in model:
@@ -741,7 +745,7 @@ class ConsultaOfertasEstudio(Ventana):
         # Filtro y me quedo con el TOP5:
         datachart.sort(lambda c1, c2: int(c2[1] - c1[1]))
         _datachart = datachart[:5]
-        _datachart.append(("Resto", sum([c[1] for c in datachart[5:]])))
+        _datachart.append(("Resto", sum([c[1] for c in datachart[5:]]), 7))
         datachart = _datachart
         try:
             oldchart = self.wids['eventbox_chart'].get_child()
@@ -801,7 +805,7 @@ class ConsultaOfertasEstudio(Ventana):
         if self.wids['notebook1'].get_current_page() == 0:
             tv = self.wids['tv_datos']
             titulo = "Ofertas"
-            totales = [12]
+            totales = [9]
             extra_data = [["", "", "===", "===", "===", 
                            "===", "===", "===", "===", ""], 
                           ["", "", 
@@ -812,7 +816,6 @@ class ConsultaOfertasEstudio(Ventana):
                            self.wids['e_total_ofertas'].get_text()
                           ]
                          ]
-            extra_data = []
         elif self.wids['notebook1'].get_current_page() == 1:
             tv = self.wids['tv_cliente']
             titulo = "Ofertas por cliente"
@@ -826,7 +829,7 @@ class ConsultaOfertasEstudio(Ventana):
         elif self.wids['notebook1'].get_current_page() == 2:
             tv = self.wids['tv_producto']
             titulo = "Ofertas por producto"
-            totales = [1, 2]
+            totales = [1]
             extra_data = [["", "===", "==="], 
                           ["", 
                            "Total ofertado:", 
