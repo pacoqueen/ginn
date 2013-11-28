@@ -54,7 +54,9 @@ class ConsultaOfertasEstudio(Ventana):
         el que se muestra por defecto).
         """
         self.usuario = usuario
-        Ventana.__init__(self, 'consulta_ofertas.glade', objeto, self.usuario)
+        Ventana.__init__(self, 'consulta_ofertas_estudio.glade', 
+                         objeto, self.usuario)
+        # Son ofertas de estudio. Quito todo lo de pedidos.
         connections = {'b_salir/clicked': self.salir,
                        'b_buscar/clicked': self.buscar,
                        'b_imprimir/clicked': self.imprimir,
@@ -72,9 +74,6 @@ class ConsultaOfertasEstudio(Ventana):
                 ('€/kg',  'gobject.TYPE_STRING', False, True, False, None),
                 ('Obra',      'gobject.TYPE_STRING', False, True, False, None),
                 ('Comercial', 'gobject.TYPE_STRING', False, True, False, None),
-                ('Adjudicada','gobject.TYPE_BOOLEAN', False, True, False, None),
-                ('Estado', 'gobject.TYPE_STRING', False, True, False, None),#10
-                ('Pedido',    'gobject.TYPE_STRING', False, True, False, None),
                 ('Importe (s/IVA)',   
                               'gobject.TYPE_STRING', False, True, False, None),
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
@@ -84,18 +83,14 @@ class ConsultaOfertasEstudio(Ventana):
         tv.get_column(4).get_cell_renderers()[0].set_property('xalign', 1) 
         tv.get_column(5).get_cell_renderers()[0].set_property('xalign', 1) 
         tv.get_column(6).get_cell_renderers()[0].set_property('xalign', 1) 
-        tv.get_column(12).get_cell_renderers()[0].set_property('xalign', 1) 
         self.colorear(tv)
         cols = (('Producto', 'gobject.TYPE_STRING', False, True, True, None),
                 ('Cantidad Ofertada', 
                              'gobject.TYPE_STRING', False, True, False, None),
-                ('Cantidad pedida',   
-                             'gobject.TYPE_STRING', False, True, False, None), 
                 ('PUID',     'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_treeview(self.wids['tv_producto'], cols)
         getcoltvpro = self.wids['tv_producto'].get_column
         getcoltvpro(1).get_cell_renderers()[0].set_property('xalign', 1) 
-        getcoltvpro(2).get_cell_renderers()[0].set_property('xalign', 1) 
         self.wids['tv_producto'].connect("row-activated", self.abrir_objeto)
         cols = (('Cliente', 'gobject.TYPE_STRING', False, True, True, None),
                 ('CIF',     'gobject.TYPE_STRING', False, True, False, None),
@@ -168,7 +163,7 @@ class ConsultaOfertasEstudio(Ventana):
         tv = self.wids['tv_provincia']
         tv.get_column(4).get_cell_renderers()[0].set_property('xalign', 1) 
         tv.connect("row-activated", self.abrir_objeto)
-        self.wids['ventana'].set_title("Consulta de ofertas de pedido")
+        self.wids['ventana'].set_title("Consulta de ofertas de estudio")
         self.por_oferta = {} # defaultdict(lambda: [])
         self.por_producto = defaultdict(lambda: [])
         self.por_cliente = defaultdict(lambda: [])
@@ -185,10 +180,9 @@ class ConsultaOfertasEstudio(Ventana):
             else:
                 if presupuesto.rechazado: 
                     color = "Indian Red"
-                #elif presupuesto.get_pedidos(): # FIXME: Esto es muy lento.
-                elif model[itr][11]: # Esta es la columna de los pedidos.
-                    color = "light green"
                 elif presupuesto.validado:
+                    # En ofertas de estudio, básicamente es si el cliente 
+                    # está dado de alta o no.
                     color = "light yellow"
                 else:
                     color = None
@@ -224,9 +218,6 @@ class ConsultaOfertasEstudio(Ventana):
         elif isinstance(objeto, pclases.ProductoCompra):
             from formularios.productos_compra \
                     import ProductosCompra as NuevaVentana
-        elif isinstance(objeto, pclases.PedidoVenta):
-            from formularios.pedidos_de_venta \
-                    import PedidosDeVenta as NuevaVentana
         elif isinstance(objeto, pclases.LineaDePresupuesto):
             objeto = objeto.presupuesto
             from formularios.presupuestos import Presupuestos as NuevaVentana
@@ -254,7 +245,7 @@ class ConsultaOfertasEstudio(Ventana):
     def buscar(self, boton):
         """
         Dadas fecha de inicio y de fin, busca todas las ofertas 
-        (de pedido) entre esas dos fechas.
+        (de estudio) entre esas dos fechas.
         """
         self.por_oferta = {} # defaultdict(lambda: [])
         self.por_producto = defaultdict(lambda: [])
@@ -262,14 +253,14 @@ class ConsultaOfertasEstudio(Ventana):
         self.por_comercial = defaultdict(lambda: [])
         self.por_provincia = defaultdict(lambda: [])
         total_ofertas = 0.0
-        total_pedidos = 0.0
+        total_ofertas_siva = 0.0
         ratio = None
         from ventana_progreso import VentanaProgreso
         vpro = VentanaProgreso(padre = self.wids['ventana'])
         vpro.mostrar()
         if pclases.DEBUG:
             print "self.inicio", self.inicio, "self.fin", self.fin
-        vpro.set_valor(0.0, "Buscando ofertas de pedido...")
+        vpro.set_valor(0.0, "Buscando ofertas de estudio...")
         criterios = [pclases.Presupuesto.q.estudio == True]
         idcliente = utils.combo_get_value(self.wids['cbe_cliente'])
         if idcliente != -1:
@@ -291,11 +282,10 @@ class ConsultaOfertasEstudio(Ventana):
                                                       orderBy = "id")
         tot = presupuestos.count()
         i = 0.0
-        convertidos = 0
         for p in presupuestos:
-            vpro.set_valor(i/tot, "Clasificando ofertas de pedido...")
+            vpro.set_valor(i/tot, "Clasificando ofertas de estudio...")
             if p in self.por_oferta and pclases.DEBUG:
-                txt = "consulta_ofertas.py::buscar -> "\
+                txt = "consulta_ofertas_estudio.py::buscar -> "\
                       "El presupuesto %s aparece dos veces en la consulta." % (
                               p.puid)
                 try:
@@ -311,16 +301,9 @@ class ConsultaOfertasEstudio(Ventana):
             self.por_provincia[p.provincia.upper()].append(p)
             importe_total = p.calcular_importe_total()
             total_ofertas += importe_total
-            if p.get_pedidos(): # Se asume que se convierte siempre la oferta 
-                                # completa, por tanto cuento el importe total 
-                                # del presupuesto en lugar operar con el pedido
-                total_pedidos += importe_total
-                convertidos += 1
+            importe_total_siva = p.calcular_importe_total(iva = False)
+            total_ofertas_siva += importe_total_siva
             i += 1
-        try:
-            ratio = 100.0 * convertidos / tot
-        except ZeroDivisionError:
-            ratio = None
         self.rellenar_tabla_por_oferta(vpro)
         self.rellenar_tabla_por_producto(vpro)
         self.rellenar_tabla_por_cliente(vpro)
@@ -329,10 +312,9 @@ class ConsultaOfertasEstudio(Ventana):
         vpro.ocultar()
         self.wids['e_total_ofertas'].set_text("%s €" % (
             utils.float2str(total_ofertas)))
-        self.wids['e_total_pedidos'].set_text("%s €" % (
-            utils.float2str(total_pedidos)))
-        self.wids['e_ratio'].set_text("%s %%" % (ratio != None 
-            and utils.float2str(ratio, precision = 2) or "-"))
+        self.wids['e_total_ofertas_siva'].set_text("%s €" % (
+            utils.float2str(total_ofertas_siva)))
+        self.wids['e_numero_ofertas'].set_text("%d" % (tot)) # assert i == tot
 
     def rellenar_tabla_por_oferta(self, vpro):
         """
@@ -346,16 +328,11 @@ class ConsultaOfertasEstudio(Ventana):
             vpro.set_valor(i/tot, "Mostrando listado de ofertas...")
         except ZeroDivisionError:
             return  # No hay ofertas que mostrar.
-        self.pedidos_generados = []
         presupuestos = self.por_oferta.keys()
         presupuestos.sort(key = lambda p: p.id, reverse = True)
         for p in presupuestos:
             vpro.set_valor(i/tot, "Mostrando listado de ofertas... (%d)" % p.id)
             presupuesto = self.por_oferta[p]  # Él mismo en la práctica.
-            pedidos = presupuesto.get_pedidos()
-            self.pedidos_generados += [ped for ped in pedidos 
-                                       if ped not in self.pedidos_generados]
-            cadena_pedidos=", ".join([pedido.numpedido for pedido in pedidos])
             nombreobra = (presupuesto.obra and presupuesto.obra.nombre 
                           or presupuesto.nombreobra)
             #if len(nombreobra) > 33:
@@ -395,11 +372,6 @@ class ConsultaOfertasEstudio(Ventana):
                         precio_kilo, 
                         nombreobra, 
                         nombre_comercial, 
-                        presupuesto.adjudicada, 
-                        estado, 
-                        # presupuesto.personaContacto, # CWT: Ya no
-                        cadena_pedidos, 
-                        #utils.float2str(presupuesto.calcular_importe_total()),
                         utils.float2str(ldp.get_subtotal()), 
                         presupuesto.puid)
                 model.append(fila)
@@ -412,8 +384,7 @@ class ConsultaOfertasEstudio(Ventana):
         datachart = []  # Cada fila: Descripción, cantidad, color (7 = gris
                         #                                          0 = amarillo
                         #                                          3 = verde)
-        datachart = [["Ofertas", len(self.por_oferta), 0], 
-                     ["Pedidos", len(self.pedidos_generados), 3]]
+        datachart = [["Ofertas", len(self.por_oferta), 0]] 
         try:
             oldchart = self.wids['eventbox_chart'].get_child()
             if oldchart != None:
@@ -429,7 +400,7 @@ class ConsultaOfertasEstudio(Ventana):
             chart.plot(datachart)
             self.wids['eventbox_chart'].show_all()
         except Exception, msg:
-            txt = "consulta_ofertas.py::graficar_por_oferta -> "\
+            txt = "consulta_ofertas_estudio.py::graficar_por_oferta -> "\
                   "Error al dibujar gráfica (charting): %s" % msg
             print txt
             self.logger.error(txt)
@@ -462,26 +433,15 @@ class ConsultaOfertasEstudio(Ventana):
                         nombre_producto = producto or ""
                         puid = None
                     padre = padres[producto] = model.append(None, 
-                            (nombre_producto, "0.0", "0.0", puid))
+                            (nombre_producto, "0.0", puid))
                 ofertado = ldp.cantidad
-                try:
-                    # FIXME: Si dos ofertas se han pasado al mismo pedido 
-                    # entonces a dos líneas de presupuesto le corresponde la 
-                    # misma línea de pedido. Por tanto la cantidad pedida se 
-                    # duplicará. ¿Es así?
-                    pedido=ldp.presupuesto.get_pedido_por_producto()[producto]
-                except KeyError:
-                    pedido = 0.0
                 fila = ("Presupuesto %d" % ldp.presupuesto.id, 
                         utils.float2str(ofertado), 
-                        utils.float2str(pedido), 
                         ldp.puid)
                 model.append(padre, fila)
                 # Actualizo totales fila padre.
                 model[padre][1] = utils.float2str(
                         utils._float(model[padre][1]) + ofertado)
-                model[padre][2] = utils.float2str(
-                        utils._float(model[padre][2]) + pedido)
                 i += 1
         # Y ahora la gráfica.
         if self.wids['notebook1'].get_current_page() == 1:
@@ -523,7 +483,7 @@ class ConsultaOfertasEstudio(Ventana):
             chart.plot(datachart)
             self.wids['eventbox_chart'].show_all()
         except Exception, msg:
-            txt = "consulta_ofertas.py::graficar_por_producto -> "\
+            txt = "consulta_ofertas_estudio.py::graficar_por_producto -> "\
                   "Error al dibujar gráfica (charting): %s" % msg
             print txt
             self.logger.error(txt)
@@ -613,7 +573,7 @@ class ConsultaOfertasEstudio(Ventana):
             chart.plot(datachart)
             self.wids['eventbox_chart'].show_all()
         except Exception, msg:
-            txt = "consulta_ofertas.py::graficar_por_cliente -> "\
+            txt = "consulta_ofertas_estudio.py::graficar_por_cliente -> "\
                   "Error al dibujar gráfica (charting): %s" % msg
             print txt
             self.logger.error(txt)
@@ -701,7 +661,7 @@ class ConsultaOfertasEstudio(Ventana):
             chart.plot(datachart)
             self.wids['eventbox_chart'].show_all()
         except Exception, msg:
-            txt = "consulta_ofertas.py::graficar_por_comercial -> "\
+            txt = "consulta_ofertas_estudio.py::graficar_por_comercial -> "\
                   "Error al dibujar gráfica (charting): %s" % msg
             print txt
             self.logger.error(txt)
@@ -795,7 +755,7 @@ class ConsultaOfertasEstudio(Ventana):
             chart.plot(datachart)
             self.wids['eventbox_chart'].show_all()
         except Exception, msg:
-            txt = "consulta_ofertas.py::graficar_por_provincia -> "\
+            txt = "consulta_ofertas_estudio.py::graficar_por_provincia -> "\
                   "Error al dibujar gráfica (charting): %s" % msg
             print txt
             self.logger.error(txt)
@@ -845,15 +805,14 @@ class ConsultaOfertasEstudio(Ventana):
             extra_data = [["", "", "===", "===", "===", 
                            "===", "===", "===", "===", ""], 
                           ["", "", 
-                           "Ratio de conversión:", 
-                           self.wids['e_ratio'].get_text(), 
+                           "", 
+                           "", 
                            "Total ofertado:", 
                            "", 
-                           self.wids['e_total_ofertas'].get_text(), 
-                           "Total pedido:", 
-                           self.wids['e_total_pedidos'].get_text(), 
-                           ""]
+                           self.wids['e_total_ofertas'].get_text()
+                          ]
                          ]
+            extra_data = []
         elif self.wids['notebook1'].get_current_page() == 1:
             tv = self.wids['tv_cliente']
             titulo = "Ofertas por cliente"
@@ -863,13 +822,6 @@ class ConsultaOfertasEstudio(Ventana):
                            "Total ofertado:", 
                            self.wids['e_total_ofertas'].get_text(),
                            ""], 
-                          ["", 
-                           "Total pedido:", 
-                           self.wids['e_total_pedidos'].get_text(), 
-                           ""], 
-                          ["", 
-                           "Ratio de conversión:", 
-                           self.wids['e_ratio'].get_text(), ""]
                          ]
         elif self.wids['notebook1'].get_current_page() == 2:
             tv = self.wids['tv_producto']
@@ -879,12 +831,6 @@ class ConsultaOfertasEstudio(Ventana):
                           ["", 
                            "Total ofertado:", 
                            self.wids['e_total_ofertas'].get_text()], 
-                          ["", 
-                           "Total pedido:", 
-                           self.wids['e_total_pedidos'].get_text()], 
-                          ["", 
-                           "Ratio de conversión:", 
-                           self.wids['e_ratio'].get_text()]
                          ]
         elif self.wids['notebook1'].get_current_page() == 3:
             tv = self.wids['tv_comercial']
@@ -893,10 +839,6 @@ class ConsultaOfertasEstudio(Ventana):
             extra_data = [["===", "===", "", ""], 
                           ["Total ofertado:", 
                            self.wids['e_total_ofertas'].get_text(), "", ""], 
-                          ["Total pedido:", 
-                           self.wids['e_total_pedidos'].get_text(), "", ""], 
-                          ["Ratio de conversión:", 
-                           self.wids['e_ratio'].get_text(), "", ""]
                          ]
         elif self.wids['notebook1'].get_current_page() == 4:
             tv = self.wids['tv_provincia']
@@ -906,12 +848,6 @@ class ConsultaOfertasEstudio(Ventana):
                           ["Total ofertado:", 
                            self.wids['e_total_ofertas'].get_text(), 
                            "", "", ""], 
-                          ["Total pedido:", 
-                           self.wids['e_total_pedidos'].get_text(), 
-                           "", "", ""], 
-                          ["Ratio de conversión:", 
-                           self.wids['e_ratio'].get_text(), 
-                           "", "", ""]
                          ]
         else:
             return

@@ -10351,7 +10351,7 @@ class Presupuesto(SQLObject, PRPCTOO):
         if iva:
             tot_iva = self.calcular_total_iva(subtotal)
         else:
-            iva = 0.0
+            tot_iva = 0.0
         irpf = self.calcular_total_irpf(subtotal)
         total = subtotal + tot_iva + irpf
         return total
