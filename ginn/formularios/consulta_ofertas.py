@@ -63,7 +63,7 @@ class ConsultaOfertas(Ventana):
                        'b_exportar/clicked': self.exportar, 
                        'notebook1/switch-page': self.cambiar_grafica}
         self.add_connections(connections)
-        cols = (('Número',   'gobject.TYPE_STRING', False, True, True, None),#0
+        cols = (('N.º',      'gobject.TYPE_STRING', False, True, True, None),#0
                 ('Fecha',     'gobject.TYPE_STRING', False, True, False, None),
                 ('Cliente',   'gobject.TYPE_STRING', False, True, False, None),
                 ('Producto',  'gobject.TYPE_STRING', False, True, False, None),
@@ -75,7 +75,9 @@ class ConsultaOfertas(Ventana):
                 #('Tipo',      'gobject.TYPE_STRING', False, True, False, None),
                 # CWT: Solo ofertas de pedido. Nada de estudio.
                 ('Adjudicada','gobject.TYPE_BOOLEAN', False, True, False, None),
-                ('Estado', 'gobject.TYPE_STRING', False, True, False, None),#10
+                #('Estado', 'gobject.TYPE_STRING', False, True, False, None),#10
+                ('Forma de pago', 
+                           'gobject.TYPE_STRING', False, True, False, None),#10
                 #('Contacto',  'gobject.TYPE_STRING', False, True, False, None),
                 ('Pedido',    'gobject.TYPE_STRING', False, True, False, None),
                 ('Importe (s/IVA)',   
@@ -368,9 +370,10 @@ class ConsultaOfertas(Ventana):
             nombre_comercial = (presupuesto.comercial 
                             and presupuesto.comercial.get_nombre_completo()
                             or "Sin comercial relacionado")
-            estado = presupuesto.get_str_estado().replace("\n", " ")
-            if presupuesto.validado:
-                estado += " (%s)" % presupuesto.get_str_validacion()
+            #estado = presupuesto.get_str_estado().replace("\n", " ")
+            #if presupuesto.validado:
+            #    estado += " (%s)" % presupuesto.get_str_validacion()
+            str_forma_de_pago = ""  # PORASQUI
             total_presupuesto = presupuesto.calcular_importe_total()
             for ldp in presupuesto.lineasDePresupuesto:
                 if ldp.productoVenta:
@@ -387,8 +390,9 @@ class ConsultaOfertas(Ventana):
                 cantidad = utils.float2str(ldp.cantidad) 
                     #+ unidad Me jode poder operar si exporto a hoja de cálculo
                 precio_unitario = utils.float2str(ldp.precio)
-                fila = ("%d (%s € IVA incl.)" % (presupuesto.id, 
-                            utils.float2str(total_presupuesto)), 
+                fila = (#"%d (%s € IVA incl.)" % (presupuesto.id, 
+                        #    utils.float2str(total_presupuesto)), 
+                        `presupuesto.id`,     # CWT
                         utils.str_fecha(presupuesto.fecha), 
                         presupuesto.cliente and presupuesto.cliente.nombre 
                             or presupuesto.nombrecliente, 
@@ -399,7 +403,8 @@ class ConsultaOfertas(Ventana):
                         nombreobra, 
                         nombre_comercial, 
                         presupuesto.adjudicada, 
-                        estado, 
+                        #estado, 
+                        str_forma_de_pago, 
                         # presupuesto.personaContacto, # CWT: Ya no
                         cadena_pedidos, 
                         #utils.float2str(presupuesto.calcular_importe_total()),
@@ -504,7 +509,7 @@ class ConsultaOfertas(Ventana):
                                                pclases.Servicio)):
                     # Productos que no están dados de alta, no 
                     # tengo el puid de producto o es servicio.
-                color = 7
+                color = 1   # En naranja los servicios.
             else:
                 color = 3
             nombre_corto = fila[0].replace("GEOTESAN", "")  # OJO: HARCODED
@@ -512,7 +517,7 @@ class ConsultaOfertas(Ventana):
         # Filtro y me quedo con el TOP5:
         datachart.sort(lambda c1, c2: int(c2[1] - c1[1]))
         _datachart = datachart[:5]
-        _datachart.append(("Resto", sum([c[1] for c in datachart[5:]])))
+        _datachart.append(("Resto", sum([c[1] for c in datachart[5:]]), 7))
         datachart = _datachart
         try:
             oldchart = self.wids['eventbox_chart'].get_child()
@@ -602,7 +607,7 @@ class ConsultaOfertas(Ventana):
         # Filtro y me quedo con el TOP5:
         datachart.sort(lambda c1, c2: int(c2[1] - c1[1]))
         _datachart = datachart[:5]
-        _datachart.append(("Resto", sum([c[1] for c in datachart[5:]])))
+        _datachart.append(("Resto", sum([c[1] for c in datachart[5:]]), 7))
         datachart = _datachart
         try:
             oldchart = self.wids['eventbox_chart'].get_child()
@@ -784,7 +789,7 @@ class ConsultaOfertas(Ventana):
         # Filtro y me quedo con el TOP5:
         datachart.sort(lambda c1, c2: int(c2[1] - c1[1]))
         _datachart = datachart[:5]
-        _datachart.append(("Resto", sum([c[1] for c in datachart[5:]])))
+        _datachart.append(("Resto", sum([c[1] for c in datachart[5:]]), 7))
         datachart = _datachart
         try:
             oldchart = self.wids['eventbox_chart'].get_child()

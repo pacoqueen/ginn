@@ -385,9 +385,11 @@ class ConsultaOfertasEstudio(Ventana):
                         #                                          0 = amarillo
                         #                                          3 = verde)
         datachart = [["De estudio", len(self.por_oferta), 1], 
-                     #["De pedido", self.de_pedido, 3], 
-                     #["Indeterminado", self.indeterminadas, 7], 
-                     #["Total", self.total, 0]
+                # PLAN: Se podría contar el resto de tipo de ofertas, por 
+                # comparar y eso. Pero no sé si será útil en realidad.
+                     #["De pedido", len(self.de_pedido), 3], 
+                     #["Indeterminado", len(self.indeterminadas), 7], 
+                     #["Total", len(self.total), 0]
                     ] 
         try:
             oldchart = self.wids['eventbox_chart'].get_child()
