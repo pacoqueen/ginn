@@ -373,7 +373,10 @@ class ConsultaOfertas(Ventana):
             #estado = presupuesto.get_str_estado().replace("\n", " ")
             #if presupuesto.validado:
             #    estado += " (%s)" % presupuesto.get_str_validacion()
-            str_forma_de_pago = ""  # PORASQUI
+            try:
+                str_forma_de_pago = presupuesto.formaDePago.toString()
+            except AttributeError: 
+                str_forma_de_pago = ""
             total_presupuesto = presupuesto.calcular_importe_total()
             for ldp in presupuesto.lineasDePresupuesto:
                 if ldp.productoVenta:
