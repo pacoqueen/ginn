@@ -17024,9 +17024,13 @@ class Empleado(SQLObject, PRPCTOO):
             cats = [c for c in CategoriaLaboral.selectBy(codigo = codigo)
                     if c.fecha]
             cats.sort(key = lambda c: c.fecha)
-            res = CategoriaLaboral.select(AND(
-                CategoriaLaboral.q.codigo == codigo, 
-                CategoriaLaboral.q.fecha == None))[0] # Por defecto
+            try:
+                res = CategoriaLaboral.select(AND(
+                    CategoriaLaboral.q.codigo == codigo, 
+                    CategoriaLaboral.q.fecha == None))[0] # Por defecto
+            except IndexError:
+                res = self.categoriaLaboral     # Uso la que tenga el empleado
+                                        # como categoría laboral por defecto.
             for c in cats:
                 if c.fecha and c.fecha > fecha:
                     break
