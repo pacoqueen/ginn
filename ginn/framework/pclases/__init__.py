@@ -9843,7 +9843,7 @@ class PedidoVenta(SQLObject, PRPCTOO):
                           manual del usuario.
             VALIDABLE: Cumple todos los requisitos de validación automática.
             PLAZO_EXCESIVO: La forma de pago seleccionada en el pedido supera 
-                            los 120 días.
+                            los 120 días. [02/12/2013] Se cambia a 60.
             SIN_FORMA_DE_PAGO: El pedido no tiene forma de pago definida.
             PRECIO_INSUFICIENTE: Algún precio por kilo en las líneas del 
                                  pedido está por encima del mínimo configurado 
@@ -9862,7 +9862,8 @@ class PedidoVenta(SQLObject, PRPCTOO):
             fdp = self.formaDePago
             if not fdp:
                 validable = SIN_FORMA_DE_PAGO
-            elif fdp.plazo > 120:
+            # elif fdp.plazo > 120:
+            elif fdp.plazo > 60:
                 validable = PLAZO_EXCESIVO
         if validable:
             importe_pedido = self.calcular_importe_total(iva = True)
@@ -10496,7 +10497,7 @@ class Presupuesto(SQLObject, PRPCTOO):
             VALIDABLE: Cumple todos los requisitos de validación automática.
             NO_VALIDABLE: El cliente todavía no tiene ficha.
             PLAZO_EXCESIVO: La forma de pago seleccionada en el pedido supera 
-                            los 120 días.
+                            los 120 días. [02/12/2013] Se cambia a 60.
             SIN_FORMA_DE_PAGO: El pedido no tiene forma de pago definida.
             PRECIO_INSUFICIENTE: Algún precio por kilo en las líneas del 
                                  pedido está por encima del mínimo configurado 
@@ -10519,7 +10520,8 @@ class Presupuesto(SQLObject, PRPCTOO):
             fdp = self.formaDePago
             if not fdp:
                 validable = SIN_FORMA_DE_PAGO
-            elif fdp.plazo > 120:
+            # elif fdp.plazo > 120:
+            elif fdp.plazo > 60:
                 validable = PLAZO_EXCESIVO
         if validable == VALIDABLE:
             if not self.cif.strip():
