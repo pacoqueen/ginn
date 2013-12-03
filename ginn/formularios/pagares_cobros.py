@@ -1014,26 +1014,32 @@ class PagaresCobros(Ventana):
                              padre = self.wids['ventana']):
             return
         model, path = self.wids['tv_cobros'].get_selection().get_selected()
-        idc = model[path][-1]
-        cobro = pclases.Cobro.get(idc)
-        antes = sum([c.importe for c in pagare.cobros])
-        if antes == pagare.cantidad:
-            actualizar_cantidad = True  # Como el importe es la suma de los 
-                                        # cobros, el nuevo que añado ahora 
-                                        # tiene que actualizar la cantidad.
-                                        # Si no fuera así (el importe es 
-                                        # distinto a la suma de los cobros) 
-                                        # es que se ha introducido a mano
-                                        # y por tanto debo respetarlo.
+        if not path:
+            utils.dialogo_info(titulo = "SELECCIÓN VACÍA", 
+                texto = "Seleccione al menos una fila para eliminarla"
+                        " del pagaré actual.", 
+                padre = self.wids['ventana'])
         else:
-            actualizar_cantidad = False
-        cobro.destroy(usuario = self.usuario, ventana = __file__)
-        if actualizar_cantidad:
-            pagare.cantidad = sum([c.importe for c in pagare.cobros])
-            if pagare.cobrado > pagare.cantidad:
-                pagare.cobrado = pagare.cantidad
-        self.actualizar_ventana()
-        
+            idc = model[path][-1]
+            cobro = pclases.Cobro.get(idc)
+            antes = sum([c.importe for c in pagare.cobros])
+            if antes == pagare.cantidad:
+                actualizar_cantidad = True  # Como el importe es la suma de los 
+                                            # cobros, el nuevo que añado ahora 
+                                            # tiene que actualizar la cantidad.
+                                            # Si no fuera así (el importe es 
+                                            # distinto a la suma de los cobros) 
+                                            # es que se ha introducido a mano
+                                            # y por tanto debo respetarlo.
+            else:
+                actualizar_cantidad = False
+            cobro.destroy(usuario = self.usuario, ventana = __file__)
+            if actualizar_cantidad:
+                pagare.cantidad = sum([c.importe for c in pagare.cobros])
+                if pagare.cobrado > pagare.cantidad:
+                    pagare.cobrado = pagare.cantidad
+            self.actualizar_ventana()
+            
     def cambiar_fechac(self, b):
         self.wids['e_fechac'].set_text(utils.str_fecha(
             utils.mostrar_calendario(padre = self.wids['ventana'])))
