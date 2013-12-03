@@ -1068,24 +1068,30 @@ class Confirmings(Ventana):
                              texto = txt):
             return
         model, path = self.wids['tv_cobros'].get_selection().get_selected()
-        idc = model[path][-1]
-        cobro = pclases.Cobro.get(idc)
-        antes = sum([c.importe for c in confirming.cobros])
-        if antes == confirming.cantidad:
-            actualizar_cantidad = True  # Como el importe es la suma de los 
-                    # cobros, el nuevo que añado ahora tiene que actualizar 
-                    # la cantidad. Si no fuera así (el importe es distinto a 
-                    # la suma de los cobros) es que se ha introducido a mano
-                    # y por tanto debo respetarlo.
+        if not path:
+            utils.dialogo_info(titulo = "SELECCIONE UN COBRO", 
+                    texto = "Debe seleccionar la fila a eliminar.", 
+                    padre = self.wids['ventana'])
         else:
-            actualizar_cantidad = False
-        cobro.destroy(usuario = self.usuario, ventana = __file__)
-        if actualizar_cantidad:
-            confirming.cantidad = sum([c.importe for c in confirming.cobros])
-            if confirming.cobrado > confirming.cantidad:
-                confirming.cobrado = confirming.cantidad
-        self.actualizar_ventana()
-        
+            idc = model[path][-1]
+            cobro = pclases.Cobro.get(idc)
+            antes = sum([c.importe for c in confirming.cobros])
+            if antes == confirming.cantidad:
+                actualizar_cantidad = True  # Como el importe es la suma de los 
+                        # cobros, el nuevo que añado ahora tiene que actualizar 
+                        # la cantidad. Si no fuera así (el importe es distinto a 
+                        # la suma de los cobros) es que se ha introducido a mano
+                        # y por tanto debo respetarlo.
+            else:
+                actualizar_cantidad = False
+            cobro.destroy(usuario = self.usuario, ventana = __file__)
+            if actualizar_cantidad:
+                confirming.cantidad = sum(
+                        [c.importe for c in confirming.cobros])
+                if confirming.cobrado > confirming.cantidad:
+                    confirming.cobrado = confirming.cantidad
+            self.actualizar_ventana()
+            
     def cambiar_fechac(self, b):
         self.wids['e_fechac'].set_text(utils.str_fecha(
             utils.mostrar_calendario(padre = self.wids['ventana'])))
