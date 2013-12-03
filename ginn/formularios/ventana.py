@@ -173,7 +173,7 @@ class Ventana:
                 self.wids['ventana'].set_icon(logo_xpm)
             self.wids['barra_estado'] = barrastado = gtk.Statusbar()
             try:
-                label_statusbar = barrastado.get_children()[0].child.children()[0]
+                label_statusbar = barrastado.get_children()[0].child.get_children()[0]
             except:
                 label_statusbar = barrastado.get_children()[0].child
             font = pango.FontDescription("Monospace oblique 7")
@@ -293,7 +293,7 @@ class Ventana:
 
     def add_debug_admin_controls(self, barrastado):
         from framework import pclases
-        hbox_barrastado = barrastado.children()[0].children()[0]
+        hbox_barrastado = barrastado.get_children()[0].get_children()[0]
         self.ch_pclasesdebug = gtk.CheckButton(label = "DEBUG")
         self.ch_pclasesverbose = gtk.CheckButton(label = "VERBOSE")
         hbox_barrastado.pack_start(self.ch_pclasesdebug, expand = False)
