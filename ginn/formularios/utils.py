@@ -1942,7 +1942,11 @@ def parse_fecha(txt):
             tmpdate = eval(txt)
         except:
             raise ValueError, "%s no se pudo interpretar como fecha." % txt
-        txt = tmpdate.strftime("%d/%m/%Y")
+        try:
+            txt = tmpdate.strftime("%d/%m/%Y")
+        except AttributeError:
+            txt = (mx.DateTime.today() 
+                    + mx.DateTime.TimeDelta(24 * tmpdate)).strftime("%d/%m/%Y")
     if "H" in txt:
         txt = txt.replace("H", mx.DateTime.today().strftime("%d/%m/%Y"))
     try:
