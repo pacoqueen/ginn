@@ -524,7 +524,14 @@ class AlbaranesDeSalida(Ventana):
                             tokenpale = tokenpale[:tokenpale.index("/")]
                         _rango.append(tokenpale)
                     rango = "-".join(_rango)
-                ini, fin = rango.split('-')
+                try:
+                    ini, fin = rango.split('-')
+                except ValueError:
+                    utils.dialogo_info(titulo = "RANGO INCORRECTO", 
+                        texto = "Asegúrese de que el texto introducido (%s) "
+                                "es correcto." % rango, 
+                        padre = self.wids['ventana'])
+                    continue
                 try:
                     ini = int(ini)
                     fin = int(fin)
