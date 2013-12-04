@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 02 diciembre 2013 at 17:15:31.
+" Created by session.vim 1.5 on 03 diciembre 2013 at 17:39:54.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -67,17 +67,17 @@ badd +2322 ginn/formularios/facturas_venta.py
 badd +419 ginn/framework/configuracion.py
 badd +4 bin/ginn.sh
 badd +10 ginn/main.py
-badd +908 ginn/formularios/ventana.py
+badd +296 ginn/formularios/ventana.py
 badd +1899 ginn/formularios/pedidos_de_venta.py
 badd +3876 db/tablas.sql
-badd +2103 ginn/formularios/albaranes_de_salida.py
+badd +532 ginn/formularios/albaranes_de_salida.py
 badd +227 ginn/formularios/presupuesto.py
 badd +1990 ginn/formularios/presupuestos.py
 badd +97 ginn/informes/carta_compromiso.py
 badd +367 ginn/formularios/tarifas_de_precios.py
 badd +88 ginn/formularios/logviewer.py
 badd +693 ginn/formularios/facturas_compra.py
-badd +15 ginn/formularios/utils.py
+badd +1950 ginn/formularios/utils.py
 badd +648 ginn/formularios/resultados_fibra.py
 badd +955 ginn/formularios/albaranes_de_entrada.py
 badd +751 ginn/formularios/consulta_ventas.py
@@ -86,7 +86,7 @@ badd +907 ginn/formularios/pagares_pagos.py
 badd +331 ginn/formularios/ausencias.py
 badd +67 ginn/formularios/partes_no_bloqueados.py
 badd +218 ginn/formularios/gtkexcepthook.py
-badd +351 ginn/framework/seeker.py
+badd +402 ginn/framework/seeker.py
 badd +13 ginn/formularios/crm_seguimiento_impagos.py
 badd +203 ginn/formularios/productos.py
 badd +1064 ginn/formularios/trazabilidad_articulos.py
@@ -112,7 +112,7 @@ badd +553 ginn/formularios/categorias_laborales.py
 badd +411 ginn/formularios/nominas.py
 badd +383 ginn/framework/pclases/cliente.py
 badd +1 ginn/formularios/consulta_cobros.py
-badd +628 ginn/formularios/pagares_cobros.py
+badd +1020 ginn/formularios/pagares_cobros.py
 badd +24 extra/patches/calcular_credito_disponible.sql
 badd +301 ginn/formularios/pclase2tv.py
 badd +94 ginn/formularios/consulta_control_horas.py
@@ -151,6 +151,7 @@ badd +66 ginn/lib/odfpy/contrib/odscell/odscell
 badd +127 ginn/lib/odfpy/contrib/odscell/odscell.py
 badd +133 ginn/formularios/consulta_ofertas_pendientes_validar.py
 badd +392 ginn/formularios/consulta_ofertas_estudio.py
+badd +1075 ginn/formularios/confirmings.py
 args formularios/auditviewer.py
 set lines=45 columns=103
 edit ginn/framework/pclases/__init__.py
@@ -182,15 +183,15 @@ set winheight=1 winwidth=1
 exe 'vert 1resize ' . ((&columns * 22 + 51) / 103)
 exe '2resize ' . ((&lines * 1 + 22) / 45)
 exe 'vert 2resize ' . ((&columns * 80 + 51) / 103)
-exe '3resize ' . ((&lines * 24 + 22) / 45)
+exe '3resize ' . ((&lines * 33 + 22) / 45)
 exe 'vert 3resize ' . ((&columns * 80 + 51) / 103)
 exe '4resize ' . ((&lines * 1 + 22) / 45)
 exe 'vert 4resize ' . ((&columns * 80 + 51) / 103)
 exe '5resize ' . ((&lines * 1 + 22) / 45)
 exe 'vert 5resize ' . ((&columns * 80 + 51) / 103)
-exe '6resize ' . ((&lines * 5 + 22) / 45)
+exe '6resize ' . ((&lines * 1 + 22) / 45)
 exe 'vert 6resize ' . ((&columns * 80 + 51) / 103)
-exe '7resize ' . ((&lines * 6 + 22) / 45)
+exe '7resize ' . ((&lines * 1 + 22) / 45)
 exe 'vert 7resize ' . ((&columns * 80 + 51) / 103)
 argglobal
 enew
@@ -402,12 +403,12 @@ normal! zo
 normal! zo
 944
 normal! zo
-let s:l = 386 - ((13 * winheight(0) + 12) / 24)
+let s:l = 387 - ((17 * winheight(0) + 16) / 33)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-386
-normal! 034|
+387
+normal! 029|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -508,7 +509,7 @@ normal! zo
 normal! zo
 503
 normal! zo
-let s:l = 521 - ((0 * winheight(0) + 2) / 5)
+let s:l = 521 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -537,26 +538,26 @@ normal! zo
 normal! zo
 112
 normal! zo
-let s:l = 68 - ((0 * winheight(0) + 3) / 6)
+let s:l = 68 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 68
 normal! 053|
 wincmd w
-2wincmd w
+3wincmd w
 exe 'vert 1resize ' . ((&columns * 22 + 51) / 103)
 exe '2resize ' . ((&lines * 1 + 22) / 45)
 exe 'vert 2resize ' . ((&columns * 80 + 51) / 103)
-exe '3resize ' . ((&lines * 24 + 22) / 45)
+exe '3resize ' . ((&lines * 33 + 22) / 45)
 exe 'vert 3resize ' . ((&columns * 80 + 51) / 103)
 exe '4resize ' . ((&lines * 1 + 22) / 45)
 exe 'vert 4resize ' . ((&columns * 80 + 51) / 103)
 exe '5resize ' . ((&lines * 1 + 22) / 45)
 exe 'vert 5resize ' . ((&columns * 80 + 51) / 103)
-exe '6resize ' . ((&lines * 5 + 22) / 45)
+exe '6resize ' . ((&lines * 1 + 22) / 45)
 exe 'vert 6resize ' . ((&columns * 80 + 51) / 103)
-exe '7resize ' . ((&lines * 6 + 22) / 45)
+exe '7resize ' . ((&lines * 1 + 22) / 45)
 exe 'vert 7resize ' . ((&columns * 80 + 51) / 103)
 tabnext 1
 if exists('s:wipebuf')
@@ -572,6 +573,6 @@ let &so = s:so_save | let &siso = s:siso_save
 doautoall SessionLoadPost
 unlet SessionLoad
 tabnext 1
-2wincmd w
+3wincmd w
 
 " vim: ft=vim ro nowrap smc=128

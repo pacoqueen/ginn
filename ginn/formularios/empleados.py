@@ -330,15 +330,27 @@ class Empleados(Ventana):
         Redimensiona «t» y crea dentro los widgets necesarios para
         mostrar y editar los campos de «objeto».
         """
+        if pclases.DEBUG:                                       # XXX
+            print "empleados.py::rellenar_widgets -> Ready..."  # XXX
+            import time                                         # XXX
+            antes = time.time()                                 # XXX
         # HACK: Es para evitar el campo precio hora extra, que ya no se usa. 
         # Nómina ahora es el sueldo base a sumar al cálculo de la nomina 
         # mensual.
         d = {}
+        if pclases.DEBUG:                                       # XXX
+            print "empleados.py::rellenar_widgets -> Steady...",# XXX
+            print time.time() - antes                           # XXX
+            antes = time.time()                                 # XXX
         for c in self.objeto.sqlmeta.columns:
             if c != 'preciohora':
                 d[c] = self.objeto.sqlmeta.columns[c]
         self.objeto.sqlmeta.columns = d
         # END OF HACK
+        if pclases.DEBUG:                                       # XXX
+            print "empleados.py::rellenar_widgets -> GO!      ",# XXX
+            print time.time() - antes                           # XXX
+            antes = time.time()                                 # XXX
         numcampos = len(self.objeto.sqlmeta.columns)
         if numcampos % 2 != 0:
             numwidgets = numcampos + 1
@@ -346,9 +358,17 @@ class Empleados(Ventana):
             numwidgets = numcampos
         for child in self.wids['t'].get_children():
             child.destroy()
+        if pclases.DEBUG:                                       # XXX
+            print "empleados.py::rellenar_widgets -> ",         # XXX
+            print time.time() - antes                           # XXX
+            antes = time.time()                                 # XXX
         self.wids['t'].resize(numwidgets / 2, 4)
         icol = 0
         irow = 0
+        if pclases.DEBUG:                                       # XXX
+            print "empleados.py::rellenar_widgets -> ",         # XXX
+            print time.time() - antes                           # XXX
+            antes = time.time()                                 # XXX
         for col in self.objeto.sqlmeta.columns:
             if not isinstance(self.objeto.sqlmeta.columns[col], 
                               pclases.SOBoolCol):
@@ -363,18 +383,26 @@ class Empleados(Ventana):
             if icol == 4:
                 icol = 0
                 irow += 1
+        if pclases.DEBUG:                                       # XXX
+            print "empleados.py::rellenar_widgets -> ",         # XXX
+            print time.time() - antes                           # XXX
+            antes = time.time()                                 # XXX
         self.wids['t'].show_all()
         self.objeto.make_swap()
         # Añadido: Si el empleado no tiene alta como trabajador, deshabilito 
         # el botón de permisos.
         self.wids['b_ausencias'].set_sensitive(self.objeto.activo)
-        self.wids['b_categoria'].set_sensitive(self.objeto.categoriaLaboral != None)
+        self.wids['b_categoria'].set_sensitive(
+                self.objeto.categoriaLaboral != None)
+        if pclases.DEBUG:                                       # XXX
+            print "empleados.py::rellenar_widgets -> WINTER!",  # XXX
+            print time.time() - antes                           # XXX
+            antes = time.time()                                 # XXX
 
     def build_label(self, nombrecampo):
         """
         Construye la etiqueta correspondiente a "nombrecampo".
         """
-        # XXX: Cambiar el diccionario según lo que se vaya a mostrar en pantalla.
         nombres = {'planta': 'Trabaja en planta',
                    'activo': 'Trabajador con alta en la empresa',
                    'categoriaLaboralID': 'Categoría laboral',
@@ -596,7 +624,8 @@ class Empleados(Ventana):
             empleado = resultados[0]
             # Y activo la función de notificación:
             self.objeto = empleado
-            self.actualizar_ventana(objetobak)
+            self.actualizar_ventana(objeto_anterior = objetobak, 
+                                    deep_refresh  =False)
             empleado.notificador.set_func(self.aviso_actualizacion)
 
     def guardar(self, widget):
