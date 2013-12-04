@@ -330,12 +330,14 @@ class CategoriasLaborales(Ventana):
         filas_res = []
         for r in resultados:
             filas_res.append((r.id, r.codigo, r.puesto, 
+                r.fecha and utils.str_fecha(r.fecha) or "", 
                 r.lineaDeProduccion and r.lineaDeProduccion.nombre or ""))
         idcategoria_laboral = utils.dialogo_resultado(filas_res,
                                     titulo = 'Seleccione categoria laboral',
                                     cabeceras = ('ID_interno', 
                                                  'Código', 
                                                  'Puesto', 
+                                                 'Entrada en vigor', 
                                                  'Línea de producción'))
         if idcategoria_laboral < 0:
             return None
@@ -599,19 +601,30 @@ class CategoriasLaborales(Ventana):
             criterio = pclases.OR(
                     pclases.CategoriaLaboral.q.codigo.contains(a_buscar),
                     pclases.CategoriaLaboral.q.puesto.contains(a_buscar))
-            resultados = pclases.CategoriaLaboral.select(pclases.AND(
-                criterio, 
-                pclases.CategoriaLaboral.q.fecha == None))
+            #resultados = pclases.CategoriaLaboral.select(pclases.AND(
+            #    criterio, 
+            #    pclases.CategoriaLaboral.q.fecha == None))  # ¿Y qué pasa si 
+                # la categoría laboral es nueva a partir de una fecha? Que no 
+                # aparecería aquí porque solo hay un registro con ese código 
+                # y tiene fecha != None.
+            resultados = pclases.SQLtuple(pclases.CategoriaLaboral.select(
+                criterio))
             if resultados.count() > 1:
                 ## Refinar los resultados
-                idcategoria_laboral = self.refinar_resultados_busqueda(resultados)
+                idcategoria_laboral = self.refinar_resultados_busqueda(
+                        resultados)
                 if idcategoria_laboral == None:
                     return
                 resultados = [pclases.CategoriaLaboral.get(idcategoria_laboral)]
             elif resultados.count() < 1:
                 ## Sin resultados de búsqueda
                 utils.dialogo_info('SIN RESULTADOS',
-                                   '\n\nLa búsqueda no produjo resultados.\nPruebe a cambiar el texto buscado o déjelo en blanco para ver una lista completa.\n(Atención: Ver la lista completa puede resultar lento si el número de elementos es muy alto)\n\n')
+                    '\n\nLa búsqueda no produjo resultados.\nPruebe a '
+                    'cambiar el texto buscado o déjelo en blanco para ver una'
+                    ' lista completa.\n(Atención: Ver la lista completa '
+                    'puede resultar lento si el número de elementos es '
+                    'muy alto)\n\n', 
+                    padre = self.wids['ventana'])
                 return
             ## Un único resultado
             # Primero anulo la función de actualización
