@@ -429,8 +429,10 @@ class Proveedores(Ventana):
                 padre = self.wids['ventana'])
         if cif == None:
             return
+        # TODO: Si se mete el CIF en minúsculas, se traga el duplicado.
         while (utils.parse_cif(cif) == "" or 
-               pclases.Proveedor.select(pclases.Proveedor.q.cif==cif).count()):
+               pclases.Proveedor.select(
+                   pclases.Proveedor.q.cif == utils.parse_cif(cif)).count()):
             utils.dialogo_info(titulo = "CIF INVÁLIDO", 
              texto="El CIF tecleado %s no es válido o está repetido." % (cif), 
              padre = self.wids['ventana'])
@@ -550,6 +552,7 @@ class Proveedores(Ventana):
         proveedor.notificador.set_func(lambda: None)
         # Actualizo los datos del objeto
         cif = self.wids['e_cif'].get_text()
+        # TODO: Aquí habría que comprobar que el CIF no se duplica
         self.wids['e_cif'].set_text(utils.parse_cif(cif) or self.objeto.cif)
         for c in [c.name for c in proveedor.sqlmeta.columnList]:
             if c != "tipoDeProveedorID":
@@ -573,7 +576,9 @@ class Proveedores(Ventana):
         """
         proveedor = self.objeto
         if proveedor != None:
-            if utils.dialogo('¿Está seguro de eliminar el proveedor actual?', '¿BORRAR PROVEEDOR?', padre = self.wids['ventana']):
+            if utils.dialogo('¿Está seguro de eliminar el proveedor actual?', 
+                             '¿BORRAR PROVEEDOR?', 
+                             padre = self.wids['ventana']):
                 proveedor.notificador.set_func(lambda : None)
                 try:
                     proveedor.destroy(ventana = __file__)
