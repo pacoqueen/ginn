@@ -1046,7 +1046,7 @@ class ControlPersonal(Ventana, VentanaGenerica):
                 tabla.attach(entries[h], 1, 2, fila, fila+1)
                 entries[h].set_text(utils.float2str(h.horasProduccion, 
                                                     autodec = True))
-                entries[h].connect("activate", lambda *args, **kw: v.destroy())
+                entries[h].connect("activate", lambda entry, v: v.destroy(), v)
                 fila += 1
             v.add(tabla)
             v.show_all()
@@ -1064,6 +1064,7 @@ class ControlPersonal(Ventana, VentanaGenerica):
                         horas = 0
                     horaslinea.horasProduccion = horas
                 he = self.wids['horas_produccion_%d' % ide]
+                ch = pclases.ControlHoras.get(ide)
                 he.set_text(utils.float2str(
                                 ch.calcular_total_horas_produccion(), 
                                 autodec = True))
