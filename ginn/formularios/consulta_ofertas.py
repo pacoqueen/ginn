@@ -212,6 +212,7 @@ class ConsultaOfertas(Ventana):
             col = self.wids['tv_resumen'].get_column(ncol+1)
             for cell in col.get_cell_renderers():
                 cell.set_property('xalign', 1) 
+        self.colorear_resumen(self.wids['tv_resumen'])
         self.resetear_resumen()
         gtk.main()
 
@@ -219,6 +220,38 @@ class ConsultaOfertas(Ventana):
         #for comercial in self.todos_los_comerciales + ['Total']: 
         comercial = "Total"
         self.resumen[comercial] = valores_defecto_resumen()
+
+    def colorear_resumen(self, tv):
+        def cell_func(column, cell, model, itr, i):
+            color = None
+            titulo = column.get_property("title").lower()
+            try:
+                concepto = model[itr].parent[0]
+            except TypeError:
+                concepto = model[itr][0]
+            if concepto == "Total":
+                color = "Plum"
+                if "ofertad" in titulo and model[itr][0] != "Total":
+                    color = "light blue"
+                elif "pedido" in titulo and model[itr][0] != "Total":
+                    color = "yellow green"
+            else:
+                if "total" in titulo:
+                    if "ofertad" in titulo:
+                        color = "light blue"
+                    elif "pedido" in titulo:
+                        color = "yellow green"
+                elif "ofertad" in titulo:
+                    color = "alice blue"
+                elif "pedido" in titulo:
+                    color = "light green"
+            cell.set_property("cell-background", color)
+        cols = tv.get_columns()
+        for i in xrange(len(cols)):
+            column = cols[i]
+            cells = column.get_cell_renderers()
+            for cell in cells:
+                column.set_cell_data_func(cell, cell_func, i)
 
     def colorear(self, tv):
         def cell_func(column, cell, model, itr, i):
@@ -1128,11 +1161,11 @@ def clasificar_resumen_linea(ldp, resumen, c):
     resumen['Total'][tipo_producto]['ofertado']['€/kg'][0] += importe
     resumen['Total'][tipo_producto]['ofertado']['€/kg'][1] += kg
     resumen['Total'][tipo_producto]['ofertado']['días'].append(dias)
-    resumen['Total']['Total']['ofertado']['kg'] += kg   # Total total ???
-    resumen['Total']['Total']['ofertado']['importe'] += importe
-    resumen['Total']['Total']['ofertado']['€/kg'][0] += importe
-    resumen['Total']['Total']['ofertado']['€/kg'][1] += kg
-    resumen['Total']['Total']['ofertado']['días'].append(dias)
+    #resumen['Total']['Total']['ofertado']['kg'] += kg   # Total total ???
+    #resumen['Total']['Total']['ofertado']['importe'] += importe
+    #resumen['Total']['Total']['ofertado']['€/kg'][0] += importe
+    #resumen['Total']['Total']['ofertado']['€/kg'][1] += kg
+    #resumen['Total']['Total']['ofertado']['días'].append(dias)
     if ldp.presupuesto.get_pedidos():
         resumen[c][tipo_producto]['en_pedido']['kg'] = kg
         resumen[c][tipo_producto]['en_pedido']['importe'] = importe
@@ -1149,11 +1182,11 @@ def clasificar_resumen_linea(ldp, resumen, c):
         resumen['Total'][tipo_producto]['en_pedido']['€/kg'][0] += importe
         resumen['Total'][tipo_producto]['en_pedido']['€/kg'][1] += kg
         resumen['Total'][tipo_producto]['en_pedido']['días'].append(dias)
-        resumen['Total']['Total']['en_pedido']['kg'] += kg
-        resumen['Total']['Total']['en_pedido']['importe'] += importe
-        resumen['Total']['Total']['en_pedido']['€/kg'][0] += importe
-        resumen['Total']['Total']['en_pedido']['€/kg'][1] += kg
-        resumen['Total']['Total']['en_pedido']['días'].append(dias)
+        #resumen['Total']['Total']['en_pedido']['kg'] += kg
+        #resumen['Total']['Total']['en_pedido']['importe'] += importe
+        #resumen['Total']['Total']['en_pedido']['€/kg'][0] += importe
+        #resumen['Total']['Total']['en_pedido']['€/kg'][1] += kg
+        #resumen['Total']['Total']['en_pedido']['días'].append(dias)
 
 def totalizar_resumen(r):
     """
