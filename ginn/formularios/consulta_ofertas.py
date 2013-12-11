@@ -218,8 +218,8 @@ class ConsultaOfertas(Ventana):
 
     def resetear_resumen(self):
         #for comercial in self.todos_los_comerciales + ['Total']: 
-        comercial = "Total"
-        self.resumen[comercial] = valores_defecto_resumen()
+        self.resumen = {"Total": None}
+        self.resumen["Total"] = valores_defecto_resumen()
 
     def colorear_resumen(self, tv):
         def cell_func(column, cell, model, itr, i):
