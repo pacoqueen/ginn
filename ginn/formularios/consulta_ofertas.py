@@ -459,6 +459,7 @@ class ConsultaOfertas(Ventana):
                  utils.float2str(resumen[c]['Total']['ofertado']['días']), 
                  utils.float2str(resumen[c]['Total']['en_pedido']['días']), 
                  0))
+        self.wids['tv_resumen'].expand_all()
 
     def rellenar_tabla_por_oferta(self, vpro):
         """
@@ -1117,8 +1118,8 @@ def clasificar_resumen_linea(ldp, resumen, c):
     resumen[c][tipo_producto]['ofertado']['€/kg'][0] += importe
     resumen[c][tipo_producto]['ofertado']['€/kg'][1] += kg
     resumen[c][tipo_producto]['ofertado']['días'].append(dias)
-    resumen[c]['Total']['ofertado']['kg'] = kg
-    resumen[c]['Total']['ofertado']['importe'] = importe
+    resumen[c]['Total']['ofertado']['kg'] += kg
+    resumen[c]['Total']['ofertado']['importe'] += importe
     resumen[c]['Total']['ofertado']['€/kg'][0] += importe
     resumen[c]['Total']['ofertado']['€/kg'][1] += kg
     resumen[c]['Total']['ofertado']['días'].append(dias)
@@ -1127,7 +1128,7 @@ def clasificar_resumen_linea(ldp, resumen, c):
     resumen['Total'][tipo_producto]['ofertado']['€/kg'][0] += importe
     resumen['Total'][tipo_producto]['ofertado']['€/kg'][1] += kg
     resumen['Total'][tipo_producto]['ofertado']['días'].append(dias)
-    resumen['Total']['Total']['ofertado']['kg'] += kg   # Total Total ???
+    resumen['Total']['Total']['ofertado']['kg'] += kg   # Total total ???
     resumen['Total']['Total']['ofertado']['importe'] += importe
     resumen['Total']['Total']['ofertado']['€/kg'][0] += importe
     resumen['Total']['Total']['ofertado']['€/kg'][1] += kg
@@ -1138,8 +1139,8 @@ def clasificar_resumen_linea(ldp, resumen, c):
         resumen[c][tipo_producto]['en_pedido']['€/kg'][0] += importe
         resumen[c][tipo_producto]['en_pedido']['€/kg'][1] += kg
         resumen[c][tipo_producto]['en_pedido']['días'].append(dias)
-        resumen[c]['Total']['en_pedido']['kg'] = kg
-        resumen[c]['Total']['en_pedido']['importe'] = importe
+        resumen[c]['Total']['en_pedido']['kg'] += kg
+        resumen[c]['Total']['en_pedido']['importe'] += importe
         resumen[c]['Total']['en_pedido']['€/kg'][0] += importe
         resumen[c]['Total']['en_pedido']['€/kg'][1] += kg
         resumen[c]['Total']['en_pedido']['días'].append(dias)
