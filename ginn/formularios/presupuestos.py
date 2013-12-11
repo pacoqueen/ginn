@@ -396,7 +396,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         Envía un correo de solicitud de crédito al usuario correspondiente.
         """
-        # TODO: PORASQUI: El Excel de serie (al menos hasta la versión 2007 no abre los ods. Enviar versión también en PDF o HTML y un enlace al conversor para que se lo instale quien quiera.
+        # TODO: PORASQUI: El Excel de serie (al menos hasta la versión 2007 no abre los ods. Enviar versión también en PDF o HTML.
         vpro = VentanaActividad(self.wids['ventana'], 
                 "Enviando solicitud por correo electrónico.")
         vpro.mostrar()
@@ -418,7 +418,11 @@ class Presupuestos(Ventana, VentanaGenerica):
             # Correo de riesgo de cliente
             texto = "%s ha solicitado crédito para el cliente %s "\
                     "a través de la oferta %d. Se adjunta copia del "\
-                    "formulario." % (
+                    "formulario.\n\n\nSi no puede ver el adjunto "\
+                    "use el siguiente complemento: http://downloads"\
+                    ".sourceforge.net/odf-converter/"\
+                    "OdfAddInForOfficeSetup-en.3.0.5254.exe?"\
+                    "use_mirror=nchc" % (
                         self.usuario and self.usuario.nombre or "Se", 
                         self.objeto.cliente and self.objeto.cliente.nombre 
                             or self.objeto.nombrecliente, 
