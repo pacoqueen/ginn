@@ -215,53 +215,11 @@ class ConsultaOfertas(Ventana):
         self.resetear_resumen()
         gtk.main()
 
-    def resetear_resumen(self, comerciales = None):
-        for comercial in self.todos_los_comerciales + ['total']: 
-            self.resumen[comercial] = {
-                    'fibra': {'ofertado':  {'kg': 0.0, 
-                                            'importe': 0.0, 
-                                            '€/kg': [0.0, 0.0], 
-                                            'días': []}, 
-                              'en_pedido': {'kg': 0.0, 
-                                            'importe': 0.0, 
-                                            '€/kg': [0.0, 0.0], 
-                                            'días': []}}, 
-                    'geotextiles': {
-                              'ofertado':  {'kg': 0.0, 
-                                            'importe': 0.0, 
-                                            '€/kg': [0.0, 0.0], 
-                                            'días': []}, 
-                              'en_pedido': {'kg': 0.0, 
-                                            'importe': 0.0, 
-                                            '€/kg': [0.0, 0.0], 
-                                            'días': []}}, 
-                    'geocem': {
-                              'ofertado':  {'kg': 0.0, 
-                                            'importe': 0.0, 
-                                            '€/kg': [0.0, 0.0], 
-                                            'días': []}, 
-                              'en_pedido': {'kg': 0.0, 
-                                            'importe': 0.0, 
-                                            '€/kg': [0.0, 0.0], 
-                                            'días': []}},
-                    'comercializados': {
-                              'ofertado': {'kg': 0.0, 
-                                            'importe': 0.0, 
-                                            '€/kg': [0.0, 0.0], 
-                                            'días': []}, 
-                              'en_pedido': {'kg': 0.0, 
-                                            'importe': 0.0, 
-                                            '€/kg': [0.0, 0.0], 
-                                            'días': []}},  
-                    'total': {'ofertado':  {'kg': 0.0, 
-                                            'importe': 0.0, 
-                                            '€/kg': [0.0, 0.0], 
-                                            'días': []}, 
-                              'en_pedido': {'kg': 0.0, 
-                                            'importe': 0.0, 
-                                            '€/kg': [0.0, 0.0], 
-                                            'días': []}}}
-    
+    def resetear_resumen(self):
+        #for comercial in self.todos_los_comerciales + ['Total']: 
+        comercial = "Total"
+        self.resumen[comercial] = valores_defecto_resumen()
+
     def colorear(self, tv):
         def cell_func(column, cell, model, itr, i):
             try:
@@ -401,8 +359,8 @@ class ConsultaOfertas(Ventana):
             importe_total = p.calcular_importe_total()
             total_ofertas += importe_total
             if p.get_pedidos(): # Se asume que se convierte siempre la oferta 
-                                # completa, por tanto cuento el importe total 
-                                # del presupuesto en lugar operar con el pedido
+                            # completa, por tanto cuento el importe total 
+                            # del presupuesto en lugar operar con el pedido
                 total_pedidos += importe_total
                 convertidos += 1
             i += 1
@@ -432,12 +390,12 @@ class ConsultaOfertas(Ventana):
         model = self.wids['tv_resumen'].get_model()
         model.clear()
         comerciales_y_total = self.resumen.keys()
-        comerciales_y_total.remove("total")
+        comerciales_y_total.remove("Total")
         comerciales_y_total.sort(key = lambda i: i.get_nombre_completo())
-        comerciales_y_total.append("total")
+        comerciales_y_total.append("Total")
         for c in comerciales_y_total:
             padre = model.append(None, 
-                (c != "total" and c.get_nombre_completo() or c, 
+                (c != "Total" and c.get_nombre_completo() or c, 
                  "", # Fibra ofertada
                  "", # Fibra en pedido
                  "", # Gtx ofertado
@@ -448,7 +406,7 @@ class ConsultaOfertas(Ventana):
                  "", # Comercializado en pedido
                  "", # Total ofertado
                  "", # Total en pedido
-                 c != "total" and c.id or 0))
+                 c != "Total" and c.id or 0))
             model.append(padre, 
                 ("kg", 
                  utils.float2str(resumen[c]['fibra']['ofertado']['kg']), 
@@ -459,8 +417,8 @@ class ConsultaOfertas(Ventana):
                  utils.float2str(resumen[c]['geocem']['en_pedido']['kg']), 
                  utils.float2str(resumen[c]['comercializados']['ofertado']['kg']), 
                  utils.float2str(resumen[c]['comercializados']['en_pedido']['kg']), 
-                 utils.float2str(resumen[c]['total']['ofertado']['kg']), 
-                 utils.float2str(resumen[c]['total']['en_pedido']['kg']), 
+                 utils.float2str(resumen[c]['Total']['ofertado']['kg']), 
+                 utils.float2str(resumen[c]['Total']['en_pedido']['kg']), 
                  0))
             model.append(padre, 
                 ("Importe", 
@@ -472,8 +430,8 @@ class ConsultaOfertas(Ventana):
                  utils.float2str(resumen[c]['geocem']['en_pedido']['importe']), 
                  utils.float2str(resumen[c]['comercializados']['ofertado']['importe']), 
                  utils.float2str(resumen[c]['comercializados']['en_pedido']['importe']), 
-                 utils.float2str(resumen[c]['total']['ofertado']['importe']), 
-                 utils.float2str(resumen[c]['total']['en_pedido']['importe']), 
+                 utils.float2str(resumen[c]['Total']['ofertado']['importe']), 
+                 utils.float2str(resumen[c]['Total']['en_pedido']['importe']), 
                  0))
             model.append(padre, 
                 ("€/k", 
@@ -485,8 +443,8 @@ class ConsultaOfertas(Ventana):
                  utils.float2str(resumen[c]['geocem']['en_pedido']['€/kg']), 
                  utils.float2str(resumen[c]['comercializados']['ofertado']['€/kg']), 
                  utils.float2str(resumen[c]['comercializados']['en_pedido']['€/kg']), 
-                 utils.float2str(resumen[c]['total']['ofertado']['€/kg']), 
-                 utils.float2str(resumen[c]['total']['en_pedido']['€/kg']), 
+                 utils.float2str(resumen[c]['Total']['ofertado']['€/kg']), 
+                 utils.float2str(resumen[c]['Total']['en_pedido']['€/kg']), 
                  0))
             model.append(padre, 
                 ("días", 
@@ -498,8 +456,8 @@ class ConsultaOfertas(Ventana):
                  utils.float2str(resumen[c]['geocem']['en_pedido']['días']), 
                  utils.float2str(resumen[c]['comercializados']['ofertado']['días']), 
                  utils.float2str(resumen[c]['comercializados']['en_pedido']['días']), 
-                 utils.float2str(resumen[c]['total']['ofertado']['días']), 
-                 utils.float2str(resumen[c]['total']['en_pedido']['días']), 
+                 utils.float2str(resumen[c]['Total']['ofertado']['días']), 
+                 utils.float2str(resumen[c]['Total']['en_pedido']['días']), 
                  0))
 
     def rellenar_tabla_por_oferta(self, vpro):
@@ -1002,6 +960,8 @@ class ConsultaOfertas(Ventana):
             tv = self.wids['tv_comercial']
         elif self.wids['notebook1'].get_current_page() == 4:
             tv = self.wids['tv_provincia']
+        elif self.wids['notebook1'].get_current_page() == 5:
+            tv = self.wids['tv_resumen']
         else:
             return
         abrir_csv(treeview2csv(tv))
@@ -1087,6 +1047,11 @@ class ConsultaOfertas(Ventana):
                            self.wids['e_ratio'].get_text(), 
                            "", "", ""]
                          ]
+        elif self.wids['notebook1'].get_current_page() == 5:
+            tv = self.wids['tv_resumen']
+            titulo = "Resumen por comercial, tipo de producto y estado"
+            totales = []
+            extra_data = []
         else:
             return
         if self.inicio:
@@ -1146,48 +1111,48 @@ def clasificar_resumen_linea(ldp, resumen, c):
     except AttributeError:
         dias = None
     if c not in resumen:
-        resetear_resumen()
+        resumen[c] = valores_defecto_resumen()
     resumen[c][tipo_producto]['ofertado']['kg'] = kg
     resumen[c][tipo_producto]['ofertado']['importe'] = importe
     resumen[c][tipo_producto]['ofertado']['€/kg'][0] += importe
     resumen[c][tipo_producto]['ofertado']['€/kg'][1] += kg
     resumen[c][tipo_producto]['ofertado']['días'].append(dias)
-    resumen[c]['total']['ofertado']['kg'] = kg
-    resumen[c]['total']['ofertado']['importe'] = importe
-    resumen[c]['total']['ofertado']['€/kg'][0] += importe
-    resumen[c]['total']['ofertado']['€/kg'][1] += kg
-    resumen[c]['total']['ofertado']['días'].append(dias)
-    resumen['total'][tipo_producto]['ofertado']['kg'] += kg
-    resumen['total'][tipo_producto]['ofertado']['importe'] += importe
-    resumen['total'][tipo_producto]['ofertado']['€/kg'][0] += importe
-    resumen['total'][tipo_producto]['ofertado']['€/kg'][1] += kg
-    resumen['total'][tipo_producto]['ofertado']['días'].append(dias)
-    resumen['total']['total']['ofertado']['kg'] += kg   # total total ???
-    resumen['total']['total']['ofertado']['importe'] += importe
-    resumen['total']['total']['ofertado']['€/kg'][0] += importe
-    resumen['total']['total']['ofertado']['€/kg'][1] += kg
-    resumen['total']['total']['ofertado']['días'].append(dias)
+    resumen[c]['Total']['ofertado']['kg'] = kg
+    resumen[c]['Total']['ofertado']['importe'] = importe
+    resumen[c]['Total']['ofertado']['€/kg'][0] += importe
+    resumen[c]['Total']['ofertado']['€/kg'][1] += kg
+    resumen[c]['Total']['ofertado']['días'].append(dias)
+    resumen['Total'][tipo_producto]['ofertado']['kg'] += kg
+    resumen['Total'][tipo_producto]['ofertado']['importe'] += importe
+    resumen['Total'][tipo_producto]['ofertado']['€/kg'][0] += importe
+    resumen['Total'][tipo_producto]['ofertado']['€/kg'][1] += kg
+    resumen['Total'][tipo_producto]['ofertado']['días'].append(dias)
+    resumen['Total']['Total']['ofertado']['kg'] += kg   # Total Total ???
+    resumen['Total']['Total']['ofertado']['importe'] += importe
+    resumen['Total']['Total']['ofertado']['€/kg'][0] += importe
+    resumen['Total']['Total']['ofertado']['€/kg'][1] += kg
+    resumen['Total']['Total']['ofertado']['días'].append(dias)
     if ldp.presupuesto.get_pedidos():
         resumen[c][tipo_producto]['en_pedido']['kg'] = kg
         resumen[c][tipo_producto]['en_pedido']['importe'] = importe
         resumen[c][tipo_producto]['en_pedido']['€/kg'][0] += importe
         resumen[c][tipo_producto]['en_pedido']['€/kg'][1] += kg
         resumen[c][tipo_producto]['en_pedido']['días'].append(dias)
-        resumen[c]['total']['en_pedido']['kg'] = kg
-        resumen[c]['total']['en_pedido']['importe'] = importe
-        resumen[c]['total']['en_pedido']['€/kg'][0] += importe
-        resumen[c]['total']['en_pedido']['€/kg'][1] += kg
-        resumen[c]['total']['en_pedido']['días'].append(dias)
-        resumen['total'][tipo_producto]['en_pedido']['kg'] += kg
-        resumen['total'][tipo_producto]['en_pedido']['importe'] += importe
-        resumen['total'][tipo_producto]['en_pedido']['€/kg'][0] += importe
-        resumen['total'][tipo_producto]['en_pedido']['€/kg'][1] += kg
-        resumen['total'][tipo_producto]['en_pedido']['días'].append(dias)
-        resumen['total']['total']['en_pedido']['kg'] += kg
-        resumen['total']['total']['en_pedido']['importe'] += importe
-        resumen['total']['total']['en_pedido']['€/kg'][0] += importe
-        resumen['total']['total']['en_pedido']['€/kg'][1] += kg
-        resumen['total']['total']['en_pedido']['días'].append(dias)
+        resumen[c]['Total']['en_pedido']['kg'] = kg
+        resumen[c]['Total']['en_pedido']['importe'] = importe
+        resumen[c]['Total']['en_pedido']['€/kg'][0] += importe
+        resumen[c]['Total']['en_pedido']['€/kg'][1] += kg
+        resumen[c]['Total']['en_pedido']['días'].append(dias)
+        resumen['Total'][tipo_producto]['en_pedido']['kg'] += kg
+        resumen['Total'][tipo_producto]['en_pedido']['importe'] += importe
+        resumen['Total'][tipo_producto]['en_pedido']['€/kg'][0] += importe
+        resumen['Total'][tipo_producto]['en_pedido']['€/kg'][1] += kg
+        resumen['Total'][tipo_producto]['en_pedido']['días'].append(dias)
+        resumen['Total']['Total']['en_pedido']['kg'] += kg
+        resumen['Total']['Total']['en_pedido']['importe'] += importe
+        resumen['Total']['Total']['en_pedido']['€/kg'][0] += importe
+        resumen['Total']['Total']['en_pedido']['€/kg'][1] += kg
+        resumen['Total']['Total']['en_pedido']['días'].append(dias)
 
 def totalizar_resumen(r):
     """
@@ -1203,6 +1168,54 @@ def totalizar_resumen(r):
                     r[c][tipo][ofertado_o_adjudicado]['€/kg'] = 0.0 # None 
                 r[c][tipo][ofertado_o_adjudicado]['días'] = utils.media(
                         r[c][tipo][ofertado_o_adjudicado]['días'])
+
+def valores_defecto_resumen():
+        default = {
+                    'fibra': {'ofertado':  {'kg': 0.0, 
+                                            'importe': 0.0, 
+                                            '€/kg': [0.0, 0.0], 
+                                            'días': []}, 
+                              'en_pedido': {'kg': 0.0, 
+                                            'importe': 0.0, 
+                                            '€/kg': [0.0, 0.0], 
+                                            'días': []}}, 
+                    'geotextiles': {
+                              'ofertado':  {'kg': 0.0, 
+                                            'importe': 0.0, 
+                                            '€/kg': [0.0, 0.0], 
+                                            'días': []}, 
+                              'en_pedido': {'kg': 0.0, 
+                                            'importe': 0.0, 
+                                            '€/kg': [0.0, 0.0], 
+                                            'días': []}}, 
+                    'geocem': {
+                              'ofertado':  {'kg': 0.0, 
+                                            'importe': 0.0, 
+                                            '€/kg': [0.0, 0.0], 
+                                            'días': []}, 
+                              'en_pedido': {'kg': 0.0, 
+                                            'importe': 0.0, 
+                                            '€/kg': [0.0, 0.0], 
+                                            'días': []}},
+                    'comercializados': {
+                              'ofertado': {'kg': 0.0, 
+                                            'importe': 0.0, 
+                                            '€/kg': [0.0, 0.0], 
+                                            'días': []}, 
+                              'en_pedido': {'kg': 0.0, 
+                                            'importe': 0.0, 
+                                            '€/kg': [0.0, 0.0], 
+                                            'días': []}},  
+                    'Total': {'ofertado':  {'kg': 0.0, 
+                                            'importe': 0.0, 
+                                            '€/kg': [0.0, 0.0], 
+                                            'días': []}, 
+                              'en_pedido': {'kg': 0.0, 
+                                            'importe': 0.0, 
+                                            '€/kg': [0.0, 0.0], 
+                                            'días': []}}}
+        return default
+
 
 if __name__ == '__main__':
     t = ConsultaOfertas()
