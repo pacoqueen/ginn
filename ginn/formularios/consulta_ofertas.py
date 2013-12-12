@@ -282,7 +282,10 @@ class ConsultaOfertas(Ventana):
         """
         model = tv.get_model()
         puid = model[path][-1]
-        objeto = pclases.getObjetoPUID(puid)
+        try:
+            objeto = pclases.getObjetoPUID(puid)
+        except AttributeError:  # puid es None
+            return  # No hago nada. Mutis por el foro...
         if isinstance(objeto, pclases.Cliente):
             from formularios.clientes import Clientes as NuevaVentana
         elif isinstance(objeto, pclases.Presupuesto):
