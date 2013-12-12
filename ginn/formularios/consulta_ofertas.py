@@ -1165,11 +1165,11 @@ def clasificar_resumen_linea(ldp, resumen, c):
     resumen['Total'][tipo_producto]['ofertado']['€/kg'][0] += importe
     resumen['Total'][tipo_producto]['ofertado']['€/kg'][1] += kg
     resumen['Total'][tipo_producto]['ofertado']['días'].append(dias)
-    #resumen['Total']['Total']['ofertado']['kg'] += kg   # Total total ???
-    #resumen['Total']['Total']['ofertado']['importe'] += importe
-    #resumen['Total']['Total']['ofertado']['€/kg'][0] += importe
-    #resumen['Total']['Total']['ofertado']['€/kg'][1] += kg
-    #resumen['Total']['Total']['ofertado']['días'].append(dias)
+    resumen['Total']['Total']['ofertado']['kg'] += kg   # Total total ???
+    resumen['Total']['Total']['ofertado']['importe'] += importe
+    resumen['Total']['Total']['ofertado']['€/kg'][0] += importe
+    resumen['Total']['Total']['ofertado']['€/kg'][1] += kg
+    resumen['Total']['Total']['ofertado']['días'].append(dias)
     if ldp.presupuesto.get_pedidos():
         resumen[c][tipo_producto]['en_pedido']['kg'] += kg
         resumen[c][tipo_producto]['en_pedido']['importe'] += importe
@@ -1186,11 +1186,11 @@ def clasificar_resumen_linea(ldp, resumen, c):
         resumen['Total'][tipo_producto]['en_pedido']['€/kg'][0] += importe
         resumen['Total'][tipo_producto]['en_pedido']['€/kg'][1] += kg
         resumen['Total'][tipo_producto]['en_pedido']['días'].append(dias)
-        #resumen['Total']['Total']['en_pedido']['kg'] += kg
-        #resumen['Total']['Total']['en_pedido']['importe'] += importe
-        #resumen['Total']['Total']['en_pedido']['€/kg'][0] += importe
-        #resumen['Total']['Total']['en_pedido']['€/kg'][1] += kg
-        #resumen['Total']['Total']['en_pedido']['días'].append(dias)
+        resumen['Total']['Total']['en_pedido']['kg'] += kg
+        resumen['Total']['Total']['en_pedido']['importe'] += importe
+        resumen['Total']['Total']['en_pedido']['€/kg'][0] += importe
+        resumen['Total']['Total']['en_pedido']['€/kg'][1] += kg
+        resumen['Total']['Total']['en_pedido']['días'].append(dias)
 
 def totalizar_resumen(r):
     """
@@ -1204,8 +1204,12 @@ def totalizar_resumen(r):
                     r[c][tipo][ofertado_o_adjudicado]['€/kg'] = e/k
                 except ZeroDivisionError:
                     r[c][tipo][ofertado_o_adjudicado]['€/kg'] = 0.0 # None 
+                # Limpio los Nones en días de plazo de las formas de pago:
+                dias_plazo_pago = [d for d in 
+                        r[c][tipo][ofertado_o_adjudicado]['días']
+                        if d != None]
                 r[c][tipo][ofertado_o_adjudicado]['días'] = utils.media(
-                        r[c][tipo][ofertado_o_adjudicado]['días'])
+                        dias_plazo_pago)
 
 def valores_defecto_resumen():
         default = {
