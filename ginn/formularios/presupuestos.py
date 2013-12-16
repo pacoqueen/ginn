@@ -2499,8 +2499,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         validado no son el mismo.
         """
         if self.usuario and self.objeto:
-            comerciales = [c for c in self.usuario.get_comerciales() 
-                          if c != self.objeto.comercial]
+            comerciales = [self.objeto.comercial]
             servidor = self.usuario.smtpserver
             smtpuser = self.usuario.smtpuser
             smtppass = self.usuario.smtppassword
