@@ -60,7 +60,7 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True, lang = "es"):
                  "Geotextil no tejido de polipropileno 100% virgen", 
              "14 uso": "Uso: %s", 
              "15 blanco3": "",      # Separador 
-             "16 codigo": "Partida: %d Rollo: %s", 
+             "16 codigo": "Partida: %d Rollo: %d", 
              "17 caracteristicas": "Gramaje: %d g/m² Ancho: %s m Largo: %d m" 
             }
     if lang == "en":
