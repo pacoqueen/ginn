@@ -60,7 +60,7 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True, lang = "es"):
                  "Geotextil no tejido de polipropileno 100% virgen", 
              "14 uso": "Uso: %s", 
              "15 blanco3": "",      # Separador 
-             "16 codigo": "Partida: %d Rollo: %d", 
+             "16 codigo": "Partida: %d Rollo: %s", 
              "17 caracteristicas": "Gramaje: %d g/m² Ancho: %s m Largo: %d m" 
             }
     if lang == "en":
@@ -217,7 +217,7 @@ def helene_laanest(texto):
     translate_table["De EN13249:2001 a EN13257:2001"] = "From EN13249:2001 to EN13257:2001"
     translate_table["Geotextil no tejido de polipropileno 100% virgen"] = "Nonwoven geotextile of 100% polypropylene fibres."
     translate_table["Uso: %s"] = "Use: %s"
-    translate_table["Partida: %d Rollo: %d"] = "Batch: %d Roll: %d"
+    translate_table["Partida: %d Rollo: %s"] = "Batch: %d Roll: %s"
     translate_table["Gramaje: %d g/m² Ancho: %s m Largo: %d m"] = "Mass per area: %d g/m² Width: %s m Length: %d m" 
     return translate_table[texto]
 
