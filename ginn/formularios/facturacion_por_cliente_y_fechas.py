@@ -511,6 +511,8 @@ class FacturacionPorClienteYFechas(Ventana):
         idcliente = utils.combo_get_value(self.wids['cbe_cliente'])
         fechaini, fechafin = self.leer_fechas()
         if idcliente >= 0 and fechaini and fechafin:
+            modelcesce = self.wids['tv_cesce'].get_model()
+            modelcesce.clear()
             model = self.wids['tv_facturas'].get_model()
             model.clear()
             
