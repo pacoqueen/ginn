@@ -342,9 +342,11 @@ class PedidosDeVenta(Ventana):
             cliente = pclases.Cliente.get(idcliente)
             cliente.sync()
             if self.cache_credito == None:
-                importe_pedido = self.objeto.calcular_importe_total(iva = True)
+                #importe_pedido = self.objeto.calcular_importe_total(iva = True)
+                importe_pendiente = \
+                    self.objeto.calcular_importe_pendiente_de_servir(iva=True)
                 self.cache_credito = cliente.\
-                        calcular_credito_disponible(base = importe_pedido)
+                        calcular_credito_disponible(base = importe_pendiente)
             credito = self.cache_credito
             if credito == sys.maxint:   # ¿maxint, te preguntarás? Ver 
                                         # docstring de calcular_credito
@@ -2543,10 +2545,12 @@ class PedidosDeVenta(Ventana):
         Si el usuario es administrador, se le deja a su elección. En otro 
         caso, se le avisa y se impide que continúe devolviendo FALSE.
         """
-        importe_pedido = self.objeto.calcular_importe_total(iva = True)
+        #importe_pedido = self.objeto.calcular_importe_total(iva = True)
+        importe_pendiente = \
+                self.objeto.calcular_importe_pendiente_de_servir(iva = True)
         if self.cache_credito == None:
             self.cache_credito = self.objeto.cliente.\
-                    calcular_credito_disponible(base = importe_pedido)
+                    calcular_credito_disponible(base = importe_pendiente)
         credito = self.cache_credito
         if importe_pedido > credito:
             texto = "El crédito actual del cliente es de %s.\n"\

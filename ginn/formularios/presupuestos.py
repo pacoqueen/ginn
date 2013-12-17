@@ -3063,6 +3063,8 @@ def cmp_celdas_lrtd(a, b):
 
 
 def convertir_a_html(fods):
+    # PORASQUI: Resulta que al cargar el ods original, solo llega hasta la 
+    # mitad de la hoja de cálculo. El resto es como si no existiera.
     pathdest = fods + ".html"
     from lib.simple_odspy.simpleodspy.sodsspreadsheet import SodsSpreadSheet
     from lib.simple_odspy.simpleodspy.sodshtml import SodsHtml
@@ -3083,7 +3085,7 @@ def convertir_a_xls(fods):
     t = SodsSpreadSheet()
     tw = SodsOds(t)
     tw.load(fods)   # load carga el contenido de fods en t. fw no vale para 
-    tw = SodsXls(t)    # nada después de eso. Lo reutilizo para html
+    tw = SodsXls(t)    # nada después de eso. Lo reutilizo para xls.
     tw.save(pathdest)
     return pathdest
 

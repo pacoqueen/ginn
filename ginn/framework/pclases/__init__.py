@@ -9991,6 +9991,28 @@ class PedidoVenta(SQLObject, PRPCTOO):
                         if productos[p]['pedido'] != productos[p]['servido']]
         return productos, productos_pendientes, servicios_pendientes
 
+    def calcular_importe_servido(self, iva = False):
+        """
+        Devuelve el importe servido de este pedido a los precios que hayan 
+        especificado en la línea de venta.
+        """
+        res = 0.0
+        for ldv in self.lineasDeVenta:
+            res += ldv.calcular_subtotal(iva = True)
+        return res
+
+    def calcular_importe_pendiente_de_servir(self, iva = False):
+        """
+        Devuelve el importe total de productos y servicios pendientes de 
+        servir del pedido actual según los precios de las líneas de pedido 
+        pero valorando las salidas al precio de factura (o albarán).
+        Incluye el IVA por defecto.
+        """
+        total = self.calcular_importe_total(iva = iva)
+        servido = self.calcular_importe_servido(iva = iva) 
+        res = total - servido
+        return res
+
     def get_pendiente_facturar(self):
         """
         Devuelve una lista de diccionarios de productos y otra de servicios 
