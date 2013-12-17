@@ -3078,6 +3078,9 @@ def convertir_a_html(fods):
 
 
 def convertir_a_xls(fods):
+    # TODO: PORASQUI: El módulo xl* parece funcionar a la perfección. Ahora 
+    # tengo que volver a crear la plantilla vacía, copiarla con el xutils y 
+    # rellenarla para guardarla con xlst. Ver el README.md de xlutils.
     pathdest = fods + ".xls"
     from lib.simple_odspy.simpleodspy.sodsspreadsheet import SodsSpreadSheet
     from lib.simple_odspy.simpleodspy.sodsxls import SodsXls
