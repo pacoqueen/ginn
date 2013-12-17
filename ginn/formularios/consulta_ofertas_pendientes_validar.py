@@ -71,15 +71,18 @@ class ConsultaOfertasPendientesValidar(Ventana):
                 #('Tipo',      'gobject.TYPE_STRING', False, True, False, None),
                 # CWT: Solo ofertas de pedido. Nada de estudio.
                 ('Estado',  'gobject.TYPE_STRING', False, True, False, None),#5
+                ('Denegada', 'gobject.TYPE_BOOLEAN', False, True, False, None),
+                ('Motivo', 'gobject.TYPE_STRING', False, True, False, None), 
                 ('Importe (c/IVA)',   
                               'gobject.TYPE_STRING', False, True, False, None),
                 ('Forma de pago', 
                               'gobject.TYPE_STRING', False, True, False, None),
-                ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
+                ('PUID', 'gobject.TYPE_STRING', False, False, False, None)) #10
         tv = self.wids['tv_datos']
         utils.preparar_listview(tv, cols)
         tv.connect("row-activated", self.abrir_objeto)
-        tv.get_column(6).get_cell_renderers()[0].set_property('xalign', 1) 
+        tv.get_column(6).get_cell_renderers()[0].set_property('xalign', 0.5) 
+        tv.get_column(8).get_cell_renderers()[0].set_property('xalign', 1) 
         self.colorear(tv)
         self.inicio = None
         self.wids['e_fechainicio'].set_text("")
@@ -271,6 +274,8 @@ class ConsultaOfertasPendientesValidar(Ventana):
                     p.nombreobra, 
                     p.comercial and p.comercial.get_nombre_completo() or "", 
                     str_estado, 
+                    p.rechazado, 
+                    p.motivo, 
                     utils.float2str(importe_total), 
                     p.formaDePago and p.formaDePago.toString(), 
                     p.puid)        # Oculta. Para el get.
