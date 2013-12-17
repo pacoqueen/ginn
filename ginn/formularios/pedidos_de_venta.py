@@ -1726,7 +1726,7 @@ class PedidosDeVenta(Ventana):
             ldp = pclases.LineaDePedido.get(model[path][-1])
         except IndexError:
             # ¿Cómo demonios ha conseguido que el path llege desfasado o nulo?
-            ## Errores en segundo plano. La stderr contiene:
+            ## Errores en segundo plano...
             ## Traceback (most recent call last):
             ##  File "Q:\formularios\pedidos_de_venta.py", line 956, in cambiar_precio_ldp
             ##    ldp = pclases.LineaDePedido.get(model[path][-1])

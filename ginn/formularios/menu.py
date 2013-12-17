@@ -144,6 +144,21 @@ class MetaF:
     def vacio(self):
         return len(self.t) == 0
 
+    def contains(self, palabras):
+        """
+        Devuelve True si todas las palabras recibidas están en el texto 
+        del "metafichero".
+        """
+        if isinstance(palabras, (list, tuple)):
+            res = len(palabras) > 0
+            for p in palabras:
+                if p not in self.t:
+                    res = False
+                    break
+        else:
+            res = palabras in self.t
+        return res
+
 
 class Menu:
     def __init__(self, user = None, passwd = None, fconfig = None):
@@ -960,7 +975,10 @@ def main():
     sys.stderr = errores
     m = Menu(user, passwd, fconfig)
     m.mostrar()
-    if not errores.vacio():
+    if not errores.vacio() and not errores.contains(
+            ["Logged from file menu.py", "Bad file descriptor"]):
+        # Me quito de en medio los errores de volcado a log (IOError 9) que 
+        # aparecen a veces por... ¿Samba? ¿Clientes Windows? No lo sé. 
         print "Se han detectado algunos errores en segundo plano durante "\
               "la ejecución."
         enviar_correo('Errores en segundo plano. La stderr contiene:\n%s' 

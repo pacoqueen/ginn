@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 16 diciembre 2013 at 16:21:04.
+" Created by session.vim 1.5 on 16 diciembre 2013 at 17:16:18.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -175,7 +175,10 @@ wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
-6wincmd k
+wincmd _ | wincmd |
+split
+7wincmd k
+wincmd w
 wincmd w
 wincmd w
 wincmd w
@@ -189,7 +192,7 @@ set winheight=1 winwidth=1
 exe 'vert 1resize ' . ((&columns * 21 + 51) / 102)
 exe '2resize ' . ((&lines * 5 + 22) / 45)
 exe 'vert 2resize ' . ((&columns * 80 + 51) / 102)
-exe '3resize ' . ((&lines * 27 + 22) / 45)
+exe '3resize ' . ((&lines * 25 + 22) / 45)
 exe 'vert 3resize ' . ((&columns * 80 + 51) / 102)
 exe '4resize ' . ((&lines * 1 + 22) / 45)
 exe 'vert 4resize ' . ((&columns * 80 + 51) / 102)
@@ -201,6 +204,8 @@ exe '7resize ' . ((&lines * 1 + 22) / 45)
 exe 'vert 7resize ' . ((&columns * 80 + 51) / 102)
 exe '8resize ' . ((&lines * 1 + 22) / 45)
 exe 'vert 8resize ' . ((&columns * 80 + 51) / 102)
+exe '9resize ' . ((&lines * 1 + 22) / 45)
+exe 'vert 9resize ' . ((&columns * 80 + 51) / 102)
 argglobal
 enew
 file __Tag_List__
@@ -362,6 +367,58 @@ normal! 09|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
+edit ~/Geotexan/src/Geotex-INN/ginn/informes/norma2013.py
+setlocal fdm=indent
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=99
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+21
+normal! zo
+47
+normal! zo
+47
+normal! zo
+67
+normal! zo
+79
+normal! zo
+98
+normal! zo
+100
+normal! zo
+101
+normal! zo
+145
+normal! zo
+203
+normal! zo
+233
+normal! zo
+278
+normal! zo
+291
+normal! zo
+297
+normal! zo
+299
+normal! zo
+300
+normal! zo
+344
+normal! zo
+let s:l = 63 - ((12 * winheight(0) + 12) / 25)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+63
+normal! 028|
+lcd ~/Geotexan/src/Geotex-INN
+wincmd w
+argglobal
 edit ~/Geotexan/src/Geotex-INN/ginn/formularios/presupuestos.py
 setlocal fdm=indent
 setlocal fde=0
@@ -427,7 +484,7 @@ normal! zo
 normal! zo
 2528
 normal! zo
-let s:l = 2511 - ((12 * winheight(0) + 13) / 27)
+let s:l = 2511 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -805,7 +862,7 @@ wincmd w
 exe 'vert 1resize ' . ((&columns * 21 + 51) / 102)
 exe '2resize ' . ((&lines * 5 + 22) / 45)
 exe 'vert 2resize ' . ((&columns * 80 + 51) / 102)
-exe '3resize ' . ((&lines * 27 + 22) / 45)
+exe '3resize ' . ((&lines * 25 + 22) / 45)
 exe 'vert 3resize ' . ((&columns * 80 + 51) / 102)
 exe '4resize ' . ((&lines * 1 + 22) / 45)
 exe 'vert 4resize ' . ((&columns * 80 + 51) / 102)
@@ -817,6 +874,8 @@ exe '7resize ' . ((&lines * 1 + 22) / 45)
 exe 'vert 7resize ' . ((&columns * 80 + 51) / 102)
 exe '8resize ' . ((&lines * 1 + 22) / 45)
 exe 'vert 8resize ' . ((&columns * 80 + 51) / 102)
+exe '9resize ' . ((&lines * 1 + 22) / 45)
+exe 'vert 9resize ' . ((&columns * 80 + 51) / 102)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
