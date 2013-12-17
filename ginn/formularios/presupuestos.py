@@ -1186,6 +1186,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         self.wids['comboboxentry-entry1'].set_property("can_focus", True)
         self.wids['comboboxentry-entry'].set_property("can_focus", True)
+        self.wids['cb_forma_cobro'].set_wrap_width(3)
         # FIXED: Hay un bug con glade-gtk2 que convierte el Entry de los Combo
         # a can_focus=no por lo que nunca se puede llegar a meter nada a mano.
         self.wids['iconostado'].set_from_stock(gtk.STOCK_INFO, 
