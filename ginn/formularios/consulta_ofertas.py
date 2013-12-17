@@ -28,12 +28,9 @@
 ## NOTAS:
 ##  
 ###################################################################
-## TODO:
+## DONE:
 ## * ¿Filtro para que solo se puedan ver las ofertas del usuario 
 ##   que ha abierto la ventana?
-## PORASQUI: Todavía no se imprime el resumen. Ni por separado 
-##           ni como anexo al PDF de las demás pestañas.
-##           Además no está testeado. Salen valores raros en los días y totales.
 ###################################################################
 
 from ventana import Ventana

@@ -7,3 +7,6 @@
 [submodule "ginn/lib/odfpy"]
 	path = ginn/lib/odfpy
 	url = git@github.com:pacoqueen/odfpy.git
+[submodule "ginn/lib/xlwt"]
+	path = ginn/lib/xlwt
+	url = git@github.com:pacoqueen/xlwt.git

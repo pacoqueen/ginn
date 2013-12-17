@@ -283,11 +283,15 @@ class PedidosDeVenta(Ventana):
             if self.objeto.cliente:
                 if self.cache_credito == None:
                     vpro.mover()
-                    importe_pedido = self.objeto.calcular_importe_total(
-                                        iva = True)
+                    #importe_pedido = self.objeto.calcular_importe_total(
+                    #                    iva = True)
+                    importe_pendiente = \
+                        self.objeto.calcular_importe_pendiente_de_servir(
+                                iva = True)
                     vpro.mover()
                     self.cache_credito = self.objeto.cliente.\
-                            calcular_credito_disponible(base = importe_pedido)
+                            calcular_credito_disponible(
+                                    base = importe_pendiente)
                 if self.cache_credito <= 0:
                     vpro.mover()
                     color = self.wids['cbe_cliente'].child.get_colormap().\

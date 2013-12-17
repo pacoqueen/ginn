@@ -418,17 +418,20 @@ class Presupuestos(Ventana, VentanaGenerica):
             # Correo de riesgo de cliente
             texto = "%s ha solicitado crédito para el cliente %s "\
                     "a través de la oferta %d. Se adjunta copia del "\
-                    "formulario.\n\n\nSi no puede ver el adjunto "\
-                    "use el siguiente complemento: http://downloads"\
-                    ".sourceforge.net/odf-converter/"\
-                    "OdfAddInForOfficeSetup-en.3.0.5254.exe?"\
-                    "use_mirror=nchc" % (
+                    "formulario." % (
                         self.usuario and self.usuario.nombre or "Se", 
                         self.objeto.cliente and self.objeto.cliente.nombre 
                             or self.objeto.nombrecliente, 
                         self.objeto.id)
             if nomfich_solicitud: 
-                adjunto = [nomfich_solicitud]
+                texto += "\n\n\nSi no puede ver el adjunto "\
+                    "use el siguiente complemento: http://downloads"\
+                    ".sourceforge.net/odf-converter/"\
+                    "OdfAddInForOfficeSetup-en.3.0.5254.exe?"\
+                    "use_mirror=nchc" 
+                fich_sol_html = convertir_a_html(nomfich_solicitud)
+                fich_sol_xls = convertir_a_xls(nomfich_solicitud)
+                adjunto = [nomfich_solicitud, fich_sol_html, fich_sol_xls]
             else: 
                 adjunto = []
             vpro.mover()
@@ -3057,6 +3060,32 @@ def cmp_celdas_lrtd(a, b):
         filb = int(b[1:])
         res = fila - filb
     return res
+
+
+def convertir_a_html(fods):
+    pathdest = fods + ".html"
+    from lib.simple_odspy.simpleodspy.sodsspreadsheet import SodsSpreadSheet
+    from lib.simple_odspy.simpleodspy.sodshtml import SodsHtml
+    from lib.simple_odspy.simpleodspy.sodsods import SodsOds
+    t = SodsSpreadSheet()
+    tw = SodsOds(t)
+    tw.load(fods)   # load carga el contenido de fods en t. fw no vale para 
+    tw = SodsHtml(t)    # nada después de eso. Lo reutilizo para html
+    tw.save(pathdest)
+    return pathdest
+
+
+def convertir_a_xls(fods):
+    pathdest = fods + ".xls"
+    from lib.simple_odspy.simpleodspy.sodsspreadsheet import SodsSpreadSheet
+    from lib.simple_odspy.simpleodspy.sodsxls import SodsXls
+    from lib.simple_odspy.simpleodspy.sodsods import SodsOds
+    t = SodsSpreadSheet()
+    tw = SodsOds(t)
+    tw.load(fods)   # load carga el contenido de fods en t. fw no vale para 
+    tw = SodsXls(t)    # nada después de eso. Lo reutilizo para html
+    tw.save(pathdest)
+    return pathdest
 
 
 if __name__ == "__main__":
