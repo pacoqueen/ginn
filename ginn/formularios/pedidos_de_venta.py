@@ -359,7 +359,8 @@ class PedidosDeVenta(Ventana):
             strcredito = "¡UN «GRITÓN» DE DÓLARES!"
             strfdp = "Subasta (de lata de anchoas)"
         self.wids['cbe_cliente'].set_tooltip_text(
-            "Crédito disponible (incluyendo el importe del pedido): %s\n"
+            "Crédito disponible (incluyendo el importe pendiente de "
+            "servir del pedido): %s\n"
             % strcredito)
         self.wids['cbe_fdp'].set_tooltip_text("Forma de pago: %s" % strfdp)
         self.rellenar_obras(combo)

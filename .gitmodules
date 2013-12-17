@@ -10,3 +10,15 @@
 [submodule "ginn/lib/xlwt"]
 	path = ginn/lib/xlwt
 	url = git@github.com:pacoqueen/xlwt.git
+[submodule "xlrd"]
+	path = xlrd
+	url = git@github.com:pacoqueen/xlrd.git
+[submodule "xlutils"]
+	path = xlutils
+	url = git@github.com:pacoqueen/xlutils.git
+[submodule "ginn/lib/xlrd"]
+	path = ginn/lib/xlrd
+	url = git@github.com:pacoqueen/xlrd.git
+[submodule "ginn/lib/xlutils"]
+	path = ginn/lib/xlutils
+	url = git@github.com:pacoqueen/xlutils.git
