@@ -2850,10 +2850,63 @@ def hacer_pedido(presupuesto, usuario, ventana_padre = None):
     las líneas de pedido y servicios del mismo.
     """
     nuevopedido = None
+    if not tiene_pedido_asignado(presupuesto, ventana_padre):
+        numpedido = utils.dialogo_entrada(
+                texto = 'Introduzca un número de pedido.', 
+                titulo = 'NÚMERO DE PEDIDO', 
+                padre = ventana_padre)
+        if numpedido != None:
+            existe = pclases.PedidoVenta.select(
+                pclases.PedidoVenta.q.numpedido == numpedido)
+            if existe.count() > 0:
+                if utils.dialogo(titulo = "PEDIDO YA EXISTE", 
+                        texto = "El número de pedido ya existe. "\
+                                "¿Desea agregar la oferta?", 
+                        padre = ventana_padre):
+                    nuevopedido = existe[0]
+                    if nuevopedido.cerrado:
+                        utils.dialogo_info(titulo = "PEDIDO CERRADO", 
+                            texto = "El pedido %s está cerrado y no admite "
+                                    "cambios. Corrija esta situación antes "
+                                    "de volver a intentarlo." % (
+                                        nuevopedido.numpedido), 
+                            padre = ventana_padre)
+                        nuevopedido = None
+                else:
+                    nuevopedido = None
+            else:
+                if not presupuesto.cliente:
+                    presupuesto.cliente = buscar_cliente(presupuesto, usuario)
+                if not presupuesto.cliente:
+                    # PLAN: Sugerir clientes con nombres parecidos o 
+                    # permitir que se creen si tiene permiso.
+                    nuevopedido = None
+                    utils.dialogo_info(titulo = "CLIENTE NO EXISTE", 
+                            texto = "Asegúrese de que el cliente\n"
+                                    "«%s»\n"
+                                    "existe y está correctamente escrito." % (
+                                        presupuesto.nombrecliente), 
+                            padre = ventana_padre)
+                else:
+                    if not presupuesto.obra:
+                        if presupuesto.nombreobra:
+                            presupuesto.obra = crear_obra(presupuesto, usuario)
+                        else:
+                            customer = presupuesto.cliente
+                            presupuesto.obra = customer.get_obra_generica()
+                    nuevopedido = crear_pedido(presupuesto, numpedido, usuario)
+            if nuevopedido != None:
+                for ldp in presupuesto.lineasDePresupuesto:
+                    add_ldp_a_pedido(presupuesto, ldp, nuevopedido, usuario)
+                #self.actualizar_ventana()
+    return nuevopedido
+
+def tiene_pedido_asignado(presupuesto, ventana_padre):
     if presupuesto and presupuesto.get_pedidos():
         # PLAN: Esto habrá que cambiarlo por una función que compruebe 
         # si queda algo que no haya sido pasado a pedido. No todos los 
         # presupuestos se van a convertir en un único pedido.
+        # CWT: Sí que de cada presupuesto se saca un único pedido. 
         utils.dialogo_info(titulo = "NO SE PUEDE CONVERTIR A PEDIDO", 
                 texto = "La oferta ya se encuentra vinculada a "
                         "los pedidos: %s" % (
@@ -2861,56 +2914,8 @@ def hacer_pedido(presupuesto, usuario, ventana_padre = None):
                                        for p in presupuesto.get_pedidos()]
                                      )),
                 padre = ventana_padre)
-        return
-    numpedido = utils.dialogo_entrada(
-            texto = 'Introduzca un número de pedido.', 
-            titulo = 'NÚMERO DE PEDIDO', 
-            padre = ventana_padre)
-    if numpedido != None:
-        existe = pclases.PedidoVenta.select(
-            pclases.PedidoVenta.q.numpedido == numpedido)
-        if existe.count() > 0:
-            if utils.dialogo(titulo = "PEDIDO YA EXISTE", 
-                    texto = "El número de pedido ya existe. "\
-                            "¿Desea agregar la oferta?", 
-                    padre = ventana_padre):
-                nuevopedido = existe[0]
-                if nuevopedido.cerrado:
-                    utils.dialogo_info(titulo = "PEDIDO CERRADO", 
-                        texto = "El pedido %s está cerrado y no admite "
-                                "cambios. Corrija esta situación antes "
-                                "de volver a intentarlo." % (
-                                    nuevopedido.numpedido), 
-                        padre = ventana_padre)
-                    nuevopedido = None
-            else:
-                nuevopedido = None
-        else:
-            if not presupuesto.cliente:
-                presupuesto.cliente = buscar_cliente(presupuesto, usuario)
-            if not presupuesto.cliente:
-                # PLAN: Sugerir clientes con nombres parecidos o 
-                # permitir que se creen si tiene permiso.
-                nuevopedido = None
-                utils.dialogo_info(titulo = "CLIENTE NO EXISTE", 
-                        texto = "Asegúrese de que el cliente\n"
-                                "«%s»\n"
-                                "existe y está correctamente escrito." % (
-                                    presupuesto.nombrecliente), 
-                        padre = ventana_padre)
-            else:
-                if not presupuesto.obra:
-                    if presupuesto.nombreobra:
-                        presupuesto.obra = crear_obra(presupuesto, usuario)
-                    else:
-                        customer = presupuesto.cliente
-                        presupuesto.obra = customer.get_obra_generica()
-                nuevopedido = crear_pedido(presupuesto, numpedido, usuario)
-        if nuevopedido != None:
-            for ldp in presupuesto.lineasDePresupuesto:
-                add_ldp_a_pedido(presupuesto, ldp, nuevopedido, usuario)
-            #self.actualizar_ventana()
-    return nuevopedido
+        return True
+    return False
 
 
 def abrir_pedido(nuevopedido, usuario):

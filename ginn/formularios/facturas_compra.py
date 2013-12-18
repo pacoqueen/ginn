@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2013  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -119,7 +119,7 @@ class FacturasDeEntrada(Ventana):
                         # XXX: Código para adjuntos.
                        'b_ver_adjunto/clicked': self.ver_adjunto,
                         # XXX: Código para adjuntos.
-                       'b_reciente/pressed': self.abrir_recientes 
+                       'b_reciente/pressed': self.abrir_recientes, 
                       }
         self.add_connections(connections)
         self.inicializar_ventana()
@@ -201,7 +201,7 @@ class FacturasDeEntrada(Ventana):
                         pclases.Ventana.q.fichero == VENTANA)
             if ventanas.count() == 1:   # Siempre debería ser 1.
                 permiso = self.usuario.get_permiso(ventanas[0])
-                if permiso.escritura:
+                if permiso and permiso.escritura:
                     if self.usuario.nivel <= 2:
                         if pclases.DEBUG and pclases.VERBOSE:
                             print "Activo widgets para usuario con nivel "\
@@ -228,11 +228,14 @@ class FacturasDeEntrada(Ventana):
                             print "Desactivo widgets porque no permiso de "\
                                     "escritura."
                         self.activar_widgets(False, chequear_permisos = False)
-                self.wids['b_buscar'].set_sensitive(permiso.lectura)
+                self.wids['b_buscar'].set_sensitive(
+                        permiso and permiso.lectura or False)
                 # XXX: Modificación para recientes.
-                self.wids['b_reciente'].set_sensitive(permiso.lectura)
+                self.wids['b_reciente'].set_sensitive(
+                        permiso and permiso.lectura or False)
                 # XXX: EOModificación para recientes.
-                self.wids['b_nuevo'].set_sensitive(permiso.nuevo)
+                self.wids['b_nuevo'].set_sensitive(
+                        permiso and permiso.nuevo or False)
         else:
             self.activar_widgets(True, chequear_permisos = False)
 
@@ -784,10 +787,19 @@ class FacturasDeEntrada(Ventana):
             # Si el usuario tiene nivel 3 y permiso sobre la ventana (si ha 
             # podido abrirla es que sí), 
             # le dejo editar los vencimientos y cobros.
-            self.wids['expander1'].set_sensitive(True)
+            self.habilitar_vencimientos_e_hijos(self.wids['expander1'])
         self.habilitar_firmas()
         if chequear_permisos:
             self.check_permisos()
+
+    def habilitar_vencimientos_e_hijos(self, w):
+        if w:
+            w.set_sensitive(True)
+            try:
+                for hijo in w.children():
+                    self.habilitar_vencimientos_e_hijos(hijo)
+            except AttributeError:  # No es contenedor, no tiene hijos
+                pass
 
     def habilitar_firmas(self):
         """
@@ -2552,6 +2564,9 @@ class FacturasDeEntrada(Ventana):
             import gobject
             gobject.timeout_add(2000, 
                 lambda *args,**kw:self.wids['ventana'].window.set_cursor(None))
+
+    def debug_bloqueo(self, boton, event):
+        print "Se ha presionado", boton
 
 def abrir_adjunto_from_tv(tv, path, col):   # XXX: Código para adjuntos.
     """
