@@ -2509,10 +2509,11 @@ class Presupuestos(Ventana, VentanaGenerica):
             smtppass = self.usuario.smtppassword
             rte = self.usuario.email
             # TODO: OJO: HARDCODED
-            if self.usuario and self.usuario.id == 1:
+            if self.usuario and self.usuario.id == 1:   # Para depuración.
                 dests = ["informatica@geotexan.com"]
             else:
-                dests = [comercial.correoe for comercial in comerciales]
+                dests = [comercial.correoe for comercial in comerciales 
+                         if comercial.empleado.usuario.usuario != self.usuario]
             # Correo de riesgo de cliente
             texto = "%s ha validado la oferta %d "\
                     "para el cliente %s de fecha %s." % (
