@@ -1345,18 +1345,33 @@ class Presupuestos(Ventana, VentanaGenerica):
         Asocia una función al treeview para resaltar las acciones.
         """
         def cell_func(column, cell, model, itr, numcol):
-            tipo = model[itr][3]
-            if tipo == "create":
-                color = "green"
-            elif tipo == "drop":
-                color = "red"
-            elif tipo == "update": 
-                color = "light blue"
+            usuario = model[itr][0]
+            if usuario == (self.usuario and self.usuario.usuario or ""):
+                color_fg = "tomato"
+            elif usuario == (self.objeto.comercial 
+                    and self.objeto.comercial.empleado 
+                    and self.objeto.comercial.empleado.usuario 
+                    and self.objeto.comercial.empleado.usuario.usuario or ""):
+                color_fg = "blue"
             else:
-                # Cualquier otra cosa 
-                color = None
+                color_fg = None
+            ventana = model[itr][1]
+            if ventana != "presupuestos.py":    # OJO: HARCODED
+                color = "light gray"
+            else:
+                tipo = model[itr][3]
+                if tipo == "create":
+                    color = "yellow green"
+                elif tipo == "drop":
+                    color = "red"
+                elif tipo == "update": 
+                    color = "light blue"
+                else:
+                    # Cualquier otra cosa 
+                    color = None
             #cell.set_property("cell-background", color)
             cell.set_property("background", color)
+            cell.set_property("foreground", color_fg)
         cols = tv.get_columns()
         for i in xrange(len(cols)): 
             column = cols[i]
@@ -2195,10 +2210,31 @@ class Presupuestos(Ventana, VentanaGenerica):
         model.clear()
         last_iter = None
         if self.objeto:
+            # Cambios en el objeto en sí 
             audits = pclases.Auditoria.select(
                     pclases.Auditoria.q.dbpuid == self.objeto.puid, 
                     orderBy = "fechahora")
             self.lines_added = []
+            audits = pclases.SQLlist(audits)
+            # Líneas de presupuesto
+            for ldpresupuesto in self.objeto.lineasDePresupuesto:
+                more_audits = pclases.Auditoria.select(
+                        pclases.Auditoria.q.dbpuid == ldpresupuesto.puid, 
+                        orderBy = "fechahora")
+                audits += [i for i in more_audits]
+            # Cambios en el cliente
+            if self.objeto.cliente:
+                much_more_audits = pclases.Auditoria.select(
+                        pclases.Auditoria.q.dbpuid == self.objeto.cliente.puid,
+                        orderBy = "fechahora")
+                audits += [i for i in much_more_audits]
+            # Cambios en obra
+            if self.objeto.obra:
+                much_more_audits = pclases.Auditoria.select(
+                        pclases.Auditoria.q.dbpuid == self.objeto.obra.puid,
+                        orderBy = "fechahora")
+                audits += [i for i in much_more_audits]
+            # Vuelco a la ventana, aunque no lleven orden de fechahora absoluto
             for a in audits:
                 last_iter = self.agregar_linea_auditoria(model, a)
         w.set_model(model)
