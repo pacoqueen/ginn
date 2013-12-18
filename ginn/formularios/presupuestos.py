@@ -396,7 +396,6 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         Envía un correo de solicitud de crédito al usuario correspondiente.
         """
-        # TODO: PORASQUI: El Excel de serie (al menos hasta la versión 2007 no abre los ods. Enviar versión también en PDF o HTML.
         vpro = VentanaActividad(self.wids['ventana'], 
                 "Enviando solicitud por correo electrónico.")
         vpro.mostrar()
@@ -424,13 +423,13 @@ class Presupuestos(Ventana, VentanaGenerica):
                             or self.objeto.nombrecliente, 
                         self.objeto.id)
             if nomfich_solicitud: 
-                texto += "\n\n\nSi no puede ver el adjunto "\
-                    "use el siguiente complemento: http://downloads"\
-                    ".sourceforge.net/odf-converter/"\
+                texto += "\n\n\nSi no puede ver el adjunto en el estándar"\
+                    " OpenDocument use el siguiente complemento: "\
+                    "http://downloads.sourceforge.net/odf-converter/"\
                     "OdfAddInForOfficeSetup-en.3.0.5254.exe?"\
                     "use_mirror=nchc" 
                 fich_sol_html = convertir_a_html(nomfich_solicitud)
-                fich_sol_xls = convertir_a_xls(nomfich_solicitud)
+                fich_sol_xls = crear_xls(self.objeto, self.wids)
                 adjunto = [nomfich_solicitud, fich_sol_html, fich_sol_xls]
             else: 
                 adjunto = []
@@ -2851,6 +2850,14 @@ def hacer_pedido(presupuesto, usuario, ventana_padre = None):
     """
     nuevopedido = None
     if not tiene_pedido_asignado(presupuesto, ventana_padre):
+        # TODO: ¿Debo comprobar si el cliente tiene crédito 
+        # suficiente para crear un pedido con toda la oferta? Pues en teoría 
+        # no. Porque si no tiene crédito, necesita validación manual. Y si 
+        # alguien con permisos ha validado es porque se le puede vender esta 
+        # oferta aunque no tenga crédito. No tiene sentido volver a 
+        # a comprobarlo a no ser que la oferta fuera válida en principio y al 
+        # cabo de unos días, cuando se intente hacer el pedido, ya no tenga 
+        # crédito por el motivo que sea.
         numpedido = utils.dialogo_entrada(
                 texto = 'Introduzca un número de pedido.', 
                 titulo = 'NÚMERO DE PEDIDO', 
@@ -2859,21 +2866,8 @@ def hacer_pedido(presupuesto, usuario, ventana_padre = None):
             existe = pclases.PedidoVenta.select(
                 pclases.PedidoVenta.q.numpedido == numpedido)
             if existe.count() > 0:
-                if utils.dialogo(titulo = "PEDIDO YA EXISTE", 
-                        texto = "El número de pedido ya existe. "\
-                                "¿Desea agregar la oferta?", 
-                        padre = ventana_padre):
-                    nuevopedido = existe[0]
-                    if nuevopedido.cerrado:
-                        utils.dialogo_info(titulo = "PEDIDO CERRADO", 
-                            texto = "El pedido %s está cerrado y no admite "
-                                    "cambios. Corrija esta situación antes "
-                                    "de volver a intentarlo." % (
-                                        nuevopedido.numpedido), 
-                            padre = ventana_padre)
-                        nuevopedido = None
-                else:
-                    nuevopedido = None
+                nuevopedido = preguntar_si_agregar_a_pedido(
+                                ventana_padre, existe, nuevopedido)
             else:
                 if not presupuesto.cliente:
                     presupuesto.cliente = buscar_cliente(presupuesto, usuario)
@@ -2899,6 +2893,24 @@ def hacer_pedido(presupuesto, usuario, ventana_padre = None):
                 for ldp in presupuesto.lineasDePresupuesto:
                     add_ldp_a_pedido(presupuesto, ldp, nuevopedido, usuario)
                 #self.actualizar_ventana()
+    return nuevopedido
+
+def preguntar_si_agregar_a_pedido(ventana_padre, existe, nuevopedido):
+    if utils.dialogo(titulo = "PEDIDO YA EXISTE", 
+            texto = "El número de pedido ya existe. "\
+                    "¿Desea agregar la oferta?", 
+            padre = ventana_padre):
+        nuevopedido = existe[0]
+        if nuevopedido.cerrado:
+            utils.dialogo_info(titulo = "PEDIDO CERRADO", 
+                texto = "El pedido %s está cerrado y no admite "
+                        "cambios. Corrija esta situación antes "
+                        "de volver a intentarlo." % (
+                            nuevopedido.numpedido), 
+                padre = ventana_padre)
+            nuevopedido = None
+    else:
+        nuevopedido = None
     return nuevopedido
 
 def tiene_pedido_asignado(presupuesto, ventana_padre):
@@ -3073,6 +3085,24 @@ def generar_pdf_presupuesto(objeto_presupuesto):
     pdf_presupuesto = presupuesto.go_from_presupuesto(objeto_presupuesto)
     return pdf_presupuesto
 
+def prepare_for_xls(cadena):
+    """
+    Pepara la cadena para ser incluída en una hoja de cálculo en ODF (.ods).
+    """
+    valor = cadena
+    # TODO: No me gusta cambiar el encoding --y menos a uno sin tildes--, 
+    # pero tampoco encuentro la manera de que el xls me pille unicode por 
+    # mucho que lo fuerzo. 
+    # TODO: También habría que retocar la plantilla para que los bordes 
+    # se dibujaran desde las celdas adyacentes, ya que al rellenar el valor 
+    # se pierden los bordes de las celdas que relleno. Pero como además me 
+    # han pasado el Excel protegido... pues tampoco puedo tocarlo 
+    # (en teoría...MWHAHAHAHA. BOFH inside)
+    valor = valor.encode("ascii", "replace")
+    #valor = valor.replace("\n", " ").strip()
+    return valor
+
+
 def prepare_for_ods(cadena):
     """
     Pepara la cadena para ser incluída en una hoja de cálculo en ODF (.ods).
@@ -3118,11 +3148,143 @@ def convertir_a_html(fods):
     tw.save(pathdest)
     return pathdest
 
+def crear_xls(p, wids_ventana):
+    """
+    Crea "un excel" a partir de una plantilla xls en blanco (el nombre está 
+    predeterminado y no se puede cambiar) con los datos del presupuesto «p».
+    """
+    vpro = VentanaProgreso(padre = wids_ventana['ventana'])
+    vpro.set_valor(0, "Rellenado plantilla (xls)...")
+    vpro.mostrar()
+    from lib.odfpy.contrib.odscell.odscell import updateCells, parseCell
+    from lib.xlutils.xlutils import copy
+    from lib.xlwt import xlwt
+    from lib.xlrd import xlrd
+    import os
+    from tempfile import NamedTemporaryFile
+    # Cargo la plantilla y creo una tabla para trabajar en ella que al 
+    # principio contendrá lo mismo que la plantilla.
+    plantilla = os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+                         "..", "informes", "solicitud_credito.xls")
+    ruta_final = NamedTemporaryFile(suffix = ".xls").name
+    ## Relleno los campos. Prepararsus que no son pocos:
+    try:
+        credsolicitado = str(int(utils._float(
+                         wids_ventana['e_cred_credsolicitado'].get_text())))
+    except ValueError:
+        credsolicitado = ""
+    try:
+        credasegurado = str(int(utils._float(
+                     wids_ventana['e_cred_asegurado'].get_text())))
+    except ValueError:
+        credasegurado  = ""
+    try:
+        credconcedido = str(int(utils._float(
+                     wids_ventana['e_cred_concedido'].get_text())))
+    except ValueError:
+        credconcedido = ""
+    celfields = {"B5": wids_ventana['e_cred_fecha'].get_text(), 
+                 # HACK: Las celdas vacías consecutivas cuentan como 1 sola
+                 #"F4": p.credApertura and "X" or " ", 
+                 "O6": p.credApertura and "X" or " ", 
+                 # HACK: Las celdas vacías consecutivas cuentan como 1 sola
+                 #"F5": p.credAumento and "X" or " ", 
+                 "O7": p.credAumento and "X" or " ", 
+                 "O8": p.credSolicitud and "X" or " ", 
+                 "B7": wids_ventana['e_cred_comercial'].get_text(), 
+                # Apartado de datos fiscales.
+                 "B13": wids_ventana['e_cred_cif'].get_text(), 
+                 "B15": wids_ventana['e_cred_nombre'].get_text(), 
+                 "B17": wids_ventana['e_cred_ute'].get_text(), 
+                 "B19": wids_ventana['e_cred_obra'].get_text(), 
+                 "B21": wids_ventana['e_cred_licitador'].get_text(), 
+                 "B23": wids_ventana['e_cred_dirfiscal'].get_text(), 
+                 "B25": wids_ventana['e_cred_cpfiscal'].get_text(), 
+                 "F25": wids_ventana['e_cred_poblacionfiscal'].get_text(), 
+                 "M25": wids_ventana['e_cred_provinciafiscal'].get_text(), 
+                 "B27": wids_ventana['e_cred_telefonofiscal'].get_text(), 
+                 "G27": wids_ventana['e_cred_faxfiscal'].get_text(), 
+                 "M27": wids_ventana['e_cred_movilfiscal'].get_text(), 
+                 "B29": wids_ventana['e_cred_contactofiscal'].get_text(), 
+                 # HACK: Las celdas vacías consecutivas cuentan como 1 sola
+                 #"F26": wids_ventana['e_cred_emailfiscal'].get_text(), 
+                 "M29": wids_ventana['e_cred_emailfiscal'].get_text(), 
+                # Apartado de envío de facturas y contratos. 
+                 "B34": wids_ventana['e_cred_dircontratos'].get_text(), 
+                 "B36": wids_ventana['e_cred_cpcontratos'].get_text(), 
+                 "F36": wids_ventana['e_cred_poblacioncontratos'].get_text(), 
+                 "M36": wids_ventana['e_cred_provinciacontratos'].get_text(), 
+                 "B38": wids_ventana['e_cred_telefonocontratos'].get_text(), 
+                 "K38": wids_ventana['e_cred_emailcontratos'].get_text(), 
+                 "B40": wids_ventana['e_cred_contactocontratos'].get_text(), 
+                 # HACK: Las celdas vacías consecutivas cuentan como 1 sola
+                 #"F36": wids_ventana['e_cred_movilcontratos'].get_text(),  
+                 "M40": wids_ventana['e_cred_movilcontratos'].get_text(),  
+                # Apartado de dirección de obra (envío de materiales)
+                 "B45": wids_ventana['e_cred_dirobra'].get_text(), 
+                 "B47": wids_ventana['e_cred_cpobra'].get_text(), 
+                 "F47": wids_ventana['e_cred_poblacionobra'].get_text(), 
+                 "M47": wids_ventana['e_cred_provinciaobra'].get_text(), 
+                 "B49": wids_ventana['e_cred_movilobra'].get_text(), 
+                 "B51": wids_ventana['e_cred_contactoobra'].get_text(), 
+                # Apartado de datos de pago 
+                 "C56": wids_ventana['e_cred_fdp'].get_text(), 
+                 "A60": wids_ventana['txt_cred_entidades'].get_buffer(
+                     ).get_text(
+                         *wids_ventana['txt_cred_entidades'].get_buffer(
+                             ).get_bounds()),
+                 "A68": wids_ventana['e_cred_entidad'].get_text(), 
+                 "D68": wids_ventana['e_cred_oficina'].get_text(), 
+                 "I68": wids_ventana['e_cred_digitocontrol'].get_text(), 
+                 "L68": wids_ventana['e_cred_numcuenta'].get_text(), 
+                 "G70": wids_ventana['e_cred_diapago1'].get_text(), 
+                 "H70": wids_ventana['e_cred_diapago2'].get_text(), 
+                 "I70": wids_ventana['e_cred_diapago3'].get_text(), 
+                # Apartado de riesgos cliente
+                 "B75": credsolicitado, 
+                 "A78": wids_ventana['txt_cred_observaciones'].get_buffer(
+                    ).get_text(
+                        *wids_ventana['txt_cred_observaciones'].get_buffer(
+                            ).get_bounds()),
+                 "A83": wids_ventana['txt_cred_condiciones'].get_buffer(
+                         ).get_text(
+                            *wids_ventana['txt_cred_condiciones'].get_buffer(
+                                ).get_bounds()),
+                # Apartado de vistos buenos
+                 "A94": wids_ventana['e_cred_vb_nombrecomercial'].get_text(), 
+                 ## Protegido en el original. No lo toco.
+                 #"": wids_ventana['e_cred_vb_nombreadmon'].get_text(), 
+                 #"": credasegurado, 
+                 #"": wids_ventana['e_cred_fechaasegurado'].get_text(), 
+                 #"": credconcedido, 
+                 # HACK: Las celdas vacías consecutivas cuentan como 1 sola
+                 #"F77": wids_ventana['e_cred_fechaconcedido'].get_text(), 
+                 #"": wids_ventana['e_cred_fechaconcedido'].get_text(), 
+                }
+    wb = copy.copy(
+            xlrd.open_workbook(plantilla, 
+                               formatting_info = True, 
+                               encoding_override="utf-8")
+            )
+    s = wb.get_sheet(0)
+    tot = len(celfields.keys())
+    i = 0.0
+    for cell in celfields:
+        i += 1
+        vpro.set_valor(i/tot, "Rellenando plantilla (xls)...")
+        valor = prepare_for_xls(celfields[cell])
+        if valor:
+            s.write(parseCell(cell)[1],     # row
+                    parseCell(cell)[0],     # col
+                    valor)    # Espera un iterable
+    ## Y por fin guardo y devuelvo la ruta.
+    vpro.set_valor(1.0, 
+            "Guardando plantilla. Por favor, espere.")
+    wb.save(ruta_final)
+    vpro.ocultar()
+    return ruta_final
 
-def convertir_a_xls(fods):
-    # TODO: PORASQUI: El módulo xl* parece funcionar a la perfección. Ahora 
-    # tengo que volver a crear la plantilla vacía, copiarla con el xutils y 
-    # rellenarla para guardarla con xlst. Ver el README.md de xlutils.
+def OBSOLETE_convertir_a_xls(fods):
     pathdest = fods + ".xls"
     from lib.simple_odspy.simpleodspy.sodsspreadsheet import SodsSpreadSheet
     from lib.simple_odspy.simpleodspy.sodsxls import SodsXls
