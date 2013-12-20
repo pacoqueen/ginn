@@ -43,7 +43,6 @@ pygtk.require('2.0')
 import gtk, mx.DateTime
 from framework import pclases
 from framework.seeker import VentanaGenerica 
-from pedidos_de_venta import preguntar_precio
 from formularios.ventana_progreso import VentanaActividad
 from formularios.ventana_progreso import VentanaProgreso
 import gobject
