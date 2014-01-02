@@ -2553,11 +2553,13 @@ class PedidosDeVenta(Ventana):
             self.cache_credito = self.objeto.cliente.\
                     calcular_credito_disponible(base = importe_pendiente)
         credito = self.cache_credito
-        if importe_pedido > credito:
+        #if importe_pedido > credito:
+        if importe_pendiente> credito:
             texto = "El crédito actual del cliente es de %s.\n"\
-                     "El importe del pedido es %s.\n" % (
+                     "El importe pendiente del pedido es %s.\n" % (
                         utils.float2str(credito), 
-                        utils.float2str(importe_pedido))
+                        #utils.float2str(importe_pedido))
+                        utils.float2str(importe_pendiente))
             if self.usuario and self.usuario.nivel == 0:
                 res = utils.dialogo(titulo = "¿FACTURAR SIN CRÉDITO?", 
                     texto = texto + "\n¿Continuar?", 
