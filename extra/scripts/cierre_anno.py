@@ -26,13 +26,11 @@ import re
 import mx, mx.DateTime
 # Determino dónde estoy para importar pclases y utils
 diractual = os.path.split(os.path.abspath(os.path.curdir))[-1]
-if diractual == "fixes":
-    path_to_f = os.path.join("..", "geotexinn02", "formularios")
-    os.chdir(path_to_f)
-sys.path.insert(0, os.path.join("..", "framework"))
-sys.path.insert(1, os.path.join("..", "formularios"))
-import pclases
-import utils
+assert diractual == "scripts", \
+        "Debe ejecutar el script desde el directorio donde reside."
+sys.path.insert(0, os.path.abspath(os.path.join("..", "..", "ginn")))
+from framework import pclases
+from formularios import utils
 
 
 def detect_anno_cierre():
@@ -98,11 +96,17 @@ def pasar_contador(contador):
     """
     prefijo = pasar_presufi(contador.prefijo)
     sufijo = pasar_presufi(contador.sufijo)
-    nuevocontador = contador.clone(prefijo = prefijo, sufijo = sufijo, 
-                                   contador = 1)
+    try:    # Puede que ya exista el contador. Lo reutilizo
+        nuevocontador = pclases.Contador.select(pclases.AND(
+                pclases.Contador.q.prefijo == prefijo, 
+                pclases.Contador.q.sufijo == sufijo), 
+            orderBy = "-id")[0]
+    except IndexError:  # Si no existe, entonces sí que lo creo.
+        nuevocontador = contador.clone(prefijo = prefijo, sufijo = sufijo, 
+                                       contador = 1)
     print "\tPasando contador %s (%d facturas)." % (contador, 
                                                 len(contador.get_facturas()))
-    print "\tContador %s creado." % nuevocontador
+    print "\tContador %s creado o reusado." % nuevocontador
     print "\tPasando %d clientes..." % len(contador.clientes), 
     sys.stdout.flush()
     for cliente in contador.clientes:

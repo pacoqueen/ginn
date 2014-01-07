@@ -98,7 +98,10 @@ class FacturaVenta(SQLObject, PRPCTOO, SuperFacturaVenta):
         """
         res = None
         numfactura = self.numfactura
-        contadores = Contador.select()
+        contadores = Contador.select(orderBy = "-id")   # Para que si hay 
+        # varios que empiezan igual o esté el prefijo de uno contenido en el 
+        # del otro , se quede con el más reciente. Que probablemente sea el 
+        # correcto.
         for c in contadores:
             if (numfactura.startswith(c.prefijo) 
                and numfactura.endswith(c.sufijo)):
