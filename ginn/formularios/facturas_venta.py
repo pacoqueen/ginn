@@ -1256,7 +1256,7 @@ class FacturasVenta(Ventana):
                                        irpf = irpf)
                 # ¡¡¡¿Por qué sigue teniendo el cliente el IVA como entero en vez de fracción de 1?!!!
         pclases.Auditoria.nuevo(factura, self.usuario, __file__)
-        numero_contador = int(numfactura.replace(cliente.contador.prefijo, '').replace(cliente.contador.sufijo, '')) + 1
+        numero_contador = factura.get_numero_numfactura_contador()
         if numero_contador > cliente.contador.contador:
             # Si crea una factura que no sea la última (para rellenar algún hueco o algo), NO DEBE ACTUALIZAR EL CONTADOR.
             cliente.contador.contador = numero_contador
