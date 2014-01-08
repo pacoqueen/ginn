@@ -892,6 +892,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         #    self.wids["e_fax"].set_text(cliente.fax)
         if not self.wids['e_persona_contacto'].get_text().strip():
             self.wids['e_persona_contacto'].set_text(cliente.contacto)
+        self.actualizar_obras_cliente()
 
     def seleccionar_cantidad(self, producto):
         """
@@ -1758,7 +1759,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         esta función en ese caso.
         """
         if pclases.DEBUG:
-            print "  >>> ::::::::::::::::: rellenar_widgets ::::::::::::::::::"
+            print "  >>> :::::::::::::: rellenar_widgets :::::::::::::::"
         # Autobloqueo antes de nada.
         if (self.objeto and self.objeto.get_pedidos() 
                 and not self.objeto.bloqueado):
@@ -1767,8 +1768,8 @@ class Presupuestos(Ventana, VentanaGenerica):
             self.objeto.bloqueado = True
             self.objeto.syncUpdate()
             self.wids['ch_bloqueado'].set_active(self.objeto.bloqueado)
-            self.hndlr_bloqueado = self.wids['ch_bloqueado'].connect('clicked', 
-                    self.bloquear)
+            self.hndlr_bloqueado = self.wids['ch_bloqueado'].connect(
+                    'clicked', self.bloquear)
         # Botones atrás/adelante. ¿Hay anterior y siguiente?
         presupuestos_anteriores = self.buscar_presupuestos_accesibles(
                     mas_criterios_de_busqueda = 
@@ -1787,12 +1788,13 @@ class Presupuestos(Ventana, VentanaGenerica):
         utils.rellenar_lista(self.wids['cb_forma_cobro'], fdps)
         utils.rellenar_lista(self.wids['cbe_cliente'], 
             [(p.id, p.nombre) for p in 
-             pclases.Cliente.select(orderBy = "nombre") if not p.inhabilitado]) 
+             pclases.Cliente.select(orderBy = "nombre") 
+             if not p.inhabilitado]) 
             # Lo pongo aquí por si crea un cliente nuevo sin cerrar esta 
             # ventana y lo quiere usar.
         # SANTABÁRBARA
-        # Me aseguro de que si el cliente existe y es lo que tengo escrito, 
-        # la asociación esté bien hecha.
+        # Me aseguro de que si el cliente existe y es lo que tengo 
+        # escrito, la asociación esté bien hecha.
         try:
             self.objeto.cliente = pclases.Cliente.selectBy(
                     nombre = self.objeto.nombrecliente)[0]
@@ -1805,7 +1807,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 for c in e.comerciales:
                     comerciales.append(c)
         if not comerciales or (self.usuario 
-                               and self.usuario.nivel <= NIVEL_VALIDACION):
+                               and self.usuario.nivel<=NIVEL_VALIDACION):
             comerciales = pclases.Comercial.select() 
         if self.objeto.comercial and self.objeto.comercial not in comerciales:
             comerciales.append(self.objeto.comercial)
@@ -1820,18 +1822,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             opciones_comerciales += [(-1, "Sin comercial relacionado")]
         utils.rellenar_lista(self.wids['cb_comercial'], 
                 opciones_comerciales)
-        if self.objeto.cliente:
-            obras = [(o.id, o.get_str_obra()) 
-                     for o in self.objeto.cliente.obras]
-        else:
-            obras = []
-        if (self.objeto.obra 
-                and self.objeto.obra.id not in [o[0] for o in obras]):
-            # Por si acaso no está la obra del presupuesto entre las del 
-            # cliente por no estar la lista actualizada o lo que sea. 
-            obras.append((self.objeto.obra.id, 
-                          self.objeto.obra.get_str_obra()))
-        utils.rellenar_lista(self.wids['cbe_obra'], obras)
+        self.actualizar_obras_cliente()
         presupuesto = self.objeto
         for nombre_col in self.dic_campos:
             if nombre_col == "comercialID" and not presupuesto.comercial:
@@ -1886,7 +1877,26 @@ class Presupuestos(Ventana, VentanaGenerica):
             nombre_del_comercial = ""
         self.wids["e_cred_comercial"].set_text(nombre_del_comercial)
         if pclases.DEBUG:
-            print "  <<< ::::::::::::::::: rellenar_widgets ::::::::::::::::::"
+            print "  <<< :::::::::::::: rellenar_widgets :::::::::::::::"
+
+    def actualizar_obras_cliente(self):
+        idcliente = utils.combo_get_value(self.wids['cbe_cliente'])
+        if idcliente and idcliente != -1:
+            temp_cliente = pclases.Cliente.get(idcliente)
+            obras = [(o.id, o.get_str_obra()) 
+                     for o in temp_cliente.obras]
+        elif self.objeto.cliente:
+            obras = [(o.id, o.get_str_obra()) 
+                     for o in self.objeto.cliente.obras]
+        else:
+            obras = []
+        if (self.objeto.obra 
+                and self.objeto.obra.id not in [o[0] for o in obras]):
+            # Por si acaso no está la obra del presupuesto entre las del 
+            # cliente por no estar la lista actualizada o lo que sea. 
+            obras.append((self.objeto.obra.id, 
+                          self.objeto.obra.get_str_obra()))
+        utils.rellenar_lista(self.wids['cbe_obra'], obras)
 
     def rellenar_lista_presupuestos(self):
         if not "tv_presupuestos" in self.wids.keys():
