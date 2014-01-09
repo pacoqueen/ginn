@@ -117,7 +117,10 @@ class GestorMensajes:
         ventana = self.construir_ventana(fecha,mensaje,len(self.__pendientes))
         a.entregado = self.mostrar_ventana(ventana, a)
         if a.entregado:
-            self.__pendientes.remove(a)
+            try:
+                self.__pendientes.remove(a)
+            except ValueError:
+                pass    # el mensaje «a» ya fue eliminado de pendientes.
         return len(self.__pendientes)
 
     def construir_ventana(self, f, m, p):
