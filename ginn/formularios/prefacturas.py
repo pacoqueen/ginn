@@ -385,6 +385,9 @@ class Prefacturas(Ventana):
         except TypeError:
             tot_dto = ffloat(-1 * (subtotal + float(factura.cargo)) 
                                 * float(factura.descuento))
+        except ValueError:
+            tot_dto = utils._float(-1 * (subtotal + float(factura.cargo)) 
+                                * float(factura.descuento))
         self.wids['e_tot_dto'].set_text("%s €" % utils.float2str(tot_dto))
         if tot_dto < 0:
             self.wids['e_tot_dto'].modify_text(gtk.STATE_NORMAL, 
@@ -418,10 +421,16 @@ class Prefacturas(Ventana):
         # XXX
 
     def total_irpf(self, base_imponible, irpf):
-        return ffloat(base_imponible * irpf)
+        try:
+            return ffloat(base_imponible * irpf)
+        except ValueError:
+            return utils._float(base_imponible * irpf)
 
     def total_iva(self, iva, subtotal, tot_dto, cargo, abonos):
-        return ffloat(subtotal + tot_dto + cargo + abonos) * iva
+        try:
+            return ffloat(subtotal + tot_dto + cargo + abonos) * iva
+        except ValueError:
+            return utils._float(subtotal + tot_dto + cargo + abonos) * iva
 
     def total_ldvs(self, factura):
         """

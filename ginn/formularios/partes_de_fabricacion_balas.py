@@ -317,8 +317,6 @@ class PartesDeFabricacionBalas(Ventana):
         # Siempre debe ser la del producto, so...
         self.wids['e_o80'].set_has_frame(False)
         self.wids['e_o80'].set_property("editable", False)
-        self.wids['e_o80'].set_property("editable", True)   # OJO: XXX: Hasta 
-                    # que estén bien puestas todas las producciones estándar.
         # Inicialmente no se muestra NADA. Sólo se le deja al
         # usuario la opción de buscar o crear nuevo.
         self.activar_widgets(False)
