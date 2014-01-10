@@ -1103,12 +1103,18 @@ class Presupuestos(Ventana, VentanaGenerica):
             enviado = ventana_correo.run()
             ventana_correo.cerrar()
             if not enviado:
+                try:
+                    ventana_padre = self.wids['ventana']
+                except KeyError:
+                    # Ya ventana ya no está disponible. Pero muestro el error 
+                    # igualmente.
+                    ventana_padre = None
                 utils.dialogo_info(titulo = "ERROR EN ENVÍO", 
                         texto = "Ocurrió un error al enviar el correo.\n"
                                 "Asegúrese de que su antivirus no está "
                                 "bloqueando los correos salientes y "
                                 "vuelva a intentarlo más tarde.", 
-                        padre = self.wids['ventana'])
+                        padre = ventana_padre)
         #utils.dialogo_info(titulo = "NO IMPLEMENTADO", 
         #        texto = "Característica en desarrollo.", 
         #        padre = self.wids['ventana'])
