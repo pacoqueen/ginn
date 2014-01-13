@@ -29,7 +29,7 @@
 ## NOTAS:
 ##  
 ## ----------------------------------------------------------------
-##  
+## TODO: Servicios en cursiva para distinguirlo mejor de los productos de compra y venta. 
 ###################################################################
 ## Changelog:
 ## 15 de marzo de 2007 -> Inicio 
