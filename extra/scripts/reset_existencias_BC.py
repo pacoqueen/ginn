@@ -66,15 +66,20 @@ def main ():
     i = 0
     puntos = 0
     alb = buscar_o_crear_albaran_ajuste()
-    for a in articulos:
+    ultimo = articulos.max("id")
+    for ide in range(1, ultimo + 1):   # Es más rápido y ocupa menos memoria.
+        try:
+            a = pclases.Articulo.get(ide)
+        except pclases.SQLObjectNotFound:
+            continue    # No existe. No me importa. No me interesa.
         i += 1
         if a.en_almacen() and (a.es_clase_b() or a.es_clase_c()):
             print "Anulando %s (%d/%d)." % (a.codigo, i, tot)
-            anular(a, aajuste)
+            anular(a, alb)
         else:
             puntos += 1
             print ".", 
-            if puntos >= 100:
+            if puntos >= 1000:
                 puntos = 0
                 print "<%d/%d>" % (i, tot), 
             sys.stdout.flush()
