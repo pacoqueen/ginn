@@ -1653,12 +1653,14 @@ class Presupuestos(Ventana, VentanaGenerica):
                 if estado in (pclases.PLAZO_EXCESIVO, 
                               pclases.SIN_FORMA_DE_PAGO, 
                               pclases.PRECIO_INSUFICIENTE, 
-                              pclases.COND_PARTICULARES):
+                              pclases.COND_PARTICULARES, 
+                              pclases.COMERCIALIZADO):
                     puede_imprimir = False
                     txt_puede_imprimir = "Compruebe que la oferta tiene "\
                             "forma de pago, que cumple las restricciones "\
-                            "de plazo y precio mínimo y que no tiene "\
-                            "condiciones particulares."
+                            "de plazo y precio mínimo, que no tiene "\
+                            "condiciones particulares y que no lleva "\
+                            "comercializados"
                     if estado != pclases.COND_PARTICULARES:
                         # Una oferta con condiciones particulares sí que puede 
                         # adjudicarse. Solo que para imprimirla antes le 
