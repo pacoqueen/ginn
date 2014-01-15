@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2013 Francisco José Rodríguez Bogado,                    #
+# Copyright (C) 2005-2014 Francisco José Rodríguez Bogado,                    #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -696,6 +696,7 @@ class DocumentoDePago(SQLObject, PRPCTOO):
     CONFIRMING = "Confirming"
     CHEQUE = "Cheque"
     CARTA = "Carta de crédito"
+    CARTA_VISTA = "Carta de crédito a la vista"
     DOMICILIACION = "Domiciliación bancaria"
 
     @classmethod
@@ -725,6 +726,10 @@ class DocumentoDePago(SQLObject, PRPCTOO):
     @classmethod
     def Carta(clase):
         return clase._oblomov(clase.CARTA)
+
+    @classmethod
+    def CartaVista(clase):
+        return clase._oblomov(clase.CARTA_VISTA)
 
     @classmethod
     def Domiciliacion(clase):
@@ -3073,6 +3078,8 @@ class Cobro(SQLObject, PRPCTOO):
             doc = DocumentoDePago.NoALaOrden()
         elif "CHEQUE" in txt:
             doc = DocumentoDePago.Cheque()
+        elif "CARTA" in txt and "VISTA" in txt:
+            doc = DocumentoDePago.CartaVista()
         elif "CARTA" in txt:
             doc = DocumentoDePago.Carta()
         elif "DOMICILIA" in txt or "RECIBO" in txt or "BANC" in txt:

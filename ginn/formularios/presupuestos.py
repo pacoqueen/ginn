@@ -60,6 +60,9 @@ CONDICIONES_DURAS = (pclases.PLAZO_EXCESIVO,
                      pclases.PRECIO_INSUFICIENTE, 
                      pclases.COND_PARTICULARES, 
                      pclases.COMERCIALIZADO)
+CONDICIONES_BLANDAS = (pclases.NO_VALIDABLE,    # @UnusedVariable
+                       pclases.CLIENTE_DEUDOR, 
+                       pclases.SIN_CIF)
 
 class Presupuestos(Ventana, VentanaGenerica):
     def __init__(self, objeto = None, usuario = None):
