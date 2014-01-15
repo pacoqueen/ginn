@@ -55,6 +55,11 @@ import time
 from formularios.utils import enviar_correoe
 
 NIVEL_VALIDACION = 1
+CONDICIONES_DURAS = (pclases.PLAZO_EXCESIVO, 
+                     pclases.SIN_FORMA_DE_PAGO, 
+                     pclases.PRECIO_INSUFICIENTE, 
+                     pclases.COND_PARTICULARES, 
+                     pclases.COMERCIALIZADO)
 
 class Presupuestos(Ventana, VentanaGenerica):
     def __init__(self, objeto = None, usuario = None):
@@ -1650,11 +1655,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             if self.objeto and self.objeto.estudio == False:
                 # En ofertas de pedido...
                 estado = self.objeto.get_estado_validacion()
-                if estado in (pclases.PLAZO_EXCESIVO, 
-                              pclases.SIN_FORMA_DE_PAGO, 
-                              pclases.PRECIO_INSUFICIENTE, 
-                              pclases.COND_PARTICULARES, 
-                              pclases.COMERCIALIZADO):
+                if estado in CONDICIONES_DURAS:
                     puede_imprimir = False
                     txt_puede_imprimir = "Compruebe que la oferta tiene "\
                             "forma de pago, que cumple las restricciones "\
@@ -2073,10 +2074,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                     continue    # Si ya se ha servido, validado o no, ya no 
                                 # está pendiente de nada. Ya siguió su curso.
                 estado = p.get_estado_validacion()
-                if estado in (pclases.PLAZO_EXCESIVO, 
-                              pclases.SIN_FORMA_DE_PAGO, 
-                              pclases.PRECIO_INSUFICIENTE, 
-                              pclases.COND_PARTICULARES):
+                if estado in CONDICIONES_DURAS:
                     _presupuestos.append(p)
             presupuestos = pclases.SQLlist(_presupuestos)
         vpro.ocultar()
