@@ -16434,20 +16434,26 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         Calcula el rendimiento de la línea si el 
         parte es de rollos.
         El cálculo se realiza según la fórmula:
-        % rendimiento = (kg producidos * 100) / (horas trabajadas * kg producción estándar/hora)
-        los kg no cuentan el peso del embalaje.
+        % rendimiento = (kg producidos * 100) 
+                        / (horas del parte * kg producción estándar/hora)
+        los kg no cuentan el peso del embalaje __y solo son de producto A__.
         """
-        try:
-            horas_trabajadas = self.get_horas_trabajadas()
-        except AssertionError:
-            horas_trabajadas = mx.DateTime.DateTimeDelta(0)
-        denominador = horas_trabajadas.hours * self.prodestandar
+        # TODO: ¿Cómo lo hacemos para la fibra?
+        # CWT: Se cuenta todo el parte completo. Incluyendo paradas.
+        #try:
+        #    horas_trabajadas = self.get_horas_trabajadas()
+        #except AssertionError:
+        #    horas_trabajadas = mx.DateTime.DateTimeDelta(0)
+        horas = self.get_duracion().hours
+        #denominador = horas_trabajadas.hours * self.prodestandar
+        denominador = horas * self.prodestandar
         try:
             peso_embalaje = self.articulos[0].productoVenta.camposEspecificosRollo.pesoEmbalaje
         except (AttributeError, IndexError):
             peso_embalaje = 0
         kg_producidos = sum([a.peso for a in self.articulos if a.es_rollo()]) - (len([a for a in self.articulos if a.es_rollo()]) * peso_embalaje)
-        kg_producidos += sum([a.rolloDefectuoso.peso_sin for a in self.articulos if a.es_rollo_defectuoso()])
+        # CWT: No se incluye producto B en el cálculo de la nueva productividad
+        #kg_producidos += sum([a.rolloDefectuoso.peso_sin for a in self.articulos if a.es_rollo_defectuoso()])
         try:
             rendimiento = (kg_producidos * 100.0) / denominador
         except ZeroDivisionError:
