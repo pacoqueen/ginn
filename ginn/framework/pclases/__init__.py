@@ -19736,6 +19736,36 @@ class Auditoria(SQLObject, PRPCTOO):
         return res
 
     @staticmethod
+    def trace(objeto, printout = True):
+        """
+        Muestra por pantalla la traza en audotoría del objeto de pclases 
+        recibido si printout es True. También puede ser una lista de 
+        objetos.
+        En otro caso devuelve los textos en una lista.
+        """
+        res = []
+        if isinstance(objeto, (list, tuple)):
+            lista_objetos = objeto
+            for objeto in lista_objetos:
+                res += Auditoria.trace(objeto, printout = False)
+        else:
+            try:
+                dbpuid = objeto.puid
+            except AttributeError:  # Es None o algo
+                pass
+            else:
+                audis = Auditoria.select(Auditoria.q.dbpuid == dbpuid, 
+                                         orderBy = "fechahora")
+                for a in audis:
+                    res.append(a)
+        if printout:
+            res.sort(key = lambda a: a.fechahora)
+            for a in res:
+                print a.get_info()
+        else:
+            return res
+
+    @staticmethod
     def nuevo(objeto, usuario, ventana, descripcion = None):
         """
         Nuevo registro en la base de datos. Creo un objeto auditoría 
@@ -19757,7 +19787,8 @@ class Auditoria(SQLObject, PRPCTOO):
             try:
                 descripcion = objeto.get_info().replace("'", "`")
             except Exception, msg:
-                descripcion = "Error al obtener información del objeto. "\
+                descripcion = "pclases::Auditoria.nuevo -> "\
+                              "Error al obtener información del objeto. "\
                               "Excepción capturada: %s " % msg
         if not usuario:
             usuario = logged_user
@@ -19822,10 +19853,15 @@ class Auditoria(SQLObject, PRPCTOO):
                 ventana = None
         if not descripcion:
             try:
+                difobjeto = objeto.diff()
                 #descripcion = objeto.get_info() #Nuevos valores. Mejor que nada
-                descripcion = pprint.pformat(objeto.diff()).decode("utf8").replace("'", '"').encode("ascii", "ignore")
+                descripcion = pprint.pformat(difobjeto)
+                descripcion = descripcion.decode("utf8", "ignore")
+                descripcion = descripcion.replace("'", '"')
+                descripcion = descripcion.encode("ascii", "ignore")
             except Exception, msg:
-                descripcion = "Error al obtener información del objeto. "\
+                descripcion = "pclases::Auditoria.modificado -> "\
+                              "Error al obtener información del objeto. "\
                               "Excepción capturada: %s " % msg
         else:
             descripcion = descripcion.decode("utf8", "ignore").encode("ascii", "ignore")
