@@ -10362,6 +10362,32 @@ class Presupuesto(SQLObject, PRPCTOO):
                 pedidos.append(srvpedidoVenta)
         return pedidos
 
+    def get_albaranes(self):
+        """
+        Devuelve los albaranes relacionados con los pedidos relacionados con 
+        la oferta.
+        No siempre, pero por lo general la correspondencia es 1:1:1
+        """
+        albaranes = []
+        for p in self.get_pedidos():
+            for a in p.get_albaranes():
+                if a not in albaranes:
+                    albaranes.append(a)
+        return albaranes
+
+    def get_facturas(self):
+        """
+        Devuelve las facturas relacionadas con los albaranes relacionados 
+        con los pedidos relacionados con la oferta actual.
+        No siempre, pero por lo general la correspondencia es 1:1:1:1
+        """
+        facturas = []
+        for p in self.get_pedidos():
+            for f in p.get_facturas():
+                if f not in facturas:
+                    facturas.append(f)
+        return facturas
+
     def esta_servido(self):
         """
         Devuelve True con que tan solo se haya servido una parte del pedido.

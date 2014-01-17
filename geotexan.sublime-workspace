@@ -11,7 +11,23 @@
 			"file": "ginn/formularios/pagares_cobros.py",
 			"settings":
 			{
-				"buffer_size": 54237,
+				"buffer_size": 54665,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ginn/formularios/confirmings.py",
+			"settings":
+			{
+				"buffer_size": 54411,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ginn/formularios/utils.py",
+			"settings":
+			{
+				"buffer_size": 177995,
 				"line_ending": "Unix"
 			}
 		}
@@ -25,13 +41,17 @@
 			[
 				":w",
 				":w - Save"
+			],
+			[
+				":q",
+				"Set Syntax: SQL"
 			]
 		],
 		"width": 392.0
 	},
 	"console":
 	{
-		"height": 0.0,
+		"height": 139.0,
 		"history":
 		[
 		]
@@ -47,6 +67,17 @@
 	},
 	"file_history":
 	[
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/confirmings.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/confirmings.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_facturas_sin_doc_pago.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/extra/install/softwin python 2.7/pyserial-2.6/examples/wxSerialConfigDialog.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/confirmings.glade",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/configuracion.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/cuentas_origen.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/COPYING",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/utils.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/extra/patches/upgrade_db_to_3_9.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/usuarios.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/pagares_cobros.glade",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/pagares_pagos.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/pagares_cobros.html",
@@ -74,6 +105,17 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"inhabilitado",
+			"combo_set_from_db(self.wids['cbe_cliente']",
+			"combo_set_from_db(.*cbe_cliente",
+			"combo_set_from_db",
+			"cbe_cliente",
+			"Cliente.select(",
+			"combo_set_from_db",
+			"cbe_cliente",
+			"def rellenar_widgets",
+			"buscar_cliente",
+			"Cliente.select(",
 			"buscar_cliente",
 			"Cliente.select("
 		],
@@ -93,7 +135,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -102,15 +144,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 54237,
+						"buffer_size": 54665,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								31513,
-								31513
+								21085,
+								21085
 							]
 						],
 						"settings":
@@ -120,10 +162,70 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 11225.0,
+						"translation.y": 7225.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "ginn/formularios/confirmings.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 54411,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								12071,
+								12071
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 30.0,
+						"translation.y": 3621.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "ginn/formularios/utils.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 177995,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								52215,
+								52215
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 20269.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
@@ -175,6 +277,18 @@
 		"height": 0.0,
 		"selected_items":
 		[
+			[
+				"confirmings.py",
+				"ginn/formularios/confirmings.py"
+			],
+			[
+				"confirmin",
+				"ginn/formularios/confirmings.py"
+			],
+			[
+				"utils.py",
+				"ginn/formularios/utils.py"
+			],
 			[
 				"pagares",
 				"ginn/formularios/pagares_cobros.py"
