@@ -229,7 +229,10 @@ class Confirmings(Ventana):
         self.colorear_cobros(self.wids['tv_cobros'])
         self.wids['tv_cobros'].connect("row-activated", self.abrir_factura)
         utils.rellenar_lista(self.wids['cbe_cliente'], 
-          [(c.id, c.nombre) for c in pclases.Cliente.select(orderBy="nombre")])
+          [(c.id, c.nombre) for c in 
+            pclases.Cliente.select(
+                pclases.Cliente.q.inhabilitado == False, 
+                orderBy="nombre")])
         utils.combo_set_from_db(self.wids['cbe_cliente'], -1)   # Esto 
                                 # quitará el elemento activo del combo.
         self.wids['cbe_cliente'].child.set_text("")
@@ -242,7 +245,8 @@ class Confirmings(Ventana):
                     itr = None
             if itr != None:
                 idcliente = model[itr][0]
-                utils.combo_set_from_db(self.wids['cbe_cliente'], idcliente)
+                utils.combo_set_from_db(self.wids['cbe_cliente'], idcliente, 
+                    forced_value = pclases.Cliente.get(idcliente).nombre)
                 for p in [p for p in self.objeto.cobros if p.cliente == None]:
                     p.clienteID = idcliente
             self.wids['cbe_cliente'].set_sensitive(
@@ -466,7 +470,8 @@ class Confirmings(Ventana):
         model.clear()
         if self.objeto.cobros != []:
             utils.combo_set_from_db(self.wids['cbe_cliente'], 
-                                    self.objeto.cobros[0].cliente.id)
+                                    self.objeto.cobros[0].cliente.id, 
+                                    forced_value = self.objeto.cobros[0].cliente.nombre)
         for c in self.objeto.cobros:
             if c.facturaVentaID != None:
                 importe_factura = c.facturaVenta.importeTotal
@@ -683,7 +688,7 @@ class Confirmings(Ventana):
         else:
             return idcliente
 
-    def buscar_cliente(self):
+    def buscar_cliente(self, include_inhabilitados = False):
         """
         Muestra una ventana de búsqueda y a continuación los
         resultados. El objeto seleccionado se hará activo
@@ -697,7 +702,12 @@ class Confirmings(Ventana):
         if a_buscar != None:
             criterio = pclases.OR(pclases.Cliente.q.nombre.contains(a_buscar),
                                   pclases.Cliente.q.cif.contains(a_buscar))
-            resultados = pclases.Cliente.select(criterio) 
+            if not include_inhabilitados:
+                resultados = pclases.Cliente.select(pclases.AND(
+                    pclases.Cliente.q.inhabilitado == False, 
+                    criterio))
+            else:
+                resultados = pclases.Cliente.select(criterio) 
             if resultados.count() > 1:
                 ## Refinar los resultados
                 idcliente=self.refinar_resultados_busqueda_cliente(resultados)

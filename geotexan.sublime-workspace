@@ -1,0 +1,213 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "ginn/formularios/pagares_cobros.py",
+			"settings":
+			{
+				"buffer_size": 54237,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 264.0,
+		"selected_items":
+		[
+			[
+				":w",
+				":w - Save"
+			]
+		],
+		"width": 392.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/pagares_cobros.glade",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/pagares_pagos.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/pagares_cobros.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/extra/install/softwin python 2.7/pyserial-2.6/documentation/pyserial_api.rst",
+		"/home/bogado/Geotexan/src/Geotex-INN/db/populate.sql",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/odf2mht/odf2mht",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_ofertas_pendientes_validar.glade",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/odf/opendocument.py",
+		"/home/bogado/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
+		"/home/bogado/.config/sublime-text-3/Packages/Default/Preferences.sublime-settings"
+	],
+	"find":
+	{
+		"height": 25.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"buscar_cliente",
+			"Cliente.select("
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "ginn/formularios/pagares_cobros.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 54237,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								31513,
+								31513
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 11225.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 34.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"project": "geotexan.sublime-project",
+	"replace":
+	{
+		"height": 46.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"pagares",
+				"ginn/formularios/pagares_cobros.py"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
