@@ -1405,6 +1405,7 @@ class PedidosDeVenta(Ventana):
             and len(self.objeto.lineasDePedido) > 0
             and len(servicios_pendientes) == 0):
             # Cierre automático del pedido si ya está todo servido.
+            # PORASQUI: Aquí está la "tostá". Deja la ventana abierta mientras sirve todo el pedido. En el albarán al fina quita la línea que sobra, pero durante ese tiempo se actualiza la ventana y cierra el pedido.
             self.objeto.cerrado = True
             self.wids['cerrado'].set_active(self.objeto.cerrado)
         for producto in productos:
