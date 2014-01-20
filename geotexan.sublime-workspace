@@ -30,12 +30,28 @@
 				"buffer_size": 177995,
 				"line_ending": "Unix"
 			}
+		},
+		{
+			"file": "ginn/framework/pclases/cliente.py",
+			"settings":
+			{
+				"buffer_size": 35889,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "db/tablas.sql",
+			"settings":
+			{
+				"buffer_size": 177706,
+				"line_ending": "Unix"
+			}
 		}
 	],
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 264.0,
+		"height": 33.0,
 		"selected_items":
 		[
 			[
@@ -67,6 +83,7 @@
 	},
 	"file_history":
 	[
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/framework/pclases/__init__.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/confirmings.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/confirmings.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_facturas_sin_doc_pago.html",
@@ -105,6 +122,10 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"def calcular_credito_disponible(",
+			"def calcular_credito",
+			"def calcular_credito_disponible(",
+			"calcular_credito_disponible(",
 			"inhabilitado",
 			"combo_set_from_db(self.wids['cbe_cliente']",
 			"combo_set_from_db(.*cbe_cliente",
@@ -135,7 +156,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 4,
 			"sheets":
 			[
 				{
@@ -165,7 +186,7 @@
 						"translation.y": 7225.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
@@ -192,10 +213,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 30.0,
-						"translation.y": 3621.0,
+						"translation.y": 3672.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
@@ -226,6 +247,66 @@
 						"zoom_level": 1.0
 					},
 					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "ginn/framework/pclases/cliente.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 35889,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "db/tablas.sql",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 177706,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								170630,
+								170630
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/SQL/SQL.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 65280.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
 					"type": "text"
 				}
 			]

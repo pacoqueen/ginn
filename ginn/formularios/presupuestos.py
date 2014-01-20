@@ -2251,6 +2251,14 @@ class Presupuestos(Ventana, VentanaGenerica):
                         pclases.Auditoria.q.dbpuid == self.objeto.obra.puid,
                         orderBy = "fechahora")
                 audits += [i for i in much_more_audits]
+            # Cambios en pedido, albaranes y facturas relacionadas:
+            for o in (self.objeto.get_pedidos() 
+                        + self.objeto.get_albaranes() 
+                        + self.objeto.get_facturas()):
+                much_more_audits = pclases.Auditoria.select(
+                        pclases.Auditoria.q.dbpuid == o.puid,
+                        orderBy = "fechahora")
+                audits += [i for i in much_more_audits if i not in audits]
             # Vuelco a la ventana, aunque no lleven orden de fechahora absoluto
             for a in audits:
                 last_iter = self.agregar_linea_auditoria(model, a)
