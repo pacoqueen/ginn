@@ -227,7 +227,9 @@ class Presupuestos(Ventana, VentanaGenerica):
         except AttributeError:
             b_pedido_activado = self.wids['b_pedido'].get_property("sensitive")
         self.wids['b_pedido'].set_sensitive(
-                b_pedido_activado and not ch.get_active())
+                b_pedido_activado and not ch.get_active() 
+                # CWT: Si ya se le ha hecho al menos 1 pedido, no permitir más
+                and not (self.objeto and self.objeto.get_pedidos()))
 
     def mostrar_ttip(self, widget, event):
         texto_tooltip = self.wids['iconostado'].get_tooltip_text()
@@ -1868,8 +1870,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         # Y ahora la lista de presupuestos.
         #self.rellenar_lista_presupuestos()
         # Para finalizar, el pedido al que se ha convertido
-        self.wids['e_pedido'].set_text(", ".join(
-            [p.numpedido for p in presupuesto.get_pedidos()]))
+        numspedidos = [p.numpedido for p in presupuesto.get_pedidos()] 
+        self.wids['e_pedido'].set_text(", ".join(numspedidos))
         self.wids['ch_bloqueado'].disconnect(self.hndlr_bloqueado)
         self.wids['ch_bloqueado'].set_active(self.objeto.bloqueado)
         self.hndlr_bloqueado = self.wids['ch_bloqueado'].connect('clicked', 
@@ -1895,10 +1897,12 @@ class Presupuestos(Ventana, VentanaGenerica):
         idcliente = utils.combo_get_value(self.wids['cbe_cliente'])
         if idcliente and idcliente != -1:
             temp_cliente = pclases.Cliente.get(idcliente)
-            obras = [(o.id, o.get_str_obra()) 
+            #obras = [(o.id, o.get_str_obra()) 
+            obras = [(o.id, o.nombre) 
                      for o in temp_cliente.obras]
         elif self.objeto.cliente:
-            obras = [(o.id, o.get_str_obra()) 
+            #obras = [(o.id, o.get_str_obra()) 
+            obras = [(o.id, o.nombre) 
                      for o in self.objeto.cliente.obras]
         else:
             obras = []
@@ -1907,7 +1911,8 @@ class Presupuestos(Ventana, VentanaGenerica):
             # Por si acaso no está la obra del presupuesto entre las del 
             # cliente por no estar la lista actualizada o lo que sea. 
             obras.append((self.objeto.obra.id, 
-                          self.objeto.obra.get_str_obra()))
+                          #self.objeto.obra.get_str_obra()))
+                          self.objeto.obra.nombre))
         utils.rellenar_lista(self.wids['cbe_obra'], obras)
 
     def rellenar_lista_presupuestos(self):
@@ -2255,9 +2260,12 @@ class Presupuestos(Ventana, VentanaGenerica):
             for o in (self.objeto.get_pedidos() 
                         + self.objeto.get_albaranes() 
                         + self.objeto.get_facturas()):
-                much_more_audits = pclases.Auditoria.select(
-                        pclases.Auditoria.q.dbpuid == o.puid,
-                        orderBy = "fechahora")
+                try:
+                    much_more_audits = pclases.Auditoria.select(
+                            pclases.Auditoria.q.dbpuid == o.puid,
+                            orderBy = "fechahora")
+                except AttributeError:  # ha devuelto None en aluna fra. o algo
+                    much_more_audits = []
                 audits += [i for i in much_more_audits if i not in audits]
             # Vuelco a la ventana, aunque no lleven orden de fechahora absoluto
             for a in audits:

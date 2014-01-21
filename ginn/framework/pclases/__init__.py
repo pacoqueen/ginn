@@ -376,7 +376,7 @@ class PRPCTOO:
                 try:
                     self.comparar_swap()
                 except SQLObjectChanged:
-                    if DEBUG: print "Objeto cambiado"
+                    if DEBUG: print "esperarNotificacion: Objeto cambiado"
                     funcion()
                 except SQLObjectNotFound:
                     if DEBUG: print "Registro borrado"
@@ -392,7 +392,7 @@ class PRPCTOO:
             # print "NO CAMBIA"
         except SQLObjectChanged:
             # print "CAMBIA"
-            if DEBUG: print "Objeto cambiado"
+            if DEBUG: print "chequear_cambios: Objeto cambiado"
             # print self.notificador
             self.notificador.run()
         except SQLObjectNotFound:
