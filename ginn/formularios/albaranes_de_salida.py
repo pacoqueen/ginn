@@ -2201,7 +2201,7 @@ class AlbaranesDeSalida(Ventana):
                                    padre = self.wids['ventana'])
             else:
                 ldps_a_incluir, srvs_a_incluir = select_lineas_pedido(pedido, 
-                        padre = self.wids.ventana)
+                        padre = self.wids['ventana'])
                 not_included = []
                 for ldp in pedido.lineasDePedido[:]:
                     # DONE: No unificar si tiene precios de venta distintos. 
@@ -4745,6 +4745,7 @@ def select_lineas_pedido(pedido, padre = None):
     Si cancela devuelve las listas vacías.
     """
     # TODO: PORASQUI
+    return []
 
 
 if __name__=='__main__':
