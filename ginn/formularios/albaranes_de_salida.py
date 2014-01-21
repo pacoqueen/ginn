@@ -2014,6 +2014,7 @@ class AlbaranesDeSalida(Ventana):
                     p.cliente and p.cliente.nombre or 'SIN CLIENTE', 
                     p.fecha and p.fecha.strftime('%d/%m/%Y') or 'SIN FECHA')) 
                 for p in pedidos]
+        peds.sort(key = lambda p: p[0], reverse = True)
         resp = utils.dialogo_combo(texto = 'Se encontraron varios pedidos con'
                                            ' el mismo número.\nSeleccione uno'
                                            ' de ellos.',
@@ -2025,8 +2026,9 @@ class AlbaranesDeSalida(Ventana):
 
     def add_pedido(self, boton):
         """
-        Añade todas las líneas de venta de un pedido
-        al albarán.
+        Añade las líneas de venta de un pedido al albarán. En lugar de añadir 
+        todas de golpe, permite seleccionar al usuario las que agregará.
+        Por defecto seguirán siendo todas.
         """
         copiar_dirobra = False
         if (self.objeto.cliente 
@@ -2198,6 +2200,8 @@ class AlbaranesDeSalida(Ventana):
                                    texto = txtdlg, 
                                    padre = self.wids['ventana'])
             else:
+                ldps_a_incluir, srvs_a_incluir = select_lineas_pedido(pedido, 
+                        padre = self.wids.ventana)
                 not_included = []
                 for ldp in pedido.lineasDePedido[:]:
                     # DONE: No unificar si tiene precios de venta distintos. 
@@ -4733,6 +4737,15 @@ def comprobar_existencias_producto(ldp, ventana_padre, cantidad, almacen):
         a_servir = cantidad
     return a_servir
  
+def select_lineas_pedido(pedido, padre = None):
+    """
+    Muestra las líneas del pedido pendientes de servir y permite al usuario 
+    seleccionar las que realmente va a incluir en el albarán.
+    Devuelve dos listas: una de líneas de pedido y otra de servicios.
+    Si cancela devuelve las listas vacías.
+    """
+    # TODO: PORASQUI
+
 
 if __name__=='__main__':
     a = AlbaranesDeSalida()
