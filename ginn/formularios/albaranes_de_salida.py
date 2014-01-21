@@ -4745,7 +4745,7 @@ def select_lineas_pedido(pedido, padre = None):
     Si cancela devuelve las listas vacías.
     """
     # TODO: PORASQUI
-    return []
+    return [], []
 
 
 if __name__=='__main__':
