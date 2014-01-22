@@ -305,7 +305,7 @@ def comprobar_cantidades_albaran(report_mode = False):
             pv = articulo.productoVenta
             if pv.es_rollo():
                 cantidad_articulo = articulo.superficie
-            elif pv.es_bala() or pv.es_bala_cable() or pv.es_bigbag():
+            elif pv.es_bala() or pv.es_bala_cable() or pv.es_bigbag() or pv.es_caja() or pv.es_rollo_c():
                 cantidad_articulo = articulo.peso
             else:
                 print >> sys.stderr, "Artículo ID %d no es bala [cable], rollo [defectuoso] ni bigbag." % (articulo.id)

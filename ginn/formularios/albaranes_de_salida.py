@@ -3859,6 +3859,7 @@ class AlbaranesDeSalida(Ventana):
                           "%s %%" % (utils.float2str(100*comision.porcentaje)),
                           numfactura, 
                           comision.get_puid()))
+
     def cambiar_precio_comision(self, cell, path, texto):
         try:
             precio = utils._float(texto)
