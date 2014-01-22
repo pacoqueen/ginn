@@ -3171,7 +3171,7 @@ def enviar_factura_por_correo(archivo,
                 padre = padre, 
                 valor_por_defecto = "; ".join((diremail, remitente)))
             if correos:
-                correos=correos.replace(",", " ").replace(";", "").strip().split()
+                correos=correos.replace(",", " ").replace(";", " ").strip().split()
                 correos = utils.unificar([c.lower().strip() for c in correos])
                 try:
                     ok = utils.enviar_correoe(remitente, 
