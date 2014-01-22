@@ -81,7 +81,7 @@ def comprobar_cantidades_albaran(alb):
         # Voy a hacer un calculote feo "porcima" para evitar los errores de cambios de producto y redondeos extraños en el cuarto decimal.
         total_factura = sum([pvs[pv][0] for pv in pvs])
         total_articulos = sum([pvs[pv][1] for pv in pvs])
-        res = int(total_factura) - int(total_articulos) == 0
+        res = abs(int(total_factura) - int(total_articulos)) == 0
         #if not res:    # DEBUG
         #    print total_factura, total_articulos
     return res, total_articulos, total_factura
