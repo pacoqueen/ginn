@@ -2016,7 +2016,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         Si "solo_pdte" es True, elimina de la lista de resultados los 
         presupuestos de estudio y los que no tengan informado ese campo; solo 
         buscará entre las ofertas de pedido que estén pendientes de 
-        validación para imprimir (y por ende, no pasadas a pedido).
+        validación para imprimir (y por ende, no pasadas a pedido) y que no 
+        hayan sido rechazadas.
         El resultado se devuelve **ordenado por id**.
         """
         vpro = VentanaProgreso(padre = self.wids['ventana'])
@@ -2054,11 +2055,13 @@ class Presupuestos(Ventana, VentanaGenerica):
                 mas_criterios_de_busqueda = pclases.AND(
                                     mas_criterios_de_busqueda, 
                                     pclases.Presupuesto.q.estudio == False, 
-                                    pclases.Presupuesto.q.usuarioID == None)
+                                    pclases.Presupuesto.q.usuarioID == None, 
+                                    pclases.Presupuesto.q.rechazado == False)
             else:
                 mas_criterios_de_busqueda = pclases.AND(
                                     pclases.Presupuesto.q.estudio == False, 
-                                    pclases.Presupuesto.q.usuarioID == None)
+                                    pclases.Presupuesto.q.usuarioID == None,
+                                    pclases.Presupuesto.q.rechazado == False)
         # Ya tengo montados todos los criterios de selección. A JUGAAAAR:
         if criterio_comercial:
             criterios = pclases.AND(mas_criterios_de_busqueda, 

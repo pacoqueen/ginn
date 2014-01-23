@@ -10567,6 +10567,9 @@ class Presupuesto(SQLObject, PRPCTOO):
         # presupuestos siguen el mismo criterio, pero están especificados por 
         # duplicado en una función en cada clase.
         validable = VALIDABLE
+        if validable == VALIDABLE:
+            if self._lleva_comercializado():
+                validable = COMERCIALIZADO
         if self.condicionesParticulares:
             validable = COND_PARTICULARES
         if validable == VALIDABLE and not self.check_validacion_precios():
@@ -10592,9 +10595,6 @@ class Presupuesto(SQLObject, PRPCTOO):
         if validable == VALIDABLE:
             if not self.cliente:
                 validable = NO_VALIDABLE
-        if validable == VALIDABLE:
-            if self._lleva_comercializado():
-                validable = COMERCIALIZADO
         return validable
 
     def _lleva_comercializado(self):
