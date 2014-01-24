@@ -2092,6 +2092,7 @@ class AlbaranesDeSalida(Ventana):
         # ventana de los pedidos ante cada cambio o incluso mejor que justo 
         # antes de imprimir, así doy más tiempo al usuario a corregirlo.
         prods_pedidos = {}
+        presupuesto.sync()  # Porsi se borrado, recreado, modificado, etc...
         for presupuesto in pedido.get_presupuestos():
             pedido_en_presupuesto = presupuesto.get_pedido_por_producto()
             for producto in pedido_en_presupuesto:
