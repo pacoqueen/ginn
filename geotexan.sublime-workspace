@@ -11,7 +11,7 @@
 			"file": "extra/scripts/detectar_albaranes_mal_facturados.py",
 			"settings":
 			{
-				"buffer_size": 6291,
+				"buffer_size": 6345,
 				"line_ending": "Unix"
 			}
 		}
@@ -19,7 +19,7 @@
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 264.0,
+		"height": 201.0,
 		"selected_items":
 		[
 			[
@@ -55,11 +55,18 @@
 	},
 	"file_history":
 	[
+		"/tmp/detectar_albaranes_mal_facturados.txt",
+		"/home/bogado/Geotexan/src/Geotex-INN/db/tablas.sql",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/tipos_material.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/tmp-cmd.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/tests/examples/parastyles.odt",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/tests/examples/definitionlists.odt",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/tests/examples/headerfooter.odt",
+		"/home/bogado/Geotexan/src/Geotex-INN/db/_tablas.sql",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/pagares_cobros.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/confirmings.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/utils.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/framework/pclases/cliente.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/db/tablas.sql",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/checklist_window.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/framework/tests.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/TODO",
@@ -87,7 +94,7 @@
 	],
 	"find":
 	{
-		"height": 25.0
+		"height": 35.0
 	},
 	"find_in_files":
 	{
@@ -101,6 +108,9 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"aproximadamente 0 de ",
+			"for ldv in alb.lineasDeVenta:\n            pv = ldv.productoVenta\n            if pv != None and (pv.es_bala() or pv.es_bala_cable() or pv.es_bigbag() or pv.es_rollo()):\n                if pv not in pvs:\n                    pvs[pv] = [ldv.cantidad, 0.0]\n                else:\n                    pvs[pv][0] += ldv.cantidad\n        for articulo in alb.articulos + [ldd.articulo \n                                         for ldd in alb.lineasDeDevolucion]:\n            pv = articulo.productoVenta\n            if pv.es_rollo():\n                cantidad_articulo = articulo.superficie\n            elif pv.es_bala() or pv.es_bala_cable() or pv.es_bigbag() or pv.es_caja() or pv.es_rollo_c():\n                cantidad_articulo = articulo.peso\n            else:\n                print >> sys.stderr, \"Artículo ID %d no es bala [cable], rollo [defectuoso] ni bigbag.\" % (articulo.id)\n                continue\n            if pv not in pvs:\n                pvs[pv] = [0.0, cantidad_articulo]\n            else:\n                pvs[pv][1] += cantidad_articulo\n        for pv in pvs:\n            if round(pvs[pv][0], 2) != round(pvs[pv][1], 2):\n                print >> sys.stderr, \"El albarán ID %d (%s) tiene como cantidad total de %s, %s en líneas de venta y %s en artículos.\" % (\n                    alb.id, alb.numalbaran, pv.descripcion, utils.float2str(pvs[pv][0]), utils.float2str(pvs[pv][1]))\n                res = False",
+			"aproximadamente 0 de ",
 			"print",
 			"for ldv in alb.lineasDeVenta:\n            pv = ldv.productoVenta\n            if pv != None and (pv.es_bala() or pv.es_bala_cable() or pv.es_bigbag() or pv.es_rollo()):\n                if pv not in pvs:\n                    pvs[pv] = [ldv.cantidad, 0.0]\n                else:\n                    pvs[pv][0] += ldv.cantidad\n        for articulo in alb.articulos + [ldd.articulo \n                                         for ldd in alb.lineasDeDevolucion]:\n            pv = articulo.productoVenta\n            if pv.es_rollo():\n                cantidad_articulo = articulo.superficie\n            elif pv.es_bala() or pv.es_bala_cable() or pv.es_bigbag() or pv.es_caja() or pv.es_rollo_c():\n                cantidad_articulo = articulo.peso\n            else:\n                print >> sys.stderr, \"Artículo ID %d no es bala [cable], rollo [defectuoso] ni bigbag.\" % (articulo.id)\n                continue\n            if pv not in pvs:\n                pvs[pv] = [0.0, cantidad_articulo]\n            else:\n                pvs[pv][1] += cantidad_articulo\n        for pv in pvs:\n            if round(pvs[pv][0], 2) != round(pvs[pv][1], 2):\n                print >> sys.stderr, \"El albarán ID %d (%s) tiene como cantidad total de %s, %s en líneas de venta y %s en artículos.\" % (\n                    alb.id, alb.numalbaran, pv.descripcion, utils.float2str(pvs[pv][0]), utils.float2str(pvs[pv][1]))\n                res = False",
 			"comprobar_cantidades_albaran",
@@ -147,15 +157,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6291,
+						"buffer_size": 6345,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5109,
-								5109
+								4593,
+								4593
 							]
 						],
 						"settings":
@@ -165,7 +175,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1503.0,
+						"translation.y": 1452.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,

@@ -112,7 +112,7 @@ def main ():
     for a in albs:
         correcto, en_alb, en_fra = comprobar_cantidades_albaran(a)
         diferencia = en_fra - en_alb
-        if not correcto:
+        if not correcto:    # Todavía se siguen colando falsos positivos.
             print "Albarán %s (%s) incorrecto. Factura %s. Se facturó a %s aproximadamente %d de %s." % (
                 a.numalbaran, utils.str_fecha(a.fecha), ", ".join([f.numfactura for f in a.get_facturas()]), 
                 a.cliente.nombre, abs(diferencia), diferencia >= 0 and "más" or "menos")
