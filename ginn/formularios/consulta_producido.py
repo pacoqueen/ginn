@@ -345,6 +345,17 @@ class ConsultaProducido(Ventana):
                                   "%s" % (error))
                 cantidad = 0.0
             try: 
+                prod_rollos[key][1] += cantidad
+                prod_rollos[key][5] += 1
+                try:
+                    prod_rollos[key][6][a.partida]['cantidad'] += a.superficie
+                    prod_rollos[key][6][a.partida]['bultos'] += 1
+                except KeyError:
+                    prod_rollos[key][6][a.partida] = {
+                            'cantidad' : a.superficie, 'bultos' : 1}
+                prod_rollos[key][7] += a.calcular_tiempo_teorico()
+                prod_rollos[key][8] += a.rollo.peso_teorico
+            except KeyError:
                 prod_rollos[key] = [a.productoVenta.descripcion,    # 0
                                     cantidad,                       # 1
                                     a.productoVenta.id,             # 2
@@ -357,35 +368,12 @@ class ConsultaProducido(Ventana):
                                     a.calcular_tiempo_teorico(),    # 7
                                     a.rollo.peso_teorico            # 8
                                    ]
-            except KeyError:
-                prod_rollos[key][1] += cantidad
-                prod_rollos[key][5] += 1
-                try:
-                    prod_rollos[key][6][a.partida]['cantidad'] += a.superficie
-                    prod_rollos[key][6][a.partida]['bultos'] += 1
-                except KeyError:
-                    prod_rollos[key][6][a.partida] = {
-                            'cantidad' : a.superficie, 'bultos' : 1}
-                prod_rollos[key][7] += a.calcular_tiempo_teorico()
-                prod_rollos[key][8] += a.rollo.peso_teorico
 
     def procesar_pdp_cajas(self, pdp, prod_pales):
         # Añado ProductoVenta de los palés.
         for a in pdp.articulos:
             key = "%d:P" % (a.productoVentaID)
             try: 
-                prod_pales[key] = [a.productoVenta.descripcion,         # 0
-                                   a.peso, 
-                                   a.productoVenta.id, 
-                                   'P', 
-                                   'kg', 
-                                   1,                                   # 5
-                                   {a.partidaCem: 
-                                        {'cantidad': a.peso, 
-                                         'bultos': a.caja.numbolsas}}, 
-                                   a.calcular_tiempo_teorico(),         # 7
-                                  ]     # No lleva peso teórico
-            except KeyError:
                 prod_pales[key][1] += a.peso
                 try:
                     prod_pales[key][6][a.partidaCem]['cantidad'] \
@@ -397,7 +385,19 @@ class ConsultaProducido(Ventana):
                         'cantidad':a.peso,
                         'bultos': a.caja.numbolsas}
                 prod_pales[key][5] += 1
-                proc_pales[key][7] += a.calcular_tiempo_teorico()
+                prod_pales[key][7] += a.calcular_tiempo_teorico()
+            except KeyError:
+                prod_pales[key] = [a.productoVenta.descripcion,         # 0
+                                   a.peso, 
+                                   a.productoVenta.id, 
+                                   'P', 
+                                   'kg', 
+                                   1,                                   # 5
+                                   {a.partidaCem: 
+                                        {'cantidad': a.peso, 
+                                         'bultos': a.caja.numbolsas}}, 
+                                   a.calcular_tiempo_teorico(),         # 7
+                                  ]     # No lleva peso teórico
 
     def procesar_pdp_balas(self, pdp, prod_balas):
         # Añado ProductoVenta de las balas.
@@ -411,17 +411,6 @@ class ConsultaProducido(Ventana):
                 lote = a.loteCem
             tiempo_teorico = a.calcular_tiempo_teorico()
             try: 
-                prod_balas[key] = [a.productoVenta.descripcion,     # 0
-                                   peso, 
-                                   a.productoVenta.id, 
-                                   'B', 
-                                   'kg', 
-                                   1,                               # 5
-                                   {lote: {'cantidad': peso, 
-                                           'bultos': 1}}, 
-                                   tiempo_teorico                   # 7
-                                  ]     # Tampoco tienen peso teórico
-            except KeyError: 
                 prod_balas[key][1] += peso
                 try:
                     prod_balas[key][6][lote]['cantidad'] += peso
@@ -438,6 +427,17 @@ class ConsultaProducido(Ventana):
                         # desconocido?! ¡Esto es lo que pasa, Larry!
                 prod_balas[key][5] += 1
                 prod_balas[key][7] += tiempo_teorico
+            except KeyError:
+                prod_balas[key] = [a.productoVenta.descripcion,     # 0
+                                   peso, 
+                                   a.productoVenta.id, 
+                                   'B', 
+                                   'kg', 
+                                   1,                               # 5
+                                   {lote: {'cantidad': peso, 
+                                           'bultos': 1}}, 
+                                   tiempo_teorico                   # 7
+                                  ]     # Tampoco tienen peso teórico
 
     def agregar_parte_a_dicford(self, ford, parte):
         """
