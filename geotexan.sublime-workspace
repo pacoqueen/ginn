@@ -8,7 +8,10 @@
 	"buffers":
 	[
 		{
+			"contents": "#!/usr/bin/env python\n# -*- coding: utf-8 -*-\n\n\"\"\"\n22/01/2014\n\nRecorre los albaranes de salida detectando aquellos en los que la cantidad \nagregada como artículos difiere de la cantidad facturada.\nIgnora albaranes internos y de ajuste de existencias.\n\nSYNOPSIS\n\n    detectar_albaranes_mal_facturados.py [-h,--help] [-v,--verbose] [--version]\n\nVERSION\n\n    $Id$\n\"\"\"\n\nimport sys, os, traceback, optparse\nimport time\nimport re\n#from pexpect import run, spawn\n\n\nimport mx, mx.DateTime\n# Determino dónde estoy para importar pclases y utils\ndiractual = os.path.split(os.path.abspath(os.path.curdir))[-1]\nassert diractual == \"scripts\", \\\n        \"Debe ejecutar el script desde el directorio donde reside.\"\nsys.path.insert(0, os.path.abspath(os.path.join(\"..\", \"..\", \"ginn\")))\nfrom framework import pclases\nfrom formularios import utils\n\ndef comprobar_cantidades_albaran(alb):\n    \"\"\"\n    Lo primero que determina es que el albarán sea facturable y tenga factura. \n    Si lo es, lo ignora en caso de que sea un albarán de movimiento, de respuestos, \n    interno o vacío. En otro caso cuenta las cantidades agregadas al \n    albarán en forma de artículos con trazabilidad y las compara con las \n    que dice la factura que han salido. Si no coinciden devuelve False.\n    En otro caso devuelve True.\n    \"\"\"\n    res = True\n    pvs = {}\n    total_articulos = 0.0\n    total_factura = 0.0\n    if alb.facturable and alb.get_facturas() and (alb.get_str_tipo() \n            == pclases.AlbaranSalida.str_tipos[pclases.AlbaranSalida.NORMAL]):\n        # Suma de cantidades según las líneas de venta facturadas.\n        for ldv in alb.lineasDeVenta:\n            pv = ldv.productoVenta\n            if pv != None and (pv.es_bala() or pv.es_bala_cable() or pv.es_bigbag() or pv.es_rollo() or pv.es_rollo_c() or pv.es_caja()):\n                if pv not in pvs:\n                    pvs[pv] = [ldv.cantidad, 0.0]\n                else:\n                    pvs[pv][0] += ldv.cantidad\n        # Suma de cantidades según artículos con trazabilidad agregados.\n        for articulo in alb.articulos + [ldd.articulo \n                                         for ldd in alb.lineasDeDevolucion]:\n            pv = articulo.productoVenta\n            if pv.es_rollo():\n                cantidad_articulo = articulo.superficie\n            elif pv.es_bala() or pv.es_bala_cable() or pv.es_bigbag() or pv.es_caja() or pv.es_rollo_c():\n                cantidad_articulo = articulo.peso\n            else:\n                print >> sys.stderr, \"Artículo ID %d no es bala [cable], rollo [defectuoso] ni bigbag.\" % (articulo.id)\n                continue\n            if pv not in pvs:\n                pvs[pv] = [0.0, cantidad_articulo]\n            else:\n                pvs[pv][1] += cantidad_articulo\n        #for pv in pvs:\n        #    if round(pvs[pv][0], 2) != round(pvs[pv][1], 2):\n        #        print >> sys.stderr, \"El albarán ID %d (%s) tiene como cantidad total de %s, %s en líneas de venta y %s en artículos.\" % (\n        #            alb.id, alb.numalbaran, pv.descripcion, utils.float2str(pvs[pv][0]), utils.float2str(pvs[pv][1]))\n        #        res = False\n        #segun_precios_pedido_y_articulos = alb.calcular_total(iva_incluido = False, segun_factura = False)\n        #segun_factura = alb.calcular_total(iva_incluido = False, segun_factura = True)\n        #res = (round(segun_precios_pedido_y_articulos, 2) - round(segun_factura, 2)) == 0.0\n        # Voy a hacer un calculote feo \"porcima\" para evitar los errores de cambios de producto y redondeos extraños en el cuarto decimal.\n        total_factura = sum([pvs[pv][0] for pv in pvs])\n        total_articulos = sum([pvs[pv][1] for pv in pvs])\n        res = abs(int(total_factura) - int(total_articulos)) == 0\n        #if not res:    # DEBUG\n        #    print total_factura, total_articulos\n    return res, total_articulos, total_factura\n\ndef buscar_albaranes(fecha_inicio = None, fecha_fin = None):\n    if fecha_inicio and fecha_fin:\n        albs = pclases.AlbaranSalida.select(\n            pclases.AND(\n                pclases.AlbaranSalida.q.fecha >= fecha_inicio, \n                pclases.AlbaranSalida.q.fecha <= fecha_fin), \n            orderBy = \"-fecha\")\n    elif fecha_inicio:\n        albs = pclases.AlbaranSalida.select(\n            pclases.AlbaranSalida.q.fecha >= fecha_inicio, \n            orderBy = \"-fecha\")\n    elif fecha_fin:\n        albs = pclases.AlbaranSalida.select(\n            pclases.AlbaranSalida.q.fecha <= fecha_fin, \n            orderBy = \"-fecha\")\n    else:\n        albs = pclases.AlbaranSalida.select(orderBy = \"-fecha\")\n    return albs\n\ndef main ():\n    global options, args\n    albs = buscar_albaranes()\n    print \"Comprobando %d albaranes...\" % albs.count()\n    for a in albs:\n        correcto, en_alb, en_fra = comprobar_cantidades_albaran(a)\n        diferencia = en_fra - en_alb\n        if not correcto:    # Todavía se siguen colando falsos positivos.\n            print \"Albarán %s (%s) incorrecto. Factura %s. Se facturó a %s aproximadamente %d de %s.\" % (\n                a.numalbaran, utils.str_fecha(a.fecha), \", \".join([f.numfactura for f in a.get_facturas()]), \n                a.cliente.nombre, abs(diferencia), diferencia >= 0 and \"más\" or \"menos\")\n\nif __name__ == '__main__':\n    try:\n        start_time = time.time()\n        parser=optparse.OptionParser(formatter=optparse.TitledHelpFormatter(), \n                                     usage=globals()['__doc__'], \n                                     version='$Id$')\n        parser.add_option ('-v', \n                           '--verbose', \n                           action='store_true', \n                           default=False, \n                           help='verbose output')\n        (options, args) = parser.parse_args()\n        #if len(args) < 1:\n        #    parser.error ('missing argument')\n        if options.verbose: print time.asctime()\n        main()\n        if options.verbose: print time.asctime()\n        if options.verbose: print 'Tiempo total en minutos: ', \n        if options.verbose: print (time.time() - start_time) / 60.0\n        sys.exit(0)\n    except KeyboardInterrupt, e: # Ctrl-C\n        raise e\n    except SystemExit, e: # sys.exit()\n        raise e\n    except Exception, e:\n        print 'Error, excepción inesperada.'\n        print str(e)\n        traceback.print_exc()\n        os._exit(1)\n\n",
 			"file": "extra/scripts/detectar_albaranes_mal_facturados.py",
+			"file_size": 6366,
+			"file_write_time": 130348790763271670,
 			"settings":
 			{
 				"buffer_size": 6345,
@@ -19,9 +22,25 @@
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 201.0,
+		"height": 33.0,
 		"selected_items":
 		[
+			[
+				"package control: ins",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: Install",
+				"Package Control: Install Package"
+			],
+			[
+				"rope",
+				"Preferences: Browse Packages"
+			],
+			[
+				"package",
+				"Preferences: Browse Packages"
+			],
 			[
 				":w",
 				":w - Save"
@@ -35,13 +54,26 @@
 				"Set Syntax: SQL"
 			]
 		],
-		"width": 392.0
+		"width": 467.0
 	},
 	"console":
 	{
 		"height": 139.0,
 		"history":
 		[
+			"import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by) ",
+			"from ginn.framework import pclases",
+			"cd ginn",
+			"from framework import pclases",
+			"print(__name__)",
+			"print(__version__)",
+			"print __version__",
+			"print(\"a\")",
+			"print \"a\"",
+			"print 'a';",
+			"print 'a'",
+			"import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by) ",
+			"import urllib"
 		]
 	},
 	"distraction_free":
@@ -55,6 +87,7 @@
 	},
 	"file_history":
 	[
+		"/home/bogado/Geotexan/src/Geotex-INN/geotexan.sublime-project",
 		"/tmp/detectar_albaranes_mal_facturados.txt",
 		"/home/bogado/Geotexan/src/Geotex-INN/db/tablas.sql",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/tipos_material.html",
@@ -94,7 +127,7 @@
 	],
 	"find":
 	{
-		"height": 35.0
+		"height": 25.0
 	},
 	"find_in_files":
 	{
@@ -108,6 +141,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			" ",
 			"aproximadamente 0 de ",
 			"for ldv in alb.lineasDeVenta:\n            pv = ldv.productoVenta\n            if pv != None and (pv.es_bala() or pv.es_bala_cable() or pv.es_bigbag() or pv.es_rollo()):\n                if pv not in pvs:\n                    pvs[pv] = [ldv.cantidad, 0.0]\n                else:\n                    pvs[pv][0] += ldv.cantidad\n        for articulo in alb.articulos + [ldd.articulo \n                                         for ldd in alb.lineasDeDevolucion]:\n            pv = articulo.productoVenta\n            if pv.es_rollo():\n                cantidad_articulo = articulo.superficie\n            elif pv.es_bala() or pv.es_bala_cable() or pv.es_bigbag() or pv.es_caja() or pv.es_rollo_c():\n                cantidad_articulo = articulo.peso\n            else:\n                print >> sys.stderr, \"Artículo ID %d no es bala [cable], rollo [defectuoso] ni bigbag.\" % (articulo.id)\n                continue\n            if pv not in pvs:\n                pvs[pv] = [0.0, cantidad_articulo]\n            else:\n                pvs[pv][1] += cantidad_articulo\n        for pv in pvs:\n            if round(pvs[pv][0], 2) != round(pvs[pv][1], 2):\n                print >> sys.stderr, \"El albarán ID %d (%s) tiene como cantidad total de %s, %s en líneas de venta y %s en artículos.\" % (\n                    alb.id, alb.numalbaran, pv.descripcion, utils.float2str(pvs[pv][0]), utils.float2str(pvs[pv][1]))\n                res = False",
 			"aproximadamente 0 de ",
@@ -164,8 +198,8 @@
 						"selection":
 						[
 							[
-								4593,
-								4593
+								2761,
+								2761
 							]
 						],
 						"settings":
@@ -175,7 +209,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1452.0,
+						"translation.y": 714.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -186,7 +220,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 34.0
+		"height": 25.0
 	},
 	"input":
 	{
@@ -259,11 +293,11 @@
 	},
 	"select_project":
 	{
-		"height": 0.0,
+		"height": 500.0,
 		"selected_items":
 		[
 		],
-		"width": 0.0
+		"width": 380.0
 	},
 	"select_symbol":
 	{

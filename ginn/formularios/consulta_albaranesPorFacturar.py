@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -46,7 +46,7 @@ import pygtk
 pygtk.require('2.0')
 import gtk, time 
 from framework import pclases
-
+from formularios.ventana_progreso import VentanaProgreso
 
 class ConsultaAlbaranesPorFacturar(Ventana):
     inicio = None
@@ -61,7 +61,8 @@ class ConsultaAlbaranesPorFacturar(Ventana):
         """
         self.usuario = usuario
         global fin
-        Ventana.__init__(self, 'consulta_albaranesPorFacturar.glade', objeto, usuario = usuario)
+        Ventana.__init__(self, 'consulta_albaranesPorFacturar.glade', 
+                         objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_buscar/clicked': self.buscar,
                        'b_imprimir/clicked': self.imprimir,
@@ -97,6 +98,10 @@ class ConsultaAlbaranesPorFacturar(Ventana):
         temp = time.localtime()
         self.fin = str(temp[0])+'/'+str(temp[1])+'/'+str(temp[2])
         self.wids['e_fechafin'].set_text(utils.str_fecha(temp))
+        self.wids['e_total_entrada'].set_property("xalign", 1.0)
+        self.wids['e_total_salida'].set_property("xalign", 1.0)
+        self.wids['e_euros_entrada'].set_property("xalign", 1.0)
+        self.wids['e_euros_salida'].set_property("xalign", 1.0)
         gtk.main()
 
     def exportar(self, boton):
@@ -205,7 +210,12 @@ class ConsultaAlbaranesPorFacturar(Ventana):
                                        cliente,
                                        "AS:%s" % (i.id)))
                 for ldv in i.lineasDeVenta:
-                    if ldv.facturaVenta == None or ldv.prefactura == None:
+                    if ((ldv.facturaVenta == None and ldv.prefactura == None)
+                            and ldv.cantidad != 0):
+                        # CWT: Aquí me voy a quitar las líneas nulas. Pero 
+                        # sigo creyendo que es mejor idea verlas y así 
+                        # investigar sobre la marcha por qué el usuario  
+                        # ha dejado en albarán una línea con cantidad cero.
                         models.append(padre, ("", 
                                               "", 
                                               ldv.producto.descripcion, 
@@ -268,8 +278,8 @@ class ConsultaAlbaranesPorFacturar(Ventana):
                                 por_producto[p][0] - por_producto[p][1]), 
                            p.id
                           ))
-        self.wids['e_total_entrada'].set_text("%d " % total_salida)
-        self.wids['e_total_salida'].set_text("%d " % total_entrada)
+        self.wids['e_total_entrada'].set_text("%d" % total_salida)
+        self.wids['e_total_salida'].set_text("%d" % total_entrada)
         self.wids['e_euros_entrada'].set_text(utils.float2str(euros_entrada))
         self.wids['e_euros_salida'].set_text(utils.float2str(euros_salida))
         
@@ -316,45 +326,70 @@ class ConsultaAlbaranesPorFacturar(Ventana):
         Dadas fecha de inicio y de fin, lista todos los albaranes
         pendientes de facturar.
         """
+        i = 0.0
+        vpro = VentanaProgreso(padre = self.wids['ventana'])
+        vpro.mostrar()
         self.resultado = []
         self.comisiones = []
         self.transportes = []
-        selfinicio = self.inicio and utils.parse_fecha("/".join(self.inicio.split("/")[::-1])) or None
+        selfinicio = self.inicio and utils.parse_fecha(
+                "/".join(self.inicio.split("/")[::-1])) or None
         selffin = utils.parse_fecha("/".join(self.fin.split("/")[::-1]))
         if not selfinicio:
-            albaranesentrada = pclases.AlbaranEntrada.select(pclases.AlbaranEntrada.q.fecha <= selffin, orderBy = 'fecha')
+            albaranesentrada = pclases.AlbaranEntrada.select(
+                    pclases.AlbaranEntrada.q.fecha <= selffin, 
+                    orderBy = 'fecha')
+            albaranessalida = pclases.AlbaranSalida.select(
+                    pclases.AND(pclases.AlbaranSalida.q.fecha <= selffin, 
+                                pclases.AlbaranSalida.q.facturable == True), 
+                    orderBy = 'fecha')
         else:
-            albaranesentrada = pclases.AlbaranEntrada.select(pclases.AND(pclases.AlbaranEntrada.q.fecha >= selfinicio,
-                                                                   pclases.AlbaranEntrada.q.fecha <= selffin), 
-                                                     orderBy='fecha')
-        for proveedor in pclases.Proveedor.select():
+            albaranesentrada = pclases.AlbaranEntrada.select(
+                    pclases.AND(pclases.AlbaranEntrada.q.fecha >= selfinicio,
+                                pclases.AlbaranEntrada.q.fecha <= selffin), 
+                    orderBy='fecha')
+            albaranessalida = pclases.AlbaranSalida.select(
+                    pclases.AND(pclases.AlbaranSalida.q.fecha >= selfinicio,
+                                pclases.AlbaranSalida.q.fecha <= selffin, 
+                                pclases.AlbaranSalida.q.facturable == True), 
+                    orderBy='fecha')
+        proveedores = pclases.Proveedor.select()
+        tot = (proveedores.count() + albaranessalida.count() 
+                + albaranesentrada.count())
+        for proveedor in proveedores:
+            vpro.set_valor(i/tot, 
+                    "Buscando albaranes de comisiones y transportes...\n"
+                    "(%s)" % proveedor.nombre)
+            i += 1
             if not selfinicio:
-                self.comisiones += [c for c in proveedor.get_comisiones_pendientes_de_facturar() 
-                                    if c.fecha <= selffin and c not in self.comisiones]
-                self.transportes += [t for t in proveedor.get_transportes_pendientes_de_facturar() 
-                                     if t.fecha <= selffin and t not in self.transportes] 
+                self.comisiones += [c for c in 
+                        proveedor.get_comisiones_pendientes_de_facturar() 
+                        if c.fecha <= selffin and c not in self.comisiones]
+                self.transportes += [t for t in 
+                        proveedor.get_transportes_pendientes_de_facturar() 
+                        if t.fecha <= selffin and t not in self.transportes] 
             else:
                 for c in proveedor.get_comisiones_pendientes_de_facturar():
-                    if selfinicio <= c.fecha <= selffin and c not in self.comisiones:
+                    if (selfinicio <= c.fecha <= selffin 
+                            and c not in self.comisiones):
                         self.comisiones.append(c)
                 for t in proveedor.get_transportes_pendientes_de_facturar():
-                    if selfinicio <= t.fecha <= selffin and t not in self.transportes:
+                    if (selfinicio <= t.fecha <= selffin 
+                            and t not in self.transportes):
                         self.transportes.append(t)
-        if not selfinicio:
-            albaranessalida = pclases.AlbaranSalida.select(pclases.AND(pclases.AlbaranSalida.q.fecha <= selffin, 
-                                                                 pclases.AlbaranSalida.q.facturable == True), 
-                                                     orderBy = 'fecha')
-        else:
-            albaranessalida = pclases.AlbaranSalida.select(pclases.AND(pclases.AlbaranSalida.q.fecha >= selfinicio,
-                                                                   pclases.AlbaranSalida.q.fecha <= selffin, 
-                                                                   pclases.AlbaranSalida.q.facturable == True), 
-                                                     orderBy='fecha')
+        # DONE: Mostrar solo lo pendiente de facturar. No todas las líneas.
         for a in albaranessalida:
-            total_lineas = len(a.lineasDeVenta)
+            vpro.set_valor(i/tot, "Buscando albaranes de salida...")
+            i += 1
+            total_lineas = len([ldv for ldv in a.lineasDeVenta 
+                                if ldv.cantidad])
             if a.contar_lineas_facturadas() < total_lineas: 
                 self.resultado.append(a)
         for a in albaranesentrada:
-            total_lineas = len(a.lineasDeCompra)
+            vpro.set_valor(i/tot, "Buscando albaranes de entrada...")
+            i += 1
+            total_lineas = len([ldc for ldc in a.lineasDeCompra 
+                                if ldc.cantidad])
             if a.contar_lineas_facturadas() < total_lineas: 
                 self.resultado.append(a)
         self.resultado.sort(self.por_fecha)
@@ -362,6 +397,7 @@ class ConsultaAlbaranesPorFacturar(Ventana):
         self.transportes.sort(self.por_fecha)
         self.rellenar_tabla(self.resultado, self.comisiones, self.transportes)
         self.wids['tv_producto'].get_columns()[0].set_expand(True)
+        vpro.ocultar()
 
     def imprimir(self,boton):
         """
@@ -370,18 +406,21 @@ class ConsultaAlbaranesPorFacturar(Ventana):
         from informes.treeview2pdf import treeview2pdf
         from formularios.reports import abrir_pdf
         if not self.inicio:
-            fechaInforme = 'Hasta '+utils.str_fecha(time.strptime(self.fin,"%Y/%m/%d"))
+            fechaInforme = 'Hasta ' + utils.str_fecha(
+                    time.strptime(self.fin,"%Y/%m/%d"))
         else:
-            fechaInforme = utils.str_fecha(time.strptime(self.inicio,"%Y/%m/%d"))+' - '+utils.str_fecha(time.strptime(self.fin,"%Y/%m/%d"))
+            fechaInforme = (utils.str_fecha(
+                    time.strptime(self.inicio,"%Y/%m/%d")) + ' - ' 
+                    + utils.str_fecha(time.strptime(self.fin,"%Y/%m/%d")))
         abrir_pdf(treeview2pdf(self.wids['tv_entrada'], 
-                               titulo = "Albaranes de entrada pendientes de facturar", 
-                               fecha = fechaInforme))
+            titulo = "Albaranes de entrada pendientes de facturar", 
+            fecha = fechaInforme))
         abrir_pdf(treeview2pdf(self.wids['tv_salida'], 
-                               titulo = "Albaranes de salida pendientes de facturar", 
-                               fecha = fechaInforme))
+            titulo = "Albaranes de salida pendientes de facturar", 
+            fecha = fechaInforme))
         abrir_pdf(treeview2pdf(self.wids['tv_producto'], 
-                               titulo = "Pendiente de facturar por producto", 
-                               fecha = fechaInforme))
+            titulo = "Pendiente de facturar por producto", 
+            fecha = fechaInforme))
 
 if __name__ == '__main__':
     t = ConsultaAlbaranesPorFacturar()

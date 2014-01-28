@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -53,23 +53,19 @@ pygtk.require('2.0')
     
 
 class ConsultaProducido(Ventana):
-    inicio = None
-    fin = None
-    resultado = []
-        
     def __init__(self, objeto = None, usuario = None):
         """
         Constructor. objeto puede ser un objeto de pclases con el que
         comenzar la ventana (en lugar del primero de la tabla, que es
         el que se muestra por defecto).
         """
-        global fin
         self.grafico = None
         self.kilos = 0
         self.metros = 0
         self.rollos = 0
         self.balas = 0
-        Ventana.__init__(self, 'consulta_producido.glade', objeto, usuario = usuario)
+        Ventana.__init__(self, 'consulta_producido.glade', objeto, 
+                         usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_buscar/clicked': self.buscar,
                        'b_imprimir/clicked': self.imprimir,
@@ -77,20 +73,38 @@ class ConsultaProducido(Ventana):
                        'b_fecha_fin/clicked': self.set_fin, 
                        "b_exportar/clicked": self.exportar}
         self.add_connections(connections)
-        cols = (('Producto/Lote','gobject.TYPE_STRING', False, True, False, None),
-                ('Cantidad producida','gobject.TYPE_STRING', False, True, False, None),
-                ('Unidades', 'gobject.TYPE_INT64', False, True, False, None),
-                ('Media por unidad', 'gobject.TYPE_STRING', False, True, False, None), 
+        cols = (('Producto/Lote','gobject.TYPE_STRING', 
+                    False, True, False, None),
+                ('Cantidad producida','gobject.TYPE_STRING', 
+                    False, True, False, None),
+                ('Bultos', 'gobject.TYPE_INT64', False, True, False, None),
+                ('Media por unidad', 'gobject.TYPE_STRING', 
+                    False, True, False, None), 
+                ('Kg. teóricos', 'gobject.TYPE_STRING', 
+                    False, True, False, None), 
+                ('Tiempo teórico', 'gobject.TYPE_STRING', 
+                    False, True, False, None), 
                 ('ID','gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_treeview(self.wids['tv_datos'], cols)
+        for i in (1, 2, 3, 4, 5):
+            col = self.wids['tv_datos'].get_column(i)
+            for cell in col.get_cell_renderers(): # One, actually
+                cell.set_property("xalign", 1.0)
         cols = (('Grupo', 'gobject.TYPE_STRING', False, True, True, None), 
-                ('Producción', 'gobject.TYPE_STRING', False, True, False, None), 
+                ('Producción', 'gobject.TYPE_STRING', 
+                    False, True, False, None), 
+                ('Kg. teóricos', 'gobject.TYPE_STRING', 
+                    False, True, False, None), 
+                ('Tiempo teórico', 'gobject.TYPE_STRING', 
+                    False, True, False, None), 
                 ('ID', 'gobject.TYPE_INT64', False, None, None, None))
         utils.preparar_listview(self.wids['tv_ford'], cols)
         temp = time.localtime()
         self.fin = str(temp[0])+'/'+str(temp[1])+'/'+str(temp[2])
         self.wids['e_fechafin'].set_text(utils.str_fecha(temp))
-        self.wids['e_fechainicio'].set_text(utils.str_fecha(mx.DateTime.localtime() - (7 * mx.DateTime.oneDay)))
+        self.wids['e_fechainicio'].set_text(
+                utils.str_fecha(
+                    mx.DateTime.localtime() - (7 * mx.DateTime.oneDay)))
         self.inicio = self.wids['e_fechainicio'].get_text().split('/')
         self.inicio.reverse()
         self.inicio = '/'.join(self.inicio)
@@ -113,24 +127,37 @@ class ConsultaProducido(Ventana):
         """
         Rellena el model con los items de la consulta.
         "items" es una lista de 4 elementos: Nombre producto, cantidad, ID y X.
-        En la última columna del model (la oculta) se guarda un string "ID:X" donde X
-        es R si es un rollo (geotextil) o B si es bala (fibra).
+        En la última columna del model (la oculta) se guarda un string "ID:X" 
+        donde X es R si es un rollo (geotextil) o B si es bala (fibra).
         """        
         model = self.wids['tv_datos'].get_model()
         model.clear()
         for item in items:
+            try:
+                kilos_teoricos = utils.float2str(item[7])
+            except ValueError:  # Es bala o caja. No tiene.
+                kilos_teoricos = "" 
+            tiempo_teorico = str_horas(
+                    mx.DateTime.TimeDeltaFrom(hours = item[8]))
             itr = model.append(None, (item[0],
-                                       item[1],
-                                       item[4],
-                                       utils.float2str(item[5]), 
-                                       "%d:%s" % (item[2], item[3])))
+                                      item[1],
+                                      item[4],
+                                      utils.float2str(item[5]), 
+                                      kilos_teoricos, 
+                                      tiempo_teorico, 
+                                      "%d:%s" % (item[2], item[3])))
             for lote_partida in item[6]:
+                cantidad = item[6][lote_partida]['cantidad']
+                bultos = item[6][lote_partida]['bultos']
+                media = cantidad / bultos
                 model.append(itr, (lote_partida and lote_partida.codigo or "?", 
-                                    utils.float2str(item[6][lote_partida]['cantidad']), 
-                                    item[6][lote_partida]['bultos'], 
-                                    utils.float2str(item[6][lote_partida]['cantidad'] / item[6][lote_partida]['bultos']), 
-                                    "%d:LP" % (lote_partida.id)
-                                   ))
+                                   utils.float2str(cantidad), 
+                                   bultos, 
+                                   utils.float2str(media), 
+                                   "",  # XXX Kilos teóricos
+                                   "",  # XXX Tiempo teórico
+                                   "%d:LP" % (lote_partida.id)
+                                  ))
         
     def set_inicio(self,boton):
         temp = utils.mostrar_calendario(padre = self.wids['ventana'])
@@ -154,15 +181,16 @@ class ConsultaProducido(Ventana):
             return 1
         else:
             return 0
-
-        
+    
     def get_lineas_produccion(self):
-        linea = pclases.LineaDeProduccion.select(pclases.LineaDeProduccion.q.nombre.contains('geotextil'))
+        linea = pclases.LineaDeProduccion.select(
+                pclases.LineaDeProduccion.q.nombre.contains('geotextil'))
         if linea.count() == 0:
             linea_gtx = None
         else:
             linea_gtx = linea[0]
-        linea = pclases.LineaDeProduccion.select(pclases.LineaDeProduccion.q.nombre.contains('fibra'))
+        linea = pclases.LineaDeProduccion.select(
+                pclases.LineaDeProduccion.q.nombre.contains('fibra'))
         if linea.count() == 0:
             linea_fib = None
         else:
@@ -196,122 +224,29 @@ class ConsultaProducido(Ventana):
                 and (self.wids['rb_todas'].get_active() 
                      or self.wids['rb_fibra'].get_active())):
                 self.agregar_parte_a_dicford(ford, pdp)
-                # Añado ProductoVenta de las balas.
-                for a in pdp.articulos:
-                    key = "%d:B" % (a.productoVentaID)
-                    if key not in prod_balas:
-                        try:
-                            prod_balas[key] = [a.productoVenta.descripcion, 
-                                               a.bala.pesobala, 
-                                               a.productoVenta.id, 
-                                               'B', 
-                                               'kg', 
-                                               1, 
-                                               {a.lote: {'cantidad': a.peso, 
-                                                         'bultos': 1}}
-                                              ]
-                        except AttributeError:
-                            prod_balas[key] = [a.productoVenta.descripcion, 
-                                               a.bigbag.pesobigbag, 
-                                               a.productoVenta.id, 
-                                               'B', 
-                                               'kg', 
-                                               1, 
-                                               {a.loteCem: {'cantidad': a.peso,
-                                                            'bultos': 1}}
-                                              ]
-                    else:
-                        try:
-                            prod_balas[key][1] += a.bala.pesobala
-                            try:
-                                prod_balas[key][6][a.lote]['cantidad']+=a.peso
-                                prod_balas[key][6][a.lote]['bultos'] += 1
-                            except KeyError:
-                                prod_balas[key][6][a.lote]={'cantidad':a.peso,
-                                                            'bultos': 1}
-                        except AttributeError:
-                            prod_balas[key][1] += a.bigbag.pesobigbag
-                            try:
-                                prod_balas[key][6][a.loteCem]['cantidad'] += a.peso
-                                prod_balas[key][6][a.loteCem]['bultos'] += 1 
-                            except KeyError:
-                                prod_balas[key][6][a.loteCem] = {'cantidad' : a.peso, 'bultos' : 1}
-                                # De verdad que es absurdo llamar «key» a la 
-                                # variable que hace de "key". No tiene nombre 
-                                # descriptivo y ahora no sé lo qué es. ¿Una 
-                                # bala? ¿Un producto? ¿Un parte? ¿Un consumo? 
-                                # ¿Ves lo que pasa? ¿Ves lo que pasa cuando 
-                                # intentas dar por culo a un desconocido? 
-                        prod_balas[key][5] += 1
+                self.procesar_pdp_balas(pdp, prod_balas)
             elif (pdp.es_de_bolsas() 
                   and (self.wids['rb_todas'].get_active() 
                        or self.wids['rb_embolsado'].get_active())):
                 self.agregar_parte_a_dicford(ford, pdp)
-                # Añado ProductoVenta de los palés.
-                for a in pdp.articulos:
-                    key = "%d:P" % (a.productoVentaID)
-                    if key not in prod_pales:
-                        prod_pales[key] = [a.productoVenta.descripcion, 
-                                           a.peso, 
-                                           a.productoVenta.id, 
-                                           'P', 
-                                           'kg', 
-                                           1, 
-                                           {a.partidaCem: 
-                                                {'cantidad': a.peso, 
-                                                 'bultos': a.caja.numbolsas}}
-                                          ]
-                    else:
-                        prod_pales[key][1] += a.peso
-                        try:
-                            prod_pales[key][6][a.partidaCem]['cantidad'] \
-                                += a.peso
-                            prod_pales[key][6][a.partidaCem]['bultos'] \
-                                += a.caja.numbolsas
-                        except KeyError:
-                            prod_pales[key][6][a.partidaCem] = {
-                                'cantidad':a.peso,
-                                'bultos': a.caja.numbolsas}
-                        prod_pales[key][5] += 1
+                self.procesar_pdp_cajas(pdp, prod_pales)
             elif (pdp.es_de_rollos() and 
                   (self.wids['rb_todas'].get_active() 
                    or self.wids['rb_geotextiles'].get_active())):
                 self.agregar_parte_a_dicford(ford, pdp)
-                # Añado ProductoVenta de los rollos.
-                for a in pdp.articulos:
-                    key = "%d:R" % (a.productoVentaID)
-                    try:
-                        cantidad = a.superficie
-                    except AttributeError, error:
-                        self.logger.error("consulta_producido::buscar -> "
-                                          "Falló el acceso a las propiedades "
-                                          "de producto de venta del rollo: "
-                                          "%s" % (error))
-                    if key not in prod_rollos:
-                        prod_rollos[key] = [a.productoVenta.descripcion, 
-                                            cantidad, 
-                                            a.productoVenta.id, 
-                                            'R', 
-                                            'm²', 
-                                            1, 
-                                            {a.partida:
-                                                {'cantidad': a.superficie, 
-                                                 'bultos': 1}}
-                                           ]
-                    else:
-                        prod_rollos[key][1] += cantidad
-                        prod_rollos[key][5] += 1
-                        try:
-                            prod_rollos[key][6][a.partida]['cantidad'] += a.superficie
-                            prod_rollos[key][6][a.partida]['bultos'] += 1
-                        except KeyError:
-                            prod_rollos[key][6][a.partida] = {'cantidad' : a.superficie, 'bultos' : 1}
+                self.procesar_pdp_rollos(pdp, prod_rollos)
             i += 1
         # Gráfico usando PyChart:
         data = []
         self.resultado = []
         for k in prod_balas:
-            cantidad = "%s %s" % (utils.float2str(prod_balas[k][1], 1), prod_balas[k][4])
+            cantidad = "%s %s" % (utils.float2str(prod_balas[k][1], 1), 
+                                  prod_balas[k][4])
+            tiempo_teorico = prod_balas[k][7]
+            try:
+                peso_teorico = prod_balas[k][8]
+            except IndexError:
+                peso_teorico = ""
             self.resultado.append([prod_balas[k][0],    # ?
                                    cantidad,            # Cantidad como cadena 
                                                         # de texto, con 
@@ -321,7 +256,9 @@ class ConsultaProducido(Ventana):
                                    prod_balas[k][5],    # ?
                                    prod_balas[k][1] / prod_balas[k][5], # Peso
                                                         # medio por bala/saca.
-                                   prod_balas[k][6]
+                                   prod_balas[k][6],
+                                   peso_teorico, 
+                                   tiempo_teorico
                                   ])
             data.append((prod_balas[k][0].replace("/", "//"), 
                          prod_balas[k][1], 
@@ -329,6 +266,11 @@ class ConsultaProducido(Ventana):
         for k in prod_pales:
             cantidad = "%s %s" % (utils.float2str(prod_pales[k][1], 1), 
                                   prod_pales[k][4])
+            tiempo_teorico = prod_pales[k][7]
+            try:
+                peso_teorico = prod_pales[k][8]
+            except IndexError:
+                peso_teorico = ""
             self.resultado.append([prod_pales[k][0],    # ?
                                    cantidad,            # Cantidad como cadena 
                                                         # de texto, con 
@@ -338,7 +280,9 @@ class ConsultaProducido(Ventana):
                                    prod_pales[k][5],    # ?
                                    prod_pales[k][1] / prod_pales[k][5], # Peso
                                                         # medio por caja.
-                                   prod_pales[k][6]
+                                   prod_pales[k][6], 
+                                   peso_teorico, 
+                                   tiempo_teorico
                                   ])
             data.append((prod_pales[k][0].replace("/", "//"), 
                          prod_pales[k][1], 
@@ -346,6 +290,11 @@ class ConsultaProducido(Ventana):
         for k in prod_rollos:
             cantidad = "%s %s" % (utils.float2str(prod_rollos[k][1], 1), 
                                   prod_rollos[k][4])
+            tiempo_teorico = prod_rollos[k][7]
+            try:
+                peso_teorico = prod_rollos[k][8]
+            except IndexError:
+                peso_teorico = ""
             self.resultado.append([prod_rollos[k][0],   # ?
                                    cantidad,            # Cantidad como 
                                                         # cadena, con unidades 
@@ -355,11 +304,15 @@ class ConsultaProducido(Ventana):
                                    prod_rollos[k][1]/prod_rollos[k][5], 
                                     # Metros cuadrados medio por rollo (no 
                                     # tiene mucho sentido, pero bueno)
-                                   prod_rollos[k][6]    # Producción / partida
+                                   prod_rollos[k][6],   # Producción / partida
+                                   peso_teorico, 
+                                   tiempo_teorico, 
                                   ])
             data.append((prod_rollos[k][0].replace("/", "//"), 
                          prod_rollos[k][1], 
                          prod_rollos[k][5]))
+        self.dibujar_grafico(data)
+        # Totales
         kilos, bultos_fibra = self.calcular_totales(prod_balas)
         metros, bultos_gtx = self.calcular_totales(prod_rollos)
         kilospales, bultos_pales = self.calcular_totales(prod_pales)
@@ -375,10 +328,116 @@ class ConsultaProducido(Ventana):
             utils.float2str(kilospales), bultos_pales))
         self.wids['e_total_gtx'].set_text("%s (%s rollos)" % (
             utils.float2str(metros), bultos_gtx))
-        self.dibujar_grafico(data)
         vpro.ocultar()
         self.rellenar_tabla(self.resultado)
         self.rellenar_tabla_fordiana(ford)
+
+    def procesar_pdp_rollos(self, pdp, prod_rollos):
+        # Añado ProductoVenta de los rollos.
+        for a in pdp.articulos:
+            key = "%d:R" % (a.productoVentaID)
+            try:
+                cantidad = a.superficie
+            except AttributeError, error:
+                self.logger.error("consulta_producido::procesar_pdp_rollos -> "
+                                  "Falló el acceso a las propiedades "
+                                  "de producto de venta del rollo: "
+                                  "%s" % (error))
+                cantidad = 0.0
+            try: 
+                prod_rollos[key] = [a.productoVenta.descripcion,    # 0
+                                    cantidad,                       # 1
+                                    a.productoVenta.id,             # 2
+                                    'R',                            # 3
+                                    'm²',                           # 4
+                                    1,                              # 5
+                                    {a.partida:                     # 6
+                                        {'cantidad': a.superficie, 
+                                         'bultos': 1}},
+                                    a.calcular_tiempo_teorico(),    # 7
+                                    a.rollo.peso_teorico            # 8
+                                   ]
+            except KeyError:
+                prod_rollos[key][1] += cantidad
+                prod_rollos[key][5] += 1
+                try:
+                    prod_rollos[key][6][a.partida]['cantidad'] += a.superficie
+                    prod_rollos[key][6][a.partida]['bultos'] += 1
+                except KeyError:
+                    prod_rollos[key][6][a.partida] = {
+                            'cantidad' : a.superficie, 'bultos' : 1}
+                prod_rollos[key][7] += a.calcular_tiempo_teorico()
+                prod_rollos[key][8] += a.rollo.peso_teorico
+
+    def procesar_pdp_cajas(self, pdp, prod_pales):
+        # Añado ProductoVenta de los palés.
+        for a in pdp.articulos:
+            key = "%d:P" % (a.productoVentaID)
+            try: 
+                prod_pales[key] = [a.productoVenta.descripcion,         # 0
+                                   a.peso, 
+                                   a.productoVenta.id, 
+                                   'P', 
+                                   'kg', 
+                                   1,                                   # 5
+                                   {a.partidaCem: 
+                                        {'cantidad': a.peso, 
+                                         'bultos': a.caja.numbolsas}}, 
+                                   a.calcular_tiempo_teorico(),         # 7
+                                  ]     # No lleva peso teórico
+            except KeyError:
+                prod_pales[key][1] += a.peso
+                try:
+                    prod_pales[key][6][a.partidaCem]['cantidad'] \
+                        += a.peso
+                    prod_pales[key][6][a.partidaCem]['bultos'] \
+                        += a.caja.numbolsas
+                except KeyError:
+                    prod_pales[key][6][a.partidaCem] = {
+                        'cantidad':a.peso,
+                        'bultos': a.caja.numbolsas}
+                prod_pales[key][5] += 1
+                proc_pales[key][7] += a.calcular_tiempo_teorico()
+
+    def procesar_pdp_balas(self, pdp, prod_balas):
+        # Añado ProductoVenta de las balas.
+        for a in pdp.articulos:
+            key = "%d:B" % (a.productoVentaID)
+            try:
+                peso = a.bala.pesobala
+                lote = a.lote
+            except AttributeError:  # Es cemento
+                peso = a.bigbag.pesobigbag
+                lote = a.loteCem
+            tiempo_teorico = a.calcular_tiempo_teorico()
+            try: 
+                prod_balas[key] = [a.productoVenta.descripcion,     # 0
+                                   peso, 
+                                   a.productoVenta.id, 
+                                   'B', 
+                                   'kg', 
+                                   1,                               # 5
+                                   {lote: {'cantidad': peso, 
+                                           'bultos': 1}}, 
+                                   tiempo_teorico                   # 7
+                                  ]     # Tampoco tienen peso teórico
+            except KeyError: 
+                prod_balas[key][1] += peso
+                try:
+                    prod_balas[key][6][lote]['cantidad'] += peso
+                    prod_balas[key][6][lote]['bultos'] += 1
+                except KeyError:
+                    prod_balas[key][6][lote]={'cantidad': peso,
+                                              'bultos': 1}
+                        # De verdad que es absurdo llamar «key» a la 
+                        # variable que hace de "key". No tiene nombre 
+                        # descriptivo y ahora no sé lo qué es. ¿Una 
+                        # bala? ¿Un producto? ¿Un parte? ¿Un consumo? 
+                        # ¿Ves lo que pasa, Larry? ¡¿Ves lo que pasa 
+                        # cuando intentas dar por culo a un 
+                        # desconocido?! ¡Esto es lo que pasa, Larry!
+                prod_balas[key][5] += 1
+                prod_balas[key][7] += tiempo_teorico
 
     def agregar_parte_a_dicford(self, ford, parte):
         """
@@ -411,10 +470,12 @@ class ConsultaProducido(Ventana):
 
     def preparar_diccionario_ford(self, fechaini, fechafin):
         """
-        Prepara un diccionario cuyas claves son una tupla (fechahorainicio, fechahorafin).
-        Si fechaini es None, fechahorainicio será la fecha más antigua de los partes 
-        de la BD a las 6:00.
-        Todas las tuplas irán en intervalo de 06:00 a 14:00, 14:00 a 22:00 y 22:00 a 06:00.
+        Prepara un diccionario cuyas claves son una tupla (fechahorainicio, 
+        fechahorafin).
+        Si fechaini es None, fechahorainicio será la fecha más antigua de los 
+        partes de la BD a las 6:00.
+        Todas las tuplas irán en intervalo de 06:00 a 14:00, 14:00 a 
+        22:00 y 22:00 a 06:00.
         DEPRECATED: Agrupo mejor por grupos, en lugar de por turnos.
         """
         dic = {}
@@ -439,9 +500,17 @@ class ConsultaProducido(Ventana):
         for grupo in ford:
             produccion = []
             for unidad in ford[grupo]:
-                produccion.append("%s %s" % (utils.float2str(ford[grupo][unidad], 3, autodec = True), unidad))
+                produccion.append("%s %s" % (
+                    utils.float2str(ford[grupo][unidad], 3, autodec = True), 
+                    unidad))
+            tiempo_teorico = 0.0 # TODO
+            peso_teorico = ""   # TODO
             nombregrupo = grupo and grupo.nombre or "Sin grupo"
-            model.append((nombregrupo, "; ".join(produccion), 0))
+            model.append((nombregrupo, 
+                          "; ".join(produccion), 
+                          peso_teorico, 
+                          tiempo_teorico, 
+                          0))
 
     def calcular_totales(self, prod):
         """
@@ -454,27 +523,36 @@ class ConsultaProducido(Ventana):
 
     def dibujar_grafico(self, data):
         """
-        Dibuja el gráfico de tarta. Si se mezclan balas y rollos, usa unidades (balas o rollos). 
-        Si es solo de geotextiles o de fibra, se usan sus unidades (metros o kilos).
+        Dibuja el gráfico de tarta. Si se mezclan balas y rollos, usa 
+        unidades (balas o rollos). 
+        Si es solo de geotextiles o de fibra, se usan sus unidades 
+        (metros o kilos).
         """
         if pychart_available and len(data) > 0:
             theme.use_color = True
             theme.reinitialize()
             tempdir = gettempdir()
             formato = "png"   # NECESITA ghostscript
-            nomarchivo = "%s.%s" % (mx.DateTime.localtime().strftime("gcproducido_%Y_%m_%d_%H_%M_%S"), formato)
+            nombre_fichero = mx.DateTime.localtime().strftime(
+                    "gcproducido_%Y_%m_%d_%H_%M_%S")
+            nomarchivo = "%s.%s" % (nombre_fichero, formato)
             nombregraph = os.path.join(tempdir, "%s") % (nomarchivo)
             can = canvas.init(fname = nombregraph, format = formato)
-            ar = area.T(size=(400, 200), legend=legend.T(), x_grid_style = None, y_grid_style = None)
+            ar = area.T(size=(400, 200), 
+                        legend=legend.T(), 
+                        x_grid_style = None, 
+                        y_grid_style = None)
             if self.wids['rb_todas'].get_active():
                 data = [(d[0], d[2]) for d in data]
-                can.show(15, 150, "/a90/12/hRNúmero de balas\ny rollos fabricados")
+                can.show(15, 150, 
+                         "/a90/12/hRNúmero de balas\ny rollos fabricados")
             else:
                 data = [(d[0], d[1]) for d in data]
                 if self.wids['rb_fibra'].get_active():
                     can.show(15, 150, "/a90/12/hRKilos de\nfibra fabricados")
                 elif self.wids['rb_geotextiles'].get_active():
-                    can.show(15, 150, "/a90/12/hRMetros cuadrados de\ngeotextiles fabricados")
+                    can.show(15, 150, 
+                             "/a90/12/hRMetros cuadrados de\ngeotextiles fabricados")
             plot = pie_plot.T(data=data, arc_offsets=[0,10,0,10],
                               shadow = (2, -2, fill_style.gray50),
                               label_offset = 25,
@@ -487,14 +565,16 @@ class ConsultaProducido(Ventana):
                 self.wids['im_graph'].set_from_file(nombregraph)
             except:
                 utils.dialogo_info(titulo = "NECESITA GHOSTSCRIPT",
-                                   texto = "Para ver gráficas en pantalla necesita instalar Ghostscript.\nPuede encontrarlo en el servidor de la aplicación o descargarlo de la web (http://www.cs.wisc.edu/~ghost/).",
-                                   padre = self.wids['ventana'])
+                    texto = "Para ver gráficas en pantalla necesita instalar"
+                            " Ghostscript.\nPuede encontrarlo en el servidor"
+                            " de la aplicación o descargarlo de la web "
+                            "(http://www.cs.wisc.edu/~ghost/).",
+                    padre = self.wids['ventana'])
             self.grafico = nombregraph
         else:
-            self.wids['im_graph'].set_from_file("NOEXISTEPORTANTOVAADIBUJARUNASPA")
+            self.wids['im_graph'].set_from_file(
+                    "NOEXISTEPORTANTOVAADIBUJARUNASPA")
             self.grafico = None
-
-
 
     def imprimir(self,boton):
         """
@@ -511,18 +591,36 @@ class ConsultaProducido(Ventana):
             datos.append(("", "", ""))
             datos.append(("", "-" * 30 , "-" * 30))
             datos.append(("", "", ""))
-            datos.append((" " * 50 + "TOTAL:", "%s kg" % (utils.float2str(self.kilos)), self.balas))
+            datos.append((" " * 50 + "TOTAL:", "%s kg" % (
+                utils.float2str(self.kilos)), self.balas))
         if self.rollos != 0:
             datos.append(("", "", ""))
             datos.append(("", "-" * 30 , "-" * 30))
             datos.append(("", "", ""))
-            datos.append((" " * 50 + "TOTAL:", "%s m²" % (utils.float2str(self.metros)), self.rollos))
+            datos.append((" " * 50 + "TOTAL:", "%s m²" % (
+                utils.float2str(self.metros)), self.rollos))
         if (self.inicio) == None:            
-            fechaInforme = 'Hasta '+utils.str_fecha(time.strptime(self.fin,"%Y/%m/%d"))
+            fechaInforme = 'Hasta ' + utils.str_fecha(
+                    time.strptime(self.fin,"%Y/%m/%d"))
         else:
-            fechaInforme = utils.str_fecha(time.strptime(self.inicio,"%Y/%m/%d"))+' - '+utils.str_fecha(time.strptime(self.fin,"%Y/%m/%d"))
+            fechaInforme = (utils.str_fecha(
+                    time.strptime(self.inicio,"%Y/%m/%d")) + ' - '
+                    + utils.str_fecha(time.strptime(self.fin,"%Y/%m/%d")))
         if datos != []:
-            reports.abrir_pdf(geninformes.producido_produccion(datos, fechaInforme, self.grafico))
+            reports.abrir_pdf(
+                    geninformes.producido_produccion(datos, 
+                                                     fechaInforme, 
+                                                     self.grafico))
+
+
+def str_horas(fh):
+    """
+    Devuelve un TimeDelta en horas:minutos
+    """
+    try:
+        return "%02d:%02d" % (fh.hour + fh.days * 24, fh.minute)
+    except:
+        return ''
 
 
 if __name__ == '__main__':

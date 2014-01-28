@@ -9745,7 +9745,19 @@ class Articulo(SQLObject, PRPCTOO):
                 self.syncUpdate()
                 res = 0
         return res 
-            
+
+    def calcular_tiempo_teorico(self):
+        """
+        Devuelve el tiempo en horas en que se debería haber producido el 
+        artículo según la producción estándar de la ficha del producto que sea.
+        """
+        vel = self.productoVenta.prodestandar
+        peso_sin = self.peso_sin
+        try:
+            tiempo = peso_sin / vel
+        except ZeroDivisionError:
+            tiempo = 0.0
+        return tiempo
     
 cont, tiempo = print_verbose(cont, total, tiempo)
 

@@ -5,5 +5,8 @@
 			"follow_symlinks": true,
 			"path": "."
 		}
-	]
+	], 
+	"settings": {
+		"python_interpreter": "/usr/bin/env python"
+	}
 }
