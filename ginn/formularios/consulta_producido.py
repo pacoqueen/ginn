@@ -150,12 +150,15 @@ class ConsultaProducido(Ventana):
                 cantidad = item[6][lote_partida]['cantidad']
                 bultos = item[6][lote_partida]['bultos']
                 media = cantidad / bultos
+# TODO: PORASQUI: Implementar el get_peso_teorico y poner aquí un try o algo para que pete si no se puede calcular (balas o cemento no tienen peso teórico)
+                kilos_teoricos = bultos * pv.get_peso_teorico()
                 model.append(itr, (lote_partida and lote_partida.codigo or "?", 
                                    utils.float2str(cantidad), 
                                    bultos, 
                                    utils.float2str(media), 
-                                   "",  # XXX Kilos teóricos
-                                   "",  # XXX Tiempo teórico
+                                   # PORASQUI: Me queda: Faltan totales, arreglar gráfica en entornos Windows y cálculos por turno y por lote/partida.
+                                   "",  # TODO: Kilos teóricos
+                                   "",  # TODO: Tiempo teórico
                                    "%d:LP" % (lote_partida.id)
                                   ))
         
@@ -504,7 +507,7 @@ class ConsultaProducido(Ventana):
                     utils.float2str(ford[grupo][unidad], 3, autodec = True), 
                     unidad))
             tiempo_teorico = 0.0 # TODO
-            peso_teorico = ""   # TODO
+            peso_teorico = ""    # TODO
             nombregrupo = grupo and grupo.nombre or "Sin grupo"
             model.append((nombregrupo, 
                           "; ".join(produccion), 
