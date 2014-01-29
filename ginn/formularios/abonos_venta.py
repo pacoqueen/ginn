@@ -1079,9 +1079,13 @@ class AbonosVenta(Ventana):
         self.wids['b_guardar'].set_sensitive(False)
 
     def buscar_fecha(self, w):
+        try:
+            fecha_actual = self.objeto.fecha.tuple()[:3][::-1]
+        except AttributeError:
+            fecha_actual = self.objeto.fecha
         fecha = utils.str_fecha(
                   utils.mostrar_calendario(
-                    self.objeto.fecha.tuple()[:3][::-1], 
+                    fecha_actual, 
                     padre = self.wids['ventana'])
                   )
         self.wids['e_fecha'].set_text(fecha)
