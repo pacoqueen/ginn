@@ -100,6 +100,10 @@ class ConsultaProducido(Ventana):
                     False, True, False, None), 
                 ('ID', 'gobject.TYPE_INT64', False, None, None, None))
         utils.preparar_listview(self.wids['tv_ford'], cols)
+        for i in (2, 3):
+            col = self.wids['tv_ford'].get_column(i)
+            for cell in col.get_cell_renderers(): # One, actually
+                cell.set_property("xalign", 1.0)
         temp = time.localtime()
         self.fin = str(temp[0])+'/'+str(temp[1])+'/'+str(temp[2])
         self.wids['e_fechafin'].set_text(utils.str_fecha(temp))
@@ -498,6 +502,14 @@ class ConsultaProducido(Ventana):
             try:
                 producido_proporcional = (produccion[0] 
                                       *(grupos[grupo].hours/total_horas.hours))
+                try:
+                    peso_teorico = parte.productoVenta.get_peso_teorico()
+                    kilos_teoricos = (len(parte.articulos) * peso_teorico 
+                            * (grupos[grupo].hours / total_horas.hours))
+                    horas_teoricas = kilos_teoricos / parte.prodestandar 
+                except (ValueError, AttributeError):
+                    kilos_teoricos = 0
+                    horas_teoricas = 0
             except ZeroDivisionError:
                 # Valor de horas nulo. No cuenta para el informe.
                 producido_proporcional = 0.0
@@ -507,11 +519,14 @@ class ConsultaProducido(Ventana):
                          "total_horas": total_horas, 
                          "grupos": grupos})
             if grupo not in ford:
-                ford[grupo] = {}
+                ford[grupo] = {'tiempo_teorico': 0.0, 
+                               'peso_teorico': 0.0}
             if produccion[1] not in ford[grupo]:
                 ford[grupo][produccion[1]] = producido_proporcional
             else:
                 ford[grupo][produccion[1]] += producido_proporcional
+            ford[grupo]['peso_teorico'] += kilos_teoricos
+            ford[grupo]['tiempo_teorico'] += horas_teoricas
 
     def preparar_diccionario_ford(self, fechaini, fechafin):
         """
@@ -545,11 +560,14 @@ class ConsultaProducido(Ventana):
         for grupo in ford:
             produccion = []
             for unidad in ford[grupo]:
+                if unidad in ("peso_teorico", "tiempo_teorico"):
+                    continue
                 produccion.append("%s %s" % (
                     utils.float2str(ford[grupo][unidad], 3, autodec = True), 
                     unidad))
-            tiempo_teorico = 0.0 # TODO
-            peso_teorico = ""    # TODO
+            tiempo_teorico = str_horas(mx.DateTime.TimeDeltaFrom(
+                    hours = ford[grupo]['tiempo_teorico']))
+            peso_teorico = utils.float2str(ford[grupo]['peso_teorico'])
             nombregrupo = grupo and grupo.nombre or "Sin grupo"
             model.append((nombregrupo, 
                           "; ".join(produccion), 
@@ -636,19 +654,27 @@ class ConsultaProducido(Ventana):
         for i in model:
             datos.append((i[0],
                           i[1],
-                          i[2]))
+                          i[2], 
+                          i[3], 
+                          i[4]))
         if self.balas != 0:
-            datos.append(("", "", ""))
-            datos.append(("", "-" * 30 , "-" * 30))
-            datos.append(("", "", ""))
-            datos.append((" " * 50 + "TOTAL:", "%s kg" % (
-                utils.float2str(self.kilos)), self.balas))
+            datos.append(("", "", "", "", ""))
+            datos.append(("", "-" * 30 , "-" * 30, "-" * 30, "-" * 30))
+            datos.append(("", "", "", "", ""))
+            datos.append((" " * 50 + "TOTAL FIBRA:", 
+                          "%s kg" % (utils.float2str(self.kilos)), 
+                          self.balas, 
+                          "", 
+                          ""))
         if self.rollos != 0:
-            datos.append(("", "", ""))
-            datos.append(("", "-" * 30 , "-" * 30))
-            datos.append(("", "", ""))
-            datos.append((" " * 50 + "TOTAL:", "%s m²" % (
-                utils.float2str(self.metros)), self.rollos))
+            datos.append(("", "", "", "", ""))
+            datos.append(("", "-" * 30, "-" * 30, "-" * 30, "-" * 30))
+            datos.append(("", "", "", "", ""))
+            datos.append((" " * 50 + "TOTAL GEOTEXTILES:", 
+                          "%s m²" % (utils.float2str(self.metros)), 
+                          self.rollos, 
+                          self.wids['e_total_peso_teorico'].get_text(), 
+                          self.wids['e_total_tiempo_teorico'].get_text()))
         if (self.inicio) == None:            
             fechaInforme = 'Hasta ' + utils.str_fecha(
                     time.strptime(self.fin,"%Y/%m/%d"))
