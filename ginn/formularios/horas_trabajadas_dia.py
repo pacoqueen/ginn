@@ -48,6 +48,7 @@ pygtk.require('2.0')
 import gtk
 from framework import pclases
 import mx.DateTime
+import datetime
 
 
 class HorasTrabajadasDia(Ventana):
@@ -523,7 +524,14 @@ class HorasTrabajadasDia(Ventana):
                 # las 6:00. 
                 # Si la hora de inicio del parte es inferior a esa, se 
                 # considerará del día anterior a efectos de horas extras.
-                if ht.parteDeProduccion.horainicio < finnoche:
+                try:
+                    empieza_en_turno_de_dia = (
+                            ht.parteDeProduccion.horainicio < finnoche)
+                except TypeError:
+                    finnoche = datetime.time(finnoche.hour, finnoche.minute)
+                    empieza_en_turno_de_dia = (
+                            ht.parteDeProduccion.horainicio < finnoche)
+                if empieza_en_turno_de_dia:
                     dia = (ht.parteDeProduccion.fecha - mx.DateTime.oneDay)
                 else:
                     dia = ht.parteDeProduccion.fecha
