@@ -417,7 +417,7 @@ class ConsultaProducido(Ventana):
                         += a.peso
                     prod_pales[key][6][a.partidaCem]['bultos'] \
                         += a.caja.numbolsas
-                    prod_pases[key][6][a.partidaCem]['tiempo'] \
+                    prod_pales[key][6][a.partidaCem]['tiempo'] \
                         += tiempo_teorico
                 except KeyError:
                     prod_pales[key][6][a.partidaCem] = {
