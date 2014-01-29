@@ -3765,6 +3765,10 @@ class LoteCem(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
+    @property
+    def productoVenta(self):
+        return self.get_productoVenta()
+
     def calcular_media_pruebas(self, pruebas):
         """
         Devuelve la media del campo resultados de 
@@ -4484,6 +4488,10 @@ class PartidaCem(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
+    @property
+    def productoVenta(self):
+        return self.get_productoVenta()
+
     def get_puid(self):
         """
         Identificador único en la BD para cada objeto de esta clase.
@@ -4502,9 +4510,9 @@ class PartidaCem(SQLObject, PRPCTOO):
         Devuelve el producto de venta al que pertenece
         la partida o None si no tiene producción.
         """
-        if self.bolsas:
-            producto = self.bolsas[0].articulo.productoVenta
-        else:
+        try:
+            producto = self.pales[0].bolsas[0].articulo.productoVenta
+        except IndexError:  # No tiene producción todavía.
             producto = None
         return producto
 
@@ -5383,6 +5391,10 @@ class Partida(SQLObject, PRPCTOO):
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
+
+    @property
+    def productoVenta(self):
+        return self.get_producto()
 
     def calcular_media_pruebas(self, pruebas):
         """
@@ -14320,6 +14332,29 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
 
     unidad = property(get_unidad)
 
+    def get_peso_teorico(self):
+        """
+        Devuelve el peso teórico del rollo (ancho * largo * densidad) en 
+        kilogramos.
+        Si es caja, devuelve el peso teórico de la misma (sus artículos no 
+        tienen peso "real" porque no se pesan en la línea). Ojo: no del palé 
+        completo. Solo de una caja.
+        Si es fibra, lanza excepción porque no hay definido un peso teórico 
+        estándar para esos productos.
+        """
+        try:
+            return self.camposEspecificosRollo.peso_teorico
+        except AttributeError:
+            if self.es_caja():
+                return (self.camposEspecificosBolsa.gramosBolsa * self.camposEspecificosBolsa.bolsasCaja)
+            else:
+                if self.es_especial():
+                    raise ValueError, "Los productos especiales no tienen"\
+                                      " peso teórico."
+                elif self.es_fibra():
+                    raise ValueError, "Las balas de fibra no tienen peso "\
+                                      "teórico."
+
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 class StockAlmacen(SQLObject, PRPCTOO):
@@ -15882,6 +15917,10 @@ class Lote(SQLObject, PRPCTOO):
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
+
+    @property 
+    def productoVenta(self):
+        return self.get_productoVenta()
 
     def calcular_media_pruebas(self, pruebas):
         """

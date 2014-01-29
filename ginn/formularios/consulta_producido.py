@@ -49,6 +49,7 @@ import mx.DateTime
 import pygtk
 import os
 from formularios import utils
+from formularios.ventana_progreso import VentanaProgreso
 pygtk.require('2.0')
     
 
@@ -130,9 +131,15 @@ class ConsultaProducido(Ventana):
         En la última columna del model (la oculta) se guarda un string "ID:X" 
         donde X es R si es un rollo (geotextil) o B si es bala (fibra).
         """        
+        vpro = VentanaProgreso(padre = self.wids['ventana'])
+        vpro.mostrar()
+        i = 0.0
+        tot = len(items)
         model = self.wids['tv_datos'].get_model()
         model.clear()
         for item in items:
+            i += 1
+            vpro.set_valor(i / tot, "Mostrando datos en ventana...")
             try:
                 kilos_teoricos = utils.float2str(item[7])
             except ValueError:  # Es bala o caja. No tiene.
@@ -149,18 +156,31 @@ class ConsultaProducido(Ventana):
             for lote_partida in item[6]:
                 cantidad = item[6][lote_partida]['cantidad']
                 bultos = item[6][lote_partida]['bultos']
+                horas_teoricas = item[6][lote_partida]['tiempo']
                 media = cantidad / bultos
-# TODO: PORASQUI: Implementar el get_peso_teorico y poner aquí un try o algo para que pete si no se puede calcular (balas o cemento no tienen peso teórico)
-                kilos_teoricos = bultos * pv.get_peso_teorico()
+                try:
+                    pv = lote_partida.rollos[0].productoVenta
+                    kilos_teoricos_lote_partida = utils.float2str(
+                        bultos * pv.get_peso_teorico())
+                except (ValueError, IndexError, AttributeError):
+                    # Es bala, cemento o especial. No tiene.
+                    kilos_teoricos_lote_partida = ""
+                try:
+                    horas_teoricas = mx.DateTime.TimeDeltaFrom(
+                            hours = horas_teoricas)
+                    tiempo_teorico = str_horas(horas_teoricas)
+                except ZeroDivisionError:
+                    tiempo_teorico = ""
                 model.append(itr, (lote_partida and lote_partida.codigo or "?", 
                                    utils.float2str(cantidad), 
                                    bultos, 
                                    utils.float2str(media), 
                                    # PORASQUI: Me queda: Faltan totales, arreglar gráfica en entornos Windows y cálculos por turno y por lote/partida.
-                                   "",  # TODO: Kilos teóricos
-                                   "",  # TODO: Tiempo teórico
+                                   kilos_teoricos_lote_partida, 
+                                   tiempo_teorico, 
                                    "%d:LP" % (lote_partida.id)
                                   ))
+        vpro.ocultar()
         
     def set_inicio(self,boton):
         temp = utils.mostrar_calendario(padre = self.wids['ventana'])
@@ -350,15 +370,20 @@ class ConsultaProducido(Ventana):
             try: 
                 prod_rollos[key][1] += cantidad
                 prod_rollos[key][5] += 1
+                tiempo_teorico = a.calcular_tiempo_teorico()
                 try:
                     prod_rollos[key][6][a.partida]['cantidad'] += a.superficie
                     prod_rollos[key][6][a.partida]['bultos'] += 1
+                    prod_rollos[key][6][a.partida]['tiempo'] += tiempo_teorico
                 except KeyError:
                     prod_rollos[key][6][a.partida] = {
-                            'cantidad' : a.superficie, 'bultos' : 1}
-                prod_rollos[key][7] += a.calcular_tiempo_teorico()
+                            'cantidad' : a.superficie, 
+                            'bultos' : 1, 
+                            'tiempo': tiempo_teorico}
+                prod_rollos[key][7] += tiempo_teorico
                 prod_rollos[key][8] += a.rollo.peso_teorico
             except KeyError:
+                tiempo_teorico = a.calcular_tiempo_teorico()
                 prod_rollos[key] = [a.productoVenta.descripcion,    # 0
                                     cantidad,                       # 1
                                     a.productoVenta.id,             # 2
@@ -367,8 +392,9 @@ class ConsultaProducido(Ventana):
                                     1,                              # 5
                                     {a.partida:                     # 6
                                         {'cantidad': a.superficie, 
-                                         'bultos': 1}},
-                                    a.calcular_tiempo_teorico(),    # 7
+                                         'bultos': 1, 
+                                         'tiempo': tiempo_teorico}},
+                                    tiempo_teorico,                 # 7
                                     a.rollo.peso_teorico            # 8
                                    ]
 
@@ -378,18 +404,22 @@ class ConsultaProducido(Ventana):
             key = "%d:P" % (a.productoVentaID)
             try: 
                 prod_pales[key][1] += a.peso
+                tiempo_teorico = a.calcular_tiempo_teorico()
                 try:
                     prod_pales[key][6][a.partidaCem]['cantidad'] \
                         += a.peso
                     prod_pales[key][6][a.partidaCem]['bultos'] \
                         += a.caja.numbolsas
+                    prod_pases[key][6][a.partidaCem]['tiempo'] \
+                        += tiempo_teorico
                 except KeyError:
                     prod_pales[key][6][a.partidaCem] = {
                         'cantidad':a.peso,
                         'bultos': a.caja.numbolsas}
                 prod_pales[key][5] += 1
-                prod_pales[key][7] += a.calcular_tiempo_teorico()
+                prod_pales[key][7] += tiempo_teorico
             except KeyError:
+                tiempo_teorico = a.calcular_tiempo_teorico()
                 prod_pales[key] = [a.productoVenta.descripcion,         # 0
                                    a.peso, 
                                    a.productoVenta.id, 
@@ -398,8 +428,9 @@ class ConsultaProducido(Ventana):
                                    1,                                   # 5
                                    {a.partidaCem: 
                                         {'cantidad': a.peso, 
-                                         'bultos': a.caja.numbolsas}}, 
-                                   a.calcular_tiempo_teorico(),         # 7
+                                         'bultos': a.caja.numbolsas, 
+                                         'tiempo': tiempo_teorico}}, 
+                                   tiempo_teorico,                      # 7
                                   ]     # No lleva peso teórico
 
     def procesar_pdp_balas(self, pdp, prod_balas):
@@ -418,9 +449,11 @@ class ConsultaProducido(Ventana):
                 try:
                     prod_balas[key][6][lote]['cantidad'] += peso
                     prod_balas[key][6][lote]['bultos'] += 1
+                    prod_balas[key][6][lote]['tiempo'] += tiempo_teorico
                 except KeyError:
                     prod_balas[key][6][lote]={'cantidad': peso,
-                                              'bultos': 1}
+                                              'bultos': 1, 
+                                              'tiempo': tiempo_teorico}
                         # De verdad que es absurdo llamar «key» a la 
                         # variable que hace de "key". No tiene nombre 
                         # descriptivo y ahora no sé lo qué es. ¿Una 
@@ -431,6 +464,7 @@ class ConsultaProducido(Ventana):
                 prod_balas[key][5] += 1
                 prod_balas[key][7] += tiempo_teorico
             except KeyError:
+                tiempo_teorico = a.calcular_tiempo_teorico()
                 prod_balas[key] = [a.productoVenta.descripcion,     # 0
                                    peso, 
                                    a.productoVenta.id, 
@@ -438,7 +472,8 @@ class ConsultaProducido(Ventana):
                                    'kg', 
                                    1,                               # 5
                                    {lote: {'cantidad': peso, 
-                                           'bultos': 1}}, 
+                                           'bultos': 1, 
+                                           'tiempo': tiempo_teorico}}, 
                                    tiempo_teorico                   # 7
                                   ]     # Tampoco tienen peso teórico
 
