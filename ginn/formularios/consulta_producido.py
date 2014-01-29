@@ -179,7 +179,7 @@ class ConsultaProducido(Ventana):
                                    utils.float2str(cantidad), 
                                    bultos, 
                                    utils.float2str(media), 
-                                   # PORASQUI: Me queda: Faltan totales, arreglar gráfica en entornos Windows y cálculos por turno y por lote/partida.
+                                   # PORASQUI: Me queda: arreglar gráfica en entornos Windows 
                                    kilos_teoricos_lote_partida, 
                                    tiempo_teorico, 
                                    "%d:LP" % (lote_partida.id)
