@@ -336,6 +336,8 @@ class ConsultaProducido(Ventana):
                          prod_rollos[k][5]))
         self.dibujar_grafico(data)
         # Totales
+        self.tiempo_teorico = 0.0
+        self.peso_teorico = 0.0 # Se actualizan en el calcular_totales
         kilos, bultos_fibra = self.calcular_totales(prod_balas)
         metros, bultos_gtx = self.calcular_totales(prod_rollos)
         kilospales, bultos_pales = self.calcular_totales(prod_pales)
@@ -351,6 +353,11 @@ class ConsultaProducido(Ventana):
             utils.float2str(kilospales), bultos_pales))
         self.wids['e_total_gtx'].set_text("%s (%s rollos)" % (
             utils.float2str(metros), bultos_gtx))
+        horas_teoricas = mx.DateTime.TimeDeltaFrom(hours = self.tiempo_teorico)
+        self.wids['e_total_tiempo_teorico'].set_text(
+                str_horas(horas_teoricas))
+        self.wids['e_total_peso_teorico'].set_text(
+                utils.float2str(self.peso_teorico))
         vpro.ocultar()
         self.rellenar_tabla(self.resultado)
         self.rellenar_tabla_fordiana(ford)
@@ -557,6 +564,11 @@ class ConsultaProducido(Ventana):
         """
         cantidad = sum([prod[p][1] for p in prod])
         bultos = sum([prod[p][5] for p in prod])
+        self.tiempo_teorico += sum([prod[p][7] for p in prod])
+        try:
+            self.peso_teorico += sum([prod[p][8] for p in prod])
+        except IndexError:  # No tiene peso teórico
+            pass
         return (cantidad, bultos)
 
     def dibujar_grafico(self, data):
@@ -656,7 +668,7 @@ def str_horas(fh):
     Devuelve un TimeDelta en horas:minutos
     """
     try:
-        return "%02d:%02d" % (fh.hour + fh.days * 24, fh.minute)
+        return "%02d:%02d" % (fh.hour + fh.day * 24, fh.minute)
     except:
         return ''
 
