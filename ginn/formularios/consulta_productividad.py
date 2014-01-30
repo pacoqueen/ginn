@@ -463,6 +463,7 @@ En ambos casos el límite inferior es flexible -por compensación-.)""")
         except ZeroDivisionError:
             e_personasturno = 0
         self.wids['e_personasturno'].set_text("%s (%s personas/h)" % (utils.float2str(e_personasturno), utils.float2str(personashora)))
+        self.wids['e_tiempo_faltante'].set_text("")  # TODO: PORASQUI
         
     def set_inicio(self, boton):
         temp = utils.mostrar_calendario(padre = self.wids['ventana'])

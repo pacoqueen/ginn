@@ -16522,7 +16522,6 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
                         / (horas del parte * kg producción estándar/hora)
         los kg no cuentan el peso del embalaje __y solo son de producto A__.
         """
-        # TODO: ¿Cómo lo hacemos para la fibra?
         # CWT: Se cuenta todo el parte completo. Incluyendo paradas.
         #try:
         #    horas_trabajadas = self.get_horas_trabajadas()
@@ -16530,12 +16529,24 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         #    horas_trabajadas = mx.DateTime.DateTimeDelta(0)
         horas = self.get_duracion().hours
         #denominador = horas_trabajadas.hours * self.prodestandar
-        denominador = horas * self.prodestandar
+        if self.prodestandar:
+            denominador = horas * self.prodestandar 
+        else:   # Cojo la del producto si el parte la tiene a 0
+            try:
+                denominador = horas * self.productoVenta.prodestandar
+            except AttributeError:  # ¿No tiene producto el parte? ?¿Vacío?
+                denominador = 0.0
         try:
             peso_embalaje = self.articulos[0].productoVenta.camposEspecificosRollo.pesoEmbalaje
         except (AttributeError, IndexError):
             peso_embalaje = 0
-        kg_producidos = sum([a.peso for a in self.articulos if a.es_rollo()]) - (len([a for a in self.articulos if a.es_rollo()]) * peso_embalaje)
+            # TODO: ¿Cómo lo hacemos para la fibra? El peso que asignamos al 
+            # embalaje es totalmente arbitrario. Las balas de calbe, rollos 
+            # B y C al menos sí tienen ese campo aunque no se use.
+        articulos_A = [a for a in self.articulos if a.es_clase_a()]
+        peso_total_con_embalaje = sum([a.peso for a in articulos_A])
+        peso_total_embalajes = len(articulos_A) * peso_embalaje
+        kg_producidos = peso_total_con_embalaje - peso_total_embalajes
         # CWT: No se incluye producto B en el cálculo de la nueva productividad
         #kg_producidos += sum([a.rolloDefectuoso.peso_sin for a in self.articulos if a.es_rollo_defectuoso()])
         try:
