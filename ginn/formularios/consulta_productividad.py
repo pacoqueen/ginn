@@ -263,16 +263,9 @@ class ConsultaProductividad(Ventana):
             kilosgranza_del_parte = 0.0
             tiempototal, tiemporeal = self.calcular_tiempo_trabajado(p)
             tiempototaltotal += tiempototal
-            try:
-                # print tiemporeal, tiempototal
-                productividad = (tiemporeal.seconds / tiempototal.seconds)*100
-            except ZeroDivisionError:
-                productividad = 100     # Bueno, el máximo es 1 (100%). Es lo 
-                                    # más parecido a infinito positivo, ¿no?
-            if productividad < 0:
-                productividad = 0
-                self.logger.warning("consulta_productividad::rellenar_tabla "
-                    "-> Parte con productividad NEGATIVA: %s" % p)
+            #productividad = p.calcular_productividad()
+            # CWT: Ahora no se calcula así, sino como el antiguo rendimiento.
+            productividad = p.calcular_rendimiento()
             # Tratamiento especial para partes de balas
             if (self.wids['r_balas'].get_active() 
                 or self.wids['r_ambos'].get_active()):   # Sólo balas o todos. 
