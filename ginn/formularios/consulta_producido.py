@@ -396,7 +396,8 @@ class ConsultaProducido(Ventana):
         # Añado ProductoVenta de los rollos.
         tiempo_real = pdp.get_duracion().hours
         for a in pdp.articulos:
-            key = "%d:R" % (a.productoVentaID)
+            #key = "%d:R" % (a.productoVentaID)
+            key = a.productoVenta.puid
             try:
                 cantidad = a.superficie
             except AttributeError, error:
@@ -417,7 +418,8 @@ class ConsultaProducido(Ventana):
                     prod_rollos[key][6][a.partida] = {
                             'cantidad' : a.superficie, 
                             'bultos' : 1, 
-                            'tiempo': tiempo_teorico}
+                            'tiempo': tiempo_teorico, 
+                            't_real': 0.0}
                 prod_rollos[key][7] += tiempo_teorico
                 prod_rollos[key][8] += a.rollo.peso_teorico
             except KeyError:
@@ -431,7 +433,8 @@ class ConsultaProducido(Ventana):
                                     {a.partida:                     # 6
                                         {'cantidad': a.superficie, 
                                          'bultos': 1, 
-                                         'tiempo': tiempo_teorico}},
+                                         'tiempo': tiempo_teorico, 
+                                         't_real': 0.0}},
                                     tiempo_teorico,                 # 7
                                     a.rollo.peso_teorico            # 8
                                    ]
@@ -440,10 +443,7 @@ class ConsultaProducido(Ventana):
                 prod_rollos[key][9] += tiempo_real
             except IndexError:
                 prod_rollos[key].append(tiempo_real)                # 9
-            try:
-                prod_rollos[key][6][a.partida]['t_real'] += tiempo_real
-            except KeyError:
-                prod_rollos[key][6][a.partida]['t_real'] = tiempo_real
+            prod_rollos[key][6][a.partida]['t_real'] += tiempo_real
         except (KeyError, UnboundLocalError):
             pass        # ¿Parte sin producción? 
 
@@ -451,7 +451,8 @@ class ConsultaProducido(Ventana):
         # Añado ProductoVenta de los palés.
         tiempo_real = pdp.get_duracion().hours
         for a in pdp.articulos:
-            key = "%d:P" % (a.productoVentaID)
+            #key = "%d:P" % (a.productoVentaID)
+            key = a.productoVenta.puid
             try: 
                 prod_pales[key][1] += a.peso
                 tiempo_teorico = a.calcular_tiempo_teorico()
@@ -465,7 +466,9 @@ class ConsultaProducido(Ventana):
                 except KeyError:
                     prod_pales[key][6][a.partidaCem] = {
                         'cantidad':a.peso,
-                        'bultos': a.caja.numbolsas}
+                        'bultos': a.caja.numbolsas, 
+                        'tiempo': tiempo_teorico, 
+                        't_real': 0.0}
                 prod_pales[key][5] += 1
                 prod_pales[key][7] += tiempo_teorico
             except KeyError:
@@ -479,7 +482,8 @@ class ConsultaProducido(Ventana):
                                    {a.partidaCem: 
                                         {'cantidad': a.peso, 
                                          'bultos': a.caja.numbolsas, 
-                                         'tiempo': tiempo_teorico}}, 
+                                         'tiempo': tiempo_teorico, 
+                                         't_real': 0.0}}, 
                                    tiempo_teorico,                      # 7
                                   ]     # No lleva peso teórico
         try:
@@ -487,10 +491,7 @@ class ConsultaProducido(Ventana):
                 prod_pales[key][8] += tiempo_real
             except IndexError:
                 prod_pales[key].append(tiempo_real)                # 9
-            try:
-                prod_pales[key][6][a.partidaCem]['t_real'] += tiempo_real
-            except KeyError:
-                prod_pales[key][6][a.partidaCem]['t_real'] = tiempo_real
+            prod_pales[key][6][a.partidaCem]['t_real'] += tiempo_real
         except (KeyError, UnboundLocalError):
             pass    # `key` no instanciada. ¿Parte sin producción?
 
@@ -498,7 +499,8 @@ class ConsultaProducido(Ventana):
         # Añado ProductoVenta de las balas.
         tiempo_real = pdp.get_duracion().hours
         for a in pdp.articulos:
-            key = "%d:B" % (a.productoVentaID)
+            #key = "%d:B" % (a.productoVentaID)
+            key = a.productoVenta.puid
             try:
                 peso = a.bala.pesobala
                 lote = a.lote
@@ -515,7 +517,8 @@ class ConsultaProducido(Ventana):
                 except KeyError:
                     prod_balas[key][6][lote]={'cantidad': peso,
                                               'bultos': 1, 
-                                              'tiempo': tiempo_teorico}
+                                              'tiempo': tiempo_teorico, 
+                                              't_real': 0.0}
                         # De verdad que es absurdo llamar «key» a la 
                         # variable que hace de "key". No tiene nombre 
                         # descriptivo y ahora no sé lo qué es. ¿Una 
@@ -535,7 +538,8 @@ class ConsultaProducido(Ventana):
                                    1,                               # 5
                                    {lote: {'cantidad': peso, 
                                            'bultos': 1, 
-                                           'tiempo': tiempo_teorico}}, 
+                                           'tiempo': tiempo_teorico, 
+                                           't_real': 0.0}}, 
                                    tiempo_teorico                   # 7
                                   ]     # Tampoco tienen peso teórico
         try:
@@ -543,10 +547,7 @@ class ConsultaProducido(Ventana):
                 prod_balas[key][8] += tiempo_real
             except IndexError:
                 prod_balas[key].append(tiempo_real)                # 9
-            try:
-                prod_balas[key][6][lote]['t_real'] += tiempo_real
-            except KeyError:
-                prod_balas[key][6][lote]['t_real'] = tiempo_real
+            prod_balas[key][6][lote]['t_real'] += tiempo_real
         except (KeyError, UnboundLocalError):
             pass    # `key` no instanciada. ¿Parte sin producción?
 

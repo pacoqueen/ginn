@@ -462,7 +462,8 @@ En ambos casos el límite inferior es flexible -por compensación-.)""")
             e_personasturno = float(e_personasturno) / len(partes)
         except ZeroDivisionError:
             e_personasturno = 0
-        self.wids['e_personasturno'].set_text("%s (%s personas/h)" % (utils.float2str(e_personasturno), utils.float2str(personashora)))
+        self.wids['e_personasturno'].set_text("%s (%s personas/h)" % (
+            utils.float2str(e_personasturno), utils.float2str(personashora)))
         self.wids['e_tiempo_faltante'].set_text("")  # TODO: PORASQUI
         
     def set_inicio(self, boton):

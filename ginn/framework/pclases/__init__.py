@@ -16869,45 +16869,36 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
             # aunque las horas de inicio y fin estén mal.
         return duracion
 
-    def get_produccion(self):
+    def get_produccion(self, clase_A = True, clase_B = False, clase_C = False):
         """
         Devuelve la producción del parte en kilos si es de 
         balas o en metros si es de rollos de la forma:
         (cantidad_producida, unidad).
+        Cuenta como producción, por defecto, solo clase A. Para incluir lo 
+        demás hay que activar los "flags" clase_B y clase_C.
         """
         producido = 0
         unidad = ""
-        if self.es_de_balas():
+        if self.es_de_fibra():
             unidad = "kg"
-            if len(self.articulos) > 0:
-                try:
-                    producido = sum([a.peso for a in self.articulos])
-                except AttributeError, msg:
-                    print "pclases.py (get_produccion): Probablemente haya un"\
-                          " artículo sin bala, caja o bigbag asociado: %s" % (
-                            msg)
-        elif self.es_de_rollos():
+        elif self.es_de_geotextiles():
             unidad = "m²"
-            if len(self.articulos) > 0:
-                try:
-                    producido = len([a for a in self.articulos if a.es_rollo()]) * self.articulos[0].productoVenta.camposEspecificosRollo.metros_cuadrados
-                    producido += sum([a.superficie for a in self.articulos if a.es_rollo_defectuoso()])
-                except AttributeError, msg:
-                    print "pclases.py (get_produccion): Probablemente haya un artículo sin rollo asociado: %s" % (msg)
-        elif self.es_de_bolsas():
-            unidad = "kg"
-            #numbolsas = ParteDeProduccion._connection.queryOne("""
-            #    SELECT COUNT(id) 
-            #    FROM articulo 
-            #    WHERE articulo.parte_de_produccion_id = %d""" % self.id)[0] 
-            #try:
-            #    producto = self.articulos[0].productoVenta
-            #    kilos = (numbolsas 
-            #         * producto.camposEspecificosBala.gramosBolsa/1000.0)
-            #except AttributeError:
-            #    kilos = 0.0
-            kilos = sum([a.caja.peso for a in self.articulos])
-            producido = kilos
+        soy_parte_de_cemento = self.es_de_bolsas()
+        for a in self.articulos:
+            if ((clase_A and a.es_clase_a()) 
+                    or (clase_B and a.es_clase_b()) 
+                    or (clase_C and a.es_clase_c())):
+                cantidad_normalizada = a.cantidad   # En balas se guarda 
+                    # siempre el peso neto. kg de fibra pura. Sin embalaje.
+                    # En rollos los m² no se afectan por el embalaje.
+                    # En bigbags no se especifica peso de embalaje y en cajas 
+                    # es despreciable.
+                if a.es_rolloC():
+                    unidad = "kg"
+                    cantidad_normalizada = a.peso_sin
+                if soy_parte_de_cemento:     # Cantidad viene en gramos
+                    cantidad_normalizada /= 1000.0
+                producido += cantidad_normalizada
         return producido, unidad
 
     def es_nocturno(self):

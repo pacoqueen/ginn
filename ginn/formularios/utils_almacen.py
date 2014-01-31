@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco Jos� Rodr�guez Bogado,                   #
-#                          Diego Mu�oz Escalante.                             #
+# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+#                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
@@ -25,7 +25,7 @@
 
 
 ###################################################################
-## utils_almacen.py - Utilidades del m�dulo almac�n. 
+## utils_almacen.py - Utilidades del módulo almacén. 
 ###################################################################
 ## NOTAS:
 ## 
