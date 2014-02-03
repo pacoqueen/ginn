@@ -214,10 +214,10 @@ def _info(exctyp, value, tb):
             # Aparte de enviarlo por correo, si tengo consola, vuelco.
             try:
                 sys.stderr.write("\n")
-                sys.stderr.write("="*80)
+                sys.stderr.write("="*79)
                 sys.stderr.write(datetime.datetime.now().strftime(
                     "%Y%m%d %H:%M:%S").center(80))
-                sys.stderr.write("="*80)
+                sys.stderr.write("="*79)
                 sys.stderr.write("\n")
                 sys.stderr.write(message)
                 sys.stderr.write("\n")

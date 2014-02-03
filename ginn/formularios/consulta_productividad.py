@@ -47,7 +47,7 @@ import mx.DateTime
 import pygtk
 from formularios import utils
 pygtk.require('2.0')
-
+from formularios.consulta_producido import str_horas
 
 class ConsultaProductividad(Ventana):
     inicio = None
@@ -101,6 +101,10 @@ class ConsultaProductividad(Ventana):
         self.wids['tv_datos'].connect('button_press_event', 
                                       self.button_clicked) 
         # XXX
+        for ncol in (3, 4):
+            col = self.wids['tv_datos'].get_column(ncol)
+            for cell in col.get_cell_renderers():
+                cell.set_property("xalign", 1.0)
         self.colorear(self.wids['tv_datos'])
         temp = time.localtime()
         self.fin = str(temp[0])+'/'+str(temp[1])+'/'+str(temp[2])
@@ -210,9 +214,14 @@ class ConsultaProductividad(Ventana):
 
     def rellenar_tabla(self, partes, solobalas):
         """
-        Rellena el model con los tipos de material existentes
+        Rellena el model con los partes rescatados de la BD en `buscar`.
+        PRERREQUISITO:
+            Los partes vienen en una lista y deben estar ordenados por fecha y 
+            hora de inicio.
         """        
         from ventana_progreso import VentanaProgreso
+        self.huecos = []    # Lista de los últimos partes tratados por línea.
+        self.tiempo_faltante = mx.DateTime.TimeDeltaFrom(0)
         vpro = VentanaProgreso(padre = self.wids['ventana'])
         model = self.wids['tv_datos'].get_model()
         model.clear()
@@ -260,6 +269,7 @@ class ConsultaProductividad(Ventana):
                 continue
             vpro.set_valor(i/tot, 'Añadiendo parte %s...' % (
                                     utils.str_fecha(p.fecha)))
+            self.detectar_hueco(p)
             kilosgranza_del_parte = 0.0
             tiempototal, tiemporeal = self.calcular_tiempo_trabajado(p)
             tiempototaltotal += tiempototal
@@ -319,10 +329,8 @@ class ConsultaProductividad(Ventana):
                 personashora.append(empleados/tiempoparte)
             else:
                 personashora.append(0.0)
-            
             vector.append(productividad)
             produccion = p.get_produccion()
-
             # Resúmenes por día como nodos padre del TreeView.
             if dia_actual != utils.str_fecha(p.fecha):
                 if dia_actual != "":  # Actualizo el padre
@@ -464,7 +472,30 @@ En ambos casos el límite inferior es flexible -por compensación-.)""")
             e_personasturno = 0
         self.wids['e_personasturno'].set_text("%s (%s personas/h)" % (
             utils.float2str(e_personasturno), utils.float2str(personashora)))
-        self.wids['e_tiempo_faltante'].set_text("")  # TODO: PORASQUI
+        self.wids['e_tiempo_faltante'].set_text(
+                self.tiempo_faltante 
+                and (str_horas(self.tiempo_faltante) + " h")
+                or "") 
+
+    def detectar_hueco(self, pdp):
+        """
+        Compara el parte con el último de los existentes de su tipo en el 
+        diccionario y actualiza el tiempo faltante con la diferencia si 
+        la hubiera.
+        """
+        for last_parte in self.huecos[:]:
+            if last_parte._es_del_mismo_tipo(pdp):
+                delta = pdp.fechahorainicio - last_parte.fechahorafin
+                try:
+                    horas_delta = delta.total_seconds() / 60.0 / 60.0
+                except AttributeError:
+                    horas_delta = delta.hours
+                if horas_delta < 8:
+                    # Si el hueco es de más de un turno, es que no ha habido 
+                    # producción en ese turno.
+                    self.tiempo_faltante += delta
+                self.huecos.remove(last_parte)
+        self.huecos.append(pdp)
         
     def set_inicio(self, boton):
         temp = utils.mostrar_calendario(padre = self.wids['ventana'])
