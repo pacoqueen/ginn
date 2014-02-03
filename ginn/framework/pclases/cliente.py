@@ -820,3 +820,4 @@ class Cliente(SQLObject, PRPCTOO):
                   "ERROR: La empresa no está en la tabla de clientes."
             return 0
         return empresa.id
+

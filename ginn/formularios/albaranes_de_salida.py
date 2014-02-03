@@ -1076,7 +1076,8 @@ class AlbaranesDeSalida(Ventana):
                       AND articulo.albaran_salida_id = %d 
                       AND articulo.producto_venta_id = %d 
                     -- GROUP BY caja.id 
-                    -- ORDER BY caja.id;""" % (albaran.id, producto.id))
+                    -- ORDER BY caja.id;
+                    """ % (albaran.id, producto.id))
                 cajas = [pclases.Caja.get(tupla[0]) for tupla in queryres_ids]
                 cantidad = sum([c.peso for c in cajas])
             else:
