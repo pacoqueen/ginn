@@ -29,7 +29,6 @@
 ## NOTAS:
 ##  
 ## ----------------------------------------------------------------
-## TODO: Servicios en cursiva para distinguirlo mejor de los productos de compra y venta. 
 ###################################################################
 ## Changelog:
 ## 15 de marzo de 2007 -> Inicio 
@@ -1281,6 +1280,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                                      1)
         self.wids['tv_contenido'].set_tooltip_column(1)
         self.wids['tv_contenido'].connect("query-tooltip", self.tooltip_query)
+        self.colorear_contenido(self.wids['tv_contenido'])
         self.build_tv_presupuestos_no_validados()
         cols = (('Usuario', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Ventana', 'gobject.TYPE_STRING', False, True, False, None),
@@ -1384,9 +1384,9 @@ class Presupuestos(Ventana, VentanaGenerica):
                 else:
                     # Cualquier otra cosa 
                     color = None
-            #cell.set_property("cell-background", color)
-            cell.set_property("background", color)
             cell.set_property("foreground", color_fg)
+            cell.set_property("background", color)
+            #cell.set_property("cell-background", color)
         cols = tv.get_columns()
         for i in xrange(len(cols)): 
             column = cols[i]
@@ -1395,6 +1395,44 @@ class Presupuestos(Ventana, VentanaGenerica):
                 column.set_cell_data_func(cell, cell_func, i)
                 # Aprovecho para cambiar el tamaño de la fuente:
                 cell.set_property("font-desc", pango.FontDescription("sans 7"))
+
+    def colorear_contenido(self, tv):
+        """
+        Asocia una función al treeview para resaltar los productos.
+        """
+        def cell_func(column, cell, model, itr, numcol):
+            ldpid = model[itr][-1]
+            ldp = pclases.getObjetoPUID(ldpid)
+            if ldp.productoVenta:       
+                prod = ldp.productoVenta
+                if prod.es_fibra():     # Fibra en gris
+                    color = "gainsboro"
+                    color_fg = None
+                else:                   # Gtx. en amarillo
+                    color = "gold"
+                    color_fg = "dark green"
+                fuente = "sans bold"
+            elif ldp.productoCompra:    # Comercializado, verdito
+                color = "olive drab"
+                color_fg = "white"
+                fuente = "sans"
+            else:                       # Servicio, naranja
+                color = None
+                color_fg = "dark orange"
+                fuente = "sans italic"
+            cell.set_property("foreground", color_fg)
+            cell.set_property("cell-background", color)
+            if numcol == 1:     # Solo descripciones
+                cell.set_property("font-desc", pango.FontDescription(fuente))
+        cols = tv.get_columns()
+        for i in xrange(len(cols)): 
+            column = cols[i]
+            cells = column.get_cell_renderers()
+            for cell in cells:
+                if not isinstance(cell, gtk.CellRendererPixbuf):
+                    # El cell del pixbuf del icono de notas lleva su 
+                    # propia función de render.
+                    column.set_cell_data_func(cell, cell_func, i)
 
     def colorear_presupuestos(self):
         def cell_func(column, cell, model, itr, i):
@@ -1488,13 +1526,34 @@ class Presupuestos(Ventana, VentanaGenerica):
                     precio = 0
             ldp.precio = precio
             model_tv[path][2] = utils.float2str(ldp.precio, 3, autodec = True)
-        # TODO: Si es rollo, poner una cantidad por defecto múltiplo de sus m²
+        # Compruebo que cantidad sea múltiplo si es un producto geotextil.
+        if ldp.productoVenta and ldp.productoVenta.es_rollo():
+            cantidad = ldp.cantidad
+            cer = ldp.productoVenta.camposEspecificosRollo
+            resto = cantidad % cer.metrosCuadrados
+            if resto:
+                nueva_cantidad = cantidad + cer.metrosCuadrados - resto
+                if utils.dialogo(titulo = "¿CANTIDAD INCORRECTA?", 
+                        texto = "El producto %s se vende por múltiplos "
+                                "de %s m².\nLa línea contiene %s.\n\n"
+                                "¿Corregir la cantidad a %s?" % (
+                                    ldp.productoVenta.descripcion, 
+                                    utils.float2str(cer.metrosCuadrados, 
+                                                    autodec = True), 
+                                    utils.float2str(cantidad, 
+                                                    autodec = True), 
+                                    utils.float2str(nueva_cantidad, 
+                                                    autodec = True)), 
+                        padre = self.wids['ventana']):
+                    cantidad = nueva_cantidad
+            ldp.cantidad = cantidad
+        pclases.Auditoria.modificado(ldp, self.usuario, __file__)
         # Sigo con el foco en la cantidad.
         col = self.wids['tv_contenido'].get_column(0)
         #self.wids['tv_contenido'].grab_focus()
         #self.wids['tv_contenido'].set_cursor(path, col, True)
         gobject.idle_add(self.fin_edicion_cellrenderers, cell, 
-                self.wids['tv_contenido'], path, col)
+                         self.wids['tv_contenido'], path, col)
 
     def cambiar_precio_ldp(self, cell, path, texto):
         """

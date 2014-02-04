@@ -533,13 +533,11 @@ def attach_menu_notas(tv, clase, usuario, col = None):
                 pb = None
                 text = ""  # @UnusedVariable
             cell.set_property("stock-id", pb)
-            # cell.set_tooltip_text(text) TODO: Los CellRenderer no derivan de Widget, la forma de poner un tooltip en un TreeView 
-            # es meter el texto en una columna del model y hacer tv.set_tooltip_column(num_columna_del_model_que_contiene_el_texto).
-            refcolorcell = [c for c in columna.get_cell_renderers() if c is not cell]
-            if refcolorcell:
+            try:
+                refcolorcell = [c for c in columna.get_cell_renderers() 
+                                if c is not cell][-1]
                 #pb = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, 1, 1)
                 #pb.fill(0x00010000)
-                refcolorcell = refcolorcell[0]
                 color = refcolorcell.get_property("cell-background-gdk")
                 if color.red == color.green == color.blue == 0: # HACK: Mi canal alfa particular. Si no, saldría con fondo negro 
                     cell.set_property("cell-background", None)  # en lugar del blanco (o el que sea) del theme GTK.
@@ -549,6 +547,9 @@ def attach_menu_notas(tv, clase, usuario, col = None):
                     except AttributeError:  # PyGTK < 2.12
                         stringcolor = color_to_string(color)
                         cell.set_property("cell-background", stringcolor)
+            except IndexError:
+                # ¿Esta columna solo tiene el icono? ¿No más cells? Me extraña
+                pass
         columna.set_cell_data_func(cell, check_notas)
 
 def color_to_string(color):
