@@ -50,6 +50,7 @@ import pygtk
 import os
 from formularios import utils
 from formularios.ventana_progreso import VentanaProgreso
+from lib import charting
 pygtk.require('2.0')
     
 
@@ -72,7 +73,12 @@ class ConsultaProducido(Ventana):
                        'b_imprimir/clicked': self.imprimir,
                        'b_fecha_inicio/clicked': self.set_inicio,
                        'b_fecha_fin/clicked': self.set_fin, 
-                       "b_exportar/clicked": self.exportar}
+                       "b_exportar/clicked": self.exportar, 
+                       #"im_graph/button-press-event": self.alternar_grafica, 
+                       #"eventbox_chart/button-press-event": 
+                       #                                 self.alternar_grafica, 
+                       "eventbox_hbox/button-press-event": 
+                                                        self.alternar_grafica}
         self.add_connections(connections)
         cols = (('Producto/Lote','gobject.TYPE_STRING', 
                     False, True, False, None),
@@ -118,6 +124,7 @@ class ConsultaProducido(Ventana):
         self.inicio.reverse()
         self.inicio = '/'.join(self.inicio)
         self.wids['rb_todas'].set_active(True)
+        self.wids['im_graph'].set_visible(pychart_available)
         gtk.main()
 
     def exportar(self, boton):
@@ -283,7 +290,7 @@ class ConsultaProducido(Ventana):
                 self.agregar_parte_a_dicford(ford, pdp)
                 self.procesar_pdp_rollos(pdp, prod_rollos)
             i += 1
-        # Gráfico usando PyChart:
+        # Gráfico usando PyChart/lib.charting:
         data = []
         self.resultado = []
         for k in prod_balas:
@@ -395,7 +402,7 @@ class ConsultaProducido(Ventana):
                 utils.float2str(self.peso_teorico))
         str_tiempo_total = str_horas(horas_reales)
         if self.tiempo_faltante:
-            str_tiempo_total += " + (%s hasta completar turnos)" % (
+            str_tiempo_total += " (+ %s hasta completar turnos)" % (
                     str_horas(self.tiempo_faltante))
         self.wids['e_total_tiempo_real'].set_text(
                 str_tiempo_total)
@@ -672,6 +679,57 @@ class ConsultaProducido(Ventana):
             self.tiempo_real += sum([prod[p][8] for p in prod])
         return (cantidad, bultos)
 
+    def alternar_grafica(self, *args, **kw): 
+        if pychart_available:
+            visible_pychart = self.wids['im_graph'].get_property("visible")
+            visible_charting = self.wids['eventbox_chart'].get_property("visible")
+            if visible_pychart and visible_charting:
+                ver_pychart = False
+                ver_charting = True
+            elif visible_pychart and not visible_charting:
+                ver_pychart = True
+                ver_charting = True
+            elif not visible_pychart and visible_charting:
+                ver_pychart = True
+                ver_charting = False
+            else:   # No debería darse nunca este estado.
+                ver_pychart = True
+                ver_charting = True
+        else:
+            ver_pychart = False
+            ver_charting = True
+        self.wids['im_graph'].set_property("visible", ver_pychart)
+        self.wids['eventbox_chart'].set_property("visible", ver_charting)
+
+    def dibujar_con_charting(self, data):
+        try:
+            oldchart = self.wids['eventbox_chart'].get_child()
+            if oldchart != None:
+                #self.wids['eventbox_chart'].remove(oldchart)
+                chart = oldchart
+            else:
+                chart = charting.Chart(orient = "horizontal", 
+                                       orient_vertical = False, 
+                                       values_on_bars = True)
+                self.wids['eventbox_chart'].add(chart)
+            datachart = []
+            color = 0
+            for d in data:
+                if self.wids['rb_todas'].get_active():  # Uso bultos
+                    datachart.append((d[0], d[2], color))
+                else:   # Uso las unidades del producto
+                    datachart.append((d[0], d[1], color))
+                color += 1
+                if color > 8:
+                    color = 0
+            chart.plot(datachart)
+            self.wids['eventbox_chart'].show_all()
+        except Exception, msg:
+            txt = "consulta_producido.py::rellenar_tabla -> "\
+                  "Error al dibujar gráfica (charting): %s" % msg
+            print txt
+            self.logger.error(txt)
+ 
     def dibujar_grafico(self, data):
         """
         Dibuja el gráfico de tarta. Si se mezclan balas y rollos, usa 
@@ -679,6 +737,7 @@ class ConsultaProducido(Ventana):
         Si es solo de geotextiles o de fibra, se usan sus unidades 
         (metros o kilos).
         """
+        self.dibujar_con_charting(data)
         if pychart_available and len(data) > 0:
             theme.use_color = True
             theme.reinitialize()
@@ -739,25 +798,40 @@ class ConsultaProducido(Ventana):
                           i[1],     # Cantidad producida
                           i[2],     # Bultos
                           i[4],     # Kg teóricos
-                          i[5]))    # Tiempo teórico
+                          i[5],     # Tiempo teórico
+                          i[6]))    # Tiempo real
+        datos.append(("", 
+                      "", 
+                      "", 
+                      "===", 
+                      "===", 
+                      "==="))
+        datos.append(("", 
+                      "", 
+                      "TOTALES", 
+                      self.wids['e_total_peso_teorico'].get_text(), 
+                      self.wids['e_total_tiempo_teorico'].get_text(), 
+                      self.wids['e_total_tiempo_real'].get_text()))
         if self.balas != 0:
-            datos.append(("", "", "", "", ""))
-            datos.append(("", "-" * 30 , "-" * 30, "-" * 30, "-" * 30))
-            datos.append(("", "", "", "", ""))
+            datos.append(("", "", "", "", "", ""))
+            datos.append(("", "-"*30 , "-"*30, "-"*30, "-"*30, "-"*30))
+            datos.append(("", "", "", "", "", ""))
             datos.append((" " * 50 + "TOTAL FIBRA:", 
                           "%s kg" % (utils.float2str(self.kilos)), 
                           self.balas, 
                           "", 
+                          "", 
                           ""))
         if self.rollos != 0:
-            datos.append(("", "", "", "", ""))
-            datos.append(("", "-" * 30, "-" * 30, "-" * 30, "-" * 30))
-            datos.append(("", "", "", "", ""))
+            datos.append(("", "", "", "", "", ""))
+            datos.append(("", "-"*30, "-"*30, "-"*30, "-"*30, "-"*30))
+            datos.append(("", "", "", "", "", ""))
             datos.append((" " * 50 + "TOTAL GEOTEXTILES:", 
                           "%s m²" % (utils.float2str(self.metros)), 
                           self.rollos, 
-                          self.wids['e_total_peso_teorico'].get_text(), 
-                          self.wids['e_total_tiempo_teorico'].get_text()))
+                          "", 
+                          "", 
+                          ""))
         if (self.inicio) == None:            
             fechaInforme = 'Hasta ' + utils.str_fecha(
                     time.strptime(self.fin,"%Y/%m/%d"))

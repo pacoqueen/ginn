@@ -9530,13 +9530,14 @@ def producido_produccion(datos, fecha = None, grafico = None):
     archivo = os.path.join(gettempdir(),
         'producido_produccion_%s' % give_me_the_name_baby())
     titulo = 'Producción: Productos terminados.'
-    campos = [('Producto', 35), ('Cantidad', 20), ('Bultos', 15), 
-              ('Kg teóricos', 15), ('Horas teóricas', 15)]
+    campos = [('Producto', 32), ('Cantidad', 18), ('Bultos', 15), 
+              ('Kg teóricos', 13), ('Horas teóricas', 11), 
+              ("Horas reales", 11)]
     if grafico == None:
         graficos = []
     else:
         graficos = [grafico]
-    return imprimir2(archivo, titulo, campos, datos, fecha, (1, 2, 3, 4),
+    return imprimir2(archivo, titulo, campos, datos, fecha, (1, 2, 3, 4, 5, 6),
                      graficos = graficos)
 
 def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
