@@ -244,10 +244,12 @@ class ConsultaProducido(Ventana):
         """
         PDP = pclases.ParteDeProduccion
         if not self.inicio:
-            pdps = PDP.select(PDP.q.fecha <= self.fin, orderBy = 'fecha')
+            pdps = PDP.select(PDP.q.fecha <= self.fin, 
+                              orderBy = 'fechahorainicio')
         else:
             pdps = PDP.select(pclases.AND(PDP.q.fecha >= self.inicio, 
-                              PDP.q.fecha <= self.fin), orderBy='fecha')
+                                          PDP.q.fecha <= self.fin), 
+                              orderBy = 'fechahorainicio')
         vpro = ventana_progreso.VentanaProgreso(padre = self.wids['ventana'])
         tot = pdps.count()
         i = 0.0
@@ -256,9 +258,14 @@ class ConsultaProducido(Ventana):
         prod_pales = {}
         prod_rollos = {}
         ford = {}
+        self.tiempo_faltante = mx.DateTime.TimeDeltaFrom(0)
+        self.huecos = []    # Lista de los últimos partes tratados por línea.
         for pdp in pdps:
             vpro.set_valor(i/tot, 'Analizando partes %s...' % (
                 utils.str_fecha(pdp.fecha)))
+            delta_entre_partes, parte_anterior = detectar_hueco(pdp, 
+                                                                self.huecos)
+            self.tiempo_faltante += delta_entre_partes
             if (pdp.es_de_balas() 
                 and not "reenvas" in pdp.observaciones.lower() 
                 and (self.wids['rb_todas'].get_active() 
@@ -386,8 +393,12 @@ class ConsultaProducido(Ventana):
                 str_horas(horas_teoricas))
         self.wids['e_total_peso_teorico'].set_text(
                 utils.float2str(self.peso_teorico))
+        str_tiempo_total = str_horas(horas_reales)
+        if self.tiempo_faltante:
+            str_tiempo_total += " + (%s hasta completar turnos)" % (
+                    str_horas(self.tiempo_faltante))
         self.wids['e_total_tiempo_real'].set_text(
-                str_horas(horas_reales))
+                str_tiempo_total)
         vpro.ocultar()
         self.rellenar_tabla(self.resultado)
         self.rellenar_tabla_fordiana(ford)
@@ -770,6 +781,38 @@ def str_horas(fh):
     except:
         return ''
 
+def detectar_hueco(pdp, huecos):
+    """
+    Compara el parte con el último de los existentes de su tipo en el 
+    diccionario y actualiza el tiempo faltante con la diferencia si 
+    la hubiera.
+    Si el tiempo entre dos partes del mismo tipo es de más de 8 horas se 
+    considera que no ha habido turno y se ignora. Si es menor, se devuelve 
+    el TimeDelta con la diferencia. 
+    Además siempre se devuelve el parte anterior (si lo hubiera).
+    """
+    tiempo_faltante = mx.DateTime.DateTimeDeltaFrom(0)
+    parte_anterior = None
+    for last_parte in huecos[:]:    # Hay un parte de cada tipo en la lista 
+                                    # para controlar huecos. Busco el de la 
+                                    # misma línea que yo.
+        if last_parte._es_del_mismo_tipo(pdp):
+            huecos.remove(last_parte)
+            parte_anterior = last_parte
+            delta = pdp.fechahorainicio - last_parte.fechahorafin
+            try:
+                horas_delta = delta.total_seconds() / 60.0 / 60.0
+            except AttributeError:
+                horas_delta = delta.hours
+            if 0 < horas_delta < 8:
+                # Si el hueco es de más de un turno, es que no ha habido 
+                # producción en ese turno.
+                tiempo_faltante = delta
+                if pclases.DEBUG:
+                    print(">>> %f --> Hueco detectado entre %s y %s" % (
+                        horas_delta, last_parte.get_info(), pdp.get_info()))
+    huecos.append(pdp)
+    return tiempo_faltante, parte_anterior
 
 if __name__ == '__main__':
     t = ConsultaProducido() 

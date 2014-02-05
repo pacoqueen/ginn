@@ -32,11 +32,6 @@
 ## Changelog:
 ## 16 de marzo de 2006 -> Inicio
 ###################################################################
-## TODO: Es bastante lento. Optimizar las consultas.
-##       Además, no sólo hay que mirar la fecha del parte. La hora
-##       también influye para determinar a qué día laborable 
-##       pertenece (y eso aquí no se tiene en cuenta).
-###################################################################
 
 from formularios.utils import _float as float
 from framework import pclases
@@ -47,7 +42,8 @@ import mx.DateTime
 import pygtk
 from formularios import utils
 pygtk.require('2.0')
-from formularios.consulta_producido import str_horas
+from formularios.consulta_producido import str_horas, detectar_hueco
+import pango
 
 class ConsultaProductividad(Ventana):
     inicio = None
@@ -134,9 +130,12 @@ class ConsultaProductividad(Ventana):
             """
             Si la fila corresponde a un parte de producción no verificado, 
             lo colorea en rojo oscuro, si no, lo hace en verde oscuro.
+            Aparte, si el parte tiene incidencia con las horas (hueco con 
+            el anterior o posterior), marca la fila entera en naranja.
             """
             color = "black"
             idparte = model[itr][-1]
+            bgcolor = None
             if idparte > 0:
                 parte = pclases.ParteDeProduccion.get(idparte)
                 if parte.bloqueado:
@@ -144,7 +143,29 @@ class ConsultaProductividad(Ventana):
                 else:
                     color = "dark red"
             cell.set_property("foreground", color)
-
+            # Coloreo huecos
+            parteid = model[itr][-1]
+            if parteid:
+                pdp = pclases.ParteDeProduccion.get(parteid)
+                if numcol == 1 and pdp in self.incidencias_horaini:
+                    bgcolor = "orange"
+                if numcol == 2 and pdp in self.incidencias_horafin:
+                    bgcolor = "orange"
+            cell.set_property("cell-background", bgcolor)
+            # Marco inicios y finales de turno:
+            cell.set_property("font-desc", None)
+            if numcol == 1 or numcol == 2:
+                parte_horas = model[itr][numcol][:2]
+                parte_minutos = model[itr][numcol][-2:]
+                try:
+                    parte_horas = int(parte_horas)
+                except ValueError:
+                    pass
+                else:
+                    if ((parte_horas - 6) % 8) == 0 and parte_minutos == "00":
+                        cell.set_property("font-desc", 
+                                          pango.FontDescription("sans bold"))
+        
         cols = tv.get_columns()
         for i in xrange(len(cols) - 1): # Todas las columas menos la 
                                         # del porcentaje en barra.
@@ -191,6 +212,11 @@ class ConsultaProductividad(Ventana):
                       self.wids['e_total'].get_text(), ""))
         datos.append(("", "Personas/turno:", 
                       self.wids['e_personasturno'].get_text(), ""))
+        datos.append(("", "Tiempo acumulado en partes:", 
+                      self.wids['e_tiempo_partes'].get_text(), ""))
+        if self.tiempo_faltante:
+            datos.append(("", "Tiempo faltante hasta completar turnos:", 
+                          self.wids['e_tiempo_faltante'].get_text(), ""))
         reports.abrir_pdf(
             geninformes.consulta_productividad(titulo, str_fecha, datos))
 
@@ -221,6 +247,8 @@ class ConsultaProductividad(Ventana):
         """        
         from ventana_progreso import VentanaProgreso
         self.huecos = []    # Lista de los últimos partes tratados por línea.
+        self.incidencias_horaini = []
+        self.incidencias_horafin = []
         self.tiempo_faltante = mx.DateTime.TimeDeltaFrom(0)
         vpro = VentanaProgreso(padre = self.wids['ventana'])
         model = self.wids['tv_datos'].get_model()
@@ -269,7 +297,10 @@ class ConsultaProductividad(Ventana):
                 continue
             vpro.set_valor(i/tot, 'Añadiendo parte %s...' % (
                                     utils.str_fecha(p.fecha)))
-            self.detectar_hueco(p)
+            delta_entre_partes, parte_anterior = detectar_hueco(p, self.huecos)
+            if delta_entre_partes:
+                self.marcar_hueco(parte_anterior, p)
+            self.tiempo_faltante += delta_entre_partes
             kilosgranza_del_parte = 0.0
             tiempototal, tiemporeal = self.calcular_tiempo_trabajado(p)
             tiempototaltotal += tiempototal
@@ -335,14 +366,17 @@ class ConsultaProductividad(Ventana):
             if dia_actual != utils.str_fecha(p.fecha):
                 if dia_actual != "":  # Actualizo el padre
                     if not self.wids['r_ambos'].get_active():
-                        model[padre][3] = "%s %s" % (utils.float2str(produccion_actual), produccion[1])
+                        model[padre][3] = "%s %s" % (
+                                utils.float2str(produccion_actual), 
+                                produccion[1])
                     else:   # Evito mezclar kilos con metros
                         model[padre][3] = "-"
                     try:
                         productividad_actual /= nodos_hijos_por_dia
                     except ZeroDivisionError:
                         productividad_actual = 100.0    # A falta de infinito.
-                    model[padre][4] = "%s %%" % (utils.float2str(productividad_actual))
+                    model[padre][4] = "%s %%" % (
+                            utils.float2str(productividad_actual))
                     model[padre][5] = productividad_actual
                 dia_actual = utils.str_fecha(p.fecha)
                 produccion_actual = 0.0
@@ -354,7 +388,7 @@ class ConsultaProductividad(Ventana):
                              "", 
                              "", 
                              "%s %%" % (utils.float2str(productividad_actual)), 
-                             productividad_actual,
+                             min(productividad_actual, 100),
                              0))
             model.append(padre, 
                 (utils.str_fecha(p.fecha),
@@ -362,7 +396,7 @@ class ConsultaProductividad(Ventana):
                  str(p.horafin)[:5],
                  "%s %s" % (utils.float2str(produccion[0]), produccion[1]),
                  "%s %%" % (utils.float2str(productividad)),
-                 productividad,
+                 min(productividad, 100),
                  p.id))
             produccion_actual += produccion[0]
             # BUG: Es media ponderada, no media aritmética:            productividad_actual += productividad
@@ -411,11 +445,15 @@ class ConsultaProductividad(Ventana):
                 self.wids['e_kilosgranza'].set_text(
                     "%s kg" % (utils.float2str(kilosgranza)))
                 try:
-                    e_kiloshora = (kilosproducidos/float(tiempototaltotal.hours))
+                    e_kiloshora = (kilosproducidos
+                                    /float(tiempototaltotal.hours))
                 except ZeroDivisionError:
-                    self.logger.warning("consulta_productividad.py::rellenar_tabla -> tiempototaltotal = 0")
+                    self.logger.warning(
+                            "consulta_productividad.py::rellenar_tabla"
+                            " -> tiempototaltotal = 0")
                     e_kiloshora = 0   # Cero por poner algo. Porque un parte de tiempo transcurrido=0... se las trae.
-                self.wids['e_kiloshora'].set_text("%s kg/h" % (utils.float2str(e_kiloshora)))
+                self.wids['e_kiloshora'].set_text("%s kg/h" % (
+                                                utils.float2str(e_kiloshora)))
             elif self.wids['r_rollos'].get_active():
                 tips = gtk.Tooltips()
                 tips.set_tip(self.wids['e_kilosgranza'], """Kilogramos consumidos contando partidas completas por defecto y por exceso. 
@@ -476,27 +514,9 @@ En ambos casos el límite inferior es flexible -por compensación-.)""")
                 self.tiempo_faltante 
                 and (str_horas(self.tiempo_faltante) + " h")
                 or "") 
-
-    def detectar_hueco(self, pdp):
-        """
-        Compara el parte con el último de los existentes de su tipo en el 
-        diccionario y actualiza el tiempo faltante con la diferencia si 
-        la hubiera.
-        """
-        for last_parte in self.huecos[:]:
-            if last_parte._es_del_mismo_tipo(pdp):
-                delta = pdp.fechahorainicio - last_parte.fechahorafin
-                try:
-                    horas_delta = delta.total_seconds() / 60.0 / 60.0
-                except AttributeError:
-                    horas_delta = delta.hours
-                if horas_delta < 8:
-                    # Si el hueco es de más de un turno, es que no ha habido 
-                    # producción en ese turno.
-                    self.tiempo_faltante += delta
-                self.huecos.remove(last_parte)
-        self.huecos.append(pdp)
-        
+        self.wids['e_tiempo_partes'].set_text(
+                str_horas(tiempototaltotal) + " h")
+       
     def set_inicio(self, boton):
         temp = utils.mostrar_calendario(padre = self.wids['ventana'])
         self.wids['e_fechainicio'].set_text(utils.str_fecha(temp))
@@ -540,6 +560,7 @@ En ambos casos el límite inferior es flexible -por compensación-.)""")
         solobalas = False
         if not self.inicio:
             partes = pclases.ParteDeProduccion.select(
+                        pclases.ParteDeProduccion.q.fecha <= self.fin, 
                         orderBy = ('fecha', 'horainicio'))
         else:
             partes = pclases.ParteDeProduccion.select(pclases.AND(
@@ -659,6 +680,11 @@ En ambos casos el límite inferior es flexible -por compensación-.)""")
                         msj = "Tiene una muestra "
                     msj += "pendiente de analizar." 
                     user.enviar_mensaje(msj)
+
+    def marcar_hueco(self, pdp0, pdp1):
+        # Crea o actualiza
+        self.incidencias_horaini.append(pdp1)
+        self.incidencias_horafin.append(pdp0)
 
 if __name__ == '__main__':
     t = ConsultaProductividad()

@@ -951,7 +951,7 @@ de desecho</property>
               <widget class="GtkLabel" id="label33">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Productividad: </property>
+                <property name="label" translatable="yes">Rendimiento: </property>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -1070,7 +1070,7 @@ de desecho</property>
                   <widget class="GtkLabel" id="label43">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Rendimiento: </property>
+                    <property name="label" translatable="yes">Productividad: </property>
                   </widget>
                   <packing>
                     <property name="expand">False</property>

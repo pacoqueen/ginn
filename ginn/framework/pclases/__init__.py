@@ -16358,6 +16358,15 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
+    def get_info(self):
+        producto = self.get_producto_fabricado()
+        if not producto:
+            producto = "Vacío"
+        else:
+            producto = producto.descripcion
+        return "%s (%s --> %s): %s" % (self.puid, self.fechahorainicio, 
+                self.fechahorafin, producto)
+
     def _es_del_mismo_tipo(self, pdp):
         """
         Devuelve True si el tipo del parte y el del parte recibido es el 
@@ -16367,7 +16376,8 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         funcs_tipo = [f for f in dir(self) if f.startswith("es_de_")]
         iguales = True
         for f in funcs_tipo:
-            iguales = iguales and (getattr(self, f)() == getattr(pdp, f)())
+            iguales = iguales and (bool(getattr(self, f)()) 
+                                    == bool(getattr(pdp, f)()))
         return iguales
 
     def siguiente(self):
