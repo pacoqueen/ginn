@@ -16523,6 +16523,60 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
                 res[grupo] += ht_horas
         return res
 
+    def calcular_kilos_teoricos(self):
+        """
+        Devuelve los kilos teóricos que deberían haberse fabricado en el 
+        parte según la producción estándar almacenada, que viene de la 
+        producción estándar de la ficha del producto al crear el parte.
+        """
+        horas = self.get_duracion().hours
+        if self.prodestandar:
+            kilos = horas * self.prodestandar 
+        else:   # Cojo la del producto si el parte la tiene a 0
+            try:
+                kilos = horas * self.productoVenta.prodestandar
+            except AttributeError:  # ¿No tiene producto el parte? ?¿Vacío?
+                kilos = 0.0
+        return kilos
+
+    def calcular_kilos_producidos(self, A = True, B = False, C = False):
+        """
+        Devuelve la producción **en kilos** del parte. Incluye los productos 
+        A, B y C si así se especifica en los parámetros de la función.
+        """
+        res = 0.0
+        if A:
+            res += self.calcular_kilos_producidos_A()
+        if B: 
+            res += self.calcular_kilos_producidos_B()
+        if C:
+            res += self.calcular_kilos_producidos_C()
+        return res
+
+    def calcular_kilos_producidos_A(self):
+        """
+        Devuelve los kilos producidos **netos** --sin embalaje-- de producto A.
+        """
+        articulos_A = [a for a in self.articulos if a.es_clase_a()]
+        kg_producidos = sum([a.peso_sin for a in articulos_A])
+        return kg_producidos
+
+    def calcular_kilos_producidos_B(self):
+        """
+        Devuelve los kilos producidos **netos** --sin embalaje-- de producto B.
+        """
+        articulos_B = [a for a in self.articulos if a.es_clase_b()]
+        kg_producidos = sum([a.peso_sin for a in articulos_B])
+        return kg_producidos
+
+    def calcular_kilos_producidos_C(self):
+        """
+        Devuelve los kilos producidos **netos** --sin embalaje-- de producto C.
+        """
+        articulos_C = [a for a in self.articulos if a.es_clase_c()]
+        kg_producidos = sum([a.peso_sin for a in articulos_C])
+        return kg_producidos
+
     def calcular_rendimiento(self):
         """
         Calcula el rendimiento de la línea si el 
@@ -16537,30 +16591,16 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         #    horas_trabajadas = self.get_horas_trabajadas()
         #except AssertionError:
         #    horas_trabajadas = mx.DateTime.DateTimeDelta(0)
-        horas = self.get_duracion().hours
         #denominador = horas_trabajadas.hours * self.prodestandar
-        if self.prodestandar:
-            denominador = horas * self.prodestandar 
-        else:   # Cojo la del producto si el parte la tiene a 0
-            try:
-                denominador = horas * self.productoVenta.prodestandar
-            except AttributeError:  # ¿No tiene producto el parte? ?¿Vacío?
-                denominador = 0.0
-        try:
-            peso_embalaje = self.articulos[0].productoVenta.camposEspecificosRollo.pesoEmbalaje
-        except (AttributeError, IndexError):
-            peso_embalaje = 0
-            # TODO: ¿Cómo lo hacemos para la fibra? El peso que asignamos al 
-            # embalaje es totalmente arbitrario. Las balas de calbe, rollos 
-            # B y C al menos sí tienen ese campo aunque no se use.
-        articulos_A = [a for a in self.articulos if a.es_clase_a()]
-        peso_total_con_embalaje = sum([a.peso for a in articulos_A])
-        peso_total_embalajes = len(articulos_A) * peso_embalaje
-        kg_producidos = peso_total_con_embalaje - peso_total_embalajes
         # CWT: No se incluye producto B en el cálculo de la nueva productividad
         #kg_producidos += sum([a.rolloDefectuoso.peso_sin for a in self.articulos if a.es_rollo_defectuoso()])
+        denominador = self.calcular_kilos_teoricos()
+        kg_producidos_A = self.calcular_kilos_producidos(A = True, 
+                                                         B = False, 
+                                                         C = False)
+        numerador = kg_producidos_A * 100.0
         try:
-            rendimiento = (kg_producidos * 100.0) / denominador
+            rendimiento = numerador / denominador
         except ZeroDivisionError:
             rendimiento = 0.0   # Aunque esto se daría si producción estándar es 0, 
                                 # pero así por lo menos se dan cuenta de que hay que poner algo.

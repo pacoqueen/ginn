@@ -897,7 +897,7 @@ class ConsultaGlobal(Ventana):
                 ('Noviembre', 'gobject.TYPE_STRING', False, False, False, None), 
                 ('Diciembre', 'gobject.TYPE_STRING', False, False, False, None), 
                 ('Anual', 'gobject.TYPE_STRING', False, False, False, None), 
-                ('Rocío', 'gobject.TYPE_STRING', False, False, False, None))
+                ('Clara', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_listview(tv, cols)
         for col in tv.get_columns()[1:]:
             for cell in col.get_cell_renderers():
@@ -967,6 +967,27 @@ class ConsultaGlobal(Ventana):
 
 ########################## P R O D U C C I Ó N   G E O T E X T I L E S ########
 def calcular_productividad_conjunta(pdps):
+    """
+    Devuelve la productividad de una lista de objetos parte.
+    Se calcula como:
+    sumatorio(kilos de A fabricados en los partes) / sumatorio(kilos teóricos  
+    que se deberían haber fabricado en la duración completa de cada parte, 
+    incluyendo hasta paradas)
+    """
+    kilos_teoricos = 0.0
+    kilos_fabricados_A = 0.0
+    for pdp in pdps:
+        kilos_teoricos += pdp.calcular_kilos_teoricos()
+        kilos_fabricados_A += pdp.calcular_kilos_producidos(A = True, 
+                                                            B = False, 
+                                                            C = False)
+    try:
+        res = kilos_fabricados_A / kilos_teoricos
+    except ZeroDivisionError:
+        res = 0.0
+    return res
+
+def DEPRECATED_calcular_productividad_conjunta(pdps):
     """
     Devuelve la productividad de una lista de objetos parte.
     Se calcula como:
@@ -3472,7 +3493,7 @@ def preparar_tv(tv, listview = True):
             ('Noviembre', 'gobject.TYPE_STRING', False, False, False, None), 
             ('Diciembre', 'gobject.TYPE_STRING', False, False, False, None), 
             ('Anual', 'gobject.TYPE_STRING', False, False, False, None), 
-            ('Rocío', 'gobject.TYPE_STRING', False, False, False, None))
+            ('Clara', 'gobject.TYPE_STRING', False, False, False, None))
     if listview:
         utils.preparar_listview(tv, cols)
     else:
