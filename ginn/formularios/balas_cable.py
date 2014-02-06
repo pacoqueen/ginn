@@ -158,14 +158,16 @@ class BalasCable(Ventana):
                     peso = utils._float(peso)
                 except ValueError:
                     utils.dialogo_info(titulo = "ERROR", 
-                                       texto = "El valor tecleado %s no es correcto." % (peso), 
-                                       padre = self.wids['ventana'])
+                        texto = "El valor tecleado %s no es correcto." % peso, 
+                        padre = self.wids['ventana'])
                     peso = 0
+                except TypeError:   # Ha cancelado
+                    return
             nueva_bala = self.crear_objeto_bala(producto, peso)
             if nueva_bala == None:
                 utils.dialogo_info(titulo = "ERROR", 
-                                   texto = "La bala no se pudo crear. Inténtelo de nuevo.", 
-                                   padre = self.wids['ventana'])
+                    texto = "La bala no se pudo crear. Inténtelo de nuevo.", 
+                    padre = self.wids['ventana'])
             else:
                 self.add_nueva_bala_tv(nueva_bala)
                 try:
