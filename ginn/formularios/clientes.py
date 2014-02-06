@@ -1389,7 +1389,11 @@ class Clientes(Ventana):
             self.activar_widgets(False)
             return
         cliente = self.objeto
-        orden = utils.combo_get_value(self.wids['cb_orden'])
+        try:
+            orden = utils.combo_get_value(self.wids['cb_orden'])
+        except KeyError:    # Ventana destruyéndose a la vez que se ha pulsado 
+                            # F5 para actualizar. Mutis por el foro...
+            return
         if orden == "Orden cronológico":
             clientes = pclases.Cliente.select(orderBy = "id")
         elif orden == "Orden alfabético": 
