@@ -1757,8 +1757,8 @@ class PartesDeFabricacionRollos(Ventana):
         try:
             if (partedeproduccion.articulos 
                     or partedeproduccion.horasTrabajadas
-                    or pdp.descuentosDeMaterial 
-                    or pdp.consumos):
+                    or partedeproduccion.descuentosDeMaterial 
+                    or partedeproduccion.consumos):
                 utils.dialogo_info(titulo = "PARTE NO VACÍO", 
                         texto = "El parte no está vacío y no se eliminará.\n"
                                 "Quite primero toda la producción, consumos,\n"
@@ -1767,11 +1767,13 @@ class PartesDeFabricacionRollos(Ventana):
                         padre = self.wids['ventana'])
             else:
                 partedeproduccion.destroy(ventana = __file__)
-        except:
+        except Exception, msg:
             utils.dialogo_info('PARTE NO BORRADO', 
                     'El parte no se eliminó.\nSi tiene rollos o empleados '
                     'asociados, trate primero de eliminarlos y vuelva a '
-                    'intentarlo.', 
+                    'intentarlo.\nEn otro caso, suministre la siguiente '
+                    'información técnica al administrador:\n\n%s - %s' % (
+                        partedeproduccion.puid, msg), 
                     padre = self.wids['ventana'])
             return
         self.ir_a_primero()
