@@ -779,7 +779,6 @@ class ConsultaGlobal(Ventana):
         fila_productividad = ["Productividad"]
         fila_gtxc = ["Kg C (no computa en global)"]
         fila_consumo_fibra = ["Consumo de fibra (partidas completas)"]
-# PORASQUI
         metros_totales = 0.0
         kilos_totales = 0.0
         metros_b_totales = 0.0
@@ -788,6 +787,7 @@ class ConsultaGlobal(Ventana):
         kilos_consumidos_totales = 0.0
         kilos_reales_sin_embalaje_total = 0.0
         kilos_gtxc = 0.0
+        kilos_fibra_consumidos = 0.0
         for mes in xrange(12):
         #for mes in produccion_gtx:
             metros_totales_mes = produccion_gtx[mes]['A']['metros'] + produccion_gtx[mes]['B']['metros']
@@ -835,6 +835,9 @@ class ConsultaGlobal(Ventana):
             gtxc = produccion_gtx[mes]["gtxc"]
             fila_gtxc.append(utils.float2str(gtxc))
             kilos_gtxc += gtxc
+            kgs_fibra_consumidos = produccion_gtx[mes]["consumo"]
+            fila_consumo_fibra.append(utils.float2str(kgs_fibra_consumidos))
+            kilos_fibra_consumidos += kgs_fibra_consumidos
         # Totales:
         fila_metros.append(utils.float2str(metros_totales))
         fila_kilos.append(utils.float2str(kilos_totales))
@@ -860,6 +863,7 @@ class ConsultaGlobal(Ventana):
         fila_empleados.append("%s" % utils.float2str(avg([produccion_gtx[mes]['empleados'] for mes in produccion_gtx])))
         fila_productividad.append("%s %%" % utils.float2str(avg([produccion_gtx[mes]['productividad'] for mes in produccion_gtx]) * 100.0))
         fila_gtxc.append(utils.float2str(kilos_gtxc))
+        fila_consumo_fibra.append(utils.float2str(kilos_fibra_consumidos))
         # ... al model:
         model.append(fila_metros + ["Love"])
         model.append(fila_kilos + ["reign"])
@@ -876,7 +880,8 @@ class ConsultaGlobal(Ventana):
         model.append(fila_horas_produccion + ["... ojete moreno..."])
         model.append(fila_turnos + ["... like the sweat of lovers..."])
         model.append(fila_empleados + ["... laying in the fields..."])
-        model.append(fila_gtxc + ["Looooooooooooove"])
+        model.append(fila_gtxc + ["Looooooooooooo..."])
+        model.append(fila_consumo_fibra + ["... oooooooooooove"])
 
     def construir_treeview_ficticio(self):
         """
@@ -1188,6 +1193,11 @@ def consultar_kilos_fibra_consumidos(fechaini, fechafin):
     a estas alturas cualquiera se atreve a cambiar de SGBD).
     (Ver metros_y_kilos_gtx.sql)
     """
+    #partes = pclases.ParteDeProduccion.select(pclases.AND(
+    #    pclases.ParteDeProduccion.q.fechahorainicio >= fechaini, 
+    #    pclases.ParteDeProduccion.q.fechahorainicio < fechafin))
+    #return sum([pdp.calcular_consumo_mp() for pdp in partes if pdp.es_de_geotextiles()])
+# TODO: PORASQUI: Intentando calcular por ratio de m²...
     con = pclases.Rollo._connection
     # Consultas a pelo
     partes_gtx = """
@@ -2798,7 +2808,7 @@ def buscar_ventas_fibra_color(anno, vpro = None, rango = None, meses = []):
     ## TOTALES 
     for fila in filas:
         total_fila = sum(fila[1:])
-        fila += [total_fila, "Me estoy quedando sin fuerzas, solo espero ya la muerte. Me fanta sangre en las venas. Mi corazón se retuerce."]
+        fila += [total_fila, "Me estoy quedando sin fuerzas, solo espero ya la muerte. Me falta sangre en las venas. Mi corazón se retuerce."]
         for i in xrange(1, len(fila) - 1):
             fila[i] = utils.float2str(fila[i])
     return filas

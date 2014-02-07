@@ -16951,7 +16951,7 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
                 producido += cantidad_normalizada
         return producido, unidad
 
-    def get_consumo_mp(self):
+    def calcular_consumo_mp(self):
         """
         - Si es un parte de rollos devuelve el consumo de fibra según la carga 
         de cuartos de la partida completa **entre** los m² fabricados por 
@@ -16975,6 +16975,83 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
             raise NotImplementedError, "Tipo de parte no contemplado en el "\
                                        "consumo de materia prima."
 
+    def _get_consumo_granza(self):
+        return self.get_granza_consumida()
+
+    def _get_consumo_bigbags(self):
+        """
+        Devuelve la suma de los pesos de los bigbags cargados en el parte 
+        de fibra de cemento.
+        """
+        res = 0.0
+        for bb in self.bigbags:
+            res += bb.articulo.peso_sin
+        return res
+
+    def _get_consumo_fibra(self):
+        """
+        Devuelve los kilos de fibra cargada en la partida del parte entre los 
+        m² de la partida completa y por los m² reales fabricados en el parte.
+        Es la aproximación más precisa que he encontrado para hacer la 
+        estimación del consumo POR PARTE DE PRODUCCIÓN (ya que hasta ahora 
+        solo se había contemplado por partida de geotextiles completa).
+        """
+        pc = self._get_partidaCarga()
+        try:
+            kgs = sum([b.articulo.peso_sin for b in pc.balas])
+        except AttributeError:  # pc es None. ¡Parte sin carga!
+            res = 0.0
+        else:
+            # Metros totales:
+            total_m2 = 0.0
+            for partida in pc.partidas:
+                if partida == self.partida:
+                    for pdp in partida.get_partes_de_produccion():
+                        m2 = pdp.get_produccion(clase_A = True, 
+                                                clase_B = True, 
+                                                clase_C = True)[0] 
+                        # Devuelve m² y unidad. Me quedo solo con la cantidad
+                        if pdp is self:
+                            mis_m2 = m2
+                            print "mis_m2", mis_m2
+                        total_m2 += m2
+            # Kg de fibra por metro:
+            try:
+                ratio = kgs / total_m2
+            except ZeroDivisionError:
+                ratio = 0.0
+            # Kilos que se supone que YO he consumido
+            res = mis_m2 * ratio
+        return res
+
+    def _get_partida(self):
+        """
+        Devuelve la partida de geotextiles relacionada con el parte a través 
+        de uno de sus artículos.
+        Si el parte no es de geotextiles lanza una excepción.
+        Si el parte está vacío devuelve None.
+        """
+        if not self.es_de_geotextiles():
+            raise ValueError, "Solo los partes de geotextiles tienen "\
+                    "asociados una partida de geotextiles."
+        try:
+            return self.articulos[0].partida
+        except IndexError:  # Vacío
+            return None
+
+    def _get_partidaCarga(self):
+        """
+        Devuelve la partida de carga relacionada con el parte si es de 
+        geotextiles. Si es de otro tipo lanza un ValueError.
+        """
+        try:
+            return self._get_partida().partidaCarga
+        except AttributeError:
+            if not self.es_de_geotextiles():
+                raise ValueError, "Solo los partes de geotextiles tienen "\
+                        "asociados una partida de carga de fibra en cuartos."
+            else:
+                return None     # Parte vacío.
 
     def es_nocturno(self):
         """
