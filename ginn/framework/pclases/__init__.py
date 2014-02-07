@@ -16842,10 +16842,10 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
 
     def removeEmpleado(self, empleado):
         """
-        Elimina al empleado del parte, eliminando también el registro relacionado
-        entre ambos.
-        Si el emeplado no estaba en el parte no se hace nada. Ni siquiera se lanza 
-        una excepción.
+        Elimina al empleado del parte, eliminando también el registro 
+        relacionado entre ambos.
+        Si el emeplado no estaba en el parte no se hace nada. Ni siquiera se 
+        lanza una excepción.
         """
         HT = HorasTrabajadas
         qry = HT.select(AND(HT.q.empleadoid == empleado, 
@@ -16950,6 +16950,31 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
                     cantidad_normalizada /= 1000.0
                 producido += cantidad_normalizada
         return producido, unidad
+
+    def get_consumo_mp(self):
+        """
+        - Si es un parte de rollos devuelve el consumo de fibra según la carga 
+        de cuartos de la partida completa **entre** los m² fabricados por 
+        todos los partes de la partida y por el número de m² fabricados 
+        en este parte.
+        - Si es un parte de fibra devuelve el consumo de granza hecho en el 
+        parte.
+        - Si es un parte de cemento devuelve el consumo de fibra de cemento 
+        en bigbags del parte.
+        
+        Los partes de producto C no son partes de producción. Son listados 
+        infinitos de alta de artículos sin ParteDeProduccion asociado.
+        """
+        if self.es_de_rollos():
+            return self._get_consumo_fibra()
+        elif self.es_de_balas() or self.es_de_bigbags():
+            return self._get_consumo_granza()
+        elif self.es_de_bolsas():
+            return self._get_consumo_bigbags()
+        else:
+            raise NotImplementedError, "Tipo de parte no contemplado en el "\
+                                       "consumo de materia prima."
+
 
     def es_nocturno(self):
         """

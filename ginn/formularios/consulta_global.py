@@ -765,7 +765,7 @@ class ConsultaGlobal(Ventana):
         fila_metros = ["Total m²"]
         fila_kilos = ["Total kg teóricos"]
         fila_kilos_reales = ["Total kg reales sin embalaje"]
-        fila_merma = ["Merma", ]
+        fila_merma = ["Merma"]
         fila_porciento_merma = ["% merma", ]
         fila_gramaje_medio = ["Gramaje medio"]
         fila_metros_b = ["m² rollos defectuosos"]
@@ -778,6 +778,8 @@ class ConsultaGlobal(Ventana):
         fila_empleados = ["Trabajadores / día"]
         fila_productividad = ["Productividad"]
         fila_gtxc = ["Kg C (no computa en global)"]
+        fila_consumo_fibra = ["Consumo de fibra (partidas completas)"]
+# PORASQUI
         metros_totales = 0.0
         kilos_totales = 0.0
         metros_b_totales = 0.0

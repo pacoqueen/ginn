@@ -377,7 +377,7 @@ class ConsultaProductividad(Ventana):
                         productividad_actual = 100.0    # A falta de infinito.
                     model[padre][4] = "%s %%" % (
                             utils.float2str(productividad_actual))
-                    model[padre][5] = productividad_actual
+                    model[padre][5] = min(productividad_actual, 100)
                 dia_actual = utils.str_fecha(p.fecha)
                 produccion_actual = 0.0
                 productividad_actual = 0.0
@@ -415,7 +415,7 @@ class ConsultaProductividad(Ventana):
             except ZeroDivisionError:
                 productividad_actual = 100.0    # A falta de infinito...
             model[padre][4] = "%s %%" % (utils.float2str(productividad_actual))
-            model[padre][5] = productividad_actual
+            model[padre][5] = min(productividad_actual, 100)
 
         vpro.ocultar()
         # XXX Primer intento de acelerar los treeview
