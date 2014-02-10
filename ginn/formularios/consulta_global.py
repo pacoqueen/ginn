@@ -1182,6 +1182,31 @@ def consultar_kilos_bigbags_consumidos(fechaini, fechafin):
     kilos = kilos != None and kilos or 0.0
     return kilos
 
+def consultar_kilos_fibra_consumidos_segun_densidad_media(fechaini, fechafin):
+    """
+    Recibe 2 mx.DateTime con las fechas inicial y final de la 
+    consulta de metros y kilos.
+    Devuelve los kilos de fibra consumidos según el criterio de la densidad 
+    media de cada parte que se calcula como: kg totales cargados en las 
+    partidas de carga a las que pertencen las partidas fabricadas en los 
+    partes entre las fechas de inicio y fin / metros cuadrados totales 
+    fabricados entre todos los partes * m² fabricados en cada parte.
+    """
+    # XXX: De momento no lo uso. Lo dejo preparado hasta hacer la 
+    # reunión con producción y que se aclaren de una vez cómo vamos a 
+    # estructurar los consumos de fibra en la línea de geotextiles por 
+    # enésima vez.
+    partes = pclases.ParteDeProduccion.select(pclases.AND(
+                    pclases.ParteDeProduccion.q.fecha >= fechaini, 
+                    pclases.ParteDeProduccion.q.fecha <= fechafin), 
+                orderBy = "fechahorainicio")
+    res = 0.0
+    for p in partes:
+        if p.es_de_geotextiles():
+            #print p.fechahorainicio, p.calcular_consumo_mp(), p.cal
+            res += p.calcular_consumo_mp()
+    return res
+
 def consultar_kilos_fibra_consumidos(fechaini, fechafin):
     """
     Recibe 2 mx.DateTime con las fechas inicial y final de la 
@@ -1196,8 +1221,11 @@ def consultar_kilos_fibra_consumidos(fechaini, fechafin):
     #partes = pclases.ParteDeProduccion.select(pclases.AND(
     #    pclases.ParteDeProduccion.q.fechahorainicio >= fechaini, 
     #    pclases.ParteDeProduccion.q.fechahorainicio < fechafin))
-    #return sum([pdp.calcular_consumo_mp() for pdp in partes if pdp.es_de_geotextiles()])
-# TODO: PORASQUI: Intentando calcular por ratio de m²...
+    #return sum([pdp.calcular_consumo_mp() for pdp in partes 
+    #            if pdp.es_de_geotextiles()])
+    # NOTA: Debido a la discrepancia entre estimar el consumo tirando de 
+    # partidas completas a hacerlo desde partes, uso el primer criterio. Que 
+    # es también el que se utiliza en el resto de ventanas de consulta.
     con = pclases.Rollo._connection
     # Consultas a pelo
     partes_gtx = """
@@ -1652,6 +1680,11 @@ def buscar_produccion_gtx(anno, vpro = None, rango = None, logger = None,
              kilos_b) = consultar_metros_y_kilos_gtx(fechaini, fechafin)
             kilos_consumidos = consultar_kilos_fibra_consumidos(fechaini, 
                                                                 fechafin)
+            # XXX: Da una cantidad ligeramente diferente al criterio seguido 
+            # de consumo por partidas completas. Que a su vez es también 
+            # diferente al que busca por ventas internas. Dejo el de arriba 
+            # (partidas completas) hasta que tengamos la reunión de consumos.
+            #kilos_consumidos = consultar_kilos_fibra_consumidos_segun_densidad_media(fechaini, fechafin)
             horas = consultar_horas_reales_gtx(fechaini, fechafin)
             horas_trabajo = consultar_horas_trabajo_gtx(fechaini, 
                                                         fechafin, 
@@ -2418,8 +2451,12 @@ def buscar_ventas_internas_fibra(anno, vpro = None, rango = None, meses = []):
         if i+1 not in meses:
             kilos_consumidos = euros_consumidos = 0
         else:
-            fechaini = mx.DateTime.DateTimeFrom(day = 1, month = i + 1, year = anno)
-            fechafin = mx.DateTime.DateTimeFrom(day = -1, month = i+1, year = anno)
+            fechaini = mx.DateTime.DateTimeFrom(day = 1, 
+                                                month = i + 1, 
+                                                year = anno)
+            fechafin = mx.DateTime.DateTimeFrom(day = -1, 
+                                                month = i+1, 
+                                                year = anno)
             
             # XXX: No estoy seguro de por qué, pero de repente la versión de 
             #      mx de Sid amd64 ha empezado a devolver -1 como día 

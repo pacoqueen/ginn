@@ -17005,7 +17005,11 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
             # Metros totales:
             total_m2 = 0.0
             for partida in pc.partidas:
-                if partida == self.partida:
+                #if partida == self.partida:
+                if True:    # Si cuento los kilos de TODA la partida de carga, 
+                            # por fuerza he de contar los m² de TODA la 
+                            # producción asociada. Sea solo mi partida o sean 
+                            # varias partidas; que es lo normal.
                     for pdp in partida.get_partes_de_produccion():
                         m2 = pdp.get_produccion(clase_A = True, 
                                                 clase_B = True, 
@@ -17013,15 +17017,16 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
                         # Devuelve m² y unidad. Me quedo solo con la cantidad
                         if pdp is self:
                             mis_m2 = m2
-                            print "mis_m2", mis_m2
+                            #print "mis_m2", mis_m2
                         total_m2 += m2
             # Kg de fibra por metro:
             try:
-                ratio = kgs / total_m2
+                densidad_media = kgs / total_m2
             except ZeroDivisionError:
-                ratio = 0.0
+                densidad_media = 0.0
             # Kilos que se supone que YO he consumido
-            res = mis_m2 * ratio
+            res = mis_m2 * densidad_media
+            #print "total_m2", total_m2, "kgs", kgs, "densidad_media", densidad_media
         return res
 
     def _get_partida(self):
