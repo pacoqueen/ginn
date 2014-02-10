@@ -173,6 +173,15 @@ class ConsumoFibraPorPartidaGtx(Ventana):
                        str(partidas_carga[pc]['rollos']), 
                        utils.float2str(partidas_carga[pc]['metros']), 
                        pc.id))
+            # Actualizo totales conforme relleno el _model_
+            pcpc = partidas_carga[pc]
+            self.totales['e_total_kg_consumidos'] += pcpc['kilos_consumidos']
+            self.totales['e_total_kg_prod_real'] += pcpc['kilos_producidos']
+            self.totales['e_total_kg_prod_teorico'] += pcpc['kilos_teoricos']
+            self.totales['e_total_balas_consumidas'] += pcpc['balas']
+            self.totales['e_total_rollos_producidos'] += pcpc['rollos']
+            self.totales['e_total_m2_producidos'] += pcpc['metros']
+            # Y sigo con el gráfico y tal
             datachart.append([pc.codigo, 
                               partidas_carga[pc]['kilos_consumidos']])
             padre = model.append(abuelo, 
@@ -236,12 +245,16 @@ class ConsumoFibraPorPartidaGtx(Ventana):
             self.logger.error(txt)
         
     def set_inicio(self, boton):
-        temp = utils.mostrar_calendario(padre = self.wids['ventana'])
+        temp = utils.mostrar_calendario(
+                fecha_defecto = self.wids['e_fechainicio'].get_text(), 
+                padre = self.wids['ventana'])
         self.wids['e_fechainicio'].set_text(utils.str_fecha(temp))
         self.inicio = utils.parse_fecha(self.wids['e_fechainicio'].get_text()) 
 
     def set_fin(self, boton):
-        temp = utils.mostrar_calendario(padre = self.wids['ventana'])
+        temp = utils.mostrar_calendario(
+                fecha_defecto = self.wids['e_fechafin'].get_text(), 
+                padre = self.wids['ventana'])
         self.wids['e_fechafin'].set_text(utils.str_fecha(temp))
         self.fin = utils.parse_fecha(self.wids['e_fechafin'].get_text()) 
 
@@ -277,6 +290,12 @@ class ConsumoFibraPorPartidaGtx(Ventana):
         relación directa entre rollo y bala consumida (se pierde definición 
         al haber una tabla de una relación muchos a muchos entre medio).
         """
+        self.totales = {'e_total_kg_consumidos': 0.0, 
+                        'e_total_kg_prod_real': 0.0, 
+                        'e_total_kg_prod_teorico': 0.0, 
+                        'e_total_balas_consumidas': 0, 
+                        'e_total_rollos_producidos': 0, 
+                        'e_total_m2_producidos': 0.0}
         PDP = pclases.ParteDeProduccion
         if not self.inicio:
             pdps = PDP.select(""" fecha <= '%s' AND observaciones NOT LIKE '%%;%%;%%;%%;%%;%%' """ % (self.fin.strftime('%Y-%m-%d')))
@@ -404,6 +423,12 @@ class ConsumoFibraPorPartidaGtx(Ventana):
         vpro.ocultar()
         self.partidas_carga = partidas_carga
         self.rellenar_tabla(partidas_carga)
+        self.rellenar_totales()
+
+    def rellenar_totales(self):
+        for k in self.totales:
+            self.wids[k].set_text(utils.float2str(self.totales[k], 
+                                                  autodec = True))
 
     def imprimir(self, boton):
         """

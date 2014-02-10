@@ -1340,7 +1340,7 @@ def consultar_kilos_fibra_consumidos(fechaini, fechafin):
     """
     con.query(caidita_de_roma)
     balas, kilos = balas_kilos[0]  # @UnusedVariable
-    return (kilos and kilos or 0.0)
+    return (kilos or 0.0)
 
 def consultar_horas_reales_gtx(fechaini, fechafin):
     """
