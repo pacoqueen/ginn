@@ -1132,11 +1132,11 @@ def existencias_productos(informe, fecha, hasta = None, almacen = None,
         else:
             txtalmacen = ""
         if informe == 'rollos':
-            cabecera(c, 'Inventario de geotextiles%s' % txtalmacen, fecha)
-            c.setTitle("Inventario de geotextiles%s" % txtalmacen)
+            cabecera(c, 'Inventario de geotextiles A%s' % txtalmacen, fecha)
+            c.setTitle("Inventario de geotextiles A%s" % txtalmacen)
         elif informe == 'balas':
-            cabecera(c, 'Inventario de fibras%s' % txtalmacen, fecha)
-            c.setTitle("Inventario de fibras%s" % txtalmacen)
+            cabecera(c, 'Inventario de fibras B%s' % txtalmacen, fecha)
+            c.setTitle("Inventario de fibras B%s" % txtalmacen)
         # El cuerpo
         c.setFont("Helvetica-Bold", 10)
 
