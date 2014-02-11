@@ -489,7 +489,8 @@ def existencias_no_nulas(hasta = None, exportar_a_csv_a = None,
                                           (22, True),
                                           (22 + 7 + 7 + 8, True), ),
                      exportar_a_csv_a = exportar_a_csv_a)
-    vpro.ocultar()
+    if ventana_padre:
+        vpro.ocultar()
     return generated_files
 
 def existencias(hasta = None, exportar_a_csv_a = None, ventana_padre = None):
