@@ -50,7 +50,8 @@ class ConsultaExistenciasPorTipo(Ventana):
         connections = {'b_salir/clicked': self.salir,
                        'b_actualizar/clicked': self.buscar,
                        'b_imprimir/clicked': self.imprimir,
-                       'b_exportar/clicked': self.exportar} 
+                       'b_exportar/clicked': self.exportar, 
+                       'cb_almacen/changed': self.buscar} 
         self.add_connections(connections)
         cols = (('Producto', 'gobject.TYPE_STRING', False, True, True, None),#0
                 ('A', 'gobject.TYPE_STRING', False, True, False, None),
@@ -196,6 +197,11 @@ class ConsultaExistenciasPorTipo(Ventana):
         from formularios import reports
         from informes.treeview2pdf import treeview2pdf
         pagina_activa = self.wids['nb_tipo'].get_current_page()
+        almacenid = utils.combo_get_value(self.wids['cb_almacen'])
+        if almacenid != 0:
+            almacen = pclases.Almacen.get(almacenid)
+        else:
+            almacen = None
         if pagina_activa == 0:
             tv = self.wids['tv_fibra']
             titulo = "Existencias de productos por tipo: fibra"
@@ -207,6 +213,10 @@ class ConsultaExistenciasPorTipo(Ventana):
             titulo = "Existencias de productos por tipo: fibra de cemento"
         else:
             return
+        try:
+            titulo += " (%s)" % almacen.nombre
+        except AttributeError:
+            pass
         totales = [1, 2, 3, 4]
         extra_data = []
         reports.abrir_pdf(treeview2pdf(tv, 
