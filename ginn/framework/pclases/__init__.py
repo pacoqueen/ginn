@@ -753,8 +753,18 @@ class FormaDePago(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
-    def toString(self):
-        return "%s, %d D. F. F." % (self.documentoDePago.documento, self.plazo)
+    def toString(self, cliente = None):
+        """
+        Si se especifica un cliente, usa el texto complementario de la 
+        forma de pago que se le pusiera en la ficha.
+        """
+        res = "%s, %d D. F. F." % (self.documentoDePago.documento, self.plazo)
+        try:
+            if cliente and cliente.textoComplementarioFormaDePago:
+                res += " " + cliente.textoComplementarioFormaDePago
+        except (TypeError, AttributeError):
+            pass 
+        return res
 
     def porDefecto(cls):
         """

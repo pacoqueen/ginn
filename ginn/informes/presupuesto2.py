@@ -546,7 +546,8 @@ def go_from_presupuesto(presupuesto,
     else:
         condicionado = None
     try:
-        fdp = "Forma de pago: %s" % presupuesto.formaDePago.toString()
+        fdp = "Forma de pago: %s" % presupuesto.formaDePago.toString(
+                presupuesto.cliente)
     except AttributeError:
         fdp = ""
     if presupuesto.comercial:

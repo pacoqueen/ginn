@@ -1204,6 +1204,26 @@ class Clientes(Ventana):
                     pclases.DocumentoDePago.select(orderBy = "id")])
         if pclases.DEBUG:
             print "8.- clientes.py::inicializar_ventana ->", time.time() - antes
+        self.add_texto_complementario()
+        if pclases.DEBUG:
+            print "9.- clientes.py::inicializar_ventana ->", time.time() - antes
+
+    def add_texto_complementario(self):
+        t = self.wids['e_diadepago'].parent
+        v = gtk.VBox()
+        l = gtk.Label("<small>Texto complementario a la forma de pago</small>")
+        l.set_property("xalign", 0.0)
+        l.set_use_markup(True)
+        e = gtk.Entry()
+        v.pack_start(l, expand = True)
+        v.pack_start(e, expand = True)
+        self.wids['e_textoComplementarioFormaDePago'] = e
+        t.remove(self.wids['e_diadepago'])
+        h = gtk.HBox()
+        h.pack_start(self.wids['e_diadepago'], expand = False)
+        h.pack_start(v, expand = True)
+        t.attach(h, 1, 3, 1, 2, xoptions = gtk.FILL, yoptions = 0)
+        t.show_all()
 
     def seleccionar_en_tv_superior(self, tv):
         """
@@ -1482,6 +1502,8 @@ class Clientes(Ventana):
         self.wids['e_facturarConAlbaran'].set_active(
             cliente.facturarConAlbaran)
         self.wids['e_fax'].set_text(cliente.fax != None and cliente.fax or '')
+        self.wids['e_textoComplementarioFormaDePago'].set_text(
+                                        cliente.textoComplementarioFormaDePago)
         # Este cliente es comercial de otros clientes: oculto el desplegable y 
         # muestro la pestaña de datos de comercial:
         self.wids['hbox_comercial'].set_property("visible", 

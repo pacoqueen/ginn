@@ -2346,7 +2346,8 @@ class FacturasVenta(Ventana):
             if self.objeto.get_pedidos():
                 try:
                     pedido = factura.get_pedidos()[0]
-                    str_formapago = pedido.formaDePago.toString()
+                    str_formapago = pedido.formaDePago.toString(
+                            self.objeto.cliente)
                 except (AttributeError, IndexError):
                     str_formapago = (factura.cliente 
                             and factura.cliente.textoformacobro or "")

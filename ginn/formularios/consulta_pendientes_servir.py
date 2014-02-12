@@ -224,7 +224,7 @@ def build_datos_por_pedido(fibra_o_gtx):
                     str_existencias = producto.get_str_stock()
                     ide = pedido.id
                     try:
-                        fdp = pedido.formaDePago.toString()
+                        fdp = pedido.formaDePago.toString(pedido.cliente)
                     except AttributeError:
                         fdp = ""
                     if (not hasattr(producto, "controlExistencias") 

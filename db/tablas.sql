@@ -430,7 +430,8 @@ CREATE TABLE cliente(
     packing_list_con_codigo BOOLEAN DEFAULT FALSE,  -- NEW! 27/02/2009
     facturar_con_albaran BOOLEAN DEFAULT TRUE,      -- NEW! 02/03/2009
     copias_factura INT DEFAULT 0,   -- Sin incluir la original. NEW! 09/07/2009
-    tipo_de_cliente_id INT REFERENCES tipo_de_cliente DEFAULT NULL
+    tipo_de_cliente_id INT REFERENCES tipo_de_cliente DEFAULT NULL, 
+    texto_complementario_forma_de_pago TEXT DEFAULT ''  -- NEW! 12/02/2014
 );
 
 ---------------------------------

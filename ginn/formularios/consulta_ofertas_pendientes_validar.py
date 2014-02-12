@@ -277,7 +277,7 @@ class ConsultaOfertasPendientesValidar(Ventana):
                     p.rechazado, 
                     p.motivo, 
                     utils.float2str(importe_total), 
-                    p.formaDePago and p.formaDePago.toString(), 
+                    p.formaDePago and p.formaDePago.toString(p.cliente), 
                     p.puid)        # Oculta. Para el get.
             total += importe_total
             pendientes += 1

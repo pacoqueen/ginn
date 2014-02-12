@@ -95,17 +95,30 @@ class Cliente(SQLObject, PRPCTOO):
     def get_texto_forma_cobro(self):
         """
         Devuelve un texto que representa la forma de cobro del cliente. 
-        Por ejemplo:  efectivo, pagaré 90 D.F.F., transferencia banco 1234-23-...
+        Por ejemplo:  efectivo, pagaré 90 D.F.F., transferencia banco 
+        1234-23-...
         """
         formapago = ""
-        if self.documentodepago != None and self.documentodepago.strip() != "" and self.documentodepago.strip() != "0":
+        if (self.documentodepago != None 
+                and self.documentodepago.strip() != "" 
+                and self.documentodepago.strip() != "0"):
             formapago = "%s, " % (self.documentodepago)
-        if self.vencimientos != None and self.vencimientos.strip() != "" and self.vencimientos.strip() != "0":
+        if (self.vencimientos != None 
+                and self.vencimientos.strip() != "" 
+                and self.vencimientos.strip() != "0"):
             formapago += "%s " % (self.vencimientos)
-        if self.diadepago != None and self.diadepago.strip() != "" and self.diadepago.strip() != "-":
+        if (self.diadepago != None 
+                and self.diadepago.strip() != "" 
+                and self.diadepago.strip() != "-"):
             formapago += "los días %s" % (self.diadepago)
         if len(formapago) > 0:
             formapago += ". "
+        try:
+            txtcompl = self.textoComplementarioFormaDePago
+        except AttributeError:
+            txtcompl = ""
+        if formapago and txtcompl:
+            formapago += " " + txtcompl
         return formapago
 
     textoformacobro = property(get_texto_forma_cobro)

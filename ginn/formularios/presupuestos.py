@@ -3132,8 +3132,10 @@ def buscar_cliente(presupuesto, usuario, crear_si_no_existe = False):
                 cp = presupuesto.cp, 
                 telefono = presupuesto.telefono, 
                 email = presupuesto.email,
-                vencimientos = presupuesto.formaDePago.toString(), 
-                formadepago = presupuesto.formaDePago.toString(), 
+                vencimientos = presupuesto.formaDePago.toString(
+                    presupuesto.cliente), 
+                formadepago = presupuesto.formaDePago.toString(
+                    presupuesto.cliente), 
                 contacto = presupuesto.personaContacto)
             pclases.Auditoria.nuevo(cliente, usuario, __file__)
         else:

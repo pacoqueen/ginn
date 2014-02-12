@@ -535,7 +535,8 @@ class ConsultaOfertasEstudio(Ventana):
                         utils.str_fecha(presupuesto.fecha),
                         utils.float2str(importe), 
                         presupuesto.formaDePago 
-                            and presupuesto.formaDePago.toString() or "", 
+                            and presupuesto.formaDePago.toString(
+                                presupuesto.cliente) or "", 
                         presupuesto.puid)
                 model.append(padre, fila)
                 # Actualizo totales fila padre.
@@ -623,7 +624,8 @@ class ConsultaOfertasEstudio(Ventana):
                         presupuesto.cliente and presupuesto.cliente.nombre 
                             or presupuesto.nombrecliente,
                         presupuesto.formaDePago 
-                            and presupuesto.formaDePago.toString() or "", 
+                            and presupuesto.formaDePago.toString(
+                                presupuesto.cliente) or "", 
                         utils.float2str(importe), 
                         presupuesto.puid)
                 model.append(padre, fila)
@@ -712,7 +714,8 @@ class ConsultaOfertasEstudio(Ventana):
                         presupuesto.cliente and presupuesto.cliente.nombre 
                             or presupuesto.nombrecliente,
                         presupuesto.formaDePago 
-                            and presupuesto.formaDePago.toString() or "", 
+                            and presupuesto.formaDePago.toString(
+                                presupuesto.cliente) or "", 
                         utils.float2str(importe), 
                         presupuesto.puid)
                 model.append(padre, fila)

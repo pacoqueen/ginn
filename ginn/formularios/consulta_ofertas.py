@@ -528,7 +528,8 @@ class ConsultaOfertas(Ventana):
             #if presupuesto.validado:
             #    estado += " (%s)" % presupuesto.get_str_validacion()
             try:
-                str_forma_de_pago = presupuesto.formaDePago.toString()
+                str_forma_de_pago = presupuesto.formaDePago.toString(
+                        presupuesto.cliente)
             except AttributeError: 
                 str_forma_de_pago = ""
             total_presupuesto = presupuesto.calcular_importe_total()
@@ -734,7 +735,8 @@ class ConsultaOfertas(Ventana):
                         utils.str_fecha(presupuesto.fecha),
                         utils.float2str(importe), 
                         presupuesto.formaDePago 
-                            and presupuesto.formaDePago.toString() or "", 
+                            and presupuesto.formaDePago.toString(
+                                presupuesto.cliente) or "", 
                         presupuesto.puid)
                 model.append(padre, fila)
                 # Actualizo totales fila padre.
@@ -822,7 +824,8 @@ class ConsultaOfertas(Ventana):
                         presupuesto.cliente and presupuesto.cliente.nombre 
                             or presupuesto.nombrecliente,
                         presupuesto.formaDePago 
-                            and presupuesto.formaDePago.toString() or "", 
+                            and presupuesto.formaDePago.toString(
+                                presupuesto.cliente) or "", 
                         utils.float2str(importe), 
                         presupuesto.puid)
                 model.append(padre, fila)
@@ -911,7 +914,8 @@ class ConsultaOfertas(Ventana):
                         presupuesto.cliente and presupuesto.cliente.nombre 
                             or presupuesto.nombrecliente,
                         presupuesto.formaDePago 
-                            and presupuesto.formaDePago.toString() or "", 
+                            and presupuesto.formaDePago.toString(
+                                presupuesto.cliente) or "", 
                         utils.float2str(importe), 
                         presupuesto.puid)
                 model.append(padre, fila)
