@@ -520,11 +520,12 @@ class ConsultaProducido(Ventana):
             #key = "%d:B" % (a.productoVentaID)
             key = a.productoVenta.puid
             try:
-                peso = a.bala.pesobala
+                peso = a.bala.pesobala      # XXX: Cuenta las balas B
                 lote = a.lote
             except AttributeError:  # Es cemento
-                peso = a.bigbag.pesobigbag
-                lote = a.loteCem
+                peso = a.bigbag.pesobigbag  # XXX: Y bigbags
+                lote = a.loteCem            # XXX: Pero no las C porque no van 
+                                            # XXX: en un parte de producción.
             tiempo_teorico = a.calcular_tiempo_teorico()
             try: 
                 prod_balas[key][1] += peso

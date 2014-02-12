@@ -586,7 +586,8 @@ class ListadoBalas(Ventana):
 
     def buscar_balas(self,wid):
         """
-        Pide el código de un producto y busca todos las unidades de ese producto
+        Pide el código de un producto y busca todos las unidades de ese 
+        producto.
         """
         a_buscar = utils.dialogo_entrada(titulo = 'INTRODUZCA DATOS', 
                     texto = 'Introduzca el código, nombre o descripción\n'

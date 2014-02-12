@@ -114,7 +114,7 @@ class ConsultaExistenciasPorTipo(Ventana):
             elif pv.es_especial():
                 continue    # Estos los ignoro
             else:
-                # ¿Producto vacío? Casi seguro.
+                # ¿Producto vacío, sin descripción ni nada? Casi seguro.
                 #raise ValueError, "consulta_existencias_por_tipo::buscar -> "\
                 #                  "Producto no es fibra, geotextil ni cemento."
                 # TODO: Agregar línea al log o emitir un warning o algo.

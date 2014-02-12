@@ -55,7 +55,8 @@ class ConsumoBalasPartida(Ventana):
         el que se muestra por defecto).
         """
         self.usuario = usuario
-        Ventana.__init__(self, 'consumo_balas_partida.glade', objeto, usuario = usuario)
+        Ventana.__init__(self, 'consumo_balas_partida.glade', 
+                         objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_partida/clicked': self.set_partida,
                        'b_imprimir/clicked': self.imprimir,
