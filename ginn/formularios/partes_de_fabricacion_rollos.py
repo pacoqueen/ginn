@@ -1215,7 +1215,8 @@ class PartesDeFabricacionRollos(Ventana):
         """
         Carga la imagen "imagen" del directorio "imagenes" en el widget.
         """
-        im = os.path.join('..', 'imagenes', imagen)
+        im = os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+                          "..", "imagenes", imagen)
         w.set_from_file(im)
 
     def mostrar_icono(self, densidad_anterior, densidad_actual):
@@ -2370,8 +2371,8 @@ class PartesDeFabricacionRollos(Ventana):
                     self.producto.camposEspecificosRollo.fichaFabricacion)
                 self.objeto.fichaproduccion \
                     = self.wids['e_fichaproduccion'].get_text()
-            for a in self.objeto.articulos: # Y cambio de partida los artículos y 
-                                            # de producto de venta.
+            for a in self.objeto.articulos: # Y cambio de partida los 
+                                    # artículos y de producto de venta.
                 a.partida = partida
                 a.productoVenta = self.producto
             self.actualizar_ventana()
