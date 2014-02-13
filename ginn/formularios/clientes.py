@@ -1502,8 +1502,11 @@ class Clientes(Ventana):
         self.wids['e_facturarConAlbaran'].set_active(
             cliente.facturarConAlbaran)
         self.wids['e_fax'].set_text(cliente.fax != None and cliente.fax or '')
-        self.wids['e_textoComplementarioFormaDePago'].set_text(
+        try:
+            self.wids['e_textoComplementarioFormaDePago'].set_text(
                                         cliente.textoComplementarioFormaDePago)
+        except AttributeError:
+            pass    # Versiones anteriores de la BD. No tiene este campo.
         # Este cliente es comercial de otros clientes: oculto el desplegable y 
         # muestro la pestaña de datos de comercial:
         self.wids['hbox_comercial'].set_property("visible", 
