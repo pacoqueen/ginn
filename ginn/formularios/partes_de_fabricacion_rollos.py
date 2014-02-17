@@ -2363,7 +2363,8 @@ class PartesDeFabricacionRollos(Ventana):
         else:
             self.wids['e_partida'].set_text(partida_carga.codigo)
             self.wids['e_partida_gtx'].set_text(partida.codigo)
-            if partida.rollos: # Ya tiene algún rollo asociado de un parte anterior
+            if partida.rollos:  # Ya tiene algún rollo asociado de un parte 
+                                # anterior
                 productoVenta = partida.rollos[0].articulos[0].productoVenta
                 self.producto = productoVenta
                 self.rellenar_datos_articulo(self.producto)

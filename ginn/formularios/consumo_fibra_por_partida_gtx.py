@@ -298,9 +298,14 @@ class ConsumoFibraPorPartidaGtx(Ventana):
                         'e_total_m2_producidos': 0.0}
         PDP = pclases.ParteDeProduccion
         if not self.inicio:
-            pdps = PDP.select(""" fecha <= '%s' AND observaciones NOT LIKE '%%;%%;%%;%%;%%;%%' """ % (self.fin.strftime('%Y-%m-%d')))
+            pdps = PDP.select(""" fecha <= '%s' 
+                    AND observaciones NOT LIKE '%%;%%;%%;%%;%%;%%' """ % (
+                        self.fin.strftime('%Y-%m-%d')))
         else:
-            pdps = PDP.select(""" fecha >= '%s' AND fecha <= '%s' AND observaciones NOT LIKE '%%;%%;%%;%%;%%;%%' """ % (self.inicio.strftime('%Y-%m-%d'), self.fin.strftime('%Y-%m-%d')))
+            pdps = PDP.select(""" fecha >= '%s' AND fecha <= '%s' 
+                    AND observaciones NOT LIKE '%%;%%;%%;%%;%%;%%' """ % (
+                        self.inicio.strftime('%Y-%m-%d'), 
+                        self.fin.strftime('%Y-%m-%d')))
         vpro = ventana_progreso.VentanaProgreso(padre = self.wids['ventana'])
         tot = pdps.count()
         pdps = pdps.orderBy("fecha")
@@ -334,7 +339,7 @@ class ConsumoFibraPorPartidaGtx(Ventana):
                     partida = articulo.rolloDefectuoso.partida
                 else:
                     partida = None
-                if partida!=None and partida.entra_en_cota_superior(self.fin):
+                if partida and partida.entra_en_cota_superior(self.fin):
                     partida_carga = partida.partidaCarga
                     if partida_carga == None:   # Partidas sin partida de carga
                                                 # ... eso es malo.
