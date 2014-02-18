@@ -268,8 +268,27 @@ class Presupuestos(Ventana, VentanaGenerica):
 
     def hacer_y_abrir_pedido(self, boton):
         pedido = hacer_pedido(self.objeto, self.usuario, self.wids['ventana'])
+        # [18/02/2014] Nueva alerta: Si el cliente en ese momento no tiene 
+        # crédito, crear el pedido pero invalidado. Y además enviar un correo 
+        # a comerciales, validadores, epalomo y rparra advirtiéndoles.
         if pedido:
             self.actualizar_ventana()
+            importe_pedido = self.objeto.calcular_importe_total(iva = True)
+            credito = self.objeto.cliente.calcular_credito_disponible()
+            if credito - importe_pedido <= 0:
+                utils.dialogo_info(titulo = "CLIENTE SIN CRÉDITO", 
+                        texto = "El cliente no tiene crédito suficiente para"
+                                " atender al pedido completo.\n"
+                                "Crédito: %s\n"
+                                "Importe pedido: %s\n"
+                                "El pedido %s se invalidará." % (
+                                    utils.float2str(credito), 
+                                    utils.float2str(importe_pedido), 
+                                    pedido.numpedido), 
+                        padre = self.wids['ventana'])
+                pedido.validado = False
+                pedido.usuario = None
+                self.enviar_correo_de_riesgo(pedido)
             abrir_pedido(pedido, self.usuario)
 
     def detectar_cambio_pagina_notebook(self, nb, page, page_num):
@@ -455,51 +474,51 @@ class Presupuestos(Ventana, VentanaGenerica):
         vpro.ocultar()
         return ok
     
-    def enviar_correo_de_riesgo(self):
+    def enviar_correo_de_riesgo(self, pedido):
         """
         Si el cliente está en riesgo, aviso por correo para que se vaya 
         preparando el personal de CRM.
         """
         # CWT: Deshabilitado. Se sustituye solo por el envío voluntario de 
-        # solicitud de crédito por parte del usuario.
-        return 
+        # solicitud de crédito por parte del usuario. Ahora lo uso para 
+        # enviar el correo de nuevo pedido a cliente sin crédito.
         if self.usuario and self.objeto.cliente:
-            # En pclases ya hay una cutrecaché que hace que dos llamadas 
-            # consecutivas al cálculo de crédito solo consuman el tiempo 
-            # de CPU de una llamada.
             importe_presupuesto = self.objeto.calcular_importe_total(
                                     iva = True)
-            credito = self.objeto.cliente.\
-                        calcular_credito_disponible(
-                                base = importe_presupuesto)
-            if credito <= 0:
-                # TODO: Y que no se haya enviado ya antes. Si no, no veas 
-                # la paliza de correos que van a llegar cada vez que guarde 
-                # un valor de la ventana.
-                servidor = self.usuario.smtpserver
-                smtpuser = self.usuario.smtpuser
-                smtppass = self.usuario.smtppassword
-                rte = self.usuario.email
-                # TODO: OJO: HARDCODED
-                if self.usuario and self.usuario.id == 1:
-                    dests = ["informatica@geotexan.com"]
-                else:
-                    dests = ["epalomo@geotexan.com"]
-                # Correo de riesgo de cliente
-                texto = "Se ha creado la oferta %d "\
-                        "para el cliente %s, que está en riesgo: crédito "\
-                        "disponible: %s. Importe del presupuesto: %s." % (
-                            self.objeto.id, 
-                            self.objeto.nombrecliente, 
-                            utils.float2str(credito), 
-                            utils.float2str(importe_presupuesto))
-                enviar_correoe(rte, 
-                               dests,
-                               "Alerta de oferta sin crédito", 
-                               texto, 
-                               servidor = servidor, 
-                               usuario = smtpuser, 
-                               password = smtppass)
+            # Correo de riesgo de cliente
+            texto = "Se ha creado el pedido %s de la oferta %d "\
+                    "para el cliente %s, que está en riesgo por falta "\
+                    "de crédito para el suministro completo.\n"\
+                    "Importe del presupuesto: %s.\n"\
+                    "El pedido se ha marcado como pendiente de validación." % (
+                        pedido.numpedido, 
+                        self.objeto.id, 
+                        self.objeto.nombrecliente, 
+                        utils.float2str(importe_presupuesto))
+            # TODO: Y que no se haya enviado ya antes. Si no, no veas 
+            # la paliza de correos que van a llegar cada vez que guarde 
+            # un valor de la ventana.
+            servidor = self.usuario.smtpserver
+            smtpuser = self.usuario.smtpuser
+            smtppass = self.usuario.smtppassword
+            rte = self.usuario.email
+            # TODO: OJO: HARDCODED
+            dests = ["epalomo@geotexan.com"] 
+            dests += [d for d in self.select_correo_validador()]
+            comerciales = [self.objeto.comercial]
+            dests += [comercial.correoe for comercial in comerciales 
+                      if comercial.empleado.usuario.usuario != self.usuario]
+            if self.usuario and self.usuario.id == 1:
+                texto += "\n\n\nEl correo iba dirigido a: %s" % (
+                        "; ".join(dests))
+                dests = ["informatica@geotexan.com"]
+            enviar_correoe(rte, 
+                           dests,
+                           "Alerta de pedido sin crédito", 
+                           texto, 
+                           servidor = servidor, 
+                           usuario = smtpuser, 
+                           password = smtppass)
 
     def adjudicar(self, ch):
         if ch.get_active() != self.objeto.adjudicada:   # Es el usuario el 
@@ -2604,7 +2623,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         # Correos electrónicos de alarmas, altas y demás. Ahora compruebo 
         # primero que lo hayan marcado así los DELEGADOS (sic) comerciales.
         if self.objeto.cerrado and ha_cambiado_el_cliente:
-            self.enviar_correo_de_riesgo()
+            # self.enviar_correo_de_riesgo()
+            pass    # CWT: Ver doc. de enviar_correo_riesgo
         if self.objeto.cerrado and self.debe_solicitar_validacion():
             self.enviar_correo_solicitud_validacion()
         if errores:
