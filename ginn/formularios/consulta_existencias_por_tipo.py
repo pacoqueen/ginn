@@ -83,7 +83,7 @@ class ConsultaExistenciasPorTipo(Ventana):
         model = tv.get_model()
         puid = model[path][-1]
         objeto = pclases.getObjetoPUID(puid)
-        if objeto.es_rollo():
+        if objeto.es_rollo() or objeto.es_rollo_c():
             from formularios.productos_de_venta_rollos \
                     import ProductosDeVentaRollos as NuevaVentana
         elif objeto.es_fibra() or objeto.es_bolsa():
@@ -150,7 +150,8 @@ class ConsultaExistenciasPorTipo(Ventana):
                 A = pv.get_stock_A(almacen = almacen)
                 B = pv.get_stock_B(almacen = almacen)
                 C = pv.get_stock_C(almacen = almacen)
-                total = pv.get_stock(almacen = almacen)
+                total = pv.get_stock(almacen = almacen, 
+                                     contar_defectuosos = True)
                 if pclases.DEBUG:
                     assert round(A + B + C) == round(total), pv.puid  # XXX 
                 fila = (pv.descripcion, 
