@@ -20,7 +20,7 @@ NOTAS:
     - consulta_existencias_por_tipo (existencias iniciales y finales)
     - consulta_ventas_por_producto (ventas y abonos)
     - consulta_producido (producción)
-    - consulta_consumo (consumo de fibra en la línea de geotextiles)
+    - consulta_consumo (para consumo de fibra en la línea de geotextiles)
 * Los consumos de fibra de las partidas de carga solían llevar un albarán 
   interno que debía generar el usuario manualmente. Lógicamente, lleva siglos 
   sin hacerse. Al menos en enero '14 no hay ni un albarán interno de consumo 
@@ -31,6 +31,13 @@ NOTAS:
   a las balas cargadas físicamente en la línea pero aún no descontadas en el 
   programa porque el operario no ha llevado las etiquetas de las balas 
   cargadas al usuario.
+* Los bigbag que se consumen en la línea de embolsado no deberían incluirse en 
+  la consulta de consumos porque también llevan su propio albarán interno de 
+  consumo de materiales y materia prima. Por lo tanto se contarían dos veces 
+  si se marcara la opción `Línea de embolsado` en la consulta
+* En la consulta de producido hay que indicar que se quiere también sacar la 
+  producción C (aunque no entren para el cálculo de horas, totales y eso) para 
+  que cuadre con las existencias inciales, finales y ventas.
 
 SYNOPSIS
 
