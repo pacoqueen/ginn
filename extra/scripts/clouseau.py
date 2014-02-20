@@ -15,11 +15,22 @@ de producto y una columna con el delta de:
 e_ini + producción - (ventas + abonos) - consumos de fibra = e_fin 
                                                         | diff(e_fin, e_ini)
 
-Los ficheros se sacan de:
-consulta_existencias_por_tipo (existencias iniciales y finales)
-consulta_ventas_por_producto (ventas y abonos)
-consulta_producido (producción)
-consulta_consumo (consumo de fibra en la línea de geotextiles)
+NOTAS:
+* Los ficheros se sacan de:
+    - consulta_existencias_por_tipo (existencias iniciales y finales)
+    - consulta_ventas_por_producto (ventas y abonos)
+    - consulta_producido (producción)
+    - consulta_consumo (consumo de fibra en la línea de geotextiles)
+* Los consumos de fibra de las partidas de carga solían llevar un albarán 
+  interno que debía generar el usuario manualmente. Lógicamente, lleva siglos 
+  sin hacerse. Al menos en enero '14 no hay ni un albarán interno de consumo 
+  de fibra en línea de geotextiles. __Hay que tenerlo en cuenta porque si 
+  se empezaran otra vez a generar, se contarían dos veces: en los consumos 
+  de línea y en las salidas como albaranes internos.__ También hay que tener 
+  en cuenta que los posibles descuadres de fibra se pueden deber precisamente 
+  a las balas cargadas físicamente en la línea pero aún no descontadas en el 
+  programa porque el operario no ha llevado las etiquetas de las balas 
+  cargadas al usuario.
 
 SYNOPSIS
 
