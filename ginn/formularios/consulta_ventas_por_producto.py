@@ -165,14 +165,16 @@ class ConsultaVentasPorProducto(Ventana):
                 txt = "%sconsulta_ventas_por_producto::rellenar_tabla -> Tipo de producto desconocido: LDV ID: %d, Representación del objeto producto: %s" % (self.usuario and self.usuario + ": " or "", ldv.id, p)
                 print txt
                 self.logger.error(txt)
+            cantidad_albaraneada = ldv.get_cantidad_albaraneada()
             if p not in productos:
                 fila = model.append(None, (p.descripcion, "", "", "", "", "%s:%d" % (tipo, p.id)))
-                productos[p] = [fila, ldv.get_cantidad_albaraneada()]
+                productos[p] = [fila, cantidad_albaraneada]
             else:
                 fila = productos[p][0]
-                productos[p][1] += ldv.get_cantidad_albaraneada()
+                if not ldv.albaranSalida.es_de_movimiento():
+                    productos[p][1] += cantidad_albaraneada
             if tipo == "PV":
-                cantidad = ldv.get_cantidad_albaraneada()
+                cantidad = cantidad_albaraneada
                 if (p.es_bala() or p.es_bigbag() or p.es_bala_cable() 
                         or p.es_rollo_c() or p.es_caja()):
                     total_kilos += cantidad
@@ -181,11 +183,21 @@ class ConsultaVentasPorProducto(Ventana):
                 elif p.es_especial():
                     total_otros += cantidad
             elif tipo == "PC":
-                cantidad = ldv.get_cantidad_albaraneada()
+                cantidad = cantidad_albaraneada 
                 total_otros += cantidad * ldv.precio
             else:
                 cantidad = 0
             model.append(fila, ("", utils.float2str(cantidad), 
+                                    ldv.albaranSalida.cliente 
+                                        and ldv.albaranSalida.cliente.nombre 
+                                        or "", 
+                                    utils.str_fecha(ldv.albaranSalida.fecha),
+                                    ldv.albaranSalida.numalbaran, 
+                                    "LDV:%d" % (ldv.id)))
+            if ldv.albaranSalida.es_de_movimiento():
+                # Añado la misma línea pero en negativo, de ese modo se 
+                # anularán. La consulta no es por almacén, sino general.
+                model.append(fila, ("", utils.float2str(-cantidad), 
                                     ldv.albaranSalida.cliente 
                                         and ldv.albaranSalida.cliente.nombre 
                                         or "", 
@@ -239,6 +251,7 @@ class ConsultaVentasPorProducto(Ventana):
                     metros_en_kilos_teoricos = (productos[p][1] * p.camposEspecificosRollo.gramos) / 1000
                     total_metros_en_kilos_teoricos += metros_en_kilos_teoricos
                     cantidad += " (%s kg)" % utils.float2str(metros_en_kilos_teoricos)
+                # TODO: FIXME: Esto de los kilos teóricos... con rollos B y tal... Mal, ¿eh?
             except AttributeError:  # It's Easier to Ask Forgiveness than Permission (EAFP)
                 pass
             fila = productos[p][0]
