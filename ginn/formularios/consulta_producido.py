@@ -125,6 +125,8 @@ class ConsultaProducido(Ventana):
         self.inicio = '/'.join(self.inicio)
         self.wids['rb_todas'].set_active(True)
         self.wids['im_graph'].set_visible(pychart_available)
+        if not self.usuario or self.usuario.id == 1:
+            self.wids['ch_c'].set_property("visible", True)
         gtk.main()
 
     def exportar(self, boton):
@@ -172,6 +174,8 @@ class ConsultaProducido(Ventana):
                                       tiempo_real, 
                                       "%d:%s" % (item[2], item[3])))
             for lote_partida in item[6]:
+                if lote_partida == None:
+                    continue    # Es material C. No tiene lote/partida
                 cantidad = item[6][lote_partida]['cantidad']
                 bultos = item[6][lote_partida]['bultos']
                 horas_teoricas = item[6][lote_partida]['tiempo']
@@ -267,6 +271,13 @@ class ConsultaProducido(Ventana):
         ford = {}
         self.tiempo_faltante = mx.DateTime.TimeDeltaFrom(0)
         self.huecos = []    # Lista de los últimos partes tratados por línea.
+        if self.wids['ch_c'].get_active():
+            if (self.wids['rb_todas'].get_active() 
+                or self.wids['rb_geotextiles'].get_active()):
+                self.procesar_rollos_c(prod_rollos)
+            if (self.wids['rb_todas'].get_active() 
+                or self.wids['rb_fibra'].get_active()):
+                self.procesar_balas_c(prod_balas)
         for pdp in pdps:
             vpro.set_valor(i/tot, 'Analizando partes %s...' % (
                 utils.str_fecha(pdp.fecha)))
@@ -409,6 +420,81 @@ class ConsultaProducido(Ventana):
         vpro.ocultar()
         self.rellenar_tabla(self.resultado)
         self.rellenar_tabla_fordiana(ford)
+
+    def procesar_rollos_c(self, prod_rollos):
+        if not self.inicio:
+            rollosc = pclases.RolloC.select(
+                    pclases.RolloC.q.fechahora <= self.fin,
+                              orderBy = 'fechahora')
+        else:
+            rollosc = pclases.RolloC.select(pclases.AND(
+                                pclases.RolloC.q.fechahora >= self.inicio, 
+                                pclases.RolloC.q.fechahora <= self.fin), 
+                              orderBy = 'fechahora')
+        for rolloc in rollosc:
+            key = rolloc.productoVenta.puid
+            try:
+                cantidad = rolloc.articulo.peso_sin
+                prod_rollos[key][1] += cantidad
+                prod_rollos[key][5] += 1
+                tiempo_teorico = 0.0
+                prod_rollos[key][7] += tiempo_teorico
+                prod_rollos[key][8] += 0.0
+            except KeyError:
+                tiempo_teorico = 0.0
+                prod_rollos[key] = [rolloc.productoVenta.descripcion,    # 0
+                                    cantidad,                       # 1
+                                    rolloc.productoVenta.id,             # 2
+                                    'R',                            # 3
+                                    'kg',                           # 4
+                                    1,                              # 5
+                                    {None:                          # 6
+                                        {'cantidad': 0.0, 
+                                         'bultos': 1, 
+                                         'tiempo': tiempo_teorico, 
+                                         't_real': 0.0}},
+                                    tiempo_teorico,                 # 7
+                                    0.0                             # 8
+                                   ]
+
+    def procesar_balas_c(self, prod_balas):
+        if not self.inicio:
+            balasc = pclases.BalaCable.select(
+                    pclases.BalaCable.q.fechahora <= self.fin,
+                              orderBy = 'fechahora')
+        else:
+            balasc = pclases.BalaCable.select(pclases.AND(
+                                pclases.BalaCable.q.fechahora >= self.inicio, 
+                                pclases.BalaCable.q.fechahora <= self.fin), 
+                              orderBy = 'fechahora')
+        print "aaaaaaaaaaaaaaaaaaaaa", balasc.count()
+        for balac in balasc:
+            key = balac.productoVenta.puid
+            if key == pclases.ProductoVenta.selectBy(descripcion = "Fibra de arranque NATURAL")[0]:
+                print "ASASAAAAAAAAAAAAAAAAAAAAAAAA", key
+            try:
+                cantidad = balac.articulo.peso_sin
+                prod_balas[key][1] += cantidad
+                prod_balas[key][5] += 1
+                tiempo_teorico = 0.0
+                prod_balas[key][7] += tiempo_teorico
+                prod_balas[key][8] += 0.0
+            except KeyError:
+                tiempo_teorico = 0.0
+                prod_balas[key] = [balac.productoVenta.descripcion,    # 0
+                                    cantidad,                       # 1
+                                    balac.productoVenta.id,             # 2
+                                    'B',                            # 3
+                                    'kg',                           # 4
+                                    1,                              # 5
+                                    {None:                          # 6
+                                        {'cantidad': 0.0, 
+                                         'bultos': 1, 
+                                         'tiempo': tiempo_teorico, 
+                                         't_real': 0.0}},
+                                    tiempo_teorico,                 # 7
+                                    0.0                             # 8
+                                   ]
 
     def procesar_pdp_rollos(self, pdp, prod_rollos):
         # Añado ProductoVenta de los rollos.

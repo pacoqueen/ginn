@@ -100,6 +100,21 @@
                 <property name="position">4</property>
               </packing>
             </child>
+            <child>
+              <widget class="GtkCheckButton" id="ch_c">
+                <property name="label" translatable="yes">Incluir clase C</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="tooltip" translatable="yes">No cuenta para la producción por turnos ni para el cálculo de tiempos, totales, acumulados de partidas, etc.</property>
+                <property name="use_action_appearance">False</property>
+                <property name="draw_indicator">True</property>
+              </widget>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">5</property>
+              </packing>
+            </child>
           </widget>
           <packing>
             <property name="expand">False</property>

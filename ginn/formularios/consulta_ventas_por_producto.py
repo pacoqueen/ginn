@@ -139,6 +139,12 @@ class ConsultaVentasPorProducto(Ventana):
         la fila que ocupa (padre de la que se esté insertando en ese 
         momento) y la cantidad total del mismo.
         """ 
+        from ventana_progreso import VentanaProgreso
+        vpro = VentanaProgreso(padre = self.wids['ventana'])
+        vpro.mostrar()
+        i = 0.0
+        tot = len(ldvs) + len(ldds)
+        vpro.set_valor(i / tot, "Analizando %s..." % (""))
         model = self.wids['tv_datos'].get_model()
         model.clear()
         total_otros = 0.0
@@ -146,6 +152,9 @@ class ConsultaVentasPorProducto(Ventana):
         total_kilos = 0.0
         productos = {}
         for ldv in ldvs:
+            i += 1
+            vpro.set_valor(i / tot, "Analizando %s..." % (
+                ldv.albaranSalida.numalbaran))
             p = ldv.producto
             if isinstance(p, pclases.ProductoVenta):
                 tipo = "PV"
@@ -158,54 +167,72 @@ class ConsultaVentasPorProducto(Ventana):
                 self.logger.error(txt)
             if p not in productos:
                 fila = model.append(None, (p.descripcion, "", "", "", "", "%s:%d" % (tipo, p.id)))
-                productos[p] = [fila, ldv.cantidad]
+                productos[p] = [fila, ldv.get_cantidad_albaraneada()]
             else:
                 fila = productos[p][0]
-                productos[p][1] += ldv.cantidad
+                productos[p][1] += ldv.get_cantidad_albaraneada()
             if tipo == "PV":
-                cantidad = ldv.cantidad
-                if p.es_bala() or p.es_bigbag() or p.es_bala_cable():
+                cantidad = ldv.get_cantidad_albaraneada()
+                if (p.es_bala() or p.es_bigbag() or p.es_bala_cable() 
+                        or p.es_rollo_c() or p.es_caja()):
                     total_kilos += cantidad
                 elif p.es_rollo():
                     total_metros += cantidad
                 elif p.es_especial():
                     total_otros += cantidad
             elif tipo == "PC":
-                cantidad = ldv.cantidad
+                cantidad = ldv.get_cantidad_albaraneada()
                 total_otros += cantidad * ldv.precio
             else:
                 cantidad = 0
             model.append(fila, ("", utils.float2str(cantidad), 
-                                    ldv.albaranSalida.cliente and ldv.albaranSalida.cliente.nombre or "", 
+                                    ldv.albaranSalida.cliente 
+                                        and ldv.albaranSalida.cliente.nombre 
+                                        or "", 
                                     utils.str_fecha(ldv.albaranSalida.fecha),
                                     ldv.albaranSalida.numalbaran, 
                                     "LDV:%d" % (ldv.id)))
         for ldd in ldds:
+            i += 1
+            vpro.set_valor(i / tot, "Analizando %s..." % (
+                ldd.abono.numabono))
             p = ldd.producto
             tipo = "PV" # De momento los abonos, más concretamente las LDD, no soportan otra cosa que no sea un (artículo de) ProductoVenta.
             if p not in productos:
-                fila = model.append(None, (p.descripcion, "", "", "", "", "%s:%d" % (tipo, p.id)))
-                productos[p] = [fila, ldv.cantidad]
+                fila = model.append(None, 
+                                    (p.descripcion, 
+                                     "", 
+                                     "", 
+                                     "", 
+                                     "", 
+                                     "%s:%d" % (tipo, p.id)))
+                productos[p] = [fila, ldv.get_cantidad_albaraneada()]
             else:
                 fila = productos[p][0]
-                productos[p][1] += ldv.cantidad
+                productos[p][1] += ldv.get_cantidad_albaraneada()
             cantidad = ldd.cantidad
-            if p.es_bala() or p.es_bigbag() or p.es_bala_cable():
+            if (p.es_bala() or p.es_bigbag() or p.es_bala_cable() 
+                    or p.es_rollo_c() or p.es_caja()):
                 total_kilos += cantidad
             elif p.es_rollo():
                 total_metros += cantidad
             elif p.es_especial():
                 total_otros += cantidad * ldd.precio
-            model.append(fila, ("", utils.float2str(cantidad), 
-                                    ldd.abono.cliente and ldd.abono.cliente.nombre or "", 
-                                    utils.str_fecha(ldd.albaranDeEntradaDeAbono.fecha),
-                                    ldd.albaranDeEntradaDeAbono.numalbaran, 
-                                    "LDD:%d" % (ldd.id)))
-
+            model.append(fila, 
+                    ("", 
+                     utils.float2str(cantidad), 
+                     ldd.abono.cliente and ldd.abono.cliente.nombre or "", 
+                     utils.str_fecha(ldd.albaranDeEntradaDeAbono.fecha),
+                     ldd.albaranDeEntradaDeAbono.numalbaran, 
+                     "LDD:%d" % (ldd.id)))
 
         # Actualizo los totales de los productos en las filas del TreeView
         total_metros_en_kilos_teoricos = 0.0
+        i = 0.0
+        tot = len(productos.keys())
         for p in productos:
+            i += 1
+            vpro.set_valor(i/tot, "Actualizando totales...")
             cantidad = "%s %s" % (utils.float2str(productos[p][1]), p.unidad)
             try:
                 if p.es_rollo():
@@ -216,10 +243,15 @@ class ConsultaVentasPorProducto(Ventana):
                 pass
             fila = productos[p][0]
             model[fila][1] = cantidad
-        self.wids['e_total_otros'].set_text("%s € " % (utils.float2str(total_otros)))
-        self.wids['e_total_kilos'].set_text("%s kg" % (utils.float2str(total_kilos)))
-        self.wids['e_total_metros'].set_text("%s m² (%s kg)" % (utils.float2str(total_metros), 
-                                                                utils.float2str(total_metros_en_kilos_teoricos)))
+        self.wids['e_total_otros'].set_text(
+                "%s € " % (utils.float2str(total_otros)))
+        self.wids['e_total_kilos'].set_text(
+                "%s kg" % (utils.float2str(total_kilos)))
+        self.wids['e_total_metros'].set_text(
+                "%s m² (%s kg)" % (
+                    utils.float2str(total_metros), 
+                    utils.float2str(total_metros_en_kilos_teoricos)))
+        vpro.ocultar()
 
     def set_inicio(self, boton):
         temp = utils.mostrar_calendario(fecha_defecto = utils.parse_fecha(self.wids['e_fechainicio'].get_text()), 
@@ -251,7 +283,7 @@ class ConsultaVentasPorProducto(Ventana):
         for a in albs:
             for ldv in a.lineasDeVenta: # Lo hago así para cargar aquí todo el peso de traer las LDVs, y así aligero el rellenar_tabla.
                 ldvs.append(ldv)
-        vpro.set_valor(0.6, "Analizando facturas y abonos...")
+        vpro.set_valor(0.6, "Analizando albaranes y abonos...")
         adedas = pclases.AlbaranDeEntradaDeAbono.select(pclases.AND(
                             pclases.AlbaranDeEntradaDeAbono.q.fecha >= fini, 
                             pclases.AlbaranDeEntradaDeAbono.q.fecha <= ffin), 
@@ -261,8 +293,8 @@ class ConsultaVentasPorProducto(Ventana):
             for ldd in a.lineasDeDevolucion:
                 ldds.append(ldd)
         vpro.set_valor(0.9, "Actualizando ventana...")
-        self.rellenar_tabla(ldvs, ldds)
         vpro.ocultar()
+        self.rellenar_tabla(ldvs, ldds)
 
     def imprimir(self, boton):
         """

@@ -82,7 +82,8 @@ class ConsultaConsumo(Ventana):
         self.inicio = self.wids['e_fechainicio'].get_text().split('/')
         self.inicio.reverse()
         self.inicio = '/'.join(self.inicio)
-        self.wids['rb_todas'].set_active(True)
+        self.wids['ch_fibra'].set_active(True)
+        self.wids['ch_geotextiles'].set_active(True)
         gtk.main()
 
     def exportar(self, boton):
@@ -188,14 +189,14 @@ class ConsultaConsumo(Ventana):
         linea_gtx, linea_fib = self.get_lineas_produccion()  # @UnusedVariable
         cons_balas = {}
         cons_rollos = {}
+        cons_cemento = {}
         partidas_contadas = []
         balas_contadas = []
         for pdp in pdps:
             vpro.set_valor(i/tot, 'Analizando partes %s...' % (
                 utils.str_fecha(pdp.fecha)))
-            if pdp.es_de_balas() and \
-               (self.wids['rb_todas'].get_active() 
-                       or self.wids['rb_fibra'].get_active()):
+            if (pdp.es_de_balas() and 
+                    self.wids['ch_fibra'].get_active()):
                 # Añado consumos de material adicional y materia prima (ambos 
                 # son ProductoCompra).
                 for c in pdp.consumos:
@@ -208,9 +209,34 @@ class ConsultaConsumo(Ventana):
                                            c.productoCompra.unidad]
                     else:
                         cons_balas[key][1] += c.cantidad
+            elif (pdp.es_de_bolsas() 
+                        and self.wids['ch_embolsado'].get_active()):
+                # Consume materiales (productos de compra).
+                for c in pdp.consumos:
+                    key = "%d:C" % (c.productoCompraID)
+                    if key not in cons_cemento:
+                        cons_cemento[key] = [c.productoCompra.descripcion, 
+                                           c.cantidad, 
+                                           c.productoCompra.id, 
+                                           'C', 
+                                           c.productoCompra.unidad]
+                    else:
+                        cons_cemento[key][1] += c.cantidad
+                # Y también consume fibra en bigbags:
+                for bb in pdp.bigbags:
+                    productoVenta = bb.articulo.productoVenta
+                    key = "%d:V" % (productoVenta.id)
+                    if key not in cons_cemento:
+                        cons_cemento[key] = [
+                                bb.articulo.productoVenta.descripcion, 
+                                bb.articulo.peso_sin, 
+                                bb.articulo.productoVenta.id, 
+                                'V', 
+                                "kg"]
+                    else:
+                        cons_cemento[key][1] += bb.articulo.peso_sin
             elif (pdp.es_de_rollos() and 
-                    (self.wids['rb_todas'].get_active() 
-                     or self.wids['rb_geotextiles'].get_active())):
+                        self.wids['ch_geotextiles'].get_active()):
                 # Añado consumos de material adicional (ProductoCompra).
                 for c in pdp.consumos:
                     key = "%d:C" % (c.productoCompraID)
@@ -277,6 +303,16 @@ class ConsultaConsumo(Ventana):
                                    cantidad, 
                                    cons_rollos[k][2], 
                                    cons_rollos[k][3], 
+                                   media])
+        for k in cons_cemento:
+            cantidad = "%s %s" % (utils.float2str(cons_cemento[k][1], 3), 
+                                  cons_cemento[k][4])
+            media = "%s %s/día" % (utils.float2str(cons_cemento[k][1] / dias), 
+                                   cons_cemento[k][4])
+            self.resultado.append([cons_cemento[k][0], 
+                                   cantidad, 
+                                   cons_cemento[k][2], 
+                                   cons_cemento[k][3], 
                                    media])
         vpro.ocultar()
         self.rellenar_tabla(self.resultado)

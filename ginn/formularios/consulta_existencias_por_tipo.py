@@ -155,10 +155,10 @@ class ConsultaExistenciasPorTipo(Ventana):
                 if pclases.DEBUG:
                     assert round(A + B + C) == round(total), pv.puid  # XXX 
                 fila = (pv.descripcion, 
-                        A, 
-                        B, 
-                        C, 
-                        total, 
+                        utils.float2str(A), 
+                        utils.float2str(B), 
+                        utils.float2str(C), 
+                        utils.float2str(total), 
                         pv.puid)
                 model.append(fila)
                 # Actualizo totales 
@@ -172,7 +172,15 @@ class ConsultaExistenciasPorTipo(Ventana):
                 nomentry = "e_%s_%s" % (tipo_producto, tipo_stock)
                 entry = self.wids[nomentry]
                 total = totales[tipo_stock][tipo_producto]
-                entry.set_text(utils.float2str(total))
+                unidad = "kg"
+                if tipo_producto == "gtx":
+                    unidad = "m²"
+                    if tipo_stock == "total":
+                        total -= totales["C"]["gtx"]    # Los C se miden en kg
+                        # No puedo mezclar con metros. Muestro solo m².
+                    elif tipo_stock == "C":
+                        unidad = "kg"
+                entry.set_text(utils.float2str(total) + " " + unidad)
    
     def exportar(self, boton):
         """

@@ -7140,6 +7140,13 @@ class LineaDeVenta(SQLObject, PRPCTOO, Venta):
         cantidad albaraneada de su producto en ese 
         albarán. Si no, devuelve 0.
         """
+        return self.albaranSalida.agrupar_articulos()[self.id]['cantidad']
+        # TODO: FIXME: URGENTE: PORASQUI: 
+        # Optimizar esto de abajo para que haga lo de 
+        # arriba. Porque en el caso de la LDV 206762 esta función daba 
+        # 164.4 y no 73.2, que es lo correcto. Y en el fondo es porque 
+        # el artículo es un X (rollo clase B) que tiene 73.2 en realidad pero 
+        # el estándar de su producto es 164.4.
         res = 0
         if self.albaranSalidaID != None:
             producto = self.producto
