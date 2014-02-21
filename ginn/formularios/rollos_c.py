@@ -138,6 +138,9 @@ class RollosC(Ventana):
         if data:
             from formularios import reports
             reports.abrir_pdf(geninformes.etiquetasRollosCEtiquetadora(data))
+            for r in rollos:    # XXX: Anoto que se ha impreso la etiqueta.
+                pclases.Auditoria.modificado(r, self.usuario, __file__, 
+                        "Impresión de etiqueta para rollo %s" % r.get_info())
 
     def borrar_rollos(self, rollos):
         """

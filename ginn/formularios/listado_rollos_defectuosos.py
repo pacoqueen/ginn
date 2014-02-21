@@ -397,12 +397,17 @@ class ListadoRollosDefectuosos(Ventana):
                 for r in temp:
                     elemento, fetiqueta = build_etiqueta(r)
                     rollos.append(elemento)
+                    pclases.Auditoria.modificado(r, self.usuario, __file__, 
+                      "Impresión de etiqueta para rollo %s" % r.get_info())
                 reports.abrir_pdf(geninformes.etiquetasRollosEtiquetadora(
                     rollos, mostrar_marcado, hook = fetiqueta))    
                     # Etiquetas térmicas pequeñas.
         else:
             utils.dialogo_info(titulo = "USUARIO SIN PRIVILEGIOS", 
-                               texto = "Para poder crear etiquetas de rollos existentes es necesario\nque tenga permiso de escritura sobre la ventana actual.", 
+                               texto = "Para poder crear etiquetas de rollos"
+                                       " existentes es necesario\nque tenga "
+                                       "permiso de escritura sobre la ventana"
+                                       " actual.", 
                                padre = self.wids['ventana'])
 
 

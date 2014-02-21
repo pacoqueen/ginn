@@ -582,6 +582,8 @@ class ListadoRollos(Ventana):
                     else:
                         elemento, fetiqueta = build_etiqueta(r)
                         rollos.append(elemento)
+                    pclases.Auditoria.modificado(r, self.usuario, __file__, 
+                      "Impresión de etiqueta para rollo %s" % r.get_info())
                     if rollos:
                         reports.abrir_pdf(
                             geninformes.etiquetasRollosEtiquetadora(

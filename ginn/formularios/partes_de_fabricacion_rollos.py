@@ -30,7 +30,9 @@
 ## NOTAS:
 ##  
 ## ----------------------------------------------------------------
-##  
+## TODO: No se pueden crear rollos B aquí si no es desde la línea 
+## con la ventana de pesaje automático. Ya no se permite hacerlo 
+## manualmente marcando con el botón derecho y tal. FIXME
 ###################################################################
 ## Changelog:
 ## 15 de noviembre de 2005 -> Inicio
@@ -223,6 +225,8 @@ def imprimir_etiqueta_de_rollo_defectuoso(rollo):
         return
     reports.abrir_pdf(geninformes.etiquetasRollosEtiquetadora([elemento], 
                                                                False))
+    pclases.Auditoria.modificado(rollo, None, __file__, 
+                    "Impresión de etiqueta para rollo %s" % rollo.get_info())
     
 
 class PartesDeFabricacionRollos(Ventana):
@@ -2963,6 +2967,8 @@ class PartesDeFabricacionRollos(Ventana):
             rollos = []
             fetiqueta = None
             for r in temp:
+                pclases.Auditoria.modificado(r, self.usuario, __file__, 
+                    "Impresión de etiqueta para rollo %s" % r.get_info())
                 elemento, fetiqueta = build_etiqueta(r)
                 rollos.append(elemento)
             if boton.name == "b_etiquetas":
@@ -3648,7 +3654,8 @@ def imprimir_etiqueta(articulo, marcado_ce, ventana_parte, defectuoso = False):
             partida = articulo.rollo.partida.codigo
             if ventana_parte.ultima_etiqueta == None:
                 kilos_fibra = 5500.0 * (1 - articulo.parteDeProduccion.merma) # OJO: Harcoded
-                kilos_por_rollo = (campos.metros_cuadrados * campos.gramos) / 1000.0
+                kilos_por_rollo = (
+                        (campos.metros_cuadrados * campos.gramos) / 1000.0)
                 rollos_parte = int(kilos_fibra / kilos_por_rollo)
                 ultima = articulo.rollo.numrollo + rollos_parte
                     # Mando a imprimir todos los rollos de la partida a no ser 
@@ -3681,6 +3688,14 @@ def imprimir_etiqueta(articulo, marcado_ce, ventana_parte, defectuoso = False):
             reports.abrir_pdf(geninformes.etiquetasRollosEtiquetadora(rollos, 
                                                                 marcado_ce, 
                                                                 fetiqueta))
+            for r in rollos:
+                pclases.Auditoria.modificado(articulo, None, __file__, 
+                    "Impresión de %d etiquetas para producto %s. Rollo %s."
+                    "Rollo que inició la serie: %s" % (
+                        len(rollos), 
+                        r['descripcion'], 
+                        r['codigo39'], 
+                        articulo.codigo))
 
 def recv_serial(com, ventana, l_peso, ventana_parte, ch_marcado, e_numrollo, 
                 ch_defectuoso, objeto_ventana_parte):
