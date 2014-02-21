@@ -1366,6 +1366,10 @@ class AlbaranesDeSalida(Ventana):
             else:
                 bultos = len(articulos)     # Bultos añadidos
             ldv = self.__ldvs[idldv]['ldv']
+            # Un "porsiaca":
+            if ldv.cantidad is None:
+                ldv.cantidad = 0.0
+                ldv.sync()
             cantidad = ldv.cantidad 
             cantidad_servida = self.cantidad_anadida_a_ldv(ldv)
             iterpadre = model.append(None, (bultos, 

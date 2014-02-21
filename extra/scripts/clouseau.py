@@ -202,7 +202,11 @@ def dump_deltas(deltas):
         # Aquí voy a filtrar y me quito los que no son productos de venta
         es_producto_de_venta = False
         try:
-            objeto = pclases.ProductoVenta.selectBy(descripcion = p)[0]
+            try:
+                objeto = pclases.ProductoVenta.selectBy(descripcion = p)[0]
+            except: # DataError:
+                p = p.decode("latin1").encode("utf-8")
+                objeto = pclases.ProductoVenta.selectBy(descripcion = p)[0]
             if objeto:
                 es_producto_de_venta = True
         except IndexError:

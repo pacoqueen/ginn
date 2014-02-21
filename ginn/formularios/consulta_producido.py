@@ -125,8 +125,12 @@ class ConsultaProducido(Ventana):
         self.inicio = '/'.join(self.inicio)
         self.wids['rb_todas'].set_active(True)
         self.wids['im_graph'].set_visible(pychart_available)
+        self.wids['ventana'].set_title(self.wids['ventana'].get_title() 
+                + "A + B")
         if not self.usuario or self.usuario.id == 1:
             self.wids['ch_c'].set_property("visible", True)
+            self.wids['ventana'].set_title(self.wids['ventana'].get_title() 
+                + " (+ C opcional)")
         gtk.main()
 
     def exportar(self, boton):

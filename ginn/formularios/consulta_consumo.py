@@ -168,10 +168,10 @@ class ConsultaConsumo(Ventana):
         """
         PDP = pclases.ParteDeProduccion
         if not self.inicio:
-            pdps = PDP.select(PDP.q.fecha <= self.fin, orderBy = 'fecha')
+            pdps = PDP.select(PDP.q.fecha < self.fin, orderBy = 'fecha')
         else:
             pdps = PDP.select(pclases.AND(PDP.q.fecha >= self.inicio, 
-                                          PDP.q.fecha <= self.fin), 
+                                          PDP.q.fecha < self.fin), 
                               orderBy='fecha')
         fechainicio = mx.DateTime.DateTimeFrom(
                 day = int(self.inicio.split("/")[2]), 

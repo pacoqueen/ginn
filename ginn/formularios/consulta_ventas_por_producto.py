@@ -290,7 +290,7 @@ class ConsultaVentasPorProducto(Ventana):
         vpro.set_valor(0.3, "Buscando albaranes de salida...")
         albs = pclases.AlbaranSalida.select(pclases.AND(
                                     pclases.AlbaranSalida.q.fecha >= fini, 
-                                    pclases.AlbaranSalida.q.fecha <= ffin), 
+                                    pclases.AlbaranSalida.q.fecha < ffin), 
                                             orderBy = "fecha")
         ldvs = []
         for a in albs:
@@ -299,7 +299,7 @@ class ConsultaVentasPorProducto(Ventana):
         vpro.set_valor(0.6, "Analizando albaranes y abonos...")
         adedas = pclases.AlbaranDeEntradaDeAbono.select(pclases.AND(
                             pclases.AlbaranDeEntradaDeAbono.q.fecha >= fini, 
-                            pclases.AlbaranDeEntradaDeAbono.q.fecha <= ffin), 
+                            pclases.AlbaranDeEntradaDeAbono.q.fecha < ffin), 
                                                         orderBy = "fecha")
         ldds = []
         for a in adedas:
