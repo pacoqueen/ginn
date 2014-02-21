@@ -11599,6 +11599,9 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
     
     es_rolloC = es_rollo_c
 
+    def es_clase_c(self):
+        return self.es_bala_cable() or self.es_rollo_c()
+
     def es_bala(self):
         return (self.camposEspecificosBala != None and not self.es_bigbag() 
                 and not self.es_bala_cable() and not self.es_caja())

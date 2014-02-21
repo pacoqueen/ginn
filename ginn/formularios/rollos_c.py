@@ -98,7 +98,7 @@ class RollosC(Ventana):
                         mensaje = "%srollos_c::__init__ -> CamposEspecificosRollo ID %d sin productosVenta no se pudo eliminar. Excepción: %s" % (self.usuario and self.usuario.usuario + ": " or "", cer.id, msg)
                         print mensaje
                         self.logger.error(mensaje)
-        productos_gtxc.sort(lambda p1, p2: (p1[-1] < p2[-1] and -1) or (p1[-1] > p2[-1] and 1) or 0)
+        productos_gtxc.sort(lambda p1, p2: p1[0] - p2[0])
         utils.rellenar_lista(self.wids['cbe_producto'], productos_gtxc)
         if len(productos_gtxc) > 0:
             utils.combo_set_from_db(self.wids['cbe_producto'], 
