@@ -255,11 +255,11 @@ class ConsultaProducido(Ventana):
         """
         PDP = pclases.ParteDeProduccion
         if not self.inicio:
-            pdps = PDP.select(PDP.q.fecha <= self.fin, 
+            pdps = PDP.select(PDP.q.fecha < self.fin, 
                               orderBy = 'fechahorainicio')
         else:
             pdps = PDP.select(pclases.AND(PDP.q.fecha >= self.inicio, 
-                                          PDP.q.fecha <= self.fin), 
+                                          PDP.q.fecha < self.fin), 
                               orderBy = 'fechahorainicio')
         vpro = ventana_progreso.VentanaProgreso(padre = self.wids['ventana'])
         tot = pdps.count()
@@ -424,12 +424,12 @@ class ConsultaProducido(Ventana):
     def procesar_rollos_c(self, prod_rollos):
         if not self.inicio:
             rollosc = pclases.RolloC.select(
-                    pclases.RolloC.q.fechahora <= self.fin,
+                    pclases.RolloC.q.fechahora < self.fin,
                               orderBy = 'fechahora')
         else:
             rollosc = pclases.RolloC.select(pclases.AND(
                                 pclases.RolloC.q.fechahora >= self.inicio, 
-                                pclases.RolloC.q.fechahora <= self.fin), 
+                                pclases.RolloC.q.fechahora < self.fin), 
                               orderBy = 'fechahora')
         for rolloc in rollosc:
             key = rolloc.productoVenta.puid
@@ -460,18 +460,15 @@ class ConsultaProducido(Ventana):
     def procesar_balas_c(self, prod_balas):
         if not self.inicio:
             balasc = pclases.BalaCable.select(
-                    pclases.BalaCable.q.fechahora <= self.fin,
+                    pclases.BalaCable.q.fechahora < self.fin,
                               orderBy = 'fechahora')
         else:
             balasc = pclases.BalaCable.select(pclases.AND(
                                 pclases.BalaCable.q.fechahora >= self.inicio, 
-                                pclases.BalaCable.q.fechahora <= self.fin), 
+                                pclases.BalaCable.q.fechahora < self.fin), 
                               orderBy = 'fechahora')
-        print "aaaaaaaaaaaaaaaaaaaaa", balasc.count()
         for balac in balasc:
             key = balac.productoVenta.puid
-            if key == pclases.ProductoVenta.selectBy(descripcion = "Fibra de arranque NATURAL")[0]:
-                print "ASASAAAAAAAAAAAAAAAAAAAAAAAA", key
             try:
                 cantidad = balac.articulo.peso_sin
                 prod_balas[key][1] += cantidad

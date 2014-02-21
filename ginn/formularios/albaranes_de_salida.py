@@ -1143,6 +1143,8 @@ class AlbaranesDeSalida(Ventana):
         idldv = self.wids['tv_ldvs'].get_model()[path][-1]
         #ldv = pclases.LineaDeVenta.get(idldv)
         ldv = pclases.getObjetoPUID(idldv)
+        if pclases.DEBUG: 
+            print "Soy redistribuir_ldv. Vamos con", ldv.producto.descripcion
         if (not self.objeto.bloqueado and 
               ((ldv.facturaVenta == None or not ldv.facturaVenta.bloqueada) 
                 or (ldv.prefactura == None or not ldv.prefactura.bloqueada))):
@@ -2666,16 +2668,20 @@ class AlbaranesDeSalida(Ventana):
                     self.logger.error(txterror)
             if bultos == 0:
                 bultos = self.contar_bultos_de_ldvs(prods, producto)
-            try:
-                cantidad_anadida = self.cantidad_anadida(
+            if es_venta_c(prods[producto][0]):
+                cantidad_anadida = 0    # CWT: De este modo ignoro los 
+                                        # artículos y uso la cantidad tecleada.
+            else:
+                try:
+                    cantidad_anadida = self.cantidad_anadida(
                                                 prods[producto][0].producto)
-            except Exception, msg:
-                txterror = "albaranes_de_salida::preparar_llamada_imprimir"\
-                           " -> Excepción al contar cantidad añadida al "\
-                           "imprimir el albarán: %s" % (msg)
-                self.logger.debug(txterror)
-                print txterror
-                cantidad_anadida = 0
+                except Exception, msg:
+                    txterror = "albaranes_de_salida::preparar_llamada_imprimir"\
+                               " -> Excepción al contar cantidad añadida al "\
+                               "imprimir el albarán: %s" % (msg)
+                    self.logger.debug(txterror)
+                    print txterror
+                    cantidad_anadida = 0
             # Si la cantidad añadida en artículos servidos es 0 y el 
             # producto es un producto especial o un producto de compra,
             # la cantidad servida que aparecerá impresa es la de las LDVs 
@@ -2685,6 +2691,7 @@ class AlbaranesDeSalida(Ventana):
                  or (hasattr(producto, "camposEspecificosEspecialID") 
                      and producto.camposEspecificosEspecialID != None
                     )
+                 or es_venta_c(producto)
                 )
                ):
                 for ldv in prods[producto]:
@@ -2858,11 +2865,11 @@ class AlbaranesDeSalida(Ventana):
                   "(self.cantidad_anadida_a_ldv(ldv)..."
             antes = time.time()
         for ldv in albaran.lineasDeVenta:
-            if ((ldv.productoVentaID != None 
-                 and ldv.productoVenta.articulos != []) 
+            if ((ldv.productoVentaID and ldv.productoVenta.articulos) 
                 and (self.usuario != None 
-                     and self.usuario.nivel >= 3 
-                     and not self.objeto.bloqueado)):
+                     and self.usuario.nivel >= 1 
+                     and not self.objeto.bloqueado)
+                and not es_venta_c(ldv)):
                 # DONE: Así consigo que se imprima la cantidad del pedido en 
                 #       productos "especiales" (cables de fibra y cosas 
                 #       así) que no tienen artículos en la BD porque nunca 
@@ -3253,7 +3260,19 @@ class AlbaranesDeSalida(Ventana):
             for idldv in self.__ldvs:
                 if (round(self.__ldvs[idldv]['ldv'].cantidad, 3) 
                         != round(self.__ldvs[idldv]['cantidad'], 3)): 
-                    if self.__ldvs[idldv]['cantidad'] > 0:  
+                    if (self.__ldvs[idldv]['cantidad'] > 0
+                        # CWT: Si son artículos clase C, como desde que se 
+                        # pesaron hasta que se venden han podido variar de 
+                        # peso (agua, plásticos, etc.), hay que respetar lo 
+                        # que ha pesado el camión de verdad, que es lo que 
+                        # ha tecleado el usuario como cantidad pedida y no lo 
+                        # que dicen los pesos de los artículos. Pero los 
+                        # artículos deben descontarse igualmente para que no 
+                        # me descuadren los bultos en el almacén. Otra cosa 
+                        # es que después las cantidades facturadas no 
+                        # coincidan con las salidas de almacén. Pero eso ya 
+                        # lo tienen contemplado y dicen que no les importa.
+                            and not es_venta_c(self.__ldvs[idldv]['ldv'])):
                         # TODO: Si la cantidad AÑADIDA no es cero, ajusto las 
                         #       cantidades. Si es 0 prefiero dejar la cantidad 
                         #       de la LDV original porque es posible que sea 
@@ -4224,6 +4243,8 @@ class AlbaranesDeSalida(Ventana):
                     str_formapago = pedido.formaDePago.toString(cliente)
                 except (AttributeError, IndexError):
                     str_formapago = factura.cliente and factura.cliente.textoformacobro or ""
+            else:   # Albarán sin pedidos. No debería, pero puede pasar.
+                str_formapago = factura.cliente.get_texto_forma_cobro()
             for incr in vtos:
                 fechavto = mx.DateTime.DateFrom(factura.fecha) + (incr * mx.DateTime.oneDay)
                 vto = pclases.VencimientoCobro(fecha = fechavto,
@@ -4740,6 +4761,25 @@ def comprobar_existencias_producto(ldp, ventana_padre, cantidad, almacen):
         a_servir = cantidad
     return a_servir
  
+def es_venta_c(ldv_o_producto):
+    """
+    Comprueba si la línea de venta es de un producto C con artículos C. Porque 
+    en ese caso no debería ajustarse la cantidad de la línea con el peso 
+    real de sus artículos.
+    """
+    if isinstance(ldv_o_producto, pclases.LineaDeVenta):
+        producto = ldv_o_producto.productoVenta
+    else:
+        producto = ldv_o_producto
+    try:
+        res = (producto.es_bala_cable() 
+                or producto.es_rollo_c())
+    except AttributeError:
+        res = False
+    if pclases.DEBUG:
+        print "albaranes_de_salida::es_venta_c ->", res
+    return res
+
 def select_lineas_pedido(pedido, padre = None):
     """
     Muestra las líneas del pedido pendientes de servir y permite al usuario 
