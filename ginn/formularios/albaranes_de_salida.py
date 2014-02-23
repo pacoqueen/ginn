@@ -1297,6 +1297,7 @@ class AlbaranesDeSalida(Ventana):
                 else:
                     cant_servida = round(ldvs[idldv]['ldv'].cantidad, 3)
                     cant_added = round(ldvs[idldv]['cantidad'], 3)
+                    # TODO: Líneas con producto C en otro color. O en verde directamente.
                     if cant_servida > cant_added:
                         color = "yellow"
                     if cant_servida == cant_added: 
