@@ -268,6 +268,9 @@ class AlbaranesDeSalida(Ventana):
             ws.append(self.wids['dwg_verde'].window)
             ws.append(self.wids['dwg_azul'].window)
             ws.append(self.wids['dwg_RosyBrown3'].window)
+            # TODO: Falta el gris de los productos C, que no ajustan 
+            # cantidades según bultos agregados. Pero el glade-gtk2 
+            # me da una violación de segmento.
             cs = ("yellow", "orange", "red", "white", "green", "blue", 
                   "RosyBrown3")
             for i in xrange(len(cs)):   # Debe haber otra forma más 
@@ -1294,10 +1297,14 @@ class AlbaranesDeSalida(Ventana):
                 if isinstance(ldvs[idldv]['ldv'].producto, 
                               pclases.ProductoCompra):
                     color = "PaleGreen"
+                elif (isinstance(ldvs[idldv]['ldv'].producto, 
+                				pclases.ProductoVenta) 
+                	  and ldvs[idldv]['ldv'].producto.es_clase_c()):
+                    # DONE: Líneas con producto C en otro color. O en verde directamente.
+                	color = "light grey"
                 else:
                     cant_servida = round(ldvs[idldv]['ldv'].cantidad, 3)
                     cant_added = round(ldvs[idldv]['cantidad'], 3)
-                    # TODO: Líneas con producto C en otro color. O en verde directamente.
                     if cant_servida > cant_added:
                         color = "yellow"
                     if cant_servida == cant_added: 
