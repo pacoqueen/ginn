@@ -5995,7 +5995,8 @@ class Rollo(SQLObject, PRPCTOO):
 
     def get_peso_teorico(self):
         """
-        Devuelve el peso teórico del rollo (ancho * largo * densidad) en kilogramos.
+        Devuelve el peso teórico del rollo (ancho * largo * densidad) en 
+        kilogramos.
         """
         return self.articulo.productoVenta.camposEspecificosRollo.peso_teorico
     
