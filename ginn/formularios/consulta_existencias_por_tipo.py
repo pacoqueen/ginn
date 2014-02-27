@@ -56,17 +56,24 @@ class ConsultaExistenciasPorTipo(Ventana):
             cols = [
                 ('Producto', 'gobject.TYPE_STRING', False, True, True, None),#0
                 ('A (Kg)', 'gobject.TYPE_STRING', False, True, False, None),
+                ('A (#)', 'gobject.TYPE_STRING', False, True, False, None),
                 ('B (Kg)', 'gobject.TYPE_STRING', False, True, False, None),
+                ('B (#)', 'gobject.TYPE_STRING', False, True, False, None),
                 ('C (Kg)', 'gobject.TYPE_STRING', False, True, False, None),
-                ('Total', 'gobject.TYPE_STRING', False, True, False, None),
+                ('C (#)', 'gobject.TYPE_STRING', False, True, False, None),
+                ('Total (Kg)', 'gobject.TYPE_STRING', False, True, False, None),
+                ('Total (#)', 'gobject.TYPE_STRING', False, True, False, None),
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None)]#(5)
             if nomtv == "tv_gtx":
-                cols.insert(1, 
+                cols.insert(2, 
                   ('A (m²)', 'gobject.TYPE_STRING', False, True, False, None))
-                cols.insert(3, 
-                  ('B (m²)', 'gobject.TYPE_STRING', False, True, False, None))
                 cols.insert(5, 
+                  ('B (m²)', 'gobject.TYPE_STRING', False, True, False, None))
+                cols.insert(8, 
                   ('C (m²)', 'gobject.TYPE_STRING', False, True, False, None))
+                cols.insert(11, 
+                  ('Total (m²)', 
+                      'gobject.TYPE_STRING', False, True, False, None))
             tv = self.wids[nomtv]
             utils.preparar_listview(tv, cols)
             tv.connect("row-activated", self.abrir_objeto)
@@ -138,13 +145,18 @@ class ConsultaExistenciasPorTipo(Ventana):
             almacen = None
         vpro = VentanaProgreso(padre = self.wids['ventana'])
         vpro.mostrar()
-        totales = {'A':     {}, 
-                   'B':     {}, 
-                   'C':     {}, 
-                   'total': {}, 
-                   'mA':    {}, 
-                   'mB':    {}, 
-                   'mC':    {}
+        totales = {'kgA':     {}, 
+                   'kgB':     {}, 
+                   'kgC':     {}, 
+                   'kgTotal': {}, 
+                   'mA':      {}, 
+                   'mB':      {}, 
+                   'mC':      {}, 
+                   'mTotal':  {}, 
+                   '#A':      {}, 
+                   '#B':      {}, 
+                   '#C':      {}, 
+                   '#Total':  {}
                   }
         i = 0.0
         tot = sum([len(self.productos[k]) for k in self.productos.keys()])
@@ -158,35 +170,71 @@ class ConsultaExistenciasPorTipo(Ventana):
                 vpro.set_valor(i / tot, 
                                "Contando existencias de %s (%d) [%s]..." % (
                                     pv.nombre, pv.id, tipo))
-                A = pv.get_stock_A(almacen = almacen)
-                B = pv.get_stock_B(almacen = almacen)
-                C = pv.get_stock_C(almacen = almacen)
-                total = pv.get_stock(almacen = almacen, 
+                kgA = pv.get_stock_A(almacen = almacen)
+                kgB = pv.get_stock_B(almacen = almacen)
+                kgC = pv.get_stock_C(almacen = almacen)
+                bultosA = pv.get_existencias_A(almacen = almacen)
+                bultosB = pv.get_existencias_B(almacen = almacen)
+                bultosC = pv.get_existencias_C(almacen = almacen)
+                total_kg = pv.get_stock(almacen = almacen, 
+                                     contar_defectuosos = True)
+                total_bultos = pv.get_existencias(almacen = almacen, 
                                      contar_defectuosos = True)
                 if pclases.DEBUG:
-                    assert round(A + B + C) == round(total), pv.puid  # XXX 
-                fila = [pv.descripcion, 
-                        utils.float2str(A), 
-                        utils.float2str(B), 
-                        utils.float2str(C), 
-                        utils.float2str(total), 
-                        pv.puid]
-                if nombre_tv == "tv_gtx":
-                    mA = A
-                    mB = B
-                    # El C no lo cambio porque siempre es en kilos
-                    #mC = C
-                    mC = 0.0
-                    # TODO: PORASQUI: No tengo método en pclases para existencias de rollos en kilos y por tipo. Grrrr!!!!
-                    A = 0.0
-                    B = 0.0
-                    fila.insert(2, utils.float2str(A))
-                    fila.insert(4, utils.float2str(B))
-                    fila.insert(6, utils.float2str(C))
-                    actualizar_totales(totales, A, B, C, total, tipo, 
-                                       0.0, 0.0, 0.0)
+                    assert round(kgA + kgB + kgC) == round(
+                            total_kg), pv.puid  # XXX 
+                    # Esto de arriba, aunque mezcle metros con kilos, no 
+                    # debe fallar. Ya que en el total de un producto C, 
+                    # A y B se quedan a 0.0. Y al contrario. Si el producto 
+                    # no es C, A y B valdrán algo y C siempre es 0.
+                    assert round(bultosA + bultosB + bultosC) == round(
+                            total_bultos), pv.puid  # XXX 
+                if nombre_tv != "tv_gtx":
+                    fila = [pv.descripcion, 
+                            utils.float2str(kgA), 
+                            utils.int2str(bultosA), 
+                            utils.float2str(kgB), 
+                            utils.int2str(bultosB), 
+                            utils.float2str(kgC), 
+                            utils.int2str(bultosC), 
+                            utils.float2str(total_kg), 
+                            utils.int2str(total_bultos), 
+                            pv.puid]
+                    actualizar_totales(totales, tipo, 
+                            kgA, kgB, kgC, total_kg, 
+                            bultosA, bultosB, bultosC, total_bultos)
                 else:
-                    actualizar_totales(totales, A, B, C, total, tipo)
+                    # Los metros ya los tenía calculados. Es lo que devuelve 
+                    # el get_stock. Solo que arriba lo he llamado kg*
+                    metrosA = kgA
+                    metrosB = kgB
+                    metrosC = "N/A" # No aplicable. Solo se mide en kilos.
+                    kilosA = 0.0
+                    kilosB = 0.0
+                    kilosC = kgC    # Ya estaba calculado
+                    total_kilos = kilosA + kilosB + kilosC
+                    total_metros = metrosA + metrosB
+                    # total bultos ya se calcula arriba.
+                    # TODO: PORASQUI: No tengo método en pclases para existencias de rollos en kilos y por tipo. Grrrr!!!!
+                    fila = [pv.descripcion, 
+                            utils.float2str(kilosA), 
+                            utils.float2str(metrosA), 
+                            utils.int2str(bultosA), 
+                            utils.float2str(kilosB), 
+                            utils.float2str(metrosB), 
+                            utils.int2str(bultosB), 
+                            utils.float2str(kilosC), 
+                            metrosC,  # No es aplicable. Solo kg. No m² en C.
+                            utils.int2str(bultosC), 
+                            utils.float2str(total_kilos), 
+                            utils.float2str(total_metros), 
+                            utils.int2str(total_bultos), 
+                            pv.puid]
+                    actualizar_totales(totales, tipo, 
+                            kgA, kgB, kgC, total_kilos, 
+                            bultosA, bultosB, bultosC, total_bultos, 
+                            metrosA, metrosB, 0.0, total_metros)
+                        # m² de C es "N/A". Le paso un 0 aquí para que no pete.
                 model.append(fila)
         vpro.ocultar()
         return totales
@@ -200,15 +248,7 @@ class ConsultaExistenciasPorTipo(Ventana):
                 except KeyError:
                     continue    # TODO: Crear el total para Kg geotextiles
                 total = totales[tipo_stock][tipo_producto]
-                unidad = "kg"
-                if tipo_producto == "gtx":
-                    unidad = "m²"
-                    if tipo_stock == "total":
-                        total -= totales["C"]["gtx"]    # Los C se miden en kg
-                        # No puedo mezclar con metros. Muestro solo m².
-                    elif tipo_stock == "C":
-                        unidad = "kg"
-                entry.set_text(utils.float2str(total) + " " + unidad)
+                entry.set_text(utils.float2str(total, autodec = True))
    
     def exportar(self, boton):
         """
@@ -254,7 +294,8 @@ class ConsultaExistenciasPorTipo(Ventana):
             titulo += " (%s)" % almacen.nombre
         except AttributeError:
             pass
-        totales = [1, 2, 3, 4]
+        # TODO: Probar.
+        totales = range(1, len(tv.get_model().get_n_columns()-1))
         extra_data = []
         reports.abrir_pdf(treeview2pdf(tv, 
                                        titulo = titulo, 
@@ -264,23 +305,31 @@ class ConsultaExistenciasPorTipo(Ventana):
                                        extra_data = extra_data))
 
 
-def actualizar_totales(totales, A, B, C, total, tipo_de_producto, 
-                       metros_a = None, metros_b = None, metros_c = None):
+def actualizar_totales(totales, tipo_de_producto, kgA, kgB, kgC, kg_total, 
+                       bultosA, bultosB, bultosC, bultos_total, 
+                       metrosA = None, metrosB = None, metrosC = None, 
+                       metros_total = None):
     """
     Actualiza el diccionario de totales.
     tipo_de_producto es 'gtx', 'fibra' o 'cemento'.
-    totales es un diccionario organizado por tipo de existencias (A, B, C o 
-    total).
-    A, B, C y total son las existencias en sí con las que se actualizará el 
-    diccionario en función del tipo de existencias y del tipo de producto.
+    totales es un diccionario organizado por tipo de existencias (kgA, kgB, 
+    kgC, kgTotal, etc.) y dentro de éstas, por tipo de producto (fibra, 
+    gtx o cemento).
+    kgA, kgB, kgC y total son las existencias en sí con las que se actualizará 
+    el diccionario en función del tipo de existencias y del tipo de producto.
     """
-    for tipo_de_stock, stock_de_ese_tipo in (('A', A), 
-                                             ('B', B), 
-                                             ('C', C), 
-                                             ('total', total), 
-                                             ('mA', metros_a), 
-                                             ('mB', metros_b), 
-                                             ('mC', metros_c)):
+    for tipo_de_stock, stock_de_ese_tipo in (('kgA', kgA), 
+                                             ('kgB', kgB), 
+                                             ('kgC', kgC), 
+                                             ('kgTotal', kg_total), 
+                                             ('mA', metrosA), 
+                                             ('mB', metrosB), 
+                                             ('mC', metrosC), 
+                                             ('mTotal', metros_total), 
+                                             ('#A', bultosA), 
+                                             ('#B', bultosB), 
+                                             ('#C', bultosC), 
+                                             ('#Total', bultos_total)):
         if stock_de_ese_tipo is None:
             continue
         try:
