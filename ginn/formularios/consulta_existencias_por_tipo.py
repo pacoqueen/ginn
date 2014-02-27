@@ -209,13 +209,12 @@ class ConsultaExistenciasPorTipo(Ventana):
                     metrosA = kgA
                     metrosB = kgB
                     metrosC = "N/A" # No aplicable. Solo se mide en kilos.
-                    kilosA = 0.0
-                    kilosB = 0.0
+                    kilosA = pv.get_stock_kg_A(almacen = almacen)
+                    kilosB = pv.get_stock_kg_B(almacen = almacen)
                     kilosC = kgC    # Ya estaba calculado
                     total_kilos = kilosA + kilosB + kilosC
                     total_metros = metrosA + metrosB
                     # total bultos ya se calcula arriba.
-                    # TODO: PORASQUI: No tengo método en pclases para existencias de rollos en kilos y por tipo. Grrrr!!!!
                     fila = [pv.descripcion, 
                             utils.float2str(kilosA), 
                             utils.float2str(metrosA), 
@@ -231,7 +230,7 @@ class ConsultaExistenciasPorTipo(Ventana):
                             utils.int2str(total_bultos), 
                             pv.puid]
                     actualizar_totales(totales, tipo, 
-                            kgA, kgB, kgC, total_kilos, 
+                            kilosA, kilosB, kilosC, total_kilos, 
                             bultosA, bultosB, bultosC, total_bultos, 
                             metrosA, metrosB, 0.0, total_metros)
                         # m² de C es "N/A". Le paso un 0 aquí para que no pete.
@@ -243,10 +242,7 @@ class ConsultaExistenciasPorTipo(Ventana):
         for tipo_stock in totales:
             for tipo_producto in totales[tipo_stock]:
                 nomentry = "e_%s_%s" % (tipo_producto, tipo_stock)
-                try:
-                    entry = self.wids[nomentry]
-                except KeyError:
-                    continue    # TODO: Crear el total para Kg geotextiles
+                entry = self.wids[nomentry]
                 total = totales[tipo_stock][tipo_producto]
                 entry.set_text(utils.float2str(total, autodec = True))
    
@@ -294,8 +290,7 @@ class ConsultaExistenciasPorTipo(Ventana):
             titulo += " (%s)" % almacen.nombre
         except AttributeError:
             pass
-        # TODO: Probar.
-        totales = range(1, len(tv.get_model().get_n_columns()-1))
+        totales = range(1, len(tv.get_model().get_n_columns())-1)
         extra_data = []
         reports.abrir_pdf(treeview2pdf(tv, 
                                        titulo = titulo, 

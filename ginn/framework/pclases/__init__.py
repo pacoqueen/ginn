@@ -12906,7 +12906,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                 en_almacen.append(rd)
         return SQLlist(en_almacen)
 
-    def _get_articulos_en_fecha_en_almacen(self, fecha, almacen = None, 
+    def _get_articulos_en_fecha_en_almacen(self, fecha = mx.DateTime.today(), 
+                                           almacen = None, 
                                            tipo = None):
         """
         Devuelve una lista de artículos que se encontraban en un almacén 
@@ -12918,6 +12919,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         """
         A = Articulo
         PDP = ParteDeProduccion
+        if not fecha:
+            fecha = mx.DateTime.today()
         clauses = [A.q.parteDeProduccionID == PDP.q.id, 
                    PDP.q.fecha < fecha + mx.DateTime.oneDay, 
                    A.q.productoVentaID == self.id]
@@ -13516,6 +13519,61 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                                                 fecha = hasta, 
                                                 almacen = almacen)
         return res
+
+    def get_stock_kg_A(self, hasta = None, forzar = False, actualizar = True, 
+                       contar_defectuosos = False, almacen = None):
+        """
+        Devuelve el stock en kg de clase A del producto de venta.
+        """
+        if self.es_rollo():
+            # No cuento rollos defecuosos, que por definición son B.
+            articulos = self._get_articulos_en_fecha_en_almacen(
+                    hasta, almacen, tipo = Rollo)
+            # XXX: No cuento peso_sin (que cuadraría con la producción) porque 
+            # a la hora de vender y pesar la mercancía, se hace con embalaje.
+            res = sum([a.peso for a in articulos if a.es_clase_a()])
+            # Pero de todas maneras filtro aquí por si se ha colado un B como 
+            # rollo normal (no RolloDefectuoso)
+        else:
+            # Los rollos A y B son los únicos que se cuentan en m². Lo demás
+            # en Kg. Así que paso la llamada a la original.
+            res = self.get_stock_A(hasta, forzar, actualizar, 
+                                   contar_defectuosos, almacen)
+        return res
+    
+    def get_stock_kg_B(self, hasta = None, forzar = False, actualizar = True, 
+                       contar_defectuosos = False, almacen = None):
+        """
+        Devuelve el stock en kg de clase B del producto de venta.
+        """
+        # TODO: Esto va a tardar...
+        if self.es_rollo():
+            # Aunque en teoría todo lo B está en RolloDefectuoso, ya nos vamos 
+            # conociendo...
+            articulos1 = self._get_articulos_en_fecha_en_almacen(
+                    hasta, almacen, tipo = Rollo)
+            articulos2 = self._get_articulos_en_fecha_en_almacen(
+                    hasta, almacen, tipo = RolloDefectuoso)
+            # XXX: No cuento peso_sin (que cuadraría con la producción) porque 
+            # a la hora de vender y pesar la mercancía, se hace con embalaje.
+            res = sum([a.peso for a in articulos1 if a.es_clase_b()])
+            res += sum([a.peso for a in articulos2 if a.es_clase_b()])
+        else:
+            # Los rollos A y B son los únicos que se cuentan en m². Lo demás
+            # en Kg. Así que paso la llamada a la original.
+            res = self.get_stock_B(hasta, forzar, actualizar, 
+                                   contar_defectuosos, almacen)
+        return res
+
+    def get_stock_kg_C(self, hasta = None, forzar = False, actualizar = True, 
+                       contar_defectuosos = False, almacen = None):
+        """
+        La clase C siempre se cuenta en Kg. En todo. Hasta en geotextiles; 
+        porque no se puede precisar los m² al ser de ancho variable, restos, 
+        etc.
+        """
+        return self.get_stock_C(hasta, forzar, actualizar, 
+                                contar_defectuosos, almacen)
     
     def get_cantidad_B_actuales_todos_almacenes(self):
         if self.es_bala():
