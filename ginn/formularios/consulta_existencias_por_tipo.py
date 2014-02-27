@@ -28,8 +28,7 @@
 ## NOTAS:
 ##  
 ###################################################################
-## TODO: 
-##  Me faltan los kg de geotextiles. No solo metros.
+## 
 ###################################################################
 
 from ventana import Ventana
@@ -53,17 +52,25 @@ class ConsultaExistenciasPorTipo(Ventana):
                        'b_exportar/clicked': self.exportar, 
                        'cb_almacen/changed': self.buscar} 
         self.add_connections(connections)
-        cols = (('Producto', 'gobject.TYPE_STRING', False, True, True, None),#0
-                ('A', 'gobject.TYPE_STRING', False, True, False, None),
-                ('B', 'gobject.TYPE_STRING', False, True, False, None),
-                ('C', 'gobject.TYPE_STRING', False, True, False, None),
-                ('Total', 'gobject.TYPE_STRING', False, True, False, None),
-                ('PUID', 'gobject.TYPE_STRING', False, False, False, None))#(5)
         for nomtv in ("tv_fibra", "tv_gtx", "tv_cemento"):
+            cols = [
+                ('Producto', 'gobject.TYPE_STRING', False, True, True, None),#0
+                ('A (Kg)', 'gobject.TYPE_STRING', False, True, False, None),
+                ('B (Kg)', 'gobject.TYPE_STRING', False, True, False, None),
+                ('C (Kg)', 'gobject.TYPE_STRING', False, True, False, None),
+                ('Total', 'gobject.TYPE_STRING', False, True, False, None),
+                ('PUID', 'gobject.TYPE_STRING', False, False, False, None)]#(5)
+            if nomtv == "tv_gtx":
+                cols.insert(1, 
+                  ('A (m²)', 'gobject.TYPE_STRING', False, True, False, None))
+                cols.insert(3, 
+                  ('B (m²)', 'gobject.TYPE_STRING', False, True, False, None))
+                cols.insert(5, 
+                  ('C (m²)', 'gobject.TYPE_STRING', False, True, False, None))
             tv = self.wids[nomtv]
             utils.preparar_listview(tv, cols)
             tv.connect("row-activated", self.abrir_objeto)
-            for ncol in range(1, 5):
+            for ncol in range(1, len(cols) - 1):
                 col = tv.get_column(ncol)
                 col.get_cell_renderers()[0].set_property('xalign', 1.0) 
             col = tv.get_column(0)
@@ -134,7 +141,11 @@ class ConsultaExistenciasPorTipo(Ventana):
         totales = {'A':     {}, 
                    'B':     {}, 
                    'C':     {}, 
-                   'total': {}}
+                   'total': {}, 
+                   'mA':    {}, 
+                   'mB':    {}, 
+                   'mC':    {}
+                  }
         i = 0.0
         tot = sum([len(self.productos[k]) for k in self.productos.keys()])
         for nombre_tv in ("tv_fibra", "tv_gtx", "tv_cemento"):
@@ -154,15 +165,29 @@ class ConsultaExistenciasPorTipo(Ventana):
                                      contar_defectuosos = True)
                 if pclases.DEBUG:
                     assert round(A + B + C) == round(total), pv.puid  # XXX 
-                fila = (pv.descripcion, 
+                fila = [pv.descripcion, 
                         utils.float2str(A), 
                         utils.float2str(B), 
                         utils.float2str(C), 
                         utils.float2str(total), 
-                        pv.puid)
+                        pv.puid]
+                if nombre_tv == "tv_gtx":
+                    mA = A
+                    mB = B
+                    # El C no lo cambio porque siempre es en kilos
+                    #mC = C
+                    mC = 0.0
+                    # TODO: PORASQUI: No tengo método en pclases para existencias de rollos en kilos y por tipo. Grrrr!!!!
+                    A = 0.0
+                    B = 0.0
+                    fila.insert(2, utils.float2str(A))
+                    fila.insert(4, utils.float2str(B))
+                    fila.insert(6, utils.float2str(C))
+                    actualizar_totales(totales, A, B, C, total, tipo, 
+                                       0.0, 0.0, 0.0)
+                else:
+                    actualizar_totales(totales, A, B, C, total, tipo)
                 model.append(fila)
-                # Actualizo totales 
-                actualizar_totales(totales, A, B, C, total, tipo)
         vpro.ocultar()
         return totales
 
@@ -170,7 +195,10 @@ class ConsultaExistenciasPorTipo(Ventana):
         for tipo_stock in totales:
             for tipo_producto in totales[tipo_stock]:
                 nomentry = "e_%s_%s" % (tipo_producto, tipo_stock)
-                entry = self.wids[nomentry]
+                try:
+                    entry = self.wids[nomentry]
+                except KeyError:
+                    continue    # TODO: Crear el total para Kg geotextiles
                 total = totales[tipo_stock][tipo_producto]
                 unidad = "kg"
                 if tipo_producto == "gtx":
@@ -236,7 +264,8 @@ class ConsultaExistenciasPorTipo(Ventana):
                                        extra_data = extra_data))
 
 
-def actualizar_totales(totales, A, B, C, total, tipo_de_producto):
+def actualizar_totales(totales, A, B, C, total, tipo_de_producto, 
+                       metros_a = None, metros_b = None, metros_c = None):
     """
     Actualiza el diccionario de totales.
     tipo_de_producto es 'gtx', 'fibra' o 'cemento'.
@@ -248,7 +277,12 @@ def actualizar_totales(totales, A, B, C, total, tipo_de_producto):
     for tipo_de_stock, stock_de_ese_tipo in (('A', A), 
                                              ('B', B), 
                                              ('C', C), 
-                                             ('total', total)):
+                                             ('total', total), 
+                                             ('mA', metros_a), 
+                                             ('mB', metros_b), 
+                                             ('mC', metros_c)):
+        if stock_de_ese_tipo is None:
+            continue
         try:
             totales[tipo_de_stock][tipo_de_producto] += stock_de_ese_tipo
         except KeyError:

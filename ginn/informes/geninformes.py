@@ -1136,8 +1136,8 @@ def existencias_productos(informe, fecha, hasta = None, almacen = None,
             cabecera(c, 'Inventario de geotextiles A%s' % txtalmacen, fecha)
             c.setTitle("Inventario de geotextiles A%s" % txtalmacen)
         elif informe == 'balas':
-            cabecera(c, 'Inventario de fibras B%s' % txtalmacen, fecha)
-            c.setTitle("Inventario de fibras B%s" % txtalmacen)
+            cabecera(c, 'Inventario de fibras A%s' % txtalmacen, fecha)
+            c.setTitle("Inventario de fibras A%s" % txtalmacen)
         # El cuerpo
         c.setFont("Helvetica-Bold", 10)
 
@@ -9314,6 +9314,7 @@ def listado_rollos(datos, desc_producto, fecha = None):
 def existencias_fibra_por_lote(fecha = None):
     """
     Imprime las existencias de fibra en almacén desglosadas por lote.
+    A y B. Nada de C aquí.
     """
     from formularios.ventana_progreso import VentanaProgreso
     vpro = VentanaProgreso()
