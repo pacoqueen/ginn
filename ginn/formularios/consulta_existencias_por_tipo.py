@@ -290,7 +290,7 @@ class ConsultaExistenciasPorTipo(Ventana):
             titulo += " (%s)" % almacen.nombre
         except AttributeError:
             pass
-        totales = range(1, len(tv.get_model().get_n_columns())-1)
+        totales = range(1, tv.get_model().get_n_columns()-1)
         extra_data = []
         reports.abrir_pdf(treeview2pdf(tv, 
                                        titulo = titulo, 

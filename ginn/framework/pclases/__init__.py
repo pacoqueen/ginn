@@ -9308,7 +9308,8 @@ class Articulo(SQLObject, PRPCTOO):
         en ese almacén únicamente, aunque siguiendo todos los criterios 
         explicados anteriormente.
         """
-        self.sync()
+        # XXX: TODO: PORASQUI: La diferencia entre activarlo o no es un segundo por cada 1.000 artículos.
+        #self.sync()
         if not fecha:   # No pregunta por ninguna fecha en concreto. Chequeo 
                         # por la actual.
             if almacen:
@@ -9320,6 +9321,12 @@ class Articulo(SQLObject, PRPCTOO):
             # una fecha anterior a la de fabricación.
             if fecha < self.fecha_fabricacion:
                 res = False
+            elif fecha >= mx.DateTime.today():
+                # Si pregunto por hoy, solo tengo que mirar si está en almacén
+                if almacen:
+                    res = self.almacen == almacen
+                else:
+                    res = self.almacen != None
             else:
                 hist = self.get_historial_trazabilidad()
                 pos = len(hist) - 1
@@ -12957,13 +12964,13 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         articulos = A.select(AND(*clauses))
         en_almacen = []
         # PLAN: Optimizar
-        if DEBUG:
+        if DEBUG and VERBOSE:
             contador = 0
             total = articulos.count()
         for a in articulos:
             if a.en_almacen(fecha, almacen):
                 en_almacen.append(a)
-            if DEBUG:
+            if DEBUG and VERBOSE:
                 contador += 1
                 print "%d de %d" % (contador, total)
         return SQLtuple(en_almacen)
@@ -21233,10 +21240,19 @@ except SQLObjectNotFound:
 # funciona el autocommit. 
 conhack.autoCommit = True
 
+def do_performance_test():
+    import time
+    #for pv in ProductoVenta.select():
+    for pv in [ProductoVenta.get(102)]:
+        antes = time.time()
+        print pv.puid, pv.descripcion, pv.get_stock_kg_A()
+        print ">>>", round(time.time() - antes, 2), "s"
+
 
 if __name__ == '__main__':
     DEBUG = True
     do_unittests()
+    #do_performance_test()
     #r = Rollo.select()[0]
     #r.destroy_en_cascada()
 
