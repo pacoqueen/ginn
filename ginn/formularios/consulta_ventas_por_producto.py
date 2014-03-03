@@ -64,12 +64,18 @@ class ConsultaVentasPorProducto(Ventana):
                 ('Cliente', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Fecha', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Albarán', 'gobject.TYPE_STRING', False, True, False, None),
+                ('A', 'gobject.TYPE_STRING', False, True, False, None),
+                ('B', 'gobject.TYPE_STRING', False, True, False, None),
+                ('C', 'gobject.TYPE_STRING', False, True, False, None),
                 ('ID', 'gobject.TYPE_STRING', False, False, False, None))    # Del producto, de la LDV o de la LDD.
         utils.preparar_treeview(self.wids['tv_datos'], cols)
         self.wids['tv_datos'].connect("row-activated", self.abrir_producto_albaran_o_abono)
         self.wids['tv_datos'].get_column(1).get_cell_renderers()[0].set_property('xalign', 1) 
         self.wids['tv_datos'].get_column(2).get_cell_renderers()[0].set_property('xalign', 1) 
         self.wids['tv_datos'].get_column(3).get_cell_renderers()[0].set_property('xalign', 0.5) 
+        self.wids['tv_datos'].get_column(5).get_cell_renderers()[0].set_property('xalign', 1) 
+        self.wids['tv_datos'].get_column(6).get_cell_renderers()[0].set_property('xalign', 1) 
+        self.wids['tv_datos'].get_column(7).get_cell_renderers()[0].set_property('xalign', 1) 
         fin = mx.DateTime.localtime()
         inicio = mx.DateTime.localtime() - mx.DateTime.oneWeek
         self.wids['e_fechainicio'].set_text(utils.str_fecha(inicio))
@@ -167,7 +173,15 @@ class ConsultaVentasPorProducto(Ventana):
                 self.logger.error(txt)
             cantidad_albaraneada = ldv.get_cantidad_albaraneada()
             if p not in productos:
-                fila = model.append(None, (p.descripcion, "", "", "", "", "%s:%d" % (tipo, p.id)))
+                fila = model.append(None, (p.descripcion, 
+                                           "", 
+                                           "", 
+                                           "", 
+                                           "", 
+                                           "", 
+                                           "", 
+                                           "", 
+                                           "%s:%d" % (tipo, p.id)))
                 productos[p] = [fila, cantidad_albaraneada]
             else:
                 fila = productos[p][0]
@@ -185,14 +199,19 @@ class ConsultaVentasPorProducto(Ventana):
             elif tipo == "PC":
                 cantidad = cantidad_albaraneada 
                 total_otros += cantidad * ldv.precio
+                A = B = C = "N/A"
             else:
                 cantidad = 0
+                A = B = C = "N/A"
             model.append(fila, ("", utils.float2str(cantidad), 
                                     ldv.albaranSalida.cliente 
                                         and ldv.albaranSalida.cliente.nombre 
                                         or "", 
                                     utils.str_fecha(ldv.albaranSalida.fecha),
                                     ldv.albaranSalida.numalbaran, 
+                                    A, 
+                                    B, 
+                                    C, 
                                     "LDV:%d" % (ldv.id)))
             if ldv.albaranSalida.es_de_movimiento():
                 # Añado la misma línea pero en negativo, de ese modo se 
@@ -203,6 +222,9 @@ class ConsultaVentasPorProducto(Ventana):
                                         or "", 
                                     utils.str_fecha(ldv.albaranSalida.fecha),
                                     ldv.albaranSalida.numalbaran, 
+                                    "", 
+                                    "", 
+                                    "", 
                                     "LDV:%d" % (ldv.id)))
         for ldd in ldds:
             i += 1
@@ -213,6 +235,9 @@ class ConsultaVentasPorProducto(Ventana):
             if p not in productos:
                 fila = model.append(None, 
                                     (p.descripcion, 
+                                     "", 
+                                     "", 
+                                     "", 
                                      "", 
                                      "", 
                                      "", 
@@ -236,6 +261,9 @@ class ConsultaVentasPorProducto(Ventana):
                      ldd.abono.cliente and ldd.abono.cliente.nombre or "", 
                      utils.str_fecha(ldd.albaranDeEntradaDeAbono.fecha),
                      ldd.albaranDeEntradaDeAbono.numalbaran, 
+                     "", 
+                     "", 
+                     "", 
                      "LDD:%d" % (ldd.id)))
 
         # Actualizo los totales de los productos en las filas del TreeView
@@ -315,18 +343,23 @@ class ConsultaVentasPorProducto(Ventana):
         """
         from informes.treeview2pdf import treeview2pdf
         from formularios.reports import abrir_pdf
-        strfecha = "%s - %s" % (self.wids['e_fechainicio'].get_text(), self.wids['e_fechafin'].get_text())
+        strfecha = "%s - %s" % (self.wids['e_fechainicio'].get_text(), 
+                                self.wids['e_fechafin'].get_text())
         resp = utils.dialogo(titulo = "¿IMPRIMIR DESGLOSE?", 
-                             texto = "Puede imprimir únicamente los productos o toda la información de la ventana.\n¿Desea imprimir toda la información desglosada?", 
+                             texto = "Puede imprimir únicamente los productos"
+                                     " o toda la información de la ventana.\n"
+                                     "¿Desea imprimir toda la información "
+                                     "desglosada?", 
                              padre = self.wids['ventana'])
-        tv = clone_treeview(self.wids['tv_datos'])  # Para respetar el orden del treeview original y que no afecte a las filas 
-                                                    # de totales que añado después. Si las añado al original directamente se 
-                                                    # mostrarán en el orden que correspondería en lugar de al final.
+        tv = clone_treeview(self.wids['tv_datos'])  # Para respetar el orden 
+        # del treeview original y que no afecte a las filas de totales que 
+        # añado después. Si las añado al original directamente se mostrarán 
+        # en el orden que correspondería en lugar de al final.
         model = tv.get_model()
-        fila_sep = model.append(None, ("===",) * 6)
-        fila_total_gtx = model.append(None, ("Total m² geotextiles", self.wids['e_total_metros'].get_text(), "", "", "", ""))
-        fila_total_fibra = model.append(None, ("Total kg fibra", self.wids['e_total_kilos'].get_text(), "", "", "", ""))
-        fila_total_otros = model.append(None, ("Total € otros", self.wids['e_total_otros'].get_text(), "", "", "", ""))
+        fila_sep = model.append(None, ("===",) * 9)
+        fila_total_gtx = model.append(None, ("Total m² geotextiles", self.wids['e_total_metros'].get_text(), "", "", "", "", "", "", ""))
+        fila_total_fibra = model.append(None, ("Total kg fibra", self.wids['e_total_kilos'].get_text(), "", "", "", "", "", "", ""))
+        fila_total_otros = model.append(None, ("Total € otros", self.wids['e_total_otros'].get_text(), "", "", "", "", "", "", ""))
         if resp:
             tv.expand_all()
             while gtk.events_pending(): gtk.main_iteration(False)
@@ -334,11 +367,13 @@ class ConsultaVentasPorProducto(Ventana):
             tv.collapse_all()
             while gtk.events_pending(): gtk.main_iteration(False)
             tv = convertir_a_listview(tv)
-            # Para este caso particular me sobran las tres últimas columnas
-            tv.remove_column(tv.get_columns()[-1])
-            tv.remove_column(tv.get_columns()[-1])
-            tv.remove_column(tv.get_columns()[-1])
-        abrir_pdf(treeview2pdf(tv, titulo = "Salidas de almacén agrupadas por producto", fecha = strfecha))
+            # Para este caso particular me sobran las columnas de albarán y eso
+            tv.remove_column(tv.get_columns()[-4])
+            tv.remove_column(tv.get_columns()[-4])
+            tv.remove_column(tv.get_columns()[-4])
+        abrir_pdf(treeview2pdf(tv, 
+            titulo = "Salidas de almacén agrupadas por producto", 
+            fecha = strfecha))
         model.remove(fila_sep)
         model.remove(fila_total_gtx)
         model.remove(fila_total_fibra)
@@ -367,7 +402,8 @@ def clone_treeview(otv):
         ncell = type(ocell)()
         ncol = gtk.TreeViewColumn(title, ncell)
         ncol.set_data("q_ncol", ocol.get_data("q_ncol"))
-        ncol.get_cell_renderers()[0].set_property('xalign', ocol.get_cell_renderers()[0].get_property('xalign')) 
+        ncol.get_cell_renderers()[0].set_property('xalign', 
+                ocol.get_cell_renderers()[0].get_property('xalign')) 
         ntv.append_column(ncol)
     return ntv
 
@@ -390,7 +426,8 @@ def convertir_a_listview(otv):
         ncell = type(ocell)()
         ncol = gtk.TreeViewColumn(title, ncell)
         ncol.set_data("q_ncol", ocol.get_data("q_ncol"))
-        ncol.get_cell_renderers()[0].set_property('xalign', ocol.get_cell_renderers()[0].get_property('xalign')) 
+        ncol.get_cell_renderers()[0].set_property('xalign', 
+                ocol.get_cell_renderers()[0].get_property('xalign')) 
         ntv.append_column(ncol)
     return ntv
 

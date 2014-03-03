@@ -17,10 +17,10 @@ e_ini + producción - (ventas + abonos) - consumos de fibra = e_fin
 
 NOTAS:
 * Los ficheros se sacan de:
-    - consulta_existencias_por_tipo (existencias iniciales y finales)
-    - consulta_ventas_por_producto (ventas y abonos)
-    - consulta_producido (producción)
-    - consulta_consumo (para consumo de fibra en la línea de geotextiles)
+    - consulta_existencias_por_tipo (existencias iniciales y finales): 6
+    - consulta_ventas_por_producto (ventas y abonos): 1 fichero
+    - consulta_producido (producción): 3 ficheros
+    - consulta_consumo (para consumo de fibra en la línea de geotextiles): 1
 * Los consumos de fibra de las partidas de carga solían llevar un albarán 
   interno que debía generar el usuario manualmente. Lógicamente, lleva siglos 
   sin hacerse. Al menos en enero '14 no hay ni un albarán interno de consumo 
@@ -46,7 +46,7 @@ SYNOPSIS
         finales_fibra.cem finales_gtx.cem finales_cem.csv
 
 EJEMPLO
-./clouseau.py ../../tests/20140101_0600_existencias_iniciales_fib.csv ../../tests/20140101_0600_existencias_iniciales_gtx.csv ../../tests/20140101_0600_existencias_iniciales_cem.csv ../../tests/20140201_0600_producido.csv ../../tests/20140201_0600_salidas.csv ../../tests/20140201_0600_consumido.csv ../../tests/20140201_0600_existencias_finales_fib.csv ../../tests/20140201_0600_existencias_finales_gtx.csv ../../tests/20140201_0600_existencias_finales_cem.csv > diff.csv && libreoffice diff.csv
+./clouseau.py ../../tests/20140101_0600_existencias_iniciales_fib.csv ../../tests/20140101_0600_existencias_iniciales_gtx.csv ../../tests/20140101_0600_existencias_iniciales_cem.csv ../../tests/20140201_0600_producido_fib.csv ../../tests/20140201_0600_producido_gtx.csv ../../tests/20140201_0600_producido_cem.csv ../../tests/20140201_0600_salidas.csv ../../tests/20140201_0600_consumido.csv ../../tests/20140201_0600_existencias_finales_fib.csv ../../tests/20140201_0600_existencias_finales_gtx.csv ../../tests/20140201_0600_existencias_finales_cem.csv > diff.csv && libreoffice diff.csv
 
 VERSION
 
@@ -97,30 +97,52 @@ def parse_existencias(fexistencias_ini, res = None):
                 total = utils.parse_float(kgTotal)
         except ValueError: # Es el listado de fibra. No lleva metros.
             (producto, kgA, bA, kgB, bB, kgC, bC, 
-                    kgTotal, mTotal, bTotal) = linea
+                    kgTotal, bTotal) = linea
             total = utils.parse_float(kgTotal)
         res[producto] += total
     f_in.close()
     return res
 
-def parse_produccion(fproduccion):
+def parse_produccion(fproduccion_fib, fproduccion_gtx, fproduccion_cem):
     """
     Abre el fichero y devuelve un diccionario de productos con la producción.
     """
     res = defaultdict(lambda: 0.0)
-    f_in = open(fproduccion)
-    data_in = reader(f_in, delimiter = ";", lineterminator = "\n")
-    cabecera = True     # La primera fila son los títulos de columnas
-    for linea in data_in:
-        if cabecera:
-            cabecera = False
-            continue
-        producto, producido, bultos, media, kg, t_teorico, t_real = linea
-        if producto.startswith(">"):
-            continue    # Es un desglose. No me interesa.
-        producido = utils.parse_float(producido)
-        res[producto] += producido
-    f_in.close()
+    for fproduccion in (fproduccion_fib, fproduccion_gtx, fproduccion_cem):
+        f_in = open(fproduccion)
+        data_in = reader(f_in, delimiter = ";", lineterminator = "\n")
+        cabecera = True     # La primera fila son los títulos de columnas
+        for linea in data_in:
+            if cabecera:
+                cabecera = False
+                continue
+            try:
+                (producto, 
+                 mA, mB, mC, mTotal, 
+                 kgA, kgB, kgC, kgTotal, 
+                 bA, bB, bC, bTotal, 
+                 t_teorico, t_real) = linea
+                es_gtx = True
+            except ValueError:  # Hay valores de menos. No es geotextiles.
+                (producto, 
+                 kgA, kgB, kgC, kgTotal, 
+                 bA, bB, bC, bTotal, 
+                 t_teorico, t_real) = linea
+                es_gtx = False
+            if producto.startswith(">"):
+                continue    # Es un desglose. No me interesa.
+            if es_gtx:
+                producido = utils.parse_float(mTotal)
+                # Caso especial para producto C. Se mide en Kg. En mTotal tendrá 
+                # un cero. Otros productos normales también pueden tener un cero 
+                # en producción de metros, pero también lo tendrán en la columna 
+                # de kg producidos. So... 
+                if not producido: 
+                    producido = utils.parse_float(kgTotal)
+            else:
+                producido = utils.parse_float(kgTotal)
+            res[producto] += producido
+        f_in.close()
     return res
 
 def parse_salidas(fventas):
@@ -258,14 +280,17 @@ def dump_deltas(deltas):
                       delta))
 
 def main(fexistencias_ini_fib, fexistencias_ini_gtx, fexistencias_ini_cem, 
-         fproduccion, fventas, fconsumos, fexistencias_fin_fib, 
-         fexistencias_fin_gtx, fexistencias_fin_cem):
+         fproduccion_fib, fproduccion_gtx, fproduccion_cem, 
+         fventas, fconsumos, 
+         fexistencias_fin_fib, fexistencias_fin_gtx, fexistencias_fin_cem):
 	existencias_ini = parse_existencias(fexistencias_ini_fib)
 	existencias_ini = parse_existencias(fexistencias_ini_gtx, 
                                             existencias_ini)
 	existencias_ini = parse_existencias(fexistencias_ini_cem, 
                                             existencias_ini)
-	produccion = parse_produccion(fproduccion)
+	produccion = parse_produccion(fproduccion_fib, 
+                                      fproduccion_gtx, 
+                                      fproduccion_cem)
         salidas = parse_salidas(fventas)
         consumos = parse_consumos(fconsumos)
         existencias_fin = parse_existencias(fexistencias_fin_fib)
@@ -293,7 +318,7 @@ if __name__ == '__main__':
                            help='verbose output')
         (options, args) = parser.parse_args()
         if len(args) < 9:
-            parser.error ('Debe especificar nueve ficheros fuente')
+            parser.error ('Debe especificar once ficheros fuente')
         if options.verbose: print >> sys.stderr, time.asctime()
         main(*args)
         if options.verbose: print >> sys.stderr, time.asctime()
