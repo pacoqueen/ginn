@@ -84,8 +84,21 @@ def parse_existencias(fexistencias_ini, res = None):
         if cabecera:
             cabecera = False
             continue
-        producto, a, b, c, total = linea
-        total = utils.parse_float(total)
+        try:
+            (producto, kgA, mA, bA, kgB, mB, bB, kgC, mC, bC, 
+                    kgTotal, mTotal, bTotal) = linea
+            total = utils.parse_float(mTotal)
+            if total == 0.0:    # Puede que sea un producto C. No lo puedo 
+                # saber únicamente por los datos de la hoja de cálculo. Uso 
+                # como total los kg. En el caso de los geotextiles normales 
+                # será también cero. No pasa nada. Solo habré perdido tiempo 
+                # parseando el valor. Pero si se mide en kg como los C, 
+                # entonces es el valor que me interesa.
+                total = utils.parse_float(kgTotal)
+        except ValueError: # Es el listado de fibra. No lleva metros.
+            (producto, kgA, bA, kgB, bB, kgC, bC, 
+                    kgTotal, mTotal, bTotal) = linea
+            total = utils.parse_float(kgTotal)
         res[producto] += total
     f_in.close()
     return res
