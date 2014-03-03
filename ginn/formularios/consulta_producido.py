@@ -447,11 +447,16 @@ class ConsultaProducido(Ventana):
         # El tiempo real lo añado una vez por parte para evitar errores de 
         # precisión por redondeos.
         tiempo_real = pdp.get_duracion()
-        update_dic_producto(prod_rollos, pdp.productoVenta, tipo, 0.0, 
-                            0.0, mx.DateTime.DateTimeDelta(0), tiempo_real)
-        update_lote_partida(prod_rollos[pdp.productoVenta.puid], 
-                            pdp.partida, tipo, 0.0, 0.0, 
-                            mx.DateTime.DateTimeDelta(0), tiempo_real)
+        try:
+            update_dic_producto(prod_rollos, pdp.productoVenta, tipo, 0.0, 
+                                0.0, mx.DateTime.DateTimeDelta(0), tiempo_real)
+        except (UnboundLocalError, AttributeError):
+            pass    # No partida instanciada. No ha entrado en el for. No 
+                    # artículos. No producción. No "tipo" instanciado siquiera.
+        else:
+            update_lote_partida(prod_rollos[pdp.productoVenta.puid], 
+                                pdp.partida, tipo, 0.0, 0.0, 
+                                mx.DateTime.DateTimeDelta(0), tiempo_real)
 
     def procesar_pdp_cajas(self, pdp, prod_pales):
         for a in pdp.articulos:
@@ -477,13 +482,18 @@ class ConsultaProducido(Ventana):
         # El tiempo real lo añado una vez por parte para evitar errores de 
         # precisión por redondeos.
         tiempo_real = pdp.get_duracion().hours 
-        update_dic_producto(prod_pales, pdp.productoVenta, tipo, 0.0, 
-                            tiempo_teorico = mx.DateTime.DateTimeDelta(0), 
-                            tiempo_real = tiempo_real)
-        update_lote_partida(prod_pales[pdp.productoVenta.puid], 
-                            pdp.partidaCem, tipo, 0.0, 
-                            tiempo_teorico = mx.DateTime.DateTimeDelta(0), 
-                            tiempo_real = tiempo_real)
+        try:
+            update_dic_producto(prod_pales, pdp.productoVenta, tipo, 0.0, 
+                                tiempo_teorico = mx.DateTime.DateTimeDelta(0), 
+                                tiempo_real = tiempo_real)
+        except (UnboundLocalError, AttributeError):
+            pass    # No partida instanciada. No ha entrado en el for. No 
+                    # artículos. No producción. No "tipo" instanciado siquiera.
+        else:
+            update_lote_partida(prod_pales[pdp.productoVenta.puid], 
+                                pdp.partidaCem, tipo, 0.0, 
+                                tiempo_teorico = mx.DateTime.DateTimeDelta(0), 
+                                tiempo_real = tiempo_real)
 
     def procesar_pdp_balas(self, pdp, prod_balas):
         for a in pdp.articulos:
