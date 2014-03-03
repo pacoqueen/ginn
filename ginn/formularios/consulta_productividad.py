@@ -46,9 +46,6 @@ from formularios.consulta_producido import str_horas, detectar_hueco
 import pango
 
 class ConsultaProductividad(Ventana):
-    inicio = None
-    fin = None
-    
     def __init__(self, objeto = None, usuario = None):
         """
         Constructor. objeto puede ser un objeto de pclases con el que
@@ -560,12 +557,12 @@ En ambos casos el límite inferior es flexible -por compensación-.)""")
         solobalas = False
         if not self.inicio:
             partes = pclases.ParteDeProduccion.select(
-                        pclases.ParteDeProduccion.q.fecha <= self.fin, 
+                        pclases.ParteDeProduccion.q.fecha < self.fin, 
                         orderBy = ('fecha', 'horainicio'))
         else:
             partes = pclases.ParteDeProduccion.select(pclases.AND(
                     pclases.ParteDeProduccion.q.fecha >= self.inicio,
-                    pclases.ParteDeProduccion.q.fecha <= self.fin), 
+                    pclases.ParteDeProduccion.q.fecha < self.fin), 
                 orderBy = ('fecha', 'horainicio'))
         if self.wids['r_balas'].get_active():
             partes = [p for p in partes if p.es_de_balas()]
