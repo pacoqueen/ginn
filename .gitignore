@@ -40,6 +40,7 @@ db/baks_sql
 ginn/adjuntos/*
 ginn/framework/*ginn*.conf*
 tests/*.csv
+tests/cierre*/*.csv
 
 # Control de versiones CVS
 CVS
