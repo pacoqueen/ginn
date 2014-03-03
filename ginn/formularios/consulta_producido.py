@@ -495,7 +495,7 @@ class ConsultaProducido(Ventana):
                                 tiempo_teorico = tiempo_teorico)
         # El tiempo real lo añado una vez por parte para evitar errores de 
         # precisión por redondeos.
-        tiempo_real = pdp.get_duracion().hours 
+        tiempo_real = pdp.get_duracion()
         try:
             update_dic_producto(prod_pales, pdp.productoVenta, tipo, 0.0, 
                                 tiempo_teorico = mx.DateTime.DateTimeDelta(0), 
@@ -512,7 +512,8 @@ class ConsultaProducido(Ventana):
                         # el cálculo de productividad. Aunque no se haya 
                         # fabricado nada.
             update_dic_producto(prod_rollos, es_rollo, tipo, 0.0, 
-                                0.0, mx.DateTime.DateTimeDelta(0), tiempo_real)
+                                tiempo_teorico = mx.DateTime.DateTimeDelta(0), 
+                                tiempo_real = tiempo_real)
             update_lote_partida(prod_pales[None], 
                                 pdp.partidaCem, tipo, 0.0, 
                                 tiempo_teorico = mx.DateTime.DateTimeDelta(0), 
