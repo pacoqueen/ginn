@@ -107,6 +107,10 @@ class BalasCable(Ventana):
         if data:
             from formularios import reports
             reports.abrir_pdf(geninformes.etiquetasBalasCableEtiquetadora(data))
+            for bala in balas:
+                pclases.Auditoria.modificado(bala.articulo, None, __file__, 
+                    "Impresión de etiqueta para bala %s." % (
+                        bala.articulo.get_info()))
 
     def borrar_balas(self, balas):
         """

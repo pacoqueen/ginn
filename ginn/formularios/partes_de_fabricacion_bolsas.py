@@ -1956,6 +1956,12 @@ def imprimir_etiquetas_pales(pales, padre = None, mostrar_dialogo = True):
                 return
             # EOBACKTRACK: Descomentar el rotate = True cuando volvamos a usar las etiquetas nuevas.
             filetiqpale = geninformes.generar_etiqueta_pale(pales, tipo)
+            for pale in pales:
+                pclases.Auditoria.modificado(pale, 
+                    self.usuario, 
+                    __file__,
+                    "Impresión de etiqueta para palé %s" % (
+                    pale.codigo))
             mandar_a_imprimir_con_ghostscript(filetiqpale#) 
                                               , rotate = True) 
         if que_imprimir == 1 or que_imprimir == 2:
@@ -1974,6 +1980,12 @@ def imprimir_etiquetas_pales(pales, padre = None, mostrar_dialogo = True):
             cajas = []
             for p in pales:
                 cajas += p.cajas[:]
+            for caja in cajas:
+                pclases.Auditoria.modificado(caja.articulo, 
+                    self.usuario, 
+                    __file__,
+                    "Impresión de etiqueta para caja %s" % (
+                    caja.articulo.get_info()))
             filetiqcaja = geninformes.generar_etiqueta_caja(cajas, tipo)
             mandar_a_imprimir_con_ghostscript(filetiqcaja) 
 

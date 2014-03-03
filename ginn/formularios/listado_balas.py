@@ -128,13 +128,31 @@ class ListadoBalas(Ventana):
                 etiqsbalascable = preparar_datos_etiquetas_balas_cable(balas_cable)
                 if etiqsbalas:
                     etpdf = geninformes.etiquetasBalasEtiquetadora(etiqsbalas)
+                    for bala in balas:
+                        pclases.Auditoria.modificado(bala.articulo, 
+                                self.usuario, 
+                                __file__,
+                                "Impresión de etiqueta para bala %s" % (
+                                    bala.articulo.get_info()))
                     reports.abrir_pdf(etpdf)
                 if bigbags:
                     etpdf = geninformes.etiquetasBigbags(bigbags)
+                    for bigbag in bigbags:
+                        pclases.Auditoria.modificado(bigbag.articulo, 
+                                self.usuario, 
+                                __file__,
+                                "Impresión de etiqueta para bigbag %s" % (
+                                    bigbag.articulo.get_info()))
                     reports.abrir_pdf(etpdf)
                 if balas_cable:
                     etpdf = geninformes.etiquetasBalasCableEtiquetadora(
                                 etiqsbalascable)
+                    for bala_cable in balas_cable:
+                        pclases.Auditoria.modificado(bala_cable.articulo, 
+                                self.usuario, 
+                                __file__,
+                                "Impresión de etiqueta para bala de cable %s"%(
+                                    bala_cable.articulo.get_info()))
                     reports.abrir_pdf(etpdf)
                 if pales:
                     from partes_de_fabricacion_bolsas import imprimir_etiquetas_pales

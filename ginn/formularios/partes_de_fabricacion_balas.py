@@ -3203,6 +3203,10 @@ class PartesDeFabricacionBalas(Ventana):
             producto = temp[0].articulos[0].productoVenta
             campos = producto.camposEspecificosBala
             for b in temp:
+                pclases.Auditoria.modificado(b.articulo, self.usuario, 
+                        __file__, 
+                        "Impresión de etiqueta para bala %s" % (
+                            b.articulo.get_info()))
                 if campos.antiuv:
                     acabado = '1'
                 else:
@@ -3303,6 +3307,10 @@ class PartesDeFabricacionBalas(Ventana):
                 producto = temp[0].articulos[0].productoVenta
                 campos = producto.camposEspecificosBala
                 for b in temp:
+                    pclases.Auditoria.modificado(b.articulo, self.usuario, 
+                        __file__, 
+                        "Impresión de etiqueta para bala %s" % (
+                            b.articulo.get_info()))
                     if campos.antiuv:
                         acabado = '1'
                     else:
@@ -3801,6 +3809,8 @@ def imprimir_etiqueta(articulo, ventana_parte):
     # reports.abrir_pdf(geninformes.etiquetasBalasEtiquetadora(balas))
     reports.mandar_a_imprimir_con_ghostscript(
         geninformes.etiquetasBalasEtiquetadora(balas))
+    pclases.Auditoria.modificado(articulo, None, __file__, 
+            "Impresión de etiqueta para bala %s." % (articulo.get_info()))
 
 def build_ventana(padre):
     """
@@ -3955,6 +3965,10 @@ def imprimir_etiquetas_bigbags(lista_bbs_defecto = [], ventana_parte = None):
                 else:
                     bigbags.append(bb)
         reports.abrir_pdf(geninformes.etiquetasBigbags(bigbags))
+        for bb in bigbags:
+            pclases.Auditoria.modificado(bb.articulo, None, __file__, 
+                "Impresión de etiqueta para bigbag %s." % (
+                    bb.articulo.get_info()))
 
 def mostrar_carga_silo(label, silo):
     """
