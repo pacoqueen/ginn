@@ -649,6 +649,7 @@ CREATE TABLE producto_venta(
     dni TEXT DEFAULT '', 
     uso TEXT DEFAULT '', 
     -- ALTER TABLE producto_venta ADD COLUMN anno_certificacion INT DEFAULT NULL; ALTER TABLE producto_venta ADD COLUMN dni TEXT DEFAULT ''; ALTER TABLE producto_venta ADD COLUMN uso TEXT DEFAULT ''; UPDATE producto_venta SET anno_certificacion = NULL; UPDATE producto_venta SET dni = ''; UPDATE producto_venta SET uso = ''; 
+    obsoleto BOOLEAN DEFAULT FALSE, -- NEW! 03/03/2014. 
     CHECK (NOT(campos_especificos_bala_id <> NULL
                 AND campos_especificos_rollo_id <> NULL
                 AND campos_especificos_especial_id <> NULL))
@@ -3954,6 +3955,7 @@ CREATE UNIQUE INDEX prcid_aid ON stock_almacen (producto_compra_id, almacen_id);
 CREATE UNIQUE INDEX he ON historial_existencias (producto_venta_id, almacen_id, fecha);
 CREATE UNIQUE INDEX hec ON historial_existencias_compra (producto_compra_id, almacen_id, fecha);
 CREATE INDEX pcobsoleto ON producto_compra (obsoleto);
+CREATE INDEX pvobsoleto ON producto_venta (obsoleto);
 
 ---- TRIGGERS ----
 CREATE FUNCTION un_solo_almacen_ppal() RETURNS TRIGGER AS '
