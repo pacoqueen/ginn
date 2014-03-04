@@ -626,7 +626,8 @@ class ConsultaProducido(Ventana):
         for prod in (prod_fibra, prod_gtx, prod_cem):
             for pvid in prod:
                 try:
-                    desc = pclases.getObjetoPUID(pvid).descripcion
+                    desc = pclases.getObjetoPUID(pvid).descripcion.replace(
+                            "/", "//")
                 except: 
                     desc = "Sin producción"
                 kg = prod[pvid]['kg']['a']
