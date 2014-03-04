@@ -7141,31 +7141,18 @@ class LineaDeVenta(SQLObject, PRPCTOO, Venta):
         cantidad albaraneada de su producto en ese 
         albarán. Si no, devuelve 0.
         """
-        return self.albaranSalida.agrupar_articulos()[self.id]['cantidad']
-        # TODO: FIXME: URGENTE: PORASQUI: 
-        # Optimizar esto de abajo para que haga lo de 
-        # arriba. Porque en el caso de la LDV 206762 esta función daba 
-        # 164.4 y no 73.2, que es lo correcto. Y en el fondo es porque 
-        # el artículo es un X (rollo clase B) que tiene 73.2 en realidad pero 
-        # el estándar de su producto es 164.4.
         res = 0
         if self.albaranSalidaID != None:
             producto = self.producto
-            if isinstance(producto, ProductoVenta):     # Si es un producto de venta, contamos las cantidades de sus bultos (artículos).
-                productoVenta = producto
-                articulos = [a for a in self.albaranSalida.articulos if a.productoVenta == productoVenta]
-                if productoVenta.es_rollo():
-                    metros_cuadrados = productoVenta.camposEspecificosRollo.metros_cuadrados
-                    res = metros_cuadrados * len(articulos)
-                elif productoVenta.es_bala():
-                    for a in articulos:
-                        res += a.bala.pesobala
-                elif productoVenta.es_bigbag():
-                    for a in articulos:
-                        res += a.bigbag.peso
-                elif productoVenta.es_caja():
-                    for a in articulos:
-                        res += a.caja.peso
+            if isinstance(producto, ProductoVenta):     # Si es un producto de 
+                    # venta, contamos las cantidades de sus bultos (artículos).
+                articulos_clasificados = self.albaranSalida.agrupar_articulos()
+                res = articulos_clasificados[self.id]['cantidad']
+                # XXX: Ojito porque si es producto C, la cantidad del LDV (que 
+                # es la que se factura) puede diferir de la suma de sus 
+                # artículos (que es la que se descuenta de existencias). Esto 
+                # es así por diseño (CWT) y poder vender al peso incluyendo 
+                # plásticos, agua, residuos, etc.
             elif isinstance(producto, ProductoCompra):  # Si es un producto de 
                 # compra, la cantidad albaraneada es la de la propia LDV, 
                 res = self.cantidad                     # ya que no tiene 
