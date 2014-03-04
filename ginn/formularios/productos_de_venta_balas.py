@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -158,6 +158,11 @@ class ProductosDeVentaBalas(Ventana):
         except AttributeError:
             cliente_objeto = None
         condicion = (condicion and cliente_objeto == cliente)
+        try:
+            condicion = (condicion and self.objeto.obsoleto 
+                                    == self.wids['ch_obsoleto'].get_active())
+        except (KeyError, AttributeError):
+            pass    # Versión antigua de la base de datos.
         return not condicion    # Concición verifica que sea igual
 
     def aviso_actualizacion(self):
@@ -426,6 +431,10 @@ class ProductosDeVentaBalas(Ventana):
             self.wids['ch_no_anno_cert'].set_active(False)
         self.wids['e_dni'].set_text(producto.dni)
         self.wids['e_uso'].set_text(producto.uso)
+        try:
+            self.wids['ch_obsoleto'].set_active(self.objeto.obsoleto)
+        except (KeyError, AttributeError):
+            pass    # Versión antigua de la base de datos.
         ### Botones anterior/siguiente
         producto = self.objeto
         try:
@@ -793,6 +802,10 @@ class ProductosDeVentaBalas(Ventana):
         if cliente == 0:
             cliente = None
         producto.camposEspecificosBala.clienteID = cliente
+        try:
+            self.objeto.obsoleto = self.wids['ch_obsoleto'].get_active()
+        except (KeyError, AttributeError):
+            pass    # Versión antigua de la base de datos.
         # Fuerzo la actualización de la BD y no espero a que SQLObject lo 
         # haga por mí:
         producto.syncUpdate()

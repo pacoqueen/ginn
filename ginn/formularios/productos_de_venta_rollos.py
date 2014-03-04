@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2013  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -284,6 +284,11 @@ class ProductosDeVentaRollos(Ventana):
             condicion = (condicion and
                 producto.annoCertificacion 
                     == self.wids['sp_anno_certificacion'].get_value_as_int())
+        try:
+            condicion = (condicion and producto.obsoleto 
+                                    == self.wids['ch_obsoleto'].get_active())
+        except (KeyError, AttributeError):
+            pass    # Versión antigua de la base de datos.
         return not condicion    # Concición verifica que sea igual
 
     def aviso_actualizacion(self):
@@ -613,6 +618,10 @@ class ProductosDeVentaRollos(Ventana):
         self.wids['cbe_uso'].child.set_text(producto.uso)
         # Datos no modificables:
         self.wids['e_idproducto'].set_text(`producto.id`)
+        try:
+            self.wids['ch_obsoleto'].set_active(producto.obsoleto)
+        except (KeyError, AttributeError):
+            pass    # Versión antigua de la BD
         self.muestra_stock()
         # self.wids['e_stock'].set_text("Pulse para consultar almacén.")
         self.mostrar_especificos()
@@ -1075,6 +1084,10 @@ class ProductosDeVentaRollos(Ventana):
         else:
             producto.annoCertificacion \
                     = self.wids['sp_anno_certificacion'].get_value_as_int()
+        try:
+            producto.obsoleto = self.wids['ch_obsoleto'].get_active()
+        except (KeyError, AttributeError):
+            pass    # Versión antigua de la BD
         # Fuerzo la actualización de la BD y no espero a que SQLObject 
         # lo haga por mí:
         producto.syncUpdate()

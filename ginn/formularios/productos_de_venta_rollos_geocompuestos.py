@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -114,6 +114,11 @@ class ProductosDeVentaRollosGeocompuestos(Ventana):
         condicion = condicion and (str(producto.camposEspecificosRollo.ancho) == self.wids['e_ancho'].get_text())
         condicion = condicion and (str(producto.camposEspecificosRollo.diametro) == self.wids['e_diametro'].get_text())
         condicion = condicion and (str(producto.camposEspecificosRollo.rollosPorCamion) == self.wids['e_rollo_camion'].get_text())
+        try:
+            condicion = (condicion and self.objeto.obsoleto 
+                                    == self.wids['ch_obsoleto'].get_active())
+        except (KeyError, AttributeError):
+            pass    # Versión antigua de la base de datos.
         return not condicion    # Concición verifica que sea igual
 
     def aviso_actualizacion(self):
@@ -295,6 +300,10 @@ class ProductosDeVentaRollosGeocompuestos(Ventana):
             self.wids['e_rollo_camion'].set_text(str(campos.rollosPorCamion))
             # Datos no modificables:
             self.wids['e_idproducto'].set_text(`producto.id`)
+            try:
+                self.wids['ch_obsoleto'].set_active(self.objeto.obsoleto)
+            except (KeyError, AttributeError):
+                pass    # Versión antigua de la base de datos.
             self.muestra_stock()
             self.mostrar_especificos()
             self.objeto.make_swap()
@@ -549,6 +558,10 @@ class ProductosDeVentaRollosGeocompuestos(Ventana):
         producto.camposEspecificosRollo.codigoComposan = composan
         producto.camposEspecificosRollo.rollosPorCamion = rolloCamion
         producto.camposEspecificosRollo.metrosLineales = metrosLineales
+        try:
+            self.objeto.obsoleto = self.wids['ch_obsoleto'].get_active()
+        except (KeyError, AttributeError):
+            pass    # Versión antigua de la base de datos.
         # Fuerzo la actualización de la BD y no espero a que SQLObject lo haga por mí:
         producto.syncUpdate()
         # Vuelvo a activar el notificador

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -105,6 +105,11 @@ class ProductosDeVentaEspecial(Ventana):
         condicion = condicion and (str(producto.minimo) == self.wids['e_minimo'].get_text())
         condicion = condicion and (str(producto.arancel) == self.wids['e_arancel'].get_text())
         condicion = condicion and (utils.float2str(producto.prodestandar) == self.wids['e_prodestandar'].get_text())
+        try:
+            condicion = (condicion and self.objeto.obsoleto 
+                                    == self.wids['ch_obsoleto'].get_active())
+        except (KeyError, AttributeError):
+            pass    # Versión antigua de la base de datos.
         return not condicion    # Concición verifica que sea igual
 
     def aviso_actualizacion(self):
@@ -325,6 +330,10 @@ class ProductosDeVentaEspecial(Ventana):
         self.wids['e_observaciones'].set_text(campos.observaciones)
         # Datos no modificables:
         self.wids['e_idproducto'].set_text(`producto.id`)
+        try:
+            self.wids['ch_obsoleto'].set_active(self.objeto.obsoleto)
+        except (KeyError, AttributeError):
+            pass    # Versión antigua de la base de datos.
         self.mostrar_especificos()
         self.rellenar_tabla_tarifas()
         self.rellenar_existencias_almacen(producto)
@@ -622,6 +631,10 @@ class ProductosDeVentaEspecial(Ventana):
         producto.camposEspecificosEspecial.unidad = unidad
         producto.camposEspecificosEspecial.observaciones = observaciones 
         producto.camposEspecificosEspecial.existencias = existencias
+        try:
+            self.objeto.obsoleto = self.wids['ch_obsoleto'].get_active()
+        except (KeyError, AttributeError):
+            pass    # Versión antigua de la base de datos.
         # Fuerzo la actualización de la BD y no espero a que SQLObject lo haga por mí:
         producto.syncUpdate()
         # Vuelvo a activar el notificador
