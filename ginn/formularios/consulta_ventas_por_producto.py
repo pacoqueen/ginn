@@ -150,7 +150,7 @@ class ConsultaVentasPorProducto(Ventana):
         vpro.mostrar()
         i = 0.0
         tot = len(ldvs) + len(ldds)
-        vpro.set_valor(i / tot, "Analizando %s..." % (""))
+        vpro.set_valor(i / (tot + 1), "Analizando %s..." % ("")) #Por si tot==0
         model = self.wids['tv_datos'].get_model()
         model.clear()
         total_otros = 0.0
@@ -189,6 +189,8 @@ class ConsultaVentasPorProducto(Ventana):
                     productos[p][1] += cantidad_albaraneada
             if tipo == "PV":
                 cantidad = cantidad_albaraneada
+                # TODO: PORASQUI
+                A = B = C = ""
                 if (p.es_bala() or p.es_bigbag() or p.es_bala_cable() 
                         or p.es_rollo_c() or p.es_caja()):
                     total_kilos += cantidad

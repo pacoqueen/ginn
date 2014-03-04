@@ -150,6 +150,8 @@ def parse_salidas(fventas):
     Abre el fichero y parsea las ventas devolviendo un diccionario de 
     productos y las salidas de cada uno.
     """
+    # TODO: Adaptar al nuevo formato de la consulta con A, B y C.
+    # TODO: Y ya de paso hacer todo con A, B y C en la hoja que genero.
     res = defaultdict(lambda: 0.0)
     f_in = open(fventas)
     data_in = reader(f_in, delimiter = ";", lineterminator = "\n")
