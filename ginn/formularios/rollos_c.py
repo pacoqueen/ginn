@@ -149,7 +149,7 @@ class RollosC(Ventana):
         for b in rollos:
             self.anular_consumo(b)
             a = b.articulo
-            a.rolloC = None
+            #a.rolloC = None
             try:
                 a.destroy(ventana = __file__)
             except Exception, msg:
