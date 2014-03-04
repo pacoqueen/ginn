@@ -7146,6 +7146,7 @@ class LineaDeVenta(SQLObject, PRPCTOO, Venta):
             producto = self.producto
             if isinstance(producto, ProductoVenta):     # Si es un producto de 
                     # venta, contamos las cantidades de sus bultos (artículos).
+                # PLAN: Optimizar. El agrupar_articulos es bastante lento.
                 articulos_clasificados = self.albaranSalida.agrupar_articulos()
                 res = articulos_clasificados[self.id]['cantidad']
                 # XXX: Ojito porque si es producto C, la cantidad del LDV (que 
