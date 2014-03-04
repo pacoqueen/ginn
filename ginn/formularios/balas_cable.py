@@ -170,7 +170,8 @@ class BalasCable(Ventana):
             nueva_bala = self.crear_objeto_bala(producto, peso)
             if nueva_bala == None:
                 utils.dialogo_info(titulo = "ERROR", 
-                    texto = "La bala no se pudo crear. Inténtelo de nuevo.", 
+                    texto = "La bala no se pudo crear. Verifique el peso "
+                            "e inténtelo de nuevo.", 
                     padre = self.wids['ventana'])
             else:
                 self.add_nueva_bala_tv(nueva_bala)
@@ -186,22 +187,26 @@ class BalasCable(Ventana):
         """
         Crea una nueva bala de cable y su artículo relacionado.
         """
-        b = pclases.BalaCable(peso = peso)
-        pclases.Auditoria.nuevo(b, self.usuario, __file__)
-        try:
-            a = pclases.Articulo(balaCable = b, 
-                            bala = None, 
-                            bigbag = None, 
-                            rollo = None, 
-                            fechahora = mx.DateTime.localtime(), 
-                            productoVenta = producto, 
-                            parteDeProduccion = None, 
-                            albaranSalida = None, 
-                            almacen = pclases.Almacen.get_almacen_principal())
-            pclases.Auditoria.nuevo(a, self.usuario, __file__)
-        except:
-            b.destroy(ventana = __file__)
-            b = None
+        if peso > 0:
+            b = pclases.BalaCable(peso = peso)
+            pclases.Auditoria.nuevo(b, self.usuario, __file__)
+            try:
+                a = pclases.Articulo(balaCable = b, 
+                                bala = None, 
+                                bigbag = None, 
+                                rollo = None, 
+                                fechahora = mx.DateTime.localtime(), 
+                                productoVenta = producto, 
+                                parteDeProduccion = None, 
+                                albaranSalida = None, 
+                                almacen = 
+                                    pclases.Almacen.get_almacen_principal())
+                pclases.Auditoria.nuevo(a, self.usuario, __file__)
+            except:
+                b.destroy(ventana = __file__)
+                b = None
+        else:
+            b = None    # No creo balas con peso cero. Ni siquiera de cable.
         return b
 
     def add_nueva_bala_tv(self, bala):

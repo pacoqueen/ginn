@@ -200,7 +200,8 @@ class RollosC(Ventana):
             nuevo_rollo = self.crear_objeto_rollo(producto, peso)
             if nuevo_rollo == None:
                 utils.dialogo_info(titulo = "ERROR", 
-                    texto = "El rollo no se pudo crear. Inténtelo de nuevo.", 
+                    texto = "El rollo no se pudo crear. Verifique el peso "
+                            "introducido e inténtelo de nuevo.", 
                     padre = self.wids['ventana'])
             else:
                 self.consumir(nuevo_rollo)
@@ -229,22 +230,25 @@ class RollosC(Ventana):
         """
         Crea una nueva rollo «C» y su artículo relacionado.
         """
-        b = pclases.RolloC(peso = peso)
-        pclases.Auditoria.nuevo(b, self.usuario, __file__)
-        try:
-            a = pclases.Articulo(rolloC = b, 
-                            bala = None, 
-                            bigbag = None, 
-                            rollo = None, 
-                            fechahora = mx.DateTime.localtime(), 
-                            productoVenta = producto, 
-                            parteDeProduccion = None, 
-                            albaranSalida = None, 
-                            almacen = pclases.Almacen.get_almacen_principal())
-            pclases.Auditoria.nuevo(a, self.usuario, __file__)
-        except:
-            b.destroy(ventana = __file__)
-            b = None
+        if peso > 0:
+            b = pclases.RolloC(peso = peso)
+            pclases.Auditoria.nuevo(b, self.usuario, __file__)
+            try:
+                a = pclases.Articulo(rolloC = b, 
+                                bala = None, 
+                                bigbag = None, 
+                                rollo = None, 
+                                fechahora = mx.DateTime.localtime(), 
+                                productoVenta = producto, 
+                                parteDeProduccion = None, 
+                                albaranSalida = None, 
+                                almacen = pclases.Almacen.get_almacen_principal())
+                pclases.Auditoria.nuevo(a, self.usuario, __file__)
+            except:
+                b.destroy(ventana = __file__)
+                b = None
+        else:
+            b = None    # No creo rollos con peso 0. Ni siquiera C.
         return b
 
     def add_nuevo_rollo_tv(self, rollo):
