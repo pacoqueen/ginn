@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -185,9 +185,11 @@ class ConsultaProductividad(Ventana):
             linea = "global."
         titulo = "Productividad %s" % (linea)
         if not self.inicio:
-            str_fecha = "Hasta %s" % ('/'.join(self.fin.split('/')[::-1]))
+            str_fecha = "Hasta %s" % (self.wids['e_fechafin'].get_text())
         else:
-            str_fecha = "Del %s al %s" % ('/'.join(self.inicio.split('/')[::-1]), '/'.join(self.fin.split('/')[::-1]))
+            str_fecha = "Del %s al %s" % (
+                    self.wids['e_fechainicio'].get_text(), 
+                    self.wids['e_fechafin'].get_text())
         datos = []
         model = self.wids['tv_datos'].get_model()
         for row in model:

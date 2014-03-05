@@ -38,6 +38,9 @@ NOTAS:
 * En la consulta de producido hay que indicar que se quiere también sacar la 
   producción C (aunque no entren para el cálculo de horas, totales y eso) para 
   que cuadre con las existencias inciales, finales y ventas.
+* Hay que tener en cuenta que dos productos que se llamen igual, aunque uno 
+  esté desabilitado (caso ARIAROLL 180), se van a combinar en una sola 
+  fila de la hoja de cálculo.
 
 SYNOPSIS
 

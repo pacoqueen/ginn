@@ -230,11 +230,11 @@ class ConsultaProducido(Ventana):
                 except: # No producción en el parte. Pero cuenta para tiempo.
                     codigo = "Sin producción"
                 kilos_a = lista_lotes[lote_partida_puid]['kg']['a']
-                kilos_b = lista_lotes[lote_partida_puid]['kg']['a']
-                kilos_c = lista_lotes[lote_partida_puid]['kg']['a']
+                kilos_b = lista_lotes[lote_partida_puid]['kg']['b']
+                kilos_c = lista_lotes[lote_partida_puid]['kg']['c']
                 bultos_a = lista_lotes[lote_partida_puid]['#']['a']
-                bultos_b = lista_lotes[lote_partida_puid]['#']['a']
-                bultos_c = lista_lotes[lote_partida_puid]['#']['a']
+                bultos_b = lista_lotes[lote_partida_puid]['#']['b']
+                bultos_c = lista_lotes[lote_partida_puid]['#']['c']
                 try:
                     metros_a = lista_lotes[lote_partida_puid]['m']['a']
                     metros_b = lista_lotes[lote_partida_puid]['m']['b']
@@ -455,10 +455,12 @@ class ConsultaProducido(Ventana):
         tiempo_real = pdp.get_duracion()
         try:
             update_dic_producto(prod_rollos, pdp.productoVenta, tipo, 0.0, 
-                                0.0, mx.DateTime.DateTimeDelta(0), tiempo_real)
+                                0.0, mx.DateTime.DateTimeDelta(0), tiempo_real, 
+                                bultos = 0)
             update_lote_partida(prod_rollos[pdp.productoVenta.puid], 
                                 pdp.partida, tipo, 0.0, 0.0, 
-                                mx.DateTime.DateTimeDelta(0), tiempo_real)
+                                mx.DateTime.DateTimeDelta(0), tiempo_real, 
+                                bultos = 0)
         except (UnboundLocalError, AttributeError):
                     # No partida instanciada. No ha entrado en el for. No 
                     # artículos. No producción. No "tipo" instanciado siquiera.
@@ -467,10 +469,12 @@ class ConsultaProducido(Ventana):
                         # el cálculo de productividad. Aunque no se haya 
                         # fabricado nada.
             update_dic_producto(prod_rollos, es_rollo, tipo, 0.0, 
-                                0.0, mx.DateTime.DateTimeDelta(0), tiempo_real)
+                                0.0, mx.DateTime.DateTimeDelta(0), tiempo_real, 
+                                bultos = 0)
             update_lote_partida(prod_rollos[None], 
                                 pdp.partida, tipo, 0.0, 0.0, 
-                                mx.DateTime.DateTimeDelta(0), tiempo_real)
+                                mx.DateTime.DateTimeDelta(0), tiempo_real, 
+                                bultos = 0)
 
     def procesar_pdp_cajas(self, pdp, prod_pales):
         for a in pdp.articulos:
@@ -499,11 +503,13 @@ class ConsultaProducido(Ventana):
         try:
             update_dic_producto(prod_pales, pdp.productoVenta, tipo, 0.0, 
                                 tiempo_teorico = mx.DateTime.DateTimeDelta(0), 
-                                tiempo_real = tiempo_real)
+                                tiempo_real = tiempo_real, 
+                                bultos = 0)
             update_lote_partida(prod_pales[pdp.productoVenta.puid], 
                                 pdp.partidaCem, tipo, 0.0, 
                                 tiempo_teorico = mx.DateTime.DateTimeDelta(0), 
-                                tiempo_real = tiempo_real)
+                                tiempo_real = tiempo_real, 
+                                bultos = 0)
         except (UnboundLocalError, AttributeError):
                     # No partida instanciada. No ha entrado en el for. No 
                     # artículos. No producción. No "tipo" instanciado siquiera.
@@ -513,11 +519,13 @@ class ConsultaProducido(Ventana):
                         # fabricado nada.
             update_dic_producto(prod_rollos, es_rollo, tipo, 0.0, 
                                 tiempo_teorico = mx.DateTime.DateTimeDelta(0), 
-                                tiempo_real = tiempo_real)
+                                tiempo_real = tiempo_real, 
+                                bultos = 0)
             update_lote_partida(prod_pales[None], 
                                 pdp.partidaCem, tipo, 0.0, 
                                 tiempo_teorico = mx.DateTime.DateTimeDelta(0), 
-                                tiempo_real = tiempo_real)
+                                tiempo_real = tiempo_real, 
+                                bultos = 0)
 
     def procesar_pdp_balas(self, pdp, prod_balas):
         for a in pdp.articulos:
@@ -547,11 +555,13 @@ class ConsultaProducido(Ventana):
         try:
             update_dic_producto(prod_balas, pdp.productoVenta, tipo, 0.0, 
                                 tiempo_teorico = mx.DateTime.DateTimeDelta(0), 
-                                tiempo_real = tiempo_real)
+                                tiempo_real = tiempo_real, 
+                                bultos = 0)
             update_lote_partida(prod_balas[pdp.productoVenta.puid], 
                                 lote, tipo, 0.0,
                                 tiempo_teorico = mx.DateTime.DateTimeDelta(0), 
-                                tiempo_real = tiempo_real)
+                                tiempo_real = tiempo_real, 
+                                bultos = 0)
         except (UnboundLocalError, AttributeError):
                     # No partida instanciada. No ha entrado en el for. No 
                     # artículos. No producción. No "tipo" instanciado siquiera.
@@ -561,12 +571,14 @@ class ConsultaProducido(Ventana):
                         # fabricado nada.
             update_dic_producto(prod_balas, es_rollo, tipo, 0.0, 
                                 tiempo_teorico = mx.DateTime.DateTimeDelta(0), 
-                                tiempo_real = tiempo_real)
+                                tiempo_real = tiempo_real, 
+                                bultos = 0)
             # No lote. No producto.
             update_lote_partida(prod_balas[None], 
                                 None, tipo, 0.0, 
                                 tiempo_teorico = mx.DateTime.DateTimeDelta(0), 
-                                tiempo_real = tiempo_real)
+                                tiempo_real = tiempo_real, 
+                                bultos = 0)
 
     def alternar_grafica(self, *args, **kw): 
         if pychart_available:
@@ -781,25 +793,30 @@ def create_prod_rollo(prod_rollos, puid):
 def update_lote_partida(dic_producto, lote_partida, tipo, cantidad, 
                         metros = None, 
                         tiempo_teorico = mx.DateTime.DateTimeDelta(0), 
-                        tiempo_real = mx.DateTime.DateTimeDelta(0)):
+                        tiempo_real = mx.DateTime.DateTimeDelta(0), 
+                        bultos = None):
     """
     Actualiza el lote/partida del producto en las cantidades 
     recibidas. Crea la clave si es necesario.
+    Bultos vendrá a cero cuando queramos contar el tiempo total de un 
+    parte, pero no incrementar la producción con un artículo en concreto.
     """
     try:
         puid_lote_partida = lote_partida.puid
-        bultos = 1
+        if bultos is None:  # No estoy actualizando tiempo total del parte.
+            bultos = 1
     except AttributeError:  # CWT: No lote/partida. Parte sin producción, pero 
         puid_lote_partida = None    # cuenta para el tiempo empleado en A (sic)
-        bultos = 0
+        if bultos is None:  # No estoy actualizando tiempo total del parte.
+            bultos = 0
     if puid_lote_partida not in dic_producto['lotes_partidas']:
         dic_producto['lotes_partidas'][puid_lote_partida] = {
                 'kg': {'a': 0.0, 
                        'b': 0.0,
                        'c': 0.0}, 
-                '#': {'a': 0.0, 
-                      'b': 0.0, 
-                      'c': 0.0}, 
+                '#': {'a': 0, 
+                      'b': 0, 
+                      'c': 0}, 
                 't_real': mx.DateTime.DateTimeDelta(0), 
                 't_teorico': mx.DateTime.DateTimeDelta(0)
             }
@@ -827,7 +844,8 @@ def update_lote_partida(dic_producto, lote_partida, tipo, cantidad,
 
 def update_dic_producto(prod, pv, tipo, cantidad, metros = 0.0, 
                         tiempo_teorico = mx.DateTime.DateTimeDelta(0), 
-                        tiempo_real = mx.DateTime.DateTimeDelta(0)):
+                        tiempo_real = mx.DateTime.DateTimeDelta(0), 
+                        bultos = None):
     """
     Actualiza la producción del artículo en el diccionario de producciones.
     Si no existe, lo agrega y después añade la información.
@@ -835,12 +853,14 @@ def update_dic_producto(prod, pv, tipo, cantidad, metros = 0.0,
     try:
         puid_pv = pv.puid
         es_rollo = pv.es_rollo() or pv.es_rollo_c()
-        bultos = 1
+        if bultos is None:  # No estoy actualizando tiempo real del parte, 
+            bultos = 1      # que viene con bultos = 0.
     except AttributeError:
         puid_pv = None  # Parte sin producción.
-        es_rollo = pv       # Si no tiene producción, aquí debe venir un 
-                            # boolean que diga si es o no un geotextil.
-        bultos = 0
+        es_rollo = pv           # Si no tiene producción, aquí debe venir un 
+                                # boolean que diga si es o no un geotextil.
+        if bultos is None:  # No estoy actualizando tiempo real del parte.
+            bultos = 0
     # Primero compruebo si lo creo o si ya se ha tratado y existe.
     if puid_pv not in prod:
         if es_rollo:
