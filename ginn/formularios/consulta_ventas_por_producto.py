@@ -192,7 +192,6 @@ class ConsultaVentasPorProducto(Ventana):
                 # TODO: PORASQUI: A ver cómo me las arreglo para distinguir
                 # A, B y C de la cantidad albaraneada sin que tarde todavía 
                 # más. Que actualmente ya es demasiado.
-# TODO: PORASQUI: Los comercializados no salen bien. Sale la cantidad añadida (0) en lugar de la de la línea de venta.
                 A = B = C = ""
                 if (p.es_bala() or p.es_bigbag() or p.es_bala_cable() 
                         or p.es_rollo_c() or p.es_caja()):

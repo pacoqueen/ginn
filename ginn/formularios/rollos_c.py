@@ -85,8 +85,13 @@ class RollosC(Ventana):
         for cer in pclases.CamposEspecificosRollo.select(
             pclases.CamposEspecificosRollo.q.c == True):
             try:
-                productos_gtxc.append((cer.productosVenta[0].id, 
-                                       cer.productosVenta[0].descripcion))
+                try:
+                    esta_obsoleto = cer.productosVenta[0].obsoleto
+                except AttributeError:
+                    esta_obsoleto = False
+                if not esta_obsoleto:
+                    productos_gtxc.append((cer.productosVenta[0].id, 
+                                           cer.productosVenta[0].descripcion))
             except IndexError:  # Producto mal borrado, CER desparejado.
                 mensaje = "%srollos_c::__init__ -> CamposEspecificosRollo ID %d sin productosVenta. Intento eliminar." % (self.usuario and self.usuario.usuario + ": " or "", cer.id)
                 self.logger.error(mensaje)
