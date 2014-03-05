@@ -68,9 +68,20 @@ class BalasCable(Ventana):
                        }
         self.add_connections(connections)
         productos_cable = []
-        for ceb in pclases.CamposEspecificosBala.select(pclases.CamposEspecificosBala.q.reciclada == True):
-            productos_cable.append((ceb.productosVenta[0].id, ceb.productosVenta[0].descripcion))
-        productos_cable.sort(lambda p1, p2: (p1[-1] < p2[-1] and -1) or (p1[-1] > p2[-1] and 1) or 0)
+        for ceb in pclases.CamposEspecificosBala.select(
+                pclases.CamposEspecificosBala.q.reciclada == True):
+            try:
+                obsoleto = ceb.productosVenta[0].obsoleto
+            except AttributeError:
+                obsoleto = False    # Versión antigua de la BD
+            if not obsoleto:
+                productos_cable.append(
+                        (ceb.productosVenta[0].id, 
+                         ceb.productosVenta[0].descripcion))
+        productos_cable.sort(
+                lambda p1, p2: (p1[-1] < p2[-1] and -1) 
+                                or (p1[-1] > p2[-1] and 1) 
+                                or 0)
         utils.rellenar_lista(self.wids['cbe_producto'], productos_cable)
         self.wids['sp_ver'].set_value(15)
         self.preparar_tv(self.wids['tv_balas'])

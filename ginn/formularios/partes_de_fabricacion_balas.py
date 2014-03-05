@@ -152,9 +152,11 @@ class PartesDeFabricacionBalas(Ventana):
                       }
         self.add_connections(connections)
         try:
-            self.linea = pclases.LineaDeProduccion.select(pclases.LineaDeProduccion.q.nombre=='Línea de fibra')[0]
+            self.linea = pclases.LineaDeProduccion.select(
+                    pclases.LineaDeProduccion.q.nombre=='Línea de fibra')[0]
         except IndexError:
-            self.logger.error("La línea de fibra no está correctamente dada de alta.")
+            self.logger.error(
+                    "La línea de fibra no está correctamente dada de alta.")
             self.linea = None
         self.inicializar_ventana()
         if not self.objeto:
@@ -833,7 +835,9 @@ class PartesDeFabricacionBalas(Ventana):
                 if partedeproduccion != None: partedeproduccion.notificador.desactivar()
                 # Anulo el aviso de actualización del envío que deja de ser activo.
                 # OJO: Debe haber más formas de distinguirlos e incluso más lógicas, pero de momento me voy a guiar por el formateo de las observaciones. Si tiene 6 campos concatenados con ';' es de balas y si no es de rollos.
-                partesdeproduccion = pclases.ParteDeProduccion.select("""partida_cem_id IS NULL AND observaciones LIKE '%;%;%;%;%;%'""")
+                partesdeproduccion = pclases.ParteDeProduccion.select(
+                        """partida_cem_id IS NULL 
+                           AND observaciones LIKE '%;%;%;%;%;%'""")
                 partesdeproduccion = partesdeproduccion.orderBy("-id")
                 partedeproduccion=partesdeproduccion[0]
                 partedeproduccion.notificador.activar(self.aviso_actualizacion)
@@ -1849,18 +1853,20 @@ class PartesDeFabricacionBalas(Ventana):
         """
         producto = None
         a_buscar = utils.dialogo_entrada(titulo = "BUSCAR PRODUCTO", 
-                                         texto = "Introduzca código, nombre o descripción de producto:", 
-                                         padre = self.wids['ventana']) 
+                texto = "Introduzca código, nombre o descripción de producto:", 
+                padre = self.wids['ventana']) 
         if a_buscar != None:
             try:
                 ida_buscar = int(a_buscar)
             except ValueError:
                 ida_buscar = -1
-            criterio = pclases.OR(pclases.ProductoVenta.q.codigo.contains(a_buscar),
-                                  pclases.ProductoVenta.q.descripcion.contains(a_buscar),
-                                  pclases.ProductoVenta.q.nombre.contains(a_buscar),
-                                  pclases.ProductoVenta.q.id == ida_buscar)
-            criterio = pclases.AND(criterio, criterio_lineas)
+            criterio = pclases.OR(
+                    pclases.ProductoVenta.q.codigo.contains(a_buscar),
+                    pclases.ProductoVenta.q.descripcion.contains(a_buscar),
+                    pclases.ProductoVenta.q.nombre.contains(a_buscar),
+                    pclases.ProductoVenta.q.id == ida_buscar)
+            no_obsoleto = pclases.ProductoVenta.q.obsoleto == False 
+            criterio = pclases.AND(criterio, criterio_lineas, no_obsoleto)
             resultados = pclases.ProductoVenta.select(criterio)
             if resultados.count() > 1:
                     ## Refinar los resultados
@@ -1934,7 +1940,8 @@ class PartesDeFabricacionBalas(Ventana):
             if not utils.dialogo(titulo = '¿CAMBIAR LA PRODUCCIÓN?', texto = txt, padre = self.wids['ventana']):
                 return
         try:
-            idlineafibra = pclases.LineaDeProduccion.select(pclases.LineaDeProduccion.q.nombre=='Línea de fibra')[0]
+            idlineafibra = pclases.LineaDeProduccion.select(
+                    pclases.LineaDeProduccion.q.nombre=='Línea de fibra')[0]
             # OJO: Debe llamarse EXACTAMENTE Línea de fibra en la BD.
         except:     # No hay línea de fibra
             utils.dialogo_info('ERROR LÍNEA DE FIBRA', 
@@ -2265,12 +2272,14 @@ class PartesDeFabricacionBalas(Ventana):
         """
         if fibracemento: 
             try:
-                numdefecto = str(pclases.Bigbag.select(orderBy = "-numbigbag")[0].numbigbag + 1)
+                numdefecto = str(pclases.Bigbag.select(
+                    orderBy = "-numbigbag")[0].numbigbag + 1)
             except (AttributeError, IndexError):
                 numdefecto = "1"
         else:
             try:
-                numdefecto = str(pclases.Bala.select(orderBy = "-numbala")[0].numbala + 1)
+                numdefecto = str(pclases.Bala.select(
+                    orderBy = "-numbala")[0].numbala + 1)
             except (AttributeError, IndexError):
                 numdefecto = "1"
         numbala, pedir_peso = self.dialogo_entrada_numbala("Introduzca el número %s o un rango de números separados por guión: " % (fibracemento and "del bigbag" or "de la bala"), 
@@ -2523,9 +2532,10 @@ class PartesDeFabricacionBalas(Ventana):
             self.actualizar_ventana()
 
     def add_empleado(self, w):
-        empleados = pclases.Empleado.select(pclases.AND(pclases.Empleado.q.activo == True, 
-                                                        pclases.Empleado.q.planta == True), 
-                                            orderBy = 'apellidos')
+        empleados = pclases.Empleado.select(
+                pclases.AND(pclases.Empleado.q.activo == True, 
+                            pclases.Empleado.q.planta == True), 
+                orderBy = 'apellidos')
         empleados = [(e.id, e.nombre, e.apellidos) for e in empleados \
                      if e.planta and \
                         e.activo and \
@@ -2957,7 +2967,8 @@ class PartesDeFabricacionBalas(Ventana):
             if utils.dialogo(titulo = "MUESTRA ENVIADA",
                              texto = "Muestra creada, enviada y pendiente para su análisis en laboratorio.\n¿Desea enviar una alerta?", 
                              padre = self.wids['ventana']):
-                usuarios = [(u.id, u.usuario) for u in pclases.Usuario.select(orderBy = 'usuario')]
+                usuarios = [(u.id, u.usuario) 
+                        for u in pclases.Usuario.select(orderBy = 'usuario')]
                 usuario = utils.dialogo_combo(titulo = "SELECCIONE USUARIO",
                                               texto = "Seleccione del desplegable inferior al usuario que quiere alertar acerca de la muestra.",
                                               ops = usuarios,
@@ -3187,7 +3198,8 @@ class PartesDeFabricacionBalas(Ventana):
                     return
                 temp = []
                 for i in range(a, b):
-                    temp.append(pclases.Bala.select(pclases.Bala.q.numbala == i)[0])
+                    temp.append(pclases.Bala.select(
+                        pclases.Bala.q.numbala == i)[0])
             else:
                 try:
                     a = int(entrada)
@@ -3198,7 +3210,8 @@ class PartesDeFabricacionBalas(Ventana):
                     utils.dialogo_info(titulo='ERROR', texto='El número de bala (%i) introducido no pertece al parte.' % a, padre = self.wids['ventana'])
                     return
                 else:
-                    temp = [pclases.Bala.select(pclases.Bala.q.numbala == a)[0]]
+                    temp = [pclases.Bala.select(
+                        pclases.Bala.q.numbala == a)[0]]
             balas = []
             producto = temp[0].articulos[0].productoVenta
             campos = producto.camposEspecificosBala
