@@ -1616,8 +1616,9 @@ class PartesDeFabricacionRollos(Ventana):
                 else:
                     resultados = pclases.ParteDeProduccion.select("""NOT observaciones LIKE '%;%;%;%;%;%'""")
             except:
-                producto = pclases.ProductoVenta.select(pclases.AND(pclases.ProductoVenta.q.nombre.contains(a_buscar), 
-                                                                    pclases.ProductoVenta.q.camposEspecificosRolloID != None))
+                producto = pclases.ProductoVenta.select(pclases.AND(
+                    pclases.ProductoVenta.q.nombre.contains(a_buscar), 
+                    pclases.ProductoVenta.q.camposEspecificosRolloID != None))
                 resultados = pclases.ParteDeProduccion.select()
                 # Pongo la barra porque con muchos partes esto tarda
                 vpro = VentanaProgreso(padre = self.wids['ventana'])
@@ -1888,8 +1889,8 @@ class PartesDeFabricacionRollos(Ventana):
         """
         producto = self.producto
         a_buscar = utils.dialogo_entrada(titulo = "BUSCAR PRODUCTO", 
-                                         texto = "Introduzca código, nombre o descripción de producto:", 
-                                         padre = self.wids['ventana']) 
+            texto = "Introduzca código, nombre o descripción de producto:", 
+            padre = self.wids['ventana']) 
         if a_buscar != None:
             try:
                 ida_buscar = int(a_buscar)
@@ -1899,7 +1900,8 @@ class PartesDeFabricacionRollos(Ventana):
                                     pclases.ProductoVenta.q.descripcion.contains(a_buscar),
                                     pclases.ProductoVenta.q.nombre.contains(a_buscar),
                                     pclases.ProductoVenta.q.id == ida_buscar)
-            criterio = pclases.AND(criterio, criterio_lineas)
+            no_obsoleto = pclases.ProductoVenta.q.obsoleto == False
+            criterio = pclases.AND(criterio, criterio_lineas, no_obsoleto)
             resultados = pclases.ProductoVenta.select(criterio)
             if resultados.count() > 1:
                     ## Refinar los resultados

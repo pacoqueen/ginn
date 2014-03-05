@@ -2768,7 +2768,7 @@ def buscar_productos_compra(a_buscar, incluir_obsoletos = False):
                         orderBy = "descripcion")
     return pcs
 
-def buscar_productos_venta(a_buscar):
+def buscar_productos_venta(a_buscar, incluir_obsoletos = False):
     """
     Busca entre los productos de venta el texto "a_buscar"
     en los campos de código, nombre o descripción. Al resultado
@@ -2786,6 +2786,8 @@ def buscar_productos_venta(a_buscar):
     productos = [p for p in prods]
     productos += [p.productosVenta[0] for p in rollos 
         if len(p.productosVenta) == 1 and p.productosVenta[0] not in productos]
+    if not incluir_obsoletos:
+        productos = [p for p in productos if not p.obsoleto]
     return productos
 
 def buscar_producto_general(padre = None, 
