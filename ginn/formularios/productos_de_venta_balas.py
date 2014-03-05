@@ -205,6 +205,19 @@ class ProductosDeVentaBalas(Ventana):
             clientes += ((cliente.id, "%s (%s)" % (cliente.nombre, 
                                                    cliente.cif)), )
         utils.rellenar_lista(self.wids['cbe_cliente'], clientes)
+        # HACK: Como glade-gtk2 ya no me abre el glade ni desde la 3.8.4:
+        self.add_campo_obsoleto()
+
+    def add_campo_obsoleto(self):
+        e_uso = self.wids['e_uso']
+        tabla = e_uso.parent
+        i, d, ar, ab = tabla.child_get(e_uso, 'left-attach','right-attach', 
+                                              'top-attach', 'bottom-attach')
+        tabla.remove(e_uso)
+        tabla.attach(e_uso, i, d - 1, ar, ab)
+        self.wids['ch_obsoleto'] = gtk.CheckButton('Obsoleto')
+        tabla.attach(self.wids['ch_obsoleto'], d - 1, d, ar, ab)
+        tabla.show_all()
 
     def activar_widgets(self, s, chequear_permisos = True):
         """

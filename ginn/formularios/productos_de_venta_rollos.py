@@ -379,6 +379,20 @@ class ProductosDeVentaRollos(Ventana):
             "Hasta NT 18: Drenaje, filtración, refuerzo y separación.\n"
             "NT 21 en adelante: Drenaje, filtración, refuerzo, separación "
             "y protección.")
+        # HACK: Como glade-gtk2 ya no me abre el glade ni desde la 3.8.4:
+        self.add_campo_obsoleto()
+
+    def add_campo_obsoleto(self):
+        e_uso = self.wids['cbe_uso']
+        tabla = e_uso.parent
+        i, d, ar, ab = tabla.child_get(e_uso, 'left-attach','right-attach', 
+                                              'top-attach', 'bottom-attach')
+        tabla.remove(e_uso)
+        tabla.attach(e_uso, i, d - 1, ar, ab)
+        self.wids['ch_obsoleto'] = gtk.CheckButton('Obsoleto')
+        tabla.attach(self.wids['ch_obsoleto'], d - 1, d, ar, ab)
+        tabla.show_all()
+
 
     def activar_widgets(self, s, chequear_permisos = True):
         """
