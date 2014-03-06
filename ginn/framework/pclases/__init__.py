@@ -17174,6 +17174,15 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
             res = res or esta_en_turno
         return res
 
+    def es_parte_de_reenvasado(self):
+        """
+        Un parte de reenvasado es un parte de producción que "consume" balas 
+        y produce nuevas balas a partir de éstas con embalaje nuevo y 
+        probablemente nueva calidad al solucionar mezclas de colores 
+        en las balas originales, etc.
+        """
+        return "reenvas" in self.objeto.observaciones.lower()
+
     def unificar_consumos(self):
         """
         Une todos los consumos del parte en uno solo por 

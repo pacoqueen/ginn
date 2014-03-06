@@ -666,7 +666,10 @@ class ConsultaProducido(Ventana):
                               label_offset = 25,
                               arrow_style = arrow.a3)
             ar.add_plot(plot)
-            ar.draw(can)
+            try:
+                ar.draw(can)
+            except ZeroDivisionError:
+                return  # No hay datos suficientes para la gráfica.
             try:
                 can.close()
                 self.wids['im_graph'].set_size_request(410, 210)

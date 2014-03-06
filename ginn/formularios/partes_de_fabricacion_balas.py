@@ -1972,8 +1972,10 @@ class PartesDeFabricacionBalas(Ventana):
         Devuelve True si hay al menos un silo marcado.
         """
         # XXX: Caso especial para reenvasado de bigbags: 27 de marzo de 2007.
-        if "reenvas" in self.objeto.observaciones.lower():
-            silo_marcado = True     # Engaño a la ventana y le digo que sí se ha marcado un silo aunque sea mentira. No se va a consumir de él de todas formas.
+        if self.objeto.es_parte_de_reenvasado():
+            silo_marcado = True     # Engaño a la ventana y le digo que sí se 
+                # ha marcado un silo aunque sea mentira. No se va a consumir 
+                # de él de todas formas.
         else:
         # XXX
             silo_marcado = False
@@ -2001,7 +2003,7 @@ class PartesDeFabricacionBalas(Ventana):
         """
         res = True
         # XXX: Caso especial para reenvasado de bigbags: 27 de marzo de 2007.
-        if "reenvas" in self.objeto.observaciones.lower():
+        if self.objeto.es_parte_de_reenvasado():
             res = True  # Engaño a la ventana y le digo que sí se ha marcado el 100% 
         else:
             # XXX
@@ -2046,7 +2048,7 @@ class PartesDeFabricacionBalas(Ventana):
                 porcentaje_total += porcentaje
         if porcentaje_total < 1.0:
             # XXX: Caso especial para reenvasado de bigbags: 27 de marzo de 2007.
-            if "reenvas" in self.objeto.observaciones.lower():
+            if self.objeto.es_parte_de_reenvasado():
                 res = True  # Engaño a la ventana y le digo que sí se ha marcado el 100% 
             else:
             # XXX
@@ -2067,8 +2069,8 @@ class PartesDeFabricacionBalas(Ventana):
         """
         res = False
         # XXX: Caso especial para reenvasado de bigbags: 27 de marzo de 2007.
-        if "reenvas" in self.objeto.observaciones.lower():
-            res = True  # Engaño a la ventana y le digo que sí hay silos marcados 
+        if self.objeto.es_parte_de_reenvasado():
+            res = True #Engaño a la ventana y le digo que sí hay silos marcados
         else:
         # XXX
             # Compruebo que al menos hay un silo marcado.
@@ -3155,12 +3157,13 @@ class PartesDeFabricacionBalas(Ventana):
         se avisará al usuario de la incidencia.
         """
         # XXX: Caso especial para reenvasado de bigbags: 27 de marzo de 2007.
-        if "reenvas" in self.objeto.observaciones.lower():
+        if self.objeto.es_parte_de_reenvasado():
             self.logger.warning("%spartes_de_fabricacion_balas::descontar_material_adicional -> Reenvasando bulto %s. Se ignora el consumo de material. Será necesario descontar después la fibra reenvasada manualmente del almacén." % (self.usuario and self.usuario.usuario + ": " or "", articulo.codigo))
         else:
         # XXX
             producto = articulo.productoVenta
-            aditivos = self.consumir_segun_formulacion(producto, articulo, restar)
+            aditivos = self.consumir_segun_formulacion(producto, articulo, 
+                                                       restar)
             self.consumir_granza_silos(articulo, aditivos, restar)
             self.consumir_granza_reciclada(articulo, aditivos, restar)
             self.objeto.unificar_consumos()
@@ -3522,7 +3525,7 @@ class PartesDeFabricacionBalas(Ventana):
         Abre la ventana de pesaje automático.
         """
         # XXX: Caso especial para reenvasado de bigbags: 27 de marzo de 2007.
-        if "reenvas" in self.objeto.observaciones.lower():
+        if self.objeto.es_parte_de_reenvasado():
             silo_marcado = True     # Engaño a la ventana y le digo que sí se ha marcado un silo aunque sea mentira. No se va a consumir de él de todas formas.
         else:
         # XXX
