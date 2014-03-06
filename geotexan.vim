@@ -1,9 +1,9 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 05 marzo 2014 at 23:20:31.
+" Created by session.vim 1.5 on 06 marzo 2014 at 17:29:52.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
-silent! set guifont=Inconsolata\ 12
+silent! set guifont=Inconsolata\ 9
 if exists('g:syntax_on') != 1 | syntax on | endif
 if exists('g:did_load_filetypes') != 1 | filetype on | endif
 if exists('g:did_load_ftplugin') != 1 | filetype plugin on | endif
@@ -41,7 +41,7 @@ badd +77 ginn/framework/pclases.py
 badd +201 ginn/formularios/historico_existencias_compra.py
 badd +39 ginn/formularios/historico_existencias.py
 badd +46 ginn/formularios/consulta_incidencias.py
-badd +809 ginn/formularios/consulta_producido.py
+badd +663 ginn/formularios/consulta_producido.py
 badd +1 ginn/__init__.py
 badd +1505 ginn/formularios/clientes.py
 badd +991 ginn/formularios/productos_compra.py
@@ -50,7 +50,7 @@ badd +525 ginn/formularios/recibos.py
 badd +374 ginn/formularios/productos_de_venta_rollos.py
 badd +315 ginn/formularios/productos_de_venta_rollos_geocompuestos.py
 badd +337 ginn/formularios/productos_de_venta_especial.py
-badd +1868 ginn/formularios/partes_de_fabricacion_balas.py
+badd +2463 ginn/formularios/partes_de_fabricacion_balas.py
 badd +737 ginn/formularios/partes_de_fabricacion_bolsas.py
 badd +1899 ginn/formularios/partes_de_fabricacion_rollos.py
 badd +312 ginn/formularios/proveedores.py
@@ -70,7 +70,7 @@ badd +10 ginn/main.py
 badd +1149 ginn/formularios/ventana.py
 badd +2094 ginn/formularios/pedidos_de_venta.py
 badd +3879 db/tablas.sql
-badd +1 ginn/formularios/albaranes_de_salida.py
+badd +3073 ginn/formularios/albaranes_de_salida.py
 badd +93 ginn/formularios/presupuesto.py
 badd +1884 ginn/formularios/presupuestos.py
 badd +97 ginn/informes/carta_compromiso.py
@@ -192,7 +192,7 @@ badd +1 tests/stock_performance.py
 badd +1 (clewn)_console
 badd +1 ginn/formularios/consulta_productividad.glade
 args formularios/auditviewer.py
-set lines=63 columns=107
+set lines=51 columns=115
 edit (clewn)_console
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -217,10 +217,7 @@ wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
-wincmd _ | wincmd |
-split
-8wincmd k
-wincmd w
+7wincmd k
 wincmd w
 wincmd w
 wincmd w
@@ -232,28 +229,26 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 6 + 31) / 63)
-exe 'vert 1resize ' . ((&columns * 26 + 53) / 107)
-exe '2resize ' . ((&lines * 54 + 31) / 63)
-exe 'vert 2resize ' . ((&columns * 26 + 53) / 107)
-exe '3resize ' . ((&lines * 7 + 31) / 63)
-exe 'vert 3resize ' . ((&columns * 80 + 53) / 107)
-exe '4resize ' . ((&lines * 18 + 31) / 63)
-exe 'vert 4resize ' . ((&columns * 80 + 53) / 107)
-exe '5resize ' . ((&lines * 13 + 31) / 63)
-exe 'vert 5resize ' . ((&columns * 80 + 53) / 107)
-exe '6resize ' . ((&lines * 10 + 31) / 63)
-exe 'vert 6resize ' . ((&columns * 80 + 53) / 107)
-exe '7resize ' . ((&lines * 1 + 31) / 63)
-exe 'vert 7resize ' . ((&columns * 80 + 53) / 107)
-exe '8resize ' . ((&lines * 1 + 31) / 63)
-exe 'vert 8resize ' . ((&columns * 80 + 53) / 107)
-exe '9resize ' . ((&lines * 1 + 31) / 63)
-exe 'vert 9resize ' . ((&columns * 80 + 53) / 107)
-exe '10resize ' . ((&lines * 1 + 31) / 63)
-exe 'vert 10resize ' . ((&columns * 80 + 53) / 107)
-exe '11resize ' . ((&lines * 1 + 31) / 63)
-exe 'vert 11resize ' . ((&columns * 80 + 53) / 107)
+exe '1resize ' . ((&lines * 3 + 25) / 51)
+exe 'vert 1resize ' . ((&columns * 34 + 57) / 115)
+exe '2resize ' . ((&lines * 45 + 25) / 51)
+exe 'vert 2resize ' . ((&columns * 34 + 57) / 115)
+exe '3resize ' . ((&lines * 1 + 25) / 51)
+exe 'vert 3resize ' . ((&columns * 80 + 57) / 115)
+exe '4resize ' . ((&lines * 11 + 25) / 51)
+exe 'vert 4resize ' . ((&columns * 80 + 57) / 115)
+exe '5resize ' . ((&lines * 25 + 25) / 51)
+exe 'vert 5resize ' . ((&columns * 80 + 57) / 115)
+exe '6resize ' . ((&lines * 1 + 25) / 51)
+exe 'vert 6resize ' . ((&columns * 80 + 57) / 115)
+exe '7resize ' . ((&lines * 1 + 25) / 51)
+exe 'vert 7resize ' . ((&columns * 80 + 57) / 115)
+exe '8resize ' . ((&lines * 1 + 25) / 51)
+exe 'vert 8resize ' . ((&columns * 80 + 57) / 115)
+exe '9resize ' . ((&lines * 1 + 25) / 51)
+exe 'vert 9resize ' . ((&columns * 80 + 57) / 115)
+exe '10resize ' . ((&lines * 1 + 25) / 51)
+exe 'vert 10resize ' . ((&columns * 80 + 57) / 115)
 argglobal
 setlocal fdm=indent
 setlocal fde=0
@@ -263,7 +258,7 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 1 - ((0 * winheight(0) + 3) / 6)
+let s:l = 1 - ((0 * winheight(0) + 1) / 3)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -306,55 +301,59 @@ normal! zo
 normal! zo
 1173
 normal! zo
-2021
+2019
 normal! zo
-2034
+2032
 normal! zo
-2034
+2032
 normal! zo
-2034
+2032
 normal! zo
-2034
+2032
 normal! zo
-2034
+2032
 normal! zo
-2034
+2032
 normal! zo
-2034
+2032
 normal! zo
-2043
+2041
 normal! zo
-2065
+2063
 normal! zo
-2070
+2068
 normal! zo
-2070
+2068
 normal! zo
-2196
+2194
 normal! zo
-2830
+2828
 normal! zo
-2839
+2837
 normal! zo
-3062
+3060
 normal! zo
-3260
+3258
+normal! zo
+3270
+normal! zo
+3271
 normal! zo
 3272
 normal! zo
-3273
+3289
 normal! zo
-3274
+3289
 normal! zo
-4209
+4212
 normal! zo
-4239
+4242
 normal! zo
-let s:l = 4794 - ((0 * winheight(0) + 3) / 7)
+let s:l = 4799 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-4794
+4799
 normal! 0
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
@@ -694,183 +693,107 @@ normal! zo
 normal! zo
 7146
 normal! zo
-7546
+7164
 normal! zo
-7575
+7175
 normal! zo
-7575
+7175
 normal! zo
-7575
+7175
 normal! zo
-7575
+7178
 normal! zo
-7575
+7178
 normal! zo
-7599
+7181
 normal! zo
-7668
+7181
 normal! zo
-7687
+7184
 normal! zo
-7690
+7184
 normal! zo
-7691
+7188
 normal! zo
-7691
+7192
 normal! zo
-7691
+7200
 normal! zo
-7704
+7218
 normal! zo
-7705
+7219
 normal! zo
-7706
+7228
 normal! zo
-7711
+7229
 normal! zo
-7717
+7231
 normal! zo
-7723
+7616
 normal! zo
-7723
+7645
 normal! zo
-7723
+7645
 normal! zo
-7723
+7645
 normal! zo
-7723
+7645
 normal! zo
-7723
+7645
 normal! zo
-7725
+7669
 normal! zo
-7764
+7738
+normal! zo
+7757
+normal! zo
+7760
+normal! zo
+7761
+normal! zo
+7761
+normal! zo
+7761
 normal! zo
 7774
 normal! zo
 7775
 normal! zo
-7783
+7776
 normal! zo
-7784
+7781
 normal! zo
 7787
 normal! zo
-7792
+7793
 normal! zo
 7793
 normal! zo
-7794
+7793
+normal! zo
+7793
+normal! zo
+7793
+normal! zo
+7793
 normal! zo
 7795
 normal! zo
-7795
-normal! zo
-7795
-normal! zo
-7795
-normal! zo
-7795
-normal! zo
-7795
-normal! zo
-7799
-normal! zo
-7805
-normal! zo
-7808
-normal! zo
-7808
-normal! zo
-7808
-normal! zo
-7808
-normal! zo
-7808
-normal! zo
-7817
-normal! zo
-7818
-normal! zo
-7819
-normal! zo
-7827
-normal! zo
 7834
 normal! zo
-7834
+7844
 normal! zo
-7834
+7845
 normal! zo
-7834
+7853
 normal! zo
-7834
+7854
 normal! zo
-7834
+7857
 normal! zo
-7836
+7862
 normal! zo
-7836
-normal! zo
-7836
-normal! zo
-7836
-normal! zo
-7836
-normal! zo
-7836
-normal! zo
-7836
-normal! zo
-7839
-normal! zo
-7839
-normal! zo
-7839
-normal! zo
-7839
-normal! zo
-7839
-normal! zo
-7839
-normal! zo
-7840
-normal! zo
-7840
-normal! zo
-7840
-normal! zo
-7840
-normal! zo
-7842
-normal! zo
-7843
-normal! zo
-7852
-normal! zo
-7859
-normal! zo
-7859
-normal! zo
-7859
-normal! zo
-7859
-normal! zo
-7859
-normal! zo
-7859
-normal! zo
-7861
-normal! zo
-7864
-normal! zo
-7864
-normal! zo
-7864
-normal! zo
-7864
-normal! zo
-7864
+7863
 normal! zo
 7864
 normal! zo
@@ -882,323 +805,365 @@ normal! zo
 normal! zo
 7865
 normal! zo
-7867
+7865
 normal! zo
-7868
+7865
 normal! zo
-7871
+7869
 normal! zo
-7876
+7875
 normal! zo
-7876
+7878
 normal! zo
-7876
+7878
 normal! zo
-7876
+7878
 normal! zo
-7876
+7878
 normal! zo
-7876
+7878
 normal! zo
-7876
+7887
 normal! zo
-7924
+7888
+normal! zo
+7889
+normal! zo
+7897
+normal! zo
+7904
+normal! zo
+7904
+normal! zo
+7904
+normal! zo
+7904
+normal! zo
+7904
+normal! zo
+7904
+normal! zo
+7906
+normal! zo
+7906
+normal! zo
+7906
+normal! zo
+7906
+normal! zo
+7906
+normal! zo
+7906
+normal! zo
+7906
+normal! zo
+7909
+normal! zo
+7909
+normal! zo
+7909
+normal! zo
+7909
+normal! zo
+7909
+normal! zo
+7909
+normal! zo
+7910
+normal! zo
+7910
+normal! zo
+7910
+normal! zo
+7910
+normal! zo
+7912
+normal! zo
+7913
+normal! zo
+7922
+normal! zo
+7929
+normal! zo
+7929
+normal! zo
+7929
+normal! zo
+7929
+normal! zo
+7929
 normal! zo
 7929
 normal! zo
 7931
 normal! zo
-7932
+7934
 normal! zo
-7932
+7934
 normal! zo
-7932
+7934
 normal! zo
-7932
+7934
 normal! zo
-7932
+7934
 normal! zo
-7932
+7934
 normal! zo
 7935
 normal! zo
+7935
+normal! zo
+7935
+normal! zo
+7935
+normal! zo
+7937
+normal! zo
+7938
+normal! zo
 7941
 normal! zo
-7944
+7946
 normal! zo
-7953
+7946
 normal! zo
-7955
+7946
 normal! zo
-7956
+7946
 normal! zo
-7963
+7946
 normal! zo
-7964
+7946
 normal! zo
-7965
-normal! zo
-7970
-normal! zo
-7974
-normal! zo
-7982
-normal! zo
-7983
-normal! zo
-7985
-normal! zo
-7985
-normal! zo
-7992
-normal! zo
-7993
+7946
 normal! zo
 7994
 normal! zo
-7994
+7999
 normal! zo
-7994
+8001
 normal! zo
-7994
+8002
 normal! zo
-7994
+8002
 normal! zo
-7994
+8002
 normal! zo
-7994
+8002
 normal! zo
-7994
+8002
 normal! zo
-7997
+8002
 normal! zo
-7997
+8005
 normal! zo
-7997
+8011
 normal! zo
-8004
+8014
 normal! zo
-8006
+8023
 normal! zo
-8289
+8025
 normal! zo
-8300
+8026
 normal! zo
-8301
+8033
 normal! zo
-8301
+8034
 normal! zo
-8301
+8035
 normal! zo
-8301
+8040
 normal! zo
-8301
+8044
 normal! zo
-8301
+8052
 normal! zo
-8301
+8053
 normal! zo
-8304
+8055
 normal! zo
-8304
+8055
 normal! zo
-8304
+8062
 normal! zo
-8304
+8063
 normal! zo
-8304
+8064
 normal! zo
-8304
+8064
 normal! zo
-8304
+8064
 normal! zo
-8308
+8064
 normal! zo
-8315
+8064
 normal! zo
-8315
+8064
 normal! zo
-8315
+8064
 normal! zo
-8315
+8064
 normal! zo
-8315
+8067
 normal! zo
-8315
+8067
 normal! zo
-8315
+8067
 normal! zo
-8315
+8074
 normal! zo
-8318
+8076
 normal! zo
-8318
+8359
 normal! zo
-8318
+8370
 normal! zo
-8318
+8371
 normal! zo
-8318
+8371
 normal! zo
-8318
+8371
 normal! zo
-8318
+8371
 normal! zo
-8318
+8371
 normal! zo
-8753
+8371
 normal! zo
-8757
+8371
 normal! zo
-8788
+8374
 normal! zo
-8837
+8374
 normal! zo
-8844
+8374
 normal! zo
-9012
+8374
 normal! zo
-9023
+8374
 normal! zo
-9036
+8374
 normal! zo
-9037
+8374
 normal! zo
-9050
+8378
 normal! zo
-9055
+8385
 normal! zo
-9060
+8385
 normal! zo
-9065
+8385
 normal! zo
-9076
+8385
 normal! zo
-9099
+8385
 normal! zo
-9122
+8385
 normal! zo
-9123
+8385
 normal! zo
-9123
+8385
 normal! zo
-9123
+8388
 normal! zo
-9123
+8388
 normal! zo
-9123
+8388
 normal! zo
-9123
+8388
 normal! zo
-9134
+8388
 normal! zo
-9149
+8388
 normal! zo
-9184
+8388
 normal! zo
-9272
+8388
 normal! zo
-9303
+8823
 normal! zo
-9310
+8827
 normal! zo
-9314
+8858
 normal! zo
-9319
+8907
 normal! zo
-9334
+8914
 normal! zo
-9382
+9082
 normal! zo
-9423
+9093
 normal! zo
-9685
+9106
 normal! zo
-9711
+9107
 normal! zo
-9750
+9120
 normal! zo
-9761
+9125
 normal! zo
-9762
+9130
 normal! zo
-9775
+9135
 normal! zo
-9787
+9146
 normal! zo
-9801
+9169
 normal! zo
-9817
+9192
 normal! zo
-9834
+9193
 normal! zo
-9834
+9193
 normal! zo
-9834
+9193
 normal! zo
-9834
+9193
 normal! zo
-9834
+9193
 normal! zo
-9834
+9193
 normal! zo
-9834
+9204
 normal! zo
-9834
+9219
 normal! zo
-9834
+9254
 normal! zo
-9841
+9342
 normal! zo
-9855
+9373
 normal! zo
-9856
+9380
 normal! zo
-9856
+9384
 normal! zo
-9858
+9389
 normal! zo
-9859
+9404
 normal! zo
-9859
+9452
 normal! zo
-9861
+9493
 normal! zo
-9862
+9755
 normal! zo
-9862
+9781
 normal! zo
-9864
+9820
 normal! zo
-9865
+9831
 normal! zo
-9865
+9832
 normal! zo
-9867
+9845
 normal! zo
-9870
+9857
 normal! zo
-9872
+9871
 normal! zo
-9872
-normal! zo
-9872
-normal! zo
-9881
-normal! zo
-9894
-normal! zo
-9897
-normal! zo
-9898
-normal! zo
-9898
-normal! zo
-9901
-normal! zo
-9901
-normal! zo
-9901
+9887
 normal! zo
 9904
 normal! zo
@@ -1208,265 +1173,259 @@ normal! zo
 normal! zo
 9904
 normal! zo
-9910
+9904
 normal! zo
-9913
+9904
 normal! zo
-9917
+9904
 normal! zo
-9924
+9904
+normal! zo
+9904
+normal! zo
+9911
+normal! zo
+9925
 normal! zo
 9926
 normal! zo
-9973
+9926
+normal! zo
+9928
+normal! zo
+9929
+normal! zo
+9929
+normal! zo
+9931
+normal! zo
+9932
+normal! zo
+9932
+normal! zo
+9934
+normal! zo
+9935
+normal! zo
+9935
+normal! zo
+9937
+normal! zo
+9940
+normal! zo
+9942
+normal! zo
+9942
+normal! zo
+9942
+normal! zo
+9951
+normal! zo
+9964
+normal! zo
+9967
+normal! zo
+9968
+normal! zo
+9968
+normal! zo
+9971
+normal! zo
+9971
+normal! zo
+9971
+normal! zo
+9974
+normal! zo
+9974
+normal! zo
+9974
+normal! zo
+9974
+normal! zo
+9980
+normal! zo
+9983
 normal! zo
 9987
 normal! zo
-9988
+9994
 normal! zo
-9990
-normal! zo
-10025
-normal! zo
-10032
-normal! zo
-10037
-normal! zo
-10038
+9996
 normal! zo
 10043
 normal! zo
-10043
+10057
 normal! zo
-10043
+10058
 normal! zo
-10043
+10060
 normal! zo
-10043
+10095
 normal! zo
-10046
-normal! zo
-10046
-normal! zo
-10046
-normal! zo
-10072
-normal! zo
-10081
-normal! zo
-10086
-normal! zo
-10088
-normal! zo
-10093
-normal! zo
-10099
+10102
 normal! zo
 10107
 normal! zo
 10108
 normal! zo
-10108
+10113
 normal! zo
-10108
+10113
 normal! zo
-10108
+10113
 normal! zo
-10117
+10113
 normal! zo
-10118
+10113
 normal! zo
-10123
+10116
 normal! zo
-10172
+10116
+normal! zo
+10116
+normal! zo
+10142
+normal! zo
+10151
+normal! zo
+10156
+normal! zo
+10158
+normal! zo
+10163
+normal! zo
+10169
 normal! zo
 10177
 normal! zo
-10290
+10178
 normal! zo
-10317
+10178
 normal! zo
-10322
+10178
 normal! zo
-10328
+10178
 normal! zo
-10414
+10187
 normal! zo
-10421
+10188
 normal! zo
-10422
+10193
 normal! zo
-10470
+10242
 normal! zo
-10470
+10247
 normal! zo
-10470
+10360
 normal! zo
-10470
+10387
 normal! zo
-10470
+10392
 normal! zo
-10473
+10398
 normal! zo
-10481
+10484
 normal! zo
-10482
+10491
 normal! zo
-10527
+10492
 normal! zo
-10547
+10540
 normal! zo
-10548
+10540
 normal! zo
-10549
+10540
 normal! zo
-10549
+10540
 normal! zo
-10549
+10540
 normal! zo
-10549
+10543
 normal! zo
-10549
+10551
 normal! zo
-10549
-normal! zo
-10549
-normal! zo
-10549
-normal! zo
-10549
-normal! zo
-10566
-normal! zo
-10572
-normal! zo
-10582
+10552
 normal! zo
 10597
 normal! zo
-10600
+10617
 normal! zo
-10603
-normal! zo
-10603
-normal! zo
-10603
-normal! zo
-10606
-normal! zo
-10606
-normal! zo
-10606
-normal! zo
-10606
-normal! zo
-10611
-normal! zo
-10611
-normal! zo
-10611
+10618
 normal! zo
 10619
 normal! zo
-10626
+10619
 normal! zo
-10633
+10619
+normal! zo
+10619
+normal! zo
+10619
+normal! zo
+10619
+normal! zo
+10619
+normal! zo
+10619
+normal! zo
+10619
 normal! zo
 10636
 normal! zo
-10638
+10642
 normal! zo
-10641
-normal! zo
-10644
-normal! zo
-10649
-normal! zo
-10660
+10652
 normal! zo
 10667
 normal! zo
-10671
+10670
 normal! zo
-10672
+10673
 normal! zo
-10672
+10673
 normal! zo
-10674
+10673
 normal! zo
-10675
+10676
 normal! zo
-10675
+10676
 normal! zo
-10677
+10676
 normal! zo
-10678
-normal! zo
-10678
-normal! zo
-10680
+10676
 normal! zo
 10681
 normal! zo
 10681
 normal! zo
-10683
-normal! zo
-10684
-normal! zo
-10684
-normal! zo
-10686
-normal! zo
-10687
-normal! zo
-10687
+10681
 normal! zo
 10689
 normal! zo
-10690
-normal! zo
-10690
-normal! zo
-10692
-normal! zo
-10695
-normal! zo
-10697
-normal! zo
-10697
-normal! zo
-10697
+10696
 normal! zo
 10703
 normal! zo
-10704
-normal! zo
-10704
-normal! zo
 10706
 normal! zo
-10707
+10708
 normal! zo
-10707
+10711
 normal! zo
-10731
+10714
 normal! zo
-10735
+10719
 normal! zo
-10738
+10730
 normal! zo
-10739
+10737
 normal! zo
-10739
+10741
 normal! zo
-10739
+10742
 normal! zo
-10739
-normal! zo
-10739
-normal! zo
-10739
+10742
 normal! zo
 10744
 normal! zo
@@ -1474,699 +1433,727 @@ normal! zo
 normal! zo
 10745
 normal! zo
-10745
+10747
 normal! zo
 10748
 normal! zo
-10860
+10748
 normal! zo
-10936
+10750
 normal! zo
-10944
+10751
 normal! zo
-10951
+10751
 normal! zo
-10951
+10753
 normal! zo
-10951
+10754
 normal! zo
-10951
+10754
 normal! zo
-10951
+10756
 normal! zo
-10951
+10757
 normal! zo
-10951
+10757
 normal! zo
-10962
+10759
 normal! zo
-10966
+10760
 normal! zo
-10967
+10760
 normal! zo
-10967
+10762
 normal! zo
-10967
+10765
 normal! zo
-10977
+10767
 normal! zo
-10980
+10767
 normal! zo
-10987
+10767
 normal! zo
-10996
+10773
 normal! zo
-11005
+10774
 normal! zo
-11115
+10774
 normal! zo
-11116
+10776
+normal! zo
+10777
+normal! zo
+10777
+normal! zo
+10801
+normal! zo
+10805
+normal! zo
+10808
+normal! zo
+10809
+normal! zo
+10809
+normal! zo
+10809
+normal! zo
+10809
+normal! zo
+10809
+normal! zo
+10809
+normal! zo
+10814
+normal! zo
+10815
+normal! zo
+10815
+normal! zo
+10815
+normal! zo
+10818
+normal! zo
+10930
+normal! zo
+11006
+normal! zo
+11014
+normal! zo
+11021
+normal! zo
+11021
+normal! zo
+11021
+normal! zo
+11021
+normal! zo
+11021
+normal! zo
+11021
+normal! zo
+11021
+normal! zo
+11032
+normal! zo
+11036
+normal! zo
+11037
+normal! zo
+11037
+normal! zo
+11037
+normal! zo
+11047
+normal! zo
+11050
+normal! zo
+11057
+normal! zo
+11066
+normal! zo
+11075
+normal! zo
+11185
+normal! zo
+11186
 normal! zc
-11129
+11199
 normal! zo
-11129
+11199
 normal! zo
-11129
+11199
 normal! zo
-11129
+11199
 normal! zo
-11138
+11208
 normal! zc
-11141
+11211
 normal! zo
-11154
+11224
 normal! zo
-11167
+11237
 normal! zo
-11174
+11244
 normal! zo
-11176
+11246
 normal! zo
-11176
+11246
 normal! zo
-11176
+11246
 normal! zo
-11176
+11246
 normal! zo
-11176
+11246
 normal! zo
-11176
+11246
 normal! zo
-11184
+11254
 normal! zc
-11201
+11271
 normal! zo
-11229
+11299
 normal! zo
-11241
+11311
 normal! zo
-11242
+11312
 normal! zo
-11242
+11312
 normal! zo
-11242
+11312
 normal! zo
-11242
+11312
 normal! zo
-11201
+11271
 normal! zc
-11247
+11317
 normal! zo
-11247
+11317
 normal! zc
-11298
+11368
 normal! zo
-11298
+11368
 normal! zc
-11413
+11483
 normal! zo
-11421
+11491
 normal! zo
-11421
+11491
 normal! zo
-11421
+11491
 normal! zo
-11421
+11491
 normal! zo
-11413
+11483
 normal! zc
-11429
+11499
 normal! zc
-11435
+11505
 normal! zo
-11435
+11505
 normal! zc
-11446
+11516
 normal! zo
-11446
+11516
 normal! zc
-11463
+11533
 normal! zo
-11463
+11533
 normal! zo
-11467
+11537
 normal! zo
-11472
+11542
 normal! zo
-11472
+11542
 normal! zo
-11474
+11544
 normal! zo
-11475
+11545
 normal! zo
-11475
+11545
 normal! zo
-11480
+11550
 normal! zo
-11480
+11550
 normal! zo
-11480
+11550
 normal! zo
-11480
+11550
 normal! zo
-11480
+11550
 normal! zo
-11480
+11550
 normal! zc
-11493
+11563
 normal! zo
-11496
+11566
 normal! zo
-11496
+11566
 normal! zo
-11496
+11566
 normal! zo
-11496
+11566
 normal! zo
-11502
+11572
 normal! zo
-11502
+11572
 normal! zo
-11502
+11572
 normal! zo
-11502
+11572
 normal! zo
-11502
+11572
 normal! zo
-11502
+11572
 normal! zc
-11530
+11600
 normal! zo
-11568
+11638
 normal! zc
-11575
+11645
 normal! zc
-11583
+11653
 normal! zo
-11583
+11653
 normal! zc
-11591
+11661
 normal! zc
-11599
+11669
 normal! zc
-11613
+11683
 normal! zo
-11613
+11683
 normal! zc
-11631
+11701
 normal! zo
-11631
+11701
 normal! zo
-11631
+11701
 normal! zo
-11631
+11701
 normal! zo
-11631
+11701
 normal! zo
-11631
+11701
 normal! zo
-11631
+11701
 normal! zo
-11631
+11701
 normal! zo
-11631
+11701
 normal! zo
-11631
+11701
 normal! zo
-11631
+11701
 normal! zc
-11652
+11722
 normal! zo
-11652
+11722
 normal! zo
-11652
+11722
 normal! zo
-11652
+11722
 normal! zo
-11652
+11722
 normal! zo
-11652
+11722
 normal! zo
-11693
+11763
 normal! zo
-11694
+11764
 normal! zo
-11716
+11786
 normal! zo
-11716
+11786
 normal! zc
-11823
+11893
 normal! zo
-11823
+11893
 normal! zc
-11872
+11942
 normal! zo
-11872
+11942
 normal! zo
-11874
+11944
 normal! zo
-11884
+11954
 normal! zo
-11872
+11942
 normal! zc
-11967
+12037
 normal! zo
-11967
+12037
 normal! zc
-12021
+12091
 normal! zo
-12021
+12091
 normal! zo
-12021
+12091
 normal! zo
-12021
+12091
 normal! zc
-12021
+12091
 normal! zc
-12035
+12105
 normal! zo
-12072
+12142
 normal! zo
-12083
+12153
 normal! zo
-12088
+12158
 normal! zo
-12106
+12176
 normal! zo
-12106
+12176
 normal! zo
-12106
+12176
 normal! zo
-12106
+12176
 normal! zo
-12107
+12177
 normal! zo
-12112
+12182
 normal! zo
-12128
+12198
 normal! zo
-12128
+12198
 normal! zo
-12128
+12198
 normal! zo
-12128
+12198
 normal! zo
-12137
+12207
 normal! zo
-12137
+12207
 normal! zo
-12137
+12207
 normal! zo
-12137
+12207
 normal! zo
-12137
+12207
 normal! zo
-12161
+12231
 normal! zo
-12185
+12255
 normal! zo
-12185
+12255
 normal! zc
-12226
+12296
 normal! zo
-12226
+12296
 normal! zo
-12226
+12296
 normal! zo
-12226
+12296
 normal! zo
-12288
+12358
 normal! zo
-12304
+12374
 normal! zo
-12304
+12374
 normal! zc
-12328
+12398
 normal! zo
-12328
+12398
 normal! zo
-12328
+12398
 normal! zo
-12328
+12398
 normal! zc
-12353
+12423
 normal! zo
-12353
+12423
 normal! zo
-12353
+12423
 normal! zo
-12353
+12423
 normal! zc
-12428
+12498
 normal! zo
-12428
+12498
 normal! zo
-12428
+12498
 normal! zo
-12428
+12498
 normal! zo
-12428
+12498
 normal! zo
-12428
+12498
 normal! zo
-12428
+12498
 normal! zo
-12428
+12498
 normal! zo
-12428
+12498
 normal! zc
-12444
+12514
 normal! zo
-12444
+12514
 normal! zc
-12466
+12536
 normal! zo
-12466
+12536
 normal! zc
-12487
+12557
 normal! zo
-12487
+12557
 normal! zo
-12487
+12557
 normal! zo
-12487
+12557
 normal! zo
-12487
+12557
 normal! zo
-12487
+12557
 normal! zo
-12487
+12557
 normal! zo
-12487
+12557
 normal! zc
-12487
+12557
 normal! zc
-12607
+12677
 normal! zo
-12607
+12677
 normal! zo
-12607
+12677
 normal! zo
-12607
+12677
 normal! zo
-12607
+12677
 normal! zo
-12607
+12677
 normal! zc
-12875
+12945
 normal! zo
-12875
+12945
 normal! zc
-12905
+12975
 normal! zo
-12905
+12975
 normal! zo
-12905
+12975
 normal! zo
-12905
+12975
 normal! zo
-12905
+12975
 normal! zo
-12905
+12975
 normal! zo
-12905
+12975
 normal! zo
-12905
+12975
 normal! zo
-12920
+12990
 normal! zo
-12935
+13005
 normal! zo
-12937
+13007
 normal! zo
-12959
+13029
 normal! zo
-12967
+13037
 normal! zo
-12967
+13037
 normal! zc
-12983
+13053
 normal! zo
-12983
+13053
 normal! zo
-13022
+13092
 normal! zo
-13084
+13154
 normal! zo
-13085
+13155
 normal! zo
-13103
+13173
 normal! zo
-13145
+13215
 normal! zo
-13146
+13216
 normal! zo
-13174
+13244
 normal! zo
-13206
+13276
 normal! zo
-13207
+13277
 normal! zo
-13235
+13305
 normal! zo
-13271
+13341
 normal! zo
-13272
+13342
 normal! zo
-13290
+13360
 normal! zo
-13317
+13387
 normal! zc
-13327
+13397
 normal! zo
-13327
+13397
 normal! zc
-13347
+13417
 normal! zo
-13348
+13418
 normal! zo
-13349
+13419
 normal! zo
-13347
+13417
 normal! zc
-13403
+13473
 normal! zo
-13403
+13473
 normal! zc
-13461
+13531
 normal! zo
-13461
+13531
 normal! zo
-13461
+13531
 normal! zo
-13471
+13541
 normal! zo
-13476
+13546
 normal! zo
-13477
-normal! zo
-13478
-normal! zo
-13478
-normal! zo
-13478
-normal! zo
-13478
-normal! zo
-13478
-normal! zo
-13478
-normal! zo
-13478
-normal! zo
-13478
-normal! zo
-13478
-normal! zo
-13478
-normal! zo
-13484
-normal! zo
-13485
-normal! zo
-13486
-normal! zo
-13486
-normal! zo
-13486
-normal! zo
-13486
-normal! zo
-13486
-normal! zo
-13486
-normal! zo
-13486
-normal! zo
-13488
-normal! zo
-13488
-normal! zo
-13488
-normal! zo
-13488
-normal! zo
-13488
-normal! zo
-13488
-normal! zo
-13488
-normal! zo
-13488
-normal! zo
-13490
-normal! zo
-13491
-normal! zo
-13491
-normal! zo
-13491
-normal! zo
-13491
-normal! zo
-13491
-normal! zo
-13491
-normal! zo
-13491
-normal! zo
-13491
-normal! zo
-13491
-normal! zo
-13494
-normal! zo
-13496
-normal! zo
-13496
-normal! zo
-13501
-normal! zo
-13501
-normal! zo
-13511
-normal! zo
-13512
-normal! zo
-13512
-normal! zo
-13512
-normal! zo
-13512
-normal! zo
-13512
-normal! zo
-13512
-normal! zo
-13519
-normal! zo
-13519
-normal! zo
-13519
-normal! zo
-13525
-normal! zo
-13526
-normal! zo
-13535
-normal! zo
-13536
-normal! zo
-13536
-normal! zo
-13536
-normal! zo
-13536
-normal! zo
-13540
-normal! zo
-13540
-normal! zo
-13540
+13547
 normal! zo
 13548
 normal! zo
-13549
+13548
 normal! zo
-13551
+13548
 normal! zo
-13559
+13548
+normal! zo
+13548
+normal! zo
+13548
+normal! zo
+13548
+normal! zo
+13548
+normal! zo
+13548
+normal! zo
+13548
+normal! zo
+13554
+normal! zo
+13555
+normal! zo
+13556
+normal! zo
+13556
+normal! zo
+13556
+normal! zo
+13556
+normal! zo
+13556
+normal! zo
+13556
+normal! zo
+13556
+normal! zo
+13558
+normal! zo
+13558
+normal! zo
+13558
+normal! zo
+13558
+normal! zo
+13558
+normal! zo
+13558
+normal! zo
+13558
+normal! zo
+13558
 normal! zo
 13560
 normal! zo
-13560
+13561
 normal! zo
-13560
+13561
 normal! zo
-13560
+13561
+normal! zo
+13561
+normal! zo
+13561
+normal! zo
+13561
+normal! zo
+13561
+normal! zo
+13561
+normal! zo
+13561
 normal! zo
 13564
 normal! zo
-13564
+13566
 normal! zo
-13564
-normal! zo
-13571
+13566
 normal! zo
 13571
 normal! zo
 13571
 normal! zo
-13571
+13581
 normal! zo
-13571
+13582
 normal! zo
-13574
+13582
 normal! zo
-13575
+13582
 normal! zo
-13576
+13582
 normal! zo
-13577
+13582
 normal! zo
-13577
+13582
 normal! zo
-13578
+13589
 normal! zo
-13590
+13589
 normal! zo
-13591
+13589
 normal! zo
-13591
+13595
 normal! zo
-13591
+13596
 normal! zo
-13598
+13605
 normal! zo
-13599
+13606
 normal! zo
-13600
+13606
 normal! zo
-13600
+13606
 normal! zo
-13601
+13606
 normal! zo
-13612
+13610
 normal! zo
-13613
+13610
 normal! zo
-13614
+13610
 normal! zo
-13614
+13618
 normal! zo
-13615
+13619
+normal! zo
+13621
+normal! zo
+13629
 normal! zo
 13630
 normal! zo
-13631
+13630
 normal! zo
-13632
+13630
 normal! zo
-13633
-normal! zo
-13633
+13630
 normal! zo
 13634
+normal! zo
+13634
+normal! zo
+13634
+normal! zo
+13641
+normal! zo
+13641
+normal! zo
+13641
+normal! zo
+13641
+normal! zo
+13641
+normal! zo
+13644
+normal! zo
+13645
 normal! zo
 13646
 normal! zo
@@ -2174,19 +2161,15 @@ normal! zo
 normal! zo
 13647
 normal! zo
-13647
-normal! zo
 13648
 normal! zo
-13654
+13660
 normal! zo
-13655
+13661
 normal! zo
-13656
+13661
 normal! zo
-13656
-normal! zo
-13657
+13661
 normal! zo
 13668
 normal! zo
@@ -2198,295 +2181,275 @@ normal! zo
 normal! zo
 13671
 normal! zo
-13686
+13682
 normal! zo
-13686
+13683
 normal! zo
-13686
+13684
 normal! zo
-13707
+13684
 normal! zo
-13712
+13685
 normal! zo
-13713
+13700
 normal! zo
-13714
+13701
 normal! zo
-13714
+13702
 normal! zo
-13714
+13703
 normal! zo
-13714
+13703
 normal! zo
-13714
+13704
 normal! zo
-13714
+13716
 normal! zo
-13714
+13717
 normal! zo
-13714
+13717
 normal! zo
-13714
+13717
 normal! zo
-13714
-normal! zo
-13720
-normal! zo
-13721
-normal! zo
-13722
-normal! zo
-13722
-normal! zo
-13722
-normal! zo
-13722
-normal! zo
-13722
-normal! zo
-13722
-normal! zo
-13722
+13718
 normal! zo
 13724
 normal! zo
-13724
+13725
 normal! zo
-13724
-normal! zo
-13724
-normal! zo
-13724
-normal! zo
-13724
-normal! zo
-13724
-normal! zo
-13724
+13726
 normal! zo
 13726
 normal! zo
 13727
 normal! zo
-13727
+13738
 normal! zo
-13727
+13739
 normal! zo
-13727
+13740
 normal! zo
-13727
+13740
 normal! zo
-13727
-normal! zo
-13727
-normal! zo
-13727
-normal! zo
-13727
-normal! zo
-13730
-normal! zo
-13732
-normal! zo
-13737
-normal! zo
-13746
-normal! zo
-13747
-normal! zo
-13747
-normal! zo
-13747
-normal! zo
-13747
-normal! zo
-13747
-normal! zo
-13747
-normal! zo
-13747
-normal! zo
-13754
+13741
 normal! zo
 13756
 normal! zo
-13757
+13756
 normal! zo
-13758
+13756
 normal! zo
-13758
+13777
 normal! zo
-13759
+13782
 normal! zo
-13769
+13783
 normal! zo
-13770
+13784
 normal! zo
-13771
+13784
 normal! zo
-13771
+13784
 normal! zo
-13772
+13784
 normal! zo
-13786
+13784
 normal! zo
-13787
+13784
 normal! zo
-13788
+13784
 normal! zo
-13789
+13784
 normal! zo
-13789
+13784
+normal! zo
+13784
 normal! zo
 13790
 normal! zo
+13791
+normal! zo
+13792
+normal! zo
+13792
+normal! zo
+13792
+normal! zo
+13792
+normal! zo
+13792
+normal! zo
+13792
+normal! zo
+13792
+normal! zo
+13794
+normal! zo
+13794
+normal! zo
+13794
+normal! zo
+13794
+normal! zo
+13794
+normal! zo
+13794
+normal! zo
+13794
+normal! zo
+13794
+normal! zo
+13796
+normal! zo
+13797
+normal! zo
+13797
+normal! zo
+13797
+normal! zo
+13797
+normal! zo
+13797
+normal! zo
+13797
+normal! zo
+13797
+normal! zo
+13797
+normal! zo
+13797
+normal! zo
 13800
 normal! zo
-13801
-normal! zo
 13802
 normal! zo
-13802
+13807
 normal! zo
-13803
+13816
+normal! zo
+13817
+normal! zo
+13817
 normal! zo
 13817
 normal! zo
 13817
 normal! zo
 13817
+normal! zo
+13817
+normal! zo
+13817
+normal! zo
+13824
+normal! zo
+13826
+normal! zo
+13827
 normal! zo
 13828
 normal! zo
-13833
+13828
 normal! zo
-13834
+13829
 normal! zo
-13835
+13839
 normal! zo
-13835
+13840
 normal! zo
-13835
-normal! zo
-13835
-normal! zo
-13835
-normal! zo
-13835
-normal! zo
-13835
-normal! zo
-13835
-normal! zo
-13835
-normal! zo
-13835
+13841
 normal! zo
 13841
 normal! zo
 13842
 normal! zo
-13843
+13856
 normal! zo
-13843
-normal! zo
-13843
-normal! zo
-13843
-normal! zo
-13843
-normal! zo
-13843
-normal! zo
-13843
-normal! zo
-13845
-normal! zo
-13845
-normal! zo
-13845
-normal! zo
-13845
-normal! zo
-13845
-normal! zo
-13845
-normal! zo
-13845
-normal! zo
-13845
-normal! zo
-13847
-normal! zo
-13848
-normal! zo
-13848
-normal! zo
-13848
-normal! zo
-13848
-normal! zo
-13848
-normal! zo
-13848
-normal! zo
-13848
-normal! zo
-13848
-normal! zo
-13848
-normal! zo
-13851
-normal! zo
-13853
+13857
 normal! zo
 13858
 normal! zo
-13867
+13859
 normal! zo
-13868
+13859
 normal! zo
-13868
+13860
 normal! zo
-13868
+13870
 normal! zo
-13868
+13871
 normal! zo
-13868
+13872
 normal! zo
-13868
+13872
 normal! zo
-13868
+13873
 normal! zo
-13875
+13887
 normal! zo
-13880
+13887
 normal! zo
-13881
-normal! zo
-13882
-normal! zo
-13889
-normal! zo
-13890
-normal! zo
-13891
-normal! zo
-13897
+13887
 normal! zo
 13898
 normal! zo
-13899
+13903
 normal! zo
 13904
 normal! zo
 13905
 normal! zo
-13906
+13905
 normal! zo
-13906
+13905
 normal! zo
-13916
+13905
+normal! zo
+13905
+normal! zo
+13905
+normal! zo
+13905
+normal! zo
+13905
+normal! zo
+13905
+normal! zo
+13905
+normal! zo
+13911
+normal! zo
+13912
+normal! zo
+13913
+normal! zo
+13913
+normal! zo
+13913
+normal! zo
+13913
+normal! zo
+13913
+normal! zo
+13913
+normal! zo
+13913
+normal! zo
+13915
+normal! zo
+13915
+normal! zo
+13915
+normal! zo
+13915
+normal! zo
+13915
+normal! zo
+13915
+normal! zo
+13915
+normal! zo
+13915
 normal! zo
 13917
 normal! zo
@@ -2502,93 +2465,63 @@ normal! zo
 normal! zo
 13918
 normal! zo
-13925
+13918
 normal! zo
-13926
+13918
 normal! zo
-13926
+13918
 normal! zo
-13926
+13921
 normal! zo
-13926
+13923
 normal! zo
-13926
+13928
 normal! zo
-13926
+13937
 normal! zo
-13926
+13938
 normal! zo
-13933
+13938
 normal! zo
-13934
+13938
 normal! zo
-13934
+13938
 normal! zo
-13934
+13938
 normal! zo
-13934
+13938
 normal! zo
-13934
+13938
 normal! zo
-13934
+13945
 normal! zo
-13934
-normal! zo
-13940
-normal! zo
-13941
-normal! zo
-13941
-normal! zo
-13941
-normal! zo
-13941
-normal! zo
-13941
-normal! zo
-13941
-normal! zo
-13941
+13950
 normal! zo
 13951
 normal! zo
-13957
+13952
 normal! zo
-13957
+13959
 normal! zo
-13963
+13960
+normal! zo
+13961
+normal! zo
+13967
+normal! zo
+13968
 normal! zo
 13969
 normal! zo
-13975
+13974
 normal! zo
 13975
 normal! zo
-13975
+13976
 normal! zo
-13975
+13976
 normal! zo
-13975
-normal! zo
-13975
-normal! zo
-13975
-normal! zo
-13975
-normal! zo
-13975
-normal! zo
-13985
-normal! zo
-13985
-normal! zo
-13985
-normal! zo
-13985
-normal! zo
-13985
-normal! zo
-13985
+13986
 normal! zo
 13987
 normal! zo
@@ -2598,195 +2531,187 @@ normal! zo
 normal! zo
 13988
 normal! zo
-13994
+13988
 normal! zo
-13994
+13988
 normal! zo
-13994
+13988
 normal! zo
-13994
+13995
 normal! zo
-13994
+13996
 normal! zo
-13994
+13996
 normal! zo
-13994
+13996
 normal! zo
-13994
+13996
 normal! zo
-13994
+13996
 normal! zo
-14005
+13996
 normal! zo
-14005
+13996
 normal! zo
-14005
+14003
 normal! zo
-14005
+14004
 normal! zo
-14005
+14004
 normal! zo
-14005
+14004
 normal! zo
-14007
+14004
 normal! zo
-14008
+14004
 normal! zo
-14008
+14004
 normal! zo
-14008
+14004
 normal! zo
-14014
+14010
 normal! zo
-14014
+14011
 normal! zo
-14014
+14011
 normal! zo
-14014
+14011
 normal! zo
-14022
+14011
+normal! zo
+14011
+normal! zo
+14011
+normal! zo
+14011
+normal! zo
+14021
 normal! zo
 14027
 normal! zo
-14030
+14027
 normal! zo
-14035
+14033
 normal! zo
-14036
+14039
 normal! zo
-14037
+14045
 normal! zo
-14037
+14045
 normal! zo
-14037
+14045
 normal! zo
-14037
+14045
 normal! zo
-14037
+14045
 normal! zo
-14037
+14045
 normal! zo
-14037
+14045
 normal! zo
-14037
+14045
 normal! zo
-14037
+14045
 normal! zo
-14037
+14055
 normal! zo
-14043
+14055
 normal! zo
-14044
+14055
 normal! zo
-14047
+14055
 normal! zo
-14048
+14055
 normal! zo
-14048
+14055
 normal! zo
-14048
+14057
 normal! zo
-14048
+14058
 normal! zo
-14048
+14058
 normal! zo
-14048
-normal! zo
-14048
-normal! zo
-14050
-normal! zo
-14050
-normal! zo
-14050
-normal! zo
-14050
-normal! zo
-14050
-normal! zo
-14050
-normal! zo
-14050
-normal! zo
-14050
-normal! zo
-14050
-normal! zo
-14052
-normal! zo
-14053
-normal! zo
-14056
-normal! zo
-14056
-normal! zo
-14056
-normal! zo
-14056
-normal! zo
-14056
-normal! zo
-14056
-normal! zo
-14056
-normal! zo
-14056
-normal! zo
-14056
-normal! zo
-14059
-normal! zo
-14060
+14058
 normal! zo
 14064
 normal! zo
 14064
 normal! zo
-14069
+14064
 normal! zo
-14069
+14064
 normal! zo
-14074
+14064
+normal! zo
+14064
+normal! zo
+14064
+normal! zo
+14064
+normal! zo
+14064
 normal! zo
 14075
 normal! zo
-14082
+14075
 normal! zo
-14083
+14075
 normal! zo
-14086
+14075
 normal! zo
-14086
+14075
 normal! zo
-14086
+14075
 normal! zo
-14086
+14077
 normal! zo
-14086
+14078
 normal! zo
-14086
+14078
 normal! zo
-14093
+14078
 normal! zo
-14094
+14084
 normal! zo
-14095
+14084
 normal! zo
-14096
+14084
 normal! zo
-14102
+14084
 normal! zo
-14103
+14092
 normal! zo
-14104
+14097
 normal! zo
-14110
+14100
 normal! zo
-14111
+14105
 normal! zo
-14111
+14106
 normal! zo
-14112
+14107
+normal! zo
+14107
+normal! zo
+14107
+normal! zo
+14107
+normal! zo
+14107
+normal! zo
+14107
+normal! zo
+14107
+normal! zo
+14107
+normal! zo
+14107
+normal! zo
+14107
+normal! zo
+14113
+normal! zo
+14114
 normal! zo
 14117
 normal! zo
@@ -2794,125 +2719,141 @@ normal! zo
 normal! zo
 14118
 normal! zo
-14119
+14118
 normal! zo
-14128
+14118
+normal! zo
+14118
+normal! zo
+14118
+normal! zo
+14118
+normal! zo
+14120
+normal! zo
+14120
+normal! zo
+14120
+normal! zo
+14120
+normal! zo
+14120
+normal! zo
+14120
+normal! zo
+14120
+normal! zo
+14120
+normal! zo
+14120
+normal! zo
+14122
+normal! zo
+14123
+normal! zo
+14126
+normal! zo
+14126
+normal! zo
+14126
+normal! zo
+14126
+normal! zo
+14126
+normal! zo
+14126
+normal! zo
+14126
+normal! zo
+14126
+normal! zo
+14126
 normal! zo
 14129
 normal! zo
 14130
 normal! zo
-14130
+14134
 normal! zo
-14130
-normal! zo
-14130
-normal! zo
-14130
-normal! zo
-14130
-normal! zo
-14137
-normal! zo
-14138
+14134
 normal! zo
 14139
 normal! zo
+14139
+normal! zo
+14144
+normal! zo
 14145
-normal! zo
-14146
-normal! zo
-14146
-normal! zo
-14146
-normal! zo
-14146
-normal! zo
-14146
-normal! zo
-14146
-normal! zo
-14146
 normal! zo
 14152
 normal! zo
 14153
 normal! zo
-14153
+14156
 normal! zo
-14153
+14156
 normal! zo
-14153
+14156
 normal! zo
-14153
+14156
 normal! zo
-14153
+14156
 normal! zo
-14153
+14156
+normal! zo
+14163
 normal! zo
 14164
 normal! zo
 14165
 normal! zo
-14165
+14166
 normal! zo
-14171
+14172
 normal! zo
-14177
+14173
 normal! zo
-14177
+14174
 normal! zo
-14183
+14180
 normal! zo
-14183
+14181
 normal! zo
-14183
+14181
 normal! zo
-14183
+14182
+normal! zo
+14187
+normal! zo
+14188
+normal! zo
+14188
+normal! zo
+14189
+normal! zo
+14198
 normal! zo
 14199
 normal! zo
-14204
+14200
 normal! zo
-14205
+14200
 normal! zo
-14206
+14200
 normal! zo
-14206
+14200
 normal! zo
-14206
+14200
 normal! zo
-14206
+14200
 normal! zo
-14206
+14207
 normal! zo
-14206
+14208
 normal! zo
-14206
+14209
 normal! zo
-14206
-normal! zo
-14206
-normal! zo
-14206
-normal! zo
-14212
-normal! zo
-14213
-normal! zo
-14214
-normal! zo
-14214
-normal! zo
-14214
-normal! zo
-14214
-normal! zo
-14214
-normal! zo
-14214
-normal! zo
-14214
+14215
 normal! zo
 14216
 normal! zo
@@ -2927,82 +2868,42 @@ normal! zo
 14216
 normal! zo
 14216
-normal! zo
-14216
-normal! zo
-14216
-normal! zo
-14218
-normal! zo
-14219
-normal! zo
-14219
-normal! zo
-14219
-normal! zo
-14219
-normal! zo
-14219
-normal! zo
-14219
-normal! zo
-14219
-normal! zo
-14219
-normal! zo
-14219
 normal! zo
 14222
 normal! zo
-14224
+14223
 normal! zo
-14224
+14223
 normal! zo
-14229
+14223
 normal! zo
-14229
+14223
 normal! zo
-14239
+14223
 normal! zo
-14240
+14223
 normal! zo
-14240
+14223
 normal! zo
-14240
+14234
 normal! zo
-14240
+14235
 normal! zo
-14240
+14235
 normal! zo
-14240
+14241
 normal! zo
 14247
 normal! zo
-14248
+14247
 normal! zo
-14249
+14253
 normal! zo
-14250
+14253
 normal! zo
-14255
+14253
 normal! zo
-14256
-normal! zo
-14257
-normal! zo
-14267
-normal! zo
-14268
-normal! zo
-14269
-normal! zo
-14269
-normal! zo
-14269
-normal! zo
-14269
-normal! zo
-14269
+14253
 normal! zo
 14269
 normal! zo
@@ -3010,33 +2911,105 @@ normal! zo
 normal! zo
 14275
 normal! zo
-14275
-normal! zo
-14275
+14276
 normal! zo
 14276
 normal! zo
+14276
+normal! zo
+14276
+normal! zo
+14276
+normal! zo
+14276
+normal! zo
+14276
+normal! zo
+14276
+normal! zo
+14276
+normal! zo
+14276
+normal! zo
+14282
+normal! zo
+14283
+normal! zo
+14284
+normal! zo
+14284
+normal! zo
+14284
+normal! zo
+14284
+normal! zo
+14284
+normal! zo
+14284
+normal! zo
+14284
+normal! zo
 14286
 normal! zo
-14287
+14286
 normal! zo
-14287
+14286
 normal! zo
-14293
+14286
+normal! zo
+14286
+normal! zo
+14286
+normal! zo
+14286
+normal! zo
+14286
+normal! zo
+14286
+normal! zo
+14288
+normal! zo
+14289
+normal! zo
+14289
+normal! zo
+14289
+normal! zo
+14289
+normal! zo
+14289
+normal! zo
+14289
+normal! zo
+14289
+normal! zo
+14289
+normal! zo
+14289
+normal! zo
+14292
 normal! zo
 14294
 normal! zo
 14294
 normal! zo
-14300
+14299
 normal! zo
-14300
+14299
 normal! zo
-14300
+14309
 normal! zo
-14300
+14310
 normal! zo
-14312
+14310
+normal! zo
+14310
+normal! zo
+14310
+normal! zo
+14310
+normal! zo
+14310
 normal! zo
 14317
 normal! zo
@@ -3044,23 +3017,7 @@ normal! zo
 normal! zo
 14319
 normal! zo
-14319
-normal! zo
-14319
-normal! zo
-14319
-normal! zo
-14319
-normal! zo
-14319
-normal! zo
-14319
-normal! zo
-14319
-normal! zo
-14319
-normal! zo
-14319
+14320
 normal! zo
 14325
 normal! zo
@@ -3068,85 +3025,43 @@ normal! zo
 normal! zo
 14327
 normal! zo
-14327
-normal! zo
-14327
-normal! zo
-14327
-normal! zo
-14327
-normal! zo
-14327
-normal! zo
-14327
-normal! zo
-14329
-normal! zo
-14329
-normal! zo
-14329
-normal! zo
-14329
-normal! zo
-14329
-normal! zo
-14329
-normal! zo
-14329
-normal! zo
-14329
-normal! zo
-14329
-normal! zo
-14331
-normal! zo
-14332
-normal! zo
-14332
-normal! zo
-14332
-normal! zo
-14332
-normal! zo
-14332
-normal! zo
-14332
-normal! zo
-14332
-normal! zo
-14332
-normal! zo
-14332
-normal! zo
-14335
-normal! zo
 14337
 normal! zo
-14337
+14338
 normal! zo
-14342
+14339
 normal! zo
-14342
+14339
 normal! zo
-14352
+14339
 normal! zo
-14353
+14339
 normal! zo
-14353
+14339
 normal! zo
-14353
+14339
 normal! zo
-14353
+14344
 normal! zo
-14353
+14345
 normal! zo
-14353
+14345
 normal! zo
-14360
+14345
 normal! zo
-14367
+14346
 normal! zo
-14368
+14356
+normal! zo
+14357
+normal! zo
+14357
+normal! zo
+14363
+normal! zo
+14364
+normal! zo
+14364
 normal! zo
 14370
 normal! zo
@@ -3154,761 +3069,841 @@ normal! zo
 normal! zo
 14370
 normal! zo
-14376
+14370
 normal! zo
-14378
+14382
 normal! zo
-14380
-normal! zo
-14386
+14387
 normal! zo
 14388
 normal! zo
-14390
+14389
+normal! zo
+14389
+normal! zo
+14389
+normal! zo
+14389
+normal! zo
+14389
+normal! zo
+14389
+normal! zo
+14389
+normal! zo
+14389
+normal! zo
+14389
+normal! zo
+14389
+normal! zo
+14395
+normal! zo
+14396
+normal! zo
+14397
+normal! zo
+14397
+normal! zo
+14397
+normal! zo
+14397
+normal! zo
+14397
+normal! zo
+14397
+normal! zo
+14397
+normal! zo
+14399
+normal! zo
+14399
+normal! zo
+14399
+normal! zo
+14399
+normal! zo
+14399
+normal! zo
+14399
+normal! zo
+14399
+normal! zo
+14399
+normal! zo
+14399
 normal! zo
 14401
 normal! zo
-14421
+14402
 normal! zo
-14433
+14402
 normal! zo
-14436
+14402
+normal! zo
+14402
+normal! zo
+14402
+normal! zo
+14402
+normal! zo
+14402
+normal! zo
+14402
+normal! zo
+14402
+normal! zo
+14405
+normal! zo
+14407
+normal! zo
+14407
+normal! zo
+14412
+normal! zo
+14412
+normal! zo
+14422
+normal! zo
+14423
+normal! zo
+14423
+normal! zo
+14423
+normal! zo
+14423
+normal! zo
+14423
+normal! zo
+14423
+normal! zo
+14430
 normal! zo
 14437
 normal! zo
 14438
 normal! zo
-14438
-normal! zo
-14438
+14440
 normal! zo
 14440
 normal! zo
-14441
+14440
 normal! zo
-14441
+14446
 normal! zo
-14441
+14448
 normal! zo
-14457
+14450
 normal! zo
-14468
+14456
 normal! zo
-14477
+14458
 normal! zo
-14487
+14460
 normal! zo
-14514
+14471
 normal! zo
-14519
+14491
 normal! zo
-14525
+14503
 normal! zo
-14536
+14506
 normal! zo
-14549
+14507
 normal! zo
-14573
+14508
 normal! zo
-14575
+14508
 normal! zo
-14578
+14508
 normal! zo
-14581
+14510
 normal! zo
-14582
+14511
 normal! zo
-14586
+14511
 normal! zo
-14587
+14511
 normal! zo
-14601
+14527
 normal! zo
-14601
+14538
 normal! zo
-14601
+14547
 normal! zo
-14601
+14557
 normal! zo
-14623
+14584
 normal! zo
-14624
+14589
 normal! zo
-14625
+14595
 normal! zo
-14625
+14606
 normal! zo
-14625
+14619
 normal! zo
-14625
-normal! zo
-14625
-normal! zo
-14625
-normal! zo
-14625
-normal! zo
-14625
-normal! zo
-14625
-normal! zo
-14625
-normal! zo
-14634
-normal! zo
-14635
-normal! zo
-14641
+14643
 normal! zo
 14645
 normal! zo
-14646
+14648
 normal! zo
-14655
+14651
+normal! zo
+14652
 normal! zo
 14656
 normal! zo
-14664
-normal! zo
-14665
+14657
 normal! zo
 14671
 normal! zo
-14686
+14671
+normal! zo
+14671
+normal! zo
+14671
+normal! zo
+14693
 normal! zo
 14694
 normal! zo
-14700
+14695
 normal! zo
-14706
+14695
+normal! zo
+14695
+normal! zo
+14695
+normal! zo
+14695
+normal! zo
+14695
+normal! zo
+14695
+normal! zo
+14695
+normal! zo
+14695
+normal! zo
+14695
+normal! zo
+14704
+normal! zo
+14705
 normal! zo
 14711
 normal! zo
 14715
 normal! zo
-14721
+14716
+normal! zo
+14725
 normal! zo
 14726
 normal! zo
-14727
+14734
 normal! zo
-14732
+14735
 normal! zo
-14743
+14741
 normal! zo
-14761
+14756
 normal! zo
-14803
+14764
 normal! zo
-14809
+14770
 normal! zo
-14815
+14776
 normal! zo
-14822
+14781
+normal! zo
+14785
+normal! zo
+14791
+normal! zo
+14796
+normal! zo
+14797
+normal! zo
+14802
+normal! zo
+14813
 normal! zo
 14831
 normal! zo
-14833
+14873
 normal! zo
-14840
+14879
 normal! zo
-14840
+14885
 normal! zo
-14840
+14892
 normal! zo
-14840
+14901
 normal! zo
-14840
+14903
 normal! zo
-14840
+14910
 normal! zo
-14857
+14910
 normal! zo
-14869
+14910
 normal! zo
-14880
+14910
 normal! zo
-14881
+14910
 normal! zo
-14897
+14910
 normal! zo
-14914
+14927
 normal! zo
-14918
-normal! zo
-14919
-normal! zo
-14920
-normal! zo
-14920
-normal! zo
-14922
-normal! zo
-14925
-normal! zo
-14938
-normal! zo
-14948
+14939
 normal! zo
 14950
 normal! zo
-14954
+14951
 normal! zo
-14955
+14967
 normal! zo
-14955
+14984
 normal! zo
-14955
-normal! zo
-14955
-normal! zo
-14955
-normal! zo
-14955
-normal! zo
-14968
+14988
 normal! zo
 14989
 normal! zo
 14990
 normal! zo
-14997
+14990
 normal! zo
-15030
+14992
 normal! zo
-15031
+14995
 normal! zo
-15031
+15008
 normal! zo
-15047
+15018
 normal! zo
-15053
+15020
 normal! zo
-15056
+15024
 normal! zo
-15056
+15025
 normal! zo
-15056
+15025
 normal! zo
-15062
+15025
 normal! zo
-15062
+15025
 normal! zo
-15082
+15025
 normal! zo
-15087
+15025
 normal! zo
-15092
+15038
+normal! zo
+15059
+normal! zo
+15060
+normal! zo
+15067
 normal! zo
 15100
 normal! zo
-15119
+15101
 normal! zo
-15153
+15101
 normal! zo
-15161
+15117
+normal! zo
+15123
+normal! zo
+15126
+normal! zo
+15126
+normal! zo
+15126
+normal! zo
+15132
+normal! zo
+15132
+normal! zo
+15152
+normal! zo
+15157
+normal! zo
+15162
 normal! zo
 15170
 normal! zo
 15189
 normal! zo
-15191
+15223
 normal! zo
-15195
+15231
 normal! zo
-15212
+15240
 normal! zo
-15218
-normal! zo
-15222
+15259
 normal! zo
 15261
 normal! zo
-15365
+15265
 normal! zo
-15365
+15282
 normal! zo
-15441
+15288
 normal! zo
-15441
+15292
 normal! zo
-15441
+15331
 normal! zo
-15554
+15435
 normal! zo
-15585
+15435
 normal! zo
-15609
+15511
 normal! zo
-15619
+15511
 normal! zo
-15619
+15511
 normal! zo
-15619
+15624
 normal! zo
-15619
+15655
 normal! zo
-15619
+15679
 normal! zo
-15807
+15689
 normal! zo
-15826
+15689
 normal! zo
-15848
+15689
 normal! zo
-15853
+15689
 normal! zo
-15854
+15689
 normal! zo
-15854
+15877
 normal! zo
-15857
+15896
 normal! zo
-15858
+15918
 normal! zo
-15858
+15923
 normal! zo
-15858
+15924
 normal! zo
-15861
+15924
 normal! zo
-15861
+15927
 normal! zo
-15861
+15928
 normal! zo
-15865
+15928
 normal! zo
-15865
+15928
 normal! zo
-15865
+15931
 normal! zo
-15865
+15931
 normal! zo
-15865
+15931
 normal! zo
-15865
+15935
 normal! zo
-15865
+15935
 normal! zo
-15865
+15935
 normal! zo
-15865
+15935
 normal! zo
-16396
+15935
 normal! zo
-16432
+15935
 normal! zo
-16447
+15935
 normal! zo
-16453
+15935
 normal! zo
-16456
+15935
 normal! zo
-16464
+16466
 normal! zo
-16465
+16502
 normal! zo
-16465
+16517
 normal! zo
-16465
-normal! zo
-16465
-normal! zo
-16465
-normal! zo
-16469
-normal! zo
-16477
-normal! zo
-16480
-normal! zo
-16486
-normal! zo
-16492
-normal! zo
-16495
-normal! zo
-16501
-normal! zo
-16515
-normal! zo
-16521
+16523
 normal! zo
 16526
 normal! zo
-16529
+16534
 normal! zo
-16529
+16535
 normal! zo
-16529
+16535
+normal! zo
+16535
+normal! zo
+16535
+normal! zo
+16535
 normal! zo
 16539
 normal! zo
-16554
+16547
+normal! zo
+16550
+normal! zo
+16556
+normal! zo
+16562
 normal! zo
 16565
 normal! zo
-16565
+16571
 normal! zo
-16576
+16585
 normal! zo
 16591
 normal! zo
-16601
+16596
 normal! zo
-16612
+16599
 normal! zo
-16621
+16599
 normal! zo
-16628
+16599
 normal! zo
-16666
+16609
+normal! zo
+16624
+normal! zo
+16635
+normal! zo
+16635
+normal! zo
+16646
+normal! zo
+16661
 normal! zo
 16671
 normal! zo
-16671
+16682
 normal! zo
-16671
+16691
 normal! zo
-16684
-normal! zo
-16684
-normal! zo
-16684
-normal! zo
-16684
-normal! zo
-16684
-normal! zo
-16684
-normal! zo
-16684
-normal! zo
-16684
-normal! zo
-16684
-normal! zo
-16684
-normal! zo
-16684
-normal! zo
-16696
-normal! zo
-16717
+16698
 normal! zo
 16736
 normal! zo
-16744
+16741
 normal! zo
-16745
+16741
 normal! zo
-16746
-normal! zo
-16750
+16741
 normal! zo
 16754
 normal! zo
-16770
+16754
 normal! zo
-16785
+16754
 normal! zo
-16790
+16754
 normal! zo
-16795
+16754
 normal! zo
-16805
+16754
+normal! zo
+16754
+normal! zo
+16754
+normal! zo
+16754
+normal! zo
+16754
+normal! zo
+16754
+normal! zo
+16766
+normal! zo
+16787
 normal! zo
 16806
-normal! zo
-16806
-normal! zo
-16806
-normal! zo
-16808
-normal! zo
-16808
-normal! zo
-16808
-normal! zo
-16808
-normal! zo
-16808
-normal! zo
-16808
-normal! zo
-16808
-normal! zo
-16808
-normal! zo
-16808
-normal! zo
-16808
-normal! zo
-16813
 normal! zo
 16814
 normal! zo
+16815
+normal! zo
+16816
+normal! zo
 16820
 normal! zo
-16821
+16824
 normal! zo
-16841
+16840
 normal! zo
-16866
+16855
 normal! zo
-16870
+16860
 normal! zo
-16887
+16865
 normal! zo
-16898
+16875
 normal! zo
-16898
+16876
 normal! zo
-16898
+16876
 normal! zo
-16898
+16876
 normal! zo
-16900
+16878
 normal! zo
-16901
+16878
 normal! zo
-16902
+16878
 normal! zo
-16903
+16878
 normal! zo
-16904
+16878
 normal! zo
-16908
+16878
 normal! zo
-16909
+16878
 normal! zo
-16910
+16878
 normal! zo
-16910
+16878
 normal! zo
-16910
+16878
 normal! zo
-16910
+16883
 normal! zo
-16910
+16884
 normal! zo
-16910
+16890
 normal! zo
-16910
+16891
 normal! zo
-16912
+16911
 normal! zo
-16914
+16936
 normal! zo
-16919
-normal! zo
-16919
-normal! zo
-16919
-normal! zo
-16919
-normal! zo
-16925
-normal! zo
-16929
-normal! zo
-16937
-normal! zo
-16937
-normal! zo
-16937
-normal! zo
-16937
-normal! zo
-16945
-normal! zo
-16953
-normal! zo
-16954
+16940
 normal! zo
 16957
 normal! zo
-16962
+16968
+normal! zo
+16968
+normal! zo
+16968
+normal! zo
+16968
 normal! zo
 16970
 normal! zo
-16975
+16971
 normal! zo
-16983
+16972
 normal! zo
-16988
+16973
 normal! zo
-16997
+16974
 normal! zo
-16998
+16978
 normal! zo
-16998
+16979
 normal! zo
-17008
+16980
+normal! zo
+16980
+normal! zo
+16980
+normal! zo
+16980
+normal! zo
+16980
+normal! zo
+16980
+normal! zo
+16980
+normal! zo
+16982
+normal! zo
+16984
+normal! zo
+16989
+normal! zo
+16989
+normal! zo
+16989
+normal! zo
+16989
+normal! zo
+16995
+normal! zo
+16999
+normal! zo
+17007
+normal! zo
+17007
+normal! zo
+17007
+normal! zo
+17007
+normal! zo
+17015
 normal! zo
 17023
 normal! zo
 17024
 normal! zo
+17027
+normal! zo
+17032
+normal! zo
 17040
 normal! zo
-17060
+17045
 normal! zo
-17061
+17053
 normal! zo
-17061
-normal! zo
-17061
-normal! zo
-17061
-normal! zo
-17061
+17058
 normal! zo
 17067
 normal! zo
-17077
+17068
 normal! zo
-17091
+17068
+normal! zo
+17078
+normal! zo
+17093
 normal! zo
 17094
 normal! zo
-17098
+17110
 normal! zo
-17099
+17130
 normal! zo
-17100
+17131
 normal! zo
-17100
+17131
 normal! zo
-17100
+17131
 normal! zo
-17100
+17131
 normal! zo
-17100
+17131
 normal! zo
-17118
-normal! zo
-17125
-normal! zo
-17126
-normal! zo
-17133
-normal! zo
-17140
-normal! zo
-17141
-normal! zo
-17142
+17137
 normal! zo
 17147
 normal! zo
-17154
+17161
 normal! zo
-17159
+17164
 normal! zo
-17172
+17168
 normal! zo
-17173
+17169
 normal! zo
-17173
+17170
 normal! zo
-17173
+17170
 normal! zo
-17178
+17170
 normal! zo
-17191
+17170
 normal! zo
-17198
+17170
 normal! zo
-17199
+17188
 normal! zo
-17214
+17195
 normal! zo
-17221
+17196
 normal! zo
-17235
+17203
+normal! zo
+17210
+normal! zo
+17211
+normal! zo
+17212
+normal! zo
+17217
+normal! zo
+17224
+normal! zo
+17229
 normal! zo
 17242
 normal! zo
 17243
 normal! zo
-17248
+17243
+normal! zo
+17243
 normal! zo
 17257
 normal! zo
-17271
+17270
+normal! zo
+17277
+normal! zo
+17278
 normal! zo
 17293
 normal! zo
+17300
+normal! zo
 17314
 normal! zo
-17327
+17321
+normal! zo
+17322
 normal! zo
 17327
 normal! zo
-17327
-normal! zo
-17327
-normal! zo
-17327
-normal! zo
-17327
-normal! zo
-17337
+17336
 normal! zo
 17350
 normal! zo
-17374
+17372
 normal! zo
-17379
+17393
 normal! zo
-17381
+17406
 normal! zo
-17384
+17406
 normal! zo
-17391
+17406
 normal! zo
-17403
+17406
 normal! zo
-17413
+17406
 normal! zo
-17413
+17406
 normal! zo
-17413
+17416
 normal! zo
-17413
+17429
 normal! zo
-17413
+17453
 normal! zo
-17413
+17458
 normal! zo
-17421
+17460
 normal! zo
-17431
+17463
 normal! zo
-17431
+17470
 normal! zo
-17431
-normal! zo
-17431
-normal! zo
-17431
-normal! zo
-17431
-normal! zo
-17439
-normal! zo
-17440
-normal! zo
-17451
-normal! zo
-17456
-normal! zo
-17467
-normal! zo
-17475
-normal! zo
-17488
+17482
 normal! zo
 17492
 normal! zo
@@ -3920,21 +3915,9 @@ normal! zo
 normal! zo
 17492
 normal! zo
-17494
+17492
 normal! zo
-17506
-normal! zo
-17506
-normal! zo
-17506
-normal! zo
-17506
-normal! zo
-17506
-normal! zo
-17506
-normal! zo
-17506
+17500
 normal! zo
 17510
 normal! zo
@@ -3948,530 +3931,370 @@ normal! zo
 normal! zo
 17510
 normal! zo
-17516
-normal! zo
-17516
-normal! zo
-17516
-normal! zo
-17516
+17518
 normal! zo
 17519
 normal! zo
-17520
+17530
 normal! zo
-17521
+17535
 normal! zo
-17527
+17546
 normal! zo
-17528
+17554
 normal! zo
-17528
+17567
 normal! zo
-17528
+17571
 normal! zo
-17650
+17571
 normal! zo
-17705
+17571
 normal! zo
-17738
+17571
 normal! zo
-17795
+17571
 normal! zo
-17810
+17573
+normal! zo
+17585
+normal! zo
+17585
+normal! zo
+17585
+normal! zo
+17585
+normal! zo
+17585
+normal! zo
+17585
+normal! zo
+17585
+normal! zo
+17589
+normal! zo
+17589
+normal! zo
+17589
+normal! zo
+17589
+normal! zo
+17589
+normal! zo
+17589
+normal! zo
+17595
+normal! zo
+17595
+normal! zo
+17595
+normal! zo
+17595
+normal! zo
+17598
+normal! zo
+17599
+normal! zo
+17600
+normal! zo
+17606
+normal! zo
+17607
+normal! zo
+17607
+normal! zo
+17607
+normal! zo
+17729
+normal! zo
+17784
 normal! zo
 17817
 normal! zo
-17818
+17874
 normal! zo
-17834
+17889
 normal! zo
-17844
+17896
 normal! zo
-17858
+17897
 normal! zo
-17861
+17913
 normal! zo
-17862
+17923
 normal! zo
-17862
-normal! zo
-17884
-normal! zo
-17904
-normal! zo
-17916
-normal! zo
-17916
-normal! zo
-17916
-normal! zo
-17916
-normal! zo
-17916
-normal! zo
-17919
-normal! zo
-17926
-normal! zo
-17929
+17937
 normal! zo
 17940
 normal! zo
-17946
+17941
 normal! zo
-17951
+17941
 normal! zo
-17957
+17963
 normal! zo
-17958
+17983
 normal! zo
-17959
+17995
 normal! zo
-17962
+17995
 normal! zo
-17981
+17995
 normal! zo
-17996
+17995
 normal! zo
-18024
+17995
 normal! zo
-18049
+17998
 normal! zo
-18070
+18005
 normal! zo
-18105
+18008
 normal! zo
-18114
+18019
 normal! zo
-18115
+18025
 normal! zo
-18116
+18030
 normal! zo
-18118
+18036
 normal! zo
-18118
+18037
 normal! zo
-18118
+18038
 normal! zo
-18121
+18041
 normal! zo
-18123
+18060
 normal! zo
-18123
+18075
 normal! zo
-18123
+18103
 normal! zo
-18126
+18128
 normal! zo
-18127
+18149
 normal! zo
-18127
+18184
 normal! zo
-18127
+18193
 normal! zo
-18127
+18194
 normal! zo
-18127
+18195
 normal! zo
-18653
+18197
 normal! zo
-18670
+18197
 normal! zo
-18680
+18197
 normal! zo
-18683
+18200
 normal! zo
-18684
+18202
 normal! zo
-18684
+18202
 normal! zo
-18690
+18202
 normal! zo
-18697
+18205
 normal! zo
-18698
+18206
 normal! zo
-18699
+18206
 normal! zo
-18699
+18206
 normal! zo
-18699
+18206
 normal! zo
-18699
+18206
 normal! zo
-18703
+18732
 normal! zo
-18704
+18749
 normal! zo
-18704
+18759
 normal! zo
-18704
+18762
 normal! zo
-18704
+18763
 normal! zo
-18720
+18763
 normal! zo
-19021
+18769
 normal! zo
-19938
+18776
 normal! zo
-19962
+18777
 normal! zo
-19968
+18778
 normal! zo
-19974
+18778
 normal! zo
-19992
+18778
 normal! zo
-20002
+18778
 normal! zo
-20005
+18782
 normal! zo
-20012
+18783
 normal! zo
-20012
+18783
 normal! zo
-20012
+18783
 normal! zo
-20012
+18783
+normal! zo
+18799
+normal! zo
+19100
 normal! zo
 20017
 normal! zo
-20297
+20041
 normal! zo
-20303
+20047
 normal! zo
-20303
+20053
 normal! zo
-20312
+20071
 normal! zo
-20319
+20081
 normal! zo
-20326
+20084
 normal! zo
-20333
+20091
 normal! zo
-20340
+20091
 normal! zo
-20347
+20091
 normal! zo
-20354
+20091
 normal! zo
-20360
+20096
 normal! zo
-20361
+20376
 normal! zo
-20370
+20382
 normal! zo
-20379
+20382
 normal! zo
-20542
+20391
 normal! zo
-20552
+20398
 normal! zo
-20563
+20405
 normal! zo
-20574
+20412
 normal! zo
-20575
+20419
 normal! zo
-20580
+20426
 normal! zo
-20581
+20433
 normal! zo
-20581
+20439
 normal! zo
-20591
+20440
 normal! zo
-20591
+20449
 normal! zo
-20591
+20458
 normal! zo
-20591
-normal! zo
-20591
-normal! zo
-20591
-normal! zo
-20591
-normal! zo
-20591
-normal! zo
-20591
-normal! zo
-20602
-normal! zo
-20603
-normal! zo
-20611
-normal! zo
-20611
-normal! zo
-20611
-normal! zo
-20611
-normal! zo
-20611
-normal! zo
-20611
-normal! zo
-20611
-normal! zo
-20611
-normal! zo
-20622
-normal! zo
-20623
+20621
 normal! zo
 20631
 normal! zo
-20646
+20642
 normal! zo
-20679
+20653
 normal! zo
-20700
+20654
 normal! zo
-20705
+20659
 normal! zo
-20717
+20660
 normal! zo
-20717
+20660
 normal! zo
-20717
+20670
 normal! zo
-20717
+20670
 normal! zo
-20717
+20670
 normal! zo
-20717
+20670
 normal! zo
-20717
+20670
 normal! zo
-20735
+20670
 normal! zo
-20742
+20670
 normal! zo
-21232
+20670
 normal! zo
-let s:l = 16611 - ((2 * winheight(0) + 9) / 18)
+20670
+normal! zo
+20681
+normal! zo
+20682
+normal! zo
+20690
+normal! zo
+20690
+normal! zo
+20690
+normal! zo
+20690
+normal! zo
+20690
+normal! zo
+20690
+normal! zo
+20690
+normal! zo
+20690
+normal! zo
+20701
+normal! zo
+20702
+normal! zo
+20710
+normal! zo
+20725
+normal! zo
+20758
+normal! zo
+20779
+normal! zo
+20784
+normal! zo
+20796
+normal! zo
+20796
+normal! zo
+20796
+normal! zo
+20796
+normal! zo
+20796
+normal! zo
+20796
+normal! zo
+20796
+normal! zo
+20814
+normal! zo
+20821
+normal! zo
+21311
+normal! zo
+let s:l = 7223 - ((10 * winheight(0) + 5) / 11)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-16611
-normal! 09|
-lcd ~/Geotexan/src/Geotex-INN
-wincmd w
-argglobal
-edit ~/Geotexan/src/Geotex-INN/ginn/formularios/consulta_producido.py
-setlocal fdm=indent
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=99
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-58
-normal! zo
-59
-normal! zo
-110
-normal! zo
-335
-normal! zo
-364
-normal! zo
-369
-normal! zo
-373
-normal! zo
-395
-normal! zo
-405
-normal! zo
-414
-normal! zo
-424
-normal! zo
-432
-normal! zo
-433
-normal! zo
-457
-normal! zo
-458
-normal! zo
-458
-normal! zo
-458
-normal! zo
-458
-normal! zo
-461
-normal! zo
-461
-normal! zo
-461
-normal! zo
-461
-normal! zo
-467
-normal! zo
-472
-normal! zo
-472
-normal! zo
-472
-normal! zo
-472
-normal! zo
-475
-normal! zo
-475
-normal! zo
-475
-normal! zo
-475
-normal! zo
-480
-normal! zo
-481
-normal! zo
-504
-normal! zo
-505
-normal! zo
-505
-normal! zo
-505
-normal! zo
-505
-normal! zo
-509
-normal! zo
-509
-normal! zo
-509
-normal! zo
-509
-normal! zo
-516
-normal! zo
-521
-normal! zo
-521
-normal! zo
-521
-normal! zo
-521
-normal! zo
-525
-normal! zo
-525
-normal! zo
-525
-normal! zo
-525
-normal! zo
-531
-normal! zo
-532
-normal! zo
-556
-normal! zo
-557
-normal! zo
-557
-normal! zo
-557
-normal! zo
-557
-normal! zo
-561
-normal! zo
-561
-normal! zo
-561
-normal! zo
-561
-normal! zo
-568
-normal! zo
-573
-normal! zo
-573
-normal! zo
-573
-normal! zo
-573
-normal! zo
-578
-normal! zo
-578
-normal! zo
-578
-normal! zo
-578
-normal! zo
-633
-normal! zo
-639
-normal! zo
-640
-normal! zo
-641
-normal! zo
-642
-normal! zo
-688
-normal! zo
-694
-normal! zo
-694
-normal! zo
-694
-normal! zo
-694
-normal! zo
-694
-normal! zo
-794
-normal! zo
-794
-normal! zo
-794
-normal! zo
-794
-normal! zo
-794
-normal! zo
-805
-normal! zo
-809
-normal! zo
-813
-normal! zo
-846
-normal! zo
-846
-normal! zo
-846
-normal! zo
-846
-normal! zo
-846
-normal! zo
-854
-normal! zo
-859
-normal! zo
-let s:l = 268 - ((0 * winheight(0) + 6) / 13)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-268
-normal! 065|
+7223
+normal! 030|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -4498,110 +4321,120 @@ normal! zo
 normal! zo
 161
 normal! zo
-176
+166
 normal! zo
-177
+182
 normal! zo
-177
+183
 normal! zo
-177
+183
 normal! zo
-177
+183
 normal! zo
-177
+183
 normal! zo
-187
+183
 normal! zo
-191
+193
 normal! zo
 197
 normal! zo
-211
+203
 normal! zo
-211
+217
 normal! zo
-211
+217
 normal! zo
-211
+217
 normal! zo
-211
+217
 normal! zo
-211
+217
 normal! zo
-223
+217
 normal! zo
-224
+229
 normal! zo
-224
+230
 normal! zo
-224
+230
 normal! zo
-224
+230
 normal! zo
-224
+230
 normal! zo
-234
+230
 normal! zo
 240
 normal! zo
-241
+247
 normal! zo
-241
+248
 normal! zo
-241
+248
 normal! zo
-241
+248
 normal! zo
-263
+248
 normal! zo
-278
+270
 normal! zo
-307
+284
 normal! zo
-312
+288
 normal! zo
-345
+289
 normal! zo
-351
+290
 normal! zo
-351
+294
 normal! zo
-351
+316
 normal! zo
-351
-normal! zo
-351
-normal! zo
-353
-normal! zo
-353
-normal! zo
-353
-normal! zo
-353
-normal! zo
-353
+321
 normal! zo
 354
 normal! zo
-387
+360
 normal! zo
-404
+360
 normal! zo
-410
+360
 normal! zo
-415
+360
 normal! zo
-428
+360
 normal! zo
-434
+362
 normal! zo
-let s:l = 192 - ((4 * winheight(0) + 5) / 10)
+362
+normal! zo
+362
+normal! zo
+362
+normal! zo
+362
+normal! zo
+363
+normal! zo
+396
+normal! zo
+413
+normal! zo
+419
+normal! zo
+424
+normal! zo
+437
+normal! zo
+443
+normal! zo
+let s:l = 171 - ((11 * winheight(0) + 12) / 25)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-192
-normal! 021|
+171
+normal! 0199|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -4690,7 +4523,7 @@ normal! zo
 normal! zo
 288
 normal! zo
-288
+297
 normal! zo
 297
 normal! zo
@@ -5284,109 +5117,109 @@ normal! zo
 normal! zo
 665
 normal! zo
-675
+678
 normal! zo
-676
+679
 normal! zo
-677
+680
 normal! zo
-683
+686
 normal! zo
-684
+687
 normal! zo
-688
+691
 normal! zo
-694
+697
 normal! zo
-694
+697
 normal! zo
-694
+697
 normal! zo
-694
+697
 normal! zo
-694
-normal! zo
-706
+697
 normal! zo
 709
 normal! zo
-709
+712
 normal! zo
-709
+712
 normal! zo
-709
+712
 normal! zo
-715
+712
 normal! zo
-726
+718
 normal! zo
-740
+729
 normal! zo
-741
+743
 normal! zo
-751
+744
 normal! zo
-753
+754
 normal! zo
-759
+756
 normal! zo
-763
+762
 normal! zo
-763
+766
 normal! zo
-775
+766
 normal! zo
-779
+778
 normal! zo
-779
+782
 normal! zo
-794
+782
 normal! zo
-794
+797
 normal! zo
-794
+797
 normal! zo
-794
+797
 normal! zo
-794
+797
 normal! zo
-813
+797
 normal! zo
-814
+816
 normal! zo
-814
+817
 normal! zo
-832
+817
 normal! zo
-833
+835
 normal! zo
-833
+836
 normal! zo
-833
+836
 normal! zo
-833
+836
 normal! zo
-833
+836
 normal! zo
-833
+836
 normal! zo
-833
+836
 normal! zo
-833
+836
 normal! zo
-833
+836
 normal! zo
-846
+836
 normal! zo
-846
+849
 normal! zo
-846
+849
 normal! zo
-846
+849
 normal! zo
-846
+849
 normal! zo
-866
+849
+normal! zo
+869
 normal! zo
 let s:l = 1 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
@@ -5395,29 +5228,27 @@ normal! zt
 1
 normal! 0
 wincmd w
-6wincmd w
-exe '1resize ' . ((&lines * 6 + 31) / 63)
-exe 'vert 1resize ' . ((&columns * 26 + 53) / 107)
-exe '2resize ' . ((&lines * 54 + 31) / 63)
-exe 'vert 2resize ' . ((&columns * 26 + 53) / 107)
-exe '3resize ' . ((&lines * 7 + 31) / 63)
-exe 'vert 3resize ' . ((&columns * 80 + 53) / 107)
-exe '4resize ' . ((&lines * 18 + 31) / 63)
-exe 'vert 4resize ' . ((&columns * 80 + 53) / 107)
-exe '5resize ' . ((&lines * 13 + 31) / 63)
-exe 'vert 5resize ' . ((&columns * 80 + 53) / 107)
-exe '6resize ' . ((&lines * 10 + 31) / 63)
-exe 'vert 6resize ' . ((&columns * 80 + 53) / 107)
-exe '7resize ' . ((&lines * 1 + 31) / 63)
-exe 'vert 7resize ' . ((&columns * 80 + 53) / 107)
-exe '8resize ' . ((&lines * 1 + 31) / 63)
-exe 'vert 8resize ' . ((&columns * 80 + 53) / 107)
-exe '9resize ' . ((&lines * 1 + 31) / 63)
-exe 'vert 9resize ' . ((&columns * 80 + 53) / 107)
-exe '10resize ' . ((&lines * 1 + 31) / 63)
-exe 'vert 10resize ' . ((&columns * 80 + 53) / 107)
-exe '11resize ' . ((&lines * 1 + 31) / 63)
-exe 'vert 11resize ' . ((&columns * 80 + 53) / 107)
+5wincmd w
+exe '1resize ' . ((&lines * 3 + 25) / 51)
+exe 'vert 1resize ' . ((&columns * 34 + 57) / 115)
+exe '2resize ' . ((&lines * 45 + 25) / 51)
+exe 'vert 2resize ' . ((&columns * 34 + 57) / 115)
+exe '3resize ' . ((&lines * 1 + 25) / 51)
+exe 'vert 3resize ' . ((&columns * 80 + 57) / 115)
+exe '4resize ' . ((&lines * 11 + 25) / 51)
+exe 'vert 4resize ' . ((&columns * 80 + 57) / 115)
+exe '5resize ' . ((&lines * 25 + 25) / 51)
+exe 'vert 5resize ' . ((&columns * 80 + 57) / 115)
+exe '6resize ' . ((&lines * 1 + 25) / 51)
+exe 'vert 6resize ' . ((&columns * 80 + 57) / 115)
+exe '7resize ' . ((&lines * 1 + 25) / 51)
+exe 'vert 7resize ' . ((&columns * 80 + 57) / 115)
+exe '8resize ' . ((&lines * 1 + 25) / 51)
+exe 'vert 8resize ' . ((&columns * 80 + 57) / 115)
+exe '9resize ' . ((&lines * 1 + 25) / 51)
+exe 'vert 9resize ' . ((&columns * 80 + 57) / 115)
+exe '10resize ' . ((&lines * 1 + 25) / 51)
+exe 'vert 10resize ' . ((&columns * 80 + 57) / 115)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
@@ -5432,6 +5263,6 @@ let &so = s:so_save | let &siso = s:siso_save
 doautoall SessionLoadPost
 unlet SessionLoad
 tabnext 1
-6wincmd w
+5wincmd w
 
 " vim: ft=vim ro nowrap smc=128

@@ -164,14 +164,20 @@ class ConsultaVentasPorProducto(Ventana):
             p = ldv.producto
             if isinstance(p, pclases.ProductoVenta):
                 tipo = "PV"
+                cantidades = ldv.get_cantidad_albaraneada_por_calidad()
+                cantidad_albaraneada = cantidades['total']['m²']
+                if not cantidad_albaraneada: # ¿Será fibra? Si es gtx también 
+                    cantidad_albaraneada = cantidades['total']['kg'] # será 0
+# TODO: PORASQUI: Al final voy a tener que rediseñar la ventana completa. No hay manera de mezclar metros, kilos, otras unidades para los productos de compra, etc. y que quede más o menos homogéneo. 
             elif isinstance(p, pclases.ProductoCompra):
                 tipo = "PC"
+                cantidad_albaraneada = ldv.get_cantidad_albaraneada()
             else:
                 tipo = "?"
                 txt = "%sconsulta_ventas_por_producto::rellenar_tabla -> Tipo de producto desconocido: LDV ID: %d, Representación del objeto producto: %s" % (self.usuario and self.usuario + ": " or "", ldv.id, p)
                 print txt
                 self.logger.error(txt)
-            cantidad_albaraneada = ldv.get_cantidad_albaraneada()
+                cantidad_albaraneada = 0
             if p not in productos:
                 fila = model.append(None, (p.descripcion, 
                                            "", 
@@ -235,7 +241,8 @@ class ConsultaVentasPorProducto(Ventana):
             vpro.set_valor(i / tot, "Analizando %s..." % (
                 ldd.abono.numabono))
             p = ldd.producto
-            tipo = "PV" # De momento los abonos, más concretamente las LDD, no soportan otra cosa que no sea un (artículo de) ProductoVenta.
+            tipo = "PV" # De momento los abonos, más concretamente las LDD, 
+            # no soportan otra cosa que no sea un (artículo de) ProductoVenta.
             if p not in productos:
                 fila = model.append(None, 
                                     (p.descripcion, 
@@ -269,7 +276,6 @@ class ConsultaVentasPorProducto(Ventana):
                      "", 
                      "", 
                      "LDD:%d" % (ldd.id)))
-
         # Actualizo los totales de los productos en las filas del TreeView
         total_metros_en_kilos_teoricos = 0.0
         i = 0.0
@@ -280,9 +286,12 @@ class ConsultaVentasPorProducto(Ventana):
             cantidad = "%s %s" % (utils.float2str(productos[p][1]), p.unidad)
             try:
                 if p.es_rollo():
-                    metros_en_kilos_teoricos = (productos[p][1] * p.camposEspecificosRollo.gramos) / 1000
+                    metros_en_kilos_teoricos = (
+                            (productos[p][1] * p.camposEspecificosRollo.gramos)
+                            / 1000.0)
                     total_metros_en_kilos_teoricos += metros_en_kilos_teoricos
-                    cantidad += " (%s kg)" % utils.float2str(metros_en_kilos_teoricos)
+                    cantidad += " (%s kg)" % utils.float2str(
+                            metros_en_kilos_teoricos)
                 # TODO: FIXME: Esto de los kilos teóricos... con rollos B y tal... Mal, ¿eh?
             except AttributeError:  # It's Easier to Ask Forgiveness than Permission (EAFP)
                 pass

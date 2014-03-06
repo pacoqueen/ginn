@@ -7160,6 +7160,76 @@ class LineaDeVenta(SQLObject, PRPCTOO, Venta):
                 # bultos ni nada que se pueda contar aparte de eso.
         return res
 
+    def get_cantidad_albaraneada_por_calidad(self):
+        """
+        Si la LDV pertenece a un albarán, devuelve la 
+        cantidad albaraneada de su producto en ese 
+        albarán divididas por clase: A, B y C; y por unidades:
+        bultos, kilos y m² (si procede). 
+        Si no, lanza una excepción: TypeError para cuando se trata una 
+        línea de venta con producto de compra y ValueError si un artículo 
+        no es A, B ni C (No debería pasar a no ser que se haya quedado un 
+        artículo a medio crear o a medio borrar. Y creo que ni eso)
+        """
+        res = {'a':     {'m²': 0.0, 
+                         'kg': 0.0, 
+                         '#' : 0},  
+               'b':     {'m²': 0.0, 
+                         'kg': 0.0, 
+                         '#' : 0},
+               'c':     {'m²': 0.0, 
+                         'kg': 0.0, 
+                         '#' : 0}, 
+               'total': {'m²': 0.0, 
+                         'kg': 0.0, 
+                         '#' : 0}
+              }  
+        if self.albaranSalidaID != None:
+            producto = self.producto
+            if isinstance(producto, ProductoVenta):     # Si es un producto de 
+                    # venta, contamos las cantidades de sus bultos (artículos).
+                # PLAN: Optimizar. El agrupar_articulos es bastante lento.
+                articulos_clasificados = self.albaranSalida.agrupar_articulos()
+                articulos = articulos_clasificados[self.id]['articulos']
+                # XXX: Ojito porque si es producto C, la cantidad del LDV (que 
+                # es la que se factura) puede diferir de la suma de sus 
+                # artículos (que es la que se descuenta de existencias). Esto 
+                # es así por diseño (CWT) y poder vender al peso incluyendo 
+                # plásticos, agua, residuos, etc.
+                for a in articulos:     # Momento de clasificar
+                    superficie = a.superficie
+                    if superficie == None:
+                        superficie = 0.0    # Para no joder el acumulado.
+                    peso = a.peso   # Con embalaje, que es como se vende.
+                    bultos = 1 # Un artículo, un bulto. Al menos eso está claro
+                    if a.es_clase_a():
+                        res['a']['m²'] += superficie
+                        res['a']['kg'] += peso 
+                        res['a']['#'] += 1
+                    elif a.es_clase_b():
+                        res['b']['m²'] += superficie
+                        res['b']['kg'] += peso 
+                        res['b']['#'] += 1
+                    elif a.es_clase_c():
+                        # Los productos C no tienen m².
+                        res['c']['kg'] += peso 
+                        res['c']['#'] += 1
+                    else:
+                        txtexcepcion = "pclases::__init__ -> Artículo %s "\
+                                "no es A, B ni C." % a.puid
+                        raise ValueError, txtexcepcion
+                    res['total']['m²'] += superficie
+                    res['total']['kg'] += peso 
+                    res['total']['#'] += 1
+            elif isinstance(producto, ProductoCompra):  # Si es un producto de 
+                # compra, no se puede dividir en A, B y C por artículo.  
+                res = None 
+        if res == None:
+            txtexception = "pclases::__init__ -> Solo los productos de venta "\
+                    "pueden clasificarse por calidad (A, B y C)."
+            raise TypeError, txtexception
+        return res
+
     def eliminar(self):
         """
         Intenta eliminar la línea de venta.
