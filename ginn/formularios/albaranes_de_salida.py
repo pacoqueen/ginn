@@ -1297,11 +1297,9 @@ class AlbaranesDeSalida(Ventana):
                 if isinstance(ldvs[idldv]['ldv'].producto, 
                               pclases.ProductoCompra):
                     color = "PaleGreen"
-                elif (isinstance(ldvs[idldv]['ldv'].producto, 
-                				pclases.ProductoVenta) 
-                	  and ldvs[idldv]['ldv'].producto.es_clase_c()):
-                    # DONE: Líneas con producto C en otro color. O en verde directamente.
-                	color = "light grey"
+                elif es_venta_rollos_c(ldvs[idldv]['ldv'].producto):
+                    # DONE: Líneas con producto rollo C en otro color. 
+                    color = "light grey"
                 else:
                     cant_servida = round(ldvs[idldv]['ldv'].cantidad, 3)
                     cant_added = round(ldvs[idldv]['cantidad'], 3)
@@ -2680,7 +2678,7 @@ class AlbaranesDeSalida(Ventana):
                     self.logger.error(txterror)
             if bultos == 0:
                 bultos = self.contar_bultos_de_ldvs(prods, producto)
-            if es_venta_c(prods[producto][0]):
+            if es_venta_rollos_c(prods[producto][0]):
                 cantidad_anadida = 0    # CWT: De este modo ignoro los 
                                         # artículos y uso la cantidad tecleada.
             else:
@@ -2703,7 +2701,7 @@ class AlbaranesDeSalida(Ventana):
                  or (hasattr(producto, "camposEspecificosEspecialID") 
                      and producto.camposEspecificosEspecialID != None
                     )
-                 or es_venta_c(producto)
+                 or es_venta_rollos_c(producto)
                 )
                ):
                 for ldv in prods[producto]:
@@ -2881,7 +2879,7 @@ class AlbaranesDeSalida(Ventana):
                 and (self.usuario != None 
                      and self.usuario.nivel >= 1 
                      and not self.objeto.bloqueado)
-                and not es_venta_c(ldv)):
+                and not es_venta_rollos_c(ldv)):
                 # DONE: Así consigo que se imprima la cantidad del pedido en 
                 #       productos "especiales" (cables de fibra y cosas 
                 #       así) que no tienen artículos en la BD porque nunca 
@@ -3284,7 +3282,12 @@ class AlbaranesDeSalida(Ventana):
                         # es que después las cantidades facturadas no 
                         # coincidan con las salidas de almacén. Pero eso ya 
                         # lo tienen contemplado y dicen que no les importa.
-                            and not es_venta_c(self.__ldvs[idldv]['ldv'])):
+                        # UPDATE [20140306]: (rparra) Solo para geotextiles C. 
+                        # La fibra C va a seguir saliendo con el peso que 
+                        # marque su código de trazabilidad tanto en fra. como 
+                        # en albarán.
+                            and not es_venta_rollos_c(
+                                self.__ldvs[idldv]['ldv'])):
                         # TODO: Si la cantidad AÑADIDA no es cero, ajusto las 
                         #       cantidades. Si es 0 prefiero dejar la cantidad 
                         #       de la LDV original porque es posible que sea 
@@ -4773,10 +4776,10 @@ def comprobar_existencias_producto(ldp, ventana_padre, cantidad, almacen):
         a_servir = cantidad
     return a_servir
  
-def es_venta_c(ldv_o_producto):
+def es_venta_rollos_c(ldv_o_producto):
     """
-    Comprueba si la línea de venta es de un producto C con artículos C. Porque 
-    en ese caso no debería ajustarse la cantidad de la línea con el peso 
+    Comprueba si la línea de venta es de un producto C con artículos rollos C. 
+    Porque en ese caso no debería ajustarse la cantidad de la línea con el peso
     real de sus artículos.
     """
     if isinstance(ldv_o_producto, pclases.LineaDeVenta):
@@ -4784,12 +4787,14 @@ def es_venta_c(ldv_o_producto):
     else:
         producto = ldv_o_producto
     try:
-        res = (producto.es_bala_cable() 
-                or producto.es_rollo_c())
+        # CWT: Solo para rollos C. Nada de balas de cable. 
+        #res = (producto.es_bala_cable() 
+        #        or producto.es_rollo_c())
+        res = producto.es_rollo_c()
     except AttributeError:
         res = False
     if pclases.DEBUG:
-        print "albaranes_de_salida::es_venta_c ->", res
+        print "albaranes_de_salida::es_venta_rollos_c ->", res
     return res
 
 def select_lineas_pedido(pedido, padre = None):
