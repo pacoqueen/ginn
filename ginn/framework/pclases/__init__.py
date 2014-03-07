@@ -16741,6 +16741,7 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
                         / (horas del parte * kg producción estándar/hora)
         los kg no cuentan el peso del embalaje __y solo son de producto A__.
         """
+# PORASQUI: Hay que volverlo a cambiar por kilos teóricos, no por los producidos reales.
         # CWT: Se cuenta todo el parte completo. Incluyendo paradas.
         #try:
         #    horas_trabajadas = self.get_horas_trabajadas()
@@ -17251,7 +17252,7 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         probablemente nueva calidad al solucionar mezclas de colores 
         en las balas originales, etc.
         """
-        return "reenvas" in self.objeto.observaciones.lower()
+        return "reenvas" in self.observaciones.lower()
 
     def unificar_consumos(self):
         """

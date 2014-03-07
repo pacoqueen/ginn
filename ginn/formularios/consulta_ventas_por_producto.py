@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -31,7 +31,7 @@
 ###################################################################
 ## Changelog:
 ## 26 de julio de 2007 -> Inicio
-## 
+## 7 de marzo de 2014 -> Rediseño.
 ###################################################################
 
 from ventana import Ventana
@@ -45,13 +45,9 @@ import mx.DateTime
 class ConsultaVentasPorProducto(Ventana):
 
     def __init__(self, objeto = None, usuario = None):
-        """
-        Constructor. objeto puede ser un objeto de pclases con el que
-        comenzar la ventana (en lugar del primero de la tabla, que es
-        el que se muestra por defecto).
-        """
         self.usuario = usuario
-        Ventana.__init__(self, 'consulta_ventas_por_producto.glade', objeto, usuario = usuario)
+        Ventana.__init__(self, 'consulta_ventas_por_producto.glade', 
+                         objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_buscar/clicked': self.buscar,
                        'b_imprimir/clicked': self.imprimir,
@@ -59,15 +55,21 @@ class ConsultaVentasPorProducto(Ventana):
                        'b_fecha_fin/clicked': self.set_fin, 
                        'b_exportar/clicked': self.exportar}
         self.add_connections(connections)
-        cols = (('Producto', 'gobject.TYPE_STRING', False, True, True, None),
-                ('Cantidad', 'gobject.TYPE_STRING', False, True, False, None),
-                ('Cliente', 'gobject.TYPE_STRING', False, True, False, None),
-                ('Fecha', 'gobject.TYPE_STRING', False, True, False, None),
-                ('Albarán', 'gobject.TYPE_STRING', False, True, False, None),
-                ('A', 'gobject.TYPE_STRING', False, True, False, None),
-                ('B', 'gobject.TYPE_STRING', False, True, False, None),
-                ('C', 'gobject.TYPE_STRING', False, True, False, None),
-                ('ID', 'gobject.TYPE_STRING', False, False, False, None))    # Del producto, de la LDV o de la LDD.
+        cols_fib = (
+            ('Producto', 'gobject.TYPE_STRING', False, True, True, None),
+            ('Cantidad', 'gobject.TYPE_STRING', False, True, False, None),
+            ('Cliente', 'gobject.TYPE_STRING', False, True, False, None),
+            ('Fecha', 'gobject.TYPE_STRING', False, True, False, None),
+            ('Albarán', 'gobject.TYPE_STRING', False, True, False, None),
+            ('A', 'gobject.TYPE_STRING', False, True, False, None),
+            ('B', 'gobject.TYPE_STRING', False, True, False, None),
+            ('C', 'gobject.TYPE_STRING', False, True, False, None),
+            ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
+        cols_gtx = ()
+        cols_otros = ()
+
+
+
         utils.preparar_treeview(self.wids['tv_datos'], cols)
         self.wids['tv_datos'].connect("row-activated", self.abrir_producto_albaran_o_abono)
         self.wids['tv_datos'].get_column(1).get_cell_renderers()[0].set_property('xalign', 1) 
