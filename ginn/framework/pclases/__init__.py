@@ -9844,7 +9844,8 @@ class Articulo(SQLObject, PRPCTOO):
     def calcular_tiempo_teorico(self, solo_clase_a = True):
         """
         Devuelve el tiempo en horas en que se debería haber producido el 
-        artículo según la producción estándar de la ficha del producto que sea.
+        artículo según la producción estándar de la ficha del producto que sea
+        y el peso teórico que debería haber tenido, NO EL REAL QUE HA DADO.
         Si solo_clase_a es True, el tiempo teórico solo se calculará si 
         el artículo es de clase A. En otro caso calculará el tiempo teórico 
         aunque sea clase B (que debería ser igual pero en las consultas 
@@ -9855,9 +9856,13 @@ class Articulo(SQLObject, PRPCTOO):
         """
         if self.es_clase_a() and solo_clase_a:
             vel = self.productoVenta.prodestandar
-            peso_sin = self.peso_sin
             try:
-                tiempo = peso_sin / vel
+                # XXX: CWT
+                peso = peso_teorico = self.productoVenta.get_peso_teorico()
+            except ValueError:  # No tiene peso teórico. Es bala o algo.
+                peso = peso_sin = self.peso_sin
+            try:
+                tiempo = peso / vel
             except ZeroDivisionError:
                 tiempo = 0.0
         else:   # CWT: Si es B o C, el tiempo teórico es 0 porque no debe 
@@ -14501,7 +14506,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
             return self.camposEspecificosRollo.peso_teorico
         except AttributeError:
             if self.es_caja():
-                return (self.camposEspecificosBolsa.gramosBolsa * self.camposEspecificosBolsa.bolsasCaja)
+                return (self.camposEspecificosBala.gramosBolsa 
+                        * self.camposEspecificosBala.bolsasCaja)
             else:
                 if self.es_especial():
                     raise ValueError, "Los productos especiales no tienen"\
