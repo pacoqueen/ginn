@@ -745,13 +745,49 @@ class ConsultaProducido(Ventana):
         """
         vpro = VentanaProgreso(padre = self.wids['ventana'])
         vpro.mostrar()
-        tot = len(pdps)
+        widnames = (("e_pdp_ini_gtx", obtener_fechahorainicio_primer_parte),
+                    ("e_pdp_fin_gtx", obtener_fechahorafin_ultimo_parte), 
+                    ("e_pdp_dif_gtx", obtener_diferencia_horas_partes), 
+                    ("e_t_total_gtx", calcular_t_real_total), 
+                    ("e_t_total_a_gtx", calcular_t_teorico), 
+                    ("e_productividad_gtx", calcular_productividad), 
+                    ("e_kg_teorico_a_gtx", calcular_kgs_teoricos_a), 
+                    ("e_kg_real_a_gtx", calcular_kgs_reales_a), 
+                    ("e_dif_real_teorico_gtx", calcular_diferencia_kgs_a), 
+                    ("e_porcentaje_gtx", calcular_porcentaje_kgs), 
+                    ("e_kg_real_b_gtx", calcular_kgs_reales_b), 
+                    ("e_kg_real_c_gtx", calcular_kgs_reales_c), 
+                    ("e_kg_real_total_gtx", calcular_kg_total), 
+                    ("e_desviaciones_gtx", calcular_desviaciones), 
+                    ("e_fibra_gtx", calcular_consumo), 
+                    ("e_dif_cons_prod_gtx", calcular_diff_cons_prod)
+                   )
+        tot = len(widnames)
         i = 0.0
         vpro.set_valor(i / tot, "Calculando resumen de geotextiles...")
         pdps.sort(key = lambda p: p.fechahorainicio)
-        for pdp in pdps:
+        for widname, func in widnames:
+            i += 1
             vpro.set_valor(i / tot, 
-                "Calculando resumen de geotextiles\n[%s]..." % pdp.get_info())
+                "Calculando resumen de geotextiles (%s)..." % (widname))
+            if func.func_code.co_argcount == 1:
+                result = func(pdps)
+            elif func.func_code.co_argcount == 3:
+                result = func(self.inicio, self.fin, pclases.RolloC)
+            elif func.func_code.co_argcount == 4:
+                result = func(pdps, self.inicio, self.fin, pclases.RolloC)
+            else:
+                # No debería
+                result = None
+            if result == None:
+                str_result = ""
+            else:
+                str_result = str(result)
+                #try:
+                #    str_result = utils.float2str(result)
+                #except ValueError:  # Es tiempo.
+                #    str_result = str_horas(result)
+            self.wids[widname].set_text(str_result)
         vpro.ocultar()
 
 
@@ -926,6 +962,182 @@ def update_dic_producto(prod, pv, tipo, cantidad, metros = 0.0,
         prod[puid_pv]['m'][tipo] += metros
     except KeyError:    # No es rollo.
         pass
+
+## Funciones auxiliares para el cálculo del resumen.
+def obtener_fechahorainicio_primer_parte(pdps):
+    try:
+        res = min(pdps, key = lambda pdp: pdp.fechahorainicio).fechahorainicio
+    except ValueError:
+        res = None
+    return res
+
+def obtener_fechahorafin_ultimo_parte(pdps):
+    try:
+        res = max(pdps, key = lambda pdp: pdp.fechahorafin).fechahorafin
+    except ValueError:
+        res = None
+    return res
+
+def obtener_diferencia_horas_partes(pdps):
+    ini = obtener_fechahorainicio_primer_parte(pdps)
+    fin = obtener_fechahorafin_ultimo_parte(pdps)
+    try:
+        res = fin - ini
+    except TypeError, msg:
+        res = None
+    return res
+
+def calcular_t_real_total(pdps):
+    res = sum([pdp.get_duracion() for pdp in pdps])
+    return res
+
+def calcular_t_teorico(pdps):
+    res = sum([pdp.calcular_tiempo_teorico() for pdp in pdps])
+    res = mx.DateTime.DateTimeDeltaFrom(hours = res)
+    return res
+
+def calcular_productividad(pdps):
+    # Esto no lo puedo calcular como la media de los rendimientos a no ser 
+    # que fuera media ponderada en función de los Kg producidos, que al final 
+    # es más complejo que si lo calculamos con la misma fórmula pero aplicada 
+    # al conjunto de los partes.
+    #try:
+    #    res = sum([pdp.calcular_rendimiento() for pdp in pdps]) / len(pdps)
+    #except ZeroDivisionError:
+    #    res = 0.0
+    # OJO: Si volviera a cambiar la fórmula de la productividad, hay que 
+    # redefinirla aquí también.
+    kgs_a = sum([pdp.calcular_kilos_producidos(A = True, B = False, C = False)
+        for pdp in pdps])
+    kgs_teoricos = sum([pdp.calcular_kilos_teoricos() for pdp in pdps])
+    try:
+        res = kgs_a * 100.0 / kgs_teoricos
+    except ZeroDivisionError:
+        res = 0.0
+    return res
+
+def calcular_kgs_teoricos_a(pdps):
+    """
+    Devuelve el total de Kgs de que deberían pesar los rollos A producidos    
+    entre todos los partes recibidos.
+    """
+    res = 0.0
+    for pdp in pdps:
+        for a in pdp.articulos:
+            if a.es_clase_a():
+                try:
+                    res += a.get_peso_teorico()
+                except TypeError:   # Sin peso teórico.
+                    pass
+    return res
+
+def calcular_kgs_reales_a(pdps):
+    """
+    Devuelve los kgs reales sin embalaje producidos en A entre todos los 
+    partes.
+    """
+    res = sum([pdp.calcular_kilos_producidos_A() for pdp in pdps])
+    return res
+
+def calcular_diferencia_kgs_a(pdps):
+    """
+    Devuelve la diferencia entre los Kgs reales de A y los teóricos de A para 
+    todos los partes.
+    """
+    reales = calcular_kgs_reales_a(pdps)
+    teoricos = calcular_kgs_teoricos_a(pdps)
+    res = reales - teoricos
+    return res
+
+def calcular_porcentaje_kgs(pdps):
+    """
+    Devuelve el porcentaje que representa la diferencia entre kgs reales y 
+    teóricos sobre los kilos teóricos de A que deberían haber dado los partes.
+    """
+    diferencia = calcular_diferencia_kgs_a(pdps)
+    teoricos = calcular_kgs_teoricos_a(pdps)
+    try:
+        res = diferencia * 100.0 / teoricos
+    except ZeroDivisionError:
+        res = 0.0
+    return res
+
+def calcular_kgs_reales_b(pdps):
+    """
+    Devuelve los kgs de B reales sin embalaje producidos en los partes.
+    """
+    res = sum([pdp.calcular_kilos_producidos_B() for pdp in pdps])
+    return res
+
+def calcular_kgs_reales_c(fini, ffin, claseC):
+    """
+    Devuelve los kgs de C reales sin embalaje producidos entre las fechas 
+    recibidas (la fecha final no entra) del tipo de clase C recibido 
+    (pclases.RolloC o pclases.BalaC).
+    """
+    # res = sum([pdp.calcular_kilos_producidos_C() for pdp in pdps])
+    # Esto no se puede hacer así porque los artículos C no van en los partes 
+    # de producción DE MOMENTO. Así que lo calculo mirando las fechas 
+    # inicial y final de
+    res = 0.0
+    objs = claseC.select(pclases.AND(claseC.fechahora >= fini, 
+                                     claseC.fechahora < ffin))
+    res = sum([o.articulo.peso_sin for o in objs])
+    return res
+
+def calcular_kg_total(pdps, fini, ffin, claseC):
+    """
+    Devuelve los kilos reales totales fabricados de A+B+C.
+    """
+    A = calcular_kgs_reales_a(pdps)
+    B = calcular_kgs_reales_b(pdps)
+    C = calcular_kgs_reales_c(fini, ffin, claseC)
+    res = A + B + C
+    return res
+
+def calcular_desviaciones(pdps, fini, ffin, claseC):
+    """
+    Devuelve la suma de desviaciones (artículos B, artículos C y 
+    diferencia entre A teóricos y A reales) sobre A.
+    """
+    # Esto es casi pura programación funcional. Me va a costar mucho tiempo 
+    # repitiendo llamadas a funciones para calcular los mismos resultados en 
+    # varios sitios que en Erlang estaría totalmente optimizado. For sure!
+    diferencia_teoricos_reales = calcular_diferencia_kgs_a(pdps)
+    B = calcular_kgs_reales_b(pdps)
+    C = calcular_kgs_reales_c(fini, ffin, claseC)
+    res = diferencia_teoricos_reales + B + C
+    return res
+
+def calcular_consumo(pdps):
+    """
+    Devuelve el "consumo" de materia prima en kgs de los partes de producción 
+    recibidos.
+    En el caso de la fibra es la suma de consumos de granza.
+    En el caso de los geotextiles es la suma de la fibra CARGADA en los 
+    cuartos para las partidas fabricadas en los partes.
+    En el caso del cemento es la suma de los bigbags cargados en los partes.
+    En el caso de los productos C (rollos C y balas de cable) es cero porque 
+    actualmente no consumen (DE MOMENTO) y además no pertenecen a partes de
+    producción "estándar", así que no se le invocaría porque no habría pdps.
+    """
+    try:
+        pdp = pdps[0]
+    except IndexError:  # No partes. No consumos.
+        res = 0.0
+    else:
+        res = sum([pdp.calcular_consumo_mp() for pdp in pdps])
+    return res
+
+def calcular_diff_cons_prod(pdps, fini, ffin, claseC):
+    """
+    Devuelve la diferencia entre los kilos producidos sin embalaje de A, B y C 
+    con los kilos de materia prima cargados o consumidos por los partes.
+    """
+    producido = calcular_kg_total(pdps, fini, ffin, claseC)
+    consumido = calcular_consumo(pdps)
+    res = consumido - producido
+    return res
 
 if __name__ == '__main__':
     t = ConsultaProducido() 

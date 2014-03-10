@@ -9869,6 +9869,27 @@ class Articulo(SQLObject, PRPCTOO):
                 # contar para las consultas de productividad.
             tiempo = 0.0
         return tiempo
+
+    def get_peso_teorico(self):
+        """
+        Devuelve el peso teórico del artículo según la ficha del producto.
+        """
+        for link in ("bala", "balaC", "rollo", "rolloDefecutoso", "rolloC", 
+                     "bigbag", "caja"):
+            try:
+                linked = getattr(self, link)
+                if linked == None:
+                    raise AttributeError
+            except AttributeError:
+                continue
+            else:
+                try:
+                    res = linked.get_peso_teorico()
+                except AttributeError:  
+                    res = None # Este tipo de producto no lo tiene definido.
+                break
+        return res
+
     
 cont, tiempo = print_verbose(cont, total, tiempo)
 
@@ -16682,6 +16703,19 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
                 res[grupo] = ht_horas
             else:
                 res[grupo] += ht_horas
+        return res
+
+    def calcular_tiempo_teorico(self):
+        """
+        Devuelve el tiempo teórico en horas que debería haber tardado el parte 
+        para fabricar los kilogramos teóricos de A correspondientes a los 
+        bultos de A que se han fabricado. Ojo: no con los kilos reales de A 
+        fabricados, sino con los teóricos del producto.
+        """
+        res = 0.0
+        for a in self.articulos:
+            if a.es_clase_a():
+                res += a.calcular_tiempo_teorico()
         return res
 
     def calcular_kilos_teoricos(self):
