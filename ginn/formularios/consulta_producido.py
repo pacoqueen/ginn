@@ -376,6 +376,7 @@ class ConsultaProducido(Ventana):
         self.huecos = []    # Lista de los últimos partes tratados por línea.
         self.procesar_rollos_c(prod_rollos)
         self.procesar_balas_c(prod_balas)
+        pdps_rollos = []
         for pdp in pdps:
             vpro.set_valor(i/tot, 'Analizando partes %s...' % (
                 utils.str_fecha(pdp.fecha)))
@@ -392,6 +393,7 @@ class ConsultaProducido(Ventana):
             elif pdp.es_de_rollos():
                 self.procesar_pdp_rollos(pdp, prod_rollos)
                 huecos_gtx += delta_entre_partes
+                pdps_rollos.append(pdp)
             else:
                 # WTF? ¿Nueva línea de producción? ¿Y yo con estos pelos?
                 raise ValueError, "consulta_producido.py::buscar -> %s "\
@@ -406,6 +408,7 @@ class ConsultaProducido(Ventana):
         self.rellenar_tabla(self.wids['tv_cem'], prod_pales, huecos_cem, 
                 "cem")
         self.dibujar_grafica(prod_balas, prod_rollos, prod_pales)
+        self.resumen_gtx(pdps_rollos)
 
     def procesar_rollos_c(self, prod_rollos):
         if not self.inicio:
@@ -735,6 +738,22 @@ class ConsultaProducido(Ventana):
                                    fecha = fecha, 
                                    numcols_a_totalizar = totales, 
                                    extra_data = extra))
+
+    def resumen_gtx(self, pdps):
+        """
+        Calcula totales del resumen únicamente en base a los partes recibidos.
+        """
+        vpro = VentanaProgreso(padre = self.wids['ventana'])
+        vpro.mostrar()
+        tot = len(pdps)
+        i = 0.0
+        vpro.set_valor(i / tot, "Calculando resumen de geotextiles...")
+        pdps.sort(key = lambda p: p.fechahorainicio)
+        for pdp in pdps:
+            vpro.set_valor(i / tot, 
+                "Calculando resumen de geotextiles\n[%s]..." % pdp.get_info())
+        vpro.ocultar()
+
 
 def str_horas(fh):
     """

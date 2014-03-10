@@ -1259,7 +1259,9 @@ class Presupuestos(Ventana, VentanaGenerica):
         # Convierto descripción en un entry con autocompletado.
         col.clear()
         liststore_productos = gtk.ListStore(str, str)
-        for p in pclases.ProductoVenta.select(orderBy = "descripcion"):
+        for p in pclases.ProductoVenta.select(
+                pclases.ProductoVenta.q.obsoleto == False, 
+                orderBy = "descripcion"):
             liststore_productos.append((p.descripcion, p.puid))
         for p in pclases.ProductoCompra.select(
                 pclases.ProductoCompra.q.obsoleto == False, 

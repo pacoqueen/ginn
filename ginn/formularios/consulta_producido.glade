@@ -585,7 +585,7 @@
                   <widget class="GtkTable" id="table1">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="n_rows">4</property>
+                    <property name="n_rows">5</property>
                     <property name="n_columns">5</property>
                     <child>
                       <widget class="GtkLabel" id="label8">
@@ -961,6 +961,661 @@
                         <property name="right_attach">5</property>
                         <property name="top_attach">3</property>
                         <property name="bottom_attach">4</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkTable" id="table2">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="n_rows">10</property>
+                        <property name="n_columns">6</property>
+                        <child>
+                          <widget class="GtkLabel" id="label33">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Inicio primer parte:</property>
+                          </widget>
+                          <packing>
+                            <property name="x_options">GTK_SHRINK | GTK_FILL</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="label34">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Fin último parte:</property>
+                          </widget>
+                          <packing>
+                            <property name="top_attach">1</property>
+                            <property name="bottom_attach">2</property>
+                            <property name="x_options">GTK_SHRINK | GTK_FILL</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="label35">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Diferencia: </property>
+                          </widget>
+                          <packing>
+                            <property name="top_attach">2</property>
+                            <property name="bottom_attach">3</property>
+                            <property name="x_options">GTK_SHRINK | GTK_FILL</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="label36">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Tiempo total: </property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">2</property>
+                            <property name="right_attach">3</property>
+                            <property name="x_options">GTK_SHRINK | GTK_FILL</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="label37">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Tiempo total producción A: </property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">2</property>
+                            <property name="right_attach">3</property>
+                            <property name="top_attach">1</property>
+                            <property name="bottom_attach">2</property>
+                            <property name="x_options">GTK_SHRINK | GTK_FILL</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="label38">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Productividad: </property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">2</property>
+                            <property name="right_attach">3</property>
+                            <property name="top_attach">2</property>
+                            <property name="bottom_attach">3</property>
+                            <property name="x_options">GTK_SHRINK | GTK_FILL</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="label39">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Kg teóricos A: </property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">4</property>
+                            <property name="right_attach">5</property>
+                            <property name="x_options">GTK_SHRINK | GTK_FILL</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="label40">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Kg reales A: </property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">4</property>
+                            <property name="right_attach">5</property>
+                            <property name="top_attach">1</property>
+                            <property name="bottom_attach">2</property>
+                            <property name="x_options">GTK_SHRINK | GTK_FILL</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="label41">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Diferencia: </property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">4</property>
+                            <property name="right_attach">5</property>
+                            <property name="top_attach">2</property>
+                            <property name="bottom_attach">3</property>
+                            <property name="x_options">GTK_SHRINK | GTK_FILL</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="label42">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">% sobre teóricos: </property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">4</property>
+                            <property name="right_attach">5</property>
+                            <property name="top_attach">3</property>
+                            <property name="bottom_attach">4</property>
+                            <property name="x_options">GTK_SHRINK | GTK_FILL</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="label43">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Kg reales B: </property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">4</property>
+                            <property name="right_attach">5</property>
+                            <property name="top_attach">4</property>
+                            <property name="bottom_attach">5</property>
+                            <property name="x_options">GTK_SHRINK | GTK_FILL</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="label44">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Kg reales C: </property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">4</property>
+                            <property name="right_attach">5</property>
+                            <property name="top_attach">5</property>
+                            <property name="bottom_attach">6</property>
+                            <property name="x_options">GTK_SHRINK | GTK_FILL</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="label45">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Suma desviaciones:</property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">4</property>
+                            <property name="right_attach">5</property>
+                            <property name="top_attach">7</property>
+                            <property name="bottom_attach">8</property>
+                            <property name="x_options">GTK_SHRINK | GTK_FILL</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="label46">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Total kg reales:</property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">4</property>
+                            <property name="right_attach">5</property>
+                            <property name="top_attach">6</property>
+                            <property name="bottom_attach">7</property>
+                            <property name="x_options">GTK_SHRINK | GTK_FILL</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="label47">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Fibra cargada:</property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">4</property>
+                            <property name="right_attach">5</property>
+                            <property name="top_attach">8</property>
+                            <property name="bottom_attach">9</property>
+                            <property name="x_options">GTK_SHRINK | GTK_FILL</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="label48">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Diferencia: </property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">4</property>
+                            <property name="right_attach">5</property>
+                            <property name="top_attach">9</property>
+                            <property name="bottom_attach">10</property>
+                            <property name="x_options">GTK_SHRINK | GTK_FILL</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkEntry" id="e_pdp_ini_gtx">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="editable">False</property>
+                            <property name="has_frame">False</property>
+                            <property name="invisible_char">•</property>
+                            <property name="xalign">0.5</property>
+                            <property name="invisible_char_set">True</property>
+                            <property name="primary_icon_activatable">False</property>
+                            <property name="secondary_icon_activatable">False</property>
+                            <property name="primary_icon_sensitive">True</property>
+                            <property name="secondary_icon_sensitive">True</property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="right_attach">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkEntry" id="e_pdp_fin_gtx">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="editable">False</property>
+                            <property name="has_frame">False</property>
+                            <property name="invisible_char">•</property>
+                            <property name="xalign">0.5</property>
+                            <property name="invisible_char_set">True</property>
+                            <property name="primary_icon_activatable">False</property>
+                            <property name="secondary_icon_activatable">False</property>
+                            <property name="primary_icon_sensitive">True</property>
+                            <property name="secondary_icon_sensitive">True</property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="right_attach">2</property>
+                            <property name="top_attach">1</property>
+                            <property name="bottom_attach">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkEntry" id="e_pdp_dif_gtx">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="editable">False</property>
+                            <property name="has_frame">False</property>
+                            <property name="invisible_char">•</property>
+                            <property name="xalign">0.5</property>
+                            <property name="invisible_char_set">True</property>
+                            <property name="primary_icon_activatable">False</property>
+                            <property name="secondary_icon_activatable">False</property>
+                            <property name="primary_icon_sensitive">True</property>
+                            <property name="secondary_icon_sensitive">True</property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="right_attach">2</property>
+                            <property name="top_attach">2</property>
+                            <property name="bottom_attach">3</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <widget class="GtkEntry" id="e_t_total_gtx">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="editable">False</property>
+                            <property name="has_frame">False</property>
+                            <property name="invisible_char">•</property>
+                            <property name="xalign">0.5</property>
+                            <property name="invisible_char_set">True</property>
+                            <property name="primary_icon_activatable">False</property>
+                            <property name="secondary_icon_activatable">False</property>
+                            <property name="primary_icon_sensitive">True</property>
+                            <property name="secondary_icon_sensitive">True</property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">3</property>
+                            <property name="right_attach">4</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkEntry" id="e_t_total_a_gtx">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="editable">False</property>
+                            <property name="has_frame">False</property>
+                            <property name="invisible_char">•</property>
+                            <property name="xalign">0.5</property>
+                            <property name="invisible_char_set">True</property>
+                            <property name="primary_icon_activatable">False</property>
+                            <property name="secondary_icon_activatable">False</property>
+                            <property name="primary_icon_sensitive">True</property>
+                            <property name="secondary_icon_sensitive">True</property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">3</property>
+                            <property name="right_attach">4</property>
+                            <property name="top_attach">1</property>
+                            <property name="bottom_attach">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkEntry" id="e_productividad_gtx">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="editable">False</property>
+                            <property name="has_frame">False</property>
+                            <property name="invisible_char">•</property>
+                            <property name="xalign">0.5</property>
+                            <property name="invisible_char_set">True</property>
+                            <property name="primary_icon_activatable">False</property>
+                            <property name="secondary_icon_activatable">False</property>
+                            <property name="primary_icon_sensitive">True</property>
+                            <property name="secondary_icon_sensitive">True</property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">3</property>
+                            <property name="right_attach">4</property>
+                            <property name="top_attach">2</property>
+                            <property name="bottom_attach">3</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkEntry" id="e_kg_teorico_a_gtx">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="editable">False</property>
+                            <property name="has_frame">False</property>
+                            <property name="invisible_char">•</property>
+                            <property name="xalign">0.5</property>
+                            <property name="invisible_char_set">True</property>
+                            <property name="primary_icon_activatable">False</property>
+                            <property name="secondary_icon_activatable">False</property>
+                            <property name="primary_icon_sensitive">True</property>
+                            <property name="secondary_icon_sensitive">True</property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">5</property>
+                            <property name="right_attach">6</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkEntry" id="e_kg_real_a_gtx">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="editable">False</property>
+                            <property name="has_frame">False</property>
+                            <property name="invisible_char">•</property>
+                            <property name="xalign">0.5</property>
+                            <property name="invisible_char_set">True</property>
+                            <property name="primary_icon_activatable">False</property>
+                            <property name="secondary_icon_activatable">False</property>
+                            <property name="primary_icon_sensitive">True</property>
+                            <property name="secondary_icon_sensitive">True</property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">5</property>
+                            <property name="right_attach">6</property>
+                            <property name="top_attach">1</property>
+                            <property name="bottom_attach">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkEntry" id="e_dif_real_teorico_gtx">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="editable">False</property>
+                            <property name="has_frame">False</property>
+                            <property name="invisible_char">•</property>
+                            <property name="xalign">0.5</property>
+                            <property name="invisible_char_set">True</property>
+                            <property name="primary_icon_activatable">False</property>
+                            <property name="secondary_icon_activatable">False</property>
+                            <property name="primary_icon_sensitive">True</property>
+                            <property name="secondary_icon_sensitive">True</property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">5</property>
+                            <property name="right_attach">6</property>
+                            <property name="top_attach">2</property>
+                            <property name="bottom_attach">3</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkEntry" id="e_porcentaje_gtx">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="editable">False</property>
+                            <property name="has_frame">False</property>
+                            <property name="invisible_char">•</property>
+                            <property name="xalign">0.5</property>
+                            <property name="invisible_char_set">True</property>
+                            <property name="primary_icon_activatable">False</property>
+                            <property name="secondary_icon_activatable">False</property>
+                            <property name="primary_icon_sensitive">True</property>
+                            <property name="secondary_icon_sensitive">True</property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">5</property>
+                            <property name="right_attach">6</property>
+                            <property name="top_attach">3</property>
+                            <property name="bottom_attach">4</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkEntry" id="e_kg_real_b_gtx">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="editable">False</property>
+                            <property name="has_frame">False</property>
+                            <property name="invisible_char">•</property>
+                            <property name="xalign">0.5</property>
+                            <property name="invisible_char_set">True</property>
+                            <property name="primary_icon_activatable">False</property>
+                            <property name="secondary_icon_activatable">False</property>
+                            <property name="primary_icon_sensitive">True</property>
+                            <property name="secondary_icon_sensitive">True</property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">5</property>
+                            <property name="right_attach">6</property>
+                            <property name="top_attach">4</property>
+                            <property name="bottom_attach">5</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkEntry" id="e_kg_real_c_gtx">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="editable">False</property>
+                            <property name="has_frame">False</property>
+                            <property name="invisible_char">•</property>
+                            <property name="xalign">0.5</property>
+                            <property name="invisible_char_set">True</property>
+                            <property name="primary_icon_activatable">False</property>
+                            <property name="secondary_icon_activatable">False</property>
+                            <property name="primary_icon_sensitive">True</property>
+                            <property name="secondary_icon_sensitive">True</property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">5</property>
+                            <property name="right_attach">6</property>
+                            <property name="top_attach">5</property>
+                            <property name="bottom_attach">6</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkEntry" id="e_kg_real_total_gtx">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="editable">False</property>
+                            <property name="has_frame">False</property>
+                            <property name="invisible_char">•</property>
+                            <property name="xalign">0.5</property>
+                            <property name="invisible_char_set">True</property>
+                            <property name="primary_icon_activatable">False</property>
+                            <property name="secondary_icon_activatable">False</property>
+                            <property name="primary_icon_sensitive">True</property>
+                            <property name="secondary_icon_sensitive">True</property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">5</property>
+                            <property name="right_attach">6</property>
+                            <property name="top_attach">6</property>
+                            <property name="bottom_attach">7</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkEntry" id="e_desviaciones_gtx">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="editable">False</property>
+                            <property name="has_frame">False</property>
+                            <property name="invisible_char">•</property>
+                            <property name="xalign">0.5</property>
+                            <property name="invisible_char_set">True</property>
+                            <property name="primary_icon_activatable">False</property>
+                            <property name="secondary_icon_activatable">False</property>
+                            <property name="primary_icon_sensitive">True</property>
+                            <property name="secondary_icon_sensitive">True</property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">5</property>
+                            <property name="right_attach">6</property>
+                            <property name="top_attach">7</property>
+                            <property name="bottom_attach">8</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkEntry" id="e_fibra_gtx">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="editable">False</property>
+                            <property name="has_frame">False</property>
+                            <property name="invisible_char">•</property>
+                            <property name="xalign">0.5</property>
+                            <property name="invisible_char_set">True</property>
+                            <property name="primary_icon_activatable">False</property>
+                            <property name="secondary_icon_activatable">False</property>
+                            <property name="primary_icon_sensitive">True</property>
+                            <property name="secondary_icon_sensitive">True</property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">5</property>
+                            <property name="right_attach">6</property>
+                            <property name="top_attach">8</property>
+                            <property name="bottom_attach">9</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkEntry" id="e_dif_cons_prod_gtx">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="editable">False</property>
+                            <property name="has_frame">False</property>
+                            <property name="invisible_char">•</property>
+                            <property name="xalign">0.5</property>
+                            <property name="invisible_char_set">True</property>
+                            <property name="primary_icon_activatable">False</property>
+                            <property name="secondary_icon_activatable">False</property>
+                            <property name="primary_icon_sensitive">True</property>
+                            <property name="secondary_icon_sensitive">True</property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">5</property>
+                            <property name="right_attach">6</property>
+                            <property name="top_attach">9</property>
+                            <property name="bottom_attach">10</property>
+                          </packing>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="right_attach">5</property>
+                        <property name="top_attach">4</property>
+                        <property name="bottom_attach">5</property>
                       </packing>
                     </child>
                     <child>
@@ -1364,58 +2019,67 @@
                 <property name="type">tab</property>
               </packing>
             </child>
-          </widget>
-          <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="GtkEventBox" id="eventbox_hbox">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
             <child>
-              <widget class="GtkHBox" id="hbox_chart">
+              <widget class="GtkEventBox" id="eventbox_hbox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <widget class="GtkImage" id="im_graph">
-                    <property name="width_request">200</property>
-                    <property name="height_request">200</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="stock">gtk-missing-image</property>
-                  </widget>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="padding">5</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkEventBox" id="eventbox_chart">
+                  <widget class="GtkHBox" id="hbox_chart">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <child>
-                      <placeholder/>
+                      <widget class="GtkImage" id="im_graph">
+                        <property name="width_request">200</property>
+                        <property name="height_request">200</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="stock">gtk-missing-image</property>
+                      </widget>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="padding">5</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkEventBox" id="eventbox_chart">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <child>
+                          <placeholder/>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
                     </child>
                   </widget>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
                 </child>
               </widget>
+              <packing>
+                <property name="position">3</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkLabel" id="label30">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Gráfica</property>
+              </widget>
+              <packing>
+                <property name="position">3</property>
+                <property name="tab_fill">False</property>
+                <property name="type">tab</property>
+              </packing>
             </child>
           </widget>
           <packing>
             <property name="expand">True</property>
             <property name="fill">True</property>
-            <property name="padding">10</property>
-            <property name="position">2</property>
+            <property name="position">1</property>
           </packing>
         </child>
         <child>
@@ -1474,7 +2138,7 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">3</property>
+            <property name="position">2</property>
           </packing>
         </child>
       </widget>
