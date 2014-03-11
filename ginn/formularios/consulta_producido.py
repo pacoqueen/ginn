@@ -33,6 +33,7 @@
 ## 
 ###################################################################
 
+import datetime
 from formularios import ventana_progreso
 from framework import pclases
 from informes import geninformes
@@ -132,6 +133,7 @@ class ConsultaProducido(Ventana):
         self.inicio.reverse()
         self.inicio = '/'.join(self.inicio)
         self.wids['im_graph'].set_visible(pychart_available)
+        self.wids['notebook1'].set_current_page(1)
         gtk.main()
 
     def exportar(self, boton):
@@ -779,14 +781,20 @@ class ConsultaProducido(Ventana):
             else:
                 # No debería
                 result = None
-            if result == None:
+            if result is None:
                 str_result = ""
             else:
-                str_result = str(result)
-                #try:
-                #    str_result = utils.float2str(result)
-                #except ValueError:  # Es tiempo.
-                #    str_result = str_horas(result)
+                if isinstance(result, float):
+                    str_result = utils.float2str(result, precision = 2, 
+                                                 autodec = True)
+                elif utils.es_interpretable_como_fechahora(result):
+                    str_result = utils.str_fechahora(result)
+                elif isinstance(result, 
+                                (type(mx.DateTime.DateTimeDelta(0)), 
+                                 datetime.timedelta)):
+                    str_result = str_horas(result)
+                else:
+                    str_result = str(result)
             self.wids[widname].set_text(str_result)
         vpro.ocultar()
 
@@ -798,9 +806,16 @@ def str_horas(fh):
     if isinstance(fh, float):
         fh = mx.DateTime.DateTimeDeltaFrom(hours = fh)
     try:
-        return "%02d:%02d" % (fh.hour + fh.day * 24, fh.minute)
+        res = "%02d:%02d" % (fh.hour + fh.day * 24, fh.minute)
+    except AttributeError:  # Es un datetime.timedelta
+        hours, remainder = divmod(fh.seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        res = "%02d:%02d" % (hours + fh.days * 24, minutes)
+        if seconds:
+            res += ":%02d" % seconds
     except:
-        return ''
+        res = ''
+    return res
 
 def detectar_hueco(pdp, huecos):
     """

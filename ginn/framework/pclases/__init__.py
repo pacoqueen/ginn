@@ -9846,6 +9846,9 @@ class Articulo(SQLObject, PRPCTOO):
         Devuelve el tiempo en horas en que se debería haber producido el 
         artículo según la producción estándar de la ficha del producto que sea
         y el peso teórico que debería haber tenido, NO EL REAL QUE HA DADO.
+        En el caso de la fibra, que no tiene peso teórico, se usa el peso 
+        que haya dado sin embalaje entre la producción estándar de la ficha, 
+        dando el tiempo teórico que se debería haber tardado.
         Si solo_clase_a es True, el tiempo teórico solo se calculará si 
         el artículo es de clase A. En otro caso calculará el tiempo teórico 
         aunque sea clase B (que debería ser igual pero en las consultas 
