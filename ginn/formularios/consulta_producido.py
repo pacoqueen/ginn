@@ -842,7 +842,10 @@ def detectar_hueco(pdp, huecos):
             try:
                 horas_delta = delta.total_seconds() / 60.0 / 60.0
             except AttributeError:
-                horas_delta = delta.hours
+                try:
+                    horas_delta = delta.hours
+                except AttributeError:  # Versión <2.7 de Python
+                    horas_delta = delta.days * 24 + delta.seconds / 60.0 / 60.0
             if 0 < horas_delta < 8:
                 # Si el hueco es de más de un turno, es que no ha habido 
                 # producción en ese turno.
