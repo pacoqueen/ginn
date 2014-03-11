@@ -1101,8 +1101,8 @@ def calcular_kgs_reales_c(fini, ffin, claseC):
     # de producción DE MOMENTO. Así que lo calculo mirando las fechas 
     # inicial y final de
     res = 0.0
-    objs = claseC.select(pclases.AND(claseC.fechahora >= fini, 
-                                     claseC.fechahora < ffin))
+    objs = claseC.select(pclases.AND(claseC.q.fechahora >= fini, 
+                                     claseC.q.fechahora < ffin))
     res = sum([o.articulo.peso_sin for o in objs])
     return res
 
