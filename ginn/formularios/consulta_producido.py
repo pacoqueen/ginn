@@ -132,7 +132,10 @@ class ConsultaProducido(Ventana):
         self.inicio = self.wids['e_fechainicio'].get_text().split('/')
         self.inicio.reverse()
         self.inicio = '/'.join(self.inicio)
-        self.wids['im_graph'].set_visible(pychart_available)
+        try:
+            self.wids['im_graph'].set_visible(pychart_available)
+        except AttributeError:
+            self.wids['im_graph'].set_property("visible", pychart_available)
         self.wids['notebook1'].set_current_page(1)
         gtk.main()
 
