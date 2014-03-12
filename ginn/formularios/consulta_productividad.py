@@ -63,10 +63,11 @@ class ConsultaProductividad(Ventana):
                        'b_exportar/clicked': self.exportar}
         self.add_connections(connections)
         cols = (('Fecha', 'gobject.TYPE_STRING', False, True, False, None),
-                ('Inicio del turno', 'gobject.TYPE_STRING', 
+                ('Inicio parte', 'gobject.TYPE_STRING', 
                     False, True, False, None),
-                ('Fin del turno', 'gobject.TYPE_STRING', 
+                ('Fin parte', 'gobject.TYPE_STRING', 
                     False, True, False, None),
+                ('Producto', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Producción', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Productividad', 'gobject.TYPE_STRING', 
                     False, True, False, None),
@@ -80,21 +81,22 @@ class ConsultaProductividad(Ventana):
                               gobject.TYPE_STRING, 
                               gobject.TYPE_STRING,
                               gobject.TYPE_STRING,
+                              gobject.TYPE_STRING,
                               gobject.TYPE_FLOAT,
                               gobject.TYPE_INT64)
         self.wids['tv_datos'].set_model(model)
         model.set_sort_func(0, utils.funcion_orden, 0)
         cell = gtk.CellRendererProgress()
         column = gtk.TreeViewColumn('', cell)
-        column.add_attribute(cell, 'value', 5)
-        column.set_sort_column_id(5)
-        self.wids['tv_datos'].insert_column(column, 5)
+        column.add_attribute(cell, 'value', 6)
+        column.set_sort_column_id(6)
+        self.wids['tv_datos'].insert_column(column, 6)
         # XXX
         self.wids['tv_datos'].add_events(gtk.gdk.BUTTON_PRESS_MASK)
         self.wids['tv_datos'].connect('button_press_event', 
                                       self.button_clicked) 
         # XXX
-        for ncol in (3, 4):
+        for ncol in (4, 5):
             col = self.wids['tv_datos'].get_column(ncol)
             for cell in col.get_cell_renderers():
                 cell.set_property("xalign", 1.0)
@@ -195,7 +197,10 @@ class ConsultaProductividad(Ventana):
         for row in model:
             datos.append((row[0], "", "", ""))
             for hijo in row.iterchildren():
-                datos.append(("", "%s-%s" % (hijo[1], hijo[2]), hijo[3], hijo[4]))
+                datos.append(("", 
+                              "%s-%s" % (hijo[1], hijo[2]), 
+                              hijo[3], 
+                              hijo[4]))
             datos.append(("", "", "---", "---"))
             datos.append(("", "", row[3], row[4]))
             datos.append(("===", "===", "===", "==="))
@@ -307,6 +312,10 @@ class ConsultaProductividad(Ventana):
             # CWT: Ahora no se calcula así, sino como el antiguo rendimiento.
             productividad = p.calcular_rendimiento()
             # Tratamiento especial para partes de balas
+            try:
+                str_producto = p.productoVenta.descripcion
+            except AttributeError: 
+                str_producto = "Sin producción"
             if (self.wids['r_balas'].get_active() 
                 or self.wids['r_ambos'].get_active()):   # Sólo balas o todos. 
                 if p.es_de_fibra(): 
@@ -365,24 +374,25 @@ class ConsultaProductividad(Ventana):
             if dia_actual != utils.str_fecha(p.fecha):
                 if dia_actual != "":  # Actualizo el padre
                     if not self.wids['r_ambos'].get_active():
-                        model[padre][3] = "%s %s" % (
+                        model[padre][4] = "%s %s" % (
                                 utils.float2str(produccion_actual), 
                                 produccion[1])
                     else:   # Evito mezclar kilos con metros
-                        model[padre][3] = "-"
+                        model[padre][4] = "-"
                     try:
                         productividad_actual /= nodos_hijos_por_dia
                     except ZeroDivisionError:
                         productividad_actual = 100.0    # A falta de infinito.
-                    model[padre][4] = "%s %%" % (
+                    model[padre][5] = "%s %%" % (
                             utils.float2str(productividad_actual))
-                    model[padre][5] = min(productividad_actual, 100)
+                    model[padre][6] = min(productividad_actual, 100)
                 dia_actual = utils.str_fecha(p.fecha)
                 produccion_actual = 0.0
                 productividad_actual = 0.0
                 nodos_hijos_por_dia = 0
                 padre = model.append(None, 
                             (utils.str_fecha(p.fecha), 
+                             "", 
                              "", 
                              "", 
                              "", 
@@ -393,6 +403,7 @@ class ConsultaProductividad(Ventana):
                 (utils.str_fecha(p.fecha),
                  str(p.horainicio)[:5],
                  str(p.horafin)[:5],
+                 str_producto, 
                  "%s %s" % (utils.float2str(produccion[0]), produccion[1]),
                  "%s %%" % (utils.float2str(productividad)),
                  min(productividad, 100),
@@ -406,15 +417,15 @@ class ConsultaProductividad(Ventana):
         # Actualizo el padre de los últimos nodos:
         if dia_actual != "":  # Actualizo el padre
             if not self.wids['r_ambos'].get_active():
-                model[padre][3] = "%s %s" % (utils.float2str(produccion_actual), produccion[1])
+                model[padre][4] = "%s %s" % (utils.float2str(produccion_actual), produccion[1])
             else:   # Evito mezclar kilos con metros
-                model[padre][3] = "-"
+                model[padre][4] = "-"
             try:
                 productividad_actual /= nodos_hijos_por_dia
             except ZeroDivisionError:
                 productividad_actual = 100.0    # A falta de infinito...
-            model[padre][4] = "%s %%" % (utils.float2str(productividad_actual))
-            model[padre][5] = min(productividad_actual, 100)
+            model[padre][5] = "%s %%" % (utils.float2str(productividad_actual))
+            model[padre][6] = min(productividad_actual, 100)
 
         vpro.ocultar()
         # XXX Primer intento de acelerar los treeview

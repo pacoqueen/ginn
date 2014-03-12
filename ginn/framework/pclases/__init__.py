@@ -16791,9 +16791,13 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         Calcula el rendimiento de la línea si el 
         parte es de rollos.
         El cálculo se realiza según la fórmula:
-        % rendimiento = (kg producidos * 100) 
+        % rendimiento = (kg producidos A[1] * 100) 
                         / (horas del parte * kg producción estándar/hora)
         los kg no cuentan el peso del embalaje __y solo son de producto A__.
+        ---
+        [1] En el caso de los rollos, los kg producidos de A según peso 
+            estándar del producto, **NO LOS REALES**. En los demás casos 
+            son los kilos fabricados de A sin embalaje.
         """
         # CWT: Se cuenta todo el parte completo. Incluyendo paradas.
         #try:
