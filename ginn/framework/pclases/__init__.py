@@ -606,6 +606,9 @@ def actualizar_estado_cobro_de(clase):
             p.fechaCobrado = p.fechaVencimiento
             p.cobrado = p.cantidad
             p.procesado = True
+            Auditoria.modificado(p, None, None, 
+                    "%s marcado como procesado al actualizar automáticamente"
+                    " su estado de cobro." % clase.__name__)
             p.syncUpdate()
             try:
                 cobros = p.cobros
@@ -2657,6 +2660,9 @@ class VencimientoPago(SQLObject, PRPCTOO):
                     importe_cobrado = sum([p.importe for p in pagos])
                     if importe_cobrado >= v.importe:
                         v.procesado = True    # Marco para no volver a tratar.
+                        Auditoria.modificado(v, None, None, 
+                            "Vencimiento de pago marcado como procesado al "
+                            "comprobar automáticamente su importe pagado.")
                         continue    # Ya está pagado aunque no haya sido 
                                     # procesado automáticamente.
             if mx.DateTime.today() >= v.fecha:
@@ -2668,6 +2674,10 @@ class VencimientoPago(SQLObject, PRPCTOO):
                         pass    # Consola de depuración o algo. No tiene flush.
                 v.fechaCobrado = v.fecha
                 v.procesado = True
+                Auditoria.modificado(v, None, None, 
+                    "Vencimiento de pago domiciliado marcado como procesado y"
+                    " pagado al comprobar automáticamente su fecha de "
+                    "vencimiento.")
                 v.syncUpdate()
                 # Creo el pago:
                 try:
@@ -9366,7 +9376,8 @@ class Articulo(SQLObject, PRPCTOO):
         en ese almacén únicamente, aunque siguiendo todos los criterios 
         explicados anteriormente.
         """
-        # XXX: TODO: PORASQUI: La diferencia entre activarlo o no es un segundo por cada 1.000 artículos.
+        # XXX: La diferencia entre activar el sync o no es un segundo por cada 
+        #      1.000 artículos.
         #self.sync()
         if not fecha:   # No pregunta por ninguna fecha en concreto. Chequeo 
                         # por la actual.
@@ -16784,7 +16795,6 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
                         / (horas del parte * kg producción estándar/hora)
         los kg no cuentan el peso del embalaje __y solo son de producto A__.
         """
-# PORASQUI: Hay que volverlo a cambiar por kilos teóricos, no por los producidos reales.
         # CWT: Se cuenta todo el parte completo. Incluyendo paradas.
         #try:
         #    horas_trabajadas = self.get_horas_trabajadas()
@@ -16793,11 +16803,18 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         #denominador = horas_trabajadas.hours * self.prodestandar
         # CWT: No se incluye producto B en el cálculo de la nueva productividad
         #kg_producidos += sum([a.rolloDefectuoso.peso_sin for a in self.articulos if a.es_rollo_defectuoso()])
+        # CWT: Hay que volverlo a cambiar por kilos teóricos, no por los 
+        # producidos reales. Aquí «teóricos» = kilos según peso estándar del 
+        # producto, no kilos según velocidad de la línea.
         denominador = self.calcular_kilos_teoricos()
-        kg_producidos_A = self.calcular_kilos_producidos(A = True, 
-                                                         B = False, 
-                                                         C = False)
-        numerador = kg_producidos_A * 100.0
+        try:
+            kg_peso_estandar_A = self.calcular_kilos_peso_estandar_A()
+            numerador = 100.0 * kg_peso_estandar_A
+        except ValueError: # No soy de geotextiles. Uso peso real
+            kg_producidos_A = self.calcular_kilos_producidos(A = True, 
+                                                             B = False, 
+                                                             C = False)
+            numerador = kg_producidos_A * 100.0
         try:
             rendimiento = numerador / denominador
         except ZeroDivisionError:
@@ -16805,6 +16822,25 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
                                 # pero así por lo menos se dan cuenta de que hay que poner algo.
                                 # (Si vieran 100% -lo más parecido a infinito positivo- no les dolería "al bolsillo".)
         return rendimiento
+
+    def calcular_kilos_peso_estandar_A(self):
+        """
+        Devuelve los kilos que se deberían haber fabricado si cada rollo 
+        llevara el peso estándar (o teórico) que debería. Solo cuenta 
+        producción A.
+        Si el parte es de fibra lanza una excepción ValueError.
+        """
+        res = 0.0
+        for a in self.articulos:
+            if a.es_clase_a():
+                try:
+                    res += a.productoVenta.camposEspecificosRollo.peso_teorico
+                except AttributeError:  # No es rollo.
+                    txterror = "pclases::__init__ -> "\
+                            "calcular_kilos_peso_estandar_A -> "\
+                            "La fibra no tiene peso teórico estándar definido."
+                    raise ValueError, txterror
+        return res
 
     def calcular_productividad(self):
         """

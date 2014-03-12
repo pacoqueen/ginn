@@ -633,6 +633,8 @@ class PagaresCobros(Ventana):
             for c in self.objeto.cobros:
                 c.fecha = self.objeto.fechaCobrado
                 c.syncUpdate()
+            pclases.Auditoria.modificado(self.objeto, self.usuario, __file__, 
+                    "Pagaré de cobro marcado manualmente como cobrado.")
         else:
             self.objeto.cobrado = -1
             w.set_label('Pagaré pendiente')
@@ -641,6 +643,8 @@ class PagaresCobros(Ventana):
             for c in self.objeto.cobros:
                 c.fecha = self.objeto.fechaVencimiento
                 c.syncUpdate()
+            pclases.Auditoria.modificado(self.objeto, self.usuario, __file__, 
+                    "Pagaré de cobro marcado manualmente como pendiente.")
         self.guardar()
         self.objeto.sync()
         self.objeto.make_swap()

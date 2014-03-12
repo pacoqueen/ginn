@@ -1028,8 +1028,10 @@ def calcular_productividad(pdps):
     #    res = 0.0
     # OJO: Si volviera a cambiar la fórmula de la productividad, hay que 
     # redefinirla aquí también.
-    kgs_a = sum([pdp.calcular_kilos_producidos(A = True, B = False, C = False)
-        for pdp in pdps])
+    try:
+        kgs_a = sum([pdp.calcular_kilos_peso_estandar_A() for pdp in pdps])
+    except ValueError:  # No soy de geotextiles.
+        kgs_a = sum([pdp.calcular_kilos_producidos_A() for pdp in pdps])
     kgs_teoricos = sum([pdp.calcular_kilos_teoricos() for pdp in pdps])
     try:
         res = kgs_a * 100.0 / kgs_teoricos
