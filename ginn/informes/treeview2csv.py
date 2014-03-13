@@ -58,7 +58,7 @@ def to_float(t, sensibilidad = 2):
             return res
     raise ValueError
 
-def treeview2csv(tv, filtro_ceros = [], desglosar = False):
+def treeview2csv(tv, filtro_ceros = [], desglosar = False, extra_data = []):
     """
     A partir de un TreeView crea un csv con su contenido.
     1.- Asigna un nombre de archivo en función del nombre del TreeView.
@@ -68,14 +68,15 @@ def treeview2csv(tv, filtro_ceros = [], desglosar = False):
     Si «desglosar» es True vuelca también los nodos hijos del treeview. No 
     tiene efecto en los listview (porque son "planos"). Si es False, trata 
     los treeview igual que los listview y no manda desgloses al CSV.
+    «extra_data» serán filas adicionales que se agregarán al fichero final.
     """
     archivo = get_nombre_archivo_from_tv(tv)
     campos = get_campos_from_tv(tv)
     datos = get_datos_from_tv(tv, filtro_ceros, desglosar)
-    ficherocsv = generar_csv(archivo, campos, datos)
+    ficherocsv = generar_csv(archivo, campos, datos, extra_data)
     return ficherocsv.name  # Por compatibilidad
 
-def generar_csv(nomarchivo, campos, datos):
+def generar_csv(nomarchivo, campos, datos, extra_data = []):
     """
     Genera un fichero de texto plano en formato "comma separated values" con 
     los títulos de los campos en la primera línea y los datos del treeview 
@@ -86,6 +87,8 @@ def generar_csv(nomarchivo, campos, datos):
         # Por defecto formato "excel".
     escritor.writerow(campos)
     escritor.writerows(datos)
+    #TODO: ¿Qué pasaría si extra_data tiene más columnas que el resto de filas?
+    escritor.writerows(extra_data)
     archivo.close()
     return archivo
 

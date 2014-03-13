@@ -144,10 +144,16 @@ class ConsultaProducido(Ventana):
         Exporta el contenido del TreeView a un fichero csv.
         """
         from informes.treeview2csv import treeview2csv
+        from informes.treeview2pdf import gtktable2list
         from formularios.reports import abrir_csv
         for nombre_tv in ("tv_gtx", "tv_fibra", "tv_cem"):
             tv = self.wids[nombre_tv]
-            abrir_csv(treeview2csv(tv))
+            if nombre_tv == "tv_gtx":
+                tabla_resumen = self.wids['table2']
+                extra_data = [""] + gtktable2list(tabla_resumen)
+            else:
+                extra_data = []
+            abrir_csv(treeview2csv(tv, extra_data = extra_data))
 
     def chequear_cambios(self):
         pass
