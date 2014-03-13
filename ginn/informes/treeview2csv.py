@@ -88,6 +88,8 @@ def generar_csv(nomarchivo, campos, datos, extra_data = []):
     escritor.writerow(campos)
     escritor.writerows(datos)
     #TODO: ¿Qué pasaría si extra_data tiene más columnas que el resto de filas?
+    # Pues que en el servidor se cuelga. En mi GNU/Linux no. No sé qué pasará 
+    # con un Office normal hasta que no tenga el feedback de nzumer.
     escritor.writerows(extra_data)
     archivo.close()
     return archivo
