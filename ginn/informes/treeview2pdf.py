@@ -293,6 +293,10 @@ def gtktable2list(tabla):
                                               "top-attach", "bottom-attach")
         try:
             texto = child.get_text()
+            try:
+                texto = texto.decode("utf8").encode("latin1")
+            except: 
+                pass
         except AttributeError:
             pass    # El widget no es un entry ni un label
         else:

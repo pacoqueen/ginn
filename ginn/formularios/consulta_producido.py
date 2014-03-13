@@ -657,6 +657,7 @@ class ConsultaProducido(Ventana):
                 color += 1
                 if color > 8:
                     color = 0
+            datachart.sort(key = lambda d: d[1], reverse = True)
             chart.plot(datachart)
             self.wids['eventbox_chart'].show_all()
         except Exception, msg:
