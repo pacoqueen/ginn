@@ -755,7 +755,7 @@ class ConsultaProducido(Ventana):
                     ("e_pdp_dif_gtx", obtener_diferencia_horas_partes), 
                     ("e_t_total_gtx", calcular_t_real_total), 
                     ("e_t_total_a_gtx", calcular_t_teorico), 
-                    ("e_productividad_gtx", calcular_productividad), 
+                    ("e_productividad_gtx", calcular_productividad_conjunta), 
                     ("e_kg_teorico_a_gtx", calcular_kgs_teoricos_a), 
                     ("e_kg_real_a_gtx", calcular_kgs_reales_a), 
                     ("e_dif_real_teorico_gtx", calcular_diferencia_kgs_a), 
@@ -1017,7 +1017,7 @@ def calcular_t_teorico(pdps):
     res = mx.DateTime.DateTimeDeltaFrom(hours = res)
     return res
 
-def calcular_productividad(pdps):
+def calcular_productividad_conjunta(pdps):
     # Esto no lo puedo calcular como la media de los rendimientos a no ser 
     # que fuera media ponderada en función de los Kg producidos, que al final 
     # es más complejo que si lo calculamos con la misma fórmula pero aplicada 
@@ -1028,15 +1028,23 @@ def calcular_productividad(pdps):
     #    res = 0.0
     # OJO: Si volviera a cambiar la fórmula de la productividad, hay que 
     # redefinirla aquí también.
+    ## CWT: Hay que volverlo a cambiar. nzumer me dice por correo que hay 
+    ##      que aplicar la productividad conjunta basada en tiempos. !!!
+    #try:
+    #    kgs_a = sum([pdp.calcular_kilos_peso_estandar_A() for pdp in pdps])
+    #except ValueError:  # No soy de geotextiles.
+    #    kgs_a = sum([pdp.calcular_kilos_producidos_A() for pdp in pdps])
+    #kgs_teoricos = sum([pdp.calcular_kilos_teoricos() for pdp in pdps])
+    #try:
+    #    res = kgs_a * 100.0 / kgs_teoricos
+    #except ZeroDivisionError:
+    #    res = 0.0
+    tiempo_teorico = calcular_t_teorico(pdps)
+    tiempo_real = calcular_t_real_total(pdps)
     try:
-        kgs_a = sum([pdp.calcular_kilos_peso_estandar_A() for pdp in pdps])
-    except ValueError:  # No soy de geotextiles.
-        kgs_a = sum([pdp.calcular_kilos_producidos_A() for pdp in pdps])
-    kgs_teoricos = sum([pdp.calcular_kilos_teoricos() for pdp in pdps])
-    try:
-        res = kgs_a * 100.0 / kgs_teoricos
+        res = tiempo_teorico / tiempo_real * 100
     except ZeroDivisionError:
-        res = 0.0
+        res = 0.0   # No datos, no tiempo, no productividad.
     return res
 
 def calcular_kgs_teoricos_a(pdps):

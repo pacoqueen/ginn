@@ -42,7 +42,8 @@ import mx.DateTime
 import pygtk
 from formularios import utils
 pygtk.require('2.0')
-from formularios.consulta_producido import str_horas, detectar_hueco
+from formularios.consulta_producido import str_horas, detectar_hueco, \
+                                           calcular_productividad_conjunta
 import pango
 
 class ConsultaProductividad(Ventana):
@@ -280,8 +281,12 @@ class ConsultaProductividad(Ventana):
         dia_actual = ""     # Estos tres parámetros son para medir la 
                             # producción y productividad por día.
         produccion_actual = 0.0
-        productividad_actual = 0.0
-        nodos_hijos_por_dia = 0
+        #productividad_actual = 0.0
+        pdps_dia = []   # Ojo. Los partes deben venir ordenados para que 
+            # esta lista solo contenga los partes del día tratado en la 
+            # iteración por la que vaya. Se limpia al cambiar de un día al 
+            # siguiente mientras relleno los datos.
+        #nodos_hijos_por_dia = 0
         balas_consumidas = []       # Lista con las balas consumidas por 
             # todos los partes, así evito contar la misma dos veces si en dos 
             # partes se ha usado la misma partida o dos partidas de la misma 
@@ -371,6 +376,7 @@ class ConsultaProductividad(Ventana):
             vector.append(productividad)
             produccion = p.get_produccion()
             # Resúmenes por día como nodos padre del TreeView.
+            pdps_dia.append(p)
             if dia_actual != utils.str_fecha(p.fecha):
                 if dia_actual != "":  # Actualizo el padre
                     if not self.wids['r_ambos'].get_active():
@@ -379,17 +385,23 @@ class ConsultaProductividad(Ventana):
                                 produccion[1])
                     else:   # Evito mezclar kilos con metros
                         model[padre][4] = "-"
-                    try:
-                        productividad_actual /= nodos_hijos_por_dia
-                    except ZeroDivisionError:
-                        productividad_actual = 100.0    # A falta de infinito.
+                    #try:
+                    #    productividad_actual /= nodos_hijos_por_dia
+                    #except ZeroDivisionError:
+                    #    productividad_actual = 100.0    # A falta de infinito.
+                    #model[padre][5] = "%s %%" % (
+                    #        utils.float2str(productividad_actual))
+                    #model[padre][6] = min(productividad_actual, 100)
+                    productividad_actual=calcular_productividad_conjunta(
+                            pdps_dia)
                     model[padre][5] = "%s %%" % (
                             utils.float2str(productividad_actual))
                     model[padre][6] = min(productividad_actual, 100)
+                    pdps_dia = [] # He cambiado de día. Limpio.
                 dia_actual = utils.str_fecha(p.fecha)
                 produccion_actual = 0.0
                 productividad_actual = 0.0
-                nodos_hijos_por_dia = 0
+                #nodos_hijos_por_dia = 0
                 padre = model.append(None, 
                             (utils.str_fecha(p.fecha), 
                              "", 
@@ -411,8 +423,8 @@ class ConsultaProductividad(Ventana):
             produccion_actual += produccion[0]
             # BUG: Es media ponderada, no media aritmética:            productividad_actual += productividad
             # BUG: Es media ponderada, no media aritmética:            nodos_hijos_por_dia += 1
-            productividad_actual += productividad * p.get_duracion().hours
-            nodos_hijos_por_dia += p.get_duracion().hours
+            #productividad_actual += productividad * p.get_duracion().hours
+            #nodos_hijos_por_dia += p.get_duracion().hours
             i+=1
         # Actualizo el padre de los últimos nodos:
         if dia_actual != "":  # Actualizo el padre
@@ -420,10 +432,11 @@ class ConsultaProductividad(Ventana):
                 model[padre][4] = "%s %s" % (utils.float2str(produccion_actual), produccion[1])
             else:   # Evito mezclar kilos con metros
                 model[padre][4] = "-"
-            try:
-                productividad_actual /= nodos_hijos_por_dia
-            except ZeroDivisionError:
-                productividad_actual = 100.0    # A falta de infinito...
+            #try:
+            #    productividad_actual /= nodos_hijos_por_dia
+            #except ZeroDivisionError:
+            #    productividad_actual = 100.0    # A falta de infinito...
+            productividad_actual = calcular_productividad_conjunta(pdps_dia)
             model[padre][5] = "%s %%" % (utils.float2str(productividad_actual))
             model[padre][6] = min(productividad_actual, 100)
 
@@ -441,10 +454,11 @@ class ConsultaProductividad(Ventana):
                              for r in self.wids['tv_datos'].get_model() 
                              if r.parent == None]
             # ¿Los peores nombres de variables de la historia?
-            try:
-                total = sum(numeradores) / len(denominadores)
-            except ZeroDivisionError:
-                total = 0.0
+            #try:
+            #    total = sum(numeradores) / len(denominadores)
+            #except ZeroDivisionError:
+            #    total = 0.0
+            total = calcular_productividad_conjunta(partes)
             # Campos especiales de "Sólo balas"
             if self.wids['r_balas'].get_active():
                 self.wids['label7'].set_text('Kilos producidos:')
