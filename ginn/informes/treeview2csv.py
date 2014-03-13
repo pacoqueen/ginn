@@ -58,17 +58,20 @@ def to_float(t, sensibilidad = 2):
             return res
     raise ValueError
 
-def treeview2csv(tv, filtro_ceros = []):
+def treeview2csv(tv, filtro_ceros = [], desglosar = False):
     """
     A partir de un TreeView crea un csv con su contenido.
     1.- Asigna un nombre de archivo en función del nombre del TreeView.
     2.- El título del campo será el título (get_title) de la columna.
     Si «filtro_ceros» contiene números de columna, sustituye los valores 
     numéricos "0" y derivados por la cadena vacía en esas columnas del TV.
+    Si «desglosar» es True vuelca también los nodos hijos del treeview. No 
+    tiene efecto en los listview (porque son "planos"). Si es False, trata 
+    los treeview igual que los listview y no manda desgloses al CSV.
     """
     archivo = get_nombre_archivo_from_tv(tv)
     campos = get_campos_from_tv(tv)
-    datos = get_datos_from_tv(tv, filtro_ceros)
+    datos = get_datos_from_tv(tv, filtro_ceros, desglosar)
     ficherocsv = generar_csv(archivo, campos, datos)
     return ficherocsv.name  # Por compatibilidad
 
@@ -95,7 +98,7 @@ def get_nombre_archivo_from_tv(tv):
     nomarchivo = os.path.join(gettempdir(), "%s_%s.csv" % (nomtreeview, geninformes.give_me_the_name_baby()))
     return nomarchivo
 
-def get_datos_from_tv(tv, filtro_ceros):
+def get_datos_from_tv(tv, filtro_ceros, desglosar):
     """
     Devuelve una lista de tuplas. Cada tupla contiene los datos de las cells 
     del TreeView para cada fila.
@@ -140,7 +143,7 @@ def get_datos_from_tv(tv, filtro_ceros):
                         dato = ""   # Más rápido que una regexp.
             filadato.append(dato)
         datos.append(filadato)
-        if hasattr(fila, 'iterchildren'):
+        if hasattr(fila, 'iterchildren') and desglosar:
             filas_hijas = agregar_hijos(fila, numcols, 1, tv)
             #if filas_hijas != [] and len(datos) > 1 and datos[-2][0] != "---":
             #    datos.insert(-1, ("---", ) * numcols)

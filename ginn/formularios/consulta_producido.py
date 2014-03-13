@@ -721,7 +721,7 @@ class ConsultaProducido(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from informes.treeview2pdf import treeview2pdf
+        from informes.treeview2pdf import treeview2pdf, gtktable2list
         from formularios.reports import abrir_pdf
         for nombre_tv, titulo in (("tv_fibra", "Fibra"), 
                                   ("tv_gtx", "Geotextiles"),  
@@ -735,9 +735,11 @@ class ConsultaProducido(Ventana):
             t_real = self.wids[nome].get_text()
             nome = nombre_tv.replace("tv", "e") + "_huecos"
             huecos = self.wids[nome].get_text()
-            extra = (("Tiempo teórico: ", t_teorico) , 
-                     ("Tiempo real: ", t_real) , 
-                     ("Huecos entre partes: ", huecos))
+            extra = [("Tiempo teórico: ", t_teorico), 
+                     ("Tiempo real: ", t_real), 
+                     ("Huecos entre partes: ", huecos)]
+            if nombre_tv == "tv_gtx":
+                extra += gtktable2list(self.wids['table2'])
             abrir_pdf(treeview2pdf(tv, 
                                    titulo = titulo, 
                                    fecha = fecha, 

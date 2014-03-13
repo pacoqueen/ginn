@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008 Francisco José Rodríguez Bogado,                    #
-#                          Diego Muñoz Escalante.                             #
-# (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
+# Copyright (C) 2005-2014 Francisco José Rodríguez Bogado.                    #
+#                         <frbogado@geotexan.com>                             #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
 #                                                                             #
@@ -275,6 +274,30 @@ def get_campos_from_tv(tv):
         elif col['alineación'] == 0:
             cols_centradas.append(i)
     return res, anchotv >= 800, cols_a_derecha, cols_centradas
+
+def gtktable2list(tabla):
+    """
+    Devuelve una lista anidada de filas que contienen el texto de los 
+    labels y entries de la tabla Gtk.
+    """
+    cols = tabla.get_property("n-columns")
+    fils = tabla.get_property("n-rows")
+    res = []
+    for f in range(fils):
+        fila = []
+        for c in range(cols):
+            fila.append("")
+        res.append(fila)
+    for child in tabla.get_children():
+        i, d, ar, ab = tabla.child_get(child, "left-attach", "right-attach", 
+                                              "top-attach", "bottom-attach")
+        try:
+            texto = child.get_text()
+        except AttributeError:
+            pass    # El widget no es un entry ni un label
+        else:
+            res[ar][i] = texto
+    return res
 
 def probar():
     """
