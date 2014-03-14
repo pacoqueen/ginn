@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008 Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014 Francisco José Rodríguez Bogado,                    #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -90,9 +90,32 @@ def generar_csv(nomarchivo, campos, datos, extra_data = []):
     #TODO: ¿Qué pasaría si extra_data tiene más columnas que el resto de filas?
     # Pues que en el servidor se cuelga. En mi GNU/Linux no. No sé qué pasará 
     # con un Office normal hasta que no tenga el feedback de nzumer.
-    escritor.writerows(extra_data)
+    if extra_data and campos:
+        ajustar_extra_data(extra_data, len(campos))
+        escritor.writerows(extra_data)
     archivo.close()
     return archivo
+
+def ajustar_extra_data(d, numcols):
+    """
+    Si las filas de d son más largas que el número de columnas, las 
+    redistribuye para ajustaras.
+    Si son más cortas, añade "casillas" en blanco.
+    """
+    res = []
+    for fila in d:
+        if len(fila) > numcols:
+            # Lo normal es que vengan valores a pares: label + dato. Corto 
+            # de dos en dos para no descuajaringarlo mucho.
+            if numcols % 2 != 0 and numcols > 1:
+                corte = numcols - 1 
+            else:
+                corte = numcols
+            fila = fila[:corte]
+            d.append(fila[corte:])
+        while len(fila) < numcols:
+            fila.append("")
+    return  res
 
 def get_nombre_archivo_from_tv(tv):
     """

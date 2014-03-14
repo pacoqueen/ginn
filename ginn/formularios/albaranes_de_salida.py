@@ -2043,6 +2043,12 @@ class AlbaranesDeSalida(Ventana):
         todas de golpe, permite seleccionar al usuario las que agregará.
         Por defecto seguirán siendo todas.
         """
+        if self.objeto and self.objeto.bloqueado:
+            if not utils.dialogo(titulo = "ALBARÁN BLOQUEADO", 
+                    texto = "El albarán se encuentra bloqueado.\n"
+                            "¿Desea continuar?", 
+                    padre = self.wids['ventana']):
+                return
         copiar_dirobra = False
         if (self.objeto.cliente 
             and self.objeto.cliente.calcular_credito_disponible() <= 0):
