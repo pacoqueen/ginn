@@ -91,7 +91,7 @@ def generar_csv(nomarchivo, campos, datos, extra_data = []):
     # Pues que en el servidor se cuelga. En mi GNU/Linux no. No sé qué pasará 
     # con un Office normal hasta que no tenga el feedback de nzumer.
     if extra_data and campos:
-        ajustar_extra_data(extra_data, len(campos))
+        extra_data = ajustar_extra_data(extra_data, len(campos))
         escritor.writerows(extra_data)
     archivo.close()
     return archivo
@@ -103,7 +103,10 @@ def ajustar_extra_data(d, numcols):
     Si son más cortas, añade "casillas" en blanco.
     """
     res = []
-    for fila in d:
+    while d:
+        fila = d.pop(0)
+        if not fila or not isinstance(fila, list):
+            continue
         if len(fila) > numcols:
             # Lo normal es que vengan valores a pares: label + dato. Corto 
             # de dos en dos para no descuajaringarlo mucho.
@@ -115,6 +118,8 @@ def ajustar_extra_data(d, numcols):
             d.append(fila[corte:])
         while len(fila) < numcols:
             fila.append("")
+        if [i for i in fila if i]:  # Si tiene algún valor no nulo (elimino 
+            res.append(fila)        # filas en blanco)
     return  res
 
 def get_nombre_archivo_from_tv(tv):
