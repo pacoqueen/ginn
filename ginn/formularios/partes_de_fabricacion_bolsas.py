@@ -1958,7 +1958,8 @@ def imprimir_etiquetas_pales(pales, padre = None, mostrar_dialogo = True):
             filetiqpale = geninformes.generar_etiqueta_pale(pales, tipo)
             for pale in pales:
                 pclases.Auditoria.modificado(pale, 
-                    self.usuario, 
+                    # self.usuario, 
+                    None, 
                     __file__,
                     "Impresión de etiqueta para palé %s" % (
                     pale.codigo))
