@@ -14918,15 +14918,26 @@ class AlbaranSalida(SQLObject, PRPCTOO):
         # Para no cambiar la función de la BD, compruebo aquí:
         if not res:
             hay_un_bigbag_relacionado_con_un_parte = False
+            hay_una_bala_reenvasada = False
             # XXX: Voy a tener que recorrer la lista de artículos. A tomar 
             # por saco la optimización:
             # TODO: Optimizar y pasarlo a función de la BD, por los clavos de 
             #       cristo.
             for a in self.articulos:
+                # OJO: No vale con que tenga un bigbag, tiene que tener un 
+                # bigbag conectado con un parte donde se ha consumido. Pero no 
+                # conectado mediante el artículo (que todos los productos con 
+                # trazabilidad lo tienen), sino directamente entre BB y parte.
                 if a.bigbagID and a.bigbag.parteDeProduccion:
                     hay_un_bigbag_relacionado_con_un_parte = True
                     break
-            res = hay_un_bigbag_relacionado_con_un_parte
+                # O bien tiene al menos una bala que se ha consumido en 
+                # reenvasarla para sacar nueva(s) bala(s).
+                elif a.bala and "ALBINTPDP" in self.observaciones:
+                    hay_una_bala_reenvasada = True
+                    break
+            res = (hay_un_bigbag_relacionado_con_un_parte 
+                    or hay_una_bala_reenvasada)
         return res
 
     def comprobar_cantidades(self):

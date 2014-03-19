@@ -56,8 +56,6 @@ from formularios import ventana_progreso
 
 
 class ConsumoFibraPorPartidaGtx(Ventana):
-    inicio = None
-    fin = None
         
     def __init__(self, objeto = None, usuario = None):
         """
@@ -67,7 +65,6 @@ class ConsumoFibraPorPartidaGtx(Ventana):
         """
         self.usuario = usuario
         self.partidas_carga = {}
-        global fin
         Ventana.__init__(self, 'consumo_fibra_por_partida_gtx.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_buscar/clicked': self.buscar,

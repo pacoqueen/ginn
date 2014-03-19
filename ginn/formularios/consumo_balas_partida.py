@@ -471,8 +471,10 @@ Sin embalaje.</i></small>""" % (merma))
                                      texto = 'La bala está marcada como clase B. Esto puede provocar\nproblemas en la línea de producción.\n¿Está seguro de querer comsumir la bala de fibra?', 
                                      padre = self.wids['ventana']):
                         bala.partida = partida
+                        bala.articulo.almacen = None # La saco del almacén.
                 else:
                     bala.partida = partida
+                    bala.articulo.almacen = None # La saco del almacén.
         else:
             self.logger.warning("%sconsumo_balas_partida::add_bala -> Añadiendo carga de cuarto manual." % (self.usuario and self.usuario.usuario + ": " or ""))
             for numbala in rango:

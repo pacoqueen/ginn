@@ -3508,7 +3508,7 @@ CREATE FUNCTION es_interno(INT)
     AS 'SELECT cliente_albaran_es_propia_empresa($1)
            AND contiene_bala_o_producto_compra($1)
            AND (es_de_partida_de_carga($1)
-            OR es_albaran_interno_de_consumos($1))
+                OR es_albaran_interno_de_consumos($1))
     ;'; -- NEW 03/07/2007
 
 CREATE FUNCTION caja_es_clase_b(INT)
