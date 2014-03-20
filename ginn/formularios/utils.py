@@ -4019,6 +4019,7 @@ def parse_cif(cif = None):
         * Gibraltar: 12345 
         * Francia: FR64 384 813 341 00029
         * Polonia: 1234567890
+        * México: NNE100120TW0
 
     En teoría lo siguiente debería valer de unittest con 
     import doctest; doctest.testmod()
@@ -4026,6 +4027,7 @@ def parse_cif(cif = None):
     Un par de páginas con los listados de códigos de países y VAT numbers:
     http://www.hmrc.gov.uk/vat/managing/international/esl/country-codes.htm
     http://www.alfanet.es/nif-iva.php
+    http://en.wikipedia.org/wiki/VAT_identification_number
 
 
     >>> parse_cif("")
@@ -4058,6 +4060,8 @@ def parse_cif(cif = None):
     'DKR2013-E3577'
     >>> parse_cif("12345678")
     '12345678'
+    >>> parse_cif("NNE100120TW0")
+    'NNE100120TW0'
     """
     # [Update: 29/05/2012] Javi me pasa estos formatos, que son con los que 
     #                      ellos normalmente trabajan:
@@ -4097,12 +4101,19 @@ def parse_cif(cif = None):
                         # encuentro más información. Este es el único ejemplo 
                         # que tengo.
         samples['_Marruecos'] = "12345678"
+        samples['_México'] = "NNE100120TW0"     # Según el Registro Federal de 
+                        # Contribuyentes de México, este formato es: 
+                        # 3 caracteres (también valen números) + 6 números + 
+                        # otros 3 caracteres alfanuméricos.
         res = {}
         aciertos = 0
         for pais in samples:
             res[pais] = parse_cif(samples[pais])
-            if res[pais]:
+            # if res[pais]:
+            if res[pais].replace(" ", "") == samples[pais].replace(" ", ""):
                 aciertos += 1
+            else:
+                print "Error en %s: %s -> %s" % (pais,samples[pais],res[pais])
         print "WARNING: TEST MODE: %.2f %% aciertos" % (
                 aciertos * 100.0 / len(samples.keys()))
     else:
@@ -4178,6 +4189,8 @@ def parse_cif(cif = None):
                          "([0-9]{8})"
                          "|"
                          "([0-9]{5})"
+                         "|"
+                         "([A-Z0-9]{3}[0-9]{6}[A-Z0-9]{3})"
                         )
         res = rex.findall(cif)
         try:
