@@ -515,7 +515,7 @@ En ambos casos el límite inferior es flexible -por compensación-.)""")
             self.wids['curva'].set_vector(vector)
             self.wids['curva'].set_curve_type(gtk.CURVE_TYPE_SPLINE)
             # self.wids['curva'].set_curve_type(gtk.CURVE_TYPE_LINEAR)
-            self.wids['pb'].set_fraction(total / 100.0)
+            self.wids['pb'].set_fraction(max(min(total, 100), 0) / 100.0)
         else:
             self.wids['curva'].set_range(0, 2, 0, 100)
             self.wids['curva'].set_vector((0, 0))

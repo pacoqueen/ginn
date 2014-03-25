@@ -475,8 +475,35 @@ class PartesDeFabricacionRollos(Ventana):
         """
         # CWT: No se debe poder editar la producción estándar desde el parte. 
         # Siempre debe ser la del producto, so...
-        self.wids['e_o11'].set_has_frame(False)
-        self.wids['e_o11'].set_property("editable", False)
+        if self.usuario and self.usuario.nivel >= 1:
+            self.wids['e_o11'].set_has_frame(False)
+            self.wids['e_o11'].set_property("editable", False)
+            if self.usuario.nivel == 5: # A los operarios les quito lo que no 
+                # deberían ver para que se dejen de una vez de ajustar los 
+                # partes a mano y falsear la realidad:
+                for banned in ("label14", "e_tiempo_real_trabajado", 
+                               "label33", "e_productividad", 
+                               "label43", "e_rendimiento"): 
+                    self.wids[banned].set_property("visible", False)
+        else:   # Pero si soy yo, me dejo hacer de todo. Que siempre hay que 
+                # corregir algo a mano...
+            b_rescatar_prodestandar = gtk.Button()
+            b_rescatar_prodestandar.add(
+                    gtk.image_new_from_stock(gtk.STOCK_COLOR_PICKER, 
+                        gtk.ICON_SIZE_SMALL_TOOLBAR))
+            b_rescatar_prodestandar.connect("clicked", 
+                    self.rescatar_prodestandar)
+            tabla = self.wids['e_o11'].parent
+            i, d, ar, ab = tabla.child_get(self.wids['e_o11'], 
+                "left-attach", "right-attach", "top-attach", "bottom-attach")
+            tabla.remove(self.wids['e_o11'])
+            box = gtk.HBox()
+            box.add(self.wids['e_o11'])
+            box.pack_end(b_rescatar_prodestandar, False, False)
+            b_rescatar_prodestandar.set_tooltip_text("Rescata la producción "
+                "estándar del producto fabricado y actualiza la del parte.")
+            box.show_all()
+            tabla.attach(box, i, d, ar, ab, False, False)
         # Inicialmente no se muestra NADA. Sólo se le deja al
         # usuario la opción de buscar o crear nuevo.
         self.activar_widgets(False)
@@ -564,6 +591,14 @@ class PartesDeFabricacionRollos(Ventana):
         utils.preparar_listview(self.wids['tv_desecho'], cols)
         self.wids['tv_desecho'].get_selection().set_mode(gtk.SELECTION_MULTIPLE)
         self.wids['ventana'].maximize()
+
+    def rescatar_prodestandar(self, boton):
+        try:
+            self.objeto.prodestandar = self.objeto.productoVenta.prodestandar
+        except AttributeError:  # Parte vacío, no parte o sin producción.
+            pass
+        else:
+            self.actualizar_ventana()
 
     def cambiar_observaciones_descuento_material(self, cell, path, newtext):
         """
