@@ -55,24 +55,23 @@ class ConsultaVentasPorProducto(Ventana):
                        'b_fecha_fin/clicked': self.set_fin, 
                        'b_exportar/clicked': self.exportar}
         self.add_connections(connections)
-        cols_fib = [
+        cols = [
             ('Producto', 'gobject.TYPE_STRING', False, True, True, None),
-            ('Cantidad', 'gobject.TYPE_STRING', False, True, False, None),
-            ('Cliente', 'gobject.TYPE_STRING', False, True, False, None),
-            ('Fecha', 'gobject.TYPE_STRING', False, True, False, None),
-            ('Albarán', 'gobject.TYPE_STRING', False, True, False, None),
-            ('A', 'gobject.TYPE_STRING', False, True, False, None),
-            ('B', 'gobject.TYPE_STRING', False, True, False, None),
-            ('C', 'gobject.TYPE_STRING', False, True, False, None),
+            ('kg A', 'gobject.TYPE_STRING', False, True, False, None),
+            ('# A', 'gobject.TYPE_STRING', False, True, False, None),
+            ('kg B', 'gobject.TYPE_STRING', False, True, False, None),
+            ('# B', 'gobject.TYPE_STRING', False, True, False, None),
+            ('kg C', 'gobject.TYPE_STRING', False, True, False, None),
+            ('# C', 'gobject.TYPE_STRING', False, True, False, None),
+            ('Total kg', 'gobject.TYPE_STRING', False, True, False, None),
+            ('Total #', 'gobject.TYPE_STRING', False, True, False, None),
             ('PUID', 'gobject.TYPE_STRING', False, False, False, None)]
         utils.preparar_treeview(self.wids['tv_fibra'], cols)
-        self.wids['tv_datos'].connect("row-activated", self.abrir_producto_albaran_o_abono)
-        self.wids['tv_datos'].get_column(1).get_cell_renderers()[0].set_property('xalign', 1) 
-        self.wids['tv_datos'].get_column(2).get_cell_renderers()[0].set_property('xalign', 1) 
-        self.wids['tv_datos'].get_column(3).get_cell_renderers()[0].set_property('xalign', 0.5) 
-        self.wids['tv_datos'].get_column(5).get_cell_renderers()[0].set_property('xalign', 1) 
-        self.wids['tv_datos'].get_column(6).get_cell_renderers()[0].set_property('xalign', 1) 
-        self.wids['tv_datos'].get_column(7).get_cell_renderers()[0].set_property('xalign', 1) 
+        self.wids['tv_fibra'].connect("row-activated", 
+                                      self.abrir_producto_albaran_o_abono)
+        tv = self.wids['tv_fibra']
+        for n in range(1, 9): 
+            tv.get_column(n).get_cell_renderers()[0].set_property('xalign', 1) 
         fin = mx.DateTime.localtime()
         inicio = mx.DateTime.localtime() - mx.DateTime.oneWeek
         self.wids['e_fechainicio'].set_text(utils.str_fecha(inicio))
@@ -94,40 +93,31 @@ class ConsultaVentasPorProducto(Ventana):
         un producto, abre el producto.
         """
         model = tv.get_model()
-        tipo, ide = model[path][-1].split(":")
-        try:
-            ide = int(ide)
-        except:
-            txt = "%sconsulta_ventas_por_producto::abrir_producto_albaran_o_abono -> Excepción al convertir ID a entero: (tipo %s) %s." % (self.usuario and self.usuario + ": " or "", tipo, id)
-            print txt
-            self.logger.error(txt)
-        else:
-            if tipo == "PV":        # ProductoVenta 
-                pv = pclases.ProductoVenta.get(ide)
-                if pv.es_rollo():
-                    from formularios import productos_de_venta_rollos
-                    v = productos_de_venta_rollos.ProductosDeVentaRollos(pv, usuario = self.usuario)  # @UnusedVariable
-                elif pv.es_bala() or pv.es_bala_cable() or pv.es_bigbag():
-                    from formularios import productos_de_venta_balas
-                    v = productos_de_venta_balas.ProductosDeVentaBalas(pv, usuario = self.usuario)  # @UnusedVariable
-                elif pv.es_especial():
-                    from formularios import productos_de_venta_especial
-                    v = productos_de_venta_especial.ProductosDeVentaEspecial(pv, usuario = self.usuario)  # @UnusedVariable
-            elif tipo == "PC": 
-                pc = pclases.ProductoCompra.get(ide)
-                from formularios import productos_compra
-                v = productos_compra.ProductosCompra(pc, usuario = self.usuario)  # @UnusedVariable
-            elif tipo == "LDV":
-                ldv = pclases.LineaDeVenta.get(ide)
-                alb = ldv.albaranSalida
-                from formularios import albaranes_de_salida
-                v = albaranes_de_salida.AlbaranesDeSalida(alb, usuario = self.usuario)  # @UnusedVariable
-            elif tipo == "LDD": 
-                ldd = pclases.LineaDeDevolucion.get(ide)
-                adeda = ldd.lbaranDeEntradaDeAbono
-                abono = adeda.abono
-                from formularios import abonos_venta
-                v = abonos_venta.AbonosVenta(abono, usuario = self.usuario)  # @UnusedVariable
+        puid = model[path][-1]
+        objeto = pclases.getObjetoPUID(puid)
+        if isinstance(objeto, pclases.ProductoVenta):        # ProductoVenta 
+            pv = objeto
+            if pv.es_rollo():
+                from formularios import productos_de_venta_rollos
+                v = productos_de_venta_rollos.ProductosDeVentaRollos(pv, usuario = self.usuario)  # @UnusedVariable
+            elif pv.es_bala() or pv.es_bala_cable() or pv.es_bigbag():
+                from formularios import productos_de_venta_balas
+                v = productos_de_venta_balas.ProductosDeVentaBalas(pv, usuario = self.usuario)  # @UnusedVariable
+            elif pv.es_especial():
+                from formularios import productos_de_venta_especial
+                v = productos_de_venta_especial.ProductosDeVentaEspecial(pv, usuario = self.usuario)  # @UnusedVariable
+        elif isinstance(objeto, pclases.ProductoCompra):
+            pc = objeto
+            from formularios import productos_compra
+            v = productos_compra.ProductosCompra(pc, usuario = self.usuario)  # @UnusedVariable
+        elif isinstance(objeto, pclases.AlbaranSalida):
+            alb = objeto
+            from formularios import albaranes_de_salida
+            v = albaranes_de_salida.AlbaranesDeSalida(alb, usuario = self.usuario)  # @UnusedVariable
+        elif isinstance(objeto, pclases.AlbaranDeEntradaDeAbono):
+            abono = objeto
+            from formularios import abonos_venta
+            v = abonos_venta.AbonosVenta(abono, usuario = self.usuario)  # @UnusedVariable
 
     def chequear_cambios(self):
         pass
