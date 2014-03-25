@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -1197,14 +1197,28 @@ class PartesDeFabricacionRollos(Ventana):
         try:
             res = d.horainicio.strftime('%H:%M')
         except AttributeError:
-            res = ''
+            try:
+                res = utils.str_fechahoralarga(d.fechahora)
+            except AttributeError:
+                res = ''
         return res
 
     def horafin(self, d):
         try:
             res = d.horafin.strftime('%H:%M')
         except AttributeError:
-            res = ''
+            try:
+                try:
+                    fechahora_fin = d.fechahora+mx.DateTime.DateTimeDeltaFrom(
+                            hours = d.calcular_tiempo_teorico(
+                                solo_clase_a = False))
+                except TypeError:
+                    fechahora_fin = d.fechahora + datetime.timedelta(
+                            hours = d.calcular_tiempo_teorico(
+                                solo_clase_a = False))
+                res = utils.str_fechahoralarga(fechahora_fin)
+            except AttributeError:
+                res = ''
         return res
 
     def duracion(self, d):
@@ -1216,7 +1230,10 @@ class PartesDeFabricacionRollos(Ventana):
                 res = "%d:%02d" % (duracion.seconds / 3600, 
                                    duracion.seconds / 60 % 60)
         except AttributeError:
-            res = ''
+            try:
+                res = utils.str_hora(d.calcular_tiempo_fabricacion())
+            except AttributeError:
+                res = ''
         return res
 
     def observaciones(self, d):

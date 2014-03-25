@@ -55,7 +55,7 @@ class ConsultaVentasPorProducto(Ventana):
                        'b_fecha_fin/clicked': self.set_fin, 
                        'b_exportar/clicked': self.exportar}
         self.add_connections(connections)
-        cols_fib = (
+        cols_fib = [
             ('Producto', 'gobject.TYPE_STRING', False, True, True, None),
             ('Cantidad', 'gobject.TYPE_STRING', False, True, False, None),
             ('Cliente', 'gobject.TYPE_STRING', False, True, False, None),
@@ -64,11 +64,9 @@ class ConsultaVentasPorProducto(Ventana):
             ('A', 'gobject.TYPE_STRING', False, True, False, None),
             ('B', 'gobject.TYPE_STRING', False, True, False, None),
             ('C', 'gobject.TYPE_STRING', False, True, False, None),
-            ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
+            ('PUID', 'gobject.TYPE_STRING', False, False, False, None)]
         cols_gtx = ()
         cols_otros = ()
-
-
 
         utils.preparar_treeview(self.wids['tv_datos'], cols)
         self.wids['tv_datos'].connect("row-activated", self.abrir_producto_albaran_o_abono)

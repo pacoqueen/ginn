@@ -9868,7 +9868,7 @@ class Articulo(SQLObject, PRPCTOO):
         son de tan baja calidad que no debe tenerse en cuenta bajo ningún 
         concepto).
         """
-        if self.es_clase_a() and solo_clase_a:
+        if self.es_clase_a() or not solo_clase_a:
             vel = self.productoVenta.prodestandar
             try:
                 # XXX: CWT
@@ -9904,6 +9904,47 @@ class Articulo(SQLObject, PRPCTOO):
                 break
         return res
 
+    def calcular_tiempo_fabricacion(self):
+        """
+        Calcula el tiempo transcurrido entre el artículo y el siguiente de 
+        la misma serie. Si todavía no se ha fabricado el siguiente devuelve 
+        None.
+        """
+        # FIXME: Para las cajas hay que afinar más y buscar el tiempo entre 
+        # palé y palé, ya que todas las cajas de un mismo palé se hacen con 
+        # la misma fecha y hora.
+        for tipo, atributo in (("bala",      "numbala"), 
+                               ("balaCable", "numbala"), 
+                               ("rollo",     "numrollo"), 
+                               ("rolloC",    "numrollo"), 
+                               ("caja",      "numcaja"), 
+                               ("bigbag",    "numbigbag")):
+            try:
+                mi_codigo = getattr(getattr(self, tipo), atributo)
+            except AttributeError:
+                mi_codigo = None
+            else:
+                break
+        if mi_codigo:
+            try:
+                sig = eval(tipo.capitalize()).select(
+                    getattr(getattr(eval(tipo.capitalize()), "q"), atributo) 
+                        > mi_codigo, 
+                    orderBy = atributo, 
+                    limit = 1
+                    )[0]
+            except IndexError:
+                res = None
+            else:
+                res = sig.fechahora - self.fechahora
+                # TODO: De alguna forma habrá que controlar que el siguiente 
+                # rollo o lo que sea se fabricó justo después, porque si no:
+                # 1.- Si lo siguiente es una incidencia, el tiempo sería hasta 
+                #     la siguiente incidencia.
+                # 2.- Si hay una parada de fin de semana o algo, no debería 
+                #     devolver que se ha tardado dos días en hacer el rollo. 
+                #     ¿Debería fijarme en el tiempo de fin del parte? 
+        return res
     
 cont, tiempo = print_verbose(cont, total, tiempo)
 

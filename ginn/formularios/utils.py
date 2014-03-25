@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -126,8 +126,12 @@ def str_hora(fh):
     """
     try:
         return "%02d:%02d:%02d" % (fh.hour, fh.minute, fh.second)
-    except:
-        return ''
+    except:     # Por si es un datetime
+        try:
+            fh = mx.DateTime.DateTimeDeltaFrom(seconds = fh.total_seconds())
+            return "%02d:%02d:%02d" % (fh.hour, fh.minute, fh.second)
+        except: 
+            return ''
 
 def str_hora_corta(fh):
     """
@@ -136,8 +140,12 @@ def str_hora_corta(fh):
     """
     try:
         return "%02d:%02d" % (fh.hour, fh.minute)
-    except:
-        return ''
+    except:     # Por si es un datetime
+        try:
+            fh = mx.DateTime.DateTimeDeltaFrom(seconds = fh.total_seconds())
+            return "%02d:%02d" % (fh.hour, fh.minute)
+        except:
+            return ''
 
 def respuesta_si_no(dialog, response, res):
     res[0] = response == gtk.RESPONSE_YES
