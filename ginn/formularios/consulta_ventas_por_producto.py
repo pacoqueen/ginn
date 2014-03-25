@@ -65,10 +65,7 @@ class ConsultaVentasPorProducto(Ventana):
             ('B', 'gobject.TYPE_STRING', False, True, False, None),
             ('C', 'gobject.TYPE_STRING', False, True, False, None),
             ('PUID', 'gobject.TYPE_STRING', False, False, False, None)]
-        cols_gtx = ()
-        cols_otros = ()
-
-        utils.preparar_treeview(self.wids['tv_datos'], cols)
+        utils.preparar_treeview(self.wids['tv_fibra'], cols)
         self.wids['tv_datos'].connect("row-activated", self.abrir_producto_albaran_o_abono)
         self.wids['tv_datos'].get_column(1).get_cell_renderers()[0].set_property('xalign', 1) 
         self.wids['tv_datos'].get_column(2).get_cell_renderers()[0].set_property('xalign', 1) 

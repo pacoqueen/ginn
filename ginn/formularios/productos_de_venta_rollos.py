@@ -425,6 +425,12 @@ class ProductosDeVentaRollos(Ventana):
                   "e_rollo_camion", "e_metros_lineales", "e_ficha_fabricacion", 
                   "table3", "hbox7", "hbox6", "hbox5"):
             self.wids[w].set_sensitive(s and activar_campos_esp)
+        # CWT: Solo los usuarios "con derecho a roce" pueden cambiar la 
+        # producción estándar y el peso del embalaje.
+        self.wids['e_peso_embalaje'].set_sensitive(
+                    not (self.usuario and self.usuario.nivel > 1))
+        self.wids['e_prodestandar'].set_sensitive(
+                    not (self.usuario and self.usuario.nivel > 1))
 
     def ir_a_primero(self):
         """
