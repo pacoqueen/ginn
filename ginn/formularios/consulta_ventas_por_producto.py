@@ -53,8 +53,11 @@ class ConsultaVentasPorProducto(Ventana):
                        'b_imprimir/clicked': self.imprimir,
                        'b_fecha_inicio/clicked': self.set_inicio,
                        'b_fecha_fin/clicked': self.set_fin, 
-                       'b_exportar/clicked': self.exportar}
+                       'b_exportar/clicked': self.exportar, 
+                       'e_fechainicio/focus-out-event': act_fecha, 
+                       'e_fechafin/focus-out-event': act_fecha}
         self.add_connections(connections)
+        # TreeViews de fibra y cemento
         cols = [
             ('Producto', 'gobject.TYPE_STRING', False, True, True, None),
             ('kg A', 'gobject.TYPE_STRING', False, True, False, None),
@@ -66,61 +69,89 @@ class ConsultaVentasPorProducto(Ventana):
             ('Total kg', 'gobject.TYPE_STRING', False, True, False, None),
             ('Total #', 'gobject.TYPE_STRING', False, True, False, None),
             ('PUID', 'gobject.TYPE_STRING', False, False, False, None)]
-        utils.preparar_treeview(self.wids['tv_fibra'], cols)
-        self.wids['tv_fibra'].connect("row-activated", 
+        for tv in (self.wids['tv_fibra'], self.wids['tv_cem']):
+            utils.preparar_treeview(tv, cols)
+            tv.connect("row-activated", self.abrir_producto_albaran_o_abono)
+            for n in range(1, 9): 
+                tv.get_column(n).get_cell_renderers()[0].set_property(
+                        'xalign', 1) 
+        # TreeView de geotextiles
+        cols.insert(1, 
+            ('m² A', 'gobject.TYPE_STRING', False, True, False, None))
+        cols.insert(4, 
+            ('m² B', 'gobject.TYPE_STRING', False, True, False, None))
+        cols.insert(7, 
+            ('m² C', 'gobject.TYPE_STRING', False, True, False, None))
+        cols.insert(10, 
+            ('Total m²', 'gobject.TYPE_STRING', False, True, False, None))
+        utils.preparar_treeview(self.wids['tv_gtx'], cols)
+        self.wids['tv_gtx'].connect("row-activated", 
                                       self.abrir_producto_albaran_o_abono)
-        tv = self.wids['tv_fibra']
-        for n in range(1, 9): 
+        tv = self.wids['tv_gtx']
+        for n in range(1, 13): 
             tv.get_column(n).get_cell_renderers()[0].set_property('xalign', 1) 
+        # TreeView de otros
+        cols = [
+            ('Producto', 'gobject.TYPE_STRING', False, True, True, None),
+            ('Cantidad', 'gobject.TYPE_STRING', False, True, False, None),
+            ('PUID', 'gobject.TYPE_STRING', False, False, False, None)]
+        utils.preparar_treeview(self.wids['tv_otros'], cols)
+        self.wids['tv_otros'].connect("row-activated", 
+                                      self.abrir_producto_albaran_o_abono)
+        tv = self.wids['tv_otros']
+        tv.get_column(1).get_cell_renderers()[0].set_property('xalign', 1) 
         fin = mx.DateTime.localtime()
         inicio = mx.DateTime.localtime() - mx.DateTime.oneWeek
         self.wids['e_fechainicio'].set_text(utils.str_fecha(inicio))
         self.wids['e_fechafin'].set_text(utils.str_fecha(fin))
         gtk.main()
     
-    def exportar(self, boton):
-        """
-        Exporta el contenido del TreeView a un fichero csv.
-        """
-        from informes.treeview2csv import treeview2csv
-        from formularios.reports import abrir_csv
-        tv = self.wids['tv_datos']
-        abrir_csv(treeview2csv(tv))
-
-    def abrir_producto_albaran_o_abono(self, tv, path, view_column):
-        """
-        Si la fila seleccionada es una tarifa, abre la tarifa. Si es 
-        un producto, abre el producto.
-        """
-        model = tv.get_model()
-        puid = model[path][-1]
-        objeto = pclases.getObjetoPUID(puid)
-        if isinstance(objeto, pclases.ProductoVenta):        # ProductoVenta 
-            pv = objeto
-            if pv.es_rollo():
-                from formularios import productos_de_venta_rollos
-                v = productos_de_venta_rollos.ProductosDeVentaRollos(pv, usuario = self.usuario)  # @UnusedVariable
-            elif pv.es_bala() or pv.es_bala_cable() or pv.es_bigbag():
-                from formularios import productos_de_venta_balas
-                v = productos_de_venta_balas.ProductosDeVentaBalas(pv, usuario = self.usuario)  # @UnusedVariable
-            elif pv.es_especial():
-                from formularios import productos_de_venta_especial
-                v = productos_de_venta_especial.ProductosDeVentaEspecial(pv, usuario = self.usuario)  # @UnusedVariable
-        elif isinstance(objeto, pclases.ProductoCompra):
-            pc = objeto
-            from formularios import productos_compra
-            v = productos_compra.ProductosCompra(pc, usuario = self.usuario)  # @UnusedVariable
-        elif isinstance(objeto, pclases.AlbaranSalida):
-            alb = objeto
-            from formularios import albaranes_de_salida
-            v = albaranes_de_salida.AlbaranesDeSalida(alb, usuario = self.usuario)  # @UnusedVariable
-        elif isinstance(objeto, pclases.AlbaranDeEntradaDeAbono):
-            abono = objeto
-            from formularios import abonos_venta
-            v = abonos_venta.AbonosVenta(abono, usuario = self.usuario)  # @UnusedVariable
-
     def chequear_cambios(self):
         pass
+
+    def set_inicio(self, boton):
+        temp = utils.mostrar_calendario(fecha_defecto = utils.parse_fecha(self.wids['e_fechainicio'].get_text()), 
+                                        padre = self.wids['ventana'])
+        self.wids['e_fechainicio'].set_text(utils.str_fecha(temp))
+
+    def set_fin(self, boton):
+        temp = utils.mostrar_calendario(fecha_defecto = utils.parse_fecha(self.wids['e_fechafin'].get_text()), 
+                                        padre = self.wids['ventana'])
+        self.wids['e_fechafin'].set_text(utils.str_fecha(temp))
+
+    def buscar(self, boton):
+        """
+        A partir de las fechas de inicio y fin de la ventana busca los 
+        artículos con trazabilidad y los clasifica por A, B y C en metros, 
+        kilos reales CON embalaje y bultos. También busca los productos de 
+        compra con las cantidades que salieron o entraron.
+        """
+        from ventana_progreso import VentanaProgreso
+        vpro = VentanaProgreso(padre = self.wids['ventana'])
+        vpro.mostrar()
+        fini = utils.parse_fecha(self.wids['e_fechainicio'].get_text())
+        ffin = utils.parse_fecha(self.wids['e_fechafin'].get_text())
+        vpro.set_valor(0.3, "Buscando albaranes de salida...")
+        albs = pclases.AlbaranSalida.select(pclases.AND(
+                                    pclases.AlbaranSalida.q.fecha >= fini, 
+                                    pclases.AlbaranSalida.q.fecha < ffin), 
+                                            orderBy = "fecha")
+        ldvs = []
+        for a in albs:
+            for ldv in a.lineasDeVenta: # Lo hago así para cargar aquí todo el peso de traer las LDVs, y así aligero el rellenar_tabla.
+                ldvs.append(ldv)
+        vpro.set_valor(0.6, "Analizando albaranes y abonos...")
+        adedas = pclases.AlbaranDeEntradaDeAbono.select(pclases.AND(
+                            pclases.AlbaranDeEntradaDeAbono.q.fecha >= fini, 
+                            pclases.AlbaranDeEntradaDeAbono.q.fecha < ffin), 
+                                                        orderBy = "fecha")
+        ldds = []
+        for a in adedas:
+            for ldd in a.lineasDeDevolucion:
+                ldds.append(ldd)
+        vpro.set_valor(0.9, "Actualizando ventana...")
+        vpro.ocultar()
+        self.rellenar_tabla(ldvs, ldds)
 
     def rellenar_tabla(self, ldvs, ldds):
         """
@@ -294,48 +325,47 @@ class ConsultaVentasPorProducto(Ventana):
                     utils.float2str(total_metros_en_kilos_teoricos)))
         vpro.ocultar()
 
-    def set_inicio(self, boton):
-        temp = utils.mostrar_calendario(fecha_defecto = utils.parse_fecha(self.wids['e_fechainicio'].get_text()), 
-                                        padre = self.wids['ventana'])
-        self.wids['e_fechainicio'].set_text(utils.str_fecha(temp))
-
-    def set_fin(self, boton):
-        temp = utils.mostrar_calendario(fecha_defecto = utils.parse_fecha(self.wids['e_fechafin'].get_text()), 
-                                        padre = self.wids['ventana'])
-        self.wids['e_fechafin'].set_text(utils.str_fecha(temp))
-
-    def buscar(self, boton):
+    def exportar(self, boton):
         """
-        A partir de las fechas de inicio y fin de la ventana busca las LDVs y LDDs de 
-        albaranes de salida y albaranes de entrada de abonos entre ellas.
-        Rellena el TreeView con el resultado de la búsqueda.
+        Exporta el contenido del TreeView a un fichero csv.
         """
-        from ventana_progreso import VentanaProgreso
-        vpro = VentanaProgreso(padre = self.wids['ventana'])
-        vpro.mostrar()
-        fini = utils.parse_fecha(self.wids['e_fechainicio'].get_text())
-        ffin = utils.parse_fecha(self.wids['e_fechafin'].get_text())
-        vpro.set_valor(0.3, "Buscando albaranes de salida...")
-        albs = pclases.AlbaranSalida.select(pclases.AND(
-                                    pclases.AlbaranSalida.q.fecha >= fini, 
-                                    pclases.AlbaranSalida.q.fecha < ffin), 
-                                            orderBy = "fecha")
-        ldvs = []
-        for a in albs:
-            for ldv in a.lineasDeVenta: # Lo hago así para cargar aquí todo el peso de traer las LDVs, y así aligero el rellenar_tabla.
-                ldvs.append(ldv)
-        vpro.set_valor(0.6, "Analizando albaranes y abonos...")
-        adedas = pclases.AlbaranDeEntradaDeAbono.select(pclases.AND(
-                            pclases.AlbaranDeEntradaDeAbono.q.fecha >= fini, 
-                            pclases.AlbaranDeEntradaDeAbono.q.fecha < ffin), 
-                                                        orderBy = "fecha")
-        ldds = []
-        for a in adedas:
-            for ldd in a.lineasDeDevolucion:
-                ldds.append(ldd)
-        vpro.set_valor(0.9, "Actualizando ventana...")
-        vpro.ocultar()
-        self.rellenar_tabla(ldvs, ldds)
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
+        tv = self.wids['tv_datos']
+        abrir_csv(treeview2csv(tv))
+
+    def abrir_producto_albaran_o_abono(self, tv, path, view_column):
+        """
+        Si la fila seleccionada es una tarifa, abre la tarifa. Si es 
+        un producto, abre el producto.
+        """
+        model = tv.get_model()
+        puid = model[path][-1]
+        objeto = pclases.getObjetoPUID(puid)
+        if isinstance(objeto, pclases.ProductoVenta):        # ProductoVenta 
+            pv = objeto
+            if pv.es_rollo() or pv.es_rollo_c():
+                from formularios import productos_de_venta_rollos
+                v = productos_de_venta_rollos.ProductosDeVentaRollos(pv, usuario = self.usuario)  # @UnusedVariable
+            elif (pv.es_bala() or pv.es_bala_cable() or pv.es_bigbag() 
+                    or pv.es_bolsa() or pv.es_caja()):
+                from formularios import productos_de_venta_balas
+                v = productos_de_venta_balas.ProductosDeVentaBalas(pv, usuario = self.usuario)  # @UnusedVariable
+            elif pv.es_especial():
+                from formularios import productos_de_venta_especial
+                v = productos_de_venta_especial.ProductosDeVentaEspecial(pv, usuario = self.usuario)  # @UnusedVariable
+        elif isinstance(objeto, pclases.ProductoCompra):
+            pc = objeto
+            from formularios import productos_compra
+            v = productos_compra.ProductosCompra(pc, usuario = self.usuario)  # @UnusedVariable
+        elif isinstance(objeto, pclases.AlbaranSalida):
+            alb = objeto
+            from formularios import albaranes_de_salida
+            v = albaranes_de_salida.AlbaranesDeSalida(alb, usuario = self.usuario)  # @UnusedVariable
+        elif isinstance(objeto, pclases.AlbaranDeEntradaDeAbono):
+            abono = objeto
+            from formularios import abonos_venta
+            v = abonos_venta.AbonosVenta(abono, usuario = self.usuario)  # @UnusedVariable
 
     def imprimir(self, boton):
         """
@@ -430,6 +460,19 @@ def convertir_a_listview(otv):
                 ocol.get_cell_renderers()[0].get_property('xalign')) 
         ntv.append_column(ncol)
     return ntv
+
+def act_fecha(entry, event):                                                    
+    """
+    Cambia los mnemotécnicos de fecha por la fecha debidamente formateada 
+    o la cadena vacía para indicar que no hay límite de fecha.
+    """
+    txtfecha = entry.get_text()
+    try:
+        txtfecha = utils.str_fecha(utils.parse_fecha(txtfecha))
+    except (ValueError, TypeError):
+        txtfecha = ""
+    entry.set_text(txtfecha)
+
 
 if __name__ == '__main__':
     t = ConsultaVentasPorProducto()

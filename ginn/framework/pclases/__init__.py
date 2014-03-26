@@ -9944,6 +9944,8 @@ class Articulo(SQLObject, PRPCTOO):
                 # 2.- Si hay una parada de fin de semana o algo, no debería 
                 #     devolver que se ha tardado dos días en hacer el rollo. 
                 #     ¿Debería fijarme en el tiempo de fin del parte? 
+        else:
+            res = None
         return res
     
 cont, tiempo = print_verbose(cont, total, tiempo)
