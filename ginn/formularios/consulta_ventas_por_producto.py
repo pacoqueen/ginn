@@ -145,7 +145,7 @@ class ConsultaVentasPorProducto(Ventana):
         for a in albs:
             i += 1
             vpro.set_valor(i/tot, "Analizando albarán %s..." % a.numalbaran)
-            # TODO: XXX
+            extract_data_from_albaran(a, fib, gtx, cem, otros)
         # Abonos
         vpro.set_valor(0.0, "Buscando abonos...")
         adedas = pclases.AlbaranDeEntradaDeAbono.select(pclases.AND(
@@ -159,7 +159,10 @@ class ConsultaVentasPorProducto(Ventana):
             vpro.set_valor(i/tot, "Analizando abono %s..." % a.numalbaran)
             # TODO: XXX
         vpro.ocultar()
-        self.rellenar_tabla(fib, gtx, cem, otros)
+        tot_fib, tot_gtx, tot_cem = self.rellenar_tabla(fib, gtx, cem, otros)
+        self.rellenar_totales(tot_fib, "fibra")
+        self.rellenar_totales(tot_gtx, "gtx")
+        self.rellenar_totales(tot_cem, "cem")
 
     def rellenar_tabla(self, fib, gtx, cem, otros):
         """
@@ -167,21 +170,24 @@ class ConsultaVentasPorProducto(Ventana):
         Recibe cuatro diccionarios dependiendo del tipo de producto que habrá 
         que introducir en los cuatro treeviews correspondientes.
         Los diccionarios se organizan:
-        {'producto1': {'albarán1': {'m2': 0.0, 
-                                    'kg': 0.0, 
-                                    '#': 0}, 
+        {'producto1': {'albarán1': {'m2': {'a': 0.0, 'b': 0.0, 'c': 0.0}, 
+                                    'kg': {'a': 0.0, 'b': 0.0, 'c': 0.0}, 
+                                    '#': {'a': 0, 'b': 0, 'c': 0}}, 
          'producto2': {'albarán1': {'cantidad': 0.0}, 
-         'producto3': {'albarán2': {'kg': 0.0, 
-                                    '#': 0}, 
+         'producto3': {'albarán2': {'kg': {'a': 0.0, 'b': 0.0, 'c': 0.0}, 
+                                    '#': {'a': 0, 'b': 0, 'c': 0}}, 
         ...}
         """ 
-        tot_fibra = {'kg': 0.0, 
-                     '#': 0}
-        tot_gtx = {'kg': 0.0, 
-                   '#': 0, 
-                   'm2': 0.0}
-        tot_cem = {'kg': 0.0, 
-                   '#': 0}
+        tot_fibra = {'kg': {'a': 0.0, 'b': 0.0, 'c': 0.0},  
+                     '#':  {'a': 0,   'b': 0,   'c': 0}
+                    }
+        tot_gtx = {'kg': {'a': 0.0, 'b': 0.0, 'c': 0.0}, 
+                   '#':  {'a': 0,   'b': 0,   'c': 0}, 
+                   'm2': {'a': 0.0, 'b': 0.0, 'c': 0.0}
+                  }
+        tot_cem = {'kg': {'a': 0.0, 'b': 0.0, 'c': 0.0}, 
+                   '#':  {'a': 0,   'b': 0,   'c': 0}
+                  }
         from ventana_progreso import VentanaProgreso
         vpro = VentanaProgreso(padre = self.wids['ventana'])
         vpro.mostrar()
@@ -195,23 +201,37 @@ class ConsultaVentasPorProducto(Ventana):
                              (self.wids['tv_gtx'], gtx, tot_gtx), 
                              (self.wids['tv_cem'], cem, tot_cem), 
                              (self.wids['tv_otros'], otros, None)):
+            # "Otros" no lleva totales porque son unidades diferentes.
             model = tv.get_model()
             model.clear()
             for producto in dic:
                 i += 1
                 vpro.set_valor(i / tot, "Mostrando %s..." % (producto)) 
-                # TODO: PORASQUI
+                fila_producto = build_fila(dic, producto)
+                producto_padre = model.append(None, fila_producto)
+                if tot:
+                    update_total(tot, dic[producto])
+                for albaran in dic[producto]:
+                    fila_albaran = build_fila(dic[producto], albaran)
+                    model.append(producto_padre, fila_albaran)
         vpro.ocultar()
         return tot_fibra, tot_gtx, tot_cem
 
-    def exportar(self, boton):
+    def rellenar_totales(self, tot, tipo):
         """
-        Exporta el contenido del TreeView a un fichero csv.
+        Rellena los totales de fibra, geotextiles y cemento.
         """
-        from informes.treeview2csv import treeview2csv
-        from formularios.reports import abrir_csv
-        tv = self.wids['tv_datos']
-        abrir_csv(treeview2csv(tv))
+        for dim in tot.keys():
+            total = 0.0
+            for qlty in tot[dim].keys():
+                cantidad = tot[dim][qlty]
+                total += cantidad
+                nomentry = "e_%s_%s_%s" % (tipo, dim, qlty)
+                w = self.wids[nomentry]
+                w.set_text(utils.float2str(cantidad, autodec = True))
+            e_total = 'e_%s_%s_total' % (tipo, dim)
+            self.wids[e_total].set_text(
+                    utils.float2str(total, autodec = True))
 
     def abrir_producto_albaran_o_abono(self, tv, path, view_column):
         """
@@ -246,6 +266,15 @@ class ConsultaVentasPorProducto(Ventana):
             from formularios import abonos_venta
             v = abonos_venta.AbonosVenta(abono, usuario = self.usuario)  # @UnusedVariable
 
+    def exportar(self, boton):
+        """
+        Exporta el contenido del TreeView a un fichero csv.
+        """
+        from informes.treeview2csv import treeview2csv
+        from formularios.reports import abrir_csv
+        tv = self.wids['tv_datos']
+        abrir_csv(treeview2csv(tv))
+
     def imprimir(self, boton):
         """
         Prepara la vista preliminar para la impresión del informe.
@@ -260,6 +289,7 @@ class ConsultaVentasPorProducto(Ventana):
                                      "¿Desea imprimir toda la información "
                                      "desglosada?", 
                              padre = self.wids['ventana'])
+        # TODO: Esto hay que testearlo...
         tv = clone_treeview(self.wids['tv_datos'])  # Para respetar el orden 
         # del treeview original y que no afecte a las filas de totales que 
         # añado después. Si las añado al original directamente se mostrarán 
@@ -351,6 +381,87 @@ def act_fecha(entry, event):
     except (ValueError, TypeError):
         txtfecha = ""
     entry.set_text(txtfecha)
+
+def build_fila(dic, clave):
+    try:
+        m2 = dic[clave]['m2']
+    except KeyError:    # No es geotextil
+        m2 = None
+    try:
+        kg = dic[clave]['kg']
+        bultos = dic[clave]['#']
+        cantidad = None
+    except KeyError:    # No es tampoco fibra ni cemento
+        kg = bultos = None
+        cantidad = dic[clave]['cantidad']
+    puid = clave
+    try:
+        producto_o_albaran = pclases.getObjetoPUID(puid).descripcion
+    except AttributeError: 
+        producto_o_albaran = pclases.getObjetoPUID(puid).numalbaran
+    fila = [producto_o_albaran]
+    if not cantidad is None:
+        fila += [utils.float2str(cantidad)]
+    elif not m2 is None:
+        tot_m2 = (dic[clave]['m2']['a'] 
+                    + dic[clave]['m2']['b'] 
+                    + dic[clave]['m2']['c'])
+        tot_kg = (dic[clave]['kg']['a'] 
+                    + dic[clave]['kg']['b'] 
+                    + dic[clave]['kg']['c'])
+        tot_bultos = (dic[clave]['#']['a'] 
+                        + dic[clave]['#']['b'] 
+                        + dic[clave]['#']['c'])
+        fila += [utils.float2str(dic[clave]['m2']['a']), 
+                 utils.float2str(dic[clave]['kg']['b']), 
+                 utils.float2str(dic[clave]['#']['c'], precision = 0), 
+                 utils.float2str(dic[clave]['m2']['a']), 
+                 utils.float2str(dic[clave]['kg']['b']), 
+                 utils.float2str(dic[clave]['#']['c'], precision = 0), 
+                 utils.float2str(dic[clave]['m2']['a']), 
+                 utils.float2str(dic[clave]['kg']['b']), 
+                 utils.float2str(dic[clave]['#']['c'], precision = 0),
+                 utils.float2str(tot_m2),
+                 utils.float2str(tot_kg),
+                 utils.float2str(tot_bultos)
+                ]
+    else:
+        tot_kg = (dic[clave]['kg']['a'] 
+                    + dic[clave]['kg']['b'] 
+                    + dic[clave]['kg']['c'])
+        tot_bultos = (dic[clave]['#']['a'] 
+                        + dic[clave]['#']['b'] 
+                        + dic[clave]['#']['c'])
+        fila += [utils.float2str(dic[clave]['kg']['b']), 
+                 utils.float2str(dic[clave]['#']['c'], precision = 0), 
+                 utils.float2str(dic[clave]['kg']['b']), 
+                 utils.float2str(dic[clave]['#']['c'], precision = 0), 
+                 utils.float2str(dic[clave]['kg']['b']), 
+                 utils.float2str(dic[clave]['#']['c'], precision = 0),
+                 utils.float2str(tot_kg),
+                 utils.float2str(tot_bultos)
+                ]
+    fila += [puid]
+    return fila
+
+def extract_data_from_albaran(alb, fib, gtx, cem, otros):
+    """
+    De las líneas de venta del albarán extrae las cantidades servidas de los 
+    productos de compra (diccionario otros).
+    De los artículos extrae las cantidades en metros (si procede), kilos y 
+    bultos en el diccionario que corresponda según el tipo de artículo.
+    """
+    # Primero los procuctos sin trazabilidad:
+    for ldv in alb.lineasDeVenta:
+        pc = ldv.productoCompra
+        if pc:
+            try:
+                otros[pc.puid]['cantidad'] += ldv.cantidad
+            except KeyError:
+                # TODO: XXX: Esto de arriba está mal. Falta un diccionario intermedio con el puid del albarán, me parece
+                otros[pc.puid]['cantidad'] = ldv.cantidad
+    for a in alb.articulos:
+        pass # PORASQUI
 
 
 if __name__ == '__main__':
