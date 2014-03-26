@@ -427,10 +427,11 @@ class ProductosDeVentaRollos(Ventana):
             self.wids[w].set_sensitive(s and activar_campos_esp)
         # CWT: Solo los usuarios "con derecho a roce" pueden cambiar la 
         # producción estándar y el peso del embalaje.
-        self.wids['e_peso_embalaje'].set_sensitive(
-                    not (self.usuario and self.usuario.nivel > 1))
-        self.wids['e_prodestandar'].set_sensitive(
-                    not (self.usuario and self.usuario.nivel > 1))
+        # CWT one more time: Donde dije digo digo Diego.
+        #self.wids['e_peso_embalaje'].set_sensitive(
+        #            not (self.usuario and self.usuario.nivel > 1))
+        #self.wids['e_prodestandar'].set_sensitive(
+        #            not (self.usuario and self.usuario.nivel > 1))
 
     def ir_a_primero(self):
         """

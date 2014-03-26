@@ -131,199 +131,78 @@ class ConsultaVentasPorProducto(Ventana):
         vpro.mostrar()
         fini = utils.parse_fecha(self.wids['e_fechainicio'].get_text())
         ffin = utils.parse_fecha(self.wids['e_fechafin'].get_text())
-        vpro.set_valor(0.3, "Buscando albaranes de salida...")
+        vpro.set_valor(0.0, "Buscando albaranes de salida...")
         albs = pclases.AlbaranSalida.select(pclases.AND(
                                     pclases.AlbaranSalida.q.fecha >= fini, 
                                     pclases.AlbaranSalida.q.fecha < ffin), 
                                             orderBy = "fecha")
-        ldvs = []
+        fib = {}
+        gtx = {}
+        cem = {}
+        otros = {}
+        i = 0.0
+        tot = albs.count()
         for a in albs:
-            for ldv in a.lineasDeVenta: # Lo hago así para cargar aquí todo el peso de traer las LDVs, y así aligero el rellenar_tabla.
-                ldvs.append(ldv)
-        vpro.set_valor(0.6, "Analizando albaranes y abonos...")
+            i += 1
+            vpro.set_valor(i/tot, "Analizando albarán %s..." % a.numalbaran)
+            # TODO: XXX
+        # Abonos
+        vpro.set_valor(0.0, "Buscando abonos...")
         adedas = pclases.AlbaranDeEntradaDeAbono.select(pclases.AND(
                             pclases.AlbaranDeEntradaDeAbono.q.fecha >= fini, 
                             pclases.AlbaranDeEntradaDeAbono.q.fecha < ffin), 
-                                                        orderBy = "fecha")
-        ldds = []
+                        orderBy = "fecha")
+        i = 0.0
+        tot = adedas.count()
         for a in adedas:
-            for ldd in a.lineasDeDevolucion:
-                ldds.append(ldd)
-        vpro.set_valor(0.9, "Actualizando ventana...")
+            i += 1
+            vpro.set_valor(i/tot, "Analizando abono %s..." % a.numalbaran)
+            # TODO: XXX
         vpro.ocultar()
-        self.rellenar_tabla(ldvs, ldds)
+        self.rellenar_tabla(fib, gtx, cem, otros)
 
-    def rellenar_tabla(self, ldvs, ldds):
+    def rellenar_tabla(self, fib, gtx, cem, otros):
         """
         Rellena el model con los items de la consulta.
-        ldvs es una lista de líneas de venta.
-        ldds es una lista de líneas de devolución.
-        Recorre ambas listas y las inserta en función del producto de cada 
-        una de ellas. Para ello va guardando en un diccionario el producto, 
-        la fila que ocupa (padre de la que se esté insertando en ese 
-        momento) y la cantidad total del mismo.
+        Recibe cuatro diccionarios dependiendo del tipo de producto que habrá 
+        que introducir en los cuatro treeviews correspondientes.
+        Los diccionarios se organizan:
+        {'producto1': {'albarán1': {'m2': 0.0, 
+                                    'kg': 0.0, 
+                                    '#': 0}, 
+         'producto2': {'albarán1': {'cantidad': 0.0}, 
+         'producto3': {'albarán2': {'kg': 0.0, 
+                                    '#': 0}, 
+        ...}
         """ 
+        tot_fibra = {'kg': 0.0, 
+                     '#': 0}
+        tot_gtx = {'kg': 0.0, 
+                   '#': 0, 
+                   'm2': 0.0}
+        tot_cem = {'kg': 0.0, 
+                   '#': 0}
         from ventana_progreso import VentanaProgreso
         vpro = VentanaProgreso(padre = self.wids['ventana'])
         vpro.mostrar()
         i = 0.0
-        tot = len(ldvs) + len(ldds)
-        vpro.set_valor(i / (tot + 1), "Analizando %s..." % ("")) #Por si tot==0
-        model = self.wids['tv_datos'].get_model()
-        model.clear()
-        total_otros = 0.0
-        total_metros = 0.0
-        total_kilos = 0.0
-        productos = {}
-        for ldv in ldvs:
-            i += 1
-            vpro.set_valor(i / tot, "Analizando %s..." % (
-                ldv.albaranSalida.numalbaran))
-            p = ldv.producto
-            if isinstance(p, pclases.ProductoVenta):
-                tipo = "PV"
-                cantidades = ldv.get_cantidad_albaraneada_por_calidad()
-                cantidad_albaraneada = cantidades['total']['m²']
-                if not cantidad_albaraneada: # ¿Será fibra? Si es gtx también 
-                    cantidad_albaraneada = cantidades['total']['kg'] # será 0
-# TODO: PORASQUI: Al final voy a tener que rediseñar la ventana completa. No hay manera de mezclar metros, kilos, otras unidades para los productos de compra, etc. y que quede más o menos homogéneo. 
-            elif isinstance(p, pclases.ProductoCompra):
-                tipo = "PC"
-                cantidad_albaraneada = ldv.get_cantidad_albaraneada()
-            else:
-                tipo = "?"
-                txt = "%sconsulta_ventas_por_producto::rellenar_tabla -> Tipo de producto desconocido: LDV ID: %d, Representación del objeto producto: %s" % (self.usuario and self.usuario + ": " or "", ldv.id, p)
-                print txt
-                self.logger.error(txt)
-                cantidad_albaraneada = 0
-            if p not in productos:
-                fila = model.append(None, (p.descripcion, 
-                                           "", 
-                                           "", 
-                                           "", 
-                                           "", 
-                                           "", 
-                                           "", 
-                                           "", 
-                                           "%s:%d" % (tipo, p.id)))
-                productos[p] = [fila, cantidad_albaraneada]
-            else:
-                fila = productos[p][0]
-                if not ldv.albaranSalida.es_de_movimiento():
-                    productos[p][1] += cantidad_albaraneada
-            if tipo == "PV":
-                cantidad = cantidad_albaraneada
-                # TODO: PORASQUI: A ver cómo me las arreglo para distinguir
-                # A, B y C de la cantidad albaraneada sin que tarde todavía 
-                # más. Que actualmente ya es demasiado.
-                A = B = C = ""
-                if (p.es_bala() or p.es_bigbag() or p.es_bala_cable() 
-                        or p.es_rollo_c() or p.es_caja()):
-                    total_kilos += cantidad
-                elif p.es_rollo():
-                    total_metros += cantidad
-                elif p.es_especial():
-                    total_otros += cantidad
-            elif tipo == "PC":
-                cantidad = cantidad_albaraneada 
-                total_otros += cantidad * ldv.precio
-                A = B = C = "N/A"
-            else:
-                cantidad = 0
-                A = B = C = "N/A"
-            model.append(fila, ("", utils.float2str(cantidad), 
-                                    ldv.albaranSalida.cliente 
-                                        and ldv.albaranSalida.cliente.nombre 
-                                        or "", 
-                                    utils.str_fecha(ldv.albaranSalida.fecha),
-                                    ldv.albaranSalida.numalbaran, 
-                                    A, 
-                                    B, 
-                                    C, 
-                                    "LDV:%d" % (ldv.id)))
-            if ldv.albaranSalida.es_de_movimiento():
-                # Añado la misma línea pero en negativo, de ese modo se 
-                # anularán. La consulta no es por almacén, sino general.
-                model.append(fila, ("", utils.float2str(-cantidad), 
-                                    ldv.albaranSalida.cliente 
-                                        and ldv.albaranSalida.cliente.nombre 
-                                        or "", 
-                                    utils.str_fecha(ldv.albaranSalida.fecha),
-                                    ldv.albaranSalida.numalbaran, 
-                                    "", 
-                                    "", 
-                                    "", 
-                                    "LDV:%d" % (ldv.id)))
-        for ldd in ldds:
-            i += 1
-            vpro.set_valor(i / tot, "Analizando %s..." % (
-                ldd.abono.numabono))
-            p = ldd.producto
-            tipo = "PV" # De momento los abonos, más concretamente las LDD, 
-            # no soportan otra cosa que no sea un (artículo de) ProductoVenta.
-            if p not in productos:
-                fila = model.append(None, 
-                                    (p.descripcion, 
-                                     "", 
-                                     "", 
-                                     "", 
-                                     "", 
-                                     "", 
-                                     "", 
-                                     "", 
-                                     "%s:%d" % (tipo, p.id)))
-                productos[p] = [fila, ldv.get_cantidad_albaraneada()]
-            else:
-                fila = productos[p][0]
-                productos[p][1] += ldv.get_cantidad_albaraneada()
-            cantidad = ldd.cantidad
-            if (p.es_bala() or p.es_bigbag() or p.es_bala_cable() 
-                    or p.es_rollo_c() or p.es_caja()):
-                total_kilos += cantidad
-            elif p.es_rollo():
-                total_metros += cantidad
-            elif p.es_especial():
-                total_otros += cantidad * ldd.precio
-            model.append(fila, 
-                    ("", 
-                     utils.float2str(cantidad), 
-                     ldd.abono.cliente and ldd.abono.cliente.nombre or "", 
-                     utils.str_fecha(ldd.albaranDeEntradaDeAbono.fecha),
-                     ldd.albaranDeEntradaDeAbono.numalbaran, 
-                     "", 
-                     "", 
-                     "", 
-                     "LDD:%d" % (ldd.id)))
-        # Actualizo los totales de los productos en las filas del TreeView
-        total_metros_en_kilos_teoricos = 0.0
-        i = 0.0
-        tot = len(productos.keys())
-        for p in productos:
-            i += 1
-            vpro.set_valor(i/tot, "Actualizando totales...")
-            cantidad = "%s %s" % (utils.float2str(productos[p][1]), p.unidad)
-            try:
-                if p.es_rollo():
-                    metros_en_kilos_teoricos = (
-                            (productos[p][1] * p.camposEspecificosRollo.gramos)
-                            / 1000.0)
-                    total_metros_en_kilos_teoricos += metros_en_kilos_teoricos
-                    cantidad += " (%s kg)" % utils.float2str(
-                            metros_en_kilos_teoricos)
-                # TODO: FIXME: Esto de los kilos teóricos... con rollos B y tal... Mal, ¿eh?
-            except AttributeError:  # It's Easier to Ask Forgiveness than Permission (EAFP)
-                pass
-            fila = productos[p][0]
-            model[fila][1] = cantidad
-        self.wids['e_total_otros'].set_text(
-                "%s € " % (utils.float2str(total_otros)))
-        self.wids['e_total_kilos'].set_text(
-                "%s kg" % (utils.float2str(total_kilos)))
-        self.wids['e_total_metros'].set_text(
-                "%s m² (%s kg)" % (
-                    utils.float2str(total_metros), 
-                    utils.float2str(total_metros_en_kilos_teoricos)))
+        tot = len(fib) + len(gtx) + len(cem) + len(otros)
+        try:
+            vpro.set_valor(i / tot, "Mostrando %s..." % ("")) 
+        except ZeroDivisionError: 
+            pass    # It's Easier to Ask Forgiveness than Permission (EAFP)
+        for tv, dic, tot in ((self.wids['tv_fibra'], fib, tot_fibra), 
+                             (self.wids['tv_gtx'], gtx, tot_gtx), 
+                             (self.wids['tv_cem'], cem, tot_cem), 
+                             (self.wids['tv_otros'], otros, None)):
+            model = tv.get_model()
+            model.clear()
+            for producto in dic:
+                i += 1
+                vpro.set_valor(i / tot, "Mostrando %s..." % (producto)) 
+                # TODO: PORASQUI
         vpro.ocultar()
+        return tot_fibra, tot_gtx, tot_cem
 
     def exportar(self, boton):
         """
