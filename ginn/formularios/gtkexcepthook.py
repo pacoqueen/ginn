@@ -36,6 +36,10 @@
 import inspect, linecache, pydoc, sys, os# , traceback
 from cStringIO import StringIO
 from smtplib import SMTP, SMTPException
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
 import datetime
 
 import locale
@@ -147,6 +151,25 @@ def myprettyprint(stuff):
     #else:
     #    return pformat(stuff)
 
+def prettyprint_html(m):
+    """
+    Envuelvo el cuerpo del correo en HTML usando 
+    http://code.google.com/p/google-code-prettify/
+    """
+    TEMPLATE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), 
+                                   "..", "informes"))
+    tmpl = open(os.path.join(TEMPLATE_DIR, "traceback_template.html"))
+    s = "".join(tmpl.readlines())
+    tmpl.close()
+    #cabecera, traza = m.split("Excepción capturada.\n\n")
+    #cabecera += "Excepción capturada.\n\n"
+    traza = m
+    mark = "<!-- TRACEBACK_HERE -->"
+    s = s.replace(mark, mark + "\n\n" + traza)
+    #mensaje_html = cabecera + s
+    mensaje_html = s
+    return mensaje_html
+
 def _info(exctyp, value, tb):
     # DONE: Si se puede enviar por correo, enviar por correo y no abrir 
     # siquiera la ventana. O guardar a log o algo así si no se puede. Lo de 
@@ -208,8 +231,36 @@ def _info(exctyp, value, tb):
             except NameError:
                 server = 'localhost'
             vpro.mover()
-            message = 'From: %s"\nTo: %s\nSubject: Geotex-INN -- Excepción capturada.\n\n%s'%(
-                email, "Soporte G-INN", trace.getvalue())
+            msgmail = MIMEMultipart("alternative")
+            msgmail["Subject"] = "Geotex-INN -- Excepción capturada"
+            msgmail["From"] = email
+            msgmail["To"] = "Soporte G-INN"
+            traza = trace.getvalue()
+            message = 'From: %s"\nTo: %s\nSubject: Geotex-INN'\
+                      ' -- Excepción capturada.\n\n%s'%(msgmail["From"], 
+                                                        msgmail["To"], 
+                                                        traza)
+            text_version = message
+            html_version = prettyprint_html(traza)
+            # XXX: Test del HTML. En el navegador se ve fetén, pero en el 
+            #      thunderbird no carga el prettyPrint()
+            #      Tristeza infinita.
+            if False:
+                tempfile = open("/tmp/error.html", "w")
+                tempfile.write(html_version)
+                tempfile.close()
+                os.system("xdg-open /tmp/error.html")
+            # XXX
+            part1 = MIMEText(text_version, "plain")
+            part2 = MIMEText(html_version, "html")
+            msgmail.attach(part1)
+            msgmail.attach(part2)
+            adjunto = MIMEBase("text", "html")
+            adjunto.set_payload(html_version)
+            encoders.encode_base64(adjunto)
+            adjunto.add_header("Content-Disposition", 
+                               "attachment;filename=error_ginn.html")
+            msgmail.attach(adjunto)
             vpro.mover()
             # Aparte de enviarlo por correo, si tengo consola, vuelco.
             try:
@@ -275,9 +326,9 @@ def _info(exctyp, value, tb):
             vpro.mover()
             try:
                 try:
-                    s.sendmail(email, (devs_to,), message) #@UndefinedVariable
+                    s.sendmail(email, (devs_to,), msgmail.as_string()) #@UndefinedVariable
                 except NameError:
-                    s.sendmail(email, (email,), message)
+                    s.sendmail(email, (email,), msgmail.as_string())
             except:
                 vpro.ocultar()
                 autosend = False # ¿No Inet? Volver a bucle mostrando ventana.

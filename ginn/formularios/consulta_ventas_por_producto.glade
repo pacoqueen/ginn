@@ -183,7 +183,8 @@
                 <property name="label" translatable="yes">&lt;i&gt;&lt;small&gt;NOTAS: &lt;/small&gt;&lt;/i&gt;
 &lt;i&gt;&lt;small&gt;  - La consulta se basa en las salidas de albaranes y abonos; y usa la fecha de los mismos para la comparación.&lt;/small&gt;&lt;/i&gt;
 &lt;i&gt;&lt;small&gt;  - Ignora si la venta se encuentra o no facturada.&lt;/small&gt;&lt;/i&gt;
-&lt;i&gt;&lt;small&gt;  - Las cantidades computadas en un albarán pueden diferir de la de los artículos del packing list si el usuario no lo cerró correctamente o aún no ha sido imprimido.&lt;/small&gt;&lt;/i&gt;</property>
+&lt;i&gt;&lt;small&gt;  - Las cantidades computadas en un albarán pueden diferir de la de los artículos del packing list si el usuario no lo cerró correctamente o aún no ha sido imprimido.&lt;/small&gt;&lt;/i&gt;
+&lt;i&gt;&lt;small&gt;  - El peso incluye el embalaje definido para cada producto.&lt;/small&gt;&lt;/i&gt;</property>
                 <property name="use_markup">True</property>
               </widget>
               <packing>

@@ -27,7 +27,8 @@
 ## consulta_ventas_por_producto.py --
 ###################################################################
 ## NOTAS:
-##  
+##  * No se hace la distición por almacén. Demasiadas dimensiones 
+##    van ya con la calidad y tipo de producto.
 ###################################################################
 ## Changelog:
 ## 26 de julio de 2007 -> Inicio
@@ -157,7 +158,7 @@ class ConsultaVentasPorProducto(Ventana):
         for a in adedas:
             i += 1
             vpro.set_valor(i/tot, "Analizando abono %s..." % a.numalbaran)
-            # TODO: XXX
+            extract_data_from_abono(a, fib, gtx, cem, otros)
         vpro.ocultar()
         tot_fib, tot_gtx, tot_cem = self.rellenar_tabla(fib, gtx, cem, otros)
         self.rellenar_totales(tot_fib, "fibra")
@@ -455,13 +456,101 @@ def extract_data_from_albaran(alb, fib, gtx, cem, otros):
     for ldv in alb.lineasDeVenta:
         pc = ldv.productoCompra
         if pc:
+            if pc.puid not in otros:
+                otros[pc.puid] = {}
             try:
-                otros[pc.puid]['cantidad'] += ldv.cantidad
+                otros[pc.puid][alb.puid]['cantidad'] += ldv.cantidad
             except KeyError:
-                # TODO: XXX: Esto de arriba está mal. Falta un diccionario intermedio con el puid del albarán, me parece
-                otros[pc.puid]['cantidad'] = ldv.cantidad
+                otros[pc.puid][alb.puid]['cantidad'] = ldv.cantidad
+    # Y ahora los que se tratan individualmente.
     for a in alb.articulos:
-        pass # PORASQUI
+        pv = a.productoVenta
+        if pv.es_bala() or pv.es_bala_cable() or pv.es_bigbag():
+            dic = fib
+        elif pv.es_rollo() or pv.es_rollo_c():
+            dic = gtx
+        elif pv.es_caja():
+            dic = cem
+        elif pv.es_especial():
+            dic = otros
+        else:
+            # ¿Qué producto es este? Warning, log y tal...
+            dic = None
+        if dic is not None:
+            if pv.puid not in dic:
+                dic[pv.puid] = {}
+            if a.superficie != None:
+                # Es un geotextil.
+                try:
+                    dic[pv.puid][alb.puid]["m2"] += a.superficie
+                except KeyError:
+                    dic[pv.puid][alb.puid]["m2"] = a.superficie
+            # XXX: OJO: Uso peso CON embalaje. Es lo mismo que se usa en 
+            # el get_stock_kg_* de pclases para contar existencias. PERO no 
+            # es el mismo criterio que usa el calcular_kilos_producidos* de 
+            # pclases para las consultas de producción.
+            peso = a.peso
+            if peso is not None:
+                try:
+                    dic[pv.puid][alb.puid]["kg"] += peso
+                    dic[pv.puid][alb.puid]["#"] += 1
+                except KeyError:
+                    dic[pv.puid][alb.puid]["kg"] = peso
+                    dic[pv.puid][alb.puid]["#"] = 1
+            else:   # Es un producto especial. Cuento el artículo en sí mismo.
+                try:
+                    dic[pv.puid][alb.puid]["cantidad"] += 1
+                except KeyError:
+                    dic[pv.puid][alb.puid]["cantidad"] = 1
+
+def extract_data_from_abono(alb, fib, gtx, cem, otros):
+    """
+    De las líneas de venta del abono extrae las cantidades servidas de los 
+    productos de compra (diccionario otros).
+    De los artículos extrae las cantidades en metros (si procede), kilos y 
+    bultos en el diccionario que corresponda según el tipo de artículo.
+    """
+    for ldd in alb.lineasDeDevolucion:  # Las lineasDeAbono son de ajuste de 
+                                # precio. No implican movimiento en almacén.
+        pv = ldd.productoVenta
+        a = ldd.articulo
+        if pv.es_bala() or pv.es_bala_cable() or pv.es_bigbag():
+            dic = fib
+        elif pv.es_rollo() or pv.es_rollo_c():
+            dic = gtx
+        elif pv.es_caja():
+            dic = cem
+        elif pv.es_especial():
+            dic = otros
+        else:
+            # ¿Qué producto es este? Warning, log y tal...
+            dic = None
+        if dic is not None:
+            if pv.puid not in dic:
+                dic[pv.puid] = {}
+            if a.superficie != None:
+                # Es un geotextil.
+                try:
+                    dic[pv.puid][alb.puid]["m2"] += a.superficie
+                except KeyError:
+                    dic[pv.puid][alb.puid]["m2"] = a.superficie
+            # XXX: OJO: Uso peso CON embalaje. Es lo mismo que se usa en 
+            # el get_stock_kg_* de pclases para contar existencias. PERO no 
+            # es el mismo criterio que usa el calcular_kilos_producidos* de 
+            # pclases para las consultas de producción.
+            peso = a.peso
+            if peso is not None:
+                try:
+                    dic[pv.puid][alb.puid]["kg"] += peso
+                    dic[pv.puid][alb.puid]["#"] += 1
+                except KeyError:
+                    dic[pv.puid][alb.puid]["kg"] = peso
+                    dic[pv.puid][alb.puid]["#"] = 1
+            else:   # Es un producto especial. Cuento el artículo en sí mismo.
+                try:
+                    dic[pv.puid][alb.puid]["cantidad"] += 1
+                except KeyError:
+                    dic[pv.puid][alb.puid]["cantidad"] = 1
 
 
 if __name__ == '__main__':

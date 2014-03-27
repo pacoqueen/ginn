@@ -1073,7 +1073,7 @@ def calcular_kgs_teoricos_a(pdps):
 
 def calcular_kgs_reales_a(pdps):
     """
-    Devuelve los kgs reales sin embalaje producidos en A entre todos los 
+    Devuelve los kgs reales SIN EMBALAJE producidos en A entre todos los 
     partes.
     """
     res = sum([pdp.calcular_kilos_producidos_A() for pdp in pdps])
