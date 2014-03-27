@@ -198,10 +198,10 @@ class ConsultaVentasPorProducto(Ventana):
             vpro.set_valor(i / tot, "Mostrando %s..." % ("")) 
         except ZeroDivisionError: 
             pass    # It's Easier to Ask Forgiveness than Permission (EAFP)
-        for tv, dic, tot in ((self.wids['tv_fibra'], fib, tot_fibra), 
-                             (self.wids['tv_gtx'], gtx, tot_gtx), 
-                             (self.wids['tv_cem'], cem, tot_cem), 
-                             (self.wids['tv_otros'], otros, None)):
+        for tv, dic, dic_tot in ((self.wids['tv_fibra'], fib, tot_fibra), 
+                                 (self.wids['tv_gtx'], gtx, tot_gtx), 
+                                 (self.wids['tv_cem'], cem, tot_cem), 
+                                 (self.wids['tv_otros'], otros, None)):
             # "Otros" no lleva totales porque son unidades diferentes.
             model = tv.get_model()
             model.clear()
@@ -210,8 +210,8 @@ class ConsultaVentasPorProducto(Ventana):
                 vpro.set_valor(i / tot, "Mostrando %s..." % (producto)) 
                 fila_producto = build_fila(dic, producto)
                 producto_padre = model.append(None, fila_producto)
-                if tot:
-                    update_total(tot, dic[producto])
+                if dic_tot:
+                    update_total(dic_tot, dic[producto])
                 for albaran in dic[producto]:
                     fila_albaran = build_fila(dic[producto], albaran)
                     model.append(producto_padre, fila_albaran)
@@ -384,66 +384,113 @@ def act_fecha(entry, event):
     entry.set_text(txtfecha)
 
 def build_fila(dic, clave):
-    try:
-        m2 = dic[clave]['m2']
-    except KeyError:    # No es geotextil
-        m2 = None
-    try:
-        kg = dic[clave]['kg']
-        bultos = dic[clave]['#']
-        cantidad = None
-    except KeyError:    # No es tampoco fibra ni cemento
-        kg = bultos = None
-        cantidad = dic[clave]['cantidad']
+    """
+    Recibe un diccionario y la clave sobre la que se construirá la fila para 
+    insertarla en el TreeView. La clave puede ser un PUID de producto (y en 
+    ese caso el diccionario es el diccionario completo de fibra, geotextiles, 
+    cemento u otros) o un PUID de albarán (en cuyo caso el diccionario es solo 
+    el "subdccionario" del producto correspondiente al albarán).
+    El en caso de producto, los valores se toman de la suma de todos los 
+    subdiccionarios. Si es albarán, es inmediato.
+    """
     puid = clave
     try:
         producto_o_albaran = pclases.getObjetoPUID(puid).descripcion
     except AttributeError: 
         producto_o_albaran = pclases.getObjetoPUID(puid).numalbaran
+    if isinstance(producto_o_albaran, pclases.AlbaranSalida):
+        # Los valores están en el propio diccionario.
+        m2, kg, bultos, cantidad = extract_dic_abc(dic[clave])
+    else:
+        # Tengo que recorrer todos los albaranes del producto para hacer la 
+        # suma del total. 
+        for puidalb in dic[clave]:
+            # PORASQUI
+            m2, kg, bultos, cantidad = extract_dic_abc(dic[clave][puidalb])
+    # Construcción de la fila en sí:
     fila = [producto_o_albaran]
     if not cantidad is None:
         fila += [utils.float2str(cantidad)]
     elif not m2 is None:
-        tot_m2 = (dic[clave]['m2']['a'] 
-                    + dic[clave]['m2']['b'] 
-                    + dic[clave]['m2']['c'])
-        tot_kg = (dic[clave]['kg']['a'] 
-                    + dic[clave]['kg']['b'] 
-                    + dic[clave]['kg']['c'])
-        tot_bultos = (dic[clave]['#']['a'] 
-                        + dic[clave]['#']['b'] 
-                        + dic[clave]['#']['c'])
-        fila += [utils.float2str(dic[clave]['m2']['a']), 
-                 utils.float2str(dic[clave]['kg']['b']), 
-                 utils.float2str(dic[clave]['#']['c'], precision = 0), 
-                 utils.float2str(dic[clave]['m2']['a']), 
-                 utils.float2str(dic[clave]['kg']['b']), 
-                 utils.float2str(dic[clave]['#']['c'], precision = 0), 
-                 utils.float2str(dic[clave]['m2']['a']), 
-                 utils.float2str(dic[clave]['kg']['b']), 
-                 utils.float2str(dic[clave]['#']['c'], precision = 0),
+        tot_m2 = (m2['a'] 
+                    + m2['b'] 
+                    + m2['c'])
+        tot_kg = (kg['a'] 
+                    + kg['b'] 
+                    + kg['c'])
+        tot_bultos = (bultos['a'] 
+                        + bultos['b'] 
+                        + bultos['c'])
+        fila += [utils.float2str(m2['a']), 
+                 utils.float2str(kg['b']), 
+                 utils.float2str(bultos['c'], precision = 0), 
+                 utils.float2str(m2['a']), 
+                 utils.float2str(kg['b']), 
+                 utils.float2str(bultos['c'], precision = 0), 
+                 utils.float2str(m2['a']), 
+                 utils.float2str(kg['b']), 
+                 utils.float2str(bultos['c'], precision = 0),
                  utils.float2str(tot_m2),
                  utils.float2str(tot_kg),
                  utils.float2str(tot_bultos)
                 ]
     else:
-        tot_kg = (dic[clave]['kg']['a'] 
-                    + dic[clave]['kg']['b'] 
-                    + dic[clave]['kg']['c'])
-        tot_bultos = (dic[clave]['#']['a'] 
-                        + dic[clave]['#']['b'] 
-                        + dic[clave]['#']['c'])
-        fila += [utils.float2str(dic[clave]['kg']['b']), 
-                 utils.float2str(dic[clave]['#']['c'], precision = 0), 
-                 utils.float2str(dic[clave]['kg']['b']), 
-                 utils.float2str(dic[clave]['#']['c'], precision = 0), 
-                 utils.float2str(dic[clave]['kg']['b']), 
-                 utils.float2str(dic[clave]['#']['c'], precision = 0),
+        tot_kg = (kg['a'] 
+                    + kg['b'] 
+                    + kg['c'])
+        tot_bultos = (bultos['a'] 
+                        + bultos['b'] 
+                        + bultos['c'])
+        fila += [utils.float2str(kg['b']), 
+                 utils.float2str(bultos['c'], precision = 0), 
+                 utils.float2str(kg['b']), 
+                 utils.float2str(bultos['c'], precision = 0), 
+                 utils.float2str(kg['b']), 
+                 utils.float2str(butos['c'], precision = 0),
                  utils.float2str(tot_kg),
                  utils.float2str(tot_bultos)
                 ]
     fila += [puid]
     return fila
+
+def extract_dic_abc(d):
+    """
+    Devuelve los valores para m², kg y bultos de A, B y C y la cantidad del 
+    diccionario. Si alguno de los valores no está presente, devuelve None.
+    Si el diccionario es de producto y contiene diccionario de albaranes, 
+    devuelve la suma.
+    """
+    try:
+        m2 = d['m2']
+    except KeyError:    # No es geotextil
+        m2 = None
+    try:
+        kg = d['kg']
+        bultos = d['#']
+        cantidad = None
+    except KeyError:    # No es tampoco fibra ni cemento
+        try:
+            cantidad = d['cantidad']
+            kg = bultos = None
+        except KeyError:    # Es un producto. Tengo que sumar los diccionarios 
+                            # de albaranes que contiene.
+            m2 = {}
+            kg = {}
+            bultos = {}
+            cantidad = {}
+            for albaran in d:
+                _m2, _kg, _bultos, _cantidad = extract_dic_abc(d[albaran])
+                for dsum, dparcial in ((m2, _m2), 
+                                       (kg, _kg), 
+                                       (bultos, _bultos)):
+                    if dparcial:
+                        for qlty in dparcial.keys():
+                            try:
+                                dsum[qlty] += dparcial[qlty]
+                            except KeyError:
+                                dsum[qlty] = dparcial[qlty]
+                # PORASQUI: Me falta cantidad (que no lleva A, B y C) y probar.
+    return m2, kg, bultos, cantidad
 
 def extract_data_from_albaran(alb, fib, gtx, cem, otros):
     """
@@ -458,6 +505,8 @@ def extract_data_from_albaran(alb, fib, gtx, cem, otros):
         if pc:
             if pc.puid not in otros:
                 otros[pc.puid] = {}
+            if not alb.puid in otros[pc.puid]:
+                otros[pc.puid][alb.puid] = {}
             try:
                 otros[pc.puid][alb.puid]['cantidad'] += ldv.cantidad
             except KeyError:
@@ -479,24 +528,43 @@ def extract_data_from_albaran(alb, fib, gtx, cem, otros):
         if dic is not None:
             if pv.puid not in dic:
                 dic[pv.puid] = {}
+            if not alb.puid in dic[pv.puid]:
+                dic[pv.puid][alb.puid] = {}
+            # Ahora determino la calidad (A, B o C) para clasificar.
+            if a.es_clase_a():
+                qlty = "a"
+            elif a.es_clase_b():
+                qlty = "b"
+            elif a.es_clase_c():
+                qlty = "c"
+            else:
+                raise ValueError, "consulta_ventas_por_producto::"\
+                        "extract_data_from_albaran"\
+                        "El artículo «%s» no es A, B ni C." % (a.puid)
             if a.superficie != None:
                 # Es un geotextil.
+                if "m2" not in dic[pv.puid][alb.puid]:
+                    dic[pv.puid][alb.puid]["m2"] = {}
                 try:
-                    dic[pv.puid][alb.puid]["m2"] += a.superficie
+                    dic[pv.puid][alb.puid]["m2"][qlty] += a.superficie
                 except KeyError:
-                    dic[pv.puid][alb.puid]["m2"] = a.superficie
+                    dic[pv.puid][alb.puid]["m2"][qlty] = a.superficie
             # XXX: OJO: Uso peso CON embalaje. Es lo mismo que se usa en 
             # el get_stock_kg_* de pclases para contar existencias. PERO no 
             # es el mismo criterio que usa el calcular_kilos_producidos* de 
             # pclases para las consultas de producción.
             peso = a.peso
             if peso is not None:
+                if "kg" not in dic[pv.puid][alb.puid]:
+                    dic[pv.puid][alb.puid]["kg"] = {}
+                if "#" not in dic[pv.puid][alb.puid]:
+                    dic[pv.puid][alb.puid]["#"] = {}
                 try:
-                    dic[pv.puid][alb.puid]["kg"] += peso
-                    dic[pv.puid][alb.puid]["#"] += 1
+                    dic[pv.puid][alb.puid]["kg"][qlty] += peso
+                    dic[pv.puid][alb.puid]["#"][qlty] += 1
                 except KeyError:
-                    dic[pv.puid][alb.puid]["kg"] = peso
-                    dic[pv.puid][alb.puid]["#"] = 1
+                    dic[pv.puid][alb.puid]["kg"][qlty] = peso
+                    dic[pv.puid][alb.puid]["#"][qlty] = 1
             else:   # Es un producto especial. Cuento el artículo en sí mismo.
                 try:
                     dic[pv.puid][alb.puid]["cantidad"] += 1
@@ -528,24 +596,43 @@ def extract_data_from_abono(alb, fib, gtx, cem, otros):
         if dic is not None:
             if pv.puid not in dic:
                 dic[pv.puid] = {}
+            if alb.puid not in dic[pv.puid]:
+                dic[pv.puid][alb.puid] = {}
+            # Ahora determino la calidad (A, B o C) para clasificar.
+            if a.es_clase_a():
+                qlty = "a"
+            elif a.es_clase_b():
+                qlty = "b"
+            elif a.es_clase_c():
+                qlty = "c"
+            else:
+                raise ValueError, "consulta_ventas_por_producto::"\
+                        "extract_data_from_abono"\
+                        "El artículo «%s» no es A, B ni C." % (a.puid)
             if a.superficie != None:
                 # Es un geotextil.
+                if "m2" not in dic[pv.puid][alb.puid]:
+                    dic[pv.puid][alb.puid]["m2"] = {}
                 try:
-                    dic[pv.puid][alb.puid]["m2"] += a.superficie
+                    dic[pv.puid][alb.puid]["m2"][qlty] += a.superficie
                 except KeyError:
-                    dic[pv.puid][alb.puid]["m2"] = a.superficie
+                    dic[pv.puid][alb.puid]["m2"][qlty] = a.superficie
             # XXX: OJO: Uso peso CON embalaje. Es lo mismo que se usa en 
             # el get_stock_kg_* de pclases para contar existencias. PERO no 
             # es el mismo criterio que usa el calcular_kilos_producidos* de 
             # pclases para las consultas de producción.
             peso = a.peso
             if peso is not None:
+                if "kg" not in dic[pv.puid][alb.puid]:
+                    dic[pv.puid][alb.puid]["kg"] = {}
+                if "#" not in dic[pv.puid][alb.puid]:
+                    dic[pv.puid][alb.puid]["#"] = {}
                 try:
-                    dic[pv.puid][alb.puid]["kg"] += peso
-                    dic[pv.puid][alb.puid]["#"] += 1
+                    dic[pv.puid][alb.puid]["kg"][qlty] += peso
+                    dic[pv.puid][alb.puid]["#"][qlty] += 1
                 except KeyError:
-                    dic[pv.puid][alb.puid]["kg"] = peso
-                    dic[pv.puid][alb.puid]["#"] = 1
+                    dic[pv.puid][alb.puid]["kg"][qlty] = peso
+                    dic[pv.puid][alb.puid]["#"][qlty] = 1
             else:   # Es un producto especial. Cuento el artículo en sí mismo.
                 try:
                     dic[pv.puid][alb.puid]["cantidad"] += 1
