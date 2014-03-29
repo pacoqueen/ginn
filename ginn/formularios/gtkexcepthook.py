@@ -242,14 +242,23 @@ def _info(exctyp, value, tb):
                                                         traza)
             text_version = message
             html_version = prettyprint_html(traza)
+            ferrname = traza.split("\n")[-1].split(":")[0]
+            #import re
+            #regexpline = re.compile("line [0-9]+")
+            #try:
+            #    linea = regexplline.findall(traza)[-1]
+            #except IndexError:
+            #    pass
+            #else:
+            #    ferrname += "_" + linea.replace(" ", "_")
             # XXX: Test del HTML. En el navegador se ve fetén, pero en el 
             #      thunderbird no carga el prettyPrint()
             #      Tristeza infinita.
             if False:
-                tempfile = open("/tmp/error.html", "w")
+                tempfile = open("/tmp/%s.html" % ferrname, "w")
                 tempfile.write(html_version)
                 tempfile.close()
-                os.system("xdg-open /tmp/error.html")
+                os.system("xdg-open /tmp/%s.html" % ferrname)
             # XXX
             part1 = MIMEText(text_version, "plain")
             part2 = MIMEText(html_version, "html")
@@ -259,7 +268,7 @@ def _info(exctyp, value, tb):
             adjunto.set_payload(html_version)
             encoders.encode_base64(adjunto)
             adjunto.add_header("Content-Disposition", 
-                               "attachment;filename=error_ginn.html")
+                               "attachment;filename=%s.html" % (ferrname))
             msgmail.attach(adjunto)
             vpro.mover()
             # Aparte de enviarlo por correo, si tengo consola, vuelco.

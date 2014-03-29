@@ -42,6 +42,7 @@ pygtk.require('2.0')
 import gtk
 from framework import pclases
 import mx.DateTime
+from collections import defaultdict
 
 class ConsultaVentasPorProducto(Ventana):
 
@@ -211,6 +212,9 @@ class ConsultaVentasPorProducto(Ventana):
                 fila_producto = build_fila(dic, producto)
                 producto_padre = model.append(None, fila_producto)
                 if dic_tot:
+                    # PLAN: OPTIMIZAR: Estúpido, podrías aprovechar el bucle 
+                    # de los albaranes de abajo y no repetirlo en el 
+                    # update_total.
                     update_total(dic_tot, dic[producto])
                 for albaran in dic[producto]:
                     fila_albaran = build_fila(dic[producto], albaran)
@@ -273,7 +277,15 @@ class ConsultaVentasPorProducto(Ventana):
         """
         from informes.treeview2csv import treeview2csv
         from formularios.reports import abrir_csv
-        tv = self.wids['tv_datos']
+        pactiva = self.wids['notebook1'].get_current_page()
+        if pactiva == 0: 
+            tv = self.wids['tv_fibra']
+        elif pactiva == 1: 
+            tv = self.wids['tv_gtx']
+        elif pactiva == 2: 
+            tv = self.wids['tv_cem']
+        elif pactiva == 3: 
+            tv = self.wids['tv_otros']
         abrir_csv(treeview2csv(tv))
 
     def imprimir(self, boton):
@@ -284,92 +296,23 @@ class ConsultaVentasPorProducto(Ventana):
         from formularios.reports import abrir_pdf
         strfecha = "%s - %s" % (self.wids['e_fechainicio'].get_text(), 
                                 self.wids['e_fechafin'].get_text())
-        resp = utils.dialogo(titulo = "¿IMPRIMIR DESGLOSE?", 
-                             texto = "Puede imprimir únicamente los productos"
-                                     " o toda la información de la ventana.\n"
-                                     "¿Desea imprimir toda la información "
-                                     "desglosada?", 
-                             padre = self.wids['ventana'])
-        # TODO: Esto hay que testearlo...
-        tv = clone_treeview(self.wids['tv_datos'])  # Para respetar el orden 
-        # del treeview original y que no afecte a las filas de totales que 
-        # añado después. Si las añado al original directamente se mostrarán 
-        # en el orden que correspondería en lugar de al final.
-        model = tv.get_model()
-        fila_sep = model.append(None, ("===",) * 9)
-        fila_total_gtx = model.append(None, ("Total m² geotextiles", self.wids['e_total_metros'].get_text(), "", "", "", "", "", "", ""))
-        fila_total_fibra = model.append(None, ("Total kg fibra", self.wids['e_total_kilos'].get_text(), "", "", "", "", "", "", ""))
-        fila_total_otros = model.append(None, ("Total € otros", self.wids['e_total_otros'].get_text(), "", "", "", "", "", "", ""))
-        if resp:
-            tv.expand_all()
-            while gtk.events_pending(): gtk.main_iteration(False)
-        else:
-            tv.collapse_all()
-            while gtk.events_pending(): gtk.main_iteration(False)
-            tv = convertir_a_listview(tv)
-            # Para este caso particular me sobran las columnas de albarán y eso
-            tv.remove_column(tv.get_columns()[-4])
-            tv.remove_column(tv.get_columns()[-4])
-            tv.remove_column(tv.get_columns()[-4])
+        pactiva = self.wids['notebook1'].get_current_page()
+        if pactiva == 0: 
+            tv = self.wids['tv_fibra']
+            totales = range(1, tv.get_model().get_n_columns() - 1)
+        elif pactiva == 1: 
+            tv = self.wids['tv_gtx']
+            totales = range(1, tv.get_model().get_n_columns() - 1)
+        elif pactiva == 2: 
+            tv = self.wids['tv_cem']
+            totales = range(1, tv.get_model().get_n_columns() - 1)
+        elif pactiva == 3: 
+            tv = self.wids['tv_otros']
+            totales = []
         abrir_pdf(treeview2pdf(tv, 
             titulo = "Salidas de almacén agrupadas por producto", 
-            fecha = strfecha))
-        model.remove(fila_sep)
-        model.remove(fila_total_gtx)
-        model.remove(fila_total_fibra)
-        model.remove(fila_total_otros)
-
-def clone_treeview(otv):
-    """
-    Clona un treeview en uno nuevo.
-    """
-    ntv = gtk.TreeView()
-    ntv.set_name(otv.get_name())
-    omodel = otv.get_model()
-    tipos = [omodel.get_column_type(i) for i in range(omodel.get_n_columns())]
-    nmodel = gtk.TreeStore(*tipos)
-    ntv.set_model(nmodel)
-    for fila_nivel_1 in omodel:
-        def agregar_fila(model, padre, fila):
-            iterpadre = model.append(padre, fila)
-            if hasattr(fila, 'iterchildren'):
-                for hijo in fila.iterchildren():
-                    agregar_fila(model, iterpadre, hijo)
-        agregar_fila(nmodel, None, fila_nivel_1)
-    for ocol in otv.get_columns():
-        title = ocol.get_title()
-        ocell = ocol.get_cell_renderers()[0]
-        ncell = type(ocell)()
-        ncol = gtk.TreeViewColumn(title, ncell)
-        ncol.set_data("q_ncol", ocol.get_data("q_ncol"))
-        ncol.get_cell_renderers()[0].set_property('xalign', 
-                ocol.get_cell_renderers()[0].get_property('xalign')) 
-        ntv.append_column(ncol)
-    return ntv
-
-def convertir_a_listview(otv):
-    """
-    Convierte el TreeView en un ListView con los mismos datos que el original y 
-    lo devuelve.
-    """
-    ntv = gtk.TreeView()
-    ntv.set_name(otv.get_name())
-    omodel = otv.get_model()
-    tipos = [omodel.get_column_type(i) for i in range(omodel.get_n_columns())]
-    nmodel = gtk.ListStore(*tipos)
-    ntv.set_model(nmodel)
-    for fila in omodel:
-        nmodel.append([e for e in fila])
-    for ocol in otv.get_columns():
-        title = ocol.get_title()
-        ocell = ocol.get_cell_renderers()[0]
-        ncell = type(ocell)()
-        ncol = gtk.TreeViewColumn(title, ncell)
-        ncol.set_data("q_ncol", ocol.get_data("q_ncol"))
-        ncol.get_cell_renderers()[0].set_property('xalign', 
-                ocol.get_cell_renderers()[0].get_property('xalign')) 
-        ntv.append_column(ncol)
-    return ntv
+            fecha = strfecha, 
+            numcols_a_totalizar = totales))
 
 def act_fecha(entry, event):                                                    
     """
@@ -383,6 +326,16 @@ def act_fecha(entry, event):
         txtfecha = ""
     entry.set_text(txtfecha)
 
+def update_total(dic_total, dic_producto):
+    """
+    Actualiza los totales a partir del diccionario de albaranes de un producto.
+    """
+    for albaran in dic_producto:
+        for medida in dic_producto[albaran]:
+            for calidad in dic_producto[albaran][medida]:
+                cantidad = dic_producto[albaran][medida][calidad]
+                dic_total[medida][calidad] += cantidad
+
 def build_fila(dic, clave):
     """
     Recibe un diccionario y la clave sobre la que se construirá la fila para 
@@ -394,18 +347,16 @@ def build_fila(dic, clave):
     subdiccionarios. Si es albarán, es inmediato.
     """
     puid = clave
-    try:
-        producto_o_albaran = pclases.getObjetoPUID(puid).descripcion
-    except AttributeError: 
-        producto_o_albaran = pclases.getObjetoPUID(puid).numalbaran
-    if isinstance(producto_o_albaran, pclases.AlbaranSalida):
+    objeto_pclases = pclases.getObjetoPUID(puid)
+    if isinstance(objeto_pclases, pclases.AlbaranSalida):
         # Los valores están en el propio diccionario.
+        producto_o_albaran = pclases.getObjetoPUID(puid).numalbaran
         m2, kg, bultos, cantidad = extract_dic_abc(dic[clave])
     else:
         # Tengo que recorrer todos los albaranes del producto para hacer la 
         # suma del total. 
+        producto_o_albaran = objeto_pclases.descripcion
         for puidalb in dic[clave]:
-            # PORASQUI
             m2, kg, bultos, cantidad = extract_dic_abc(dic[clave][puidalb])
     # Construcción de la fila en sí:
     fila = [producto_o_albaran]
@@ -422,13 +373,13 @@ def build_fila(dic, clave):
                         + bultos['b'] 
                         + bultos['c'])
         fila += [utils.float2str(m2['a']), 
+                 utils.float2str(kg['a']), 
+                 utils.float2str(bultos['a'], precision = 0), 
+                 utils.float2str(m2['b']), 
                  utils.float2str(kg['b']), 
-                 utils.float2str(bultos['c'], precision = 0), 
-                 utils.float2str(m2['a']), 
-                 utils.float2str(kg['b']), 
-                 utils.float2str(bultos['c'], precision = 0), 
-                 utils.float2str(m2['a']), 
-                 utils.float2str(kg['b']), 
+                 utils.float2str(bultos['b'], precision = 0), 
+                 utils.float2str(m2['c']), 
+                 utils.float2str(kg['c']), 
                  utils.float2str(bultos['c'], precision = 0),
                  utils.float2str(tot_m2),
                  utils.float2str(tot_kg),
@@ -441,12 +392,12 @@ def build_fila(dic, clave):
         tot_bultos = (bultos['a'] 
                         + bultos['b'] 
                         + bultos['c'])
-        fila += [utils.float2str(kg['b']), 
-                 utils.float2str(bultos['c'], precision = 0), 
+        fila += [utils.float2str(kg['a']), 
+                 utils.float2str(bultos['a'], precision = 0), 
                  utils.float2str(kg['b']), 
-                 utils.float2str(bultos['c'], precision = 0), 
-                 utils.float2str(kg['b']), 
-                 utils.float2str(butos['c'], precision = 0),
+                 utils.float2str(bultos['b'], precision = 0), 
+                 utils.float2str(kg['c']), 
+                 utils.float2str(bultos['c'], precision = 0),
                  utils.float2str(tot_kg),
                  utils.float2str(tot_bultos)
                 ]
@@ -462,7 +413,7 @@ def extract_dic_abc(d):
     """
     try:
         m2 = d['m2']
-    except KeyError:    # No es geotextil
+    except KeyError:    # No es albarán de un geotextil
         m2 = None
     try:
         kg = d['kg']
@@ -474,10 +425,10 @@ def extract_dic_abc(d):
             kg = bultos = None
         except KeyError:    # Es un producto. Tengo que sumar los diccionarios 
                             # de albaranes que contiene.
-            m2 = {}
-            kg = {}
-            bultos = {}
-            cantidad = {}
+            m2 = defaultdict(lambda: 0.0)
+            kg = defaultdict(lambda: 0.0)
+            bultos = defaultdict(lambda: 0)
+            cantidad = 0.0
             for albaran in d:
                 _m2, _kg, _bultos, _cantidad = extract_dic_abc(d[albaran])
                 for dsum, dparcial in ((m2, _m2), 
@@ -489,7 +440,8 @@ def extract_dic_abc(d):
                                 dsum[qlty] += dparcial[qlty]
                             except KeyError:
                                 dsum[qlty] = dparcial[qlty]
-                # PORASQUI: Me falta cantidad (que no lleva A, B y C) y probar.
+                if _cantidad:
+                    cantidad += _cantidad
     return m2, kg, bultos, cantidad
 
 def extract_data_from_albaran(alb, fib, gtx, cem, otros):
@@ -541,24 +493,24 @@ def extract_data_from_albaran(alb, fib, gtx, cem, otros):
                 raise ValueError, "consulta_ventas_por_producto::"\
                         "extract_data_from_albaran"\
                         "El artículo «%s» no es A, B ni C." % (a.puid)
-            if a.superficie != None:
+            if a.superficie != None or a.es_rolloC():
                 # Es un geotextil.
                 if "m2" not in dic[pv.puid][alb.puid]:
-                    dic[pv.puid][alb.puid]["m2"] = {}
+                    dic[pv.puid][alb.puid]["m2"] = defaultdict(lambda: 0.0)
                 try:
                     dic[pv.puid][alb.puid]["m2"][qlty] += a.superficie
-                except KeyError:
-                    dic[pv.puid][alb.puid]["m2"][qlty] = a.superficie
+                except TypeError:
+                    pass    # Es rollo C. No tiene superficie. Solo peso.
             # XXX: OJO: Uso peso CON embalaje. Es lo mismo que se usa en 
             # el get_stock_kg_* de pclases para contar existencias. PERO no 
             # es el mismo criterio que usa el calcular_kilos_producidos* de 
             # pclases para las consultas de producción.
             peso = a.peso
-            if peso is not None:
+            if not peso is None:
                 if "kg" not in dic[pv.puid][alb.puid]:
-                    dic[pv.puid][alb.puid]["kg"] = {}
+                    dic[pv.puid][alb.puid]["kg"] = defaultdict(lambda: 0.0)
                 if "#" not in dic[pv.puid][alb.puid]:
-                    dic[pv.puid][alb.puid]["#"] = {}
+                    dic[pv.puid][alb.puid]["#"] = defaultdict(lambda: 0)
                 try:
                     dic[pv.puid][alb.puid]["kg"][qlty] += peso
                     dic[pv.puid][alb.puid]["#"][qlty] += 1
@@ -609,24 +561,24 @@ def extract_data_from_abono(alb, fib, gtx, cem, otros):
                 raise ValueError, "consulta_ventas_por_producto::"\
                         "extract_data_from_abono"\
                         "El artículo «%s» no es A, B ni C." % (a.puid)
-            if a.superficie != None:
+            if a.superficie != None or a.es_rolloC():
                 # Es un geotextil.
                 if "m2" not in dic[pv.puid][alb.puid]:
-                    dic[pv.puid][alb.puid]["m2"] = {}
+                    dic[pv.puid][alb.puid]["m2"] = defaultdict(lambda: 0.0)
                 try:
                     dic[pv.puid][alb.puid]["m2"][qlty] += a.superficie
-                except KeyError:
-                    dic[pv.puid][alb.puid]["m2"][qlty] = a.superficie
+                except TypeError:
+                    pass    # Es rollo C. No tiene superficie. Solo peso.
             # XXX: OJO: Uso peso CON embalaje. Es lo mismo que se usa en 
             # el get_stock_kg_* de pclases para contar existencias. PERO no 
             # es el mismo criterio que usa el calcular_kilos_producidos* de 
             # pclases para las consultas de producción.
             peso = a.peso
-            if peso is not None:
+            if not peso is None:
                 if "kg" not in dic[pv.puid][alb.puid]:
-                    dic[pv.puid][alb.puid]["kg"] = {}
+                    dic[pv.puid][alb.puid]["kg"] = defaultdict(lambda: 0.0)
                 if "#" not in dic[pv.puid][alb.puid]:
-                    dic[pv.puid][alb.puid]["#"] = {}
+                    dic[pv.puid][alb.puid]["#"] = defaultdict(lambda: 0)
                 try:
                     dic[pv.puid][alb.puid]["kg"][qlty] += peso
                     dic[pv.puid][alb.puid]["#"][qlty] += 1
