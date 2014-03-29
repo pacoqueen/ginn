@@ -348,9 +348,10 @@ def build_fila(dic, clave):
     """
     puid = clave
     objeto_pclases = pclases.getObjetoPUID(puid)
-    if isinstance(objeto_pclases, pclases.AlbaranSalida):
+    if isinstance(objeto_pclases, (
+            pclases.AlbaranSalida, pclases.AlbaranDeEntradaDeAbono)):
         # Los valores están en el propio diccionario.
-        producto_o_albaran = pclases.getObjetoPUID(puid).numalbaran
+        producto_o_albaran = objeto_pclases.numalbaran
         m2, kg, bultos, cantidad = extract_dic_abc(dic[clave])
     else:
         # Tengo que recorrer todos los albaranes del producto para hacer la 
@@ -566,7 +567,7 @@ def extract_data_from_abono(alb, fib, gtx, cem, otros):
                 if "m2" not in dic[pv.puid][alb.puid]:
                     dic[pv.puid][alb.puid]["m2"] = defaultdict(lambda: 0.0)
                 try:
-                    dic[pv.puid][alb.puid]["m2"][qlty] += a.superficie
+                    dic[pv.puid][alb.puid]["m2"][qlty] += -a.superficie
                 except TypeError:
                     pass    # Es rollo C. No tiene superficie. Solo peso.
             # XXX: OJO: Uso peso CON embalaje. Es lo mismo que se usa en 
@@ -580,16 +581,16 @@ def extract_data_from_abono(alb, fib, gtx, cem, otros):
                 if "#" not in dic[pv.puid][alb.puid]:
                     dic[pv.puid][alb.puid]["#"] = defaultdict(lambda: 0)
                 try:
-                    dic[pv.puid][alb.puid]["kg"][qlty] += peso
-                    dic[pv.puid][alb.puid]["#"][qlty] += 1
+                    dic[pv.puid][alb.puid]["kg"][qlty] += -peso
+                    dic[pv.puid][alb.puid]["#"][qlty] += -1
                 except KeyError:
-                    dic[pv.puid][alb.puid]["kg"][qlty] = peso
-                    dic[pv.puid][alb.puid]["#"][qlty] = 1
+                    dic[pv.puid][alb.puid]["kg"][qlty] = -peso
+                    dic[pv.puid][alb.puid]["#"][qlty] = -1
             else:   # Es un producto especial. Cuento el artículo en sí mismo.
                 try:
-                    dic[pv.puid][alb.puid]["cantidad"] += 1
+                    dic[pv.puid][alb.puid]["cantidad"] += -1
                 except KeyError:
-                    dic[pv.puid][alb.puid]["cantidad"] = 1
+                    dic[pv.puid][alb.puid]["cantidad"] = -1
 
 
 if __name__ == '__main__':
