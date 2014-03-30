@@ -57,7 +57,8 @@ class ConsultaVentasPorProducto(Ventana):
                        'b_fecha_fin/clicked': self.set_fin, 
                        'b_exportar/clicked': self.exportar, 
                        'e_fechainicio/focus-out-event': act_fecha, 
-                       'e_fechafin/focus-out-event': act_fecha}
+                       'e_fechafin/focus-out-event': act_fecha, 
+                       'b_map/clicked': self.exportar_a_html}
         self.add_connections(connections)
         # TreeViews de fibra y cemento
         cols = [
@@ -134,7 +135,7 @@ class ConsultaVentasPorProducto(Ventana):
         fini = utils.parse_fecha(self.wids['e_fechainicio'].get_text())
         ffin = utils.parse_fecha(self.wids['e_fechafin'].get_text())
         vpro.set_valor(0.0, "Buscando albaranes de salida...")
-        albs = pclases.AlbaranSalida.select(pclases.AND(
+        self.albs = pclases.AlbaranSalida.select(pclases.AND(
                                     pclases.AlbaranSalida.q.fecha >= fini, 
                                     pclases.AlbaranSalida.q.fecha < ffin), 
                                             orderBy = "fecha")
@@ -143,20 +144,20 @@ class ConsultaVentasPorProducto(Ventana):
         cem = {}
         otros = {}
         i = 0.0
-        tot = albs.count()
-        for a in albs:
+        tot = self.albs.count()
+        for a in self.albs:
             i += 1
             vpro.set_valor(i/tot, "Analizando albarán %s..." % a.numalbaran)
             extract_data_from_albaran(a, fib, gtx, cem, otros)
         # Abonos
         vpro.set_valor(0.0, "Buscando abonos...")
-        adedas = pclases.AlbaranDeEntradaDeAbono.select(pclases.AND(
+        self.adedas = pclases.AlbaranDeEntradaDeAbono.select(pclases.AND(
                             pclases.AlbaranDeEntradaDeAbono.q.fecha >= fini, 
                             pclases.AlbaranDeEntradaDeAbono.q.fecha < ffin), 
                         orderBy = "fecha")
         i = 0.0
-        tot = adedas.count()
-        for a in adedas:
+        tot = self.adedas.count()
+        for a in self.adedas:
             i += 1
             vpro.set_valor(i/tot, "Analizando abono %s..." % a.numalbaran)
             extract_data_from_abono(a, fib, gtx, cem, otros)
@@ -313,6 +314,58 @@ class ConsultaVentasPorProducto(Ventana):
             titulo = "Salidas de almacén agrupadas por producto", 
             fecha = strfecha, 
             numcols_a_totalizar = totales))
+
+    def exportar_a_html(self, boton):
+        """
+        Visualiza la información de las salidas por destino de sus albaranes.
+        Exporta un HTML que usa Google Visualization API (Google Charts).
+        """
+        from lib.google_visualization_python import gviz_api
+        import tempfile
+        from formularios import multi_open
+        page_template = """
+        <html>
+          <script src="https://www.google.com/jsapi" type="text/javascript"></script>
+          <script>
+            google.load('visualization', '1', {packages:['geochart']});
+            google.setOnLoadCallback(drawMarkersMap);
+            function drawMarkersMap() {
+              var json_data = new google.visualization.DataTable(%(json)s);
+              var json_table = new google.visualization.GeoChart(document.getElementById('table_div_json'));
+              json_table.draw(json_data, {displayMode: 'markers'});
+            }
+          </script>
+          <body>
+            <!-- <H1>Table created using ToJSon</H1> -->
+            <div id="table_div_json"></div>
+          </body>
+        </html>
+        """
+        # Creamos los datos:
+        description = {"address": ("string", "Dirección"), 
+                       "euros": ("number", "€")}
+        data = []
+        for a in self.albs:
+            data.append({"address": a.cliente.get_direccion_completa(), 
+                         "euros": a.calcular_total()})
+        # Cargamos en gviz_api.DataTable
+        data_table = gviz_api.DataTable(description)
+        data_table.LoadData(data)
+        # Creando código JavaScript
+        jscode = data_table.ToJSCode("jscode_data", 
+                                     columns_order = ("address", "euros"), 
+                                     order_by = "euros")
+        # Creando cadena JSon
+        json = data_table.ToJSon(columns_order = ("address", "euros"), 
+                                 order_by = "euros")
+        # Metiendo código JS y JSon a la plantilla
+        tfile = tempfile.NamedTemporaryFile(suffix = ".html", delete = False)
+        fname = tfile.name
+        tfile.write(page_template % vars())
+        tfile.close()
+        # TODO: Contar abonos. Relacionar la gráfica con los kg y no con los 
+        # euros, centrar zona en Europa si no hay Chile, etc.
+        multi_open.webbrowser.open(fname)
 
 def act_fecha(entry, event):                                                    
     """
