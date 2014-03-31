@@ -1,9 +1,9 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 31 marzo 2014 at 07:17:46.
+" Created by session.vim 1.5 on 31 marzo 2014 at 17:11:15.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
-silent! set guifont=Source\ Code\ Pro\ 10
+silent! set guifont=Source\ Code\ Pro\ 9
 if exists('g:syntax_on') != 1 | syntax on | endif
 if exists('g:did_load_filetypes') != 1 | filetype on | endif
 if exists('g:did_load_ftplugin') != 1 | filetype plugin on | endif
@@ -12,7 +12,7 @@ if &background != 'dark'
 	set background=dark
 endif
 if !exists('g:colors_name') || g:colors_name != 'desert' | colorscheme desert | endif
-call setqflist([])
+call setqflist([{'lnum': 90, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '1: E302 expected 2 blank lines, found 1'}, {'lnum': 92, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '74: W291 trailing whitespace'}, {'lnum': 105, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '62: W291 trailing whitespace'}, {'lnum': 107, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '21: E127 continuation line over-indented for visual indent'}, {'lnum': 108, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '75: W291 trailing whitespace'}, {'lnum': 109, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '78: W291 trailing whitespace'}, {'lnum': 110, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '76: W291 trailing whitespace'}, {'lnum': 111, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '80: W291 trailing whitespace'}, {'lnum': 112, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '72: W291 trailing whitespace'}, {'lnum': 115, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '27: E261 at least two spaces before inline comment'}, {'lnum': 116, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '50: W291 trailing whitespace'}, {'lnum': 117, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '21: E127 continuation line over-indented for visual indent'}, {'lnum': 124, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '1: E302 expected 2 blank lines, found 1'}, {'lnum': 138, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '27: W291 trailing whitespace'}, {'lnum': 139, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '37: W291 trailing whitespace'}, {'lnum': 140, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '41: W291 trailing whitespace'}, {'lnum': 141, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '37: W291 trailing whitespace'}, {'lnum': 145, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '27: W291 trailing whitespace'}, {'lnum': 146, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '41: W291 trailing whitespace'}, {'lnum': 147, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '37: W291 trailing whitespace'}, {'lnum': 154, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '80: E501 line too long (80 > 79 characters)'}, {'lnum': 154, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '82: W291 trailing whitespace'}, {'lnum': 158, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '80: E501 line too long (80 > 79 characters)'}, {'lnum': 158, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '82: W291 trailing whitespace'}, {'lnum': 158, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '80: E501 line too long (80 > 79 characters)'}, {'lnum': 158, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '84: W291 trailing whitespace'}, {'lnum': 158, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '42: W291 trailing whitespace'}, {'lnum': 158, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '34: W291 trailing whitespace'}, {'lnum': 167, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '1: E302 expected 2 blank lines, found 1'}, {'lnum': 169, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '70: W291 trailing whitespace'}, {'lnum': 192, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '1: E302 expected 2 blank lines, found 1'}, {'lnum': 194, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '70: W291 trailing whitespace'}, {'lnum': 212, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '1: E302 expected 2 blank lines, found 1'}, {'lnum': 214, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '73: W291 trailing whitespace'}, {'lnum': 215, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '76: W291 trailing whitespace'}, {'lnum': 216, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '77: W291 trailing whitespace'}, {'lnum': 217, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '78: W291 trailing whitespace'}, {'lnum': 220, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '47: W291 trailing whitespace'}, {'lnum': 221, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '51: W291 trailing whitespace'}, {'lnum': 222, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '47: W291 trailing whitespace'}, {'lnum': 223, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '48: W291 trailing whitespace'}, {'lnum': 224, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '45: W291 trailing whitespace'}, {'lnum': 225, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '45: W291 trailing whitespace'}, {'lnum': 245, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '39: W291 trailing whitespace'}, {'lnum': 254, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '70: W291 trailing whitespace'}, {'lnum': 255, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '73: W291 trailing whitespace'}, {'lnum': 297, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '44: W291 trailing whitespace'}, {'lnum': 298, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '31: W291 trailing whitespace'}, {'lnum': 299, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '34: W291 trailing whitespace'}, {'lnum': 300, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '31: W291 trailing whitespace'}, {'lnum': 301, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '32: W291 trailing whitespace'}, {'lnum': 302, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '29: W291 trailing whitespace'}, {'lnum': 303, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '29: W291 trailing whitespace'}, {'lnum': 307, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '1: E302 expected 2 blank lines, found 1'}, {'lnum': 307, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '75: W291 trailing whitespace'}, {'lnum': 308, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '60: W291 trailing whitespace'}, {'lnum': 309, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '29: W291 trailing whitespace'}, {'lnum': 312, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '66: W291 trailing whitespace'}, {'lnum': 314, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '66: W291 trailing whitespace'}, {'lnum': 316, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '55: W291 trailing whitespace'}, {'lnum': 317, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '55: W291 trailing whitespace'}, {'lnum': 322, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '66: W291 trailing whitespace'}, {'lnum': 324, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '66: W291 trailing whitespace'}, {'lnum': 326, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '55: W291 trailing whitespace'}, {'lnum': 327, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '50: W291 trailing whitespace'}, {'lnum': 328, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '47: W291 trailing whitespace'}, {'lnum': 329, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '48: W291 trailing whitespace'}, {'lnum': 336, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '15: E225 missing whitespace around operator'}, {'lnum': 336, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '79: W291 trailing whitespace'}, {'lnum': 338, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '65: W291 trailing whitespace'}, {'lnum': 340, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '26: E211 whitespace before ''('''}, {'lnum': 340, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '33: W291 trailing whitespace'}, {'lnum': 341, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '40: W291 trailing whitespace'}, {'lnum': 342, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '48: W291 trailing whitespace'}, {'lnum': 343, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '42: W291 trailing whitespace'}, {'lnum': 347, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '25: E211 whitespace before ''('''}, {'lnum': 348, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '27: E701 multiple statements on one line (colon)'}, {'lnum': 351, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '27: E701 multiple statements on one line (colon)'}, {'lnum': 353, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '27: E701 multiple statements on one line (colon)'}, {'lnum': 353, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '78: W291 trailing whitespace'}, {'lnum': 355, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '27: E701 multiple statements on one line (colon)'}, {'lnum': 355, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '80: E501 line too long (82 > 79 characters)'}, {'lnum': 358, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '33: E261 at least two spaces before inline comment'}, {'lnum': 360, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '26: E261 at least two spaces before inline comment'}, {'lnum': 367, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '1: W391 blank line at end of file'}])
 let SessionLoad = 1
 if &cp | set nocp | endif
 let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
@@ -85,7 +85,7 @@ badd +37 ginn/formularios/__init__.py
 badd +907 ginn/formularios/pagares_pagos.py
 badd +331 ginn/formularios/ausencias.py
 badd +67 ginn/formularios/partes_no_bloqueados.py
-badd +253 ginn/formularios/gtkexcepthook.py
+badd +146 ginn/formularios/gtkexcepthook.py
 badd +402 ginn/framework/seeker.py
 badd +13 ginn/formularios/crm_seguimiento_impagos.py
 badd +203 ginn/formularios/productos.py
@@ -187,17 +187,16 @@ badd +1 ginn/formularios/consumo_balas_partida.pyç
 badd +28 db/restore_snapshot.sh
 badd +1 extra/scripts/clouseau.py
 badd +86 ginn/informes/treeview2csv.py
-badd +315 ginn/formularios/consulta_ventas_por_producto.py
+badd +325 ginn/formularios/consulta_ventas_por_producto.py
 badd +1 tests/stock_performance.py
 badd +1 (clewn)_console
 badd +1 ginn/formularios/consulta_productividad.glade
 badd +1 extra/scripts/balas_basura_reembaladas.py
 badd +1 extra/scripts/reset_existencias_BC.py
 badd +1 ginn/formularios/consulta_producido
-argglobal
-silent! argdel *
-argadd formularios/auditviewer.py
-set lines=59 columns=125
+badd +0 -TaskList_164-
+args formularios/auditviewer.py
+set lines=48 columns=115
 edit (clewn)_console
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -222,10 +221,7 @@ wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
-wincmd _ | wincmd |
-split
-8wincmd k
-wincmd w
+7wincmd k
 wincmd w
 wincmd w
 wincmd w
@@ -237,28 +233,26 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 1 + 29) / 59)
-exe 'vert 1resize ' . ((&columns * 41 + 62) / 125)
-exe '2resize ' . ((&lines * 55 + 29) / 59)
-exe 'vert 2resize ' . ((&columns * 41 + 62) / 125)
-exe '3resize ' . ((&lines * 1 + 29) / 59)
-exe 'vert 3resize ' . ((&columns * 83 + 62) / 125)
-exe '4resize ' . ((&lines * 1 + 29) / 59)
-exe 'vert 4resize ' . ((&columns * 83 + 62) / 125)
-exe '5resize ' . ((&lines * 1 + 29) / 59)
-exe 'vert 5resize ' . ((&columns * 83 + 62) / 125)
-exe '6resize ' . ((&lines * 1 + 29) / 59)
-exe 'vert 6resize ' . ((&columns * 83 + 62) / 125)
-exe '7resize ' . ((&lines * 28 + 29) / 59)
-exe 'vert 7resize ' . ((&columns * 83 + 62) / 125)
-exe '8resize ' . ((&lines * 14 + 29) / 59)
-exe 'vert 8resize ' . ((&columns * 83 + 62) / 125)
-exe '9resize ' . ((&lines * 1 + 29) / 59)
-exe 'vert 9resize ' . ((&columns * 83 + 62) / 125)
-exe '10resize ' . ((&lines * 1 + 29) / 59)
-exe 'vert 10resize ' . ((&columns * 83 + 62) / 125)
-exe '11resize ' . ((&lines * 1 + 29) / 59)
-exe 'vert 11resize ' . ((&columns * 83 + 62) / 125)
+exe '1resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 1resize ' . ((&columns * 31 + 57) / 115)
+exe '2resize ' . ((&lines * 44 + 24) / 48)
+exe 'vert 2resize ' . ((&columns * 31 + 57) / 115)
+exe '3resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 3resize ' . ((&columns * 83 + 57) / 115)
+exe '4resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 4resize ' . ((&columns * 83 + 57) / 115)
+exe '5resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 5resize ' . ((&columns * 83 + 57) / 115)
+exe '6resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 6resize ' . ((&columns * 83 + 57) / 115)
+exe '7resize ' . ((&lines * 29 + 24) / 48)
+exe 'vert 7resize ' . ((&columns * 83 + 57) / 115)
+exe '8resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 8resize ' . ((&columns * 83 + 57) / 115)
+exe '9resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 9resize ' . ((&columns * 83 + 57) / 115)
+exe '10resize ' . ((&lines * 4 + 24) / 48)
+exe 'vert 10resize ' . ((&columns * 83 + 57) / 115)
 argglobal
 setlocal fdm=indent
 setlocal fde=0
@@ -396,7 +390,7 @@ if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 1518
-normal! 015|
+normal! 034|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -4153,12 +4147,12 @@ normal! zo
 normal! zo
 21094
 normal! zo
-let s:l = 9554 - ((0 * winheight(0) + 0) / 1)
+let s:l = 9562 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-9554
-normal! 013|
+9562
+normal! 017|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -4312,81 +4306,6 @@ normal! 030|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
-edit ~/Geotexan/src/Geotex-INN/ginn/formularios/consulta_ventas_por_producto.py
-setlocal fdm=indent
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=99
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-49
-normal! zo
-50
-normal! zo
-54
-normal! zo
-54
-normal! zo
-126
-normal! zo
-319
-normal! zo
-330
-normal! zo
-336
-normal! zo
-336
-normal! zo
-336
-normal! zo
-349
-normal! zo
-366
-normal! zo
-366
-normal! zo
-369
-normal! zo
-371
-normal! zo
-372
-normal! zo
-372
-normal! zo
-378
-normal! zo
-378
-normal! zo
-378
-normal! zo
-378
-normal! zo
-378
-normal! zo
-378
-normal! zo
-382
-normal! zo
-382
-normal! zo
-382
-normal! zo
-382
-normal! zo
-382
-normal! zo
-524
-normal! zo
-let s:l = 345 - ((21 * winheight(0) + 14) / 28)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-345
-normal! 013|
-wincmd w
-argglobal
 edit ~/Geotexan/src/Geotex-INN/extra/scripts/clouseau.py
 setlocal fdm=indent
 setlocal fde=0
@@ -4396,106 +4315,94 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-16
-normal! zo
-16
-normal! zo
-16
-normal! zo
-16
-normal! zo
-16
-normal! zo
-16
-normal! zo
-16
-normal! zo
-16
-normal! zo
-16
-normal! zo
-16
-normal! zo
-16
-normal! zo
-16
-normal! zo
-16
-normal! zo
-47
-normal! zo
-69
-normal! zo
-77
-normal! zo
-87
-normal! zo
 91
 normal! zo
-110
+101
 normal! zo
-115
+105
 normal! zo
-152
+116
 normal! zo
-163
+125
 normal! zo
-176
+130
 normal! zo
-185
+134
 normal! zo
-195
+153
 normal! zo
-203
+168
 normal! zo
-203
+193
 normal! zo
-203
+213
 normal! zo
-203
+221
 normal! zo
-203
+221
 normal! zo
-231
+221
 normal! zo
-241
+221
 normal! zo
-245
+221
 normal! zo
-254
+250
 normal! zo
-264
+255
 normal! zo
-279
+255
 normal! zo
-279
+260
 normal! zo
-288
+298
 normal! zo
-288
+298
 normal! zo
-297
+308
 normal! zo
-297
+308
 normal! zo
-297
+317
 normal! zo
-297
+317
 normal! zo
-297
+317
 normal! zo
-297
+317
 normal! zo
-314
+317
 normal! zo
-315
+317
 normal! zo
-let s:l = 312 - ((10 * winheight(0) + 7) / 14)
+327
+normal! zo
+327
+normal! zo
+327
+normal! zo
+327
+normal! zo
+327
+normal! zo
+327
+normal! zo
+334
+normal! zo
+335
+normal! zo
+341
+normal! zo
+341
+normal! zo
+341
+normal! zo
+let s:l = 358 - ((19 * winheight(0) + 14) / 29)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-312
-normal! 0
+358
+normal! 012|
 wincmd w
 argglobal
 edit ~/Geotexan/src/Geotex-INN/db/tablas.sql
@@ -4530,7 +4437,7 @@ if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 173
-normal! 029|
+normal! 041|
 wincmd w
 argglobal
 edit ~/Geotexan/src/Geotex-INN/ginn/formularios/consulta_cobros.py
@@ -4557,7 +4464,7 @@ if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 254
-normal! 025|
+normal! 040|
 wincmd w
 argglobal
 edit ~/Geotexan/src/Geotex-INN/ginn/formularios/ventana.py
@@ -4633,36 +4540,34 @@ normal! zo
 normal! zo
 1148
 normal! zo
-let s:l = 389 - ((0 * winheight(0) + 0) / 1)
+let s:l = 389 - ((0 * winheight(0) + 2) / 4)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 389
-normal! 028|
+normal! 040|
 wincmd w
 7wincmd w
-exe '1resize ' . ((&lines * 1 + 29) / 59)
-exe 'vert 1resize ' . ((&columns * 41 + 62) / 125)
-exe '2resize ' . ((&lines * 55 + 29) / 59)
-exe 'vert 2resize ' . ((&columns * 41 + 62) / 125)
-exe '3resize ' . ((&lines * 1 + 29) / 59)
-exe 'vert 3resize ' . ((&columns * 83 + 62) / 125)
-exe '4resize ' . ((&lines * 1 + 29) / 59)
-exe 'vert 4resize ' . ((&columns * 83 + 62) / 125)
-exe '5resize ' . ((&lines * 1 + 29) / 59)
-exe 'vert 5resize ' . ((&columns * 83 + 62) / 125)
-exe '6resize ' . ((&lines * 1 + 29) / 59)
-exe 'vert 6resize ' . ((&columns * 83 + 62) / 125)
-exe '7resize ' . ((&lines * 28 + 29) / 59)
-exe 'vert 7resize ' . ((&columns * 83 + 62) / 125)
-exe '8resize ' . ((&lines * 14 + 29) / 59)
-exe 'vert 8resize ' . ((&columns * 83 + 62) / 125)
-exe '9resize ' . ((&lines * 1 + 29) / 59)
-exe 'vert 9resize ' . ((&columns * 83 + 62) / 125)
-exe '10resize ' . ((&lines * 1 + 29) / 59)
-exe 'vert 10resize ' . ((&columns * 83 + 62) / 125)
-exe '11resize ' . ((&lines * 1 + 29) / 59)
-exe 'vert 11resize ' . ((&columns * 83 + 62) / 125)
+exe '1resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 1resize ' . ((&columns * 31 + 57) / 115)
+exe '2resize ' . ((&lines * 44 + 24) / 48)
+exe 'vert 2resize ' . ((&columns * 31 + 57) / 115)
+exe '3resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 3resize ' . ((&columns * 83 + 57) / 115)
+exe '4resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 4resize ' . ((&columns * 83 + 57) / 115)
+exe '5resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 5resize ' . ((&columns * 83 + 57) / 115)
+exe '6resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 6resize ' . ((&columns * 83 + 57) / 115)
+exe '7resize ' . ((&lines * 29 + 24) / 48)
+exe 'vert 7resize ' . ((&columns * 83 + 57) / 115)
+exe '8resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 8resize ' . ((&columns * 83 + 57) / 115)
+exe '9resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 9resize ' . ((&columns * 83 + 57) / 115)
+exe '10resize ' . ((&lines * 4 + 24) / 48)
+exe 'vert 10resize ' . ((&columns * 83 + 57) / 115)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf

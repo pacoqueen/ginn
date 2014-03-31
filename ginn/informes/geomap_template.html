@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Geotex-INN: Visualización en mapa</title>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<script src="https://www.google.com/jsapi" type="text/javascript"></script>
+<script>
+  google.load('visualization', '1', {packages:['geochart']});
+  google.setOnLoadCallback(drawMarkersMap);
+  function drawMarkersMap() {
+    var json_data = new google.visualization.DataTable(%(json)s);
+    var json_table = new google.visualization.GeoChart(document.getElementById('table_div_json'));
+    var options = {displayMode: 'markers', 
+                   // width: 1024, 
+                   // height: 768, 
+                   region: 'world'};
+  json_table.draw(json_data, options);
+  } 
+</script>
+<body>
+  <H1>%(reporttitle)s</H1>
+  <div id="table_div_json" style="width: 1024px; height=768px;"></div>
+  <div id="opciones">
+    <input type="radio" name="region" value="world" checked="checked">Mundo
+    <input type="radio" name="region" value="150">Europa
+    <input type="radio" name="region" value="142">Asia
+    <input type="radio" name="region" value="002">África
+    <input type="radio" name="region" value="021">América del norte
+    <input type="radio" name="region" value="005">América del sur
+    <input type="radio" name="region" value="009">Oceania
+    <input type="radio" name="region" value="145">Oriente medio</div>
+  </div>
+  <!-- Algo me dice que soy un chapuzas, pero... ¡hey! Es mi primera vez con JS -->
+  <script>
+  // XXX  
+  $('[name=region]:radio').click(function () {
+    /* ¿Y qué tal usar el event de cuando acaba de renderizar el mapa y los 
+     * datos para mostrar u ocultar los radiobuttons? Es que si le doy a 
+     * alguno antes de que acabe de mostrar los datos, algo raro pasa.
+     */ 
+    var json_data = new google.visualization.DataTable(%(json)s);
+    var json_table = new google.visualization.GeoChart(document.getElementById('table_div_json'));
+    var options = {displayMode: 'markers', 
+                   // width: 1024, 
+                   // height: 768, 
+                   region: 'world'};
+    options.region = $('[name=region]:radio:checked').attr('value');
+    json_table.draw(json_data, options);
+  });
+  // XXX  
+  </script>
+</body>
+</html>
