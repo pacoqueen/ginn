@@ -332,12 +332,32 @@ class ConsultaVentasPorProducto(Ventana):
             function drawMarkersMap() {
               var json_data = new google.visualization.DataTable(%(json)s);
               var json_table = new google.visualization.GeoChart(document.getElementById('table_div_json'));
-              json_table.draw(json_data, {displayMode: 'markers'});
+              var options = {displayMode: 'markers', 
+                             // width: 1024, 
+                             // height: 768, 
+                             region: 'world'};
+              json_table.draw(json_data, options);
             }
+            // XXX  
+            $('[name=region]:radio').click(function () {
+                 options.region = $('[name=region]:radio:checked').attr('value');
+                 json_table.draw(json_data, options);
+            });
+            // XXX  
           </script>
           <body>
             <!-- <H1>Table created using ToJSon</H1> -->
-            <div id="table_div_json"></div>
+            <div id="table_div_json" style="width: 1024px; height=768px;"></div>
+            <div id="opciones">
+                <input type="radio" name="region" value="world" checked="checked">Mundo
+                <input type="radio" name="region" value="150">Europa
+                <input type="radio" name="region" value="142">Asia
+                <input type="radio" name="region" value="002">África
+                <input type="radio" name="region" value="021">América del norte
+                <input type="radio" name="region" value="005">América del sur
+                <input type="radio" name="region" value="009">Oceania
+                <input type="radio" name="region" value="145">Oriente medio</div>
+            </div>
           </body>
         </html>
         """
@@ -346,8 +366,10 @@ class ConsultaVentasPorProducto(Ventana):
                        "euros": ("number", "€")}
         data = []
         for a in self.albs:
-            data.append({"address": a.cliente.get_direccion_completa(), 
-                         "euros": a.calcular_total()})
+            if a.cliente:   # No debería pasar. Y si pasa, usar dirección del 
+                            # albarán, log, corregir y tal...
+                data.append({"address": a.cliente.get_direccion_completa(), 
+                             "euros": a.calcular_total()})
         # Cargamos en gviz_api.DataTable
         data_table = gviz_api.DataTable(description)
         data_table.LoadData(data)
@@ -364,7 +386,7 @@ class ConsultaVentasPorProducto(Ventana):
         tfile.write(page_template % vars())
         tfile.close()
         # TODO: Contar abonos. Relacionar la gráfica con los kg y no con los 
-        # euros, centrar zona en Europa si no hay Chile, etc.
+        # euros, no centrar zona en Europa si hay Chile, etc.
         multi_open.webbrowser.open(fname)
 
 def act_fecha(entry, event):                                                    

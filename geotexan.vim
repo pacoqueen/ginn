@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 30 marzo 2014 at 22:41:29.
+" Created by session.vim 1.5 on 31 marzo 2014 at 07:17:46.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -249,9 +249,9 @@ exe '5resize ' . ((&lines * 1 + 29) / 59)
 exe 'vert 5resize ' . ((&columns * 83 + 62) / 125)
 exe '6resize ' . ((&lines * 1 + 29) / 59)
 exe 'vert 6resize ' . ((&columns * 83 + 62) / 125)
-exe '7resize ' . ((&lines * 21 + 29) / 59)
+exe '7resize ' . ((&lines * 28 + 29) / 59)
 exe 'vert 7resize ' . ((&columns * 83 + 62) / 125)
-exe '8resize ' . ((&lines * 21 + 29) / 59)
+exe '8resize ' . ((&lines * 14 + 29) / 59)
 exe 'vert 8resize ' . ((&columns * 83 + 62) / 125)
 exe '9resize ' . ((&lines * 1 + 29) / 59)
 exe 'vert 9resize ' . ((&columns * 83 + 62) / 125)
@@ -4331,86 +4331,60 @@ normal! zo
 normal! zo
 126
 normal! zo
-318
-normal! zo
 319
 normal! zo
-332
+330
 normal! zo
-345
+336
 normal! zo
-345
+336
 normal! zo
-346
-normal! zo
-346
+336
 normal! zo
 349
 normal! zo
-350
+366
 normal! zo
-350
+366
 normal! zo
-351
+369
 normal! zo
-351
+371
 normal! zo
-351
+372
 normal! zo
-352
+372
 normal! zo
-355
+378
 normal! zo
-355
+378
 normal! zo
-356
+378
 normal! zo
-356
+378
 normal! zo
-356
+378
 normal! zo
-356
+378
 normal! zo
-356
+382
 normal! zo
-356
+382
 normal! zo
-358
+382
 normal! zo
-358
+382
 normal! zo
-358
+382
 normal! zo
-358
+524
 normal! zo
-358
-normal! zo
-358
-normal! zo
-358
-normal! zo
-359
-normal! zo
-359
-normal! zo
-360
-normal! zo
-360
-normal! zo
-360
-normal! zo
-360
-normal! zo
-360
-normal! zo
-502
-normal! zo
-let s:l = 367 - ((11 * winheight(0) + 10) / 21)
+let s:l = 345 - ((21 * winheight(0) + 14) / 28)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-367
-normal! 021|
+345
+normal! 013|
 wincmd w
 argglobal
 edit ~/Geotexan/src/Geotex-INN/extra/scripts/clouseau.py
@@ -4516,12 +4490,12 @@ normal! zo
 normal! zo
 315
 normal! zo
-let s:l = 91 - ((15 * winheight(0) + 10) / 21)
+let s:l = 312 - ((10 * winheight(0) + 7) / 14)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-91
-normal! 022|
+312
+normal! 0
 wincmd w
 argglobal
 edit ~/Geotexan/src/Geotex-INN/db/tablas.sql
@@ -4679,9 +4653,9 @@ exe '5resize ' . ((&lines * 1 + 29) / 59)
 exe 'vert 5resize ' . ((&columns * 83 + 62) / 125)
 exe '6resize ' . ((&lines * 1 + 29) / 59)
 exe 'vert 6resize ' . ((&columns * 83 + 62) / 125)
-exe '7resize ' . ((&lines * 21 + 29) / 59)
+exe '7resize ' . ((&lines * 28 + 29) / 59)
 exe 'vert 7resize ' . ((&columns * 83 + 62) / 125)
-exe '8resize ' . ((&lines * 21 + 29) / 59)
+exe '8resize ' . ((&lines * 14 + 29) / 59)
 exe 'vert 8resize ' . ((&columns * 83 + 62) / 125)
 exe '9resize ' . ((&lines * 1 + 29) / 59)
 exe 'vert 9resize ' . ((&columns * 83 + 62) / 125)
