@@ -11,7 +11,7 @@
 			"file": "ginn/informes/geomap_template.html",
 			"settings":
 			{
-				"buffer_size": 2278,
+				"buffer_size": 3117,
 				"line_ending": "Unix"
 			}
 		},
@@ -19,7 +19,7 @@
 			"file": "ginn/formularios/consulta_ventas_por_producto.py",
 			"settings":
 			{
-				"buffer_size": 30092,
+				"buffer_size": 30264,
 				"line_ending": "Unix"
 			}
 		}
@@ -33,6 +33,10 @@
 			[
 				":w",
 				":w - Save"
+			],
+			[
+				"color",
+				"Color Picker"
 			],
 			[
 				":wa",
@@ -200,6 +204,7 @@
 	},
 	"file_history":
 	[
+		"/tmp/tmp9ibzgD.html",
 		"/home/bogado/.config/sublime-text-3/Packages/Default/Preferences.sublime-settings",
 		"/home/bogado/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/informes/traceback_template.html",
@@ -291,6 +296,9 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"table_div_json",
+			"GeoChart",
+			"visualization",
 			"direccion_completa",
 			"vars",
 			"json",
@@ -345,15 +353,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2278,
+						"buffer_size": 3117,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								768,
-								768
+								1314,
+								1314
 							]
 						],
 						"settings":
@@ -367,7 +375,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 45.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -379,15 +387,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 30092,
+						"buffer_size": 30264,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								17093,
-								17093
+								16380,
+								16380
 							]
 						],
 						"settings":
@@ -402,7 +410,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 5926.0,
+						"translation.y": 4771.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
@@ -531,7 +539,7 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 269.0,
+	"side_bar_width": 216.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
