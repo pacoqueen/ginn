@@ -24,4 +24,4 @@
 	url = git@github.com:pacoqueen/xlutils.git
 [submodule "ginn/lib/pprintpp"]
 	path = ginn/lib/pprintpp
-	url = https://github.com/wolever/pprintpp.git
+	url = git@github.com:pacoqueen/pprintpp.git
