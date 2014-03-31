@@ -143,7 +143,8 @@ def analyse(exctyp, value, tb):
     return trace
 
 def myprettyprint(stuff):
-    from pprint import pformat
+    from lib.pprintpp import pformat
+    #from pprint import pformat
     return pformat(stuff)
     #from myprettyprint import print_dict
     #if isinstance(stuff, dict):
