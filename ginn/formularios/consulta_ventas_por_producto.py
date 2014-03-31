@@ -345,9 +345,11 @@ class ConsultaVentasPorProducto(Ventana):
         data = []
         for a in self.albs:
             if a.destino and a.destino.ciudad:
-                ciudad_destino = a.destino.ciudad
+                ciudad_destino = ", ".join((a.destino.ciudad, 
+                                            a.destino.pais or "ESPAÑA"))
             elif a.cliente and a.cliente.ciudad:
-                ciudad_destino = a.cliente.ciudad
+                ciudad_destino = ", ".join((a.cliente.ciudad, 
+                                            a.cliente.pais or "ESPAÑA"))
             else:
                 continue
             for dic_valores in data:

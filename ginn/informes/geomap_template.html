@@ -3,23 +3,33 @@
 <head>
 <meta charset="utf-8">
 <title>Geotex-INN: Visualización en mapa</title>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 <script src="https://www.google.com/jsapi" type="text/javascript"></script>
+<script type="text/javascript" src="http://fgnass.github.io/spin.js/spin.min.js"></script>
 <script>
   google.load('visualization', '1', {packages:['geochart']});
   google.setOnLoadCallback(drawMarkersMap);
   function drawMarkersMap() {
+    document.getElementById("opciones").style.visibility = "hidden";
     var json_data = new google.visualization.DataTable(%(json)s);
-    var json_table = new google.visualization.GeoChart(document.getElementById('table_div_json'));
+    var json_table = new google.visualization.GeoChart(
+      document.getElementById('table_div_json'));
     var options = {displayMode: 'markers', 
                    // width: 1024, 
-                   // height: 768, 
+                   // height: 768,
+                   colorAxis: {colors:['#A0C8C3','#00FF00']},
                    region: 'world'};
-  json_table.draw(json_data, options);
+    google.visualization.events.addListener(json_table, "ready", 
+    function(e){
+      document.getElementById("opciones").style.visibility = "visible";
+    }); 
+    json_table.draw(json_data, options);
   } 
 </script>
 <body>
-  <H1>%(reporttitle)s</H1>
+  <div id="titulo">
+    <H1>%(reporttitle)s</H1>
+  </div>
   <div id="table_div_json" style="width: 1024px; height=768px;"></div>
   <div id="opciones">
     <input type="radio" name="region" value="world" checked="checked">Mundo
@@ -41,13 +51,20 @@
      * datos para mostrar u ocultar los radiobuttons? Es que si le doy a 
      * alguno antes de que acabe de mostrar los datos, algo raro pasa.
      */ 
+    document.getElementById("opciones").style.visibility = "hidden";
     var json_data = new google.visualization.DataTable(%(json)s);
     var json_table = new google.visualization.GeoChart(document.getElementById('table_div_json'));
     var options = {displayMode: 'markers', 
                    // width: 1024, 
                    // height: 768, 
+                   colorAxis: {colors:['#A0C8C3','#00FF00']},
                    region: 'world'};
     options.region = $('[name=region]:radio:checked').attr('value');
+    google.visualization.events.addListener(json_table, "ready", 
+    function(e){
+      document.getElementById("opciones").style.visibility = "visible";
+      // alert('Dibujo cargado.');
+    }); 
     json_table.draw(json_data, options);
   });
   // XXX  
