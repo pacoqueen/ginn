@@ -55,7 +55,9 @@ EJEMPLO
               ../../tests/20140201_0600_producido_fib.csv \
               ../../tests/20140201_0600_producido_gtx.csv \
               ../../tests/20140201_0600_producido_cem.csv \
-              ../../tests/20140201_0600_salidas.csv \
+              ../../tests/20140201_0600_salidas_fib.csv \
+              ../../tests/20140201_0600_salidas_gtx.csv \
+              ../../tests/20140201_0600_salidas_cem.csv \
               ../../tests/20140201_0600_consumido.csv \
               ../../tests/20140201_0600_existencias_finales_fib.csv \
               ../../tests/20140201_0600_existencias_finales_gtx.csv \
@@ -75,10 +77,10 @@ import time
 #from pexpect import run, spawn
 
 
-import mx.DateTime
+#import mx.DateTime
 # Determino dónde estoy para importar pclases y utils
-diractual = os.path.split(os.path.abspath(os.path.curdir))[-1]
-assert diractual == "scripts", \
+DIRACTUAL = os.path.split(os.path.abspath(os.path.curdir))[-1]
+assert DIRACTUAL == "scripts", \
                     "Debe ejecutar el script desde el directorio donde reside."
 sys.path.insert(0, os.path.abspath(os.path.join("..", "..", "ginn")))
 from framework import pclases

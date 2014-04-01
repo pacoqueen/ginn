@@ -254,32 +254,32 @@ class ConsultaVentasPorProducto(Ventana):
             pv = objeto
             if pv.es_rollo() or pv.es_rollo_c():
                 from formularios import productos_de_venta_rollos
-                v = productos_de_venta_rollos.ProductosDeVentaRollos(
-                    pv, usuario=self.usuario)  # @UnusedVariable
+                productos_de_venta_rollos.ProductosDeVentaRollos(
+                    pv, usuario=self.usuario)
             elif (pv.es_bala() or pv.es_bala_cable() or pv.es_bigbag()
                     or pv.es_bolsa() or pv.es_caja()):
                 from formularios import productos_de_venta_balas
-                v = productos_de_venta_balas.ProductosDeVentaBalas(
-                    pv, usuario=self.usuario)  # @UnusedVariable
+                productos_de_venta_balas.ProductosDeVentaBalas(
+                    pv, usuario=self.usuario)
             elif pv.es_especial():
                 from formularios import productos_de_venta_especial
-                v = productos_de_venta_especial.ProductosDeVentaEspecial(
-                    pv, usuario=self.usuario)  # @UnusedVariable
+                productos_de_venta_especial.ProductosDeVentaEspecial(
+                    pv, usuario=self.usuario)
         elif isinstance(objeto, pclases.ProductoCompra):
             pc = objeto
             from formularios import productos_compra
-            v = productos_compra.ProductosCompra(
-                pc, usuario=self.usuario)  # @UnusedVariable
+            productos_compra.ProductosCompra(
+                pc, usuario=self.usuario)
         elif isinstance(objeto, pclases.AlbaranSalida):
             alb = objeto
             from formularios import albaranes_de_salida
-            v = albaranes_de_salida.AlbaranesDeSalida(
-                alb, usuario=self.usuario)  # @UnusedVariable
+            albaranes_de_salida.AlbaranesDeSalida(
+                alb, usuario=self.usuario)
         elif isinstance(objeto, pclases.AlbaranDeEntradaDeAbono):
             abono = objeto
             from formularios import abonos_venta
-            v = abonos_venta.AbonosVenta(
-                abono, usuario=self.usuario)  # @UnusedVariable
+            abonos_venta.AbonosVenta(
+                abono, usuario=self.usuario)
 
     def exportar(self, boton):
         """

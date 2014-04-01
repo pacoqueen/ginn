@@ -14,14 +14,6 @@
 				"buffer_size": 3117,
 				"line_ending": "Unix"
 			}
-		},
-		{
-			"file": "ginn/formularios/consulta_ventas_por_producto.py",
-			"settings":
-			{
-				"buffer_size": 30264,
-				"line_ending": "Unix"
-			}
 		}
 	],
 	"build_system": "",
@@ -35,8 +27,60 @@
 				":w - Save"
 			],
 			[
-				"color",
-				"Color Picker"
+				"debug",
+				"SublimeLinter: Disable Debug Mode"
+			],
+			[
+				"python run",
+				"SublimeREPL: Python - virtualenv"
+			],
+			[
+				"pep8",
+				"User: Python PEP8 Autoformat"
+			],
+			[
+				"keybiu",
+				"Preferences: Key Bindings - User"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"keybin",
+				"Preferences: Key Bindings - Default"
+			],
+			[
+				"keybind",
+				"Preferences: Key Bindings - User"
+			],
+			[
+				"markdown pre",
+				"Markdown Preview: Python Markdown: Preview in Browser"
+			],
+			[
+				"package",
+				"Package Control: Remove Package"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Remove Package"
+			],
+			[
+				"package control",
+				"Package Control: Enable Package"
+			],
+			[
+				"strapdown",
+				"Strapdown.js Markdown: Preview in a browser"
+			],
+			[
+				"markdown",
+				"Strapdown.js Markdown: Preview in a browser"
+			],
+			[
+				"strap",
+				"Strapdown.js Markdown: Preview in a browser"
 			],
 			[
 				":wa",
@@ -91,20 +135,8 @@
 				"Web Inspector"
 			],
 			[
-				"package",
-				"Package Control: Discover Packages"
-			],
-			[
 				"packa",
 				"Package Control: Install Package"
-			],
-			[
-				"install",
-				"Package Control: Install Package"
-			],
-			[
-				"package control",
-				"Package Control: Remove Package"
 			],
 			[
 				"side",
@@ -133,10 +165,6 @@
 			[
 				"upgrade",
 				"Package Control: Upgrade/Overwrite All Packages"
-			],
-			[
-				"debug",
-				"SublimeLinter: Enable Debug Mode"
 			],
 			[
 				":s",
@@ -171,7 +199,7 @@
 				":w - Save"
 			]
 		],
-		"width": 629.0
+		"width": 647.0
 	},
 	"console":
 	{
@@ -204,9 +232,22 @@
 	},
 	"file_history":
 	[
-		"/tmp/tmp9ibzgD.html",
-		"/home/bogado/.config/sublime-text-3/Packages/Default/Preferences.sublime-settings",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_ventas_por_producto.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_consumo.py",
+		"/home/bogado/Geotexan/doc/Telefonía/Orange/SOMOSUR.md",
+		"/home/bogado/.config/sublime-text-3/Packages/User/Default (Linux).sublime-keymap",
+		"/home/bogado/.config/sublime-text-3/Packages/Default/Default (Linux).sublime-keymap",
+		"/home/bogado/.config/sublime-text-3/Packages/User/MarkdownPreview.sublime-settings",
 		"/home/bogado/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
+		"/tmp/test.md",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_consumo.glade",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_consumo.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_cobros.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_beneficio.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/confirmings.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consumo_balas_partida.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/examples/countrystatistics.ods",
+		"/home/bogado/.config/sublime-text-3/Packages/Default/Preferences.sublime-settings",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/informes/traceback_template.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/gtkexcepthook.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_ventas_por_producto.glade",
@@ -256,7 +297,6 @@
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/tests/examples/headerfooter.odt",
 		"/home/bogado/Geotexan/src/Geotex-INN/db/_tablas.sql",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/pagares_cobros.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/confirmings.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/utils.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/framework/pclases/cliente.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/checklist_window.py",
@@ -296,9 +336,20 @@
 		"case_sensitive": false,
 		"find_history":
 		[
-			"table_div_json",
-			"GeoChart",
-			"visualization",
+			"self.inicio",
+			"fechainicio",
+			"dias",
+			"self.inicio",
+			"self.fin",
+			"self.inicio",
+			"fechainicio",
+			"self.inicio",
+			"self.wids['e_fechainicio",
+			"self.inicio",
+			"act_fecha",
+			"def set_inicio",
+			"set_active",
+			"set_inicio",
 			"direccion_completa",
 			"vars",
 			"json",
@@ -360,8 +411,8 @@
 						"selection":
 						[
 							[
-								1314,
-								1314
+								1920,
+								1920
 							]
 						],
 						"settings":
@@ -375,45 +426,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 45.0,
+						"translation.y": 587.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "ginn/formularios/consulta_ventas_por_producto.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 30264,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								16380,
-								16380
-							]
-						],
-						"settings":
-						{
-							"pep8": true,
-							"rulers":
-							[
-								80
-							],
-							"syntax": "Packages/Python/Python.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 4771.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
 					"type": "text"
 				}
 			]
@@ -458,6 +474,10 @@
 	{
 		"height": 0.0
 	},
+	"output.markdown":
+	{
+		"height": 112.0
+	},
 	"project": "geotexan.sublime-project",
 	"replace":
 	{
@@ -469,6 +489,10 @@
 		"height": 0.0,
 		"selected_items":
 		[
+			[
+				"consulta_consumo",
+				"ginn/formularios/consulta_consumo.py"
+			],
 			[
 				"por_producto",
 				"ginn/formularios/consulta_ventas_por_producto.py"
@@ -539,7 +563,7 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 216.0,
+	"side_bar_width": 269.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
