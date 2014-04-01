@@ -80,6 +80,7 @@ class ConsultaProducido(Ventana):
                        #                                 self.alternar_grafica, 
                        "eventbox_hbox/button-press-event": 
                                                         self.alternar_grafica}
+        # TODO: Convertir fechas en editable con el parse_fecha y el focus-out como en las demás ventanas de cierre.
         self.add_connections(connections)
         cols = [['Producto/Partida','gobject.TYPE_STRING', 
                                                 False, True, False, None], # 0

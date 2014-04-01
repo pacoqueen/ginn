@@ -330,6 +330,9 @@ class ConsultaVentasPorProducto(Ventana):
         Visualiza la información de las salidas por destino de sus albaranes.
         Exporta un HTML que usa Google Visualization API (Google Charts).
         """
+        self.wids['ventana'].window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+        while gtk.events_pending():
+            gtk.main_iteration(False)
         from lib.google_visualization_python import gviz_api
         import tempfile
         from formularios import multi_open
@@ -345,10 +348,10 @@ class ConsultaVentasPorProducto(Ventana):
         data = []
         for a in self.albs:
             if a.destino and a.destino.ciudad:
-                ciudad_destino = ", ".join((a.destino.ciudad, 
+                ciudad_destino = ", ".join((a.destino.ciudad,
                                             a.destino.pais or "ESPAÑA"))
             elif a.cliente and a.cliente.ciudad:
-                ciudad_destino = ", ".join((a.cliente.ciudad, 
+                ciudad_destino = ", ".join((a.cliente.ciudad,
                                             a.cliente.pais or "ESPAÑA"))
             else:
                 continue
@@ -383,6 +386,7 @@ class ConsultaVentasPorProducto(Ventana):
         # TODO: Contar abonos. Relacionar la gráfica con los kg y no con los
         # euros, no centrar zona en Europa si hay Chile, etc.
         multi_open.webbrowser.open(fname)
+        self.wids['ventana'].window.set_cursor(None)
 
 
 def act_fecha(entry, event):
