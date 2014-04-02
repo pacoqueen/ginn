@@ -19,7 +19,15 @@
 			"file": "ginn/formularios/consulta_ventas_por_producto.py",
 			"settings":
 			{
-				"buffer_size": 30264,
+				"buffer_size": 30329,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ginn/formularios/consulta_producido.py",
+			"settings":
+			{
+				"buffer_size": 54401,
 				"line_ending": "Unix"
 			}
 		}
@@ -47,8 +55,60 @@
 				":w - Save"
 			],
 			[
-				"color",
-				"Color Picker"
+				"debug",
+				"SublimeLinter: Disable Debug Mode"
+			],
+			[
+				"python run",
+				"SublimeREPL: Python - virtualenv"
+			],
+			[
+				"pep8",
+				"User: Python PEP8 Autoformat"
+			],
+			[
+				"keybiu",
+				"Preferences: Key Bindings - User"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"keybin",
+				"Preferences: Key Bindings - Default"
+			],
+			[
+				"keybind",
+				"Preferences: Key Bindings - User"
+			],
+			[
+				"markdown pre",
+				"Markdown Preview: Python Markdown: Preview in Browser"
+			],
+			[
+				"package",
+				"Package Control: Remove Package"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Remove Package"
+			],
+			[
+				"package control",
+				"Package Control: Enable Package"
+			],
+			[
+				"strapdown",
+				"Strapdown.js Markdown: Preview in a browser"
+			],
+			[
+				"markdown",
+				"Strapdown.js Markdown: Preview in a browser"
+			],
+			[
+				"strap",
+				"Strapdown.js Markdown: Preview in a browser"
 			],
 			[
 				":wa",
@@ -103,18 +163,17 @@
 				"Web Inspector"
 			],
 			[
-				"package",
-				"Package Control: Discover Packages"
-			],
-			[
 				"packa",
 				"Package Control: Install Package"
 			],
 			[
+<<<<<<< HEAD
 				"package control",
 				"Package Control: Remove Package"
 			],
 			[
+=======
+>>>>>>> 1c6b528b36c9a148cf73ddc60fdf62f44584f62b
 				"side",
 				"Side Bar: Reveal File"
 			],
@@ -141,10 +200,6 @@
 			[
 				"upgrade",
 				"Package Control: Upgrade/Overwrite All Packages"
-			],
-			[
-				"debug",
-				"SublimeLinter: Enable Debug Mode"
 			],
 			[
 				":s",
@@ -212,17 +267,41 @@
 	},
 	"file_history":
 	[
-		"/tmp/tmp9ibzgD.html",
-		"/home/bogado/.config/sublime-text-3/Packages/Default/Preferences.sublime-settings",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_producido.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_consumo.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/confirmings.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_pagos.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_pendientes_servir.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_beneficio.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_ventas_por_producto.glade",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_ventas_por_producto.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_ventas_prefacturas.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_ventas.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_albaranesFacturados.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_entradas_almacen.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_albaranes_clientes.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_albaranes_clientes.glade",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_ofertas_pendientes_validar.glade",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_pagos_realizados.glade",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_ventas_por_producto.py",
+		"/home/bogado/Geotexan/doc/Telefonía/Orange/SOMOSUR.md",
+		"/home/bogado/.config/sublime-text-3/Packages/User/Default (Linux).sublime-keymap",
+		"/home/bogado/.config/sublime-text-3/Packages/Default/Default (Linux).sublime-keymap",
+		"/home/bogado/.config/sublime-text-3/Packages/User/MarkdownPreview.sublime-settings",
 		"/home/bogado/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
+		"/tmp/test.md",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_consumo.glade",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_consumo.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_cobros.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consumo_balas_partida.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/examples/countrystatistics.ods",
+		"/home/bogado/.config/sublime-text-3/Packages/Default/Preferences.sublime-settings",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/informes/traceback_template.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/gtkexcepthook.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_ventas_por_producto.glade",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_partidas_por_producto.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_partidas_por_producto.glade",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_lotes_por_producto.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_lotes_por_producto.glade",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_ventas_por_producto.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_partidas_por_producto.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_lotes_por_producto.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/facturacion_por_cliente_y_fechas.html",
@@ -264,7 +343,6 @@
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/tests/examples/headerfooter.odt",
 		"/home/bogado/Geotexan/src/Geotex-INN/db/_tablas.sql",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/pagares_cobros.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/confirmings.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/utils.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/framework/pclases/cliente.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/checklist_window.py",
@@ -285,7 +363,6 @@
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/pagares_cobros.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/extra/install/softwin python 2.7/pyserial-2.6/documentation/pyserial_api.rst",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/odf2mht/odf2mht",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_ofertas_pendientes_validar.glade",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/odf/opendocument.py"
 	],
 	"find":
@@ -304,9 +381,22 @@
 		"case_sensitive": false,
 		"find_history":
 		[
-			"table_div_json",
-			"GeoChart",
-			"visualization",
+			"exportar_a_html",
+			"b_map",
+			"self.inicio",
+			"fechainicio",
+			"dias",
+			"self.inicio",
+			"self.fin",
+			"self.inicio",
+			"fechainicio",
+			"self.inicio",
+			"self.wids['e_fechainicio",
+			"self.inicio",
+			"act_fecha",
+			"def set_inicio",
+			"set_active",
+			"set_inicio",
 			"direccion_completa",
 			"vars",
 			"json",
@@ -352,7 +442,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -368,8 +458,8 @@
 						"selection":
 						[
 							[
-								1314,
-								1314
+								1251,
+								1251
 							]
 						],
 						"settings":
@@ -383,10 +473,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 45.0,
+						"translation.y": 485.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
@@ -395,30 +485,55 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 30264,
+						"buffer_size": 30329,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								16380,
-								16380
+								13821,
+								13821
 							]
 						],
 						"settings":
 						{
-							"pep8": true,
-							"rulers":
-							[
-								80
-							],
 							"syntax": "Packages/Python/Python.tmLanguage",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 4771.0,
+						"translation.y": 4509.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "ginn/formularios/consulta_producido.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 54401,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2952,
+								2952
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1071.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
@@ -466,6 +581,10 @@
 	{
 		"height": 0.0
 	},
+	"output.markdown":
+	{
+		"height": 112.0
+	},
 	"project": "geotexan.sublime-project",
 	"replace":
 	{
@@ -477,6 +596,22 @@
 		"height": 0.0,
 		"selected_items":
 		[
+			[
+				"consulta_producipy",
+				"ginn/formularios/consulta_producido.py"
+			],
+			[
+				"consulta_producido",
+				"doc/pydoc/consulta_producido.html"
+			],
+			[
+				"consulta_ventas_por_produ",
+				"ginn/formularios/consulta_ventas_por_producto.py"
+			],
+			[
+				"consulta_consumo",
+				"ginn/formularios/consulta_consumo.py"
+			],
 			[
 				"por_producto",
 				"ginn/formularios/consulta_ventas_por_producto.py"
@@ -547,7 +682,7 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 216.0,
+	"side_bar_width": 269.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
