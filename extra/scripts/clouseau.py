@@ -41,6 +41,11 @@ NOTAS:
 * Hay que tener en cuenta que dos productos que se llamen igual, aunque uno
   esté desabilitado (caso ARIAROLL 180), se van a combinar en una sola
   fila de la hoja de cálculo.
+* Peculiaridades: el consumo se mide en peso sin embalaje, mientras que las 
+  existencias van con embalaje y la producción también sin. En las balas, 
+  cajas y bigbags no afecta porque el embalaje es despreciable o no se puede 
+  estimar. En los rollos sí importa. Suerte que hasta ahora estamos tratando 
+  totales, que en el caso de rollos van en metros. Y los metros no engañan.
 
 SYNOPSIS
 
@@ -82,8 +87,14 @@ import time
 #import mx.DateTime
 # Determino dónde estoy para importar pclases y utils
 DIRACTUAL = os.path.split(os.path.abspath(os.path.curdir))[-1]
-assert DIRACTUAL == "scripts", \
-                    "Debe ejecutar el script desde el directorio donde reside."
+try:
+    FULLDIRPADRE = os.path.split(os.path.abspath(os.path.curdir))[0]
+    DIRPADRE = os.path.split(FULLDIRPADRE)[-1]
+except IndexError:
+    sys.exit(2) # Where The Fuck am I?
+assert DIRACTUAL == "scripts" or DIRPADRE == "tests", \
+                    "Debe ejecutar el script desde el directorio donde reside"\
+                    " o bien desde un subdirectorio de `tests`."
 sys.path.insert(0, os.path.abspath(os.path.join("..", "..", "ginn")))
 from framework import pclases
 from formularios import utils
@@ -141,7 +152,7 @@ def parse_produccion(fproduccion_fib, fproduccion_gtx, fproduccion_cem):
             try:
                 (producto,
                  m_a, m_b, m_c, m_total,
-                 kg_a, kg_b, kg_c, kg_total,
+                 kg_a, kg_teorico_a, kg_b, kg_teorico_b, kg_c, kg_total,
                  b_a, b_b, b_c, b_total,
                  t_teorico, t_real) = linea
                 es_gtx = True
@@ -153,14 +164,19 @@ def parse_produccion(fproduccion_fib, fproduccion_gtx, fproduccion_cem):
                 es_gtx = False
             if producto.startswith(">"):
                 continue    # Es un desglose. No me interesa.
+            if producto == "Sin producción".encode("latin1"):
+                continue    # Es un resumen de tiempo sin producir. 
             if es_gtx:
-                producido = utils.parse_float(m_total)
-                # Caso especial para producto C. Se mide en Kg. En m_total
-                # tendrá un cero. Otros productos normales también pueden
-                # tener un cero en producción de metros, pero también lo
-                # tendrán en la columna de kg producidos. So...
-                if not producido:
-                    producido = utils.parse_float(kg_total)
+                try:
+                    producido = utils.parse_float(m_total)
+                    # Caso especial para producto C. Se mide en Kg. En m_total
+                    # tendrá un cero. Otros productos normales también pueden
+                    # tener un cero en producción de metros, pero también lo
+                    # tendrán en la columna de kg producidos. So...
+                    if not producido:
+                        producido = utils.parse_float(kg_total)
+                except ValueError:  # Es una línea de resumen.
+                    continue
             else:
                 producido = utils.parse_float(kg_total)
             res[producto] += producido
@@ -227,7 +243,7 @@ def parse_consumos(fconsumos):
         if cabecera:
             cabecera = False
             continue
-        producto, cantidad = linea[:2]
+        producto, cantidad, a, b, c = linea[:5]
         salidas = utils.parse_float(cantidad)
         res[producto] += salidas
     f_in.close()
@@ -276,7 +292,8 @@ def dump_deltas(deltas):
     Crea un CSV que saca por salida estándar.
     """
     out = writer(sys.stdout, delimiter=";", lineterminator="\n")
-    out.writerow(("Producto", "Existencias iniciales", "Producción",
+    out.writerow(("Producto", "Existencias iniciales", 
+                  "Producción".encode("latin1"),
                   "Salidas", "Consumos", "Total", "Existencias finales",
                   "diff(final, total)"))
     productos = deltas.keys()

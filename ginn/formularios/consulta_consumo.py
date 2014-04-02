@@ -73,10 +73,18 @@ class ConsultaConsumo(Ventana):
         cols = (('Producto', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Cantidad consumida', 'gobject.TYPE_STRING',
                  False, True, False, None),
+                ('A', 'gobject.TYPE_STRING',
+                 False, True, False, None),
+                ('B', 'gobject.TYPE_STRING',
+                 False, True, False, None),
+                ('C', 'gobject.TYPE_STRING',
+                 False, True, False, None),
                 ('Media diaria', 'gobject.TYPE_STRING',
                  False, True, False, None),
                 ('ID', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_treeview(self.wids['tv_datos'], cols)
+        for ncol in range(1, 4):
+            self.wids['tv_datos'].get_column(ncol).get_cell_renderers()[0].set_property("xalign", 1)
         self.fin = mx.DateTime.today()
         self.wids['e_fechafin'].set_text(utils.str_fecha(self.fin))
         self.wids['e_fechainicio'].set_text(
@@ -113,8 +121,11 @@ class ConsultaConsumo(Ventana):
         for item in items:
             model.append(None, (item[0],
                                 item[1],
+                                item[2],
+                                item[3],
                                 item[4],
-                                "%d:%s" % (item[2], item[3])))
+                                item[7],
+                                "%d:%s" % (item[5], item[6])))
         # : Es un TreeView, ya añadiré si se necesita información adicional en
         # los hijos. Usaré el evento "row-expanded" para no retrasar más la
         # carga inicial de datos de cada consulta.
@@ -208,6 +219,9 @@ class ConsultaConsumo(Ventana):
                     if key not in cons_balas:
                         cons_balas[key] = [c.productoCompra.descripcion,
                                            c.cantidad,
+                                           'N/A', 
+                                           'N/A', 
+                                           'N/A', 
                                            c.productoCompra.id,
                                            'C',
                                            c.productoCompra.unidad]
@@ -221,6 +235,9 @@ class ConsultaConsumo(Ventana):
                     if key not in cons_cemento:
                         cons_cemento[key] = [c.productoCompra.descripcion,
                                              c.cantidad,
+                                             'N/A', 
+                                             'N/A', 
+                                             'N/A', 
                                              c.productoCompra.id,
                                              'C',
                                              c.productoCompra.unidad]
@@ -228,17 +245,29 @@ class ConsultaConsumo(Ventana):
                         cons_cemento[key][1] += c.cantidad
                 # Y también consume fibra en bigbags:
                 for bb in pdp.bigbags:
+                    clase_a = bb.articulo.es_clase_a()
+                    clase_b = bb.articulo.es_clase_b()
+                    clase_c = bb.articulo.es_clase_c()
                     productoVenta = bb.articulo.productoVenta
                     key = "%d:V" % (productoVenta.id)
                     if key not in cons_cemento:
                         cons_cemento[key] = [
                             bb.articulo.productoVenta.descripcion,
                             bb.articulo.peso_sin,
+                            clase_a and bb.peso_sin or 0.0, 
+                            clase_b and bb.peso_sin or 0.0, 
+                            clase_c and bb.peso_sin or 0.0, 
                             bb.articulo.productoVenta.id,
                             'V',
                             "kg"]
                     else:
                         cons_cemento[key][1] += bb.articulo.peso_sin
+                        if clase_a:
+                            cons_cemento[key][2] += bb.articulo.peso_sin
+                        elif clase_b:
+                            cons_cemento[key][3] += bb.articulo.peso_sin
+                        elif clase_c:
+                            cons_cemento[key][4] += bb.articulo.peso_sin
             elif (pdp.es_de_rollos() and
                   self.wids['ch_geotextiles'].get_active()):
                 # Añado consumos de material adicional (ProductoCompra).
@@ -247,6 +276,9 @@ class ConsultaConsumo(Ventana):
                     if key not in cons_rollos:
                         cons_rollos[key] = [c.productoCompra.descripcion,
                                             c.cantidad,
+                                            'N/A', 
+                                            'N/A', 
+                                            'N/A', 
                                             c.productoCompra.id,
                                             'C',
                                             c.productoCompra.unidad]
@@ -277,46 +309,88 @@ class ConsultaConsumo(Ventana):
                                 #peso_neto_bala = bala.pesobala
                                 # En realidad es lo mismo. Pero así más claro:
                                 peso_neto_bala = bala.articulo.peso_sin
+                                clase_a = bala.articulo.es_clase_a()
+                                clase_b = bala.articulo.es_clase_b()
+                                clase_c = bala.articulo.es_clase_c()
                                 if key not in cons_rollos:
                                     cons_rollos[key] = [
                                         productoVenta.descripcion,
                                         peso_neto_bala,
+                                        clase_a and peso_neto_bala or 0.0, 
+                                        clase_b and peso_neto_bala or 0.0, 
+                                        clase_c and peso_neto_bala or 0.0, 
                                         productoVenta.id,
                                         'V',
                                         'kg']
                                 else:
                                     cons_rollos[key][1] += peso_neto_bala
+                                    if clase_a:
+                                        cons_rollos[key][2] += peso_neto_bala
+                                    elif clase_b:
+                                        cons_rollos[key][3] += peso_neto_bala
+                                    elif clase_c:
+                                        cons_rollos[key][4] += peso_neto_bala
             i += 1
         self.resultado = []
         for k in cons_balas:
             cantidad = "%s %s" % (utils.float2str(cons_balas[k][1], 3),
-                                  cons_balas[k][4])
+                                  cons_balas[k][7])
             media = "%s %s/día" % (utils.float2str(cons_balas[k][1] / dias),
-                                   cons_balas[k][4])
+                                   cons_balas[k][7])
+            try:
+                str_a = utils.float2str(cons_balas[k][2])
+                str_b = utils.float2str(cons_balas[k][3])
+                str_c = utils.float2str(cons_balas[k][4])
+            except ValueError:
+                str_a = str_b = str_c = cons_balas[k][2] # = 4 y a 5 = N/A
             self.resultado.append([cons_balas[k][0],
                                    cantidad,
-                                   cons_balas[k][2],
-                                   cons_balas[k][3],
+                                   str_a, 
+                                   str_b, 
+                                   str_c, 
+                                   cons_balas[k][5],
+                                   cons_balas[k][6],
+                                   cons_balas[k][7],
                                    media])
         for k in cons_rollos:
             cantidad = "%s %s" % (utils.float2str(cons_rollos[k][1], 3),
-                                  cons_rollos[k][4])
+                                  cons_rollos[k][7])
             media = "%s %s/día" % (utils.float2str(cons_rollos[k][1] / dias),
-                                   cons_rollos[k][4])
+                                   cons_rollos[k][7])
+            try:
+                str_a = utils.float2str(cons_rollos[k][2])
+                str_b = utils.float2str(cons_rollos[k][3])
+                str_c = utils.float2str(cons_rollos[k][4])
+            except ValueError:
+                str_a = str_b = str_c = cons_rollos[k][3] # = 4 y a 5 = N/A
             self.resultado.append([cons_rollos[k][0],
                                    cantidad,
-                                   cons_rollos[k][2],
-                                   cons_rollos[k][3],
+                                   str_a, 
+                                   str_b, 
+                                   str_c, 
+                                   cons_rollos[k][5],
+                                   cons_rollos[k][6],
+                                   cons_rollos[k][7],
                                    media])
         for k in cons_cemento:
             cantidad = "%s %s" % (utils.float2str(cons_cemento[k][1], 3),
-                                  cons_cemento[k][4])
+                                  cons_cemento[k][7])
             media = "%s %s/día" % (utils.float2str(cons_cemento[k][1] / dias),
-                                   cons_cemento[k][4])
+                                   cons_cemento[k][7])
+            try:
+                str_a = utils.float2str(cons_cemento[k][2])
+                str_b = utils.float2str(cons_cemento[k][3])
+                str_c = utils.float2str(cons_cemento[k][4])
+            except ValueError:
+                str_a = str_b = str_c = cons_cemento[k][3] # = 4 y a 5 = N/A
             self.resultado.append([cons_cemento[k][0],
                                    cantidad,
-                                   cons_cemento[k][2],
-                                   cons_cemento[k][3],
+                                   str_a, 
+                                   str_b, 
+                                   str_c, 
+                                   cons_cemento[k][5],
+                                   cons_cemento[k][6],
+                                   cons_cemento[k][7],
                                    media])
         vpro.ocultar()
         self.rellenar_tabla(self.resultado)
