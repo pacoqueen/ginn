@@ -68,7 +68,7 @@ class ConsultaRepuestos(Ventana):
                          defecto = "No", 
                          tiempo = 10): 
             exportar_a_csv_a = os.path.join(tempfile.gettempdir(), 
-                                            "csv_repuestos_%s" % (
+                                            "csv_repuestos_%s.csv" % (
                                     mx.DateTime.localtime().strftime("%Y%m%d")))
         pdfs = func_informe(exportar_a_csv_a = exportar_a_csv_a)
         for pdf in pdfs:

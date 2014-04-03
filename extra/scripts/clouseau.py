@@ -108,7 +108,9 @@ def parse_existencias(fexistencias_ini, res=None):
     sus existencias.
     """
     if not res:
-        res = defaultdict(lambda: 0.0)
+        res = {}
+        for qlty in ("A", "B", "C", "total"):
+            res[qlty] = defaultdict(lambda: 0.0)
     f_in = open(fexistencias_ini)
     data_in = reader(f_in, delimiter=";", lineterminator="\n")
     cabecera = True     # La primera fila son los títulos de columnas
@@ -119,6 +121,9 @@ def parse_existencias(fexistencias_ini, res=None):
         try:
             (producto, kg_a, m_a, b_a, kg_b, m_b, b_b, kg_c, m_c, b_c,
                 kg_total, m_total, b_total) = linea
+            stock_a = utils.parse_float(m_a)
+            stock_b = utils.parse_float(m_b)
+            stock_c = utils.parse_float(m_c)
             total = utils.parse_float(m_total)
             if total == 0.0:    # Puede que sea un producto C. No lo puedo
                 # saber únicamente por los datos de la hoja de cálculo. Uso
@@ -130,8 +135,14 @@ def parse_existencias(fexistencias_ini, res=None):
         except ValueError:  # Es el listado de fibra. No lleva metros.
             (producto, kg_a, b_a, kg_b, b_b, kg_c, b_c,
                 kg_total, b_total) = linea
+            stock_a = utils.parse_float(kg_a)
+            stock_b = utils.parse_float(kg_b)
+            stock_c = utils.parse_float(kg_c)
             total = utils.parse_float(kg_total)
-        res[producto] += total
+        res["A"][producto] += stock_a
+        res["B"][producto] += stock_b
+        res["C"][producto] += stock_c
+        res["total"][producto] += total
     f_in.close()
     return res
 
@@ -140,7 +151,9 @@ def parse_produccion(fproduccion_fib, fproduccion_gtx, fproduccion_cem):
     """
     Abre el fichero y devuelve un diccionario de productos con la producción.
     """
-    res = defaultdict(lambda: 0.0)
+    res = {}
+    for qlty in ("A", "B", "C", "total"):
+        res[qlty] = defaultdict(lambda: 0.0)
     for fproduccion in (fproduccion_fib, fproduccion_gtx, fproduccion_cem):
         f_in = open(fproduccion)
         data_in = reader(f_in, delimiter=";", lineterminator="\n")
@@ -168,18 +181,30 @@ def parse_produccion(fproduccion_fib, fproduccion_gtx, fproduccion_cem):
                 continue    # Es un resumen de tiempo sin producir. 
             if es_gtx:
                 try:
+                    prod_a = utils.parse_float(m_a)
+                    prod_b = utils.parse_float(m_b)
+                    prod_c = utils.parse_float(m_c)
                     producido = utils.parse_float(m_total)
                     # Caso especial para producto C. Se mide en Kg. En m_total
                     # tendrá un cero. Otros productos normales también pueden
                     # tener un cero en producción de metros, pero también lo
                     # tendrán en la columna de kg producidos. So...
                     if not producido:
+                        prod_a = utils.parse_float(kg_a)
+                        prod_b = utils.parse_float(kg_b)
+                        prod_c = utils.parse_float(kg_c)
                         producido = utils.parse_float(kg_total)
                 except ValueError:  # Es una línea de resumen.
                     continue
             else:
+                prod_a = utils.parse_float(kg_a)
+                prod_b = utils.parse_float(kg_b)
+                prod_b = utils.parse_float(kg_c)
                 producido = utils.parse_float(kg_total)
-            res[producto] += producido
+            res["A"][producto] += prod_a
+            res["B"][producto] += prod_b
+            res["C"][producto] += prod_c
+            res["total"][producto] += producido
         f_in.close()
     return res
 
@@ -190,8 +215,9 @@ def parse_salidas(fsalidas_fib, fsalidas_gtx, fsalidas_cem):
     diccionario de productos y las salidas de cada uno EN SUS UNIDADES: kg 
     para fibra y metros cuadrados para geotextiles.
     """
-    # TODO: Ya de paso hacer todo con A, B y C en la hoja que genero.
-    res = defaultdict(lambda: 0.0)
+    res = {}
+    for qlty in ("A", "B", "C", "total"):
+        res[qlty] = defaultdict(lambda: 0.0)
     for fname in fsalidas_fib, fsalidas_gtx, fsalidas_cem:
         f_in = open(fname)
         data_in = reader(f_in, delimiter=";", lineterminator="\n")
@@ -215,16 +241,28 @@ def parse_salidas(fsalidas_fib, fsalidas_gtx, fsalidas_cem):
                  kg_total, b_total) = linea
                 es_gtx = False
             if es_gtx:
+                sals_a = utils.parse_float(m_a)
+                sals_b = utils.parse_float(m_b)
+                sals_c = utils.parse_float(m_c)
                 salidas = utils.parse_float(m_total)
                 # Caso especial para producto C. Se mide en Kg. En m_total
                 # tendrá un cero. Otros productos normales también pueden
                 # tener un cero en producción de metros, pero también lo
                 # tendrán en la columna de kg producidos. So...
                 if not salidas:
+                    sals_a = utils.parse_float(kg_a)
+                    sals_b = utils.parse_float(kg_b)
+                    sals_c = utils.parse_float(kg_c)
                     salidas = utils.parse_float(kg_total)
             else:
+                sals_a = utils.parse_float(kg_a)
+                sals_b = utils.parse_float(kg_b)
+                sals_c = utils.parse_float(kg_c)
                 salidas = utils.parse_float(kg_total)
-            res[producto] += salidas
+            res["A"][producto] += sals_a
+            res["B"][producto] += sals_b
+            res["C"][producto] += sals_c
+            res["total"][producto] += salidas
         f_in.close()
     return res
 
@@ -235,7 +273,9 @@ def parse_consumos(fconsumos):
     productos y la cantidad de cada uno que ha salido del almacén para 
     consumirse en la línea.
     """
-    res = defaultdict(lambda: 0.0)
+    res = {}
+    for qlty in ("A", "B", "C", "total"):
+        res[qlty] = defaultdict(lambda: 0.0)
     f_in = open(fconsumos)
     data_in = reader(f_in, delimiter=";", lineterminator="\n")
     cabecera = True     # La primera fila son los títulos de columnas
@@ -243,9 +283,15 @@ def parse_consumos(fconsumos):
         if cabecera:
             cabecera = False
             continue
-        producto, cantidad, a, b, c = linea[:5]
-        salidas = utils.parse_float(cantidad)
-        res[producto] += salidas
+        producto, cantidad, cant_a, cant_b, cant_c = linea[:5]
+        cons_a = utils.parse_float(cant_a)
+        cons_b = utils.parse_float(cant_b)
+        cons_c = utils.parse_float(cant_c)
+        consumos = utils.parse_float(cantidad)
+        res["a"][producto] += cons_a
+        res["b"][producto] += cons_b
+        res["c"][producto] += cons_c
+        res["total"][producto] += consumos
     f_in.close()
     return res
 
@@ -258,32 +304,39 @@ def calculate_deltas(e_ini, prod, salidas, cons, e_fin):
     primeros valores y otra con la diferencia entre las existencias finales y
     ese total.
     """
-    res = defaultdict(lambda: {'inicial': 0.0,
-                               'producción': 0.0,
-                               'salidas': 0.0,
-                               'consumos': 0.0,
-                               'total': 0.0,
-                               'final': 0.0,
-                               'diff': 0.0})
+    def empty_producto():
+        dic_producto = {}
+        for qlty in ("A", "B", "C", "total"):
+            dic_producto[qlty] = {'inicial': 0.0,
+                                  'producción': 0.0,
+                                  'traspasos': 0.0, 
+                                  'salidas': 0.0,
+                                  'consumos': 0.0,
+                                  'total': 0.0,
+                                  'final': 0.0,
+                                  'diff': 0.0}
+        return dic_producto
+    res = defaultdict(empty_producto)
     for producto in e_ini:
-        res[producto]['inicial'] += e_ini[producto]
+        res[producto][qlty]['inicial'] += e_ini[qlty][producto]
     for producto in prod:
-        res[producto]['producción'] += prod[producto]
+        res[producto][qlty]['producción'] += prod[qlty][producto]
     for producto in salidas:
-        res[producto]['salidas'] += salidas[producto]
+        res[producto][qlty]['salidas'] += salidas[qlty][producto]
     for producto in cons:
-        res[producto]['consumos'] += cons[producto]
+        res[producto][qlty]['consumos'] += cons[qlty][producto]
     for producto in e_fin:
-        res[producto]['final'] += e_fin[producto]
+        res[producto][qlty]['final'] += e_fin[qlty][producto]
+    # Cálculo de deltas:
     for producto in res:
-        inicial = res[producto]['inicial']
-        produccion = res[producto]['producción']
-        salidas = res[producto]['salidas']
-        consumos = res[producto]['consumos']
+        inicial = res[producto][qlty]['inicial']
+        produccion = res[producto][qlty]['producción']
+        salidas = res[producto][qlty]['salidas']
+        consumos = res[producto][qlty]['consumos']
         total = inicial + produccion - salidas - consumos
-        res[producto]['total'] += total
-        delta = res[producto]['final'] - total
-        res[producto]['diff'] += delta
+        res[producto][qlty]['total'] += total
+        delta = res[producto][qlty]['final'] - total
+        res[producto][qlty]['diff'] += delta
     return res
 
 
@@ -292,13 +345,21 @@ def dump_deltas(deltas):
     Crea un CSV que saca por salida estándar.
     """
     out = writer(sys.stdout, delimiter=";", lineterminator="\n")
-    out.writerow(("Producto", "Existencias iniciales", 
-                  "Producción".encode("latin1"),
-                  "Salidas", "Consumos", "Total", "Existencias finales",
-                  "diff(final, total)"))
+    cabecera = ["Producto"]
+    for qlty in ("a", "b", "c", "total"):
+        cabecera += ["Existencias iniciales [%s]" % (qlty.upper()), 
+                     "Producción [%s]".encode("latin1") % (qlty.upper()),
+                     "Traspasos [%s]" % (qlty.upper()), 
+                     "Salidas [%s]" % (qlty.upper()), 
+                     "Consumos [%s]" % (qlty.upper()), 
+                     "Total [%s]" % (qlty.upper()), 
+                     "Existencias finales [%s]" % (qlty.upper()),
+                     "diff(final, total) [%s]" % (qlty.upper())]
+    out.writerow()
     productos = deltas.keys()
     productos.sort()
     for prod in productos:
+        fila = []
         descripcion_producto = prod
         # Aquí voy a filtrar y me quito los que no son productos de venta
         es_producto_de_venta = False
@@ -332,21 +393,25 @@ def dump_deltas(deltas):
                     es_producto_de_venta = True
         if not es_producto_de_venta:
             continue    # No lo incluyo en el CSV de salida.
-        inicial = utils.float2str(deltas[prod]['inicial'])
-        produccion = utils.float2str(deltas[prod]['producción'])
-        salidas = utils.float2str(deltas[prod]['salidas'])
-        consumos = utils.float2str(deltas[prod]['consumos'])
-        total = utils.float2str(deltas[prod]['total'])
-        final = utils.float2str(deltas[prod]['final'])
-        delta = utils.float2str(deltas[prod]['diff'])
-        out.writerow((descripcion_producto,
+        for qlty in ("a", "b", "c", "total"):
+            inicial = utils.float2str(deltas[prod]['inicial'])
+            produccion = utils.float2str(deltas[prod]['producción'])
+            traspasos = utils.float2str(deltas[prod]['traspasos'])
+            salidas = utils.float2str(deltas[prod]['salidas'])
+            consumos = utils.float2str(deltas[prod]['consumos'])
+            total = utils.float2str(deltas[prod]['total'])
+            final = utils.float2str(deltas[prod]['final'])
+            delta = utils.float2str(deltas[prod]['diff'])
+            fila += [descripcion_producto,
                       inicial,
                       produccion,
+                      traspasos, 
                       salidas,
                       consumos,
                       total,
                       final,
-                      delta))
+                      delta]
+        out.writerow(fila)
 
 
 def main(fexistencias_ini_fib, fexistencias_ini_gtx, fexistencias_ini_cem,
@@ -379,7 +444,39 @@ def main(fexistencias_ini_fib, fexistencias_ini_gtx, fexistencias_ini_cem,
                                   salidas,
                                   consumos,
                                   existencias_fin)
+    check_traspasos(dic_deltas)
     dump_deltas(dic_deltas)
+
+def check_traspasos(dic_deltas):
+    """
+    Para los productos que tienen diferencias construye un diccionario donde 
+    trata de descubrir si ha habido traspasos directos entre productos. Se 
+    cumplirá cuando un producto tiene un delta = x y otro uno similar = -x. En 
+    ese caso podemos asumir que se han cambiado de denominación algunos 
+    artículos de ese producto durante el transcurso de existencias_ini a e_fin.
+    """
+    traspasos = {}
+    # Primero recorro detectando diferencias.
+    for p in dic_deltas:
+        if dic_deltas[p]['diff'] != 0:
+            try:
+                traspasos[abs(dic_deltas[p]['diff'])].append(
+                        {'desc_producto': p, 'diff': dic_deltas[p]['diff']})
+            except KeyError:
+                traspasos[abs(dic_deltas[p]['diff'])] = [
+                        {'desc_producto': p, 'diff': dic_deltas[p]['diff']}]
+    # Ahora recorro la lista de difernecias que han casado.
+    for diferencia in traspasos:
+        if len(traspasos[diferencia]) > 1:  # Si == 1, diferencia no justificada.
+            # TODO: ¿Se dará el caso en que haya TRES productos (o cualquier 
+            # otro número impar) con la misma diferencia? ¿Y si son cuatro? 
+            # ¿cómo puedo distinguir cuál ha ido a cada cual? ¿Podría anotarlo 
+            # en el propio CSV en plan "NT 14 -> CR 14..." en alguna "celda"?
+            for dic_diferencia in traspasos[diferencia]:
+                producto = dic_diferencia['desc_producto']
+                diff = dic_diferencia['diff']
+                dic_deltas[producto]['traspasos'] += diff
+                dic_deltas[producto]['diff'] -= diff
 
 if __name__ == '__main__':
     try:
