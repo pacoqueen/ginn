@@ -31,6 +31,10 @@
 		"selected_items":
 		[
 			[
+				"packe",
+				"Package Control: List Packages"
+			],
+			[
 				"list",
 				"Package Control: List Packages"
 			],
@@ -212,9 +216,18 @@
 	},
 	"file_history":
 	[
-		"/home/queen/Geotexan/src/Geotex-INN/extra/scripts/clouseau.py",
-		"/home/queen/Geotexan/src/Geotex-INN/doc/ChangeLog",
+		"/home/queen/Geotexan/src/Geotex-INN/doc/pydoc/consulta_ventas_prefacturas.html",
+		"/home/queen/Geotexan/src/Geotex-INN/doc/pydoc/consulta_ventas.html",
+		"/home/queen/Geotexan/src/Geotex-INN/doc/pydoc/consulta_beneficio.html",
+		"/home/queen/Geotexan/src/Geotex-INN/tests/cierre marzo 2014/consumos.csv",
 		"/home/queen/Geotexan/src/Geotex-INN/ginn/formularios/confirmings.py",
+		"/home/queen/Geotexan/src/Geotex-INN/extra/scripts/clouseau.py",
+		"/home/queen/Geotexan/src/Geotex-INN/ginn/formularios/consulta_producido.py",
+		"/home/queen/Geotexan/src/Geotex-INN/doc/pydoc/consulta_producido.html",
+		"/home/queen/Geotexan/src/Geotex-INN/doc/pydoc/consulta_pagos.html",
+		"/home/queen/Geotexan/src/Geotex-INN/doc/pydoc/consulta_cobros.html",
+		"/home/queen/Geotexan/src/Geotex-INN/doc/pydoc/consulta_consumo.html",
+		"/home/queen/Geotexan/src/Geotex-INN/doc/ChangeLog",
 		"/tmp/tmp9ibzgD.html",
 		"/home/bogado/.config/sublime-text-3/Packages/Default/Preferences.sublime-settings",
 		"/home/bogado/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
@@ -307,6 +320,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"peso",
 			"table_div_json",
 			"GeoChart",
 			"visualization",
@@ -355,7 +369,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -389,7 +403,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
@@ -405,8 +419,8 @@
 						"selection":
 						[
 							[
-								16380,
-								16380
+								15974,
+								15974
 							]
 						],
 						"settings":
@@ -421,10 +435,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 4771.0,
+						"translation.y": 2971.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 0,
 					"type": "text"
 				}
 			]
@@ -480,6 +494,14 @@
 		"height": 0.0,
 		"selected_items":
 		[
+			[
+				"consulta_ventas_por_producto.py",
+				"ginn/formularios/consulta_ventas_por_producto.py"
+			],
+			[
+				"consulta_producido.py",
+				"ginn/formularios/consulta_producido.py"
+			],
 			[
 				"clousea",
 				"extra/scripts/clouseau.py"

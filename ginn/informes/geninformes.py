@@ -752,9 +752,11 @@ def repuestos_no_nulos(hasta = None, exportar_a_csv_a = None):
             total += subtotal
         datos.append(("", "", "TOTAL", utils.float2str(total)))
         if exportar_a_csv_a != None:
-            exportar_a_csv_a = "%s_%d" % (exportar_a_csv_a, tipo.id)
+            _exportar_a_csv_a = "%s_%d" % (exportar_a_csv_a, tipo.id)
             if not _exportar_a_csv_a.endswith(".csv"):
                 _exportar_a_csv_a += ".csv"
+        else:
+            _exportar_a_csv_a = None
         _nomarchivo = "%s_%d.pdf" % (nomarchivo.replace(".pdf", ""), tipo.id)
         fichpdf = imprimir2(archivo = _nomarchivo,
                             titulo = tipo.descripcion + " - " + titulo,
@@ -764,7 +766,7 @@ def repuestos_no_nulos(hasta = None, exportar_a_csv_a = None):
                             cols_a_derecha = (1, 2, 3),
                             graficos = [],
                             apaisado = False,
-                            exportar_a_csv_a = exportar_a_csv_a)
+                            exportar_a_csv_a = _exportar_a_csv_a)
         ficheros.append(fichpdf)
     return ficheros
 
