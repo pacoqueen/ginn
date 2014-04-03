@@ -37,7 +37,9 @@ NOTAS:
   si se marcara la opción `Línea de embolsado` en la consulta
 * En la consulta de producido hay que indicar que se quiere también sacar la
   producción C (aunque no entren para el cálculo de horas, totales y eso) para
-  que cuadre con las existencias inciales, finales y ventas.
+  que cuadre con las existencias inciales, finales y ventas. 
+  [03/04/2014]: OBSOLETO. Ya no existe esa opción en la ventana y se saca la 
+                producción C siempre.
 * Hay que tener en cuenta que dos productos que se llamen igual, aunque uno
   esté desabilitado (caso ARIAROLL 180), se van a combinar en una sola
   fila de la hoja de cálculo.
@@ -76,6 +78,11 @@ VERSION
     $Id$
 """
 
+AUTO_OUT = False    # Determina si genera todas las combinaciones posibles de
+                    # tipos y calidades y escribe cada resultado en un fichero
+                    # diferente. De otro modo, y por defecto, escribe todo el
+                    # csv por salida estándar.
+
 import sys
 import os
 import traceback
@@ -103,14 +110,19 @@ from csv import writer, reader
 
 
 class Options:
-    def __init__(self, filter_zeroes, filter_prods, calidades, tipos):
+    def __init__(self,
+                 filter_zeroes=True,
+                 filter_prods=True,
+                 calidades=("A", "B", "C", "total"),
+                 tipos=("fib", "gtx", "cem")):
         self.filter_zeroes = filter_zeroes
         self.filter_prods = filter_prods
         self.qlty = calidades
         self.tipo = tipos
 
-OPTIONS = Options(True, True, ("A", "B", "C", "total"), ("fib", "gtx", "cem"))
-#OPTIONS = Options(True, True, ("A", ))
+#OPTIONS = Options(calidades = ("A", ), tipos = ("fib", ))
+#OPTIONS = Options(True, True, ("total", ), ("gtx", ))
+OPTIONS = Options()
 
 def parse_existencias(fexistencias_ini, res=None):
     """
@@ -361,12 +373,16 @@ def calculate_deltas(e_ini, prod, sals, cons, e_fin):
     return res
 
 
-def dump_deltas(deltas):
+def dump_deltas(deltas, fout = None):
     """
     Crea un CSV que saca por salida estándar.
     """
     # TODO: Filtrar por tipo de producto: OPTIONS.tipo
-    out = writer(sys.stdout, delimiter=";", lineterminator="\n")
+    if fout == None:
+        csv_out = sys.stdout
+    else:
+        csv_out = open(fout, "w")
+    out = writer(csv_out, delimiter=";", lineterminator="\n")
     cabecera = ["Producto"]
     for qlty in OPTIONS.qlty:
         cabecera += ["Existencias iniciales [%s]" % (qlty.upper()), 
@@ -385,6 +401,7 @@ def dump_deltas(deltas):
         descripcion_producto = prod
         # Aquí voy a filtrar y me quito los que no son productos de venta
         es_producto_de_venta = False
+        tipo = guess_tipo(prod)
         try:
             try:
                 objeto = pclases.ProductoVenta.selectBy(descripcion=prod)[0]
@@ -413,7 +430,7 @@ def dump_deltas(deltas):
                     es_producto_de_venta = False
                 else:
                     es_producto_de_venta = True
-        if not es_producto_de_venta:
+        if not es_producto_de_venta or tipo not in OPTIONS.tipo:
             continue    # No lo incluyo en el CSV de salida.
         fila += [descripcion_producto]
         for qlty in OPTIONS.qlty:
@@ -436,8 +453,57 @@ def dump_deltas(deltas):
         if OPTIONS.filter_prods and prod_sin_movimientos(fila):
             continue
         if OPTIONS.filter_zeroes:
-            fila = filter_zeroes(fila)
+            fila = filter_zeros(fila)
         out.writerow(fila)
+    if fout is not None:
+        csv_out.close()
+
+
+def guess_tipo(descripcion):
+    """
+    Partiendo de la descripción, trata de adivinar qué tipo de producto es:
+    fibra(fib), geotextiles (gtx), cemento (cem) o ninguno de ellos (None).
+    """
+    tipo = None
+    palabras = limpiar(descripcion)
+    crits = []
+    for palabra in palabras:
+        crits.append(pclases.ProductoVenta.q.descripcion.contains(palabra))
+    try:
+        pv = pclases.ProductoVenta.select(pclases.AND(*crits))[0]
+        if pv.es_bala() or pv.es_bala_cable() or pv.es_bigbag():
+            tipo = "fib"
+        elif pv.es_rollo() or pv.es_rollo_c(): 
+            tipo = "gtx"
+        elif pv.es_bolsa() or pv.es_caja(): 
+            tipo = "cem"
+        else:
+            tipo = None
+    except IndexError:
+        pv = None
+    return tipo
+
+
+def limpiar(cad):
+    """
+    Dada una cadena, devuelve todas las subpalabras que no contengan 
+    caracteres no ascii ni símbolos de puntuación. Por ejemplo:
+    Leña de 2.15 -> [Le, a, de, 2, 15]
+    """
+    import string
+    validos = string.ascii_letters + string.digits
+    res = []
+    subw = ""
+    for letra in cad:
+        if letra in validos:
+            subw += letra
+        else:
+            if subw:
+                res.append(subw)
+            subw = ""
+    if subw:
+        res.append(subw)
+    return res
 
 
 def prod_sin_movimientos(fila):
@@ -451,7 +517,7 @@ def prod_sin_movimientos(fila):
     return True
 
 
-def filter_zeroes(fila):
+def filter_zeros(fila):
     """
     Sustitule los ceros de la fila por la cadena vacía.
     """
@@ -467,7 +533,8 @@ def filter_zeroes(fila):
 def main(fexistencias_ini_fib, fexistencias_ini_gtx, fexistencias_ini_cem,
          fproduccion_fib, fproduccion_gtx, fproduccion_cem,
          fsalidas_fib, fsalidas_gtx, fsalidas_cem, fconsumos,
-         fexistencias_fin_fib, fexistencias_fin_gtx, fexistencias_fin_cem):
+         fexistencias_fin_fib, fexistencias_fin_gtx, fexistencias_fin_cem, 
+         fout = None):
     """
     Abre y parsea uno por uno los ficheros de entrada. Construye una serie 
     de diccionarios con la información de existencias, salidas, consumos y 
@@ -495,7 +562,24 @@ def main(fexistencias_ini_fib, fexistencias_ini_gtx, fexistencias_ini_cem,
                                   consumos,
                                   existencias_fin)
     check_traspasos(dic_deltas)
-    dump_deltas(dic_deltas)
+    if AUTO_OUT:
+        for tipo in (("fib", ), ("gtx", ), ("cem", ), ("fib", "gtx", "cem")):
+            for qlty in (("A", ), ("B", ), ("C", ), ("total", ), 
+                         ("A", "B", "C", "total")):
+                OPTIONS.tipo = tipo
+                OPTIONS.qlty = qlty
+                if len(tipo) == 3:
+                    str_tipo = ""
+                else:
+                    str_tipo = "_" + "".join(tipo)
+                if len(qlty) == 4:
+                    str_qlty = ""
+                else:
+                    str_qlty = "_" + "".join(qlty)
+                fout = "diff%s%s.csv" % (str_tipo, str_qlty)
+                dump_deltas(dic_deltas, fout)
+    else:
+        dump_deltas(dic_deltas, fout)
 
 def check_traspasos(dic_deltas):
     """
