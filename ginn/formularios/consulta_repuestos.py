@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -68,7 +68,7 @@ class ConsultaRepuestos(Ventana):
                          defecto = "No", 
                          tiempo = 10): 
             exportar_a_csv_a = os.path.join(tempfile.gettempdir(), 
-                                            "csv_repuestos_%s" % (
+                                            "%s_repuestos" % (
                                     mx.DateTime.localtime().strftime("%Y%m%d")))
         pdfs = func_informe(exportar_a_csv_a = exportar_a_csv_a)
         for pdf in pdfs:

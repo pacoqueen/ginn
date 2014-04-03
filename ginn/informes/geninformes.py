@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008 Francisco José Rodríguez Bogado,                    #
+# Copyright (C) 2005-2014 Francisco José Rodríguez Bogado,                    #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -752,7 +752,9 @@ def repuestos_no_nulos(hasta = None, exportar_a_csv_a = None):
             total += subtotal
         datos.append(("", "", "TOTAL", utils.float2str(total)))
         if exportar_a_csv_a != None:
-            exportar_a_csv_a = "%s_%d.csv" % (exportar_a_csv_a, tipo.id)
+            exportar_a_csv_a = "%s_%d" % (exportar_a_csv_a, tipo.id)
+            if not _exportar_a_csv_a.endswith(".csv"):
+                _exportar_a_csv_a += ".csv"
         _nomarchivo = "%s_%d.pdf" % (nomarchivo.replace(".pdf", ""), tipo.id)
         fichpdf = imprimir2(archivo = _nomarchivo,
                             titulo = tipo.descripcion + " - " + titulo,
@@ -826,7 +828,7 @@ def repuestos(hasta = None, exportar_a_csv_a = None):
             total += subtotal
         datos.append(("", "", "TOTAL", utils.float2str(total)))
         if exportar_a_csv_a != None:
-            _exportar_a_csv_a = "%s_%d.csv" % (exportar_a_csv_a, tipo.id)
+            _exportar_a_csv_a = "%s_%d" % (exportar_a_csv_a, tipo.id)
             if not _exportar_a_csv_a.endswith(".csv"):
                 _exportar_a_csv_a += ".csv"
         else:
