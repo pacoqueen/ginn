@@ -2,6 +2,7 @@ last-session.txt
 *.lock
 *.py[co]
 .~lock.*#
+.zedstate
 
 # Packages
 *.egg
@@ -40,6 +41,7 @@ db/baks_sql
 ginn/adjuntos/*
 ginn/framework/*ginn*.conf*
 tests/*.csv
+tests/cierre*
 tests/cierre*/*.csv
 
 # Control de versiones CVS
