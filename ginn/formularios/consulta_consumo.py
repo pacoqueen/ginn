@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
-#                          Diego Muñoz Escalante.                             #
+# Copyright (C) 2005-2014 Francisco José Rodríguez Bogado,                    #
+#                         Diego Muñoz Escalante.                              #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
 # This file is part of GeotexInn.                                             #

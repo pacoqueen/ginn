@@ -103,12 +103,13 @@ from csv import writer, reader
 
 
 class Options:
-    def __init__(self, filter_zeroes, filter_prods, calidades):
+    def __init__(self, filter_zeroes, filter_prods, calidades, tipos):
         self.filter_zeroes = filter_zeroes
         self.filter_prods = filter_prods
         self.qlty = calidades
+        self.tipo = tipos
 
-OPTIONS = Options(True, True, ("A", "B", "C", "total"))
+OPTIONS = Options(True, True, ("A", "B", "C", "total"), ("fib", "gtx", "cem"))
 #OPTIONS = Options(True, True, ("A", ))
 
 def parse_existencias(fexistencias_ini, res=None):
@@ -364,6 +365,7 @@ def dump_deltas(deltas):
     """
     Crea un CSV que saca por salida estándar.
     """
+    # TODO: Filtrar por tipo de producto: OPTIONS.tipo
     out = writer(sys.stdout, delimiter=";", lineterminator="\n")
     cabecera = ["Producto"]
     for qlty in OPTIONS.qlty:
@@ -507,15 +509,16 @@ def check_traspasos(dic_deltas):
     # Primero recorro detectando diferencias.
     for p in dic_deltas:
         for qlty in ("A", "B", "C", "total"):
-            if dic_deltas[p][qlty]['diff'] != 0:
+            diff = dic_deltas[p][qlty]['diff']
+            if diff != 0:
                 try:
-                    traspasos[qlty][abs(dic_deltas[p][qlty]['diff'])].append(
+                    traspasos[qlty][abs(round(diff, 2))].append(
                             {'desc_producto': p,
-                             'diff': dic_deltas[p][qlty]['diff']})
+                             'diff': diff})
                 except KeyError:
-                    traspasos[qlty][abs(dic_deltas[p][qlty]['diff'])] = [
+                    traspasos[qlty][abs(round(diff, 2))] = [
                             {'desc_producto': p,
-                             'diff': dic_deltas[p][qlty]['diff']}]
+                             'diff': diff}]
     # Ahora recorro la lista de difernecias que han casado.
     for qlty in ("A", "B", "C", "total"):
         for diferencia in traspasos[qlty]:

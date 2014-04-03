@@ -53,6 +53,7 @@ from formularios import utils
 from formularios.ventana_progreso import VentanaProgreso
 from lib import charting
 pygtk.require('2.0')
+from formularios.consulta_ventas_por_producto import act_fecha
     
 
 class ConsultaProducido(Ventana):
@@ -74,13 +75,14 @@ class ConsultaProducido(Ventana):
                        'b_imprimir/clicked': self.imprimir,
                        'b_fecha_inicio/clicked': self.set_inicio,
                        'b_fecha_fin/clicked': self.set_fin, 
+                       'e_fechainicio/focus-out-event': act_fecha,
+                       'e_fechafin/focus-out-event': act_fecha,
                        "b_exportar/clicked": self.exportar, 
                        #"im_graph/button-press-event": self.alternar_grafica, 
                        #"eventbox_chart/button-press-event": 
                        #                                 self.alternar_grafica, 
                        "eventbox_hbox/button-press-event": 
                                                         self.alternar_grafica}
-        # TODO: Convertir fechas en editable con el parse_fecha y el focus-out como en las demás ventanas de cierre.
         self.add_connections(connections)
         cols = [['Producto/Partida','gobject.TYPE_STRING', 
                                                 False, True, False, None], # 0
@@ -125,19 +127,19 @@ class ConsultaProducido(Ventana):
                     cell.set_property("xalign", 1.0)
 
         temp = time.localtime()
-        self.fin = str(temp[0])+'/'+str(temp[1])+'/'+str(temp[2])
         self.wids['e_fechafin'].set_text(utils.str_fecha(temp))
         self.wids['e_fechainicio'].set_text(
                 utils.str_fecha(
                     mx.DateTime.localtime() - (7 * mx.DateTime.oneDay)))
-        self.inicio = self.wids['e_fechainicio'].get_text().split('/')
-        self.inicio.reverse()
-        self.inicio = '/'.join(self.inicio)
         try:
             self.wids['im_graph'].set_visible(pychart_available)
         except AttributeError:
             self.wids['im_graph'].set_property("visible", pychart_available)
         self.wids['notebook1'].set_current_page(1)
+        self.wids['e_fechainicio'].set_property("editable", True)
+        self.wids['e_fechainicio'].set_property("has-frame", True)
+        self.wids['e_fechafin'].set_property("editable", True)
+        self.wids['e_fechafin'].set_property("has-frame", True)
         gtk.main()
 
     def exportar(self, boton):
@@ -348,16 +350,16 @@ class ConsultaProducido(Ventana):
             self.wids[nombre_wid].set_text(dato)
         
     def set_inicio(self, boton):
-        self.inicio = utils.mostrar_calendario(padre = self.wids['ventana'], 
+        inicio = utils.mostrar_calendario(padre = self.wids['ventana'], 
                 fecha_defecto = self.wids['e_fechainicio'].get_text())
-        self.inicio = utils.str_fecha(self.inicio)
-        self.wids['e_fechainicio'].set_text(self.inicio)
+        inicio = utils.str_fecha(inicio)
+        self.wids['e_fechainicio'].set_text(inicio)
 
     def set_fin(self, boton):
-        self.fin = utils.mostrar_calendario(padre = self.wids['ventana'], 
+        fin = utils.mostrar_calendario(padre = self.wids['ventana'], 
                 fecha_defecto = self.wids['e_fechafin'].get_text())
-        self.fin = utils.str_fecha(self.fin)
-        self.wids['e_fechafin'].set_text(self.fin)
+        fin = utils.str_fecha(fin)
+        self.wids['e_fechafin'].set_text(fin)
 
     def buscar(self,boton):
         """
@@ -368,6 +370,18 @@ class ConsultaProducido(Ventana):
         cuentan para los cómputos de tiempo.
         """
         PDP = pclases.ParteDeProduccion
+        try:
+            self.inicio = utils.parse_fecha(
+                    self.wids['e_fechainicio'].get_text())
+        except ValueError:
+            self.inicio = None
+        try:
+            self.fin = utils.parse_fecha(self.wids['e_fechafin'].get_text())
+        except ValueError:
+            self.wids['e_fechafin'].set_text(utils.str_fecha(
+                mx.DateTime.today()))
+            self.fin = utils.parse_fecha(
+                    self.wids['e_fechafin'].get_text())
         if not self.inicio:
             pdps = PDP.select(PDP.q.fecha < self.fin, 
                               orderBy = 'fechahorainicio')
@@ -734,7 +748,9 @@ class ConsultaProducido(Ventana):
         for nombre_tv, titulo in (("tv_fibra", "Fibra"), 
                                   ("tv_gtx", "Geotextiles"),  
                                   ("tv_cem", "Fibra de cemento")):
-            fecha = "[%s..%s)" % (self.inicio, self.fin)
+            fecha = "[%s..%s)" % (
+                    self.inicio and utils.str_fecha(self.inicio) or "", 
+                    utils.str_fecha(self.fin))
             tv = self.wids[nombre_tv]
             totales = range(1, tv.get_model().get_n_columns() - 3)
             nome = nombre_tv.replace("tv", "e") + "_t_real"
