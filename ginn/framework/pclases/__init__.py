@@ -6451,7 +6451,7 @@ class RolloC(SQLObject, PRPCTOO):
 
     def get_fecha_fabricacion(self):
         """
-        Devuelve la fecha de fabricación del rollo que será:
+        Devuelve la fecha de fabricación de la bala de cable que será:
         Si tiene parte de producción, la del parte de producción.
         Si no tiene, la del rollo en sí (fecha de alta en el sistema).
         NOTA: Devuelve una fecha _absoluta_, sin hora.

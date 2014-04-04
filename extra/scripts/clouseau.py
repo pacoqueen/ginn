@@ -632,8 +632,8 @@ if __name__ == '__main__':
                           default=False,
                           help='verbose output')
         (options, args) = parser.parse_args()
-        if len(args) < 9:
-            parser.error('Debe especificar once ficheros fuente')
+        if len(args) < 13:
+            parser.error('Debe especificar trece ficheros fuente')
         if options.verbose:
             print >> sys.stderr, time.asctime()
         main(*args)

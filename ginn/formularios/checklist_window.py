@@ -553,7 +553,7 @@ def tarea1():
 
 def pruebas_periodicas():
     from framework.configuracion import ConfigConexion
-    from framework import tests
+    from framework import tests_coherencia as tests
 
     tasks = [{"nombre": "Cantidades de caché son correctas.", 
               "func": tests.comprobar_caches, 

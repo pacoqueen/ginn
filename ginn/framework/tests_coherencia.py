@@ -88,9 +88,10 @@ def comprobar_fibra_consumida_antes_de_fecha_de_fabricacion(
     Devuelve False si el alguna no se cumple esa condición.
     """
     res = True
-    articulos = pclases.Articulo.select(pclases.AND(pclases.Bala.q.partidaCargaID != None, 
-                                                    pclases.Articulo.q.balaID == pclases.Bala.q.id), 
-                                        orderBy = "-id")
+    articulos = pclases.Articulo.select(
+            pclases.AND(pclases.Bala.q.partidaCargaID != None, 
+                        pclases.Articulo.q.balaID == pclases.Bala.q.id), 
+            orderBy = "-id")
         # Empiezo por las últimas por si alguna falla, que falle cuanto antes (las más antiguas se 
         # suponen que ya han sido comprobadas anteriormente y es menos probable que sean erróneas).
     for a in articulos:
@@ -304,7 +305,7 @@ def comprobar_cantidades_albaran(report_mode = False):
             pv = articulo.productoVenta
             if pv.es_rollo():
                 cantidad_articulo = articulo.superficie
-            elif pv.es_bala() or pv.es_bala_cable() or pv.es_bigbag():
+            elif pv.es_bala() or pv.es_bala_cable() or pv.es_bigbag() or pv.es_caja() or pv.es_rollo_c():
                 cantidad_articulo = articulo.peso
             else:
                 print >> sys.stderr, "Artículo ID %d no es bala [cable], rollo [defectuoso] ni bigbag." % (articulo.id)
@@ -720,7 +721,7 @@ def comprobar_numeracion_articulos(report_mode = False,
             if ide in _ignore_list[tipo]:
                 continue
             if last_num != None and num - last_num != 1:
-                print >> sys.stderr, "%s ID %d (número %d) no es consecutivo con el anterior (%d)." % (tipo, id, num, last_num)
+                print >> sys.stderr, "%s ID %d (número %d) no es consecutivo con el anterior (%d)." % (tipo, ide, num, last_num)
                 res = False
                 if not report_mode:
                     break
