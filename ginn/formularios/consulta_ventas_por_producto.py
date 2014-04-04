@@ -423,8 +423,14 @@ def build_fila(dic, clave):
     El en caso de producto, los valores se toman de la suma de todos los
     subdiccionarios. Si es albarán, es inmediato.
     """
+    # XXX
+    #if clave == "ProductoVenta:127":
+    #            import ipdb; ipdb.set_trace()
+    # XXX
+
     puid = clave
     objeto_pclases = pclases.getObjetoPUID(puid)
+
     if isinstance(objeto_pclases, (
             pclases.AlbaranSalida, pclases.AlbaranDeEntradaDeAbono)):
         # Los valores están en el propio diccionario.
@@ -434,13 +440,14 @@ def build_fila(dic, clave):
         # Tengo que recorrer todos los albaranes del producto para hacer la
         # suma del total.
         producto_o_albaran = objeto_pclases.descripcion
-        for puidalb in dic[clave]:
-            m2, kg, bultos, cantidad = extract_dic_abc(dic[clave][puidalb])
+        #for puidalb in dic[clave]:
+        #    m2, kg, bultos, cantidad = extract_dic_abc(dic[clave][puidalb])
+        m2, kg, bultos, cantidad = extract_dic_abc(dic[clave])
     # Construcción de la fila en sí:
     fila = [producto_o_albaran]
-    if not cantidad is None:
+    if cantidad is not None:
         fila += [utils.float2str(cantidad)]
-    elif not m2 is None:
+    elif m2 is not None:
         tot_m2 = (m2['a']
                   + m2['b']
                   + m2['c'])
@@ -461,7 +468,7 @@ def build_fila(dic, clave):
                  utils.float2str(bultos['c'], precision=0),
                  utils.float2str(tot_m2),
                  utils.float2str(tot_kg),
-                 utils.float2str(tot_bultos)
+                 utils.float2str(tot_bultos, precision=0)
                  ]
     else:
         tot_kg = (kg['a']
@@ -477,7 +484,7 @@ def build_fila(dic, clave):
                  utils.float2str(kg['c']),
                  utils.float2str(bultos['c'], precision=0),
                  utils.float2str(tot_kg),
-                 utils.float2str(tot_bultos)
+                 utils.float2str(tot_bultos, precision=0)
                  ]
     fila += [puid]
     return fila
@@ -507,19 +514,22 @@ def extract_dic_abc(d):
             m2 = defaultdict(lambda: 0.0)
             kg = defaultdict(lambda: 0.0)
             bultos = defaultdict(lambda: 0)
-            cantidad = 0.0
+            cantidad = 0.0 
             for albaran in d:
                 _m2, _kg, _bultos, _cantidad = extract_dic_abc(d[albaran])
+                if _m2 is None:     # Si no es rollo, esto debe devolver None 
+                    m2 = None       # porque es donde se fijan el resto de 
+                                    # funciones para saber si es rollo o no:
+                                    # que tenga valor la clave m2 o sea None.
+                if _cantidad is None:
+                    cantidad = None     # Lo mismo pasa con productos de compra
                 for dsum, dparcial in ((m2, _m2),
                                        (kg, _kg),
                                        (bultos, _bultos)):
-                    if dparcial:
+                    if dparcial is not None:
                         for qlty in dparcial.keys():
-                            try:
-                                dsum[qlty] += dparcial[qlty]
-                            except KeyError:
-                                dsum[qlty] = dparcial[qlty]
-                if _cantidad:
+                            dsum[qlty] += dparcial[qlty]
+                if _cantidad is not None:
                     cantidad += _cantidad
     return m2, kg, bultos, cantidad
 

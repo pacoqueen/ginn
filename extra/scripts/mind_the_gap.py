@@ -34,7 +34,7 @@ import time
 #from pexpect import run, spawn
 from collections import defaultdict
 
-import mx.DateTime
+#import mx.DateTime
 # Determino dónde estoy para importar pclases y utils
 DIRACTUAL = os.path.split(os.path.abspath(os.path.curdir))[-1]
 try:
@@ -51,7 +51,7 @@ from framework import pclases
 from formularios import utils
 
 
-def detect_articulos_fabricados_fuera_del_parte(pivote):
+def fabricados_fuera_del_parte(pivote):
     """
     Busca artículos fabricados en la fecha `pivote` pero que pertenecen a
     una producción anterior a esa fecha o posterior a la misma. Es decir:
@@ -72,49 +72,47 @@ def detect_articulos_fabricados_fuera_del_parte(pivote):
     prods_gap1 = defaultdict(lambda: [])
     prods_gap2 = defaultdict(lambda: [])
     print "Detectando gap 1.1"
-    arts = pclases.Articulo.select(pclases.OR(
-        pclases.AND(pclases.Articulo.q.balaID != pclases.Bala.q.id,
-                    pclases.Bala.q.fechahora < pivote),
-        pclases.AND(pclases.Articulo.q.balaCableID != pclases.BalaCable.q.id,
-                    pclases.BalaCable.q.fechahora < pivote),
-        pclases.AND(pclases.Articulo.q.bigbagID != pclases.Bigbag.q.id,
-                    pclases.Bigbag.q.fechahora < pivote),
-        pclases.AND(pclases.Articulo.q.rolloID != pclases.Rollo.q.id,
-                    pclases.Rollo.q.fechahora < pivote),
-        pclases.AND(pclases.Articulo.q.rolloDefectuosoID != pclases.RolloDefectuoso.q.id,
-                    pclases.RolloDefectuoso.q.fechahora < pivote),
-        pclases.AND(pclases.Articulo.q.cajaID != pclases.Caja.q.id,
-                    pclases.Caja.q.fechahora < pivote)
-    ))
-    tot = arts.count()
-    i = 0
-    for articulo in arts:
-        i += 1
-        print "\r%3d" % i, ('='*i)+('-'*(tot-i)),
-        sys.stdout.flush()
-        #fecha_alta = mx.DateTime.DateFrom(a.fechahora)
-        if articulo.fecha_fabricacion > pivote:
-            prods_gap1[articulo.productoVenta].append(articulo)
+    for subclase in (pclases.Bala, 
+                     pclases.BalaCable, 
+                     pclases.Bigbag, 
+                     pclases.Caja, 
+                     pclases.Rollo, 
+                     pclases.RolloDefectuoso, 
+                     pclases.RolloC):
+        subobjetos = subclase.select(subclase.q.fechahora < pivote)
+        tot = subobjetos.count() 
+        i = 0.0
+        for subobjeto in subobjetos:
+            i += 1 
+            sys.stdout.write("\r[%s] %3d/%d" % (subclase.__name__, i, tot))
+            sys.stdout.flush()
+            #fecha_alta = mx.DateTime.DateFrom(a.fechahora)
+            articulo = subobjeto.articulo
+            if articulo.fecha_fabricacion > pivote:
+                prodventa = articulo.productoVenta
+                prods_gap1[prodventa].append(articulo)
+        sys.stdout.write("\n")
     print "Detectando gap 1.2"
-    arts = pclases.Articulo.select(pclases.OR(
-        pclases.AND(pclases.Articulo.q.balaID != pclases.Bala.q.id,
-                    pclases.Bala.q.fechahora >= pivote),
-        pclases.AND(pclases.Articulo.q.balaCableID != pclases.BalaCable.q.id,
-                    pclases.BalaCable.q.fechahora >= pivote),
-        pclases.AND(pclases.Articulo.q.bigbagID != pclases.Bigbag.q.id,
-                    pclases.Bigbag.q.fechahora >= pivote),
-        pclases.AND(pclases.Articulo.q.rolloID != pclases.Rollo.q.id,
-                    pclases.Rollo.q.fechahora >= pivote),
-        pclases.AND(pclases.Articulo.q.rolloDefectuosoID != pclases.RolloDefectuoso.q.id,
-                    pclases.RolloDefectuoso.q.fechahora >= pivote),
-        pclases.AND(pclases.Articulo.q.cajaID != pclases.Caja.q.id,
-                    pclases.Caja.q.fechahora >= pivote)
-    ))
-    for articulo in arts:
-        print "\r%3d" % i, ('='*i)+('-'*(tot-i)),
-        sys.stdout.flush()
-        if articulo.fecha_fabricacion < pivote:
-            prods_gap2[articulo.productoVenta].append(articulo)
+    for subclase in (pclases.Bala, 
+                     pclases.BalaCable, 
+                     pclases.Bigbag, 
+                     pclases.Caja, 
+                     pclases.Rollo, 
+                     pclases.RolloDefectuoso, 
+                     pclases.RolloC):
+        subobjetos = subclase.select(subclase.q.fechahora >= pivote)
+        tot = subobjetos.count()
+        i = 0
+        for subobjeto in subobjetos:
+            i += 1 
+            sys.stdout.write("\r[%s] %3d/%d" % (subclase.__name__, i, tot))
+            sys.stdout.flush()
+            #fecha_alta = mx.DateTime.DateFrom(a.fechahora)
+            articulo = subobjeto.articulo
+            if articulo.fecha_fabricacion < pivote:
+                prodventa = articulo.productoVenta
+                prods_gap2[prodventa].append(articulo)
+        sys.stdout.write("\n")
     return prods_gap1, prods_gap2
 
 
@@ -142,7 +140,7 @@ def main(fecha):
     fecha recibida.
     """
     pivote = utils.parse_fecha(fecha)
-    gap1, gap2 = detect_articulos_fabricados_fuera_del_parte(pivote)
+    gap1, gap2 = fabricados_fuera_del_parte(pivote)
     dump(gap1, "Artículos en almacén antes de ser fabricados", +1)
     dump(gap2, "Artículos fabricados antes de entrar en almacén", -1)
 
