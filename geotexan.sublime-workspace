@@ -3,47 +3,47 @@
 	{
 		"selected_items":
 		[
+			[
+				"rest",
+				"restore_log"
+			],
+			[
+				"get",
+				"get_remote_log"
+			],
+			[
+				"get_",
+				"get_remote_log"
+			],
+			[
+				"get_remo",
+				"get_remote_fbak"
+			]
 		]
 	},
 	"buffers":
 	[
 		{
-			"file": "ginn/informes/geomap_template.html",
+			"file": "extra/scripts/mind_the_gap.py",
 			"settings":
 			{
-				"buffer_size": 3117,
+				"buffer_size": 6627,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "ginn/formularios/consulta_ventas_por_producto.py",
+			"file": "db/restore_snapshot.sh",
 			"settings":
 			{
-				"buffer_size": 30838,
+				"buffer_size": 2048,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "db/tablas.sql",
+			"file": "db/sync_contra_alfred_pgrestore.sh",
 			"settings":
 			{
-				"buffer_size": 177898,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "ginn/formularios/consumo_balas_partida.py",
-			"settings":
-			{
-				"buffer_size": 39073,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "ginn/framework/pclases/__init__.py",
-			"settings":
-			{
-				"buffer_size": 940896,
+				"buffer_size": 2456,
 				"line_ending": "Unix"
 			}
 		}
@@ -55,68 +55,28 @@
 		"selected_items":
 		[
 			[
-				"list",
-				"Package Control: List Packages"
-			],
-			[
 				":w",
 				":w - Save"
 			],
 			[
-				"debug",
-				"SublimeLinter: Disable Debug Mode"
+				"packe",
+				"Package Control: List Packages"
 			],
 			[
-				"python run",
-				"SublimeREPL: Python - virtualenv"
-			],
-			[
-				"pep8",
-				"User: Python PEP8 Autoformat"
-			],
-			[
-				"keybiu",
-				"Preferences: Key Bindings - User"
+				"list",
+				"Package Control: List Packages"
 			],
 			[
 				"install",
 				"Package Control: Install Package"
 			],
 			[
-				"keybin",
-				"Preferences: Key Bindings - Default"
+				"packa lis",
+				"Package Control: List Packages"
 			],
 			[
-				"keybind",
-				"Preferences: Key Bindings - User"
-			],
-			[
-				"markdown pre",
-				"Markdown Preview: Python Markdown: Preview in Browser"
-			],
-			[
-				"package",
-				"Package Control: Remove Package"
-			],
-			[
-				"Package Control: ",
-				"Package Control: Remove Package"
-			],
-			[
-				"package control",
-				"Package Control: Enable Package"
-			],
-			[
-				"strapdown",
-				"Strapdown.js Markdown: Preview in a browser"
-			],
-			[
-				"markdown",
-				"Strapdown.js Markdown: Preview in a browser"
-			],
-			[
-				"strap",
-				"Strapdown.js Markdown: Preview in a browser"
+				"color",
+				"Color Picker"
 			],
 			[
 				":wa",
@@ -171,8 +131,16 @@
 				"Web Inspector"
 			],
 			[
+				"package",
+				"Package Control: Discover Packages"
+			],
+			[
 				"packa",
 				"Package Control: Install Package"
+			],
+			[
+				"package control",
+				"Package Control: Remove Package"
 			],
 			[
 				"side",
@@ -201,6 +169,10 @@
 			[
 				"upgrade",
 				"Package Control: Upgrade/Overwrite All Packages"
+			],
+			[
+				"debug",
+				"SublimeLinter: Enable Debug Mode"
 			],
 			[
 				":s",
@@ -268,69 +240,66 @@
 	},
 	"file_history":
 	[
-		"/home/bogado/Geotexan/src/Geotex-INN/tests/cierre marzo 2014/fabricados_antes_de_entrar_en_almacen.txt",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/framework/pclases/.__init__.py.swp",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pclases.aux",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/pagares_cobros.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/db/populate.sql",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/dev.aux",
-		"/home/bogado/Geotexan/src/Geotex-INN/extra/scripts/detectar_albaranes_mal_facturados.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/crm_detalles_factura.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/partes_de_fabricacion_balas.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/contrib/ODFFile/__init__.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/extra/patches/upgrade_db_texto_complementario_forma_cobro_clientes.sql",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consumo_balas_partida.glade",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consumo_balas_partida.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consumo_balas_partida.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/tests/cierre marzo 2014/consumos.csv",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_consumo.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/confirmings.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/trazabilidad_articulos.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/informes/traceback_template.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/imagenes/tesoreria.svg",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/xlrd/tests/test_biffh.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/xlrd/tests/text_bar.xlsx",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/tipos_material_balas.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_producido.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/extra/scripts/mind_the_gap.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/mdb-import",
-		"/home/bogado/Geotexan/src/Geotex-INN/db/migrate2bacall.sh",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_producido.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_pagos.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_pendientes_servir.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_beneficio.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_ventas_por_producto.glade",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_ventas_por_producto.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_ventas_prefacturas.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_ventas.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_albaranesFacturados.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_entradas_almacen.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_albaranes_clientes.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_albaranes_clientes.glade",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_ofertas_pendientes_validar.glade",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_pagos_realizados.glade",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_ventas_por_producto.py",
-		"/home/bogado/Geotexan/doc/Telefonía/Orange/SOMOSUR.md",
-		"/home/bogado/.config/sublime-text-3/Packages/User/Default (Linux).sublime-keymap",
-		"/home/bogado/.config/sublime-text-3/Packages/Default/Default (Linux).sublime-keymap",
-		"/home/bogado/.config/sublime-text-3/Packages/User/MarkdownPreview.sublime-settings",
-		"/home/bogado/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
-		"/tmp/test.md",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_consumo.glade",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_consumo.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_cobros.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/examples/countrystatistics.ods",
+		"/home/queen/Geotexan/src/Geotex-INN/db/sync_contra_alfred.sh",
+		"/home/queen/Geotexan/src/Geotex-INN/ginn/lib/sync_compartido.sh",
+		"/home/queen/Geotexan/src/Geotex-INN/db/sync_contra_alfred_pgrestore.sh",
+		"/home/queen/Geotexan/src/Geotex-INN/ginn/lib/odfpy/contrib/syntaxhighlight/syntaxhighlight.docbook",
+		"/home/queen/Geotexan/src/Geotex-INN/db/sync_bak.sh",
+		"/home/queen/Geotexan/src/Geotex-INN/setup.py",
+		"/home/queen/Geotexan/src/Geotex-INN/db/restore_blancope.sh",
+		"/home/queen/Geotexan/src/Geotex-INN/db/restore_snapshot.sh",
+		"/home/queen/Geotexan/src/Geotex-INN/doc/pydoc/resultados_elongacion.html",
+		"/home/queen/Geotexan/src/Geotex-INN/README",
+		"/home/queen/Geotexan/src/Geotex-INN/ginn/formularios/consulta_ventas_por_producto.py",
+		"/home/queen/Geotexan/src/Geotex-INN/ginn/informes/geomap_template.html",
+		"/home/queen/Geotexan/src/Geotex-INN/ginn/framework/tests_coherencia.py",
+		"/home/queen/Geotexan/src/Geotex-INN/extra/scripts/clouseau.py",
+		"/home/queen/Geotexan/src/Geotex-INN/ginn/framework/pclases/__init__.py",
+		"/home/queen/Geotexan/src/Geotex-INN/doc/pclases.aux",
+		"/home/queen/Geotexan/src/Geotex-INN/doc/pclases.dvi",
+		"/home/queen/Geotexan/src/Geotex-INN/doc/pydoc/pagares_cobros.html",
+		"/home/queen/Geotexan/src/Geotex-INN/db/populate.sql",
+		"/home/queen/Geotexan/src/Geotex-INN/ginn/framework/__init__.py",
+		"/home/queen/Geotexan/src/Geotex-INN/ginn/__init__.py",
+		"/home/queen/Geotexan/src/Geotex-INN/ginn/formularios/__init__.py",
+		"/home/queen/Geotexan/src/Geotex-INN/tests/__init__.py",
+		"/home/queen/Geotexan/src/Geotex-INN/db/_tablas.sql",
+		"/home/queen/Geotexan/src/Geotex-INN/ginn/formularios/checklist_window.py",
+		"/home/queen/Geotexan/src/Geotex-INN/ginn/framework/tests.py",
+		"/home/queen/Geotexan/src/Geotex-INN/doc/pydoc/checklist_window.html",
+		"/home/queen/Geotexan/src/Geotex-INN/ginn/lib/xlrd/tests/test_sheet.py",
+		"/home/queen/Geotexan/src/Geotex-INN/ginn/lib/cachear_historicos_pv.py",
+		"/home/queen/Geotexan/src/Geotex-INN/doc/changelog_ginn.aux",
+		"/home/queen/Geotexan/src/Geotex-INN/ginn/lib/mdb-import",
+		"/home/queen/Geotexan/src/Geotex-INN/db/migrate2bacall.sh",
+		"/home/queen/Geotexan/src/Geotex-INN/doc/pydoc/consulta_ventas_prefacturas.html",
+		"/home/queen/Geotexan/src/Geotex-INN/doc/pydoc/consulta_ventas.html",
+		"/home/queen/Geotexan/src/Geotex-INN/doc/pydoc/consulta_beneficio.html",
+		"/home/queen/Geotexan/src/Geotex-INN/tests/cierre marzo 2014/consumos.csv",
+		"/home/queen/Geotexan/src/Geotex-INN/ginn/formularios/confirmings.py",
+		"/home/queen/Geotexan/src/Geotex-INN/ginn/formularios/consulta_producido.py",
+		"/home/queen/Geotexan/src/Geotex-INN/doc/pydoc/consulta_producido.html",
+		"/home/queen/Geotexan/src/Geotex-INN/doc/pydoc/consulta_pagos.html",
+		"/home/queen/Geotexan/src/Geotex-INN/doc/pydoc/consulta_cobros.html",
+		"/home/queen/Geotexan/src/Geotex-INN/doc/pydoc/consulta_consumo.html",
+		"/home/queen/Geotexan/src/Geotex-INN/doc/ChangeLog",
+		"/tmp/tmp9ibzgD.html",
 		"/home/bogado/.config/sublime-text-3/Packages/Default/Preferences.sublime-settings",
+		"/home/bogado/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/informes/traceback_template.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/gtkexcepthook.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_ventas_por_producto.glade",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_partidas_por_producto.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_partidas_por_producto.glade",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_lotes_por_producto.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_lotes_por_producto.glade",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_ventas_por_producto.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_partidas_por_producto.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_lotes_por_producto.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/facturacion_por_cliente_y_fechas.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/resultados_poros.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/examples/passwd-as-ods.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/db/populate.sql",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/albaranes_de_salida_repuestos.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/albaranes_de_salida_repuestos.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/tests/cierre febrero 2014/20140201_salidas.csv",
@@ -341,13 +310,16 @@
 		"/home/bogado/Geotexan/src/Geotex-INN/tests/ginn_tests.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/framework/tests_coherencia.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/GPL",
+		"/home/bogado/Geotexan/src/Geotex-INN/extra/scripts/detectar_albaranes_mal_facturados.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/centros_de_trabajo.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/tests/cierre febrero 2014/diff_enero.csv",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/dev.aux",
 		"/home/bogado/Geotexan/src/Geotex-INN/db/ajuste_consumos.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/APACHE-LICENSE-2.0.txt",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/framework/tests.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/albaranes_de_entrada.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/informes/albaran_multipag.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/extra/patches/upgrade_db_texto_complementario_forma_cobro_clientes.sql",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/examples/text-with-masterpage.py",
 		"/home/bogado/.config/sublime-text-3/Packages/User/SublimeLinter.sublime-settings",
 		"/home/bogado/.config/sublime-text-3/Packages/Web Inspector/swi.sublime-settings",
@@ -363,6 +335,7 @@
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/tests/examples/headerfooter.odt",
 		"/home/bogado/Geotexan/src/Geotex-INN/db/_tablas.sql",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/pagares_cobros.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/confirmings.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/utils.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/framework/pclases/cliente.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/checklist_window.py",
@@ -380,13 +353,15 @@
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/usuarios.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/pagares_cobros.glade",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/pagares_pagos.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/pagares_cobros.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/extra/install/softwin python 2.7/pyserial-2.6/documentation/pyserial_api.rst",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/odf2mht/odf2mht",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_ofertas_pendientes_validar.glade",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/odf/opendocument.py"
 	],
 	"find":
 	{
-		"height": 35.0
+		"height": 34.0
 	},
 	"find_in_files":
 	{
@@ -400,26 +375,17 @@
 		"case_sensitive": false,
 		"find_history":
 		[
-			"TABLE partida_carga",
-			"buscar_fecha",
-			"rollo_defectuoso",
-			"fechahora",
-			"exportar_a_html",
-			"b_map",
-			"self.inicio",
-			"fechainicio",
-			"dias",
-			"self.inicio",
-			"self.fin",
-			"self.inicio",
-			"fechainicio",
-			"self.inicio",
-			"self.wids['e_fechainicio",
-			"self.inicio",
-			"act_fecha",
-			"def set_inicio",
-			"set_active",
-			"set_inicio",
+			"DUMP",
+			"\\t",
+			"HOST_BAKS",
+			"Defecuoso",
+			"fecha_fabricacion",
+			"es_rollo",
+			"tests",
+			"peso",
+			"table_div_json",
+			"GeoChart",
+			"visualization",
 			"direccion_completa",
 			"vars",
 			"json",
@@ -470,53 +436,19 @@
 			[
 				{
 					"buffer": 0,
-					"file": "ginn/informes/geomap_template.html",
+					"file": "extra/scripts/mind_the_gap.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3117,
+						"buffer_size": 6627,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								490,
-								490
-							]
-						],
-						"settings":
-						{
-							"rulers":
-							[
-								80
-							],
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 77.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "ginn/formularios/consulta_ventas_por_producto.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 30838,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								13156,
-								13156
+								0,
+								0
 							]
 						],
 						"settings":
@@ -526,98 +458,79 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 4509.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "db/tablas.sql",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 177898,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								75836,
-								75836
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/SQL/SQL.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 27331.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "ginn/formularios/consumo_balas_partida.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 39073,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								37899,
-								37899
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 12214.0,
+						"translation.y": 1207.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 2,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
-					"file": "ginn/framework/pclases/__init__.py",
+					"buffer": 1,
+					"file": "db/restore_snapshot.sh",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 940896,
+						"buffer_size": 2048,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								218696,
-								218696
+								885,
+								885
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Python/Python.tmLanguage",
+							"syntax": "Packages/ShellScript/Shell-Unix-Generic.tmLanguage",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 87584.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "db/sync_contra_alfred_pgrestore.sh",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2456,
+						"regions":
+						{
+							"bookmark_n":
+							{
+								"flags": 144,
+								"regions":
+								[
+									[
+										140,
+										140
+									]
+								]
+							}
+						},
+						"selection":
+						[
+							[
+								2402,
+								2402
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ShellScript/Shell-Unix-Generic.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 468.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
 					"type": "text"
 				}
 			]
@@ -662,10 +575,6 @@
 	{
 		"height": 0.0
 	},
-	"output.markdown":
-	{
-		"height": 112.0
-	},
 	"project": "geotexan.sublime-project",
 	"replace":
 	{
@@ -678,36 +587,56 @@
 		"selected_items":
 		[
 			[
-				"pclases/__init",
+				"synd_",
+				"db/sync_contra_alfred_pgrestore.sh"
+			],
+			[
+				"restores_s",
+				"db/restore_snapshot.sh"
+			],
+			[
+				"pclases__init__",
 				"ginn/framework/pclases/__init__.py"
 			],
 			[
-				"consumo_",
-				"ginn/formularios/consumo_balas_partida.py"
+				"__init",
+				"ginn/framework/__init__.py"
 			],
 			[
-				"tablas.sql",
-				"db/tablas.sql"
+				"clouseau",
+				"extra/scripts/clouseau.py"
+			],
+			[
+				"checklst",
+				"ginn/formularios/checklist_window.py"
+			],
+			[
+				"tests_cohere",
+				"ginn/framework/tests_coherencia.py"
+			],
+			[
+				"tests.",
+				"ginn/framework/tests.py"
+			],
+			[
+				"checklis",
+				"ginn/formularios/checklist_window.py"
 			],
 			[
 				"mind_",
 				"extra/scripts/mind_the_gap.py"
 			],
 			[
-				"consulta_producipy",
-				"ginn/formularios/consulta_producido.py"
-			],
-			[
-				"consulta_producido",
-				"doc/pydoc/consulta_producido.html"
-			],
-			[
-				"consulta_ventas_por_produ",
+				"consulta_ventas_por_producto.py",
 				"ginn/formularios/consulta_ventas_por_producto.py"
 			],
 			[
-				"consulta_consumo",
-				"ginn/formularios/consulta_consumo.py"
+				"consulta_producido.py",
+				"ginn/formularios/consulta_producido.py"
+			],
+			[
+				"clousea",
+				"extra/scripts/clouseau.py"
 			],
 			[
 				"por_producto",
@@ -779,7 +708,7 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 269.0,
+	"side_bar_width": 216.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
