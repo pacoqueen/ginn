@@ -4,30 +4,29 @@
 # restaura su contenido.
 
 function check_nombre_fbak(){
-	if [ ! "$(echo $1 | grep '.ginn.dump')" ]; then 
-		DUMP=$1.ginn.dump
-	else 
-		DUMP=$1
-	fi
+    if [ ! "$(echo $1 | grep '.ginn.dump')" ]; then 
+        DUMP=$1.ginn.dump
+    else 
+        DUMP=$1
+    fi
 }
 
 function get_remote_fbak(){
     echo "Copiando fichero de copia de seguridad..."
     HOST_BAKS=bacall
     #PATH_BAKS="/home/bogado/backups_sql"
-    PATH_BAKS="backups_sql"    
+    PATH_BAKS="backups_sql"
     # Intento así para ver si estoy en la fábrica:
-    scp $HOST_BAKS:$PATH_BAKS/$DUMP /tmp	
-    if [ ! $? -eq 0 ]; then 	# Estoy en nostromo
+    scp $HOST_BAKS:$PATH_BAKS/$DUMP /tmp
+    if [ ! $? -eq 0 ]; then     # Estoy en nostromo
         echo "Obteniendo copia a través de Internet..."
-		# Primero, la copio a justinho
-		ssh bogado@gtx.dyndns-server.com "scp bogado@bacall:backups_sql/$1 /tmp"
-		# Después me la traigo
-		scp bogado@gtx.dyndns-server.com:/tmp/$1 /tmp
+        # Primero, la copio a justinho
+        ssh bogado@gtx.dyndns-server.com "scp bogado@bacall:backups_sql/$1 /tmp"
+        # Después me la traigo
+        scp bogado@gtx.dyndns-server.com:/tmp/$1 /tmp
     else
         echo "Copia exitosa por LAN."
-	fi
-
+    fi
 }
 
 function crear_bd(){
@@ -37,13 +36,13 @@ function crear_bd(){
     NOMBD="$PARTENOMBRE"_"$FECHA" 
     WHORU=$(ssh bogado@pennyworth hostname)
     if [ ! "$WHORU" = "$HOST" ]; then
-    	HOST=localhost 	# Estoy en nostromo
-    	OPTS=""
+        HOST=localhost     # Estoy en nostromo
+        OPTS=""
     else
         OPTS="-h $HOST "
     fi
     echo "Creando base de datos $NOMBD en $HOST..."
-	createdb $OPTS -O geotexan -E 'UTF-8' $NOMBD
+    createdb $OPTS -O geotexan -E 'UTF-8' $NOMBD
 }
 
 function restaurar_bd(){
@@ -61,7 +60,7 @@ function crear_fconf(){
 if [ $# -eq 1 ]; then
     check_nombre_fbak $1
     if [ ! -f /tmp/$DUMP ]; then
-  	    get_remote_fbak $DUMP
+          get_remote_fbak $DUMP
     fi
     crear_bd
     restaurar_bd
