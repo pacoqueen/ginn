@@ -151,6 +151,15 @@ class ConsultaVentasPorProducto(Ventana):
         for a in self.albs:
             i += 1
             vpro.set_valor(i / tot, "Analizando albarán %s..." % a.numalbaran)
+            if a.es_de_movimiento():
+                continue    # No cuento los interalmacenes porque me falsean 
+                # los totales ya que en realidad la mercancía no se ha movido 
+                # a ningún sitio todavía. Simplemente se han mandado a otro 
+                # almacén en espera de ser vendidos definitivamente al cliente.
+                # Esa venta, aunque no se facture, es la que debe contar. Da 
+                # igual que sea venta a cliente o salida por consumo propio. 
+                # Los interalmacenes no implican salida real de mercancía,
+                # solo movimiento.
             extract_data_from_albaran(a, fib, gtx, cem, otros)
         # Abonos
         vpro.set_valor(0.0, "Buscando abonos...")
