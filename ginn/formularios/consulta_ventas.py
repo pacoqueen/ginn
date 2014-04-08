@@ -204,17 +204,22 @@ class ConsultaVentas(Ventana):
         from formularios.reports import abrir_csv
         if self.wids['notebook1'].get_current_page() == 0:
             tv = self.wids['tv_datos']
+            desglosar = True
         elif self.wids['notebook1'].get_current_page() == 1:
             tv = self.wids['tv_cliente']
+            desglosar = False
         elif self.wids['notebook1'].get_current_page() == 2:
             tv = self.wids['tv_producto']
+            desglosar = None    # No se aplica. No es TreeView, sino ListView.
         elif self.wids['notebook1'].get_current_page() == 3:
             tv = self.wids['tv_comercial']
+            desglosar = True
         elif self.wids['notebook1'].get_current_page() == 4:
             tv = self.wids['tv_proveedor']
+            desglosar = True
         else:
             return
-        abrir_csv(treeview2csv(tv))
+        abrir_csv(treeview2csv(tv, desglosar = desglosar))
 
     def colorear(self, tv):
         def cell_func(column, cell, model, itr, numcol):
@@ -1143,10 +1148,10 @@ class ConsultaVentas(Ventana):
                     orderBy = 'fecha')
                 vpro.set_valor(0.1, "Analizando facturas y abonos...")
                 facturasDeAbono = [f for f in facturasDeAbono if f.abono]
-        vpro.set_valor(0.3, "Analizando facturas y abonos...")
+        vpro.set_valor(0.2, "Analizando facturas y abonos...")
         facturas = list(facturas) + list(prefacturas)
         facturas.sort(self.por_fecha)
-        vpro.set_valor(0.5, "Analizando facturas y abonos...")
+        vpro.set_valor(0.3, "Analizando facturas y abonos...")
         for f in facturas:
             for linea in f.lineasDeVenta:
                 self.resultado.append(linea)
@@ -1154,7 +1159,7 @@ class ConsultaVentas(Ventana):
                 for srv in f.servicios:
                     servicios.append(srv)
         facturasDeAbono.sort(self.por_fecha)
-        vpro.set_valor(0.7, "Analizando facturas y abonos...")
+        vpro.set_valor(0.4, "Analizando facturas y abonos...")
         for f in facturasDeAbono:
             abono = f.abono
             for lda in abono.lineasDeAbono:
@@ -1164,23 +1169,28 @@ class ConsultaVentas(Ventana):
                     self.resultado_abonos['lineasDeAbono'].append(lda)
             for ldd in abono.lineasDeDevolucion:
                 self.resultado_abonos['lineasDeDevolucion'].append(ldd)
-        vpro.set_valor(0.9, "Analizando facturas y abonos...")
-        vpro.ocultar()
+        vpro.set_valor(0.5, "Mostrando datos por tarifa...")
         self.rellenar_tabla_por_tarifa(self.resultado, 
                                        self.resultado_abonos, 
                                        servicios)
+        vpro.set_valor(0.6, "Mostrando datos por producto...")
         self.rellenar_tabla_por_producto(self.resultado, 
                                          self.resultado_abonos, 
                                          servicios)
+        vpro.set_valor(0.7, "Mostrando datos por cliente...")
         self.rellenar_tabla_clientes(self.resultado, 
                                      self.resultado_abonos, 
                                      servicios)
+        vpro.set_valor(0.8, "Mostrando datos por comercial...")
         self.rellenar_tabla_comerciales(self.resultado, 
                                         self.resultado_abonos, 
                                         servicios)
+        vpro.set_valor(0.9, "Mostrando datos por proveedor...")
         self.rellenar_tabla_proveedores(self.resultado, 
                                         self.resultado_abonos, 
                                         servicios)
+        vpro.set_valor(1.0, "")
+        vpro.ocultar()
 
     def rellenar_tabla_clientes(self, resultado, resultado_abonos, servicios):
         # TODO: Faltan los abonos. Caso CETCO cuando consulto desde agosto.
