@@ -45,6 +45,7 @@ pygtk.require('2.0')
 from formularios.consulta_producido import str_horas, detectar_hueco, \
                                            calcular_productividad_conjunta
 import pango
+from formularios.consulta_ventas_por_producto import act_fecha
 
 class ConsultaProductividad(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -60,6 +61,8 @@ class ConsultaProductividad(Ventana):
                        'b_buscar/clicked': self.buscar,
                        'b_fecha_inicio/clicked': self.set_inicio,
                        'b_fecha_fin/clicked': self.set_fin, 
+                       'e_fechainicio/focus-out-event': act_fecha,
+                       'e_fechafin/focus-out-event': act_fecha,
                        'b_imprimir/clicked': self.imprimir, 
                        'b_exportar/clicked': self.exportar}
         self.add_connections(connections)
@@ -103,13 +106,17 @@ class ConsultaProductividad(Ventana):
                 cell.set_property("xalign", 1.0)
         self.colorear(self.wids['tv_datos'])
         temp = time.localtime()
-        self.fin = str(temp[0])+'/'+str(temp[1])+'/'+str(temp[2])
+        #self.fin = str(temp[0])+'/'+str(temp[1])+'/'+str(temp[2])
         self.wids['e_fechafin'].set_text(utils.str_fecha(temp))
         self.wids['e_fechainicio'].set_text(utils.str_fecha(
             mx.DateTime.localtime() - (7 * mx.DateTime.oneDay)))
-        self.inicio = self.wids['e_fechainicio'].get_text().split('/')
-        self.inicio.reverse()
-        self.inicio = '/'.join(self.inicio)
+        #self.inicio = self.wids['e_fechainicio'].get_text().split('/')
+        #self.inicio.reverse()
+        #self.inicio = '/'.join(self.inicio)
+        self.wids['e_fechainicio'].set_property("editable", True)
+        self.wids['e_fechainicio'].set_property("has-frame", True)
+        self.wids['e_fechafin'].set_property("editable", True)
+        self.wids['e_fechafin'].set_property("has-frame", True)
         gtk.main()
     
     def exportar(self, boton):
@@ -271,7 +278,8 @@ class ConsultaProductividad(Ventana):
         metrosproducidos = 0
         kilosconsumidos = kilosconsumidos_partidas_completas = 0
         tiempototaltotal = mx.DateTime.DateTimeDelta(0)
-        selffin = utils.parse_fecha('/'.join(self.fin.split('/')[::-1]))
+        #selffin = utils.parse_fecha('/'.join(self.fin.split('/')[::-1]))
+        selffin = self.fin
         # ... WTF? Esto está hecho como el culo. ¡REFACTORIZAR!
         # XXX Primer intento de acelerar los treeview
         self.wids['tv_datos'].freeze_child_notify()
@@ -542,13 +550,15 @@ En ambos casos el límite inferior es flexible -por compensación-.)""")
                 str_horas(tiempototaltotal) + " h")
        
     def set_inicio(self, boton):
-        temp = utils.mostrar_calendario(padre = self.wids['ventana'])
+        temp = utils.mostrar_calendario(padre = self.wids['ventana'], 
+                fecha_defecto = self.wids['e_fechainicio'].get_text())
         self.wids['e_fechainicio'].set_text(utils.str_fecha(temp))
         self.inicio = str(temp[2])+'/'+str(temp[1])+'/'+str(temp[0])
 
 
     def set_fin(self, boton):
-        temp = utils.mostrar_calendario(padre = self.wids['ventana'])
+        temp = utils.mostrar_calendario(padre = self.wids['ventana'], 
+                fecha_defecto = self.wids['e_fechafin'].get_text())
         self.wids['e_fechafin'].set_text(utils.str_fecha(temp))
         self.fin = str(temp[2])+'/'+str(temp[1])+'/'+str(temp[0])
 
@@ -582,6 +592,16 @@ En ambos casos el límite inferior es flexible -por compensación-.)""")
         de dicho parte
         """
         solobalas = False
+        try:
+            self.inicio = utils.parse_fecha(
+                    self.wids['e_fechainicio'].get_text())
+        except ValueError:
+            self.inicio = None
+        try:
+            self.fin = utils.parse_fecha(self.wids['e_fechafin'].get_text())
+        except ValueError:
+            self.fin = mx.DateTime.today()
+            self.wids['e_fechafin'].set_text(utils.str_fecha(self.fin))
         if not self.inicio:
             partes = pclases.ParteDeProduccion.select(
                         pclases.ParteDeProduccion.q.fecha < self.fin, 
