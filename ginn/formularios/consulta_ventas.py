@@ -912,8 +912,9 @@ class ConsultaVentas(Ventana):
             bultos = ""
         cantidad = "%s %s" % (utils.float2str(i.cantidad, 1), metros_o_kilos)
         sumtransportes = (i.albaranSalida and 
-                          sum([t.precio 
-                               for t in i.albaranSalida.transportesACuenta])
+                          sum([transp.precio 
+                               for transp 
+                               in i.albaranSalida.transportesACuenta])
                           or None)
         transporte = (sumtransportes 
                       and "%s €" % utils.float2str(sumtransportes) 
