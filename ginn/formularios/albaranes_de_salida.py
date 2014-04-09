@@ -105,7 +105,7 @@ class AlbaranesDeSalida(Ventana):
         self.modificado = False # Para detectar si el albarán en pantalla 
                                 # se ha modificado en la sesión actual. 
         self.nuevo = False      # Para detectar si un albarán es nuevo.
-        Ventana.__init__(self, 'albaranes_de_salida.glade', objeto, 
+        Ventana.__init__(self, 'albaranes_de_salida.glade', objeto,
                          usuario = self.usuario)
         connections = {'b_salir/clicked': self.pre_salir,
                        'b_fecha/clicked': self.buscar_fecha,
@@ -3747,7 +3747,8 @@ class AlbaranesDeSalida(Ventana):
             if (servicio.facturaVenta == None 
                 and servicio.prefacturaID == None
                 and servicio.pedidoVenta == None):
-                servicio.destroy(ventana = __file__)  # No debería saltar ninguna excepción. 
+                servicio.destroy(ventana = __file__)  
+                    # No debería saltar ninguna excepción. 
             self.rellenar_servicios()
             self.modificado = True
             self.objeto.calcular_comisiones()
@@ -3757,8 +3758,9 @@ class AlbaranesDeSalida(Ventana):
         """
         Elimina el transporte a cuenta seleccionado en el treeview.
         """
-        if self.wids['tv_transportesACuenta'].get_selection().count_selected_rows() > 0: 
-            model, paths = self.wids['tv_transportesACuenta'].get_selection().get_selected_rows()
+        tv = self.wids['tv_transportesACuenta']
+        if tv.get_selection().count_selected_rows() > 0: 
+            model, paths = tv.get_selection().get_selected_rows()
             for path in paths:
                 idtac = model[path][-1]
                 #tac = pclases.TransporteACuenta.get(idtac)
@@ -3770,14 +3772,22 @@ class AlbaranesDeSalida(Ventana):
         """
         Añade un nuevo transporte a cuenta al albarán actual.
         """
-        t = pclases.TransporteACuenta(concepto = "Transporte pagado.", 
-                precio = 0, 
-                proveedor = None,
-                observaciones="Introduzca el precio y empresa transportista.", 
-                fecha = mx.DateTime.localtime(), 
-                albaranSalidaID = self.objeto.id)
-        pclases.Auditoria.nuevo(t, self.usuario, __file__)
-        self.rellenar_transportes_a_cuenta()
+        if (self.objeto 
+                and self.usuario and self.usuario.nivel >= 2 
+                and self.objeto.get_facturas()):
+            utils.dialogo_info(titulo = "ALBARÁN FACTURADO", 
+                    texto = "El albarán se encuentra facturado.\n"
+                            "No puede agregar más transportes.", 
+                    padre = self.wids['ventana'])
+        else:
+            t = pclases.TransporteACuenta(concepto = "Transporte pagado.", 
+                    precio = 0, 
+                    proveedor = None,
+                    observaciones="Introduzca el precio y empresa transportista.", 
+                    fecha = mx.DateTime.localtime(), 
+                    albaranSalidaID = self.objeto.id)
+            pclases.Auditoria.nuevo(t, self.usuario, __file__)
+            self.rellenar_transportes_a_cuenta()
 
     def cambiar_concepto_tac(self, cell, path, texto):
         model = self.wids['tv_transportesACuenta'].get_model()
@@ -3789,26 +3799,34 @@ class AlbaranesDeSalida(Ventana):
         model[path][0] = tac.concepto
 
     def cambiar_precio_tac(self, cell, path, texto):
-        try:
-            precio = utils._float(texto)
-        except ValueError:
-            utils.dialogo_info(titulo = "PRECIO INCORRECTO", 
-                texto = "El texto introducido %s no es una cantidad "\
-                        "correcta." % (texto), 
-                padre = self.wids['ventana'])
+        if (self.objeto 
+                and self.usuario and self.usuario.nivel >= 2 
+                and self.objeto.get_facturas()):
+            utils.dialogo_info(titulo = "ALBARÁN FACTURADO", 
+                    texto = "El albarán se encuentra facturado.\n"
+                            "No puede modificar el precio del transporte.", 
+                    padre = self.wids['ventana'])
         else:
-            model = self.wids['tv_transportesACuenta'].get_model()
-            idtac = model[path][-1]
-            #tac = pclases.TransporteACuenta.get(idtac)
-            tac = pclases.getObjetoPUID(idtac)
-            tac.precio = precio
-            tac.syncUpdate()
-            # BUGFIX: GINN-75
-            for st in tac.serviciosTomados:
-                st.precio = precio / len(tac.serviciosTomados)
-                st.syncUpdate()
-            self.modificado = True
-            model[path][1] = utils.float2str(tac.precio)
+            try:
+                precio = utils._float(texto)
+            except ValueError:
+                utils.dialogo_info(titulo = "PRECIO INCORRECTO", 
+                    texto = "El texto introducido %s no es una cantidad "\
+                            "correcta." % (texto), 
+                    padre = self.wids['ventana'])
+            else:
+                model = self.wids['tv_transportesACuenta'].get_model()
+                idtac = model[path][-1]
+                #tac = pclases.TransporteACuenta.get(idtac)
+                tac = pclases.getObjetoPUID(idtac)
+                tac.precio = precio
+                tac.syncUpdate()
+                # BUGFIX: GINN-75
+                for st in tac.serviciosTomados:
+                    st.precio = precio / len(tac.serviciosTomados)
+                    st.syncUpdate()
+                self.modificado = True
+                model[path][1] = utils.float2str(tac.precio)
 
     def cambiar_observaciones_tac(self, cell, path, texto):
         model = self.wids['tv_transportesACuenta'].get_model()

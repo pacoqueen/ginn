@@ -628,9 +628,22 @@ class FacturasDeEntrada(Ventana):
             else:  # Caso servicio que viene de albarán salida.
                 s = pclases.ServicioTomado.get(idldc)
                 s.qprecio = precio
-        else: # Caso servicio metido a mano.
+        else: # Caso servicio metido a mano o transporte a cuenta.
             s = pclases.ServicioTomado.get(idldc)
-            s.qprecio = precio
+            try:
+                alb = s.transporteACuenta.albaranSalida
+            except AttributeError:
+                alb = None  # No es un transporte. Es un servicio a manopla.
+            if (alb and self.usuario and self.usuario.nivel >= 2 
+                    and alb.get_facturas()):
+                numalb = alb.numalbaran
+                utils.dialogo_info(titulo = "ALBARÁN FACTURADO", 
+                        texto = "El albarán %s al que corresponde el "
+                                "transporte se encuentra facturado.\n"
+                                "No puede modificar el precio." % numalb, 
+                        padre = self.wids['ventana'])
+            else:
+                s.qprecio = precio
         self.rellenar_widgets()
 
     def cambiar_descripcion(self, cell, path, texto):
