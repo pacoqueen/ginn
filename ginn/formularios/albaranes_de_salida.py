@@ -2990,6 +2990,16 @@ class AlbaranesDeSalida(Ventana):
                         sí para generar la factura.
                               """, 
                               padre = self.wids['ventana'])):
+            # XXX: CWT (rparra): Si el albarán no tiene transporte, avisar 
+            #                    antes de que se bloquee.
+            if (not self.objeto.transportesACuenta
+                and not utils.dialogo(titulo = "¿ESTÁ SEGURO?", 
+                        texto = "El albarán no tiene transportes a cuenta.\n"
+                                "Si genera la factura, no podrá agregarlos"
+                                "más tarde. ¿Desea continuar?", 
+                        padre = self.wids['ventana'])):
+                    return
+            # XXX
             ok, factura = self.generar_factura()
             if ok:
                 self.objeto.bloqueado = factura.bloqueada = ok
