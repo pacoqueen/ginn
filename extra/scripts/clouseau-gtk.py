@@ -50,7 +50,7 @@ class Clouseau(Gtk.Window):
         dialogo_select_csv = Gtk.FileChooserDialog(
             "SELECCIONE FICHERO ORIGEN", 
             self.wids.get_object("ventana"), 
-            Gtk.FileChooserAction.SELECT_FILE, 
+            Gtk.FileChooserAction.OPEN, 
             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, 
              Gtk.STOCK_OK, Gtk.ResponseType.OK))
             # TODO: Añadir filtro para seleccionar el CSV correcto y además 
