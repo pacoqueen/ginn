@@ -28,7 +28,43 @@ class Clouseau(Gtk.Window):
             wid, signal = wid_signal.split("/")
             callback = handlers[wid_signal]
             self.wids.get_object(wid).connect(signal, callback)
+        for concepto in ("existencias", "prod", "salidas", "consumos"): 
+            for periodo in ("ini", "fin", ""):
+                for tipo in ("fib", "gtx", "cem"):
+                    nombre_boton = "b_%s_%s_%s" % (concepto, periodo, tipo)
+                    boton = self.wids.get_object(nombre_boton)
+                    nombre_entry = nombre_boton.replace("b_", "e_")
+                    entry = self.wids.get_object(nombre_entry)
+                    try:
+                        boton.connect("clicked", self.select_source, entry)
+                    except AttributeError:
+                        pass    # Combinación que no existe como botón.
         self.wids.get_object("ventana").show_all()
+
+
+    def select_source(self, boton, entry):
+        """
+        Coloca en el entry recibido el fichero seleccionado al abrir el 
+        diálogo con el botón que ha lanzado el evento "clicked".
+        """
+        dialogo_select_csv = Gtk.FileChooserDialog(
+            "SELECCIONE FICHERO ORIGEN", 
+            self.wids.get_object("ventana"), 
+            Gtk.FileChooserAction.SELECT_FILE, 
+            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, 
+             Gtk.STOCK_OK, Gtk.ResponseType.OK))
+            # TODO: Añadir filtro para seleccionar el CSV correcto y además 
+            # que *gtx*.csv o *fib*.csv o incluso existencias* consum* o lo 
+            # que sea en función del nombre del botón o del entry (si es que 
+            # se puede sacar por get_name; si no, recibirlo como parámetro).
+        response = dialogo_select_csv.run()
+        if response == Gtk.ResponseType.OK:
+            csvname = dialogo_select_csv.get_filename()
+            if DEBUG:
+                print("Directorio seleccionado: ", csvname)
+        dialogo_select_csv.destroy()
+        entry.set_text(csvname)
+        entry.set_position(-1)    
 
     
     def buscar_sources(self, boton):
