@@ -53,19 +53,40 @@ class Clouseau(Gtk.Window):
             Gtk.FileChooserAction.OPEN, 
             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, 
              Gtk.STOCK_OK, Gtk.ResponseType.OK))
-            # TODO: Añadir filtro para seleccionar el CSV correcto y además 
-            # que *gtx*.csv o *fib*.csv o incluso existencias* consum* o lo 
-            # que sea en función del nombre del botón o del entry (si es que 
-            # se puede sacar por get_name; si no, recibirlo como parámetro).
+        self.add_filters(dialogo_select_csv, boton)
         response = dialogo_select_csv.run()
         if response == Gtk.ResponseType.OK:
             csvname = dialogo_select_csv.get_filename()
             if DEBUG:
                 print("Directorio seleccionado: ", csvname)
+            entry.set_text(csvname)
+            entry.set_position(-1)    
         dialogo_select_csv.destroy()
-        entry.set_text(csvname)
-        entry.set_position(-1)    
 
+
+    def add_filters(self, dialogo, boton):
+        """
+        Filtros para localizar los fuentes adecuadamente según el nombre del 
+        botón, que trae el tipo de fichero, periodo, etc.
+        """
+        nombre_boton = Gtk.Buildable.get_name(boton)
+        filter_nombre = Gtk.FileFilter()
+        filter_nombre.set_name("Fichero fuente de cierre")
+        nombre_fichero = nombre_boton.replace("b_", "") 
+        pattern_fichero = "*%s*%s*.csv" % (nombre_fichero.split("_")[0], 
+                                           nombre_fichero.split("_")[-1])
+        filter_nombre.add_pattern(pattern_fichero)
+        dialogo.add_filter(filter_nombre)
+
+        filter_csv = Gtk.FileFilter()
+        filter_csv.set_name("Ficheros CSV")
+        filter_csv.add_mime_type("text/csv")
+        dialogo.add_filter(filter_csv)
+
+        filter_any = Gtk.FileFilter()
+        filter_any.set_name("Todos")
+        filter_any.add_pattern("*")
+        dialogo.add_filter(filter_any)
     
     def buscar_sources(self, boton):
         """
@@ -80,15 +101,49 @@ class Clouseau(Gtk.Window):
             Gtk.FileChooserAction.SELECT_FOLDER, 
             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, 
              Gtk.STOCK_OK, Gtk.ResponseType.OK))
+        dialogo_select_dir.set_current_folder("../../tests")    # TODO: Hacer 
+        # que sea "sensitive" al directorio donde se ejecuta. Puede que ya 
+        # esté en el directorio "tests"
         response = dialogo_select_dir.run()
         if response == Gtk.ResponseType.OK:
             dirname = dialogo_select_dir.get_filename()
             if DEBUG:
                 print("Directorio seleccionado: ", dirname)
+            entry_directorio = self.wids.get_object("e_directorio")
+            entry_directorio.set_text(dirname)
+            entry_directorio.set_position(-1)    
+            self.buscar_sources_y_rellenar_entries(dirname)
         dialogo_select_dir.destroy()
-        entry_directorio = self.wids.get_object("e_directorio")
-        entry_directorio.set_text(dirname)
-        entry_directorio.set_position(-1)    
+
+    
+    def buscar_sources_y_rellenar_entries(self, dirname):
+        """
+        Recorre el directorio dirname y rellena los entries con los ficheros
+        que encuentre y casen con el tipo de fichero fuente buscado.
+        """
+        for raiz, directorios, ficheros in os.walk(dirname):
+            for fichero in ficheros:
+                if DEBUG:
+                    print("fichero:", fichero)
+                concepto, periodo, tipo = analizar(fichero)
+                if DEBUG:
+                    print("\tconcepto:", concepto, 
+                            "; periodo:", periodo, 
+                            "; tipo:", tipo)
+                if periodo:
+                    nom_entry = "e_%s_%s_%s" % (concepto, periodo, tipo)
+                elif tipo:
+                    nom_entry = "e_%s_%s" % (concepto, tipo)
+                else:
+                    nom_entry = "e_%s" % (concepto)
+                try:
+                    self.wids.get_object(nom_entry).set_text(fichero)
+                except AttributeError:
+                    if DEBUG:
+                        print("\t\t", nom_entry, "no existe")
+                else:
+                    if DEBUG:
+                        print("\t\t", nom_entry, "\t[OK]")
     
     
     def empezar(self, boton):
@@ -110,6 +165,50 @@ class Clouseau(Gtk.Window):
         if (DEBUG):
             print(comando)
         os.system(comando)
+
+
+def analizar(txt):
+    """
+    Trata de analizar el texto recibido buscando a qué concepto se refiere, 
+    periodo (si lo lleva) y tipo.
+    Conceptos: existencias, prod, salidas, consumos.
+    Periodo: ini, fin
+    Tipo: fib, gtx, cem
+    """
+    txt = txt.split(".")[0]
+    tokens = txt.split("_")
+    try:
+        concepto, periodo, tipo = tokens
+    except ValueError:
+        try:
+            concepto, tipo = tokens
+            periodo = ""
+        except ValueError:  # Es "diff.csv" o algo así.
+            concepto = tokens[0]
+            tipo = periodo = ""
+    # Concepto:
+    if "exist" in concepto or "stock" in concepto:
+        concepto = "existencias"
+    elif "prod" in concepto: 
+        concepto = "prod"
+    elif "sal" in concepto or "vent" in concepto:
+        concepto = "salidas"
+    elif "cons" in concepto:
+        concepto = "consumos"
+    # Periodo, si lo lleva:
+    if periodo:
+        if "ini" in periodo:
+            periodo = "ini"
+        elif "fin" in periodo:
+            periodo = "fin"
+    # Y tipo:
+    if "fib" in tipo:
+        tipo = "fib"
+    elif "geotex" in tipo or "gtx" in tipo:
+        tipo = "gtx"
+    elif "cem" in tipo:
+        tipo = "cem"
+    return concepto, periodo, tipo
 
 
 def run(ejecutar = True):
