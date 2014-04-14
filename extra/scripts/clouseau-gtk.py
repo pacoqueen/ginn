@@ -12,6 +12,9 @@ DEBUG = True
 
 from gi.repository import Gtk
 import os
+import tempfile
+
+CLOUSEAU_COMMAND = "./clouseau.py" 
 
 class Clouseau(Gtk.Window):
     def __init__(self):
@@ -21,9 +24,11 @@ class Clouseau(Gtk.Window):
         """
         self.wids = Gtk.Builder()
         self.wids.add_from_file("clouseau.glade")
+        self.wids.get_object("b_start").set_sensitive(False)
+        self.entries = {}
         handlers = {"b_start/clicked": self.empezar, 
                     "ventana/delete-event": Gtk.main_quit, 
-                    "b_select_directorio/clicked": self.buscar_sources}
+                    "b_select_directorio/clicked": self.auto_buscar_sources}
         for wid_signal in handlers:
             wid, signal = wid_signal.split("/")
             callback = handlers[wid_signal]
@@ -32,6 +37,7 @@ class Clouseau(Gtk.Window):
             for periodo in ("ini", "fin", ""):
                 for tipo in ("fib", "gtx", "cem"):
                     nombre_boton = "b_%s_%s_%s" % (concepto, periodo, tipo)
+                    nombre_boton = nombre_boton.replace("__", "_")
                     boton = self.wids.get_object(nombre_boton)
                     nombre_entry = nombre_boton.replace("b_", "e_")
                     entry = self.wids.get_object(nombre_entry)
@@ -39,7 +45,26 @@ class Clouseau(Gtk.Window):
                         boton.connect("clicked", self.select_source, entry)
                     except AttributeError:
                         pass    # Combinación que no existe como botón.
+                    else:
+                        # Aprovechando que si encuentra el botón también 
+                        # encontrará el entry (se llaman --casi-- igual).
+                        self.entries[nombre_entry] = entry
+                        entry.connect('changed', self.activar_ejecutar)
         self.wids.get_object("ventana").show_all()
+
+
+    def activar_ejecutar(self, entry):
+        """
+        Si todos los entries de ficheros fuente están informados, activa el 
+        botón de ejecutar.
+        """
+        activar = True
+        for nom_ent in self.entries:
+            nomfichero = self.entries[nom_ent].get_text()
+            if not nomfichero:
+                activar = False
+                break
+        self.wids.get_object("b_start").set_sensitive(activar)
 
 
     def select_source(self, boton, entry):
@@ -54,11 +79,19 @@ class Clouseau(Gtk.Window):
             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, 
              Gtk.STOCK_OK, Gtk.ResponseType.OK))
         self.add_filters(dialogo_select_csv, boton)
+        # Si hay un fichero seleccionado, lo pongo por defecto en el diálogo.
+        dirname = self.wids.get_object("e_directorio").get_text()
+        if dirname:
+            dialogo_select_csv.set_current_folder(dirname)
+        filname = entry.get_text()
+        if filname:
+            dialogo_select_csv.set_current_name(filname)
+        # Ahora toca ejecutar el diálogo de selección de fichero fuente:
         response = dialogo_select_csv.run()
         if response == Gtk.ResponseType.OK:
             csvname = dialogo_select_csv.get_filename()
             if DEBUG:
-                print("Directorio seleccionado: ", csvname)
+                print("Fichero seleccionado: ", csvname)
             entry.set_text(csvname)
             entry.set_position(-1)    
         dialogo_select_csv.destroy()
@@ -88,7 +121,8 @@ class Clouseau(Gtk.Window):
         filter_any.add_pattern("*")
         dialogo.add_filter(filter_any)
     
-    def buscar_sources(self, boton):
+
+    def auto_buscar_sources(self, boton):
         """
         Muestra un diálogo para seleccionar un directorio.
         Si pulsa aceptar, recorre el contenido del directorio buscando 
@@ -136,12 +170,15 @@ class Clouseau(Gtk.Window):
                     nom_entry = "e_%s_%s" % (concepto, tipo)
                 else:
                     nom_entry = "e_%s" % (concepto)
+                nom_entry = nom_entry.replace("__", "_")
+                fullpath_fichero = os.path.join(dirname, fichero)
                 try:
-                    self.wids.get_object(nom_entry).set_text(fichero)
+                    self.wids.get_object(nom_entry).set_text(fullpath_fichero)
                 except AttributeError:
                     if DEBUG:
                         print("\t\t", nom_entry, "no existe")
                 else:
+                    self.wids.get_object(nom_entry).set_position(-1)    
                     if DEBUG:
                         print("\t\t", nom_entry, "\t[OK]")
     
@@ -161,7 +198,12 @@ class Clouseau(Gtk.Window):
             entry_text = self.wids.get_object(widget)
             simple_text = entry_text.get_text()
             entries_text.append(simple_text)
-        comando = "dir " + " ".join(entries_text)
+        tempodiff = tempfile.NamedTemporaryFile(suffix = ".csv", 
+                                                delete = False)
+        fout = os.path.abspath(tempodiff.name)
+        comando = CLOUSEAU_COMMAND + " " + " ".join(
+                ['"%s"' % (text) for text in entries_text]
+                ) + " > " + fout + " && localc " + fout
         if (DEBUG):
             print(comando)
         os.system(comando)
@@ -195,12 +237,16 @@ def analizar(txt):
         concepto = "salidas"
     elif "cons" in concepto:
         concepto = "consumos"
+    elif concepto.isnumeric():
+        concepto, periodo = periodo, concepto
     # Periodo, si lo lleva:
     if periodo:
         if "ini" in periodo:
             periodo = "ini"
         elif "fin" in periodo:
             periodo = "fin"
+        else:
+            periodo = ""    # Debe ser 20140201 o algo asina.
     # Y tipo:
     if "fib" in tipo:
         tipo = "fib"
