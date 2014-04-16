@@ -4406,7 +4406,9 @@ def sanitize(cad, strict = False):
                           (")", ""), 
                           ("`", ""), 
                           ("'", ""), 
-                          ("'", "")]
+                          ("'", ""), 
+                          ("ñ", "nn"), 
+                          ("Ñ", "NN")]
     for mala, buena in equivalencias:
         cad = cad.replace(mala, buena)
     if strict:
