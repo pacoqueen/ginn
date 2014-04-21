@@ -1439,8 +1439,9 @@ class PedidosDeVenta(Ventana):
             try:
                 ldp = pclases.LineaDePedido.get(model[itr][-1])
             except pclases.SQLObjectNotFound:
-                print "LDP ID %d no encontrada. Probablemente borrada "\
-                      "justo durante el coloreado." % (model[itr][-1])
+                if pclases.DEBUG and pclases.VERBOSE:
+                    print "LDP ID %d no encontrada. Probablemente borrada "\
+                          "justo durante el coloreado." % (model[itr][-1])
                 return
             color = None
             # Usaré una especie de caché de stock que se refrescará en 
