@@ -618,6 +618,9 @@ def check_traspasos(dic_deltas):
                     diff = dic_diferencia['diff']
                     dic_deltas[producto][qlty]['traspasos'] += diff
                     dic_deltas[producto][qlty]['diff'] -= diff
+                    # Y también influye en el total computado. Hay que sumar 
+                    # ese traspaso.
+                    dic_deltas[producto][qlty]['total'] += diff
 
 if __name__ == '__main__':
     try:
