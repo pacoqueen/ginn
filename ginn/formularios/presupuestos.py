@@ -2593,9 +2593,18 @@ class Presupuestos(Ventana, VentanaGenerica):
                     valor_ventana = self.wids['cbe_cliente'].child.get_text()
                     colname = "nombrecliente"
                 if colname == "obraID" and valor_ventana == None:
-                    self.objeto.obra = None
-                    valor_ventana = self.wids['cbe_obra'].child.get_text()
-                    colname = "nombreobra"
+                    cbe = self.wids['cbe_obra']
+                    valor_ventana = cbe.child.get_text().strip()
+                    # SAFETY DANCE!
+                    try:
+                        self.objeto.obra = pclases.Obra.selectBy(
+                                nombre = valor_ventana)[0]
+                        # Esto es por si ha escrito ex-ac-ta-men-te el nombre 
+                        # de la obra pero no la ha seleccionado del desplegable
+                        valor_ventana = self.objeto.obra.id
+                    except IndexError:
+                        self.objeto.obra = None
+                        colname = "nombreobra"
                 if colname == "cif":
                     _valor_ventana = utils.parse_cif(valor_ventana)
                     if _valor_ventana != valor_ventana:
@@ -3121,17 +3130,22 @@ def crear_pedido(presupuesto, numpedido, usuario):
 
 
 def crear_obra(presupuesto, usuario):
-    obra = pclases.Obra(
-            nombre = presupuesto.nombreobra, 
-            direccion = presupuesto.direccion, 
-            cp = presupuesto.cp, 
-            ciudad = presupuesto.ciudad, 
-            provincia = presupuesto.provincia, 
-            observaciones = "Creada automáticamente desde presupuesto.", 
-            pais = presupuesto.pais, 
-            generica = False)
-    obra.addCliente(presupuesto.cliente)
-    pclases.Auditoria.nuevo(obra, usuario, __file__)
+    # Voy a añadir un control extra para evitar que se sigan duplicando.
+    try:
+        obra = pclases.Obra.selectBy(nombre = presupuesto.nombreobra)[0]
+    except IndexError:
+        obra = pclases.Obra(
+                nombre = presupuesto.nombreobra, 
+                direccion = presupuesto.direccion, 
+                cp = presupuesto.cp, 
+                ciudad = presupuesto.ciudad, 
+                provincia = presupuesto.provincia, 
+                observaciones = "Creada automáticamente desde presupuesto.", 
+                pais = presupuesto.pais, 
+                generica = False)
+        pclases.Auditoria.nuevo(obra, usuario, __file__)
+    if presupuesto.cliente not in obra.clientes:
+        obra.addCliente(presupuesto.cliente)
     return obra
 
 
