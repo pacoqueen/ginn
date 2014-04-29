@@ -122,7 +122,7 @@ class Options:
 
 #OPTIONS = Options(calidades = ("A", ), tipos = ("fib", ))
 #OPTIONS = Options(True, True, ("total", ), ("gtx", ))
-OPTIONS = Options()
+OPTIONS = Options(tipos = ("fib", ))
 
 def parse_existencias(fexistencias_ini, res=None):
     """

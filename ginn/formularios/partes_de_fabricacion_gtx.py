@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
-#                          Diego Muñoz Escalante.                             #
-# (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
+# Copyright (C) 2005-2014 Francisco José Rodríguez Bogado                     #
+#                         <frbogado@geotexan.com>                             #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
 #                                                                             #
@@ -25,44 +24,17 @@
 
 
 ###################################################################
-## partes_de_fabricacion_rollos.py - Parte de producción para rollos. 
+## partes_de_fabricacion_gtx.py - Parte de producción de geotextiles
 ###################################################################
 ## NOTAS:
-##  
-## ----------------------------------------------------------------
-## TODO: No se pueden crear rollos B aquí si no es desde la línea 
-## con la ventana de pesaje automático. Ya no se permite hacerlo 
-## manualmente marcando con el botón derecho y tal. FIXME
+## 
 ###################################################################
 ## Changelog:
-## 15 de noviembre de 2005 -> Inicio
-## 16 de noviembre de 2005 -> 99% funcional
-## 23 de enero de 2006 -> Portado a clase.
-## 26 de enero de 2006 -> Funcional al 99% one more time.
-## 9 de mayo de 2006 -> Control de permisos. Para copiar a otras 
-## ventanas, mirar: check_permisos(), rellenar_widgets, 
-## self.__lecturaescritura, self.__permisos, activar_widgets y 
-## la asignación de id en nuevo_.
-## 10 de mayo de 2006 -> Cambiado comportamiento de set_articulo.
-## 26 de julio de 2006 -> Añadidos empleados por defecto según 
-##                        calendario laboral.
-## 8 de marzo de 2006 -> Añado rollos por defecto.
-## 31 de julio de 2007 -> Nueva casilla "versión de la ficha de 
-##                        producción" usada (texto libre).
+## 28/04/2014 -> Rediseño desde la ventana de partes_..._rollos.py
+## 
 ###################################################################
 ## DONE:
-## + Comprobar que se marca bien el consumo estimado en relación 
-##   con el de balas _en todos los partes_ de la misma partida. 
-## + No estaría de más un entry con el cálculo acumulado de consumo 
-##   estimado (además facilitaría el consumo en relación con 
-##   el consumo real de balas añadida. El cálculo de arriba, 
-##   vamos.)
-## + Falta cálculo de rendimiento: 
-##   nºtrabajadores * horas turno / nº trabajadores * horas reales.
-## + Comprobar que las horas del parte no pisan a otro parte de rollos.
-## + Al eliminar todos los rollos de un parte, los consumos deberían 
-##   quedar a 0. Sin embargo no es así. Why? (por poner el parte a 
-##   None antes de descontar el consumo).
+##   
 ###################################################################
 
 
@@ -229,7 +201,7 @@ def imprimir_etiqueta_de_rollo_defectuoso(rollo):
                     "Impresión de etiqueta para rollo %s" % rollo.get_info())
     
 
-class PartesDeFabricacionRollos(Ventana):
+class PartesDeFabricacionGeotextiles(Ventana):
     def __init__(self, objeto = None, permisos = "rwx", usuario = None):
         """
         Constructor. objeto puede ser un objeto de pclases con el que
@@ -237,32 +209,13 @@ class PartesDeFabricacionRollos(Ventana):
         el que se muestra por defecto).
         """
         self.usuario = usuario
-        self.producto = None    # Producto relacionado con el parte. 
-                                # Debe coincidir con el de todas las rollos 
-                                # de "Detalles de producción"
-        self.ultima_etiqueta = None
-        self.__lecturaescritura = None
-            # Este atributo vale None cuando la ventana permite acceder y 
-            # modificar todos los partes.
-            # Si sólo permite consulta de partes anteriores y edición de los 
-            # nuevos, self.__lecturaescritura contiene el identificador del 
-            # parte. De este modo siempre se puede cambiar el parte nuevo 
-            # aunque se haya consultado momentáneamente otro.
         self.__permisos = permisos
         # ¡Mira papá lo que me acabo de inventar! ¡Sin manos! si el permiso 
         # contiene "x" la ventana permite crear nuevos partes. Si tiene "r" 
         # permite leer partes antiguos. Y si contiene "w" permite editar 
         # partes antiguos. Ueeee.
-        Ventana.__init__(self, 'partes_de_fabricacion_rollos.glade', 
+        Ventana.__init__(self, 'partes_de_fabricacion_gtx.glade', 
                          objeto, usuario = usuario)
-        # XXX
-        self.wids['sp_merma'] = gtk.SpinButton()
-        self.wids['sp_merma'].set_range(0, 100)
-        self.wids['table1'].attach(self.wids['sp_merma'], 1, 2, 1, 2)
-        self.wids['sp_merma'].connect('output', 
-                                      self.actualizar_consumo_estimado)
-        self.wids['sp_merma'].set_property("visible", False)
-        # XXX
         connections = {'b_salir/clicked': self._salir,
                        'ventana/delete_event' : self._salir,
                        'b_nuevo/clicked': self.crear_nuevo_partedeproduccion,
@@ -3908,5 +3861,5 @@ def actualizar_albaran_interno_con_tubos(pdp):
 
 
 if __name__ == "__main__":
-    p = PartesDeFabricacionRollos()
+    p = PartesDeFabricacionGeotextiles()
 
