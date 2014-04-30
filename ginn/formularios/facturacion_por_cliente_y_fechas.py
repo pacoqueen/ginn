@@ -865,7 +865,7 @@ class FacturacionPorClienteYFechas(Ventana):
             tv = self.wids['tv_cesce']
         else:
             return
-        abrir_csv(treeview2csv(tv))
+        abrir_csv(treeview2csv(tv, desglosar = True))
 
 
 if __name__ == '__main__':
