@@ -31,7 +31,15 @@
 			"file": "db/tablas.sql",
 			"settings":
 			{
-				"buffer_size": 178848,
+				"buffer_size": 178982,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/bogado/Geotexan/doc/Sysadmin/Red/MACs_wifi.md",
+			"settings":
+			{
+				"buffer_size": 2414,
 				"line_ending": "Unix"
 			}
 		}
@@ -39,9 +47,13 @@
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 33.0,
+		"height": 392.0,
 		"selected_items":
 		[
+			[
+				":w",
+				":w - Save"
+			],
 			[
 				"erlyman",
 				"Erlyman: Find"
@@ -53,10 +65,6 @@
 			[
 				"erly",
 				"Erlyman: Find"
-			],
-			[
-				":w",
-				":w - Save"
 			],
 			[
 				"erlan",
@@ -412,6 +420,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"**",
 			"temperatureConverter",
 			"TABLE partida_carga",
 			"buscar_fecha",
@@ -478,7 +487,7 @@
 	"groups":
 	[
 		{
-			"selected": 2,
+			"selected": 3,
 			"sheets":
 			[
 				{
@@ -512,7 +521,7 @@
 						"translation.y": 77.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
@@ -542,7 +551,7 @@
 						"translation.y": 4509.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
@@ -551,15 +560,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 178848,
+						"buffer_size": 178982,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								169068,
-								169068
+								0,
+								0
 							]
 						],
 						"settings":
@@ -568,6 +577,34 @@
 						},
 						"translation.x": 0.0,
 						"translation.y": 65135.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/home/bogado/Geotexan/doc/Sysadmin/Red/MACs_wifi.md",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2414,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2042,
+								2042
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/MarkdownEditing/Markdown.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1113.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,

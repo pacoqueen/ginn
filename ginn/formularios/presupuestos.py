@@ -1417,10 +1417,49 @@ class Presupuestos(Ventana, VentanaGenerica):
                 # Aprovecho para cambiar el tamaño de la fuente:
                 cell.set_property("font-desc", pango.FontDescription("sans 7"))
 
+    def add_help_button(self):
+        """
+        Añade un botón para mostrar la leyenda de coloreado.
+        """
+        padre = self.wids['b_add'].parent
+        b = self.wids['b_color_help'] = gtk.Button(stock = gtk.STOCK_HELP)
+        padre.add(b)
+        b.show()
+        b.connect("clicked", self.show_color_help)
+
+    def show_color_help(self, boton):
+        """
+        Crea una ventana con la leyenda de colores usada en las líneas de 
+        presupuesto.
+        """
+        d = gtk.Dialog()
+        d.add_buttons(gtk.STOCK_CLOSE, 1)
+        for texto, fuente, color, color_fg in (
+                ("Fibra",          "sans bold",   "gainsboro",   None), 
+                ("Geotextil",      "sans bold",   "gold",        "dark green"), 
+                ("Comercializado", "sans",        "olive drab",  "white"), 
+                ("Servicio",       "sans italic", None,          "dark orange")):
+            entry = gtk.Entry()
+            entry.set_text(texto)
+            entry.set_property("has-frame", False)
+            entry.set_property("editable", False)
+            if color_fg:
+                color_fg = entry.get_colormap().alloc_color(color_fg)
+            entry.modify_text(gtk.STATE_NORMAL, color_fg)
+            if color:
+                color = entry.get_colormap().alloc_color(color)
+            entry.modify_base(gtk.STATE_NORMAL, color)
+            entry.modify_font(pango.FontDescription(fuente))
+            d.vbox.pack_start(entry)
+        d.show_all()
+        d.run()
+        d.destroy()
+
     def colorear_contenido(self, tv):
         """
         Asocia una función al treeview para resaltar los productos.
         """
+        self.add_help_button()
         def cell_func(column, cell, model, itr, numcol):
             ldpid = model[itr][-1]
             ldp = pclases.getObjetoPUID(ldpid)
