@@ -120,7 +120,8 @@ class PartesDeFabricacionBolsas(Ventana):
                 def __init__(self):
                     self.lectura=self.escritura=self.permiso=self.nuevo=True
             self.__permisos = FakePermisos()
-        Ventana.__init__(self, 'partes_de_fabricacion_bolsas.glade', objeto, usuario = usuario)
+        Ventana.__init__(self, 'partes_de_fabricacion_bolsas.glade', objeto, 
+                         usuario = usuario)
         connections = {'b_salir/clicked': self._salir,
                        'ventana/delete_event' : self._salir,
                        'b_add_empleado/clicked': self.add_empleado,

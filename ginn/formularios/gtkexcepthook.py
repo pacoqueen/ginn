@@ -244,6 +244,8 @@ def _info(exctyp, value, tb):
             text_version = message
             html_version = prettyprint_html(traza)
             ferrname = traza.split("\n")[-1].split(":")[0]
+            if not ferrname:
+                ferrname = "error_ginn"
             #import re
             #regexpline = re.compile("line [0-9]+")
             #try:

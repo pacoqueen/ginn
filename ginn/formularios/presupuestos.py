@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2013  Francisco José Rodríguez Bogado                    #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado                    #
 #                          <frbogado@geotexan.com>                            #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
@@ -1417,10 +1417,49 @@ class Presupuestos(Ventana, VentanaGenerica):
                 # Aprovecho para cambiar el tamaño de la fuente:
                 cell.set_property("font-desc", pango.FontDescription("sans 7"))
 
+    def add_help_button(self):
+        """
+        Añade un botón para mostrar la leyenda de coloreado.
+        """
+        padre = self.wids['b_add'].parent
+        b = self.wids['b_color_help'] = gtk.Button(stock = gtk.STOCK_HELP)
+        padre.add(b)
+        b.show()
+        b.connect("clicked", self.show_color_help)
+
+    def show_color_help(self, boton):
+        """
+        Crea una ventana con la leyenda de colores usada en las líneas de 
+        presupuesto.
+        """
+        d = gtk.Dialog()
+        d.add_buttons(gtk.STOCK_CLOSE, 1)
+        for texto, fuente, color, color_fg in (
+                ("Fibra",          "sans bold",   "gainsboro",   None), 
+                ("Geotextil",      "sans bold",   "gold",        "dark green"), 
+                ("Comercializado", "sans",        "olive drab",  "white"), 
+                ("Servicio",       "sans italic", None,          "dark orange")):
+            entry = gtk.Entry()
+            entry.set_text(texto)
+            entry.set_property("has-frame", False)
+            entry.set_property("editable", False)
+            if color_fg:
+                color_fg = entry.get_colormap().alloc_color(color_fg)
+            entry.modify_text(gtk.STATE_NORMAL, color_fg)
+            if color:
+                color = entry.get_colormap().alloc_color(color)
+            entry.modify_base(gtk.STATE_NORMAL, color)
+            entry.modify_font(pango.FontDescription(fuente))
+            d.vbox.pack_start(entry)
+        d.show_all()
+        d.run()
+        d.destroy()
+
     def colorear_contenido(self, tv):
         """
         Asocia una función al treeview para resaltar los productos.
         """
+        self.add_help_button()
         def cell_func(column, cell, model, itr, numcol):
             ldpid = model[itr][-1]
             ldp = pclases.getObjetoPUID(ldpid)
@@ -2593,9 +2632,18 @@ class Presupuestos(Ventana, VentanaGenerica):
                     valor_ventana = self.wids['cbe_cliente'].child.get_text()
                     colname = "nombrecliente"
                 if colname == "obraID" and valor_ventana == None:
-                    self.objeto.obra = None
-                    valor_ventana = self.wids['cbe_obra'].child.get_text()
-                    colname = "nombreobra"
+                    cbe = self.wids['cbe_obra']
+                    valor_ventana = cbe.child.get_text().strip()
+                    # SAFETY DANCE!
+                    try:
+                        self.objeto.obra = pclases.Obra.selectBy(
+                                nombre = valor_ventana)[0]
+                        # Esto es por si ha escrito ex-ac-ta-men-te el nombre 
+                        # de la obra pero no la ha seleccionado del desplegable
+                        valor_ventana = self.objeto.obra.id
+                    except IndexError:
+                        self.objeto.obra = None
+                        colname = "nombreobra"
                 if colname == "cif":
                     _valor_ventana = utils.parse_cif(valor_ventana)
                     if _valor_ventana != valor_ventana:
@@ -3121,17 +3169,22 @@ def crear_pedido(presupuesto, numpedido, usuario):
 
 
 def crear_obra(presupuesto, usuario):
-    obra = pclases.Obra(
-            nombre = presupuesto.nombreobra, 
-            direccion = presupuesto.direccion, 
-            cp = presupuesto.cp, 
-            ciudad = presupuesto.ciudad, 
-            provincia = presupuesto.provincia, 
-            observaciones = "Creada automáticamente desde presupuesto.", 
-            pais = presupuesto.pais, 
-            generica = False)
-    obra.addCliente(presupuesto.cliente)
-    pclases.Auditoria.nuevo(obra, usuario, __file__)
+    # Voy a añadir un control extra para evitar que se sigan duplicando.
+    try:
+        obra = pclases.Obra.selectBy(nombre = presupuesto.nombreobra)[0]
+    except IndexError:
+        obra = pclases.Obra(
+                nombre = presupuesto.nombreobra, 
+                direccion = presupuesto.direccion, 
+                cp = presupuesto.cp, 
+                ciudad = presupuesto.ciudad, 
+                provincia = presupuesto.provincia, 
+                observaciones = "Creada automáticamente desde presupuesto.", 
+                pais = presupuesto.pais, 
+                generica = False)
+        pclases.Auditoria.nuevo(obra, usuario, __file__)
+    if presupuesto.cliente not in obra.clientes:
+        obra.addCliente(presupuesto.cliente)
     return obra
 
 

@@ -3725,7 +3725,9 @@ CREATE OR REPLACE FUNCTION fra_cobrada(idfra INTEGER,
         SELECT calcular_importe_cobrado_factura_venta($1, $2) INTO cobrado;
         SELECT calcular_importe_vencido_factura_venta($1, $2) INTO vencido;
         SELECT calcular_importe_no_vencido_factura_venta($1, $2) INTO no_vencido;
-        RETURN cobrado != 0 AND ABS(cobrado) >= ABS(vencido + no_vencido);
+        RETURN cobrado != 0 
+           AND ABS(ROUND(cobrado::NUMERIC, 2)) 
+            >= ABS(ROUND((vencido + no_vencido)::NUMERIC, 2));
     END;
     $BODY$ LANGUAGE plpgsql;    -- NEW! 1/08/2013
 
@@ -3803,7 +3805,9 @@ CREATE OR REPLACE FUNCTION fra_impagada(idfra INTEGER,
         SELECT calcular_importe_cobrado_factura_venta($1, $2) INTO cobrado;
         SELECT calcular_importe_vencido_factura_venta($1, $2) INTO vencido;
         SELECT calcular_importe_documentado_factura_venta($1, $2) INTO documentado;
-        RETURN cobrado + documentado >= 0 and cobrado + documentado < vencido;
+        RETURN cobrado + documentado >= 0 
+           AND ROUND((cobrado + documentado)::NUMERIC, 2) 
+                < ROUND(vencido::NUMERIC, 2);
     END;
     $$ LANGUAGE plpgsql;        -- NEW! 2/08/2013
 
