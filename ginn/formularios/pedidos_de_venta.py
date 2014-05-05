@@ -1986,6 +1986,7 @@ class PedidosDeVenta(Ventana):
         Guarda el contenido de los entry y demás widgets de entrada
         de datos en el objeto y lo sincroniza con la BD.
         """
+        campos_diferentes = self.es_diferente()
         if not self.usuario or self.usuario.nivel > NIVEL_VALIDACION:
             self.objeto.usuario = None # He cambiado algo después de 
             # validación manual (o no). Motivo suficiente para que si no es 
@@ -2108,6 +2109,10 @@ class PedidosDeVenta(Ventana):
                     # valor_por_defecto = fdp.id)
         self.objeto.formaDePagoID = idfdp
         self.objeto.syncUpdate()
+        pclases.Auditoria.modificado(self.objeto, self.usuario, __file__, 
+                "Pedido %s guardado. Campos modificados: %s" % (
+                    self.objeto.numpedido, 
+                    "; ".join(campos_diferentes)))
         self.actualizar_ventana()
         self.wids['b_guardar'].set_sensitive(False)
         # Vuelvo a activar el notificador
