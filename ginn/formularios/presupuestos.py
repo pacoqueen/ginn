@@ -520,6 +520,44 @@ class Presupuestos(Ventana, VentanaGenerica):
                            usuario = smtpuser, 
                            password = smtppass)
 
+    def enviar_correo_observaciones(self):
+        """
+        Al modificar las notas internas, se envía un correo electrónico 
+        al comercial con el texto "Oferta [no] validada. Se agregaron 
+        anotaciones internas..."
+        """
+        if self.usuario:
+            # Correo de riesgo de cliente
+            anotaciones_formateadas = "\n> "
+            anotaciones_formateadas += "\n> ".join(
+                    utils.wrap(self.objeto.observaciones,
+                    76).splitlines())
+            texto = "Oferta %d %svalidada.\n"\
+                    "Se agregaron anotaciones internas:\n\n"\
+                    "%s" % (
+                        self.objeto.id, 
+                        self.objeto.validado and "" or "no ", 
+                        anotaciones_formateadas)
+            servidor = self.usuario.smtpserver
+            smtpuser = self.usuario.smtpuser
+            smtppass = self.usuario.smtppassword
+            rte = self.usuario.email
+            dests = [d for d in self.select_correo_validador()]
+            comerciales = [self.objeto.comercial]
+            dests += [comercial.correoe for comercial in comerciales 
+                      if comercial.empleado.usuario.usuario != self.usuario]
+            if self.usuario and self.usuario.id == 1:
+                texto += "\n\n\nEl correo iba dirigido a: %s" % (
+                        "; ".join(dests))
+                dests = ["informatica@geotexan.com"]
+            enviar_correoe(rte, 
+                           dests,
+                           "Nuevas anotaciones en oferta %d" % self.objeto.id, 
+                           texto, 
+                           servidor = servidor, 
+                           usuario = smtpuser, 
+                           password = smtppass)
+
     def adjudicar(self, ch):
         if ch.get_active() != self.objeto.adjudicada:   # Es el usuario el 
                                                         # que ha hecho clic.
@@ -2617,7 +2655,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.objeto.notificador.activar(lambda: None)
         errores = []
         # Actualizo los datos del objeto
-        ha_cambiado_el_cliente = False
+        ha_cambiado_el_cliente = ha_cambiado_observaciones = False
         for colname in self.dic_campos:
             col = self.clase.sqlmeta.columns[colname]
             try:
@@ -2625,6 +2663,10 @@ class Presupuestos(Ventana, VentanaGenerica):
                 if (colname == "clienteID" 
                         and valor_ventana != self.objeto.cliente):
                     ha_cambiado_el_cliente = True
+                if (colname == "observaciones" 
+                        and valor_ventana != self.objeto.observaciones
+                        and valor_ventana.strip()):
+                    ha_cambiado_observaciones = True
                 if colname == "comercialID" and valor_ventana == -1:
                     valor_ventana = None
                 if colname == "clienteID" and valor_ventana == None:
@@ -2677,6 +2719,8 @@ class Presupuestos(Ventana, VentanaGenerica):
             pass    # CWT: Ver doc. de enviar_correo_riesgo
         if self.objeto.cerrado and self.debe_solicitar_validacion():
             self.enviar_correo_solicitud_validacion()
+        if ha_cambiado_observaciones:
+            self.enviar_correo_observaciones()
         if errores:
             utils.dialogo_info(titulo = "ERRORES AL GUARDAR", 
                     texto = "Se produjo un error al intentar guardar\n"
