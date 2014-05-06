@@ -694,5 +694,30 @@ def extract_data_from_abono(alb, fib, gtx, cem, otros):
                     dic[pv.puid][alb.puid]["cantidad"] = -1
 
 
+def convertir_a_listview(otv):
+    """
+    Convierte el TreeView en un ListView con los mismos datos que el original y 
+    lo devuelve.
+    """
+    ntv = gtk.TreeView()
+    ntv.set_name(otv.get_name())
+    omodel = otv.get_model()
+    tipos = [omodel.get_column_type(i) for i in range(omodel.get_n_columns())]
+    nmodel = gtk.ListStore(*tipos)
+    ntv.set_model(nmodel)
+    for fila in omodel:
+        nmodel.append([e for e in fila])
+    for ocol in otv.get_columns():
+        title = ocol.get_title()
+        ocell = ocol.get_cell_renderers()[0]
+        ncell = type(ocell)()
+        ncol = gtk.TreeViewColumn(title, ncell)
+        ncol.set_data("q_ncol", ocol.get_data("q_ncol"))
+        ncol.get_cell_renderers()[0].set_property('xalign', 
+                ocol.get_cell_renderers()[0].get_property('xalign')) 
+        ntv.append_column(ncol)
+    return ntv
+
+
 if __name__ == '__main__':
     t = ConsultaVentasPorProducto()
