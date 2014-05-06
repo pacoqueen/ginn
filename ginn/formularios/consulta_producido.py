@@ -568,7 +568,7 @@ class ConsultaProducido(Ventana):
             tipo = "a"  # Cuento el tiempo empleado como producción A para 
                         # el cálculo de productividad. Aunque no se haya 
                         # fabricado nada.
-            update_dic_producto(prod_rollos, es_rollo, tipo, 0.0, 
+            update_dic_producto(prod_pales, es_rollo, tipo, 0.0, 
                                 tiempo_teorico = mx.DateTime.DateTimeDelta(0), 
                                 tiempo_real = tiempo_real, 
                                 bultos = 0)
