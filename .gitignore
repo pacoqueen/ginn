@@ -60,3 +60,7 @@ CVS/*
 # KDE
 .directory
 
+# Glade
+*.glade#
+
+

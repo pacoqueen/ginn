@@ -250,24 +250,25 @@ class ConsultaConsumo(Ventana):
                     clase_c = bb.articulo.es_clase_c()
                     productoVenta = bb.articulo.productoVenta
                     key = "%d:V" % (productoVenta.id)
+                    peso_sin = bb.articulo.peso_sin
                     if key not in cons_cemento:
                         cons_cemento[key] = [
                             bb.articulo.productoVenta.descripcion,
-                            bb.articulo.peso_sin,
-                            clase_a and bb.peso_sin or 0.0, 
-                            clase_b and bb.peso_sin or 0.0, 
-                            clase_c and bb.peso_sin or 0.0, 
+                            peso_sin,
+                            clase_a and peso_sin or 0.0, 
+                            clase_b and peso_sin or 0.0, 
+                            clase_c and peso_sin or 0.0, 
                             bb.articulo.productoVenta.id,
                             'V',
                             "kg"]
                     else:
-                        cons_cemento[key][1] += bb.articulo.peso_sin
+                        cons_cemento[key][1] += peso_sin
                         if clase_a:
-                            cons_cemento[key][2] += bb.articulo.peso_sin
+                            cons_cemento[key][2] += peso_sin
                         elif clase_b:
-                            cons_cemento[key][3] += bb.articulo.peso_sin
+                            cons_cemento[key][3] += peso_sin
                         elif clase_c:
-                            cons_cemento[key][4] += bb.articulo.peso_sin
+                            cons_cemento[key][4] += peso_sin
             elif (pdp.es_de_rollos() and
                   self.wids['ch_geotextiles'].get_active()):
                 # Añado consumos de material adicional (ProductoCompra).
