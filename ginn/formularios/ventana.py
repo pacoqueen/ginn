@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2013  Francisco José Rodríguez Bogado                    #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado                    #
 #                          <frbogado@geotexan.com>                            #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
@@ -623,7 +623,7 @@ class Ventana:
         vacerca.set_license(open(os.path.join('..', 'gpl.txt')).read())
         vacerca.set_website('http://ginn.sf.net')
         vacerca.set_artists(['Iconos gartoon por Kuswanto (a.k.a. Zeus) <zeussama@gmail.com>'])
-        vacerca.set_copyright('Copyright 2005-2013  Francisco José Rodríguez Bogado, Diego Muñoz Escalante.')
+        vacerca.set_copyright('Copyright 2005-2014  Francisco José Rodríguez Bogado, Diego Muñoz Escalante.')
         vacerca.run()
         vacerca.destroy()
 

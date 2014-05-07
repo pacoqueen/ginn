@@ -834,7 +834,7 @@ class Menu:
         vacerca.set_website('http://ginn.sf.net')
         vacerca.set_artists(['Iconos gartoon por Kuswanto (a.k.a. Zeus) '
                              '<zeussama@gmail.com>'])
-        vacerca.set_copyright('Copyright 2005-2013  Francisco José Rodríguez'
+        vacerca.set_copyright('Copyright 2005-2014  Francisco José Rodríguez'
                               ' Bogado, Diego Muñoz Escalante.')
         vacerca.run()
         vacerca.destroy()
