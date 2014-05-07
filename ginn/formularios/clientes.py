@@ -1544,13 +1544,16 @@ class Clientes(Ventana):
             doc_from_db = self.objeto.get_documentoDePago().documento
         except AttributeError:
             doc_from_db = None
-        if doc_from_db and doc_from_db.upper() == self.objeto.documentodepago.upper():
+        if (doc_from_db 
+              and doc_from_db.upper() == self.objeto.documentodepago.upper()):
             self.objeto.documentodepago = doc_from_db
             self.objeto.syncUpdate()
             self.wids['e_documentodepago'].set_text(
                     self.objeto.documentodepago)
-            pclases.Auditoria.modificado(self.objeto, self.usuario, 
-                                         __file__)
+            pclases.Auditoria.modificado(self.objeto, self.usuario, __file__, 
+                    "Actualización automática de la forma de pago para "
+                    "hacerla coincidir con la descripción exacta de la tabla "
+                    "de documentos de pago válidos.")
         if doc_from_db and doc_from_db != self.objeto.documentodepago:
             if utils.dialogo(titulo = "CORREGIR DOCUMENTO DE PAGO", 
                     texto = "El cliente actual tiene como documento de pago:\n"
@@ -1566,7 +1569,9 @@ class Clientes(Ventana):
                 self.wids['e_documentodepago'].set_text(
                         self.objeto.documentodepago)
                 pclases.Auditoria.modificado(self.objeto, self.usuario, 
-                                             __file__)
+                        __file__, 
+                        "Corrección propuesta del texto de forma de pago "
+                        "aceptada por el usuario.")
                 self.objeto.make_swap()
         if pclases.DEBUG:
             print "9.- clientes.py::rellenar_widgets ->", time.time() - antes
@@ -1862,6 +1867,8 @@ class Clientes(Ventana):
                     print "Campo", c, ":", datos[c]
         # Desactivo el notificador momentáneamente
         cliente.notificador.set_func(lambda: None)
+        # Auditoría: Swap para comparar después con lo que se haya guardado.
+        self.objeto.make_swap()
         # Actualizo los datos del objeto
         for c in datos:
             # OJO: Hay que tener cuidado con los campos numéricos:
@@ -1929,7 +1936,6 @@ class Clientes(Ventana):
             copias = 0
         cliente.copiasFactura = copias 
         # Auditoría de cambios
-        pclases.Auditoria.modificado(cliente, self.usuario, __file__)
         if (asegurado_antes != cliente.riesgoAsegurado 
                 or concedido_antes != cliente.riesgoConcedido):
             pclases.Auditoria.modificado(cliente, self.usuario, __file__, 
@@ -1943,6 +1949,10 @@ class Clientes(Ventana):
         # Fuerzo la actualización de la BD y no espero a que SQLObject lo 
         # haga por mí:
         cliente.syncUpdate()
+        # Y ahora la auditoría, que comparará lo guardado en el objeto con los 
+        # valores "swapeados" (cacheados en el diccionario swap) antes de 
+        # guardar.
+        pclases.Auditoria.modificado(cliente, self.usuario, __file__)
         # Vuelvo a activar el notificador
         cliente.notificador.set_func(self.aviso_actualizacion)
         self.actualizar_ventana(deep_refresh = False)
