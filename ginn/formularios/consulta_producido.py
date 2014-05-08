@@ -1011,7 +1011,9 @@ def get_my_entry(funcname, wids):
     Devuelve el entry correspondiente a la función cuyo nombre se ha recibido.
     Es el entry que esa función actualizará con el valor devuelto y al que 
     moverá la barra de progreso.
-    `wids` es el diccionario de widgets de la ventana de consulta.
+    `wids` es el diccionario de widgets de la ventana de consulta. Lo paso a 
+    todas las funciones auxiliares para que no cambie el "signature" de las 
+    llamadas y así aprovechar el decorador memoize.
     """
     for nomentry, func in WIDSRESUMEN:
         try:

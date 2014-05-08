@@ -1700,7 +1700,10 @@ class Presupuestos(Ventana, VentanaGenerica):
             # Si es rollo, ajusto al múltiplo de rollos completos.
             if ldp.productoVenta and ldp.productoVenta.es_rollo():
                 cer = ldp.productoVenta.camposEspecificosRollo
-                resto = cantidad % cer.metrosCuadrados
+                try:
+                    resto = cantidad % cer.metrosCuadrados
+                except ZeroDivisionError:  # No está bien dado de alta el prod.
+                    resto = 0.0
                 if resto:
                     nueva_cantidad = cantidad + cer.metrosCuadrados - resto
                     if utils.dialogo(titulo = "¿CANTIDAD INCORRECTA?", 
