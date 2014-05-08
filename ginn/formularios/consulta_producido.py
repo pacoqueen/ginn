@@ -54,7 +54,8 @@ from formularios.ventana_progreso import VentanaProgreso
 from lib import charting
 pygtk.require('2.0')
 from formularios.consulta_ventas_por_producto import act_fecha
-    
+from framework.memoize import memoized
+import sys    
 
 class ConsultaProducido(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -774,39 +775,31 @@ class ConsultaProducido(Ventana):
         """
         Calcula totales del resumen únicamente en base a los partes recibidos.
         """
-        vpro = VentanaProgreso(padre = self.wids['ventana'])
-        vpro.mostrar()
-        widnames = (("e_pdp_ini_gtx", obtener_fechahorainicio_primer_parte),
-                    ("e_pdp_fin_gtx", obtener_fechahorafin_ultimo_parte), 
-                    ("e_pdp_dif_gtx", obtener_diferencia_horas_partes), 
-                    ("e_t_total_gtx", calcular_t_real_total), 
-                    ("e_t_total_a_gtx", calcular_t_teorico), 
-                    ("e_productividad_gtx", calcular_productividad_conjunta), 
-                    ("e_kg_teorico_a_gtx", calcular_kgs_teoricos_a), 
-                    ("e_kg_real_a_gtx", calcular_kgs_reales_a), 
-                    ("e_dif_real_teorico_gtx", calcular_diferencia_kgs_a), 
-                    ("e_porcentaje_gtx", calcular_porcentaje_kgs), 
-                    ("e_kg_real_b_gtx", calcular_kgs_reales_b), 
-                    ("e_kg_real_c_gtx", calcular_kgs_reales_c), 
-                    ("e_kg_real_total_gtx", calcular_kg_total), 
-                    ("e_desviaciones_gtx", calcular_desviaciones), 
-                    ("e_fibra_gtx", calcular_consumo), 
-                    ("e_dif_cons_prod_gtx", calcular_diff_cons_prod)
-                   )
+        # Como ya no hay ventana de progreso global, me aseguro de que el
+        # usuario no exporta ni imprime datos mientras se hacen los cálculos.
+        self.wids['b_imprimir'].set_sensitive(False)
+        self.wids['b_exportar'].set_sensitive(False)
+        #vpro = VentanaProgreso(padre = self.wids['ventana'])
+        #vpro = VentanaProgreso()
+        #vpro.mostrar()
+        widnames = WIDSRESUMEN 
         tot = len(widnames)
         i = 0.0
-        vpro.set_valor(i / tot, "Calculando resumen de geotextiles...")
+        #vpro.set_valor(i / tot, "Calculando resumen de geotextiles...")
         pdps.sort(key = lambda p: p.fechahorainicio)
+        pdps = tuple(pdps)  # Hashable y más rápido.
         for widname, func in widnames:
             i += 1
-            vpro.set_valor(i / tot, 
-                "Calculando resumen de geotextiles (%s)..." % (widname))
-            if func.func_code.co_argcount == 1:
-                result = func(pdps)
-            elif func.func_code.co_argcount == 3:
-                result = func(self.inicio, self.fin, pclases.RolloC)
-            elif func.func_code.co_argcount == 4:
-                result = func(pdps, self.inicio, self.fin, pclases.RolloC)
+            #vpro.set_valor(i / tot, 
+            #    "Calculando resumen de geotextiles (%s)..." % (widname))
+            entry = self.wids[widname]
+            if func.func.func_code.co_argcount == 2: # 'cause memoize decorator
+                result = func(pdps, self.wids)
+            elif func.func.func_code.co_argcount == 4:
+                result = func(self.inicio, self.fin, pclases.RolloC, self.wids)
+            elif func.func.func_code.co_argcount == 5:
+                result = func(pdps, self.inicio, self.fin, pclases.RolloC, 
+                              self.wids)
             else:
                 # No debería
                 result = None
@@ -824,8 +817,10 @@ class ConsultaProducido(Ventana):
                     str_result = str_horas(result)
                 else:
                     str_result = str(result)
-            self.wids[widname].set_text(str_result)
-        vpro.ocultar()
+            entry.set_text(str_result)
+        #vpro.ocultar()
+        self.wids['b_imprimir'].set_sensitive(True)
+        self.wids['b_exportar'].set_sensitive(True)
 
 
 def str_horas(fh):
@@ -1011,39 +1006,104 @@ def update_dic_producto(prod, pv, tipo, cantidad, metros = 0.0,
         pass
 
 ## Funciones auxiliares para el cálculo del resumen.
-def obtener_fechahorainicio_primer_parte(pdps):
+def get_my_entry(funcname, wids):
+    """
+    Devuelve el entry correspondiente a la función cuyo nombre se ha recibido.
+    Es el entry que esa función actualizará con el valor devuelto y al que 
+    moverá la barra de progreso.
+    `wids` es el diccionario de widgets de la ventana de consulta.
+    """
+    for nomentry, func in WIDSRESUMEN:
+        try:
+            func_mem_name = func.__name__
+        except AttributeError:  # Está "memoizada"
+            func_mem_name = func.func.__name__
+        if func_mem_name == funcname:
+            return wids[nomentry]
+    return None
+
+@memoized
+def obtener_fechahorainicio_primer_parte(pdps, wids):
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry.set_progress_fraction(0.5)
+    while gtk.events_pending(): gtk.main_iteration(False)
     try:
         res = min(pdps, key = lambda pdp: pdp.fechahorainicio).fechahorainicio
     except ValueError:
         res = None
+    entry.set_progress_fraction(1.0)
+    while gtk.events_pending(): gtk.main_iteration(False)
     return res
 
-def obtener_fechahorafin_ultimo_parte(pdps):
+@memoized
+def obtener_fechahorafin_ultimo_parte(pdps, wids):
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry.set_progress_fraction(0.5)
+    while gtk.events_pending(): gtk.main_iteration(False)
     try:
         res = max(pdps, key = lambda pdp: pdp.fechahorafin).fechahorafin
     except ValueError:
         res = None
+    entry.set_progress_fraction(1.0)
+    while gtk.events_pending(): gtk.main_iteration(False)
     return res
 
-def obtener_diferencia_horas_partes(pdps):
-    ini = obtener_fechahorainicio_primer_parte(pdps)
-    fin = obtener_fechahorafin_ultimo_parte(pdps)
+@memoized
+def obtener_diferencia_horas_partes(pdps, wids):
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry.set_progress_fraction(0.0)
+    while gtk.events_pending(): gtk.main_iteration(False)
+    ini = obtener_fechahorainicio_primer_parte(pdps, wids)
+    entry.set_progress_fraction(0.25)
+    while gtk.events_pending(): gtk.main_iteration(False)
+    fin = obtener_fechahorafin_ultimo_parte(pdps, wids)
+    entry.set_progress_fraction(0.5)
+    while gtk.events_pending(): gtk.main_iteration(False)
     try:
         res = fin - ini
     except TypeError, msg:
         res = None
+    entry.set_progress_fraction(1.0)
+    while gtk.events_pending(): gtk.main_iteration(False)
     return res
 
-def calcular_t_real_total(pdps):
-    res = sum([pdp.get_duracion() for pdp in pdps])
+@memoized
+def calcular_t_real_total(pdps, wids):
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry.set_progress_fraction(0.0)
+    while gtk.events_pending(): gtk.main_iteration(False)
+    i = 0.0
+    tot = len(pdps)
+    res = 0.0
+    for pdp in pdps:
+        i += 1
+        entry.set_progress_fraction(i / tot)
+        while gtk.events_pending(): gtk.main_iteration(False)
+        res += pdp.get_duracion()
+    entry.set_progress_fraction(1.0)
+    while gtk.events_pending(): gtk.main_iteration(False)
     return res
 
-def calcular_t_teorico(pdps):
-    res = sum([pdp.calcular_tiempo_teorico() for pdp in pdps])
+@memoized
+def calcular_t_teorico(pdps, wids):
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry.set_progress_fraction(0.0)
+    while gtk.events_pending(): gtk.main_iteration(False)
+    i = 0.0
+    tot = len(pdps)
+    res = 0.0
+    for pdp in pdps:
+        i += 1
+        entry.set_progress_fraction(i / tot)
+        while gtk.events_pending(): gtk.main_iteration(False)
+        res += pdp.calcular_tiempo_teorico()
     res = mx.DateTime.DateTimeDeltaFrom(hours = res)
+    entry.set_progress_fraction(1.0)
+    while gtk.events_pending(): gtk.main_iteration(False)
     return res
 
-def calcular_productividad_conjunta(pdps):
+@memoized
+def calcular_productividad_conjunta(pdps, wids):
     # Esto no lo puedo calcular como la media de los rendimientos a no ser 
     # que fuera media ponderada en función de los Kg producidos, que al final 
     # es más complejo que si lo calculamos con la misma fórmula pero aplicada 
@@ -1065,68 +1125,134 @@ def calcular_productividad_conjunta(pdps):
     #    res = kgs_a * 100.0 / kgs_teoricos
     #except ZeroDivisionError:
     #    res = 0.0
-    tiempo_teorico = calcular_t_teorico(pdps)
-    tiempo_real = calcular_t_real_total(pdps)
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry.set_progress_fraction(0.0)
+    while gtk.events_pending(): gtk.main_iteration(False)
+    tiempo_teorico = calcular_t_teorico(pdps, wids)
+    entry.set_progress_fraction(0.5)
+    while gtk.events_pending(): gtk.main_iteration(False)
+    tiempo_real = calcular_t_real_total(pdps, wids)
+    entry.set_progress_fraction(0.75)
+    while gtk.events_pending(): gtk.main_iteration(False)
     try:
         res = tiempo_teorico / tiempo_real * 100
     except ZeroDivisionError:
         res = 0.0   # No datos, no tiempo, no productividad.
+    entry.set_progress_fraction(1.0)
+    while gtk.events_pending(): gtk.main_iteration(False)
     return res
 
-def calcular_kgs_teoricos_a(pdps):
+@memoized
+def calcular_kgs_teoricos_a(pdps, wids):
     """
     Devuelve el total de Kgs de que deberían pesar los rollos A producidos    
     entre todos los partes recibidos.
     """
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry.set_progress_fraction(0.0)
+    while gtk.events_pending(): gtk.main_iteration(False)
     res = 0.0
+    i = 0.0
     for pdp in pdps:
+        entry.set_progress_fraction(i / len(pdps))
+        while gtk.events_pending(): gtk.main_iteration(False)
         for a in pdp.articulos:
             if a.es_clase_a():
                 try:
                     res += a.get_peso_teorico()
                 except TypeError:   # Sin peso teórico.
                     pass
+        i += 1
+    entry.set_progress_fraction(1.0)
+    while gtk.events_pending(): gtk.main_iteration(False)
     return res
 
-def calcular_kgs_reales_a(pdps):
+@memoized
+def calcular_kgs_reales_a(pdps, wids):
     """
     Devuelve los kgs reales SIN EMBALAJE producidos en A entre todos los 
     partes.
     """
-    res = sum([pdp.calcular_kilos_producidos_A() for pdp in pdps])
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry.set_progress_fraction(0.0)
+    while gtk.events_pending(): gtk.main_iteration(False)
+    i = 0.0
+    tot = len(pdps)
+    res = 0.0
+    for pdp in pdps:
+        i += 1
+        entry.set_progress_fraction(i / tot)
+        while gtk.events_pending(): gtk.main_iteration(False)
+        res += pdp.calcular_kilos_producidos_A()
+    entry.set_progress_fraction(1.0)
+    while gtk.events_pending(): gtk.main_iteration(False)
     return res
 
-def calcular_diferencia_kgs_a(pdps):
+@memoized
+def calcular_diferencia_kgs_a(pdps, wids):
     """
     Devuelve la diferencia entre los Kgs reales de A y los teóricos de A para 
     todos los partes.
     """
-    reales = calcular_kgs_reales_a(pdps)
-    teoricos = calcular_kgs_teoricos_a(pdps)
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry.set_progress_fraction(0.25)
+    while gtk.events_pending(): gtk.main_iteration(False)
+    reales = calcular_kgs_reales_a(pdps, wids)
+    entry.set_progress_fraction(0.5)
+    while gtk.events_pending(): gtk.main_iteration(False)
+    teoricos = calcular_kgs_teoricos_a(pdps, wids)
+    entry.set_progress_fraction(0.75)
+    while gtk.events_pending(): gtk.main_iteration(False)
     res = reales - teoricos
+    entry.set_progress_fraction(1.0)
+    while gtk.events_pending(): gtk.main_iteration(False)
     return res
 
-def calcular_porcentaje_kgs(pdps):
+@memoized
+def calcular_porcentaje_kgs(pdps, wids):
     """
     Devuelve el porcentaje que representa la diferencia entre kgs reales y 
     teóricos sobre los kilos teóricos de A que deberían haber dado los partes.
     """
-    diferencia = calcular_diferencia_kgs_a(pdps)
-    teoricos = calcular_kgs_teoricos_a(pdps)
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry.set_progress_fraction(0.25)
+    while gtk.events_pending(): gtk.main_iteration(False)
+    diferencia = calcular_diferencia_kgs_a(pdps, wids)
+    entry.set_progress_fraction(0.5)
+    while gtk.events_pending(): gtk.main_iteration(False)
+    teoricos = calcular_kgs_teoricos_a(pdps, wids)
+    entry.set_progress_fraction(0.75)
+    while gtk.events_pending(): gtk.main_iteration(False)
     try:
         res = diferencia * 100.0 / teoricos
     except ZeroDivisionError:
         res = 0.0
+    entry.set_progress_fraction(1.0)
+    while gtk.events_pending(): gtk.main_iteration(False)
     return res
 
-def calcular_kgs_reales_b(pdps):
+@memoized
+def calcular_kgs_reales_b(pdps, wids):
     """
     Devuelve los kgs de B reales sin embalaje producidos en los partes.
     """
-    res = sum([pdp.calcular_kilos_producidos_B() for pdp in pdps])
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry.set_progress_fraction(0.0)
+    while gtk.events_pending(): gtk.main_iteration(False)
+    i = 0.0
+    tot = len(pdps)
+    res = 0.0
+    for pdp in pdps:
+        i += 1
+        entry.set_progress_fraction(i / tot)
+        while gtk.events_pending(): gtk.main_iteration(False)
+        res += pdp.calcular_kilos_producidos_B()
+    entry.set_progress_fraction(1.0)
+    while gtk.events_pending(): gtk.main_iteration(False)
     return res
 
-def calcular_kgs_reales_c(fini, ffin, claseC):
+@memoized
+def calcular_kgs_reales_c(fini, ffin, claseC, wids):
     """
     Devuelve los kgs de C reales sin embalaje producidos entre las fechas 
     recibidas (la fecha final no entra) del tipo de clase C recibido 
@@ -1136,37 +1262,74 @@ def calcular_kgs_reales_c(fini, ffin, claseC):
     # Esto no se puede hacer así porque los artículos C no van en los partes 
     # de producción DE MOMENTO. Así que lo calculo mirando las fechas 
     # inicial y final de
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry.set_progress_fraction(0.0)
+    while gtk.events_pending(): gtk.main_iteration(False)
     res = 0.0
     objs = claseC.select(pclases.AND(claseC.q.fechahora >= fini, 
                                      claseC.q.fechahora < ffin))
-    res = sum([o.articulo.peso_sin for o in objs])
+    i = 0.0
+    tot = objs.count()
+    res = 0.0
+    for o in objs:
+        i += 1
+        entry.set_progress_fraction(i / tot)
+        while gtk.events_pending(): gtk.main_iteration(False)
+        res += o.articulo.peso_sin
+    entry.set_progress_fraction(1.0)
+    while gtk.events_pending(): gtk.main_iteration(False)
     return res
 
-def calcular_kg_total(pdps, fini, ffin, claseC):
+@memoized
+def calcular_kg_total(pdps, fini, ffin, claseC, wids):
     """
     Devuelve los kilos reales totales fabricados de A+B+C.
     """
-    A = calcular_kgs_reales_a(pdps)
-    B = calcular_kgs_reales_b(pdps)
-    C = calcular_kgs_reales_c(fini, ffin, claseC)
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry.set_progress_fraction(0.0)
+    while gtk.events_pending(): gtk.main_iteration(False)
+    A = calcular_kgs_reales_a(pdps, wids)
+    entry.set_progress_fraction(0.25)
+    while gtk.events_pending(): gtk.main_iteration(False)
+    B = calcular_kgs_reales_b(pdps, wids)
+    entry.set_progress_fraction(0.5)
+    while gtk.events_pending(): gtk.main_iteration(False)
+    C = calcular_kgs_reales_c(fini, ffin, claseC, wids)
+    entry.set_progress_fraction(0.75)
+    while gtk.events_pending(): gtk.main_iteration(False)
     res = A + B + C
+    entry.set_progress_fraction(1.0)
+    while gtk.events_pending(): gtk.main_iteration(False)
     return res
 
-def calcular_desviaciones(pdps, fini, ffin, claseC):
+@memoized
+def calcular_desviaciones(pdps, fini, ffin, claseC, wids):
     """
     Devuelve la suma de desviaciones (artículos B, artículos C y 
     diferencia entre A teóricos y A reales) sobre A.
     """
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry.set_progress_fraction(0.0)
+    while gtk.events_pending(): gtk.main_iteration(False)
     # Esto es casi pura programación funcional. Me va a costar mucho tiempo 
     # repitiendo llamadas a funciones para calcular los mismos resultados en 
     # varios sitios que en Erlang estaría totalmente optimizado. For sure!
-    diferencia_teoricos_reales = calcular_diferencia_kgs_a(pdps)
-    B = calcular_kgs_reales_b(pdps)
-    C = calcular_kgs_reales_c(fini, ffin, claseC)
+    diferencia_teoricos_reales = calcular_diferencia_kgs_a(pdps, wids)
+    entry.set_progress_fraction(0.25)
+    while gtk.events_pending(): gtk.main_iteration(False)
+    B = calcular_kgs_reales_b(pdps, wids)
+    entry.set_progress_fraction(0.5)
+    while gtk.events_pending(): gtk.main_iteration(False)
+    C = calcular_kgs_reales_c(fini, ffin, claseC, wids)
+    entry.set_progress_fraction(0.75)
+    while gtk.events_pending(): gtk.main_iteration(False)
     res = diferencia_teoricos_reales + B + C
+    entry.set_progress_fraction(1.0)
+    while gtk.events_pending(): gtk.main_iteration(False)
     return res
 
-def calcular_consumo(pdps):
+@memoized
+def calcular_consumo(pdps, wids):
     """
     Devuelve el "consumo" de materia prima en kgs de los partes de producción 
     recibidos.
@@ -1178,23 +1341,59 @@ def calcular_consumo(pdps):
     actualmente no consumen (DE MOMENTO) y además no pertenecen a partes de
     producción "estándar", así que no se le invocaría porque no habría pdps.
     """
-    try:
-        pdp = pdps[0]
-    except IndexError:  # No partes. No consumos.
-        res = 0.0
-    else:
-        res = sum([pdp.calcular_consumo_mp() for pdp in pdps])
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry.set_progress_fraction(0.0)
+    while gtk.events_pending(): gtk.main_iteration(False)
+    i = 0.0
+    tot = len(pdps)
+    res = 0.0
+    for pdp in pdps:
+        i += 1
+        entry.set_progress_fraction(i / tot)
+        while gtk.events_pending(): gtk.main_iteration(False)
+        res += pdp.calcular_consumo_mp()
+    entry.set_progress_fraction(1.0)
+    while gtk.events_pending(): gtk.main_iteration(False)
     return res
 
-def calcular_diff_cons_prod(pdps, fini, ffin, claseC):
+@memoized
+def calcular_diff_cons_prod(pdps, fini, ffin, claseC, wids):
     """
     Devuelve la diferencia entre los kilos producidos sin embalaje de A, B y C 
     con los kilos de materia prima cargados o consumidos por los partes.
     """
-    producido = calcular_kg_total(pdps, fini, ffin, claseC)
-    consumido = calcular_consumo(pdps)
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry.set_progress_fraction(0.25)
+    while gtk.events_pending(): gtk.main_iteration(False)
+    producido = calcular_kg_total(pdps, fini, ffin, claseC, wids)
+    entry.set_progress_fraction(0.50)
+    while gtk.events_pending(): gtk.main_iteration(False)
+    consumido = calcular_consumo(pdps, wids)
+    entry.set_progress_fraction(0.75)
+    while gtk.events_pending(): gtk.main_iteration(False)
     res = consumido - producido
+    entry.set_progress_fraction(1.0)
+    while gtk.events_pending(): gtk.main_iteration(False)
     return res
+
+WIDSRESUMEN = (("e_pdp_ini_gtx", obtener_fechahorainicio_primer_parte),
+               ("e_pdp_fin_gtx", obtener_fechahorafin_ultimo_parte), 
+               ("e_pdp_dif_gtx", obtener_diferencia_horas_partes), 
+               ("e_t_total_gtx", calcular_t_real_total), 
+               ("e_t_total_a_gtx", calcular_t_teorico), 
+               ("e_productividad_gtx", calcular_productividad_conjunta), 
+               ("e_kg_teorico_a_gtx", calcular_kgs_teoricos_a), 
+               ("e_kg_real_a_gtx", calcular_kgs_reales_a), 
+               ("e_dif_real_teorico_gtx", calcular_diferencia_kgs_a), 
+               ("e_porcentaje_gtx", calcular_porcentaje_kgs), 
+               ("e_kg_real_b_gtx", calcular_kgs_reales_b), 
+               ("e_kg_real_c_gtx", calcular_kgs_reales_c), 
+               ("e_kg_real_total_gtx", calcular_kg_total), 
+               ("e_desviaciones_gtx", calcular_desviaciones), 
+               ("e_fibra_gtx", calcular_consumo), 
+               ("e_dif_cons_prod_gtx", calcular_diff_cons_prod)
+              )
+
 
 if __name__ == '__main__':
     t = ConsultaProducido() 

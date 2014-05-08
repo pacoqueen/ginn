@@ -390,7 +390,9 @@ class ConsultaCompras(Ventana):
             entry = self.wids["e_fechafin"]
         else:
             return
-        fecha = utils.mostrar_calendario(fecha_defecto = utils.parse_fecha(entry.get_text()), padre = self.wids['ventana'])
+        fecha = utils.mostrar_calendario(fecha_defecto = utils.parse_fecha(
+                                                            entry.get_text()),
+                                         padre = self.wids['ventana'])
         entry.set_text(utils.str_fecha(fecha))
         dia, mes, anno = fecha
         if nombreboton == "b_fecha_inicio":

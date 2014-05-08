@@ -50,6 +50,9 @@ from framework import pclases
 #from framework import tests_coherencia
 from formularios import utils
 
+# Cuando vaya a meterle mano de nuevo, usar esta barra de progreso modo texto:
+# https://code.google.com/p/python-progressbar/source/checkout
+
 
 def fabricados_fuera_del_parte(pivote):
     """
