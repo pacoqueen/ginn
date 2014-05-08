@@ -437,10 +437,10 @@ class Ausencias(Ventana):
                                                 motivo = motivo)
                     pclases.Auditoria.nuevo(ausencia, self.usuario, __file__)
                 self.actualizar_ventana()
-            except ValueError:
+            except (ValueError, TypeError):
                 utils.dialogo_info(titulo = "VALOR INCORRECTO",
-                                   texto = "Debe teclear un número. Vuelva a intentarlo",
-                                   padre = self.wids['ventana'])
+                        texto = "Debe teclear un número. Vuelva a intentarlo",
+                        padre = self.wids['ventana'])
 
     def drop_ausencia(self, b):
         model, itr = self.wids['tv_ausencias'].get_selection().get_selected()
