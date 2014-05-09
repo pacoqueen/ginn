@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -62,11 +62,11 @@ def abrir_pdf(pdf):
     # saber cuándo se ha ejecutado bien y cuándo no.
     if os.name == 'posix':
         # OJO(Diego) Lo he cambiado por un problema de dependencias y el evince
-        if not ((not os.system("evince %s &" % pdf)) or \
-                (not os.system("acroread %s &" % pdf)) or \
-                (not os.system("xdg-open %s &" % pdf)) or \
-                (not os.system("gnome-open %s &" % pdf)) or \
-                (not os.system("xpdf %s &" % pdf))):
+        if not ((not os.system('evince "%s" &' % pdf)) or \
+                (not os.system('acroread "%s" &' % pdf)) or \
+                (not os.system('xdg-open "%s" &' % pdf)) or \
+                (not os.system('gnome-open "%s" &' % pdf)) or \
+                (not os.system('xpdf "%s" &' % pdf))):
             utils.dialogo_info(titulo = "VISOR PDF NO ENCONTRADO", 
                                texto = "No se encontró evince, acroread ni xpdf en el sistema.\nNo fue posible mostrar el archivo %s." % (pdf))
     else:

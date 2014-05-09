@@ -357,7 +357,7 @@ def go_from_presupuesto(presupuesto):
     else:
         texto_riesgo = None
     nomarchivo = os.path.join(gettempdir(), 
-                              "presupuesto_%s.pdf" % give_me_the_name_baby())
+            "%s.pdf" % plantilla_nombre_carta_compromiso(presupuesto))
     if presupuesto.texto:
         condicionado = "Condiciones particulares:\n" + presupuesto.texto
     else:
@@ -379,6 +379,13 @@ def go_from_presupuesto(presupuesto):
        datos_fiscales = datos_fiscales, 
        logo_marcado = logo_marcado)  
     return nomarchivo
+
+def plantilla_nombre_carta_compromiso(presupuesto):
+    """
+    Devuelve el nombre del fichero (sin extensión) para la carta de compromiso.
+    """
+    nombre = "CC oferta estudio (%d)" % presupuesto.id
+    return nombre
 
 
 if __name__ == "__main__":
