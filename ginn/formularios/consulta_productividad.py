@@ -56,7 +56,8 @@ class ConsultaProductividad(Ventana):
         """
         self.usuario = usuario
         global fin
-        Ventana.__init__(self, 'consulta_productividad.glade', objeto, usuario = usuario)
+        Ventana.__init__(self, 'consulta_productividad.glade', objeto, 
+                         usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_buscar/clicked': self.buscar,
                        'b_fecha_inicio/clicked': self.set_inicio,
@@ -401,7 +402,7 @@ class ConsultaProductividad(Ventana):
                     #        utils.float2str(productividad_actual))
                     #model[padre][6] = min(productividad_actual, 100)
                     productividad_actual=calcular_productividad_conjunta(
-                            pdps_dia)
+                            tuple(pdps_dia))
                     model[padre][5] = "%s %%" % (
                             utils.float2str(productividad_actual))
                     model[padre][6] = min(productividad_actual, 100)
@@ -444,7 +445,8 @@ class ConsultaProductividad(Ventana):
             #    productividad_actual /= nodos_hijos_por_dia
             #except ZeroDivisionError:
             #    productividad_actual = 100.0    # A falta de infinito...
-            productividad_actual = calcular_productividad_conjunta(pdps_dia)
+            productividad_actual = calcular_productividad_conjunta(
+                                                            tuple(pdps_dia))
             model[padre][5] = "%s %%" % (utils.float2str(productividad_actual))
             model[padre][6] = min(productividad_actual, 100)
 
@@ -466,7 +468,7 @@ class ConsultaProductividad(Ventana):
             #    total = sum(numeradores) / len(denominadores)
             #except ZeroDivisionError:
             #    total = 0.0
-            total = calcular_productividad_conjunta(partes)
+            total = calcular_productividad_conjunta(tuple(partes))
             # Campos especiales de "Sólo balas"
             if self.wids['r_balas'].get_active():
                 self.wids['label7'].set_text('Kilos producidos:')

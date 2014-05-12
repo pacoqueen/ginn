@@ -1015,14 +1015,16 @@ def get_my_entry(funcname, wids):
     todas las funciones auxiliares para que no cambie el "signature" de las 
     llamadas y así aprovechar el decorador memoize.
     """
-    for nomentry, func in WIDSRESUMEN:
-        try:
-            func_mem_name = func.__name__
-        except AttributeError:  # Está "memoizada"
-            func_mem_name = func.func.__name__
-        if func_mem_name == funcname:
-            return wids[nomentry]
-    return None
+    if wids:
+        for nomentry, func in WIDSRESUMEN:
+            try:
+                func_mem_name = func.__name__
+            except AttributeError:  # Está "memoizada"
+                func_mem_name = func.func.__name__
+            if func_mem_name == funcname:
+                return wids[nomentry]
+    return gtk.Entry()  # Entry "fantasma" para evitar errores si me invoca 
+                        # otra ventana.
 
 @memoized
 def obtener_fechahorainicio_primer_parte(pdps, wids):
@@ -1105,7 +1107,7 @@ def calcular_t_teorico(pdps, wids):
     return res
 
 @memoized
-def calcular_productividad_conjunta(pdps, wids):
+def calcular_productividad_conjunta(pdps, wids = None):
     # Esto no lo puedo calcular como la media de los rendimientos a no ser 
     # que fuera media ponderada en función de los Kg producidos, que al final 
     # es más complejo que si lo calculamos con la misma fórmula pero aplicada 
