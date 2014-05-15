@@ -540,10 +540,11 @@ class ListadoRollos(Ventana):
             rollos_defecto = ', '.join(rollos_defecto)
             from formularios import reports
             entrada, mostrar_marcado = self._dialogo_entrada(
-                                        titulo = 'ETIQUETAS', 
-                                        texto = "Introduzca los números de rollo, separados por coma, que desea etiquetar:",
-                                        valor_por_defecto = rollos_defecto,
-                                        padre = self.wids['ventana'])
+                    titulo = 'ETIQUETAS', 
+                    texto = "Introduzca los números de rollo, separados por "
+                            "coma, que desea etiquetar:",
+                    valor_por_defecto = rollos_defecto,
+                    padre = self.wids['ventana'])
             if entrada != None:
                 codigos = [cod.strip() for cod in entrada.split(",")]
                 temp = []

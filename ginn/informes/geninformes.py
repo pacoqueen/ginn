@@ -9600,7 +9600,9 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
                           (width - 0.3 * cm, height - 0.3 * cm))
 
             if mostrar_marcado and not rollo['defectuoso']:
-                c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', 'CE.png'),
+                c.drawImage(os.path.join(os.path.dirname(
+                                os.path.realpath(__file__)), 
+                                '..', 'imagenes', 'CE.png'),
                             width/2 - (2 * cm / 2),
                             height - 0.3 * cm - 0.1 * cm - 1.64 * cm,
                             width = 2 * cm,
