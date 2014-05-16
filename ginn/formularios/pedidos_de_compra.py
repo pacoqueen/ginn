@@ -1167,16 +1167,27 @@ class PedidosDeCompra(Ventana):
             proveedor = {}
             proveedor['nombre'] = pedido.proveedor.nombre
             proveedor['direccion'] = pedido.proveedor.direccion
-            proveedor['direccion2'] = "%s %s %s %s" % (pedido.proveedor.cp and "%s, " % (pedido.proveedor.cp) or "", 
-                                                       pedido.proveedor.ciudad, 
-                                                       pedido.proveedor.ciudad and "(%s)" % (pedido.proveedor.provincia) or pedido.proveedor.provincia, 
-                                                       pedido.proveedor.pais and "; %s" % (pedido.proveedor.pais) or "")
+            proveedor['direccion2'] = "%s %s %s %s" % (
+                    pedido.proveedor.cp 
+                        and "%s, " % (pedido.proveedor.cp) or "", 
+                    pedido.proveedor.ciudad, 
+                    pedido.proveedor.ciudad 
+                        and "(%s)" % (pedido.proveedor.provincia) 
+                        or pedido.proveedor.provincia, 
+                    pedido.proveedor.pais 
+                        and "; %s" % (pedido.proveedor.pais) or "")
             proveedor['telefono'] = pedido.proveedor.telefono
             proveedor['fax'] = pedido.proveedor.fax
             proveedor['cif'] = pedido.proveedor.cif
             proveedor['contacto'] = pedido.proveedor.contacto
             proveedor['formadepago'] = pedido.proveedor.formadepago
             proveedor['correoe'] = pedido.proveedor.correoe
+            if pedido.proveedor.es_extranjero():
+                # Para casos como el proveedor Bosnio con caracteres extraños 
+                # en la dirección.
+                for k in proveedor:
+                    proveedor[k] = geninformes.cambiar_caracteres_problematicos(
+                            proveedor[k])
             fecha = utils.str_fecha(pedido.fecha)
             descuento = self.wids['e_descuento'].get_text()
             iva = self.wids['e_iva'].get_text()
@@ -1195,36 +1206,65 @@ class PedidosDeCompra(Ventana):
                        'total': total}        
             lineas = []
             for l in pedido.lineasDePedidoDeCompra:
-                # if l.albaranEntrada != None:
-                #    continue    # Me salto las líneas que ya hayan sido "albaraneadas" (je).
-                cantidad = '%s %s' % (utils.float2str(l.cantidad), l.productoCompra.unidad)
+                cantidad = '%s %s' % (utils.float2str(l.cantidad), 
+                                      l.productoCompra.unidad)
                 if l.descuento != 0:
-                    precio = "%s (dto:%s %%)" % (utils.float2str(l.precio, 4, autodec = True), utils.float2str(l.descuento * 100, 0))
+                    precio = "%s (dto:%s %%)" % (
+                            utils.float2str(l.precio, 4, autodec = True), 
+                            utils.float2str(l.descuento * 100, 0))
                 else:
                     precio = utils.float2str(l.precio, 4, autodec = True)
                 textoEntrega = l.textoEntrega != None and l.textoEntrega or ""
+                if pedido.proveedor.es_extranjero():
+                    # Para casos como el proveedor Bosnio.
+                    textoEntrega = geninformes.cambiar_caracteres_problematicos(
+                            textoEntrega)
                 lineas.append({'codigo': l.productoCompra.codigo, 
                                'descripcion': l.productoCompra.descripcion, 
                                'cantidad': cantidad, 
                                'precio': precio,
-                               'entrega': "%s %s" % (utils.str_fecha(l.fechaEntrega), textoEntrega)})
+                               'entrega': "%s %s" % (
+                                   utils.str_fecha(l.fechaEntrega), 
+                                   textoEntrega)})
             bounds = self.wids['txt_entregas'].get_buffer().get_bounds()
-            txtEntregas = self.wids['txt_entregas'].get_buffer().get_text(bounds[0], bounds[1])
+            txtEntregas = self.wids['txt_entregas'].get_buffer().get_text(
+                    bounds[0], bounds[1])
             entregas = txtEntregas.split('\n')
             observaciones = pedido.observaciones
+            if pedido.proveedor.es_extranjero():
+                # Para casos como el proveedor Bosnio.
+                entregas = [geninformes.cambiar_caracteres_problematicos(e) 
+                            for e in entregas]
+                observaciones = geninformes.cambiar_caracteres_problematicos(
+                                    observaciones)
+                entrega0 = geninformes.cambiar_caracteres_problematicos(
+                                pedido.direccionEntrega0)
+                entrega1 = geninformes.cambiar_caracteres_problematicos(
+                                pedido.direccionEntrega1)
+                entrega2 = geninformes.cambiar_caracteres_problematicos(
+                                pedido.direccionEntrega2)
+                responsable0 = geninformes.cambiar_caracteres_problematicos(
+                                pedido.responsable0)
+                responsable1 = geninformes.cambiar_caracteres_problematicos(
+                                pedido.responsable1)
+            else:
+                entrega0 = pedido.direccionEntrega0
+                entrega1 = pedido.direccionEntrega1
+                entrega2 = pedido.direccionEntrega2
+                responsable0 = pedido.responsable0
+                responsable1 = pedido.responsable1
             forma_pago = pedido.formaDePago
-            #reports.abrir_pdf(geninformes.pedidoCompra(general, proveedor, lineas, entregas, observaciones, forma_pago))
             reports.abrir_pdf(geninformes.pedidoCompra(general, 
               proveedor, 
               lineas, 
               entregas, 
               observaciones, 
               forma_pago, 
-              pedido.direccionEntrega0, 
-              pedido.direccionEntrega1, 
-              pedido.direccionEntrega2, 
-              pedido.responsable0, 
-              pedido.responsable1, 
+              entrega0, 
+              entrega1, 
+              entrega2, 
+              responsable0, 
+              responsable1, 
               pedido.portes0, 
               pedido.portes1, 
               mostrar_precios = self.wids['ch_imprimir_precios'].get_active(),

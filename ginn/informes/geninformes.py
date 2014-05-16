@@ -178,7 +178,7 @@ def escribe(cadena_original, limite = None):
                           ' los acentos gráficos de "%s". Mensaje de la '\
                           'excepción: %s' % (cadena, msg)
                     cadena = ''
-    # TODO: No activar hasta que pruebe que funciona en producción. Sin esto
+    # DONE: No activar hasta que pruebe que funciona en producción. Sin esto
     # la única máquina que da problemas con la codificación es el Windows XP
     # del VirtualBox en la Debian de nostromo.
     try:
@@ -213,6 +213,8 @@ def cambiar_caracteres_problematicos(cadena):
                         ("ü", "u"), ("Ü", "U"), 
                         ("ç", "c"), ("Ç", "C"), 
                         ("(", ""), (")", ""), 
+                        ("č", "c"), ("Č", "C"), 
+                        ("ć", "c"), ("Ć", "C"), 
                         ("'", "")):
         cadena = cadena.replace(mala, buena)
     return cadena
@@ -2526,18 +2528,22 @@ def pedidoCompra(general, proveedor, lineas, entregas, observaciones,
                               "pedidoCompra_%s.pdf" % give_me_the_name_baby())
     c = canvas.Canvas(nomarchivo)
     # La cabecera
-    c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo),
+    c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+                             '..', 'imagenes', datos_empresa.logo),
                 lm+0.5*inch, height - 1.5*inch, 1.5*inch, 1.5*inch)
     c.setFont("Helvetica-Bold", 18)
     c.drawCentredString(width/2, tm+inch, escribe('PEDIDO DE COMPRA'))
     fuente = "Helvetica"
     tamano = 8
     if datos_empresa.bvqi:
-        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logoiso1),
+        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+                                 '..', 'imagenes', datos_empresa.logoiso1),
                     rm-1.75*inch, tm+0.65*inch, width = 119, height = 65)
         c.setFont(fuente, tamano - 2)
-        c.drawCentredString(rm-0.94*inch, tm+0.66*inch, escribe('Geotextiles CE 1035-CPD-ES033858'))
-        c.drawCentredString(rm-0.94*inch, tm+0.56*inch, escribe('Fibra CE 1035-CPD-9003712'))
+        c.drawCentredString(rm-0.94*inch, tm+0.66*inch, 
+                            escribe('Geotextiles CE 1035-CPD-ES033858'))
+        c.drawCentredString(rm-0.94*inch, tm+0.56*inch, 
+                            escribe('Fibra CE 1035-CPD-9003712'))
     c.setFont(fuente, tamano)
     linea = height-15
     if datos_empresa.direccion != datos_empresa.dirfacturacion:
@@ -2631,16 +2637,16 @@ def pedidoCompra(general, proveedor, lineas, entregas, observaciones,
     linea = arr
     linea = sigLinea()
     linea = sigLinea(12)
-    c.drawString(xCuadro, linea, escribe('EMPRESA: '+proveedor['nombre']))
+    c.drawString(xCuadro, linea, escribe('EMPRESA: ' + proveedor['nombre']))
     linea = sigLinea(12)
-    c.drawString(xCuadro, linea, escribe('DIRECCIÓN: '+proveedor['direccion']))
+    c.drawString(xCuadro, linea, escribe('DIRECCIÓN: ' + proveedor['direccion']))
     linea = sigLinea(12)
     c.drawString(xCuadro + c.stringWidth('DIRECCIÓN: ', fuente, tamano),
                  linea, escribe(proveedor['direccion2']))
     linea = sigLinea(12)
-    c.drawString(xCuadro, linea, escribe('TELEFONO: '+proveedor['telefono']))
-    c.drawString(xFax, linea, escribe('FAX: '+proveedor['fax']))
-    c.drawString(xCif, linea, escribe('C.I.F: '+proveedor['cif']))
+    c.drawString(xCuadro, linea, escribe('TELEFONO: ' + proveedor['telefono']))
+    c.drawString(xFax, linea, escribe('FAX: ' + proveedor['fax']))
+    c.drawString(xCif, linea, escribe('C.I.F: ' + proveedor['cif']))
     linea = sigLinea(12)
     if proveedor['contacto']:
         c.drawString(xCuadro, linea,
