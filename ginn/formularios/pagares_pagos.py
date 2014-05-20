@@ -136,15 +136,22 @@ class PagaresPagos(Ventana):
         self.wids['b_nuevo'].set_sensitive(True)
         self.wids['b_buscar'].set_sensitive(True)
         cols = (('Factura', 'gobject.TYPE_STRING', False, True, True, None),
+                ('Fecha factura', 'gobject.TYPE_STRING', 
+                    False, True, False, None),
                 ('Importe', 'gobject.TYPE_FLOAT', False, True, False, None),
-                ('Fecha vencimiento', 'gobject.TYPE_STRING', False, True, False, None),
-                ('Código Logic', 'gobject.TYPE_STRING', False, True, False, None),
+                ('Fecha vencimiento', 'gobject.TYPE_STRING', 
+                    False, True, False, None),
+                ('Código Logic', 'gobject.TYPE_STRING', 
+                    False, True, False, None),
                 ('ID', 'gobject.TYPE_INT64', False, False, False, None))
         utils.preparar_listview(self.wids['tv_pagos'], cols)
         self.wids['tv_pagos'].connect("row-activated", self.abrir_factura)
-        utils.rellenar_lista(self.wids['cbe_proveedor'], [(c.id, c.nombre) for c in pclases.Proveedor.select(orderBy="nombre")])
+        utils.rellenar_lista(self.wids['cbe_proveedor'], 
+                [(c.id, c.nombre) 
+                    for c in pclases.Proveedor.select(orderBy="nombre")])
         def iter_proveedor_seleccionado(completion, model, itr = None):
-            if itr == None:    # Si me ha llamado el changed, el iter habrá cambiado JUSTO AHORA.
+            if itr == None:     # Si me ha llamado el changed, el iter habrá 
+                                # cambiado JUSTO AHORA.
                 try:
                     itr = completion.get_active_iter()
                 except AttributeError:
@@ -154,11 +161,14 @@ class PagaresPagos(Ventana):
                 utils.combo_set_from_db(self.wids['cbe_proveedor'], idproveedor)
                 for p in [p for p in self.objeto.pagos if p.proveedor == None]:
                     p.proveedorID = idproveedor
-            self.wids['cbe_proveedor'].set_sensitive(len([p for p in self.objeto.pagos if p.proveedor != None]) == 0)
-        self.wids['cbe_proveedor'].child.get_completion().connect('match-selected', iter_proveedor_seleccionado)
-        self.wids['cbe_proveedor'].connect('changed', iter_proveedor_seleccionado, 
-                                                      self.wids['cbe_proveedor'].get_model(), 
-                                                      self.wids['cbe_proveedor'].get_active_iter())
+            self.wids['cbe_proveedor'].set_sensitive(
+                    len([p for p in self.objeto.pagos if p.proveedor]) == 0)
+        self.wids['cbe_proveedor'].child.get_completion().connect(
+                'match-selected', iter_proveedor_seleccionado)
+        self.wids['cbe_proveedor'].connect('changed', 
+                iter_proveedor_seleccionado, 
+                self.wids['cbe_proveedor'].get_model(), 
+                self.wids['cbe_proveedor'].get_active_iter())
 
     def abrir_factura(self, tv, path, view_column):
         model = tv.get_model()
@@ -305,14 +315,19 @@ class PagaresPagos(Ventana):
                 utils.combo_set_from_db(self.wids['cbe_proveedor'], self.objeto.pagos[0].facturaCompra.proveedor.id)
             except AttributeError:
                 try:
-                    utils.combo_set_from_db(self.wids['cbe_proveedor'], self.objeto.pagos[0].proveedor.id)
+                    utils.combo_set_from_db(self.wids['cbe_proveedor'], 
+                            self.objeto.pagos[0].proveedor.id)
                 except AttributeError:
                     utils.combo_set_from_db(self.wids['cbe_proveedor'], -1)
         for c in self.objeto.pagos:
-            model.append((c.facturaCompra != None and c.facturaCompra.numfactura or c.observaciones, 
+            model.append((c.facturaCompra != None 
+                            and c.facturaCompra.numfactura or c.observaciones,
+                          c.facturaCompra 
+                            and utils.str_fecha(c.facturaCompra.fecha) or "",
                           c.importe, 
                           utils.str_fecha(c.fecha), 
-                          c.logicMovimientos and c.logicMovimientos.get_codigo() or "", 
+                          c.logicMovimientos 
+                            and c.logicMovimientos.get_codigo() or "", 
                           c.id))
 
     # --------------- Manejadores de eventos ----------------------------
@@ -360,22 +375,27 @@ class PagaresPagos(Ventana):
         la ventana de resultados.
         """
         pagare = self.objeto
-        a_buscar = utils.dialogo_entrada("Introduzca fecha o número de factura:", "BUSCAR PAGARÉ", padre = self.wids['ventana'])
+        a_buscar = utils.dialogo_entrada(
+                "Introduzca fecha o número de factura:", "BUSCAR PAGARÉ", 
+                padre = self.wids['ventana'])
         if a_buscar != None:
             if a_buscar.count('/') == 2:
                 fecha = utils.parse_fecha(a_buscar) 
-                resultados = pclases.PagarePago.select(pclases.OR(pclases.PagarePago.q.fechaEmision == fecha, 
-                                                                     pclases.PagarePago.q.fechaPago == fecha))
+                resultados = pclases.PagarePago.select(
+                        pclases.OR(pclases.PagarePago.q.fechaEmision == fecha, 
+                                   pclases.PagarePago.q.fechaPago == fecha))
                 lon = resultados.count()
             elif a_buscar == "":
                 resultados = pclases.PagarePago.select()
                 lon = resultados.count()
             else:
-                facturas = pclases.FacturaCompra.select(pclases.FacturaCompra.q.numfactura.contains(a_buscar))
+                facturas = pclases.FacturaCompra.select(
+                        pclases.FacturaCompra.q.numfactura.contains(a_buscar))
                 resultados = []
                 for f in facturas:
                     for c in f.pagos:
-                        if c.pagarePago != None and c.pagarePago not in resultados:
+                        if (c.pagarePago != None 
+                                and c.pagarePago not in resultados):
                             resultados.append(c.pagarePago)
                 lon = len(resultados)
             if lon > 1:
@@ -388,7 +408,11 @@ class PagaresPagos(Ventana):
             elif lon < 1:
                 ## Sin resultados de búsqueda
                 utils.dialogo_info('SIN RESULTADOS', 
-                                   'La búsqueda no produjo resultados.\nPruebe a cambiar el texto buscado o déjelo en blanco para ver una lista completa.\n(Atención: Ver la lista completa puede resultar lento si el número de elementos es muy alto)', padre = self.wids['ventana'])
+                    'La búsqueda no produjo resultados.\nPruebe a cambiar el'
+                    ' texto buscado o déjelo en blanco para ver una lista'
+                    ' completa.\n(Atención: Ver la lista completa puede'
+                    ' resultar lento si el número de elementos es muy alto)', 
+                    padre = self.wids['ventana'])
                 return
             ## Un único resultado
             # Primero anulo la función de actualización
