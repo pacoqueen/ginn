@@ -152,11 +152,11 @@ class ConsumoBalasPartida(Ventana):
         elimina la partida de la BD).
         """
         model, path = self.wids['tv_gtx'].get_selection().get_selected()
-        idpartida = model[path][-1]
         try:
+            idpartida = model[path][-1]
             partida = pclases.Partida.get(idpartida)
         except:
-            return
+            return  # Partida ya borrada, path es None, etc...
         partida.partidaCarga = None
         self.actualizar_ventana()
 
