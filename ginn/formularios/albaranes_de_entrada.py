@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -361,7 +361,8 @@ class AlbaranesDeEntrada(Ventana):
         cellcombo.connect("edited", guardar_combo, tv.get_model(), numcol, model)
         #column.pack_start(cellcombo)
         #column.set_attributes(cellcombo, text = numcol)
-        tv.insert_column_with_attributes(numcol, "          Silo          ", cellcombo, text = numcol)
+        tv.insert_column_with_attributes(numcol, "          Silo          ", 
+                cellcombo, text = numcol)
 
     def anular_carga_y_crear_nueva(self, ldc, silo):
         """
@@ -376,7 +377,8 @@ class AlbaranesDeEntrada(Ventana):
                 carga_anterior = ldc.cargaSilo
                 ldc.cargaSilo = None
                 ldc.silo = None
-                carga_anterior.destroy(usuario = self.usuario, ventana = __file__)
+                carga_anterior.destroy(usuario = self.usuario, 
+                                       ventana = __file__)
             except:
                 utils.dialogo_info(titulo = "OPERACIÓN NO PERMITIDA", 
                                    texto="No puede cambiar el silo de carga.", 
@@ -409,8 +411,8 @@ class AlbaranesDeEntrada(Ventana):
             iva = utils.parse_porcentaje(texto, True)
         except:
             utils.dialogo_info(titulo = "ERROR", 
-                               texto = "La cantidad %s no es un número válido." % (texto), 
-                               padre = self.wids['ventana'])
+                   texto = "La cantidad %s no es un número válido." % (texto), 
+                   padre = self.wids['ventana'])
             return
         model = self.wids['tv_ldvs'].get_model()
         idldc = model[path][-1]
@@ -423,8 +425,8 @@ class AlbaranesDeEntrada(Ventana):
             descuento = utils.parse_porcentaje(texto, True)
         except:
             utils.dialogo_info(titulo = "ERROR", 
-                               texto = "La cantidad %s no es un número válido." % (texto), 
-                               padre = self.wids['ventana'])
+                   texto = "La cantidad %s no es un número válido." % (texto), 
+                   padre = self.wids['ventana'])
             return
         model = self.wids['tv_ldvs'].get_model()
         idldc = model[path][-1]
@@ -509,7 +511,7 @@ class AlbaranesDeEntrada(Ventana):
                               utils.float2str(l.cantidad, 2),
                               utils.float2str(l.precio, 4, autodec = True),
                               "%s %%" % (utils.float2str(l.iva * 100, 0)),
-                              "%s %%" % (utils.float2str(l.descuento * 100, 0)),
+                              "%s %%" % (utils.float2str(l.descuento*100, 0)),
                               utils.float2str(l.get_subtotal(iva = True)),
                               l.silo and l.silo.nombre or "", 
                               l.pedidoCompra 
@@ -782,6 +784,9 @@ class AlbaranesDeEntrada(Ventana):
                         padre = self.wids['ventana'])
         if numalbaran == None: 
             return
+        proveedor = utils.dialogo_proveedor(self.wids['ventana'])
+        if not proveedor:
+            return
         if albaran != None: albaran.notificador.set_func(lambda : None)
         almacenes = [(a.id, a.nombre) 
                      for a in pclases.Almacen.select(
@@ -800,13 +805,14 @@ class AlbaranesDeEntrada(Ventana):
             return
         albaran = pclases.AlbaranEntrada(fecha = mx.DateTime.localtime(),
                                          numalbaran = numalbaran,
-                                         proveedor = None, 
+                                         proveedor = proveedor, 
                                          repuestos = False, 
                                          almacenID = almo)
         pclases.Auditoria.nuevo(albaran, self.usuario, __file__)
         utils.dialogo_info('ALBARÁN CREADO', 
-                           'El albarán %s ha sido creado.\nComplete la información asociando entradas al mismo.' % str(albaran.numalbaran),
-                           padre = self.wids['ventana'])
+           'El albarán %s ha sido creado.\nComplete la información asociando '
+           'entradas al mismo.' % str(albaran.numalbaran),
+           padre = self.wids['ventana'])
         albaran.notificador.set_func(self.aviso_actualizacion)
         self.objeto = albaran
         self.actualizar_ventana()

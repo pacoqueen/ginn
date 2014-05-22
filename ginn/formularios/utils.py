@@ -4415,6 +4415,31 @@ def sanitize(cad, strict = False):
         cad = filtrar_tildes(cad)
     return cad
 
+def dialogo_proveedor(padre = None, inhabilitados = False):
+    """
+    Muestra un diálogo con un combo de proveedores. Devuelve el objeto 
+    proveedor o None si se cancela.
+    Si inhabilitados es True, incluye también proveedores deshabilitados.
+    """
+    from framework import pclases
+    if not inhabilitados:
+        proveedores = pclases.Proveedor.select(
+                pclases.Proveedor.q.inhabilitado == False, 
+                orderBy = "nombre")
+    else:
+        proveedores = pclases.Proveedor.select(orderBy = "nombre")
+    ops = [(p.id, p.nombre) for p in proveedores]
+    res = dialogo_combo(titulo = "SELECCIONE UN PROVEEDOR", 
+        texto = "Seleccione un proveedor de la siguiente lista:", 
+        ops = ops, 
+        padre = padre)
+    if res:
+        try:
+            res = pclases.Proveedor.get(res)
+        except:     # Proveedor borrado durante el proceso.
+            res = None 
+    return res
+
 
 if __name__=="__main__":
     print dialogo_radio(titulo='Seleccione una opción', 
