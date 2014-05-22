@@ -1364,6 +1364,19 @@ class Presupuestos(Ventana, VentanaGenerica):
                 ("Pendiente", "gobject.TYPE_FLOAT", False, False, True, None), 
                 ("PUID", "gobject.TYPE_STRING", False, False, False, None))
         utils.preparar_listview(self.wids["tv_ofertado"], cols)
+        from formularios.custom_widgets import starhscale
+        self.wids['rating'] = starhscale.StarHScale(max_stars = 5)
+        self.wids['rating'].set_sensitive(False)
+        b_ayuda = gtk.Button(stock = gtk.STOCK_HELP)
+        def show_hint(boton):
+            utils.dialogo_info(titulo = "RATING", 
+                    texto = pclases.Cliente.calcular_rating.__doc__, 
+                    padre = self.wids['ventana'])
+        b_ayuda.connect("clicked", show_hint)
+        hbox = gtk.HBox()
+        hbox.pack_start(self.wids['rating'], gtk.FILL)
+        hbox.pack_start(b_ayuda, gtk.FILL)
+        self.wids['cbe_cliente'].parent.pack_start(hbox, gtk.FILL)
 
     def build_tv_presupuestos_no_validados(self):
         cols = (('Presupuesto','gobject.TYPE_STRING',False,True,True,None), 
@@ -2356,9 +2369,11 @@ class Presupuestos(Ventana, VentanaGenerica):
             else:
                 strcredito = utils.float2str(credito)
             strfdp = cliente.textoformacobro
+            self.wids['rating'].set_value(cliente.calcular_rating())
         else:
             strcredito = "Nuevo cliente. Sin datos de control de riesgo."
             strfdp = "No tiene"
+            self.wids['rating'].set_value(0)
         self.wids['cbe_cliente'].set_tooltip_text(
             "Crédito disponible (incluyendo el importe del presente"
             " presupuesto): %s\n"

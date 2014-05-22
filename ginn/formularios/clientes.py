@@ -1215,8 +1215,7 @@ class Clientes(Ventana):
         tabla.resize(tabla.get_property("n-rows") + 1, 
                      tabla.get_property("n-columns"))
         from formularios.custom_widgets import starhscale
-        self.wids['rating'] = starhscale.StarHScale(
-                max_stars = 5)
+        self.wids['rating'] = starhscale.StarHScale(max_stars = 5)
         self.wids['rating'].set_sensitive(False)
         f = tabla.get_property("n-rows")
         tabla.attach(gtk.Label("Calificación"), 0, 1, f, f + 1, gtk.FILL, gtk.FILL)
