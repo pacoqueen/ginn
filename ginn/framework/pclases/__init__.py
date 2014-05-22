@@ -9122,9 +9122,22 @@ class AlbaranEntrada(SQLObject, PRPCTOO):
         Devuelve el número de líneas de venta del albarán 
         que ya han sido facturadas.
         """
-        lineas_facturadas = [ldc for ldc in self.lineasDeCompra if ldc.facturaCompraID != None]
-            # Acceder a ...ID es más rápido que acceder al objeto en sí, aunque sea solo para comparar si no es None.
+        lineas_facturadas = [ldc for ldc in self.lineasDeCompra 
+                             if ldc.facturaCompraID]
+            # Acceder a ...ID es más rápido que acceder al objeto en sí, 
+            # aunque sea solo para comparar si no es None.
         return len(lineas_facturadas)
+
+    def contar_lineas_no_facturadas(self):
+        """
+        Devuelve el número de líneas de venta del albarán 
+        que todavía han sido facturadas.
+        """
+        lineas_no_facturadas = [ldc for ldc in self.lineasDeCompra 
+                                if not ldc.facturaCompraID]
+            # Acceder a ...ID es más rápido que acceder al objeto en sí, 
+            # aunque sea solo para comparar si no es None.
+        return len(lineas_no_facturadas)
 
     def get_facturas(self):
         """
@@ -9132,7 +9145,8 @@ class AlbaranEntrada(SQLObject, PRPCTOO):
         """
         facturas = []
         for ldc in self.lineasDeCompra:
-            if ldc.facturaCompraID != None and ldc.facturaCompra not in facturas:
+            if (ldc.facturaCompraID != None 
+                    and ldc.facturaCompra not in facturas):
                 facturas.append(ldc.facturaCompra)
         return facturas
 
@@ -9146,8 +9160,10 @@ class AlbaranEntrada(SQLObject, PRPCTOO):
                 pedidos.append(ldc.pedidoCompra)
         return pedidos
 
-    facturasCompra = property(get_facturas, doc = "Facturas relacionadas con el albarán de entrda.")
-    pedidosCompra = property(get_pedidos, doc = 'Lista de objetos "pedido de compra" servidos en este albarán')
+    facturasCompra = property(get_facturas, 
+        doc = "Facturas relacionadas con el albarán de entrda.")
+    pedidosCompra = property(get_pedidos, 
+        doc = 'Lista de objetos "pedido de compra" servidos en este albarán')
 
 
 cont, tiempo = print_verbose(cont, total, tiempo)

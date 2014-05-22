@@ -273,11 +273,11 @@ class FacturasDeEntrada(Ventana):
         filas_res = []
         for r in resultados:
             if r.proveedor != None:
-                proveedor = r.proveedor.nombre
+                nombre_proveedor = r.proveedor.nombre
             else:
-                proveedor = ''
+                nombre_proveedor = ''
             filas_res.append((r.id, r.numalbaran, utils.str_fecha(r.fecha), 
-                              proveedor, ))
+                              nombre_proveedor))
         idalbaran = utils.dialogo_resultado(filas_res,
             titulo = 'Seleccione albarán',
             cabeceras = ('ID Interno', 'Num. Albarán', 'Fecha', 'Proveedor'), 
@@ -302,19 +302,17 @@ class FacturasDeEntrada(Ventana):
                                        'NÚMERO DE ALBARÁN', 
                                        padre = self.wids['ventana'])
         if codigo != None:
-            albaranes = pclases.AlbaranEntrada.select(
-                    pclases.AlbaranEntrada.q.numalbaran.contains(codigo))
-            encontrados = albaranes.count()
             proveedor = utils.combo_get_value(self.wids['cmbe_proveedor'])
             if proveedor == None:
-                albaranes = [a for a in albaranes 
-                        if [ldc for ldc in a.lineasDeCompra 
-                            if ldc.facturaCompra == None] != []]
+                albaranes = pclases.AlbaranEntrada.select(
+                        pclases.AlbaranEntrada.q.numalbaran.contains(codigo))
             else:
-                albaranes = [a for a in albaranes 
-                             if [ldc for ldc in a.lineasDeCompra 
-                                 if ldc.facturaCompra == None] != [] 
-                                    and a.proveedorID == proveedor]
+                albaranes = pclases.AlbaranEntrada.select(pclases.AND(
+                        pclases.AlbaranEntrada.q.numalbaran.contains(codigo), 
+                        pclases.AlbaranEntrada.q.proveedorID == proveedor))
+            encontrados = albaranes.count()
+            albaranes = [a for a in albaranes 
+                         if a.contar_lineas_no_facturadas()] 
             if len(albaranes) > 1:
                 idsalbaranes = self.refinar_busqueda_albaran(albaranes)
                 if idsalbaranes != None and len(idsalbaranes) > 0:
@@ -1130,12 +1128,12 @@ class FacturasDeEntrada(Ventana):
                             defecto = range(len(filas)))
                 if lineas[0] > 0:
                     self.objeto.anular_vistos_buenos()
-                for idl in lineas:
-                    l = pclases.LineaDeCompra.get(idl)
-                    if l.facturaCompra == None:
-                        l.facturaCompra = factura
-                if self.objeto.proveedorID == None:
-                    self.objeto.proveedor = albaran.proveedor
+                    for idl in lineas:
+                        l = pclases.LineaDeCompra.get(idl)
+                        if l.facturaCompra == None:
+                            l.facturaCompra = factura
+                    if self.objeto.proveedorID == None:
+                        self.objeto.proveedor = albaran.proveedor
                 self.actualizar_ventana()
                 # ¿Ves? Al final lo hemos tenido que quitar. 
                 # Ains, Minglanillas...

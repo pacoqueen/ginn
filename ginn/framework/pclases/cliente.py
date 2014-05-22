@@ -293,7 +293,8 @@ class Cliente(SQLObject, PRPCTOO):
         if fechafin:
             criterio = AND(criterio, FacturaVenta.q.fecha <= fechafin)
             criteriopre = AND(criteriopre, Prefactura.q.fecha >= fechaini)
-        return [f for f in FacturaVenta.select(criterio)] + [f for f in Prefactura.select(criterio)]
+        return ([f for f in FacturaVenta.select(criterio)] 
+                + [f for f in Prefactura.select(criterio)])
 
     def calcular_comprado(self, fechaini = None, fechafin = None):
         """
@@ -833,4 +834,23 @@ class Cliente(SQLObject, PRPCTOO):
                   "ERROR: La empresa no está en la tabla de clientes."
             return 0
         return empresa.id
+
+    def get_quality(self):
+        """
+        Devuelve la "calidad" del cliente en una escala de 1 a 5.
+        0 = Cliente no evaluado: Es nuevo o no hay datos suficientes todavía.
+        1 = Cliente a evitar: Riesgo concedido cero.
+        2 = Cliente malo: No paga.
+        3 = Cliente regular: Paga tarde.
+        4 = Cliente bueno: Paga bien.
+        5 = Cliente excelente: Compra mucho y paga pronto.
+        """
+        quality = 0
+        if self.riesgoConcedido == 0.0:
+            quality = 1
+        else:
+            pass
+            #for 
+        return quality
+        
 

@@ -457,12 +457,12 @@ class ConsultaProductividad(Ventana):
         # XXX
         if partes != []:
             # total = total / len(partes)    
-            numeradores = [r[-2] 
-                           for r in self.wids['tv_datos'].get_model() 
-                           if r.parent == None]
-            denominadores = [r 
-                             for r in self.wids['tv_datos'].get_model() 
-                             if r.parent == None]
+            #numeradores = [r[-2] 
+            #               for r in self.wids['tv_datos'].get_model() 
+            #               if r.parent == None]
+            #denominadores = [r 
+            #                 for r in self.wids['tv_datos'].get_model() 
+            #                 if r.parent == None]
             # ¿Los peores nombres de variables de la historia?
             #try:
             #    total = sum(numeradores) / len(denominadores)

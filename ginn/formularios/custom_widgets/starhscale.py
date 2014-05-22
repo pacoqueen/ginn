@@ -140,6 +140,136 @@ STAR_PIXMAP = ["22 22 77 1",
 "                      ",
 "                      "]
 
+PIXMAP_SIZE = 32
+STAR_PIXMAP = ["32 32 95 2",
+"   c None",
+".  c #6F3008",
+"+  c #783C13",
+"@  c #C0985B",
+"#  c #F4DA8F",
+"$  c #B3884D",
+"%  c #FEE799",
+"&  c #76390E",
+"*  c #FEE185",
+"=  c #763A0F",
+"-  c #A77539",
+";  c #FCD876",
+">  c #FEDB78",
+",  c #FCDE83",
+"'  c #B5883A",
+")  c #FFD76F",
+"!  c #B6853F",
+"~  c #F6C95C",
+"{  c #FED261",
+"]  c #F7CA6F",
+"^  c #824411",
+"/  c #9B5F1D",
+"(  c #B47A2A",
+"_  c #CB9335",
+":  c #DAA33C",
+"<  c #E8B344",
+"[  c #FFCB4F",
+"}  c #FFD375",
+"|  c #E8BA64",
+"1  c #D9A051",
+"2  c #CA9046",
+"3  c #B37837",
+"4  c #9A5E25",
+"5  c #824415",
+"6  c #834310",
+"7  c #F1BC48",
+"8  c #F9BE50",
+"9  c #FBB943",
+"0  c #ECA750",
+"a  c #82400E",
+"b  c #915116",
+"c  c #FFBC36",
+"d  c #FFB828",
+"e  c #FAB458",
+"f  c #8E4B12",
+"g  c #8C4D14",
+"h  c #FECA4E",
+"i  c #FFAC20",
+"j  c #FFA41B",
+"k  c #FAB842",
+"l  c #8A4711",
+"m  c #904D0D",
+"n  c #F7B541",
+"o  c #EE9D31",
+"p  c #8F480F",
+"q  c #89460C",
+"r  c #88420E",
+"s  c #85420A",
+"t  c #FEAB1F",
+"u  c #FEA31A",
+"v  c #85400B",
+"w  c #85420B",
+"x  c #FF9E15",
+"y  c #E9991C",
+"z  c #E88C12",
+"A  c #FBA01A",
+"B  c #FF991F",
+"C  c #FB961E",
+"D  c #773609",
+"E  c #A0550C",
+"F  c #FF8E18",
+"G  c #A0500D",
+"H  c #C77016",
+"I  c #C76911",
+"J  c #EC8B1C",
+"K  c #BD6310",
+"L  c #773608",
+"M  c #BB6217",
+"N  c #EC8215",
+"O  c #723208",
+"P  c #F58816",
+"Q  c #F99729",
+"R  c #F59428",
+"S  c #CF6F1C",
+"T  c #C1630E",
+"U  c #793609",
+"V  c #F49327",
+"W  c #D0701C",
+"X  c #773508",
+"Y  c #C2630E",
+"Z  c #FB8C25",
+"`  c #F68823",
+" . c #7E3A0B",
+".. c #CD6E1B",
+"+. c #843D09",
+"                            . . . .                             ",
+"                            . . . .                             ",
+"                          . . . . . .                           ",
+"                          . . + + . .                           ",
+"                        . . . @ @ . . .                         ",
+"                        . . . # # . . .                         ",
+"                      . . . $ % % $ . . .                       ",
+"                      . . & * * % % = . .                       ",
+"                    . . . - * * * * - . . .                     ",
+"                . . . . . ; > * * * , . . . . .                 ",
+"    . . . . . . . . . . ' ) ) > > > > ! . . . . . . . . . .     ",
+". . . . . . . . . . . . ~ { { ) ) ) > ] . . . . . . . . . . . . ",
+". . . . . ^ / ( _ : < [ { { { { { ) ) ) } | 1 2 3 4 5 . . . . . ",
+". . 6 7 [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ 8 8 8 8 9 9 9 9 8 0 a . . ",
+". . . b 8 [ [ [ [ [ c c c c d d d d d d c c 9 9 9 9 8 e f . . . ",
+"  . . . g 8 h d d d d d d d d d d d d d i i i i j k e l . . .   ",
+"    . . . m n c d d d d d d d d d i i i i i i i i o p . . .     ",
+"      . . . q c d d d d d d i i i i i i i i i j j r . . .       ",
+"        . . . s i t i i i i i i i i i i i j u j v . . .         ",
+"          . . . w i i i i i i i i i i j j j x v . . .           ",
+"            . . . y i i i i i i j j j j x x z . . .             ",
+"            . . . A j j j j j j j x x x x B C . . .             ",
+"            . . D j j j j x x x x B x x B B B D . .             ",
+"            . . E x x x B B x x B B B B B B F G . .             ",
+"          . . . H B B B B B B B B B B F F F F I . . .           ",
+"          . . . J B B B B B K L L M B B F F F N . . .           ",
+"          . . O P F Q R S . . . . . . T R Q F P O . .           ",
+"          . . U V Q W X . . . . . . . . X Y Z ` U . .           ",
+"          . .  ...+.. . . . .     . . . . . +... .. .           ",
+"          . . . . . . . .             . . . . . . . .           ",
+"        . . . . . . .                     . . . . . . .         ",
+"        . . . . .                             . . . . .         "]
+
 class StarHScale(gtk.Widget):
     """A horizontal Scale Widget that attempts to mimic the star
     rating scheme used in iTunes.
@@ -223,9 +353,9 @@ class StarHScale(gtk.Widget):
 
         # load the star xpm
         self.pixmap, mask = gtk.gdk.pixmap_create_from_xpm_d(  # @UnusedVariable
-            self.window
-            , self.style.bg[gtk.STATE_NORMAL]
-            , STAR_PIXMAP)
+            self.window, 
+            self.style.bg[gtk.STATE_NORMAL], 
+            STAR_PIXMAP)
 
         # self.style is a gtk.Style object, self.style.fg_gc is
         # an array or graphic contexts used for drawing the forground
@@ -265,10 +395,10 @@ class StarHScale(gtk.Widget):
 
         #Draw the correct number of stars.  Each time you draw another star
         #move over by 22 pixels. which is the size of the star.
-        for count in range(0,self.stars):
-            self.window.draw_drawable(self.gc, self.pixmap, 0, 0
-                                                , self.sizes[count]
-                                                , 0,-1, -1)
+        for count in range(0, self.stars):
+            self.window.draw_drawable(self.gc, 
+                self.pixmap, 0, 0, 
+                self.sizes[count], 0,-1, -1)
 
     def motion_notify_event(self, widget, event):
         # if this is a hint, then let's get all the necessary
@@ -365,7 +495,8 @@ def main():
     win.resize(200,50)
     win.connect('delete-event', gtk.main_quit)
 
-    starScale = StarHScale(10,5)
+    starScale = StarHScale(3,2)
+    #starScale.set_property("sensitive", False)
     win.add(starScale)
     win.show()
     win.show_all()
@@ -373,4 +504,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
