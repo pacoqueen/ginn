@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          (pacoqueen@users.sourceforge.net)                  #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
@@ -140,7 +140,7 @@ STAR_PIXMAP = ["22 22 77 1",
 "                      ",
 "                      "]
 
-PIXMAP_SIZE = 32
+#PIXMAP_SIZE = 32
 STAR_PIXMAP = ["32 32 95 2",
 "   c None",
 ".  c #6F3008",
@@ -352,10 +352,13 @@ class StarHScale(gtk.Widget):
         self.window.move_resize(*self.allocation)
 
         # load the star xpm
-        self.pixmap, mask = gtk.gdk.pixmap_create_from_xpm_d(  # @UnusedVariable
-            self.window, 
-            self.style.bg[gtk.STATE_NORMAL], 
-            STAR_PIXMAP)
+        self.pixbuf = gtk.gdk.pixbuf_new_from_xpm_data(STAR_PIXMAP)
+        self.pixbuf = self.pixbuf.scale_simple(PIXMAP_SIZE, PIXMAP_SIZE, 
+                gtk.gdk.INTERP_BILINEAR)
+        #self.pixmap, mask = gtk.gdk.pixmap_create_from_xpm_d(  # @UnusedVariable
+        #    self.window, 
+        #    self.style.bg[gtk.STATE_NORMAL], 
+        #    STAR_PIXMAP)
 
         # self.style is a gtk.Style object, self.style.fg_gc is
         # an array or graphic contexts used for drawing the forground
@@ -392,13 +395,14 @@ class StarHScale(gtk.Widget):
 
     def do_expose_event(self, event):
         """This is where the widget must draw itself."""
-
         #Draw the correct number of stars.  Each time you draw another star
         #move over by 22 pixels. which is the size of the star.
         for count in range(0, self.stars):
-            self.window.draw_drawable(self.gc, 
-                self.pixmap, 0, 0, 
-                self.sizes[count], 0,-1, -1)
+            #self.window.draw_drawable(self.gc, 
+            #    self.pixmap, 0, 0, 
+            #    self.sizes[count], 0, -1, -1)
+            self.window.draw_pixbuf(self.gc, 
+                    self.pixbuf, 0, 0, self.sizes[count], 0)
 
     def motion_notify_event(self, widget, event):
         # if this is a hint, then let's get all the necessary
@@ -456,7 +460,10 @@ class StarHScale(gtk.Widget):
 
                 # redraw the widget
                 self.queue_resize()
-                self.window.move_resize(*self.allocation)
+                try:
+                    self.window.move_resize(*self.allocation)
+                except AttributeError:
+                    pass    # ¿Por qué self.window podría ser None?
 
     def get_value(self):
         """Get the current number of stars displayed"""
@@ -495,7 +502,7 @@ def main():
     win.resize(200,50)
     win.connect('delete-event', gtk.main_quit)
 
-    starScale = StarHScale(3,2)
+    starScale = StarHScale(3, 2)
     #starScale.set_property("sensitive", False)
     win.add(starScale)
     win.show()
@@ -504,3 +511,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

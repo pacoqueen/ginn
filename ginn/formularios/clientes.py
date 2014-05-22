@@ -762,11 +762,15 @@ class Clientes(Ventana):
         if pclases.DEBUG:
             print "11.- clientes.py::rellenar_riesgo_campos_calculados ->", \
                 time.time() - antes
+        self.wids['rating'].set_value(self.objeto.calcular_rating())
+        if pclases.DEBUG:
+            print "12.- clientes.py::rellenar_riesgo_campos_calculados ->", \
+                time.time() - antes
         seguir = False
         vpro.ocultar()
         self.wids['ventana'].window.set_cursor(None)
         if pclases.DEBUG:
-            print "12.- clientes.py::rellenar_riesgo_campos_calculados ->", \
+            print "13.- clientes.py::rellenar_riesgo_campos_calculados ->", \
                 time.time() - antes
 
     def listar_facturas_proforma(self, boton):
@@ -1207,6 +1211,29 @@ class Clientes(Ventana):
         self.add_texto_complementario()
         if pclases.DEBUG:
             print "9.- clientes.py::inicializar_ventana ->", time.time() - antes
+        tabla = self.wids['e_riesgoAsegurado'].parent
+        tabla.resize(tabla.get_property("n-rows") + 1, 
+                     tabla.get_property("n-columns"))
+        from formularios.custom_widgets import starhscale
+        self.wids['rating'] = starhscale.StarHScale(
+                max_stars = 5)
+        self.wids['rating'].set_sensitive(False)
+        f = tabla.get_property("n-rows")
+        tabla.attach(gtk.Label("Calificación"), 0, 1, f, f + 1, gtk.FILL, gtk.FILL)
+        tabla.attach(self.wids['rating'], 1, 2, f, f + 1, gtk.FILL, gtk.FILL)
+        #self.wids['rating'].set_tooltip_text(
+        #        pclases.Cliente.calcular_rating.__doc__)
+        # Como esto de arriba no funciona, lo hago explícito.
+        b_ayuda = gtk.Button(stock = gtk.STOCK_HELP)
+        def show_hint(boton):
+            utils.dialogo_info(titulo = "RATING", 
+                    texto = pclases.Cliente.calcular_rating.__doc__, 
+                    padre = self.wids['ventana'])
+        b_ayuda.connect("clicked", show_hint)
+        tabla.attach(b_ayuda, 2, 3, f, f + 1, gtk.SHRINK, gtk.SHRINK)
+        tabla.show_all()
+        if pclases.DEBUG:
+            print "10.- clientes.py::inicializar_ventana ->", time.time()-antes
 
     def add_texto_complementario(self):
         t = self.wids['e_diadepago'].parent

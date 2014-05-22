@@ -44,7 +44,7 @@ import datetime
 import sys
 import re
 import time
-
+from formularios import utils
 
 # Tiempo de expiración de la cutrecaché de crédito de clientes
 T_CACHE_EXPIRED = 60    # Segundos.
@@ -835,9 +835,9 @@ class Cliente(SQLObject, PRPCTOO):
             return 0
         return empresa.id
 
-    def get_rating(self):
+    def calcular_rating(self):
         """
-        Devuelve la "calidad" del cliente en una escala de 1 a 5.
+        Calificación del cliente en una escala de 1 a 5.
         0 = Cliente no evaluado: Es nuevo o no hay datos suficientes todavía.
         1 = Cliente a evitar: Riesgo concedido cero.
         2 = Cliente malo: No paga.
@@ -845,39 +845,111 @@ class Cliente(SQLObject, PRPCTOO):
         4 = Cliente bueno: Paga bien.
         5 = Cliente excelente: Compra mucho y paga pronto.
         """
+        try:
+            rating = self.rating
+        except AttributeError:
+            rating = None
+        if rating != None:
+            return rating
+        # ^^^ Por si algún día decido que se pueda almacenar en la BD y editar 
+        # por el usuario, en cuyo caso su opinión prevalecerá sobre el cálculo.
+        # Ya meteré algún botoncico para "resetearlo" a None y que se vuelva a 
+        # recalcular a partir de sus datos de facturación.
         quality = 0
         if self.riesgoConcedido == 0.0:
             quality = 1
         elif self.get_facturas_impagadas():
             quality = 2
         else:
-            exceso_plazo = self.calcular_exceso_plazo_cobro()
-            if exceso_plazo > 0:
-                quality = 3
-            else: 
-                quality = 4
-                # Si además de pagar bien, su facturación es superior a la 
-                # media, entonces es un cinco estrellas.
-                if (self.calcular_facturado() >= 
-                        (Cliente.calcular_facturacion() 
-                            / len(Cliente.select(
-                                Cliente.q.inhabilitado == False)))):
-                    quality = 5
+            if self.facturasVenta:
+                exceso_plazo = self.calcular_exceso_medio_plazo_cobro()
+                if exceso_plazo > 0:
+                    quality = 3
+                elif exceso_plazo == None:
+                    quality = 0
+                else: 
+                    quality = 4
+                    # Si además de pagar bien, su facturación es superior a la 
+                    # media, entonces es un cinco estrellas.
+                    pda = mx.DateTime.DateFrom(day = 1, month = 1, 
+                            year = mx.DateTime.today().year)
+                    if (self.calcular_facturado(fini = pda) >= 
+                            (Cliente.calcular_facturacion(fini = pda) 
+                                / Cliente.selectBy(
+                                    inhabilitado = False).count())):
+                        quality = 5
         return quality
+
+    def calcular_exceso_medio_plazo_cobro(self):
+        """
+        Calcula el exceso medio de los cobros sobre los vencimientos de las
+        facturas del cliente.
+        Devuelve None si no hay datos suficientes para calcular.
+        """
+        plazos = []
+        for f in self.facturasVenta:
+            plazo = f.get_plazo_pagado() 
+            if plazo != None:
+                plazo_ini = f.get_plazo_pago(default = 0)
+                try:
+                    plazo -= plazo_ini
+                except TypeError:   # plazo_ini es una lista de días.
+                    plazo_ini.sort()
+                    plazo -= plazo_ini[-1]  # Me quedo con el día más lejano
+                        # porque seguramente lo demás sea el día de pago, no 
+                        # el plazo entre vencimientos.
+                plazos.append(plazo)
+        if plazos:
+            res = utils.media(plazos)
+        else:
+            res = None
+        return res
 
     def calcular_facturado(self, fini = None, ffin = None):
         """
         Calcula la facturación bruta del cliente entre las fechas recibidas.
         """
         res = 0.0
+        if fini and not ffin:
+            fras = FacturaVenta.select(AND(FacturaVenta.q.fecha >= fini, 
+                FacturaVenta.q.clienteID == self.id))
+        elif not fini and ffin:
+            fras = FacturaVenta.select(AND(FacturaVenta.q.fecha < ffin, 
+                FacturaVenta.q.clienteID == self.id))
+        elif fini and ffin:
+            fras = FacturaVenta.select(AND(FacturaVenta.q.fecha >= fini, 
+                FacturaVenta.q.fecha < ffin, 
+                FacturaVenta.q.clienteID == self.id))
+        else:   # not fini and not ffin
+            fras = FacturaVenta.select(AND(
+                FacturaVenta.q.clienteID == self.id))
+        res = sum([f.calcular_importe_total() for f in fras])
         return res
         
-    @classmethod
-    def calcular_facturacion(clase, fini = None, ffin = None):
+    @staticmethod
+    def calcular_facturacion(fini = None, ffin = None):
         """
         Calcula la facturación bruta de todos los clientes entre las fechas 
         recibidas.
         """
         res = 0.0
+        if fini and not ffin:
+            fras = FacturaVenta.select(AND(FacturaVenta.q.fecha >= fini, 
+                FacturaVenta.q.clienteID == Cliente.q.id, 
+                Cliente.q.inhabilitado == False))
+        elif not fini and ffin:
+            fras = FacturaVenta.select(AND(FacturaVenta.q.fecha < ffin, 
+                FacturaVenta.q.clienteID == Cliente.q.id, 
+                Cliente.q.inhabilitado == False))
+        elif fini and ffin:
+            fras = FacturaVenta.select(AND(FacturaVenta.q.fecha >= fini, 
+                FacturaVenta.q.fecha < ffin, 
+                FacturaVenta.q.clienteID == Cliente.q.id, 
+                Cliente.q.inhabilitado == False))
+        else:   # not fini and not ffin
+            fras = FacturaVenta.select(AND(
+                FacturaVenta.q.clienteID == Cliente.q.id, 
+                Cliente.q.inhabilitado == False))
+        res = sum([f.calcular_importe_total() for f in fras])
         return res
 

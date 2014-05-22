@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2013  Francisco José Rodríguez Bogado                    #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado                    #
 #                          <frbogado@geotexan.com>                            #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
@@ -760,7 +760,7 @@ class SuperFacturaVenta:
             for v in regexpr.findall(forma_de_pago_en_observaciones):
                 try:
                     v = int(v)
-                    if not ((v % 15 == 0) and (0 <= v <= 365)):
+                    if not (((v % 15 == 0) or (v == 85)) and (0 <= v <= 365)):
                         continue #No es un plazo. Es número de cuenta o algo.
                 except (ValueError, TypeError):     # Are you kidding me? 
                     continue
