@@ -835,7 +835,7 @@ class Cliente(SQLObject, PRPCTOO):
             return 0
         return empresa.id
 
-    def get_quality(self):
+    def get_rating(self):
         """
         Devuelve la "calidad" del cliente en una escala de 1 a 5.
         0 = Cliente no evaluado: Es nuevo o no hay datos suficientes todavía.
@@ -848,9 +848,36 @@ class Cliente(SQLObject, PRPCTOO):
         quality = 0
         if self.riesgoConcedido == 0.0:
             quality = 1
+        elif self.get_facturas_impagadas():
+            quality = 2
         else:
-            pass
-            #for 
+            exceso_plazo = self.calcular_exceso_plazo_cobro()
+            if exceso_plazo > 0:
+                quality = 3
+            else: 
+                quality = 4
+                # Si además de pagar bien, su facturación es superior a la 
+                # media, entonces es un cinco estrellas.
+                if (self.calcular_facturado() >= 
+                        (Cliente.calcular_facturacion() 
+                            / len(Cliente.select(
+                                Cliente.q.inhabilitado == False)))):
+                    quality = 5
         return quality
+
+    def calcular_facturado(self, fini = None, ffin = None):
+        """
+        Calcula la facturación bruta del cliente entre las fechas recibidas.
+        """
+        res = 0.0
+        return res
         
+    @classmethod
+    def calcular_facturacion(clase, fini = None, ffin = None):
+        """
+        Calcula la facturación bruta de todos los clientes entre las fechas 
+        recibidas.
+        """
+        res = 0.0
+        return res
 
