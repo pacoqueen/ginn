@@ -1218,7 +1218,8 @@ class Clientes(Ventana):
         self.wids['rating'] = starhscale.StarHScale(max_stars = 5)
         self.wids['rating'].set_sensitive(False)
         f = tabla.get_property("n-rows")
-        tabla.attach(gtk.Label("Calificación"), 0, 1, f, f + 1, gtk.FILL, gtk.FILL)
+        l_rating = gtk.Label("Calificación")
+        tabla.attach(l_rating, 0, 1, f, f + 1, gtk.FILL, gtk.FILL)
         tabla.attach(self.wids['rating'], 1, 2, f, f + 1, gtk.FILL, gtk.FILL)
         #self.wids['rating'].set_tooltip_text(
         #        pclases.Cliente.calcular_rating.__doc__)
@@ -1231,6 +1232,11 @@ class Clientes(Ventana):
         b_ayuda.connect("clicked", show_hint)
         tabla.attach(b_ayuda, 2, 3, f, f + 1, gtk.SHRINK, gtk.SHRINK)
         tabla.show_all()
+        if self.usuario and self.usuario.nivel > 1:
+            # De momento solo activo para admin y gerencia
+            self.wids['rating'].set_property("visible", False)
+            b_ayuda.set_property("visible", False)
+            l_rating.set_property("visible", False)
         if pclases.DEBUG:
             print "10.- clientes.py::inicializar_ventana ->", time.time()-antes
 

@@ -38,7 +38,7 @@ if gtk.pygtk_version < (2, 0):
     raise SystemExit
 
 BORDER_WIDTH = 5
-PIXMAP_SIZE = 22
+#PIXMAP_SIZE = 22
 STAR_PIXMAP = ["22 22 77 1",
 "   c None",
 ".  c #626260",
@@ -299,7 +299,7 @@ class StarHScale(gtk.Widget):
 
     """
 
-    def __init__(self, max_stars=5, stars=0):
+    def __init__(self, max_stars=5, stars=0, pixmap_size = 22):
         """Initialization, max_stars is the total number
         of stars that may be visible, and stars is the current
         number of stars to draw"""
@@ -309,11 +309,12 @@ class StarHScale(gtk.Widget):
 
         self.max_stars = max_stars
         self.stars = stars
+        self.pixmap_size = pixmap_size
 
         # Init the list to blank
         self.sizes = []
         for count in range(0,self.max_stars):
-            self.sizes.append((count * PIXMAP_SIZE) + BORDER_WIDTH)
+            self.sizes.append((count * self.pixmap_size) + BORDER_WIDTH)
 
     def do_realize(self):
         """Called when the widget should create all of its
@@ -353,7 +354,7 @@ class StarHScale(gtk.Widget):
 
         # load the star xpm
         self.pixbuf = gtk.gdk.pixbuf_new_from_xpm_data(STAR_PIXMAP)
-        self.pixbuf = self.pixbuf.scale_simple(PIXMAP_SIZE, PIXMAP_SIZE, 
+        self.pixbuf = self.pixbuf.scale_simple(self.pixmap_size, self.pixmap_size, 
                 gtk.gdk.INTERP_BILINEAR)
         #self.pixmap, mask = gtk.gdk.pixmap_create_from_xpm_d(  # @UnusedVariable
         #    self.window, 
@@ -378,10 +379,8 @@ class StarHScale(gtk.Widget):
          It's not guaranteed that gtk+ will actually give this size
          to the widget.  So we will send gtk+ the size needed for
          the maximum amount of stars"""
-
-        requisition.height = PIXMAP_SIZE
-        requisition.width = (PIXMAP_SIZE * self.max_stars) + (BORDER_WIDTH * 2)
-
+        requisition.height = self.pixmap_size
+        requisition.width = (self.pixmap_size * self.max_stars) + (BORDER_WIDTH * 2)
 
     def do_size_allocate(self, allocation):
         """The do_size_allocate is called by when the actual
@@ -462,7 +461,8 @@ class StarHScale(gtk.Widget):
                 self.queue_resize()
                 try:
                     self.window.move_resize(*self.allocation)
-                except AttributeError:
+                except AttributeError, E:
+                    print E
                     pass    # ¿Por qué self.window podría ser None?
 
     def get_value(self):
@@ -483,7 +483,7 @@ class StarHScale(gtk.Widget):
                 #reinit the sizes list (should really be a separate function)
                 self.sizes = []
                 for count in range(0,self.max_stars):
-                    self.sizes.append((count * PIXMAP_SIZE) + BORDER_WIDTH)
+                    self.sizes.append((count * self.pixmap_size) + BORDER_WIDTH)
                 """do we have to change the current number of
                 stars?"""
                 if (self.stars > self.max_stars):

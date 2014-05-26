@@ -839,11 +839,12 @@ class Cliente(SQLObject, PRPCTOO):
         """
         Calificación del cliente en una escala de 1 a 5.
         0 = Cliente no evaluado: Es nuevo o no hay datos suficientes todavía.
-        1 = Cliente a evitar: Riesgo concedido cero.
-        2 = Cliente malo: No paga.
-        3 = Cliente regular: Paga tarde.
-        4 = Cliente bueno: Paga bien.
-        5 = Cliente excelente: Compra mucho y paga pronto.
+        1 = Cliente con riesgo concedido cero por parte de la empresa.
+        2 = Cliente con impagos en la actualidad.
+        3 = El cliente suele pagar con retraso.
+        4 = El cliente paga a tiempo los vencimientos.
+        5 = Cliente que cumple con los vencimientos y su facturación en
+            lo que va de año es superior a la media.
         """
         try:
             rating = self.rating
