@@ -500,7 +500,7 @@ class Ventana:
                                         "Iniciar: gajim...", 
                                         self.logger, 
                                         self.__usuario.usuario)
-            self.abrir_gajim()
+            abrir_gajim()
         elif clase == 'acerca_de' and archivo == 'acerca_de':
             utils.escribir_barra_estado(self.wids['barra_estado'], 
                                         'Abrir: "acerca de..."', 
@@ -571,43 +571,7 @@ class Ventana:
         """
         self.wids['ventana'].window.set_cursor(None)
         return False
-    
-    def abrir_gajim(self):
-        """
-        Calcado de menu.py. Sólo lleva las modificaciones necesarias para hacerlo funcionar desde aquí.
-        """
-        try:
-            pwd = os.path.abspath(os.curdir)
-            os.chdir(os.path.join('..', 'gajim-0.9.1', 'src'))
-            if os.name == 'posix':
-                os.system("cd .. && ./launch.sh >/dev/null &")
-            elif os.name == 'nt':
-                os.startfile("gajim.pyw")  # @UndefinedVariable
-            else:
-                utils.dialogo_info(titulo = "PLATAFORMA NO SOPORTADA",
-                                   texto = "La ayuda on-line solo funciona en arquitecturas con plataformas POSIX o NT\n(GNU/Linux, MS-Windows, *BSD...).",
-                                   padre = self.wids['ventana'])
-        except:
-            print "Se ha detectado un error. Volviendo a %s." % (pwd)
-            if '.' in sys.path:
-                sys.path.remove('.')
-            os.chdir(pwd)
-            texto = ''
-            for e in sys.exc_info():
-                texto += "%s\n" % e
-            tb = sys.exc_info()[2]
-            texto += "Línea %s\n" % tb.tb_lineno
-            from menu import Metaf, enviar_correo  # @UnresolvedImport
-            info = Metaf() 
-            import traceback
-            traceback.print_tb(tb, file = info)
-            texto += "%s\n" % info
-            enviar_correo(texto, self.__usuario)
-        else:
-            if '.' in sys.path:
-                sys.path.remove('.')
-            os.chdir(pwd)
-    
+
     def acerca_de(self):
         """
         Calcado de menu.py. Modificado ligeramente para hacerlo funcionar aquí.
@@ -618,9 +582,13 @@ class Ventana:
         vacerca.set_version(__version__)
         vacerca.set_comments('Software ERP para Geotexan')
         vacerca.set_authors(['Francisco José Rodríguez Bogado <rodriguez.bogado@gmail.com>', 'Diego Muñoz Escalante <escalant3@gmail.com>'])
-        logo = gtk.gdk.pixbuf_new_from_file(os.path.join('..', 'imagenes', 'logo.jpg'))
+        logo = gtk.gdk.pixbuf_new_from_file(os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), 
+            '..', 'imagenes', 'logo.jpg'))
         vacerca.set_logo(logo)
-        vacerca.set_license(open(os.path.join('..', 'gpl.txt')).read())
+        vacerca.set_license(open(os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), '..', 'gpl.txt')
+            ).read())
         vacerca.set_website('http://ginn.sf.net')
         vacerca.set_artists(['Iconos gartoon por Kuswanto (a.k.a. Zeus) <zeussama@gmail.com>'])
         vacerca.set_copyright('Copyright 2005-2014  Francisco José Rodríguez Bogado, Diego Muñoz Escalante.')
@@ -1166,4 +1134,14 @@ class MetaPermiso:
         self.escritura = False
         self.nuevo = False
         self.permiso = False
+
+
+def abrir_gajim():
+    """
+    Por motivos históricos se llama así, pero ya no abre gajim.
+    Inicia una videollamada vía Google Hangouts en el navegador.
+    Es cuestión del usuario haber iniciado alguna vez al menos sesión, etc.
+    """
+    from formularios import multi_open
+    multi_open.open("https://plus.google.com/u/0/hangouts/active")
 

@@ -11,7 +11,7 @@ class MarqueeLabel(gtk.Label):
     # TODO: Permitir que el texto mostrado sea mayor o menor en función del
     #       tamaño del padre.
 
-    def __init__(self, texto = "", init_long = 30, speed = 10):
+    def __init__(self, texto="", init_long=30, speed=10):
         """
         init_long es la longitud EN CARACTERES de la parte del texto mostrado.
         Idealmente debería verse la parte que quepa en función del tamaño del

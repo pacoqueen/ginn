@@ -18,33 +18,41 @@
 				"buffer_size": 3117,
 				"line_ending": "Unix"
 			}
-		},
-		{
-			"file": "ginn/formularios/custom_widgets/busybox.py",
-			"settings":
-			{
-				"buffer_size": 4923,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "ginn/formularios/custom_widgets/starhscale.py",
-			"settings":
-			{
-				"buffer_size": 16282,
-				"line_ending": "Unix"
-			}
 		}
 	],
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 392.0,
+		"height": 390.0,
 		"selected_items":
 		[
 			[
+				"indent",
+				"Indent XML"
+			],
+			[
+				"inden",
+				"Indent XML"
+			],
+			[
+				"indent ",
+				"Indent XML"
+			],
+			[
+				":sav ",
+				":w - Save"
+			],
+			[
+				"new file",
+				"File: New File Relative to Current View"
+			],
+			[
 				":w",
 				":w - Save"
+			],
+			[
+				"package ",
+				"Package Control: Install Package"
 			],
 			[
 				"erlyman",
@@ -141,10 +149,6 @@
 			[
 				"lint",
 				"Python: Disable Pep8 Linting On View"
-			],
-			[
-				"indent",
-				"Indentation: Reindent Lines"
 			],
 			[
 				":q",
@@ -272,6 +276,13 @@
 	},
 	"file_history":
 	[
+		"/tmp/test.xml",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/custom_widgets/busybox.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/custom_widgets/starhscale.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/custom_widgets/marquee_label.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/grammar/OpenDocument-package-metadata-v1.2-cd1.owl",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/pagares_cobros.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/pagares_cobros.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/presupuestos.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/framework/pclases/__init__.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/framework/pclases/cliente.py",
@@ -287,7 +298,6 @@
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pclases.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pclases.dvi",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pclases.aux",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/pagares_cobros.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/presupuestos.glade",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/presupuestos.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/presupuesto.glade",
@@ -393,13 +403,7 @@
 		"/tmp/error.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/geotexan.sublime-project",
 		"/tmp/detectar_albaranes_mal_facturados.txt",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/tests/examples/definitionlists.odt",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/tests/examples/headerfooter.odt",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/pagares_cobros.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/checklist_window.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/TODO",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/confirmings.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_facturas_sin_doc_pago.html"
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/tests/examples/definitionlists.odt"
 	],
 	"find":
 	{
@@ -417,6 +421,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"API",
 			"PIXMAP_SIZE",
 			"sizes",
 			"22",
@@ -493,7 +498,7 @@
 	"groups":
 	[
 		{
-			"selected": 2,
+			"selected": 0,
 			"sheets":
 			[
 				{
@@ -509,8 +514,8 @@
 						"selection":
 						[
 							[
-								490,
-								490
+								3117,
+								3117
 							]
 						],
 						"settings":
@@ -524,67 +529,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 77.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "ginn/formularios/custom_widgets/busybox.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4923,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								4866,
-								4866
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 2193.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "ginn/formularios/custom_widgets/starhscale.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 16282,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3900,
-								3900
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 4547.0,
+						"translation.y": 1173.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -599,7 +544,7 @@
 	},
 	"input":
 	{
-		"height": 0.0
+		"height": 33.0
 	},
 	"layout":
 	{
