@@ -21,9 +21,9 @@ function get_remote_fbak(){
     if [ ! $? -eq 0 ]; then     # Estoy en nostromo
         echo "Obteniendo copia a través de Internet..."
         # Primero, la copio a justinho
-        ssh bogado@gtx.dyndns-server.com "scp bogado@bacall:backups_sql/$1 /tmp"
+        ssh bogado@gtx.duckdns.org "scp bogado@bacall:backups_sql/$1 /tmp"
         # Después me la traigo
-        scp bogado@gtx.dyndns-server.com:/tmp/$1 /tmp
+        scp bogado@gtx.duckdns.org:/tmp/$1 /tmp
     else
         echo "Copia exitosa por LAN."
     fi
