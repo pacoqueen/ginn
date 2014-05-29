@@ -68,7 +68,7 @@ from framework.configuracion import ConfigConexion, parse_params
 from formularios import custom_widgets
 from formularios.ventana import install_bug_hook, abrir_gajim
 
-__version__ = '5.6.3 (codename Ringo)'
+__version__ = '5.7.1'
 __version_info__ = tuple(
     [int(num) for num in __version__.split()[0].split('.')] + 
     [txt.replace("(", "").replace(")", "") for txt in __version__.split()[1:]]
