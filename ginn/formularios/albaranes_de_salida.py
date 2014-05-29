@@ -3000,7 +3000,7 @@ class AlbaranesDeSalida(Ventana):
             if (not self.objeto.transportesACuenta
                 and not utils.dialogo(titulo = "¿ESTÁ SEGURO?", 
                         texto = "El albarán no tiene transportes a cuenta.\n"
-                                "Si genera la factura, no podrá agregarlos"
+                                "Si genera la factura, no podrá agregarlos "
                                 "más tarde. ¿Desea continuar?", 
                         padre = self.wids['ventana'])):
                     return
@@ -4844,8 +4844,11 @@ def select_lineas_pedido(pedido, padre = None):
     Si cancela devuelve las listas vacías.
     """
     ops = []
+    default = []
     for ldp in pedido.lineasDePedido:
         ops.append((ldp.puid, ldp.get_info()))
+        if ldp.get_cantidad_pendiente():
+            default.append(ldp.puid)
     for srv in pedido.servicios:
         ops.append((srv.puid, srv.get_info()))
     res = utils.dialogo_checks(titulo = "SELECCIONE LÍNEAS DEL PEDIDO", 
@@ -4854,8 +4857,7 @@ def select_lineas_pedido(pedido, padre = None):
                     "quedarán pendientes de servir." % pedido.numpedido, 
             ops = ops, 
             padre = padre, 
-            valor_por_defecto = [item[0] for item in ops]) # Por defecto todas 
-                                                    # las opciones marcadas.
+            valor_por_defecto = default) # Marcadas las líneas pendientes.
     ldps = []
     srvs = []
     if res == False:

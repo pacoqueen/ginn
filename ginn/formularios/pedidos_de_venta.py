@@ -89,6 +89,7 @@ from ventana_progreso import VentanaProgreso, VentanaActividad
 import pango
 from formularios import postomatic
 import sys
+from collections import defaultdict
 
 NIVEL_VALIDACION = 1
 
@@ -1405,9 +1406,26 @@ class PedidosDeVenta(Ventana):
             and len(self.objeto.lineasDePedido) > 0
             and len(servicios_pendientes) == 0):
             # Cierre automático del pedido si ya está todo servido.
-            # PORASQUI: Aquí está la "tostá". Deja la ventana abierta mientras sirve todo el pedido. En el albarán al fina quita la línea que sobra, pero durante ese tiempo se actualiza la ventana y cierra el pedido.
-            self.objeto.cerrado = True
-            self.wids['cerrado'].set_active(self.objeto.cerrado)
+            # Pero antes de eso, voy a asegurarme de que el usuario ha 
+            # terminado con el albarán y no va a hacer ninguna modificación 
+            # que pudiera dejar el pedido abierto todavía. La forma que se me 
+            # ocurre es comprobar si el albarán ya se ha impreso (=facturado).
+            # El motivo es que a veces el usuario deja la ventana abierta 
+            # mientras sirve todo el pedido. En el albarán al final quita la 
+            # línea que sobra, pero durante ese tiempo se actualiza la ventana 
+            # y cierra el pedido.
+            albs = self.objeto.get_albaranes()
+            dic_pdte_albaranes = defaultdict(lambda: False)
+            algo_pdte_frar = lambda: reduce(
+                    lambda a1, a2: dic_pdte_albaranes[a1] 
+                                   or dic_pdte_albaranes[a2], 
+                    albs)
+            for a in albs:
+                if not a.get_facturas():
+                    dic_pdte_albaranes[a] = True
+            if not algo_pdte_frar():
+                self.objeto.cerrado = True
+                self.wids['cerrado'].set_active(self.objeto.cerrado)
         for producto in productos:
             pendiente = productos[producto]['pedido'] - productos[producto]['servido']
             if pendiente != 0:      # NOTA: Si es negativo TAMBIÉN LO QUIERO 

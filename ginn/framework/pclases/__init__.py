@@ -6607,6 +6607,15 @@ class LineaDePedido(SQLObject, PRPCTOO):
         servida = sum([ldv.cantidad for ldv in ldvs])
         return servida
 
+    def get_cantidad_pendiente(self):
+        """
+        Devuelve la cantidad pendiente de servir contando todos los posibles 
+        albaranes del pedido.
+        """
+        pedida = self.get_cantidad_pedida()
+        servida = self.get_cantidad_servida()
+        return pedida - servida
+
     def get_lineas_de_venta(self, 
                             productoVentaID = -1, 
                             productoCompraID = -1, 
