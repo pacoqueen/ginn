@@ -6014,7 +6014,8 @@ class Rollo(SQLObject, PRPCTOO):
         """
         Devuelve el peso *real* del rollo en kg, pero descontando el embalaje.
         """
-        return self.peso - self.articulo.productoVenta.camposEspecificosRollo.pesoEmbalaje
+        return (self.peso 
+            - self.articulo.productoVenta.camposEspecificosRollo.pesoEmbalaje)
     
     peso_teorico = property(get_peso_teorico)
     peso_sin = property(get_peso_sin)
@@ -6089,8 +6090,9 @@ class RolloDefectuoso(SQLObject, PRPCTOO):
         try:
             self.numrollo = numrollo
             self.codigo = "X%d" % (numrollo)
-        # except psycopg.ProgrammingError:    # Es la excepción que se corresponde con ERROR:  llave 
-                                            # duplicada viola restricción unique "tal"
+        # except psycopg.ProgrammingError:    
+            # Es la excepción que se corresponde con ERROR:  llave 
+            # duplicada viola restricción unique "tal"
         finally:
             return self.numrollo
             
@@ -6108,13 +6110,15 @@ class RolloDefectuoso(SQLObject, PRPCTOO):
 
     def get_albaranSalidaID(self):
         """
-        Devuelve el ID albarán de salida del artículo relacionado con el rollo o None.
+        Devuelve el ID albarán de salida del artículo relacionado con el rollo
+        o None.
         """
         return self.articulos[0].albaranSalidaID
 
     def set_albaranSalidaID(self, albaranSalidaID):
         """
-        Establece el id de albarán de salida del artículo relacionado con el rollo.
+        Establece el id de albarán de salida del artículo relacionado con el
+        rollo defectuoso.
         """
         self.articulos[0].albaranSalidaID = albaranSalidaID
 
@@ -6139,8 +6143,10 @@ class RolloDefectuoso(SQLObject, PRPCTOO):
 
     def get_peso_teorico(self):
         """
-        Devuelve el peso teórico del rollo (ancho * largo * densidad) en kilogramos.
-        Lo más probable es que NO coincida con el del producto que se supone que sería.
+        Devuelve el peso teórico del rollo (ancho * largo * densidad)
+        en kilogramos.
+        Lo más probable es que NO coincida con el del producto que se supone
+        que sería.
         """
         return (self.densidad * self.ancho * self.metrosLineales) / 1000.0
     
@@ -6170,7 +6176,8 @@ class RolloDefectuoso(SQLObject, PRPCTOO):
         """
         Devuelve código de rollo y descripción del producto.
         """
-        cad = "Rollo defectuoso %s (%s)" % (self.codigo, self.productoVenta and self.productoVenta.descripcion or "")
+        cad = "Rollo defectuoso %s (%s)" % (self.codigo, 
+                self.productoVenta and self.productoVenta.descripcion or "")
         return cad
 
 cont, tiempo = print_verbose(cont, total, tiempo)

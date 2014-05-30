@@ -1129,8 +1129,6 @@ def calcular_productividad_conjunta(pdps, wids = None):
     #    res = kgs_a * 100.0 / kgs_teoricos
     #except ZeroDivisionError:
     #    res = 0.0
-    if not isinstance(pdps, (tuple, list)):
-        pdps = tuple(pdps)
     entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
     entry.set_progress_fraction(0.0)
     while gtk.events_pending(): gtk.main_iteration(False)

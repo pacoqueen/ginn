@@ -980,7 +980,7 @@ def consultar_metros_y_kilos_gtx(fechaini, fechafin):
             kilos_reales_a += r.peso_sin
         else:
             metros_b += r.productoVenta.camposEspecificosRollo.metrosCuadrados
-            kilos_teoricos_b = r.peso_teorico
+            kilos_teoricos_b += r.peso_teorico
             kilos_reales_b += r.peso_sin
     for rd in rollosDefectuosos:
         superficie = rd.ancho * rd.metrosLineales
@@ -1374,7 +1374,8 @@ def consultar_productividad_bolsas(fechaini, fechafin):
     sql_where=" fecha >= '%s' AND fecha <= '%s' AND partida_cem_id IS NULL "%(
         fechaini.strftime("%Y-%m-%d"), fechafin.strftime("%Y-%m-%d"))
     pdps = pclases.ParteDeProduccion.select(sql_where)
-    return calcular_productividad_conjunta(pdps)
+    res = calcular_productividad_conjunta(tuple(pdps))
+    return res
 
 def consultar_empleados_por_dia_bolsas(fechaini, fechafin):
     """
@@ -1454,6 +1455,8 @@ def buscar_produccion_gtx(anno, vpro=None, rango=None, logger=None, meses=()):
     if vpro != None:
         incr_progreso = rango / 12.0
         texto_vpro = vpro.get_texto()
+        vpro.set_valor(vpro.get_valor() + incr_progreso, 
+                       texto_vpro + " (inicializando)")
     res = {}
     res = dict([(i, 0) for i in xrange(12)])
     res['pdps'] = defaultdict(lambda: []) # Para cálculo productividad conjunta
@@ -1486,12 +1489,14 @@ def buscar_produccion_gtx(anno, vpro=None, rango=None, logger=None, meses=()):
             continue
         fini = mx.DateTime.DateTimeFrom(day=1, month=mes+1, year=anno)
         try:
-            ffin = mx.DateTime.DateTimeFrom(day=1, month=fini + 1, year=anno)
+            ffin = mx.DateTime.DateTimeFrom(day=1, month=fini.month + 1, 
+                                            year=anno)
         except mx.DateTime.RangeError:
             ffin = mx.DateTime.DateTimeFrom(day=1, month=1, year=anno+1)
         pdps = tuple(pclases.ParteDeProduccion.select(
                         pclases.AND(pclases.ParteDeProduccion.q.fecha >= fini,
                                     pclases.ParteDeProduccion.q.fecha < ffin)))
+        pdps = [pdp for pdp in pdps if pdp.es_de_geotextiles()]
         res["pdps"][mes] = pdps
         (metros_a,
          kilos_teoricos_a,
@@ -1521,12 +1526,12 @@ def buscar_produccion_gtx(anno, vpro=None, rango=None, logger=None, meses=()):
             res['porciento_merma'][mes] = 0.0
         try:
             res['gramaje_medio'][mes] = ((kilos_reales_a + kilos_reales_b)
-                                         / (metros_a + metros_b))
+                                         / (metros_a + metros_b)) * 1000
         except ZeroDivisionError:
             res['gramaje_medio'][mes] = 0.0
         horas = consultar_horas_reales_gtx(fini, ffin)
         try:
-            res['kilos_hora'][mes] = kilos_reales_a + kilos_reales_b / horas
+            res['kilos_hora'][mes] = (kilos_reales_a + kilos_reales_b) / horas
         except ZeroDivisionError:
             res['kilos_hora'][mes] = 0.0
         res['horas'][mes] = horas
@@ -1544,7 +1549,7 @@ def buscar_produccion_gtx(anno, vpro=None, rango=None, logger=None, meses=()):
             turnos = 0.0
         res['turnos'][mes] = turnos
         res['empleados'][mes] = consultar_empleados_por_dia_gtx(fini, ffin)
-        res['productividad'][mes] = calcular_productividad_conjunta(pdps)
+        res['productividad'][mes]=calcular_productividad_conjunta(tuple(pdps))
         res['consumo_fibra'][mes] = kilos_consumidos
         # OJO: Kg/hora se calcula con las horas en las que la máquina
         #      funciona, sin contar paradas. En la ventana se muestran las
@@ -3284,7 +3289,8 @@ def consultar_productividad_fibra(fechaini, fechafin):
                 """ % (fechaini.strftime("%Y-%m-%d"),
                        fechafin.strftime("%Y-%m-%d"))
     pdps = pclases.ParteDeProduccion.select(sql_where)
-    return calcular_productividad_conjunta(pdps)
+    res = calcular_productividad_conjunta(tuple(pdps))
+    return res
 
 def buscar_produccion_fibra(anno,
                             vpro = None,
@@ -3420,7 +3426,8 @@ def buscar_produccion_fibra(anno,
                                 ceb_reciclada.productosVenta[0].id))]
                 res[i]['balas_cable'][descripcion] = sum(pesos)
         if vpro != None: 
-            vpro.set_valor(vpro.get_valor() + incr_progreso, texto_vpro)
+            vpro.set_valor(vpro.get_valor() + incr_progreso, 
+                           texto_vpro + " (%d/12)" % (i+1))
     return res
 
 ###############################################################################
@@ -3501,7 +3508,7 @@ def update_filas_gtx(filas, dic_gtx, mes=None):
                 kilos_a_reales_totales = sumatorio("kilos_reales_a")
                 metros_a_totales = sumatorio("metros_a")
                 try:
-                    total = kilos_a_reales_totales / metros_a_totales
+                    total = (kilos_a_reales_totales / metros_a_totales) * 1000
                 except ZeroDivisionError:
                     total = 0.0
             elif nombre_var == "kilos_hora":

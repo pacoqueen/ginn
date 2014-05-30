@@ -3525,15 +3525,16 @@ def crear_articulo(numrollo,
                     except ZeroDivisionError:
                         densidad = 0.0
                     try:
-                        rollod = pclases.RolloDefectuoso(partida = partida, 
-                                                         numrollo = numrollo, 
-                                                         codigo = codigo, 
-                                                         observaciones = observaciones, 
-                                                         peso = peso, 
-                                                         densidad = densidad, 
-                                                         metrosLineales = largo, 
-                                                         ancho = ancho, 
-                                                         pesoEmbalaje = pesoEmbalaje)
+                        rollod = pclases.RolloDefectuoso(
+                                    partida = partida, 
+                                    numrollo = numrollo, 
+                                    codigo = codigo, 
+                                    observaciones = observaciones, 
+                                    peso = peso, 
+                                    densidad = densidad, 
+                                    metrosLineales = largo, 
+                                    ancho = ancho, 
+                                    pesoEmbalaje = pesoEmbalaje)
                         pclases.Auditoria.nuevo(rollod, 
                                 objeto_ventana_parte 
                                 and objeto_ventana_parte.usuario or None, 
@@ -3777,9 +3778,15 @@ def recv_serial(com, ventana, l_peso, ventana_parte, ch_marcado, e_numrollo,
             partida = ventana_parte.get_partida()
             if partida != None:
                 defectuoso = ch_defectuoso.get_active()
-                numrollo = int(codigo_rollo_a_crear.upper().replace("R", "").replace("X", ""))  # Tanto si es normal como defectuoso, 
-                                                            # con esto debería quedarme un entero que correspondería al número de rollo.
-                articulo = crear_articulo(numrollo, partida, ventana_parte.producto, ventana_parte.objeto, peso = peso, objeto_ventana_parte = objeto_ventana_parte, defectuoso = defectuoso)
+                numrollo = int(
+                codigo_rollo_a_crear.upper().replace("R", "").replace("X", ""))
+                # Tanto si es normal como defectuoso, con esto debería 
+                # quedarme un entero que correspondería al número de rollo.
+                articulo = crear_articulo(numrollo, partida, 
+                        ventana_parte.producto, ventana_parte.objeto, 
+                        peso = peso, 
+                        objeto_ventana_parte = objeto_ventana_parte, 
+                        defectuoso = defectuoso)
                 if articulo != None:
                     descontar_material_adicional(ventana_parte, articulo)
                     imprimir_etiqueta(articulo, ch_marcado.get_active(), 
@@ -3790,17 +3797,22 @@ def recv_serial(com, ventana, l_peso, ventana_parte, ch_marcado, e_numrollo,
                                         "antes de introducir la producción.", 
                                    padre = ventana)
         except (psycopg_ProgrammingError, ValueError, AttributeError), msg:
-            txterror = "partes_de_fabricacion_rollos::recv_serial -> %s" % (msg)
+            txterror = "partes_de_fabricacion_rollos::recv_serial -> %s"%(msg)
             print txterror
             utils.dialogo_info(titulo = 'ROLLO NO CREADO', 
-                               texto = 'El rollo no se pudo crear. Vuelva a pesarlo.\n\n\nSi el error persiste, tal vez esta información pueda ser útil:\n\n%s' % (txterror), 
-                               padre = ventana)
+                texto = 'El rollo no se pudo crear. Vuelva a pesarlo.\n\n\n'
+                        'Si el error persiste, tal vez esta información pueda'
+                        ' ser útil:\n\n%s' % (txterror), 
+                padre = ventana)
             return True
         ventana_parte.actualizar_ventana()
         # El recién creado lo pongo en la línea de última pesada.
-        l_peso.set_text('<big><span color="dark green">Última pesada (%s): %s</span></big>' % (codigo_rollo_a_crear, l_peso.get_text()))
-        # Y la variable ahora pasa a contener el siguiente rollo en base al último creado (dado que el checkbox permanece inmutable 
-        # hasta que lo cambie el usuario, será del mismo tipo que el recién creado).
+        l_peso.set_text('<big><span color="dark green">Última pesada (%s): '
+                        '%s</span></big>' % (codigo_rollo_a_crear, 
+                                             l_peso.get_text()))
+        # Y la variable ahora pasa a contener el siguiente rollo en base al 
+        # último creado (dado que el checkbox permanece inmutable hasta que 
+        # lo cambie el usuario, será del mismo tipo que el recién creado).
         codigo_rollo_a_crear = get_proximo_codigo_a_crear(e_numrollo)
         e_numrollo.set_text("%s" % (codigo_rollo_a_crear))
         l_peso.set_use_markup(True)
@@ -3820,9 +3832,11 @@ def get_proximo_codigo_a_crear(e_numrollo):
     """
     codigo_actual = e_numrollo.get_text()
     if codigo_actual.startswith("R"): 
-        codigo_proximo_rollo = pclases.Rollo._queryOne("SELECT ultimo_codigo_rollo_mas_uno();")[0]
+        codigo_proximo_rollo = pclases.Rollo._queryOne(
+                "SELECT ultimo_codigo_rollo_mas_uno();")[0]
     elif codigo_actual.startswith("X"):
-        codigo_proximo_rollo = pclases.RolloDefectuoso._queryOne("SELECT ultimo_codigo_rollo_defectuoso_mas_uno();")[0]
+        codigo_proximo_rollo = pclases.RolloDefectuoso._queryOne(
+                "SELECT ultimo_codigo_rollo_defectuoso_mas_uno();")[0]
     else:
         codigo_proximo_rollo = pclases.Rollo._queryOne("SELECT ultimo_codigo_rollo_mas_uno();")[0]
         print 'partes_de_fabricacion_rollos::get_proximo_codigo_a_crear -> No se pudo determinar el tipo de rollo a crear. Creo uno "normal": %s.' % (codigo_proximo_rollo)
