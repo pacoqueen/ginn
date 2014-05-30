@@ -77,6 +77,7 @@ import mx.DateTime
 from ventana_progreso import VentanaProgreso
 from collections import OrderedDict, defaultdict
 from formularios.consulta_producido import calcular_productividad_conjunta
+import datetime
 
 class ConsultaGlobal(Ventana):
 
@@ -184,6 +185,8 @@ class ConsultaGlobal(Ventana):
         ventas_fibra_por_color = buscar_ventas_fibra_color(anno, vpro, 0.15,
                                                            meses)
         vpro.set_valor(0.15, "Analizando producción de geotextiles...")
+        while gtk.events_pending():
+            gtk.main_iteration(False)
         produccion_gtx = buscar_produccion_gtx(anno, vpro, 0.15, self.logger,
                                                meses)  #, cache)
         vpro.set_valor(0.3, "Analizando ventas...")
@@ -845,7 +848,12 @@ class ConsultaGlobal(Ventana):
             filas[k].append(k)
         for nombre_fila in filas:
             fila = filas[nombre_fila]
-            model.append(fila)
+            _fila = []
+            for valor in fila:
+                if isinstance(valor, (int, float)):
+                    valor = utils.float2str(valor)
+                _fila.append(valor)
+            model.append(_fila)
 
     def construir_treeview_ficticio(self):
         """
@@ -952,11 +960,13 @@ def consultar_metros_y_kilos_gtx(fechaini, fechafin):
     metros_b = kilos_teoricos_b = kilos_reales_b = 0.0
     kilos_reales_c = 0.0
     rollos = pclases.Rollo.select(pclases.AND(
-        pclases.Rollo.q.parteDeProduccionID == pclases.ParteDeProduccion.q.id,
+        pclases.Rollo.q.id == pclases.Articulo.q.rolloID, 
+        pclases.Articulo.q.parteDeProduccionID==pclases.ParteDeProduccion.q.id,
         pclases.ParteDeProduccion.q.fecha >= fechaini,
         pclases.ParteDeProduccion.q.fecha < fechafin))
     rollosDefectuosos = pclases.RolloDefectuoso.select(pclases.AND(
-        pclases.RolloDefectuoso.q.parteDeProduccionID
+        pclases.RolloDefectuoso.q.id == pclases.Articulo.q.rolloDefectuosoID, 
+        pclases.Articulo.q.parteDeProduccionID
             == pclases.ParteDeProduccion.q.id,
         pclases.ParteDeProduccion.q.fecha >= fechaini,
         pclases.ParteDeProduccion.q.fecha < fechafin))
@@ -1431,8 +1441,7 @@ def consultar_empleados_por_dia_gtx(fechaini, fechafin):
         res = 0.0
     return res
 
-def buscar_produccion_gtx(anno, vpro = None, rango = None, logger = None,
-                          meses = []):
+def buscar_produccion_gtx(anno, vpro=None, rango=None, logger=None, meses=()):
     """
     "anno" es el año del que buscará las producciones.
     "vpro" es la ventana de progreso de la ventana principal.
@@ -1444,6 +1453,7 @@ def buscar_produccion_gtx(anno, vpro = None, rango = None, logger = None,
     """
     if vpro != None:
         incr_progreso = rango / 12.0
+        texto_vpro = vpro.get_texto()
     res = {}
     res = dict([(i, 0) for i in xrange(12)])
     res['pdps'] = defaultdict(lambda: []) # Para cálculo productividad conjunta
@@ -1472,14 +1482,14 @@ def buscar_produccion_gtx(anno, vpro = None, rango = None, logger = None,
     res['productividad'] = defaultdict(lambda: 0.0) # ["Productividad"]
     res['consumo_fibra'] = defaultdict(lambda: 0.0)
     for mes in xrange(12):
-        if i+1 not in meses:
+        if mes+1 not in meses:
             continue
-        fini = mx.DateTime.DateTimeFrom(day=1, month=i+1, year=anno)
+        fini = mx.DateTime.DateTimeFrom(day=1, month=mes+1, year=anno)
         try:
             ffin = mx.DateTime.DateTimeFrom(day=1, month=fini + 1, year=anno)
         except mx.DateTime.RangeError:
             ffin = mx.DateTime.DateTimeFrom(day=1, month=1, year=anno+1)
-        pdps = list(pclases.ParteDeProduccion.select(
+        pdps = tuple(pclases.ParteDeProduccion.select(
                         pclases.AND(pclases.ParteDeProduccion.q.fecha >= fini,
                                     pclases.ParteDeProduccion.q.fecha < ffin)))
         res["pdps"][mes] = pdps
@@ -1505,8 +1515,8 @@ def buscar_produccion_gtx(anno, vpro = None, rango = None, logger = None,
         kilos_fabricados = kilos_reales_a + kilos_reales_b + kilos_c
         res['merma'][mes] = kilos_fabricados - kilos_consumidos
         try:
-            res['porciento_merma'][mes] = 1 - (kilos_fabricados
-                                                / kilos_consumidos)
+            res['porciento_merma'][mes] = (1 - (kilos_fabricados
+                                                / kilos_consumidos)) * 100.0
         except ZeroDivisionError:
             res['porciento_merma'][mes] = 0.0
         try:
@@ -1535,19 +1545,20 @@ def buscar_produccion_gtx(anno, vpro = None, rango = None, logger = None,
         res['turnos'][mes] = turnos
         res['empleados'][mes] = consultar_empleados_por_dia_gtx(fini, ffin)
         res['productividad'][mes] = calcular_productividad_conjunta(pdps)
-        res["consumo_fibra"][mes] = kilos_consumidos
+        res['consumo_fibra'][mes] = kilos_consumidos
         # OJO: Kg/hora se calcula con las horas en las que la máquina
         #      funciona, sin contar paradas. En la ventana se muestran las
         #      horas totales de los partes de la línea.
         # OJO: Como los Geotextiles C no tienen ancho ni largo, no los
         #      meto en la producción global para no falsear los
         #      resultados.
-        if vpro != None: vpro.set_valor(vpro.get_valor() + incr_progreso,
-                                        vpro.get_texto())
+        if vpro != None:
+            vpro.set_valor(vpro.get_valor() + incr_progreso, 
+                           texto_vpro + " (%d/12)" % (mes + 1))
     return res
 
-def buscar_produccion_bolsas(anno, vpro = None, rango = None, logger = None,
-                             meses = []):
+def buscar_produccion_bolsas(anno, vpro=None, rango=None, logger=None,
+                             meses=()):
     """
     "anno" es el año del que buscará las producciones.
     "vpro" es la ventana de progreso de la ventana principal.
@@ -1562,6 +1573,7 @@ def buscar_produccion_bolsas(anno, vpro = None, rango = None, logger = None,
     res = dict([(i, 0) for i in xrange(12)])
     if vpro != None:
         incr_progreso = rango / 12.0
+        texto_vpro = vpro.get_texto()
     for i in xrange(12):
         if i+1 not in meses:
             res[i] = {'A' : {'bolsas': 0, 'kilos': 0},
@@ -1641,7 +1653,6 @@ def _buscar_compras_geocompuestos(fecha_ini, fecha_fin):
                                 pclases.FacturaCompra.q.fecha >= fecha_ini,
                                 pclases.FacturaCompra.q.fecha <= fecha_fin),
                             orderBy='fecha')
-    facturas = list(facturas)
     for f in facturas:
         for linea in f.lineasDeCompra:
             p = linea.productoCompra
@@ -1674,7 +1685,6 @@ def _buscar_ventas_geocompuestos(fecha_ini, fecha_fin):
                                     pclases.FacturaVenta.q.fecha >= fecha_ini,
                                     pclases.FacturaVenta.q.fecha <= fecha_fin),
                                 orderBy='fecha')
-    facturas = list(facturas)
     for f in facturas:
         for linea in f.lineasDeVenta:
             p = linea.productoCompra
@@ -1719,7 +1729,6 @@ def _buscar_ventas(fecha_ini, fecha_fin):
                             pclases.FacturaDeAbono.q.fecha >= fecha_ini),
                         orderBy = 'fecha')
     facturasDeAbono = [f for f in facturasDeAbono if f.abono]
-    facturas = list(facturas)
     for f in facturas:
         for linea in f.lineasDeVenta:
             procesar_ldv(linea, ventas_gtx, ventas_fibra, ventas_bolsas)
@@ -2631,19 +2640,26 @@ def buscar_ventas_fibra_color(anno, vpro = None, rango = None, meses = []):
     """
     # Ejecuto consulta:
     if vpro != None:
-        incr_progreso = rango / 5.0
+        incr_progreso = rango / 7.0
+        texto_vpro = vpro.get_texto()
+        vpro.set_valor(vpro.get_valor() + incr_progreso, 
+                       texto_vpro + " (internas)")
     vi = buscar_ventas_internas_fibra(anno, vpro, rango, meses)
     if vpro != None:
-        vpro.set_valor(vpro.get_valor() + incr_progreso, vpro.get_texto())
+        vpro.set_valor(vpro.get_valor() + incr_progreso, 
+                       texto_vpro + " (bigbags)")
     vbb = buscar_ventas_bigbags(anno, vpro, rango, meses)
     if vpro != None:
-        vpro.set_valor(vpro.get_valor() + incr_progreso, vpro.get_texto())
+        vpro.set_valor(vpro.get_valor() + incr_progreso, 
+                       texto_vpro + " (por color)")
     vpc = buscar_ventas_por_color(anno, vpro, rango, meses)
     if vpro != None:
-        vpro.set_valor(vpro.get_valor() + incr_progreso, vpro.get_texto())
+        vpro.set_valor(vpro.get_valor() + incr_progreso, 
+                       texto_vpro + " (fibra B)")
     fb = buscar_ventas_fibra_b(anno, vpro, rango, meses)
     if vpro != None:
-        vpro.set_valor(vpro.get_valor() + incr_progreso, vpro.get_texto())
+        vpro.set_valor(vpro.get_valor() + incr_progreso, 
+                       texto_vpro + " (agrupando)")
     # Organizo datos:
     filas = []
     ## Total
@@ -2685,10 +2701,11 @@ def buscar_ventas_fibra_color(anno, vpro = None, rango = None, meses = []):
                     # sumarla otra vez. En el desglose por colores ya
         # filas[1][mes+1] += fb[mes]['euros']   # se incluye fibra B.
     ## CABLE DE FIBRA
+    if vpro != None:
+        vpro.set_valor(vpro.get_valor() + incr_progreso, 
+                       texto_vpro + " (reciclada)")
     filas.append(["Fibra reciclada (no computa en el total de ventas)"])
     cable = buscar_ventas_cable(anno, vpro, rango)
-    if vpro != None:
-        vpro.set_valor(vpro.get_valor() + incr_progreso, vpro.get_texto())
     for mes in cable:
         filas[-1].append(cable[mes]['kilos'])
         # Salen a siempre a 0 € porque son para reciclar y las pagamos al
@@ -2712,6 +2729,7 @@ def buscar_ventas(anno, vpro = None, rango = None, meses = []):
     bolsas = dict([(i, 0) for i in xrange(12)])
     if vpro != None:
         incr_progreso = rango / 12.0
+        texto_vpro = vpro.get_texto()
     for i in xrange(12):
         if i+1 not in meses:
             ventas_gtx = {'total': {'metros': 0.0, 'kilos': 0.0, 'euros': 0.0}}
@@ -2735,7 +2753,8 @@ def buscar_ventas(anno, vpro = None, rango = None, meses = []):
         fibra[i] = ventas_fibra
         bolsas[i] = ventas_bolsas
         if vpro != None:
-            vpro.set_valor(vpro.get_valor() + incr_progreso, vpro.get_texto())
+            vpro.set_valor(vpro.get_valor() + incr_progreso, 
+                           texto_vpro + " (%d/12)" % (i+1))
     _gtx = {}   # En lugar de [mes][tarifa] voy a hacer un diccionario
                 # [tarifa][mes]
 
@@ -2795,6 +2814,7 @@ def buscar_compras_geocompuestos(anno, vpro = None, rango = None,
     gcomp = dict([(i, 0) for i in xrange(12)])
     if vpro != None:
         incr_progreso = rango / 12.0
+        texto_vpro = vpro.get_texto()
     for i in xrange(12):
         if i+1 not in meses:
             gcompmes = {'total': {'cantidad': 0.0, 'euros': 0.0}}
@@ -2812,7 +2832,8 @@ def buscar_compras_geocompuestos(anno, vpro = None, rango = None,
             gcompmes = _buscar_compras_geocompuestos(fechaini, fechafin)
         gcomp[i] = gcompmes
         if vpro != None:
-            vpro.set_valor(vpro.get_valor() + incr_progreso, vpro.get_texto())
+            vpro.set_valor(vpro.get_valor() + incr_progreso, 
+                           texto_vpro + " (%d/12)" % (i+1))
     _gcomp = {}     # En lugar de [mes][proveedor] voy a hacer un diccionario
                     # [proveedor][mes]
     for mes in gcomp:
@@ -2832,6 +2853,7 @@ def buscar_ventas_geocompuestos(anno, vpro = None, rango = None,
     gcomp = dict([(i, 0) for i in xrange(12)])
     if vpro != None:
         incr_progreso = rango / 12.0
+        texto_vpro = vpro.get_texto()
     for i in xrange(12):
         if i+1 not in meses:
             gcompmes = {'total': {'cantidad': 0.0, 'euros': 0.0}}
@@ -2849,7 +2871,8 @@ def buscar_ventas_geocompuestos(anno, vpro = None, rango = None,
             gcompmes = _buscar_ventas_geocompuestos(fechaini, fechafin)
         gcomp[i] = gcompmes
         if vpro != None:
-            vpro.set_valor(vpro.get_valor() + incr_progreso, vpro.get_texto())
+            vpro.set_valor(vpro.get_valor() + incr_progreso, 
+                           texto_vpro + " (%d/12)" % (i+1))
     _gcomp = {}     # En lugar de [mes][tarifa] voy a hacer un diccionario
                     # [tarifa][mes]
     for mes in gcomp:
@@ -2903,6 +2926,7 @@ def buscar_consumos(anno, vpro = None, rango = None, meses = []):
     """
     if vpro != None:
         incr_progreso = rango / 12.0
+        texto_vpro = vpro.get_texto()
     consumos_gtx = {}
     consumos_fibra = {}
     consumos_bolsas = {}
@@ -2911,7 +2935,8 @@ def buscar_consumos(anno, vpro = None, rango = None, meses = []):
             consultar_consumos(i, anno, consumos_gtx, consumos_fibra,
                                consumos_bolsas)
         if vpro != None:
-            vpro.set_valor(vpro.get_valor() + incr_progreso, vpro.get_texto())
+            vpro.set_valor(vpro.get_valor() + incr_progreso,
+                           texto_vpro + " (%d/12)" % (i+1))
     return consumos_gtx, consumos_fibra, consumos_bolsas
 
 ################### P R O D U C C I Ó N   F I B R A ###########################
@@ -3273,6 +3298,7 @@ def buscar_produccion_fibra(anno,
     """
     if vpro != None:
         incr_progreso = rango / 12.0
+        texto_vpro = vpro.get_texto()
     res = dict([(i, 0) for i in xrange(12)])
     for i in xrange(12):
         if i+1 not in meses:
@@ -3394,7 +3420,7 @@ def buscar_produccion_fibra(anno,
                                 ceb_reciclada.productosVenta[0].id))]
                 res[i]['balas_cable'][descripcion] = sum(pesos)
         if vpro != None: 
-            vpro.set_valor(vpro.get_valor() + incr_progreso, vpro.get_texto())
+            vpro.set_valor(vpro.get_valor() + incr_progreso, texto_vpro)
     return res
 
 ###############################################################################
@@ -3498,10 +3524,13 @@ def update_filas_gtx(filas, dic_gtx, mes=None):
                 pdps = utils.aplanar(
                             [dic_gtx["pdps"][mes] for mes in xrange(12)])
                 if pdps:
-                    parte_ini = min(pdps, key = lambda pdp: pdp.fechahoraini)
-                    parte_fin = max(pdps, key = lambda pdp: pdp.fechahorafin)
+                    parte_ini = min(pdps, key=lambda pdp: pdp.fechahorainicio)
+                    parte_fin = max(pdps, key=lambda pdp: pdp.fechahorafin)
                     fini = parte_ini.fecha
-                    ffin = parte_fin.fecha + mx.DateTime.oneDay
+                    try:
+                        ffin = parte_fin.fecha + mx.DateTime.oneDay
+                    except TypeError: # Es un datetime.date
+                        ffin = parte_fin.fecha + datetime.timedelta(days = 1)
                     # Aunque fini y ffin no sean exactamente primero de mes,
                     # como vamos a buscar PDPs, no existe ninguno entre el
                     # día 1 y el día del parte inicial porque por definición
