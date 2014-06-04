@@ -25,3 +25,6 @@
 [submodule "ginn/lib/pprintpp"]
 	path = ginn/lib/pprintpp
 	url = git@github.com:pacoqueen/pprintpp.git
+[submodule "ginn/lib/networkx"]
+	path = ginn/lib/networkx
+	url = git@github.com:pacoqueen/networkx.git
