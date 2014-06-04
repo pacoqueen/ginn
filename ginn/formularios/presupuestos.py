@@ -935,6 +935,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.reset_cache_credito()
         idcliente = utils.combo_get_value(cbe)
         if not idcliente:
+            self.wids['rating'].set_value(0)
             return
         cliente = pclases.Cliente.get(idcliente)
         #if not self.wids["e_cliente"].get_text():
@@ -959,6 +960,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         if not self.wids['e_persona_contacto'].get_text().strip():
             self.wids['e_persona_contacto'].set_text(cliente.contacto)
         self.actualizar_obras_cliente()
+        self.wids['rating'].set_value(cliente.calcular_rating())
 
     def seleccionar_cantidad(self, producto):
         """
@@ -1364,6 +1366,29 @@ class Presupuestos(Ventana, VentanaGenerica):
                 ("Pendiente", "gobject.TYPE_FLOAT", False, False, True, None), 
                 ("PUID", "gobject.TYPE_STRING", False, False, False, None))
         utils.preparar_listview(self.wids["tv_ofertado"], cols)
+        from formularios.custom_widgets import starhscale
+        self.wids['rating'] = starhscale.StarHScale(max_stars = 5, 
+                                                    pixmap_size = 16)
+        self.wids['rating'].set_sensitive(False)
+        b_ayuda = gtk.Button(stock = gtk.STOCK_HELP)
+        def show_hint(boton):
+            utils.dialogo_info(titulo = "RATING", 
+                    texto = pclases.Cliente.calcular_rating.__doc__, 
+                    padre = self.wids['ventana'])
+        b_ayuda.connect("clicked", show_hint)
+        alignment = self.wids['cbe_cliente'].parent
+        vbox = alignment.parent
+        hbox = gtk.HBox()
+        hbox.set_homogeneous(False)
+        alignment.reparent(hbox)
+        hbox.pack_start(self.wids['rating'], expand = False)
+        hbox.pack_start(b_ayuda, expand = False)
+        vbox.add(hbox)
+        vbox.show_all()
+        if self.usuario and self.usuario.nivel > 1:
+            # De momento solo activo para admin y gerencia
+            self.wids['rating'].set_property("visible", False)
+            b_ayuda.set_property("visible", False)
 
     def build_tv_presupuestos_no_validados(self):
         cols = (('Presupuesto','gobject.TYPE_STRING',False,True,True,None), 
@@ -2334,7 +2359,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         # else:
         #     self.objeto.validado = None
         self.actualizar_tooltip_de_cliente()
-        # FIXME: A veces no se oculta la ventana de progreso en el ordenador de Rafa. ¿Porcuá?
+        # FIXME: A veces no se oculta la ventana de progreso en el ordenador 
+        #        de Rafa. ¿Porcuá?
         vpro.ocultar()
         self.objeto.notificador.activar(self.aviso_actualizacion)        
         return self.cache_credito

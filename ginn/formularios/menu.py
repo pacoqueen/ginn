@@ -66,9 +66,9 @@ from formularios import utils
 from framework.configuracion import ConfigConexion, parse_params
 
 from formularios import custom_widgets
-from formularios.ventana import install_bug_hook
+from formularios.ventana import install_bug_hook, abrir_gajim
 
-__version__ = '5.6.3 (codename Ringo)'
+__version__ = '5.7.2'
 __version_info__ = tuple(
     [int(num) for num in __version__.split()[0].split('.')] + 
     [txt.replace("(", "").replace(")", "") for txt in __version__.split()[1:]]
@@ -578,7 +578,7 @@ class Menu:
                                         "Iniciar: gajim...", 
                                         self.logger, 
                                         self.usuario.usuario)
-            self.abrir_gajim()
+            abrir_gajim()
         elif clase == 'acerca_de' and archivo == 'acerca_de':
             utils.escribir_barra_estado(self.statusbar, 
                                         'Abrir: "acerca de..."', 
@@ -705,53 +705,7 @@ class Menu:
         traceback.print_tb(tb, file = info)
         texto += "%s\n" % info
         enviar_correo(texto, self.get_usuario())
-
-    def abrir_gajim(self):
-        try:
-            pwd = os.path.abspath(os.curdir)
-            os.chdir(os.path.join('..', 'gajim-0.9.1', 'src'))
-            # TODO: En la versión final hay que intentar que el usuario 
-            #       que se conecte sea el mismo de la aplicación, o bien 
-            #       compartir el mismo usuario para todos los que usen el 
-            #       mismo ordenador (por aquello de que la cuenta se guarda
-            #       en el .gajim y se conecta automáticamente).
-            ## FIXME: OJO: Esto inicia un nuevo proceso (es multiplataforma). 
-            ##             La desventaja es que entonces me impide manejar 
-            ##             gajim "desde dentro". No puedo pasarle la cuenta 
-            ##             de usuario (tendría que volcarla a un .gajim antes 
-            ##             de arrancarlo), etc...
-            if os.name == 'posix':
-                # pid = os.spawnl(os.P_NOWAIT, "gajim.py")
-                # Inexplicablemente -juraría que antes funcionaba- el spawnl 
-                # ya no rula.
-                os.system("cd .. && ./launch.sh >/dev/null &")
-            elif os.name == 'nt':
-                os.startfile("gajim.pyw")  # @UndefinedVariable
-            else:
-                utils.dialogo_info(titulo = "PLATAFORMA NO SOPORTADA",
-                    texto = "La ayuda on-line solo funciona en arquitecturas"
-                            " con plataformas POSIX o NT\n(GNU/Linux, "
-                            "MS-Windows, *BSD...).",
-                    padre = self.ventana)
-        except:
-            print "Se ha detectado un error. Volviendo a %s." % (pwd)
-            if '.' in sys.path:
-                sys.path.remove('.')
-            os.chdir(pwd)
-            texto = ''
-            for e in sys.exc_info():
-                texto += "%s\n" % e
-            tb = sys.exc_info()[2]
-            texto += "Línea %s\n" % tb.tb_lineno
-            info = MetaF() 
-            traceback.print_tb(tb, file = info)
-            texto += "%s\n" % info
-            enviar_correo(texto, self.get_usuario())
-        else:
-            if '.' in sys.path:
-                sys.path.remove('.')
-            os.chdir(pwd)
-    
+   
     def abrir_pruebas_coherencia(self):
         if os.name == 'posix':
             w = gtk.Window()

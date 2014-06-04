@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -53,7 +53,8 @@ from framework import pclases
 import mx.DateTime
 from informes import geninformes
 from formularios import ventana_progreso
-
+from lib.myprint import myprint
+from formularios.consulta_ventas_por_producto import act_fecha
 
 class ConsumoFibraPorPartidaGtx(Ventana):
         
@@ -65,12 +66,15 @@ class ConsumoFibraPorPartidaGtx(Ventana):
         """
         self.usuario = usuario
         self.partidas_carga = {}
-        Ventana.__init__(self, 'consumo_fibra_por_partida_gtx.glade', objeto, usuario = usuario)
+        Ventana.__init__(self, 'consumo_fibra_por_partida_gtx.glade', objeto, 
+                         usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_buscar/clicked': self.buscar,
                        'b_imprimir/clicked': self.imprimir,
                        'b_fecha_inicio/clicked': self.set_inicio,
                        'b_fecha_fin/clicked': self.set_fin, 
+                       'e_fechainicio/focus-out-event': act_fecha,
+                       'e_fechafin/focus-out-event': act_fecha, 
                        'b_exportar/clicked': self.exportar}
         self.add_connections(connections)
         cols = (('Partida', 'gobject.TYPE_STRING', False, True, False, None),
@@ -89,7 +93,8 @@ class ConsumoFibraPorPartidaGtx(Ventana):
         self.colorear(self.wids['tv_datos'])
         temp = time.localtime()
         self.wids['e_fechafin'].set_text(utils.str_fecha(temp))
-        self.wids['e_fechainicio'].set_text(utils.str_fecha(mx.DateTime.localtime() - (7 * mx.DateTime.oneDay)))
+        self.wids['e_fechainicio'].set_text(utils.str_fecha(
+            mx.DateTime.localtime() - (7 * mx.DateTime.oneDay)))
         self.inicio = utils.parse_fecha(self.wids['e_fechainicio'].get_text())
         self.fin = utils.parse_fecha(self.wids['e_fechafin'].get_text())
         self.wids['rb_pesoreal'].child.set_property("use-markup", True)
@@ -163,8 +168,8 @@ class ConsumoFibraPorPartidaGtx(Ventana):
         for pc in partidas_carga:
             abuelo = model.append(None, 
                       (pc.codigo, 
-                       utils.float2str(partidas_carga[pc]['kilos_consumidos']), 
-                       utils.float2str(partidas_carga[pc]['kilos_producidos']), 
+                       utils.float2str(partidas_carga[pc]['kilos_consumidos']),
+                       utils.float2str(partidas_carga[pc]['kilos_producidos']),
                        utils.float2str(partidas_carga[pc]['kilos_teoricos']), 
                        str(partidas_carga[pc]['balas']), 
                        str(partidas_carga[pc]['rollos']), 
@@ -230,7 +235,9 @@ class ConsumoFibraPorPartidaGtx(Ventana):
             else:
                 chart = charting.Chart()
                 self.wids['eventbox_chart'].add(chart)
-            datachart.sort(lambda fila1, fila2: (fila1[0] < fila2[0] and -1) or (fila1[0] > fila2[0] and 1) or 0)
+            datachart.sort(lambda fila1, fila2: (fila1[0] < fila2[0] and -1) 
+                                                or (fila1[0] > fila2[0] and 1) 
+                                                or 0)
             for data in datachart:
                 data.append(6)  # Barras de color rojo.
             chart.plot(datachart)
@@ -238,7 +245,7 @@ class ConsumoFibraPorPartidaGtx(Ventana):
         except Exception, msg:
             txt = "consumo_fibra_por_partida_gtx.py::rellenar_tabla -> "\
                   "Error al dibujar gráfica (charting): %s" % msg
-            print txt
+            myprint(txt)
             self.logger.error(txt)
         
     def set_inicio(self, boton):
@@ -287,6 +294,8 @@ class ConsumoFibraPorPartidaGtx(Ventana):
         relación directa entre rollo y bala consumida (se pierde definición 
         al haber una tabla de una relación muchos a muchos entre medio).
         """
+        self.inicio = utils.parse_fecha(self.wids['e_fechainicio'].get_text()) 
+        self.fin = utils.parse_fecha(self.wids['e_fechafin'].get_text()) 
         self.totales = {'e_total_kg_consumidos': 0.0, 
                         'e_total_kg_prod_real': 0.0, 
                         'e_total_kg_prod_teorico': 0.0, 
@@ -295,11 +304,11 @@ class ConsumoFibraPorPartidaGtx(Ventana):
                         'e_total_m2_producidos': 0.0}
         PDP = pclases.ParteDeProduccion
         if not self.inicio:
-            pdps = PDP.select(""" fecha <= '%s' 
+            pdps = PDP.select(""" fecha < '%s' 
                     AND observaciones NOT LIKE '%%;%%;%%;%%;%%;%%' """ % (
                         self.fin.strftime('%Y-%m-%d')))
         else:
-            pdps = PDP.select(""" fecha >= '%s' AND fecha <= '%s' 
+            pdps = PDP.select(""" fecha >= '%s' AND fecha < '%s' 
                     AND observaciones NOT LIKE '%%;%%;%%;%%;%%;%%' """ % (
                         self.inicio.strftime('%Y-%m-%d'), 
                         self.fin.strftime('%Y-%m-%d')))
@@ -323,7 +332,7 @@ class ConsumoFibraPorPartidaGtx(Ventana):
             txt = "consumo_fibra_por_partida_gtx.py::buscar -> ¡NO HAY SELEC"\
                   "CIONADO NINGÚN RADIOBUTTON DEL GRUPO!"
             self.logger.error(txt)
-            print txt
+            myprint(txt)
             return
         for pdp in pdps:
             vpro.set_valor(i/tot, 'Analizando producción %s...' % (
@@ -343,7 +352,7 @@ class ConsumoFibraPorPartidaGtx(Ventana):
                         txt = "consumo_fibra_por_partida_gtx.py::buscar -> ¡P"\
                               "artida %s no tiene partida de carga!" % (
                                 partida.get_info())
-                        print txt
+                        myprint(txt)
                         self.logger.error("%s%s" % (
                             self.usuario and self.usuario.usuario + ": " 
                             or "", txt))
@@ -375,7 +384,7 @@ class ConsumoFibraPorPartidaGtx(Ventana):
                                           "o de cálculo. Se usará el peso te"\
                                           "órico."
                                     self.logger.warning(txt)
-                                    print txt
+                                    myprint(txt)
                                     kilos_producidos \
                                         = partida.get_kilos_teorico()
                                 kilos_teoricos = partida.get_kilos_teorico()
@@ -438,15 +447,16 @@ class ConsumoFibraPorPartidaGtx(Ventana):
         """
         if self.partidas_carga  != {}:
             if self.wids['rb_pesoreal'].get_active():
-                metodo = "reales tomados en la línea (incluyendo embalajes)."  # @UnusedVariable
+                metodo = "reales tomados en la línea (incluyendo embalajes)."
             elif self.wids['rb_teorico'].get_active():
                 metodo = "teóricos."  # @UnusedVariable
             elif self.wids['rb_pesosin'].get_active():
-                metodo = "reales tomados en la línea (sin embalajes)."  # @UnusedVariable
+                metodo = "reales tomados en la línea (sin embalajes)."
             else:
-                txt = "consumo_fibra_por_partida_gtx.py::imprimir -> ¡NO HAY SELECCIONADO NINGÚN RADIOBUTTON DEL GRUPO!"
+                txt = "consumo_fibra_por_partida_gtx.py::imprimir -> "\
+                      "¡NO HAY SELECCIONADO NINGÚN RADIOBUTTON DEL GRUPO!"
                 self.logger.error(txt)
-                print txt
+                myprint(txt)
                 return
             partidas_carga = self.partidas_carga
             from formularios import reports

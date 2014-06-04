@@ -2220,10 +2220,14 @@ class AlbaranesDeSalida(Ventana):
                                    texto = txtdlg, 
                                    padre = self.wids['ventana'])
             else:
-                ldps_a_incluir, srvs_a_incluir = select_lineas_pedido(pedido, 
-                        padre = self.wids['ventana'])
+                try:
+                    ldps_a_incluir, srvs_a_incluir = select_lineas_pedido(
+                            pedido, padre = self.wids['ventana'])
+                except TypeError: #Ha cancelado y ha devuelto None. No 2 listas
+                    return 
                 not_included = []
-                for ldp in pedido.lineasDePedido[:]:
+                #for ldp in pedido.lineasDePedido[:]:
+                for ldp in ldps_a_incluir:
                     # DONE: No unificar si tiene precios de venta distintos. 
                     # Arreglado directamente en pclases para que devuelva 
                     # cantidades servidas y pedidas teniendo en cuenta también 
@@ -2299,7 +2303,8 @@ class AlbaranesDeSalida(Ventana):
                                     % (get_nombre_producto(ldp), ldp.cantidad, ", ".join(utils.unificar([a.numalbaran for a in ldp.albaranesSalida if a != None]))) \
                                     for ldp in not_included]), 
                                         padre = self.wids['ventana'])
-                for srv in pedido.servicios:
+                #for srv in pedido.servicios:
+                for srv in srvs_a_incluir:
                     if srv.albaranSalida == None:
                         srv.albaranSalida = self.objeto
                 # Y ahora copio la dirección de envío.
@@ -2995,7 +3000,7 @@ class AlbaranesDeSalida(Ventana):
             if (not self.objeto.transportesACuenta
                 and not utils.dialogo(titulo = "¿ESTÁ SEGURO?", 
                         texto = "El albarán no tiene transportes a cuenta.\n"
-                                "Si genera la factura, no podrá agregarlos"
+                                "Si genera la factura, no podrá agregarlos "
                                 "más tarde. ¿Desea continuar?", 
                         padre = self.wids['ventana'])):
                     return
@@ -4838,9 +4843,33 @@ def select_lineas_pedido(pedido, padre = None):
     Devuelve dos listas: una de líneas de pedido y otra de servicios.
     Si cancela devuelve las listas vacías.
     """
-    # TODO: PORASQUI
-    return [], []
-
+    ops = []
+    default = []
+    for ldp in pedido.lineasDePedido:
+        ops.append((ldp.puid, ldp.get_info()))
+        if ldp.get_cantidad_pendiente():
+            default.append(ldp.puid)
+    for srv in pedido.servicios:
+        ops.append((srv.puid, srv.get_info()))
+    res = utils.dialogo_checks(titulo = "SELECCIONE LÍNEAS DEL PEDIDO", 
+            texto = "Selecciones las líneas del pedido %s a servir en\n"
+                    "el presente albarán. Las líneas no seleccionadas\n"
+                    "quedarán pendientes de servir." % pedido.numpedido, 
+            ops = ops, 
+            padre = padre, 
+            valor_por_defecto = default) # Marcadas las líneas pendientes.
+    ldps = []
+    srvs = []
+    if res == False:
+        return None     # Ha cancelado y res no son dos listas. Es False.
+    else:
+        for puid in res:
+            obj = pclases.getObjetoPUID(puid)
+            if isinstance(obj, pclases.LineaDePedido):
+                ldps.append(obj)
+            elif isinstance(obj, pclases.Servicio):
+                srvs.append(obj)
+        return ldps, srvs
 
 if __name__=='__main__':
     a = AlbaranesDeSalida()

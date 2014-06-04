@@ -626,6 +626,63 @@ def dialogo_radio(titulo='Seleccione una opción',
         res = res[0]
     return res
 
+def dialogo_checks(titulo='SELECCIONE OPCIONES', 
+                   texto='Seleccione una o varias opciones', 
+                   ops=[], 
+                   padre=None, 
+                   valor_por_defecto = None):
+    """
+    Muestra un diálogo modal con un grupo de checkbuttons con las opciones 
+    pasadas.
+    Las opciones deben ser una lista de tuplas con dos posiciones: 
+    (int/str, str). La primera se usará como "índice" a devolver. La segunda 
+    se mostrará en su check de la ventana.
+    Devuelve una lista de elementos seleccionados[0] -el entero de cada
+    opción- o None si se cancela. La lista vacía será la respuesta cuando 
+    acepte pero no seleccione ninguna opción.
+    Si valor_por_defecto != None, debe ser una lista de enteros 
+    correspondientes a los primeros índices de la lista de opciones.
+    """
+    res = []
+    de = gtk.Dialog(titulo,
+                    padre,
+                    gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                    (gtk.STOCK_OK, gtk.RESPONSE_OK,
+                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+    #-------------------------------------------------------------------#
+    def respuesta_ok_cancel_check(dialog, response, res, dicseleccion):
+        if response == gtk.RESPONSE_OK:
+            for numop in dicseleccion:
+                if dicseleccion[numop].get_active():
+                    res.append(numop)
+    #-------------------------------------------------------------------#
+    txt = gtk.Label("\n    %s    \n" % texto)
+    vchecks = gtk.VBox()
+    dicseleccion = {}
+    for numop, txtop in ops:
+        ch = gtk.CheckButton(label = txtop)
+        ch.set_active(numop in valor_por_defecto)
+        ch.set_tooltip_markup("<tt>%s</tt>" % (numop))
+        vchecks.add(ch)
+        dicseleccion[numop] = ch
+    de.connect("response", respuesta_ok_cancel_check, res, dicseleccion)
+    hbox = gtk.HBox(spacing = 5)
+    icono = gtk.Image()
+    icono.set_from_stock(gtk.STOCK_DIALOG_QUESTION, gtk.ICON_SIZE_DIALOG)
+    hbox.pack_start(icono)
+    hbox.pack_start(txt)
+    hbox.show_all()
+    de.vbox.pack_start(hbox)
+    vchecks.show_all()
+    de.vbox.pack_start(vchecks)
+    de.set_transient_for(padre)
+    de.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
+    response = de.run()
+    de.destroy()
+    if response == gtk.RESPONSE_CANCEL:
+        res = False
+    return res
+
 def dialogo_entrada_combo(titulo='Seleccione una opción', 
                           texto='', 
                           ops=[(0, 'Sin opciones')], 
@@ -4414,6 +4471,31 @@ def sanitize(cad, strict = False):
     if strict:
         cad = filtrar_tildes(cad)
     return cad
+
+def dialogo_proveedor(padre = None, inhabilitados = False):
+    """
+    Muestra un diálogo con un combo de proveedores. Devuelve el objeto 
+    proveedor o None si se cancela.
+    Si inhabilitados es True, incluye también proveedores deshabilitados.
+    """
+    from framework import pclases
+    if not inhabilitados:
+        proveedores = pclases.Proveedor.select(
+                pclases.Proveedor.q.inhabilitado == False, 
+                orderBy = "nombre")
+    else:
+        proveedores = pclases.Proveedor.select(orderBy = "nombre")
+    ops = [(p.id, p.nombre) for p in proveedores]
+    res = dialogo_combo(titulo = "SELECCIONE UN PROVEEDOR", 
+        texto = "Seleccione un proveedor de la siguiente lista:", 
+        ops = ops, 
+        padre = padre)
+    if res:
+        try:
+            res = pclases.Proveedor.get(res)
+        except:     # Proveedor borrado durante el proceso.
+            res = None 
+    return res
 
 
 if __name__=="__main__":

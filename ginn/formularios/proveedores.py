@@ -611,14 +611,17 @@ class Proveedores(Ventana):
         """
         proveedor = self.objeto
         if proveedor == None: return
-        facturas = [(p.id, p.numfactura, utils.str_fecha(p.fecha)) for p in proveedor.facturasCompra]
+        facturas = [(p.id, p.numfactura, utils.str_fecha(p.fecha), 
+                     utils.float2str(p.calcular_importe_total()))
+                    for p in proveedor.facturasCompra]
         idfactura = utils.dialogo_resultado(facturas, 
-                                            'FACTUDAS DEL PROVEEDOR',
-                                            cabeceras = ('ID', 'Número de factura', 'Fecha'), 
-                                            padre = self.wids['ventana'])
+            'FACTUDAS DEL PROVEEDOR',
+            cabeceras = ('ID', 'Número de factura', 'Fecha', 'Importe c/IVA'), 
+            padre = self.wids['ventana'])
         if idfactura > 0:
             from formularios import facturas_compra
-            p = facturas_compra.FacturasDeEntrada(pclases.FacturaCompra.get(idfactura), usuario = self.usuario)
+            p = facturas_compra.FacturasDeEntrada(
+                pclases.FacturaCompra.get(idfactura), usuario = self.usuario)
         
     def ver_productos(self, boton):
         """

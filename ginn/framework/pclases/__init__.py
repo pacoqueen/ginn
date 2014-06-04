@@ -6014,7 +6014,8 @@ class Rollo(SQLObject, PRPCTOO):
         """
         Devuelve el peso *real* del rollo en kg, pero descontando el embalaje.
         """
-        return self.peso - self.articulo.productoVenta.camposEspecificosRollo.pesoEmbalaje
+        return (self.peso 
+            - self.articulo.productoVenta.camposEspecificosRollo.pesoEmbalaje)
     
     peso_teorico = property(get_peso_teorico)
     peso_sin = property(get_peso_sin)
@@ -6089,8 +6090,9 @@ class RolloDefectuoso(SQLObject, PRPCTOO):
         try:
             self.numrollo = numrollo
             self.codigo = "X%d" % (numrollo)
-        # except psycopg.ProgrammingError:    # Es la excepción que se corresponde con ERROR:  llave 
-                                            # duplicada viola restricción unique "tal"
+        # except psycopg.ProgrammingError:    
+            # Es la excepción que se corresponde con ERROR:  llave 
+            # duplicada viola restricción unique "tal"
         finally:
             return self.numrollo
             
@@ -6108,13 +6110,15 @@ class RolloDefectuoso(SQLObject, PRPCTOO):
 
     def get_albaranSalidaID(self):
         """
-        Devuelve el ID albarán de salida del artículo relacionado con el rollo o None.
+        Devuelve el ID albarán de salida del artículo relacionado con el rollo
+        o None.
         """
         return self.articulos[0].albaranSalidaID
 
     def set_albaranSalidaID(self, albaranSalidaID):
         """
-        Establece el id de albarán de salida del artículo relacionado con el rollo.
+        Establece el id de albarán de salida del artículo relacionado con el
+        rollo defectuoso.
         """
         self.articulos[0].albaranSalidaID = albaranSalidaID
 
@@ -6139,8 +6143,10 @@ class RolloDefectuoso(SQLObject, PRPCTOO):
 
     def get_peso_teorico(self):
         """
-        Devuelve el peso teórico del rollo (ancho * largo * densidad) en kilogramos.
-        Lo más probable es que NO coincida con el del producto que se supone que sería.
+        Devuelve el peso teórico del rollo (ancho * largo * densidad)
+        en kilogramos.
+        Lo más probable es que NO coincida con el del producto que se supone
+        que sería.
         """
         return (self.densidad * self.ancho * self.metrosLineales) / 1000.0
     
@@ -6170,7 +6176,8 @@ class RolloDefectuoso(SQLObject, PRPCTOO):
         """
         Devuelve código de rollo y descripción del producto.
         """
-        cad = "Rollo defectuoso %s (%s)" % (self.codigo, self.productoVenta and self.productoVenta.descripcion or "")
+        cad = "Rollo defectuoso %s (%s)" % (self.codigo, 
+                self.productoVenta and self.productoVenta.descripcion or "")
         return cad
 
 cont, tiempo = print_verbose(cont, total, tiempo)
@@ -6606,6 +6613,15 @@ class LineaDePedido(SQLObject, PRPCTOO):
         #    servida += ldv.cantidad
         servida = sum([ldv.cantidad for ldv in ldvs])
         return servida
+
+    def get_cantidad_pendiente(self):
+        """
+        Devuelve la cantidad pendiente de servir contando todos los posibles 
+        albaranes del pedido.
+        """
+        pedida = self.get_cantidad_pedida()
+        servida = self.get_cantidad_servida()
+        return pedida - servida
 
     def get_lineas_de_venta(self, 
                             productoVentaID = -1, 
@@ -9122,9 +9138,22 @@ class AlbaranEntrada(SQLObject, PRPCTOO):
         Devuelve el número de líneas de venta del albarán 
         que ya han sido facturadas.
         """
-        lineas_facturadas = [ldc for ldc in self.lineasDeCompra if ldc.facturaCompraID != None]
-            # Acceder a ...ID es más rápido que acceder al objeto en sí, aunque sea solo para comparar si no es None.
+        lineas_facturadas = [ldc for ldc in self.lineasDeCompra 
+                             if ldc.facturaCompraID]
+            # Acceder a ...ID es más rápido que acceder al objeto en sí, 
+            # aunque sea solo para comparar si no es None.
         return len(lineas_facturadas)
+
+    def contar_lineas_no_facturadas(self):
+        """
+        Devuelve el número de líneas de venta del albarán 
+        que todavía han sido facturadas.
+        """
+        lineas_no_facturadas = [ldc for ldc in self.lineasDeCompra 
+                                if not ldc.facturaCompraID]
+            # Acceder a ...ID es más rápido que acceder al objeto en sí, 
+            # aunque sea solo para comparar si no es None.
+        return len(lineas_no_facturadas)
 
     def get_facturas(self):
         """
@@ -9132,7 +9161,8 @@ class AlbaranEntrada(SQLObject, PRPCTOO):
         """
         facturas = []
         for ldc in self.lineasDeCompra:
-            if ldc.facturaCompraID != None and ldc.facturaCompra not in facturas:
+            if (ldc.facturaCompraID != None 
+                    and ldc.facturaCompra not in facturas):
                 facturas.append(ldc.facturaCompra)
         return facturas
 
@@ -9146,8 +9176,10 @@ class AlbaranEntrada(SQLObject, PRPCTOO):
                 pedidos.append(ldc.pedidoCompra)
         return pedidos
 
-    facturasCompra = property(get_facturas, doc = "Facturas relacionadas con el albarán de entrda.")
-    pedidosCompra = property(get_pedidos, doc = 'Lista de objetos "pedido de compra" servidos en este albarán')
+    facturasCompra = property(get_facturas, 
+        doc = "Facturas relacionadas con el albarán de entrda.")
+    pedidosCompra = property(get_pedidos, 
+        doc = 'Lista de objetos "pedido de compra" servidos en este albarán')
 
 
 cont, tiempo = print_verbose(cont, total, tiempo)
