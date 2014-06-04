@@ -35,8 +35,10 @@ def myprint(*args, **kw):
     if "pythonw" in sys.executable:
         fout = tempfile.TemporaryFile()
         #sys.stderr = sys.stdout = fout
-        fout.write(cad)
-        fout.close()
+        try:
+            fout.write(cad)
+        finally:
+            fout.close()
     else:
         print(cad)
 
