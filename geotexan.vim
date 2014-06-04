@@ -1,9 +1,9 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 29 mayo 2014 at 20:23:56.
+" Created by session.vim 1.5 on 04 junio 2014 at 09:19:42.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
-silent! set guifont=Source\ Code\ Pro\ 10
+silent! set guifont=Source\ Code\ Pro\ 9
 if exists('g:syntax_on') != 1 | syntax on | endif
 if exists('g:did_load_filetypes') != 1 | filetype on | endif
 if exists('g:did_load_ftplugin') != 1 | filetype plugin on | endif
@@ -12,7 +12,7 @@ if &background != 'dark'
 	set background=dark
 endif
 if !exists('g:colors_name') || g:colors_name != 'desert' | colorscheme desert | endif
-call setqflist([{'lnum': 90, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '1: E302 expected 2 blank lines, found 1'}, {'lnum': 92, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '74: W291 trailing whitespace'}, {'lnum': 105, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '62: W291 trailing whitespace'}, {'lnum': 107, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '21: E127 continuation line over-indented for visual indent'}, {'lnum': 108, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '75: W291 trailing whitespace'}, {'lnum': 109, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '78: W291 trailing whitespace'}, {'lnum': 110, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '76: W291 trailing whitespace'}, {'lnum': 111, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '80: W291 trailing whitespace'}, {'lnum': 112, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '72: W291 trailing whitespace'}, {'lnum': 115, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '27: E261 at least two spaces before inline comment'}, {'lnum': 116, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '50: W291 trailing whitespace'}, {'lnum': 117, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '21: E127 continuation line over-indented for visual indent'}, {'lnum': 124, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '1: E302 expected 2 blank lines, found 1'}, {'lnum': 138, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '27: W291 trailing whitespace'}, {'lnum': 139, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '37: W291 trailing whitespace'}, {'lnum': 140, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '41: W291 trailing whitespace'}, {'lnum': 141, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '37: W291 trailing whitespace'}, {'lnum': 145, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '27: W291 trailing whitespace'}, {'lnum': 146, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '41: W291 trailing whitespace'}, {'lnum': 147, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '37: W291 trailing whitespace'}, {'lnum': 154, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '80: E501 line too long (80 > 79 characters)'}, {'lnum': 154, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '82: W291 trailing whitespace'}, {'lnum': 158, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '80: E501 line too long (80 > 79 characters)'}, {'lnum': 158, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '82: W291 trailing whitespace'}, {'lnum': 158, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '80: E501 line too long (80 > 79 characters)'}, {'lnum': 158, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '84: W291 trailing whitespace'}, {'lnum': 158, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '42: W291 trailing whitespace'}, {'lnum': 158, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '34: W291 trailing whitespace'}, {'lnum': 167, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '1: E302 expected 2 blank lines, found 1'}, {'lnum': 169, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '70: W291 trailing whitespace'}, {'lnum': 192, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '1: E302 expected 2 blank lines, found 1'}, {'lnum': 194, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '70: W291 trailing whitespace'}, {'lnum': 212, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '1: E302 expected 2 blank lines, found 1'}, {'lnum': 214, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '73: W291 trailing whitespace'}, {'lnum': 215, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '76: W291 trailing whitespace'}, {'lnum': 216, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '77: W291 trailing whitespace'}, {'lnum': 217, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '78: W291 trailing whitespace'}, {'lnum': 220, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '47: W291 trailing whitespace'}, {'lnum': 221, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '51: W291 trailing whitespace'}, {'lnum': 222, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '47: W291 trailing whitespace'}, {'lnum': 223, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '48: W291 trailing whitespace'}, {'lnum': 224, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '45: W291 trailing whitespace'}, {'lnum': 225, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '45: W291 trailing whitespace'}, {'lnum': 245, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '39: W291 trailing whitespace'}, {'lnum': 254, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '70: W291 trailing whitespace'}, {'lnum': 255, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '73: W291 trailing whitespace'}, {'lnum': 297, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '44: W291 trailing whitespace'}, {'lnum': 298, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '31: W291 trailing whitespace'}, {'lnum': 299, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '34: W291 trailing whitespace'}, {'lnum': 300, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '31: W291 trailing whitespace'}, {'lnum': 301, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '32: W291 trailing whitespace'}, {'lnum': 302, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '29: W291 trailing whitespace'}, {'lnum': 303, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '29: W291 trailing whitespace'}, {'lnum': 307, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '1: E302 expected 2 blank lines, found 1'}, {'lnum': 307, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '75: W291 trailing whitespace'}, {'lnum': 308, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '60: W291 trailing whitespace'}, {'lnum': 309, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '29: W291 trailing whitespace'}, {'lnum': 312, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '66: W291 trailing whitespace'}, {'lnum': 314, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '66: W291 trailing whitespace'}, {'lnum': 316, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '55: W291 trailing whitespace'}, {'lnum': 317, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '55: W291 trailing whitespace'}, {'lnum': 322, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '66: W291 trailing whitespace'}, {'lnum': 324, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '66: W291 trailing whitespace'}, {'lnum': 326, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '55: W291 trailing whitespace'}, {'lnum': 327, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '50: W291 trailing whitespace'}, {'lnum': 328, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '47: W291 trailing whitespace'}, {'lnum': 329, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '48: W291 trailing whitespace'}, {'lnum': 336, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '15: E225 missing whitespace around operator'}, {'lnum': 336, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '79: W291 trailing whitespace'}, {'lnum': 338, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '65: W291 trailing whitespace'}, {'lnum': 340, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '26: E211 whitespace before ''('''}, {'lnum': 340, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '33: W291 trailing whitespace'}, {'lnum': 341, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '40: W291 trailing whitespace'}, {'lnum': 342, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '48: W291 trailing whitespace'}, {'lnum': 343, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '42: W291 trailing whitespace'}, {'lnum': 347, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '25: E211 whitespace before ''('''}, {'lnum': 348, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '27: E701 multiple statements on one line (colon)'}, {'lnum': 351, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '27: E701 multiple statements on one line (colon)'}, {'lnum': 353, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '27: E701 multiple statements on one line (colon)'}, {'lnum': 353, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '78: W291 trailing whitespace'}, {'lnum': 355, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '27: E701 multiple statements on one line (colon)'}, {'lnum': 355, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '80: E501 line too long (82 > 79 characters)'}, {'lnum': 358, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '33: E261 at least two spaces before inline comment'}, {'lnum': 360, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '26: E261 at least two spaces before inline comment'}, {'lnum': 367, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'extra/scripts/clouseau.py', 'text': '1: W391 blank line at end of file'}])
+call setqflist([])
 let SessionLoad = 1
 if &cp | set nocp | endif
 let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
@@ -32,14 +32,12 @@ badd +248 ginn/formularios/gtkexcepthook.py
 badd +20 extra/scripts/clouseau-gtk.py
 badd +133 ginn/formularios/partes_de_fabricacion_bolsas.py
 badd +1 ginn/formularios/partes_de_fabricacion_gtx.py
-badd +1 ginn/formularios/partes_de_fabricacion_rollos.py
 badd +1 ginn/formularios/partes_de_ancho_multiple.py
 badd +1 ginn/formularios/consulta_producido.py
 badd +247 ginn/formularios/consulta_consumo.py
-badd +1 ginn/formularios/consulta_ventas_por_producto.py
 badd +41 ginn/framework/memoize.py
 badd +596 ginn/formularios/presupuesto.py
-badd +46 ginn/formularios/consulta_productividad.py
+badd +47 ginn/formularios/consulta_productividad.py
 badd +590 ginn/formularios/listado_rollos.py
 badd +3049 ginn/informes/geninformes.py
 badd +402 ginn/informes/norma2013.py
@@ -47,13 +45,12 @@ badd +99 ginn/formularios/consulta_ventas.py
 badd +1 ginn/formularios/consumo_balas_partida.py
 badd +696 ginn/formularios/utils.py
 badd +847 ginn/framework/pclases/cliente.py
-badd +1 ginn/formularios/menu.py
 badd +851 ginn/formularios/consulta_global.py
 badd +1 ginn/formularios/consulta_global.glade
-argglobal
-silent! argdel *
-argadd formularios/auditviewer.py
-set lines=58 columns=126
+badd +1 ginn/framework/pclases/__init__.py
+badd +57 ginn/formularios/consumo_fibra_por_partida_gtx.py
+args formularios/auditviewer.py
+set lines=48 columns=118
 edit extra/scripts/balas_basura_reembaladas.py
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -76,10 +73,7 @@ wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
-wincmd _ | wincmd |
-split
-9wincmd k
-wincmd w
+8wincmd k
 wincmd w
 wincmd w
 wincmd w
@@ -92,27 +86,25 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe 'vert 1resize ' . ((&columns * 36 + 63) / 126)
-exe '2resize ' . ((&lines * 3 + 29) / 58)
-exe 'vert 2resize ' . ((&columns * 89 + 63) / 126)
-exe '3resize ' . ((&lines * 1 + 29) / 58)
-exe 'vert 3resize ' . ((&columns * 89 + 63) / 126)
-exe '4resize ' . ((&lines * 1 + 29) / 58)
-exe 'vert 4resize ' . ((&columns * 89 + 63) / 126)
-exe '5resize ' . ((&lines * 1 + 29) / 58)
-exe 'vert 5resize ' . ((&columns * 89 + 63) / 126)
-exe '6resize ' . ((&lines * 1 + 29) / 58)
-exe 'vert 6resize ' . ((&columns * 89 + 63) / 126)
-exe '7resize ' . ((&lines * 1 + 29) / 58)
-exe 'vert 7resize ' . ((&columns * 89 + 63) / 126)
-exe '8resize ' . ((&lines * 1 + 29) / 58)
-exe 'vert 8resize ' . ((&columns * 89 + 63) / 126)
-exe '9resize ' . ((&lines * 1 + 29) / 58)
-exe 'vert 9resize ' . ((&columns * 89 + 63) / 126)
-exe '10resize ' . ((&lines * 27 + 29) / 58)
-exe 'vert 10resize ' . ((&columns * 89 + 63) / 126)
-exe '11resize ' . ((&lines * 10 + 29) / 58)
-exe 'vert 11resize ' . ((&columns * 89 + 63) / 126)
+exe 'vert 1resize ' . ((&columns * 31 + 59) / 118)
+exe '2resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 2resize ' . ((&columns * 86 + 59) / 118)
+exe '3resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 3resize ' . ((&columns * 86 + 59) / 118)
+exe '4resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 4resize ' . ((&columns * 86 + 59) / 118)
+exe '5resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 5resize ' . ((&columns * 86 + 59) / 118)
+exe '6resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 6resize ' . ((&columns * 86 + 59) / 118)
+exe '7resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 7resize ' . ((&columns * 86 + 59) / 118)
+exe '8resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 8resize ' . ((&columns * 86 + 59) / 118)
+exe '9resize ' . ((&lines * 19 + 24) / 48)
+exe 'vert 9resize ' . ((&columns * 86 + 59) / 118)
+exe '10resize ' . ((&lines * 12 + 24) / 48)
+exe 'vert 10resize ' . ((&columns * 86 + 59) / 118)
 argglobal
 enew
 file __Tag_List__
@@ -266,7 +258,7 @@ normal! zo
 normal! zo
 299
 normal! zo
-let s:l = 69 - ((0 * winheight(0) + 1) / 3)
+let s:l = 69 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -275,7 +267,7 @@ normal! 044|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
-edit ~/Geotexan/src/Geotex-INN/ginn/formularios/menu.py
+edit ~/Geotexan/src/Geotex-INN/ginn/framework/pclases/__init__.py
 setlocal fdm=indent
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -284,128 +276,16 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-164
+16629
 normal! zo
-574
+16736
 normal! zo
-577
-normal! zo
-578
-normal! zo
-578
-normal! zo
-578
-normal! zo
-578
-normal! zo
-578
-normal! zo
-578
-normal! zo
-let s:l = 581 - ((0 * winheight(0) + 0) / 1)
+let s:l = 17294 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-581
-normal! 013|
-lcd ~/Geotexan/src/Geotex-INN
-wincmd w
-argglobal
-edit ~/Geotexan/src/Geotex-INN/ginn/formularios/consulta_productividad.py
-setlocal fdm=indent
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=99
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-46
-normal! zo
-46
-normal! zo
-46
-normal! zo
-46
-normal! zo
-46
-normal! zo
-46
-normal! zo
-46
-normal! zo
-46
-normal! zo
-46
-normal! zo
-51
-normal! zo
-52
-normal! zo
-60
-normal! zo
-60
-normal! zo
-60
-normal! zo
-255
-normal! zo
-308
-normal! zo
-390
-normal! zo
-391
-normal! zo
-405
-normal! zo
-440
-normal! zo
-449
-normal! zo
-449
-normal! zo
-449
-normal! zo
-449
-normal! zo
-449
-normal! zo
-449
-normal! zo
-449
-normal! zo
-449
-normal! zo
-449
-normal! zo
-449
-normal! zo
-449
-normal! zo
-let s:l = 208 - ((0 * winheight(0) + 0) / 1)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-208
-normal! 013|
-lcd ~/Geotexan/src/Geotex-INN
-wincmd w
-argglobal
-edit ~/Geotexan/src/Geotex-INN/ginn/formularios/consulta_ventas_por_producto.py
-setlocal fdm=indent
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=99
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-let s:l = 702 - ((0 * winheight(0) + 0) / 1)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-702
-normal! 013|
+17294
+normal! 018|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -418,12 +298,12 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 26 - ((0 * winheight(0) + 0) / 1)
+let s:l = 30 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-26
-normal! 08|
+30
+normal! 0
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -473,7 +353,7 @@ if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 506
-normal! 049|
+normal! 043|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -514,12 +394,108 @@ normal! zo
 normal! zo
 246
 normal! zo
-let s:l = 102 - ((0 * winheight(0) + 0) / 1)
+let s:l = 106 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-102
-normal! 025|
+106
+normal! 031|
+lcd ~/Geotexan/src/Geotex-INN
+wincmd w
+argglobal
+edit ~/Geotexan/src/Geotex-INN/ginn/formularios/consumo_fibra_por_partida_gtx.py
+setlocal fdm=indent
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=99
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+61
+normal! zo
+62
+normal! zo
+70
+normal! zo
+70
+normal! zo
+70
+normal! zo
+72
+normal! zo
+72
+normal! zo
+160
+normal! zo
+169
+normal! zo
+170
+normal! zo
+231
+normal! zo
+239
+normal! zo
+239
+normal! zo
+239
+normal! zo
+239
+normal! zo
+239
+normal! zo
+239
+normal! zo
+239
+normal! zo
+239
+normal! zo
+246
+normal! zo
+252
+normal! zo
+259
+normal! zo
+260
+normal! zo
+277
+normal! zo
+311
+normal! zo
+312
+normal! zo
+312
+normal! zo
+332
+normal! zo
+338
+normal! zo
+341
+normal! zo
+349
+normal! zo
+352
+normal! zo
+360
+normal! zo
+363
+normal! zo
+373
+normal! zo
+382
+normal! zo
+445
+normal! zo
+449
+normal! zo
+456
+normal! zo
+let s:l = 422 - ((0 * winheight(0) + 0) / 1)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+422
+normal! 033|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -534,1057 +510,1083 @@ setlocal fdn=20
 setlocal fen
 83
 normal! zo
-84
+88
 normal! zo
-89
+93
 normal! zo
-89
+93
 normal! zo
-89
+93
 normal! zo
-118
+95
 normal! zo
-125
+95
 normal! zo
-151
+122
 normal! zo
-160
+129
 normal! zo
-162
+129
 normal! zo
-163
+129
 normal! zo
-163
+129
 normal! zo
-170
+129
 normal! zo
-215
+129
 normal! zo
-215
+129
 normal! zo
-215
+155
 normal! zo
-215
+164
 normal! zo
-222
+166
 normal! zo
-222
+167
 normal! zo
-222
+167
 normal! zo
-222
+174
 normal! zo
-252
+221
 normal! zo
-281
+221
+normal! zo
+221
+normal! zo
+221
+normal! zo
+228
+normal! zo
+228
+normal! zo
+228
+normal! zo
+228
+normal! zo
+258
+normal! zo
+287
 normal! zo
 373
 normal! zo
-403
+379
 normal! zo
-406
+409
 normal! zo
-407
+412
 normal! zo
-408
+413
 normal! zo
-422
+414
 normal! zo
-426
+428
 normal! zo
-426
+432
 normal! zo
-426
+432
 normal! zo
-426
+432
 normal! zo
-426
+432
 normal! zo
-426
+432
 normal! zo
-426
+432
 normal! zo
-426
+432
 normal! zo
-431
-normal! zo
-433
-normal! zo
-435
-normal! zo
-436
+432
 normal! zo
 437
 normal! zo
-438
+439
 normal! zo
-438
+441
 normal! zo
-438
+442
 normal! zo
-438
+443
 normal! zo
 444
 normal! zo
-445
+444
 normal! zo
-446
+444
 normal! zo
-447
+444
 normal! zo
-447
-normal! zo
-451
+450
 normal! zo
 451
 normal! zo
-451
+452
 normal! zo
-451
+453
 normal! zo
-480
+453
 normal! zo
-488
+457
 normal! zo
-491
+457
+normal! zo
+457
+normal! zo
+457
+normal! zo
+486
 normal! zo
 494
 normal! zo
-504
+497
 normal! zo
-514
+500
 normal! zo
-517
+510
 normal! zo
-519
+520
 normal! zo
-526
+523
+normal! zo
+525
 normal! zo
 532
 normal! zo
-533
-normal! zo
-536
-normal! zo
 538
 normal! zo
-548
+539
 normal! zo
-591
+542
 normal! zo
-591
+544
 normal! zo
-591
+554
 normal! zo
-591
+597
 normal! zo
-600
+597
 normal! zo
-601
+597
 normal! zo
-602
+597
 normal! zo
-602
+606
 normal! zo
-602
+607
 normal! zo
-602
+608
 normal! zo
-602
+608
 normal! zo
-602
+608
 normal! zo
-619
+608
 normal! zo
-662
+608
 normal! zo
-670
+608
 normal! zo
-671
+625
 normal! zo
-672
+668
 normal! zo
-672
+676
 normal! zo
-672
+677
 normal! zo
-672
+678
 normal! zo
-672
+678
 normal! zo
-672
+678
 normal! zo
-672
+678
 normal! zo
-748
+678
 normal! zo
-759
+678
 normal! zo
-763
+678
+normal! zo
+754
 normal! zo
 765
 normal! zo
-767
+769
 normal! zo
-776
+771
 normal! zo
-784
+773
 normal! zo
-785
+782
 normal! zo
-789
+790
 normal! zo
 791
 normal! zo
-793
+795
 normal! zo
-806
+797
 normal! zo
-851
+799
 normal! zo
-858
+812
 normal! zo
-858
+853
 normal! zo
-867
+856
 normal! zo
-867
+862
 normal! zo
-867
+869
 normal! zo
-867
+869
 normal! zo
-867
+878
 normal! zo
-867
+878
 normal! zo
-867
+878
 normal! zo
-867
+878
 normal! zo
-870
+878
 normal! zo
-870
+878
 normal! zo
-870
+878
 normal! zo
-870
+878
 normal! zo
-870
+881
 normal! zo
-870
+881
 normal! zo
-870
+881
 normal! zo
-870
+881
 normal! zo
-872
+881
 normal! zo
-872
+881
 normal! zo
-872
+881
 normal! zo
-872
-normal! zo
-872
-normal! zo
-872
-normal! zo
-872
-normal! zo
-872
-normal! zo
-877
+881
 normal! zo
 883
 normal! zo
-890
+883
 normal! zo
-890
+883
 normal! zo
-905
+883
 normal! zo
-910
+883
 normal! zo
-918
+883
 normal! zo
-925
+883
 normal! zo
-925
+883
 normal! zo
-925
+888
 normal! zo
-925
+894
 normal! zo
-925
+901
 normal! zo
-944
+901
 normal! zo
-959
+916
 normal! zo
-967
+921
 normal! zo
-983
+929
 normal! zo
-987
+936
 normal! zo
-1049
+936
 normal! zo
-1070
+936
 normal! zo
-1074
+936
 normal! zo
-1085
+936
 normal! zo
-1089
+955
 normal! zo
-1089
+971
 normal! zo
-1089
+980
 normal! zo
-1100
+996
+normal! zo
+1000
+normal! zo
+1062
+normal! zo
+1076
+normal! zo
+1076
+normal! zo
+1079
+normal! zo
+1084
+normal! zo
+1087
+normal! zo
+1092
 normal! zo
 1102
 normal! zo
-1105
-normal! zo
-1105
-normal! zo
-1105
-normal! zo
 1107
 normal! zo
-1107
+1110
 normal! zo
-1108
+1114
 normal! zo
-1108
+1124
 normal! zo
-1108
+1147
 normal! zo
-1111
+1155
 normal! zo
-1112
+1160
 normal! zo
-1112
+1160
 normal! zo
-1112
+1160
 normal! zo
-1120
+1169
 normal! zo
-1123
+1180
 normal! zo
-1126
+1188
 normal! zo
-1127
+1194
 normal! zo
-1127
+1197
 normal! zo
-1127
+1208
 normal! zo
-1129
+1219
 normal! zo
-1129
+1226
 normal! zo
-1130
+1251
 normal! zo
-1130
+1258
 normal! zo
-1130
+1284
 normal! zo
-1133
+1294
 normal! zo
-1134
+1297
 normal! zo
-1134
+1297
 normal! zo
-1134
+1326
 normal! zo
-1142
+1330
 normal! zo
-1148
+1331
 normal! zo
-1149
+1331
 normal! zo
-1151
+1331
 normal! zo
-1151
+1331
 normal! zo
-1151
+1331
 normal! zo
-1151
+1331
 normal! zo
-1151
+1331
 normal! zo
-1151
+1335
 normal! zo
-1151
+1335
 normal! zo
-1151
+1335
 normal! zo
-1151
+1335
 normal! zo
-1151
+1336
 normal! zo
-1151
+1336
 normal! zo
-1151
+1357
 normal! zo
-1151
+1357
 normal! zo
-1151
+1357
 normal! zo
-1156
+1357
 normal! zo
-1178
+1357
 normal! zo
-1182
+1357
 normal! zo
-1182
+1357
 normal! zo
-1182
+1357
 normal! zo
-1182
+1357
 normal! zo
-1182
+1357
 normal! zo
-1182
+1357
 normal! zo
-1182
+1357
 normal! zo
-1182
+1361
 normal! zo
-1182
+1362
 normal! zo
-1182
+1362
 normal! zo
-1182
+1362
 normal! zo
-1185
+1362
 normal! zo
-1186
+1362
 normal! zo
-1186
+1362
 normal! zo
-1190
+1362
 normal! zo
-1231
+1362
 normal! zo
-1236
+1366
 normal! zo
-1239
+1367
 normal! zo
-1254
+1367
 normal! zo
-1259
+1367
 normal! zo
-1262
+1367
 normal! zo
-1276
+1367
 normal! zo
-1307
-normal! zo
-1312
-normal! zo
-1312
-normal! zo
-1312
-normal! zo
-1321
-normal! zo
-1340
-normal! zo
-1346
-normal! zo
-1349
-normal! zo
-1360
-normal! zo
-1370
+1367
 normal! zo
 1377
 normal! zo
-1402
+1377
 normal! zo
-1409
+1377
 normal! zo
-1435
+1377
 normal! zo
-1435
+1377
 normal! zo
-1435
+1377
 normal! zo
-1435
+1377
 normal! zo
-1435
+1377
 normal! zo
-1475
+1377
 normal! zo
-1483
+1377
 normal! zo
-1483
+1399
 normal! zo
-1483
+1400
 normal! zo
-1483
+1400
 normal! zo
-1484
+1404
 normal! zo
-1484
+1404
 normal! zo
-1504
+1404
 normal! zo
-1504
+1404
 normal! zo
-1504
+1404
 normal! zo
-1504
+1404
 normal! zo
-1504
+1421
 normal! zo
-1504
+1422
 normal! zo
-1504
+1423
 normal! zo
-1504
+1429
 normal! zo
-1504
+1466
 normal! zo
-1504
+1466
 normal! zo
-1504
+1486
 normal! zo
-1504
+1496
 normal! zo
-1508
+1496
 normal! zo
-1509
+1496
 normal! zo
-1509
+1496
 normal! zo
-1509
+1496
 normal! zo
-1509
+1496
 normal! zo
-1509
+1518
 normal! zo
-1509
+1528
 normal! zo
-1509
+1528
 normal! zo
-1509
+1528
 normal! zo
-1510
+1528
 normal! zo
-1510
+1528
 normal! zo
-1510
+1528
 normal! zo
-1510
+1528
 normal! zo
-1510
+1549
 normal! zo
-1510
+1565
 normal! zo
-1510
+1565
 normal! zo
-1510
+1565
 normal! zo
-1513
-normal! zo
-1514
-normal! zo
-1514
-normal! zo
-1514
-normal! zo
-1514
-normal! zo
-1514
-normal! zo
-1514
-normal! zo
-1524
-normal! zo
-1524
-normal! zo
-1524
-normal! zo
-1524
-normal! zo
-1524
-normal! zo
-1524
-normal! zo
-1524
-normal! zo
-1524
-normal! zo
-1524
-normal! zo
-1524
-normal! zo
-1550
-normal! zo
-1550
-normal! zo
-1550
-normal! zo
-1550
-normal! zo
-1550
-normal! zo
-1550
-normal! zo
-1566
+1565
 normal! zo
 1567
 normal! zo
-1568
+1567
 normal! zo
-1574
+1567
 normal! zo
-1611
+1567
 normal! zo
-1611
+1567
 normal! zo
-1631
+1567
 normal! zo
-1641
+1567
 normal! zo
-1641
+1571
 normal! zo
-1641
+1571
 normal! zo
-1641
+1571
 normal! zo
-1641
+1571
 normal! zo
-1641
+1571
 normal! zo
-1664
+1589
 normal! zo
-1674
+1591
 normal! zo
-1674
+1612
 normal! zo
-1674
+1644
 normal! zo
-1674
+1648
 normal! zo
-1674
+1650
 normal! zo
-1674
+1658
 normal! zo
-1674
+1661
 normal! zo
-1696
+1662
 normal! zo
-1712
+1662
 normal! zo
-1712
+1662
 normal! zo
-1712
+1662
 normal! zo
-1712
+1703
 normal! zo
-1714
+1761
 normal! zo
-1714
+1788
 normal! zo
-1714
+1799
 normal! zo
-1714
+1803
 normal! zo
-1714
+1807
 normal! zo
-1714
+1818
 normal! zo
-1714
+1820
 normal! zo
-1718
+1828
 normal! zo
-1718
+1848
 normal! zo
-1718
+1873
 normal! zo
-1718
+1897
 normal! zo
-1718
+1910
 normal! zo
-1737
+1911
 normal! zo
-1739
+1912
 normal! zo
-1760
+1912
 normal! zo
-1792
+1912
 normal! zo
-1796
+1917
 normal! zo
-1798
+1920
 normal! zo
-1806
+1924
 normal! zo
-1809
+1925
 normal! zo
-1810
+1926
 normal! zo
-1810
+1926
 normal! zo
-1810
+1926
 normal! zo
-1810
+1931
 normal! zo
-1851
+1933
 normal! zo
-1909
+1940
 normal! zo
-1936
-normal! zo
-1947
-normal! zo
-1951
-normal! zo
-1955
-normal! zo
-1966
-normal! zo
-1968
-normal! zo
-1976
+1986
 normal! zo
 1996
 normal! zo
-2021
+2026
 normal! zo
-2045
+2029
 normal! zo
-2058
+2041
 normal! zo
-2059
+2048
 normal! zo
-2060
-normal! zo
-2060
-normal! zo
-2060
-normal! zo
-2065
-normal! zo
-2068
+2066
 normal! zo
 2072
 normal! zo
-2073
+2091
 normal! zo
-2074
+2096
 normal! zo
-2074
+2109
 normal! zo
-2074
+2109
 normal! zo
-2079
+2109
 normal! zo
-2081
+2109
 normal! zo
-2088
+2109
+normal! zo
+2109
+normal! zo
+2124
+normal! zo
+2131
 normal! zo
 2134
 normal! zo
-2144
+2147
 normal! zo
-2174
+2147
 normal! zo
-2177
+2148
 normal! zo
-2189
+2180
 normal! zo
-2196
+2194
 normal! zo
-2214
+2198
 normal! zo
-2220
+2209
 normal! zo
-2239
+2213
 normal! zo
-2244
+2213
 normal! zo
-2257
+2213
 normal! zo
-2257
+2243
 normal! zo
-2257
+2246
 normal! zo
-2257
+2264
 normal! zo
-2257
-normal! zo
-2257
+2271
 normal! zo
 2272
 normal! zo
-2279
+2273
 normal! zo
-2282
+2277
 normal! zo
-2295
+2298
 normal! zo
-2295
+2302
 normal! zo
-2296
+2302
 normal! zo
-2328
+2302
 normal! zo
-2342
+2302
 normal! zo
-2346
+2302
+normal! zo
+2302
+normal! zo
+2302
+normal! zo
+2302
+normal! zo
+2302
+normal! zo
+2302
+normal! zo
+2302
+normal! zo
+2305
+normal! zo
+2312
+normal! zo
+2312
+normal! zo
+2321
+normal! zo
+2356
 normal! zo
 2357
 normal! zo
-2361
+2366
 normal! zo
-2361
+2367
 normal! zo
-2361
+2375
 normal! zo
-2391
+2382
 normal! zo
-2394
+2382
+normal! zo
+2388
+normal! zo
+2395
+normal! zo
+2395
+normal! zo
+2400
+normal! zo
+2400
+normal! zo
+2400
+normal! zo
+2400
+normal! zo
+2400
+normal! zo
+2400
+normal! zo
+2400
+normal! zo
+2400
+normal! zo
+2400
+normal! zo
+2400
+normal! zo
+2402
+normal! zo
+2402
+normal! zo
+2402
+normal! zo
+2406
 normal! zo
 2412
 normal! zo
-2419
+2414
 normal! zo
-2420
+2416
 normal! zo
 2421
 normal! zo
-2425
+2421
 normal! zo
-2446
+2421
 normal! zo
-2450
+2444
 normal! zo
-2450
+2447
 normal! zo
-2450
+2447
 normal! zo
-2450
+2454
 normal! zo
-2450
+2457
 normal! zo
-2450
+2457
 normal! zo
-2450
+2474
 normal! zo
-2450
+2486
 normal! zo
-2450
+2489
 normal! zo
-2450
+2489
 normal! zo
-2450
+2492
 normal! zo
-2453
+2493
 normal! zo
-2460
+2493
 normal! zo
-2460
+2496
 normal! zo
-2469
+2497
+normal! zo
+2497
+normal! zo
+2500
+normal! zo
+2501
+normal! zo
+2501
 normal! zo
 2504
 normal! zo
 2505
 normal! zo
-2514
-normal! zo
-2515
-normal! zo
-2523
-normal! zo
-2530
-normal! zo
-2530
-normal! zo
-2536
-normal! zo
-2543
-normal! zo
-2543
+2505
 normal! zo
 2548
 normal! zo
-2548
+2549
 normal! zo
-2548
+2549
 normal! zo
-2548
-normal! zo
-2548
-normal! zo
-2548
-normal! zo
-2548
-normal! zo
-2548
-normal! zo
-2548
-normal! zo
-2548
-normal! zo
-2550
-normal! zo
-2550
-normal! zo
-2550
-normal! zo
-2554
+2558
 normal! zo
 2560
 normal! zo
-2562
+2560
 normal! zo
-2564
+2560
 normal! zo
-2569
+2560
 normal! zo
-2569
+2567
 normal! zo
-2569
+2577
 normal! zo
-2592
+2599
 normal! zo
-2595
+2600
 normal! zo
-2595
+2600
 normal! zo
-2602
+2651
 normal! zo
-2605
+2662
 normal! zo
-2605
+2678
 normal! zo
-2622
+2679
 normal! zo
-2698
+2679
 normal! zo
-2700
+2691
 normal! zo
-2700
+2701
 normal! zo
-2700
+2717
 normal! zo
-2700
+2718
 normal! zo
-2866
+2718
+normal! zo
+2732
+normal! zo
+2732
+normal! zo
+2732
+normal! zo
+2732
+normal! zo
+2735
+normal! zo
+2736
+normal! zo
+2736
+normal! zo
+2736
+normal! zo
+2736
+normal! zo
+2736
+normal! zo
+2736
+normal! zo
+2744
+normal! zo
+2747
+normal! zo
+2764
+normal! zo
+2774
+normal! zo
+2778
+normal! zo
+2779
+normal! zo
+2779
+normal! zo
+2784
+normal! zo
+2789
+normal! zo
+2792
+normal! zo
+2797
+normal! zo
+2807
+normal! zo
+2823
+normal! zo
+2834
+normal! zo
+2842
+normal! zo
+2848
+normal! zo
+2851
+normal! zo
+2862
+normal! zo
+2868
+normal! zo
+2871
 normal! zo
 2881
 normal! zo
-2919
+2887
 normal! zo
-2924
+2891
 normal! zo
-2927
+2891
 normal! zo
-2942
+2895
 normal! zo
-2958
+2895
 normal! zo
-2977
+2895
 normal! zo
-2983
+2895
+normal! zo
+2964
+normal! zo
+2964
+normal! zo
+2964
+normal! zo
+2964
+normal! zo
+2964
+normal! zo
+2964
+normal! zo
+2964
+normal! zo
+2964
+normal! zo
+2964
+normal! zo
+2964
+normal! zo
+2964
+normal! zo
+2964
+normal! zo
+2964
+normal! zo
+2968
+normal! zo
+2968
+normal! zo
+2968
+normal! zo
+2968
+normal! zo
+2968
+normal! zo
+2968
+normal! zo
+2968
+normal! zo
+2968
+normal! zo
+2968
+normal! zo
+2968
+normal! zo
+2968
+normal! zo
+2968
+normal! zo
+2968
+normal! zo
+2968
+normal! zo
+2968
+normal! zo
+2968
+normal! zo
+2973
+normal! zo
+2978
+normal! zo
+2982
+normal! zo
+2982
 normal! zo
 2986
 normal! zo
-2997
+2986
 normal! zo
-3003
+2986
 normal! zo
-3006
+2986
 normal! zo
-3016
+3040
 normal! zo
-3022
+3047
 normal! zo
-3026
+3047
 normal! zo
-3026
+3047
 normal! zo
-3030
+3047
 normal! zo
-3030
+3083
 normal! zo
-3030
+3090
 normal! zo
-3030
-normal! zo
-3099
-normal! zo
-3099
-normal! zo
-3099
-normal! zo
-3099
-normal! zo
-3099
-normal! zo
-3099
-normal! zo
-3099
-normal! zo
-3099
-normal! zo
-3099
-normal! zo
-3099
-normal! zo
-3099
-normal! zo
-3099
-normal! zo
-3099
-normal! zo
-3103
-normal! zo
-3103
-normal! zo
-3103
-normal! zo
-3103
-normal! zo
-3103
-normal! zo
-3103
-normal! zo
-3103
-normal! zo
-3103
-normal! zo
-3103
-normal! zo
-3103
-normal! zo
-3103
-normal! zo
-3103
-normal! zo
-3103
-normal! zo
-3103
-normal! zo
-3103
-normal! zo
-3103
-normal! zo
-3108
-normal! zo
-3113
-normal! zo
-3117
-normal! zo
-3117
+3116
 normal! zo
 3121
 normal! zo
@@ -1592,308 +1594,244 @@ normal! zo
 normal! zo
 3121
 normal! zo
-3121
+3131
 normal! zo
-3175
+3131
 normal! zo
-3182
+3131
 normal! zo
-3182
+3131
 normal! zo
-3182
+3131
 normal! zo
-3182
+3131
 normal! zo
-3218
+3145
 normal! zo
-3225
+3146
+normal! zo
+3166
+normal! zo
+3176
+normal! zo
+3176
+normal! zo
+3176
+normal! zo
+3176
+normal! zo
+3176
+normal! zo
+3176
+normal! zo
+3176
+normal! zo
+3176
+normal! zo
+3176
+normal! zo
+3176
+normal! zo
+3176
+normal! zo
+3178
+normal! zo
+3178
+normal! zo
+3178
+normal! zo
+3178
+normal! zo
+3178
+normal! zo
+3178
+normal! zo
+3195
+normal! zo
+3196
+normal! zo
+3202
+normal! zo
+3203
+normal! zo
+3203
+normal! zo
+3203
+normal! zo
+3203
+normal! zo
+3203
+normal! zo
+3203
+normal! zo
+3213
+normal! zo
+3213
+normal! zo
+3213
+normal! zo
+3213
+normal! zo
+3216
+normal! zo
+3216
+normal! zo
+3216
+normal! zo
+3216
+normal! zo
+3216
+normal! zo
+3216
+normal! zo
+3216
+normal! zo
+3216
+normal! zo
+3216
+normal! zo
+3216
+normal! zo
+3232
+normal! zo
+3232
+normal! zo
+3232
+normal! zo
+3232
+normal! zo
+3232
+normal! zo
+3232
+normal! zo
+3232
+normal! zo
+3232
+normal! zo
+3232
+normal! zo
+3232
+normal! zo
+3232
+normal! zo
+3235
+normal! zo
+3235
+normal! zo
+3235
+normal! zo
+3235
+normal! zo
+3235
+normal! zo
+3235
+normal! zo
+3235
+normal! zo
+3235
+normal! zo
+3235
+normal! zo
+3235
+normal! zo
+3235
+normal! zo
+3235
+normal! zo
+3235
+normal! zo
+3245
+normal! zo
+3245
+normal! zo
+3246
+normal! zo
+3246
+normal! zo
+3247
 normal! zo
 3251
 normal! zo
-3256
+3254
 normal! zo
-3256
+3254
 normal! zo
-3256
+3255
 normal! zo
-3265
-normal! zo
-3265
+3264
 normal! zo
 3265
 normal! zo
 3265
 normal! zo
-3265
+3271
 normal! zo
-3265
+3301
 normal! zo
-3278
-normal! zo
-3279
-normal! zo
-3299
-normal! zo
-3309
-normal! zo
-3309
-normal! zo
-3309
-normal! zo
-3309
-normal! zo
-3309
-normal! zo
-3309
-normal! zo
-3309
-normal! zo
-3309
-normal! zo
-3309
-normal! zo
-3309
-normal! zo
-3309
-normal! zo
-3311
-normal! zo
-3311
-normal! zo
-3311
-normal! zo
-3311
-normal! zo
-3311
-normal! zo
-3311
+3318
 normal! zo
 3328
 normal! zo
 3329
 normal! zo
-3335
+3333
 normal! zo
 3336
 normal! zo
-3336
+3343
 normal! zo
-3336
+3350
 normal! zo
-3336
+3354
 normal! zo
-3336
+3355
 normal! zo
-3336
+3355
 normal! zo
-3346
+3359
 normal! zo
-3346
+3366
 normal! zo
-3346
+3367
 normal! zo
-3346
+3367
 normal! zo
-3349
+3369
 normal! zo
-3349
+3381
 normal! zo
-3349
+3381
 normal! zo
-3349
+3381
 normal! zo
-3349
+3381
 normal! zo
-3349
+3381
 normal! zo
-3349
+3381
 normal! zo
-3349
+3381
 normal! zo
-3349
+3381
 normal! zo
-3349
+3381
 normal! zo
-3365
+3381
 normal! zo
-3365
+3381
 normal! zo
-3365
-normal! zo
-3365
-normal! zo
-3365
-normal! zo
-3365
-normal! zo
-3365
-normal! zo
-3365
-normal! zo
-3365
-normal! zo
-3365
-normal! zo
-3365
-normal! zo
-3368
-normal! zo
-3368
-normal! zo
-3368
-normal! zo
-3368
-normal! zo
-3368
-normal! zo
-3368
-normal! zo
-3368
-normal! zo
-3368
-normal! zo
-3368
-normal! zo
-3368
-normal! zo
-3368
-normal! zo
-3368
-normal! zo
-3368
-normal! zo
-3378
-normal! zo
-3378
-normal! zo
-3379
-normal! zo
-3379
-normal! zo
-3380
-normal! zo
-3384
+3386
 normal! zo
 3387
 normal! zo
 3387
 normal! zo
-3388
-normal! zo
-3403
-normal! zo
-3433
-normal! zo
-3450
-normal! zo
-3456
-normal! zo
-3460
-normal! zo
-3463
-normal! zo
-3473
-normal! zo
-3477
-normal! zo
-3477
-normal! zo
-3483
-normal! zo
-3484
-normal! zo
-3484
-normal! zo
-3494
-normal! zo
-3494
-normal! zo
-3494
-normal! zo
-3494
-normal! zo
-3494
-normal! zo
-3494
-normal! zo
-3494
-normal! zo
-3494
-normal! zo
-3494
-normal! zo
-3494
-normal! zo
-3494
-normal! zo
-3497
-normal! zo
-3498
-normal! zo
-3498
-normal! zo
-3460
-normal! zo
-3461
-normal! zo
-3465
-normal! zo
-3468
-normal! zo
-3475
-normal! zo
-3482
-normal! zo
-3486
-normal! zo
-3487
-normal! zo
-3487
-normal! zo
-3491
-normal! zo
-3498
-normal! zo
-3499
-normal! zo
-3499
-normal! zo
-3509
-normal! zo
-3510
-normal! zo
-3510
-normal! zo
-3510
-normal! zo
-3510
-normal! zo
-3510
-normal! zo
-3510
-normal! zo
-3510
-normal! zo
-3510
-normal! zo
-3510
-normal! zo
-3510
-normal! zo
-3510
-normal! zo
-3515
-normal! zo
-3516
-normal! zo
-3516
-normal! zo
-let s:l = 849 - ((16 * winheight(0) + 13) / 27)
+let s:l = 1078 - ((4 * winheight(0) + 9) / 19)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-849
-normal! 0
+1078
+normal! 026|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -1906,38 +1844,50 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
+61
+normal! zo
+62
+normal! zo
+75
+normal! zo
+75
+normal! zo
+75
+normal! zo
 1132
 normal! zo
-let s:l = 1139 - ((0 * winheight(0) + 5) / 10)
+1384
+normal! zo
+1384
+normal! zo
+let s:l = 83 - ((7 * winheight(0) + 6) / 12)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1139
-normal! 026|
+83
+normal! 048|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
-10wincmd w
-exe 'vert 1resize ' . ((&columns * 36 + 63) / 126)
-exe '2resize ' . ((&lines * 3 + 29) / 58)
-exe 'vert 2resize ' . ((&columns * 89 + 63) / 126)
-exe '3resize ' . ((&lines * 1 + 29) / 58)
-exe 'vert 3resize ' . ((&columns * 89 + 63) / 126)
-exe '4resize ' . ((&lines * 1 + 29) / 58)
-exe 'vert 4resize ' . ((&columns * 89 + 63) / 126)
-exe '5resize ' . ((&lines * 1 + 29) / 58)
-exe 'vert 5resize ' . ((&columns * 89 + 63) / 126)
-exe '6resize ' . ((&lines * 1 + 29) / 58)
-exe 'vert 6resize ' . ((&columns * 89 + 63) / 126)
-exe '7resize ' . ((&lines * 1 + 29) / 58)
-exe 'vert 7resize ' . ((&columns * 89 + 63) / 126)
-exe '8resize ' . ((&lines * 1 + 29) / 58)
-exe 'vert 8resize ' . ((&columns * 89 + 63) / 126)
-exe '9resize ' . ((&lines * 1 + 29) / 58)
-exe 'vert 9resize ' . ((&columns * 89 + 63) / 126)
-exe '10resize ' . ((&lines * 27 + 29) / 58)
-exe 'vert 10resize ' . ((&columns * 89 + 63) / 126)
-exe '11resize ' . ((&lines * 10 + 29) / 58)
-exe 'vert 11resize ' . ((&columns * 89 + 63) / 126)
+9wincmd w
+exe 'vert 1resize ' . ((&columns * 31 + 59) / 118)
+exe '2resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 2resize ' . ((&columns * 86 + 59) / 118)
+exe '3resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 3resize ' . ((&columns * 86 + 59) / 118)
+exe '4resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 4resize ' . ((&columns * 86 + 59) / 118)
+exe '5resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 5resize ' . ((&columns * 86 + 59) / 118)
+exe '6resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 6resize ' . ((&columns * 86 + 59) / 118)
+exe '7resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 7resize ' . ((&columns * 86 + 59) / 118)
+exe '8resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 8resize ' . ((&columns * 86 + 59) / 118)
+exe '9resize ' . ((&lines * 19 + 24) / 48)
+exe 'vert 9resize ' . ((&columns * 86 + 59) / 118)
+exe '10resize ' . ((&lines * 12 + 24) / 48)
+exe 'vert 10resize ' . ((&columns * 86 + 59) / 118)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
@@ -1952,6 +1902,6 @@ let &so = s:so_save | let &siso = s:siso_save
 doautoall SessionLoadPost
 unlet SessionLoad
 tabnext 1
-10wincmd w
+9wincmd w
 
 " vim: ft=vim ro nowrap smc=128

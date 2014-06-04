@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -67,27 +67,30 @@
 ## empezaron a hacer cuando en el sistema ya iban en torno a 1000
 ## partidas de carga.
 ###################################################################
-from ventana import Ventana
+from formularios.ventana import Ventana
 from formularios import utils
 import pygtk
 pygtk.require('2.0')
 import gtk
 from framework import pclases
 import mx.DateTime
-from ventana_progreso import VentanaProgreso
+from formularios.ventana_progreso import VentanaProgreso
 from collections import OrderedDict, defaultdict
 from formularios.consulta_producido import calcular_productividad_conjunta
 import datetime
 
 class ConsultaGlobal(Ventana):
-
-    def __init__(self, objeto = None, usuario = None):
+    """
+    Ventana de consulta "global". Abarca varias consultas de producción y
+    ventas.
+    """
+    def __init__(self, objeto=None, usuario=None):
         if isinstance(usuario, int):
             usuario = pclases.Usuario.get(usuario)
         self.usuario = usuario
         self.partidas_carga = {}
         Ventana.__init__(self, 'consulta_global.glade', objeto,
-                         usuario = usuario)
+                         usuario=usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_buscar/clicked': self.buscar,
                        'b_imprimir/clicked': self.imprimir,
@@ -97,7 +100,7 @@ class ConsultaGlobal(Ventana):
         preparar_tv(self.wids['tv_produccion_gtx'])
         preparar_tv(self.wids['tv_ventas_gtx'])
         preparar_tv(self.wids['tv_consumos_gtx'])
-        preparar_tv(self.wids['tv_produccion_fibra'], listview = False)
+        preparar_tv(self.wids['tv_produccion_fibra'], listview=False)
         preparar_tv(self.wids['tv_ventas_fibra'])
         preparar_tv(self.wids['tv_consumos_fibra'])
         preparar_tv(self.wids['tv_produccion_bolsas'])
@@ -1066,176 +1069,11 @@ def consultar_kilos_fibra_consumidos(fechaini, fechafin):
     a estas alturas cualquiera se atreve a cambiar de SGBD).
     (Ver metros_y_kilos_gtx.sql)
     """
-    #partes = pclases.ParteDeProduccion.select(pclases.AND(
-    #    pclases.ParteDeProduccion.q.fechahorainicio >= fechaini,
-    #    pclases.ParteDeProduccion.q.fechahorainicio < fechafin))
-    #return sum([pdp.calcular_consumo_mp() for pdp in partes
-    #            if pdp.es_de_geotextiles()])
-    # NOTA: Debido a la discrepancia entre estimar el consumo tirando de
-    # partidas completas a hacerlo desde partes, uso el primer criterio. Que
-    # es también el que se utiliza en el resto de ventanas de consulta.
-    con = pclases.Rollo._connection
-    # Consultas a pelo
-    partes_gtx = """
-        SELECT id
-         INTO TEMP partes_gtx_temp
-         FROM parte_de_produccion
-         WHERE (fecha >= '%s'                     -- Parámetro fecha ini
-                AND fecha < '%s'                  -- Parámetro fecha fin
-                AND observaciones NOT LIKE '%%;%%;%%;%%;%%;%%'
-                AND partida_cem_id IS NULL);
-    """ % (fechaini.strftime("%Y-%m-%d"), fechafin.strftime("%Y-%m-%d"))
-    rollos_fab = """
-        SELECT rollo_id, rollo_defectuoso_id
-         INTO TEMP articulos_rollo_fabricados_temp
-         FROM articulo
-         WHERE parte_de_produccion_id IN (SELECT id FROM partes_gtx_temp);
-    """
-    partidas_rollos_def = """
-        SELECT partida_id
-         INTO TEMP partidas_rollos_defectuosos_temp
-         FROM rollo_defectuoso rd
-         WHERE rd.id IN (SELECT rollo_defectuoso_id
-                           FROM articulos_rollo_fabricados_temp)
-         GROUP BY partida_id;
-    """
-    partidas_rollos = """
-        SELECT partida_id
-         INTO TEMP partidas_rollos_temp
-         FROM rollo r
-         WHERE r.id IN (SELECT rollo_id FROM articulos_rollo_fabricados_temp)
-         GROUP BY partida_id;
-    """
-    func_partes_de_partida = """
-        CREATE OR REPLACE FUNCTION partes_de_partida (INTEGER) RETURNS BIGINT
-        AS '
-            SELECT COUNT(id)
-            FROM parte_de_produccion
-            WHERE id IN (SELECT parte_de_produccion_id
-                         FROM articulo
-                         WHERE (rollo_id IS NOT NULL
-                                AND rollo_id IN (SELECT id
-                                                   FROM rollo
-                                                  WHERE partida_id = $1))
-                               OR (rollo_defectuoso_id IS NOT NULL
-                                   AND rollo_defectuoso_id IN (
-                                                SELECT id
-                                                  FROM rollo_defectuoso
-                                                 WHERE partida_id = $1))
-                        GROUP BY parte_de_produccion_id)
-            ;
-        ' LANGUAGE 'sql';
-    """
-    func_partes_antes_de = """
-        CREATE OR REPLACE FUNCTION
-            partes_de_partida_antes_de_fecha (INTEGER, DATE) RETURNS BIGINT
-        AS '
-            SELECT COUNT(id)
-             FROM parte_de_produccion
-             WHERE fecha < $2
-                AND id IN (SELECT parte_de_produccion_id
-                             FROM articulo
-                             WHERE (rollo_id IS NOT NULL
-                                    AND rollo_id IN (SELECT id
-                                                       FROM rollo
-                                                      WHERE partida_id = $1))
-                                   OR (rollo_defectuoso_id IS NOT NULL
-                                       AND rollo_defectuoso_id IN (
-                                                     SELECT id
-                                                       FROM rollo_defectuoso
-                                                      WHERE partida_id = $1))
-                            GROUP BY parte_de_produccion_id)
-             ;
-        ' LANGUAGE 'sql';
-    """
-    func_partida_entra = """
-        CREATE OR REPLACE FUNCTION
-            partida_entra_en_fecha(INTEGER, DATE) RETURNS BOOLEAN
-            -- Recibe un ID de partida de geotextiles y una fecha. Devuelve
-            -- TRUE si ningún parte de producción de la partida tiene fecha
-            -- posterior a la recibida Y la partida existe y tiene producción.
-        AS '
-            SELECT partes_de_partida($1) > 0
-                   AND
-                   partes_de_partida($1) = partes_de_partida_antes_de_fecha($1,
-                                                                            $2)
-            ;
-        ' LANGUAGE 'sql';
-    """
-    func_pc_entra = """
-        CREATE OR REPLACE FUNCTION
-            partida_carga_entra_en_fecha(INTEGER, DATE) RETURNS BOOLEAN
-            -- Recibe el ID de una partida de carga y devuelve TRUE si todas
-            -- las partidas de geotextiles de la misma pertenecen a partes de
-            -- producción de fecha anterior
-            -- o igual al segundo parámetro.
-        AS'
-            SELECT COUNT(*) > 0
-            FROM partida
-            WHERE partida_carga_id = $1
-                  AND partida_entra_en_fecha(partida.id, $2);
-        ' LANGUAGE 'sql';
-    """
-    partidas_carga_id = """
-        SELECT partida_carga_id
-         INTO TEMP partidas_carga_id_temp
-         FROM partida
-         WHERE (id IN (SELECT partida_id FROM partidas_rollos_defectuosos_temp)
-                OR id IN (SELECT partida_id FROM partidas_rollos_temp))
-         GROUP BY partida_carga_id;
-    """
-    partidas_de_pc_en_fecha = """
-        SELECT partida_carga_id
-         INTO TEMP partidas_de_carga_de_partidas_en_fecha_temp
-         FROM partidas_carga_id_temp
-         WHERE partida_carga_entra_en_fecha(partida_carga_id, '%s');
-                                                        -- Parámetro fecha fin
-    """ % ((fechafin - mx.DateTime.oneDay).strftime("%Y-%m-%d"))
-    balas_y_peso = """
-        SELECT id, AVG(pesobala) AS _pesobala    -- Si sale una bala más de
-                    -- una vez, la media dará el mismo peso de la bala en sí.
-         INTO TEMP balas_con_peso_de_partida_de_carga
-         FROM bala
-         WHERE partida_carga_id IN (
-                SELECT partida_carga_id
-                  FROM partidas_de_carga_de_partidas_en_fecha_temp)
-         GROUP BY id;
-        -- OJO: Las balas llevan en torno a kilo o kilo y medio de plástico
-        --      de embalar que se cuenta como fibra consumida.
-    """
-    total_balas_y_peso = """
-        SELECT COUNT(id) AS balas, SUM(_pesobala) AS peso_ce
-         FROM balas_con_peso_de_partida_de_carga;
-    """
-    con.query(partes_gtx)
-    con.query(rollos_fab)
-    con.query(partidas_rollos_def)
-    con.query(partidas_rollos)
-    con.query(func_partes_de_partida)
-    con.query(func_partes_antes_de)
-    con.query(func_partida_entra)
-    con.query(func_pc_entra)
-    con.query(partidas_carga_id)
-    con.query(partidas_de_pc_en_fecha)
-    con.query(balas_y_peso)
-
-    balas_kilos = con.queryAll(total_balas_y_peso)
-    caidita_de_roma = """
-        DROP FUNCTION partes_de_partida(INTEGER);
-        DROP FUNCTION partes_de_partida_antes_de_fecha(INTEGER, DATE);
-        DROP FUNCTION partida_entra_en_fecha(INTEGER, DATE);
-        DROP FUNCTION partida_carga_entra_en_fecha(INTEGER, DATE);
-        DROP TABLE partidas_carga_id_temp;
-        DROP TABLE balas_con_peso_de_partida_de_carga;
-        DROP TABLE partidas_de_carga_de_partidas_en_fecha_temp;
-        DROP TABLE partidas_rollos_defectuosos_temp;
-        DROP TABLE partidas_rollos_temp;
-        DROP TABLE articulos_rollo_fabricados_temp;
-        DROP TABLE partes_gtx_temp;
-    """
-    con.query(caidita_de_roma)
-    balas, kilos = balas_kilos[0]  # @UnusedVariable
-    return (kilos or 0.0)
+    partes = pclases.ParteDeProduccion.select(pclases.AND(
+        pclases.ParteDeProduccion.q.fechahorainicio >= fechaini,
+        pclases.ParteDeProduccion.q.fechahorainicio < fechafin))
+    return sum([pdp.calcular_consumo_mp() for pdp in partes
+                if pdp.es_de_geotextiles()])
 
 def consultar_horas_reales_gtx(fechaini, fechafin):
     """
@@ -2892,22 +2730,19 @@ def buscar_ventas_geocompuestos(anno, vpro = None, rango = None,
 
 def consultar_consumos(mes, anno, consumos_gtx, consumos_fibra,
                        consumos_bolsas):
-    ini = mx.DateTime.DateTimeFrom(day = 1, month = mes + 1, year = anno)
-    fin = mx.DateTime.DateTimeFrom(day = -1, month = mes + 1, year = anno)
-
-    # XXX: No estoy seguro de por qué, pero de repente la versión de mx de
-    #      Sid amd64 ha empezado a devolver -1 como día al operar con la
-    #      fecha, en lugar de convertir los valores negativos en días desde
-    #      el final de mes, como siempre.
-    fin = utils.asegurar_fecha_positiva(fin)
-    # XXX
-
+    ini = mx.DateTime.DateTimeFrom(day=1, month=mes + 1, year=anno)
+    try:
+        fin = mx.DateTime.DateTimeFrom(day=1, 
+                                       month=ini.month + 1, 
+                                       year=anno)
+    except mx.DateTime.RangeError:
+        fin = mx.DateTime.DateTimeFrom(day=1, month=1, year=anno+1)
     gtx = {}  # @UnusedVariable
     fibra = {}  # @UnusedVariable
     bolsas = {}  # @UnusedVariable
     pdps = pclases.ParteDeProduccion.select(pclases.AND(
             pclases.ParteDeProduccion.q.fecha >= ini,
-            pclases.ParteDeProduccion.q.fecha <= fin))
+            pclases.ParteDeProduccion.q.fecha < fin))
     for pdp in pdps:
         if pdp.es_de_balas():
             consumos = consumos_fibra
