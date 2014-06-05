@@ -155,6 +155,7 @@ class Clouseau(Gtk.Window):
         Recorre el directorio dirname y rellena los entries con los ficheros
         que encuentre y casen con el tipo de fichero fuente buscado.
         """
+        # TODO: FIXME: Si selecciono el directorio ENTRANDO en él, no lo pilla bien.
         for raiz, directorios, ficheros in os.walk(dirname):
             for fichero in ficheros:
                 if DEBUG:

@@ -78,6 +78,8 @@ VERSION
     $Id$
 """
 
+# TODO: Usar el nuevo progressbar de lib.
+
 AUTO_OUT = False    # Determina si genera todas las combinaciones posibles de
                     # tipos y calidades y escribe cada resultado en un fichero
                     # diferente. De otro modo, y por defecto, escribe todo el
@@ -122,7 +124,8 @@ class Options:
 
 #OPTIONS = Options(calidades = ("A", ), tipos = ("fib", ))
 #OPTIONS = Options(True, True, ("total", ), ("gtx", ))
-OPTIONS = Options(tipos = ("fib", ))
+#OPTIONS = Options(tipos = ("fib", ))
+OPTIONS = Options()
 
 def parse_existencias(fexistencias_ini, res=None):
     """
