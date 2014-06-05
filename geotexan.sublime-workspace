@@ -280,6 +280,13 @@
 	},
 	"file_history":
 	[
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/cairograph.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/extra/install/autossh.sh",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/autenticacion.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/ausencias.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/db/ajuste_consumos.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/extra/scripts/cierre_anno.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/confirmings.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygraphviz/pygraphviz/__init__.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygraphviz/pygraphviz/graphviz.py",
 		"/tmp/test.xml",
@@ -340,7 +347,6 @@
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consumo_balas_partida.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/tests/cierre marzo 2014/consumos.csv",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_consumo.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/confirmings.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/trazabilidad_articulos.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/informes/traceback_template.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/imagenes/tesoreria.svg",
@@ -397,17 +403,11 @@
 		"/home/bogado/Geotexan/src/Geotex-INN/GPL",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/centros_de_trabajo.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/tests/cierre febrero 2014/diff_enero.csv",
-		"/home/bogado/Geotexan/src/Geotex-INN/db/ajuste_consumos.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/APACHE-LICENSE-2.0.txt",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/framework/tests.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/albaranes_de_entrada.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/informes/albaran_multipag.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/examples/text-with-masterpage.py",
-		"/home/bogado/.config/sublime-text-3/Packages/User/SublimeLinter.sublime-settings",
-		"/home/bogado/.config/sublime-text-3/Packages/Web Inspector/swi.sublime-settings",
-		"/home/bogado/.config/sublime-text-3/Packages/User/swi.sublime-settings",
-		"/tmp/error.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/geotexan.sublime-project"
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/examples/text-with-masterpage.py"
 	],
 	"find":
 	{
@@ -425,6 +425,9 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"cairo",
+			"gobject",
+			"commitList",
 			"version",
 			"API",
 			"PIXMAP_SIZE",
@@ -534,7 +537,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1173.0,
+						"translation.y": 765.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -597,6 +600,10 @@
 		"height": 0.0,
 		"selected_items":
 		[
+			[
+				"cairo",
+				"ginn/lib/cairograph.py"
+			],
 			[
 				"pclases",
 				"ginn/framework/pclases/__init__.py"

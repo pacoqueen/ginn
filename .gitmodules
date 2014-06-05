@@ -25,3 +25,6 @@
 [submodule "ginn/lib/pprintpp"]
 	path = ginn/lib/pprintpp
 	url = git@github.com:pacoqueen/pprintpp.git
+[submodule "ginn/lib/progress"]
+	path = ginn/lib/progress
+	url = git@github.com:pacoqueen/progress.git
