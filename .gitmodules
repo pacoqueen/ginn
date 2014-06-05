@@ -25,6 +25,3 @@
 [submodule "ginn/lib/pprintpp"]
 	path = ginn/lib/pprintpp
 	url = git@github.com:pacoqueen/pprintpp.git
-[submodule "ginn/lib/pygraphviz"]
-	path = ginn/lib/pygraphviz
-	url = git@github.com:pacoqueen/pygraphviz.git

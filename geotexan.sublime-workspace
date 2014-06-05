@@ -23,9 +23,17 @@
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 390.0,
+		"height": 392.0,
 		"selected_items":
 		[
+			[
+				":w",
+				":w - Save"
+			],
+			[
+				"auto",
+				"User: Python PEP8 Autoformat"
+			],
 			[
 				"indent",
 				"Indent XML"
@@ -45,10 +53,6 @@
 			[
 				"new file",
 				"File: New File Relative to Current View"
-			],
-			[
-				":w",
-				":w - Save"
 			],
 			[
 				"package ",
@@ -276,6 +280,8 @@
 	},
 	"file_history":
 	[
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygraphviz/pygraphviz/__init__.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygraphviz/pygraphviz/graphviz.py",
 		"/tmp/test.xml",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/custom_widgets/busybox.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/custom_widgets/starhscale.py",
@@ -401,9 +407,7 @@
 		"/home/bogado/.config/sublime-text-3/Packages/Web Inspector/swi.sublime-settings",
 		"/home/bogado/.config/sublime-text-3/Packages/User/swi.sublime-settings",
 		"/tmp/error.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/geotexan.sublime-project",
-		"/tmp/detectar_albaranes_mal_facturados.txt",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/tests/examples/definitionlists.odt"
+		"/home/bogado/Geotexan/src/Geotex-INN/geotexan.sublime-project"
 	],
 	"find":
 	{
@@ -421,6 +425,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"version",
 			"API",
 			"PIXMAP_SIZE",
 			"sizes",
