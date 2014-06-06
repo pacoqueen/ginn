@@ -471,6 +471,20 @@ class Presupuestos(Ventana, VentanaGenerica):
                                       usuario = smtpuser, 
                                       password = smtppass)
             vpro.mover()
+            if ok:
+                pclases.Auditoria.modificado(self.objeto, 
+                    self.usuario, __file__, 
+                    "Usuario %s envió solicitud de crédito para oferta %d." 
+                        % (self.usuario and self.usuario.usuario or "¡NADIE!", 
+                           self.objeto.id))
+            else:
+                pclases.Auditoria.modificado(self.objeto, 
+                    self.usuario, __file__, 
+                    "Falló envío de solicitud de crédito para oferta %d del "
+                    "usuario %s." 
+                        % (self.objeto.id, 
+                           self.usuario and self.usuario.usuario or "¡NADIE!"))
+            vpro.mover()
         vpro.ocultar()
         return ok
     
