@@ -28,3 +28,6 @@
 [submodule "ginn/lib/textprogressbar"]
 	path = ginn/lib/textprogressbar
 	url = git@github.com:pacoqueen/python-textprogressbar.git
+[submodule "ginn/lib/pygal"]
+	path = ginn/lib/pygal
+	url = git@github.com:pacoqueen/pygal.git
