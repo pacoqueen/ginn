@@ -18,6 +18,14 @@
 				"buffer_size": 3117,
 				"line_ending": "Unix"
 			}
+		},
+		{
+			"file": "ginn/lib/pygal/__init__.py",
+			"settings":
+			{
+				"buffer_size": 0,
+				"line_ending": "Unix"
+			}
 		}
 	],
 	"build_system": "",
@@ -29,6 +37,14 @@
 			[
 				":w",
 				":w - Save"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"pack",
+				"Package Control: List Packages"
 			],
 			[
 				"auto",
@@ -97,10 +113,6 @@
 			[
 				"keybiu",
 				"Preferences: Key Bindings - User"
-			],
-			[
-				"install",
-				"Package Control: Install Package"
 			],
 			[
 				"keybin",
@@ -280,6 +292,48 @@
 	},
 	"file_history":
 	[
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/graph/line.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/graph/graph.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/__init__.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/svg.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/graph/base.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/graph/__init__.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/graph/dot.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/graph/frenchmap.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/graph/funnel.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/graph/gauge.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/graph/histogram.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/graph/horizontal.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/graph/horizontalbar.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/graph/horizontalstackedbar.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/graph/pie.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/graph/pyramid.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/graph/radar.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/graph/stackedbar.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/graph/stackedline.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/graph/supranationalworldmap.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/graph/verticalpyramid.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/graph/worldmap.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/graph/xy.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/graph/datey.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/graph/box.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/ghost.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/graph/bar.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/adapters.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/colors.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/config.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/etree.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/i18n.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/interpolate.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/serie.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/style.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/table.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/util.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/view.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/_compat.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/utils.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/PyPDF2/PyPDF2/__init__.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/PyPDF2/__init__.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/cairograph.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/extra/install/autossh.sh",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/autenticacion.html",
@@ -317,7 +371,6 @@
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/prefacturas.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_pendientes_recibir.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/db/populate.sql",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/utils.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_ventas_por_producto.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/db/tablas.sql",
 		"/home/bogado/Geotexan/doc/Sysadmin/Red/MACs_wifi.md",
@@ -366,48 +419,7 @@
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_ventas_prefacturas.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_ventas.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_albaranesFacturados.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_entradas_almacen.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_albaranes_clientes.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_albaranes_clientes.glade",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_ofertas_pendientes_validar.glade",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_pagos_realizados.glade",
-		"/home/bogado/Geotexan/doc/Telefonía/Orange/SOMOSUR.md",
-		"/home/bogado/.config/sublime-text-3/Packages/User/Default (Linux).sublime-keymap",
-		"/home/bogado/.config/sublime-text-3/Packages/Default/Default (Linux).sublime-keymap",
-		"/home/bogado/.config/sublime-text-3/Packages/User/MarkdownPreview.sublime-settings",
-		"/home/bogado/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
-		"/tmp/test.md",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_consumo.glade",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_consumo.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_cobros.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/examples/countrystatistics.ods",
-		"/home/bogado/.config/sublime-text-3/Packages/Default/Preferences.sublime-settings",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_partidas_por_producto.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_partidas_por_producto.glade",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_lotes_por_producto.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_lotes_por_producto.glade",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_partidas_por_producto.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_lotes_por_producto.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/facturacion_por_cliente_y_fechas.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/resultados_poros.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/examples/passwd-as-ods.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/albaranes_de_salida_repuestos.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/albaranes_de_salida_repuestos.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/tests/cierre febrero 2014/20140201_salidas.csv",
-		"/home/bogado/Geotexan/src/Geotex-INN/db/sync_contra_alfred.sh",
-		"/home/bogado/Geotexan/src/Geotex-INN/setup.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/gtkexcepthook.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/gtkrc",
-		"/home/bogado/Geotexan/src/Geotex-INN/tests/ginn_tests.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/framework/tests_coherencia.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/GPL",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/centros_de_trabajo.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/tests/cierre febrero 2014/diff_enero.csv",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/APACHE-LICENSE-2.0.txt",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/framework/tests.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/albaranes_de_entrada.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/informes/albaran_multipag.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/examples/text-with-masterpage.py"
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_entradas_almacen.html"
 	],
 	"find":
 	{
@@ -425,6 +437,8 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"pygal",
+			"parse_cif",
 			"cairo",
 			"gobject",
 			"commitList",
@@ -506,7 +520,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -537,7 +551,35 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 765.0,
+						"translation.y": 663.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "ginn/lib/pygal/__init__.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -601,6 +643,10 @@
 		"selected_items":
 		[
 			[
+				"utils.py",
+				"ginn/formularios/utils.py"
+			],
+			[
 				"cairo",
 				"ginn/lib/cairograph.py"
 			],
@@ -611,10 +657,6 @@
 			[
 				"presupuetos.",
 				"ginn/formularios/presupuestos.py"
-			],
-			[
-				"utils.py",
-				"ginn/formularios/utils.py"
 			],
 			[
 				"geninformes",
