@@ -11,10 +11,11 @@ Now with a GUI!!
 DEBUG = True
 
 from gi.repository import Gtk
-import os
+import os, sys
 import tempfile
 
-CLOUSEAU_COMMAND = "./clouseau.py" 
+DIRSCRIPT = os.path.dirname(os.path.abspath(sys.argv[0]))
+CLOUSEAU_COMMAND = os.path.join(DIRSCRIPT, "clouseau.py")
 
 class Clouseau(Gtk.Window):
     def __init__(self):
@@ -23,7 +24,8 @@ class Clouseau(Gtk.Window):
         esa mierda va aquí.
         """
         self.wids = Gtk.Builder()
-        self.wids.add_from_file("clouseau.glade")
+        gladefile = os.path.abspath(os.path.join(DIRSCRIPT, "clouseau.glade"))
+        self.wids.add_from_file(gladefile)
         self.wids.get_object("b_start").set_sensitive(False)
         self.entries = {}
         handlers = {"b_start/clicked": self.empezar, 
@@ -135,14 +137,17 @@ class Clouseau(Gtk.Window):
             Gtk.FileChooserAction.SELECT_FOLDER, 
             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, 
              Gtk.STOCK_OK, Gtk.ResponseType.OK))
-        dialogo_select_dir.set_current_folder("../../tests")    # TODO: Hacer 
-        # que sea "sensitive" al directorio donde se ejecuta. Puede que ya 
-        # esté en el directorio "tests"
+        if os.path.basename(os.path.abspath(os.path.curdir)) == "scripts":
+            dialogo_select_dir.set_current_folder(
+                    os.path.join("..", "..", "tests"))
         response = dialogo_select_dir.run()
         if response == Gtk.ResponseType.OK:
             dirname = dialogo_select_dir.get_filename()
             if DEBUG:
                 print("Directorio seleccionado: ", dirname)
+            # Si selecciono el directorio ENTRANDO en él, no lo pilla bien.
+            while not os.path.exists(dirname) and dirname:
+                dirname = os.path.dirname(dirname)
             entry_directorio = self.wids.get_object("e_directorio")
             entry_directorio.set_text(dirname)
             entry_directorio.set_position(-1)    
@@ -155,7 +160,6 @@ class Clouseau(Gtk.Window):
         Recorre el directorio dirname y rellena los entries con los ficheros
         que encuentre y casen con el tipo de fichero fuente buscado.
         """
-        # TODO: FIXME: Si selecciono el directorio ENTRANDO en él, no lo pilla bien.
         for raiz, directorios, ficheros in os.walk(dirname):
             for fichero in ficheros:
                 if DEBUG:
