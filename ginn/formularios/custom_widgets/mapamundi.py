@@ -43,7 +43,7 @@ class Mapamundi(gtk.DrawingArea):
     def __init__(self):
         super(Mapamundi, self).__init__()
         self.connect("expose_event", self.expose)
-        self.set_size_request(800,500)
+        #self.set_size_request(800,500)
 
     def expose(self, widget, event):
         cr = widget.window.cairo_create()
