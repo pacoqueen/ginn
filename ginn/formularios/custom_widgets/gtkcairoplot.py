@@ -28,6 +28,7 @@ try:
     import gtk
     import gobject
     from gtk import gdk
+    import cairo
 except:
     raise SystemExit
 
@@ -35,69 +36,85 @@ if gtk.pygtk_version < (2, 0):
     print "Se necesita PyGtk 2.0 o posterior."
     raise SystemExit
 
-class Mapamundi(gtk.DrawingArea):
-    """
-    Mapa del mundo que representa series de datos en los paises.
-    """
-    def __init__(self, data = {}):
-        self.BORDER_WIDTH = 1
-        self.data = data
-        super(Mapamundi, self).__init__()
-        #self.window.show_all()
-        self.render_data()
-        self.set_size_request(self.__pixbuf.get_width(),
-                              self.__pixbuf.get_height())
-        self.connect("expose_event", self.expose)
+(HORIZONTAL_BAR,    # 0
+ VERTICAL_BAR,      # 1
+ DONUT,             # 2
+ PIE,               # 3
+ DOT,               # 4
+ FUNCTION,          # 5
+ SCATTER,           # 6
+ GANTT              # 7
+) = range(8)
 
-    def setPixbuf(self, pixbuf):
-        if type(pixbuf) != gtk.gdk.Pixbuf:
-            raise TypeError("Pixbuf debe ser %s. Recibido %s" % (
-                gtk.gdk.Pixbuf, type(pixbuf)))
-        self.__pixbuf = pixbuf
-        self.emit("expose-event", gtk.gdk.Event(gtk.gdk.EXPOSE))
+class GtkCairoPlot(gtk.DrawingArea):
+    """
+    Widget que incluye un gráfico de CairoPlot en él.
+    """
+    def __init__(self, tipo, data = []):
+        self.BORDER_WIDTH = 1
+        super(GtkCairoPlot, self).__init__()
+        self._constructor = self._get_func(tipo)
+        self._data = data
+        self.width = 400
+        self.height = 300
+        self.set_size_request(self.width + self.BORDER_WIDTH,
+                              self.height + self.BORDER_WIDTH)
+        self.connect("expose_event", self.expose)
 
     def expose(self, widget, event):
         x, y, ancho, alto = self.allocation
         try:
-            context =  widget.window.cairo_create()
+            self.context =  widget.window.cairo_create()
         except AttributeError:
             return True
-        if self.__pixbuf != None:
-            scaledPixbuf = self.__pixbuf.scale_simple(ancho,
-                            alto,
-                            gtk.gdk.INTERP_BILINEAR)
-            ct = gtk.gdk.CairoContext(context)
-            ct.set_source_pixbuf(scaledPixbuf, 
-                                 self.BORDER_WIDTH, self.BORDER_WIDTH)
-            context.paint()
-            context.stroke()
+        self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 
+                self.width + self.BORDER_WIDTH, 
+                self.height + self.BORDER_WIDTH)
+        self.render_plot()
+        self.show_all()
 
-    def load_pixbuf(self):
+    def render_plot(self):
         """
-        Crea y devuelve un pixbuf que contiene el SVG correspondiente 
-        al gráfico de pygal creado con los datos con que inicializó el widget.
+        Invoca la función encargada de generar el gráfico de CairoPlot en el 
+        surface de Cairo.
+        """
+        # TODO: OJO porque la interfaz cambia. Esto solo vale para los bar_plot
+        plt = self._constructor(self.surface, self._data, 
+                                self.width, self.height)
+        # TODO: PORASQUI: A SVG va bien. Pero si le paso el cairosurface directamente no rula. ¿Qué estoy haciendo mal?
+        plt.render()
+        plt.commit()
+
+    @staticmethod
+    def _get_func(tipo):
+        """
+        Devuelve el tipo de función de CairoPlot que corresponde a la macro.
         """
         import sys, os
-        sys.path.append(os.path.abspath(os.path.join(
-            os.path.abspath(os.path.dirname(__file__)), 
-            "..", "..")))
-        from lib.cairoplot import cairoplot
-        data = [[1,2,3],[4,5,6],[7,8,9]]  
-        test = cairoplot.HorizontalBarPlot("/tmp/object_way.svg", 
-                                           data, 640, 480)  
-        test.render()  
-        test.commit()
-        pb = gtk.gdk.pixbuf_new_from_file("/tmp/object_way.svg")
-        #fsvg.close()
-        return pb
-
-    def render_data(self):
-        """
-        Crea el SVG y lo carga en el widget.
-        """
-        pb = self.load_pixbuf()
-        self.setPixbuf(pb)
-
+        libdir = os.path.abspath(os.path.join(
+            os.path.dirname(__file__), "..", "..", "lib"))
+        sys.path.append(libdir)
+        from cairoplot import cairoplot
+        if tipo == HORIZONTAL_BAR:
+            func = cairoplot.HorizontalBarPlot
+        elif tipo == VERTICAL_BAR:
+            func = cairoplot.VerticalBarPlot
+        elif tipo == DONUT:
+            raise NotImplementedError
+        elif tipo == PIE:
+            raise NotImplementedError
+        elif tipo == DOT:
+            raise NotImplementedError
+        elif tipo == FUNCTION:
+            raise NotImplementedError
+        elif tipo == SCATTER:
+            raise NotImplementedError
+        elif tipo == GANTT:
+            raise NotImplementedError
+        else:
+            raise ValueError, "tipo no reconocido. Consulte gtkcairoplot.py"
+        return func
+            
 
 ###############################################################################
 
@@ -107,10 +124,10 @@ def main():
     """
     win = gtk.Window()
     win.connect('delete-event', gtk.main_quit)
-    data = {'es': 12345.67, 
-            'fr': -15}
-    mapamundi = Mapamundi(data)
-    win.add(mapamundi)
+    data = [[1,2,3],[4,5,6],[7,8,9]] 
+    tipo = HORIZONTAL_BAR
+    plot = GtkCairoPlot(tipo, data)
+    win.add(plot)
     win.set_position(gtk.WIN_POS_CENTER)
     win.show_all()
     gtk.main()
