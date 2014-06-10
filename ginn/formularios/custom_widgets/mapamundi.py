@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2014       Francisco José Rodríguez Bogado,                   #
 #                          (pacoqueen@users.sourceforge.net)                  #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
@@ -21,6 +21,8 @@
 # along with GeotexInn; if not, write to the Free Software                    #
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA  #
 ###############################################################################
+# Mapamundi en un Widget usando Cairo (pygal)
+###############################################################################
 
 try:
     import gtk
@@ -28,21 +30,51 @@ try:
     from gtk import gdk
 except:
     raise SystemExit
-import pygtk
+
+
 if gtk.pygtk_version < (2, 0):
     print "Se necesita PyGtk 2.0 o posterior."
     raise SystemExit
 
-from velocimetro import Velocimetro
-from starhscale import StarHScale
-from marquee_label import MarqueeLabel
-from cellrendererautocomplete import CellRendererAutoComplete
-# Registro la clase como un widget Gtk
-gobject.type_register(StarHScale)
-gobject.type_register(Velocimetro)
-gobject.type_register(MarqueeLabel)
-gobject.type_register(CellRendererAutoComplete)
+class Mapamundi(gtk.DrawingArea):
+    """
+    Mapa del mundo que representa series de datos en los paises.
+    """
+    def __init__(self):
+        super(Mapamundi, self).__init__()
+        self.connect("expose_event", self.expose)
+        self.set_size_request(800,500)
 
-__all__ = ["Velocimetro", "StarHScale", "MarqueeLabel", 
-           "CellRendererAutoComplete", "Mapamundi"]
+    def expose(self, widget, event):
+        cr = widget.window.cairo_create()
+        rect = self.get_allocation()
+
+        # you can use w and h to calculate relative positions which
+        # also change dynamically if window gets resized
+        w = rect.width
+        h = rect.height
+
+        # here is the part where you actually draw
+        cr.move_to(0,0)
+        cr.line_to(w/2, h/2)
+        cr.stroke()
+
+###############################################################################
+
+def main():
+    """
+    Prueba rápida de que funciona.
+    """
+    win = gtk.Window()
+    win.connect('delete-event', gtk.main_quit)
+    data = {'es': 12345.67, 
+            'fr': -15}
+    mapamundi = Mapamundi(data)
+    win.add(mapamundi)
+    win.set_position(gtk.WIN_POS_CENTER)
+    win.show_all()
+    gtk.main()
+
+if __name__ == "__main__":
+    main()
 
