@@ -87,7 +87,8 @@ class ConsultaVentas(Ventana):
                     False, True, False, None),
                 ('Destino', 'gobject.TYPE_STRING', False, True, False, None), 
                 ('Factura', 'gobject.TYPE_STRING', False, True, False, None), 
-                ('Forma de cobro', 'gobject.TYPE_STRING', False, True, False, None), 
+                ('Forma de cobro', 'gobject.TYPE_STRING', 
+                    False, True, False, None), 
                 ('Cobro real', 'gobject.TYPE_STRING', 
                     False, True, False, None),  # XXX
                 ('Idlineadecompra', 'gobject.TYPE_INT64', 
@@ -131,6 +132,7 @@ class ConsultaVentas(Ventana):
                                         year = mx.DateTime.localtime().year)
         self.inicio = inicio.strftime("%Y/%m/%d")
         self.wids['e_fechainicio'].set_text(utils.str_fecha(inicio))
+        # TODO: Hacer que sea editable y que recuerde la fecha.
         temp = time.localtime()
         self.fin = str(temp[0])+'/'+str(temp[1])+'/'+str(temp[2])
         self.wids['e_fechafin'].set_text(utils.str_fecha(temp))

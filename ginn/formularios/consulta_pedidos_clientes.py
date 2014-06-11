@@ -1,8 +1,8 @@
-#!/usr/bin/env python.DateTime
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -69,12 +69,23 @@ class ConsultaPedidosCliente(Ventana):
         cols = (('Cliente', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Fecha', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Pedido', 'gobject.TYPE_STRING', False, True, False, None),
-                ('Importe', 'gobject.TYPE_STRING', False, True, False, None),
+                ('Producto', 'gobject.TYPE_STRING', False, True, False, None),
+                ('Cantidad\npedida', 'gobject.TYPE_STRING', 
+                                                    False, True, False, None),
+                ('Cantidad\nservida', 'gobject.TYPE_STRING', 
+                                                    False, True, False, None),
+                ('Importe\npedido', 'gobject.TYPE_STRING', 
+                                                    False, True, False, None),
+                ('Importe\nservido', 'gobject.TYPE_STRING', 
+                                                    False, True, False, None),
                 ("Bloqueado", "gobject.TYPE_BOOLEAN", False, True, False, None),
                 ("Cerrado", "gobject.TYPE_BOOLEAN", False, True, False, None),
                 ('Idpedido', 'gobject.TYPE_INT64', False, False, False, None))
         utils.preparar_listview(self.wids['tv_datos'], cols)
-        col = self.wids['tv_datos'].get_column(3)
+        col = self.wids['tv_datos'].get_column(4)
+        for cell in col.get_cell_renderers():
+            cell.set_property("xalign", 1)
+        col = self.wids['tv_datos'].get_column(5)
         for cell in col.get_cell_renderers():
             cell.set_property("xalign", 1)
         self.wids['tv_datos'].connect("row-activated", self.abrir_pedido)
@@ -129,21 +140,29 @@ class ConsultaPedidosCliente(Ventana):
         model.clear()
         total = 0
         importetotal = 0.0
-        for i in items:
+        for p in pedidos:
             total += 1
             importe = i.calcular_importe_total()
             importetotal += importe
-            model.append((i.cliente.nombre,
-                          utils.str_fecha(i.fecha),
-                          i.numpedido,
-                          "%s €" % (utils.float2str(importe)),
-                          i.bloqueado,
-                          i.cerrado,
-                          i.id))
+            for ldp in p.lineasDePedido:
+                model.append((i.cliente.nombre,
+                              utils.str_fecha(p.fecha),
+                              # TODO: PORASQUI: A ver cómo me las arreglo para recorrer los pedidos por LDP/LDV.
+                              p.numpedido,
+                              utils.float2str(cantidad_ldp), 
+                              utils.float2str(cantidad_ldv), 
+                              utils.float2str(importe_ldp),
+                              utils.float2str(importe_ldv),
+                              p.bloqueado,
+                              p.cerrado,
+                              p.id))
         self.wids['e_total'].set_text("%d " % total)
-        self.wids['e_importe_total'].set_text("%s €" % (utils.float2str(importetotal)))
+        # TODO: Habrá que crear otro total para el importe facturado.
+        self.wids['e_importe_total'].set_text(
+                "%s €" % (utils.float2str(importetotal)))
 
     def set_inicio(self, boton):
+        # Esto hay que hacerlo editable y que recuerde la fecha seleccionada cuando muestre el calendario
         temp = utils.mostrar_calendario(padre = self.wids['ventana'])
         self.wids['e_fechainicio'].set_text(utils.str_fecha(temp))
         self.inicio = str(temp[2])+'/'+str(temp[1])+'/'+str(temp[0])

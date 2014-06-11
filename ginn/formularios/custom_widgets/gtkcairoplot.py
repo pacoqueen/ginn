@@ -36,6 +36,12 @@ if gtk.pygtk_version < (2, 0):
     print "Se necesita PyGtk 2.0 o posterior."
     raise SystemExit
 
+import sys, os
+libdir = os.path.abspath(os.path.join(
+    os.path.dirname(__file__), "..", "..", "lib"))
+sys.path.append(libdir)
+from cairoplot import cairoplot
+
 (HORIZONTAL_BAR,    # 0
  VERTICAL_BAR,      # 1
  DONUT,             # 2
@@ -51,50 +57,52 @@ class GtkCairoPlot(gtk.DrawingArea):
     Widget que incluye un gráfico de CairoPlot en él.
     """
     def __init__(self, tipo, data = []):
-        self.BORDER_WIDTH = 1
         super(GtkCairoPlot, self).__init__()
         self._constructor = self._get_func(tipo)
         self._data = data
-        self.width = 400
-        self.height = 300
-        self.set_size_request(self.width + self.BORDER_WIDTH,
-                              self.height + self.BORDER_WIDTH)
         self.connect("expose_event", self.expose)
+        self.width = -1 
+        self.height = -1
+        self.set_size_request(self.width, self.height)
+        self._prepare_plot()
+
+    def _prepare_plot(self):
+        """
+        Crea el objeto CairoPlot con los datos del atributo _data.
+        """
+        # Es simplemente para crear el objeto. Después se reemplazará por 
+        # el surface del DrawingArea en el expose.
+        tempsurface = cairo.SVGSurface(None, self.width, self.height)
+        # TODO: OJO porque la interfaz cambia. Esto solo vale para los bar_plot
+        self.plt = self._constructor(tempsurface, 
+                                     self._data, 
+                                     self.width, self.height)
 
     def expose(self, widget, event):
-        x, y, ancho, alto = self.allocation
+        rect = self.get_allocation()
+        self.width = rect.width
+        self.height = rect.height
+        self.plt.dimensions[cairoplot.HORZ] = self.width
+        self.plt.dimensions[cairoplot.VERT] = self.height
         try:
-            self.context =  widget.window.cairo_create()
+            self.plt.context = self.context =  widget.window.cairo_create()
         except AttributeError:
             return True
-        self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 
-                self.width + self.BORDER_WIDTH, 
-                self.height + self.BORDER_WIDTH)
         self.render_plot()
-        self.show_all()
 
     def render_plot(self):
         """
         Invoca la función encargada de generar el gráfico de CairoPlot en el 
         surface de Cairo.
         """
-        # TODO: OJO porque la interfaz cambia. Esto solo vale para los bar_plot
-        plt = self._constructor(self.surface, self._data, 
-                                self.width, self.height)
-        # TODO: PORASQUI: A SVG va bien. Pero si le paso el cairosurface directamente no rula. ¿Qué estoy haciendo mal?
-        plt.render()
-        plt.commit()
+        self.plt.render()
+        self.plt.commit()
 
     @staticmethod
     def _get_func(tipo):
         """
         Devuelve el tipo de función de CairoPlot que corresponde a la macro.
         """
-        import sys, os
-        libdir = os.path.abspath(os.path.join(
-            os.path.dirname(__file__), "..", "..", "lib"))
-        sys.path.append(libdir)
-        from cairoplot import cairoplot
         if tipo == HORIZONTAL_BAR:
             func = cairoplot.HorizontalBarPlot
         elif tipo == VERTICAL_BAR:
@@ -118,18 +126,25 @@ class GtkCairoPlot(gtk.DrawingArea):
 
 ###############################################################################
 
-def main():
+def build_test_window():
     """
-    Prueba rápida de que funciona.
+    Devuelve una ventana de Gtk con un CairoPlot para pruebas.
     """
     win = gtk.Window()
+    win.set_position(gtk.WIN_POS_CENTER)
     win.connect('delete-event', gtk.main_quit)
     data = [[1,2,3],[4,5,6],[7,8,9]] 
     tipo = HORIZONTAL_BAR
     plot = GtkCairoPlot(tipo, data)
     win.add(plot)
-    win.set_position(gtk.WIN_POS_CENTER)
-    win.show_all()
+    return win, plot
+
+def main():
+    """
+    Prueba rápida de que funciona.
+    """
+    wintest, plot = build_test_window()
+    wintest.show_all()
     gtk.main()
 
 if __name__ == "__main__":
