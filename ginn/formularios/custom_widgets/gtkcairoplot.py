@@ -42,6 +42,17 @@ libdir = os.path.abspath(os.path.join(
 sys.path.append(libdir)
 from cairoplot import cairoplot
 
+# Pruebas con cagraph
+from cagraph.cagraph.ca_graph import CaGraph
+from cagraph.cagraph.axis.xaxis import CaGraphXAxis
+from cagraph.cagraph.axis.yaxis import CaGraphYAxis
+from cagraph.cagraph.axis.taxis import CaGraphTAxis
+from cagraph.cagraph.ca_graph_grid import CaGraphGrid
+from cagraph.cagraph.series.line import CaGraphSeriesLine
+from cagraph.cagraph.series.bar import CaGraphSeriesBar
+from cagraph.cagraph.series.area import CaGraphSeriesArea
+
+
 (HORIZONTAL_BAR,    # 0
  VERTICAL_BAR,      # 1
  DONUT,             # 2
@@ -126,6 +137,30 @@ class GtkCairoPlot(gtk.DrawingArea):
 
 ###############################################################################
 
+def create_cagraph_plot():
+    graph = CaGraph()
+    # create and add axiss to graph
+    xaxis = CaGraphXAxis(graph)
+    yaxis = CaGraphYAxis(graph)
+    graph.axiss.append(xaxis)
+    graph.axiss.append(yaxis)
+    # create and add series to graph
+    graph.seriess.append(CaGraphSeriesLine(graph, 0, 1))
+    graph.seriess.append(CaGraphSeriesBar(graph, 0, 1))
+    # add data to seriess
+    graph.seriess[0].data = [(10.0, 52.0), (20.0, 70.0),
+                             (30.0, 53.0), (40.0, 38),
+                             (50.0, 75.0), (60.0, 85.0),
+                             (70.0, 65.0)]
+    graph.seriess[1].data = [(10.0, 42.0), (20.0, 50.0),
+                             (30.0, 63.0), (40.0, 68),
+                             (50.0, 75.0), (60.0, 95.0),
+                             (70.0, 65.0)]
+    # automaticaly set axis ranges
+    graph.auto_set_range()
+    return graph
+
+
 def build_test_window():
     """
     Devuelve una ventana de Gtk con un CairoPlot para pruebas.
@@ -135,7 +170,8 @@ def build_test_window():
     win.connect('delete-event', gtk.main_quit)
     data = [[1,2,3],[4,5,6],[7,8,9]] 
     tipo = HORIZONTAL_BAR
-    plot = GtkCairoPlot(tipo, data)
+    #plot = GtkCairoPlot(tipo, data)
+    plot = create_cagraph_plot()
     win.add(plot)
     return win, plot
 
