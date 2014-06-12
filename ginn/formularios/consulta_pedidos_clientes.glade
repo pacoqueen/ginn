@@ -228,7 +228,7 @@
             <child>
               <widget class="GtkLabel" id="label8">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">Importe total: </property>
+                <property name="label" translatable="yes">Importe total pedido: </property>
               </widget>
               <packing>
                 <property name="fill">False</property>

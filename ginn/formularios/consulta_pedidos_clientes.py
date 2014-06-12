@@ -103,7 +103,21 @@ class ConsultaPedidosCliente(Ventana):
         if objeto != None:
             utils.combo_set_from_db(self.wids["cmbe_cliente"], objeto.id)
             self.wids["b_buscar"].clicked()
+        self.add_widgets_extra()
         gtk.main()
+
+    def add_widgets_extra(self):
+        """
+        No tengo glade-gtk2 en prometheus. Too old for rock'n roll but too 
+        youg to die.
+        """
+        self.wids['e_total_servido'] = gtk.Entry()
+        self.wids['e_total_servido'].set_property("editable", False)
+        self.wids['e_total_servido'].set_property("has-frame", False)
+        lab_total_servido = gtk.Label("Importe total servido:")
+        self.wids['e_total'].parent.pack_start(lab_total_servido)
+        self.wids['e_total'].parent.pack_start(self.wids['e_total_servido'])
+        self.wids['e_total'].parent.show_all()
 
     def exportar(self, boton):
         """
@@ -144,15 +158,20 @@ class ConsultaPedidosCliente(Ventana):
         """
         Rellena el model con los pedidos de la consulta.
         """
-        # TODO: Falta una ventana de progreso.
+        from formularios.ventana_progreso import VentanaProgreso
+        vpro = VentanaProgreso(padre = self.wids['ventana'])
+        tot = pedidos.count()
+        vpro.mostrar()
         model = self.wids['tv_datos'].get_model()
         model.clear()
-        total = 0
+        total = 0.0
         importetotal = 0.0
+        importetotal_servido = 0.0
         for p in pedidos:
+            vpro.set_valor(total / tot, "Buscando productos en pedidos..."
+                                        "\n(ignorando servicios) [%d/%d]" % (
+                                            total, tot))
             total += 1
-            importe = p.calcular_importe_total()
-            importetotal += importe
             prods = p.get_pendiente_servir()[0] # Devuelve 3 cosas.
             for producto in prods:
                 importe_ldp = sum([ldp.calcular_subtotal(iva = True) 
@@ -162,6 +181,8 @@ class ConsultaPedidosCliente(Ventana):
                                     for ldv in p.lineasDeVenta
                                     if ldv.albaranSalida 
                                         and ldv.producto == producto])
+                importetotal += importe_ldp
+                importetotal_servido += importe_ldv
                 cantidad_ldp = prods[producto]['pedido']
                 cantidad_ldv = prods[producto]['servido']
                 model.append((p.cliente.nombre,
@@ -175,10 +196,12 @@ class ConsultaPedidosCliente(Ventana):
                               p.bloqueado,
                               p.cerrado,
                               p.id))
+        vpro.ocultar()
         self.wids['e_total'].set_text("%d " % total)
-        # TODO: Habrá que crear otro total para el importe facturado.
         self.wids['e_importe_total'].set_text(
                 "%s €" % (utils.float2str(importetotal)))
+        self.wids['e_total_servido'].set_text(
+                "%s €" % (utils.float2str(importetotal_servido)))
 
     def set_fecha(self, boton):
         """
