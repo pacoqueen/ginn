@@ -34,6 +34,10 @@
 ##
 ###################################################################
 
+"""
+Consulta con los pedidos realizados por un cliente entre fechas.
+"""
+
 from ventana import Ventana
 from formularios import utils
 import pygtk
@@ -41,57 +45,61 @@ pygtk.require('2.0')
 import gtk, time
 from framework import pclases
 from informes import geninformes
-
+from formularios.consulta_existenciasBolsas import act_fecha
+import datetime
 
 class ConsultaPedidosCliente(Ventana):
-    inicio = None
-    fin = None
-    cliente = None
-    resultado = []
-
-    def __init__(self, objeto = None, usuario = None):
+    """
+    Clase que contiene la ventana y los resultados de la consulta.
+    """
+    def __init__(self, objeto=None, usuario=None):
         """
         Constructor. objeto puede ser un objeto de pclases con el que
         comenzar la ventana (en lugar del primero de la tabla, que es
         el que se muestra por defecto).
         """
         self.usuario = usuario
-        global fin
-        Ventana.__init__(self, 'consulta_pedidos_clientes.glade', objeto, usuario = usuario)
+        Ventana.__init__(self, 'consulta_pedidos_clientes.glade', objeto,
+                         usuario=usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_buscar/clicked': self.buscar,
                        'b_imprimir/clicked': self.imprimir,
-                       'b_fecha_inicio/clicked': self.set_inicio,
-                       'b_fecha_fin/clicked': self.set_fin,
-                       'b_exportar/clicked': self.exportar}
+                       'b_fecha_inicio/clicked': self.set_fecha,
+                       'b_fecha_fin/clicked': self.set_fecha,
+                       'b_exportar/clicked': self.exportar,
+                       'e_fecha_inicio/focus-out-event': act_fecha,
+                       'e_fecha_fin/focus-out-event': act_fecha,
+                      }
         self.add_connections(connections)
-        utils.rellenar_lista(self.wids['cmbe_cliente'], [(c.id, c.nombre) for c in pclases.Cliente.select(orderBy='nombre')])
+        utils.rellenar_lista(self.wids['cmbe_cliente'],
+                [(c.id, c.nombre)
+                    for c in pclases.Cliente.select(orderBy='nombre')])
         cols = (('Cliente', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Fecha', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Pedido', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Producto', 'gobject.TYPE_STRING', False, True, False, None),
-                ('Cantidad\npedida', 'gobject.TYPE_STRING', 
+                ('Cantidad\npedida', 'gobject.TYPE_STRING',
                                                     False, True, False, None),
-                ('Cantidad\nservida', 'gobject.TYPE_STRING', 
+                ('Cantidad\nservida', 'gobject.TYPE_STRING',
                                                     False, True, False, None),
-                ('Importe\npedido', 'gobject.TYPE_STRING', 
+                ('Importe\npedido\n(c/IVA)', 'gobject.TYPE_STRING',
                                                     False, True, False, None),
-                ('Importe\nservido', 'gobject.TYPE_STRING', 
+                ('Importe\nservido\n(c/IVA)', 'gobject.TYPE_STRING',
                                                     False, True, False, None),
                 ("Bloqueado", "gobject.TYPE_BOOLEAN", False, True, False, None),
                 ("Cerrado", "gobject.TYPE_BOOLEAN", False, True, False, None),
                 ('Idpedido', 'gobject.TYPE_INT64', False, False, False, None))
         utils.preparar_listview(self.wids['tv_datos'], cols)
-        col = self.wids['tv_datos'].get_column(4)
-        for cell in col.get_cell_renderers():
-            cell.set_property("xalign", 1)
-        col = self.wids['tv_datos'].get_column(5)
-        for cell in col.get_cell_renderers():
-            cell.set_property("xalign", 1)
+        for ncol in (4, 5, 6, 7):
+            col = self.wids['tv_datos'].get_column(ncol)
+            for cell in col.get_cell_renderers():
+                cell.set_property("xalign", 1)
         self.wids['tv_datos'].connect("row-activated", self.abrir_pedido)
-        temp = time.localtime()
-        self.fin = str(temp[0])+'/'+str(temp[1])+'/'+str(temp[2])
-        self.wids['e_fechafin'].set_text(utils.str_fecha(temp))
+        self.resultado = []
+        self.fin = utils.str_fecha(datetime.date.today())
+        self.inicio = None
+        self.wids['e_fecha_fin'].set_text(self.fin)
+        self.wids['e_fecha_inicio'].set_text("")
         if objeto != None:
             utils.combo_set_from_db(self.wids["cmbe_cliente"], objeto.id)
             self.wids["b_buscar"].clicked()
@@ -126,31 +134,42 @@ class ConsultaPedidosCliente(Ventana):
                                padre = self.wids['ventana'])
         else:
             from formularios import pedidos_de_venta
-            ventanapedido = pedidos_de_venta.PedidosDeVenta(objeto = pedido,  # @UnusedVariable
+            ventanapedido = pedidos_de_venta.PedidosDeVenta(objeto = pedido,
                                                         usuario = self.usuario)
 
     def chequear_cambios(self):
         pass
 
-    def rellenar_tabla(self, items):
+    def rellenar_tabla(self, pedidos):
         """
-        Rellena el model con los items de la consulta
+        Rellena el model con los pedidos de la consulta.
         """
+        # TODO: Falta una ventana de progreso.
         model = self.wids['tv_datos'].get_model()
         model.clear()
         total = 0
         importetotal = 0.0
         for p in pedidos:
             total += 1
-            importe = i.calcular_importe_total()
+            importe = p.calcular_importe_total()
             importetotal += importe
-            for ldp in p.lineasDePedido:
-                model.append((i.cliente.nombre,
+            prods = p.get_pendiente_servir()[0] # Devuelve 3 cosas.
+            for producto in prods:
+                importe_ldp = sum([ldp.calcular_subtotal(iva = True) 
+                                    for ldp in p.lineasDePedido 
+                                    if ldp.producto == producto])
+                importe_ldv = sum([ldv.calcular_subtotal(iva = True) 
+                                    for ldv in p.lineasDeVenta
+                                    if ldv.albaranSalida 
+                                        and ldv.producto == producto])
+                cantidad_ldp = prods[producto]['pedido']
+                cantidad_ldv = prods[producto]['servido']
+                model.append((p.cliente.nombre,
                               utils.str_fecha(p.fecha),
-                              # TODO: PORASQUI: A ver cómo me las arreglo para recorrer los pedidos por LDP/LDV.
                               p.numpedido,
-                              utils.float2str(cantidad_ldp), 
-                              utils.float2str(cantidad_ldv), 
+                              producto.descripcion,
+                              utils.float2str(cantidad_ldp),
+                              utils.float2str(cantidad_ldv),
                               utils.float2str(importe_ldp),
                               utils.float2str(importe_ldv),
                               p.bloqueado,
@@ -161,33 +180,23 @@ class ConsultaPedidosCliente(Ventana):
         self.wids['e_importe_total'].set_text(
                 "%s €" % (utils.float2str(importetotal)))
 
-    def set_inicio(self, boton):
-        # Esto hay que hacerlo editable y que recuerde la fecha seleccionada cuando muestre el calendario
-        temp = utils.mostrar_calendario(padre = self.wids['ventana'])
-        self.wids['e_fechainicio'].set_text(utils.str_fecha(temp))
-        self.inicio = str(temp[2])+'/'+str(temp[1])+'/'+str(temp[0])
-
-    def set_fin(self, boton):
-        temp = utils.mostrar_calendario(padre = self.wids['ventana'])
-        self.wids['e_fechafin'].set_text(utils.str_fecha(temp))
-        self.fin = str(temp[2])+'/'+str(temp[1])+'/'+str(temp[0])
-
-    def por_fecha(self, e1, e2):
+    def set_fecha(self, boton):
         """
-        Permite ordenar una lista de albaranes por fecha
+        Cambia la fecha de los filtros.
         """
-        if e1.fecha < e2.fecha:
-            return -1
-        elif e1.fecha > e2.fecha:
-            return 1
-        else:
-            return 0
-
+        w = self.wids[boton.name.replace("b_", "e_")]
+        try:
+            fechaentry = utils.parse_fecha(w.get_text())
+        except (TypeError, ValueError):
+            fechaentry = datetime.date.today()
+        w.set_text(utils.str_fecha(utils.mostrar_calendario(
+                                                fecha_defecto = fechaentry,
+                                                padre = self.wids['ventana'])))
 
     def buscar(self, boton):
         """
-        Dadas fecha de inicio y de fin, lista todos los albaranes
-        pendientes de facturar.
+        Dadas fecha de inicio y de fin, busca todos los pedidos del
+        cliente del combo.
         """
         idcliente = utils.combo_get_value(self.wids['cmbe_cliente'])
         if idcliente == None:
@@ -198,6 +207,13 @@ class ConsultaPedidosCliente(Ventana):
             idcliente = utils.combo_get_value(self.wids['cmbe_cliente'])
             self.cliente = pclases.Cliente.get(idcliente)
             cliente = self.cliente
+            str_fini = self.wids['e_fecha_inicio'].get_text()
+            if str_fini:
+                self.inicio = utils.parse_fecha(str_fini)
+            else:
+                self.inicio = None
+            str_ffin = self.wids['e_fecha_fin'].get_text()
+            self.fin = utils.parse_fecha(str_ffin)
             if not self.inicio:
                 pedidos = pclases.PedidoVenta.select(pclases.AND(
                                 pclases.PedidoVenta.q.fecha <= self.fin,
@@ -216,33 +232,19 @@ class ConsultaPedidosCliente(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        from formularios import reports
-        datos = []
-        for i in self.resultado:
-            datos.append((i.cliente.nombre,
-                          utils.str_fecha(i.fecha),
-                          i.numpedido,
-                          "%s €" % (utils.float2str(i.calcular_importe_total())),
-                          i.bloqueado and "Sí" or "No",
-                          i.cerrado and "Sí" or "No"))
-        datos.append(("", "", "", "---", "", ""))
-        datos.append(("%s pedidos listados." % (self.wids['e_total'].get_text()),
-                      "",
-                      "Importe total:",
-                      self.wids['e_importe_total'].get_text(),
-                      "",
-                      ""))
-        if (self.inicio) == None:
-            fechaInforme = 'Hasta ' + utils.str_fecha(time.strptime(self.fin, "%Y/%m/%d"))
+        from informes.treeview2pdf import treeview2pdf
+        from formularios.reports import abrir_pdf
+        if not self.inicio:
+            fecha_informe = 'Hasta ' + utils.str_fecha(self.fin)
         else:
-            fechaInforme = utils.str_fecha(time.strptime(self.inicio, "%Y/%m/%d")) + ' - ' + utils.str_fecha(time.strptime(self.fin, "%Y/%m/%d"))
-
-        if datos != []:
-            reports.abrir_pdf(geninformes.pedidosCliente(datos, self.cliente and self.cliente.nombre or "?", fechaInforme))
-
-
+            fecha_informe = (utils.str_fecha(self.inicio)
+                            + ' - '
+                            + utils.str_fecha(self.fin))
+        abrir_pdf(treeview2pdf(self.wids['tv_datos'], 
+                               titulo = "Pedidos por cliente", 
+                               fecha = fecha_informe))
 
 
 if __name__ == '__main__':
-    t = ConsultaPedidosCliente()
+    ConsultaPedidosCliente()
 

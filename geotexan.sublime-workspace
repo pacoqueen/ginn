@@ -18,6 +18,22 @@
 				"buffer_size": 3117,
 				"line_ending": "Unix"
 			}
+		},
+		{
+			"file": "ginn/lib/cagraph/cagraph/ca_graph.py",
+			"settings":
+			{
+				"buffer_size": 5645,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ginn/lib/cagraph/cagraph/series/dna.py",
+			"settings":
+			{
+				"buffer_size": 3236,
+				"line_ending": "Unix"
+			}
 		}
 	],
 	"build_system": "",
@@ -29,6 +45,14 @@
 			[
 				":w",
 				":w - Save"
+			],
+			[
+				":autopep",
+				"Anaconda: Autoformat PEP8 Errors"
+			],
+			[
+				":auto",
+				"Anaconda: Autoformat PEP8 Errors"
 			],
 			[
 				"install",
@@ -284,6 +308,12 @@
 	},
 	"file_history":
 	[
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/custom_widgets/cellrendererautocomplete.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/autenticacion.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/extra/install/autossh.sh",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/autenticacion.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/ausencias.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/db/ajuste_consumos.py",
 		"/home/bogado/Dropbox/latex_currvitae/clara.tex",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/__init__.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/graph/line.py",
@@ -329,10 +359,6 @@
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/PyPDF2/PyPDF2/__init__.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/PyPDF2/__init__.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/cairograph.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/extra/install/autossh.sh",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/autenticacion.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/ausencias.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/db/ajuste_consumos.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/extra/scripts/cierre_anno.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/confirmings.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygraphviz/pygraphviz/__init__.py",
@@ -409,9 +435,7 @@
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_pendientes_servir.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_beneficio.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_ventas_por_producto.glade",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_ventas_por_producto.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_ventas_prefacturas.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_ventas.html"
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_ventas_por_producto.html"
 	],
 	"find":
 	{
@@ -429,6 +453,9 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"CaGraphFile",
+			"CaGraphStyle",
+			"cairo",
 			"pygal",
 			"parse_cif",
 			"cairo",
@@ -512,7 +539,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 2,
 			"sheets":
 			[
 				{
@@ -544,6 +571,77 @@
 						},
 						"translation.x": 0.0,
 						"translation.y": 255.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "ginn/lib/cagraph/cagraph/ca_graph.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5645,
+						"regions":
+						{
+							"bookmark_n":
+							{
+								"flags": 144,
+								"regions":
+								[
+									[
+										982,
+										982
+									]
+								]
+							}
+						},
+						"selection":
+						[
+							[
+								1005,
+								1005
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 153.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "ginn/lib/cagraph/cagraph/series/dna.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3236,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1339,
+								1339
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 221.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
