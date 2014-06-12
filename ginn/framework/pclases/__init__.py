@@ -6556,10 +6556,12 @@ class LineaDePedido(SQLObject, PRPCTOO):
             subtotal *= (1.0 - self.descuento)
         if iva:
             if self.pedidoVenta:
-                subtotal *= self.pedidoVenta.iva
+                subtotal *= (1 + self.pedidoVenta.iva)
             else:
                 raise ValueError, "pclases::LineaDePedido::calcular_subtotal -> La LDP ID %s no tiene pedido del que obtener el IVA."
         return subtotal
+
+    calcular_subtotal = get_subtotal # Por compatibilidad con LineaDeVenta.
 
     def get_albaraneada(self):
         """
@@ -10227,7 +10229,6 @@ class PedidoVenta(SQLObject, PRPCTOO):
         servicios_pendientes = [s for s in self.servicios 
                                 if s.albaranSalida == None]
         productos_pendientes = [p for p in productos 
-                        #if productos[p]['pedido'] != productos[p]['servido']]
                         if productos[p]['pedido'] != productos[p]['servido']]
         return productos, productos_pendientes, servicios_pendientes
 
@@ -10389,7 +10390,7 @@ class LineaDePresupuesto(SQLObject, PRPCTOO):
         subtotal = self.cantidad * self.precio
         if iva:
             try:
-                subtotal *= self.presupuesto.cliente.iva
+                subtotal *= (1 + self.presupuesto.cliente.iva)
             except AttributeError:
                 raise ValueError, "pclases::LineaDePresupuesto::calcular_subtotal -> La LDP ID %s no tiene cliente del que obtener el IVA."
         return subtotal
@@ -18418,9 +18419,9 @@ class LineaDeAbono(SQLObject, PRPCTOO):
         res = self.cantidad * self.precio
         if iva:
             try:
-                res *= self.abono.facturaDeAbono.iva
+                res *= (1 + self.abono.facturaDeAbono.iva)
             except AttributeError:  # ¿Sin factura?
-                res *= self.abono.cliente.iva
+                res *= (1 + self.abono.cliente.iva)
         return res
 
     def calcular_beneficio(self):
@@ -18462,9 +18463,9 @@ class LineaDeDevolucion(SQLObject, PRPCTOO):
         res = self.cantidad * self.precio
         if iva:
             try:
-                res *= self.abono.facturaDeAbono.iva
+                res *= (1 + self.abono.facturaDeAbono.iva)
             except AttributeError:  # ¿Sin factura?
-                res *= self.abono.cliente.iva
+                res *= (1 + self.abono.cliente.iva)
         return res
 
     def get_cantidad(self):

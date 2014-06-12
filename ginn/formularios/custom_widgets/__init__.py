@@ -43,5 +43,6 @@ gobject.type_register(Velocimetro)
 gobject.type_register(MarqueeLabel)
 gobject.type_register(CellRendererAutoComplete)
 
-__all__ = ["Velocimetro", "StarHScale", "MarqueeLabel", "CellRendererAutoComplete"]
+__all__ = ["Velocimetro", "StarHScale", "MarqueeLabel", 
+           "CellRendererAutoComplete", "Mapamundi"]
 

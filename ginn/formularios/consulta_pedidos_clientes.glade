@@ -53,11 +53,11 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkEntry" id="e_fechainicio">
+                  <widget class="GtkEntry" id="e_fecha_inicio">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="editable">False</property>
-                    <property name="has_frame">False</property>
+                    <property name="editable">True</property>
+                    <property name="has_frame">True</property>
                     <property name="invisible_char">*</property>
                   </widget>
                   <packing>
@@ -95,11 +95,11 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkEntry" id="e_fechafin">
+                  <widget class="GtkEntry" id="e_fecha_fin">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="editable">False</property>
-                    <property name="has_frame">False</property>
+                    <property name="editable">True</property>
+                    <property name="has_frame">True</property>
                     <property name="invisible_char">*</property>
                   </widget>
                   <packing>
@@ -228,7 +228,7 @@
             <child>
               <widget class="GtkLabel" id="label8">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">Importe total: </property>
+                <property name="label" translatable="yes">Importe total pedido: </property>
               </widget>
               <packing>
                 <property name="fill">False</property>

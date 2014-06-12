@@ -78,8 +78,6 @@ VERSION
     $Id$
 """
 
-# TODO: Usar el nuevo progressbar de lib.
-
 AUTO_OUT = False    # Determina si genera todas las combinaciones posibles de
                     # tipos y calidades y escribe cada resultado en un fichero
                     # diferente. De otro modo, y por defecto, escribe todo el
@@ -109,7 +107,7 @@ from framework import pclases
 from formularios import utils
 from collections import defaultdict
 from csv import writer, reader
-
+from lib.textprogressbar.progress.bar import ShadyBar
 
 class Options:
     def __init__(self,
@@ -544,27 +542,41 @@ def main(fexistencias_ini_fib, fexistencias_ini_gtx, fexistencias_ini_cem,
     producción. A partir de esos diccionarios genera un fichero CSV que 
     muestra por salida estándar.
     """
+    tpro = ShadyBar("Generando CSV de cierre de existencias...",
+                    suffix='%(percent)d%% [%(elapsed_td)s / %(eta_td)s]', 
+                    max = 12)
+    tpro.next()
     existencias_ini = parse_existencias(fexistencias_ini_fib)
+    tpro.next()
     existencias_ini = parse_existencias(fexistencias_ini_gtx,
                                         existencias_ini)
+    tpro.next()
     existencias_ini = parse_existencias(fexistencias_ini_cem,
                                         existencias_ini)
+    tpro.next()
     produccion = parse_produccion(fproduccion_fib,
                                   fproduccion_gtx,
                                   fproduccion_cem)
+    tpro.next()
     salidas = parse_salidas(fsalidas_fib, fsalidas_gtx, fsalidas_cem)
+    tpro.next()
     consumos = parse_consumos(fconsumos)
     existencias_fin = parse_existencias(fexistencias_fin_fib)
+    tpro.next()
     existencias_fin = parse_existencias(fexistencias_fin_gtx,
                                         existencias_fin)
+    tpro.next()
     existencias_fin = parse_existencias(fexistencias_fin_cem,
                                         existencias_fin)
+    tpro.next()
     dic_deltas = calculate_deltas(existencias_ini,
                                   produccion,
                                   salidas,
                                   consumos,
                                   existencias_fin)
+    tpro.next()
     check_traspasos(dic_deltas)
+    tpro.next()
     if AUTO_OUT:
         for tipo in (("fib", ), ("gtx", ), ("cem", ), ("fib", "gtx", "cem")):
             for qlty in (("A", ), ("B", ), ("C", ), ("total", ), 
@@ -583,6 +595,8 @@ def main(fexistencias_ini_fib, fexistencias_ini_gtx, fexistencias_ini_cem,
                 dump_deltas(dic_deltas, fout)
     else:
         dump_deltas(dic_deltas, fout)
+    tpro.next()
+    tpro.finish()
 
 def check_traspasos(dic_deltas):
     """
