@@ -28,3 +28,9 @@
 [submodule "ginn/lib/textprogressbar"]
 	path = ginn/lib/textprogressbar
 	url = git@github.com:pacoqueen/python-textprogressbar.git
+[submodule "ginn/lib/cairoplot"]
+	path = ginn/lib/cairoplot
+	url = git@github.com:pacoqueen/cairoplot.git
+[submodule "ginn/lib/cagraph"]
+	path = ginn/lib/cagraph
+	url = git@github.com:pacoqueen/cagraph.git
