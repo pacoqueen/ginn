@@ -18,14 +18,6 @@
 				"buffer_size": 3117,
 				"line_ending": "Unix"
 			}
-		},
-		{
-			"file": "ginn/lib/pygal/__init__.py",
-			"settings":
-			{
-				"buffer_size": 0,
-				"line_ending": "Unix"
-			}
 		}
 	],
 	"build_system": "",
@@ -292,6 +284,8 @@
 	},
 	"file_history":
 	[
+		"/home/bogado/Dropbox/latex_currvitae/clara.tex",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/__init__.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/graph/line.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/graph/graph.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygal/pygal/__init__.py",
@@ -417,9 +411,7 @@
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_ventas_por_producto.glade",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_ventas_por_producto.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_ventas_prefacturas.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_ventas.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_albaranesFacturados.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_entradas_almacen.html"
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_ventas.html"
 	],
 	"find":
 	{
@@ -520,7 +512,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
@@ -551,35 +543,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 663.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "ginn/lib/pygal/__init__.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 0,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 255.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
