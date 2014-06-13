@@ -47,6 +47,8 @@ from framework import pclases
 from informes import geninformes
 from formularios.consulta_existenciasBolsas import act_fecha
 import datetime
+from formularios.custom_widgets import gtkcairoplot
+from collections import defaultdict
 
 # TODO: Añadir un Gtk.CairoPlot para ver los totales por producto. Para eso 
 # antes tendré que adaptar la clase a cagraph o usar los parámetros de 
@@ -121,7 +123,11 @@ class ConsultaPedidosCliente(Ventana):
         lab_total_servido = gtk.Label("Importe total servido:")
         self.wids['e_total'].parent.pack_start(lab_total_servido)
         self.wids['e_total'].parent.pack_start(self.wids['e_total_servido'])
-        self.wids['e_total'].parent.show_all()
+        vbox = self.wids['e_total'].parent.parent
+        self.wids['grafica'] = gtkcairoplot.GtkCairoPlot(
+                gtkcairoplot.HORIZONTAL_BAR, [[1]])
+        vbox.pack_start(self.wids['grafica'])
+        self.wids['e_total'].parent.parent.show_all()
 
     def exportar(self, boton):
         """
@@ -171,6 +177,7 @@ class ConsultaPedidosCliente(Ventana):
         total = 0.0
         importetotal = 0.0
         importetotal_servido = 0.0
+        servido_por_producto = defaultdict(lambda: 0)
         for p in pedidos:
             vpro.set_valor(total / tot, "Buscando productos en pedidos..."
                                         "\n(ignorando servicios) [%d/%d]" % (
@@ -189,6 +196,7 @@ class ConsultaPedidosCliente(Ventana):
                 importetotal_servido += importe_ldv
                 cantidad_ldp = prods[producto]['pedido']
                 cantidad_ldv = prods[producto]['servido']
+                servido_por_producto[producto] += cantidad_ldv
                 model.append((p.cliente.nombre,
                               utils.str_fecha(p.fecha),
                               p.numpedido,
@@ -206,6 +214,20 @@ class ConsultaPedidosCliente(Ventana):
                 "%s €" % (utils.float2str(importetotal)))
         self.wids['e_total_servido'].set_text(
                 "%s €" % (utils.float2str(importetotal_servido)))
+        self.actualizar_grafica(servido_por_producto)
+
+    def actualizar_grafica(self, servido_por_producto):
+        # PORASQUI: TODO: Primero, que está mal empaquetada y no se ve nada 
+        # ni maximizando. Y segundo, que no actualiza la gráfica y el "render()"
+        # creo que no es el método a llamar.
+        labels = servido_por_producto.keys()[:]
+        labels.sort()
+        data = []
+        for p in labels:
+            data.append([servido_por_producto[p]])
+        labels = [l.descripcion for l in labels]
+        self.wids['grafica'].plt.x_labels = labels
+        self.wids['grafica'].plt.data = data
 
     def set_fecha(self, boton):
         """

@@ -98,7 +98,8 @@ class GtkCairoPlot(gtk.DrawingArea):
                                      self._data,
                                      self.width, self.height,
                                      x_labels = self._x_labels,
-                                     y_labels = self._y_labels)
+                                     y_labels = self._y_labels, 
+                                     display_values = True)
 
     def expose(self, widget, event):
         rect = self.get_allocation()
@@ -183,9 +184,11 @@ def build_test_window():
     data = [[1, 2, 3],      #  Uno █▅▂
             [4, 5, 6],      #  Dos ████▅▂
             [7, 8, 9]]      # Tres ███████▅▂
+    data = [[1], [2], [3]]
     tipo = HORIZONTAL_BAR
     #tipo = VERTICAL_BAR
     plot1 = GtkCairoPlot(tipo, data, y_labels = ["Uno", "Dos", "Tres"])
+                         #x_labels = ["0", "1", "2", "3"])
     box = gtk.VBox()
     box.pack_start(plot1)
     plot2 = create_cagraph_plot(tipo, data, y_labels = ["Uno", "Dos", "Tres"])
