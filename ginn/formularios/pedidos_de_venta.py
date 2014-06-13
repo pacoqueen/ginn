@@ -1424,8 +1424,13 @@ class PedidosDeVenta(Ventana):
                 if not a.get_facturas():
                     dic_pdte_albaranes[a] = True
             if not algo_pdte_frar():
-                self.objeto.cerrado = True
-                self.wids['cerrado'].set_active(self.objeto.cerrado)
+                # Aparte de todo, si el pedido no está validado significa que 
+                # todavía puede ampliarse, están preparando otra oferta que 
+                # agregarle, etc. No cierre auto si pdte. de validación para 
+                # permitir seguir operando con él.
+                if not self.objeto.validado:
+                    self.objeto.cerrado = True
+                    self.wids['cerrado'].set_active(self.objeto.cerrado)
         for producto in productos:
             pendiente = productos[producto]['pedido'] - productos[producto]['servido']
             if pendiente != 0:      # NOTA: Si es negativo TAMBIÉN LO QUIERO 

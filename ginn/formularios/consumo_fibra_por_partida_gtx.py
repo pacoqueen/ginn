@@ -27,21 +27,21 @@
 ## consumo_fibra_por_partida_gtx.py
 ###################################################################
 ## NOTAS:
-##  
+##
 ###################################################################
 ## Changelog:
 ## 6 de noviembre de 2006 -> Inicio
-## 
+##
 ###################################################################
-## NOTA: Es posible que incluya partidas gtx. de un día anterior o 
-## posterior al inicio o fin de rango, ya que lo que busca son 
-## partidas de carga y después muestra todas las partidas de 
+## NOTA: Es posible que incluya partidas gtx. de un día anterior o
+## posterior al inicio o fin de rango, ya que lo que busca son
+## partidas de carga y después muestra todas las partidas de
 ## geotextiles fabricadas. No mostrar una partida de gtx. fabricada
-## con una partida de carga por no entrar en el rango de fechas 
-## implicaría que en la suma final de "consumido" aparecería una 
-## diferencia grande respecto a "producido" (que lógicamente, es 
-## la cantidad de esa partida no incluida). Ver en código el 
-## criterio final adoptado: entran en fecha aquellas partidas de 
+## con una partida de carga por no entrar en el rango de fechas
+## implicaría que en la suma final de "consumido" aparecería una
+## diferencia grande respecto a "producido" (que lógicamente, es
+## la cantidad de esa partida no incluida). Ver en código el
+## criterio final adoptado: entran en fecha aquellas partidas de
 ## carga completamente consumidas antes de la fecha final.
 ###################################################################
 from ventana import Ventana
@@ -57,7 +57,7 @@ from lib.myprint import myprint
 from formularios.consulta_ventas_por_producto import act_fecha
 
 class ConsumoFibraPorPartidaGtx(Ventana):
-        
+
     def __init__(self, objeto = None, usuario = None):
         """
         Constructor. objeto puede ser un objeto de pclases con el que
@@ -66,24 +66,24 @@ class ConsumoFibraPorPartidaGtx(Ventana):
         """
         self.usuario = usuario
         self.partidas_carga = {}
-        Ventana.__init__(self, 'consumo_fibra_por_partida_gtx.glade', objeto, 
+        Ventana.__init__(self, 'consumo_fibra_por_partida_gtx.glade', objeto,
                          usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_buscar/clicked': self.buscar,
                        'b_imprimir/clicked': self.imprimir,
                        'b_fecha_inicio/clicked': self.set_inicio,
-                       'b_fecha_fin/clicked': self.set_fin, 
+                       'b_fecha_fin/clicked': self.set_fin,
                        'e_fechainicio/focus-out-event': act_fecha,
-                       'e_fechafin/focus-out-event': act_fecha, 
+                       'e_fechafin/focus-out-event': act_fecha,
                        'b_exportar/clicked': self.exportar}
         self.add_connections(connections)
         cols = (('Partida', 'gobject.TYPE_STRING', False, True, False, None),
-         ('kg consumidos', 'gobject.TYPE_STRING', False, False, False, None), 
+         ('kg consumidos', 'gobject.TYPE_STRING', False, False, False, None),
          ('kg prod. (real)', 'gobject.TYPE_STRING', False, False, False, None),
          ('kg prod. (teórico)', 'gobject.TYPE_STRING', False,False,False,None),
-         ('balas cons.', 'gobject.TYPE_STRING', False, False, False, None), 
-         ('rollos prod.', 'gobject.TYPE_STRING', False, False, False, None), 
-         ('m² producidos', 'gobject.TYPE_STRING', False, False, False, None), 
+         ('balas cons.', 'gobject.TYPE_STRING', False, False, False, None),
+         ('rollos prod.', 'gobject.TYPE_STRING', False, False, False, None),
+         ('m² producidos', 'gobject.TYPE_STRING', False, False, False, None),
          ('ID', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_treeview(self.wids['tv_datos'], cols)
         for col in self.wids['tv_datos'].get_columns()[1:]:
@@ -102,7 +102,7 @@ class ConsumoFibraPorPartidaGtx(Ventana):
         self.wids['rb_pesosin'].child.set_property("use-markup", True)
         self.wids['rb_pesosin'].set_active(True)
         gtk.main()
-    
+
     def exportar(self, boton):
         """
         Exporta el contenido del TreeView a un fichero csv.
@@ -114,12 +114,12 @@ class ConsumoFibraPorPartidaGtx(Ventana):
 
     def colorear(self, tv):
         """
-        Asocia una función al treeview para resaltar los partes pendientes 
+        Asocia una función al treeview para resaltar los partes pendientes
         de verificar.
         """
         def cell_func(column, cell, model, itr, numcol):
             """
-            Si la fila corresponde a un parte de producción no verificado, 
+            Si la fila corresponde a un parte de producción no verificado,
             lo colorea en rojo oscuro, si no, lo hace en verde oscuro.
             """
             consumido = model[itr][1]
@@ -159,21 +159,21 @@ class ConsumoFibraPorPartidaGtx(Ventana):
     def rellenar_tabla(self, partidas_carga):
         """
         Rellena el model con los items de la consulta.
-        partidas_carga es un diccionario... (mirar 
+        partidas_carga es un diccionario... (mirar
         abajo, en "buscar").
-        """        
+        """
         model = self.wids['tv_datos'].get_model()
         model.clear()
         datachart = []
         for pc in partidas_carga:
-            abuelo = model.append(None, 
-                      (pc.codigo, 
+            abuelo = model.append(None,
+                      (pc.codigo,
                        utils.float2str(partidas_carga[pc]['kilos_consumidos']),
                        utils.float2str(partidas_carga[pc]['kilos_producidos']),
-                       utils.float2str(partidas_carga[pc]['kilos_teoricos']), 
-                       str(partidas_carga[pc]['balas']), 
-                       str(partidas_carga[pc]['rollos']), 
-                       utils.float2str(partidas_carga[pc]['metros']), 
+                       utils.float2str(partidas_carga[pc]['kilos_teoricos']),
+                       str(partidas_carga[pc]['balas']),
+                       str(partidas_carga[pc]['rollos']),
+                       utils.float2str(partidas_carga[pc]['metros']),
                        pc.id))
             # Actualizo totales conforme relleno el _model_
             pcpc = partidas_carga[pc]
@@ -184,46 +184,46 @@ class ConsumoFibraPorPartidaGtx(Ventana):
             self.totales['e_total_rollos_producidos'] += pcpc['rollos']
             self.totales['e_total_m2_producidos'] += pcpc['metros']
             # Y sigo con el gráfico y tal
-            datachart.append([pc.codigo, 
+            datachart.append([pc.codigo,
                               partidas_carga[pc]['kilos_consumidos']])
-            padre = model.append(abuelo, 
-                                 ("Partidas de geotextiles producidas", 
-                                  '', 
-                                  '', 
-                                  '', 
-                                  '', 
-                                  '', 
-                                  '', 
+            padre = model.append(abuelo,
+                                 ("Partidas de geotextiles producidas",
+                                  '',
+                                  '',
+                                  '',
+                                  '',
+                                  '',
+                                  '',
                                   ''))
             for pgtx in partidas_carga[pc]['partidas']:
-                model.append(padre, 
-                             ("%s: %s" % (pgtx['código'], pgtx['producto']), 
-                              "", 
-                              utils.float2str(pgtx['kilos']), 
-                              utils.float2str(pgtx['kilos_teoricos']), 
-                              "", 
-                              str(pgtx['rollos']), 
+                model.append(padre,
+                             ("%s: %s" % (pgtx['código'], pgtx['producto']),
+                              "",
+                              utils.float2str(pgtx['kilos']),
+                              utils.float2str(pgtx['kilos_teoricos']),
+                              "",
+                              str(pgtx['rollos']),
                               utils.float2str(pgtx['metros']),
                               ''))
-            padre = model.append(abuelo, 
-                                 ("Lotes de fibra consumidos", 
-                                  '', 
-                                  '', 
-                                  '', 
-                                  '', 
-                                  '', 
-                                  '', 
+            padre = model.append(abuelo,
+                                 ("Lotes de fibra consumidos",
+                                  '',
+                                  '',
+                                  '',
+                                  '',
+                                  '',
+                                  '',
                                   ''))
             for lote in partidas_carga[pc]['lotes']:
-                model.append(padre, 
-                             ("%s: %s" % (lote['código'], lote['producto']), 
-                              utils.float2str(lote['kilos']), 
-                              '', 
-                              '',  
-                              str(lote['balas']), 
-                              '', 
-                              '', 
-                              '',  
+                model.append(padre,
+                             ("%s: %s" % (lote['código'], lote['producto']),
+                              utils.float2str(lote['kilos']),
+                              '',
+                              '',
+                              str(lote['balas']),
+                              '',
+                              '',
+                              '',
                               ))
         # Y ahora la gráfica.
         from lib import charting
@@ -235,8 +235,8 @@ class ConsumoFibraPorPartidaGtx(Ventana):
             else:
                 chart = charting.Chart()
                 self.wids['eventbox_chart'].add(chart)
-            datachart.sort(lambda fila1, fila2: (fila1[0] < fila2[0] and -1) 
-                                                or (fila1[0] > fila2[0] and 1) 
+            datachart.sort(lambda fila1, fila2: (fila1[0] < fila2[0] and -1)
+                                                or (fila1[0] > fila2[0] and 1)
                                                 or 0)
             for data in datachart:
                 data.append(6)  # Barras de color rojo.
@@ -247,20 +247,20 @@ class ConsumoFibraPorPartidaGtx(Ventana):
                   "Error al dibujar gráfica (charting): %s" % msg
             myprint(txt)
             self.logger.error(txt)
-        
+
     def set_inicio(self, boton):
         temp = utils.mostrar_calendario(
-                fecha_defecto = self.wids['e_fechainicio'].get_text(), 
+                fecha_defecto = self.wids['e_fechainicio'].get_text(),
                 padre = self.wids['ventana'])
         self.wids['e_fechainicio'].set_text(utils.str_fecha(temp))
-        self.inicio = utils.parse_fecha(self.wids['e_fechainicio'].get_text()) 
+        self.inicio = utils.parse_fecha(self.wids['e_fechainicio'].get_text())
 
     def set_fin(self, boton):
         temp = utils.mostrar_calendario(
-                fecha_defecto = self.wids['e_fechafin'].get_text(), 
+                fecha_defecto = self.wids['e_fechafin'].get_text(),
                 padre = self.wids['ventana'])
         self.wids['e_fechafin'].set_text(utils.str_fecha(temp))
-        self.fin = utils.parse_fecha(self.wids['e_fechafin'].get_text()) 
+        self.fin = utils.parse_fecha(self.wids['e_fechafin'].get_text())
 
     def por_fecha(self, e1, e2):
         """
@@ -272,45 +272,45 @@ class ConsumoFibraPorPartidaGtx(Ventana):
             return 1
         else:
             return 0
-        
+
     def buscar(self, boton):
         """
-        Dadas fecha de inicio y de fin, busca los partes de 
+        Dadas fecha de inicio y de fin, busca los partes de
         producción de geotextiles entre esas fechas.
-        Para cada parte de producción extrae las partidas de 
-        geotextiles fabricadas y las agrupa por partida de 
+        Para cada parte de producción extrae las partidas de
+        geotextiles fabricadas y las agrupa por partida de
         carga.
-        Finalmente, de cada partida de carga cuenta los kilogramos 
+        Finalmente, de cada partida de carga cuenta los kilogramos
         de fibra y número de balas en ella. También divide las balas
         por lotes y cuenta los kg y bultos de cada lote que ha entrado
         en cada carga de cuarto.
-        OJO: El criterio finalmente queda: en cada mes se cuenta el 
-        consumo y la producción de las partidas cuyas partidas de carga 
-        hayan sido terminadas. Una partida que comienza en un fin de 
-        mes (por ejemplo) y acaba en el mes siguiente (cualquier fecha, en 
-        general) cuenta para el mes siguiente. Esto es así porque hay que 
-        tomar las partidas de carga como una unidad, como un todo, si se 
-        quiere discernir bien los kg producidos y consumidos, ya que no hay 
-        relación directa entre rollo y bala consumida (se pierde definición 
+        OJO: El criterio finalmente queda: en cada mes se cuenta el
+        consumo y la producción de las partidas cuyas partidas de carga
+        hayan sido terminadas. Una partida que comienza en un fin de
+        mes (por ejemplo) y acaba en el mes siguiente (cualquier fecha, en
+        general) cuenta para el mes siguiente. Esto es así porque hay que
+        tomar las partidas de carga como una unidad, como un todo, si se
+        quiere discernir bien los kg producidos y consumidos, ya que no hay
+        relación directa entre rollo y bala consumida (se pierde definición
         al haber una tabla de una relación muchos a muchos entre medio).
         """
-        self.inicio = utils.parse_fecha(self.wids['e_fechainicio'].get_text()) 
-        self.fin = utils.parse_fecha(self.wids['e_fechafin'].get_text()) 
-        self.totales = {'e_total_kg_consumidos': 0.0, 
-                        'e_total_kg_prod_real': 0.0, 
-                        'e_total_kg_prod_teorico': 0.0, 
-                        'e_total_balas_consumidas': 0, 
-                        'e_total_rollos_producidos': 0, 
+        self.inicio = utils.parse_fecha(self.wids['e_fechainicio'].get_text())
+        self.fin = utils.parse_fecha(self.wids['e_fechafin'].get_text())
+        self.totales = {'e_total_kg_consumidos': 0.0,
+                        'e_total_kg_prod_real': 0.0,
+                        'e_total_kg_prod_teorico': 0.0,
+                        'e_total_balas_consumidas': 0,
+                        'e_total_rollos_producidos': 0,
                         'e_total_m2_producidos': 0.0}
         PDP = pclases.ParteDeProduccion
         if not self.inicio:
-            pdps = PDP.select(""" fecha < '%s' 
+            pdps = PDP.select(""" fecha < '%s'
                     AND observaciones NOT LIKE '%%;%%;%%;%%;%%;%%' """ % (
                         self.fin.strftime('%Y-%m-%d')))
         else:
-            pdps = PDP.select(""" fecha >= '%s' AND fecha < '%s' 
+            pdps = PDP.select(""" fecha >= '%s' AND fecha < '%s'
                     AND observaciones NOT LIKE '%%;%%;%%;%%;%%;%%' """ % (
-                        self.inicio.strftime('%Y-%m-%d'), 
+                        self.inicio.strftime('%Y-%m-%d'),
                         self.fin.strftime('%Y-%m-%d')))
         vpro = ventana_progreso.VentanaProgreso(padre = self.wids['ventana'])
         tot = pdps.count()
@@ -354,20 +354,20 @@ class ConsumoFibraPorPartidaGtx(Ventana):
                                 partida.get_info())
                         myprint(txt)
                         self.logger.error("%s%s" % (
-                            self.usuario and self.usuario.usuario + ": " 
+                            self.usuario and self.usuario.usuario + ": "
                             or "", txt))
                     else:
-                        if partida_carga not in partidas_carga: # Aquí ya se 
-                        # asegura que no se contará dos veces la misma 
+                        if partida_carga not in partidas_carga: # Aquí ya se
+                        # asegura que no se contará dos veces la misma
                         # bala -partida de carga-.
                             partidas_carga[partida_carga] = {
-                                'partidas': [], 
-                                'lotes': [], 
-                                'kilos_consumidos': 0.0, 
-                                'balas': 0, 
-                                'kilos_producidos': 0.0, 
-                                'kilos_teoricos': 0.0, 
-                                'rollos': 0, 
+                                'partidas': [],
+                                'lotes': [],
+                                'kilos_consumidos': 0.0,
+                                'balas': 0,
+                                'kilos_producidos': 0.0,
+                                'kilos_teoricos': 0.0,
+                                'rollos': 0,
                                 'metros': 0.0, }
                             for partida in partida_carga.partidas:
                                 if metodo == PESOSIN:
@@ -392,13 +392,13 @@ class ConsumoFibraPorPartidaGtx(Ventana):
                                 producto = partida.get_producto()
                                 partidas_carga[partida_carga]\
                                   ['partidas'].append(
-                                    {'código': partida.codigo, 
-                                     'kilos': kilos_producidos, 
-                                     'kilos_teoricos': kilos_teoricos, 
-                                     'metros': metros_producidos, 
-                                     'rollos': len(partida.rollos), 
-                                     'producto': producto 
-                                                    and producto.descripcion 
+                                    {'código': partida.codigo,
+                                     'kilos': kilos_producidos,
+                                     'kilos_teoricos': kilos_teoricos,
+                                     'metros': metros_producidos,
+                                     'rollos': len(partida.rollos),
+                                     'producto': producto
+                                                    and producto.descripcion
                                                     or "SIN PRODUCCIÓN"
                                      })
                                 partidas_carga[partida_carga]\
@@ -412,19 +412,19 @@ class ConsumoFibraPorPartidaGtx(Ventana):
                             lotes = partida_carga.get_lotes()
                             for lote in lotes:
                                 balas = pclases.Bala.select(pclases.AND(
-                                    pclases.Bala.q.loteID == lote.id, 
-                                    pclases.Bala.q.partidaCargaID 
+                                    pclases.Bala.q.loteID == lote.id,
+                                    pclases.Bala.q.partidaCargaID
                                         == partida_carga.id))
                                 kilos_consumidos = sum(
                                     [b.pesobala for b in balas])
                                 partidas_carga[partida_carga]['lotes'].append(
-                                 {'código': lote.codigo, 
-                                  'kilos': kilos_consumidos, 
-                                  'balas': balas.count(), 
-                                  'producto': 
+                                 {'código': lote.codigo,
+                                  'kilos': kilos_consumidos,
+                                  'balas': balas.count(),
+                                  'producto':
                                    balas[0].articulo.productoVenta.descripcion
                                   })
-                                    # NOTA: el get_lotes() ya asegura que al 
+                                    # NOTA: el get_lotes() ya asegura que al
                                     # menos hay una bala en la consulta "balas"
                                 partidas_carga[partida_carga]\
                                     ['kilos_consumidos'] += kilos_consumidos
@@ -438,7 +438,7 @@ class ConsumoFibraPorPartidaGtx(Ventana):
 
     def rellenar_totales(self):
         for k in self.totales:
-            self.wids[k].set_text(utils.float2str(self.totales[k], 
+            self.wids[k].set_text(utils.float2str(self.totales[k],
                                                   autodec = True))
 
     def imprimir(self, boton):
@@ -476,13 +476,13 @@ class ConsumoFibraPorPartidaGtx(Ventana):
             claves = partidas_carga.keys()
             claves.sort(cmp_codigo)
             for pc in claves:
-                datos.append((pc.codigo, 
-                              utils.float2str(partidas_carga[pc]['kilos_consumidos']), 
-                              utils.float2str(partidas_carga[pc]['kilos_producidos']), 
-                              utils.float2str(partidas_carga[pc]['kilos_teoricos']), 
-                              str(partidas_carga[pc]['balas']), 
-                              str(partidas_carga[pc]['rollos']), 
-                              utils.float2str(partidas_carga[pc]['metros']), 
+                datos.append((pc.codigo,
+                              utils.float2str(partidas_carga[pc]['kilos_consumidos']),
+                              utils.float2str(partidas_carga[pc]['kilos_producidos']),
+                              utils.float2str(partidas_carga[pc]['kilos_teoricos']),
+                              str(partidas_carga[pc]['balas']),
+                              str(partidas_carga[pc]['rollos']),
+                              utils.float2str(partidas_carga[pc]['metros']),
                              ))
                 total_kilos_producidos += partidas_carga[pc]['kilos_producidos']
                 total_kilos_teoricos += partidas_carga[pc]['kilos_teoricos']
@@ -492,39 +492,39 @@ class ConsumoFibraPorPartidaGtx(Ventana):
                 total_rollos_producidos += partidas_carga[pc]['rollos']
                 padre = datos.append(("     >>> Lotes de fibra consumidos", '', '', '', '', '', ''))  # @UnusedVariable
                 for lote in partidas_carga[pc]['lotes']:
-                    datos.append(("               %s: %s" % (lote['código'], lote['producto']), 
-                                  utils.float2str(lote['kilos']), 
-                                  '',  
-                                  '',  
-                                  str(lote['balas']), 
-                                  '', 
-                                  '', 
+                    datos.append(("               %s: %s" % (lote['código'], lote['producto']),
+                                  utils.float2str(lote['kilos']),
+                                  '',
+                                  '',
+                                  str(lote['balas']),
+                                  '',
+                                  '',
                                  ))
                 padre = datos.append(("     >>> Partidas de geotextiles producidas:", '', '', '', '', '', ''))  # @UnusedVariable
                 for pgtx in partidas_carga[pc]['partidas']:
-                    datos.append(("               %s: %s" % (pgtx['código'], pgtx['producto']), 
-                                  "", 
-                                  utils.float2str(pgtx['kilos']), 
-                                  utils.float2str(pgtx['kilos_teoricos']), 
-                                  "", 
-                                  str(pgtx['rollos']), 
+                    datos.append(("               %s: %s" % (pgtx['código'], pgtx['producto']),
+                                  "",
+                                  utils.float2str(pgtx['kilos']),
+                                  utils.float2str(pgtx['kilos_teoricos']),
+                                  "",
+                                  str(pgtx['rollos']),
                                   utils.float2str(pgtx['metros']),
                                  ))
                 datos.append(("---", ) * 7)
             datos.append(("", ) * 7)
             datos.append(("===", ) * 7)
-            datos.append(("     TOTALES: ", 
-                          utils.float2str(total_kilos_consumidos), 
-                          utils.float2str(total_kilos_producidos), 
-                          utils.float2str(total_kilos_teoricos), 
-                          str(total_balas_consumidas), 
-                          str(total_rollos_producidos), 
+            datos.append(("     TOTALES: ",
+                          utils.float2str(total_kilos_consumidos),
+                          utils.float2str(total_kilos_producidos),
+                          utils.float2str(total_kilos_teoricos),
+                          str(total_balas_consumidas),
+                          str(total_rollos_producidos),
                           utils.float2str(total_metros_producidos)
                          ))
             datos.append(("", "", "", "", "", "", ""))
             datos.append(("", "", "", "", "", "", ""))
 
-            if (self.inicio) == None: 
+            if (self.inicio) == None:
                 fechaInforme = 'Hasta '+utils.str_fecha(self.fin)
             else:
                 fechaInforme = "%s - %s" % (utils.str_fecha(self.inicio), utils.str_fecha(self.fin))
@@ -533,5 +533,5 @@ class ConsumoFibraPorPartidaGtx(Ventana):
 
 
 if __name__ == '__main__':
-    t = ConsumoFibraPorPartidaGtx() 
+    t = ConsumoFibraPorPartidaGtx()
 

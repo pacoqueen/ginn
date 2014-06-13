@@ -21,8 +21,15 @@
 # along with GeotexInn; if not, write to the Free Software                    #
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA  #
 ###############################################################################
-# Mapamundi en un Widget usando Cairo (pygal)
+# Clase para empotrar gráficos hechos con Cairo en un widget Gtk
 ###############################################################################
+
+# TODO: De momento funciona para barras verticales y horizontales con CairoPlot
+# Tengo a medio hacer la adaptación de cagraph, que es más potente pero igual 
+# de mal documentado que CairoPlot; aunque más compleja a la hora de crear 
+# las gráficas.
+# Al final me quedé con las ganas de https://networkx.github.io/ porque 
+# depende de matplotlib, que es enorme y no se instala por defecto.
 
 try:
     import gtk
@@ -49,7 +56,7 @@ from cagraph.cagraph.axis.yaxis import CaGraphYAxis
 from cagraph.cagraph.axis.taxis import CaGraphTAxis
 from cagraph.cagraph.ca_graph_grid import CaGraphGrid
 from cagraph.cagraph.series.line import CaGraphSeriesLine
-from cagraph.cagraph.series.bar import CaGraphSeriesBar
+from cagraph.cagraph.series.hbar import CaGraphSeriesHBar
 from cagraph.cagraph.series.area import CaGraphSeriesArea
 
 
@@ -67,12 +74,14 @@ class GtkCairoPlot(gtk.DrawingArea):
     """
     Widget que incluye un gráfico de CairoPlot en él.
     """
-    def __init__(self, tipo, data = []):
+    def __init__(self, tipo, data = [], x_labels = [], y_labels = []):
         super(GtkCairoPlot, self).__init__()
         self._constructor = self._get_func(tipo)
         self._data = data
+        self._x_labels = x_labels
+        self._y_labels = y_labels
         self.connect("expose_event", self.expose)
-        self.width = -1 
+        self.width = -1
         self.height = -1
         self.set_size_request(self.width, self.height)
         self._prepare_plot()
@@ -81,13 +90,15 @@ class GtkCairoPlot(gtk.DrawingArea):
         """
         Crea el objeto CairoPlot con los datos del atributo _data.
         """
-        # Es simplemente para crear el objeto. Después se reemplazará por 
+        # Es simplemente para crear el objeto. Después se reemplazará por
         # el surface del DrawingArea en el expose.
         tempsurface = cairo.SVGSurface(None, self.width, self.height)
         # TODO: OJO porque la interfaz cambia. Esto solo vale para los bar_plot
-        self.plt = self._constructor(tempsurface, 
-                                     self._data, 
-                                     self.width, self.height)
+        self.plt = self._constructor(tempsurface,
+                                     self._data,
+                                     self.width, self.height,
+                                     x_labels = self._x_labels,
+                                     y_labels = self._y_labels)
 
     def expose(self, widget, event):
         rect = self.get_allocation()
@@ -103,7 +114,7 @@ class GtkCairoPlot(gtk.DrawingArea):
 
     def render_plot(self):
         """
-        Invoca la función encargada de generar el gráfico de CairoPlot en el 
+        Invoca la función encargada de generar el gráfico de CairoPlot en el
         surface de Cairo.
         """
         self.plt.render()
@@ -133,11 +144,10 @@ class GtkCairoPlot(gtk.DrawingArea):
         else:
             raise ValueError, "tipo no reconocido. Consulte gtkcairoplot.py"
         return func
-            
 
 ###############################################################################
 
-def create_cagraph_plot():
+def create_cagraph_plot(tipo, data, x_labels = [], y_labels = []):
     graph = CaGraph()
     # create and add axiss to graph
     xaxis = CaGraphXAxis(graph)
@@ -145,17 +155,19 @@ def create_cagraph_plot():
     graph.axiss.append(xaxis)
     graph.axiss.append(yaxis)
     # create and add series to graph
-    graph.seriess.append(CaGraphSeriesLine(graph, 0, 1))
-    graph.seriess.append(CaGraphSeriesBar(graph, 0, 1))
+    #graph.seriess.append(CaGraphSeriesLine(graph, 0, 1))
+    graph.seriess.append(CaGraphSeriesHBar(graph, 0, 1))
+    # En cagraph los valores se reciben siempre como pares x, y. Como solo 
+    # recibo valores, en este caso x, completo con el y para que vayan en el 
+    # orden de arriba a abajo según lo recibo.
+    _data = []
+    y = len(data[0]) * len(data)
+    for barraset in data:
+        for valor in barraset:
+            _data.append((valor, y))
+            y -= 1
     # add data to seriess
-    graph.seriess[0].data = [(10.0, 52.0), (20.0, 70.0),
-                             (30.0, 53.0), (40.0, 38),
-                             (50.0, 75.0), (60.0, 85.0),
-                             (70.0, 65.0)]
-    graph.seriess[1].data = [(10.0, 42.0), (20.0, 50.0),
-                             (30.0, 63.0), (40.0, 68),
-                             (50.0, 75.0), (60.0, 95.0),
-                             (70.0, 65.0)]
+    graph.seriess[0].data = _data
     # automaticaly set axis ranges
     graph.auto_set_range()
     return graph
@@ -168,18 +180,24 @@ def build_test_window():
     win = gtk.Window()
     win.set_position(gtk.WIN_POS_CENTER)
     win.connect('delete-event', gtk.main_quit)
-    data = [[1,2,3],[4,5,6],[7,8,9]] 
+    data = [[1, 2, 3],      #  Uno █▅▂
+            [4, 5, 6],      #  Dos ████▅▂
+            [7, 8, 9]]      # Tres ███████▅▂
     tipo = HORIZONTAL_BAR
-    #plot = GtkCairoPlot(tipo, data)
-    plot = create_cagraph_plot()
-    win.add(plot)
-    return win, plot
+    #tipo = VERTICAL_BAR
+    plot1 = GtkCairoPlot(tipo, data, y_labels = ["Uno", "Dos", "Tres"])
+    box = gtk.VBox()
+    box.pack_start(plot1)
+    plot2 = create_cagraph_plot(tipo, data, y_labels = ["Uno", "Dos", "Tres"])
+    box.pack_start(plot2)
+    win.add(box)
+    return win, plot1, plot2
 
 def main():
     """
     Prueba rápida de que funciona.
     """
-    wintest, plot = build_test_window()
+    wintest, plot1, plot2 = build_test_window()
     wintest.show_all()
     gtk.main()
 

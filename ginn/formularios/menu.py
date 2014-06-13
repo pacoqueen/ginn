@@ -68,7 +68,7 @@ from framework.configuracion import ConfigConexion, parse_params
 from formularios import custom_widgets
 from formularios.ventana import install_bug_hook, abrir_gajim
 
-__version__ = '5.7.2'
+__version__ = '5.7.3'
 __version_info__ = tuple(
     [int(num) for num in __version__.split()[0].split('.')] + 
     [txt.replace("(", "").replace(")", "") for txt in __version__.split()[1:]]
