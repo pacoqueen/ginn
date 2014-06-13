@@ -48,6 +48,10 @@ from informes import geninformes
 from formularios.consulta_existenciasBolsas import act_fecha
 import datetime
 
+# TODO: Añadir un Gtk.CairoPlot para ver los totales por producto. Para eso 
+# antes tendré que adaptar la clase a cagraph o usar los parámetros de 
+# cairoplot para, al menos, mostrar los valores.
+
 class ConsultaPedidosCliente(Ventana):
     """
     Clase que contiene la ventana y los resultados de la consulta.
