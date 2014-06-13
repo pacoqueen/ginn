@@ -265,7 +265,8 @@ class ConsultaPedidosCliente(Ventana):
                             + utils.str_fecha(self.fin))
         abrir_pdf(treeview2pdf(self.wids['tv_datos'], 
                                titulo = "Pedidos por cliente", 
-                               fecha = fecha_informe))
+                               fecha = fecha_informe, 
+                               numcols_a_totalizar = [6, 7]))
 
 
 if __name__ == '__main__':
