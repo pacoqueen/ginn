@@ -1399,8 +1399,9 @@ class Presupuestos(Ventana, VentanaGenerica):
         hbox.pack_start(b_ayuda, expand = False)
         vbox.add(hbox)
         vbox.show_all()
-        if self.usuario and self.usuario.nivel > 1:
+        if self.usuario and self.usuario.nivel > 2:
             # De momento solo activo para admin y gerencia
+            # [16/06/2014] Subo un nivel más para ver efectividad real.
             self.wids['rating'].set_property("visible", False)
             b_ayuda.set_property("visible", False)
 

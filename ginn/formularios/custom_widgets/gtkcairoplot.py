@@ -25,16 +25,14 @@
 ###############################################################################
 
 # TODO: De momento funciona para barras verticales y horizontales con CairoPlot
-# Tengo a medio hacer la adaptación de cagraph, que es más potente pero igual 
-# de mal documentado que CairoPlot; aunque más compleja a la hora de crear 
+# Tengo a medio hacer la adaptación de cagraph, que es más potente pero igual
+# de mal documentado que CairoPlot; aunque más compleja a la hora de crear
 # las gráficas.
-# Al final me quedé con las ganas de https://networkx.github.io/ porque 
+# Al final me quedé con las ganas de https://networkx.github.io/ porque
 # depende de matplotlib, que es enorme y no se instala por defecto.
 
 try:
     import gtk
-    import gobject
-    from gtk import gdk
     import cairo
 except:
     raise SystemExit
@@ -44,9 +42,9 @@ if gtk.pygtk_version < (2, 0):
     raise SystemExit
 
 import sys, os
-libdir = os.path.abspath(os.path.join(
+LIBDIR = os.path.abspath(os.path.join(
     os.path.dirname(__file__), "..", "..", "lib"))
-sys.path.append(libdir)
+sys.path.append(LIBDIR)
 from cairoplot import cairoplot
 
 # Pruebas con cagraph
@@ -60,46 +58,56 @@ from cagraph.cagraph.series.hbar import CaGraphSeriesHBar
 from cagraph.cagraph.series.area import CaGraphSeriesArea
 
 
-(HORIZONTAL_BAR,    # 0
- VERTICAL_BAR,      # 1
- DONUT,             # 2
- PIE,               # 3
- DOT,               # 4
- FUNCTION,          # 5
- SCATTER,           # 6
- GANTT              # 7
-) = range(8)
+(HORIZONTAL,    # 0
+ VERTICAL,      # 1
+ TARTA,         # 2
+ GRAFO          # 3
+) = range(4)
 
 class GtkCairoPlot(gtk.DrawingArea):
     """
     Widget que incluye un gráfico de CairoPlot en él.
     """
-    def __init__(self, tipo, data = [], x_labels = [], y_labels = []):
+    def __init__(self, tipo, data = {}):
+        """
+        Recibe un tipo de gráfica a representar en «tipo».
+        En «data» recibe un diccionario con las etiquetas de los valores como
+        claves y los valores en series (listas o tuplas) de cada etiqueta.
+        """
         super(GtkCairoPlot, self).__init__()
-        self._constructor = self._get_func(tipo)
+        self._tipo = tipo
         self._data = data
-        self._x_labels = x_labels
-        self._y_labels = y_labels
+        self._labels = data.keys()
+        self._labels.sort()
+        self.plt = self._prepare_plot()
         self.connect("expose_event", self.expose)
         self.width = -1
         self.height = -1
         self.set_size_request(self.width, self.height)
-        self._prepare_plot()
 
     def _prepare_plot(self):
         """
-        Crea el objeto CairoPlot con los datos del atributo _data.
+        Crea el objeto de la biblioteca que corresponda según el tipo.
         """
-        # Es simplemente para crear el objeto. Después se reemplazará por
-        # el surface del DrawingArea en el expose.
-        tempsurface = cairo.SVGSurface(None, self.width, self.height)
-        # TODO: OJO porque la interfaz cambia. Esto solo vale para los bar_plot
-        self.plt = self._constructor(tempsurface,
+        if self._tipo == HORIZONTAL:
+            raise NotImplementedError("gtkcairoplot: todavía no implementado.")
+        elif self._tipo == VERTICAL:
+            raise NotImplementedError("gtkcairoplot: todavía no implementado.")
+        elif self._tipo == TARTA:
+            # Es simplemente para crear el objeto. Después se reemplazará por
+            # el surface del DrawingArea en el expose.
+            tempsurface = cairo.SVGSurface(None, self.width, self.height)
+            plot = self._constructor(tempsurface,
                                      self._data,
                                      self.width, self.height,
                                      x_labels = self._x_labels,
                                      y_labels = self._y_labels, 
                                      display_values = True)
+        elif self._tipo == GRAFO:
+            raise NotImplementedError("gtkcairoplot: todavía no implementado.")
+        else:
+            raise ValueError("gtkcairoplot: tipo no reconocido.")
+        return plot
 
     def expose(self, widget, event):
         rect = self.get_allocation()
@@ -181,17 +189,13 @@ def build_test_window():
     win = gtk.Window()
     win.set_position(gtk.WIN_POS_CENTER)
     win.connect('delete-event', gtk.main_quit)
-    data = [[1, 2, 3],      #  Uno █▅▂
-            [4, 5, 6],      #  Dos ████▅▂
-            [7, 8, 9]]      # Tres ███████▅▂
-    data = [[1], [2], [3]]
-    tipo = HORIZONTAL_BAR
-    #tipo = VERTICAL_BAR
-    plot1 = GtkCairoPlot(tipo, data, y_labels = ["Uno", "Dos", "Tres"])
-                         #x_labels = ["0", "1", "2", "3"])
+    data = {"Uno":  [1, 2, 3],  #  Uno █▅▂
+            "Dos":  [4, 5, 6],  #  Dos ████▅▂
+            "Tres": [7, 8, 9]}  # Tres ███████▅▂
+    plot1 = GtkCairoPlot(HORIZONTAL, data)
     box = gtk.VBox()
     box.pack_start(plot1)
-    plot2 = create_cagraph_plot(tipo, data, y_labels = ["Uno", "Dos", "Tres"])
+    plot2 = GtkCairoPlot(TARTA, data)
     box.pack_start(plot2)
     win.add(box)
     return win, plot1, plot2

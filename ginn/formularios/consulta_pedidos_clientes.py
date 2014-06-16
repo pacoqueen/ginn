@@ -219,7 +219,7 @@ class ConsultaPedidosCliente(Ventana):
     def actualizar_grafica(self, servido_por_producto):
         # PORASQUI: TODO: Primero, que está mal empaquetada y no se ve nada 
         # ni maximizando. Y segundo, que no actualiza la gráfica y el "render()"
-        # creo que no es el método a llamar.
+        # creo que no es el método a llamar. Y el .render_plot peta.
         labels = servido_por_producto.keys()[:]
         labels.sort()
         data = []
@@ -228,6 +228,7 @@ class ConsultaPedidosCliente(Ventana):
         labels = [l.descripcion for l in labels]
         self.wids['grafica'].plt.x_labels = labels
         self.wids['grafica'].plt.data = data
+        self.wids['grafica'].render_plot()
 
     def set_fecha(self, boton):
         """

@@ -1232,8 +1232,9 @@ class Clientes(Ventana):
         b_ayuda.connect("clicked", show_hint)
         tabla.attach(b_ayuda, 2, 3, f, f + 1, gtk.SHRINK, gtk.SHRINK)
         tabla.show_all()
-        if self.usuario and self.usuario.nivel > 1:
-            # De momento solo activo para admin y gerencia
+        if self.usuario and self.usuario.nivel > 2:
+            # De momento solo activo para admin y gerencia.
+            # [16/06/2014] Subo un nivel más para ver si es realmente fiable.
             self.wids['rating'].set_property("visible", False)
             b_ayuda.set_property("visible", False)
             l_rating.set_property("visible", False)
