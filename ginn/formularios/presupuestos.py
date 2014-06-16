@@ -27,11 +27,11 @@
 ## presupuestos.py - Ofertas de precios a clientes.
 ###################################################################
 ## NOTAS:
-##  
+##
 ## ----------------------------------------------------------------
 ###################################################################
 ## Changelog:
-## 15 de marzo de 2007 -> Inicio 
+## 15 de marzo de 2007 -> Inicio
 ## 26 de agosto de 2013 -> A brand new version
 ###################################################################
 
@@ -41,7 +41,7 @@ import pygtk
 pygtk.require('2.0')
 import gtk, mx.DateTime
 from framework import pclases
-from framework.seeker import VentanaGenerica 
+from framework.seeker import VentanaGenerica
 from formularios.ventana_progreso import VentanaActividad
 from formularios.ventana_progreso import VentanaProgreso
 import gobject
@@ -54,13 +54,13 @@ import time
 from formularios.utils import enviar_correoe
 
 NIVEL_VALIDACION = 1
-CONDICIONES_DURAS = (pclases.PLAZO_EXCESIVO, 
-                     pclases.SIN_FORMA_DE_PAGO, 
-                     pclases.PRECIO_INSUFICIENTE, 
-                     pclases.COND_PARTICULARES, 
+CONDICIONES_DURAS = (pclases.PLAZO_EXCESIVO,
+                     pclases.SIN_FORMA_DE_PAGO,
+                     pclases.PRECIO_INSUFICIENTE,
+                     pclases.COND_PARTICULARES,
                      pclases.COMERCIALIZADO)
 CONDICIONES_BLANDAS = (pclases.NO_VALIDABLE,    # @UnusedVariable
-                       pclases.CLIENTE_DEUDOR, 
+                       pclases.CLIENTE_DEUDOR,
                        pclases.SIN_CIF)
 
 class Presupuestos(Ventana, VentanaGenerica):
@@ -72,81 +72,81 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         self.usuario = usuario
         self.clase = pclases.Presupuesto
-        self.dic_campos = {"comercialID": "cb_comercial", 
-                           "fecha": "e_fecha", 
-                           "adjudicada": "ch_adjudicada", 
-                           "clienteID": "cbe_cliente", 
-                           "cif": "e_cif", 
-                           "direccion": "e_direccion", 
-                           "cp": "e_cp", 
-                           "ciudad": "e_ciudad", 
-                           "provincia": "e_provincia", 
-                           "pais": "e_pais", 
-                           "telefono": "e_telefono", 
-                           "email": "e_email", 
-                           "obraID": "cbe_obra", 
-                           "formaDePagoID": "cb_forma_cobro", 
-                           "texto": "txt_condiciones", 
-                           "observaciones": "txt_observaciones", 
-                           "estudio": "rb_estudio", 
-                           "personaContacto": "e_persona_contacto", 
-                           'cerrado': "ch_cerrado", 
-                           "rechazado": "ch_denegado", 
-                           "motivo": "e_motivo", 
+        self.dic_campos = {"comercialID": "cb_comercial",
+                           "fecha": "e_fecha",
+                           "adjudicada": "ch_adjudicada",
+                           "clienteID": "cbe_cliente",
+                           "cif": "e_cif",
+                           "direccion": "e_direccion",
+                           "cp": "e_cp",
+                           "ciudad": "e_ciudad",
+                           "provincia": "e_provincia",
+                           "pais": "e_pais",
+                           "telefono": "e_telefono",
+                           "email": "e_email",
+                           "obraID": "cbe_obra",
+                           "formaDePagoID": "cb_forma_cobro",
+                           "texto": "txt_condiciones",
+                           "observaciones": "txt_observaciones",
+                           "estudio": "rb_estudio",
+                           "personaContacto": "e_persona_contacto",
+                           'cerrado': "ch_cerrado",
+                           "rechazado": "ch_denegado",
+                           "motivo": "e_motivo",
                            # Ficha de solicitud de crédito:
-                           "credUte": "e_cred_ute", 
-                           "credLicitador": "e_cred_licitador", 
-                           "credDirfiscal": "e_cred_dirfiscal", 
-                           "credCpfiscal": "e_cred_cpfiscal", 
-                           "credTelefonofiscal": "e_cred_telefonofiscal", 
-                           "credContactofiscal": "e_cred_contactofiscal", 
-                           "credPoblacionfiscal": "e_cred_poblacionfiscal", 
-                           "credFaxfiscal": "e_cred_faxfiscal", 
-                           "credProvinciafiscal": "e_cred_provinciafiscal", 
-                           "credEmailfiscal": "e_cred_emailfiscal", 
-                           "credMovilfiscal": "e_cred_movilfiscal", 
+                           "credUte": "e_cred_ute",
+                           "credLicitador": "e_cred_licitador",
+                           "credDirfiscal": "e_cred_dirfiscal",
+                           "credCpfiscal": "e_cred_cpfiscal",
+                           "credTelefonofiscal": "e_cred_telefonofiscal",
+                           "credContactofiscal": "e_cred_contactofiscal",
+                           "credPoblacionfiscal": "e_cred_poblacionfiscal",
+                           "credFaxfiscal": "e_cred_faxfiscal",
+                           "credProvinciafiscal": "e_cred_provinciafiscal",
+                           "credEmailfiscal": "e_cred_emailfiscal",
+                           "credMovilfiscal": "e_cred_movilfiscal",
                            "credTelefonocontratos":"e_cred_telefonocontratos",
-                           "credEmailcontratos": "e_cred_emailcontratos", 
-                           "credDircontratos": "e_cred_dircontratos", 
-                           "credCpcontratos": "e_cred_cpcontratos", 
-                           "credProvinciacontratos": 
+                           "credEmailcontratos": "e_cred_emailcontratos",
+                           "credDircontratos": "e_cred_dircontratos",
+                           "credCpcontratos": "e_cred_cpcontratos",
+                           "credProvinciacontratos":
                                                    "e_cred_provinciacontratos",
                            "credContactocontratos":"e_cred_contactocontratos",
-                           "credPoblacioncontratos": 
-                                                   "e_cred_poblacioncontratos", 
-                           "credMovilcontratos": "e_cred_movilcontratos", 
-                           "credDirobra": "e_cred_dirobra", 
-                           "credCpobra": "e_cred_cpobra", 
-                           "credProvinciaobra": "e_cred_provinciaobra", 
-                           "credContactoobra": "e_cred_contactoobra", 
-                           "credPoblacionobra": "e_cred_poblacionobra", 
-                           "credMovilobra": "e_cred_movilobra", 
-                           "credEntidad": "e_cred_entidad", 
-                           "credOficina": "e_cred_oficina", 
-                           "credDigitocontrol": "e_cred_digitocontrol", 
-                           "credNumcuenta": "e_cred_numcuenta", 
-                           "credFdp": "e_cred_fdp", 
-                           "credDiapago1": "e_cred_diapago1", 
-                           "credDiapago2": "e_cred_diapago2", 
-                           "credDiapago3": "e_cred_diapago3", 
-                           "credCredsolicitado": "e_cred_credsolicitado", 
+                           "credPoblacioncontratos":
+                                                   "e_cred_poblacioncontratos",
+                           "credMovilcontratos": "e_cred_movilcontratos",
+                           "credDirobra": "e_cred_dirobra",
+                           "credCpobra": "e_cred_cpobra",
+                           "credProvinciaobra": "e_cred_provinciaobra",
+                           "credContactoobra": "e_cred_contactoobra",
+                           "credPoblacionobra": "e_cred_poblacionobra",
+                           "credMovilobra": "e_cred_movilobra",
+                           "credEntidad": "e_cred_entidad",
+                           "credOficina": "e_cred_oficina",
+                           "credDigitocontrol": "e_cred_digitocontrol",
+                           "credNumcuenta": "e_cred_numcuenta",
+                           "credFdp": "e_cred_fdp",
+                           "credDiapago1": "e_cred_diapago1",
+                           "credDiapago2": "e_cred_diapago2",
+                           "credDiapago3": "e_cred_diapago3",
+                           "credCredsolicitado": "e_cred_credsolicitado",
                            "credVbNombrecomercial":
-                               "e_cred_vb_nombrecomercial", 
+                               "e_cred_vb_nombrecomercial",
                            "credVbNombreadmon":
-                               "e_cred_vb_nombreadmon", 
+                               "e_cred_vb_nombreadmon",
                            "credAsegurado":
-                               "e_cred_asegurado", 
-                           "credFechaasegurado": "e_cred_fechaasegurado", 
-                           "credConcedido": "e_cred_concedido", 
-                           "credFechaconcedido": "e_cred_fechaconcedido", 
-                           "credFecha": "e_cred_fecha", 
-                           "credApertura": "ch_cred_apertura", 
-                           "credAumento": "ch_cred_aumento", 
-                           "credSolicitud": "ch_cred_solicitud", 
-                           "credEntidades": "txt_cred_entidades", 
-                           "credObservaciones": "txt_cred_observaciones", 
-                           "credCondiciones": "txt_cred_condiciones", 
-                           "credMotivoRechazo": "txt_cred_motivo_rechazo", 
+                               "e_cred_asegurado",
+                           "credFechaasegurado": "e_cred_fechaasegurado",
+                           "credConcedido": "e_cred_concedido",
+                           "credFechaconcedido": "e_cred_fechaconcedido",
+                           "credFecha": "e_cred_fecha",
+                           "credApertura": "ch_cred_apertura",
+                           "credAumento": "ch_cred_aumento",
+                           "credSolicitud": "ch_cred_solicitud",
+                           "credEntidades": "txt_cred_entidades",
+                           "credObservaciones": "txt_cred_observaciones",
+                           "credCondiciones": "txt_cred_condiciones",
+                           "credMotivoRechazo": "txt_cred_motivo_rechazo",
                            # "ch_cred_vb_comercial", Activado si presupuesto.usuario
                            # "ch_cred_vb_admon", Activado si presupuesto.cred_usuario
                            # "e_cred_cif", Mismo que el presupuesto.cliente.cif
@@ -154,47 +154,47 @@ class Presupuestos(Ventana, VentanaGenerica):
                            # "e_cred_obra", Mismo que presupuesto.nombreobra
                            # "e_cred_comercial", Mismo que presupuesto.comercial
                           }
-        Ventana.__init__(self, 'presupuestos.glade', objeto, 
+        Ventana.__init__(self, 'presupuestos.glade', objeto,
                          usuario = self.usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_nuevo/clicked': self.nuevo,
                        'b_borrar/clicked': self.borrar,
                        'b_actualizar/clicked': self.actualizar_ventana,
                        'b_guardar/clicked': self.guardar,
-                       'b_buscar/clicked': self.buscar, 
-                       'b_fecha/clicked': self.fecha,  
-                       'rb_pedido/clicked': 
-                          lambda rb: 
-                            map(lambda item: item.set_inconsistent(False), 
-                                rb.get_group()), 
-                       'rb_estudio/clicked': 
-                          lambda rb: 
-                            map(lambda item: item.set_inconsistent(False), 
-                                rb.get_group()), 
-                       'b_imprimir/clicked': self.imprimir, 
-                       'b_carta/clicked': self.imprimir_carta_compromiso, 
-                       'b_pedido/clicked': self.hacer_y_abrir_pedido,  
-                       'b_enviar/clicked': self.enviar_por_correo, 
-                       "cbe_cliente/changed": self.cambiar_datos_cliente, 
-                       "b_add/clicked": self.add_ldp, 
-                       "b_drop/clicked": self.drop_ldp, 
-                       "ch_validado/toggled": self.validar, 
-                       "tv_contenido/query-tooltip": self.tooltip_query, 
+                       'b_buscar/clicked': self.buscar,
+                       'b_fecha/clicked': self.fecha,
+                       'rb_pedido/clicked':
+                          lambda rb:
+                            map(lambda item: item.set_inconsistent(False),
+                                rb.get_group()),
+                       'rb_estudio/clicked':
+                          lambda rb:
+                            map(lambda item: item.set_inconsistent(False),
+                                rb.get_group()),
+                       'b_imprimir/clicked': self.imprimir,
+                       'b_carta/clicked': self.imprimir_carta_compromiso,
+                       'b_pedido/clicked': self.hacer_y_abrir_pedido,
+                       'b_enviar/clicked': self.enviar_por_correo,
+                       "cbe_cliente/changed": self.cambiar_datos_cliente,
+                       "b_add/clicked": self.add_ldp,
+                       "b_drop/clicked": self.drop_ldp,
+                       "ch_validado/toggled": self.validar,
+                       "tv_contenido/query-tooltip": self.tooltip_query,
                        'ch_adjudicada/toggled': self.adjudicar,
-                       'b_credito/clicked': self.enviar_solicitud_credito, 
-                       "b_atras/clicked": self.atras, 
-                       "b_adelante/clicked": self.adelante, 
+                       'b_credito/clicked': self.enviar_solicitud_credito,
+                       "b_atras/clicked": self.atras,
+                       "b_adelante/clicked": self.adelante,
                        'ev_iconostado/button-release-event': self.mostrar_ttip,
-                       "ch_denegado/toggled": self.actualizar_editable_motivo, 
-                       "ch_cred_vb_admon/clicked": self.conceder_credito, 
-                       "e_cred_entidad/changed": self.actualizar_dc, 
-                       "e_cred_oficina/changed": self.actualizar_dc, 
+                       "ch_denegado/toggled": self.actualizar_editable_motivo,
+                       "ch_cred_vb_admon/clicked": self.conceder_credito,
+                       "e_cred_entidad/changed": self.actualizar_dc,
+                       "e_cred_oficina/changed": self.actualizar_dc,
                        "e_cred_numcuenta/changed": self.actualizar_dc
-                      }  
+                      }
         self.add_connections(connections)
         self.inicializar_ventana()
         if self.objeto == None:
-            self.ir_a_primero_de_los_mios() 
+            self.ir_a_primero_de_los_mios()
         else:
             self.ir_a(objeto)
         #if self.usuario and self.usuario.nivel >= 4:
@@ -226,7 +226,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         except AttributeError:
             b_pedido_activado = self.wids['b_pedido'].get_property("sensitive")
         self.wids['b_pedido'].set_sensitive(
-                b_pedido_activado and not ch.get_active() 
+                b_pedido_activado and not ch.get_active()
                 # CWT: Si ya se le ha hecho al menos 1 pedido, no permitir más
                 and not (self.objeto and self.objeto.get_pedidos()))
 
@@ -238,14 +238,14 @@ class Presupuestos(Ventana, VentanaGenerica):
             except AttributeError:
                 texto_tooltip = None
         if texto_tooltip:
-            utils.dialogo_info(titulo = "ESTADO DE LA OFERTA", 
-                    texto = texto_tooltip, 
+            utils.dialogo_info(titulo = "ESTADO DE LA OFERTA",
+                    texto = texto_tooltip,
                     padre = self.wids['ventana'])
 
     def atras(self, boton):
         if self.objeto:
             presupuestos_anteriores = self.buscar_presupuestos_accesibles(
-                    mas_criterios_de_busqueda = 
+                    mas_criterios_de_busqueda =
                         pclases.Presupuesto.q.id < self.objeto.id)
             try:
                 anterior = presupuestos_anteriores[0]
@@ -258,7 +258,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         if self.objeto:
             try:
                 presupuestos_siguientes = self.buscar_presupuestos_accesibles(
-                    mas_criterios_de_busqueda = 
+                    mas_criterios_de_busqueda =
                         pclases.Presupuesto.q.id > self.objeto.id)
                 siguiente = presupuestos_siguientes[-1]
                 self.reset_cache_credito()
@@ -268,23 +268,23 @@ class Presupuestos(Ventana, VentanaGenerica):
 
     def hacer_y_abrir_pedido(self, boton):
         pedido = hacer_pedido(self.objeto, self.usuario, self.wids['ventana'])
-        # [18/02/2014] Nueva alerta: Si el cliente en ese momento no tiene 
-        # crédito, crear el pedido pero invalidado. Y además enviar un correo 
+        # [18/02/2014] Nueva alerta: Si el cliente en ese momento no tiene
+        # crédito, crear el pedido pero invalidado. Y además enviar un correo
         # a comerciales, validadores, epalomo y rparra advirtiéndoles.
         if pedido:
             self.actualizar_ventana()
             importe_pedido = self.objeto.calcular_importe_total(iva = True)
             credito = self.objeto.cliente.calcular_credito_disponible()
             if credito - importe_pedido <= 0:
-                utils.dialogo_info(titulo = "CLIENTE SIN CRÉDITO", 
+                utils.dialogo_info(titulo = "CLIENTE SIN CRÉDITO",
                         texto = "El cliente no tiene crédito suficiente para"
                                 " atender al pedido completo.\n"
                                 "Crédito: %s\n"
                                 "Importe pedido: %s\n"
                                 "El pedido %s se invalidará." % (
-                                    utils.float2str(credito), 
-                                    utils.float2str(importe_pedido), 
-                                    pedido.numpedido), 
+                                    utils.float2str(credito),
+                                    utils.float2str(importe_pedido),
+                                    pedido.numpedido),
                         padre = self.wids['ventana'])
                 pedido.validado = False
                 pedido.usuario = None
@@ -295,9 +295,9 @@ class Presupuestos(Ventana, VentanaGenerica):
         if page_num == 1:
             if not self.usuario or self.usuario.nivel > 0:
                 nb.set_current_page(0)
-                utils.dialogo_info(titulo = "NECESITA PERMISOS ADICIONALES", 
+                utils.dialogo_info(titulo = "NECESITA PERMISOS ADICIONALES",
                         texto = "Solo los administradores pueden ver esta "
-                                "información.", 
+                                "información.",
                         padre = self.wids['ventana'])
             else:
                 self.rellenar_tablas_historial()
@@ -307,7 +307,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             self.guardar(None)  # Por si acaso, primero guardo
         # Comprobación de campos obligatorios:
         falta_alguno = False
-        if (self.objeto.credApertura == self.objeto.credAumento == 
+        if (self.objeto.credApertura == self.objeto.credAumento ==
                 self.objeto.credSolicitud == False):
             falta_alguno = True
             color = gtk.gdk.color_parse("Red")
@@ -316,32 +316,32 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.wids["ch_cred_apertura"].modify_base(gtk.STATE_NORMAL, color)
         self.wids["ch_cred_aumento"].modify_base(gtk.STATE_NORMAL, color)
         self.wids["ch_cred_solicitud"].modify_base(gtk.STATE_NORMAL, color)
-        for obligatorio, wid in (("credFecha", "e_cred_fecha"), 
-                                 ("comercial", "e_cred_comercial"), 
-                                 ("cif", "e_cred_cif"), 
-                                 ("nombrecliente", "e_cred_nombre"), 
-                                 ("credUte", "e_cred_ute"), 
-                                 ("nombreobra", "e_cred_obra"), 
-                                 ("credLicitador", "e_cred_licitador"), 
-                                 ("credDirfiscal", "e_cred_dirfiscal"), 
-                                 ("credCpfiscal", "e_cred_cpfiscal"), 
-                                 ("credPoblacionfiscal", 
-                                   "e_cred_poblacionfiscal"), 
-                                 ("credProvinciafiscal", 
-                                    "e_cred_provinciafiscal"), 
-                                 ("credTelefonofiscal", 
-                                    "e_cred_telefonofiscal"), 
-                                 ("credFaxfiscal", "e_cred_faxfiscal"), 
-                                 ("credMovilfiscal", "e_cred_movilfiscal"), 
-                                 ("credContactofiscal", 
-                                    "e_cred_contactofiscal"), 
-                                 ("credFdp", "e_cred_fdp"), 
-                                 ("credEntidades", "txt_cred_entidades"), 
-                                 ("credDiapago1", "e_cred_diapago1"), 
-                                 ("credCredsolicitado", 
+        for obligatorio, wid in (("credFecha", "e_cred_fecha"),
+                                 ("comercial", "e_cred_comercial"),
+                                 ("cif", "e_cred_cif"),
+                                 ("nombrecliente", "e_cred_nombre"),
+                                 ("credUte", "e_cred_ute"),
+                                 ("nombreobra", "e_cred_obra"),
+                                 ("credLicitador", "e_cred_licitador"),
+                                 ("credDirfiscal", "e_cred_dirfiscal"),
+                                 ("credCpfiscal", "e_cred_cpfiscal"),
+                                 ("credPoblacionfiscal",
+                                   "e_cred_poblacionfiscal"),
+                                 ("credProvinciafiscal",
+                                    "e_cred_provinciafiscal"),
+                                 ("credTelefonofiscal",
+                                    "e_cred_telefonofiscal"),
+                                 ("credFaxfiscal", "e_cred_faxfiscal"),
+                                 ("credMovilfiscal", "e_cred_movilfiscal"),
+                                 ("credContactofiscal",
+                                    "e_cred_contactofiscal"),
+                                 ("credFdp", "e_cred_fdp"),
+                                 ("credEntidades", "txt_cred_entidades"),
+                                 ("credDiapago1", "e_cred_diapago1"),
+                                 ("credCredsolicitado",
                                      "e_cred_credsolicitado")):
             valor = getattr(self.objeto, obligatorio)
-            if valor is None or (isinstance(valor, str) 
+            if valor is None or (isinstance(valor, str)
                                  and valor.strip() == ""):
                 falta_alguno = True
                 color = gtk.gdk.color_parse("Red")
@@ -349,11 +349,11 @@ class Presupuestos(Ventana, VentanaGenerica):
                 color = None
             self.wids[wid].modify_base(gtk.STATE_NORMAL, color)
         if falta_alguno:
-            utils.dialogo_info(titulo = "CAMPOS REQUERIDOS", 
+            utils.dialogo_info(titulo = "CAMPOS REQUERIDOS",
                 texto = "Debe completar los campos obligatorios"
-                        " marcados en rojo.", 
+                        " marcados en rojo.",
                 padre = self.wids['ventana'])
-            return 
+            return
         self.objeto.notificador.desactivar()
         self.objeto.credVecesSolicitado += 1
         try:
@@ -363,7 +363,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 nombrecomercial = self.objeto.comercial.get_nombre_completo()
             except AttributeError:
                 self.objeto.credVbNombrecomercial = ""
-        self.objeto.credVbNombrecomercial = nombrecomercial 
+        self.objeto.credVbNombrecomercial = nombrecomercial
         self.objeto.syncUpdate()
         self.objeto.make_swap("credVecesSolicitado")
         self.objeto.make_swap("credVbNombrecomercial")
@@ -372,9 +372,9 @@ class Presupuestos(Ventana, VentanaGenerica):
         envio_ok = self.enviar_correo_solicitud_credito(
                                             nomfich_solicitud = fich_sol_ods)
         if not envio_ok:
-            utils.dialogo_info(titulo = "ERROR AL ENVIAR SOLICITUD", 
+            utils.dialogo_info(titulo = "ERROR AL ENVIAR SOLICITUD",
                     texto = "Ocurrió un error al enviar la notificación \n"
-                            "por correo electrónico.", 
+                            "por correo electrónico.",
                     padre = self.wids['ventana'])
         self.actualizar_ventana()
 
@@ -388,14 +388,14 @@ class Presupuestos(Ventana, VentanaGenerica):
             facturado = self.objeto.get_facturado_por_producto()
             pendiente = self.objeto.get_pendiente_pasar_a_pedido()
             for p in ofertado:
-                fila = build_fila_historial(ofertado, pedido, servido, 
+                fila = build_fila_historial(ofertado, pedido, servido,
                                             facturado, pendiente, p)
                 model.append((fila))
-            # Si ha quedado algo pedido pero no ofertado, o servido no 
+            # Si ha quedado algo pedido pero no ofertado, o servido no
             # ofertado, etc. ahora es el momento de mostrarlo:
             for dic in (pedido, servido, facturado, pendiente):
                 for p in dic.keys()[:]:
-                    fila = build_fila_historial(ofertado, pedido, servido, 
+                    fila = build_fila_historial(ofertado, pedido, servido,
                                                 facturado, pendiente, p)
 
     def cerrar_presupuesto(self, ch_button):
@@ -409,7 +409,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         if self.objeto.cerrado == cerrar: #Actualizando. No ha sido el usuario.
             pass
         else:
-            self.objeto.cerrado = cerrar 
+            self.objeto.cerrado = cerrar
             self.objeto.syncUpdate()
             # En lugar de guardar con todo lo que conlleva, guardo solo este campo
             self.objeto.swap['cerrado'] = self.objeto.cerrado
@@ -423,7 +423,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         Envía un correo de solicitud de crédito al usuario correspondiente.
         """
-        vpro = VentanaActividad(self.wids['ventana'], 
+        vpro = VentanaActividad(self.wids['ventana'],
                 "Enviando solicitud por correo electrónico.")
         vpro.mostrar()
         vpro.mover()
@@ -445,56 +445,56 @@ class Presupuestos(Ventana, VentanaGenerica):
             texto = "%s ha solicitado crédito para el cliente %s "\
                     "a través de la oferta %d. Se adjunta copia del "\
                     "formulario." % (
-                        self.usuario and self.usuario.nombre or "Se", 
-                        self.objeto.cliente and self.objeto.cliente.nombre 
-                            or self.objeto.nombrecliente, 
+                        self.usuario and self.usuario.nombre or "Se",
+                        self.objeto.cliente and self.objeto.cliente.nombre
+                            or self.objeto.nombrecliente,
                         self.objeto.id)
-            if nomfich_solicitud: 
+            if nomfich_solicitud:
                 texto += "\n\n\nSi no puede ver el adjunto en el estándar"\
                     " OpenDocument use el siguiente complemento: "\
                     "http://downloads.sourceforge.net/odf-converter/"\
                     "OdfAddInForOfficeSetup-en.3.0.5254.exe?"\
-                    "use_mirror=nchc" 
+                    "use_mirror=nchc"
                 fich_sol_html = convertir_a_html(nomfich_solicitud)
                 fich_sol_xls = crear_xls(self.objeto, self.wids)
                 adjunto = [nomfich_solicitud, fich_sol_html, fich_sol_xls]
-            else: 
+            else:
                 adjunto = []
             vpro.mover()
-            ok = utils.enviar_correoe(rte, 
+            ok = utils.enviar_correoe(rte,
                                       dests,
                                       "Solicitud de crédito %s" % (
                                         self.wids['e_cred_nombre'].get_text()),
-                                      texto, 
-                                      adjuntos = adjunto, 
-                                      servidor = servidor, 
-                                      usuario = smtpuser, 
+                                      texto,
+                                      adjuntos = adjunto,
+                                      servidor = servidor,
+                                      usuario = smtpuser,
                                       password = smtppass)
             vpro.mover()
             if ok:
-                pclases.Auditoria.modificado(self.objeto, 
-                    self.usuario, __file__, 
-                    "Usuario %s envió solicitud de crédito para oferta %d." 
-                        % (self.usuario and self.usuario.usuario or "¡NADIE!", 
+                pclases.Auditoria.modificado(self.objeto,
+                    self.usuario, __file__,
+                    "Usuario %s envió solicitud de crédito para oferta %d."
+                        % (self.usuario and self.usuario.usuario or "¡NADIE!",
                            self.objeto.id))
             else:
-                pclases.Auditoria.modificado(self.objeto, 
-                    self.usuario, __file__, 
+                pclases.Auditoria.modificado(self.objeto,
+                    self.usuario, __file__,
                     "Falló envío de solicitud de crédito para oferta %d del "
-                    "usuario %s." 
-                        % (self.objeto.id, 
+                    "usuario %s."
+                        % (self.objeto.id,
                            self.usuario and self.usuario.usuario or "¡NADIE!"))
             vpro.mover()
         vpro.ocultar()
         return ok
-    
+
     def enviar_correo_de_riesgo(self, pedido):
         """
-        Si el cliente está en riesgo, aviso por correo para que se vaya 
+        Si el cliente está en riesgo, aviso por correo para que se vaya
         preparando el personal de CRM.
         """
-        # CWT: Deshabilitado. Se sustituye solo por el envío voluntario de 
-        # solicitud de crédito por parte del usuario. Ahora lo uso para 
+        # CWT: Deshabilitado. Se sustituye solo por el envío voluntario de
+        # solicitud de crédito por parte del usuario. Ahora lo uso para
         # enviar el correo de nuevo pedido a cliente sin crédito.
         if self.usuario and self.objeto.cliente:
             importe_presupuesto = self.objeto.calcular_importe_total(
@@ -505,39 +505,39 @@ class Presupuestos(Ventana, VentanaGenerica):
                     "de crédito para el suministro completo.\n"\
                     "Importe del presupuesto: %s.\n"\
                     "El pedido se ha marcado como pendiente de validación." % (
-                        pedido.numpedido, 
-                        self.objeto.id, 
-                        self.objeto.nombrecliente, 
+                        pedido.numpedido,
+                        self.objeto.id,
+                        self.objeto.nombrecliente,
                         utils.float2str(importe_presupuesto))
-            # TODO: Y que no se haya enviado ya antes. Si no, no veas 
-            # la paliza de correos que van a llegar cada vez que guarde 
+            # TODO: Y que no se haya enviado ya antes. Si no, no veas
+            # la paliza de correos que van a llegar cada vez que guarde
             # un valor de la ventana.
             servidor = self.usuario.smtpserver
             smtpuser = self.usuario.smtpuser
             smtppass = self.usuario.smtppassword
             rte = self.usuario.email
             # TODO: OJO: HARDCODED
-            dests = ["epalomo@geotexan.com"] 
+            dests = ["epalomo@geotexan.com"]
             dests += [d for d in self.select_correo_validador()]
             comerciales = [self.objeto.comercial]
-            dests += [comercial.correoe for comercial in comerciales 
+            dests += [comercial.correoe for comercial in comerciales
                       if comercial.empleado.usuario.usuario != self.usuario]
             if self.usuario and self.usuario.id == 1:
                 texto += "\n\n\nEl correo iba dirigido a: %s" % (
                         "; ".join(dests))
                 dests = ["informatica@geotexan.com"]
-            enviar_correoe(rte, 
+            enviar_correoe(rte,
                            dests,
-                           "Alerta de pedido sin crédito", 
-                           texto, 
-                           servidor = servidor, 
-                           usuario = smtpuser, 
+                           "Alerta de pedido sin crédito",
+                           texto,
+                           servidor = servidor,
+                           usuario = smtpuser,
                            password = smtppass)
 
     def enviar_correo_observaciones(self):
         """
-        Al modificar las notas internas, se envía un correo electrónico 
-        al comercial con el texto "Oferta [no] validada. Se agregaron 
+        Al modificar las notas internas, se envía un correo electrónico
+        al comercial con el texto "Oferta [no] validada. Se agregaron
         anotaciones internas..."
         """
         if self.usuario:
@@ -549,8 +549,8 @@ class Presupuestos(Ventana, VentanaGenerica):
             texto = "Oferta %d %svalidada.\n"\
                     "Se agregaron anotaciones internas:\n\n"\
                     "%s" % (
-                        self.objeto.id, 
-                        self.objeto.validado and "" or "no ", 
+                        self.objeto.id,
+                        self.objeto.validado and "" or "no ",
                         anotaciones_formateadas)
             servidor = self.usuario.smtpserver
             smtpuser = self.usuario.smtpuser
@@ -558,41 +558,41 @@ class Presupuestos(Ventana, VentanaGenerica):
             rte = self.usuario.email
             dests = [d for d in self.select_correo_validador()]
             comerciales = [self.objeto.comercial]
-            dests += [comercial.correoe for comercial in comerciales 
+            dests += [comercial.correoe for comercial in comerciales
                       if comercial.empleado.usuario.usuario != self.usuario]
             if self.usuario and self.usuario.id == 1:
                 texto += "\n\n\nEl correo iba dirigido a: %s" % (
                         "; ".join(dests))
                 dests = ["informatica@geotexan.com"]
-            enviar_correoe(rte, 
+            enviar_correoe(rte,
                            dests,
-                           "Nuevas anotaciones en oferta %d" % self.objeto.id, 
-                           texto, 
-                           servidor = servidor, 
-                           usuario = smtpuser, 
+                           "Nuevas anotaciones en oferta %d" % self.objeto.id,
+                           texto,
+                           servidor = servidor,
+                           usuario = smtpuser,
                            password = smtppass)
 
     def adjudicar(self, ch):
-        if ch.get_active() != self.objeto.adjudicada:   # Es el usuario el 
+        if ch.get_active() != self.objeto.adjudicada:   # Es el usuario el
                                                         # que ha hecho clic.
             if ch.get_active():     # Lo está intentando poner a True
-                if utils.dialogo(titulo = "¿ADJUDICAR OFERTA?", 
+                if utils.dialogo(titulo = "¿ADJUDICAR OFERTA?",
                     texto = "Si considera la oferta como adjudicada se\n"
                             "iniciará la parte del proceso de paso a \n"
                             "pedido que permitan las condiciones de \n"
                             "validación.\n\n"
-                            "¿Continuar?", 
+                            "¿Continuar?",
                     padre = self.wids['ventana']):
                     self.objeto.adjudicada = True
                     self.objeto.syncUpdate()
                     self.objeto.make_swap()
                     self.enviar_correo_adjudicada(ch)
-                    if (not self.objeto.cliente 
+                    if (not self.objeto.cliente
                             or self.comprobar_riesgo_cliente() <= 0):
-                        utils.dialogo_info(titulo = "SOLICITE CRÉDITO", 
+                        utils.dialogo_info(titulo = "SOLICITE CRÉDITO",
                             texto = "El cliente es nuevo o no tiene crédito "
                                     "disponible.\n\nSolicite una ampliación o "
-                                    "apertura.", 
+                                    "apertura.",
                             padre = self.wids['ventana'])
                         self.wids['nb'].set_current_page(2)
                 else:
@@ -606,7 +606,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 self.objeto.make_swap()
 
     def enviar_correo_adjudicada(self, ch):
-        # CWT: Deshabilitado. Se sustituye solo por el correo de solicitud 
+        # CWT: Deshabilitado. Se sustituye solo por el correo de solicitud
         # de crédito.
         return
         servidor = self.usuario.smtpserver
@@ -633,23 +633,23 @@ class Presupuestos(Ventana, VentanaGenerica):
                 "\tTeléfono: %s\n"\
                 "\tCorreo electrónico: %s\n"\
                 "\tPersona de contacto: %s" % (
-                        self.objeto.id, 
-                        self.objeto.nombrecliente, 
-                        self.objeto.cif, 
-                        self.objeto.direccion, 
-                        self.objeto.cp, 
-                        self.objeto.ciudad, 
-                        self.objeto.provincia, 
-                        self.objeto.pais, 
-                        self.objeto.telefono, 
-                        self.objeto.email, 
+                        self.objeto.id,
+                        self.objeto.nombrecliente,
+                        self.objeto.cif,
+                        self.objeto.direccion,
+                        self.objeto.cp,
+                        self.objeto.ciudad,
+                        self.objeto.provincia,
+                        self.objeto.pais,
+                        self.objeto.telefono,
+                        self.objeto.email,
                         self.objeto.personaContacto)
-            enviar_correoe(rte, 
+            enviar_correoe(rte,
                            dests,
-                           "Alta de nuevo cliente", 
-                           texto, 
-                           servidor = servidor, 
-                           usuario = smtpuser, 
+                           "Alta de nuevo cliente",
+                           texto,
+                           servidor = servidor,
+                           usuario = smtpuser,
                            password = smtppass)
         if not self.objeto.obra:
             # Correo de alta de la obra
@@ -661,46 +661,46 @@ class Presupuestos(Ventana, VentanaGenerica):
                 "\tCiudad: %s\n"\
                 "\tProvincia: %s\n"\
                 "\tPaís: %s\n" % (
-                        self.objeto.id, 
-                        self.objeto.nombreobra, 
-                        self.objeto.nombrecliente, 
-                        self.objeto.direccion, 
-                        self.objeto.cp, 
-                        self.objeto.ciudad, 
-                        self.objeto.provincia, 
-                        self.objeto.pais, 
+                        self.objeto.id,
+                        self.objeto.nombreobra,
+                        self.objeto.nombrecliente,
+                        self.objeto.direccion,
+                        self.objeto.cp,
+                        self.objeto.ciudad,
+                        self.objeto.provincia,
+                        self.objeto.pais,
                         )
-            enviar_correoe(rte, 
+            enviar_correoe(rte,
                            dests,
-                           "Alta de nueva obra", 
-                           texto, 
-                           servidor = servidor, 
-                           usuario = smtpuser, 
+                           "Alta de nueva obra",
+                           texto,
+                           servidor = servidor,
+                           usuario = smtpuser,
                            password = smtppass)
         # Correo de adjudicación de oferta.
         texto = "Se ha adjudicado la oferta %d del comercial %s"\
                 " al cliente %s por importe de %s €." % (
-                    self.objeto.id, 
-                    self.objeto.comercial 
+                    self.objeto.id,
+                    self.objeto.comercial
                     and self.objeto.comercial.get_nombre_completo()
-                     or "¡NADIE!", 
-                    self.objeto.nombrecliente, 
+                     or "¡NADIE!",
+                    self.objeto.nombrecliente,
                     utils.float2str(
                         self.objeto.calcular_importe_total()))
-        enviar_correoe(rte, 
+        enviar_correoe(rte,
                        dests,
-                       "Alta de nueva adjudicación de oferta", 
-                       texto, 
-                       servidor = servidor, 
-                       usuario = smtpuser, 
+                       "Alta de nueva adjudicación de oferta",
+                       texto,
+                       servidor = servidor,
+                       usuario = smtpuser,
                        password = smtppass)
 
     def bloquear(self, ch):
         """
-        Bloquea el presupuesto impidiendo modificaciones excepto para los 
+        Bloquea el presupuesto impidiendo modificaciones excepto para los
         usuarios con nivel suficiente.
         """
-        puede_bloquear = (self.usuario 
+        puede_bloquear = (self.usuario
                                 and self.usuario.nivel <= NIVEL_VALIDACION)
         if self.objeto.bloqueado == ch.get_active():
             pass
@@ -709,10 +709,10 @@ class Presupuestos(Ventana, VentanaGenerica):
             if puede_bloquear:  # Y desbloquear, claro.
                 self.objeto.bloqueado = ch.get_active()
                 self.objeto.make_swap("bloqueado")
-                pclases.Auditoria.modificado(self.objeto, 
-                    self.usuario, __file__, 
-                    "Usuario %s (des)bloqueó presupuesto %d." 
-                        % (self.usuario and self.usuario.usuario or "¡NADIE!", 
+                pclases.Auditoria.modificado(self.objeto,
+                    self.usuario, __file__,
+                    "Usuario %s (des)bloqueó presupuesto %d."
+                        % (self.usuario and self.usuario.usuario or "¡NADIE!",
                            self.objeto.id))
                 ch.set_active(self.objeto.bloqueado)
                 self.guardar(None)  # Por si hay algo pendiente.
@@ -725,25 +725,25 @@ class Presupuestos(Ventana, VentanaGenerica):
     def validar(self, ch):
         """
         Si está validado:
-            - Deja el presupuesto como indica el check. Sea quien sea. Si 
+            - Deja el presupuesto como indica el check. Sea quien sea. Si
               estamos rellenando los widgets, ch estará marcado o desmarcado en
-              función del valor de la oferta. Si le ha dado el usuario, el ch 
-              tiene el nuevo valor de validación (opuesto en este instante a 
+              función del valor de la oferta. Si le ha dado el usuario, el ch
+              tiene el nuevo valor de validación (opuesto en este instante a
               lo que guarda self.objeto.validado).
-        Si no está validado: 
+        Si no está validado:
             - Si el usuario tiene nivel: valida y guarda el usuario.
             - Si el usuario no tiene nivel: no valida y muestra aviso.
         """
-        if self.objeto.validado == ch.get_active():     # Estoy rellenando. No 
+        if self.objeto.validado == ch.get_active():     # Estoy rellenando. No
             # hay edición del usuario. No compruebo nada.
-            pass    # OJO porque aquí puede haber BUG. ¿Qué pasa si estoy 
-                    # moviéndome de un objeto ya validado a otro no  
-                    # validado? Entraría por la otra rama del if confundiendo 
-                    # una posible validación del usuario con una simple 
+            pass    # OJO porque aquí puede haber BUG. ¿Qué pasa si estoy
+                    # moviéndome de un objeto ya validado a otro no
+                    # validado? Entraría por la otra rama del if confundiendo
+                    # una posible validación del usuario con una simple
                     # actialización del widget en la ventana.
         else:   # El usuario está desvalidando o intentando validar.
             self.objeto.notificador.desactivar()
-            vpro = VentanaActividad(self.wids['ventana'], 
+            vpro = VentanaActividad(self.wids['ventana'],
                                     "Comprobando permisos validación...")
             vpro.mostrar()
             vpro.mover()
@@ -760,16 +760,16 @@ class Presupuestos(Ventana, VentanaGenerica):
                 self.objeto.swap['fechaValidacion'] = None
                 vpro.mover()
                 self.objeto.syncUpdate()
-                pclases.Auditoria.modificado(self.objeto, 
-                    self.usuario, __file__, 
-                    "Se impide intento de validación en presupuesto %d por %s." 
-                        % (self.objeto.id, 
+                pclases.Auditoria.modificado(self.objeto,
+                    self.usuario, __file__,
+                    "Se impide intento de validación en presupuesto %d por %s."
+                        % (self.objeto.id,
                            self.usuario and self.usuario.usuario or "¡NADIE!"))
                 vpro.mover()
                 vpro.ocultar()
-                utils.dialogo_info("PERMISOS INSUFICIENTES", 
+                utils.dialogo_info("PERMISOS INSUFICIENTES",
                         texto = "No posee privilegios suficientes para validar "
-                                "la oferta con las condiciones actuales.", 
+                                "la oferta con las condiciones actuales.",
                         padre = self.wids['ventana'])
             else:   # Estoy "desvalidando", tengo permisos o es validable.
                 vpro.mover()
@@ -781,15 +781,15 @@ class Presupuestos(Ventana, VentanaGenerica):
                         self.objeto.swap['usuarioID'] = self.objeto.usuario
                         fv = self.objeto.fechaValidacion
                         if fv:
-                            fv_aprox = datetime.datetime(fv.year, fv.month, 
+                            fv_aprox = datetime.datetime(fv.year, fv.month,
                                     fv.day, fv.hour, fv.minute, fv.second)
                         else:
                             fv_aprox = None
                         self.objeto.swap['fechaValidacion'] = fv_aprox
-                        pclases.Auditoria.modificado(self.objeto, 
-                            self.usuario, __file__, 
-                            "Presupuesto %d validado por %s." 
-                                % (self.objeto.id, 
+                        pclases.Auditoria.modificado(self.objeto,
+                            self.usuario, __file__,
+                            "Presupuesto %d validado por %s."
+                                % (self.objeto.id,
                                    self.objeto.usuario.usuario))
                         self.enviar_correo_notificacion_validado()
                 else:   # Estoy invalidando
@@ -800,24 +800,24 @@ class Presupuestos(Ventana, VentanaGenerica):
                     self.objeto.swap['usuarioID'] = None
                     self.objeto.swap['adjudicada'] = None
                     self.objeto.swap['fechaValidacion'] = None
-                    pclases.Auditoria.modificado(self.objeto, 
-                        self.usuario, __file__, 
-                        "Presupuesto %d invalidado por %s." 
-                            % (self.objeto.id, 
-                               self.usuario and self.usuario.usuario 
+                    pclases.Auditoria.modificado(self.objeto,
+                        self.usuario, __file__,
+                        "Presupuesto %d invalidado por %s."
+                            % (self.objeto.id,
+                               self.usuario and self.usuario.usuario
                                or "¡NADIE!"))
                 vpro.mover()
                 self.objeto.syncUpdate()
                 self.objeto.swap['usuarioID'] = self.objeto.usuarioID
                 fv = self.objeto.fechaValidacion
                 if fv:
-                    fv_aprox = datetime.datetime(fv.year, fv.month, fv.day, 
+                    fv_aprox = datetime.datetime(fv.year, fv.month, fv.day,
                                                  fv.hour, fv.minute, fv.second)
                 else:
                     fv_aprox = None
                 self.objeto.swap['fechaValidacion'] = fv_aprox
                 vpro.mover()
-                self.refresh_validado()  # Equivale a 
+                self.refresh_validado()  # Equivale a
                     # rellenar_widgets pero solo la parte del checkbox.
                 vpro.mover()
                 vpro.ocultar()
@@ -829,25 +829,25 @@ class Presupuestos(Ventana, VentanaGenerica):
     def conceder_credito(self, ch):
         """
         Si ya está condedido:
-            - Deja el presupuesto como indica el check. Sea quien sea. Si 
+            - Deja el presupuesto como indica el check. Sea quien sea. Si
               estamos rellenando los widgets, ch estará marcado o desmarcado en
-              función del valor de la oferta. Si le ha dado el usuario, el ch 
-              tiene el nuevo valor de concesión (opuesto en este instante a 
+              función del valor de la oferta. Si le ha dado el usuario, el ch
+              tiene el nuevo valor de concesión (opuesto en este instante a
               lo que guarda self.objeto...).
-        Si no está concedido: 
+        Si no está concedido:
             - Si el usuario tiene nivel: concede y guarda el usuario.
             - Si el usuario no tiene nivel: no concede y muestra aviso.
         """
-        if (self.objeto.credUsuario != None) == ch.get_active():     # Estoy rellenando. No 
+        if (self.objeto.credUsuario != None) == ch.get_active():     # Estoy rellenando. No
             # hay edición del usuario. No compruebo nada.
-            pass    # OJO porque aquí puede haber BUG. ¿Qué pasa si estoy 
-                    # moviéndome de un objeto ya concedido a otro no  
-                    # concedido? Entraría por la otra rama del if confundiendo 
-                    # una posible concesión del usuario con una simple 
+            pass    # OJO porque aquí puede haber BUG. ¿Qué pasa si estoy
+                    # moviéndome de un objeto ya concedido a otro no
+                    # concedido? Entraría por la otra rama del if confundiendo
+                    # una posible concesión del usuario con una simple
                     # actialización del widget en la ventana.
         else:   # El usuario está cancilando o intentando conceder.
             self.objeto.notificador.desactivar()
-            vpro = VentanaActividad(self.wids['ventana'], 
+            vpro = VentanaActividad(self.wids['ventana'],
                                     "Comprobando permisos...")
             vpro.mostrar()
             vpro.mover()
@@ -855,11 +855,11 @@ class Presupuestos(Ventana, VentanaGenerica):
             vpro.mover()
             if ((not self.usuario or self.usuario.nivel > NIVEL_VALIDACION)
                     and ch.get_active() # = estoy intentando conceder
-                    ): 
+                    ):
                 vpro.mover()
                 ch.disconnect(tmphndlr)
                 ch.set_active(False)
-                self.objeto.credVbNombreadmon = "" 
+                self.objeto.credVbNombreadmon = ""
                 self.objeto.credUsuario = None
                 self.objeto.credFechaconcedido = None
                 self.objeto.make_swap("credVbNombreadmon")
@@ -867,16 +867,16 @@ class Presupuestos(Ventana, VentanaGenerica):
                 self.objeto.make_swap('credFechaconcedido')
                 vpro.mover()
                 self.objeto.syncUpdate()
-                pclases.Auditoria.modificado(self.objeto, 
-                    self.usuario, __file__, 
-                    "Se impide intento de concesión de crédito en presupuesto %d por %s." 
-                        % (self.objeto.id, 
+                pclases.Auditoria.modificado(self.objeto,
+                    self.usuario, __file__,
+                    "Se impide intento de concesión de crédito en presupuesto %d por %s."
+                        % (self.objeto.id,
                            self.usuario and self.usuario.usuario or "¡NADIE!"))
                 vpro.mover()
                 vpro.ocultar()
-                utils.dialogo_info("PERMISOS INSUFICIENTES", 
+                utils.dialogo_info("PERMISOS INSUFICIENTES",
                         texto = "No posee privilegios suficientes para "
-                                "conceder crédito al cliente.", 
+                                "conceder crédito al cliente.",
                         padre = self.wids['ventana'])
             else:   # Estoy cancelando o tengo permisos para conceder crédito.
                 vpro.mover()
@@ -890,11 +890,11 @@ class Presupuestos(Ventana, VentanaGenerica):
                         self.objeto.make_swap("credUsuario")
                         self.objeto.credFechaconcedido = datetime.date.today()
                         self.objeto.make_swap("credFechaconcedido")
-                        pclases.Auditoria.modificado(self.objeto, 
-                            self.usuario, __file__, 
+                        pclases.Auditoria.modificado(self.objeto,
+                            self.usuario, __file__,
                             "Concedida solicitud de crédito para el "
-                            "presupuesto %d por %s." 
-                                % (self.objeto.id, 
+                            "presupuesto %d por %s."
+                                % (self.objeto.id,
                                    self.objeto.credUsuario.usuario))
                         # XXX: PLAN: Todavía no han dicho nada. Pero lo harán:
                         # self.enviar_correo_notificacion_credito_concedido()
@@ -905,11 +905,11 @@ class Presupuestos(Ventana, VentanaGenerica):
                     self.objeto.make_swap("credVbNombreadmon")
                     self.objeto.make_swap("credUsuario")
                     self.objeto.make_swap("credFechaconcedido")
-                    pclases.Auditoria.modificado(self.objeto, 
-                        self.usuario, __file__, 
-                        "Crédito %d cancelado por %s." 
-                            % (self.objeto.id, 
-                               self.usuario and self.usuario.usuario 
+                    pclases.Auditoria.modificado(self.objeto,
+                        self.usuario, __file__,
+                        "Crédito %d cancelado por %s."
+                            % (self.objeto.id,
+                               self.usuario and self.usuario.usuario
                                or "¡NADIE!"))
                 vpro.mover()
                 self.objeto.syncUpdate()
@@ -937,13 +937,13 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.wids['e_fecha'].set_text(
                 utils.str_fecha(
                     utils.mostrar_calendario(
-                        fecha_defecto = provisional, 
+                        fecha_defecto = provisional,
                         padre = self.wids['ventana'])))
 
     def cambiar_datos_cliente(self, cbe):
         """
-        Machaca la información de los entries de los datos del cliente 
-        del presupuesto si está vacío en campo NIF y se ha seleccionado 
+        Machaca la información de los entries de los datos del cliente
+        del presupuesto si está vacío en campo NIF y se ha seleccionado
         un cliente del desplegable.
         """
         self.reset_cache_credito()
@@ -979,15 +979,15 @@ class Presupuestos(Ventana, VentanaGenerica):
     def seleccionar_cantidad(self, producto):
         """
         Muestra un diálogo para introducir la cantidad.
-        Si el producto es un rollo, se introducirá en 
+        Si el producto es un rollo, se introducirá en
         metros cuadrados.
         Si es una bala, se introducirá en kilos.
         En las LDV se mantendrán también estas unidades
-        ya que el precio por unidad va en función de 
+        ya que el precio por unidad va en función de
         kilos y rollos en el producto.
         Cuando se haga el albarán es cuando habrá que
         calcular cuantos rollos (y cuáles en concreto)
-        y cuántas balas entran. Aunque en realidad es 
+        y cuántas balas entran. Aunque en realidad es
         el usuario el que las seleccionará y el programa
         irá informando si se satisface la LDV o no.
         """
@@ -1019,7 +1019,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         except:
             utils.dialogo_info(titulo = 'ERROR', texto = 'La cantidad introducida no es correcta.', padre = self.wids['ventana'])
             return None
-    
+
     def add_ldp(self, boton):
         """
         Añade una línea de presupuesto a la oferta.
@@ -1039,21 +1039,21 @@ class Presupuestos(Ventana, VentanaGenerica):
         #        break
         #    if isinstance(producto, pclases.ProductoCompra):
         #        ldp = pclases.LineaDePresupuesto(
-        #                                    productoVenta = None, 
-        #                                    productoCompra = producto, 
-        #                                    cantidad = cantidad, 
-        #                                    precio = precio, 
+        #                                    productoVenta = None,
+        #                                    productoCompra = producto,
+        #                                    cantidad = cantidad,
+        #                                    precio = precio,
         #                                    presupuesto = self.objeto)
         #    elif isinstance(producto, pclases.ProductoVenta):
         #        ldp = pclases.LineaDePresupuesto(
-        #                                    productoVenta = producto, 
-        #                                    productoCompra = None, 
-        #                                    cantidad = cantidad, 
-        #                                    precio = precio, 
+        #                                    productoVenta = producto,
+        #                                    productoCompra = None,
+        #                                    cantidad = cantidad,
+        #                                    precio = precio,
         #                                    presupuesto = self.objeto)
-        ldp = pclases.LineaDePresupuesto(productoVenta = None, 
-                                         productoCompra = None, 
-                                         cantidad = 0, 
+        ldp = pclases.LineaDePresupuesto(productoVenta = None,
+                                         productoCompra = None,
+                                         cantidad = 0,
                                          precio = 0,
                                          presupuesto = self.objeto)
         pclases.Auditoria.nuevo(ldp, self.usuario, __file__)
@@ -1068,7 +1068,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         col = self.wids['tv_contenido'].get_column(1)
         self.wids['tv_contenido'].grab_focus()
         self.wids['tv_contenido'].set_cursor(path, col, True)
-    
+
     def drop_ldp(self, boton):
         """
         Elimina las LDPs seleccionadas del presupuesto.
@@ -1076,9 +1076,9 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.reset_cache_credito()
         sel = self.wids['tv_contenido'].get_selection()
         model, paths = sel.get_selected_rows()
-        if utils.dialogo(titulo = "ELIMINAR LÍNEAS DE PRESUPUESTO", 
+        if utils.dialogo(titulo = "ELIMINAR LÍNEAS DE PRESUPUESTO",
                 texto = "Se van a eliminar %d líneas de presupuesto.\n"
-                        "¿Está seguro?" % len(paths), 
+                        "¿Está seguro?" % len(paths),
                 padre = self.wids['ventana']):
             fallos = []
             if  paths != None and paths != []:
@@ -1099,11 +1099,11 @@ class Presupuestos(Ventana, VentanaGenerica):
                         self.logger.error("presupuestos::drop_ldp -> "
                                 "%s no se pudo eliminar. Excepción: %s." % (
                                     fallo, msg))
-                    utils.dialogo_info(titulo = "ERROR", 
-                        texto = "%d líneas no se pudieron eliminar." 
+                    utils.dialogo_info(titulo = "ERROR",
+                        texto = "%d líneas no se pudieron eliminar."
                                                                 % len(fallo),
-                        padre = self.wids['ventana']) 
-        
+                        padre = self.wids['ventana'])
+
     def imprimir(self, boton):
         """
         Genera y abre el PDF de la carta de oferta.
@@ -1118,7 +1118,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         except AttributeError:
             pass
         else:
-            pclases.Auditoria.modificado(self.objeto, self.usuario, __file__, 
+            pclases.Auditoria.modificado(self.objeto, self.usuario, __file__,
                     "Lanzada impresión n.º %d" % self.objeto.impresiones)
         self.imprimir_presupuesto(boton)
 
@@ -1138,7 +1138,7 @@ class Presupuestos(Ventana, VentanaGenerica):
 
     def enviar_por_correo(self, boton):
         """
-        Envía por correo el PDF del presupuesto desde la cuenta del 
+        Envía por correo el PDF del presupuesto desde la cuenta del
         comerial o de la genérica "pedidos@...".
         """
         try:
@@ -1147,7 +1147,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         except AttributeError:
             pass
         else:
-            pclases.Auditoria.modificado(self.objeto, self.usuario, __file__, 
+            pclases.Auditoria.modificado(self.objeto, self.usuario, __file__,
                     "Lanzado envío n.º %d" % self.objeto.envios)
         pdf_presupuesto = generar_pdf_presupuesto(self.objeto)
         from formularios import mail_sender
@@ -1156,7 +1156,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             ventana_correo.set_from(self.usuario.email)
             ventana_correo.set_to(self.objeto.email)
             if not self.usuario or self.usuario.id == 1:
-                # Safety check. No sea que haciendo pruebas se me vaya un 
+                # Safety check. No sea que haciendo pruebas se me vaya un
                 # correo a quien no debe.
                 ventana_correo.set_to("informatica@geotexan.com")
             # PLAN: Nada de HTML de momento...
@@ -1168,16 +1168,16 @@ class Presupuestos(Ventana, VentanaGenerica):
             texto_correo += self.objeto.comercial.get_firma()
             ventana_correo.set_asunto("Geotexan: Oferta %d" % self.objeto.id)
             ventana_correo.set_adjunto(pdf_presupuesto)
-            ventana_correo.set_smtpconf(self.usuario.smtpserver, 
+            ventana_correo.set_smtpconf(self.usuario.smtpserver,
                                         465,    # TODO: OJO: HARCODED!
-                                        self.usuario.smtpuser, 
+                                        self.usuario.smtpuser,
                                         self.usuario.smtppassword)
         except AttributeError:
-            utils.dialogo_info(titulo = "CONFIGURACIÓN INCORRECTA", 
+            utils.dialogo_info(titulo = "CONFIGURACIÓN INCORRECTA",
                     texto = "Existe un problema con su configuración"
                             " de correo electrónico.\nConsulte al "
                             "administrador de la aplicación o complete"
-                            " la información en sus datos de usuario.", 
+                            " la información en sus datos de usuario.",
                     padre = self.wids['ventana'])
         else:
             ventana_correo.set_copia(True)
@@ -1188,22 +1188,22 @@ class Presupuestos(Ventana, VentanaGenerica):
                 try:
                     ventana_padre = self.wids['ventana']
                 except KeyError:
-                    # Ya ventana ya no está disponible. Pero muestro el error 
+                    # Ya ventana ya no está disponible. Pero muestro el error
                     # igualmente.
                     ventana_padre = None
-                utils.dialogo_info(titulo = "ERROR EN ENVÍO", 
+                utils.dialogo_info(titulo = "ERROR EN ENVÍO",
                         texto = "Ocurrió un error al enviar el correo.\n"
                                 "Asegúrese de que su antivirus no está "
                                 "bloqueando los correos salientes y "
-                                "vuelva a intentarlo más tarde.", 
+                                "vuelva a intentarlo más tarde.",
                         padre = ventana_padre)
-        #utils.dialogo_info(titulo = "NO IMPLEMENTADO", 
-        #        texto = "Característica en desarrollo.", 
+        #utils.dialogo_info(titulo = "NO IMPLEMENTADO",
+        #        texto = "Característica en desarrollo.",
         #        padre = self.wids['ventana'])
 
     def es_diferente(self):
         """
-        Devuelve True si algún valor en ventana difiere de 
+        Devuelve True si algún valor en ventana difiere de
         los del objeto.
         """
         if self.objeto == None:
@@ -1213,9 +1213,9 @@ class Presupuestos(Ventana, VentanaGenerica):
             for colname in self.dic_campos:
                 col = self.clase.sqlmeta.columns[colname]
                 try:
-                    valor_ventana = self.leer_valor(col, 
+                    valor_ventana = self.leer_valor(col,
                                                     self.dic_campos[colname])
-                except (ValueError, mx.DateTime.RangeError, TypeError, 
+                except (ValueError, mx.DateTime.RangeError, TypeError,
                         AttributeError):
                     igual = False
                 valor_objeto = getattr(self.objeto, col.name)
@@ -1244,27 +1244,27 @@ class Presupuestos(Ventana, VentanaGenerica):
                         print "\tvalor_ventana:", valor_ventana
                         print "\tvalor_objeto:", valor_objeto
                     #break
-                # DONE: PLAN: ¿Y si en vez de un break, cojo, sigo 
-                # sigo analizando y marco en algún color los campos 
+                # DONE: PLAN: ¿Y si en vez de un break, cojo, sigo
+                # sigo analizando y marco en algún color los campos
                 # diferentes?
-                if ((not valor_ventana and valor_objeto) 
-                        or (valor_ventana and not valor_objeto) 
+                if ((not valor_ventana and valor_objeto)
+                        or (valor_ventana and not valor_objeto)
                         or (valor_ventana != valor_objeto)):
                     color = gtk.gdk.color_parse("Light Blue")
                 else:
                     color = self.wids[
                             self.dic_campos[colname]].style.base[
                                 gtk.STATE_NORMAL]
-                    # Si estaba marcado en rojo por algún motivo (campo 
-                    # obligatorio en el crédito, por ejemplo) lo dejo como 
+                    # Si estaba marcado en rojo por algún motivo (campo
+                    # obligatorio en el crédito, por ejemplo) lo dejo como
                     # estaba. Si no, lo vuelvo a poner en blanquito.
                     if color != gtk.gdk.color_parse("Red"):
                         color = None
                 self.wids[self.dic_campos[colname]].modify_base(
-                        gtk.STATE_NORMAL, 
+                        gtk.STATE_NORMAL,
                         color)
         return not igual
-    
+
     def reset_cache_credito(self):
         self.cache_credito = None
 
@@ -1279,7 +1279,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.wids['cb_forma_cobro'].set_wrap_width(3)
         # FIXED: Hay un bug con glade-gtk2 que convierte el Entry de los Combo
         # a can_focus=no por lo que nunca se puede llegar a meter nada a mano.
-        self.wids['iconostado'].set_from_stock(gtk.STOCK_INFO, 
+        self.wids['iconostado'].set_from_stock(gtk.STOCK_INFO,
                                                gtk.ICON_SIZE_DND)
         self.solicitudes_validacion = {}
         self.reset_cache_credito()
@@ -1292,13 +1292,13 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.wids['b_nuevo'].set_sensitive(True)
         self.wids['b_buscar'].set_sensitive(True)
         # Inicialización del resto de widgets:
-        cols = (('Cantidad', 'gobject.TYPE_STRING', True, True, False, 
-                    self.cambiar_cantidad_ldp), 
+        cols = (('Cantidad', 'gobject.TYPE_STRING', True, True, False,
+                    self.cambiar_cantidad_ldp),
                 ('Descripción', 'gobject.TYPE_STRING', False,True,True, None),
-                ('Precio', 'gobject.TYPE_STRING', True, True, False, 
+                ('Precio', 'gobject.TYPE_STRING', True, True, False,
                     self.cambiar_precio_ldp),
                 ('Subtotal', 'gobject.TYPE_STRING', False, True, False, None),
-                #('Aceptado', 'gobject.TYPE_BOOLEAN', False, True, False, None), 
+                #('Aceptado', 'gobject.TYPE_BOOLEAN', False, True, False, None),
                 #('En pedido', 'gobject.TYPE_STRING', False, True, False, None),
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_listview(self.wids['tv_contenido'], cols)
@@ -1314,11 +1314,11 @@ class Presupuestos(Ventana, VentanaGenerica):
         col.clear()
         liststore_productos = gtk.ListStore(str, str)
         for p in pclases.ProductoVenta.select(
-                pclases.ProductoVenta.q.obsoleto == False, 
+                pclases.ProductoVenta.q.obsoleto == False,
                 orderBy = "descripcion"):
             liststore_productos.append((p.descripcion, p.puid))
         for p in pclases.ProductoCompra.select(
-                pclases.ProductoCompra.q.obsoleto == False, 
+                pclases.ProductoCompra.q.obsoleto == False,
                 orderBy = "descripcion"):
             liststore_productos.append((p.descripcion, p.puid))
         #cellrenderer_combo = gtk.CellRendererCombo()
@@ -1329,10 +1329,10 @@ class Presupuestos(Ventana, VentanaGenerica):
         #column_combo.pack_start(cellrenderer_combo, True)
         #column_combo.pack_start(cellrenderer_text, True)
         #column_combo.add_attribute(cellrenderer_combo, "text", 1)
-        #cellrenderer_combo.connect("edited", 
-        #                           self.update_prod_lpd, 
-        #                           liststore_productos, 
-        #                           1, 
+        #cellrenderer_combo.connect("edited",
+        #                           self.update_prod_lpd,
+        #                           liststore_productos,
+        #                           1,
         #                           self.wids['tv_contenido'].get_model())
         completion = gtk.EntryCompletion()
         completion.set_model(liststore_productos)
@@ -1340,18 +1340,18 @@ class Presupuestos(Ventana, VentanaGenerica):
         completion.set_match_func(match_producto, 0)
         cellrenderer_text = CellRendererAutoComplete(completion)
         cellrenderer_text.set_property("editable", True)
-        cellrenderer_text.connect("edited", 
-                                   self.update_prod_lpd, 
-                                   liststore_productos, 
-                                   1, 
+        cellrenderer_text.connect("edited",
+                                   self.update_prod_lpd,
+                                   liststore_productos,
+                                   1,
                                    self.wids['tv_contenido'].get_model())
         col.pack_start(cellrenderer_text, True)
         col.add_attribute(cellrenderer_text, "text", 1)
         cellrenderer_text.set_property("text", 1)
         # Notas en cada línea de presupuesto.
-        postomatic.attach_menu_notas(self.wids['tv_contenido'], 
-                                     pclases.LineaDePresupuesto, 
-                                     self.usuario, 
+        postomatic.attach_menu_notas(self.wids['tv_contenido'],
+                                     pclases.LineaDePresupuesto,
+                                     self.usuario,
                                      1)
         self.wids['tv_contenido'].set_tooltip_column(1)
         self.wids['tv_contenido'].connect("query-tooltip", self.tooltip_query)
@@ -1359,35 +1359,35 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.build_tv_presupuestos_no_validados()
         cols = (('Usuario', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Ventana', 'gobject.TYPE_STRING', False, True, False, None),
-                ('«dbpuid»', 'gobject.TYPE_STRING', False, True, False, None), 
-                ('Acción', 'gobject.TYPE_STRING', False, True, False, None), 
-                ('IP', 'gobject.TYPE_STRING', False, True, False, None), 
-                ('«hostname»', 
-                    'gobject.TYPE_STRING', False, True, False, None), 
+                ('«dbpuid»', 'gobject.TYPE_STRING', False, True, False, None),
+                ('Acción', 'gobject.TYPE_STRING', False, True, False, None),
+                ('IP', 'gobject.TYPE_STRING', False, True, False, None),
+                ('«hostname»',
+                    'gobject.TYPE_STRING', False, True, False, None),
                 ('«fechahora»', 'gobject.TYPE_STRING', False, True, True, None),
-                ('Descripción', 
-                    'gobject.TYPE_STRING', False, True, False, None), 
+                ('Descripción',
+                    'gobject.TYPE_STRING', False, True, False, None),
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_listview(self.wids['tv_auditoria'], cols)
         self.colorear_historial(self.wids['tv_auditoria'])
-        self.wids['nb'].connect_after("switch-page", 
+        self.wids['nb'].connect_after("switch-page",
                 self.detectar_cambio_pagina_notebook)
-        cols = (("Producto", "gobject.TYPE_STRING", False, True, True, None), 
-                ("Ofertado", "gobject.TYPE_FLOAT", False, False, True, None), 
-                ("Pedido", "gobject.TYPE_FLOAT", False, False, True, None), 
-                ("Servido", "gobject.TYPE_FLOAT", False, False, True, None), 
-                ("Facturado", "gobject.TYPE_FLOAT", False, False, True, None), 
-                ("Pendiente", "gobject.TYPE_FLOAT", False, False, True, None), 
+        cols = (("Producto", "gobject.TYPE_STRING", False, True, True, None),
+                ("Ofertado", "gobject.TYPE_FLOAT", False, False, True, None),
+                ("Pedido", "gobject.TYPE_FLOAT", False, False, True, None),
+                ("Servido", "gobject.TYPE_FLOAT", False, False, True, None),
+                ("Facturado", "gobject.TYPE_FLOAT", False, False, True, None),
+                ("Pendiente", "gobject.TYPE_FLOAT", False, False, True, None),
                 ("PUID", "gobject.TYPE_STRING", False, False, False, None))
         utils.preparar_listview(self.wids["tv_ofertado"], cols)
         from formularios.custom_widgets import starhscale
-        self.wids['rating'] = starhscale.StarHScale(max_stars = 5, 
+        self.wids['rating'] = starhscale.StarHScale(max_stars = 5,
                                                     pixmap_size = 16)
         self.wids['rating'].set_sensitive(False)
         b_ayuda = gtk.Button(stock = gtk.STOCK_HELP)
         def show_hint(boton):
-            utils.dialogo_info(titulo = "RATING", 
-                    texto = pclases.Cliente.calcular_rating.__doc__, 
+            utils.dialogo_info(titulo = "RATING",
+                    texto = pclases.Cliente.calcular_rating.__doc__,
                     padre = self.wids['ventana'])
         b_ayuda.connect("clicked", show_hint)
         alignment = self.wids['cbe_cliente'].parent
@@ -1405,7 +1405,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             b_ayuda.set_property("visible", False)
 
     def build_tv_presupuestos_no_validados(self):
-        cols = (('Presupuesto','gobject.TYPE_STRING',False,True,True,None), 
+        cols = (('Presupuesto','gobject.TYPE_STRING',False,True,True,None),
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_listview(self.wids['tv_presupuestos'], cols)
         self.wids['tv_presupuestos'].set_model(
@@ -1442,9 +1442,9 @@ class Presupuestos(Ventana, VentanaGenerica):
         col.set_attributes(celltext, text = 2)
         col.set_attributes(cellpb3, stock_id = 4)
         col.set_attributes(cellpb4, stock_id = 5)
-        self.hndlr_cerrado = self.wids['ch_cerrado'].connect('clicked', 
+        self.hndlr_cerrado = self.wids['ch_cerrado'].connect('clicked',
                 self.cerrar_presupuesto)
-        self.hndlr_bloqueado = self.wids['ch_bloqueado'].connect('clicked', 
+        self.hndlr_bloqueado = self.wids['ch_bloqueado'].connect('clicked',
                 self.bloquear)
         self.hndlr_presup = self.wids['tv_presupuestos'].connect(
                 "cursor-changed", self.cambiar_presupuesto_activo)
@@ -1461,9 +1461,9 @@ class Presupuestos(Ventana, VentanaGenerica):
             usuario = model[itr][0]
             if usuario == (self.usuario and self.usuario.usuario or ""):
                 color_fg = "tomato"
-            elif usuario == (self.objeto.comercial 
-                    and self.objeto.comercial.empleado 
-                    and self.objeto.comercial.empleado.usuario 
+            elif usuario == (self.objeto.comercial
+                    and self.objeto.comercial.empleado
+                    and self.objeto.comercial.empleado.usuario
                     and self.objeto.comercial.empleado.usuario.usuario or ""):
                 color_fg = "blue"
             else:
@@ -1477,16 +1477,16 @@ class Presupuestos(Ventana, VentanaGenerica):
                     color = "yellow green"
                 elif tipo == "drop":
                     color = "red"
-                elif tipo == "update": 
+                elif tipo == "update":
                     color = "light blue"
                 else:
-                    # Cualquier otra cosa 
+                    # Cualquier otra cosa
                     color = None
             cell.set_property("foreground", color_fg)
             cell.set_property("background", color)
             #cell.set_property("cell-background", color)
         cols = tv.get_columns()
-        for i in xrange(len(cols)): 
+        for i in xrange(len(cols)):
             column = cols[i]
             cells = column.get_cell_renderers()
             for cell in cells:
@@ -1506,15 +1506,15 @@ class Presupuestos(Ventana, VentanaGenerica):
 
     def show_color_help(self, boton):
         """
-        Crea una ventana con la leyenda de colores usada en las líneas de 
+        Crea una ventana con la leyenda de colores usada en las líneas de
         presupuesto.
         """
         d = gtk.Dialog()
         d.add_buttons(gtk.STOCK_CLOSE, 1)
         for texto, fuente, color, color_fg in (
-                ("Fibra",          "sans bold",   "gainsboro",   None), 
-                ("Geotextil",      "sans bold",   "gold",        "dark green"), 
-                ("Comercializado", "sans",        "olive drab",  "white"), 
+                ("Fibra",          "sans bold",   "gainsboro",   None),
+                ("Geotextil",      "sans bold",   "gold",        "dark green"),
+                ("Comercializado", "sans",        "olive drab",  "white"),
                 ("Servicio",       "sans italic", None,          "dark orange")):
             entry = gtk.Entry()
             entry.set_text(texto)
@@ -1540,7 +1540,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         def cell_func(column, cell, model, itr, numcol):
             ldpid = model[itr][-1]
             ldp = pclases.getObjetoPUID(ldpid)
-            if ldp.productoVenta:       
+            if ldp.productoVenta:
                 prod = ldp.productoVenta
                 if prod.es_fibra():     # Fibra en gris
                     color = "gainsboro"
@@ -1562,12 +1562,12 @@ class Presupuestos(Ventana, VentanaGenerica):
             if numcol == 1:     # Solo descripciones
                 cell.set_property("font-desc", pango.FontDescription(fuente))
         cols = tv.get_columns()
-        for i in xrange(len(cols)): 
+        for i in xrange(len(cols)):
             column = cols[i]
             cells = column.get_cell_renderers()
             for cell in cells:
                 if not isinstance(cell, gtk.CellRendererPixbuf):
-                    # El cell del pixbuf del icono de notas lleva su 
+                    # El cell del pixbuf del icono de notas lleva su
                     # propia función de render.
                     column.set_cell_data_func(cell, cell_func, i)
 
@@ -1603,9 +1603,9 @@ class Presupuestos(Ventana, VentanaGenerica):
                 if pclases.DEBUG:
                     print "  -----------------> ", presupuesto_seleccionado.id
                 self.reset_cache_credito()
-                self.ir_a(presupuesto_seleccionado) 
+                self.ir_a(presupuesto_seleccionado)
 
-    def fin_edicion_cellrenderers(self, cell, nextwidget = None, 
+    def fin_edicion_cellrenderers(self, cell, nextwidget = None,
                                   nextpath = None, nextcol = None):
         cell.stop_editing(False)
         self.rellenar_tablas()
@@ -1627,7 +1627,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             precioKilo = ldp.precioKilo
             if precioKilo != None:
                 texto = "%s € / kg; Mínimo: %s" % (
-                        utils.float2str(precioKilo), 
+                        utils.float2str(precioKilo),
                         ldp.producto.precioMinimo)
                 tooltip.set_text(texto)
                 return True     # Muestra ya el tooltip
@@ -1638,7 +1638,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         ldp = pclases.getObjetoPUID(puidldp)
         ldp.descripcion = text
         # LEEEEEENTO
-        # Si he tecleado un producto de compra o de venta, actualizo el 
+        # Si he tecleado un producto de compra o de venta, actualizo el
         # registro como corresponde.
         producto = None
         for desc, puid in model:
@@ -1650,7 +1650,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             ldp.productoCompra = producto
         elif isinstance(producto, pclases.ProductoVenta):
             ldp.productoVenta = producto
-        model_tv[path][ncol] = ldp.get_descripcion_producto() 
+        model_tv[path][ncol] = ldp.get_descripcion_producto()
         # Pongo precio por defecto:
         if not ldp.precio:
             try:
@@ -1659,7 +1659,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             except:
                 try:
                     precio = ldp.producto.preciopordefecto
-                except AttributeError: 
+                except AttributeError:
                     precio = 0
             ldp.precio = precio
             model_tv[path][2] = utils.float2str(ldp.precio, 3, autodec = True)
@@ -1670,17 +1670,17 @@ class Presupuestos(Ventana, VentanaGenerica):
             resto = cantidad % cer.metrosCuadrados
             if resto:
                 nueva_cantidad = cantidad + cer.metrosCuadrados - resto
-                if utils.dialogo(titulo = "¿CANTIDAD INCORRECTA?", 
+                if utils.dialogo(titulo = "¿CANTIDAD INCORRECTA?",
                         texto = "El producto %s se vende por múltiplos "
                                 "de %s m².\nLa línea contiene %s.\n\n"
                                 "¿Corregir la cantidad a %s?" % (
-                                    ldp.productoVenta.descripcion, 
-                                    utils.float2str(cer.metrosCuadrados, 
-                                                    autodec = True), 
-                                    utils.float2str(cantidad, 
-                                                    autodec = True), 
-                                    utils.float2str(nueva_cantidad, 
-                                                    autodec = True)), 
+                                    ldp.productoVenta.descripcion,
+                                    utils.float2str(cer.metrosCuadrados,
+                                                    autodec = True),
+                                    utils.float2str(cantidad,
+                                                    autodec = True),
+                                    utils.float2str(nueva_cantidad,
+                                                    autodec = True)),
                         padre = self.wids['ventana']):
                     cantidad = nueva_cantidad
             ldp.cantidad = cantidad
@@ -1689,7 +1689,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         col = self.wids['tv_contenido'].get_column(0)
         #self.wids['tv_contenido'].grab_focus()
         #self.wids['tv_contenido'].set_cursor(path, col, True)
-        gobject.idle_add(self.fin_edicion_cellrenderers, cell, 
+        gobject.idle_add(self.fin_edicion_cellrenderers, cell,
                          self.wids['tv_contenido'], path, col)
 
     def cambiar_precio_ldp(self, cell, path, texto):
@@ -1700,8 +1700,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         try:
             precio = utils._float(texto)
         except:
-            utils.dialogo_info(titulo = "ERROR", 
-                texto = 'El texto "%s" no es un número.' % (texto), 
+            utils.dialogo_info(titulo = "ERROR",
+                texto = 'El texto "%s" no es un número.' % (texto),
                 padre = self.wids['ventana'])
         else:
             model = self.wids['tv_contenido'].get_model()
@@ -1715,7 +1715,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                     self.objeto.swap['fechaValidacion'] = None
                     self.objeto.swap['usuarioID'] = None
                 pclases.Auditoria.modificado(ldp, self.usuario, __file__)
-                gobject.idle_add(self.fin_edicion_cellrenderers, cell, 
+                gobject.idle_add(self.fin_edicion_cellrenderers, cell,
                                  self.wids['b_add'])
                 #self.rellenar_tablas()
                 #self.refresh_validado()
@@ -1730,8 +1730,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         try:
             cantidad = utils._float(texto)
         except:
-            utils.dialogo_info(titulo = "ERROR", 
-                texto = 'El texto "%s" no es un número.' % (texto), 
+            utils.dialogo_info(titulo = "ERROR",
+                texto = 'El texto "%s" no es un número.' % (texto),
                 padre = self.wids['ventana'])
         else:
             model = self.wids['tv_contenido'].get_model()
@@ -1739,23 +1739,25 @@ class Presupuestos(Ventana, VentanaGenerica):
             # Si es rollo, ajusto al múltiplo de rollos completos.
             if ldp.productoVenta and ldp.productoVenta.es_rollo():
                 cer = ldp.productoVenta.camposEspecificosRollo
+                #Para evitar falsos pstvos. por rendondeo como: 31680%(4.4*900)
+                cer_m2 = round(cer.metrosCuadrados, 2)
                 try:
-                    resto = cantidad % cer.metrosCuadrados
+                    resto = cantidad % cer_m2
                 except ZeroDivisionError:  # No está bien dado de alta el prod.
                     resto = 0.0
                 if resto:
-                    nueva_cantidad = cantidad + cer.metrosCuadrados - resto
-                    if utils.dialogo(titulo = "¿CANTIDAD INCORRECTA?", 
+                    nueva_cantidad = cantidad + cer_m2 - resto
+                    if utils.dialogo(titulo = "¿CANTIDAD INCORRECTA?",
                             texto = "El producto %s se vende por múltiplos "
-                                    "de %s m².\nHa teclado %s.\n\n"
+                                    "de %s m².\nHa tecleado %s.\n\n"
                                     "¿Corregir la cantidad a %s?" % (
-                                        ldp.productoVenta.descripcion, 
-                                        utils.float2str(cer.metrosCuadrados, 
-                                                        autodec = True), 
-                                        utils.float2str(cantidad, 
-                                                        autodec = True), 
-                                        utils.float2str(nueva_cantidad, 
-                                                        autodec = True)), 
+                                        ldp.productoVenta.descripcion,
+                                        utils.float2str(cer_m2,
+                                                        autodec=True),
+                                        utils.float2str(cantidad,
+                                                        autodec=True),
+                                        utils.float2str(nueva_cantidad,
+                                                        autodec=True)),
                             padre = self.wids['ventana']):
                         cantidad = nueva_cantidad
             ldp.cantidad = cantidad
@@ -1765,34 +1767,34 @@ class Presupuestos(Ventana, VentanaGenerica):
             col = self.wids['tv_contenido'].get_column(2)
             #self.wids['tv_contenido'].grab_focus()
             #self.wids['tv_contenido'].set_cursor(path, col, True)
-            gobject.idle_add(self.fin_edicion_cellrenderers, cell, 
+            gobject.idle_add(self.fin_edicion_cellrenderers, cell,
                              self.wids['tv_contenido'], path, col)
 
     def activar_widgets(self, s):
         """
-        Activa o desactiva (sensitive=True/False) todos 
-        los widgets de la ventana que dependan del 
+        Activa o desactiva (sensitive=True/False) todos
+        los widgets de la ventana que dependan del
         objeto mostrado.
         Entrada: s debe ser True o False. En todo caso
         se evaluará como boolean.
         """
-        if (self.objeto and self.objeto.comercial 
+        if (self.objeto and self.objeto.comercial
             and self.usuario and self.usuario.get_comerciales()):
-            es_mismo_comercial = (self.objeto.comercial 
+            es_mismo_comercial = (self.objeto.comercial
                                   in self.usuario.get_comerciales())
             #print es_mismo_comercial
-            # Excepción: que tenga nivel chachi de validar aunque 
-            # tenga también perfil comercial. Si así también puede editar 
-            # ofertas de otros comerciales. 
+            # Excepción: que tenga nivel chachi de validar aunque
+            # tenga también perfil comercial. Si así también puede editar
+            # ofertas de otros comerciales.
             if self.usuario.nivel > NIVEL_VALIDACION:
                 s = s and es_mismo_comercial
-        puede_bloquear = (self.usuario 
+        puede_bloquear = (self.usuario
                                 and self.usuario.nivel <= NIVEL_VALIDACION)
         s = self.objeto and (puede_bloquear or not self.objeto.bloqueado)
         if self.objeto == None:
             s = False
-        ws = tuple(['b_pedido', "table1",  
-                    "tv_contenido", "b_add", "b_drop", "rb_pedido",  
+        ws = tuple(['b_pedido', "table1",
+                    "tv_contenido", "b_add", "b_drop", "rb_pedido",
                    ] + [self.dic_campos[k] for k in self.dic_campos.keys()])
         for w in ws:
             try:
@@ -1802,30 +1804,30 @@ class Presupuestos(Ventana, VentanaGenerica):
                                   "Widget %s no encontrado." % w)
                 if pclases.DEBUG:
                     print w
-        # Botón de hacer pedidos. Solo para ofertas de pedido validadas y si 
+        # Botón de hacer pedidos. Solo para ofertas de pedido validadas y si
         # el usuario puede hacerlo.
         txt_puede_hacer_pedido = "Crea un pedido automáticamente con el "\
                                  "contenido de la oferta."
         permiso_nuevos_pedidos = calcular_permiso_nuevos_pedidos(
                                     self.usuario, self.logger)
         iconostockstado = self.wids['iconostado'].get_stock()[0]
-        puede_hacer_pedido = self.objeto 
+        puede_hacer_pedido = self.objeto
         if not puede_hacer_pedido:
             txt_puede_hacer_pedido = "No hay presupuesto activo."
         else:
-            puede_hacer_pedido = permiso_nuevos_pedidos 
+            puede_hacer_pedido = permiso_nuevos_pedidos
             if not puede_hacer_pedido:
                 txt_puede_hacer_pedido="No tiene permisos para hacer pedidos."
             else:
-                puede_hacer_pedido = self.objeto.esta_vigente() 
+                puede_hacer_pedido = self.objeto.esta_vigente()
                 if not puede_hacer_pedido:
                     txt_puede_hacer_pedido = "Presupuesto obsoleto."
                 else:
                     puede_hacer_pedido = self.objeto.estudio == False
                     #and not self.objeto.estudio
-                    # Mejor así, porque puede ser 
-                    # None para estado indeterminado y en ese caso tampoco 
-                    # puede pasar a pedido. 
+                    # Mejor así, porque puede ser
+                    # None para estado indeterminado y en ese caso tampoco
+                    # puede pasar a pedido.
                     if not puede_hacer_pedido:
                         txt_puede_hacer_pedido = "No se permiten pedidos "\
                                                  "de ofertas para estudio."
@@ -1834,23 +1836,23 @@ class Presupuestos(Ventana, VentanaGenerica):
                         if not puede_hacer_pedido:
                             txt_puede_hacer_pedido = "La oferta debe estar "\
                                     "validada para poder pasarla a pedido."
-        puede_hacer_pedido = puede_hacer_pedido and 1 or 0   
-            # and not aceptado_completo # <- Esto se chequea después. No hace 
+        puede_hacer_pedido = puede_hacer_pedido and 1 or 0
+            # and not aceptado_completo # <- Esto se chequea después. No hace
                                         # falta
         self.wids['b_pedido'].set_sensitive(puede_hacer_pedido)
         self.wids['b_pedido'].set_tooltip_text(txt_puede_hacer_pedido)
-        # Botones de imprimir y enviar por correo. Todas las ofertas de 
+        # Botones de imprimir y enviar por correo. Todas las ofertas de
         # estudio y las de pedido que cumplan las restricciones "duras".
         txt_puede_imprimir = "Genera un PDF del presupuesto actual para "\
                         "imprimir, guardar o enviar por correo electrónico."
-        puede_imprimir = ((self.objeto 
-                           and self.objeto.estudio != None 
-                           and 1) or 0) 
+        puede_imprimir = ((self.objeto
+                           and self.objeto.estudio != None
+                           and 1) or 0)
         if not puede_imprimir:
             txt_puede_imprimir = "Debe seleccionar el tipo de oferta."
         txt_puede_adjudicarse = "Marca la oferta como adjudicada."
-        puede_adjudicarse = ((self.objeto 
-                              and self.objeto.estudio != None 
+        puede_adjudicarse = ((self.objeto
+                              and self.objeto.estudio != None
                               and 1) or 0)
         if not puede_adjudicarse:
             txt_puede_adjudicarse = "Debe seleccionar el tipo de oferta."
@@ -1867,18 +1869,18 @@ class Presupuestos(Ventana, VentanaGenerica):
                             "condiciones particulares y que no lleva "\
                             "comercializados"
                     if estado != pclases.COND_PARTICULARES:
-                        # Una oferta con condiciones particulares sí que puede 
-                        # adjudicarse. Solo que para imprimirla antes le 
+                        # Una oferta con condiciones particulares sí que puede
+                        # adjudicarse. Solo que para imprimirla antes le
                         # habrán tenido que dar el visto bueno.
                         puede_adjudicarse = False
                     txt_puede_adjudicarse = txt_puede_imprimir
             if (self.objeto and (
-                    not self.objeto.lineasDePresupuesto 
+                    not self.objeto.lineasDePresupuesto
                     or not self.objeto.cif
                     or not self.objeto.direccion
                     or not self.objeto.email
                     or not self.objeto.telefono)):
-                # Para todas las ofertas... 
+                # Para todas las ofertas...
                 puede_imprimir = False
                 txt_puede_imprimir = "Compruebe que el contenido de la oferta"\
                         " no está vacío y que ha rellenado al menos los "\
@@ -1895,19 +1897,19 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.actualizar_editable_motivo(self.wids['ch_denegado'])
         self.wids['txt_cred_motivo_rechazo'].set_sensitive(
                 not self.wids['ch_cred_vb_admon'].get_active())
-        # CWT: Si ya se había seleccionado el tipo de oferta y era de pedido, 
+        # CWT: Si ya se había seleccionado el tipo de oferta y era de pedido,
         # no permitir cambiarla.
-        if self.objeto and self.objeto.estudio: 
+        if self.objeto and self.objeto.estudio:
             self.wids['hbox_radiobutton'].set_sensitive(False)
         elif self.objeto:
             self.wids['hbox_radiobutton'].set_sensitive(True)
         # Si el crédito ya se ha aprobado, bloqueo todo menos eso.
         if self.objeto and self.objeto.credUsuario:
             for w in self.wids.keys():
-                if (("_cred_" in w and w != "ch_cred_vb_admon") 
+                if (("_cred_" in w and w != "ch_cred_vb_admon")
                         or (w == "b_credito")):
                     self.wids[w].set_sensitive(False)
-        # Aparte, si el usuario no tiene nivel para conceder crédito le 
+        # Aparte, si el usuario no tiene nivel para conceder crédito le
         # impido tocar lo concedido y sus fechas.
         if self.usuario and self.usuario.nivel > NIVEL_VALIDACION:
             self.wids['e_cred_asegurado'].set_sensitive(False)
@@ -1926,18 +1928,18 @@ class Presupuestos(Ventana, VentanaGenerica):
         filas_res = []
         for r in resultados:
             filas_res.append(
-                (r.id, 
-                 utils.str_fecha(r.fecha), 
-                 r.cliente and r.cliente.nombre or r.nombrecliente, 
-                 r.obra and r.obra.nombre or r.nombreobra, 
-                 r.comercial 
-                    and r.comercial.empleado.nombre 
-                            + " " + r.comercial.empleado.apellidos 
+                (r.id,
+                 utils.str_fecha(r.fecha),
+                 r.cliente and r.cliente.nombre or r.nombrecliente,
+                 r.obra and r.obra.nombre or r.nombreobra,
+                 r.comercial
+                    and r.comercial.empleado.nombre
+                            + " " + r.comercial.empleado.apellidos
                     or "Sin comercial relacionado",
-                r.get_str_tipo(), 
-                r.adjudicada, 
-                "Clic aquí para evaluar.", 
-                r.personaContacto, 
+                r.get_str_tipo(),
+                r.adjudicada,
+                "Clic aquí para evaluar.",
+                r.personaContacto,
                 ", ".join([p.numpedido for p in r.get_pedidos()])))
         def mostrar_info_presupuesto(tv):
             model, itr = tv.get_selection().get_selected()
@@ -1947,16 +1949,16 @@ class Presupuestos(Ventana, VentanaGenerica):
                 model[itr][-3] = oferta.get_str_estado()
         idpresupuesto = utils.dialogo_resultado(filas_res,
                             titulo = 'SELECCIONE OFERTA',
-                            cabeceras = ('ID', 'Fecha', 
-                                         'Nombre cliente', 
-                                         'Obra', 
-                                         "Comercial", 
-                                         "Tipo", 
-                                         "Adjudicada", 
-                                         "Test de validación", 
-                                         "Contacto", 
-                                         "Pedido"), 
-                            padre = self.wids['ventana'], 
+                            cabeceras = ('ID', 'Fecha',
+                                         'Nombre cliente',
+                                         'Obra',
+                                         "Comercial",
+                                         "Tipo",
+                                         "Adjudicada",
+                                         "Test de validación",
+                                         "Contacto",
+                                         "Pedido"),
+                            padre = self.wids['ventana'],
                             func_change = mostrar_info_presupuesto)
         if idpresupuesto < 0:
             return None
@@ -1968,13 +1970,13 @@ class Presupuestos(Ventana, VentanaGenerica):
         Introduce la información del presupuesto actual
         en los widgets.
         No se chequea que sea != None, así que
-        hay que tener cuidado de no llamar a 
+        hay que tener cuidado de no llamar a
         esta función en ese caso.
         """
         if pclases.DEBUG:
             print "  >>> :::::::::::::: rellenar_widgets :::::::::::::::"
         # Autobloqueo antes de nada.
-        if (self.objeto and self.objeto.get_pedidos() 
+        if (self.objeto and self.objeto.get_pedidos()
                 and not self.objeto.bloqueado):
             self.wids['ch_bloqueado'].disconnect(self.hndlr_bloqueado)
             self.objeto.make_swap("bloqueado")
@@ -1985,28 +1987,28 @@ class Presupuestos(Ventana, VentanaGenerica):
                     'clicked', self.bloquear)
         # Botones atrás/adelante. ¿Hay anterior y siguiente?
         presupuestos_anteriores = self.buscar_presupuestos_accesibles(
-                    mas_criterios_de_busqueda = 
+                    mas_criterios_de_busqueda =
                         pclases.Presupuesto.q.id < self.objeto.id)
         presupuestos_siguientes = self.buscar_presupuestos_accesibles(
-                    mas_criterios_de_busqueda = 
+                    mas_criterios_de_busqueda =
                         pclases.Presupuesto.q.id > self.objeto.id)
         hay_anterior = presupuestos_anteriores.count() > 0
         self.wids['b_atras'].set_sensitive(hay_anterior)
         hay_siguiente = presupuestos_siguientes.count() > 0
         self.wids['b_adelante'].set_sensitive(hay_siguiente)
         # Formas de pago
-        fdps = [(fdp.id, fdp.toString()) 
+        fdps = [(fdp.id, fdp.toString())
                 for fdp in pclases.FormaDePago.select(
                     orderBy = "documento_de_pago_id, plazo")]
         utils.rellenar_lista(self.wids['cb_forma_cobro'], fdps)
-        utils.rellenar_lista(self.wids['cbe_cliente'], 
-            [(p.id, p.nombre) for p in 
-             pclases.Cliente.select(orderBy = "nombre") 
-             if not p.inhabilitado]) 
-            # Lo pongo aquí por si crea un cliente nuevo sin cerrar esta 
+        utils.rellenar_lista(self.wids['cbe_cliente'],
+            [(p.id, p.nombre) for p in
+             pclases.Cliente.select(orderBy = "nombre")
+             if not p.inhabilitado])
+            # Lo pongo aquí por si crea un cliente nuevo sin cerrar esta
             # ventana y lo quiere usar.
         # SANTABÁRBARA
-        # Me aseguro de que si el cliente existe y es lo que tengo 
+        # Me aseguro de que si el cliente existe y es lo que tengo
         # escrito, la asociación esté bien hecha.
         try:
             self.objeto.cliente = pclases.Cliente.selectBy(
@@ -2019,21 +2021,21 @@ class Presupuestos(Ventana, VentanaGenerica):
             for e in self.usuario.empleados:
                 for c in e.comerciales:
                     comerciales.append(c)
-        if not comerciales or (self.usuario 
+        if not comerciales or (self.usuario
                                and self.usuario.nivel<=NIVEL_VALIDACION):
-            comerciales = pclases.Comercial.select() 
+            comerciales = pclases.Comercial.select()
         if self.objeto.comercial and self.objeto.comercial not in comerciales:
             comerciales.append(self.objeto.comercial)
         opciones_comerciales = [
-            (c.id, c.empleado and c.empleado.get_nombre_completo() 
-                or "Comercial desconocido (%s)" % c.puid) 
+            (c.id, c.empleado and c.empleado.get_nombre_completo()
+                or "Comercial desconocido (%s)" % c.puid)
             for c in comerciales
             if c.empleado.activo or c == self.objeto.comercial]
         opciones_comerciales.sort(key = lambda i: i[1])
         # CWT: Si no soy admin o equivalente, no puedo usar la opción de S/C
-        if not self.usuario or self.usuario.nivel <= NIVEL_VALIDACION: 
+        if not self.usuario or self.usuario.nivel <= NIVEL_VALIDACION:
             opciones_comerciales += [(-1, "Sin comercial relacionado")]
-        utils.rellenar_lista(self.wids['cb_comercial'], 
+        utils.rellenar_lista(self.wids['cb_comercial'],
                 opciones_comerciales)
         self.actualizar_obras_cliente()
         presupuesto = self.objeto
@@ -2047,17 +2049,17 @@ class Presupuestos(Ventana, VentanaGenerica):
                 self.wids['cbe_obra'].child.set_text(
                         presupuesto.nombreobra)
             elif nombre_col == "cerrado":
-                # En WIN el set_active IMPLICA un clicked del chbutton. Tengo 
+                # En WIN el set_active IMPLICA un clicked del chbutton. Tengo
                 # que desconectarlo temporalmente.
                 self.wids['ch_cerrado'].disconnect(self.hndlr_cerrado)
-                # Inexplicable bug. Si lo hago con self.escribir_valor, hace 
+                # Inexplicable bug. Si lo hago con self.escribir_valor, hace
                 # llamada recursiva y machaca el cliente. WTF?!
                 self.wids['ch_cerrado'].set_active(self.objeto.cerrado)
                 self.hndlr_cerrado = self.wids['ch_cerrado'].connect('clicked',
                     self.cerrar_presupuesto)
             else:
-                self.escribir_valor(presupuesto.sqlmeta.columns[nombre_col], 
-                                    getattr(presupuesto, nombre_col), 
+                self.escribir_valor(presupuesto.sqlmeta.columns[nombre_col],
+                                    getattr(presupuesto, nombre_col),
                                     self.dic_campos[nombre_col])
         self.rellenar_tablas()
         # Algunos campos "especialitos":
@@ -2069,11 +2071,11 @@ class Presupuestos(Ventana, VentanaGenerica):
         # Y ahora la lista de presupuestos.
         #self.rellenar_lista_presupuestos()
         # Para finalizar, el pedido al que se ha convertido
-        numspedidos = [p.numpedido for p in presupuesto.get_pedidos()] 
+        numspedidos = [p.numpedido for p in presupuesto.get_pedidos()]
         self.wids['e_pedido'].set_text(", ".join(numspedidos))
         self.wids['ch_bloqueado'].disconnect(self.hndlr_bloqueado)
         self.wids['ch_bloqueado'].set_active(self.objeto.bloqueado)
-        self.hndlr_bloqueado = self.wids['ch_bloqueado'].connect('clicked', 
+        self.hndlr_bloqueado = self.wids['ch_bloqueado'].connect('clicked',
                 self.bloquear)
         # Y ahora los "autocalculados" de la petición de crédito.
         self.wids['ch_cred_vb_comercial'].set_active(
@@ -2086,7 +2088,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.wids["e_cred_obra"].set_text(self.objeto.nombreobra)
         try:
             nombre_del_comercial = self.objeto.comercial.get_nombre_completo()
-        except AttributeError: 
+        except AttributeError:
             nombre_del_comercial = ""
         self.wids["e_cred_comercial"].set_text(nombre_del_comercial)
         if pclases.DEBUG:
@@ -2096,20 +2098,20 @@ class Presupuestos(Ventana, VentanaGenerica):
         idcliente = utils.combo_get_value(self.wids['cbe_cliente'])
         if idcliente and idcliente != -1:
             temp_cliente = pclases.Cliente.get(idcliente)
-            #obras = [(o.id, o.get_str_obra()) 
-            obras = [(o.id, o.nombre) 
+            #obras = [(o.id, o.get_str_obra())
+            obras = [(o.id, o.nombre)
                      for o in temp_cliente.obras]
         elif self.objeto.cliente:
-            #obras = [(o.id, o.get_str_obra()) 
-            obras = [(o.id, o.nombre) 
+            #obras = [(o.id, o.get_str_obra())
+            obras = [(o.id, o.nombre)
                      for o in self.objeto.cliente.obras]
         else:
             obras = []
-        if (self.objeto.obra 
+        if (self.objeto.obra
                 and self.objeto.obra.id not in [o[0] for o in obras]):
-            # Por si acaso no está la obra del presupuesto entre las del 
-            # cliente por no estar la lista actualizada o lo que sea. 
-            obras.append((self.objeto.obra.id, 
+            # Por si acaso no está la obra del presupuesto entre las del
+            # cliente por no estar la lista actualizada o lo que sea.
+            obras.append((self.objeto.obra.id,
                           #self.objeto.obra.get_str_obra()))
                           self.objeto.obra.nombre))
         utils.rellenar_lista(self.wids['cbe_obra'], obras)
@@ -2117,7 +2119,7 @@ class Presupuestos(Ventana, VentanaGenerica):
     def rellenar_lista_presupuestos(self):
         if not "tv_presupuestos" in self.wids.keys():
             # Se está creando la ventana. Cancelo y que me vuelva a llamar.
-            return True 
+            return True
         if pclases.DEBUG:
             ahora = time.time()
             print "rellenar_lista_presupuestos: begin"
@@ -2155,14 +2157,14 @@ class Presupuestos(Ventana, VentanaGenerica):
                     model.remove(itr)
                 continue
             fila = [p.cerrado and gtk.STOCK_DIALOG_AUTHENTICATION or None,
-                    p.validado and gtk.STOCK_YES or gtk.STOCK_NO, 
-                    p.id, 
-                    p.nombrecliente.strip() 
+                    p.validado and gtk.STOCK_YES or gtk.STOCK_NO,
+                    p.id,
+                    p.nombrecliente.strip()
                         and p.nombrecliente.replace("&", "&amp;")
-                        or "Oferta sin cliente", 
+                        or "Oferta sin cliente",
                         # Columna oculta. Para el tooltip
-                    p.adjudicada and gtk.STOCK_APPLY or None, 
-                    p.get_pedidos() and gtk.STOCK_CONNECT or None, 
+                    p.adjudicada and gtk.STOCK_APPLY or None,
+                    p.get_pedidos() and gtk.STOCK_CONNECT or None,
                     p.puid]        # Oculta. Para el get.
             if p.adjudicada:
                 fila[3] += " (oferta adjudicada)"
@@ -2178,7 +2180,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 update_fila(model, itr, fila)
             if self.objeto and self.objeto.id == p.id:
                 path = model.get_path(itr)
-        # Si me ha quedado algo en "modelo", son filas que no se corresponden 
+        # Si me ha quedado algo en "modelo", son filas que no se corresponden
         # con ningun presupuesto que deba aparecer en el TV. Lo quito:
         if pclases.DEBUG:
             print "rellenar_lista_presupuestos: Eliminando residuos..."
@@ -2189,9 +2191,9 @@ class Presupuestos(Ventana, VentanaGenerica):
         if pclases.DEBUG:
             print "rellenar_lista_presupuestos: Descongelando TreeView..."
         self.wids['tv_presupuestos'].thaw_child_notify()
-        # Lo desactivo porque tengo una manera mejor de 
+        # Lo desactivo porque tengo una manera mejor de
         # marcar el presupuesto activo sin borrar, repoblar y redibujar
-        # el model. Más que nada porque la primera llamada viene con la 
+        # el model. Más que nada porque la primera llamada viene con la
         # variable path sin instanciar. ¿Porcuá? Dunno.
         #self.wids['tv_presupuestos'].scroll_to_cell(path)
         #self.wids['tv_presupuestos'].get_selection().select_path(path)
@@ -2200,50 +2202,50 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.hndlr_presup = self.wids['tv_presupuestos'].connect(
                             "cursor-changed", self.cambiar_presupuesto_activo)
         # DONE: Habilitar si consigo acelerar la búsqueda.
-        self.hndlr_listado = gobject.timeout_add(10 * 60 * 1000, 
+        self.hndlr_listado = gobject.timeout_add(10 * 60 * 1000,
                 self.rellenar_lista_presupuestos)
         if pclases.DEBUG:
-            print "rellenar_lista_presupuestos: end (", 
+            print "rellenar_lista_presupuestos: end (",
             print time.time() - ahora, "segundos )"
         return True     # Para que siga llamándome indefinidamente.
 
-    def buscar_presupuestos_accesibles(self, solo_pdte = False, 
+    def buscar_presupuestos_accesibles(self, solo_pdte = False,
                                        mas_criterios_de_busqueda = []):
         """
-        Busca los presupuestos a los que puede acceder el usuario de la 
+        Busca los presupuestos a los que puede acceder el usuario de la
         ventana.
-        Si "solo_pdte" es True, elimina de la lista de resultados los 
-        presupuestos de estudio y los que no tengan informado ese campo; solo 
-        buscará entre las ofertas de pedido que estén pendientes de 
-        validación para imprimir (y por ende, no pasadas a pedido) y que no 
+        Si "solo_pdte" es True, elimina de la lista de resultados los
+        presupuestos de estudio y los que no tengan informado ese campo; solo
+        buscará entre las ofertas de pedido que estén pendientes de
+        validación para imprimir (y por ende, no pasadas a pedido) y que no
         hayan sido rechazadas.
         El resultado se devuelve **ordenado por id**.
         """
         vpro = VentanaProgreso(padre = self.wids['ventana'])
         vpro.mostrar()
         vpro.set_valor(0, "Buscando ofertas visibles...")
-        # Primero determino si busco entre los presupuestos de todos los 
+        # Primero determino si busco entre los presupuestos de todos los
         # comerciales o solo los míos.
         if not self.usuario:    # Todos los presupuestos
             criterio_comercial = []
-        elif (self.usuario.nivel <= NIVEL_VALIDACION 
+        elif (self.usuario.nivel <= NIVEL_VALIDACION
                 or calcular_permiso_nuevos_pedidos(self.usuario, self.logger)):
                 # Todos los presupuestos también.
             criterio_comercial = []
-        else:   # Soy usuario normal y corriente. Solo los míos y los de 
+        else:   # Soy usuario normal y corriente. Solo los míos y los de
                 # aquellos usuarios con menor nivel que yo.
             criterio_comercial = []
             for yo_as_comercial in self.usuario.get_comerciales():
                 criterio_comercial.append(
                     pclases.Presupuesto.q.comercialID==yo_as_comercial.id)
             # Peeeeeero si tengo nivel 4 (el resto de comerciales tiene 5)
-            # entonces debo dejar ver las ofertas de los demás porque soy 
-            # el director de delegados comerciales. En realidad busco los 
-            # que estén por debajo de mi nivel, así puedo establecer 
+            # entonces debo dejar ver las ofertas de los demás porque soy
+            # el director de delegados comerciales. En realidad busco los
+            # que estén por debajo de mi nivel, así puedo establecer
             # jerarquías en el futuro.
             for c in pclases.Comercial.select(pclases.AND(
-                pclases.Empleado.q.usuarioID == pclases.Usuario.q.id, 
-                pclases.Comercial.q.empleadoID == pclases.Empleado.q.id, 
+                pclases.Empleado.q.usuarioID == pclases.Usuario.q.id,
+                pclases.Comercial.q.empleadoID == pclases.Empleado.q.id,
                 pclases.Usuario.q.nivel > self.usuario.nivel)):
                 criterio_comercial.append(
                         pclases.Presupuesto.q.comercialID == c.id)
@@ -2252,22 +2254,22 @@ class Presupuestos(Ventana, VentanaGenerica):
         if solo_pdte:
             if mas_criterios_de_busqueda:
                 mas_criterios_de_busqueda = pclases.AND(
-                                    mas_criterios_de_busqueda, 
-                                    pclases.Presupuesto.q.estudio == False, 
-                                    pclases.Presupuesto.q.usuarioID == None, 
+                                    mas_criterios_de_busqueda,
+                                    pclases.Presupuesto.q.estudio == False,
+                                    pclases.Presupuesto.q.usuarioID == None,
                                     pclases.Presupuesto.q.rechazado == False)
             else:
                 mas_criterios_de_busqueda = pclases.AND(
-                                    pclases.Presupuesto.q.estudio == False, 
+                                    pclases.Presupuesto.q.estudio == False,
                                     pclases.Presupuesto.q.usuarioID == None,
                                     pclases.Presupuesto.q.rechazado == False)
         # Ya tengo montados todos los criterios de selección. A JUGAAAAR:
         if criterio_comercial:
-            criterios = pclases.AND(mas_criterios_de_busqueda, 
+            criterios = pclases.AND(mas_criterios_de_busqueda,
                                     criterio_comercial)
         else:
             criterios = mas_criterios_de_busqueda
-        presupuestos = pclases.Presupuesto.select(pclases.AND(criterios), 
+        presupuestos = pclases.Presupuesto.select(pclases.AND(criterios),
                                                   orderBy = "-id")
         # CWT: Solo los no validados PERO CON LA VALIDACIÓN QUE IMPIDE IMPRIMIR
         if solo_pdte:
@@ -2276,12 +2278,12 @@ class Presupuestos(Ventana, VentanaGenerica):
             tot = presupuestos.count()
             for p in presupuestos:
                 i += 1
-                vpro.set_valor(i / tot, 
-                    "Buscando ofertas visibles... (%d - %s)" 
-                        % (p.id, p.nombrecliente), 
+                vpro.set_valor(i / tot,
+                    "Buscando ofertas visibles... (%d - %s)"
+                        % (p.id, p.nombrecliente),
                     force_actualizar = True)
                 if p.esta_servido():
-                    continue    # Si ya se ha servido, validado o no, ya no 
+                    continue    # Si ya se ha servido, validado o no, ya no
                                 # está pendiente de nada. Ya siguió su curso.
                 estado = p.get_estado_validacion()
                 if estado in CONDICIONES_DURAS:
@@ -2295,7 +2297,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         ch.set_active(self.objeto and self.objeto.usuario and 1 or 0)
         if self.objeto and self.objeto.usuario:
             ch.set_label("Validado por %s (%s)" % (
-                self.objeto.usuario.usuario, 
+                self.objeto.usuario.usuario,
                 utils.str_fechahora(self.objeto.fechaValidacion)))
         else:
             ch.set_label("No validado (clic para validar)")
@@ -2309,7 +2311,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         if pclases.DEBUG:
             print "Soy comprobar_riesgo_cliente. Objeto activo:",self.objeto.id
         self.objeto.notificador.desactivar()
-        vpro = VentanaActividad(self.wids['ventana'], 
+        vpro = VentanaActividad(self.wids['ventana'],
                                 "Comprobando condiciones de riesgo...")
         vpro.mostrar()
         vpro.mover()
@@ -2317,7 +2319,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         if self.objeto.validado:    # True si ya validado manualmente.
             iconostockstado = gtk.STOCK_YES
             txtestado = "Validado por %s" % self.objeto.usuario.nombre
-            color = None    # Me da igual. Ya está validado. No voy a 
+            color = None    # Me da igual. Ya está validado. No voy a
                             # comprobar el crédito ni nada de eso.
         else:
             if self.objeto.cliente:
@@ -2346,7 +2348,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         vpro.mover()
         self.wids['cbe_cliente'].child.modify_base(gtk.STATE_NORMAL, color)
         vpro.mover()
-        self.wids['iconostado'].set_from_stock(iconostockstado, 
+        self.wids['iconostado'].set_from_stock(iconostockstado,
                                                gtk.ICON_SIZE_DND)
         self.wids['iconostado'].set_tooltip_text(txtestado)
         # Esto de abajo ya se hace en desactivar_widgets
@@ -2354,29 +2356,29 @@ class Presupuestos(Ventana, VentanaGenerica):
         #        iconostockstado == gtk.STOCK_YES
         #        and calcular_permiso_nuevos_pedidos(self.usuario, self.logger))
         # El equivalente a la validación automática es validarlo yo mismo.
-        # Pero tengo que cuidarme de que no lo hayan validado ya antes. En ese 
+        # Pero tengo que cuidarme de que no lo hayan validado ya antes. En ese
         # caso no cambio nada a no ser que cambie algún precio o algo.
-        if iconostockstado == gtk.STOCK_YES and not self.objeto.validado: 
+        if iconostockstado == gtk.STOCK_YES and not self.objeto.validado:
         #         # Equivalente  a volver a llamar a la evaluación.
             self.objeto.validado = self.usuario
             self.objeto.swap['usuarioID'] = self.objeto.usuario
             fv = self.objeto.fechaValidacion
             if fv:
-                fv_aprox = datetime.datetime(fv.year, fv.month, fv.day, 
+                fv_aprox = datetime.datetime(fv.year, fv.month, fv.day,
                                              fv.hour, fv.minute, fv.second)
             else:
                 fv_aprox = None
             self.objeto.swap['fechaValidacion'] = fv_aprox
-            # Y si no lo dejo como estaba. No validado o validado por algún 
+            # Y si no lo dejo como estaba. No validado o validado por algún
             # otro. Si modifico algo ya se invalidará y volverá a autovalidar
             # si es el caso.
         # else:
         #     self.objeto.validado = None
         self.actualizar_tooltip_de_cliente()
-        # FIXME: A veces no se oculta la ventana de progreso en el ordenador 
+        # FIXME: A veces no se oculta la ventana de progreso en el ordenador
         #        de Rafa. ¿Porcuá?
         vpro.ocultar()
-        self.objeto.notificador.activar(self.aviso_actualizacion)        
+        self.objeto.notificador.activar(self.aviso_actualizacion)
         return self.cache_credito
 
     def actualizar_tooltip_de_cliente(self):
@@ -2389,7 +2391,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 self.cache_credito = cliente.\
                         calcular_credito_disponible(base = importe_pedido)
             credito = self.cache_credito
-            if credito == sys.maxint:   # ¿maxint, te preguntarás? Ver 
+            if credito == sys.maxint:   # ¿maxint, te preguntarás? Ver
                                         # docstring de calcular_credito
                                         # y respuesta hallarás.
                 strcredito = "∞"
@@ -2425,7 +2427,7 @@ class Presupuestos(Ventana, VentanaGenerica):
 
     def rellenar_historial(self):
         """
-        Busca todos los registros de auditoría de la oferta y los introduce 
+        Busca todos los registros de auditoría de la oferta y los introduce
         en la tabla debidamente formateados y coloreados.
         """
         w = self.wids['tv_auditoria']
@@ -2435,16 +2437,16 @@ class Presupuestos(Ventana, VentanaGenerica):
         model.clear()
         last_iter = None
         if self.objeto:
-            # Cambios en el objeto en sí 
+            # Cambios en el objeto en sí
             audits = pclases.Auditoria.select(
-                    pclases.Auditoria.q.dbpuid == self.objeto.puid, 
+                    pclases.Auditoria.q.dbpuid == self.objeto.puid,
                     orderBy = "fechahora")
             self.lines_added = []
             audits = pclases.SQLlist(audits)
             # Líneas de presupuesto
             for ldpresupuesto in self.objeto.lineasDePresupuesto:
                 more_audits = pclases.Auditoria.select(
-                        pclases.Auditoria.q.dbpuid == ldpresupuesto.puid, 
+                        pclases.Auditoria.q.dbpuid == ldpresupuesto.puid,
                         orderBy = "fechahora")
                 audits += [i for i in more_audits]
             # Cambios en el cliente
@@ -2460,8 +2462,8 @@ class Presupuestos(Ventana, VentanaGenerica):
                         orderBy = "fechahora")
                 audits += [i for i in much_more_audits]
             # Cambios en pedido, albaranes y facturas relacionadas:
-            for o in (self.objeto.get_pedidos() 
-                        + self.objeto.get_albaranes() 
+            for o in (self.objeto.get_pedidos()
+                        + self.objeto.get_albaranes()
                         + self.objeto.get_facturas()):
                 try:
                     much_more_audits = pclases.Auditoria.select(
@@ -2484,14 +2486,14 @@ class Presupuestos(Ventana, VentanaGenerica):
         lpuid = linea.get_puid()
         if lpuid not in self.lines_added:
             added = model.append(
-                            (linea.usuario and linea.usuario.usuario or "", 
-                             linea.ventana and linea.ventana.fichero or "", 
-                             linea.dbpuid, 
-                             linea.action, 
-                             linea.ip, 
-                             linea.hostname, 
-                             utils.str_fechahora(linea.fechahora), 
-                             linea.descripcion, 
+                            (linea.usuario and linea.usuario.usuario or "",
+                             linea.ventana and linea.ventana.fichero or "",
+                             linea.dbpuid,
+                             linea.action,
+                             linea.ip,
+                             linea.hostname,
+                             utils.str_fechahora(linea.fechahora),
+                             linea.descripcion,
                              linea.get_puid()))
             self.lines_added.append(lpuid)
             return added
@@ -2502,7 +2504,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         sel = self.wids['tv_auditoria'].get_selection()
         model, selected = sel.get_selected()
-        # Me muevo al final si ya estaba en el final o si no estoy  
+        # Me muevo al final si ya estaba en el final o si no estoy
         # investigando nada (no tengo nada seleccionado en el treeview).
         vscroll = self.wids['tv_auditoria'].parent.get_vscrollbar()\
                                                             .get_adjustment()
@@ -2525,23 +2527,23 @@ class Presupuestos(Ventana, VentanaGenerica):
         for ldp in ldps:
             subtotal = ldp.get_subtotal(iva = False)
             total += subtotal
-            # SANTABÁRBARA: Esto "reenlaza" si hiciera falta el 
-            # producto{Compra|Venta} según la descripción guardada. Por si 
+            # SANTABÁRBARA: Esto "reenlaza" si hiciera falta el
+            # producto{Compra|Venta} según la descripción guardada. Por si
             # acaso...
             if ldp._link_producto():
                 if pclases.DEBUG:
                     print "Línea de presupuesto %d enlazada con %s." % (
                             ldp.id, ldp.producto.puid)
-            # EOSANTABÁRBARA 
-            model.append((utils.float2str(ldp.cantidad), 
-                          ldp.get_descripcion_producto(), 
-                          utils.float2str(ldp.precio, 3, autodec = True), 
+            # EOSANTABÁRBARA
+            model.append((utils.float2str(ldp.cantidad),
+                          ldp.get_descripcion_producto(),
+                          utils.float2str(ldp.precio, 3, autodec = True),
                           utils.float2str(subtotal),
                           #ldp.pedidoVenta != None,
-                          #ldp.pedidoVenta and ldp.pedidoVenta.numpedido or "", 
+                          #ldp.pedidoVenta and ldp.pedidoVenta.numpedido or "",
                           ldp.puid))
         return total
-    
+
     def nuevo(self, widget):
         """
         Función callback del botón b_nuevo.
@@ -2564,24 +2566,24 @@ class Presupuestos(Ventana, VentanaGenerica):
                 comercial = comerciales[-1]
         presupuesto = pclases.Presupuesto(
             clienteID = None,
-            fecha = mx.DateTime.localtime(), 
-            nombrecliente = "", 
-            nombreobra = "", 
-            direccion = "", 
-            ciudad = "", 
-            provincia = "", 
-            cp = "", 
-            pais = "", 
-            telefono = "", 
-            fax = "", 
-            texto = "", 
-            despedida = "", 
-            comercial = comercial, 
+            fecha = mx.DateTime.localtime(),
+            nombrecliente = "",
+            nombreobra = "",
+            direccion = "",
+            ciudad = "",
+            provincia = "",
+            cp = "",
+            pais = "",
+            telefono = "",
+            fax = "",
+            texto = "",
+            despedida = "",
+            comercial = comercial,
             validez = 0)
         pclases.Auditoria.nuevo(presupuesto, self.usuario, __file__)
-        utils.dialogo_info('NUEVA OFERTA CREADA', 
+        utils.dialogo_info('NUEVA OFERTA CREADA',
                            'Nuevo presupuesto creado con éxito.\n\n'
-                           'Campos obligatorios marcados en negrita.', 
+                           'Campos obligatorios marcados en negrita.',
                            padre = self.wids['ventana'])
         presupuesto.notificador.activar(self.aviso_actualizacion)
         self.objeto = presupuesto
@@ -2599,14 +2601,14 @@ class Presupuestos(Ventana, VentanaGenerica):
         txtestudio = "Buscar solamente ofertas de estudio"
         txtpedido = "Buscar solamente ofertas de pedido"
         txtadjudicadas = "Buscar solamente ofertas adjudicadas"
-        opciones_estudio_adjudicadas = {txtestudio: False, 
-                                        txtpedido: False, 
+        opciones_estudio_adjudicadas = {txtestudio: False,
+                                        txtpedido: False,
                                         txtadjudicadas: False}
-        a_buscar = utils.dialogo_entrada(titulo = "BUSCAR OFERTA", 
+        a_buscar = utils.dialogo_entrada(titulo = "BUSCAR OFERTA",
                                 texto = "Introduzca número, nombre "\
-                                        "del cliente u obra:", 
-                                padre = self.wids['ventana'], 
-                                opciones = opciones_estudio_adjudicadas) 
+                                        "del cliente u obra:",
+                                padre = self.wids['ventana'],
+                                opciones = opciones_estudio_adjudicadas)
         if a_buscar != None:
             solopedido = opciones_estudio_adjudicadas[txtpedido]
             soloestudio = opciones_estudio_adjudicadas[txtestudio]
@@ -2621,18 +2623,18 @@ class Presupuestos(Ventana, VentanaGenerica):
                     pclases.Presupuesto.q.personaContacto.contains(a_buscar),
                     pclases.Presupuesto.q.id == ida_buscar)
             if solopedido:
-                criterio = pclases.AND(criterio, 
+                criterio = pclases.AND(criterio,
                                        pclases.Presupuesto.q.estudio == False)
             elif soloestudio:
-                criterio = pclases.AND(criterio, 
+                criterio = pclases.AND(criterio,
                                        pclases.Presupuesto.q.estudio == True)
             if adjudicadas:
-                criterio = pclases.AND(criterio, 
+                criterio = pclases.AND(criterio,
                                     pclases.Presupuesto.q.adjudicada == True)
             #permiso_nuevos_pedidos = calcular_permiso_nuevos_pedidos(
             #                            self.usuario, self.logger)
-            #if not(permiso_nuevos_pedidos 
-            #       or (self.usuario 
+            #if not(permiso_nuevos_pedidos
+            #       or (self.usuario
             #           and self.usuario.nivel <= NIVEL_VALIDACION)):
             #    subcrit = []
             #    for yo_as_comercial in self.usuario.get_comerciales():
@@ -2641,20 +2643,20 @@ class Presupuestos(Ventana, VentanaGenerica):
             #    criterio = pclases.AND(criterio, pclases.OR(*subcrit))
             #resultados = pclases.Presupuesto.select(criterio)
             resultados = self.buscar_presupuestos_accesibles(
-                                        mas_criterios_de_busqueda = criterio)
+                                        mas_criterios_de_busqueda=criterio)
             if resultados.count() > 1:
                     ## Refinar los resultados
                     idpresupuesto = self.refinar_resultados_busqueda(resultados)
                     if idpresupuesto == None:
                         return
                     resultados = [pclases.Presupuesto.get(idpresupuesto)]
-                    # Me quedo con una lista de resultados de un único objeto 
+                    # Me quedo con una lista de resultados de un único objeto
                     # ocupando la primera posición.
-                    # (Más abajo será cuando se cambie realmente el objeto 
+                    # (Más abajo será cuando se cambie realmente el objeto
                     # actual por este resultado.)
             elif resultados.count() < 1:
                     ## Sin resultados de búsqueda
-                    utils.dialogo_info('SIN RESULTADOS', 
+                    utils.dialogo_info('SIN RESULTADOS',
                             'La búsqueda no produjo resultados.\nPruebe a '
                             'cambiar el texto buscado o déjelo en blanco '
                             'para ver una lista completa.\n(Atención: '
@@ -2670,11 +2672,11 @@ class Presupuestos(Ventana, VentanaGenerica):
             try:
                 presupuesto = resultados[0]
             except IndexError:
-                utils.dialogo_info(titulo = "ERROR", 
-                    texto = "Se produjo un error al recuperar la información."
+                utils.dialogo_info(titulo="ERROR",
+                    texto="Se produjo un error al recuperar la información."
                             "\nCierre y vuelva a abrir la ventana antes de "
-                            "volver a intentarlo.", 
-                    padre = self.wids['texto'])
+                            "volver a intentarlo.",
+                    padre=self.wids['texto'])
                 return
             # Y activo la función de notificación:
             presupuesto.notificador.activar(self.aviso_actualizacion)
@@ -2689,7 +2691,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         de datos en el objeto y lo sincroniza con la BD.
         """
         # Si guardo es que algo he modificado. Por tanto quito validación.
-        # TODO: Esto no es así, en teoría las modificaciones en la solicitud 
+        # TODO: Esto no es así, en teoría las modificaciones en la solicitud
         # de crédito no deberían invalidar la oferta... ¿o sí?
         self.objeto.validado = False
         self.objeto.swap['usuarioID'] = None
@@ -2703,10 +2705,10 @@ class Presupuestos(Ventana, VentanaGenerica):
             col = self.clase.sqlmeta.columns[colname]
             try:
                 valor_ventana = self.leer_valor(col, self.dic_campos[colname])
-                if (colname == "clienteID" 
+                if (colname == "clienteID"
                         and valor_ventana != self.objeto.cliente):
                     ha_cambiado_el_cliente = True
-                if (colname == "observaciones" 
+                if (colname == "observaciones"
                         and valor_ventana != self.objeto.observaciones
                         and valor_ventana.strip()):
                     ha_cambiado_observaciones = True
@@ -2723,7 +2725,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                     try:
                         self.objeto.obra = pclases.Obra.selectBy(
                                 nombre = valor_ventana)[0]
-                        # Esto es por si ha escrito ex-ac-ta-men-te el nombre 
+                        # Esto es por si ha escrito ex-ac-ta-men-te el nombre
                         # de la obra pero no la ha seleccionado del desplegable
                         valor_ventana = self.objeto.obra.id
                     except IndexError:
@@ -2746,7 +2748,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             self.objeto.nombreobra = self.objeto.obra.nombre
         except AttributeError:  # La obra no se ha dado de alta todavía.
             pass
-        # Fuerzo la actualización de la BD y no espero a que SQLObject lo 
+        # Fuerzo la actualización de la BD y no espero a que SQLObject lo
         # haga por mí:
         self.objeto.syncUpdate()
         self.objeto.sync()
@@ -2755,7 +2757,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.actualizar_ventana()
         self.wids['b_guardar'].set_sensitive(False)
         pclases.Auditoria.modificado(self.objeto, self.usuario, __file__)
-        # Correos electrónicos de alarmas, altas y demás. Ahora compruebo 
+        # Correos electrónicos de alarmas, altas y demás. Ahora compruebo
         # primero que lo hayan marcado así los DELEGADOS (sic) comerciales.
         if self.objeto.cerrado and ha_cambiado_el_cliente:
             # self.enviar_correo_de_riesgo()
@@ -2765,29 +2767,29 @@ class Presupuestos(Ventana, VentanaGenerica):
         if ha_cambiado_observaciones:
             self.enviar_correo_observaciones()
         if errores:
-            utils.dialogo_info(titulo = "ERRORES AL GUARDAR", 
+            utils.dialogo_info(titulo = "ERRORES AL GUARDAR",
                     texto = "Se produjo un error al intentar guardar\n"
                             "los valores para los siguientes campos:\n"
-                            + "\n - ".join(errores), 
+                            + "\n - ".join(errores),
                     padre = self.wids['ventana'])
         self.objeto.version += 1
         self.objeto.make_swap("version")
-        pclases.Auditoria.modificado(self.objeto, self.usuario, __file__, 
+        pclases.Auditoria.modificado(self.objeto, self.usuario, __file__,
                 "Nueva versión %d." % self.objeto.version)
 
     def debe_solicitar_validacion(self):
         """
-        Comprueba que no se haya solicitado ya la validación por correo. En 
+        Comprueba que no se haya solicitado ya la validación por correo. En
         otro caso envía el correo de solicitud.
         """
-        return (self.objeto 
+        return (self.objeto
                 and not self.objeto.validado
                 and self.objeto.id not in self.solicitudes_validacion)
 
     def enviar_correo_notificacion_validado(self):
         """
-        Envía un correo de notificación de validación de la oferta al 
-        comercial implicado. Pero solo si el comercial y el usuario que ha 
+        Envía un correo de notificación de validación de la oferta al
+        comercial implicado. Pero solo si el comercial y el usuario que ha
         validado no son el mismo.
         """
         if self.usuario and self.objeto:
@@ -2800,23 +2802,23 @@ class Presupuestos(Ventana, VentanaGenerica):
             if self.usuario and self.usuario.id == 1:   # Para depuración.
                 dests = ["informatica@geotexan.com"]
             else:
-                dests = [comercial.correoe for comercial in comerciales 
+                dests = [comercial.correoe for comercial in comerciales
                          if comercial.empleado.usuario.usuario != self.usuario]
             # Correo de riesgo de cliente
             texto = "%s ha validado la oferta %d "\
                     "para el cliente %s de fecha %s." % (
-                        self.objeto.usuario.nombre, 
-                        self.objeto.id, 
-                        self.objeto.nombrecliente, 
+                        self.objeto.usuario.nombre,
+                        self.objeto.id,
+                        self.objeto.nombrecliente,
                         utils.str_fecha(self.objeto.fecha))
-            enviar_correoe(rte, 
+            enviar_correoe(rte,
                            dests,
-                           "Oferta %d validada." % self.objeto.id, 
-                           texto, 
-                           servidor = servidor, 
-                           usuario = smtpuser, 
+                           "Oferta %d validada." % self.objeto.id,
+                           texto,
+                           servidor = servidor,
+                           usuario = smtpuser,
                            password = smtppass)
-    
+
     def enviar_correo_solicitud_validacion(self):
         dests = self.select_correo_validador()
         if not isinstance(dests, (list, tuple)):
@@ -2826,41 +2828,41 @@ class Presupuestos(Ventana, VentanaGenerica):
         smtpuser = self.usuario.smtpuser
         smtppass = self.usuario.smtppassword
         rte = self.usuario.email
-        # TODO: Habría que comprobar que la oferta está completa. Porque 
+        # TODO: Habría que comprobar que la oferta está completa. Porque
         # la primera vez que guardan casi seguro que no se valida auto.
         # dests = ["informatica@geotexan.com"]
         # Correo de riesgo de cliente
         texto = "Se ha creado la oferta %d "\
                 "para el cliente %s que necesita validación manual." % (
-                        self.objeto.id, 
+                        self.objeto.id,
                         self.objeto.nombrecliente)
-        enviar_correoe(rte, 
+        enviar_correoe(rte,
                        dests,
-                       "Alerta de validación manual de oferta", 
-                       texto, 
-                       servidor = servidor, 
-                       usuario = smtpuser, 
+                       "Alerta de validación manual de oferta",
+                       texto,
+                       servidor = servidor,
+                       usuario = smtpuser,
                        password = smtppass)
 
     def borrar(self, widget):
         """
         Elimina el presupuesto de la tabla pero NO
         intenta eliminar ninguna de sus relaciones,
-        de forma que si se incumple alguna 
+        de forma que si se incumple alguna
         restricción de la BD, cancelará la eliminación
         y avisará al usuario.
         """
         presupuesto = self.objeto
         if utils.dialogo('¿Eliminar el presupuesto?\n\n\n'
-                'SI NO ESTÁ SEGURO, RESPONDA «NO».', 
-                'BORRAR', 
+                'SI NO ESTÁ SEGURO, RESPONDA «NO».',
+                'BORRAR',
                 padre = self.wids['ventana']):
             presupuesto.notificador.desactivar()
             try:
                 presupuesto.destroy_en_cascada(ventana = __file__)
             except Exception, e:
                 self.logger.error("presupuestos::borrar -> Presupuesto ID %d no se pudo eliminar. Excepción: %s." % (presupuesto.id, e))
-                utils.dialogo_info(titulo = "PRESUPUESTO NO BORRADO", 
+                utils.dialogo_info(titulo = "PRESUPUESTO NO BORRADO",
                                    texto = "El presupuesto no se pudo eliminar.\n\nSe generó un informe de error en el «log» de la aplicación.",
                                    padre = self.wids['ventana'])
                 self.actualizar_ventana()
@@ -2873,8 +2875,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         if not self.usuario:
             self.ir_a_primero()
         else:
-            if (self.usuario.nivel <= NIVEL_VALIDACION 
-                    or calcular_permiso_nuevos_pedidos(self.usuario, 
+            if (self.usuario.nivel <= NIVEL_VALIDACION
+                    or calcular_permiso_nuevos_pedidos(self.usuario,
                                                        self.logger)):
                 try:
                     self.objeto = pclases.Presupuesto.select(orderBy="-id")[0]
@@ -2887,7 +2889,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                         pclases.Presupuesto.q.comercialID==yo_as_comercial.id)
                 presupuestos = pclases.Presupuesto.select(pclases.AND(
                                     pclases.Presupuesto.q.comercialID != None,
-                                    pclases.OR(*criterio)), 
+                                    pclases.OR(*criterio)),
                                 orderBy = "-id")
                 #print presupuestos.count()
                 try:
@@ -2895,10 +2897,10 @@ class Presupuestos(Ventana, VentanaGenerica):
                 except IndexError:
                     self.objeto = None
         self.actualizar_ventana()
-        
+
     def select_correo_validador(self):
         """
-        Devuelve un correo de usuario con permisos de validación que 
+        Devuelve un correo de usuario con permisos de validación que
         no sea admin. Uno diferente en cada llamada.
         """
         # TODO: OJO: HARCODED
@@ -2907,7 +2909,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         else:
             return ["nzumer@geotexan.com", "efigueroa@geotexan.com"]
         # CWT: Nada de RR. Correo a ambos.
-        #round_robin = [u.email 
+        #round_robin = [u.email
         #        for u in pclases.Usuario.select(
         #            pclases.Usuario.q.nivel <= NIVEL_VALIDACION)
         #        if u.usuario != "admin"]
@@ -2930,9 +2932,9 @@ class Presupuestos(Ventana, VentanaGenerica):
         import os
         from tempfile import NamedTemporaryFile
         import shutil
-        # Cargo la plantilla y creo una tabla para trabajar en ella que al 
+        # Cargo la plantilla y creo una tabla para trabajar en ella que al
         # principio contendrá lo mismo que la plantilla.
-        plantilla = os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+        plantilla = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                              "..", "informes", "solicitud_credito.ods")
         ruta_final = NamedTemporaryFile(suffix = ".ods").name
         shutil.copy(plantilla, ruta_final)
@@ -2952,65 +2954,65 @@ class Presupuestos(Ventana, VentanaGenerica):
                          self.wids['e_cred_concedido'].get_text())))
         except ValueError:
             credconcedido = ""
-        celfields = {"B3": self.wids['e_cred_fecha'].get_text(), 
+        celfields = {"B3": self.wids['e_cred_fecha'].get_text(),
                      # HACK: Las celdas vacías consecutivas cuentan como 1 sola
-                     #"F4": self.objeto.credApertura and "X" or " ", 
-                     "D4": self.objeto.credApertura and "X" or " ", 
+                     #"F4": self.objeto.credApertura and "X" or " ",
+                     "D4": self.objeto.credApertura and "X" or " ",
                      # HACK: Las celdas vacías consecutivas cuentan como 1 sola
-                     #"F5": self.objeto.credAumento and "X" or " ", 
-                     "E5": self.objeto.credAumento and "X" or " ", 
-                     "F6": self.objeto.credSolicitud and "X" or " ", 
-                     "B5": self.wids['e_cred_comercial'].get_text(), 
+                     #"F5": self.objeto.credAumento and "X" or " ",
+                     "E5": self.objeto.credAumento and "X" or " ",
+                     "F6": self.objeto.credSolicitud and "X" or " ",
+                     "B5": self.wids['e_cred_comercial'].get_text(),
                     # Apartado de datos fiscales.
-                     "B10": self.wids['e_cred_cif'].get_text(), 
-                     "B12": self.wids['e_cred_nombre'].get_text(), 
-                     "B14": self.wids['e_cred_ute'].get_text(), 
-                     "B16": self.wids['e_cred_obra'].get_text(), 
-                     "B18": self.wids['e_cred_licitador'].get_text(), 
-                     "B20": self.wids['e_cred_dirfiscal'].get_text(), 
-                     "B22": self.wids['e_cred_cpfiscal'].get_text(), 
-                     "D22": self.wids['e_cred_poblacionfiscal'].get_text(), 
-                     "F22": self.wids['e_cred_provinciafiscal'].get_text(), 
-                     "B24": self.wids['e_cred_telefonofiscal'].get_text(), 
-                     "D24": self.wids['e_cred_faxfiscal'].get_text(), 
-                     "F24": self.wids['e_cred_movilfiscal'].get_text(), 
-                     "B26": self.wids['e_cred_contactofiscal'].get_text(), 
+                     "B10": self.wids['e_cred_cif'].get_text(),
+                     "B12": self.wids['e_cred_nombre'].get_text(),
+                     "B14": self.wids['e_cred_ute'].get_text(),
+                     "B16": self.wids['e_cred_obra'].get_text(),
+                     "B18": self.wids['e_cred_licitador'].get_text(),
+                     "B20": self.wids['e_cred_dirfiscal'].get_text(),
+                     "B22": self.wids['e_cred_cpfiscal'].get_text(),
+                     "D22": self.wids['e_cred_poblacionfiscal'].get_text(),
+                     "F22": self.wids['e_cred_provinciafiscal'].get_text(),
+                     "B24": self.wids['e_cred_telefonofiscal'].get_text(),
+                     "D24": self.wids['e_cred_faxfiscal'].get_text(),
+                     "F24": self.wids['e_cred_movilfiscal'].get_text(),
+                     "B26": self.wids['e_cred_contactofiscal'].get_text(),
                      # HACK: Las celdas vacías consecutivas cuentan como 1 sola
-                     #"F26": self.wids['e_cred_emailfiscal'].get_text(), 
-                     "E26": self.wids['e_cred_emailfiscal'].get_text(), 
-                    # Apartado de envío de facturas y contratos. 
-                     "B30": self.wids['e_cred_dircontratos'].get_text(), 
-                     "B32": self.wids['e_cred_cpcontratos'].get_text(), 
-                     "D32": self.wids['e_cred_poblacioncontratos'].get_text(), 
-                     "F32": self.wids['e_cred_provinciacontratos'].get_text(), 
-                     "B34": self.wids['e_cred_telefonocontratos'].get_text(), 
-                     "D34": self.wids['e_cred_emailcontratos'].get_text(), 
-                     "B36": self.wids['e_cred_contactocontratos'].get_text(), 
+                     #"F26": self.wids['e_cred_emailfiscal'].get_text(),
+                     "E26": self.wids['e_cred_emailfiscal'].get_text(),
+                    # Apartado de envío de facturas y contratos.
+                     "B30": self.wids['e_cred_dircontratos'].get_text(),
+                     "B32": self.wids['e_cred_cpcontratos'].get_text(),
+                     "D32": self.wids['e_cred_poblacioncontratos'].get_text(),
+                     "F32": self.wids['e_cred_provinciacontratos'].get_text(),
+                     "B34": self.wids['e_cred_telefonocontratos'].get_text(),
+                     "D34": self.wids['e_cred_emailcontratos'].get_text(),
+                     "B36": self.wids['e_cred_contactocontratos'].get_text(),
                      # HACK: Las celdas vacías consecutivas cuentan como 1 sola
-                     #"F36": self.wids['e_cred_movilcontratos'].get_text(),  
-                     "E36": self.wids['e_cred_movilcontratos'].get_text(),  
+                     #"F36": self.wids['e_cred_movilcontratos'].get_text(),
+                     "E36": self.wids['e_cred_movilcontratos'].get_text(),
                     # Apartado de dirección de obra (envío de materiales)
-                     "B40": self.wids['e_cred_dirobra'].get_text(), 
-                     "B42": self.wids['e_cred_cpobra'].get_text(), 
-                     "D42": self.wids['e_cred_poblacionobra'].get_text(), 
-                     "F42": self.wids['e_cred_provinciaobra'].get_text(), 
-                     "B44": self.wids['e_cred_movilobra'].get_text(), 
-                     "B46": self.wids['e_cred_contactoobra'].get_text(), 
-                    # Apartado de datos de pago 
-                     "B50": self.wids['e_cred_fdp'].get_text(), 
+                     "B40": self.wids['e_cred_dirobra'].get_text(),
+                     "B42": self.wids['e_cred_cpobra'].get_text(),
+                     "D42": self.wids['e_cred_poblacionobra'].get_text(),
+                     "F42": self.wids['e_cred_provinciaobra'].get_text(),
+                     "B44": self.wids['e_cred_movilobra'].get_text(),
+                     "B46": self.wids['e_cred_contactoobra'].get_text(),
+                    # Apartado de datos de pago
+                     "B50": self.wids['e_cred_fdp'].get_text(),
                      "A53": self.wids['txt_cred_entidades'].get_buffer(
                          ).get_text(
                              *self.wids['txt_cred_entidades'].get_buffer(
                                  ).get_bounds()),
-                     "A57": self.wids['e_cred_entidad'].get_text(), 
-                     "B57": self.wids['e_cred_oficina'].get_text(), 
-                     "C57": self.wids['e_cred_digitocontrol'].get_text(), 
-                     "D57": self.wids['e_cred_numcuenta'].get_text(), 
-                     "B59": self.wids['e_cred_diapago1'].get_text(), 
-                     "C59": self.wids['e_cred_diapago2'].get_text(), 
-                     "D59": self.wids['e_cred_diapago3'].get_text(), 
+                     "A57": self.wids['e_cred_entidad'].get_text(),
+                     "B57": self.wids['e_cred_oficina'].get_text(),
+                     "C57": self.wids['e_cred_digitocontrol'].get_text(),
+                     "D57": self.wids['e_cred_numcuenta'].get_text(),
+                     "B59": self.wids['e_cred_diapago1'].get_text(),
+                     "C59": self.wids['e_cred_diapago2'].get_text(),
+                     "D59": self.wids['e_cred_diapago3'].get_text(),
                     # Apartado de riesgos cliente
-                     "B63": credsolicitado, 
+                     "B63": credsolicitado,
                      "A66": self.wids['txt_cred_observaciones'].get_buffer(
                         ).get_text(
                             *self.wids['txt_cred_observaciones'].get_buffer(
@@ -3020,14 +3022,14 @@ class Presupuestos(Ventana, VentanaGenerica):
                                 *self.wids['txt_cred_condiciones'].get_buffer(
                                     ).get_bounds()),
                     # Apartado de vistos buenos
-                     "A74": self.wids['e_cred_vb_nombrecomercial'].get_text(), 
-                     "C72": self.wids['e_cred_vb_nombreadmon'].get_text(), 
-                     "F71": credasegurado, 
-                     "F73": self.wids['e_cred_fechaasegurado'].get_text(), 
-                     "F75": credconcedido, 
+                     "A74": self.wids['e_cred_vb_nombrecomercial'].get_text(),
+                     "C72": self.wids['e_cred_vb_nombreadmon'].get_text(),
+                     "F71": credasegurado,
+                     "F73": self.wids['e_cred_fechaasegurado'].get_text(),
+                     "F75": credconcedido,
                      # HACK: Las celdas vacías consecutivas cuentan como 1 sola
-                     #"F77": self.wids['e_cred_fechaconcedido'].get_text(), 
-                     "E77": self.wids['e_cred_fechaconcedido'].get_text(), 
+                     #"F77": self.wids['e_cred_fechaconcedido'].get_text(),
+                     "E77": self.wids['e_cred_fechaconcedido'].get_text(),
                     }
         celdas = celfields.keys()
         celdas.sort(cmp = cmp_celdas_lrtd)
@@ -3038,7 +3040,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             vpro.set_valor(i/tot, "Rellenando plantilla...")
             valor = prepare_for_ods(celfields[cell])
             if valor:
-                updateCells(ruta_final, 
+                updateCells(ruta_final,
                                 0,      # Índice de la hoja dentro del .ods
                                 parseCell(cell)[1],     # row
                                 parseCell(cell)[0],     # col
@@ -3046,7 +3048,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                                 1,  # Número de celdas consecutivas a cambiar Y
                                 [valor])    # Espera un iterable
         ## Y por fin guardo y devuelvo la ruta.
-        vpro.set_valor(1.0, 
+        vpro.set_valor(1.0,
                 "Enviando plantilla por correo. Por favor, aguarde.")
         vpro.ocultar()
         return ruta_final
@@ -3067,7 +3069,7 @@ def calcular_permiso_nuevos_pedidos(usuario, logger = None):
             permisos_ventana_pedidos = usuario.get_permiso(ventana_pedidos)
             permiso_nuevos_pedidos = permisos_ventana_pedidos.nuevo
     return permiso_nuevos_pedidos
-    
+
 
 def match_producto(completion, key, itr, ncol):
     model = completion.get_model()
@@ -3098,22 +3100,22 @@ def update_fila(model, itr, fila):
 
 def hacer_pedido(presupuesto, usuario, ventana_padre = None):
     """
-    Crea un pedido con el cliente del presupuesto y como contenido 
+    Crea un pedido con el cliente del presupuesto y como contenido
     las líneas de pedido y servicios del mismo.
     """
     nuevopedido = None
     if not tiene_pedido_asignado(presupuesto, ventana_padre):
-        # TODO: ¿Debo comprobar si el cliente tiene crédito 
-        # suficiente para crear un pedido con toda la oferta? Pues en teoría 
-        # no. Porque si no tiene crédito, necesita validación manual. Y si 
-        # alguien con permisos ha validado es porque se le puede vender esta 
-        # oferta aunque no tenga crédito. No tiene sentido volver a 
-        # a comprobarlo a no ser que la oferta fuera válida en principio y al 
-        # cabo de unos días, cuando se intente hacer el pedido, ya no tenga 
+        # TODO: ¿Debo comprobar si el cliente tiene crédito
+        # suficiente para crear un pedido con toda la oferta? Pues en teoría
+        # no. Porque si no tiene crédito, necesita validación manual. Y si
+        # alguien con permisos ha validado es porque se le puede vender esta
+        # oferta aunque no tenga crédito. No tiene sentido volver a
+        # a comprobarlo a no ser que la oferta fuera válida en principio y al
+        # cabo de unos días, cuando se intente hacer el pedido, ya no tenga
         # crédito por el motivo que sea.
         numpedido = utils.dialogo_entrada(
-                texto = 'Introduzca un número de pedido.', 
-                titulo = 'NÚMERO DE PEDIDO', 
+                texto = 'Introduzca un número de pedido.',
+                titulo = 'NÚMERO DE PEDIDO',
                 padre = ventana_padre)
         if numpedido != None:
             existe = pclases.PedidoVenta.select(
@@ -3125,14 +3127,14 @@ def hacer_pedido(presupuesto, usuario, ventana_padre = None):
                 if not presupuesto.cliente:
                     presupuesto.cliente = buscar_cliente(presupuesto, usuario)
                 if not presupuesto.cliente:
-                    # PLAN: Sugerir clientes con nombres parecidos o 
+                    # PLAN: Sugerir clientes con nombres parecidos o
                     # permitir que se creen si tiene permiso.
                     nuevopedido = None
-                    utils.dialogo_info(titulo = "CLIENTE NO EXISTE", 
+                    utils.dialogo_info(titulo = "CLIENTE NO EXISTE",
                             texto = "Asegúrese de que el cliente\n"
                                     "«%s»\n"
                                     "existe y está correctamente escrito." % (
-                                        presupuesto.nombrecliente), 
+                                        presupuesto.nombrecliente),
                             padre = ventana_padre)
                 else:
                     if not presupuesto.obra:
@@ -3149,17 +3151,17 @@ def hacer_pedido(presupuesto, usuario, ventana_padre = None):
     return nuevopedido
 
 def preguntar_si_agregar_a_pedido(ventana_padre, existe, nuevopedido):
-    if utils.dialogo(titulo = "PEDIDO YA EXISTE", 
+    if utils.dialogo(titulo = "PEDIDO YA EXISTE",
             texto = "El número de pedido ya existe. "\
-                    "¿Desea agregar la oferta?", 
+                    "¿Desea agregar la oferta?",
             padre = ventana_padre):
         nuevopedido = existe[0]
         if nuevopedido.cerrado:
-            utils.dialogo_info(titulo = "PEDIDO CERRADO", 
+            utils.dialogo_info(titulo = "PEDIDO CERRADO",
                 texto = "El pedido %s está cerrado y no admite "
                         "cambios. Corrija esta situación antes "
                         "de volver a intentarlo." % (
-                            nuevopedido.numpedido), 
+                            nuevopedido.numpedido),
                 padre = ventana_padre)
             nuevopedido = None
     else:
@@ -3168,14 +3170,14 @@ def preguntar_si_agregar_a_pedido(ventana_padre, existe, nuevopedido):
 
 def tiene_pedido_asignado(presupuesto, ventana_padre):
     if presupuesto and presupuesto.get_pedidos():
-        # PLAN: Esto habrá que cambiarlo por una función que compruebe 
-        # si queda algo que no haya sido pasado a pedido. No todos los 
+        # PLAN: Esto habrá que cambiarlo por una función que compruebe
+        # si queda algo que no haya sido pasado a pedido. No todos los
         # presupuestos se van a convertir en un único pedido.
-        # CWT: Sí que de cada presupuesto se saca un único pedido. 
-        utils.dialogo_info(titulo = "NO SE PUEDE CONVERTIR A PEDIDO", 
+        # CWT: Sí que de cada presupuesto se saca un único pedido.
+        utils.dialogo_info(titulo = "NO SE PUEDE CONVERTIR A PEDIDO",
                 texto = "La oferta ya se encuentra vinculada a "
                         "los pedidos: %s" % (
-                            ", ".join([p.numpedido 
+                            ", ".join([p.numpedido
                                        for p in presupuesto.get_pedidos()]
                                      )),
                 padre = ventana_padre)
@@ -3186,7 +3188,7 @@ def tiene_pedido_asignado(presupuesto, ventana_padre):
 def abrir_pedido(nuevopedido, usuario):
     from formularios import pedidos_de_venta
     ventanapedido = pedidos_de_venta.PedidosDeVenta(    # @UnusedVariable
-            objeto = nuevopedido, 
+            objeto = nuevopedido,
             usuario = usuario)
 
 
@@ -3195,20 +3197,20 @@ def add_ldp_a_pedido(presupuesto, ldp, nuevopedido, usuario):
     productoVenta = ldp.productoVenta
     if productoCompra or productoVenta:
         nldp = pclases.LineaDePedido(pedidoVenta = nuevopedido,
-                productoCompra = productoCompra, 
-                productoVenta = productoVenta, 
-                notas = ldp.notas, 
-                precio = ldp.precio, 
-                cantidad = ldp.cantidad, 
-                presupuesto = presupuesto, 
+                productoCompra = productoCompra,
+                productoVenta = productoVenta,
+                notas = ldp.notas,
+                precio = ldp.precio,
+                cantidad = ldp.cantidad,
+                presupuesto = presupuesto,
                 fechaEntrega = None)
         pclases.Auditoria.nuevo(nldp, usuario, __file__)
     else:   # Creo servicio entonces
-        nsrv = pclases.Servicio(pedidoVenta = nuevopedido, 
+        nsrv = pclases.Servicio(pedidoVenta = nuevopedido,
                 cantidad = ldp.cantidad,
-                precio = ldp.precio, 
-                concepto = ldp.descripcion, 
-                notas = ldp.notas, 
+                precio = ldp.precio,
+                concepto = ldp.descripcion,
+                notas = ldp.notas,
                 presupuesto = presupuesto)
         pclases.Auditoria.nuevo(nsrv, usuario, __file__)
 
@@ -3220,7 +3222,7 @@ def crear_pedido(presupuesto, numpedido, usuario):
         cpObra = obra.cp
         dirObra = obra.direccion
         nomObra = obra.nombre
-        paiObra = obra.pais 
+        paiObra = obra.pais
         if not paiObra:
             try:
                 paiObra = presupuesto.cliente.pais
@@ -3231,25 +3233,25 @@ def crear_pedido(presupuesto, numpedido, usuario):
         if pclases.DEBUG:
             print "presupuestos.py::crear_pedido -> AttributeError:", msg
         ciuObra = cpObra = dirObra = nomObra = paiObra = proObra = ""
-    nuevopedido = pclases.PedidoVenta(cliente = presupuesto.cliente, 
-                            fecha = mx.DateTime.localtime(), 
+    nuevopedido = pclases.PedidoVenta(cliente = presupuesto.cliente,
+                            fecha = mx.DateTime.localtime(),
                             numpedido = numpedido,
                             iva = presupuesto.cliente.iva,
                             descuento = 0,
                             transporteACargo = False,
                             bloqueado = True,
-                            cerrado = False, 
-                            comercial = presupuesto.comercial, 
-                            obra = presupuesto.obra, 
-                            formaDePago = presupuesto.formaDePago, 
-                            validado = presupuesto.validado 
-                                and True or False, 
-                            usuario = presupuesto.usuario, 
-                            ciudadCorrespondencia = ciuObra, 
-                            cpCorrespondencia = cpObra, 
-                            direccionCorrespondencia = dirObra, 
-                            nombreCorrespondencia = nomObra, 
-                            paisCorrespondencia = paiObra, 
+                            cerrado = False,
+                            comercial = presupuesto.comercial,
+                            obra = presupuesto.obra,
+                            formaDePago = presupuesto.formaDePago,
+                            validado = presupuesto.validado
+                                and True or False,
+                            usuario = presupuesto.usuario,
+                            ciudadCorrespondencia = ciuObra,
+                            cpCorrespondencia = cpObra,
+                            direccionCorrespondencia = dirObra,
+                            nombreCorrespondencia = nomObra,
+                            paisCorrespondencia = paiObra,
                             provinciaCorrespondencia = proObra)
     pclases.Auditoria.nuevo(nuevopedido, usuario, __file__)
     return nuevopedido
@@ -3261,13 +3263,13 @@ def crear_obra(presupuesto, usuario):
         obra = pclases.Obra.selectBy(nombre = presupuesto.nombreobra)[0]
     except IndexError:
         obra = pclases.Obra(
-                nombre = presupuesto.nombreobra, 
-                direccion = presupuesto.direccion, 
-                cp = presupuesto.cp, 
-                ciudad = presupuesto.ciudad, 
-                provincia = presupuesto.provincia, 
-                observaciones = "Creada automáticamente desde presupuesto.", 
-                pais = presupuesto.pais, 
+                nombre = presupuesto.nombreobra,
+                direccion = presupuesto.direccion,
+                cp = presupuesto.cp,
+                ciudad = presupuesto.ciudad,
+                provincia = presupuesto.provincia,
+                observaciones = "Creada automáticamente desde presupuesto.",
+                pais = presupuesto.pais,
                 generica = False)
         pclases.Auditoria.nuevo(obra, usuario, __file__)
     if presupuesto.cliente not in obra.clientes:
@@ -3285,19 +3287,19 @@ def buscar_cliente(presupuesto, usuario, crear_si_no_existe = False):
     except IndexError:
         if crear_si_no_existe:
             cliente = pclases.Cliente(
-                nombre = presupuesto.nombrecliente, 
-                cif = presupuesto.cif, 
-                direccion = presupuesto.direccion, 
-                ciudad = presupuesto.ciudad, 
-                provincia = presupuesto.provincia, 
-                pais = presupuesto.pais, 
-                cp = presupuesto.cp, 
-                telefono = presupuesto.telefono, 
+                nombre = presupuesto.nombrecliente,
+                cif = presupuesto.cif,
+                direccion = presupuesto.direccion,
+                ciudad = presupuesto.ciudad,
+                provincia = presupuesto.provincia,
+                pais = presupuesto.pais,
+                cp = presupuesto.cp,
+                telefono = presupuesto.telefono,
                 email = presupuesto.email,
                 vencimientos = presupuesto.formaDePago.toString(
-                    presupuesto.cliente), 
+                    presupuesto.cliente),
                 formadepago = presupuesto.formaDePago.toString(
-                    presupuesto.cliente), 
+                    presupuesto.cliente),
                 contacto = presupuesto.personaContacto)
             pclases.Auditoria.nuevo(cliente, usuario, __file__)
         else:
@@ -3305,7 +3307,7 @@ def buscar_cliente(presupuesto, usuario, crear_si_no_existe = False):
     return cliente
 
 
-def build_fila_historial(ofertado, pedido, servido, facturado, pendiente, 
+def build_fila_historial(ofertado, pedido, servido, facturado, pendiente,
                          producto):
     try:
         ofer = ofertado[producto]
@@ -3350,13 +3352,13 @@ def prepare_for_xls(cadena):
     Pepara la cadena para ser incluída en una hoja de cálculo en ODF (.ods).
     """
     valor = cadena
-    # TODO: No me gusta cambiar el encoding --y menos a uno sin tildes--, 
-    # pero tampoco encuentro la manera de que el xls me pille unicode por 
-    # mucho que lo fuerzo. 
-    # TODO: También habría que retocar la plantilla para que los bordes 
-    # se dibujaran desde las celdas adyacentes, ya que al rellenar el valor 
-    # se pierden los bordes de las celdas que relleno. Pero como además me 
-    # han pasado el Excel protegido... pues tampoco puedo tocarlo 
+    # TODO: No me gusta cambiar el encoding --y menos a uno sin tildes--,
+    # pero tampoco encuentro la manera de que el xls me pille unicode por
+    # mucho que lo fuerzo.
+    # TODO: También habría que retocar la plantilla para que los bordes
+    # se dibujaran desde las celdas adyacentes, ya que al rellenar el valor
+    # se pierden los bordes de las celdas que relleno. Pero como además me
+    # han pasado el Excel protegido... pues tampoco puedo tocarlo
     # (en teoría...MWHAHAHAHA. BOFH inside)
     valor = valor.encode("ascii", "replace")
     #valor = valor.replace("\n", " ").strip()
@@ -3374,12 +3376,12 @@ def prepare_for_ods(cadena):
 
 def cmp_celdas_lrtd(a, b):
     """
-    Compara las cadenas a y b teniendo en cuenta que son etiquetas de celdas 
-    de la forma Xnn donde X es la columna y nn un entero con la fila. Devuelve 
-    -1 si a es menor que b. Se considera el orden de izquierda a derecha y 
+    Compara las cadenas a y b teniendo en cuenta que son etiquetas de celdas
+    de la forma Xnn donde X es la columna y nn un entero con la fila. Devuelve
+    -1 si a es menor que b. Se considera el orden de izquierda a derecha y
     de arriba a abajo, por ejemplo: A2 < A5 < B1
     """
-    # FIXME: Muy chapucero y teniendo en cuenta que no vamos a encontrar más 
+    # FIXME: Muy chapucero y teniendo en cuenta que no vamos a encontrar más
     # de Z columnas.
     cola = a[0].upper()
     colb = b[0].upper()
@@ -3395,7 +3397,7 @@ def cmp_celdas_lrtd(a, b):
 
 
 def convertir_a_html(fods):
-    # PORASQUI: Resulta que al cargar el ods original, solo llega hasta la 
+    # PORASQUI: Resulta que al cargar el ods original, solo llega hasta la
     # mitad de la hoja de cálculo. El resto es como si no existiera.
     pathdest = fods + ".html"
     from lib.simple_odspy.simpleodspy.sodsspreadsheet import SodsSpreadSheet
@@ -3403,14 +3405,14 @@ def convertir_a_html(fods):
     from lib.simple_odspy.simpleodspy.sodsods import SodsOds
     t = SodsSpreadSheet()
     tw = SodsOds(t)
-    tw.load(fods)   # load carga el contenido de fods en t. fw no vale para 
+    tw.load(fods)   # load carga el contenido de fods en t. fw no vale para
     tw = SodsHtml(t)    # nada después de eso. Lo reutilizo para html
     tw.save(pathdest)
     return pathdest
 
 def crear_xls(p, wids_ventana):
     """
-    Crea "un excel" a partir de una plantilla xls en blanco (el nombre está 
+    Crea "un excel" a partir de una plantilla xls en blanco (el nombre está
     predeterminado y no se puede cambiar) con los datos del presupuesto «p».
     """
     vpro = VentanaProgreso(padre = wids_ventana['ventana'])
@@ -3422,9 +3424,9 @@ def crear_xls(p, wids_ventana):
     from lib.xlrd import xlrd
     import os
     from tempfile import NamedTemporaryFile
-    # Cargo la plantilla y creo una tabla para trabajar en ella que al 
+    # Cargo la plantilla y creo una tabla para trabajar en ella que al
     # principio contendrá lo mismo que la plantilla.
-    plantilla = os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+    plantilla = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                          "..", "informes", "solicitud_credito.xls")
     ruta_final = NamedTemporaryFile(suffix = ".xls").name
     ## Relleno los campos. Prepararsus que no son pocos:
@@ -3443,65 +3445,65 @@ def crear_xls(p, wids_ventana):
                      wids_ventana['e_cred_concedido'].get_text())))
     except ValueError:
         credconcedido = ""
-    celfields = {"B5": wids_ventana['e_cred_fecha'].get_text(), 
+    celfields = {"B5": wids_ventana['e_cred_fecha'].get_text(),
                  # HACK: Las celdas vacías consecutivas cuentan como 1 sola
-                 #"F4": p.credApertura and "X" or " ", 
-                 "O6": p.credApertura and "X" or " ", 
+                 #"F4": p.credApertura and "X" or " ",
+                 "O6": p.credApertura and "X" or " ",
                  # HACK: Las celdas vacías consecutivas cuentan como 1 sola
-                 #"F5": p.credAumento and "X" or " ", 
-                 "O7": p.credAumento and "X" or " ", 
-                 "O8": p.credSolicitud and "X" or " ", 
-                 "B7": wids_ventana['e_cred_comercial'].get_text(), 
+                 #"F5": p.credAumento and "X" or " ",
+                 "O7": p.credAumento and "X" or " ",
+                 "O8": p.credSolicitud and "X" or " ",
+                 "B7": wids_ventana['e_cred_comercial'].get_text(),
                 # Apartado de datos fiscales.
-                 "B13": wids_ventana['e_cred_cif'].get_text(), 
-                 "B15": wids_ventana['e_cred_nombre'].get_text(), 
-                 "B17": wids_ventana['e_cred_ute'].get_text(), 
-                 "B19": wids_ventana['e_cred_obra'].get_text(), 
-                 "B21": wids_ventana['e_cred_licitador'].get_text(), 
-                 "B23": wids_ventana['e_cred_dirfiscal'].get_text(), 
-                 "B25": wids_ventana['e_cred_cpfiscal'].get_text(), 
-                 "F25": wids_ventana['e_cred_poblacionfiscal'].get_text(), 
-                 "M25": wids_ventana['e_cred_provinciafiscal'].get_text(), 
-                 "B27": wids_ventana['e_cred_telefonofiscal'].get_text(), 
-                 "G27": wids_ventana['e_cred_faxfiscal'].get_text(), 
-                 "M27": wids_ventana['e_cred_movilfiscal'].get_text(), 
-                 "B29": wids_ventana['e_cred_contactofiscal'].get_text(), 
+                 "B13": wids_ventana['e_cred_cif'].get_text(),
+                 "B15": wids_ventana['e_cred_nombre'].get_text(),
+                 "B17": wids_ventana['e_cred_ute'].get_text(),
+                 "B19": wids_ventana['e_cred_obra'].get_text(),
+                 "B21": wids_ventana['e_cred_licitador'].get_text(),
+                 "B23": wids_ventana['e_cred_dirfiscal'].get_text(),
+                 "B25": wids_ventana['e_cred_cpfiscal'].get_text(),
+                 "F25": wids_ventana['e_cred_poblacionfiscal'].get_text(),
+                 "M25": wids_ventana['e_cred_provinciafiscal'].get_text(),
+                 "B27": wids_ventana['e_cred_telefonofiscal'].get_text(),
+                 "G27": wids_ventana['e_cred_faxfiscal'].get_text(),
+                 "M27": wids_ventana['e_cred_movilfiscal'].get_text(),
+                 "B29": wids_ventana['e_cred_contactofiscal'].get_text(),
                  # HACK: Las celdas vacías consecutivas cuentan como 1 sola
-                 #"F26": wids_ventana['e_cred_emailfiscal'].get_text(), 
-                 "M29": wids_ventana['e_cred_emailfiscal'].get_text(), 
-                # Apartado de envío de facturas y contratos. 
-                 "B34": wids_ventana['e_cred_dircontratos'].get_text(), 
-                 "B36": wids_ventana['e_cred_cpcontratos'].get_text(), 
-                 "F36": wids_ventana['e_cred_poblacioncontratos'].get_text(), 
-                 "M36": wids_ventana['e_cred_provinciacontratos'].get_text(), 
-                 "B38": wids_ventana['e_cred_telefonocontratos'].get_text(), 
-                 "K38": wids_ventana['e_cred_emailcontratos'].get_text(), 
-                 "B40": wids_ventana['e_cred_contactocontratos'].get_text(), 
+                 #"F26": wids_ventana['e_cred_emailfiscal'].get_text(),
+                 "M29": wids_ventana['e_cred_emailfiscal'].get_text(),
+                # Apartado de envío de facturas y contratos.
+                 "B34": wids_ventana['e_cred_dircontratos'].get_text(),
+                 "B36": wids_ventana['e_cred_cpcontratos'].get_text(),
+                 "F36": wids_ventana['e_cred_poblacioncontratos'].get_text(),
+                 "M36": wids_ventana['e_cred_provinciacontratos'].get_text(),
+                 "B38": wids_ventana['e_cred_telefonocontratos'].get_text(),
+                 "K38": wids_ventana['e_cred_emailcontratos'].get_text(),
+                 "B40": wids_ventana['e_cred_contactocontratos'].get_text(),
                  # HACK: Las celdas vacías consecutivas cuentan como 1 sola
-                 #"F36": wids_ventana['e_cred_movilcontratos'].get_text(),  
-                 "M40": wids_ventana['e_cred_movilcontratos'].get_text(),  
+                 #"F36": wids_ventana['e_cred_movilcontratos'].get_text(),
+                 "M40": wids_ventana['e_cred_movilcontratos'].get_text(),
                 # Apartado de dirección de obra (envío de materiales)
-                 "B45": wids_ventana['e_cred_dirobra'].get_text(), 
-                 "B47": wids_ventana['e_cred_cpobra'].get_text(), 
-                 "F47": wids_ventana['e_cred_poblacionobra'].get_text(), 
-                 "M47": wids_ventana['e_cred_provinciaobra'].get_text(), 
-                 "B49": wids_ventana['e_cred_movilobra'].get_text(), 
-                 "B51": wids_ventana['e_cred_contactoobra'].get_text(), 
-                # Apartado de datos de pago 
-                 "C56": wids_ventana['e_cred_fdp'].get_text(), 
+                 "B45": wids_ventana['e_cred_dirobra'].get_text(),
+                 "B47": wids_ventana['e_cred_cpobra'].get_text(),
+                 "F47": wids_ventana['e_cred_poblacionobra'].get_text(),
+                 "M47": wids_ventana['e_cred_provinciaobra'].get_text(),
+                 "B49": wids_ventana['e_cred_movilobra'].get_text(),
+                 "B51": wids_ventana['e_cred_contactoobra'].get_text(),
+                # Apartado de datos de pago
+                 "C56": wids_ventana['e_cred_fdp'].get_text(),
                  "A60": wids_ventana['txt_cred_entidades'].get_buffer(
                      ).get_text(
                          *wids_ventana['txt_cred_entidades'].get_buffer(
                              ).get_bounds()),
-                 "A68": wids_ventana['e_cred_entidad'].get_text(), 
-                 "D68": wids_ventana['e_cred_oficina'].get_text(), 
-                 "I68": wids_ventana['e_cred_digitocontrol'].get_text(), 
-                 "L68": wids_ventana['e_cred_numcuenta'].get_text(), 
-                 "G70": wids_ventana['e_cred_diapago1'].get_text(), 
-                 "H70": wids_ventana['e_cred_diapago2'].get_text(), 
-                 "I70": wids_ventana['e_cred_diapago3'].get_text(), 
+                 "A68": wids_ventana['e_cred_entidad'].get_text(),
+                 "D68": wids_ventana['e_cred_oficina'].get_text(),
+                 "I68": wids_ventana['e_cred_digitocontrol'].get_text(),
+                 "L68": wids_ventana['e_cred_numcuenta'].get_text(),
+                 "G70": wids_ventana['e_cred_diapago1'].get_text(),
+                 "H70": wids_ventana['e_cred_diapago2'].get_text(),
+                 "I70": wids_ventana['e_cred_diapago3'].get_text(),
                 # Apartado de riesgos cliente
-                 "B75": credsolicitado, 
+                 "B75": credsolicitado,
                  "A78": wids_ventana['txt_cred_observaciones'].get_buffer(
                     ).get_text(
                         *wids_ventana['txt_cred_observaciones'].get_buffer(
@@ -3511,19 +3513,19 @@ def crear_xls(p, wids_ventana):
                             *wids_ventana['txt_cred_condiciones'].get_buffer(
                                 ).get_bounds()),
                 # Apartado de vistos buenos
-                 "A94": wids_ventana['e_cred_vb_nombrecomercial'].get_text(), 
+                 "A94": wids_ventana['e_cred_vb_nombrecomercial'].get_text(),
                  ## Protegido en el original. No lo toco.
-                 #"": wids_ventana['e_cred_vb_nombreadmon'].get_text(), 
-                 #"": credasegurado, 
-                 #"": wids_ventana['e_cred_fechaasegurado'].get_text(), 
-                 #"": credconcedido, 
+                 #"": wids_ventana['e_cred_vb_nombreadmon'].get_text(),
+                 #"": credasegurado,
+                 #"": wids_ventana['e_cred_fechaasegurado'].get_text(),
+                 #"": credconcedido,
                  # HACK: Las celdas vacías consecutivas cuentan como 1 sola
-                 #"F77": wids_ventana['e_cred_fechaconcedido'].get_text(), 
-                 #"": wids_ventana['e_cred_fechaconcedido'].get_text(), 
+                 #"F77": wids_ventana['e_cred_fechaconcedido'].get_text(),
+                 #"": wids_ventana['e_cred_fechaconcedido'].get_text(),
                 }
     wb = copy.copy(
-            xlrd.open_workbook(plantilla, 
-                               formatting_info = True, 
+            xlrd.open_workbook(plantilla,
+                               formatting_info = True,
                                encoding_override="utf-8")
             )
     s = wb.get_sheet(0)
@@ -3538,7 +3540,7 @@ def crear_xls(p, wids_ventana):
                     parseCell(cell)[0],     # col
                     valor)    # Espera un iterable
     ## Y por fin guardo y devuelvo la ruta.
-    vpro.set_valor(1.0, 
+    vpro.set_valor(1.0,
             "Guardando plantilla. Por favor, espere.")
     wb.save(ruta_final)
     vpro.ocultar()
@@ -3551,7 +3553,7 @@ def OBSOLETE_convertir_a_xls(fods):
     from lib.simple_odspy.simpleodspy.sodsods import SodsOds
     t = SodsSpreadSheet()
     tw = SodsOds(t)
-    tw.load(fods)   # load carga el contenido de fods en t. fw no vale para 
+    tw.load(fods)   # load carga el contenido de fods en t. fw no vale para
     tw = SodsXls(t)    # nada después de eso. Lo reutilizo para xls.
     tw.save(pathdest)
     return pathdest
