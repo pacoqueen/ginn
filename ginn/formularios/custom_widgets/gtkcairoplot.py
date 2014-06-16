@@ -76,14 +76,14 @@ class GtkCairoPlot(gtk.DrawingArea):
         """
         super(GtkCairoPlot, self).__init__()
         self._tipo = tipo
-        self._data = data
+        self._data = check_data(data, tipo)
         self._labels = data.keys()
         self._labels.sort()
-        self.plt = self._prepare_plot()
-        self.connect("expose_event", self.expose)
         self.width = -1
         self.height = -1
+        self.plt = self._prepare_plot()
         self.set_size_request(self.width, self.height)
+        self.connect("expose_event", self.expose)
 
     def _prepare_plot(self):
         """
@@ -97,12 +97,11 @@ class GtkCairoPlot(gtk.DrawingArea):
             # Es simplemente para crear el objeto. Después se reemplazará por
             # el surface del DrawingArea en el expose.
             tempsurface = cairo.SVGSurface(None, self.width, self.height)
-            plot = self._constructor(tempsurface,
+            plot = cairoplot.PiePlot(tempsurface,
                                      self._data,
-                                     self.width, self.height,
-                                     x_labels = self._x_labels,
-                                     y_labels = self._y_labels, 
-                                     display_values = True)
+                                     self.width, 
+                                     self.height)
+            # PORASQUI: Dibuja algo, pero caca. No se ve nada. Y lo importante, que es el de barras todavía no lo he empezado.
         elif self._tipo == GRAFO:
             raise NotImplementedError("gtkcairoplot: todavía no implementado.")
         else:
@@ -129,32 +128,40 @@ class GtkCairoPlot(gtk.DrawingArea):
         self.plt.render()
         self.plt.commit()
 
-    @staticmethod
-    def _get_func(tipo):
-        """
-        Devuelve el tipo de función de CairoPlot que corresponde a la macro.
-        """
-        if tipo == HORIZONTAL_BAR:
-            func = cairoplot.HorizontalBarPlot
-        elif tipo == VERTICAL_BAR:
-            func = cairoplot.VerticalBarPlot
-        elif tipo == DONUT:
-            raise NotImplementedError
-        elif tipo == PIE:
-            raise NotImplementedError
-        elif tipo == DOT:
-            raise NotImplementedError
-        elif tipo == FUNCTION:
-            raise NotImplementedError
-        elif tipo == SCATTER:
-            raise NotImplementedError
-        elif tipo == GANTT:
-            raise NotImplementedError
-        else:
-            raise ValueError, "tipo no reconocido. Consulte gtkcairoplot.py"
-        return func
-
 ###############################################################################
+
+def check_data(data, tipo):
+    """
+    Comprueba tipo y valores recibidos para asegurar que concuerdan.
+    «data» debe ser un diccionario y si el tipo es un gráfico de tarta,
+    entonces los valores deben ser un número por cada clave.
+    Si es un gráfico de barras horizontales o verticales, debe ser o bien
+    un valor único (una barra por "label") o una lista o tupla de valores
+    (varias barras por cada clave).
+    """
+    _data = {}
+    for label in data:
+        valor = data[label]
+        if tipo == TARTA:
+            if isinstance(valor, (tuple, list)):    # Si es una serie
+                _data[label] = sum(valor)   # lo sustituyo por su suma.
+            elif isinstance(valor, (int, float)):
+                _data[label] = valor
+            else:
+                raise TypeError("gtkcairoplot:"
+                                " «data» debe ser un diccionario de números")
+        elif tipo in (HORIZONTAL, VERTICAL):
+            if isinstance(valor, (int, float)):
+                _data[label] = [valor]
+            elif isinstance(valor, (list, tuple)):
+                _data[label] = valor
+            else:
+                raise TypeError("gtkcairoplot:"
+                                " «data» debe ser un diccionario de listas")
+        else:
+            raise ValueError("gtkcairoplot:"
+                             " Debe especificar un tipo de gráfico válido.")
+    return _data
 
 def create_cagraph_plot(tipo, data, x_labels = [], y_labels = []):
     graph = CaGraph()
@@ -192,7 +199,9 @@ def build_test_window():
     data = {"Uno":  [1, 2, 3],  #  Uno █▅▂
             "Dos":  [4, 5, 6],  #  Dos ████▅▂
             "Tres": [7, 8, 9]}  # Tres ███████▅▂
-    plot1 = GtkCairoPlot(HORIZONTAL, data)
+    #plot1 = GtkCairoPlot(HORIZONTAL, data)
+    plot1 = gtk.Image()
+    plot1.set_from_stock(gtk.STOCK_MISSING_IMAGE, gtk.ICON_SIZE_DIALOG)
     box = gtk.VBox()
     box.pack_start(plot1)
     plot2 = GtkCairoPlot(TARTA, data)
@@ -204,7 +213,8 @@ def main():
     """
     Prueba rápida de que funciona.
     """
-    wintest, plot1, plot2 = build_test_window()
+    wintest_plot1_plot2 = build_test_window()
+    wintest = wintest_plot1_plot2[0]
     wintest.show_all()
     gtk.main()
 

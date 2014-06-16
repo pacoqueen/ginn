@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 16 junio 2014 at 11:35:00.
+" Created by session.vim 1.5 on 16 junio 2014 at 15:04:00.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -31,7 +31,7 @@ badd +248 ginn/formularios/gtkexcepthook.py
 badd +133 ginn/formularios/partes_de_fabricacion_bolsas.py
 badd +1 ginn/formularios/partes_de_fabricacion_gtx.py
 badd +1 ginn/formularios/partes_de_ancho_multiple.py
-badd +1 ginn/formularios/consulta_producido.py
+badd +85 ginn/formularios/consulta_producido.py
 badd +247 ginn/formularios/consulta_consumo.py
 badd +41 ginn/framework/memoize.py
 badd +596 ginn/formularios/presupuesto.py
@@ -81,12 +81,13 @@ badd +28 ginn/lib/pygal/pygal/graph/supranationalworldmap.py
 badd +26 ginn/lib/pygal/pygal/graph/histogram.py
 badd +26 ginn/lib/pygal/pygal/graph/box.py
 badd +36 ginn/formularios/custom_widgets/cairoplot.py
-badd +1 ginn/formularios/custom_widgets/gtkcairoplot.py
-badd +1 ginn/lib/cairoplot/cairoplot.py
+badd +174 ginn/formularios/custom_widgets/gtkcairoplot.py
+badd +1398 ginn/lib/cairoplot/cairoplot.py
 badd +1 ginn/formularios/consulta_pedidos_clientes.py
 badd +1439 ginn/formularios/pedidos_de_venta.py
+badd +1230 ginn/formularios/clientes.py
 args formularios/auditviewer.py
-set lines=48 columns=117
+set lines=48 columns=114
 edit extra/scripts/balas_basura_reembaladas.py
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -111,19 +112,7 @@ wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
-wincmd _ | wincmd |
-split
-wincmd _ | wincmd |
-split
-wincmd _ | wincmd |
-split
-wincmd _ | wincmd |
-split
-13wincmd k
-wincmd w
-wincmd w
-wincmd w
-wincmd w
+9wincmd k
 wincmd w
 wincmd w
 wincmd w
@@ -137,35 +126,27 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe 'vert 1resize ' . ((&columns * 32 + 58) / 117)
+exe 'vert 1resize ' . ((&columns * 29 + 57) / 114)
 exe '2resize ' . ((&lines * 1 + 24) / 48)
-exe 'vert 2resize ' . ((&columns * 84 + 58) / 117)
+exe 'vert 2resize ' . ((&columns * 84 + 57) / 114)
 exe '3resize ' . ((&lines * 1 + 24) / 48)
-exe 'vert 3resize ' . ((&columns * 84 + 58) / 117)
+exe 'vert 3resize ' . ((&columns * 84 + 57) / 114)
 exe '4resize ' . ((&lines * 1 + 24) / 48)
-exe 'vert 4resize ' . ((&columns * 84 + 58) / 117)
+exe 'vert 4resize ' . ((&columns * 84 + 57) / 114)
 exe '5resize ' . ((&lines * 1 + 24) / 48)
-exe 'vert 5resize ' . ((&columns * 84 + 58) / 117)
+exe 'vert 5resize ' . ((&columns * 84 + 57) / 114)
 exe '6resize ' . ((&lines * 1 + 24) / 48)
-exe 'vert 6resize ' . ((&columns * 84 + 58) / 117)
+exe 'vert 6resize ' . ((&columns * 84 + 57) / 114)
 exe '7resize ' . ((&lines * 1 + 24) / 48)
-exe 'vert 7resize ' . ((&columns * 84 + 58) / 117)
+exe 'vert 7resize ' . ((&columns * 84 + 57) / 114)
 exe '8resize ' . ((&lines * 1 + 24) / 48)
-exe 'vert 8resize ' . ((&columns * 84 + 58) / 117)
-exe '9resize ' . ((&lines * 1 + 24) / 48)
-exe 'vert 9resize ' . ((&columns * 84 + 58) / 117)
+exe 'vert 8resize ' . ((&columns * 84 + 57) / 114)
+exe '9resize ' . ((&lines * 4 + 24) / 48)
+exe 'vert 9resize ' . ((&columns * 84 + 57) / 114)
 exe '10resize ' . ((&lines * 1 + 24) / 48)
-exe 'vert 10resize ' . ((&columns * 84 + 58) / 117)
-exe '11resize ' . ((&lines * 1 + 24) / 48)
-exe 'vert 11resize ' . ((&columns * 84 + 58) / 117)
-exe '12resize ' . ((&lines * 1 + 24) / 48)
-exe 'vert 12resize ' . ((&columns * 84 + 58) / 117)
-exe '13resize ' . ((&lines * 18 + 24) / 48)
-exe 'vert 13resize ' . ((&columns * 84 + 58) / 117)
-exe '14resize ' . ((&lines * 1 + 24) / 48)
-exe 'vert 14resize ' . ((&columns * 84 + 58) / 117)
-exe '15resize ' . ((&lines * 3 + 24) / 48)
-exe 'vert 15resize ' . ((&columns * 84 + 58) / 117)
+exe 'vert 10resize ' . ((&columns * 84 + 57) / 114)
+exe '11resize ' . ((&lines * 25 + 24) / 48)
+exe 'vert 11resize ' . ((&columns * 84 + 57) / 114)
 argglobal
 enew
 file __Tag_List__
@@ -325,24 +306,6 @@ exe s:l
 normal! zt
 69
 normal! 044|
-lcd ~/Geotexan/src/Geotex-INN
-wincmd w
-argglobal
-edit ~/Geotexan/src/Geotex-INN/ginn/formularios/presupuestos.py
-setlocal fdm=indent
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=99
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-let s:l = 3165 - ((0 * winheight(0) + 0) / 1)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-3165
-normal! 05|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -626,922 +589,6 @@ normal! 05|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
-edit ~/Geotexan/src/Geotex-INN/ginn/formularios/presupuestos.py
-setlocal fdm=indent
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=99
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-67
-normal! zo
-1637
-normal! zo
-1668
-normal! zo
-1672
-normal! zo
-1674
-normal! zo
-1674
-normal! zo
-1675
-normal! zo
-1675
-normal! zo
-1677
-normal! zo
-1681
-normal! zo
-1681
-normal! zo
-1681
-normal! zo
-1683
-normal! zo
-1683
-normal! zo
-1683
-normal! zo
-1693
-normal! zo
-1693
-normal! zo
-1693
-normal! zo
-1696
-normal! zo
-1703
-normal! zo
-1707
-normal! zo
-1710
-normal! zo
-1719
-normal! zo
-1719
-normal! zo
-1719
-normal! zo
-1726
-normal! zo
-1733
-normal! zo
-1737
-normal! zo
-1741
-normal! zo
-1747
-normal! zo
-1749
-normal! zo
-1749
-normal! zo
-1750
-normal! zo
-1750
-normal! zo
-1752
-normal! zo
-1754
-normal! zo
-1754
-normal! zo
-1754
-normal! zo
-1756
-normal! zo
-1756
-normal! zo
-1756
-normal! zo
-1758
-normal! zo
-1758
-normal! zo
-1758
-normal! zo
-1769
-normal! zo
-1769
-normal! zo
-1769
-normal! zo
-1772
-normal! zo
-1780
-normal! zo
-1782
-normal! zo
-1782
-normal! zo
-1782
-normal! zo
-1782
-normal! zo
-1790
-normal! zo
-1790
-normal! zo
-1790
-normal! zo
-1790
-normal! zo
-1790
-normal! zo
-1795
-normal! zo
-1795
-normal! zo
-1798
-normal! zo
-1801
-normal! zo
-1802
-normal! zo
-1802
-normal! zo
-1802
-normal! zo
-1808
-normal! zo
-1808
-normal! zo
-1808
-normal! zo
-1808
-normal! zo
-1808
-normal! zo
-1810
-normal! zo
-1810
-normal! zo
-1810
-normal! zo
-1810
-normal! zo
-1810
-normal! zo
-1810
-normal! zo
-1816
-normal! zo
-1820
-normal! zo
-1824
-normal! zo
-1830
-normal! zo
-1831
-normal! zo
-1831
-normal! zo
-1831
-normal! zo
-1831
-normal! zo
-1831
-normal! zo
-1833
-normal! zo
-1835
-normal! zo
-1836
-normal! zo
-1845
-normal! zo
-1845
-normal! zo
-1845
-normal! zo
-1847
-normal! zo
-1847
-normal! zo
-1847
-normal! zo
-1853
-normal! zo
-1853
-normal! zo
-1853
-normal! zo
-1853
-normal! zo
-1859
-normal! zo
-1861
-normal! zo
-1863
-normal! zo
-1865
-normal! zo
-1876
-normal! zo
-1884
-normal! zo
-1897
-normal! zo
-1906
-normal! zo
-1907
-normal! zo
-1908
-normal! zo
-1919
-normal! zo
-1928
-normal! zo
-1929
-normal! zo
-1934
-normal! zo
-1935
-normal! zo
-1943
-normal! zo
-1945
-normal! zo
-1949
-normal! zo
-1949
-normal! zo
-1949
-normal! zo
-1949
-normal! zo
-1949
-normal! zo
-1951
-normal! zo
-1951
-normal! zo
-1967
-normal! zo
-1978
-normal! zo
-1985
-normal! zo
-1988
-normal! zo
-1988
-normal! zo
-1988
-normal! zo
-1991
-normal! zo
-1991
-normal! zo
-1991
-normal! zo
-1999
-normal! zo
-1999
-normal! zo
-2012
-normal! zo
-2013
-normal! zo
-2019
-normal! zo
-2020
-normal! zo
-2023
-normal! zo
-2023
-normal! zo
-2023
-normal! zo
-2023
-normal! zo
-2028
-normal! zo
-2037
-normal! zo
-2041
-normal! zo
-2044
-normal! zo
-2045
-normal! zo
-2047
-normal! zo
-2048
-normal! zo
-2052
-normal! zo
-2059
-normal! zo
-2060
-normal! zo
-2060
-normal! zo
-2060
-normal! zo
-2060
-normal! zo
-2077
-normal! zo
-2080
-normal! zo
-2082
-normal! zo
-2096
-normal! zo
-2098
-normal! zo
-2101
-normal! zo
-2104
-normal! zo
-2105
-normal! zo
-2109
-normal! zo
-2114
-normal! zo
-2114
-normal! zo
-2118
-normal! zo
-2149
-normal! zo
-2150
-normal! zo
-2158
-normal! zo
-2158
-normal! zo
-2171
-normal! zo
-2172
-normal! zo
-2201
-normal! zo
-2201
-normal! zo
-2201
-normal! zo
-2201
-normal! zo
-2204
-normal! zo
-2211
-normal! zo
-2211
-normal! zo
-2211
-normal! zo
-2211
-normal! zo
-2211
-normal! zo
-2211
-normal! zo
-2211
-normal! zo
-2230
-normal! zo
-2235
-normal! zo
-2237
-normal! zo
-2245
-normal! zo
-2249
-normal! zo
-2253
-normal! zo
-2254
-normal! zo
-2255
-normal! zo
-2255
-normal! zo
-2255
-normal! zo
-2255
-normal! zo
-2260
-normal! zo
-2261
-normal! zo
-2261
-normal! zo
-2261
-normal! zo
-2261
-normal! zo
-2266
-normal! zo
-2267
-normal! zo
-2267
-normal! zo
-2267
-normal! zo
-2267
-normal! zo
-2267
-normal! zo
-2271
-normal! zo
-2271
-normal! zo
-2271
-normal! zo
-2271
-normal! zo
-2271
-normal! zo
-2271
-normal! zo
-2271
-normal! zo
-2271
-normal! zo
-2271
-normal! zo
-2274
-normal! zo
-2278
-normal! zo
-2280
-normal! zo
-2294
-normal! zo
-2297
-normal! zo
-2304
-normal! zo
-2313
-normal! zo
-2313
-normal! zo
-2313
-normal! zo
-2313
-normal! zo
-2313
-normal! zo
-2323
-normal! zo
-2324
-normal! zo
-2325
-normal! zo
-2327
-normal! zo
-2327
-normal! zo
-2327
-normal! zo
-2327
-normal! zo
-2330
-normal! zo
-2330
-normal! zo
-2331
-normal! zo
-2333
-normal! zo
-2335
-normal! zo
-2335
-normal! zo
-2337
-normal! zo
-2338
-normal! zo
-2338
-normal! zo
-2350
-normal! zo
-2350
-normal! zo
-2350
-normal! zo
-2350
-normal! zo
-2350
-normal! zo
-2350
-normal! zo
-2350
-normal! zo
-2350
-normal! zo
-2361
-normal! zo
-2365
-normal! zo
-2366
-normal! zo
-2366
-normal! zo
-2366
-normal! zo
-2366
-normal! zo
-2366
-normal! zo
-2366
-normal! zo
-2383
-normal! zo
-2385
-normal! zo
-2388
-normal! zo
-2390
-normal! zo
-2407
-normal! zo
-2410
-normal! zo
-2427
-normal! zo
-2439
-normal! zo
-2440
-normal! zo
-2446
-normal! zo
-2447
-normal! zo
-2452
-normal! zo
-2453
-normal! zo
-2458
-normal! zo
-2459
-normal! zo
-2464
-normal! zo
-2464
-normal! zo
-2467
-normal! zo
-2468
-normal! zo
-2481
-normal! zo
-2486
-normal! zo
-2487
-normal! zo
-2487
-normal! zo
-2487
-normal! zo
-2500
-normal! zo
-2508
-normal! zo
-2508
-normal! zo
-2508
-normal! zo
-2508
-normal! zo
-2508
-normal! zo
-2508
-normal! zo
-2508
-normal! zo
-2508
-normal! zo
-2508
-normal! zo
-2508
-normal! zo
-2508
-normal! zo
-2508
-normal! zo
-2512
-normal! zo
-2513
-normal! zo
-2514
-normal! zo
-2514
-normal! zo
-2514
-normal! zo
-2514
-normal! zo
-2514
-normal! zo
-2514
-normal! zo
-2514
-normal! zo
-2514
-normal! zo
-2520
-normal! zo
-2526
-normal! zo
-2532
-normal! zo
-2533
-normal! zo
-2534
-normal! zo
-2537
-normal! zo
-2537
-normal! zo
-2546
-normal! zo
-2559
-normal! zo
-2561
-normal! zo
-2583
-normal! zo
-2583
-normal! zo
-2583
-normal! zo
-2592
-normal! zo
-2603
-normal! zo
-2603
-normal! zo
-2603
-normal! zo
-2603
-normal! zo
-2603
-normal! zo
-2603
-normal! zo
-2603
-normal! zo
-2606
-normal! zo
-2606
-normal! zo
-2606
-normal! zo
-2606
-normal! zo
-2606
-normal! zo
-2606
-normal! zo
-2607
-normal! zo
-2611
-normal! zo
-2619
-normal! zo
-2624
-normal! zo
-2625
-normal! zo
-2625
-normal! zo
-2625
-normal! zo
-2625
-normal! zo
-2627
-normal! zo
-2628
-normal! zo
-2628
-normal! zo
-2628
-normal! zo
-2628
-normal! zo
-2630
-normal! zo
-2631
-normal! zo
-2631
-normal! zo
-2631
-normal! zo
-2631
-normal! zo
-2644
-normal! zo
-2644
-normal! zo
-2644
-normal! zo
-2644
-normal! zo
-2644
-normal! zo
-2644
-normal! zo
-2647
-normal! zo
-2647
-normal! zo
-2657
-normal! zo
-2657
-normal! zo
-2658
-normal! zo
-2673
-normal! zo
-2674
-normal! zo
-2675
-normal! zo
-2687
-normal! zo
-2703
-normal! zo
-2705
-normal! zo
-2707
-normal! zo
-2710
-normal! zo
-2720
-normal! zo
-2724
-normal! zo
-2725
-normal! zo
-2733
-normal! zo
-2768
-normal! zo
-2769
-normal! zo
-2769
-normal! zo
-2770
-normal! zo
-2776
-normal! zo
-2779
-normal! zo
-2784
-normal! zo
-2788
-normal! zo
-2794
-normal! zo
-2803
-normal! zo
-2804
-normal! zo
-2807
-normal! zo
-2807
-normal! zo
-2813
-normal! zo
-2813
-normal! zo
-2821
-normal! zo
-2834
-normal! zo
-2834
-normal! zo
-2835
-normal! zo
-2838
-normal! zo
-2838
-normal! zo
-2846
-normal! zo
-2855
-normal! zo
-2862
-normal! zo
-2864
-normal! zo
-2864
-normal! zo
-2864
-normal! zo
-2873
-normal! zo
-2876
-normal! zo
-2877
-normal! zo
-2877
-normal! zo
-2878
-normal! zo
-2878
-normal! zo
-2878
-normal! zo
-2878
-normal! zo
-2878
-normal! zo
-2878
-normal! zo
-2878
-normal! zo
-2884
-normal! zo
-2886
-normal! zo
-2889
-normal! zo
-2889
-normal! zo
-2889
-normal! zo
-2889
-normal! zo
-2900
-normal! zo
-2926
-normal! zo
-2936
-normal! zo
-2936
-normal! zo
-2936
-normal! zo
-2936
-normal! zo
-2941
-normal! zo
-2942
-normal! zo
-2942
-normal! zo
-2942
-normal! zo
-2946
-normal! zo
-2947
-normal! zo
-2947
-normal! zo
-2951
-normal! zo
-2952
-normal! zo
-2952
-normal! zo
-2958
-normal! zo
-2958
-normal! zo
-2958
-normal! zo
-3002
-normal! zo
-3003
-normal! zo
-3015
-normal! zo
-3016
-normal! zo
-3019
-normal! zo
-3019
-normal! zo
-3020
-normal! zo
-3037
-normal! zo
-3041
-normal! zo
-3042
-normal! zo
-3042
-normal! zo
-3042
-normal! zo
-3050
-normal! zo
-let s:l = 1673 - ((0 * winheight(0) + 0) / 1)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-1673
-normal! 048|
-lcd ~/Geotexan/src/Geotex-INN
-wincmd w
-argglobal
 edit ~/Geotexan/src/Geotex-INN/ginn/formularios/consulta_pedidos_clientes.py
 setlocal fdm=indent
 setlocal fde=0
@@ -1553,22 +600,102 @@ setlocal fdn=20
 setlocal fen
 58
 normal! zo
-281
+223
 normal! zo
-293
+282
 normal! zo
-293
+294
 normal! zo
-293
+294
 normal! zo
-293
+294
 normal! zo
-let s:l = 244 - ((0 * winheight(0) + 0) / 1)
+294
+normal! zo
+let s:l = 231 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-244
-normal! 0
+231
+normal! 031|
+lcd ~/Geotexan/src/Geotex-INN
+wincmd w
+argglobal
+edit ~/Geotexan/src/Geotex-INN/ginn/formularios/presupuestos.py
+setlocal fdm=indent
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=99
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+63
+normal! zo
+63
+normal! zo
+63
+normal! zo
+63
+normal! zo
+67
+normal! zo
+246
+normal! zo
+247
+normal! zo
+258
+normal! zo
+259
+normal! zo
+260
+normal! zo
+295
+normal! zo
+296
+normal! zo
+402
+normal! zo
+1409
+normal! zo
+1775
+normal! zo
+1862
+normal! zo
+1864
+normal! zo
+1970
+normal! zo
+2121
+normal! zo
+2214
+normal! zo
+2214
+normal! zo
+2214
+normal! zo
+2214
+normal! zo
+2214
+normal! zo
+2214
+normal! zo
+2214
+normal! zo
+2277
+normal! zo
+2281
+normal! zo
+2595
+normal! zo
+2614
+normal! zo
+let s:l = 2290 - ((2 * winheight(0) + 2) / 4)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+2290
+normal! 030|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -1657,12 +784,12 @@ normal! zo
 normal! zo
 1844
 normal! zo
-let s:l = 1476 - ((0 * winheight(0) + 0) / 1)
+let s:l = 1653 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1476
-normal! 033|
+1653
+normal! 022|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -1675,132 +802,94 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-74
+68
 normal! zo
-90
+89
 normal! zo
-98
+99
 normal! zo
-98
+101
 normal! zo
-98
+101
 normal! zo
-98
+101
 normal! zo
-98
+101
 normal! zo
-98
+101
+normal! zo
+112
+normal! zo
+134
+normal! zo
+144
+normal! zo
+146
+normal! zo
+151
 normal! zo
 152
 normal! zo
+152
+normal! zo
+152
+normal! zo
+154
+normal! zo
+159
+normal! zo
+160
+normal! zo
+160
+normal! zo
+160
+normal! zo
+163
+normal! zo
+163
+normal! zo
+163
+normal! zo
+163
+normal! zo
 167
 normal! zo
-178
+182
 normal! zo
-185
+193
 normal! zo
-let s:l = 90 - ((0 * winheight(0) + 0) / 1)
+200
+normal! zo
+let s:l = 104 - ((17 * winheight(0) + 12) / 25)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-90
-normal! 011|
+104
+normal! 0126|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
-argglobal
-edit ~/Geotexan/src/Geotex-INN/ginn/formularios/presupuestos.py
-setlocal fdm=indent
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=99
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-let s:l = 3556 - ((11 * winheight(0) + 9) / 18)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-3556
-normal! 07|
-lcd ~/Geotexan/src/Geotex-INN
-wincmd w
-argglobal
-edit ~/Geotexan/src/Geotex-INN/ginn/formularios/consulta_producido.py
-setlocal fdm=indent
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=99
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-61
-normal! zo
-62
-normal! zo
-75
-normal! zo
-75
-normal! zo
-75
-normal! zo
-1132
-normal! zo
-1384
-normal! zo
-1384
-normal! zo
-let s:l = 85 - ((0 * winheight(0) + 0) / 1)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-85
-normal! 033|
-lcd ~/Geotexan/src/Geotex-INN
-wincmd w
-argglobal
-enew
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=99
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-lcd ~/Geotexan/src/Geotex-INN
-wincmd w
-13wincmd w
-exe 'vert 1resize ' . ((&columns * 32 + 58) / 117)
+11wincmd w
+exe 'vert 1resize ' . ((&columns * 29 + 57) / 114)
 exe '2resize ' . ((&lines * 1 + 24) / 48)
-exe 'vert 2resize ' . ((&columns * 84 + 58) / 117)
+exe 'vert 2resize ' . ((&columns * 84 + 57) / 114)
 exe '3resize ' . ((&lines * 1 + 24) / 48)
-exe 'vert 3resize ' . ((&columns * 84 + 58) / 117)
+exe 'vert 3resize ' . ((&columns * 84 + 57) / 114)
 exe '4resize ' . ((&lines * 1 + 24) / 48)
-exe 'vert 4resize ' . ((&columns * 84 + 58) / 117)
+exe 'vert 4resize ' . ((&columns * 84 + 57) / 114)
 exe '5resize ' . ((&lines * 1 + 24) / 48)
-exe 'vert 5resize ' . ((&columns * 84 + 58) / 117)
+exe 'vert 5resize ' . ((&columns * 84 + 57) / 114)
 exe '6resize ' . ((&lines * 1 + 24) / 48)
-exe 'vert 6resize ' . ((&columns * 84 + 58) / 117)
+exe 'vert 6resize ' . ((&columns * 84 + 57) / 114)
 exe '7resize ' . ((&lines * 1 + 24) / 48)
-exe 'vert 7resize ' . ((&columns * 84 + 58) / 117)
+exe 'vert 7resize ' . ((&columns * 84 + 57) / 114)
 exe '8resize ' . ((&lines * 1 + 24) / 48)
-exe 'vert 8resize ' . ((&columns * 84 + 58) / 117)
-exe '9resize ' . ((&lines * 1 + 24) / 48)
-exe 'vert 9resize ' . ((&columns * 84 + 58) / 117)
+exe 'vert 8resize ' . ((&columns * 84 + 57) / 114)
+exe '9resize ' . ((&lines * 4 + 24) / 48)
+exe 'vert 9resize ' . ((&columns * 84 + 57) / 114)
 exe '10resize ' . ((&lines * 1 + 24) / 48)
-exe 'vert 10resize ' . ((&columns * 84 + 58) / 117)
-exe '11resize ' . ((&lines * 1 + 24) / 48)
-exe 'vert 11resize ' . ((&columns * 84 + 58) / 117)
-exe '12resize ' . ((&lines * 1 + 24) / 48)
-exe 'vert 12resize ' . ((&columns * 84 + 58) / 117)
-exe '13resize ' . ((&lines * 18 + 24) / 48)
-exe 'vert 13resize ' . ((&columns * 84 + 58) / 117)
-exe '14resize ' . ((&lines * 1 + 24) / 48)
-exe 'vert 14resize ' . ((&columns * 84 + 58) / 117)
-exe '15resize ' . ((&lines * 3 + 24) / 48)
-exe 'vert 15resize ' . ((&columns * 84 + 58) / 117)
+exe 'vert 10resize ' . ((&columns * 84 + 57) / 114)
+exe '11resize ' . ((&lines * 25 + 24) / 48)
+exe 'vert 11resize ' . ((&columns * 84 + 57) / 114)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
@@ -1815,12 +904,6 @@ let &so = s:so_save | let &siso = s:siso_save
 doautoall SessionLoadPost
 unlet SessionLoad
 tabnext 1
-15wincmd w
-let s:bufnr = bufnr("%")
-cwindow
-execute "bwipeout" s:bufnr
-1resize 46|vert 1resize 32|2resize 1|vert 2resize 84|3resize 1|vert 3resize 84|4resize 1|vert 4resize 84|5resize 1|vert 5resize 84|6resize 1|vert 6resize 84|7resize 1|vert 7resize 84|8resize 1|vert 8resize 84|9resize 1|vert 9resize 84|10resize 1|vert 10resize 84|11resize 1|vert 11resize 84|12resize 1|vert 12resize 84|13resize 18|vert 13resize 84|14resize 1|vert 14resize 84|15resize 3|vert 15resize 84|
-tabnext 1
-13wincmd w
+11wincmd w
 
 " vim: ft=vim ro nowrap smc=128
