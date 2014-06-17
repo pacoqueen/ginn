@@ -48,7 +48,7 @@ from informes import geninformes
 from formularios.consulta_existenciasBolsas import act_fecha
 import datetime
 from formularios.custom_widgets import gtkcairoplot
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 
 # TODO: Añadir un Gtk.CairoPlot para ver los totales por producto. Para eso 
 # antes tendré que adaptar la clase a cagraph o usar los parámetros de 
@@ -124,8 +124,7 @@ class ConsultaPedidosCliente(Ventana):
         self.wids['e_total'].parent.pack_start(lab_total_servido)
         self.wids['e_total'].parent.pack_start(self.wids['e_total_servido'])
         vbox = self.wids['e_total'].parent.parent
-        self.wids['grafica'] = gtkcairoplot.GtkCairoPlot(
-                gtkcairoplot.HORIZONTAL_BAR, [[1]])
+        self.wids['grafica'] = gtk.DrawingArea()
         vbox.pack_start(self.wids['grafica'])
         self.wids['e_total'].parent.parent.show_all()
 
@@ -217,18 +216,17 @@ class ConsultaPedidosCliente(Ventana):
         self.actualizar_grafica(servido_por_producto)
 
     def actualizar_grafica(self, servido_por_producto):
-        # PORASQUI: TODO: Primero, que está mal empaquetada y no se ve nada 
-        # ni maximizando. Y segundo, que no actualiza la gráfica y el "render()"
-        # creo que no es el método a llamar. Y el .render_plot peta.
-        labels = servido_por_producto.keys()[:]
-        labels.sort()
-        data = []
-        for p in labels:
-            data.append([servido_por_producto[p]])
-        labels = [l.descripcion for l in labels]
-        self.wids['grafica'].plt.x_labels = labels
-        self.wids['grafica'].plt.data = data
-        self.wids['grafica'].render_plot()
+        data = OrderedDict()
+        productos = servido_por_producto.keys()[:]
+        productos.sort()
+        for p in productos:
+            data[p.descripcion] = servido_por_producto[p]
+        padre = self.wids['grafica'].parent
+        padre.remove(self.wids['grafica'])
+        self.wids['grafica'] = gtkcairoplot.GtkCairoPlot(
+                gtkcairoplot.HORIZONTAL, data)
+        padre.pack_start(self.wids['grafica'])
+        self.wids['grafica'].show_all()
 
     def set_fecha(self, boton):
         """

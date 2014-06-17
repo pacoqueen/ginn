@@ -56,6 +56,7 @@ from cagraph.cagraph.ca_graph_grid import CaGraphGrid
 from cagraph.cagraph.series.line import CaGraphSeriesLine
 from cagraph.cagraph.series.hbar import CaGraphSeriesHBar
 from cagraph.cagraph.series.area import CaGraphSeriesArea
+from cagraph.cagraph.series.labels import CaGraphSeriesLabels
 
 
 (HORIZONTAL,    # 0
@@ -76,9 +77,7 @@ class GtkCairoPlot(gtk.DrawingArea):
         """
         super(GtkCairoPlot, self).__init__()
         self._tipo = tipo
-        self._data = check_data(data, tipo)
-        self._labels = data.keys()
-        self._labels.sort()
+        self._data, self._labels = check_data(data, tipo)
         self.width = -1
         self.height = -1
         self.plt = self._prepare_plot()
@@ -90,7 +89,17 @@ class GtkCairoPlot(gtk.DrawingArea):
         Crea el objeto de la biblioteca que corresponda según el tipo.
         """
         if self._tipo == HORIZONTAL:
-            raise NotImplementedError("gtkcairoplot: todavía no implementado.")
+            plot = CaGraph()
+            xaxis = CaGraphXAxis(plot)
+            yaxis = CaGraphYAxis(plot)
+            yaxis.axis_style.draw_labels = yaxis.axis_style.draw_tics = False
+            plot.axiss.append(xaxis)
+            plot.axiss.append(yaxis)
+            plot.seriess.append(CaGraphSeriesHBar(plot, 0, 1))
+            plot.seriess.append(CaGraphSeriesLabels(plot, 0, 1))
+            plot.seriess[0].data = self._data
+            plot.seriess[1].data = self._labels
+            plot.auto_set_range()
         elif self._tipo == VERTICAL:
             raise NotImplementedError("gtkcairoplot: todavía no implementado.")
         elif self._tipo == TARTA:
@@ -101,7 +110,7 @@ class GtkCairoPlot(gtk.DrawingArea):
                                      self._data,
                                      self.width, 
                                      self.height)
-            # PORASQUI: Dibuja algo, pero caca. No se ve nada. Y lo importante, que es el de barras todavía no lo he empezado.
+            # PORASQUI: Dibuja algo, pero caca. No se ve nada. 
         elif self._tipo == GRAFO:
             raise NotImplementedError("gtkcairoplot: todavía no implementado.")
         else:
@@ -112,8 +121,12 @@ class GtkCairoPlot(gtk.DrawingArea):
         rect = self.get_allocation()
         self.width = rect.width
         self.height = rect.height
-        self.plt.dimensions[cairoplot.HORZ] = self.width
-        self.plt.dimensions[cairoplot.VERT] = self.height
+        try:
+            self.plt.dimensions[cairoplot.HORZ] = self.width
+            self.plt.dimensions[cairoplot.VERT] = self.height
+        except AttributeError:
+            self.plt.set_allocation(rect)
+            self.plt.expose(self, event)
         try:
             self.plt.context = self.context =  widget.window.cairo_create()
         except AttributeError:
@@ -125,8 +138,11 @@ class GtkCairoPlot(gtk.DrawingArea):
         Invoca la función encargada de generar el gráfico de CairoPlot en el
         surface de Cairo.
         """
-        self.plt.render()
-        self.plt.commit()
+        try:
+            self.plt.render()
+            self.plt.commit()
+        except AttributeError:  # Es un cagraph, no un cairograph
+            pass
 
 ###############################################################################
 
@@ -139,10 +155,12 @@ def check_data(data, tipo):
     un valor único (una barra por "label") o una lista o tupla de valores
     (varias barras por cada clave).
     """
-    _data = {}
-    for label in data:
-        valor = data[label]
-        if tipo == TARTA:
+    if tipo == TARTA:
+        _data = {}
+        _labels = data.keys()
+        _labels.sort()
+        for label in data:
+            valor = data[label]
             if isinstance(valor, (tuple, list)):    # Si es una serie
                 _data[label] = sum(valor)   # lo sustituyo por su suma.
             elif isinstance(valor, (int, float)):
@@ -150,58 +168,54 @@ def check_data(data, tipo):
             else:
                 raise TypeError("gtkcairoplot:"
                                 " «data» debe ser un diccionario de números")
-        elif tipo in (HORIZONTAL, VERTICAL):
+    elif tipo in (HORIZONTAL, VERTICAL):
+        _data = []
+        _labels = []
+        y = 0
+        yoffset = 10    # No hace falta que sea proporcional al eje de abscisas
+        labels = data.keys()
+        labels.reverse()    # Para que salgan de arriba a abajo
+        for label in labels:
+            valor = data[label]
             if isinstance(valor, (int, float)):
-                _data[label] = [valor]
+                _data.append((valor, y))
+                _labels.append((valor, y, label))
+                y += yoffset
             elif isinstance(valor, (list, tuple)):
-                _data[label] = valor
+                subvalores = valor
+                subvalores.reverse()
+                for subvalor in subvalores:
+                    _data.append((subvalor, y))
+                    _labels.append((subvalor, y, 
+                                    "%s (%s)" % (label, subvalor)))
+                    y += yoffset
             else:
                 raise TypeError("gtkcairoplot:"
                                 " «data» debe ser un diccionario de listas")
-        else:
-            raise ValueError("gtkcairoplot:"
-                             " Debe especificar un tipo de gráfico válido.")
-    return _data
-
-def create_cagraph_plot(tipo, data, x_labels = [], y_labels = []):
-    graph = CaGraph()
-    # create and add axiss to graph
-    xaxis = CaGraphXAxis(graph)
-    yaxis = CaGraphYAxis(graph)
-    graph.axiss.append(xaxis)
-    graph.axiss.append(yaxis)
-    # create and add series to graph
-    #graph.seriess.append(CaGraphSeriesLine(graph, 0, 1))
-    graph.seriess.append(CaGraphSeriesHBar(graph, 0, 1))
-    # En cagraph los valores se reciben siempre como pares x, y. Como solo 
-    # recibo valores, en este caso x, completo con el y para que vayan en el 
-    # orden de arriba a abajo según lo recibo.
-    _data = []
-    y = len(data[0]) * len(data)
-    for barraset in data:
-        for valor in barraset:
-            _data.append((valor, y))
-            y -= 1
-    # add data to seriess
-    graph.seriess[0].data = _data
-    # automaticaly set axis ranges
-    graph.auto_set_range()
-    return graph
-
+        if not _labels or len(_labels) <= 1:
+            raise ValueError("gtkcairoplot: "
+                             "Necesita al menos dos series de datos")
+    else:
+        raise ValueError("gtkcairoplot:"
+                         " Debe especificar un tipo de gráfico válido.")
+    return _data, _labels
 
 def build_test_window():
     """
     Devuelve una ventana de Gtk con un CairoPlot para pruebas.
     """
     win = gtk.Window()
+    win.set_size_request(800, 600)
     win.set_position(gtk.WIN_POS_CENTER)
     win.connect('delete-event', gtk.main_quit)
-    data = {"Uno":  [1, 2, 3],  #  Uno █▅▂
-            "Dos":  [4, 5, 6],  #  Dos ████▅▂
-            "Tres": [7, 8, 9]}  # Tres ███████▅▂
-    #plot1 = GtkCairoPlot(HORIZONTAL, data)
-    plot1 = gtk.Image()
-    plot1.set_from_stock(gtk.STOCK_MISSING_IMAGE, gtk.ICON_SIZE_DIALOG)
+    import collections
+    data = collections.OrderedDict()
+    data["Uno"] =  [1, 2, 3]  #  Uno █▅▂
+    data["Dos"] =  [4, 5, 6]  #  Dos ████▅▂
+    data["Tres"] = [7, 8, 9]  # Tres ███████▅▂
+    plot1 = GtkCairoPlot(HORIZONTAL, data)
+    #plot1 = gtk.Image()
+    #plot1.set_from_stock(gtk.STOCK_MISSING_IMAGE, gtk.ICON_SIZE_DIALOG)
     box = gtk.VBox()
     box.pack_start(plot1)
     plot2 = GtkCairoPlot(TARTA, data)
