@@ -18,30 +18,22 @@
 				"buffer_size": 3117,
 				"line_ending": "Unix"
 			}
-		},
-		{
-			"file": "ginn/lib/cagraph/cagraph/ca_graph.py",
-			"settings":
-			{
-				"buffer_size": 5645,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "ginn/lib/cagraph/cagraph/series/dna.py",
-			"settings":
-			{
-				"buffer_size": 3236,
-				"line_ending": "Unix"
-			}
 		}
 	],
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 392.0,
+		"height": 285.0,
 		"selected_items":
 		[
+			[
+				"auto",
+				"User: Python PEP8 Autoformat"
+			],
+			[
+				":auto",
+				"Anaconda: Autoformat PEP8 Errors"
+			],
 			[
 				":w",
 				":w - Save"
@@ -51,20 +43,12 @@
 				"Anaconda: Autoformat PEP8 Errors"
 			],
 			[
-				":auto",
-				"Anaconda: Autoformat PEP8 Errors"
-			],
-			[
 				"install",
 				"Package Control: Install Package"
 			],
 			[
 				"pack",
 				"Package Control: List Packages"
-			],
-			[
-				"auto",
-				"User: Python PEP8 Autoformat"
 			],
 			[
 				"indent",
@@ -308,6 +292,11 @@
 	},
 	"file_history":
 	[
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/cagraph/cagraph/ca_graph_grid.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/cagraph/cagraph/ca_graph.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/cagraph/cagraph/series/dna.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/cagraph/cagraph/series/line.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/cagraph/cagraph/series/hbar.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/custom_widgets/cellrendererautocomplete.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/autenticacion.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/extra/install/autossh.sh",
@@ -430,12 +419,7 @@
 		"/home/bogado/Geotexan/src/Geotex-INN/extra/scripts/mind_the_gap.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/mdb-import",
 		"/home/bogado/Geotexan/src/Geotex-INN/db/migrate2bacall.sh",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_producido.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_pagos.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_pendientes_servir.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_beneficio.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_ventas_por_producto.glade",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_ventas_por_producto.html"
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_producido.html"
 	],
 	"find":
 	{
@@ -539,7 +523,7 @@
 	"groups":
 	[
 		{
-			"selected": 2,
+			"selected": 0,
 			"sheets":
 			[
 				{
@@ -570,78 +554,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 255.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "ginn/lib/cagraph/cagraph/ca_graph.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 5645,
-						"regions":
-						{
-							"bookmark_n":
-							{
-								"flags": 144,
-								"regions":
-								[
-									[
-										982,
-										982
-									]
-								]
-							}
-						},
-						"selection":
-						[
-							[
-								1005,
-								1005
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 153.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "ginn/lib/cagraph/cagraph/series/dna.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3236,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1339,
-								1339
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 221.0,
+						"translation.y": 17.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,

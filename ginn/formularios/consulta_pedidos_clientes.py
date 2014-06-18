@@ -110,6 +110,7 @@ class ConsultaPedidosCliente(Ventana):
             utils.combo_set_from_db(self.wids["cmbe_cliente"], objeto.id)
             self.wids["b_buscar"].clicked()
         self.add_widgets_extra()
+        self.wids['cmbe_cliente'].grab_focus()
         gtk.main()
 
     def add_widgets_extra(self):
@@ -123,9 +124,16 @@ class ConsultaPedidosCliente(Ventana):
         lab_total_servido = gtk.Label("Importe total servido:")
         self.wids['e_total'].parent.pack_start(lab_total_servido)
         self.wids['e_total'].parent.pack_start(self.wids['e_total_servido'])
-        vbox = self.wids['e_total'].parent.parent
+        # La gráfica, que es grande, en una pestaña aparte:
+        tvdatos = self.wids['tv_datos'].parent # Porque lleva un scroll porcima
+        self.wids['notebook'] = nb = gtk.Notebook()
+        from formularios.widgets import replace_widget
+        replace_widget(tvdatos, nb)
+        nb.append_page(tvdatos, gtk.Label("Tabla"))
         self.wids['grafica'] = gtk.DrawingArea()
-        vbox.pack_start(self.wids['grafica'])
+        container = gtk.HBox()
+        container.pack_start(self.wids['grafica'])
+        nb.append_page(container, gtk.Label("Gráfica"))
         self.wids['e_total'].parent.parent.show_all()
 
     def exportar(self, boton):
@@ -224,7 +232,7 @@ class ConsultaPedidosCliente(Ventana):
         padre = self.wids['grafica'].parent
         padre.remove(self.wids['grafica'])
         self.wids['grafica'] = gtkcairoplot.GtkCairoPlot(
-                gtkcairoplot.HORIZONTAL, data)
+                gtkcairoplot.HORIZONTAL, data, self.wids['ventana'])
         padre.pack_start(self.wids['grafica'])
         self.wids['grafica'].show_all()
 

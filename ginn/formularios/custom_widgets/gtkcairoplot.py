@@ -24,10 +24,8 @@
 # Clase para empotrar gráficos hechos con Cairo en un widget Gtk
 ###############################################################################
 
-# TODO: De momento funciona para barras verticales y horizontales con CairoPlot
-# Tengo a medio hacer la adaptación de cagraph, que es más potente pero igual
-# de mal documentado que CairoPlot; aunque más compleja a la hora de crear
-# las gráficas.
+# TODO: Lo mejor de cagraph frente a cairoplot es la capacidad de zoom, pan, 
+#       etc. Pero no consigo que las señales vayan donde deben ir. :(
 # Al final me quedé con las ganas de https://networkx.github.io/ porque
 # depende de matplotlib, que es enorme y no se instala por defecto.
 
@@ -69,7 +67,7 @@ class GtkCairoPlot(gtk.DrawingArea):
     """
     Widget que incluye un gráfico de CairoPlot en él.
     """
-    def __init__(self, tipo, data = {}):
+    def __init__(self, tipo, data = {}, main_window = None):
         """
         Recibe un tipo de gráfica a representar en «tipo».
         En «data» recibe un diccionario con las etiquetas de los valores como
@@ -80,26 +78,75 @@ class GtkCairoPlot(gtk.DrawingArea):
         self._data, self._labels = check_data(data, tipo)
         self.width = -1
         self.height = -1
-        self.plt = self._prepare_plot()
+        self.plt = self._prepare_plot(main_window)
         self.set_size_request(self.width, self.height)
-        self.connect("expose_event", self.expose)
 
-    def _prepare_plot(self):
+        # events
+        self.connect("expose_event", self.expose)
+        self.connect("motion_notify_event", self.motion_notify)
+        self.connect("scroll_event", self.scroll)
+        self.connect("leave_notify_event", self.button_release)
+        self.connect("button_press_event", self.button_press)
+        self.connect("button_release_event", self.button_release)
+        self.set_events(gtk.gdk.EXPOSURE_MASK
+                        | gtk.gdk.LEAVE_NOTIFY_MASK
+                        | gtk.gdk.SCROLL_MASK
+                        | gtk.gdk.BUTTON_PRESS_MASK
+                        | gtk.gdk.BUTTON_RELEASE_MASK
+                        | gtk.gdk.POINTER_MOTION_MASK
+                        | gtk.gdk.POINTER_MOTION_HINT_MASK)
+
+    def motion_notify(self, wigdet, event):
+        if isinstance(self.plt, CaGraph):
+            self.plt.emit('motion_notify_event', event)
+
+    def scroll(self, widget, event):
+        if isinstance(self.plt, CaGraph):
+            self.plt.emit('scroll_event', event)
+
+    def button_release(self, widget, event):
+        if isinstance(self.plt, CaGraph):
+            self.plt.emit('button_release_event', event)
+
+    def button_press(self, widget, event):
+        if isinstance(self.plt, CaGraph):
+            self.plt.emit('button_press_event', event)
+
+    def _prepare_plot_h(self, main_window = None):
+        plot = CaGraph(main_window)
+        xaxis = CaGraphXAxis(plot)
+        xaxis.axis_style.label_format = '%d'
+        xaxis.axis_style.side = 'bottom'
+        yaxis = CaGraphYAxis(plot)
+        yaxis.axis_style.draw_labels = yaxis.axis_style.draw_tics = False
+        plot.graph_style.draw_pointer = True
+        plot.axiss.append(xaxis)
+        plot.axiss.append(yaxis)
+        # create and add top axis
+        top_axis = CaGraphXAxis(plot)
+        top_axis.axis_style.label_format = '%d'
+        top_axis.axis_style.side = 'top'
+        plot.axiss.append(top_axis)
+        # Cuadrícula (no se puede habilitar solo horizontal)
+        plot.grid = CaGraphGrid(plot, 0, 1)
+        plot.grid.style.line_color = (0, 0.5, 0, 1.0)
+        plot.grid.style.zero_line_color = (0, 0, 0, 0)
+        # Series de datos
+        plot.seriess.append(CaGraphSeriesHBar(plot, 0, 1))
+        plot.seriess.append(CaGraphSeriesLabels(plot, 0, 1))
+        plot.seriess[0].data = self._data
+        #plot.seriess[0].style.bar_width = 10
+        plot.seriess[1].data = self._labels
+        plot.auto_set_range()
+        plot.connect("motion-notify-event", self.motion_notify_hbar)
+        return plot
+
+    def _prepare_plot(self, main_window = None):
         """
         Crea el objeto de la biblioteca que corresponda según el tipo.
         """
         if self._tipo == HORIZONTAL:
-            plot = CaGraph()
-            xaxis = CaGraphXAxis(plot)
-            yaxis = CaGraphYAxis(plot)
-            yaxis.axis_style.draw_labels = yaxis.axis_style.draw_tics = False
-            plot.axiss.append(xaxis)
-            plot.axiss.append(yaxis)
-            plot.seriess.append(CaGraphSeriesHBar(plot, 0, 1))
-            plot.seriess.append(CaGraphSeriesLabels(plot, 0, 1))
-            plot.seriess[0].data = self._data
-            plot.seriess[1].data = self._labels
-            plot.auto_set_range()
+            plot = self._prepare_plot_h(main_window)
         elif self._tipo == VERTICAL:
             raise NotImplementedError("gtkcairoplot: todavía no implementado.")
         elif self._tipo == TARTA:
@@ -117,6 +164,25 @@ class GtkCairoPlot(gtk.DrawingArea):
             raise ValueError("gtkcairoplot: tipo no reconocido.")
         return plot
 
+    def motion_notify_hbar(self, widget, ev):
+        """
+        Actualiza un label que muestra el valor de la X y el label bajo el 
+        cursor. Solo para derivados de cagraph.
+        """
+        series = self.plt.seriess[1]
+        if self.plt.check_xy(ev.x, ev.y):
+            # De píxel a valor:
+            x = series.xaxis.px_to_data(ev.x)
+            y = series.yaxis.px_to_data(ev.y)
+            # find nearest data point to mouse position
+            # index = 2 is the y-axis
+            x, y, label = series.find_point_by_index(y, 1)
+            ttext = label
+            value = " (%s)" % x
+            if not ttext.endswith(value):   # Para no duplicar la información
+                ttext += value
+            self.set_tooltip_text(ttext)
+
     def expose(self, widget, event):
         rect = self.get_allocation()
         self.width = rect.width
@@ -124,9 +190,13 @@ class GtkCairoPlot(gtk.DrawingArea):
         try:
             self.plt.dimensions[cairoplot.HORZ] = self.width
             self.plt.dimensions[cairoplot.VERT] = self.height
-        except AttributeError:
+        except AttributeError:  # Es un cagraph
             self.plt.set_allocation(rect)
             self.plt.expose(self, event)
+            #try:
+            #    self.plt.emit("expose_event", event)
+            #except AttributeError:
+            #    return True     # Todavía no está lista.
         try:
             self.plt.context = self.context =  widget.window.cairo_create()
         except AttributeError:
@@ -208,19 +278,19 @@ def build_test_window():
     win.set_size_request(800, 600)
     win.set_position(gtk.WIN_POS_CENTER)
     win.connect('delete-event', gtk.main_quit)
+    box = gtk.VBox()
+    win.add(box)
     import collections
     data = collections.OrderedDict()
     data["Uno"] =  [1, 2, 3]  #  Uno █▅▂
     data["Dos"] =  [4, 5, 6]  #  Dos ████▅▂
     data["Tres"] = [7, 8, 9]  # Tres ███████▅▂
-    plot1 = GtkCairoPlot(HORIZONTAL, data)
+    plot1 = GtkCairoPlot(HORIZONTAL, data, win)
     #plot1 = gtk.Image()
     #plot1.set_from_stock(gtk.STOCK_MISSING_IMAGE, gtk.ICON_SIZE_DIALOG)
-    box = gtk.VBox()
     box.pack_start(plot1)
     plot2 = GtkCairoPlot(TARTA, data)
     box.pack_start(plot2)
-    win.add(box)
     return win, plot1, plot2
 
 def main():
