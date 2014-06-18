@@ -288,26 +288,23 @@ class VentanaActividad:
         self._ventana.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
         self.__pbar = gtk.ProgressBar()
         self.__pbar.set_pulse_step(0.01)
+        self.__vbox = gtk.VBox()
+        self._ventana.add(self.__vbox)
         if texto:
             self._texto = texto
             self.__label = gtk.Label(self._texto)
-            self.__vbox = gtk.VBox()
             self.__vbox.add(self.__label)
-            self.__vbox.add(self.__pbar)
-            self.__vbox.show_all()
-            self._ventana.add(self.__vbox)
         else:
             self._texto = None
             self.__label = None
-            self._ventana.add(self.__pbar)
-            self.__pbar.show()
+        self.__vbox.add(self.__pbar)
         if show_timer:
             self.__label_tiempo = gtk.Label()
             self.__label_tiempo.set_use_markup = True
             self.__vbox.pack_start(self.__label_tiempo, expand = False)
-            self.__label_tiempo.show()
         else:
             self.__label_tiempo = None
+        self.__vbox.show_all()
         self._ventana.resize(300, 40)
         self.__visible = False
         self.__seguir_actualizando = True
@@ -339,7 +336,7 @@ class VentanaActividad:
             res = "<i>no computable</i>"
         return res
 
-    def mostrar_tiempo(self, valor):
+    def mostrar_tiempo(self):
         """
         Muestra el tiempo transcurrido.
         """
@@ -384,6 +381,8 @@ class VentanaActividad:
             gtk.main_iteration(False)
 
     def actualizar(self):
+        if self.__label_tiempo:
+            self.mostrar_tiempo()
         return self.__seguir_actualizando
 
     def mover(self, texto = None):
@@ -430,8 +429,7 @@ if __name__ == '__main__':
 
     def ejemplo3():
         cosas = ['a', 'b', 'c', 'd', 'e']*50
-        vpro = VentanaActividad(texto = 'Procesando...', 
-                                show_timer = True)
+        vpro = VentanaActividad(texto = 'Procesando...', show_timer = True)
         vpro.mostrar()
         for cosa in cosas:  # @UnusedVariable
             vpro.mover()
