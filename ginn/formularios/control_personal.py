@@ -950,7 +950,8 @@ class ControlPersonal(Ventana, VentanaGenerica):
                 self._is_fullscreen = False
                 era_fullscreen = True
             def cerrar_y_actualizar(ventana, ide, 
-                                    pd, md, ad, vd, pn, mn, an, vn):
+                                    pd, md, ad, vd, pn, mn, an, vn, 
+                                    era_fullscreen):
                 ch = pclases.ControlHoras.get(ide)
                 for campo, entry in (("horasExtraDiaProduccion", pd), 
                                      ("horasExtraDiaMantenimiento", md), 
@@ -972,7 +973,8 @@ class ControlPersonal(Ventana, VentanaGenerica):
                     self.wids['ventana'].fullscreen()
                     self._is_fullscreen = True
             v.connect("destroy", cerrar_y_actualizar, 
-                                 ide, pd, md, ad, vd, pn, mn, an, vn)
+                                 ide, pd, md, ad, vd, pn, mn, an, vn, 
+                                 era_fullscreen)
         boton_he.connect("clicked", abrir_popup, ch.id)
         boton_he.connect("focus_in_event", 
                          focusin, 
@@ -1055,7 +1057,7 @@ class ControlPersonal(Ventana, VentanaGenerica):
                 self.wids['ventana'].unfullscreen()
                 self._is_fullscreen = False
                 era_fullscreen = True
-            def cerrar_y_actualizar(ventana, ide, entries):
+            def cerrar_y_actualizar(ventana, ide, entries, era_fullscreen):
                 for horaslinea in entries:
                     entry = entries[horaslinea]
                     try:
@@ -1071,7 +1073,8 @@ class ControlPersonal(Ventana, VentanaGenerica):
                 if era_fullscreen:
                     self.wids['ventana'].fullscreen()
                     self._is_fullscreen = True
-            v.connect("destroy", cerrar_y_actualizar, ide, entries)
+            v.connect("destroy", cerrar_y_actualizar, ide, entries, 
+                                                      era_fullscreen)
         boton.connect("clicked", abrir_popup, ch.id)
         boton.connect("focus_in_event", 
                       focusin, 
@@ -1154,7 +1157,7 @@ class ControlPersonal(Ventana, VentanaGenerica):
                 self.wids['ventana'].unfullscreen()
                 self._is_fullscreen = False
                 era_fullscreen = True
-            def cerrar_y_actualizar(ventana, ide, entries):
+            def cerrar_y_actualizar(ventana, ide, entries, era_fullscreen):
                 for horaslinea in entries:
                     entry = entries[horaslinea]
                     try:
@@ -1169,7 +1172,8 @@ class ControlPersonal(Ventana, VentanaGenerica):
                 if era_fullscreen:
                     self.wids['ventana'].fullscreen()
                     self._is_fullscreen = True
-            v.connect("destroy", cerrar_y_actualizar, ide, entries)
+            v.connect("destroy", cerrar_y_actualizar, ide, entries, 
+                                                      era_fullscreen)
         boton.connect("clicked", abrir_popup, ch.id)
         boton.connect("focus_in_event", 
                       focusin, 

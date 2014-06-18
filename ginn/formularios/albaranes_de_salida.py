@@ -2857,6 +2857,10 @@ class AlbaranesDeSalida(Ventana):
         Genera un albarán en PDF a partir de los datos
         del albarán actual.
         """
+        from formularios.VentanaProgreso import VentanaActividad
+        vpro = VentanaActividad(self.wids['ventana'], 
+                                "Generando documentos PDF...")
+        vpro.mostrar()
         if pclases.DEBUG:
             print "Llamando a self.preguntar_si_redistribuir..."
             antes = time.time()
@@ -3076,6 +3080,7 @@ class AlbaranesDeSalida(Ventana):
         #                     texto = txt, 
         #                     padre = self.wids['ventana']):
         #        self.add_comision(None)
+        vpro.ocultar()
 
     def enviar_correo_notificacion_facturado(self, nomfich_pdf_factura):
         """
