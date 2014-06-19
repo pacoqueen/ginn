@@ -1087,6 +1087,9 @@ class AlbaranesDeSalida(Ventana):
         """
         cantidad = 0.0
         articulos_anadidos = self.__ldvs[ldv.id]['articulos']
+        if pclases.DEBUG:
+            myprint(" ==> Inicio iteraciones sobre articulos_anadidos.")
+            antes = time.time()
         for a in articulos_anadidos:
             if a.rolloID != None: # Es un rollo
                 cantidad += (
@@ -1104,6 +1107,9 @@ class AlbaranesDeSalida(Ventana):
                 cantidad += a.peso
             elif a.es_caja():
                 cantidad += a.peso
+        if pclases.DEBUG:
+            myprint(" ==> Fin iteraciones sobre articulos_anadidos.", 
+                    time.time() - antes)
         return cantidad
 
     def cantidad_anadida(self, producto):
@@ -2927,13 +2933,18 @@ class AlbaranesDeSalida(Ventana):
         if pclases.DEBUG:
             myprint("    --> Sin hueso mi ansiedad:", time.time() - antes)
             myprint("Iterando bucle de cantidades de ldv "
-                    "(self.cantidad_anadida_a_ldv(ldv)...")
+                    "[self.cantidad_anadida_a_ldv(ldv)]...")
             antes = time.time()
         for ldv in albaran.lineasDeVenta:
-            if ((ldv.productoVentaID and ldv.productoVenta.articulos)
-                and (self.usuario != None
-                     and self.usuario.nivel >= 1
-                     and not self.objeto.bloqueado)
+            productoVenta = ldv.productoVenta
+            if (productoVenta # and productoVenta.articulos <--- ESTO ES 
+                    # LENTÍSIMO con productos con muchos artículos. Intuyo
+                    # que el ORM hace un select para cada uno de los 
+                    # artículos tan solo para evaluar que su len() es o no 0
+                and tiene_articulos(productoVenta) # <-- Optimización
+                and self.usuario
+                and self.usuario.nivel >= 1
+                and not self.objeto.bloqueado
                 and not es_venta_rollos_c(ldv)):
                 # DONE: Así consigo que se imprima la cantidad del pedido en
                 #       productos "especiales" (cables de fibra y cosas
@@ -2942,6 +2953,7 @@ class AlbaranesDeSalida(Ventana):
                 #       las que se le asignen códigos de bala o rollo.
                 # CWT: Si el usuario tiene privilegios, que pueda imprimir
                 #      los albaranes con la cantidad que quieran.
+                antes2 = time.time()
                 ldv.cantidad = self.cantidad_anadida_a_ldv(ldv)
                 ldv.sync()
         vpro.mover("(Actualizando ventana)")
@@ -4987,6 +4999,8 @@ def es_venta_rollos_c(ldv_o_producto):
     Porque en ese caso no debería ajustarse la cantidad de la línea con el peso
     real de sus artículos.
     """
+    if pclases.DEBUG and pclases.VERBOSE:
+        antes = time.time()
     if isinstance(ldv_o_producto, pclases.LineaDeVenta):
         producto = ldv_o_producto.productoVenta
     else:
@@ -4998,8 +5012,9 @@ def es_venta_rollos_c(ldv_o_producto):
         res = producto.es_rollo_c()
     except AttributeError:
         res = False
-    if pclases.DEBUG:
-        myprint("albaranes_de_salida::es_venta_rollos_c ->", res)
+    if pclases.DEBUG and pclases.VERBOSE:
+        myprint("albaranes_de_salida::es_venta_rollos_c ->", res, "Tiempo:", 
+                time.time() - antes)
     return res
 
 def select_lineas_pedido(pedido, padre = None):
@@ -5036,6 +5051,15 @@ def select_lineas_pedido(pedido, padre = None):
             elif isinstance(obj, pclases.Servicio):
                 srvs.append(obj)
         return ldps, srvs
+
+def tiene_articulos(p):
+    """
+    Devuelve True si el producto «p» tiene algún artículo. False en caso
+    contrario.
+    MUCHO MÁS RÁPIDO que hacer un len(p.articulos) o «if p.articulos»:
+    """
+    arts = pclases.Articulo.select(pclases.Articulo.q.productoVenta == p)
+    return arts.count()
 
 if __name__=='__main__':
     a = AlbaranesDeSalida()
