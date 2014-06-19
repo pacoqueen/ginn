@@ -28,7 +28,9 @@ Created on 22/05/2013
 @author: bogado
 '''
 
-import os, sys
+import os
+import sys
+
 
 def guess_interprete():
     """
@@ -40,58 +42,70 @@ def guess_interprete():
         sysdrive = "C:"
     res = None
     for pyver in ("27", "26", "25"):
-        interprete = os.path.join(sysdrive, os.path.sep, "Python" + pyver, 
+        # PLAN: ¿Se podría meter aquí la optimización -OO al intérprete?
+        # ¿Serviría de algo o el cuello de botella seguiría siendo el ORM?
+        # ¿Y si con eso me cargo la introspección del GtkExceptionHook y me
+        # empiezan a llegar bug reports con las líneas y el código equivocado?
+        interprete = os.path.join(sysdrive, os.path.sep, "Python" + pyver,
                                   "pythonw.exe")
         if os.path.exists(interprete):
             res = interprete
             break
     return res
 
-def run(modulo, clase, usuario, fconfig, obj_puid = None):
+
+def run(modulo, clase, usuario, fconfig, obj_puid=None,
+        debug=False, verbose=False):
     """
     Esto va a recibir cuatro parámetros:
     * fichero
     * clase a instanciar
     * usuario
-    Con eso iniciará un proceso donde la ventana está instanciada (y por 
+    Con eso iniciará un proceso donde la ventana está instanciada (y por
     tanto entra en ejecución).
-    El parse_params de configuracion.py se encarga de establecer los modos 
-    verbose, debug y la configuración de acceso a la BD; y nos devuelve el 
-    usuario y contraseña a autenticar (si falta alguno de ellos, se 
+    El parse_params de configuracion.py se encarga de establecer los modos
+    verbose, debug y la configuración de acceso a la BD; y nos devuelve el
+    usuario y contraseña a autenticar (si falta alguno de ellos, se
     pregunta mediante el autenticacion.py).
-    Una vez pasado hecho login, se crea el proceso y se inicia el bucle GTK de 
+    Una vez pasado hecho login, se crea el proceso y se inicia el bucle GTK de
     la ventana en cuestión.
     """
     try:
-        #assert sys.platform != "linux2"     # DONE: ¿Por qué ahora no me funca el popen en linux?
+        # assert sys.platform != "linux2"     # DONE: ¿Por qué ahora no me
+        # funca el popen en linux?
         import subprocess
         ruta = os.path.realpath(os.path.join(os.path.dirname(
             os.path.realpath(__file__)), '..'))
         if sys.platform[:3] == "win":
-            comando = "set PYTHONPATH=%PYTHONPATH%;" + ruta + " & " 
+            comando = "set PYTHONPATH=%PYTHONPATH%;" + ruta + " & "
             interprete = guess_interprete()
             if not interprete:
                 interprete = ""
         else:
-            comando = "export PYTHONPATH=$PYTHONPATH:" + ruta + "; " 
+            comando = "export PYTHONPATH=$PYTHONPATH:" + ruta + "; "
             interprete = ""
-        comando += interprete 
+        comando += interprete
         args = [os.path.join(ruta, "formularios", modulo + ".py")]
         if not isinstance(usuario, str):
             usuario = usuario.usuario   # Debe de ser instancia de pclases
-        args += ["-u %s" % usuario, "-c %s" % fconfig] 
+        args += ["-u %s" % usuario, "-c %s" % fconfig]
         if obj_puid:
             args.append(" -o %s" % obj_puid)
+        if debug:
+            args.append(" -d")
+        if verbose:
+            args.append(" -v")
         # print comando, args
         #subprocess.Popen([comando] + args, shell = True)
         # Ahora no sé por qué esto de arriba no va. Esto de abajo parece que sí
-        subprocess.Popen(" ".join([comando] + args), shell = True)
-        # OJO: Si no funciona y Windows dice que 
-        # "La ruta de acceso no es válida", comprueba antes que nada que el 
-        # fichero de log de formularios existe y es accesible para escritura 
-        # para todos los usuarios. Para depurar, lo mejor es que 
+        subprocess.Popen(" ".join([comando] + args), shell=True)
+        # OJO: Si no funciona y Windows dice que
+        # "La ruta de acceso no es válida", comprueba antes que nada que el
+        # fichero de log de formularios existe y es accesible para escritura
+        # para todos los usuarios. Para depurar, lo mejor es que
         # ejecutes el launcher directamente. Sin menú. Tal que así:
-        # Q:\ginn\formularios>C:\Python27\python.exe launcher.py -u admin -p adadmin -w bancos.py
+        # Q:\ginn\formularios>C:\Python27\python.exe launcher.py -u admin -p
+        # adadmin -w bancos.py
     except Exception, msg:     # fallback @UnusedVariable
         # TODO: Esto debería ir al logger o algo:
         # print "launcher.py:", msg
@@ -100,29 +114,30 @@ def run(modulo, clase, usuario, fconfig, obj_puid = None):
         if obj_puid:
             if isinstance(obj_puid, str):
                 from framework import pclases
-                objeto = pclases.getObjetoPUID(puid)
+                objeto = pclases.getObjetoPUID(obj_puid)
             else:
                 objeto = obj_puid
-            v(usuario = usuario, objeto = objeto)
+            v(usuario=usuario, objeto=objeto)
         else:
-            v(usuario = usuario)
-    
+            v(usuario=usuario)
+
 
 def main():
     """
-    Trata los argumentos y llama al método run, que es el que realmente 
+    Trata los argumentos y llama al método run, que es el que realmente
     hace todo el trabajo.
     """
     import sys
     from framework.configuracion import parse_params
     from formularios.autenticacion import Autenticacion
-    usuario, contrasenna, modulo, clase, fconfig, verbose, debug, obj_puid = parse_params()  # @UnusedVariable
+    # @UnusedVariable
+    (usuario, contrasenna, modulo, clase,
+     fconfig, verbose, debug, obj_puid) = parse_params()
     login = Autenticacion(usuario, contrasenna)
     if login.loginvalido():
-        run(modulo, clase, usuario, fconfig, obj_puid)
+        run(modulo, clase, usuario, fconfig, obj_puid, debug, verbose)
     else:
         sys.exit(1)
 
 if __name__ == '__main__':
     main()
-

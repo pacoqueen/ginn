@@ -25,24 +25,27 @@
 
 
 ###################################################################
-## ventana_progreso.py - Clase que implementa una ventana de
-##                       progreso actualizable con prioridad alta.
+# ventana_progreso.py - Clase que implementa una ventana de
+# progreso actualizable con prioridad alta.
 ###################################################################
-## NOTAS:
+# NOTAS:
 ##
 ###################################################################
-## Changelog:
-## 1 de febrero de 2006 -> Inicio
-## 1 de febrero de 2006 -> 99% funcional
-## 1 de julio de 2006 -> Incorporada ventana de actividad.
+# Changelog:
+# 1 de febrero de 2006 -> Inicio
+# 1 de febrero de 2006 -> 99% funcional
+# 1 de julio de 2006 -> Incorporada ventana de actividad.
 ###################################################################
 
 import pygtk
 pygtk.require('2.0')
-import gtk, gobject
+import gtk
+import gobject
 import time
 
+
 class VentanaProgreso:
+
     """
     Muestra una ventana de progreso actualizable con prioridad alta.
     Ejemplo de uso:
@@ -57,7 +60,8 @@ class VentanaProgreso:
         i += 1
     vpro.ocultar()
     """
-    def __init__(self, padre = None):
+
+    def __init__(self, padre=None):
         self.__tcero = time.time()
         self.__tini = self.__tcero
         self.__tdelta = None
@@ -77,15 +81,15 @@ class VentanaProgreso:
         self.__label_tiempo = gtk.Label()
         self.__label_tiempo.set_use_markup = True
         self._vbox.pack_start(self.__pbar)
-        self._vbox.pack_start(self.__label_tiempo, expand = False)
+        self._vbox.pack_start(self.__label_tiempo, expand=False)
         self._vbox.show_all()
         self._ventana.resize(350, 40)
         self.__visible = False
         self.__seguir_actualizando = True
         self.tiempo = 100
         self.__tag = gobject.timeout_add(self.tiempo, self.actualizar,
-                                         priority = gobject.PRIORITY_HIGH)
-        self._ventana.set_property("deletable", False) # Quita el botón X.
+                                         priority=gobject.PRIORITY_HIGH)
+        self._ventana.set_property("deletable", False)  # Quita el botón X.
         self._ventana.connect('delete_event', lambda w, e: True)
 
     def __del__(self):
@@ -117,7 +121,7 @@ class VentanaProgreso:
         while gtk.events_pending():
             gtk.main_iteration(False)
 
-    def set_valor(self, valor, texto = '', force_actualizar = False):
+    def set_valor(self, valor, texto='', force_actualizar=False):
         """
         Si texto es None se respeta el que ya estuviera establecido.
         """
@@ -126,7 +130,7 @@ class VentanaProgreso:
         if texto != None:
             self.__texto = texto
         self.mostrar_tiempo(valor,
-                            actualizar_label_tiempo = self.tiempo_estable())
+                            actualizar_label_tiempo=self.tiempo_estable())
         self.__valor = valor
         if force_actualizar:
             self.actualizar()
@@ -148,7 +152,7 @@ class VentanaProgreso:
             self.__ultima_actualizacion = ahora
         return res
 
-    def mostrar_tiempo(self, valor, actualizar_label_tiempo = True):
+    def mostrar_tiempo(self, valor, actualizar_label_tiempo=True):
         """
         Muestra el tiempo transcurrido y, si se puede, el restante.
         """
@@ -182,10 +186,11 @@ class VentanaProgreso:
             restante = (porcentaje_restante * self.__tdelta) / vdelta
             self.__memento.insert(0, restante)
             try:
-                #restante = (restante + self.media(self.__memento)) / 2 # Mismo
+                # restante = (restante + self.media(self.__memento)) / 2 # Mismo
                     # peso último valor que media de anteriores (que incluye
                     # también el último valor.
-                #restante = self.media(self.__memento) # Media aritmética pura.
+                # restante = self.media(self.__memento) # Media aritmética
+                # pura.
                 restante = self.moda(self.__memento)
             except (ZeroDivisionError,      # Media de lista vacía
                     TypeError):             # Moda de lista vacía.
@@ -208,14 +213,14 @@ class VentanaProgreso:
             pass
         return restante
 
-    def media(self, valores = None):
+    def media(self, valores=None):
         if not valores:
             valores = self.__memento
         # La excepción que la capture la invocadora.
         media = (sum(self.__memento) / len(self.__memento))
         return media
 
-    def moda(self, valores = None):
+    def moda(self, valores=None):
         if not valores:
             valores = self.__memento
         moda = (0, None)
@@ -266,6 +271,7 @@ class VentanaProgreso:
 
 
 class VentanaActividad:
+
     """
     Muestra una ventana de progreso actualizable con prioridad alta;
     del tipo Activity (no se sabe exactamente el porcentaje completado
@@ -279,7 +285,8 @@ class VentanaActividad:
         vpro.mover()
     vpro.ocultar()
     """
-    def __init__(self, padre = None, texto = '', show_timer = False):
+
+    def __init__(self, padre=None, texto='', show_timer=False):
         self._ventana = gtk.Window()
         self._ventana.set_title('POR FAVOR, ESPERE')
         self._ventana.set_modal(True)
@@ -301,7 +308,7 @@ class VentanaActividad:
         if show_timer:
             self.__label_tiempo = gtk.Label()
             self.__label_tiempo.set_use_markup = True
-            self.__vbox.pack_start(self.__label_tiempo, expand = False)
+            self.__vbox.pack_start(self.__label_tiempo, expand=False)
         else:
             self.__label_tiempo = None
         self.__vbox.show_all()
@@ -310,7 +317,7 @@ class VentanaActividad:
         self.__seguir_actualizando = True
         self.tiempo = 100
         self.__tag = gobject.timeout_add(self.tiempo, self.actualizar,
-                                         priority = gobject.PRIORITY_HIGH)
+                                         priority=gobject.PRIORITY_HIGH)
         self._ventana.connect('delete_event', lambda w, e: True)
         self.__tcero = time.time()
         self.__tlast = self.__tcero     # Usado para detectar paso de segundos
@@ -341,8 +348,8 @@ class VentanaActividad:
         Muestra el tiempo transcurrido.
         """
         transcurrido = self.calcular_tiempo_transcurrido()
-        if int(transcurrido) != int(self.__tlast): # No me interesan cambios
-                                                   # en milisegundos
+        if int(transcurrido) != int(self.__tlast):  # No me interesan cambios
+                                                    # en milisegundos
             txt = '<span face="monospace"><small>Tiempo transcurrido: '
             txt += self.format_tiempo(transcurrido)
             txt += "</small></span>"
@@ -383,9 +390,10 @@ class VentanaActividad:
     def actualizar(self):
         if self.__label_tiempo:
             self.mostrar_tiempo()
+        self.mover()
         return self.__seguir_actualizando
 
-    def mover(self, texto = None):
+    def mover(self, texto=None):
         """
         Mueve un poco la barra de actividad.
         Si se especifica algún texto, lo agrega al existente.
@@ -403,13 +411,13 @@ class VentanaActividad:
 
 if __name__ == '__main__':
     def ejemplo():
-        cosas = ['a', 'b', 'c', 'd', 'e']*50
+        cosas = ['a', 'b', 'c', 'd', 'e'] * 50
         i = 0.0
         tot = len(cosas)
         vpro = VentanaProgreso()
         vpro.mostrar()
         for cosa in cosas:
-            vpro.set_valor(i/tot, 'Procesando %s...' % cosa)
+            vpro.set_valor(i / tot, 'Procesando %s...' % cosa)
             time.sleep(0.03)
             i += 1
         vpro.ocultar()
@@ -417,7 +425,7 @@ if __name__ == '__main__':
         return False
 
     def ejemplo2():
-        cosas = ['a', 'b', 'c', 'd', 'e']*50
+        cosas = ['a', 'b', 'c', 'd', 'e'] * 50
         vpro = VentanaActividad()
         vpro.mostrar()
         for cosa in cosas:  # @UnusedVariable
@@ -428,8 +436,8 @@ if __name__ == '__main__':
         return False
 
     def ejemplo3():
-        cosas = ['a', 'b', 'c', 'd', 'e']*50
-        vpro = VentanaActividad(texto = 'Procesando...', show_timer = True)
+        cosas = ['a', 'b', 'c', 'd', 'e'] * 50
+        vpro = VentanaActividad(texto='Procesando...', show_timer=True)
         vpro.mostrar()
         for cosa in cosas:  # @UnusedVariable
             vpro.mover()
@@ -438,8 +446,6 @@ if __name__ == '__main__':
         gtk.main_quit()
         return False
 
-
     # Esto es sólo para un ejemplo, la clase NO se usa exactamente así.
     gobject.idle_add(ejemplo3)
     gtk.main()
-

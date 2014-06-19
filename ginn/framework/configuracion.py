@@ -54,27 +54,33 @@ modelo_presupuesto          : ("string") [presupuesto] Nombre del módulo a impo
 
 import os
 
+
 class Singleton(type):
+
     """
     Patrón Singleton para evitar que una misma instancia del programa trabaje 
     con varias configuraciones:
     """
+
     def __init__(self, *args):
         type.__init__(self, *args)
         self._instances = {}
+
     def __call__(self, *args):
         if not args in self._instances:
             self._instances[args] = type.__call__(self, *args)
         return self._instances[args]
 
+
 class ConfigConexion:
+
     """
     Clase que recoge los parámetros de configuración
     a partir de un archivo.
     """
     __metaclass__ = Singleton
 
-    def __init__(self, fileconf = 'ginn.conf'):
+    def __init__(self, fileconf='ginn.conf'):
         if fileconf == None:
             fileconf = "ginn.conf"
         if os.sep in fileconf:
@@ -94,14 +100,14 @@ class ConfigConexion:
         if not os.path.exists(self.__fileconf):
             self.__fileconf = os.path.join('..', 'framework', fileconf)
         if not os.path.exists(self.__fileconf):
-            # Es posible que estemos en un directorio más interno. Como por 
+            # Es posible que estemos en un directorio más interno. Como por
             # ejemplo, cuando se genera la documentación.
             self.__fileconf = os.path.join('..', '..', 'framework', fileconf)
         try:
             self.__fileconf = open(self.__fileconf)
         except IOError:
             print "ERROR: configuracion::__set_conf -> Fichero de "\
-                  "configuración %s no encontrado (%s)." % (fileconf, 
+                  "configuración %s no encontrado (%s)." % (fileconf,
                                                             self.__fileconf)
             self.__fileconf = None
             self.__conf = {}
@@ -120,7 +126,7 @@ class ConfigConexion:
         l = self.__fileconf.readline()
         while l != '':
             l = l.replace('\t', ' ').replace('\n', '').split()
-            if l and not l[0].startswith("#"):   
+            if l and not l[0].startswith("#"):
                 # Ignoro líneas en blanco y las que comienzan con #
                 conf[l[0]] = " ".join([p for p in l[1:] if p.strip() != ""])
             l = self.__fileconf.readline()
@@ -128,16 +134,16 @@ class ConfigConexion:
 
     def get_tipobd(self):
         return self.__conf['tipobd']
-        
+
     def get_user(self):
         return self.__conf['user']
-    
+
     def get_pass(self):
         return self.__conf['pass']
 
     def get_dbname(self):
         return self.__conf['dbname']
-        
+
     def get_host(self):
         return self.__conf['host']
 
@@ -157,7 +163,7 @@ class ConfigConexion:
         except KeyError:
             title = "Geotex-INN"
         return title
-    
+
     def get_puerto(self):
         """
         Devuelve el puerto de la configuración o el puerto por defecto 5432 
@@ -235,7 +241,8 @@ class ConfigConexion:
         Valor por defecto es True.
         """
         try:
-            mostrarcontactoenticket = bool(int(self.__conf['mostrarcontactoenticket']))
+            mostrarcontactoenticket = bool(
+                int(self.__conf['mostrarcontactoenticket']))
         except (KeyError, TypeError, ValueError):
             mostrarcontactoenticket = False
         return mostrarcontactoenticket
@@ -383,20 +390,23 @@ class ConfigConexion:
                 precision = int(precision)
                 assert precision >= 0
         except (KeyError, ValueError, TypeError):
-            precision = None 
+            precision = None
         except AssertionError:
             print "configuracion::precision debe ser entero positivo o None."
             precision = None
         return precision
+
 
 def unittest():
     """
     Pruebas unitarias del patrón Singleton.
     """
     class Test:
-        __metaclass__=Singleton
-        def __init__(self, *args): pass
-            
+        __metaclass__ = Singleton
+
+        def __init__(self, *args):
+            pass
+
     ta1, ta2 = Test(), Test()
     assert ta1 is ta2
     tb1, tb2 = Test(5), Test(5)
@@ -410,27 +420,28 @@ def es_macro(txt):
     """
     return txt == txt.upper()
 
+
 def guess_class(modulo):
     # Lo mismo es mejor con esto: http://docs.python.org/2/library/imp.html
     exec "from formularios import " + modulo
     exec "moduler = " + modulo
     clases = [c for c in dir(moduler) if c[0].isupper()  # @UndefinedVariable
-                                        and c != "Ventana" 
-                                        and c != "VentanaGenerica"
-                                        and c != "VentanaActividad"
-                                        and c != "VentanaProgreso"
-                                        and c != "CellRendererAutoComplete"
-                                        and c != "EanBarCode"
-                                        and c != "DuplicateEntryError"
-                                        and c != "IntegrityError"
-                                        and c != "Test"
-                                        and c != "ThreadSample"
-                                        and c != "TareaSimple"
-                                        and c != "Tarea"
-                                        and not es_macro(c)]
+              and c != "Ventana"
+              and c != "VentanaGenerica"
+              and c != "VentanaActividad"
+              and c != "VentanaProgreso"
+              and c != "CellRendererAutoComplete"
+              and c != "EanBarCode"
+              and c != "DuplicateEntryError"
+              and c != "IntegrityError"
+              and c != "Test"
+              and c != "ThreadSample"
+              and c != "TareaSimple"
+              and c != "Tarea"
+              and not es_macro(c)]
     return clases[0]
-    
-    
+
+
 def parse_params():
     """
     Analiza los parámetros recibidos en línea de comandos y devuelve usuario 
@@ -443,26 +454,26 @@ def parse_params():
     desc = "Inicia la aplicación con el usuario especificado según la "\
            "configuración indicada. Si no se recibe fichero, se usará por "\
            "defecto «ginn.conf». Si no se escribe contraseña, se solicitará."
-    parser = optparse.OptionParser(description = desc)
-    parser.add_option('-u', '--user', help = "Usuario a autenticar", 
-                      action = "store", type = "string", dest = "user")
-    parser.add_option('-p', '--password', help = "Contraseña", 
-                      action = "store", type ="string", dest = "password")
-    parser.add_option('-c', '--config', help = "Fichero de configuración", 
-                      action = "store", type = "string", dest = "config", 
-                      default = "ginn.conf")
-    parser.add_option('-v', action = "store_true", dest = "verbose", 
-                      default = False)
-    parser.add_option('-d', action = "store_true", dest = "debug", 
-                      default = False)
-    parser.add_option('-w', "--window", help = "Ventana a iniciar", 
-                      action = "store", type = "string", dest = "ventana")
-    parser.add_option('-o', "--object", 
-                      help = "Objeto a abrir al inicio de la ventana", 
-                      action = "store", type = "string", dest = "puid", 
-                      default = None)
+    parser = optparse.OptionParser(description=desc)
+    parser.add_option('-u', '--user', help="Usuario a autenticar",
+                      action="store", type="string", dest="user")
+    parser.add_option('-p', '--password', help="Contraseña",
+                      action="store", type="string", dest="password")
+    parser.add_option('-c', '--config', help="Fichero de configuración",
+                      action="store", type="string", dest="config",
+                      default="ginn.conf")
+    parser.add_option('-v', action="store_true", dest="verbose",
+                      default=False)
+    parser.add_option('-d', action="store_true", dest="debug",
+                      default=False)
+    parser.add_option('-w', "--window", help="Ventana a iniciar",
+                      action="store", type="string", dest="ventana")
+    parser.add_option('-o', "--object",
+                      help="Objeto a abrir al inicio de la ventana",
+                      action="store", type="string", dest="puid",
+                      default=None)
     (opts, args) = parser.parse_args()
-    # Por compatibilidad hacia atrás, voy a tomar los argumentos posicionales 
+    # Por compatibilidad hacia atrás, voy a tomar los argumentos posicionales
     # como usuario y contraseña si no se especifica nada en las opciones.
     if not opts.user:
         try:
@@ -482,13 +493,13 @@ def parse_params():
     opts.config = opts.config.strip()
     if not os.path.exists(opts.config):
         config = os.path.join(
-                os.path.abspath(os.path.dirname(os.path.realpath(__file__))), 
-                "..", "framework", opts.config)
+            os.path.abspath(os.path.dirname(os.path.realpath(__file__))),
+            "..", "framework", opts.config)
     else:
         config = opts.config
     config = os.path.realpath(config)
-    ConfigConexion().set_file(config) # Lo hago así porque en todos sitios se 
-        # llama al constructor sin parámetros, y quiero instanciar al 
+    ConfigConexion().set_file(config)  # Lo hago así porque en todos sitios se
+        # llama al constructor sin parámetros, y quiero instanciar al
         # singleton por primera vez aquí.
         # Después pongo la configuración correcta en el archivo y en sucesivas
         # llamadas al constructor va a devolver el objeto que acabo de crear y
@@ -496,30 +507,28 @@ def parse_params():
         # fichero de configuración, la siguiente llamada al constructor será
         # la que cree el objeto y establezca la configuración del programa.
         # OJO: Dos llamadas al constructor con parámetros diferentes crean
-        # objetos diferentes.    
+        # objetos diferentes.
     # Ventana: módulo + clase
     # A partir del nombre de la ventana, saco el fichero y clase a instanciar.
-    if opts.ventana:
-        if opts.ventana.endswith(".py"):
-            modulo = opts.ventana[:-3]
+    modulo = None
+    clase = None
+    puid = opts.puid
+    ventana = opts.ventana
+    if ventana:
+        if ventana.endswith(".py"):
+            modulo = ventana[:-3]
         else:
-            modulo = opts.ventana
+            modulo = ventana
         modulo = os.path.basename(modulo)
         try:
             clase = guess_class(modulo)
         except:
-            clase = None    # PORASQUI: Habría que determinar el nombre de la 
+            clase = None    # PORASQUI: Habría que determinar el nombre de la
                             # clase de la ventana. ¿Puedo tirar de pclases para
-                            # saberlo según la tabla de ventanas, o me tiro a 
+                            # saberlo según la tabla de ventanas, o me tiro a
                             # por un grep? ¿Y en Windows, que no hay grep, qué?
                             # ¿Parseo el .py completo hasta encontrar class *?
-        # Objeto a abrir en la ventana. Si no se especifica ventana, no tiene 
-        # sentido.
-        puid = opts.puid
-    else:
-        modulo, clase, puid = None, None, None
     # Resto de parámetros
     verbose = opts.verbose
     debug = opts.debug
     return user, password, modulo, clase, config, verbose, debug, puid
-

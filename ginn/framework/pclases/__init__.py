@@ -109,9 +109,9 @@ usu, contra, modul, clas, confi, verb, debu, obj_puid = parse_params()
 # parametrización en función de lo especificado en CLI. La configuración 
 # alternativa se cambia en el propio parse_params.
 # El usuario lo establezco después, una vez declarada la clase.
-if debu != None:
+if debu:
     DEBUG = debu
-if verb != None:
+if verb:
     VERBOSE = verb
 config = ConfigConexion()
 
@@ -132,7 +132,7 @@ conn = '%s://%s:%s@%s/%s?autoCommit=False' % (config.get_tipobd(),
 #                                     config.get_puerto()) 
 sqlhub.processConnection = connectionForURI(conn)
 
-if DEBUG: # and VERBOSE:
+if DEBUG and VERBOSE:
     conndebug = connectionForURI(conn)
     #conndebug.autoCommit = False
     conndebug.debug = True
