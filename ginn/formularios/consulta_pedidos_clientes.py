@@ -94,12 +94,15 @@ class ConsultaPedidosCliente(Ventana):
                                                     False, True, False, None),
                 ("Bloqueado", "gobject.TYPE_BOOLEAN", False, True, False, None),
                 ("Cerrado", "gobject.TYPE_BOOLEAN", False, True, False, None),
-                ('Idpedido', 'gobject.TYPE_INT64', False, False, False, None))
+                ('PUIDPEDIDO;PUIDPRODUCTO', 'gobject.TYPE_STRING', # HACK
+                                                    False, False, False, None))
         utils.preparar_listview(self.wids['tv_datos'], cols)
         for ncol in (4, 5, 6, 7):
             col = self.wids['tv_datos'].get_column(ncol)
             for cell in col.get_cell_renderers():
                 cell.set_property("xalign", 1)
+        for col in self.wids['tv_datos'].get_columns():
+            col.connect("clicked", self.order_changed_refresh_grafica)
         self.wids['tv_datos'].connect("row-activated", self.abrir_pedido)
         self.resultado = []
         self.fin = utils.str_fecha(datetime.date.today())
@@ -110,8 +113,18 @@ class ConsultaPedidosCliente(Ventana):
             utils.combo_set_from_db(self.wids["cmbe_cliente"], objeto.id)
             self.wids["b_buscar"].clicked()
         self.add_widgets_extra()
+        self.servido_por_producto = defaultdict(lambda: 0)
         self.wids['cmbe_cliente'].grab_focus()
         gtk.main()
+
+    def order_changed_refresh_grafica(self, tvcol):
+        """
+        El orden de las filas en el TreeView ha cambiado. Hay que cambiar 
+        también la gráfica para que esté acorde. Eso se hace realmente en 
+        el actualizar_grafica, pero no es un callback para recibir parámetros.
+        Hago de wrapper aquí.
+        """
+        self.actualizar_grafica()   
 
     def add_widgets_extra(self):
         """
@@ -133,7 +146,7 @@ class ConsultaPedidosCliente(Ventana):
         self.wids['grafica'] = gtk.DrawingArea()
         container = gtk.HBox()
         container.pack_start(self.wids['grafica'])
-        nb.append_page(container, gtk.Label("Gráfica"))
+        nb.append_page(container, gtk.Label("Gráfica (€)"))
         self.wids['e_total'].parent.parent.show_all()
 
     def exportar(self, boton):
@@ -150,9 +163,10 @@ class ConsultaPedidosCliente(Ventana):
         Abre el pedido al que se le ha hecho doble clic en una ventana nueva.
         """
         model = tv.get_model()
-        idpedido = model[path][-1]
+        idcombo = model[path][-1]
+        puidpedido, puidproducto = idcombo.split(";")
         try:
-            pedido = pclases.PedidoVenta.get(idpedido)
+            pedido = pclases.getObjetoPUID(puidpedido)
         except Exception, e:
             utils.dialogo_info(titulo = "ERROR RECUPERANDO PEDIDO",
                                texto = "El pedido ID %d no se ha encontrado."
@@ -184,7 +198,7 @@ class ConsultaPedidosCliente(Ventana):
         total = 0.0
         importetotal = 0.0
         importetotal_servido = 0.0
-        servido_por_producto = defaultdict(lambda: 0)
+        self.servido_por_producto = defaultdict(lambda: 0)
         for p in pedidos:
             vpro.set_valor(total / tot, "Buscando productos en pedidos..."
                                         "\n(ignorando servicios) [%d/%d]" % (
@@ -203,7 +217,7 @@ class ConsultaPedidosCliente(Ventana):
                 importetotal_servido += importe_ldv
                 cantidad_ldp = prods[producto]['pedido']
                 cantidad_ldv = prods[producto]['servido']
-                servido_por_producto[producto] += cantidad_ldv
+                self.servido_por_producto[producto] += importe_ldv
                 model.append((p.cliente.nombre,
                               utils.str_fecha(p.fecha),
                               p.numpedido,
@@ -214,27 +228,37 @@ class ConsultaPedidosCliente(Ventana):
                               utils.float2str(importe_ldv),
                               p.bloqueado,
                               p.cerrado,
-                              p.id))
+                              ";".join((p.puid, producto.puid))))
         vpro.ocultar()
         self.wids['e_total'].set_text("%d " % total)
         self.wids['e_importe_total'].set_text(
                 "%s €" % (utils.float2str(importetotal)))
         self.wids['e_total_servido'].set_text(
                 "%s €" % (utils.float2str(importetotal_servido)))
-        self.actualizar_grafica(servido_por_producto)
+        self.actualizar_grafica()
 
-    def actualizar_grafica(self, servido_por_producto):
+    def actualizar_grafica(self):
         data = OrderedDict()
-        productos = servido_por_producto.keys()[:]
-        productos.sort()
+        #productos = self.servido_por_producto.keys()[:]
+        #productos.sort()
+        # Voy a sacar la lista de productos del TV para seguir el mismo orden
+        puidsproductos = utils.unificar([fila[-1].split(";")[1] 
+                            for fila in self.wids['tv_datos'].get_model()])
+        # Es que he "empaquetado" los PUID de pedido y producto combinados.
+        productos = [pclases.getObjetoPUID(puidp) for puidp in puidsproductos]
         for p in productos:
-            data[p.descripcion] = servido_por_producto[p]
+            data[p.descripcion] = self.servido_por_producto[p]
         padre = self.wids['grafica'].parent
         padre.remove(self.wids['grafica'])
-        self.wids['grafica'] = gtkcairoplot.GtkCairoPlot(
-                gtkcairoplot.HORIZONTAL, data, self.wids['ventana'])
-        padre.pack_start(self.wids['grafica'])
-        self.wids['grafica'].show_all()
+        try:
+            self.wids['grafica'] = gtkcairoplot.GtkCairoPlot(
+                    gtkcairoplot.HORIZONTAL, data, self.wids['ventana'])
+        except ValueError:
+            # Menos de 2 series de datos. No dibujo nada.
+            self.wids['grafica'] = gtk.DrawingArea()
+        else:
+            padre.pack_start(self.wids['grafica'])
+            self.wids['grafica'].show_all()
 
     def set_fecha(self, boton):
         """
