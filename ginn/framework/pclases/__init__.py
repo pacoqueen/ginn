@@ -10299,6 +10299,11 @@ class PedidoVenta(SQLObject, PRPCTOO):
                                        'fechaEntrega': [ldp.fechaEntrega]}
         # Ahora actualizo las cantidades facturadas de los productos 
         # recorriendo las facturas del pedido de venta:
+        # FIXME: Si se sirve el mismo producto desde dos pedidos diferentes, 
+        # como para ver lo pendiente de facturar solo se tiene en cuenta 
+        # este pedido, puede aparecer que se ha facturado de más dando una 
+        # cantidad negativa en lo pdte. de facturar. Cuando en realidad en 
+        # ambos pedidos está todo servido y facturado.
         for f in self.get_facturas():
             for ldv in f.lineasDeVenta:
                 p = ldv.producto

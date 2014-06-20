@@ -2903,6 +2903,7 @@ class AlbaranesDeSalida(Ventana):
                                 "Generando documentos PDF...",
                                 show_timer = True)
         vpro.mostrar()
+        vpro._ventana.set_position(gtk.WIN_POS_MOUSE)
         if pclases.DEBUG:
             myprint("Llamando a self.preguntar_si_redistribuir...")
             antes = time.time()
