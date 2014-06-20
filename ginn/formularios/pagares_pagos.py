@@ -235,6 +235,7 @@ class PagaresPagos(Ventana):
                 tipo = "Pagaré"
             conceptos = "\n".join([p.concepto for p in r.pagos])
             filas_res.append((r.id, 
+                              r.codigo, 
                               proveedor, 
                               tipo, 
                               conceptos, 
@@ -243,9 +244,11 @@ class PagaresPagos(Ventana):
                               utils.str_fecha(r.fechaPago), 
                               r.pendiente and "Sí" or "No"))
         idpagare = utils.dialogo_resultado(filas_res,
-                                            titulo = 'Seleccione Pagaré',
-                                            cabeceras = ('ID', 'Proveedor', 'Tipo', 'Conceptos', 'Fecha emisión', 'Importe', 'Vencimiento', 'Pendiente'), 
-                                            padre = self.wids['ventana'])
+                        titulo = 'Seleccione Pagaré',
+                        cabeceras = ('ID', 'N.º', 'Proveedor', 'Tipo',
+                                     'Conceptos', 'Fecha emisión', 'Importe',
+                                     'Vencimiento', 'Pendiente'), 
+                        padre = self.wids['ventana'])
         if idpagare < 0:
             return None
         else:
@@ -375,10 +378,12 @@ class PagaresPagos(Ventana):
         la ventana de resultados.
         """
         pagare = self.objeto
-        a_buscar = utils.dialogo_entrada(
-                "Introduzca fecha o número de factura:", "BUSCAR PAGARÉ", 
+        a_buscar = utils.dialogo_entrada(titulo = "BUSCAR PAGARÉ", 
+                texto = "Introduzca fecha de emisión, fecha de pago,\n"
+                        "número de factura o número de pagaré:", 
                 padre = self.wids['ventana'])
         if a_buscar != None:
+            a_buscar = a_buscar.strip()
             if a_buscar.count('/') == 2:
                 fecha = utils.parse_fecha(a_buscar) 
                 resultados = pclases.PagarePago.select(
@@ -389,15 +394,21 @@ class PagaresPagos(Ventana):
                 resultados = pclases.PagarePago.select()
                 lon = resultados.count()
             else:
-                facturas = pclases.FacturaCompra.select(
+                pagares = pclases.PagarePago.select(
+                        pclases.PagarePago.q.codigo.contains(a_buscar))
+                if not pagares.count(): # No encuentro. Busco por factura.
+                    facturas = pclases.FacturaCompra.select(
                         pclases.FacturaCompra.q.numfactura.contains(a_buscar))
-                resultados = []
-                for f in facturas:
-                    for c in f.pagos:
-                        if (c.pagarePago != None 
-                                and c.pagarePago not in resultados):
-                            resultados.append(c.pagarePago)
-                lon = len(resultados)
+                    resultados = []
+                    for f in facturas:
+                        for c in f.pagos:
+                            if (c.pagarePago != None 
+                                    and c.pagarePago not in resultados):
+                                resultados.append(c.pagarePago)
+                    lon = len(resultados)
+                else:
+                    resultados = pagares
+                    lon = pagares.count()
             if lon > 1:
                 ## Refinar los resultados
                 idpagare = self.refinar_resultados_busqueda(resultados)
