@@ -380,10 +380,11 @@ class PagaresPagos(Ventana):
         pagare = self.objeto
         a_buscar = utils.dialogo_entrada(titulo = "BUSCAR PAGARÉ", 
                 texto = "Introduzca fecha de emisión, fecha de pago,\n"
-                        "número de factura o número de pagaré:", 
+                        "número de factura, número de pagaré o importe:", 
                 padre = self.wids['ventana'])
         if a_buscar != None:
             a_buscar = a_buscar.strip()
+            resultados = []
             if a_buscar.count('/') == 2:
                 fecha = utils.parse_fecha(a_buscar) 
                 resultados = pclases.PagarePago.select(
@@ -409,6 +410,16 @@ class PagaresPagos(Ventana):
                 else:
                     resultados = pagares
                     lon = pagares.count()
+            try:
+                importe = utils._float(a_buscar)
+            except (TypeError, ValueError):
+                importe = None  # No es un importe.
+            if importe:
+                pagares = pclases.PagarePago.select(
+                        pclases.PagarePago.q.cantidad == importe)
+                resultados = (pclases.SQLlist(resultados) 
+                                + pclases.SQLlist(pagares))
+                lon = len(resultados)
             if lon > 1:
                 ## Refinar los resultados
                 idpagare = self.refinar_resultados_busqueda(resultados)
