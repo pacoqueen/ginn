@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -131,6 +131,16 @@ class PedidosDeVenta(Ventana):
         self._objetoreciencreado = None
         Ventana.__init__(self, 'pedidos_de_venta.glade', objeto, 
                          usuario = self.usuario)
+        if self.objeto and not isinstance(self.objeto, pclases.PedidoVenta):
+            # Debe ser un número de albarán. Lo intento o desisto.
+            try:
+                self.objeto = pclases.PedidoVenta.selectBy(
+                        numpedido = self.objeto)[0]
+            except IndexError:
+                try:
+                    self.objeto = pclases.PedidoVenta.get(int(self.objeto))
+                except pclases.SQLObjectNotFound:
+                    self.objeto = None
         connections = {'b_nuevo/clicked': self.crear_nuevo_pedido,
                        'b_actualizar/clicked': self.actualizar_ventana,
                        'b_guardar/clicked': self.guardar,
@@ -168,7 +178,7 @@ class PedidosDeVenta(Ventana):
         if self.objeto == None:
             self.ir_a_primero()
         else:
-            self.ir_a(objeto)
+            self.ir_a(self.objeto)
         gtk.main()
 
     def check_puede_validar(self, ch):
