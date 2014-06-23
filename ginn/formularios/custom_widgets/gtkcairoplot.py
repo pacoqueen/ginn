@@ -39,6 +39,8 @@ if gtk.pygtk_version < (2, 0):
     print "Se necesita PyGtk 2.0 o posterior."
     raise SystemExit
 
+from collections import OrderedDict
+
 import sys, os
 LIBDIR = os.path.abspath(os.path.join(
     os.path.dirname(__file__), "..", "..", "lib"))
@@ -159,7 +161,7 @@ class GtkCairoPlot(gtk.DrawingArea):
                                      self.height)
             # PORASQUI: Dibuja algo, pero caca. No se ve nada. 
         elif self._tipo == GRAFO:
-            raise NotImplementedError("gtkcairoplot: todavía no implementado.")
+            plot = GraphPlot(self._data, self.width, self.height)
         else:
             raise ValueError("gtkcairoplot: tipo no reconocido.")
         return plot
@@ -265,6 +267,12 @@ def check_data(data, tipo):
         if not _labels or len(_labels) <= 1:
             raise ValueError("gtkcairoplot: "
                              "Necesita al menos dos series de datos")
+    elif tipo == GRAFO:
+        _labels = []    # No se usan.
+        nodos = data.keys()
+        _data = OrderedDict()
+        for nodo in nodos:
+            edges = 0   # TODO: PORASQUI: Extraer los vértices, ponerles el peso por defecto si no lo tiene y montar el _data.
     else:
         raise ValueError("gtkcairoplot:"
                          " Debe especificar un tipo de gráfico válido.")
@@ -280,8 +288,7 @@ def build_test_window():
     win.connect('delete-event', gtk.main_quit)
     box = gtk.VBox()
     win.add(box)
-    import collections
-    data = collections.OrderedDict()
+    data = OrderedDict()
     data["Uno"] =  [1, 2, 3]  #  Uno █▅▂
     data["Dos"] =  [4, 5, 6]  #  Dos ████▅▂
     data["Tres"] = [7, 8, 9]  # Tres ███████▅▂
@@ -291,14 +298,20 @@ def build_test_window():
     box.pack_start(plot1)
     plot2 = GtkCairoPlot(TARTA, data)
     box.pack_start(plot2)
-    return win, plot1, plot2
+    data = OrderedDict()
+    data['a'] = ['b']      # (a)---->(b)
+    data['b'] = []         #  ^--(c)==^
+    data['c'] = [('b', 2), ('a', 1)]
+        # Claves, nodos. Valores: [(destino, peso)] o solo [destino]
+    plot3 = GtkCairoPlot(GRAFO, data)
+    return win, plot1, plot2, plot3
 
 def main():
     """
     Prueba rápida de que funciona.
     """
-    wintest_plot1_plot2 = build_test_window()
-    wintest = wintest_plot1_plot2[0]
+    wintest_plot1_plot2_plot3 = build_test_window()
+    wintest = wintest_plot1_plot2_plot3[0]
     wintest.show_all()
     gtk.main()
 

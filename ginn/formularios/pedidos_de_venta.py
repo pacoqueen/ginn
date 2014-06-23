@@ -1251,7 +1251,7 @@ class PedidosDeVenta(Ventana):
         self.suspender(self.wids['cbe_cliente'])
         if self.objeto.cliente != None:
             if self.objeto.cliente.inhabilitado:        
-                # XXX Para los inhabilitados
+                # XXX: Para los inhabilitados
                 self.wids['cbe_cliente'].get_model().append(
                     (self.objeto.cliente.id, 
                      self.objeto.cliente.nombre + " (Inhabilitado)"))
