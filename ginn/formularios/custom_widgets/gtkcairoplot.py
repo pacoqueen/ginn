@@ -57,6 +57,8 @@ from cagraph.cagraph.series.line import CaGraphSeriesLine
 from cagraph.cagraph.series.hbar import CaGraphSeriesHBar
 from cagraph.cagraph.series.area import CaGraphSeriesArea
 from cagraph.cagraph.series.labels import CaGraphSeriesLabels
+from cagraph.cagraph.ca_graph_file import CaGraphStyle
+from math import pi
 
 
 (HORIZONTAL,    # 0
@@ -159,9 +161,10 @@ class GtkCairoPlot(gtk.DrawingArea):
                                      self._data,
                                      self.width, 
                                      self.height)
-            # PORASQUI: Dibuja algo, pero caca. No se ve nada. 
+            # TODO: Dibuja algo, pero caca. No se ve nada. 
         elif self._tipo == GRAFO:
             plot = GraphPlot(self._data, self.width, self.height)
+            #plot._print_data()
         else:
             raise ValueError("gtkcairoplot: tipo no reconocido.")
         return plot
@@ -272,11 +275,139 @@ def check_data(data, tipo):
         nodos = data.keys()
         _data = OrderedDict()
         for nodo in nodos:
-            edges = 0   # TODO: PORASQUI: Extraer los vértices, ponerles el peso por defecto si no lo tiene y montar el _data.
+            _data[nodo] = []
+            edges = data[nodo]
+            for edge in edges:
+                try:
+                    corrected_edge = edge[0], edge[1]
+                    assert isinstance(corrected_edge[1], (int, float))
+                except (TypeError, IndexError, AssertionError):
+                    corrected_edge = edge, 1
+                _data[nodo].append(corrected_edge)
     else:
         raise ValueError("gtkcairoplot:"
                          " Debe especificar un tipo de gráfico válido.")
     return _data, _labels
+
+
+class GraphPlot(gtk.DrawingArea):
+    """
+    Grafo. Más o menos.
+    """
+    def __init__(self, data, width, height):
+        """
+        Constructor.
+        """
+        super(GraphPlot, self).__init__()
+        self._data = data
+        self._width = width
+        self._height = height
+        self.graph_style = CaGraphStyle()
+
+    def _print_data(self):
+        for nodo in self._data:
+            print (nodo + " -> " + 
+                   ", ".join(["%s (%d)" % vertice 
+                              for vertice in self._data[nodo]]))
+
+    def expose(self, widget, event):
+        """
+        Dibuja realmente el grafo en el canvas del DrawingArea.
+        """
+        # get widgetcontext
+        self.context = widget.window.cairo_create()
+        rect = self.get_allocation()
+        self.graph_style.width = rect.width
+        self.graph_style.height = rect.height
+        # set a clip region for the expose event
+        #self.context.rectangle(event.area.x, event.area.y,
+        #                       event.area.width, event.area.height)
+        #self.context.clip()
+        self.draw_graph()
+
+    def draw_graph(self):
+        """
+        Dibuja los elementos del grafo en el cairo-context.
+        """
+        self.__positions = {}
+        cr = self.context
+        style = self.graph_style
+
+        # draw background
+        width = style.width - style.margin - style.margin
+        height = style.height - style.margin - style.margin
+        
+        cr.set_source_rgb(*style.background_color)
+        cr.rectangle(style.margin, style.margin, width, height)
+        cr.fill()
+
+        for nodo in self._data.keys():
+            self.draw_nodo(nodo)
+            for vertice in self._data[nodo]:
+                self.draw_vertice(nodo, vertice)
+
+    def draw_nodo(self, nodo):
+        """
+        Dibuja un nodo en la gráfica. Almacena su posición en self.__positions
+        para saber dónde dirigir los vértices.
+        """
+        # Determino la posición, que puede estar precalculada ya o generarse
+        # justo ahora.
+        x, y = self.__calcular_posicion(nodo)
+        # Dibujo el texto
+        cr = self.context
+        style = self.graph_style
+        cr.save()
+        cr.set_source_rgb(0.7, 0.2, 0.0)
+        cr.select_font_face("Georgia", cairo.FONT_SLANT_NORMAL, 
+                                 cairo.FONT_WEIGHT_BOLD)
+        cr.set_font_size(32)
+        x_bearing, y_bearing, width, height = cr.text_extents(nodo)[:4]
+        cr.move_to(0.5 - width / 2 - x_bearing,
+                   0.5 - height / 2 - y_bearing)
+        cr.show_text(nodo)
+        # Y un circulín alrededor.
+        cr.translate(width / 2, height / 2)
+        cr.arc(0, 0, 50, 0, 2 * pi)
+        cr.restore()
+        cr.stroke()
+
+    def draw_vertice(self, nodo, vertice):
+        """
+        Recibe el nodo origen y una lista de vértices que parten de él. Cada 
+        vértice lleva el nodo destino (que puede o no haberse dibujado todavía)
+        y el peso del vértice (grosor del arco).
+        """
+        # Determino la posición de origen, que es la del nodo recibido.
+        x0, y0 = self.__calcular_posicion(nodo)
+        # Y calculo la del destino. Si no está dibujado aún, la función me
+        # devolverá la posición que ocupará cuando se dibuje.
+        nodo_dest, peso = vertice
+        x1, y1 = self.__calcular_posicion(nodo_dest)
+        # Ahora dibujo la flecha con el grosor del peso:
+        # PORASQUI: TODO:
+
+
+    def __calcular_posicion(self, nodo):
+        """
+        Devuelve la posición que ocupa el centro del nodo en el DrawingArea.
+        Si todavía no tiene ninguna asignada, la calcula y almacena.
+        El algoritmo de cálculo intentará que las posiciones sean lo más
+        ordenadas posibles para minimizar los cruces de vértices.
+        """
+        try:
+            pos = self.__positions[nodo]
+        except KeyError:
+            style = self.graph_style
+            width = style.width - style.margin - style.margin
+            height = style.height - style.margin - style.margin
+            # TODO: El algoritmo de cálculo en sí todavía no está NI PENSADO.
+            # Voy a empezar de arriba a abajo y de izquierda a derecha.
+            x = width / 2
+            y = height / 2
+            self.__positions[nodo] = pos = x, y
+        return pos
+
 
 def build_test_window():
     """
@@ -304,6 +435,7 @@ def build_test_window():
     data['c'] = [('b', 2), ('a', 1)]
         # Claves, nodos. Valores: [(destino, peso)] o solo [destino]
     plot3 = GtkCairoPlot(GRAFO, data)
+    box.pack_start(plot3)
     return win, plot1, plot2, plot3
 
 def main():
