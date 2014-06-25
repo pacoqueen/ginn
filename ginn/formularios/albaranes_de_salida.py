@@ -4382,6 +4382,13 @@ class AlbaranesDeSalida(Ventana):
                     for s in factura.servicios])
 
     def crear_vencimientos_por_defecto(self, factura):
+        # TODO: PORASQUI: Hay que refactorizar YA sí o sí. Con BicycleRepairMan o 
+        # como sea. Porque para meter la nueva forma de pago hay que tocar en
+        # formularios/albaranes_de_salida.py:    def crear_vencimientos_por_defecto(self, 
+        # formularios/facturas_compra.py:    def crear_vencimientos_por_defecto(self, w):
+        # formularios/facturas_venta.py:    def crear_vencimientos_por_defecto(self, w):
+        # formularios/prefacturas.py:    def crear_vencimientos_por_defecto(self, w):
+        # formularios/tpv.py:    def crear_vencimientos_por_defecto(self, factura):
         """
         Crea e inserta los vencimientos por defecto
         definidos por el cliente en la factura
