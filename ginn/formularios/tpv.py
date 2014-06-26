@@ -52,6 +52,8 @@ import mx.DateTime
 import pango
 import gobject
 from facturas_venta import debe_generar_recibo, generar_recibo
+from framework.pclases.superfacturaventa \
+        import SIN_DATOS_PARA_VENCIMIENTOS_POR_DEFECTO
 
 
 def check_almacen():
@@ -1407,93 +1409,6 @@ class TPV(Ventana):
                             actualizar_existencias(producto, -cantidad)
             self.rellenar_ultimas_ventas()
 
-    # XXX: Código a refactorizar que se usa únicamente para generar la factura. (se repite en al menos 3 ventanas)
-    def crear_vencimientos_por_defecto(self, factura):
-        """
-        Crea e inserta los vencimientos por defecto
-        definidos por el cliente en la factura
-        actual y en función de las LDV que tenga
-        en ese momento (concretamente del valor
-        del total de la ventana calculado a partir
-        de las LDV.)
-        """
-        ok = False
-        # NOTA: Casi-casi igual al de facturas_venta.py. Si cambia algo 
-        # importante aquí, cambiar también allí y viceversa.
-        cliente = factura.cliente
-        if cliente.vencimientos != None and cliente.vencimientos != '':
-            try:
-                vtos = cliente.get_vencimientos(factura.fecha)
-            except:
-                utils.dialogo_info(titulo = 'ERROR VENCIMIENTOS POR DEFECTO', 
-                                   texto = 'Los vencimientos por defecto del cliente no se pudieron procesar correctamente.\nVerifique que están bien escritos y el formato es correcto en la ventana de clientes.', 
-                                   padre = self.wids['ventana'])
-                return ok   # Los vencimientos no son válidos o no tiene.
-            self.borrar_vencimientos_y_estimaciones(factura)
-            total = self.rellenar_totales(factura)
-            numvtos = len(vtos)
-            cantidad = total/numvtos
-            if not factura.fecha:
-                factura.fecha = mx.DateTime.localtime()
-            if (cliente.diadepago != None 
-               and cliente.diadepago != ''
-               and cliente.diadepago.strip() != "-"):
-                diaest = cliente.get_dias_de_pago()
-            else:
-                diaest = False
-            for incr in vtos:
-                fechavto = factura.fecha + (incr * mx.DateTime.oneDay)
-                vto = pclases.VencimientoCobro(fecha = fechavto,
-                                               importe = cantidad,
-                                               facturaVenta = factura, 
-                                               observaciones = factura.cliente and factura.cliente.textoformacobro or "", 
-                                               cuentaOrigen = factura.cliente and factura.cliente.cuentaOrigen or None)
-                pclases.Auditoria.nuevo(vto, self.usuario, __file__)
-                if diaest:
-# XXX 24/05/06
-                    # Esto es más complicado de lo que pueda parecer a simple vista. Ante poca inspiración... ¡FUERZA BRUTA!
-                    fechas_est = []
-                    for dia_estimado in diaest:
-                        while True:
-                            try:
-                                fechaest = mx.DateTime.DateTimeFrom(day = dia_estimado, month = fechavto.month, year = fechavto.year)
-                                break
-                            except:
-                                dia_estimado -= 1
-                                if dia_estimado <= 0:
-                                    dia_estimado = 31
-                        if fechaest < fechavto:     # El día estimado cae ANTES del día del vencimiento. 
-                                                    # No es lógico, la estimación debe ser posterior.
-                                                    # Cae en el mes siguiente, pues.
-                            mes = fechaest.month + 1
-                            anno = fechaest.year
-                            if mes > 12:
-                                mes = 1
-                                anno += 1
-                            try:
-                                fechaest = mx.DateTime.DateTimeFrom(day = dia_estimado, month = mes, year = anno)
-                            except mx.DateTime.RangeError:
-                                # La ley de comercio dice que se pasa al último día del mes:
-                                fechaest = mx.DateTime.DateTimeFrom(day = -1, month = mes, year = anno)
-                        fechas_est.append(fechaest)
-                    fechas_est.sort(utils.cmp_mxDateTime)
-                    fechaest = fechas_est[0]
-                    vto.fecha = fechaest 
-            ok = True
-        else:
-            utils.dialogo_info(titulo = "SIN DATOS", 
-                               texto = "El cliente no tiene datos suficientes para crear vencimientos por defecto.", 
-                               padre = self.wids['ventana'])
-        return ok
-    
-    def borrar_vencimientos_y_estimaciones(self, factura):
-        for vto in factura.vencimientosCobro:
-            vto.factura = None
-            vto.destroy(ventana = __file__)
-        for est in factura.estimacionesCobro:
-            est.factura = None
-            est.destroy(ventana = __file__)
-    
     def rellenar_totales(self, factura):
         """
         Calcula los totales de la factura a partir de 
@@ -1615,7 +1530,13 @@ class TPV(Ventana):
                                 print txt
                                 self.logger.warning(txt)
                     if ldvs_facturadas != []:
-                        ok = self.crear_vencimientos_por_defecto(factura)
+                        ok = factura.crear_vencimientos_por_defecto()
+                        if ok == SIN_DATOS_PARA_VENCIMIENTOS_POR_DEFECTO:
+                            utils.dialogo_info(titulo = "SIN DATOS",
+                                texto = "El cliente no tiene datos suficientes"
+                                        " para crear vencimientos.",
+                                padre = self.wids['ventana'])
+                            ok = False
                         if not ok:
                             from formularios import facturas_venta
                             utils.dialogo_info(titulo = "FACTURA CREADA", 

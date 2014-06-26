@@ -50,6 +50,8 @@ try:
     from psycopg import ProgrammingError as psycopg_ProgrammingError
 except ImportError:
     from psycopg2 import ProgrammingError as psycopg_ProgrammingError
+from framework.pclases.superfacturaventa \
+        import SIN_DATOS_PARA_VENCIMIENTOS_POR_DEFECTO
 
 def buscar_cuentaOrigen(nombre, ventana_padre = None):
     """
@@ -105,7 +107,8 @@ class Prefacturas(Ventana):
                        'b_clonar_servicio/clicked': self.clon_srv,
                        'b_drop_servicio/clicked': self.drop_srv,
                        'b_imprimir/clicked': self.imprimir,
-                       'b_vtos_defecto/clicked': self.crear_vencimientos_por_defecto,
+                       'b_vtos_defecto/clicked':
+                            self.crear_vencimientos_por_defecto_y_actualizar,
                        'b_abonos/clicked': self.buscar_abonos,
                        'b_drop_abono/clicked': self.drop_abono
                       }  
@@ -1730,76 +1733,22 @@ class Prefacturas(Ventana):
         else:
             utils.dialogo_info(titulo = "VENCIMIENTO NO COBRADO", texto = "El vencimiento está pendiente de cobro.\nIntroduzca una fecha de cobro y vuelva a intentarlo.", padre = self.wids['ventana'])
 
-    def crear_vencimientos_por_defecto(self, w):
-        """
-        Crea e inserta los vencimientos por defecto
-        definidos por el cliente en la factura
-        actual y en función de las LDV que tenga
-        en ese momento (concretamente del valor
-        del total de la ventana calculado a partir
-        de las LDV.)
-        """
-        # TODO: Refactorizar esto y hacer el cálculo del día del vencimiento un método. 
-        factura = self.objeto
-        cliente = factura.cliente
-        if cliente.vencimientos != None and cliente.vencimientos != '':
-            try:
-                vtos = cliente.get_vencimientos(factura.fecha)
-            except:
-                utils.dialogo_info('ERROR VENCIMIENTOS POR DEFECTO', 'Los vencimientos por defecto del cliente no se pudieron procesar correctamente.\nVerifique que están bien escritos y el formato es correcto en la ventana de clientes.', padre = self.wids['ventana'])
-                return    # Los vencimientos no son válidos o no tiene.
-            self.borrar_vencimientos_y_estimaciones(factura)
-            total = utils._float(self.wids['e_total'].get_text().replace("€", ""))
-            numvtos = len(vtos)
-            cantidad = total/numvtos
-            if not factura.fecha:
-                factura.fecha = mx.DateTime.localtime()
-            if cliente.diadepago != None and cliente.diadepago != '':
-                diaest = cliente.get_dias_de_pago()
-            else:
-                diaest = False
-            for incr in vtos:
-                fechavto = factura.fecha + (incr * mx.DateTime.oneDay)
-                vto = pclases.VencimientoCobro(fecha = fechavto,
-                                               importe = cantidad,
-                                               prefactura = factura, 
-                                               facturaVenta = None, 
-                                               observaciones = factura.cliente and factura.cliente.textoformacobro or "", 
-                                               cuentaOrigen = factura.cliente and factura.cliente.cuentaOrigen or None)
-                pclases.Auditoria.nuevo(vto, self.usuario, __file__)
-                if diaest:
-                    # Esto es más complicado de lo que pueda parecer a simple vista. Ante poca inspiración... ¡FUERZA BRUTA!
-                    fechas_est = []
-                    for dia_estimado in diaest:
-                        while True:
-                            try:
-                                fechaest = mx.DateTime.DateTimeFrom(day = dia_estimado, month = fechavto.month, year = fechavto.year)
-                                break
-                            except:
-                                dia_estimado -= 1
-                                if dia_estimado <= 0:
-                                    dia_estimado = 31
-                        # print utils.str_fecha(fechavto), utils.str_fecha(fechaest)
-                        if fechaest < fechavto:     # El día estimado cae ANTES del día del vencimiento. 
-                                                    # No es lógico, la estimación debe ser posterior.
-                                                    # Cae en el mes siguiente, pues.
-                            mes = fechaest.month + 1
-                            anno = fechaest.year
-                            if mes > 12:
-                                mes = 1
-                                anno += 1
-                            try:
-                                fechaest = mx.DateTime.DateTimeFrom(day = dia_estimado, month = mes, year = anno)
-                            except mx.DateTime.RangeError:
-                                fechaest = mx.DateTime.DateTimeFrom(day = -1, month = mes, year = anno)
-                        fechas_est.append(fechaest)
-                    fechas_est.sort(utils.cmp_mxDateTime)
-                    fechaest = fechas_est[0]
-                    vto.fecha = fechaest 
-            self.rellenar_vencimientos()
+    def crear_vencimientos_por_defecto_y_actualizar(self, boton):
+        try:
+            vtos_creados = self.objeto.crear_vencimientos_por_defecto()
+        except AttributeError, msg: # No hay objeto activo. Es None
+            myprint("prefacturas::"
+                    "crear_vencimientos_por_defecto_y_actualizar -> "
+                    "AttributeError: ", 
+                    msg)
         else:
-            utils.dialogo_info(titulo = "SIN DATOS", texto = "El cliente no tiene datos suficientes para crear vencimientos por defecto.", padre = self.wids['ventana'])
-        
+            self.rellenar_vencimientos()
+            if vtos_creados == SIN_DATOS_PARA_VENCIMIENTOS_POR_DEFECTO:
+                utils.dialogo_info(titulo="SIN DATOS",
+                    texto="El cliente no tiene datos suficientes para "
+                          "crear vencimientos por defecto.",
+                    padre=self.wids['ventana'])
+
     def cambiar_descripcion_complementaria(self, cell, path, texto):
         if self.usuario != None and self.usuario.nivel > 2:
             utils.dialogo_info(titulo = "CAMBIO NO PERMITIDO", 
@@ -1989,7 +1938,12 @@ class Prefacturas(Ventana):
         self.guardar(None)  # Si se ha olvidado guardar, guardo yo.
         factura = self.objeto
         if len(factura.vencimientosCobro) == 0:
-            self.crear_vencimientos_por_defecto(None)
+            vtos_creados = self.objeto.crear_vencimientos_por_defecto()
+            if vtos_creados == SIN_DATOS_PARA_VENCIMIENTOS_POR_DEFECTO:
+                utils.dialogo_info(titulo="SIN DATOS",
+                    texto="El cliente no tiene datos suficientes para "
+                          "crear vencimientos por defecto.",
+                    padre=self.wids['ventana'])
             if len(factura.vencimientosCobro) == 0:
                 v = pclases.VencimientoCobro(fecha = factura.fecha, 
                         prefactura = factura, 
