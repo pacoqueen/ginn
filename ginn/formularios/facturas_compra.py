@@ -63,6 +63,7 @@
 ##   observaciones.
 ###################################################################
 
+from lib.myprint import myprint
 from ventana import Ventana
 from formularios import utils
 import pygtk
@@ -204,14 +205,14 @@ class FacturasDeEntrada(Ventana):
                 if permiso and permiso.escritura:
                     if self.usuario.nivel <= 2:
                         if pclases.DEBUG and pclases.VERBOSE:
-                            print "Activo widgets para usuario con nivel "\
-                                    "de privilegios <= 1."
+                            myprint("Activo widgets para usuario con nivel "
+                                    "de privilegios <= 1.")
                         self.activar_widgets(True, chequear_permisos = False)
                     else:
                         if pclases.DEBUG and pclases.VERBOSE:
-                            print "Activo widgets porque permiso de "\
-                                    "escritura y objeto no bloqueado o "\
-                                    "recién creado."
+                            myprint("Activo widgets porque permiso de "
+                                    "escritura y objeto no bloqueado o "
+                                    "recién creado.")
                         self.activar_widgets(self.objeto != None 
                             and (not self.objeto.bloqueado 
                                  or self._objetoreciencreado == self.objeto), 
@@ -220,13 +221,14 @@ class FacturasDeEntrada(Ventana):
                         # el objeto que acaba de crear.
                     if self._objetoreciencreado == self.objeto: 
                         if pclases.DEBUG and pclases.VERBOSE:
-                            print "Activo widgets porque objeto recién creado"\
-                                    " aunque no tiene permiso de escritura."
+                            myprint("Activo widgets porque objeto recién "
+                                    "creado aunque no tiene permiso de "
+                                    "escritura.")
                         self.activar_widgets(True, chequear_permisos = False)
                     else:
                         if pclases.DEBUG and pclases.VERBOSE:
-                            print "Desactivo widgets porque no permiso de "\
-                                    "escritura."
+                            myprint("Desactivo widgets porque no permiso de "
+                                    "escritura.")
                         self.activar_widgets(False, chequear_permisos = False)
                 self.wids['b_buscar'].set_sensitive(
                         permiso and permiso.lectura or False)
@@ -915,7 +917,7 @@ class FacturasDeEntrada(Ventana):
             self.wids['e_total'].set_text("%s €" % (
                 utils.float2str(self.objeto.importeTotal)))
         except AssertionError, msg:
-            print msg
+            myprint(msg)
             self.wids['e_total'].set_text("0,0 €")
         self.wids['txt_observaciones'].get_buffer().set_text(
                 factura.observaciones)
@@ -1602,15 +1604,14 @@ class FacturasDeEntrada(Ventana):
             return
         factura = self.objeto
         factura.notificador.set_func(lambda : None)
-        try:
-            factura.destroy(ventana = __file__)
-        except:
+        borrado = False
+        if not factura.destroy(ventana = __file__):
             # Si tiene relaciones desvinculo las LDC primero para que no se 
             # eliminen, ya que  deben seguir apareciendo en los albaranes 
             # de entrada.
             for l in factura.lineasDeCompra:
                 l.facturaCompra = None
-                if l.albaranEntradaID == None:
+                if not l.albaranEntrada:
                     l.destroy(ventana = __file__)
             for s in factura.serviciosTomados:
                 try:
@@ -1619,12 +1620,16 @@ class FacturasDeEntrada(Ventana):
                     txt = "facturas_compra.py::borrar_factura -> No se "\
                           "pudo eliminar el servicioTomado ID %d" % (s.id)
                     self.logger.error(txt)
-                    print txt
-            factura.destroy_en_cascada(ventana = __file__)
-        else:
+                    myprint(txt)
+            for c in factura.pagos:
+                c.destroy(ventana = __file__)
+            for v in factura.vencimientosPago:
+                v.destroy(ventana = __file__)
+            #factura.destroy_en_cascada(ventana = __file__)
+            borrado = factura.destroy(ventana = __file__)
+        if borrado:
             self.ir_a_primero()
         self.actualizar_ventana()
-
 
 
     def add_vto(self, boton):
@@ -2577,7 +2582,7 @@ class FacturasDeEntrada(Ventana):
                 lambda *args,**kw:self.wids['ventana'].window.set_cursor(None))
 
     def debug_bloqueo(self, boton, event):
-        print "Se ha presionado", boton
+        myprint("Se ha presionado", boton)
 
 def abrir_adjunto_from_tv(tv, path, col):   # XXX: Código para adjuntos.
     """
