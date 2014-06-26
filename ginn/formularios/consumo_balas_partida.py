@@ -64,8 +64,9 @@ class ConsumoBalasPartida(Ventana):
         el que se muestra por defecto).
         """
         self.usuario = usuario
+        self.objeto = objeto
         Ventana.__init__(self, 'consumo_balas_partida.glade',
-                         objeto, usuario=usuario)
+                         self.objeto, usuario=usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_partida/clicked': self.set_partida,
                        'b_imprimir/clicked': self.imprimir,
@@ -285,6 +286,9 @@ class ConsumoBalasPartida(Ventana):
             model.append((partida.codigo, producto, partida.id))
 
     def cambiar_peso_bala(self, cell, path, newtext):
+        """
+        Cambia el peso de una bala ya añadida.
+        """
         try:
             peso = float(newtext)
         except (TypeError, ValueError):
@@ -906,7 +910,7 @@ class ConsumoBalasPartida(Ventana):
                             utils.str_fechahora(partida.fecha))
 
 
-def func_orden_balas(self, bala1, bala2):
+def func_orden_balas(bala1, bala2):
     """
     Función auxiliar para ordenar balas por su antigüedad en el sistema.
     """

@@ -527,9 +527,12 @@ class ConsumoFibraPorPartidaGtx(Ventana):
             if (self.inicio) == None:
                 fechaInforme = 'Hasta '+utils.str_fecha(self.fin)
             else:
-                fechaInforme = "%s - %s" % (utils.str_fecha(self.inicio), utils.str_fecha(self.fin))
+                fechaInforme = "%s - %s" % (utils.str_fecha(self.inicio),
+                                            utils.str_fecha(self.fin))
             if datos != []:
-                reports.abrir_pdf(geninformes.consumo_fibra_produccion_gtx(datos, fechaInforme))
+                reports.abrir_pdf(
+                        geninformes.consumo_fibra_produccion_gtx(datos,
+                                                                 fechaInforme))
 
 
 if __name__ == '__main__':
