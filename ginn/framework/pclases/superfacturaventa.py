@@ -35,6 +35,7 @@ import mx.DateTime
 from formularios import utils
 import re
 from framework.pclases import Auditoria
+from framework.pclases import DEBUG
 
 # "Macros/constantes" de tipos de facturas:
 (FRA_NO_DOCUMENTADA,
@@ -875,9 +876,7 @@ class SuperFacturaVenta:
     def crear_vencimientos_por_defecto(self):
         """
         Crea e inserta los vencimientos por defecto definidos por el cliente
-        en la factura actual y en función de las LDV que tenga en ese momento
-        (concretamente del valor del total de la ventana calculado a partir
-        de las LDV.)
+        en la factura actual. Elimina los que tuviera previamente.
         """
         # Primero se intenta tirando del pedido. El último que tenga.
         try:
@@ -897,14 +896,14 @@ class SuperFacturaVenta:
             if cliente.vencimientos != None and cliente.vencimientos != '':
                 try:
                     vtos = cliente.get_vencimientos(self.fecha)
-                except:
-                    utils.dialogo_info('ERROR VENCIMIENTOS POR DEFECTO',
-                        'Los vencimientos por defecto del cliente no se '
-                        'pudieron procesar correctamente.\nVerifique que '
-                        'están bien escritos y el formato es correcto en '
-                        'la ventana de clientes.',
-                        padre = self.wids['ventana'])
-                    return    # Los vencimientos no son válidos o no tiene.
+                except Exception, msg:
+                    vtos = []  # Los vencimientos no son válidos o no tiene.
+                    if DEBUG:
+                        myprint("pclases::superfacturaventa -> Excepción"
+                                "capturada al determinar vencimientos del"
+                                "cliente:\n", 
+                                msg, 
+                                "\nSe asume que no tiene datos suficientes.")
         # Si finalmente hemos encontrado información, paso a calcular los días
         # de vencimiento.
         if vtos:
@@ -919,6 +918,11 @@ class SuperFacturaVenta:
                 self.fecha = mx.DateTime.localtime()
             if cliente.diadepago != None and cliente.diadepago != '':
                 diaest = cliente.get_dias_de_pago()
+                # TODO: PORASQUI: Tengo que conseguir que esto devuelve *algo*
+                # que me permita identificar que el día estimado es "primer 
+                # lunes del mes siguiente". Además debe aparecer en el 
+                # desplegable de los pedidos y ofertas. No solo en la ficha del
+                # cliente.
             else:
                 diaest = False
             if self.get_pedidos():
@@ -935,14 +939,14 @@ class SuperFacturaVenta:
             for incr in vtos:
                 fechavto = (mx.DateTime.DateFrom(self.fecha)
                             + (incr * mx.DateTime.oneDay))
-                vto = VencimientoCobro(fecha = fechavto,
-                        importe = cantidad,
-                        facturaVenta = self,
-                        observaciones = str_formapago,
-                        cuentaOrigen = self.cliente
-                                        and self.cliente.cuentaOrigen
-                                        or None)
-                Auditoria.nuevo(vto, None, ventana = __file__)
+                vto = VencimientoCobro(fecha=fechavto,
+                                       importe = cantidad,
+                                       facturaVenta = self,
+                                       observaciones = str_formapago,
+                                       cuentaOrigen = self.cliente
+                                            and self.cliente.cuentaOrigen
+                                            or None)
+                Auditoria.nuevo(vto, None, ventana=__file__)
                 # Paso None como usuario para que la propia clase lo adivine.
                 if diaest:
                     # Esto es más complicado de lo que pueda parecer a simple
@@ -956,7 +960,9 @@ class SuperFacturaVenta:
                                     month = fechavto.month,
                                     year = fechavto.year)
                                 break
-                            except:
+                            except:     # Si no es una fecha válida es porque
+                                # el día se pasa del último del mes. Pruebo
+                                # con los días anteriores hasta que lo consigo.
                                 dia_estimado -= 1
                                 if dia_estimado <= 0:
                                     dia_estimado = 31
@@ -976,7 +982,7 @@ class SuperFacturaVenta:
                                     day=dia_estimado, month=mes, year=anno)
                             except mx.DateTime.RangeError:
                                 fechaest = mx.DateTime.DateTimeFrom(
-                                    day = -1, month = mes, year = anno)
+                                    day=-1, month=mes, year=anno)
                         fechas_est.append(fechaest)
                     fechas_est.sort(utils.cmp_mxDateTime)
                     fechaest = fechas_est[0]

@@ -3178,7 +3178,7 @@ class FacturasVenta(Ventana):
         except AttributeError, msg: # No hay objeto activo. Es None
             myprint("facturas_venta::"
                     "crear_vencimientos_por_defecto_y_actualizar -> "
-                    "AttributeError: ", 
+                    "AttributeError: ",
                     msg)
         else:
             self.rellenar_vencimientos()
