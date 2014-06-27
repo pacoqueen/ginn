@@ -702,6 +702,7 @@ class DocumentoDePago(SQLObject, PRPCTOO):
     CARTA = "Carta de crédito"
     CARTA_VISTA = "Carta de crédito a la vista"
     DOMICILIACION = "Domiciliación bancaria"
+    LUNES = "Pagaré a la orden a primer lunes del mes siguiente"
 
     @classmethod
     def Contado(clase):
@@ -738,6 +739,10 @@ class DocumentoDePago(SQLObject, PRPCTOO):
     @classmethod
     def Domiciliacion(clase):
         return clase._oblomov(clase.DOMICILIACION)
+
+    @classmethod
+    def Lunes(clase):
+        return clase._oblomov(clase.LUNES)
 
     @classmethod
     def _oblomov(clase, strtipo):
@@ -2799,6 +2804,24 @@ class VencimientoCobro(SQLObject, PRPCTOO):
     def factura(self):
         return self.get_factura_o_prefactura()
 
+    def get_documentoDePago(self):
+        """
+        Devuelve el documento de pago normalizado (el de la base de datos, no
+        el texto libre del vencimiento) según el campo observaciones del
+        vencimiento. Si no se puede determinar, busca en el pedido de donde
+        viene la factura y posteriormente en el cliente.
+        Finalmente devuelve un objeto DocumentoDePago de pclases o None.
+        """
+        res = None
+        try:
+            res = Cobro._parse_docpago(self.observaciones)
+        except AttributeError:
+            res = None
+        if not res:
+            res = selfvto.facturaVenta.cliente.get_documentoDePago()
+        return res
+
+
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 class PagarePago(SQLObject, PRPCTOO):
@@ -3072,7 +3095,9 @@ class Cobro(SQLObject, PRPCTOO):
         pago válida aunque el texto recibido sea algo impreciso.
         """
         txt = txt.upper()
-        if ("PAGAR" in txt or "PGR" in txt):
+        if "LUNES" in txt:
+            doc = DocumentoDePago.Lunes()
+        elif ("PAGAR" in txt or "PGR" in txt):
             if strict_mode:
                 if "ORD" in txt:
                     # CWT: Si no se especifica si es a la orden o no a la

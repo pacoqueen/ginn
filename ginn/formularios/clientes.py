@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -61,6 +61,7 @@ from informes import geninformes
 from formularios.reports import abrir_pdf
 from ventana_progreso import VentanaActividad
 from formularios import pclase2tv
+from lib.myprint import myprint
 
 class Clientes(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -71,7 +72,22 @@ class Clientes(Ventana):
         """
         self.usuario = usuario
         self._objetoreciencreado = None
-        Ventana.__init__(self, 'clientes.glade', objeto, usuario = usuario)
+        self.objeto = objeto
+        Ventana.__init__(self, 'clientes.glade', self.objeto, usuario = usuario)
+        if self.objeto and not isinstance(self.objeto, pclases.Cliente):
+            # Intento su ID o PUID
+            try:
+                self.objeto = pclases.Cliente.get(int(self.objeto))
+            except (pclases.SQLObjectNotFound, TypeError, ValueError):
+                try:
+                    self.objeto = pclases.getObjetoPUID(self.objeto)
+                except ValueError:  # Y si no, intento por nombre
+                    try:
+                        self.objeto = pclases.Cliente.select(
+                            pclases.Cliente.q.nombre.contains(self.objeto), 
+                            orderBy = "id")[0]
+                    except IndexError:
+                        self.objeto = None
         connections = {'b_salir/clicked': self.salir,
                        'b_pedidos/clicked': self.ver_pedidos,
                        'b_productos/clicked': self.ver_productos,
@@ -111,10 +127,10 @@ class Clientes(Ventana):
                        'b_back/clicked':           self.anterior
                       }  
         self.inicializar_ventana()
-        if self.objeto == None:
+        if not self.objeto:
             self.ir_a_primero()
         else:
-            self.ir_a(objeto, deep_refresh = False)
+            self.ir_a(self.objeto, deep_refresh = False)
         self.add_connections(connections)
         gtk.main()
 
@@ -686,15 +702,15 @@ class Clientes(Ventana):
     def rellenar_riesgo_campos_calculados(self):
         if pclases.DEBUG:
             antes = time.time()
-            print "0.- clientes.py::rellenar_riesgo_campos_calculados -> "\
-                  "Düsseldorf"
+            myprint("0.- clientes.py::rellenar_riesgo_campos_calculados -> "
+                    "Düsseldorf")
         self.wids['ventana'].window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
         vpro = VentanaActividad(texto = "Esta operación puede tardar unos "
                                         "minutos...", 
                                 padre = self.wids['ventana'])
         if pclases.DEBUG:
-            print "1.- clientes.py::rellenar_riesgo_campos_calculados ->", \
-                time.time() - antes
+            myprint("1.- clientes.py::rellenar_riesgo_campos_calculados ->", 
+                    time.time() - antes)
         global seguir 
         seguir = True
         def mover_progreso(vpro):
@@ -703,15 +719,15 @@ class Clientes(Ventana):
             while gtk.events_pending(): gtk.main_iteration(False)
             return seguir
         if pclases.DEBUG:
-            print "2.- clientes.py::rellenar_riesgo_campos_calculados ->", \
-                time.time() - antes
+            myprint("2.- clientes.py::rellenar_riesgo_campos_calculados ->",
+                    time.time() - antes)
         gobject.timeout_add(50, mover_progreso, vpro, 
                             priority = gobject.PRIORITY_HIGH_IDLE + 20)
         vpro.mostrar()
         while gtk.events_pending(): gtk.main_iteration(False)
         if pclases.DEBUG:
-            print "2.5.- clientes.py::rellenar_riesgo_campos_calculados ->", \
-                time.time() - antes
+            myprint("2.5.- clientes.py::rellenar_riesgo_campos_calculados ->",
+                    time.time() - antes)
         # XXX ¡OPTIMIZACION! ¡Puños fuera!
         cache = {}
         for f in self.objeto.get_facturas_y_abonos():
@@ -719,36 +735,36 @@ class Clientes(Ventana):
             cache[f.puid] = f.get_estado()
         # XXX
         if pclases.DEBUG:
-            print "3.- clientes.py::rellenar_riesgo_campos_calculados ->", \
-                time.time() - antes
+            myprint("3.- clientes.py::rellenar_riesgo_campos_calculados ->",
+                    time.time() - antes)
         # Nuevos TreeViews de facturas pendientes:
         sin_documentar = self.rellenar_pdte_doc(vpro, cache)
         if pclases.DEBUG:
-            print "4.- clientes.py::rellenar_riesgo_campos_calculados ->", \
-                time.time() - antes
+            myprint("4.- clientes.py::rellenar_riesgo_campos_calculados ->",
+                    time.time() - antes)
         sin_vencer = self.rellenar_no_vencidas(vpro, cache)
         if pclases.DEBUG:
-            print "5.- clientes.py::rellenar_riesgo_campos_calculados ->", \
-                time.time() - antes
+            myprint("5.- clientes.py::rellenar_riesgo_campos_calculados ->",
+                    time.time() - antes)
         impagado = self.rellenar_impagadas(vpro, cache)
         if pclases.DEBUG:
-            print "6.- clientes.py::rellenar_riesgo_campos_calculados ->", \
-                time.time() - antes
+            myprint("6.- clientes.py::rellenar_riesgo_campos_calculados ->",
+                    time.time() - antes)
         #cobrado = self.rellenar_cobradas(vpro, cache)
         self.rellenar_cobradas(vpro, cache, ignorar_total = True)
         if pclases.DEBUG:
-            print "7.- clientes.py::rellenar_riesgo_campos_calculados ->", \
-                time.time() - antes
+            myprint("7.- clientes.py::rellenar_riesgo_campos_calculados ->",
+                    time.time() - antes)
         self.rellenar_facturas_y_abonos(vpro, cache)
         if pclases.DEBUG:
-            print "8.- clientes.py::rellenar_riesgo_campos_calculados ->", \
-                time.time() - antes
+            myprint("8.- clientes.py::rellenar_riesgo_campos_calculados ->",
+                    time.time() - antes)
         credito = self.objeto.calcular_credito_disponible(impagado, 
                                                           sin_documentar, 
                                                           sin_vencer)
         if pclases.DEBUG:
-            print "9.- clientes.py::rellenar_riesgo_campos_calculados ->", \
-                time.time() - antes
+            myprint("9.- clientes.py::rellenar_riesgo_campos_calculados ->",
+                    time.time() - antes)
         self.wids['e_credito'].set_text(utils.float2str(credito))
         if credito <= 0:
             self.wids['e_credito'].modify_text(gtk.STATE_NORMAL, 
@@ -756,22 +772,22 @@ class Clientes(Ventana):
         else:
             self.wids['e_credito'].modify_text(gtk.STATE_NORMAL, None)
         if pclases.DEBUG:
-            print "10.- clientes.py::rellenar_riesgo_campos_calculados ->", \
-                time.time() - antes
+            myprint("10.- clientes.py::rellenar_riesgo_campos_calculados ->",
+                    time.time() - antes)
         impagado = self.rellenar_pdte_abonar(vpro, cache)
         if pclases.DEBUG:
-            print "11.- clientes.py::rellenar_riesgo_campos_calculados ->", \
-                time.time() - antes
+            myprint("11.- clientes.py::rellenar_riesgo_campos_calculados ->",
+                    time.time() - antes)
         self.wids['rating'].set_value(self.objeto.calcular_rating())
         if pclases.DEBUG:
-            print "12.- clientes.py::rellenar_riesgo_campos_calculados ->", \
-                time.time() - antes
+            myprint("12.- clientes.py::rellenar_riesgo_campos_calculados ->",
+                    time.time() - antes)
         seguir = False
         vpro.ocultar()
         self.wids['ventana'].window.set_cursor(None)
         if pclases.DEBUG:
-            print "13.- clientes.py::rellenar_riesgo_campos_calculados ->", \
-                time.time() - antes
+            myprint("13.- clientes.py::rellenar_riesgo_campos_calculados ->",
+                    time.time() - antes)
 
     def listar_facturas_proforma(self, boton):
         """
@@ -802,7 +818,7 @@ class Clientes(Ventana):
                 except:
                     return
                 from formularios import prefacturas
-                v = prefacturas.Prefacturas(objeto=fra, usuario=self.usuario)  # @UnusedVariable
+                v = prefacturas.Prefacturas(objeto=fra, usuario=self.usuario)
 
     def listar_facturas(self, boton):
         """
@@ -835,7 +851,7 @@ class Clientes(Ventana):
                 except:
                     return
                 from formularios import facturas_venta
-                v = facturas_venta.FacturasVenta(objeto = fra,  # @UnusedVariable
+                v = facturas_venta.FacturasVenta(objeto = fra,
                                                  usuario = self.usuario)
 
     def listar_productos_proforma(self, boton):
@@ -1092,7 +1108,7 @@ class Clientes(Ventana):
         """
         if pclases.DEBUG:
             antes = time.time()
-            print "0.- clientes.py::inicializar_ventana -> Hey, ho!"
+            myprint("0.- clientes.py::inicializar_ventana -> Hey, ho!")
         # Inicialmente no se muestra NADA. Sólo se le deja al
         # usuario la opción de buscar o crear nuevo.
         self.activar_widgets(False)
@@ -1106,7 +1122,8 @@ class Clientes(Ventana):
                 self.actualizar_botones_anterior_siguiente)
         contadores = []
         if pclases.DEBUG:
-            print "1.- clientes.py::inicializar_ventana ->", time.time() - antes
+            myprint("1.- clientes.py::inicializar_ventana ->",
+                    time.time() - antes)
         for contador in pclases.Contador.select(orderBy = "prefijo"):
             if contador.prefijo == None:
                 contador.prefijo = ""
@@ -1115,7 +1132,8 @@ class Clientes(Ventana):
             contadores.append((contador.id, "%s | %s" % (contador.prefijo, 
                                                          contador.sufijo)))
         if pclases.DEBUG:
-            print "2.- clientes.py::inicializar_ventana ->", time.time() - antes
+            myprint("2.- clientes.py::inicializar_ventana ->",
+                    time.time() - antes)
         utils.rellenar_lista(self.wids['cmb_contador'], contadores)
         utils.rellenar_lista(self.wids['cbe_comercial'], 
             [(c.id, c.nombre) 
@@ -1147,7 +1165,8 @@ class Clientes(Ventana):
                     False, True, False, None))
         utils.preparar_listview(self.wids['tv_cuentas'], cols)
         if pclases.DEBUG:
-            print "3.- clientes.py::inicializar_ventana ->", time.time() - antes
+            myprint("3.- clientes.py::inicializar_ventana ->",
+                    time.time() - antes)
         self.wids['tv_cuentas'].get_selection().set_mode(
             gtk.SELECTION_MULTIPLE)
         cols = (("Nº. Factura", 'gobject.TYPE_STRING', False,True,True,None), 
@@ -1175,14 +1194,16 @@ class Clientes(Ventana):
         orden = ('nombre', 'direccion', 'cp', 'ciudad', 'provincia', 'pais', 
                  'fechainicio', 'fechafin', 'observaciones', 'generica')
         if pclases.DEBUG:
-            print "4.- clientes.py::inicializar_ventana ->", time.time() - antes
+            myprint("4.- clientes.py::inicializar_ventana ->",
+                    time.time() - antes)
         self.tvobras = pclase2tv.Pclase2tv(pclases.Obra, 
                                            self.wids['tv_obras'], 
                                            # self.objeto, # Es muchos a muchos.
                                            seleccion_multiple = True, 
                                            orden = orden)
         if pclases.DEBUG:
-            print "5.- clientes.py::inicializar_ventana ->", time.time() - antes
+            myprint("5.- clientes.py::inicializar_ventana ->",
+                    time.time() - antes)
         self.wids['tv_obras'].get_selection().connect("changed", 
                                                       self.rellenar_contactos)
         self.tvcontactos = pclase2tv.Pclase2tv(pclases.Contacto, 
@@ -1194,7 +1215,8 @@ class Clientes(Ventana):
                 # ("Importe", 'gobject.TYPE_STRING', False, True, False, None), 
                 ("PUID", 'gobject.TYPE_STRING', False, True, False, None))
         if pclases.DEBUG:
-            print "6.- clientes.py::inicializar_ventana ->", time.time() - antes
+            myprint("6.- clientes.py::inicializar_ventana ->",
+                    time.time() - antes)
         for tv in (self.wids['tv_pdte_doc'], self.wids['tv_no_vencidas'], 
                    self.wids['tv_impagadas'], self.wids['tv_cobradas']):
             utils.preparar_listview(tv, cols)
@@ -1202,15 +1224,18 @@ class Clientes(Ventana):
             tv.get_column(1).get_cell_renderers()[0].set_property('xalign',1.0)
             tv.connect("cursor-changed", self.seleccionar_en_tv_superior)
         if pclases.DEBUG:
-            print "7.- clientes.py::inicializar_ventana ->", time.time() - antes
+            myprint("7.- clientes.py::inicializar_ventana ->",
+                    time.time() - antes)
         utils.rellenar_lista(self.wids['cbe_documentodepago'], 
                 [(d.id, d.documento) for d in 
                     pclases.DocumentoDePago.select(orderBy = "id")])
         if pclases.DEBUG:
-            print "8.- clientes.py::inicializar_ventana ->", time.time() - antes
+            myprint("8.- clientes.py::inicializar_ventana ->",
+                    time.time() - antes)
         self.add_texto_complementario()
         if pclases.DEBUG:
-            print "9.- clientes.py::inicializar_ventana ->", time.time() - antes
+            myprint("9.- clientes.py::inicializar_ventana ->",
+                    time.time() - antes)
         tabla = self.wids['e_riesgoAsegurado'].parent
         tabla.resize(tabla.get_property("n-rows") + 1, 
                      tabla.get_property("n-columns"))
@@ -1239,7 +1264,8 @@ class Clientes(Ventana):
             b_ayuda.set_property("visible", False)
             l_rating.set_property("visible", False)
         if pclases.DEBUG:
-            print "10.- clientes.py::inicializar_ventana ->", time.time()-antes
+            myprint("10.- clientes.py::inicializar_ventana ->",
+                    time.time() - antes)
 
     def add_texto_complementario(self):
         t = self.wids['e_diadepago'].parent
@@ -1421,7 +1447,7 @@ class Clientes(Ventana):
         self.wids[nombrew] = nuevo
         #nuevo.set_properties(*w.get_properties())
         #self.wids.widgets.pop(nombrew)
-        #print self.wids.keys(), nombrew in self.wids.keys()
+        #myprint(self.wids.keys(), nombrew in self.wids.keys())
         from formularios.widgets import replace_widget 
         replace_widget(w, nuevo)
         nuevo.show()
@@ -1437,7 +1463,7 @@ class Clientes(Ventana):
         """
         if pclases.DEBUG:
             antes = time.time()
-            print "0.- clientes.py::rellenar_widgets -> Let's go!"
+            myprint("0.- clientes.py::rellenar_widgets -> Let's go!")
         if not self.objeto:
             self.activar_widgets(False)
             return
@@ -1469,7 +1495,8 @@ class Clientes(Ventana):
             cliente.sync()
             cliente.notificador.activar(self.aviso_actualizacion)
         if pclases.DEBUG:
-            print "1.- clientes.py::rellenar_widgets ->", time.time() - antes
+            myprint("1.- clientes.py::rellenar_widgets ->",
+                    time.time() - antes)
         self.wids['e_iva'].set_text(utils.float2str(cliente.iva * 100, 0)+' %')
         self.wids['e_nombref'].set_text(cliente.nombref or '')
         self.wids['e_direccionfacturacion'].set_text(
@@ -1498,7 +1525,8 @@ class Clientes(Ventana):
         self.wids['e_motivo'].set_text(cliente.motivo)
         self.wids['e_inhabilitado'].set_active(cliente.inhabilitado)
         if pclases.DEBUG:
-            print "2.- clientes.py::rellenar_widgets ->", time.time() - antes
+            myprint("2.- clientes.py::rellenar_widgets ->",
+                    time.time() - antes)
         if cliente.contador != None:
             self.wids['e_prefijo'].set_text(cliente.contador.prefijo)
             self.wids['e_sufijo'].set_text(cliente.contador.sufijo)
@@ -1509,7 +1537,8 @@ class Clientes(Ventana):
             self.wids['e_sufijo'].set_text('')
             utils.combo_set_from_db(self.wids['cmb_contador'], None)
         if pclases.DEBUG:
-            print "3.- clientes.py::rellenar_widgets ->", time.time() - antes
+            myprint("3.- clientes.py::rellenar_widgets ->",
+                    time.time() - antes)
         if cliente.tarifa != None:
             self.wids['e_tarifa'].set_text(cliente.tarifa.nombre)
         else:
@@ -1526,7 +1555,8 @@ class Clientes(Ventana):
         self.wids['e_porcentaje'].set_text(
             "%s %%" % (utils.float2str(cliente.porcentaje * 100)))
         if pclases.DEBUG:
-            print "4.- clientes.py::rellenar_widgets ->", time.time() - antes
+            myprint("4.- clientes.py::rellenar_widgets ->",
+                    time.time() - antes)
         self.wids['ch_envio_albaran'].set_active(cliente.enviarCorreoAlbaran)
         self.wids['ch_envio_factura'].set_active(cliente.enviarCorreoFactura)
         self.wids['ch_envio_packing'].set_active(cliente.enviarCorreoPacking)
@@ -1552,11 +1582,13 @@ class Clientes(Ventana):
             model.append((c.nombre, 
                           "%s %%" % (utils.float2str(c.porcentaje*100)), c.id))
         if pclases.DEBUG:
-            print "5.- clientes.py::rellenar_widgets ->", time.time() - antes
+            myprint("5.- clientes.py::rellenar_widgets ->",
+                    time.time() - antes)
         self.rellenar_cuentas()
         self.rellenar_riesgo_campos_objeto()
         if pclases.DEBUG:
-            print "6.- clientes.py::rellenar_widgets ->", time.time() - antes
+            myprint("6.- clientes.py::rellenar_widgets ->",
+                    time.time() - antes)
         if (self.wids['notebook1'].get_current_page() == 4 
             and not self.wids['ch_ign_concedido'].get_active()):
             self.rellenar_riesgo_campos_calculados()
@@ -1569,10 +1601,12 @@ class Clientes(Ventana):
         ch = self.wids['ch_ign_concedido']
         self.wids['e_riesgoConcedido'].set_sensitive(not ch.get_active())
         if pclases.DEBUG:
-            print "7.- clientes.py::rellenar_widgets ->", time.time() - antes
+            myprint("7.- clientes.py::rellenar_widgets ->",
+                    time.time() - antes)
         self.objeto.make_swap()
         if pclases.DEBUG:
-            print "8.- clientes.py::rellenar_widgets ->", time.time() - antes
+            myprint("8.- clientes.py::rellenar_widgets ->",
+                    time.time() - antes)
         try:
             doc_from_db = self.objeto.get_documentoDePago().documento
         except AttributeError:
@@ -1607,11 +1641,13 @@ class Clientes(Ventana):
                         "aceptada por el usuario.")
                 self.objeto.make_swap()
         if pclases.DEBUG:
-            print "9.- clientes.py::rellenar_widgets ->", time.time() - antes
+            myprint("9.- clientes.py::rellenar_widgets ->",
+                    time.time() - antes)
         ### Botones anterior/siguiente
         self.actualizar_botones_anterior_siguiente()
         if pclases.DEBUG:
-            print "10.- clientes.py::rellenar_widgets ->", time.time() - antes
+            myprint("10.- clientes.py::rellenar_widgets ->",
+                    time.time() - antes)
 
     def actualizar_botones_anterior_siguiente(self, *args, **kw):
         if self.objeto:
@@ -1897,7 +1933,7 @@ class Clientes(Ventana):
             datos[c] = self.leer_valor(self.wids['e_%s' % c])
             if pclases.DEBUG:
                 if c == "observaciones":
-                    print "Campo", c, ":", datos[c]
+                    myprint("Campo", c, ":", datos[c])
         # Desactivo el notificador momentáneamente
         cliente.notificador.set_func(lambda: None)
         # Auditoría: Swap para comparar después con lo que se haya guardado.
@@ -1928,7 +1964,7 @@ class Clientes(Ventana):
                 setattr(cliente, c, datos[c])
                 if pclases.DEBUG:
                     if c == "observaciones":
-                        print datos[c]
+                        myprint(datos[c])
                 # eval('cliente.set(%s = "%s")' % (c, datos[c]))
         # CWT: Chequeo que tenga CIF, y si no lo tiene, lo pido por 
         #      diálogo ad eternum.

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2013 Francisco José Rodríguez Bogado                     #
+# Copyright (C) 2005-2014 Francisco José Rodríguez Bogado                     #
 #                         <frbogado@geotexan.com>                             #
 #                                                                             #
 # This file is part of GeotexInn.                                             #

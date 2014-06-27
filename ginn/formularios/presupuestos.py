@@ -946,6 +946,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         del presupuesto si está vacío en campo NIF y se ha seleccionado
         un cliente del desplegable.
         """
+        self.wids['ventana'].window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
         self.reset_cache_credito()
         idcliente = utils.combo_get_value(cbe)
         if not idcliente:
@@ -975,6 +976,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             self.wids['e_persona_contacto'].set_text(cliente.contacto)
         self.actualizar_obras_cliente()
         self.wids['rating'].set_value(cliente.calcular_rating())
+        self.wids['ventana'].window.set_cursor(None)
 
     def seleccionar_cantidad(self, producto):
         """
@@ -2691,6 +2693,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         Guarda el contenido de los entry y demás widgets de entrada
         de datos en el objeto y lo sincroniza con la BD.
         """
+        self.wids['ventana'].window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
         # Si guardo es que algo he modificado. Por tanto quito validación.
         # TODO: Esto no es así, en teoría las modificaciones en la solicitud
         # de crédito no deberían invalidar la oferta... ¿o sí?
@@ -2777,6 +2780,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.objeto.make_swap("version")
         pclases.Auditoria.modificado(self.objeto, self.usuario, __file__,
                 "Nueva versión %d." % self.objeto.version)
+        self.wids['ventana'].window.set_cursor(None)
 
     def debe_solicitar_validacion(self):
         """

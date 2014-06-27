@@ -32,10 +32,12 @@ Superclase para las facturas de venta, de abono y prefacturas.
 
 from . import VERBOSE, VencimientoCobro, DocumentoDePago
 import mx.DateTime
+import datetime
 from formularios import utils
 import re
 from framework.pclases import Auditoria
 from framework.pclases import DEBUG
+from framework.pclases import Cobro
 
 # "Macros/constantes" de tipos de facturas:
 (FRA_NO_DOCUMENTADA,
@@ -918,24 +920,18 @@ class SuperFacturaVenta:
                 self.fecha = mx.DateTime.localtime()
             if cliente.diadepago != None and cliente.diadepago != '':
                 diaest = cliente.get_dias_de_pago()
-                # TODO: PORASQUI: Tengo que conseguir que esto devuelve *algo*
-                # que me permita identificar que el día estimado es "primer 
-                # lunes del mes siguiente". Además debe aparecer en el 
-                # desplegable de los pedidos y ofertas. No solo en la ficha del
-                # cliente.
             else:
                 diaest = False
             if self.get_pedidos():
                 try:
                     pedido = self.get_pedidos()[0]
-                    str_formapago = pedido.formaDePago.toString(
-                            self.cliente)
+                    str_formapago = pedido.formaDePago.toString(self.cliente)
                 except (AttributeError, IndexError):
                     str_formapago = (self.cliente
                             and self.cliente.textoformacobro or "")
             else:
                 # ¿Factura sin pedido?
-                str_formapago = self.cliente.textoformacobro
+                str_formapago = self.cliente.get_texto_forma_cobro()
             for incr in vtos:
                 fechavto = (mx.DateTime.DateFrom(self.fecha)
                             + (incr * mx.DateTime.oneDay))
@@ -987,8 +983,37 @@ class SuperFacturaVenta:
                     fechas_est.sort(utils.cmp_mxDateTime)
                     fechaest = fechas_est[0]
                     vto.fecha = fechaest
+                # Ahora el caso CETCO: primer lunes del mes siguiente.
+                vto = check_lunes(vto)
             res = self.vencimientosCobro
         else:
             res = SIN_DATOS_PARA_VENCIMIENTOS_POR_DEFECTO
         return res
+
+
+def check_lunes(vto):
+    """
+    Comprueba si la forma de pago es la del primer lunes del mes 
+    siguiente y ajusta el vencimiento en ese caso.
+    """
+    docpago = vto.get_documentoDePago()
+    if docpago == DocumentoDePago.Lunes():
+        mesoriginal = vto.fecha.month
+        try:
+                diasemana = vto.fecha.day_of_week
+        except AttributeError:  # Es un datetime
+            diasemana = vto.fecha.weekday()
+        mesvto = vto.fecha.month
+        while not(diasemana == 0 # == Lunes en ambas libs.
+                  and mesvto > mesoriginal): 
+            try:
+                vto.fecha += mx.DateTime.oneDay
+            except TypeError:
+                vto.fecha += datetime.timedelta(days = 1)
+            try:
+                diasemana = vto.fecha.day_of_week
+            except AttributeError:  # Es un datetime
+                diasemana = vto.fecha.weekday()
+            mesvto = vto.fecha.month
+    return vto
 
