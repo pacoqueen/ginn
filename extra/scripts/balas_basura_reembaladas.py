@@ -67,7 +67,7 @@ def load_data():
             "gris": [166.80, 120.00, 84.20, 187.20, 114.00, 213.00, 170.00, 
                      212.80, 134.60, 176.00]}
     # Las balas que se consumieron, al parecer, eran negras.
-    consumo = {'PC12286': {"negro": [175.50, 175.50, 203.50, 203.50, 161.00, 
+    consumo = {'PC12286': {"negro": [175.50, 175.50, 203.50, 203.50, 161.00,
                                      162.00, 214.60, 107.60, 199.20, 159.00]}}
     return baja, alta, consumo
 

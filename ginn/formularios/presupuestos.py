@@ -1976,6 +1976,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         hay que tener cuidado de no llamar a
         esta función en ese caso.
         """
+        self.wids['ventana'].window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
         if pclases.DEBUG:
             print "  >>> :::::::::::::: rellenar_widgets :::::::::::::::"
         # Autobloqueo antes de nada.
@@ -2096,6 +2097,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         self.wids["e_cred_comercial"].set_text(nombre_del_comercial)
         if pclases.DEBUG:
             print "  <<< :::::::::::::: rellenar_widgets :::::::::::::::"
+        self.wids['ventana'].window.set_cursor(None)
 
     def actualizar_obras_cliente(self):
         idcliente = utils.combo_get_value(self.wids['cbe_cliente'])
