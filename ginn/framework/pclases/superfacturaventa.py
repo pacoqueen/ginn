@@ -38,6 +38,7 @@ import re
 from framework.pclases import Auditoria
 from framework.pclases import DEBUG
 from framework.pclases import Cobro
+from lib.myprint import myprint
 
 # "Macros/constantes" de tipos de facturas:
 (FRA_NO_DOCUMENTADA,
@@ -516,7 +517,7 @@ class SuperFacturaVenta:
         try:
             estado = cache[self.puid]
             if VERBOSE:
-                print "pclases.py::SuperFacturaVenta.get_str_estado -> HIT!"
+                myprint("pclases.py::SuperFacturaVenta.get_str_estado -> HIT!")
         except KeyError:
             estado = self.get_estado(fecha)
         str_estado = ESTADOS[estado]
@@ -537,7 +538,7 @@ class SuperFacturaVenta:
         try:
             estado = cache[self.puid]
             if VERBOSE:
-                print "pclases.py::SuperFacturaVenta.get_str_estado -> HIT!"
+                myprint("pclases.py::SuperFacturaVenta.get_str_estado -> HIT!")
         except KeyError:
             estado = self.UNOPTIMIZED_get_estado(fecha)
         str_estado = ESTADOS[estado]

@@ -50,9 +50,6 @@ import datetime
 from formularios.custom_widgets import gtkcairoplot
 from collections import defaultdict, OrderedDict
 
-# TODO: Añadir un Gtk.CairoPlot para ver los totales por producto. Para eso 
-# antes tendré que adaptar la clase a cagraph o usar los parámetros de 
-# cairoplot para, al menos, mostrar los valores.
 
 class ConsultaPedidosCliente(Ventana):
     """

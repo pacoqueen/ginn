@@ -11956,23 +11956,26 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         """ % (fecha)
         balas_de_partes_de_balas_antes_de_fecha = """
             SELECT bala_id
-            FROM articulo
-            WHERE articulo.bala_id IS NOT NULL
-                  AND (articulo.parte_de_produccion_id IN (%s)
-                       OR (articulo.parte_de_produccion_id IS NULL
-                           AND (articulo.bala_id IN (SELECT bala.id
-                                                     FROM bala
-                                                     WHERE bala.fechahora < '%s' AND articulo.bala_id = bala.id
-                                                    )
-                               )
-                          )
-                      )
-        """ % (partes_de_balas_antes_de_fecha, fecha_limite_para_comparaciones_con_fechahoras)
+              FROM articulo
+             WHERE articulo.bala_id IS NOT NULL
+               AND (articulo.parte_de_produccion_id IN (%s)
+                    OR (articulo.parte_de_produccion_id IS NULL
+                        AND (articulo.bala_id IN 
+                                (SELECT bala.id
+                                   FROM bala
+                                  WHERE bala.fechahora < '%s' 
+                                    AND articulo.bala_id = bala.id
+                                )
+                            )
+                       )
+                   )
+        """ % (partes_de_balas_antes_de_fecha, 
+               fecha_limite_para_comparaciones_con_fechahoras)
         partes_de_rollos_antes_de_fecha = """
-            SELECT parte_de_produccion.id
+          SELECT parte_de_produccion.id
             FROM parte_de_produccion
-            WHERE parte_de_produccion.fecha <= '%s'
-                AND parte_de_produccion.observaciones NOT LIKE '%%;%%;%%;%%;%%;%%'
+           WHERE parte_de_produccion.fecha <= '%s'
+             AND parte_de_produccion.observaciones NOT LIKE '%%;%%;%%;%%;%%;%%'
         """ % (fecha)
         rollos_de_articulos_antes_de_fecha = """
             SELECT articulo.rollo_id
@@ -12126,9 +12129,13 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         """ % (partidas_de_carga_en_partidas_despues_de_fecha)
         # PLAN: Tal vez esta subconsulta chorretosa que mezca SQL y
         #       SQLObject se pueda optimizar:
-        ids_pcs_sin_prod = [pc.id for pc in PartidaCarga.select(PartidaCarga.q.fecha > hasta) if len(pc._get_partes_partidas()) == 0]
+        ids_pcs_sin_prod = [pc.id for pc 
+                            in PartidaCarga.select(
+                                PartidaCarga.q.fecha > hasta) 
+                            if len(pc._get_partes_partidas()) == 0]
         if len(ids_pcs_sin_prod) > 0:
-            partidas_de_carga_sin_produccion = ", ".join(map(str, map(int, ids_pcs_sin_prod)))
+            partidas_de_carga_sin_produccion = ", ".join(
+                                        map(str, map(int, ids_pcs_sin_prod)))
         else:
             partidas_de_carga_sin_produccion = "-1" # No hay IDs -1, así que
             # es como si no estuviera la rama OR (pero algo hay que poner).
@@ -12143,7 +12150,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
               AND (bala.partida_carga_id IN (%s)
                    OR bala.partida_carga_id IN (%s)
                    OR bala.partida_carga_id IS NULL);
-        """ % (self.id, partidas_de_carga_usadas_despues_de_fecha, partidas_de_carga_sin_produccion)
+        """ % (self.id, partidas_de_carga_usadas_despues_de_fecha, 
+               partidas_de_carga_sin_produccion)
         ## ## ## BALAS DEL PRODUCTO # ## ## ## ## ## ## ##
         balas_del_producto = """
             SELECT articulo.bala_id
@@ -12163,18 +12171,21 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         Bala._connection.query(balas_del_producto)
         # print 5
         ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ##
-        query = """ id IN (SELECT bala.id
-                           FROM bala,
-                                tmp_balas_del_producto p,
-                                tmp_balas_de_partes_de_balas_antes_de_fecha produccion,
-                                tmp_balas_vendidas_despues_de_fecha_o_no_vendidas,
-                                tmp_balas_usadas_despues_de_fecha_o_no_usadas
-                           WHERE bala.id = p.bala_id
-                                 AND bala.id = produccion.bala_id
-                                 AND bala.id = tmp_balas_vendidas_despues_de_fecha_o_no_vendidas.bala_id
-                                 AND bala.id = tmp_balas_usadas_despues_de_fecha_o_no_usadas.bala_id
-                           GROUP BY bala.id
-                           ) """
+        query = """ id IN 
+            (SELECT bala.id
+               FROM bala,
+                    tmp_balas_del_producto p,
+                    tmp_balas_de_partes_de_balas_antes_de_fecha produccion,
+                    tmp_balas_vendidas_despues_de_fecha_o_no_vendidas,
+                    tmp_balas_usadas_despues_de_fecha_o_no_usadas
+              WHERE bala.id = p.bala_id
+                AND bala.id = produccion.bala_id
+                AND bala.id 
+                    = tmp_balas_vendidas_despues_de_fecha_o_no_vendidas.bala_id
+                AND bala.id 
+                    = tmp_balas_usadas_despues_de_fecha_o_no_usadas.bala_id
+               GROUP BY bala.id
+            ) """
         balas = Bala.select(query)
         ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ##
         # TODO: ¿Faltan los abonos? Pues claro que faltan los abonos.

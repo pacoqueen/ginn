@@ -52,6 +52,7 @@ from formularios.custom_widgets import CellRendererAutoComplete
 import datetime
 import time
 from formularios.utils import enviar_correoe
+from lib.myprint import myprint
 
 NIVEL_VALIDACION = 1
 CONDICIONES_DURAS = (pclases.PLAZO_EXCESIVO,
@@ -404,7 +405,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         Permite que se envíen los correos de validación.
         """
         if pclases.DEBUG:
-            print "Soy cerrar presupuesto... BEGIN"
+            myprint("Soy cerrar presupuesto... BEGIN")
         cerrar = ch_button.get_active()
         if self.objeto.cerrado == cerrar: #Actualizando. No ha sido el usuario.
             pass
@@ -417,7 +418,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             #self.actualizar_ventana()  # En guardar ya actualiza ventana.
             # self.rellenar_lista_presupuestos()
         if pclases.DEBUG:
-            print "Soy cerrar presupuesto... END"
+            myprint("Soy cerrar presupuesto... END")
 
     def enviar_correo_solicitud_credito(self, nomfich_solicitud = None):
         """
@@ -1006,7 +1007,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             else:
                 txterror = """presupuestos::seleccionar_cantidad -> ERROR: El producto de venta ID %d no es bala ni rollo. Verificar.""" % (producto.id)
                 if pclases.DEBUG:
-                    print txterror
+                    myprint(txterror)
                 self.logger.error(txterror)
                 txt = """Introduzca la cantidad:"""
         elif isinstance(producto, pclases.ProductoCompra):
@@ -1092,9 +1093,9 @@ class Presupuestos(Ventana, VentanaGenerica):
                     except Exception, msg:
                         fallos.append((puid, msg))
                         if pclases.DEBUG:
-                            print "presupuestos.py::drop_ldp -> "\
+                            myprint("presupuestos.py::drop_ldp -> "\
                                   "No se pudo eliminar la línea de "\
-                                  "presupuesto. Mensaje de la excepción:", msg
+                                  "presupuesto. Mensaje de la excepción:", msg)
                 self.rellenar_tablas()
                 if fallos:
                     for fallo, msg in fallos:
@@ -1242,9 +1243,9 @@ class Presupuestos(Ventana, VentanaGenerica):
                     igual = igual and (valor_ventana == valor_objeto)
                 if not igual:
                     if pclases.DEBUG and pclases.VERBOSE:
-                        print "colname:", colname
-                        print "\tvalor_ventana:", valor_ventana
-                        print "\tvalor_objeto:", valor_objeto
+                        myprint("colname:", colname)
+                        myprint("\tvalor_ventana:", valor_ventana)
+                        myprint("\tvalor_objeto:", valor_objeto)
                     #break
                 # DONE: PLAN: ¿Y si en vez de un break, cojo, sigo
                 # sigo analizando y marco en algún color los campos
@@ -1597,14 +1598,14 @@ class Presupuestos(Ventana, VentanaGenerica):
 
     def cambiar_presupuesto_activo(self, tv):
         if pclases.DEBUG:
-            print "   ------------------------> Soy cambiar_presupuesto_activo"
+            myprint("   ---------------------> Soy cambiar_presupuesto_activo")
         model, itr = tv.get_selection().get_selected()
         if itr:
             puid = model[itr][-1]
             presupuesto_seleccionado = pclases.getObjetoPUID(puid)
             if self.objeto != presupuesto_seleccionado:
                 if pclases.DEBUG:
-                    print "  -----------------> ", presupuesto_seleccionado.id
+                    myprint("  ---------------> ", presupuesto_seleccionado.id)
                 self.reset_cache_credito()
                 self.ir_a(presupuesto_seleccionado)
 
@@ -1785,7 +1786,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             and self.usuario and self.usuario.get_comerciales()):
             es_mismo_comercial = (self.objeto.comercial
                                   in self.usuario.get_comerciales())
-            #print es_mismo_comercial
+            #myprint(es_mismo_comercial)
             # Excepción: que tenga nivel chachi de validar aunque
             # tenga también perfil comercial. Si así también puede editar
             # ofertas de otros comerciales.
@@ -1806,7 +1807,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 self.logger.error("presupuestos::activar_widgets -> "
                                   "Widget %s no encontrado." % w)
                 if pclases.DEBUG:
-                    print w
+                    myprint(w)
         # Botón de hacer pedidos. Solo para ofertas de pedido validadas y si
         # el usuario puede hacerlo.
         txt_puede_hacer_pedido = "Crea un pedido automáticamente con el "\
@@ -1978,7 +1979,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         self.wids['ventana'].window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
         if pclases.DEBUG:
-            print "  >>> :::::::::::::: rellenar_widgets :::::::::::::::"
+            myprint("  >>> :::::::::::::: rellenar_widgets :::::::::::::::")
         # Autobloqueo antes de nada.
         if (self.objeto and self.objeto.get_pedidos()
                 and not self.objeto.bloqueado):
@@ -2096,7 +2097,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             nombre_del_comercial = ""
         self.wids["e_cred_comercial"].set_text(nombre_del_comercial)
         if pclases.DEBUG:
-            print "  <<< :::::::::::::: rellenar_widgets :::::::::::::::"
+            myprint("  <<< :::::::::::::: rellenar_widgets :::::::::::::::")
         self.wids['ventana'].window.set_cursor(None)
 
     def actualizar_obras_cliente(self):
@@ -2127,30 +2128,30 @@ class Presupuestos(Ventana, VentanaGenerica):
             return True
         if pclases.DEBUG:
             ahora = time.time()
-            print "rellenar_lista_presupuestos: begin"
+            myprint("rellenar_lista_presupuestos: begin")
         try:
             gobject.source_remove(self.hndlr_listado)
         except AttributeError:
             pass    # Primera vez.
         if pclases.DEBUG:
-            print "rellenar_lista_presupuestos: Desconectando señal..."
+            myprint("rellenar_lista_presupuestos: Desconectando señal...")
         self.wids['tv_presupuestos'].disconnect(self.hndlr_presup)
         if pclases.DEBUG:
-            print "rellenar_lista_presupuestos: Buscando presupuestos..."
+            myprint("rellenar_lista_presupuestos: Buscando presupuestos...")
         presupuestos = self.buscar_presupuestos_accesibles(solo_pdte = True)
         # Ya tengo los objetos. Ahora a rellenar en la interfaz.
         if pclases.DEBUG:
-            print "rellenar_lista_presupuestos: Congelando TreeView..."
+            myprint("rellenar_lista_presupuestos: Congelando TreeView...")
         model = self.wids['tv_presupuestos'].get_model()
         self.wids['tv_presupuestos'].freeze_child_notify()
         # model.clear()
         # Primero me hago una copia del model en un diccionario accesible por
         # el id del presupuesto.
         if pclases.DEBUG:
-            print "rellenar_lista_presupuestos: Generando diccionario..."
+            myprint("rellenar_lista_presupuestos: Generando diccionario...")
         modelo = dic_presupuestos_from_model(self.wids['tv_presupuestos'])
         if pclases.DEBUG:
-            print "rellenar_lista_presupuestos: Refrescando Model..."
+            myprint("rellenar_lista_presupuestos: Refrescando Model...")
         for p in presupuestos:
             # CWT: No deben salir los presupuestos ya servidos
             if p.get_pedidos():
@@ -2188,13 +2189,13 @@ class Presupuestos(Ventana, VentanaGenerica):
         # Si me ha quedado algo en "modelo", son filas que no se corresponden
         # con ningun presupuesto que deba aparecer en el TV. Lo quito:
         if pclases.DEBUG:
-            print "rellenar_lista_presupuestos: Eliminando residuos..."
+            myprint("rellenar_lista_presupuestos: Eliminando residuos...")
         for puid in modelo:
             itr = modelo[puid]
             model.remove(itr)
         # Y por fin acabé de actualizar el TreeView.
         if pclases.DEBUG:
-            print "rellenar_lista_presupuestos: Descongelando TreeView..."
+            myprint("rellenar_lista_presupuestos: Descongelando TreeView...")
         self.wids['tv_presupuestos'].thaw_child_notify()
         # Lo desactivo porque tengo una manera mejor de
         # marcar el presupuesto activo sin borrar, repoblar y redibujar
@@ -2203,15 +2204,15 @@ class Presupuestos(Ventana, VentanaGenerica):
         #self.wids['tv_presupuestos'].scroll_to_cell(path)
         #self.wids['tv_presupuestos'].get_selection().select_path(path)
         if pclases.DEBUG:
-            print "rellenar_lista_presupuestos: Conectando señales..."
+            myprint("rellenar_lista_presupuestos: Conectando señales...")
         self.hndlr_presup = self.wids['tv_presupuestos'].connect(
                             "cursor-changed", self.cambiar_presupuesto_activo)
         # DONE: Habilitar si consigo acelerar la búsqueda.
         self.hndlr_listado = gobject.timeout_add(10 * 60 * 1000,
                 self.rellenar_lista_presupuestos)
         if pclases.DEBUG:
-            print "rellenar_lista_presupuestos: end (",
-            print time.time() - ahora, "segundos )"
+            myprint("rellenar_lista_presupuestos: end (",)
+            myprint(time.time() - ahora, "segundos )")
         return True     # Para que siga llamándome indefinidamente.
 
     def buscar_presupuestos_accesibles(self, solo_pdte = False,
@@ -2314,7 +2315,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         if not self.objeto:
             return
         if pclases.DEBUG:
-            print "Soy comprobar_riesgo_cliente. Objeto activo:",self.objeto.id
+            myprint("Soy comprobar_riesgo_cliente. Objeto activo:",
+                    self.objeto.id)
         self.objeto.notificador.desactivar()
         vpro = VentanaActividad(self.wids['ventana'],
                                 "Comprobando condiciones de riesgo...")
@@ -2537,8 +2539,8 @@ class Presupuestos(Ventana, VentanaGenerica):
             # acaso...
             if ldp._link_producto():
                 if pclases.DEBUG:
-                    print "Línea de presupuesto %d enlazada con %s." % (
-                            ldp.id, ldp.producto.puid)
+                    myprint("Línea de presupuesto %d enlazada con %s." % (
+                            ldp.id, ldp.producto.puid))
             # EOSANTABÁRBARA
             model.append((utils.float2str(ldp.cantidad),
                           ldp.get_descripcion_producto(),
@@ -2898,7 +2900,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                                     pclases.Presupuesto.q.comercialID != None,
                                     pclases.OR(*criterio)),
                                 orderBy = "-id")
-                #print presupuestos.count()
+                #myprint(presupuestos.count())
                 try:
                     self.objeto = presupuestos[0]
                 except IndexError:
@@ -3238,7 +3240,7 @@ def crear_pedido(presupuesto, numpedido, usuario):
         proObra = obra.provincia
     except AttributeError, msg:
         if pclases.DEBUG:
-            print "presupuestos.py::crear_pedido -> AttributeError:", msg
+            myprint("presupuestos.py::crear_pedido -> AttributeError:", msg)
         ciuObra = cpObra = dirObra = nomObra = paiObra = proObra = ""
     nuevopedido = pclases.PedidoVenta(cliente = presupuesto.cliente,
                             fecha = mx.DateTime.localtime(),
