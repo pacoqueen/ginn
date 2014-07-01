@@ -358,19 +358,20 @@ class GraphPlot(gtk.DrawingArea):
         cr = self.context
         style = self.graph_style
         cr.save()
-        cr.set_source_rgb(0.7, 0.2, 0.0)
+        cr.set_source_rgb(0.0, 0.0, 0.0)
         cr.select_font_face("Georgia", cairo.FONT_SLANT_NORMAL, 
                                  cairo.FONT_WEIGHT_BOLD)
         cr.set_font_size(32)
         x_bearing, y_bearing, width, height = cr.text_extents(nodo)[:4]
-        cr.move_to(0.5 - width / 2 - x_bearing,
-                   0.5 - height / 2 - y_bearing)
+        cr.move_to(x - width / 2 - x_bearing,
+                   y - height / 2 - y_bearing)
         cr.show_text(nodo)
         # Y un circulín alrededor.
-        cr.translate(width / 2, height / 2)
-        cr.arc(0, 0, 50, 0, 2 * pi)
-        cr.restore()
+        cr.translate(x - width / 2 - x_bearing, 
+                     y - height / 2 - y_bearing)
+        cr.arc(0, 0, width, 0, 2 * pi)
         cr.stroke()
+        cr.restore()
 
     def draw_vertice(self, nodo, vertice):
         """
@@ -402,9 +403,8 @@ class GraphPlot(gtk.DrawingArea):
             width = style.width - style.margin - style.margin
             height = style.height - style.margin - style.margin
             # TODO: El algoritmo de cálculo en sí todavía no está NI PENSADO.
-            # Voy a empezar de arriba a abajo y de izquierda a derecha.
-            x = width / 2
-            y = height / 2
+            x = (len(self.__positions) + 1) * (width  / len(self._data))
+            y = (len(self.__positions) + 1) * (height / len(self._data))
             self.__positions[nodo] = pos = x, y
         return pos
 
