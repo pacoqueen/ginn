@@ -248,15 +248,12 @@ def ajustar_rendimiento(pdp, objetivo, pdp_siguiente):
         pdp.horafin = pdp.fechahorafin.time()
         for horastrabajadas in pdp.horasTrabajadas:
             add_horas(horastrabajadas.horas, -delta)
+        for horastrabajadas in pdp_siguiente.horasTrabajadas:
+            add_horas(horastrabajadas.horas, delta)
+    pdp.sync()
     pdp_siguiente.fechahorainicio = pdp.fechahorafin
     pdp_siguiente.horainicio = pdp.horafin
-    pdp.sync()
     pdp_siguiente.sync()
-    for horastrabajadas in pdp_siguiente.horasTrabajadas:
-        horastrabajadas.sync()
-        add_horas(horastrabajadas.horas, delta)
-        horastrabajadas.syncUpdate()
-
 
 def main():
     """
@@ -275,7 +272,7 @@ def main():
     barra.finish()
     # Resumen de productividades:
     partes = productividades.keys()
-    partes.sort(key = lambda p: p.productoVenta.descripcion)
+    partes.sort(key=lambda p: p.productoVenta.descripcion)
     for pdp in partes:
         print pdp.get_info()
         print "\tAntes: %.2f\tDespués: %.2f\tDuración:%s" % (
