@@ -43,7 +43,8 @@ def load_rollos():
                 pclases.ProductoVenta.q.camposEspecificosRolloID ==
                     pclases.CamposEspecificosRollo.q.id,
                 pclases.CamposEspecificosRollo.q.metrosLineales == 100,
-                pclases.CamposEspecificosRollo.q.ancho == 5.5))[0]
+                pclases.CamposEspecificosRollo.q.ancho == 5.5),
+            orderBy="id")[0]
     pvnt23 = pclases.ProductoVenta.select(pclases.AND(
                 pclases.ProductoVenta.q.descripcion.contains("NT 23 "),
                 pclases.NOT(
@@ -51,7 +52,8 @@ def load_rollos():
                 pclases.ProductoVenta.q.camposEspecificosRolloID ==
                     pclases.CamposEspecificosRollo.q.id,
                 pclases.CamposEspecificosRollo.q.metrosLineales == 100,
-                pclases.CamposEspecificosRollo.q.ancho == 5.5))[0]
+                pclases.CamposEspecificosRollo.q.ancho == 5.5),
+            orderBy="id")[0]
     pvnt30 = pclases.ProductoVenta.select(pclases.AND(
                 pclases.ProductoVenta.q.descripcion.contains("NT 30"),
                 pclases.NOT(
@@ -59,7 +61,8 @@ def load_rollos():
                 pclases.ProductoVenta.q.camposEspecificosRolloID ==
                     pclases.CamposEspecificosRollo.q.id,
                 pclases.CamposEspecificosRollo.q.metrosLineales == 90,
-                pclases.CamposEspecificosRollo.q.ancho == 5.5))[0]
+                pclases.CamposEspecificosRollo.q.ancho == 5.5),
+            orderBy="id")[0]
     res = {pvnt15: [],
            pvnt23: [],
            pvnt30: []}

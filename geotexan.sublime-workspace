@@ -47,7 +47,7 @@
 			"file": "extra/scripts/20140701_cambio_rollos.py",
 			"settings":
 			{
-				"buffer_size": 4517,
+				"buffer_size": 4595,
 				"line_ending": "Unix"
 			}
 		}
@@ -680,15 +680,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4517,
+						"buffer_size": 4595,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3832,
-								3832
+								959,
+								959
 							]
 						],
 						"settings":
@@ -701,7 +701,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1080.0,
+						"translation.y": 180.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,

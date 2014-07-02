@@ -362,13 +362,15 @@ class GraphPlot(gtk.DrawingArea):
         cr.select_font_face("Georgia", cairo.FONT_SLANT_NORMAL, 
                                  cairo.FONT_WEIGHT_BOLD)
         cr.set_font_size(32)
-        x_bearing, y_bearing, width, height = cr.text_extents(nodo)[:4]
+        (x_bearing, y_bearing,
+         width, height,
+         x_advance, y_advance) = cr.text_extents(nodo)
         cr.move_to(x - width / 2 - x_bearing,
                    y - height / 2 - y_bearing)
         cr.show_text(nodo)
         # Y un circulín alrededor.
-        cr.translate(x - width / 2 - x_bearing, 
-                     y - height / 2 - y_bearing)
+        cr.translate(x - width / 2 + x_advance, 
+                     y - height / 2 + y_advance)
         cr.arc(0, 0, width, 0, 2 * pi)
         cr.stroke()
         cr.restore()

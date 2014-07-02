@@ -5966,6 +5966,21 @@ class Rollo(SQLObject, PRPCTOO):
     articulo = property(get_articulo)
     articuloID = property(get_articuloID)
 
+    def set_parteDeProduccion(self, pdp):
+        if isinstance(pdp, int):
+            self.articulo.parteDeProduccionID = pdp
+        elif isinstance(pdp, ParteDeProduccion):
+            self.articulo.parteDeProduccion = pdp
+        else:
+            raise TypeError
+        self.articulo.syncUpdate()
+
+    parteDeProduccion = property(lambda self: self.articulo.parteDeProduccion,
+                                 set_parteDeProduccion)
+    parteDeProduccionID = property(
+            lambda self: self.articulo.parteDeProduccionID, 
+            set_parteDeProduccion)
+
     def cambiar_numrollo(self, numrollo):
         """
         Cambia el número de rollo y el código de acuerdo al nuevo
@@ -17062,8 +17077,12 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         NOTA: Para distinguir los partes se emplea ye-olde-method de
         contar el número de ";" que tiene en el campo observaciones.
         """
-        criterio_balas = " (parte_de_produccion.observaciones LIKE '%%;%%;%%;%%;%%;%%') AND parte_de_produccion.partida_cem_id IS NULL"
-        criterio_rollos = " (parte_de_produccion.observaciones NOT LIKE '%%;%%;%%;%%;%%;%%') AND parte_de_produccion.partida_cem_id IS NULL"
+        criterio_balas = " (parte_de_produccion.observaciones "\
+                "LIKE '%%;%%;%%;%%;%%;%%') "\
+                "AND parte_de_produccion.partida_cem_id IS NULL"
+        criterio_rollos = " (parte_de_produccion.observaciones "\
+                "NOT LIKE '%%;%%;%%;%%;%%;%%') "\
+                "AND parte_de_produccion.partida_cem_id IS NULL"
         criterio_cajas = "NOT parte_de_produccion.partida_cem_id IS NULL"
         mi_sqlhini = self.fechahorainicio.strftime("%Y-%m-%d %H:%M:%S")
         mi_sqlhfin = self.fechahorafin.strftime("%Y-%m-%d %H:%M:%S")

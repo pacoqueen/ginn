@@ -46,6 +46,7 @@ from formularios.consulta_producido import str_horas, detectar_hueco, \
                                            calcular_productividad_conjunta
 import pango
 from formularios.consulta_ventas_por_producto import act_fecha
+from lib.myprint import myprint
 
 class ConsultaProductividad(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -306,11 +307,13 @@ class ConsultaProductividad(Ventana):
             # línea 342.
         for p in partes:
             if p.se_solapa():
-                self.logger.warning("%sconsulta_productividad::rellenar_tabla"
-                    " -> El parte ID %d se solapa con otros de la misma línea"
-                    ". Si estaba verificado, lo desbloqueo para que se vuelva"
+                texto_warning = "%sconsulta_productividad::rellenar_tabla"\
+                    " -> El parte ID %d se solapa con otros de la misma línea"\
+                    ". Si estaba verificado, lo desbloqueo para que se vuelva"\
                     " a revisar y lo ignoro para el cálculo actual." % (
-                     self.usuario and self.usuario.usuario + ": " or "", p.id))
+                     self.usuario and self.usuario.usuario + ": " or "", p.id)
+                self.logger.warning(texto_warning)
+                myprint(texto_warning)
                 p.bloqueado = False
                 continue
             vpro.set_valor(i/tot, 'Añadiendo parte %s...' % (
