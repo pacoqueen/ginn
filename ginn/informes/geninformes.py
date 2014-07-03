@@ -7331,6 +7331,12 @@ def PackingList(datos, numpagina = 1, titulo = "Packing list"):
         if (i*2 == 8):
             i = 0
             linea = sigLinea(10)
+            if linea < bm:
+                # Me pasé de espacio. Creo la siguiente página.
+                c.showPage()
+                cabecera(c, titulo + " (cont.)", fecha)
+                c.setFont("Helvetica", 8)
+                linea = tm + 1*inch
 
     linea = sigLinea()
     linea = sigLinea()
