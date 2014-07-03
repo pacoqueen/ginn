@@ -488,15 +488,16 @@ class Clientes(Ventana):
                             texto_dialogo += \
                                 "\nDebe corregir manualmente el resto de "\
                                 "facturas."
-                        utils.dialogo_info(titulo = "OPERACIÓN FINALIZADA", 
-                                           texto = texto_dialogo, 
-                                           padre = self.wids['ventana'])
+                        utils.dialogo_info(titulo="OPERACIÓN FINALIZADA", 
+                                           texto=texto_dialogo, 
+                                           padre=self.wids['ventana'])
             else:
                 obra.removeCliente(self.objeto)
                 se_borro_algo = True
                 obra.sync()
                 if not obra.clientes:   # Si esta obra no pertenece a ningún
                     # cliente más, entonces trato de eliminarla por completo.
+                    # TODO: Y aún así hay obras huérfanas en la base de datos.
                     contactos = obra.contactos[:]
                     for c in contactos:
                         obra.removeContacto(c)

@@ -4,10 +4,6 @@
 		"selected_items":
 		[
 			[
-				"camposEspe",
-				"CamposEspecificosRollo"
-			],
-			[
 				"obj_",
 				"obj_puid	(local, instance)"
 			],
@@ -28,6 +24,38 @@
 			}
 		},
 		{
+			"file": "ginn/formularios/ventana_progreso.py",
+			"settings":
+			{
+				"buffer_size": 16505,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ginn/framework/configuracion.py",
+			"settings":
+			{
+				"buffer_size": 21749,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ginn/formularios/ventana.py",
+			"settings":
+			{
+				"buffer_size": 54757,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "extra/scripts/obras_huerfanas.py",
+			"settings":
+			{
+				"buffer_size": 3785,
+				"line_ending": "Unix"
+			}
+		},
+		{
 			"file": "ginn/main.py",
 			"settings":
 			{
@@ -42,42 +70,14 @@
 				"buffer_size": 6006,
 				"line_ending": "Unix"
 			}
-		},
-		{
-			"file": "extra/scripts/20140701_cambio_rollos.py",
-			"settings":
-			{
-				"buffer_size": 4595,
-				"line_ending": "Unix"
-			}
 		}
 	],
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 152.0,
+		"height": 392.0,
 		"selected_items":
 		[
-			[
-				"install",
-				"Package Control: Install Package"
-			],
-			[
-				"indent",
-				"Indentation: Convert to Spaces"
-			],
-			[
-				"pep",
-				"PEP8: Preview Changes"
-			],
-			[
-				"package",
-				"Package Control: Remove Package"
-			],
-			[
-				"lint",
-				"User: Python Flake8 Lint"
-			],
 			[
 				":w",
 				":w - Save"
@@ -95,8 +95,16 @@
 				"Anaconda: Autoformat PEP8 Errors"
 			],
 			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
 				"pack",
 				"Package Control: List Packages"
+			],
+			[
+				"indent",
+				"Indent XML"
 			],
 			[
 				"inden",
@@ -121,6 +129,10 @@
 			[
 				"erlyman",
 				"Erlyman: Find"
+			],
+			[
+				"package",
+				"Package Control: Upgrade Package"
 			],
 			[
 				"erly",
@@ -201,6 +213,10 @@
 			[
 				"lint ",
 				"Python: Enable Pep8 Linting On View"
+			],
+			[
+				"lint",
+				"Python: Disable Pep8 Linting On View"
 			],
 			[
 				":q",
@@ -295,14 +311,13 @@
 				":w - Save"
 			]
 		],
-		"width": 467.0
+		"width": 647.0
 	},
 	"console":
 	{
 		"height": 139.0,
 		"history":
 		[
-			"import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404' + 'e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)",
 			"import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by) ",
 			"from ginn.framework import pclases",
 			"cd ginn",
@@ -329,15 +344,7 @@
 	},
 	"file_history":
 	[
-		"/home/queen/Geotexan/src/Geotex-INN/extra/scripts/mind_the_gap.py",
-		"/home/queen/.config/sublime-text-3/Packages/User/SublimeLinter.sublime-settings",
-		"/home/queen/Geotexan/src/Geotex-INN/db/baks_sql/20140203_qinn.backup",
-		"/home/queen/Geotexan/src/Geotex-INN/doc/sloccount_2007_01_16.txt",
-		"/home/queen/Geotexan/src/Geotex-INN/tests/20140201_0600_consumido.csv",
-		"/home/queen/Geotexan/src/Geotex-INN/db/20120510_ginn_geoserver.backup",
-		"/home/queen/Geotexan/src/Geotex-INN/ginn/formularios/ventana.py",
-		"/home/queen/Geotexan/src/Geotex-INN/ginn/formularios/ventana_progreso.py",
-		"/home/queen/Geotexan/src/Geotex-INN/ginn/framework/configuracion.py",
+		"/home/bogado/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/framework/launch_server.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/launcher.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/db/new_tablas.sql",
@@ -456,11 +463,19 @@
 		"/home/bogado/Geotexan/src/Geotex-INN/db/populate.sql",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_ventas_por_producto.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/db/tablas.sql",
-		"/home/bogado/Geotexan/doc/Sysadmin/Red/MACs_wifi.md"
+		"/home/bogado/Geotexan/doc/Sysadmin/Red/MACs_wifi.md",
+		"/tmp/test.erl",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/tipos_material.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/muestras_pendientes.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/tmp-cmd.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/tests/examples/parastyles.odt",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/tests/examples/emb_spreadsheet.odp",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/tests/examples/pythagoras.ods",
+		"/home/bogado/Geotexan/src/Geotex-INN/db/_tablas.sql"
 	],
 	"find":
 	{
-		"height": 23.0
+		"height": 35.0
 	},
 	"find_in_files":
 	{
@@ -571,7 +586,7 @@
 	"groups":
 	[
 		{
-			"selected": 3,
+			"selected": 4,
 			"sheets":
 			[
 				{
@@ -605,11 +620,140 @@
 						"translation.y": 17.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
 					"buffer": 1,
+					"file": "ginn/formularios/ventana_progreso.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 16505,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								13218,
+								13218
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1963.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "ginn/framework/configuracion.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 21749,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								21741,
+								21741
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 7650.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "ginn/formularios/ventana.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 54757,
+						"regions":
+						{
+							"bookmark_m":
+							{
+								"flags": 144,
+								"regions":
+								[
+									[
+										20523,
+										20523
+									]
+								]
+							}
+						},
+						"selection":
+						[
+							[
+								2434,
+								2434
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 339.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "extra/scripts/obras_huerfanas.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3785,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3743,
+								3743
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 969.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
 					"file": "ginn/main.py",
 					"semi_transient": false,
 					"settings":
@@ -621,27 +765,23 @@
 						"selection":
 						[
 							[
-								48,
-								48
+								417,
+								417
 							]
 						],
 						"settings":
 						{
-							"rulers":
-							[
-								80
-							],
-							"syntax": "Packages/Python/Python.tmLanguage"
+							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
+					"buffer": 6,
 					"file": "ginn/formularios/launcher.py",
 					"semi_transient": false,
 					"settings":
@@ -653,58 +793,21 @@
 						"selection":
 						[
 							[
-								4220,
-								4220
+								3664,
+								3664
 							]
 						],
 						"settings":
 						{
-							"rulers":
-							[
-								80
-							],
-							"syntax": "Packages/Python/Python.tmLanguage",
+							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
-						"translation.x": 0.0,
-						"translation.y": 653.0,
+						"translation.x": 248.0,
+						"translation.y": 1394.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "extra/scripts/20140701_cambio_rollos.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4595,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								959,
-								959
-							]
-						],
-						"settings":
-						{
-							"rulers":
-							[
-								80
-							],
-							"syntax": "Packages/Python/Python.tmLanguage",
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 180.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
+					"stack_index": 6,
 					"type": "text"
 				}
 			]
@@ -712,7 +815,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 23.0
+		"height": 34.0
 	},
 	"input":
 	{
@@ -741,10 +844,6 @@
 		]
 	},
 	"menu_visible": true,
-	"output.autopep8":
-	{
-		"height": 0.0
-	},
 	"output.exec":
 	{
 		"height": 112.0
@@ -760,7 +859,7 @@
 	"project": "geotexan.sublime-project",
 	"replace":
 	{
-		"height": 42.0
+		"height": 46.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -768,14 +867,6 @@
 		"height": 0.0,
 		"selected_items":
 		[
-			[
-				"mind_",
-				"extra/scripts/mind_the_gap.py"
-			],
-			[
-				"20140701",
-				"extra/scripts/20140701_cambio_rollos.py"
-			],
 			[
 				"main.py",
 				"ginn/main.py"
@@ -835,6 +926,10 @@
 			[
 				"tablas.sql",
 				"db/tablas.sql"
+			],
+			[
+				"mind_",
+				"extra/scripts/mind_the_gap.py"
 			],
 			[
 				"consulta_producipy",
