@@ -3550,9 +3550,9 @@ class AlbaranesDeSalida(Ventana):
             if modelobalas:
                 func_packinglist = geninformes.packingListBalas
             else:
-                func_packinglist = geninformes._packingListBalas
+                func_packinglist = geninformes.packingListEAN
         else:
-            func_packinglist = geninformes.oldPackingListBalas
+            func_packinglist = geninformes.PackingList
         for i in xrange(len(packing_lists)):
             titulopackinglist = "Packing list. Albarán %s" % (
                     self.objeto.numalbaran)

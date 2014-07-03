@@ -1384,7 +1384,7 @@ class AbonosVenta(Ventana):
         from formularios.reports import abrir_pdf as abrir_archivo_pdf
         self.guardar(None)  # Si se ha olvidado guardar, guardo yo.
         packings_generados = []
-        func_packinglist = geninformes._packingListBalas
+        func_packinglist = geninformes.packingListEAN
         for i in xrange(len(packing_lists)):
             nomarchivo = func_packinglist(packing_lists[i], i+1, 
                             titulo = "Packing list de abono %s" % (

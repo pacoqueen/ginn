@@ -7244,7 +7244,7 @@ def packingListBalas(datos, numpagina = 1, titulo = "Packing list"):
 
     return nomarchivo
 
-def oldPackingListBalas(datos, numpagina = 1, titulo = "Packing list"):
+def PackingList(datos, numpagina = 1, titulo = "Packing list"):
     """
     Imprime el packing list de una serie de balas.
     numpagina es el número de página del packing list.
@@ -7349,7 +7349,7 @@ def oldPackingListBalas(datos, numpagina = 1, titulo = "Packing list"):
 
     return nomarchivo
 
-def _packingListBalas(datos, numpagina = 1, titulo = "Packing list"):
+def packingListEAN(datos, numpagina = 1, titulo = "Packing list"):
     """
     Imprime el packing list de una serie de balas.
     numpagina es el número de página del packing list.

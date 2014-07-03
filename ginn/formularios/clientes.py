@@ -64,7 +64,7 @@ from formularios import pclase2tv
 from lib.myprint import myprint
 
 class Clientes(Ventana):
-    def __init__(self, objeto = None, usuario = None):
+    def __init__(self, objeto=None, usuario=None):
         """
         Constructor. objeto puede ser un objeto de pclases con el que
         comenzar la ventana (en lugar del primero de la tabla, que es
@@ -73,7 +73,7 @@ class Clientes(Ventana):
         self.usuario = usuario
         self._objetoreciencreado = None
         self.objeto = objeto
-        Ventana.__init__(self, 'clientes.glade', self.objeto, usuario = usuario)
+        Ventana.__init__(self, 'clientes.glade', self.objeto, usuario=usuario)
         if self.objeto and not isinstance(self.objeto, pclases.Cliente):
             # Intento su ID o PUID
             try:
@@ -85,7 +85,7 @@ class Clientes(Ventana):
                     try:
                         self.objeto = pclases.Cliente.select(
                             pclases.Cliente.q.nombre.contains(self.objeto), 
-                            orderBy = "id")[0]
+                            orderBy="id")[0]
                     except IndexError:
                         self.objeto = None
         connections = {'b_salir/clicked': self.salir,
@@ -130,21 +130,21 @@ class Clientes(Ventana):
         if not self.objeto:
             self.ir_a_primero()
         else:
-            self.ir_a(self.objeto, deep_refresh = False)
+            self.ir_a(self.objeto, deep_refresh=False)
         self.add_connections(connections)
         gtk.main()
 
-    def anterior(self, boton = None):
+    def anterior(self, boton=None):
         if self.objeto:
             orden = utils.combo_get_value(self.wids['cb_orden'])
             if orden == "Orden cronológico":
                 clientes = pclases.Cliente.select(
                         pclases.Cliente.q.id < self.objeto.id, 
-                        orderBy = "-id")
+                        orderBy="-id")
             elif orden == "Orden alfabético": 
                 clientes = pclases.Cliente.select(
                         pclases.Cliente.q.nombre < self.objeto.nombre, 
-                        orderBy = "-nombre")
+                        orderBy="-nombre")
             try:
                 anterior = clientes[0]
             except IndexError:
@@ -153,21 +153,21 @@ class Clientes(Ventana):
                 self.objeto = anterior
                 self.actualizar_ventana()
             else:
-                utils.dialogo_info(titulo = "NO HAY MÁS CLIENTES", 
-                        texto = "No hay clientes anteriores al actual.", 
-                        padre = self.wids['ventana'])
+                utils.dialogo_info(titulo="NO HAY MÁS CLIENTES", 
+                        texto="No hay clientes anteriores al actual.", 
+                        padre=self.wids['ventana'])
 
-    def siguiente(self, boton = None):
+    def siguiente(self, boton=None):
         if self.objeto:
             orden = utils.combo_get_value(self.wids['cb_orden'])
             if orden == "Orden cronológico":
                 clientes = pclases.Cliente.select(
                         pclases.Cliente.q.id > self.objeto.id, 
-                        orderBy = "id")
+                        orderBy="id")
             elif orden == "Orden alfabético": 
                 clientes = pclases.Cliente.select(
                         pclases.Cliente.q.nombre > self.objeto.nombre, 
-                        orderBy = "nombre")
+                        orderBy="nombre")
             try:
                 siguiente = clientes[0]
             except IndexError:
@@ -176,11 +176,11 @@ class Clientes(Ventana):
                 self.objeto = siguiente
                 self.actualizar_ventana()
             else:
-                utils.dialogo_info(titulo = "NO HAY MÁS CLIENTES", 
-                        texto = "No hay clientes posteriores al actual.", 
-                        padre = self.wids['ventana'])
+                utils.dialogo_info(titulo="NO HAY MÁS CLIENTES", 
+                        texto="No hay clientes posteriores al actual.", 
+                        padre=self.wids['ventana'])
 
-    def copiar_correspondencia(self, boton = None):
+    def copiar_correspondencia(self, boton=None):
         """Copia al portapapeles la dirección de correspondencia del cliente
         en pantalla.
         """
@@ -193,7 +193,7 @@ class Clientes(Ventana):
                                self.objeto.pais))
         copy_to_clipboard(direccion)
 
-    def copiar_fiscal(self, boton = None):
+    def copiar_fiscal(self, boton=None):
         """Copia al portapapeles la dirección fiscal completa del cliente 
         en pantalla.
         """
@@ -214,11 +214,11 @@ class Clientes(Ventana):
         sel = self.wids['tv_contactos'].get_selection()
         model, iters = sel.get_selected_rows()
         if not iters:
-            utils.dialogo_info(titulo = "SELECCIONE CONTACTO", 
-                texto = "Debe seleccionar al menos un contacto \n"
+            utils.dialogo_info(titulo="SELECCIONE CONTACTO", 
+                texto="Debe seleccionar al menos un contacto \n"
                         "para hacerlo global a todas las obras \n"
                         "del cliente.", 
-                padre = self.wids['ventana'])
+                padre=self.wids['ventana'])
         else:
             for itr in iters:
                 copiadas = 0
@@ -228,9 +228,9 @@ class Clientes(Ventana):
                     if contacto not in obra.contactos:
                         obra.addContacto(contacto)
                         copiadas += 1
-            utils.dialogo_info(titulo = "CONTACTO COPIADO", 
-                texto = "El contacto se copió a %d obras." % copiadas, 
-                padre = self.wids['ventana'])
+            utils.dialogo_info(titulo="CONTACTO COPIADO", 
+                texto="El contacto se copió a %d obras." % copiadas, 
+                padre=self.wids['ventana'])
             # No hace falta recargar. Cuando mueva el cursor lo verá, y en la 
             # obra actual ya estaba, así que lo sigue viendo.
 
@@ -247,19 +247,19 @@ class Clientes(Ventana):
         sel = self.wids['tv_obras'].get_selection()
         model, iters = sel.get_selected_rows()
         if not iters or len(iters) < 2:
-            utils.dialogo_info(titulo = "SELECCIONE OBRA", 
-                texto = "Debe seleccionar dos o más obras.", 
-                padre = self.wids['ventana'])
+            utils.dialogo_info(titulo="SELECCIONE OBRA", 
+                texto="Debe seleccionar dos o más obras.", 
+                padre=self.wids['ventana'])
         else:
             obras = [pclases.Obra.get(model[itr][-1]) for itr in iters]
             ops = [(o.id, o.get_str_obra()) for o in obras]
-            buena = utils.dialogo_combo(titulo = "SELECCIONE OBRA", 
-                texto = "Seleccione la obra base.\n"\
-                        "El resto de obras se eliminarán y sus facturas,\n"\
-                        "contactos, pedidos y abonos pasarán a la que \n"\
-                        "seleccione en el desplegable inferior.", 
-                padre = self.wids['ventana'], 
-                ops = ops)
+            buena = utils.dialogo_combo(titulo="SELECCIONE OBRA", 
+                texto="Seleccione la obra base.\n"\
+                      "El resto de obras se eliminarán y sus facturas,\n"\
+                      "contactos, pedidos y abonos pasarán a la que \n"\
+                      "seleccione en el desplegable inferior.", 
+                padre=self.wids['ventana'], 
+                ops=ops)
             if not buena:
                 return
             buena = pclases.Obra.get(buena)
@@ -276,7 +276,7 @@ class Clientes(Ventana):
                     abono.obra = buena
                 mala.removeCliente(self.objeto)
                 try:
-                    mala.destroy(ventana = __file__)
+                    mala.destroy(ventana=__file__)
                 except: # Queda algún cliente relacionado con la obra. No 
                         # la termino de eliminar.
                     pass
@@ -291,10 +291,10 @@ class Clientes(Ventana):
         sel = self.wids['tv_obras'].get_selection()
         model, iters = sel.get_selected_rows()
         if not iters:
-            utils.dialogo_info(titulo = "SELECCIONE OBRA", 
-                texto = "Debe seleccionar al menos una obra con la que\n"
-                        "relacionar el nuevo contacto.", 
-                padre = self.wids['ventana'])
+            utils.dialogo_info(titulo="SELECCIONE OBRA", 
+                texto="Debe seleccionar al menos una obra con la que\n"
+                      "relacionar el nuevo contacto.", 
+                padre=self.wids['ventana'])
         else:
             nombre = utils.dialogo_entrada(titulo = "NOMBRE", 
                 texto = "Introduzca el nombre -sin apellidos- del "
@@ -436,10 +436,15 @@ class Clientes(Ventana):
         for itr in iters:
             ide = model[itr][-1]
             obra = pclases.Obra.get(ide)
-            if obra.facturasVenta or obra.pedidosVenta:
-                strfras = ", ".join([f.numfactura for f in obra.facturasVenta])
+            obra.sync()
+            facturas_del_cliente = [f for f in obra.facturasVenta
+                                    if f.cliente == self.objeto]
+            pedidos_del_cliente = [p for p in obra.pedidosVenta
+                                   if p.cliente == self.objeto]
+            if facturas_del_cliente or pedidos_del_cliente:
+                strfras = ", ".join([f.numfactura for f in facturas_del_cliente])
                 strfras += "\n"
-                strfras += ", ".join([p.numpedido for p in obra.pedidosVenta])
+                strfras += ", ".join([p.numpedido for p in pedidos_del_cliente])
                 ans = utils.dialogo(titulo = "OBRA IMPLICADA EN FACTURACIÓN", 
                     texto = "La obra está relacionada con los siguientes "\
                         "pedidos y facturas:\n%s\n\n"
@@ -458,23 +463,25 @@ class Clientes(Ventana):
                         ops = [(o.id, o.nombre) for o 
                                in pclases.Obra.select(orderBy = "nombre")])
                     if id_nueva_obra:
-                        fras_de_la_obra = (len(obra.facturasVenta) 
-                                           + len(obra.pedidosVenta))
-                        fras_cambiadas = 0
+                        fras_o_peds = (len(facturas_del_cliente) 
+                                       + len(pedidos_del_cliente))
+                        fropeds_cambiados = 0
                         nueva_obra = pclases.Obra.get(id_nueva_obra)
-                        for fra in obra.facturasVenta[:]+obra.pedidosVenta[:]:
+                        for froped in (facturas_del_cliente 
+                                       + pedidos_del_cliente):
                             try:
-                                bloqueada = fra.bloqueada
+                                bloqueada = froped.bloqueada
                             except AttributeError:
-                                bloqueada = fra.bloqueado
+                                bloqueada = froped.bloqueado
                             if (not bloqueada 
                                 or (self.usuario and self.usuario.nivel <= 3)):
-                                fra.obra = nueva_obra
-                                fra.sync()
-                                fras_cambiadas += 1
-                        texto_dialogo = "Se reasignaron %d de %d facturas." % (
-                            fras_cambiadas, fras_de_la_obra)
-                        if fras_cambiadas == fras_de_la_obra:
+                                froped.obra = nueva_obra
+                                froped.sync()
+                                fropeds_cambiados += 1
+                        texto_dialogo = "Se reasignaron %d de %d facturas"\
+                                        " y pedidos." % (
+                            fropeds_cambiados, fras_o_peds)
+                        if fropeds_cambiados == fras_o_peds:
                             texto_dialogo += \
                                 "\nTrate ahora de eliminar la obra."
                         else:
@@ -486,21 +493,25 @@ class Clientes(Ventana):
                                            padre = self.wids['ventana'])
             else:
                 obra.removeCliente(self.objeto)
-                contactos = obra.contactos[:]
-                for c in contactos:
-                    obra.removeContacto(c)
-                try:
-                    obra.destroy(ventana = __file__)
-                except Exception, msg:
-                    obra.addCliente(self.objeto)
+                se_borro_algo = True
+                obra.sync()
+                if not obra.clientes:   # Si esta obra no pertenece a ningún
+                    # cliente más, entonces trato de eliminarla por completo.
+                    contactos = obra.contactos[:]
                     for c in contactos:
-                        obra.addContacto(c)
-                    utils.dialogo_info(titulo = "OBRA NO SE PUDO BORRAR", 
-                        texto = "No fue posible eliminar la obra.\n\n"
-                                "Información de depuración:\n%s" % msg, 
-                        padre = self.wids['ventana'])
-                else:
-                    se_borro_algo = True
+                        obra.removeContacto(c)
+                    try:
+                        obra.destroy(ventana=__file__)
+                    except Exception, msg:
+                        obra.addCliente(self.objeto)
+                        for c in contactos:
+                            obra.addContacto(c)
+                        utils.dialogo_info(titulo="OBRA NO SE PUDO BORRAR",
+                            texto="No fue posible eliminar la obra.\n\n"
+                                  "Información de depuración:\n%s" % msg,
+                            padre=self.wids['ventana'])
+                    else:
+                        se_borro_algo = True
         if se_borro_algo:
             self.rellenar_obras()
 
