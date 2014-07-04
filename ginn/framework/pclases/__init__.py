@@ -21391,7 +21391,10 @@ def unificar(bueno, malos, borrar_despues = True):
     Si borrar_despues es Verdadero, elimina los malos después de haber
     unificado.
     Se comprueba que todos los objetos sean de la misma clase de pclases.
+    OJO: No funciona para objetos con relaciones muchos a muchos.
     """
+    if not isinstance(malos, (list, tuple)):
+        malos = [malos]
     for malo in malos:
         assert malo.__class__ == bueno.__class__
     assert bueno not in malos
@@ -21404,7 +21407,7 @@ def unificar(bueno, malos, borrar_despues = True):
         for join in malo.sqlmeta.joins:
             lista = join.joinMethodName
             for dependiente in getattr(malo, lista):
-                for col in dependiente._SO_columns:
+                for col in dependiente.sqlmeta.columnList:
                     if (isinstance(col, SOForeignKey)
                         and col.foreignKey == nombreclase):
                         clave_ajena = col.name

@@ -64,7 +64,9 @@ from ventana_progreso import VentanaActividad, VentanaProgreso
 import pango
 import re
 from formularios import reports
-       
+import datetime
+
+
 def verificar_solapamiento(partedeproduccion, padre = None, 
                            fecha_anterior = None, horaini_anterior = None, 
                            horafin_anterior = None):
@@ -1520,21 +1522,31 @@ class PartesDeFabricacionBalas(Ventana):
                                                              minute = int(newtext.split(":")[1]))
             if (incidencia.horafin - incidencia.horainicio).days > 1:
                 incidencia.horainicio + mx.DateTime.oneDay
-            while incidencia.horainicio < self.objeto.fechahorainicio: # El parte está en la franja de medianoche y la incidencia comienza después de las 12.
+            while incidencia.horainicio < self.objeto.fechahorainicio: # El
+                # parte está en la franja de medianoche y la incidencia
+                # comienza después de las 12.
                 try:
-                    incidencia.horainicio += mx.DateTime.oneDay   # Debe llevar la fecha del día siguiente.
+                    incidencia.horainicio += mx.DateTime.oneDay   # Debe llevar
+                                                # la fecha del día siguiente.
                     incidencia.horafin += mx.DateTime.oneDay
                 except TypeError:   # Es un datetime
                     incidencia.horainicio += datetime.timedelta(1)
                     incidencia.horafin += datetime.timedelta(1)
         except (ValueError, IndexError):
-            utils.dialogo_info('HORA INCORRECTA', 'La fecha y hora deben respetar el formato inicial.\nSe va a reestablecer el valor antiguo,\na continuación trate de editar este valor conservando su formato.', padre = self.wids['ventana'])
+            utils.dialogo_info('HORA INCORRECTA',
+                               'La fecha y hora deben respetar el formato '
+                               'inicial.\nSe va a reestablecer el valor '
+                               'antiguo,\na continuación trate de editar este'
+                               ' valor conservando su formato.',
+                               padre = self.wids['ventana'])
             return
-        if incidencia.horainicio > incidencia.horafin:      # NOTA: No va a entrar nunca. Por ejemplo, 12:00 no es menor que 11:00, ya que 
-                                                            # las 11:00 _son del día siguiente_ cuando llega aquí, tal vez debiera mejor 
-                                                            # controlar que ninguna parada sea de más de 8 horas o algo así. O de más 
-                                                            # duración del parte... o algo.
-            incidencia.horainicio, incidencia.horafin = incidencia.horafin, incidencia.horainicio
+        if incidencia.horainicio > incidencia.horafin:      # NOTA: No va a
+            # entrar nunca. Por ejemplo, 12:00 no es menor que 11:00, ya que 
+            # las 11:00 _son del día siguiente_ cuando llega aquí, tal vez
+            # debiera mejor controlar que ninguna parada sea de más de 8 horas
+            # o algo así. O de más duración del parte... o algo.
+            (incidencia.horainicio,
+             incidencia.horafin) = (incidencia.horafin, incidencia.horainicio)
         self.rellenar_tabla_balas()
         
     def cambiar_fin_incidencia(self, cell, path, newtext):
@@ -1545,21 +1557,35 @@ class PartesDeFabricacionBalas(Ventana):
         incidencia = pclases.Incidencia.get(ide)
         self.objeto.sync()
         try:
-            incidencia.horafin = mx.DateTime.DateTimeFrom(day = self.objeto.fecha.day, 
-                                                          month = self.objeto.fecha.month, 
-                                                          year = self.objeto.fecha.year, 
-                                                          hour = int(newtext.split(":")[0]), 
-                                                          minute = int(newtext.split(":")[1]))
+            incidencia.horafin = mx.DateTime.DateTimeFrom(
+                    day = self.objeto.fecha.day, 
+                    month = self.objeto.fecha.month, 
+                    year = self.objeto.fecha.year, 
+                    hour = int(newtext.split(":")[0]), 
+                    minute = int(newtext.split(":")[1]))
             if (incidencia.horafin - incidencia.horainicio).days < 0:
                 incidencia.horafin += mx.DateTime.oneDay
-            while incidencia.horainicio < self.objeto.fechahorainicio: # El parte está en la franja de medianoche y la incidencia comienza después de las 12.
-                incidencia.horainicio += mx.DateTime.oneDay   # Debe llevar la fecha del día siguiente.
-                incidencia.horafin += mx.DateTime.oneDay
+            while incidencia.horainicio < self.objeto.fechahorainicio: # El
+                # parte está en la franja de medianoche y la incidencia
+                # comienza después de las 12.
+                try:
+                    incidencia.horainicio += mx.DateTime.oneDay   # Debe llevar
+                    incidencia.horafin += mx.DateTime.oneDay    # la fecha del
+                                                                # día siguiente
+                except TypeError:   # Es un datetime
+                    incidencia.horainicio += datetime.timedelta(1)
+                    incidencia.horafin += datetime.timedelta(1)
         except (ValueError, IndexError):
-            utils.dialogo_info('HORA INCORRECTA', 'La fecha y hora deben respetar el formato inicial.\nSe va a reestablecer el valor antiguo,\na continuación trate de editar este valor conservando su formato.', padre = self.wids['ventana'])
+            utils.dialogo_info('HORA INCORRECTA',
+                               'La fecha y hora deben respetar el formato'
+                               ' inicial.\nSe va a reestablecer el valor '
+                               'antiguo,\na continuación trate de editar este'
+                               ' valor conservando su formato.',
+                               padre = self.wids['ventana'])
             return
         if incidencia.horainicio > incidencia.horafin:
-            incidencia.horainicio, incidencia.horafin = incidencia.horafin, incidencia.horainicio
+            (incidencia.horainicio,
+             incidencia.horafin) = incidencia.horafin, incidencia.horainicio
         self.rellenar_tabla_balas()
 
     def crear_nuevo_partedeproduccion(self, widget):
@@ -1572,7 +1598,10 @@ class PartesDeFabricacionBalas(Ventana):
         """
         partedeproduccion = self.objeto
             # Datos a pedir: Ninguno. Lo planto todo con valores por defecto y listo.
-        if not utils.dialogo('Se creará un nuevo parte de producción vacío.', 'NUEVO PARTE', padre = self.wids['ventana']): return
+        if not utils.dialogo('Se creará un nuevo parte de producción vacío.',
+                             'NUEVO PARTE',
+                             padre = self.wids['ventana']):
+            return
         if partedeproduccion != None:
             partedeproduccion.notificador.desactivar()
         horainicio = time.struct_time(time.localtime()[:4]+(0,0)+time.localtime()[6:])
