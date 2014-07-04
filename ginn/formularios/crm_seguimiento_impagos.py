@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          (pacoqueen@users.sourceforge.net)                  #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
@@ -457,7 +457,7 @@ class CRM_SeguimientoImpagos(Ventana):
                 padre = self.wids['ventana'])
             if provincia == None:
                 return None
-            # De fecha de inicio, fecha de fin de obra y observacione pasamos 
+            # De fecha de inicio, fecha de fin de obra y observaciones pasamos 
             # a este nivel. Eso se afina en la ventana de obras.
             obra = pclases.Obra(nombre = nombre, direccion = direccion, 
                     cp = cp, ciudad = ciudad, provincia = provincia, 

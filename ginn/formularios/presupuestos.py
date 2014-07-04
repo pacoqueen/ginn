@@ -194,6 +194,8 @@ class Presupuestos(Ventana, VentanaGenerica):
                       }
         self.add_connections(connections)
         self.inicializar_ventana()
+        self.wids['cbe_obra'].child.connect("focus-out-event",
+                                            self.assert_nombre_obra)
         if self.objeto == None:
             self.ir_a_primero_de_los_mios()
         else:
@@ -201,6 +203,24 @@ class Presupuestos(Ventana, VentanaGenerica):
         #if self.usuario and self.usuario.nivel >= 4:
         #    self.activar_widgets(False) # Para evitar manos rápidas al abrir.
         gtk.main()
+
+    def assert_nombre_obra(self, widget, event):
+        widget.set_progress_fraction(0.1)
+        nombre_obra = widget.get_text()
+        nombre_obra = utils.eliminar_dobles_espacios(nombre_obra.strip())
+        # Y ahora busco en la base de datos a ver si hay algo parecido...
+        obras = pclases.Obra.select(orderBy = "nombre")
+        delta = (1.0 - 0.1) / obras.count()
+        for o in obras:
+            widget.set_progress_fraction(widget.get_progress_fraction() 
+                                         + delta)
+            while gtk.events_pending():
+                gtk.main_iteration(False)
+            if o.nombre.upper().strip() == nombre_obra.upper():
+                nombre_obra = o.nombre
+        widget.set_progress_fraction(1.0)
+        widget.set_text(nombre_obra)
+        widget.set_progress_fraction(0.0)
 
     def actualizar_dc(self, entry_llamante):
         ent = self.wids['e_cred_entidad'].get_text()

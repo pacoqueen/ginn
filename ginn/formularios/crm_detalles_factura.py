@@ -634,7 +634,7 @@ class CRM_DetallesFactura(Ventana):
                 padre = self.wids['ventana'])
             if provincia == None:
                 return None
-            # De fecha de inicio, fecha de fin de obra y observacione pasamos a 
+            # De fecha de inicio, fecha de fin de obra y observacione pasamos a
             # este nivel. Eso se afina en la ventana de obras.
             obra = pclases.Obra(nombre = nombre, direccion = direccion, 
                     cp = cp, ciudad = ciudad, provincia = provincia, 
