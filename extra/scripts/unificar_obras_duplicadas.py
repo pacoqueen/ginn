@@ -135,24 +135,30 @@ def report(cambiadas, unificadas):
     Saca por pantalla un listado de nombres de obra corregidos y obras
     unificadas.
     """
-    print "Nombres de obra corregidos"
-    print "=========================="
+    out = open("unificar_obras_duplicadas.txt", 'w')
+    out.write("Nombres de obra corregidos\n")
+    out.write("==========================\n")
     for anterior, nuevo in cambiadas:
-        print "%s -> %s" % (anterior, nuevo.nombre)
-    print 
-    print "%d nombres de obra cambiados." % len(cambiadas)
-    print
-    print "*" * 79
-    print
-    print "Obras unificadas"
-    print "================"
+        out.write("%s -> %s\n" % (anterior, nuevo.nombre))
+    out.write("\n")
+    out.write("%d nombres de obra cambiados.\n" % len(cambiadas))
+    out.write("\n")
+    out.write(("*" * 79) + "\n")
+    out.write("\n")
+    out.write("Obras unificadas\n")
+    out.write("================\n")
     for obra in unificadas:
-        print "%s (%d obras unificadas):" % (obra.nombre, len(unificadas[obra]))
-        print "\t%s <- (%s)" % (obra.puid, "; ".join(unificadas[obra]))
-    print 
-    print "%d obras unificadas en total." % sum(
-            [len(unificadas[o]) for o in unificadas])
-
+        out.write("%s (%d obras unificadas):\n" % (obra.nombre,
+                                                   len(unificadas[obra])))
+        out.write("\t%s <- (%s)\n" % (obra.puid, "; ".join(unificadas[obra])))
+    out.write("\n")
+    out.write("%d obras unificadas en total.\n" % sum(
+        [len(unificadas[o]) for o in unificadas]))
+    out.close()
+    out = open("unificar_obras_duplicadas.txt", "r")
+    for linea in out.readlines():
+        print linea,
+    out.close()
 
 def main():
     """
