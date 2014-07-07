@@ -1624,7 +1624,10 @@ class Clientes(Ventana):
         except AttributeError:
             doc_from_db = None
         if (doc_from_db 
-              and doc_from_db.upper() == self.objeto.documentodepago.upper()):
+              and doc_from_db.upper() == self.objeto.documentodepago.upper()
+              # Y efectivamente no son iguales. Porque si ya los son, ¿para qué
+              # actualizarla y malgastar espacio en la tabla de auditoría?
+              and doc_from_db != self.objeto.documentodepago):
             self.objeto.documentodepago = doc_from_db
             self.objeto.syncUpdate()
             self.wids['e_documentodepago'].set_text(
@@ -1685,9 +1688,11 @@ class Clientes(Ventana):
             model = self.wids['tv_cuentas'].get_model()
             model.clear()
             cuentas = self.objeto.cuentasBancariasCliente[:]
-            cuentas.sort(lambda c1, c2: (c1.id < c2.id and -1) or (c1.id > c2.id and 1) or 0)
+            cuentas.sort(lambda c1, c2:
+                    (c1.id < c2.id and -1) or (c1.id > c2.id and 1) or 0)
             for c in cuentas:
-                model.append((c.banco, c.swif, c.iban, c.cuenta, c.observaciones, c.id))
+                model.append((c.banco, c.swif, c.iban, c.cuenta,
+                              c.observaciones, c.id))
 
     def add_cuenta(self, boton):
         """
@@ -1695,8 +1700,8 @@ class Clientes(Ventana):
         """
         if self.objeto != None:
             c = pclases.CuentaBancariaCliente(clienteID = self.objeto.id, 
-                                              banco = "Nueva cuenta bancaria", 
-                                              observaciones = "Introduzca la información de la cuenta.")
+                    banco = "Nueva cuenta bancaria", 
+                    observaciones = "Introduzca la información de la cuenta.")
             pclases.Auditoria.nuevo(c, self.usuario, __file__)
             self.rellenar_cuentas()
 
@@ -1704,10 +1709,13 @@ class Clientes(Ventana):
         """
         Elimina la(s) cuenta(s) seleccionadas.
         """
-        model, paths = self.wids['tv_cuentas'].get_selection().get_selected_rows()
-        if  paths != None and paths != [] and utils.dialogo(titulo = "¿BORRAR CUENTAS SELECCIONADAS?", 
-                                                            texto = "¿Está seguro de que desea eliminar las cuentas seleccionadas?", 
-                                                            padre = self.wids['ventana']):
+        treeview = self.wids['tv_cuentas']
+        model, paths = treeview.get_selection().get_selected_rows()
+        if  paths != None and paths != [] and utils.dialogo(
+                titulo = "¿BORRAR CUENTAS SELECCIONADAS?", 
+                texto = "¿Está seguro de que desea eliminar las cuentas"
+                        " seleccionadas?", 
+                padre = self.wids['ventana']):
             for path in paths:
                 ide = model[path][-1]
                 c = pclases.CuentaBancariaCliente.get(ide)
@@ -1801,49 +1809,49 @@ class Clientes(Ventana):
                 cliente.notificador.set_func(lambda : None)
             tarifa_por_defecto = pclases.Tarifa.get_tarifa_defecto()
             tipo_defecto = pclases.TipoDeCliente.get_por_defecto()
-            self.objeto = pclases.Cliente(nombre = nombre,
-                                          tarifa = tarifa_por_defecto,
-                                          contadorID = None,
-                                          telefono = '',
-                                          cif = 'PENDIENTE',
-                                          direccion = '',
-                                          pais = '',
-                                          ciudad = '',
-                                          provincia = '',
-                                          cp = '',
-                                          vencimientos = '180 D.F.F.',
-                                          iva = 0.21,
-                                          direccionfacturacion = '',
-                                          nombref = '',
-                                          paisfacturacion = '',
-                                          ciudadfacturacion = '',
-                                          provinciafacturacion = '',
-                                          cpfacturacion = '',
-                                          email = '',
-                                          contacto = '',
-                                          observaciones = '',
-                                          documentodepago = 'Pagaré a la orden',
-                                          diadepago = '25',
-                                          formadepago = '180 D.F.F.',
-                                          inhabilitado = False, 
-                                          porcentaje = 0.0, 
-                                          clienteID = None, 
-                                          enviarCorreoAlbaran = False, 
-                                          enviarCorreoFactura = False, 
-                                          enviarCorreoPacking = False, 
-                                          fax = '', 
-                                          packingListConCodigo = False, 
-                                          facturarConAlbaran = True, 
-                                          tipoDeCliente = tipo_defecto)
+            self.objeto = pclases.Cliente(nombre=nombre,
+                                          tarifa=tarifa_por_defecto,
+                                          contadorID=None,
+                                          telefono='',
+                                          cif='PENDIENTE',
+                                          direccion='',
+                                          pais='',
+                                          ciudad='',
+                                          provincia='',
+                                          cp='',
+                                          vencimientos='180 D.F.F.',
+                                          iva=0.21,
+                                          direccionfacturacion='',
+                                          nombref='',
+                                          paisfacturacion='',
+                                          ciudadfacturacion='',
+                                          provinciafacturacion='',
+                                          cpfacturacion='',
+                                          email='',
+                                          contacto='',
+                                          observaciones='',
+                                          documentodepago='Pagaré a la orden',
+                                          diadepago='25',
+                                          formadepago='180 D.F.F.',
+                                          inhabilitado=False, 
+                                          porcentaje=0.0, 
+                                          clienteID=None, 
+                                          enviarCorreoAlbaran=False, 
+                                          enviarCorreoFactura=False, 
+                                          enviarCorreoPacking=False, 
+                                          fax='', 
+                                          packingListConCodigo=False, 
+                                          facturarConAlbaran=True, 
+                                          tipoDeCliente=tipo_defecto)
             pclases.Auditoria.nuevo(self.objeto, self.usuario, __file__)
             self._objetoreciencreado = self.objeto
             self.objeto.notificador.set_func(self.aviso_actualizacion)
-            self.actualizar_ventana(objeto_anterior = anterior, 
-                                    deep_refresh = False)
+            self.actualizar_ventana(objeto_anterior=anterior, 
+                                    deep_refresh=False)
             check_presupuestos_sin_cliente(self.objeto, self.wids['ventana'])
-            utils.dialogo_info(titulo = 'CLIENTE CREADO', 
-                texto = 'Inserte el resto de la información del cliente.', 
-                padre = self.wids['ventana'])
+            utils.dialogo_info(titulo='CLIENTE CREADO', 
+                texto='Inserte el resto de la información del cliente.', 
+                padre=self.wids['ventana'])
 
     def buscar_cliente(self, widget):
         """
@@ -1981,12 +1989,12 @@ class Clientes(Ventana):
         # CWT: Chequeo que tenga CIF, y si no lo tiene, lo pido por 
         #      diálogo ad eternum.
         while utils.parse_cif(cliente.cif) == "":
-            cliente.cif = utils.dialogo_entrada(texto = "El CIF del cliente "
+            cliente.cif = utils.dialogo_entrada(texto="El CIF del cliente "
                             "no puede estar en blanco ni tener el valor «%s»"
                             ".\nEs un campo obligatorio.\nIntroduzca un CIF c"
                             "orrecto:" % cliente.cif,
-                            titulo = "CIF",
-                            padre = self.wids['ventana'])
+                            titulo="CIF",
+                            padre=self.wids['ventana'])
             if cliente.cif == None:
                 cliente.cif = bakcif
                 break
@@ -2050,10 +2058,12 @@ class Clientes(Ventana):
         """
         cliente = self.objeto
         if cliente != None:
-            if utils.dialogo('¿Está seguro de eliminar el cliente actual?', 'BORRAR CLIENTE'):
+            if utils.dialogo('¿Está seguro de eliminar el cliente actual?',
+                             'BORRAR CLIENTE',
+                             padre = self.wids['ventana']):
                 cliente.notificador.set_func(lambda : None)
                 try:
-                    cliente.destroy(ventana = __file__)
+                    cliente.destroy(ventana=__file__)
                     self.ir_a_primero()
                 except:
                     txt = """
@@ -2063,7 +2073,8 @@ class Clientes(Ventana):
                     Los pedidos relacionados son: 
                     """
                     for p in cliente.pedidosVenta:
-                        txt += "Pedido número %s. Fecha %s.\n" % (p.numpedido, p.fecha.strftime('%d/%m/%y'))
+                        txt += "Pedido número %s. Fecha %s.\n" % (
+                                p.numpedido, p.fecha.strftime('%d/%m/%y'))
                     utils.dialogo_info(titulo = 'ERROR: NO SE PUDO BORRAR',
                                        texto = txt, 
                                        padre = self.wids['ventana'])
@@ -2089,7 +2100,9 @@ class Clientes(Ventana):
                                            func_change = self.abrir_pedido)
         if idpedido > 0:
             from formularios import pedidos_de_venta
-            p = pedidos_de_venta.PedidosDeVenta(pclases.PedidoVenta.get(idpedido), usuario = self.usuario)
+            p = pedidos_de_venta.PedidosDeVenta(
+                    pclases.PedidoVenta.get(idpedido),
+                    usuario = self.usuario)
     
     def ver_pedidos(self, boton):
         """
@@ -2110,14 +2123,23 @@ class Clientes(Ventana):
         cliente = self.objeto
         if cliente == None:
             return
-        presupuestos = [(p.id, utils.str_fecha(p.fecha), p.nombrecliente, p.personaContacto, ", ".join([pedido.numpedido for pedido in p.get_pedidos()])) for p in cliente.presupuestos]
+        presupuestos = [(p.id,
+                         utils.str_fecha(p.fecha),
+                         p.nombrecliente,
+                         p.personaContacto,
+                         ", ".join([pedido.numpedido
+                                    for pedido in p.get_pedidos()]))
+                        for p in cliente.presupuestos]
         idpresupuesto = utils.dialogo_resultado(presupuestos, 
-                                                'OFERTAS HECHAS AL CLIENTE %s' % (cliente.nombre),
-                                                cabeceras = ('ID', 'Fecha', "Cliente final", "Contacto", "Pedidos relacionados"), 
-                                                padre = self.wids['ventana'])
+                            'OFERTAS HECHAS AL CLIENTE %s' % (cliente.nombre),
+                            cabeceras = ('ID', 'Fecha', "Cliente final",
+                                         "Contacto", "Pedidos relacionados"), 
+                            padre = self.wids['ventana'])
         if idpresupuesto > 0:
             from formularios import presupuestos
-            p = presupuestos.Presupuestos(objeto = pclases.Presupuesto.get(idpresupuesto), usuario = self.usuario)
+            p = presupuestos.Presupuestos(
+                    objeto = pclases.Presupuesto.get(idpresupuesto),
+                    usuario = self.usuario)
         
     def ver_productos(self, boton):
         from formularios import consulta_productos_comprados
@@ -2167,14 +2189,18 @@ class Clientes(Ventana):
                 producto = pclases.ProductoVenta.get(idproducto.split(":")[1])
                 if producto.es_rollo():
                     from formularios import productos_de_venta_rollos
-                    ventana_producto = productos_de_venta_rollos.ProductosDeVentaRollos(producto, usuario = self.usuario)  # @UnusedVariable
+                    NewWin = productos_de_venta_rollos.ProductosDeVentaRollos
                 elif producto.es_bala() or producto.es_bigbag():
                     from formularios import productos_de_venta_balas
-                    ventana_producto = productos_de_venta_balas.ProductosDeVentaBalas(producto, usuario = self.usuario)  # @UnusedVariable
+                    NewWin = productos_de_venta_balas.ProductosDeVentaBalas
             elif "PC" in idproducto:
                 producto = pclases.ProductoCompra.get(idproducto.split(":")[1])
                 from formularios import productos_compra
-                ventana_producto = productos_compra.ProductosCompra(producto, usuario = self.usuario)  # @UnusedVariable
+                NewWin = productos_compra.ProductosCompra
+            else:
+                NewWin = None
+            if NewWin:
+                ventana_producto = NewWin(producto, usuario=self.usuario)
 
     def crear_nuevo_contador(self,boton):
         """

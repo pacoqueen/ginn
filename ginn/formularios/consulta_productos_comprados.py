@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -76,7 +76,7 @@ class ConsultaProductosComprados(Ventana):
         self.wids['tv_datos'].connect("row-activated", self.abrir_producto)
         temp = time.localtime()
         self.fin = str(temp[0])+'/'+str(temp[1])+'/'+str(temp[2])
-        self.wids['e_fechafin'].set_text(utils.str_fecha(temp))
+        self.wids['e_fecha_fin'].set_text(utils.str_fecha(temp))
         if objeto != None:
             utils.combo_set_from_db(self.wids["cmbe_cliente"], objeto.id)
             self.wids["b_buscar"].clicked()
@@ -149,12 +149,12 @@ class ConsultaProductosComprados(Ventana):
 
     def set_inicio(self, boton):
         temp = utils.mostrar_calendario(padre = self.wids['ventana'])
-        self.wids['e_fechainicio'].set_text(utils.str_fecha(temp))
+        self.wids['e_fecha_inicio'].set_text(utils.str_fecha(temp))
         self.inicio = str(temp[2])+'/'+str(temp[1])+'/'+str(temp[0])
 
     def set_fin(self, boton):
         temp = utils.mostrar_calendario(padre = self.wids['ventana'])
-        self.wids['e_fechafin'].set_text(utils.str_fecha(temp))
+        self.wids['e_fecha_fin'].set_text(utils.str_fecha(temp))
         self.fin = str(temp[2])+'/'+str(temp[1])+'/'+str(temp[0])
 
     def buscar(self, boton):

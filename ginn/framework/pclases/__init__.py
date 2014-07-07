@@ -342,8 +342,6 @@ class PRPCTOO:
         self.sync()
         # y comparo:
         for campo in self.sqlmeta.columns:
-            # print self.swap[campo], eval('self.%s' % campo)
-            #if self.swap[campo] != eval('self.%s' % campo):
             if self.swap[campo] != getattr(self, campo):
                 if DEBUG and VERBOSE:
                     myprint("comparar_swap\n\tCampo: %s. Valor swap: %s. "\
@@ -391,11 +389,11 @@ class PRPCTOO:
     def chequear_cambios(self):
         try:
             self.comparar_swap()
-            # print "NO CAMBIA"
+            # myprint("NO CAMBIA")
         except SQLObjectChanged:
-            # print "CAMBIA"
+            # myprint("CAMBIA")
             if DEBUG: myprint("chequear_cambios: Objeto cambiado")
-            # print self.notificador
+            # myprint(self.notificador)
             self.notificador.run()
         except SQLObjectNotFound:
             if DEBUG: myprint("Registro borrado")
@@ -1813,7 +1811,7 @@ class Silo(SQLObject, PRPCTOO):
         cantidad_ocupada = self.get_ocupado()
         while int(cantidad_ocupada) > 0 and int(cantidad) > 0:
             carga_antigua = self.get_carga_mas_antigua()
-            #print "All I want", carga_antigua
+            # myprint("All I want", carga_antigua)
             producto_compra = carga_antigua.productoCompra
             producto_compra.sync()
             try:
@@ -1851,7 +1849,8 @@ class Silo(SQLObject, PRPCTOO):
                 except AssertionError, msg:
                     myprint(" ---> AssertionError", msg)
             cantidad_consumida = min(cantidad_de_producto, cantidad)
-            #print "¡Hola hombre cangrejo!", cantidad_consumida, cantidad_de_producto, cantidad
+            #myprint("¡Hola hombre cangrejo!", cantidad_consumida,
+            #        cantidad_de_producto, cantidad)
             consumo = Consumo(parteDeProduccion = parte_de_produccion,
                               productoCompra = producto_compra,
                               actualizado = True,
@@ -1952,15 +1951,17 @@ class Silo(SQLObject, PRPCTOO):
         else:
             cantidad_consumida = 0
         cantidad_restante = cantidad_cargada - cantidad_consumida
-        # print "cantidad_restante", cantidad_restante
+        # myprint("cantidad_restante", cantidad_restante)
         cargas_efectivas = []
         for carga in cargas:
             if cantidad_restante <= 0:
                 break
             cargas_efectivas.append(carga)
             cantidad_restante -= carga.cantidad
-            # print "cantidad_restante:", cantidad_restante, "carga.cantidad:", carga.cantidad
-        if len(cargas_efectivas) == 0:  # El silo está vacío (o lo que es peor: EN NEGATIVO)
+            # myprint("cantidad_restante:", cantidad_restante,
+            #         "carga.cantidad:", carga.cantidad)
+        if len(cargas_efectivas) == 0:  # El silo está vacío (o lo que es peor:
+                                        # EN NEGATIVO)
             if cantidad_cargada - cantidad_consumida <= 0:
                 # Ajusto la última carga:
                 try:
@@ -1968,7 +1969,8 @@ class Silo(SQLObject, PRPCTOO):
                 except IndexError:
                     myprint("El silo no se ha cargado nunca. No se puede ajustar")
                     return -1
-                delta_existencias = abs(cantidad_cargada - cantidad_consumida) + cantidad
+                delta_existencias = (abs(cantidad_cargada - cantidad_consumida)
+                                     + cantidad)
                 carga.cantidad += delta_existencias
                 if ajustar_producto_compra:
                     carga.productoCompra.existencias += delta_existencias
@@ -1993,15 +1995,17 @@ class Silo(SQLObject, PRPCTOO):
                     # [1] La "última" de las cargas efectivas no tiene por qué ser exacta, puede tener parte
                     # en el silo y parte consumida. Ese resto (negativo) se resta (suma) a la cantidad
                     # proporcional a añadir a cada carga.
-            # print "parte_proporcional:", parte_proporcional
+            #myprint("parte_proporcional:", parte_proporcional)
             for carga in cargas_efectivas:
                 if ajustar_producto_compra:
                     carga.productoCompra.existencias += parte_proporcional - carga.cantidad
                 carga.cantidad = parte_proporcional
-                # print "carga.cantidad", carga.cantidad
-            en_el_silo = parte_proporcional * len(cargas_efectivas) + cantidad_restante # Por lo mismo que antes. [1]
-                # + cantidad_cargada - cantidad_consumida
-            # print "en_el_silo:", en_el_silo, "parte_proporcional:", parte_proporcional, "len(cargas_efectivas):", len(cargas_efectivas)
+                #myprint("carga.cantidad", carga.cantidad)
+            en_el_silo = (parte_proporcional * len(cargas_efectivas) 
+                          + cantidad_restante) # Por lo mismo que antes. [1]
+            # myprint("en_el_silo:", en_el_silo,
+            #         "parte_proporcional:", parte_proporcional,
+            #         "len(cargas_efectivas):", len(cargas_efectivas))
             # assert en_el_silo == cantidad
         return en_el_silo
 
@@ -2153,13 +2157,16 @@ class FacturaCompra(SQLObject, PRPCTOO):
             total += s.get_subtotal(iva = False)
         total *= (1 - self.descuento)
         total += utils._float(self.cargo)
-        #total = round(total, 2)         # Por ley la base imponible debe llevar 2 decimales y el IVA es el x% de la
-                                        # B.I., también con 2 decimales.
+        #total = round(total, 2)         # Por ley la base imponible debe
+                                # llevar 2 decimales y el IVA es el x% de la
+                                # B.I., también con 2 decimales.
         # La ley dirá lo que quiera, pero menudos dolores de cabeza me está dando.
-        #print "Con redondeo: %s. Sin redondeo: %s" % (utils.float2str(total + self.importeIva, 2),
-        #                                              utils.float2str(round(total, 2) + self.importeIva))
+        #myprint("Con redondeo: %s. Sin redondeo: %s" % (
+        #           utils.float2str(total + self.importeIva, 2),
+        #           utils.float2str(round(total, 2) + self.importeIva)))
         if iva:
-            total += self.importeIva        # Este método ya tiene en cuenta los distintos tipos de IVA, por línea, etc.
+            total += self.importeIva        # Este método ya tiene en cuenta
+                                # los distintos tipos de IVA, por línea, etc.
         return total
 
     def calcular_importe_iva(self):
@@ -3699,7 +3706,7 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 #        # mismo lote; siempre y cuando no necesitemos tanta granuralidad,
 #        # esta forma de relacionar bolsas y bigbags es perfectamente válida.
 #        if DEBUG:
-#            print "CARIIIÑO, YA ESTOY EN CASA."
+#            myprint("CARIIIÑO, YA ESTOY EN CASA.")
 #        pdp = self.articulos[0].parteDeProduccion
 #        bbs = pdp.bigbags[:]
 #        res = None
@@ -3827,12 +3834,18 @@ class LoteCem(SQLObject, PRPCTOO):
         except ZeroDivisionError:
             return 0
 
-    calcular_tenacidad_media = lambda self: self.calcular_media_pruebas(self.pruebasTenacidad)
-    calcular_elongacion_media = lambda self: self.calcular_media_pruebas(self.pruebasElongacion)
-    calcular_humedad_media = lambda self: self.calcular_media_pruebas(self.pruebasHumedad)
-    calcular_encogimiento_medio = lambda self: self.calcular_media_pruebas(self.pruebasEncogimiento)
-    calcular_grasa_media = lambda self: self.calcular_media_pruebas(self.pruebasGrasa)
-    calcular_titulo_medio = lambda self: self.calcular_media_pruebas(self.pruebasTitulo)
+    calcular_tenacidad_media = lambda self: self.calcular_media_pruebas(
+                                                    self.pruebasTenacidad)
+    calcular_elongacion_media = lambda self: self.calcular_media_pruebas(
+                                                    self.pruebasElongacion)
+    calcular_humedad_media = lambda self: self.calcular_media_pruebas(
+                                                    self.pruebasHumedad)
+    calcular_encogimiento_medio = lambda self: self.calcular_media_pruebas(
+                                                    self.pruebasEncogimiento)
+    calcular_grasa_media = lambda self: self.calcular_media_pruebas(
+                                                    self.pruebasGrasa)
+    calcular_titulo_medio = lambda self: self.calcular_media_pruebas(
+                                                    self.pruebasTitulo)
 
     def update_valor(self, caracteristica):
         """
@@ -3842,14 +3855,17 @@ class LoteCem(SQLObject, PRPCTOO):
         aritmética).
         """
         try:
-            lista_pruebas = getattr(self, "pruebas%s" % (caracteristica.title()))
+            lista_pruebas = getattr(self, "pruebas%s" % (
+                                    caracteristica.title()))
             try:
-                media = (sum([p.resultado for p in lista_pruebas]) * 1.0) / len(lista_pruebas)
+                media = ((sum([p.resultado for p in lista_pruebas]) * 1.0)
+                         / len(lista_pruebas))
             except ZeroDivisionError:   # No hay pruebas de esa característica.
                 media = None
             setattr(self, caracteristica, media)
         except AttributeError:
-            myprint("pclases::class LoteCem::update_valor-> El atributo %s no es correcto." % (caracteristica))
+            myprint("pclases::class LoteCem::update_valor-> El atributo %s no"
+                    " es correcto." % (caracteristica))
 
     def get_productoVenta(self):
         """
@@ -3868,11 +3884,13 @@ class LoteCem(SQLObject, PRPCTOO):
         del lote sea el recibido.
         """
         if not isinstance(productoVenta, ProductoVenta):
-            raise TypeError, "El producto debe ser un objeto de la clase ProductoVenta."
+            raise TypeError, "El producto debe ser un objeto de la clase "\
+                             "ProductoVenta."
         for b in self.bigbags:
             b.articulo.productoVenta = productoVenta
 
-    productoVenta = property(get_productoVenta, set_productoVenta, "Producto de venta relacionado con el lote de cemento.")
+    productoVenta = property(get_productoVenta, set_productoVenta,
+                    "Producto de venta relacionado con el lote de cemento.")
 
     def esta_analizada(self):
         """
@@ -3880,9 +3898,9 @@ class LoteCem(SQLObject, PRPCTOO):
         los resultados de las pruebas).
         """
         valores_nulos = (' ', '', None)
-        return (self.tenacidad not in valores_nulos) or \
-               (self.elongacion not in valores_nulos) or \
-               (self.encogimiento not in valores_nulos)
+        return ((self.tenacidad not in valores_nulos)
+                or (self.elongacion not in valores_nulos)
+                or (self.encogimiento not in valores_nulos))
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 

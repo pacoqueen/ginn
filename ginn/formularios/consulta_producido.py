@@ -56,6 +56,7 @@ pygtk.require('2.0')
 from formularios.consulta_ventas_por_producto import act_fecha
 from framework.memoize import memoized
 import sys    
+from lib.myprint import myprint
 
 class ConsultaProducido(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -679,7 +680,7 @@ class ConsultaProducido(Ventana):
         except Exception, msg:
             txt = "consulta_producido.py::rellenar_tabla -> "\
                   "Error al dibujar gráfica (charting): %s" % msg
-            print txt
+            myprint(txt)
             self.logger.error(txt)
  
     def dibujar_grafica(self, prod_fibra, prod_gtx, prod_cem):
