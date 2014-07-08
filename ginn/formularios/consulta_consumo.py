@@ -124,7 +124,7 @@ class ConsultaConsumo(Ventana):
                                 item[2],
                                 item[3],
                                 item[4],
-                                item[7],
+                                item[8],
                                 "%d:%s" % (item[5], item[6])))
         # : Es un TreeView, ya añadiré si se necesita información adicional en
         # los hijos. Usaré el evento "row-expanded" para no retrasar más la
