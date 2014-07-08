@@ -2733,6 +2733,8 @@ class Presupuestos(Ventana, VentanaGenerica):
             col = self.clase.sqlmeta.columns[colname]
             try:
                 valor_ventana = self.leer_valor(col, self.dic_campos[colname])
+                valor_ventana = valor_ventana.strip() # Se acabaron errores 
+                                        # por meter espacios donde no se debe.
                 if (colname == "clienteID"
                         and valor_ventana != self.objeto.cliente):
                     ha_cambiado_el_cliente = True
