@@ -75,6 +75,8 @@ if sys.executable.endswith("pythonw.exe"):
     # Más info: http://bugs.python.org/issue706263
     DEBUG = VERBOSE = False
 
+from lib.myprint import myprint
+
 if DEBUG or VERBOSE:
     myprint("IMPORTANDO PCLASES")
 
@@ -101,7 +103,6 @@ import time
 from formularios import utils
 from framework import notificacion
 import datetime
-from lib.myprint import myprint
 
 # GET FUN !
 
@@ -19056,6 +19057,9 @@ class CategoriaLaboral(SQLObject, PRPCTOO):
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
+
+    def get_info(self, *args, **kw):
+        return "%s (%s)" % (self.puesto, self.codigo)
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 

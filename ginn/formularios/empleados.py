@@ -52,6 +52,7 @@ try:
     from psycopg import ProgrammingError as psycopg_ProgrammingError
 except ImportError:
     from psycopg2 import ProgrammingError as psycopg_ProgrammingError
+from lib.myprint import myprint
 
 
 class Empleados(Ventana):
@@ -137,7 +138,7 @@ class Empleados(Ventana):
         else:
             txterr = "empleados.py: No se pudo determinar el tipo de datos "\
                      "del campo %s." % col
-            print txterr
+            myprint(txterr)
             self.logger.error(txterr)
         return res
 
@@ -148,7 +149,7 @@ class Empleados(Ventana):
         except KeyError:
             txt_error = "empleados.py: No se pudo obtener el valor de la "\
                         "ventana para %s." % col
-            print txt_error
+            myprint(txt_error)
             self.logger.error(txt_error)
             valor_ventana = 0.0
         try:
@@ -156,7 +157,7 @@ class Empleados(Ventana):
         except ValueError:
             txt_error = "empleados.py: No se pudo convertir %s(%s) a "\
                         "float." % (col, valor_ventana)
-            print txt_error
+            myprint(txt_error)
             self.logger.error(txt_error)
             valor_ventana = 0.0
         try:
@@ -173,7 +174,7 @@ class Empleados(Ventana):
         except KeyError:
             txt_error = "empleados.py: No se pudo obtener el valor del "\
                         "objeto para %s." % col
-            print txt_error
+            myprint(txt_error)
             self.logger.error(txt_error)
             valor_campo = 0.0
         return res
@@ -183,14 +184,14 @@ class Empleados(Ventana):
             valor_ventana = utils.combo_get_value(self.wids[col])
         except KeyError:
             txt_error = "empleados.py: No se pudo obtener el valor de la ventana para %s." % col
-            print txt_error
+            myprint(txt_error)
             self.logger.error(txt_error)
             valor_ventana = None
         try:
             valor_campo = self.objeto._SO_getValue(col) # Es un ID -es decir, un entero-, no un objeto sqlobject.
         except KeyError:
             txt_error = "empleados.py: No se pudo obtener el valor del objeto para %s." % col
-            print txt_error
+            myprint(txt_error)
             self.logger.error(txt_error)
             valor_campo = None
         res = valor_ventana == valor_campo
@@ -201,14 +202,14 @@ class Empleados(Ventana):
             valor_ventana = self.wids[col].get_active()
         except KeyError:
             txt_error = "empleados.py: No se pudo obtener el valor de la ventana para %s." % col
-            print txt_error
+            myprint(txt_error)
             self.logger.error(txt_error)
             valor_ventana = False
         try:
             valor_campo = self.objeto._SO_getValue(col)
         except KeyError:
             txt_error = "empleados.py: No se pudo obtener el valor del objeto para %s." % col
-            print txt_error
+            myprint(txt_error)
             self.logger.error(txt_error)
             valor_campo = False
         res = valor_ventana == valor_campo
@@ -219,21 +220,21 @@ class Empleados(Ventana):
             valor_ventana = self.wids[col].get_text()
         except KeyError:
             txt_error = "empleados.py: No se pudo obtener el valor de la ventana para %s." % col
-            print txt_error
+            myprint(txt_error)
             self.logger.error(txt_error)
             valor_ventana = ""
         try:
             valor_ventana = int(valor_ventana)
         except ValueError:
             txt_error = "empleados.py: No se pudo convertir %s a entero." % col
-            print txt_error
+            myprint(txt_error)
             self.logger.error(txt_error)
             valor_ventana = 0
         try:
             valor_campo = self.objeto._SO_getValue(col)
         except KeyError:
             txt_error = "empleados.py: No se pudo obtener el valor del objeto para %s." % col
-            print txt_error
+            myprint(txt_error)
             self.logger.error(txt_error)
             valor_campo = 0
         res = valor_ventana == valor_campo
@@ -245,14 +246,14 @@ class Empleados(Ventana):
             valor_ventana = self.wids[col].get_text()
         except KeyError:
             txt_error = "empleados.py: No se pudo obtener el valor de la ventana para %s." % col
-            print txt_error
+            myprint(txt_error)
             self.logger.error(txt_error)
             valor_ventana = ""
         try:
             valor_campo = self.objeto._SO_getValue(col)
         except KeyError:
             txt_error = "empleados.py: No se pudo obtener el valor del objeto para %s." % col
-            print txt_error
+            myprint(txt_error)
             self.logger.error(txt_error)
             valor_campo = ""
         res = valor_ventana == valor_campo
@@ -314,7 +315,7 @@ class Empleados(Ventana):
             filas_res.append((r.id, r.nombre, r.apellidos, r.dni, 
                               r.centroTrabajo and r.centroTrabajo.nombre or "",
                               r.categoriaLaboral 
-                                    and r.categoriaLaboral.codigo or "", 
+                                    and r.categoriaLaboral.get_info() or "", 
                               r.activo and "Sí" or "No")) 
         idempleado = utils.dialogo_resultado(filas_res,
             titulo = 'Seleccione empleado',
@@ -330,27 +331,27 @@ class Empleados(Ventana):
         Redimensiona «t» y crea dentro los widgets necesarios para
         mostrar y editar los campos de «objeto».
         """
-        if pclases.DEBUG:                                       # XXX
-            print "empleados.py::rellenar_widgets -> Ready..."  # XXX
-            import time                                         # XXX
-            antes = time.time()                                 # XXX
+        if pclases.DEBUG:                                       
+            myprint("empleados.py::rellenar_widgets -> Ready...")
+            import time
+            antes = time.time()
         # HACK: Es para evitar el campo precio hora extra, que ya no se usa. 
         # Nómina ahora es el sueldo base a sumar al cálculo de la nomina 
         # mensual.
         d = {}
-        if pclases.DEBUG:                                       # XXX
-            print "empleados.py::rellenar_widgets -> Steady...",# XXX
-            print time.time() - antes                           # XXX
-            antes = time.time()                                 # XXX
+        if pclases.DEBUG:
+            myprint("empleados.py::rellenar_widgets -> Steady...",
+                    time.time() - antes)
+            antes = time.time()
         for c in self.objeto.sqlmeta.columns:
             if c != 'preciohora':
                 d[c] = self.objeto.sqlmeta.columns[c]
         self.objeto.sqlmeta.columns = d
         # END OF HACK
-        if pclases.DEBUG:                                       # XXX
-            print "empleados.py::rellenar_widgets -> GO!      ",# XXX
-            print time.time() - antes                           # XXX
-            antes = time.time()                                 # XXX
+        if pclases.DEBUG:
+            myprint("empleados.py::rellenar_widgets -> GO!      ",
+                    time.time() - antes)
+            antes = time.time()
         numcampos = len(self.objeto.sqlmeta.columns)
         if numcampos % 2 != 0:
             numwidgets = numcampos + 1
@@ -358,17 +359,17 @@ class Empleados(Ventana):
             numwidgets = numcampos
         for child in self.wids['t'].get_children():
             child.destroy()
-        if pclases.DEBUG:                                       # XXX
-            print "empleados.py::rellenar_widgets -> ",         # XXX
-            print time.time() - antes                           # XXX
-            antes = time.time()                                 # XXX
+        if pclases.DEBUG:
+            myprint("empleados.py::rellenar_widgets -> ",
+                    time.time() - antes)
+            antes = time.time()
         self.wids['t'].resize(numwidgets / 2, 4)
         icol = 0
         irow = 0
-        if pclases.DEBUG:                                       # XXX
-            print "empleados.py::rellenar_widgets -> ",         # XXX
-            print time.time() - antes                           # XXX
-            antes = time.time()                                 # XXX
+        if pclases.DEBUG:
+            myprint("empleados.py::rellenar_widgets -> ",
+                    time.time() - antes)
+            antes = time.time()
         for col in self.objeto.sqlmeta.columns:
             if not isinstance(self.objeto.sqlmeta.columns[col], 
                               pclases.SOBoolCol):
@@ -383,10 +384,10 @@ class Empleados(Ventana):
             if icol == 4:
                 icol = 0
                 irow += 1
-        if pclases.DEBUG:                                       # XXX
-            print "empleados.py::rellenar_widgets -> ",         # XXX
-            print time.time() - antes                           # XXX
-            antes = time.time()                                 # XXX
+        if pclases.DEBUG:
+            myprint("empleados.py::rellenar_widgets -> ",
+                    time.time() - antes)
+            antes = time.time()
         self.wids['t'].show_all()
         self.objeto.make_swap()
         # Añadido: Si el empleado no tiene alta como trabajador, deshabilito 
@@ -394,10 +395,10 @@ class Empleados(Ventana):
         self.wids['b_ausencias'].set_sensitive(self.objeto.activo)
         self.wids['b_categoria'].set_sensitive(
                 self.objeto.categoriaLaboral != None)
-        if pclases.DEBUG:                                       # XXX
-            print "empleados.py::rellenar_widgets -> WINTER!",  # XXX
-            print time.time() - antes                           # XXX
-            antes = time.time()                                 # XXX
+        if pclases.DEBUG:
+            myprint("empleados.py::rellenar_widgets -> WINTER!",
+                    time.time() - antes)
+            antes = time.time()
 
     def build_label(self, nombrecampo):
         """
@@ -426,42 +427,58 @@ class Empleados(Ventana):
         establece su valor por defecto.
         """
         res = gtk.Label('ERROR: N/A')
-        if isinstance(tipocampo, pclases.SOStringCol):  # Cadena: el widget es un entry
+        if isinstance(tipocampo, pclases.SOStringCol):  # Cadena: el widget es
+                                                        # un entry
             res = gtk.Entry()
-            if tipocampo.default != None and tipocampo.default != sqlobject.sqlbuilder.NoDefault:
+            if (tipocampo.default != None
+                    and tipocampo.default != sqlobject.sqlbuilder.NoDefault):
                 res.set_text("%s" % (tipocampo.default))
-        elif isinstance(tipocampo, pclases.SOIntCol):   # Entero: el widget es un entry
+        elif isinstance(tipocampo, pclases.SOIntCol):   # Entero: el widget es
+                                                        # un entry
             res = gtk.Entry()
-            if tipocampo.default != None and tipocampo.default != sqlobject.sqlbuilder.NoDefault:
+            if (tipocampo.default != None
+                    and tipocampo.default != sqlobject.sqlbuilder.NoDefault):
                 res.set_text("%s" % (tipocampo.default))
-        elif isinstance(tipocampo, pclases.SOBoolCol):  # Boolean: el widget es un checkbox
+        elif isinstance(tipocampo, pclases.SOBoolCol):  # Boolean: el widget es
+                                                        # un checkbox
             label = self.build_label(nombrecampo)
             res = gtk.CheckButton(label = label.get_text())
             if tipocampo.default:
                 res.set_active(True)
-        elif isinstance(tipocampo, pclases.SOForeignKey):  # Entero-clave ajena: el widget es un comboboxentry
+        elif isinstance(tipocampo, pclases.SOForeignKey):  # Entero-clave
+                                        # ajena: el widget es un comboboxentry
             res = gtk.ComboBoxEntry()
             ajena = tipocampo.foreignKey
             clase = getattr(pclases, ajena)
-            COLUMNATEXTO = 'nombre'     # XXX: Cambiar si no tiene una columna "nombre"
+            COLUMNATEXTO = 'nombre'     # XXX: Cambiar si no tiene una columna
+                                        #      "nombre"
             try:
                 if clase == pclases.CategoriaLaboral:
                     # HACK: Las categorías laborales ahora van con fechas y es 
                     # una movida.
-                    contenido = [(r.id, r._SO_getValue(COLUMNATEXTO)) for r in clase.select(orderBy='id') if not r.fecha]
+                    contenido = [(r.id, #r._SO_getValue(COLUMNATEXTO))
+                                  r.get_info())
+                                 for r in clase.select(orderBy='id')
+                                 if not r.fecha]
                 else:
-                    contenido = [(r.id, r._SO_getValue(COLUMNATEXTO)) for r in clase.select(orderBy='id')]
+                    contenido = [(r.id, r._SO_getValue(COLUMNATEXTO))
+                                 for r in clase.select(orderBy='id')]
             except KeyError:
-                COLUMNATEXTO = 'puesto'     # XXX: Cambiar si no tiene una columna "puesto"
-                contenido = [(r.id, r._SO_getValue(COLUMNATEXTO)) for r in clase.select(orderBy='id')]
+                COLUMNATEXTO = 'puesto'     # XXX: Cambiar si no tiene una
+                                            #      columna "puesto"
+                contenido = [(r.id, r._SO_getValue(COLUMNATEXTO))
+                             for r in clase.select(orderBy='id')]
             utils.rellenar_lista(res, contenido)
-        elif isinstance(tipocampo, pclases.SOCol):      # Clase base, casi seguro Float: el widget es un entry
+        elif isinstance(tipocampo, pclases.SOCol):      # Clase base, casi
+                                        # seguro Float: el widget es un entry
             res = gtk.Entry()
-            if tipocampo.default != None and tipocampo.default != sqlobject.sqlbuilder.NoDefault:
+            if (tipocampo.default != None
+                    and tipocampo.default != sqlobject.sqlbuilder.NoDefault):
                 res.set_text(utils.float2str("%s" % tipocampo.default))
         else:
-            txt = "empleados.py: No se pudo construir el widget para %s." % nombrecampo
-            print txt
+            txt = "empleados.py: No se pudo construir el widget para %s." % (
+                                                                nombrecampo)
+            myprint(txt)
             self.logger.error(txt)
         res.set_name(nombrecampo)
         self.wids[nombrecampo] = res
@@ -493,7 +510,7 @@ class Empleados(Ventana):
                     w.set_text('0')
         else:
             txt = "empleados.py: No se pudo establecer el valor %s para %s." % (valor, w)
-            print txt
+            myprint(txt)
             self.logger.error(txt)
 
     def get_valor(self, w, nombrecampo, tipocampo):
@@ -507,7 +524,7 @@ class Empleados(Ventana):
             except ValueError:
 #                txt = "empleados.py: No se pudo convertir el valor %s de %s para %s <%s>." \
 #                       % (res, w, nombrecampo, tipocampo)
-#                print txt
+#                myprint(txt)
 #                self.logger.error(txt)
                 txt = "El valor «%s» no es correcto. Introduzca un número"\
                       " entero." % (res)
@@ -535,7 +552,7 @@ class Empleados(Ventana):
         else:
             txt = "empleados.py: No se pudo obtener el valor de %s para %s <%s>." \
                    % (w, nombrecampo, tipocampo)
-            print txt
+            myprint(txt)
             self.logger.error(txt)
         return res
 
@@ -594,14 +611,16 @@ class Empleados(Ventana):
         """
         empleado = self.objeto
         objetobak = self.objeto
-        a_buscar = utils.dialogo_entrada("Introduzca nombre, apellidos, DNI o código de empleado.") 
+        a_buscar = utils.dialogo_entrada("Introduzca nombre, apellidos, DNI o"
+                                         " código de empleado.") 
         if a_buscar != None:
             criterio = pclases.OR(pclases.Empleado.q.nombre.contains(a_buscar),
-                                    pclases.Empleado.q.apellidos.contains(a_buscar),
-                                    pclases.Empleado.q.dni.contains(a_buscar))
+                            pclases.Empleado.q.apellidos.contains(a_buscar),
+                            pclases.Empleado.q.dni.contains(a_buscar))
             if a_buscar != '':
                 try:
-                    criterio = pclases.OR(criterio, pclases.Empleado.q.id == int(a_buscar))
+                    criterio = pclases.OR(criterio,
+                            pclases.Empleado.q.id == int(a_buscar))
                 except ValueError:
                     pass
             resultados = pclases.Empleado.select(criterio)  
@@ -614,7 +633,12 @@ class Empleados(Ventana):
             elif resultados.count() < 1:
                 ## Sin resultados de búsqueda
                 utils.dialogo_info('SIN RESULTADOS', 
-                                   '\n\nLa búsqueda no produjo resultados.\nPruebe a cambiar el texto buscado o déjelo en blanco para ver una lista completa.\n(Atención: Ver la lista completa puede resultar lento si el número de elementos es muy alto)\n\n')
+                    '\n\nLa búsqueda no produjo resultados.\nPruebe a cambiar'
+                    ' el texto buscado o déjelo en blanco para ver una lista '
+                    'completa.\n(Atención: Ver la lista completa puede '
+                    'resultar lento si el número de elementos es muy alto)'
+                    '\n\n', 
+                    padre = self.wids['ventana'])
                 return
             ## Un único resultado
             # Primero anulo la función de actualización
@@ -624,8 +648,8 @@ class Empleados(Ventana):
             empleado = resultados[0]
             # Y activo la función de notificación:
             self.objeto = empleado
-            self.actualizar_ventana(objeto_anterior = objetobak, 
-                                    deep_refresh  =False)
+            self.actualizar_ventana(objeto_anterior=objetobak, 
+                                    deep_refresh=False)
             empleado.notificador.set_func(self.aviso_actualizacion)
 
     def guardar(self, widget):

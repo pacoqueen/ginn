@@ -66,7 +66,7 @@
 ##         probarlo más a fondo antes de poner en producción.
 ## + DONE: Falta bloquear el albarán después de 24/48 horas. ¿Cómo?
 ##         Forget about it. CWT: Se bloquea en cuanto se imprime.
-## TODO: Al crear los vencimientos de la factura al imprimir no
+## DONE: Al crear los vencimientos de la factura al imprimir no
 ##       tiene en cuenta el IRPF.
 ## DONE: ES ***EXTREMADAMENTE*** LENTO CON LOS ALBARANES DE BOLSAS.
 ## TODO: Cuando se vendan cajas sueltas, la caja debe ser el bulto
