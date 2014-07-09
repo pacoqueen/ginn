@@ -139,6 +139,31 @@ if DEBUG and VERBOSE:
     #conndebug.autoCommit = False
     conndebug.debug = True
 
+###############################################################################
+## TODO: PORASQUI: Ya sé cómo conectar a dos BD a la vez y cruzar los datos
+## de los cierres mensuales para detectar los códigos de rollos divergentes:
+# https://www.mail-archive.com/sqlobject-discuss@lists.sourceforge.net/msg04028.html
+#Just open connections:
+#
+#connection1 = connectionForURI('postgres://host:port/db')
+#connection2 = connectionForURI('sqlite:///path/to/db')
+#
+#   and use them:
+#
+#class MyTable(SQLObject):
+#   name = StringCol()
+#
+#   Get a row from the first DB:
+#
+#row1 = MyTable.get(id, connection=connection1)
+#
+#   and insert the data into the second:
+#
+#row2 = MyTable(**row.asDict(), connection=connection2)
+#
+#   Most methods in SQLObject accept connection parameter.
+# 
+###############################################################################
 
 # HACK:
 # autocommit en algunas versiones es un boolean y sqlobject intenta
@@ -16423,7 +16448,8 @@ class Transportista(SQLObject, PRPCTOO):
         # TODO: Con expresiones regulares esto iría mejor.
         if "  " in self.matricula:
             try:
-                t, s = [i.strip() for i in self.matricula.split("  ") if i.strip() != ""]
+                t, s = [i.strip() for i in self.matricula.split("  ")
+                        if i.strip() != ""]
             except Exception, msg:
                 if DEBUG:
                     myprint("pclases::transportista::parse_matricula -> %s" % msg)
@@ -21453,6 +21479,8 @@ def el_anecdoton(fecha):
     this_mod = __import__(__name__)
     clases_y_mas = [val.replace(__name__ + ".", "") for val in dir(this_mod)]
     for nombreitem in clases_y_mas:
+        # FIXME: Esto ya no vale con la nueva estructura de paquete. Da un
+        #        NameError: name '__all__' is not defined
         clase = eval(nombreitem)
         if DEBUG:
             myprint("clase", clase)
@@ -21502,7 +21530,8 @@ def buscar_puids_sobre_fecha(fecha, nameclase, namecol):
 
 def do_unittests():
     # Pruebas unitarias
-    cmd_grep = r"egrep ^class %s | grep PRPCTOO | grep ')' | cut -d ' ' -f 2 | cut -d '(' -f 1" % __file__
+    cmd_grep = r"egrep ^class %s | grep PRPCTOO | grep ')' | cut -d ' ' -f 2 "\
+                "| cut -d '(' -f 1" % __file__
     clases_persistentes = [s.replace("\n", "") for s in os.popen(cmd_grep)]
     conhack.autoCommit = False  # HACK del autocommit en SQLObject Ubuntu 12.04
     for clase in clases_persistentes:
@@ -21546,17 +21575,17 @@ try:
     Estado.get(1)
 except SQLObjectNotFound:
     myprint("Creando estado de alarmas 1...")
-    Estado(id = 1, descripcion = "No leída", pendiente = True)
+    Estado(id=1, descripcion="No leída", pendiente=True)
 try:
     Estado.get(2)
 except SQLObjectNotFound:
     myprint("Creando estado de alarmas 2...")
-    Estado(id = 2, descripcion = "En espera", pendiente = True)
+    Estado(id=2, descripcion="En espera", pendiente=True)
 try:
     Estado.get(3)
 except SQLObjectNotFound:
     myprint("Creando estado de alarmas 3...")
-    Estado(id = 3, descripcion = "Cerrada", pendiente = False)
+    Estado(id=3, descripcion="Cerrada", pendiente=False)
 
 
 

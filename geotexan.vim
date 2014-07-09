@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 08 julio 2014 at 20:45:48.
+" Created by session.vim 1.5 on 09 julio 2014 at 14:58:48.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -92,8 +92,6 @@ badd +111 ginn/formularios/prefacturas.py
 badd +1020 ginn/formularios/pedidos_de_venta.py
 badd +5 ginn/formularios/launcher.py
 badd +17415 ginn/framework/pclases/__init__.py
-badd +1 ginn/formularios/presupuestos.py
-badd +3551 ginn/formularios/albaranes_de_salida.py
 badd +1 ginn/formularios/pclase2tv.py
 badd +1 ginn/formularios/abonos_venta.glade
 badd +428 ginn/formularios/clientes.py
@@ -101,11 +99,10 @@ badd +513 ginn/formularios/crm_detalles_factura.py
 badd +406 ginn/formularios/crm_seguimiento_impagos.py
 badd +1 extra/scripts/clouseau-gtk.py
 badd +1 extra/scripts/clouseau.py
-argglobal
-silent! argdel *
-argadd formularios/auditviewer.py
-set lines=57 columns=85
-edit ginn/formularios/presupuestos.py
+badd +0 ginn/framework/configuracion.py
+args formularios/auditviewer.py
+set lines=48 columns=85
+edit extra/scripts/clouseau.py
 set splitbelow splitright
 wincmd _ | wincmd |
 split
@@ -127,13 +124,7 @@ wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
-wincmd _ | wincmd |
-split
-wincmd _ | wincmd |
-split
-12wincmd k
-wincmd w
-wincmd w
+10wincmd k
 wincmd w
 wincmd w
 wincmd w
@@ -148,19 +139,17 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 16 + 28) / 57)
-exe '2resize ' . ((&lines * 16 + 28) / 57)
-exe '3resize ' . ((&lines * 1 + 28) / 57)
-exe '4resize ' . ((&lines * 1 + 28) / 57)
-exe '5resize ' . ((&lines * 1 + 28) / 57)
-exe '6resize ' . ((&lines * 1 + 28) / 57)
-exe '7resize ' . ((&lines * 1 + 28) / 57)
-exe '8resize ' . ((&lines * 1 + 28) / 57)
-exe '9resize ' . ((&lines * 1 + 28) / 57)
-exe '10resize ' . ((&lines * 1 + 28) / 57)
-exe '11resize ' . ((&lines * 1 + 28) / 57)
-exe '12resize ' . ((&lines * 1 + 28) / 57)
-exe '13resize ' . ((&lines * 1 + 28) / 57)
+exe '1resize ' . ((&lines * 1 + 24) / 48)
+exe '2resize ' . ((&lines * 1 + 24) / 48)
+exe '3resize ' . ((&lines * 1 + 24) / 48)
+exe '4resize ' . ((&lines * 1 + 24) / 48)
+exe '5resize ' . ((&lines * 1 + 24) / 48)
+exe '6resize ' . ((&lines * 1 + 24) / 48)
+exe '7resize ' . ((&lines * 1 + 24) / 48)
+exe '8resize ' . ((&lines * 26 + 24) / 48)
+exe '9resize ' . ((&lines * 1 + 24) / 48)
+exe '10resize ' . ((&lines * 1 + 24) / 48)
+exe '11resize ' . ((&lines * 1 + 24) / 48)
 argglobal
 setlocal fdm=indent
 setlocal fde=0
@@ -170,40 +159,12 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-68
-normal! zo
-2716
-normal! zo
-2733
-normal! zo
-2735
-normal! zo
-2737
-normal! zo
-let s:l = 2740 - ((11 * winheight(0) + 8) / 16)
+let s:l = 31 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-2740
-normal! 070|
-lcd ~/Geotexan/src/Geotex-INN
-wincmd w
-argglobal
-edit ~/Geotexan/src/Geotex-INN/extra/scripts/clouseau.py
-setlocal fdm=indent
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=99
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-let s:l = 16 - ((15 * winheight(0) + 8) / 16)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-16
-normal! 0
+31
+normal! 034|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -598,16 +559,16 @@ normal! zo
 normal! zo
 287
 normal! zo
-let s:l = 323 - ((0 * winheight(0) + 0) / 1)
+let s:l = 23 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-323
-normal! 034|
+23
+normal! 049|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
-edit ~/Geotexan/src/Geotex-INN/ginn/formularios/albaranes_de_salida.py
+edit ~/Geotexan/src/Geotex-INN/ginn/framework/configuracion.py
 setlocal fdm=indent
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -616,74 +577,16 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-100
+60
 normal! zo
-101
+70
 normal! zo
-123
-normal! zo
-123
-normal! zo
-123
-normal! zo
-1084
-normal! zo
-2900
-normal! zo
-3117
-normal! zo
-3433
-normal! zo
-3441
-normal! zo
-3441
-normal! zo
-3441
-normal! zo
-3441
-normal! zo
-3441
-normal! zo
-3441
-normal! zo
-3538
-normal! zo
-3538
-normal! zo
-3538
-normal! zo
-3538
-normal! zo
-3538
-normal! zo
-3538
-normal! zo
-3538
-normal! zo
-3541
-normal! zo
-3541
-normal! zo
-3541
-normal! zo
-3541
-normal! zo
-3541
-normal! zo
-3550
-normal! zo
-4725
-normal! zo
-4744
-normal! zo
-4760
-normal! zo
-let s:l = 4767 - ((0 * winheight(0) + 0) / 1)
+let s:l = 63 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-4767
-normal! 014|
+63
+normal! 07|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -696,392 +599,416 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-271
+297
 normal! zo
-334
+360
 normal! zo
-361
+387
 normal! zo
-390
+416
 normal! zo
-1650
+1676
 normal! zo
-1771
+1797
 normal! zo
-1813
+1839
 normal! zo
-1924
+1950
 normal! zo
-1957
+1983
 normal! zo
-1965
+1991
 normal! zo
-1967
+1993
 normal! zo
-1973
+1999
 normal! zo
-1973
+1999
 normal! zo
-1973
+1999
 normal! zo
-1973
+1999
 normal! zo
-1994
+2020
 normal! zo
-2005
+2031
 normal! zo
-2005
+2031
 normal! zo
-2100
+2126
 normal! zo
-2149
+2175
 normal! zo
-3807
+2861
 normal! zo
-3838
+3833
 normal! zo
-3838
+3864
 normal! zo
-3838
+3864
 normal! zo
-3838
+3864
 normal! zo
-3838
+3864
 normal! zo
-3838
+3864
 normal! zo
-3838
+3864
 normal! zo
-3838
+3864
 normal! zo
-3838
+3864
 normal! zo
-3838
+3864
 normal! zo
-3838
+3864
 normal! zo
-3840
+3864
 normal! zo
-3840
+3866
 normal! zo
-3840
+3866
 normal! zo
-3840
+3866
 normal! zo
-3840
+3866
 normal! zo
-3840
+3866
 normal! zo
-3840
+3866
 normal! zo
-3840
+3866
 normal! zo
-3840
+3866
 normal! zo
-3840
+3866
 normal! zo
-3840
+3866
 normal! zo
-3842
-normal! zo
-3842
-normal! zo
-3842
-normal! zo
-3842
-normal! zo
-3842
-normal! zo
-3842
-normal! zo
-3842
-normal! zo
-3842
-normal! zo
-3842
-normal! zo
-3842
-normal! zo
-3842
-normal! zo
-3844
-normal! zo
-3844
-normal! zo
-3844
-normal! zo
-3844
-normal! zo
-3844
-normal! zo
-3844
-normal! zo
-3844
-normal! zo
-3844
-normal! zo
-3844
-normal! zo
-3844
-normal! zo
-3844
-normal! zo
-3846
-normal! zo
-3846
-normal! zo
-3846
-normal! zo
-3846
-normal! zo
-3846
-normal! zo
-3846
-normal! zo
-3846
-normal! zo
-3846
-normal! zo
-3846
-normal! zo
-3846
-normal! zo
-3846
-normal! zo
-3848
-normal! zo
-3848
-normal! zo
-3848
-normal! zo
-3848
-normal! zo
-3848
-normal! zo
-3848
-normal! zo
-3848
-normal! zo
-3848
-normal! zo
-3848
-normal! zo
-3848
-normal! zo
-3848
-normal! zo
-3851
-normal! zo
-3858
-normal! zo
-3859
-normal! zo
-3859
-normal! zo
-3859
-normal! zo
-3859
-normal! zo
-3859
-normal! zo
-3861
-normal! zo
-3862
-normal! zo
-3867
+3866
 normal! zo
 3868
 normal! zo
-3882
+3868
+normal! zo
+3868
+normal! zo
+3868
+normal! zo
+3868
+normal! zo
+3868
+normal! zo
+3868
+normal! zo
+3868
+normal! zo
+3868
+normal! zo
+3868
+normal! zo
+3868
+normal! zo
+3870
+normal! zo
+3870
+normal! zo
+3870
+normal! zo
+3870
+normal! zo
+3870
+normal! zo
+3870
+normal! zo
+3870
+normal! zo
+3870
+normal! zo
+3870
+normal! zo
+3870
+normal! zo
+3870
+normal! zo
+3872
+normal! zo
+3872
+normal! zo
+3872
+normal! zo
+3872
+normal! zo
+3872
+normal! zo
+3872
+normal! zo
+3872
+normal! zo
+3872
+normal! zo
+3872
+normal! zo
+3872
+normal! zo
+3872
+normal! zo
+3874
+normal! zo
+3874
+normal! zo
+3874
+normal! zo
+3874
+normal! zo
+3874
+normal! zo
+3874
+normal! zo
+3874
+normal! zo
+3874
+normal! zo
+3874
+normal! zo
+3874
+normal! zo
+3874
+normal! zo
+3877
+normal! zo
+3884
+normal! zo
+3885
+normal! zo
+3885
+normal! zo
+3885
+normal! zo
+3885
+normal! zo
+3885
 normal! zo
 3887
 normal! zo
 3888
 normal! zo
-3888
-normal! zo
-3888
-normal! zo
 3893
 normal! zo
-3893
+3894
 normal! zo
-3893
+3908
 normal! zo
-3896
+3913
 normal! zo
-3902
+3914
 normal! zo
-4643
+3914
 normal! zo
-5923
+3914
 normal! zo
-5988
+3919
 normal! zo
-5997
+3919
 normal! zo
-5997
+3919
 normal! zo
-5997
+3922
 normal! zo
-5997
+3928
 normal! zo
-5997
+4669
 normal! zo
-5997
+5949
 normal! zo
-5999
+6014
 normal! zo
-6587
+6023
 normal! zo
-6688
+6023
 normal! zo
-6688
+6023
 normal! zo
-6688
+6023
 normal! zo
-6688
+6023
 normal! zo
-6688
+6023
 normal! zo
-6976
+6025
 normal! zo
-7321
+6613
 normal! zo
-7339
+6714
 normal! zo
-7435
+6714
 normal! zo
-7457
+6714
 normal! zo
-7756
+6714
 normal! zo
-7880
+6714
 normal! zo
-7880
+7002
 normal! zo
-7880
+7347
 normal! zo
-7880
+7365
 normal! zo
-7880
+7461
 normal! zo
-7880
+7483
 normal! zo
-7949
+7782
 normal! zo
-7956
+7906
 normal! zo
-7962
+7906
 normal! zo
-8446
+7906
 normal! zo
-11365
+7906
 normal! zo
-11752
+7906
 normal! zo
-11752
+7906
 normal! zo
-11752
+7975
 normal! zo
-11752
+7982
 normal! zo
-11752
+7988
 normal! zo
-11966
+8472
 normal! zo
-12125
+11391
 normal! zo
-12125
+11778
 normal! zo
-12282
+11778
 normal! zo
-12282
+11778
 normal! zo
-12282
+11778
 normal! zo
-12296
+11778
 normal! zo
-12398
+11992
 normal! zo
-12398
+12151
 normal! zo
-12398
+12151
 normal! zo
-12398
+12308
 normal! zo
-12398
+12308
 normal! zo
-12748
+12308
 normal! zo
-12748
+12322
 normal! zo
-12748
+12424
 normal! zo
-12748
+12424
 normal! zo
-12748
+12424
 normal! zo
-12748
+12424
 normal! zo
-12748
+12424
 normal! zo
-12781
+12774
 normal! zo
-12782
+12774
 normal! zo
-12785
+12774
 normal! zo
-12799
+12774
 normal! zo
-14749
+12774
 normal! zo
-15241
+12774
 normal! zo
-15270
+12774
 normal! zo
-16268
+12807
 normal! zo
-16446
+12808
 normal! zo
-16510
+12811
 normal! zo
-16510
+12825
 normal! zo
-16510
+14775
 normal! zo
-16708
+15267
 normal! zo
-17089
+15296
 normal! zo
-17099
+16294
 normal! zo
-17102
+16433
 normal! zo
-17400
+16442
 normal! zo
-17414
+16450
 normal! zo
-17417
+16451
 normal! zo
-17421
+16452
 normal! zo
-17422
+16473
 normal! zo
-17682
+16537
 normal! zo
-17706
+16537
 normal! zo
-17711
+16537
 normal! zo
-17882
+16735
 normal! zo
-let s:l = 3959 - ((0 * winheight(0) + 0) / 1)
+17116
+normal! zo
+17126
+normal! zo
+17129
+normal! zo
+17427
+normal! zo
+17441
+normal! zo
+17444
+normal! zo
+17448
+normal! zo
+17449
+normal! zo
+17709
+normal! zo
+17733
+normal! zo
+17738
+normal! zo
+17909
+normal! zo
+19087
+normal! zo
+21474
+normal! zo
+21484
+normal! zo
+21533
+normal! zo
+21534
+normal! zo
+21534
+normal! zo
+let s:l = 146 - ((1 * winheight(0) + 13) / 26)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-3959
-normal! 046|
+146
+normal! 0
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -1224,118 +1151,12 @@ normal! zo
 normal! zo
 2189
 normal! zo
-let s:l = 1633 - ((0 * winheight(0) + 0) / 1)
+let s:l = 2068 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1633
-normal! 038|
-lcd ~/Geotexan/src/Geotex-INN
-wincmd w
-argglobal
-edit ~/Geotexan/src/Geotex-INN/ginn/formularios/presupuestos.py
-setlocal fdm=indent
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=99
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-68
-normal! zo
-423
-normal! zo
-1003
-normal! zo
-1018
-normal! zo
-1028
-normal! zo
-1096
-normal! zo
-1103
-normal! zo
-1103
-normal! zo
-1108
-normal! zo
-1109
-normal! zo
-1114
-normal! zo
-1116
-normal! zo
-1228
-normal! zo
-1235
-normal! zo
-1237
-normal! zo
-1295
-normal! zo
-1993
-normal! zo
-2039
-normal! zo
-2040
-normal! zo
 2068
-normal! zo
-2071
-normal! zo
-2072
-normal! zo
-2146
-normal! zo
-2177
-normal! zo
-2186
-normal! zo
-2186
-normal! zo
-2239
-normal! zo
-2239
-normal! zo
-2239
-normal! zo
-2239
-normal! zo
-2239
-normal! zo
-2239
-normal! zo
-2239
-normal! zo
-2302
-normal! zo
-2306
-normal! zo
-2308
-normal! zo
-2575
-normal! zo
-2621
-normal! zo
-2640
-normal! zo
-2648
-normal! zo
-2716
-normal! zo
-2733
-normal! zo
-2735
-normal! zo
-2737
-normal! zo
-let s:l = 2733 - ((0 * winheight(0) + 0) / 1)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-2733
-normal! 039|
+normal! 023|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -1456,19 +1277,18 @@ normal! zt
 normal! 040|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
-exe '1resize ' . ((&lines * 16 + 28) / 57)
-exe '2resize ' . ((&lines * 16 + 28) / 57)
-exe '3resize ' . ((&lines * 1 + 28) / 57)
-exe '4resize ' . ((&lines * 1 + 28) / 57)
-exe '5resize ' . ((&lines * 1 + 28) / 57)
-exe '6resize ' . ((&lines * 1 + 28) / 57)
-exe '7resize ' . ((&lines * 1 + 28) / 57)
-exe '8resize ' . ((&lines * 1 + 28) / 57)
-exe '9resize ' . ((&lines * 1 + 28) / 57)
-exe '10resize ' . ((&lines * 1 + 28) / 57)
-exe '11resize ' . ((&lines * 1 + 28) / 57)
-exe '12resize ' . ((&lines * 1 + 28) / 57)
-exe '13resize ' . ((&lines * 1 + 28) / 57)
+8wincmd w
+exe '1resize ' . ((&lines * 1 + 24) / 48)
+exe '2resize ' . ((&lines * 1 + 24) / 48)
+exe '3resize ' . ((&lines * 1 + 24) / 48)
+exe '4resize ' . ((&lines * 1 + 24) / 48)
+exe '5resize ' . ((&lines * 1 + 24) / 48)
+exe '6resize ' . ((&lines * 1 + 24) / 48)
+exe '7resize ' . ((&lines * 1 + 24) / 48)
+exe '8resize ' . ((&lines * 26 + 24) / 48)
+exe '9resize ' . ((&lines * 1 + 24) / 48)
+exe '10resize ' . ((&lines * 1 + 24) / 48)
+exe '11resize ' . ((&lines * 1 + 24) / 48)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
@@ -1483,6 +1303,6 @@ let &so = s:so_save | let &siso = s:siso_save
 doautoall SessionLoadPost
 unlet SessionLoad
 tabnext 1
-1wincmd w
+8wincmd w
 
 " vim: ft=vim ro nowrap smc=128
