@@ -183,14 +183,17 @@ class Empleados(Ventana):
         try:
             valor_ventana = utils.combo_get_value(self.wids[col])
         except KeyError:
-            txt_error = "empleados.py: No se pudo obtener el valor de la ventana para %s." % col
+            txt_error = "empleados.py: No se pudo obtener el valor de la"\
+                        " ventana para %s." % col
             myprint(txt_error)
             self.logger.error(txt_error)
             valor_ventana = None
         try:
-            valor_campo = self.objeto._SO_getValue(col) # Es un ID -es decir, un entero-, no un objeto sqlobject.
+            valor_campo = self.objeto._SO_getValue(col) # Es un ID -es decir,
+                                        # un entero-, no un objeto sqlobject.
         except KeyError:
-            txt_error = "empleados.py: No se pudo obtener el valor del objeto para %s." % col
+            txt_error = "empleados.py: No se pudo obtener el valor del objeto"\
+                        " para %s." % col
             myprint(txt_error)
             self.logger.error(txt_error)
             valor_campo = None
@@ -201,14 +204,16 @@ class Empleados(Ventana):
         try:
             valor_ventana = self.wids[col].get_active()
         except KeyError:
-            txt_error = "empleados.py: No se pudo obtener el valor de la ventana para %s." % col
+            txt_error = "empleados.py: No se pudo obtener el valor de la"\
+                        " ventana para %s." % col
             myprint(txt_error)
             self.logger.error(txt_error)
             valor_ventana = False
         try:
             valor_campo = self.objeto._SO_getValue(col)
         except KeyError:
-            txt_error = "empleados.py: No se pudo obtener el valor del objeto para %s." % col
+            txt_error = "empleados.py: No se pudo obtener el valor del objeto"\
+                        " para %s." % col
             myprint(txt_error)
             self.logger.error(txt_error)
             valor_campo = False
@@ -219,7 +224,8 @@ class Empleados(Ventana):
         try:
             valor_ventana = self.wids[col].get_text()
         except KeyError:
-            txt_error = "empleados.py: No se pudo obtener el valor de la ventana para %s." % col
+            txt_error = "empleados.py: No se pudo obtener el valor de la "\
+                        "ventana para %s." % col
             myprint(txt_error)
             self.logger.error(txt_error)
             valor_ventana = ""
@@ -265,7 +271,8 @@ class Empleados(Ventana):
         del objeto en memoria.
         """
         empleado = self.objeto
-        if empleado == None: return False
+        if not empleado:
+            return False
         condicion = True
         for col in empleado.sqlmeta.columns:
             condicion = (condicion 
@@ -565,14 +572,31 @@ class Empleados(Ventana):
         y avisará al usuario.
         """
         empleado = self.objeto
-        if not utils.dialogo('Se borrará el empleado actual.\n¿Está seguro?', '¿BORRAR EMPLEADO?', padre = self.wids['ventana']): 
+        if not utils.dialogo('Se borrará el empleado actual.\n¿Está seguro?',
+                '¿BORRAR EMPLEADO?',
+                padre = self.wids['ventana']): 
             return
-        if empleado != None: empleado.notificador.set_func(lambda : None)
+        if empleado != None:
+            empleado.notificador.set_func(lambda : None)
         try:
-            empleado.destroy(ventana = __file__)
+            borrado = empleado.destroy(ventana = __file__)
+            if not borrado:
+                raise Exception("%s no se pudo eliminar" % empleado.puid)
         except: 
-            utils.dialogo_info('EMPLEADO NO ELIMINADO', 'No se pudo eliminar el empleado.', padre = self.wids['ventana'])
-        self.ir_a_primero()
+            empleado.sync()
+            empleado.sqlmeta._obsolete = False # Para evitar el «... has become
+                # obsolete». El destroy de SQLObject marca este atributo pero
+                # no lo devuelve a False ni el sync ni el propio destroy si
+                # falla.
+            empleado.notificador.set_func(self.aviso_actualizacion)
+            utils.dialogo_info('EMPLEADO NO ELIMINADO',
+                            'No se pudo eliminar el empleado.\n'
+                            'Considere desmarcarlo como activo en su lugar.',
+                            padre = self.wids['ventana'])
+        else:
+            if not borrado:
+                empleado.sync()
+            self.ir_a_primero()
             
     def crear_nuevo_empleado(self, widget):
         """

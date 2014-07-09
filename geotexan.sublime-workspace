@@ -352,6 +352,7 @@
 	},
 	"file_history":
 	[
+		"/home/bogado/.lessfilter",
 		"/home/bogado/Geotexan/src/Geotex-INN/extra/scripts/clouseau-gtk.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/extra/scripts/clouseau.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/extra/scripts/clouseau.glade",
@@ -478,8 +479,7 @@
 		"/home/bogado/Geotexan/src/Geotex-INN/db/tablas.sql",
 		"/home/bogado/Geotexan/doc/Sysadmin/Red/MACs_wifi.md",
 		"/tmp/test.erl",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/tipos_material.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/muestras_pendientes.html"
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/tipos_material.html"
 	],
 	"find":
 	{
@@ -628,7 +628,7 @@
 						"translation.y": 17.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
@@ -658,7 +658,7 @@
 						"translation.y": 1963.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
@@ -688,7 +688,7 @@
 						"translation.y": 7650.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
@@ -729,7 +729,7 @@
 						"translation.y": 339.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
@@ -757,7 +757,7 @@
 						"translation.y": 969.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
@@ -783,7 +783,7 @@
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
-						"translation.x": -0.0,
+						"translation.x": 0.0,
 						"translation.y": 102.0,
 						"zoom_level": 1.0
 					},
