@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2011  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -54,13 +54,14 @@ import pygtk
 pygtk.require('2.0')
 import gtk, gobject
 import os, sys, traceback
+from lib.myprint import myprint
 from framework import pclases
 #os.environ['LANG'] = "es_ES"
 #os.environ['LANGUAGE'] = 'es_ES'
-#print os.environ
+myprint(os.environ)
 #os.chdir(os.path.dirname(os.path.realpath(sys.argv[0])))
-#print os.getcwd()
-#print os.path.realpath(sys.argv[0])
+myprint(os.getcwd())
+myprint(os.path.realpath(sys.argv[0]))
 #
 from formularios import utils
 from framework.configuracion import ConfigConexion, parse_params
@@ -68,7 +69,7 @@ from framework.configuracion import ConfigConexion, parse_params
 from formularios import custom_widgets
 from formularios.ventana import install_bug_hook, abrir_gajim
 
-__version__ = '5.7.3'
+__version__ = '5.7.5'
 __version_info__ = tuple(
     [int(num) for num in __version__.split()[0].split('.')] + 
     [txt.replace("(", "").replace(")", "") for txt in __version__.split()[1:]]
@@ -181,14 +182,14 @@ class Menu:
         install_bug_hook(self.usuario)
         # Continúo con el gestor de mensajes y resto de ventana menú.
         if pclases.VERBOSE:
-            print "Cargando gestor de mensajes..."
+            myprint("Cargando gestor de mensajes...")
         self.__gm = gestor_mensajes.GestorMensajes(self.usuario)
         # DONE: Dividir la ventana en expansores con los módulos del programa 
         # (categorías) y dentro de ellos un IconView con los iconos de cada 
         # ventana. Poner también en lo alto del VBox el icono de la aplicación.
         # (Ya va siendo hora de un poquito de eyecandy).
         if pclases.VERBOSE:
-            print "Cargando menú principal..."
+            myprint("Cargando menú principal...")
         self.construir_ventana()
         utils.escribir_barra_estado(self.statusbar, 
                                     "Menú iniciado", 
@@ -305,25 +306,25 @@ class Menu:
         modulos = {}
         usuario = self.get_usuario()
         if pclases.VERBOSE:
-            print "Analizando permisos (1/2)..."
+            myprint("Analizando permisos (1/2)...")
         if pclases.VERBOSE:
             i = 0
             tot = pclases.Modulo.select().count()
         for m in pclases.Modulo.select(orderBy = "nombre"):
             if pclases.VERBOSE:
                 i += 1
-                print "Analizando permisos (1/2)... (%d/%d)" % (i, tot)
+                myprint("Analizando permisos (1/2)... (%d/%d)" % (i, tot))
             modulos[m] = []
         if pclases.VERBOSE:
             i = 0
             tot = pclases.Permiso.select(
                 pclases.Permiso.q.usuarioID == usuario.id).count()
         if pclases.VERBOSE:
-            print "Analizando permisos (2/2)..."
+            myprint("Analizando permisos (2/2)...")
         for permusu in usuario.permisos:
             if pclases.VERBOSE:
                 i += 1
-                print "Analizando permisos (2/2)... (%d/%d)" % (i, tot)
+                myprint("Analizando permisos (2/2)... (%d/%d)" % (i, tot))
             if permusu.permiso:
                 v = permusu.ventana
                 m = v.modulo
@@ -442,7 +443,7 @@ class Menu:
                         t += "%s-\n" % tmp[:MAX]
                         tmp = tmp[MAX:]
                     l = tmp
-                # print t.replace("\n", "|"), "--", l, "--", p
+                # myprint(t.replace("\n", "|"), "--", l, "--", p)
             t += l
             res = t
         else:
@@ -546,7 +547,7 @@ class Menu:
         utils.escribir_barra_estado(self.statusbar, descripcion_icono_seleccionado, self.logger, self.usuario.usuario)
 
     def volver_a_cursor_original(self):
-        # print "Patrick Bateman sabe que es una chapuza y que no hay que hacer suposiciones de tiempo."
+        # myprint("Patrick Bateman sabe que es una chapuza y que no hay que hacer suposiciones de tiempo.")
         try:
             self.ventana.window.set_cursor(None)
         except AttributeError:
@@ -637,7 +638,7 @@ class Menu:
                     #        "Lanzador multiproceso en desarrollo..."
                     self.lanzar_ventana(archivo, clase)
                 except Exception, e:
-                    print e
+                    myprint(e)
                     sys.stderr.write(`e`)
                     self._lanzar_ventana(archivo, clase)
         except:
@@ -695,7 +696,7 @@ class Menu:
         launcher.run(archivo, clase, self.usuario, self.fconfig)
 
     def enviar_correo_error_ventana(self):
-        print "Se ha detectado un error"
+        myprint("Se ha detectado un error")
         texto = ''
         for e in sys.exc_info():
             texto += "%s\n" % e
@@ -744,16 +745,20 @@ class Menu:
         gtk.main()
 
     def launch_browser_mailer(self, dialogo, uri, tipo):
-        # FIXME: De momento sólo funciona para NT-compatibles. Usar el nuevo multi_open.
+        # FIXME: De momento sólo funciona para NT-compatibles. Usar el nuevo
+        # multi_open.
         if tipo == 'email':
             if os.name == 'nt':
                 try:
-                    os.startfile('mailto:%s' % uri) # if pywin32 is installed we open @UndefinedVariable
+                    os.startfile('mailto:%s' % uri)  # if pywin32 is installed
+                                                     # we open
                 except:
                     pass
             else:
                 utils.dialogo_info('NO IMPLEMENTADO', 
-                                   'Funcionalidad no implementada.\nDebe lanzar manualmente su cliente de correo.\nCorreo-e seleccionado: %s' % uri,
+                                   'Funcionalidad no implementada.\n'
+                                   'Debe lanzar manualmente su cliente de '
+                                   'correo.\nCorreo-e seleccionado: %s' % uri,
                                    padre = self.ventana)
         elif tipo == 'web':
             if os.name == 'nt':
@@ -933,8 +938,8 @@ def main():
             ["Logged from file menu.py", "Bad file descriptor"]):
         # Me quito de en medio los errores de volcado a log (IOError 9) que 
         # aparecen a veces por... ¿Samba? ¿Clientes Windows? No lo sé. 
-        print "Se han detectado algunos errores en segundo plano durante "\
-              "la ejecución."
+        myprint("Se han detectado algunos errores en segundo plano durante "
+                "la ejecución.")
         enviar_correo('Errores en segundo plano. La stderr contiene:\n%s' 
                         % (errores), 
                       m.get_usuario())
@@ -970,6 +975,6 @@ if __name__ == '__main__':
         #psyco.log()
         #psyco.profile()
     except ImportError:
-        print "Optimizaciones no disponibles."
+        myprint("Optimizaciones no disponibles.")
     main()
 

@@ -37,16 +37,16 @@ NOTAS:
   si se marcara la opción `Línea de embolsado` en la consulta
 * En la consulta de producido hay que indicar que se quiere también sacar la
   producción C (aunque no entren para el cálculo de horas, totales y eso) para
-  que cuadre con las existencias inciales, finales y ventas. 
-  [03/04/2014]: OBSOLETO. Ya no existe esa opción en la ventana y se saca la 
+  que cuadre con las existencias inciales, finales y ventas.
+  [03/04/2014]: OBSOLETO. Ya no existe esa opción en la ventana y se saca la
                 producción C siempre.
 * Hay que tener en cuenta que dos productos que se llamen igual, aunque uno
   esté desabilitado (caso ARIAROLL 180), se van a combinar en una sola
   fila de la hoja de cálculo.
-* Peculiaridades: el consumo se mide en peso sin embalaje, mientras que las 
-  existencias van con embalaje y la producción también sin. En las balas, 
-  cajas y bigbags no afecta porque el embalaje es despreciable o no se puede 
-  estimar. En los rollos sí importa. Suerte que hasta ahora estamos tratando 
+* Peculiaridades: el consumo se mide en peso sin embalaje, mientras que las
+  existencias van con embalaje y la producción también sin. En las balas,
+  cajas y bigbags no afecta porque el embalaje es despreciable o no se puede
+  estimar. En los rollos sí importa. Suerte que hasta ahora estamos tratando
   totales, que en el caso de rollos van en metros. Y los metros no engañan.
 
 SYNOPSIS
@@ -98,7 +98,7 @@ try:
     FULLDIRPADRE = os.path.split(os.path.abspath(os.path.curdir))[0]
     DIRPADRE = os.path.split(FULLDIRPADRE)[-1]
 except IndexError:
-    sys.exit(2) # Where The Fuck am I?
+    sys.exit(2)  # Where The Fuck am I?
 assert DIRACTUAL == "scripts" or DIRPADRE == "tests", \
                     "Debe ejecutar el script desde el directorio donde reside"\
                     " o bien desde un subdirectorio de `tests`."
@@ -108,6 +108,7 @@ from formularios import utils
 from collections import defaultdict
 from csv import writer, reader
 from lib.textprogressbar.progress.bar import ShadyBar
+
 
 class Options:
     def __init__(self,
@@ -207,7 +208,7 @@ def parse_produccion(fproduccion_fib, fproduccion_gtx, fproduccion_cem):
             if producto.startswith(">"):
                 continue    # Es un desglose. No me interesa.
             if producto == "Sin producción".encode("latin1"):
-                continue    # Es un resumen de tiempo sin producir. 
+                continue    # Es un resumen de tiempo sin producir.
             if es_gtx:
                 try:
                     prod_a = utils.parse_float(m_a)

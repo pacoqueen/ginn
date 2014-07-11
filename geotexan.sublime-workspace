@@ -24,26 +24,10 @@
 			}
 		},
 		{
-			"file": "ginn/formularios/ventana_progreso.py",
-			"settings":
-			{
-				"buffer_size": 16505,
-				"line_ending": "Unix"
-			}
-		},
-		{
 			"file": "ginn/framework/configuracion.py",
 			"settings":
 			{
 				"buffer_size": 21749,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "ginn/formularios/ventana.py",
-			"settings":
-			{
-				"buffer_size": 54757,
 				"line_ending": "Unix"
 			}
 		},
@@ -59,23 +43,7 @@
 			"file": "extra/scripts/clouseau.py",
 			"settings":
 			{
-				"buffer_size": 27989,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "ginn/main.py",
-			"settings":
-			{
-				"buffer_size": 417,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "ginn/formularios/launcher.py",
-			"settings":
-			{
-				"buffer_size": 6006,
+				"buffer_size": 27984,
 				"line_ending": "Unix"
 			}
 		}
@@ -319,7 +287,7 @@
 				":w - Save"
 			]
 		],
-		"width": 647.0
+		"width": 629.0
 	},
 	"console":
 	{
@@ -352,6 +320,13 @@
 	},
 	"file_history":
 	[
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/menu.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/menu.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/mdb-export",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/main.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/launcher.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/ventana.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/ventana_progreso.py",
 		"/home/bogado/.lessfilter",
 		"/home/bogado/Geotexan/src/Geotex-INN/extra/scripts/clouseau-gtk.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/extra/scripts/clouseau.py",
@@ -362,15 +337,12 @@
 		"/home/bogado/Geotexan/src/Geotex-INN/extra/scripts/cierre_anno.py",
 		"/home/bogado/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/framework/launch_server.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/launcher.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/db/new_tablas.sql",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/configuracion.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/presupuestos.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/framework/parse_mdblogic.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/pagares_pagos.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/main.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/framework/configuracion.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/ventana.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/mdb-array",
 		"/home/bogado/Geotexan/src/Geotex-INN/db/migrate2bacall.sh",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/examples/list-as-odt.py",
@@ -475,11 +447,7 @@
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/prefacturas.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_pendientes_recibir.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/db/populate.sql",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_ventas_por_producto.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/db/tablas.sql",
-		"/home/bogado/Geotexan/doc/Sysadmin/Red/MACs_wifi.md",
-		"/tmp/test.erl",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/tipos_material.html"
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_ventas_por_producto.py"
 	],
 	"find":
 	{
@@ -497,6 +465,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"print",
 			"\\$",
 			"print",
 			"parse_params",
@@ -584,6 +553,8 @@
 		"regex": false,
 		"replace_history":
 		[
+			"myprint(",
+			"print"
 		],
 		"reverse": false,
 		"show_context": true,
@@ -594,7 +565,7 @@
 	"groups":
 	[
 		{
-			"selected": 5,
+			"selected": 3,
 			"sheets":
 			[
 				{
@@ -628,41 +599,11 @@
 						"translation.y": 17.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "ginn/formularios/ventana_progreso.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 16505,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								13218,
-								13218
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1963.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
 					"file": "ginn/framework/configuracion.py",
 					"semi_transient": false,
 					"settings":
@@ -688,52 +629,11 @@
 						"translation.y": 7650.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "ginn/formularios/ventana.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 54757,
-						"regions":
-						{
-							"bookmark_m":
-							{
-								"flags": 144,
-								"regions":
-								[
-									[
-										20523,
-										20523
-									]
-								]
-							}
-						},
-						"selection":
-						[
-							[
-								2434,
-								2434
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 339.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
+					"buffer": 2,
 					"file": "extra/scripts/obras_huerfanas.py",
 					"semi_transient": false,
 					"settings":
@@ -754,27 +654,27 @@
 							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 969.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 3,
 					"file": "extra/scripts/clouseau.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 27989,
+						"buffer_size": 27984,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								755,
-								755
+								406,
+								406
 							]
 						],
 						"settings":
@@ -784,68 +684,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 102.0,
+						"translation.y": 51.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "ginn/main.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 417,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								417,
-								417
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "ginn/formularios/launcher.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 6006,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3664,
-								3664
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1394.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
 					"type": "text"
 				}
 			]
@@ -897,7 +739,7 @@
 	"project": "geotexan.sublime-project",
 	"replace":
 	{
-		"height": 46.0
+		"height": 64.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -905,6 +747,10 @@
 		"height": 0.0,
 		"selected_items":
 		[
+			[
+				"menu.py",
+				"ginn/formularios/menu.py"
+			],
 			[
 				"clouse",
 				"extra/scripts/clouseau.py"
