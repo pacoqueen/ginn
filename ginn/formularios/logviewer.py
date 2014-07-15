@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2013  Francisco José Rodríguez Bogado,                   #
-#                          Diego Muñoz Escalante.                             #
-# (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
+# Copyright (C) 2005-2014 Francisco José Rodríguez Bogado,                    #
+#                         <pacoqueen@users.sourceforge.net>                   #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
 #                                                                             #
@@ -51,15 +50,20 @@ class LogViewer(Ventana):
     """
     Visor de logs de la aplicación.
     """
-    def __init__(self, objeto = None, usuario = None, ventana_padre = None, locals_adicionales = {}, fichero_log = "ginn.log"):
+    def __init__(self, objeto=None, usuario=None, ventana_padre=None,
+                 locals_adicionales={}, fichero_log="ginn.log"):
         self.fichero_log = fichero_log
         self.filtro = [""]
         try:
-            Ventana.__init__(self, 'trazabilidad.glade', objeto, usuario = usuario)    
+            Ventana.__init__(self, 'trazabilidad.glade', objeto,
+                             usuario=usuario)    
             # Me vale el mismo glade. Modificaré dinámicamente lo que me 
             # estorbe.
         except:     # Tal vez me estén llamando desde otro directorio
-            Ventana.__init__(self, os.path.join('..', 'formularios', 'trazabilidad.glade'), objeto, usuario = usuario)
+            Ventana.__init__(self,
+                             os.path.join('..', 'formularios',
+                                          'trazabilidad.glade'),
+                             objeto, usuario = usuario)
         connections = {'b_salir/clicked': self._salir}
         self.add_connections(connections)
         self.wids['hbox1'].set_property("visible", False)
@@ -203,10 +207,24 @@ dir()
         self.wids['tv_datos'].set_model(None)
         model.clear()
         last_iter = None
-        if self.log != None:
-            for linea in self.filtrar_lineas(self.log):
-                last_iter = self.agregar_linea(model, linea)
-            # self.cerrar_log(log)
+        if self.log:
+            try:
+                for linea in self.filtrar_lineas(self.log):
+                    last_iter = self.agregar_linea(model, linea)
+                # self.cerrar_log(log)
+            except IOError:     # Log cerrado, fichero rotado o lo que sea...
+                import time
+                time.sleep(1)
+                fecha = utils.str_fecha(mx.DateTime.localtime())
+                hora = utils.str_hora(mx.DateTime.localtime())
+                tipo = "ERROR"
+                usuario = self.usuario
+                texto = "IOError [errno 22] Al abrir leer el log"
+                numlinea = ""
+                linea = [fecha, hora, tipo, usuario, texto, numlinea]
+                self.agregar_linea(model, linea)
+                self.log = self.abrir_log()     # Intento reabrirlo para que 
+                    # el check_log encuentre más líneas en el nuevo fichero log
         else:
             self.mostrar_error(model)
         self.agregar_eof(model)
@@ -221,7 +239,7 @@ dir()
         Comprueba si ha cambiado el tamaño del log y añade las 
         líneas nuevas.
         """
-        if os.path.getsize(self.fichero_log) > self.tamanno_log:
+        if os.path.getsize(self.fichero_log) != self.tamanno_log:
             self.tamanno_log = os.path.getsize(self.fichero_log)
             try:
                 for linea in self.filtrar_lineas(self.log):
