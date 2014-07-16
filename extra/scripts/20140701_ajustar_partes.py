@@ -4,6 +4,9 @@
 """
 Por el cambio de producto de varios rollos hay que crear los partes
 correspondientes y partidas sin alterar las productividades.
+UPDATE [16/07/2014] Hay que pasar una serie de rollos pero ahora de
+Danofelt a NT 12 normal (rparra). Se cambia el load_rollos por
+_load_rollos y se crea un nuevo load_rollos con los códigos nuevos.
 """
 
 import sys
@@ -30,7 +33,7 @@ from lib.textprogressbar.progress.bar import IncrementalBar
 add_horas = lambda h, d: (
         datetime.datetime.combine(datetime.date(1, 1, 1), h) + d).time()
 
-def load_rollos(productividades):
+def _load_rollos(productividades):
     """
     Devuelve un diccionario con los productos a los que hay que pasar cada
     rollo que está en la lista de cada clave.
@@ -86,6 +89,35 @@ def load_rollos(productividades):
     for codigo in nt30:
         rollo = pclases.Rollo.selectBy(numrollo=codigo)[0]
         res[pvnt30].append(rollo)
+        pdp = rollo.parteDeProduccion
+        if pdp not in productividades:
+            productividades[pdp] = pdp.calcular_rendimiento()
+    return res
+
+
+def load_rollos(productividades):
+    """
+    Devuelve un diccionario con los productos a los que hay que pasar cada
+    rollo que está en la lista de cada clave.
+    Guarda en el diccionario de productividades los rendimientos de los partes
+    antes de tocarlos más adelante.
+    """
+    nt12 = (354096, 354097, 354098, 354099, 354100,  # 5
+            354101, 354102, 354103, 354104, 354105,  # 10
+            354106, 354107)                          # 12
+    pvnt12 = pclases.ProductoVenta.select(pclases.AND(
+                pclases.ProductoVenta.q.descripcion.contains("NT 12 "),
+                pclases.NOT(
+                    pclases.ProductoVenta.q.descripcion.contains("NT 125")),
+                pclases.ProductoVenta.q.camposEspecificosRolloID ==
+                    pclases.CamposEspecificosRollo.q.id,
+                pclases.CamposEspecificosRollo.q.metrosLineales == 100,
+                pclases.CamposEspecificosRollo.q.ancho == 1.83),
+            orderBy="id")[0]
+    res = {pvnt12: []}
+    for codigo in nt12:
+        rollo = pclases.Rollo.selectBy(numrollo=codigo)[0]
+        res[pvnt12].append(rollo)
         pdp = rollo.parteDeProduccion
         if pdp not in productividades:
             productividades[pdp] = pdp.calcular_rendimiento()
