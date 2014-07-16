@@ -130,7 +130,7 @@ def str_hora(fh):
         try:
             fh = mx.DateTime.DateTimeDeltaFrom(seconds = fh.total_seconds())
             return "%02d:%02d:%02d" % (fh.hour, fh.minute, fh.second)
-        except: 
+        except:
             return ''
 
 def str_hora_corta(fh):
@@ -2068,7 +2068,7 @@ def parse_fechahora(txt):
 
 def parse_hora(txt):
     """
-    Devuelve un mx.DateTimeDelta a partir del 
+    Devuelve un mx.DateTimeDelta a partir del
     texto recibido.
     """
     if ":" not in txt:
@@ -2078,11 +2078,15 @@ def parse_hora(txt):
     valores = [v.strip() != "" and v or "0" for v in txt.split(":")]
     if len(valores) == 3:
         hora, minuto, segundo = map(_float, valores)
+    elif len(valores) == 4:  # Lleva hasta días.
+        dias = _float(valores[0])
+        hora, minuto, segundo = map(_float, valores[1:])
+        hora += dias*24
     else:
         segundo = 0
         hora, minuto = map(_float, valores)
-    return mx.DateTime.DateTimeDeltaFrom(hours = hora, 
-                                         minutes = minuto, 
+    return mx.DateTime.DateTimeDeltaFrom(hours = hora,
+                                         minutes = minuto,
                                          seconds = segundo)
 
 def round_banquero(numero, precision = 2):

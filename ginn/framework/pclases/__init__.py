@@ -16911,6 +16911,12 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
                 res[grupo] += ht_horas
         return res
 
+    def calcular_tiempo_real(self):
+        """
+        Simplemente devuelve la duración en horas (flotante) del parte.
+        """
+        return self.get_duracion().hours
+
     def calcular_tiempo_teorico(self):
         """
         Devuelve el tiempo teórico en horas que debería haber tardado el parte

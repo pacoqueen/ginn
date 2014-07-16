@@ -40,6 +40,7 @@ import gtk
 import time
 import mx.DateTime
 import pygtk
+import gobject
 from formularios import utils
 pygtk.require('2.0')
 from formularios.consulta_producido import str_horas, detectar_hueco, \
@@ -77,25 +78,34 @@ class ConsultaProductividad(Ventana):
                 ('Producción', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Productividad', 'gobject.TYPE_STRING', 
                     False, True, False, None),
+                # Barra porcentaje
+                ("Barra porcentaje", 'gobject.TYPE_FLOAT',
+                    False, True, False, None),  # Da igual. Se reemplazará
+                # Columnas de depuración
+                ("Tiempo teórico", 'gobject.TYPE_STRING',
+                    False, True, False, None), 
+                ("Tiempo real", 'gobject.TYPE_STRING',
+                    False, True, False, None), 
                 ('Idparte', 'gobject.TYPE_INT64', False, False, False, None))
         utils.preparar_treeview(self.wids['tv_datos'], cols)
         self.wids['tv_datos'].connect("row-activated", self.abrir_parte)
         # XXX
-        import gobject
-        model = gtk.TreeStore(gobject.TYPE_STRING, 
-                              gobject.TYPE_STRING, 
-                              gobject.TYPE_STRING, 
-                              gobject.TYPE_STRING,
-                              gobject.TYPE_STRING,
-                              gobject.TYPE_STRING,
-                              gobject.TYPE_FLOAT,
-                              gobject.TYPE_INT64)
-        self.wids['tv_datos'].set_model(model)
+        #model = gtk.TreeStore(gobject.TYPE_STRING, 
+        #                      gobject.TYPE_STRING, 
+        #                      gobject.TYPE_STRING, 
+        #                      gobject.TYPE_STRING,
+        #                      gobject.TYPE_STRING,
+        #                      gobject.TYPE_STRING,
+        #                      gobject.TYPE_FLOAT,
+        #                      gobject.TYPE_INT64)
+        #self.wids['tv_datos'].set_model(model)
+        model = self.wids['tv_datos'].get_model()
         model.set_sort_func(0, utils.funcion_orden, 0)
         cell = gtk.CellRendererProgress()
         column = gtk.TreeViewColumn('', cell)
         column.add_attribute(cell, 'value', 6)
         column.set_sort_column_id(6)
+        self.wids['tv_datos'].remove_column(self.wids['tv_datos'].get_column(6))
         self.wids['tv_datos'].insert_column(column, 6)
         # XXX
         self.wids['tv_datos'].add_events(gtk.gdk.BUTTON_PRESS_MASK)
@@ -106,7 +116,15 @@ class ConsultaProductividad(Ventana):
             col = self.wids['tv_datos'].get_column(ncol)
             for cell in col.get_cell_renderers():
                 cell.set_property("xalign", 1.0)
+        for ncol in (7, 8):
+            col = self.wids['tv_datos'].get_column(ncol)
+            for cell in col.get_cell_renderers():
+                cell.set_property("xalign", 0.5)
         self.colorear(self.wids['tv_datos'])
+        # Lo primero de todo. Si está activado el DEBUG, muestro las columnas.
+        tv = self.wids['tv_datos']
+        for ncol in range(7, len(tv.get_columns())):
+            tv.get_column(ncol).set_property("visible", pclases.DEBUG)
         temp = time.localtime()
         #self.fin = str(temp[0])+'/'+str(temp[1])+'/'+str(temp[2])
         self.wids['e_fechafin'].set_text(utils.str_fecha(temp))
@@ -176,12 +194,12 @@ class ConsultaProductividad(Ventana):
                                           pango.FontDescription("sans bold"))
         
         cols = tv.get_columns()
-        for i in xrange(len(cols) - 1): # Todas las columas menos la 
-                                        # del porcentaje en barra.
-            column = cols[i]
-            cells = column.get_cell_renderers()
-            for cell in cells:
-                column.set_cell_data_func(cell, cell_func, i)
+        for i in xrange(len(cols)): # Todas las columas menos la 
+            if i != 6:              # del porcentaje en barra.
+                column = cols[i]
+                cells = column.get_cell_renderers()
+                for cell in cells:
+                    column.set_cell_data_func(cell, cell_func, i)
 
     def imprimir(self, boton):
         """
@@ -240,14 +258,14 @@ class ConsultaProductividad(Ventana):
         if idparte > 0: # Podría usar también el chequeo de que padre != None.
             parte = pclases.ParteDeProduccion.get(idparte)
             if parte.es_de_balas():
-                from formularios import partes_de_fabricacion_balas
-                ventana_parteb = partes_de_fabricacion_balas.PartesDeFabricacionBalas(parte)  # @UnusedVariable
+                from formularios import partes_de_fabricacion_balas as pfbal
+                ventana_parteb = pfbal.PartesDeFabricacionBalas(parte)
             elif parte.es_de_geotextiles():
-                from formularios import partes_de_fabricacion_rollos
-                ventana_parteb = partes_de_fabricacion_rollos.PartesDeFabricacionRollos(parte)  # @UnusedVariable
+                from formularios import partes_de_fabricacion_rollos as pfrol
+                ventana_parteb = pfrol.PartesDeFabricacionRollos(parte)
             elif parte.es_de_bolsas():
-                from formularios import partes_de_fabricacion_bolsas
-                ventana_parteb = partes_de_fabricacion_bolsas.PartesDeFabricacionBolsas(parte)  # @UnusedVariable
+                from formularios import partes_de_fabricacion_bolsas as pfbol
+                ventana_parteb = pfbol.PartesDeFabricacionBolsas(parte)
 
     def chequear_cambios(self):
         pass
@@ -259,6 +277,10 @@ class ConsultaProductividad(Ventana):
             Los partes vienen en una lista y deben estar ordenados por fecha y 
             hora de inicio.
         """        
+        # Lo primero de todo. Si está activado el DEBUG, muestro las columnas.
+        tv = self.wids['tv_datos']
+        for ncol in range(7, len(tv.get_columns())):
+            tv.get_column(ncol).set_property("visible", pclases.DEBUG)
         from ventana_progreso import VentanaProgreso
         self.huecos = []    # Lista de los últimos partes tratados por línea.
         self.incidencias_horaini = []
@@ -276,7 +298,7 @@ class ConsultaProductividad(Ventana):
         vpro.mostrar()
         e_personasturno = 0
         tiempototal = 0
-        tiemporeal = 0      # Por si inicia una consulta sin resultados.
+        tiempo_sin_incidencias = 0      # Por si inicia una consulta sin resultados.
         metrosproducidos = 0
         kilosconsumidos = kilosconsumidos_partidas_completas = 0
         tiempototaltotal = mx.DateTime.DateTimeDelta(0)
@@ -292,6 +314,8 @@ class ConsultaProductividad(Ventana):
                             # producción y productividad por día.
         produccion_actual = 0.0
         #productividad_actual = 0.0
+        t_teorico_por_dia = 0
+        t_real_por_dia = 0
         pdps_dia = []   # Ojo. Los partes deben venir ordenados para que 
             # esta lista solo contenga los partes del día tratado en la 
             # iteración por la que vaya. Se limpia al cambiar de un día al 
@@ -305,67 +329,72 @@ class ConsultaProductividad(Ventana):
             # instanciado en el final de la anterior. Inicializo para evitar 
             # errores y errores en análisis sintáctico de algunos IDE en la 
             # línea 342.
-        for p in partes:
-            if p.se_solapa():
+        for pdp in partes:
+            if pdp.se_solapa():
                 texto_warning = "%sconsulta_productividad::rellenar_tabla"\
                     " -> El parte ID %d se solapa con otros de la misma línea"\
                     ". Si estaba verificado, lo desbloqueo para que se vuelva"\
                     " a revisar y lo ignoro para el cálculo actual." % (
-                     self.usuario and self.usuario.usuario + ": " or "", p.id)
+                     self.usuario and self.usuario.usuario + ": " or "", pdp.id)
                 self.logger.warning(texto_warning)
                 myprint(texto_warning)
-                p.bloqueado = False
+                pdp.bloqueado = False
                 continue
             vpro.set_valor(i/tot, 'Añadiendo parte %s...' % (
-                                    utils.str_fecha(p.fecha)))
-            delta_entre_partes, parte_anterior = detectar_hueco(p, self.huecos)
+                                    utils.str_fecha(pdp.fecha)))
+            delta_entre_partes, parte_anterior = detectar_hueco(pdp, self.huecos)
             if delta_entre_partes:
-                self.marcar_hueco(parte_anterior, p)
+                self.marcar_hueco(parte_anterior, pdp)
             self.tiempo_faltante += delta_entre_partes
             kilosgranza_del_parte = 0.0
-            tiempototal, tiemporeal = self.calcular_tiempo_trabajado(p)
+            tiempototal, tiempo_sin_incidencias = self.calcular_tiempo_trabajado(pdp)
             tiempototaltotal += tiempototal
-            #productividad = p.calcular_productividad()
+            #productividad = pdp.calcular_productividad()
             # CWT: Ahora no se calcula así, sino como el antiguo rendimiento.
-            productividad = p.calcular_rendimiento()
+            productividad = pdp.calcular_rendimiento()
             # Tratamiento especial para partes de balas
             try:
-                str_producto = p.productoVenta.descripcion
+                str_producto = pdp.productoVenta.descripcion
             except AttributeError: 
                 str_producto = "Sin producción"
             if (self.wids['r_balas'].get_active() 
                 or self.wids['r_ambos'].get_active()):   # Sólo balas o todos. 
-                if p.es_de_fibra(): 
-                    balas = [a.bala for a in p.articulos if a.balaID != None]
-                    bigbags = [a.bigbag for a in p.articulos if a.bigbagID != None]
+                if pdp.es_de_fibra(): 
+                    balas = [a.bala for a in pdp.articulos if a.balaID != None]
+                    bigbags = [a.bigbag for a in pdp.articulos if a.bigbagID != None]
                     for b in balas:
                         kilosproducidos += b.pesobala
                     for b in bigbags:
                         kilosproducidos += b.pesobigbag
-                    kilosgranza_del_parte = p.get_granza_consumida()
+                    kilosgranza_del_parte = pdp.get_granza_consumida()
                     kilosgranza += kilosgranza_del_parte
-                    if p.get_produccion()[0] - kilosgranza_del_parte > 1000: 
+                    if pdp.get_produccion()[0] - kilosgranza_del_parte > 1000: 
                                                                     # XXX DEBUG
-                        self.logger.warning("El parte ID %d (%s) ha consumido (%s) mucha menos granza que fibra ha producido (%s) !!!" % (p.id, utils.str_fecha(p.fecha), utils.float2str(kilosgranza_del_parte), utils.float2str(p.get_produccion()[0])))     
+                        self.logger.warning("El parte ID %d (%s) ha consumido "
+                                "(%s) mucha menos granza que fibra ha "
+                                "producido (%s) !!!" % (pdp.id,
+                                    utils.str_fecha(pdp.fecha),
+                                    utils.float2str(kilosgranza_del_parte),
+                                    utils.float2str(pdp.get_produccion()[0])))     
                                                                     # XXX DEBUG
             if (self.wids['r_cemento'].get_active() 
                 or self.wids['r_ambos'].get_active()):
-                kilosproducidos += p.get_produccion()[0]
-                kilosconsumidos += sum([bb.pesobigbag for bb in p.bigbags])
+                kilosproducidos += pdp.get_produccion()[0]
+                kilosconsumidos += sum([bb.pesobigbag for bb in pdp.bigbags])
             if (self.wids['r_rollos'].get_active()
                 or self.wids['r_ambos'].get_active()):  # Sólo rollos o todos.
-                if p.es_de_geotextiles():
+                if pdp.es_de_geotextiles():
                     superficies_defectuosos = [a.superficie 
-                        for a in p.articulos if a.es_rollo_defectuoso()]
+                        for a in pdp.articulos if a.es_rollo_defectuoso()]
                     metrosproducidos += sum(superficies_defectuosos)
-                    rollos = [a.rollo for a in p.articulos if a.rollo != None]
+                    rollos = [a.rollo for a in pdp.articulos if a.rollo != None]
                     if len(rollos) > 0:     # Para que no intente hacer el 
                         # cálculo con partes que tengan balas y/o no rollos.
-                        metrosproducidos += len(rollos) * p.articulos[0].productoVenta.camposEspecificosRollo.ancho * p.articulos[0].productoVenta.camposEspecificosRollo.metrosLineales
-                        if p.articulos[0].es_rollo():
-                            partida = p.articulos[0].rollo.partida
-                        elif p.articulos[0].es_rollo_defectuoso():
-                            partida = p.articulos[0].rolloDefectuoso.partida
+                        metrosproducidos += len(rollos) * pdp.articulos[0].productoVenta.camposEspecificosRollo.ancho * pdp.articulos[0].productoVenta.camposEspecificosRollo.metrosLineales
+                        if pdp.articulos[0].es_rollo():
+                            partida = pdp.articulos[0].rollo.partida
+                        elif pdp.articulos[0].es_rollo_defectuoso():
+                            partida = pdp.articulos[0].rolloDefectuoso.partida
                         else:
                             partida = None
                         if partida != None:
@@ -378,18 +407,18 @@ class ConsultaProductividad(Ventana):
                                         kilosconsumidos_partidas_completas += bpesobala
                                     balas_consumidas.append(b)
             
-            empleados = len(p.horasTrabajadas)
+            empleados = len(pdp.horasTrabajadas)
             e_personasturno += empleados
-            tiempoparte = p.get_duracion().hours
+            tiempoparte = pdp.get_duracion().hours
             if tiempoparte > 0:
                 personashora.append(empleados/tiempoparte)
             else:
                 personashora.append(0.0)
             vector.append(productividad)
-            produccion = p.get_produccion()
+            produccion = pdp.get_produccion()
             # Resúmenes por día como nodos padre del TreeView.
-            pdps_dia.append(p)
-            if dia_actual != utils.str_fecha(p.fecha):
+            pdps_dia.append(pdp)
+            if dia_actual != utils.str_fecha(pdp.fecha):
                 if dia_actual != "":  # Actualizo el padre
                     if not self.wids['r_ambos'].get_active():
                         model[padre][4] = "%s %s" % (
@@ -404,73 +433,69 @@ class ConsultaProductividad(Ventana):
                     #model[padre][5] = "%s %%" % (
                     #        utils.float2str(productividad_actual))
                     #model[padre][6] = min(productividad_actual, 100)
-                    productividad_actual=calcular_productividad_conjunta(
+# TODO: PORASQUI: Muy raro. Si hago una consulta sobre el día 13 nada más, me sale con una productividad conjunta del 94% (correcto según t. teórico y real). Pero si la hago del 13 al 15, baja al 87. En realidad sucede con cualquier día. El primero del rango siempre sale con una productividad inferior a si la consulta se lanza solamente sobre un día.
+                    productividad_actual = calcular_productividad_conjunta(
                             tuple(pdps_dia))
                     model[padre][5] = "%s %%" % (
                             utils.float2str(productividad_actual))
                     model[padre][6] = min(productividad_actual, 100)
+                    model[padre][7] = t_teorico_por_dia
+                    model[padre][8] = t_real_por_dia
                     pdps_dia = [] # He cambiado de día. Limpio.
-                dia_actual = utils.str_fecha(p.fecha)
+                    t_teorico_por_dia = 0
+                    t_real_por_dia = 0
+                dia_actual = utils.str_fecha(pdp.fecha)
                 produccion_actual = 0.0
                 productividad_actual = 0.0
                 #nodos_hijos_por_dia = 0
                 padre = model.append(None, 
-                            (utils.str_fecha(p.fecha), 
+                            (dia_actual, 
                              "", 
                              "", 
                              "", 
                              "", 
                              "%s %%" % (utils.float2str(productividad_actual)), 
                              min(productividad_actual, 100),
+                             "", # t. teórico
+                             "", # t. real
                              0))
+            t_teorico_pdp = pdp.calcular_tiempo_teorico()
+            t_teorico_por_dia += t_teorico_pdp
+            t_real_pdp = pdp.calcular_tiempo_real()
+            t_real_por_dia += t_real_pdp
             model.append(padre, 
-                (utils.str_fecha(p.fecha),
-                 str(p.horainicio)[:5],
-                 str(p.horafin)[:5],
+                (utils.str_fecha(pdp.fecha),
+                 str(pdp.horainicio)[:5],
+                 str(pdp.horafin)[:5],
                  str_producto, 
                  "%s %s" % (utils.float2str(produccion[0]), produccion[1]),
                  "%s %%" % (utils.float2str(productividad)),
                  min(productividad, 100),
-                 p.id))
+                 t_teorico_pdp,
+                 t_real_pdp,
+                 pdp.id))
             produccion_actual += produccion[0]
-            # BUG: Es media ponderada, no media aritmética:            productividad_actual += productividad
-            # BUG: Es media ponderada, no media aritmética:            nodos_hijos_por_dia += 1
-            #productividad_actual += productividad * p.get_duracion().hours
-            #nodos_hijos_por_dia += p.get_duracion().hours
             i+=1
         # Actualizo el padre de los últimos nodos:
         if dia_actual != "":  # Actualizo el padre
             if not self.wids['r_ambos'].get_active():
-                model[padre][4] = "%s %s" % (utils.float2str(produccion_actual), produccion[1])
+                model[padre][4] = "%s %s" % (
+                        utils.float2str(produccion_actual), produccion[1])
             else:   # Evito mezclar kilos con metros
                 model[padre][4] = "-"
-            #try:
-            #    productividad_actual /= nodos_hijos_por_dia
-            #except ZeroDivisionError:
-            #    productividad_actual = 100.0    # A falta de infinito...
             productividad_actual = calcular_productividad_conjunta(
                                                             tuple(pdps_dia))
             model[padre][5] = "%s %%" % (utils.float2str(productividad_actual))
             model[padre][6] = min(productividad_actual, 100)
-
+            # Campos de depuración
+            model[padre][7] = t_teorico_por_dia
+            model[padre][8] = t_real_por_dia
         vpro.ocultar()
         # XXX Primer intento de acelerar los treeview
         self.wids['tv_datos'].set_model(model)
         self.wids['tv_datos'].thaw_child_notify()
         # XXX
         if partes != []:
-            # total = total / len(partes)    
-            #numeradores = [r[-2] 
-            #               for r in self.wids['tv_datos'].get_model() 
-            #               if r.parent == None]
-            #denominadores = [r 
-            #                 for r in self.wids['tv_datos'].get_model() 
-            #                 if r.parent == None]
-            # ¿Los peores nombres de variables de la historia?
-            #try:
-            #    total = sum(numeradores) / len(denominadores)
-            #except ZeroDivisionError:
-            #    total = 0.0
             total = calcular_productividad_conjunta(tuple(partes))
             # Campos especiales de "Sólo balas"
             if self.wids['r_balas'].get_active():
@@ -488,15 +513,23 @@ class ConsultaProductividad(Ventana):
                     self.logger.warning(
                             "consulta_productividad.py::rellenar_tabla"
                             " -> tiempototaltotal = 0")
-                    e_kiloshora = 0   # Cero por poner algo. Porque un parte de tiempo transcurrido=0... se las trae.
+                    e_kiloshora = 0  # Cero por poner algo. Porque un parte
+                                     # de tiempo transcurrido=0... se las trae.
                 self.wids['e_kiloshora'].set_text("%s kg/h" % (
                                                 utils.float2str(e_kiloshora)))
             elif self.wids['r_rollos'].get_active():
                 tips = gtk.Tooltips()
-                tips.set_tip(self.wids['e_kilosgranza'], """Kilogramos consumidos contando partidas completas por defecto y por exceso. 
-(En un caso se cuentan solo partidas de carga cuyas partidas de geotextiles se hayan completado estrictamente antes o en la cota superior. 
-En el otro, por exceso, se contabilizan partidas completas aunque parte de su producción se salga del rango de fechas.
-En ambos casos el límite inferior es flexible -por compensación-.)""")
+                tips.set_tip(self.wids['e_kilosgranza'], 
+                             "Kilogramos consumidos contando partidas "
+                             "completas por defecto y por exceso.\n(En un caso"
+                             " se cuentan solo partidas de carga cuyas "
+                             "partidas de geotextiles se hayan completado "
+                             "estrictamente antes o en la cota superior.\n"
+                             "En el otro, por exceso, se contabilizan "
+                             "partidas completas aunque parte de su "
+                             "producción se salga del rango de fechas.\n"
+                             "En ambos casos el límite inferior es flexible "
+                             "-por compensación-.)")
                 tips.enable()
                 self.wids['label7'].set_text('m² producidos:')
                 self.wids['label8'].set_text('Kg fibra consumidos:') 
@@ -504,11 +537,17 @@ En ambos casos el límite inferior es flexible -por compensación-.)""")
                 try:
                     e_kiloshora = (metrosproducidos/float(tiempototaltotal.hours))
                 except ZeroDivisionError:
-                    self.logger.warning("consulta_productividad.py::rellenar_tabla -> tiempototaltotal = 0")
+                    self.logger.warning(
+                            "consulta_productividad.py::rellenar_tabla -> "
+                            "tiempototaltotal = 0")
                     e_kiloshora = 0
-                self.wids['e_kilosproducidos'].set_text("%s m²" % (utils.float2str(metrosproducidos)))
-                self.wids['e_kilosgranza'].set_text("%s kg ~ %s kg" % (utils.float2str(kilosconsumidos_partidas_completas), utils.float2str(kilosconsumidos)))
-                self.wids['e_kiloshora'].set_text("%s m²/h" % (utils.float2str(e_kiloshora)))
+                self.wids['e_kilosproducidos'].set_text("%s m²" % (
+                    utils.float2str(metrosproducidos)))
+                self.wids['e_kilosgranza'].set_text("%s kg ~ %s kg" % (
+                    utils.float2str(kilosconsumidos_partidas_completas),
+                    utils.float2str(kilosconsumidos)))
+                self.wids['e_kiloshora'].set_text("%s m²/h" % (
+                    utils.float2str(e_kiloshora)))
             else:
                 self.wids['label7'].set_text('Producido:')
                 self.wids['label8'].set_text('Consumido:')
@@ -517,12 +556,19 @@ En ambos casos el límite inferior es flexible -por compensación-.)""")
                     e_kiloshora = (kilosproducidos/float(tiempototaltotal.hours))
                     metros_hora = (metrosproducidos/float(tiempototaltotal.hours))
                 except ZeroDivisionError:
-                    self.logger.warning("consulta_productividad.py::rellenar_tabla -> tiempototaltotal = 0")
+                    self.logger.warning("consulta_productividad.py::"
+                            "rellenar_tabla -> tiempototaltotal = 0")
                     e_kiloshora = 0 
                     metros_hora = 0
-                self.wids['e_kilosproducidos'].set_text("%s m²; %s kg" % (utils.float2str(metrosproducidos), utils.float2str(kilosproducidos)))
-                self.wids['e_kilosgranza'].set_text("%s kg fibra; %s kg granza" % (utils.float2str(kilosconsumidos), utils.float2str(kilosgranza)))
-                self.wids['e_kiloshora'].set_text("%s m²/h; %s kg/h" % (utils.float2str(metros_hora), utils.float2str(e_kiloshora)))
+                self.wids['e_kilosproducidos'].set_text("%s m²; %s kg" % (
+                    utils.float2str(metrosproducidos),
+                    utils.float2str(kilosproducidos)))
+                self.wids['e_kilosgranza'].set_text(
+                        "%s kg fibra; %s kg granza" % (utils.float2str(
+                            kilosconsumidos), utils.float2str(kilosgranza)))
+                self.wids['e_kiloshora'].set_text("%s m²/h; %s kg/h" % (
+                    utils.float2str(metros_hora),
+                    utils.float2str(e_kiloshora)))
             # Fin campos especiales de "Sólo balas"
             self.wids['curva'].set_range(0, len(vector), 0, 100)
             self.wids['curva'].set_vector(vector)
@@ -581,13 +627,13 @@ En ambos casos el límite inferior es flexible -por compensación-.)""")
     def calcular_tiempo_trabajado(self, parte):
         tiempototal = parte.get_duracion()
         try:
-            tiemporeal = parte.get_horas_trabajadas()
+            tiempo_sin_incidencias = parte.get_horas_trabajadas()
         except AssertionError, msg:
             txt = "consulta_productividad.py::calcular_tiempo_trabajado -> Parte ID %d tiene más horas de parada que lo que dura el parte total. (%s)" % (parte.id, msg)
             self.logger.error(txt)
             print txt
-            tiemporeal = mx.DateTime.DateTimeDelta(0)
-        return tiempototal, tiemporeal
+            tiempo_sin_incidencias = mx.DateTime.DateTimeDelta(0)
+        return tiempototal, tiempo_sin_incidencias
 
         
     def buscar(self, boton):
@@ -617,13 +663,13 @@ En ambos casos el límite inferior es flexible -por compensación-.)""")
                     pclases.ParteDeProduccion.q.fecha < self.fin), 
                 orderBy = ('fecha', 'horainicio'))
         if self.wids['r_balas'].get_active():
-            partes = [p for p in partes if p.es_de_balas()]
+            partes = [pdp for pdp in partes if pdp.es_de_balas()]
             solobalas = True
         elif self.wids['r_rollos'].get_active():
-            #partes = [p for p in partes if not p.es_de_balas()]
-            partes = [p for p in partes if p.es_de_geotextiles()]
+            #partes = [pdp for pdp in partes if not pdp.es_de_balas()]
+            partes = [pdp for pdp in partes if pdp.es_de_geotextiles()]
         elif self.wids['r_cemento'].get_active():
-            partes = [p for p in partes if p.es_de_bolsas()]
+            partes = [pdp for pdp in partes if pdp.es_de_bolsas()]
         else:
             partes = list(partes)
         self.rellenar_tabla(partes, solobalas)
