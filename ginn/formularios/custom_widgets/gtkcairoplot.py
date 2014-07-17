@@ -183,7 +183,7 @@ class GtkCairoPlot(gtk.DrawingArea):
             # index = 2 is the y-axis
             x, y, label = series.find_point_by_index(y, 1)
             ttext = label
-            value = " (%s)" % x
+            value = " (%.1f)" % x
             if not ttext.endswith(value):   # Para no duplicar la información
                 ttext += value
             self.set_tooltip_text(ttext)

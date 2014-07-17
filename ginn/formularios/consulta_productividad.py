@@ -698,10 +698,19 @@ class ConsultaProductividad(Ventana):
             i += 1
             vpro.set_valor(i / tot, "Analizando rendimiento por producto...")
             producto = pdp.productoVenta
-            productos[producto].append(pdp)
+            if not producto:
+                txterr = "consulta_productividad.py::graficar_por_producto ->"\
+                         " %s:%s sin producto de venta." % (pdp.puid, 
+                                                            pdp.get_info())
+                myprint(txterr)
+                self.logger.warning(txterr)
+            else:
+                productos[producto].append(pdp)
         data = OrderedDict()
         tot += len(productos)
-        for producto in productos:
+        productos_ordenados = productos.keys()
+        productos_ordenados.sort(key = lambda prod: prod.descripcion)
+        for producto in productos_ordenados:
             i += 1
             vpro.set_valor(i / tot, "Analizando rendimiento por producto...")
             pdps = productos[producto]
