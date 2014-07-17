@@ -27,7 +27,7 @@ from formularios import utils
 from lib.textprogressbar.progress.bar import IncrementalBar
 
 
-def load_rollos():
+def _load_rollos():
     """
     Devuelve un diccionario con los productos a los que hay que pasar cada
     rollo que está en la lista de cada clave.
@@ -78,6 +78,32 @@ def load_rollos():
         rollo = pclases.Rollo.selectBy(numrollo=codigo)[0]
         assert "NT 305 5.5X90" in rollo.productoVenta.descripcion
         res[pvnt30].append(rollo)
+    return res
+
+
+def load_rollos():
+    """
+    Devuelve un diccionario con los productos a los que hay que pasar cada
+    rollo que está en la lista de cada clave.
+    Guarda en el diccionario de productividades los rendimientos de los partes
+    antes de tocarlos más adelante.
+    """
+    nt12 = (354096, 354097, 354098, 354099, 354100,  # 5
+            354101, 354102, 354103, 354104, 354105,  # 10
+            354106, 354107)                          # 12
+    pvnt12 = pclases.ProductoVenta.select(pclases.AND(
+                pclases.ProductoVenta.q.descripcion.contains("NT 12 "),
+                pclases.NOT(
+                    pclases.ProductoVenta.q.descripcion.contains("NT 125")),
+                pclases.ProductoVenta.q.camposEspecificosRolloID ==
+                    pclases.CamposEspecificosRollo.q.id,
+                pclases.CamposEspecificosRollo.q.metrosLineales == 100,
+                pclases.CamposEspecificosRollo.q.ancho == 1.83),
+            orderBy="id")[0]
+    res = {pvnt12: []}
+    for codigo in nt12:
+        rollo = pclases.Rollo.selectBy(numrollo=codigo)[0]
+        res[pvnt12].append(rollo)
     return res
 
 

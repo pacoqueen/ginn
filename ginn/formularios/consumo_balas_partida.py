@@ -731,7 +731,7 @@ class ConsumoBalasPartida(Ventana):
             len(self.objeto.get_balas_sin_albaran_interno()) > 0)
             # OJO: Esto puede dar una condición de carrera si el usuario no
             # tiene permisos y aún no se ha actualizado la ventana.
-        from ginn.formularios import albaranes_de_salida
+        from formularios import albaranes_de_salida
         albaranes_de_salida.AlbaranesDeSalida(usuario=self.usuario,
                                               objeto=albaran)
 
