@@ -48,6 +48,9 @@ from formularios.consulta_producido import str_horas, detectar_hueco, \
 import pango
 from formularios.consulta_ventas_por_producto import act_fecha
 from lib.myprint import myprint
+from collections import OrderedDict, defaultdict
+from ventana_progreso import VentanaProgreso
+from formularios.custom_widgets.gtkcairoplot import GtkCairoPlot, HORIZONTAL
 
 class ConsultaProductividad(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -281,7 +284,6 @@ class ConsultaProductividad(Ventana):
         tv = self.wids['tv_datos']
         for ncol in range(7, len(tv.get_columns())):
             tv.get_column(ncol).set_property("visible", pclases.DEBUG)
-        from ventana_progreso import VentanaProgreso
         self.huecos = []    # Lista de los últimos partes tratados por línea.
         self.incidencias_horaini = []
         self.incidencias_horafin = []
@@ -298,7 +300,7 @@ class ConsultaProductividad(Ventana):
         vpro.mostrar()
         e_personasturno = 0
         tiempototal = 0
-        tiempo_sin_incidencias = 0      # Por si inicia una consulta sin resultados.
+        tiempo_sin_incidencias = 0  # Por si inicia una consulta sin resultados
         metrosproducidos = 0
         kilosconsumidos = kilosconsumidos_partidas_completas = 0
         tiempototaltotal = mx.DateTime.DateTimeDelta(0)
@@ -678,6 +680,44 @@ class ConsultaProductividad(Ventana):
         else:
             partes = list(partes)
         self.rellenar_tabla(partes, solobalas)
+        self.graficar_por_producto(partes)
+
+    def graficar_por_producto(self, partes):
+        """
+        Construye un gráfico de rendimiento por producto. Agrupa los partes
+        de un mismo producto y calcula su productividad conjunta. Esos datos
+        los envía a un gráfico para ver los productos que mejor le van
+        a la línea.
+        """
+        vpro = VentanaProgreso(padre = self.wids['ventana'])
+        vpro.mostrar()
+        i = 0.0
+        tot = len(partes)
+        productos = defaultdict(lambda: [])
+        for pdp in partes:
+            i += 1
+            vpro.set_valor(i / tot, "Analizando rendimiento por producto...")
+            producto = pdp.productoVenta
+            productos[producto].append(pdp)
+        data = OrderedDict()
+        tot += len(productos)
+        for producto in productos:
+            i += 1
+            vpro.set_valor(i / tot, "Analizando rendimiento por producto...")
+            pdps = productos[producto]
+            data[producto.descripcion] = calcular_productividad_conjunta(
+                                                                tuple(pdps))
+        try:
+            plot = GtkCairoPlot(HORIZONTAL, data, self.wids['ventana'])
+        except ValueError:
+            plot = gtk.Label("<big>No hay datos suficientes.</big>")
+            plot.set_use_markup(True)
+        parent = self.wids['grafico'].parent
+        parent.add(plot)
+        parent.remove(self.wids['grafico'])
+        self.wids['grafico'] = plot
+        parent.show_all()
+        vpro.ocultar()
 
     def button_clicked(self, lista, event):
         if event.button == 3:

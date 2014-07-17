@@ -3515,14 +3515,17 @@ def crear_articulo(numrollo,
                 try:
                     largo = utils._float(largo)
                 except ValueError:
-                    utils.dialogo_info(titulo = "ERROR",
-                                       texto = "El texto %s no es un número válido." % (largo), 
-                                       padre = objeto_ventana_parte.wids['ventana'])
+                    utils.dialogo_info(titulo="ERROR",
+                        texto="El texto %s no es un número válido." % (largo), 
+                        padre = objeto_ventana_parte.wids['ventana'])
                 else:
-                    ancho = producto.camposEspecificosRollo.ancho                   # Conserva el ancho del producto que se intentó fabricar.
-                    pesoEmbalaje = producto.camposEspecificosRollo.pesoEmbalaje     # Conserva el peso del embalaje del producto original.
+                    ancho = producto.camposEspecificosRollo.ancho
+                        # Conserva ancho del producto que se intentó fabricar.
+                    pesoEmbalaje = producto.camposEspecificosRollo.pesoEmbalaje
+                        # Conserva el peso del embalaje del producto original.
                     try:
-                        densidad = ((peso - pesoEmbalaje) * 1000) / (largo * ancho)
+                        densidad = (((peso - pesoEmbalaje) * 1000)
+                                    / (largo * ancho))
                     except ZeroDivisionError:
                         densidad = 0.0
                     try:
