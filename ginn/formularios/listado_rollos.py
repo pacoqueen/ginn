@@ -475,7 +475,9 @@ class ListadoRollos(Ventana):
             for cell in cells:
                 column.set_cell_data_func(cell,cell_func)
     
-    def _dialogo_entrada(self, texto= '', titulo = 'ENTRADA DE DATOS', valor_por_defecto = '', padre=None, pwd = False):
+    def _dialogo_entrada(self, texto='', titulo='ENTRADA DE DATOS',
+                         valor_por_defecto='', padre=None, pwd=False,
+                         marcado_disabled=False):
         """
         Muestra un diálogo modal con un textbox.
         Devuelve el texto introducido o None si se
@@ -508,7 +510,11 @@ class ListadoRollos(Ventana):
         einput.show()
         einput.set_text(valor_por_defecto)
         marcado = gtk.CheckButton("Mostrar etiqueta de marcado CE")
-        marcado.set_active(True)
+        if marcado_disabled:
+            marcado.set_active(False)
+            marcado.set_sensitive(False)
+        else:   # Por defecto "de que sí".
+            marcado.set_active(True)
         de.vbox.pack_start(marcado)
         marcado.show()
         if len(titulo)<20:
@@ -530,21 +536,30 @@ class ListadoRollos(Ventana):
         Para poder imprimir es necesario que el usuario tenga el permiso 
         "escritura" sobre la ventana.
         """
-        if self.usuario == None \
-           or self.usuario.get_permiso(pclases.Ventana.select(pclases.Ventana.q.fichero == "listado_rollos.py")[0]).escritura: # OJO: HARCODED
-            model, paths = self.wids['tv_rollos'].get_selection().get_selected_rows()
-            rollos_defecto = []
+        if (not self.usuario
+            or self.usuario.get_permiso(
+                pclases.Ventana.select(
+                    pclases.Ventana.q.fichero
+                        == "listado_rollos.py")[0]).escritura): # OJO: HARCODED
+            tvrollos = self.wids['tv_rollos']
+            model, paths = tvrollos.get_selection().get_selected_rows()
+            rollos_por_defecto = []
+            solo_rollos_b = True
             for path in paths: 
-                rollos_defecto.append(model[path][0])
-                rollos_defecto.sort()
-            rollos_defecto = ', '.join(rollos_defecto)
+                codigo_rollo = model[path][0]
+                rollos_por_defecto.append(codigo_rollo)
+                if codigo_rollo.startswith("R"):
+                    solo_rollos_b = False
+            rollos_por_defecto.sort()
+            rollos_por_defecto = ', '.join(rollos_por_defecto)
             from formularios import reports
             entrada, mostrar_marcado = self._dialogo_entrada(
-                    titulo = 'ETIQUETAS', 
-                    texto = "Introduzca los números de rollo, separados por "
-                            "coma, que desea etiquetar:",
-                    valor_por_defecto = rollos_defecto,
-                    padre = self.wids['ventana'])
+                    titulo='ETIQUETAS', 
+                    texto="Introduzca los números de rollo, separados por "
+                          "coma, que desea etiquetar:",
+                    valor_por_defecto=rollos_por_defecto,
+                    padre=self.wids['ventana'], 
+                    marcado_disabled=solo_rollos_b)
             if entrada != None:
                 codigos = [cod.strip() for cod in entrada.split(",")]
                 temp = []
@@ -597,9 +612,11 @@ class ListadoRollos(Ventana):
                             reports.abrir_pdf(
                                 geninformes.etiquetasRollosCEtiquetadora(data))
         else:
-            utils.dialogo_info(titulo = "USUARIO SIN PRIVILEGIOS", 
-                               texto = "Para poder crear etiquetas de rollos existentes es necesario\nque tenga permiso de escritura sobre la ventana actual.", 
-                               padre = self.wids['ventana'])
+            utils.dialogo_info(titulo="USUARIO SIN PRIVILEGIOS",
+                    texto="Para poder crear etiquetas de rollos existentes es"
+                          " necesario\nque tenga permiso de escritura sobre "
+                          "la ventana actual.", 
+                    padre=self.wids['ventana'])
 
 def preparar_datos_etiquetas_rollos_c(rollos):
     """

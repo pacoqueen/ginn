@@ -127,7 +127,8 @@ def build_etiqueta(rollo):
         producto = rollo.productoVenta
         res = {'descripcion': producto.nombre,
                'densidad': utils.float2str(rollo.densidad, 1),
-               'ancho': "%s m" % (utils.float2str(rollo.ancho, 1)),
+               'ancho': "%s m" % (utils.float2str(rollo.ancho, precision=2,
+                                                  autodec=True)),
                'peso': "%s kg" % (utils.float2str(
                                     rollo.peso - rollo.pesoEmbalaje)),
                'm2': "%s m²" % (utils.float2str(

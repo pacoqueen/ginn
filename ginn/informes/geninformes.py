@@ -8923,7 +8923,6 @@ def _etiquetasRollosEtiquetadora(rollos, mostrar_marcado):
     x, y = lm, tm  # @UnusedVariable
     global linea
     MAXLINEAS = 40
-
     CM = inch / 2.54
     # Creo la hoja
     nomarchivo = os.path.join(gettempdir(),
@@ -8932,16 +8931,13 @@ def _etiquetasRollosEtiquetadora(rollos, mostrar_marcado):
     alto = 12.6*CM
     ancho = 12.4*CM
     c.setPageSize((ancho, alto))
-
     # arribaArriba significa linea de "arriba" de los cuadros de "Arriba"
     # El 0 vertical es el borde de abajo
     # El 0 horizontal es el margen derecho
     arriba = alto - 5
     abajo = 5
-
     izq = 8*CM
     der = 5
-
     xCE = alto/2
     yCE = 0.8*inch
     xCodigoCE = xCE
@@ -8956,19 +8952,21 @@ def _etiquetasRollosEtiquetadora(rollos, mostrar_marcado):
     ySegundaLinea = yPrimeraLinea + 0.2*inch
     yTerceraLinea = ySegundaLinea + 0.2*inch
     yCuartaLinea = yTerceraLinea + 0.4*inch
-
     for j in range(len(rollos)):  # @UnusedVariable
         temp = rollos[0]
         if temp == []:
             break
-
         rectangulo(c, (izq, arriba), (der, abajo))
-
         c.rotate(90)
-
         if mostrar_marcado:
-            c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', 'CE.png'),
-                xCE - (3 * cm / 2), -yCE, width = 2 * cm, height = 1.64 * cm)
+            c.drawImage(
+                os.path.join(
+                    os.path.dirname(os.path.realpath(__file__)),
+                    '..', 'imagenes', 'CE.png'),
+                xCE - (3 * cm / 2),
+                -yCE,
+                width = 2 * cm,
+                height = 1.64 * cm)
             c.setFont("Helvetica", 20)
             c.drawCentredString(xCodigoCE, -yCodigoCE, "1035-CPD-ES033858")
         c.setFont("Helvetica-Bold", 26)
@@ -9602,7 +9600,6 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
         MAXLINEAS = 40
         width = 12.55 * cm
         height = 8.4 * cm
-
         # Creo la hoja
         nomarchivo = os.path.join(gettempdir(),
                 "etiqRollos_%s.pdf" % give_me_the_name_baby())
@@ -9610,7 +9607,6 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
         for rollo in rollos:
             rectangulo(c, (0.3 * cm, 0.3 * cm),
                           (width - 0.3 * cm, height - 0.3 * cm))
-
             if mostrar_marcado and not rollo['defectuoso']:
                 c.drawImage(os.path.join(os.path.dirname(
                                 os.path.realpath(__file__)), 
@@ -9640,8 +9636,8 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
                     rollo['descripcion'] = producto.nombre
                     rollo['densidad'] = utils.float2str(prollo.densidad)
                     rollo['ancho'] = "%s m" % (campos.ancho) # Ancho se supone
-                    # fijo. Los rollos no tienen campo ancho. Es el del 
-                    # producto.
+                        # fijo. Los rollos no tienen campo ancho. Es el del 
+                        # producto.
                     rollo['peso'] = "%s kg" % (utils.float2str(prollo.peso)) 
                                     # Peso total. No teórico sin embalaje como 
                                     # en las etiquetas originales.
@@ -9662,7 +9658,9 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
                              "BE existir y ser del tipo plcases.Rollo "\
                              "o pclases.RolloDefectuoso."
                     raise TypeError, txterr 
-                c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', 'none.png'),
+                c.drawImage(os.path.join(
+                                os.path.dirname(os.path.realpath(__file__)),
+                                '..', 'imagenes', 'none.png'),
                             width/2 - (1 * cm / 2),
                             height - 0.6 * cm - 0.2 * cm - 0.82 * cm,
                             width = 1 * cm,
@@ -9676,7 +9674,6 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
                 #   c, "Helvetica", 14, 0.2 * cm,
                 #   width - 0.2*cm, height - 2.5 * cm, prollo.observaciones,
                 #   alineacion = 0)
-
             c.setFont("Helvetica-Bold", 24)
             c.drawCentredString(width/2, height - 3.6 * cm,
                                 escribe(rollo['descripcion']))
@@ -9722,12 +9719,10 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
             #c.drawString(6.8 * cm, 2.6 * cm, escribe(rollo['codigo39']))
             c.drawString((0.6 - 3.5 + 6.8) * cm, (0.9 - 2.9 + 2.6) * cm,
                          escribe(rollo['codigo39']))
-
             # XXX
             # c.setPageRotation(-90)
             # c.rotate(-90)
             # XXX
-
             c.showPage()
         c.save()
     return nomarchivo
