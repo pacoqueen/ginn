@@ -347,7 +347,8 @@ class ConsultaProductividad(Ventana):
                 self.marcar_hueco(parte_anterior, pdp)
             self.tiempo_faltante += delta_entre_partes
             kilosgranza_del_parte = 0.0
-            tiempototal, tiempo_sin_incidencias = self.calcular_tiempo_trabajado(pdp)
+            (tiempototal,
+             tiempo_sin_incidencias) = self.calcular_tiempo_trabajado(pdp)
             tiempototaltotal += tiempototal
             #productividad = pdp.calcular_productividad()
             # CWT: Ahora no se calcula así, sino como el antiguo rendimiento.
@@ -390,7 +391,10 @@ class ConsultaProductividad(Ventana):
                     rollos = [a.rollo for a in pdp.articulos if a.rollo != None]
                     if len(rollos) > 0:     # Para que no intente hacer el 
                         # cálculo con partes que tengan balas y/o no rollos.
-                        metrosproducidos += len(rollos) * pdp.articulos[0].productoVenta.camposEspecificosRollo.ancho * pdp.articulos[0].productoVenta.camposEspecificosRollo.metrosLineales
+                        pv = pdp.articulos[0].productoVenta
+                        cer = pv.camposEspecificosRollo
+                        metrosproducidos += (len(rollos) 
+                                             * cer.metros_cuadrados)
                         if pdp.articulos[0].es_rollo():
                             partida = pdp.articulos[0].rollo.partida
                         elif pdp.articulos[0].es_rollo_defectuoso():
@@ -398,15 +402,17 @@ class ConsultaProductividad(Ventana):
                         else:
                             partida = None
                         if partida != None:
-                            contar_kilosconsumidos_partidas_completas = partida.entra_en_cota_superior(selffin)
+                            contar_kilosconsums_partidas_completas \
+                                    = partida.entra_en_cota_superior(selffin)
                             for b in partida.balas:
-                                if b not in balas_consumidas:   # Evito contar la misma bala dos veces.
+                                if b not in balas_consumidas:   # Evito contar
+                                                    # la misma bala dos veces.
                                     bpesobala = b.pesobala
                                     kilosconsumidos += bpesobala
-                                    if contar_kilosconsumidos_partidas_completas:
-                                        kilosconsumidos_partidas_completas += bpesobala
+                                    if contar_kilosconsums_partidas_completas:
+                                        kilosconsumidos_partidas_completas \
+                                                += bpesobala
                                     balas_consumidas.append(b)
-            
             empleados = len(pdp.horasTrabajadas)
             e_personasturno += empleados
             tiempoparte = pdp.get_duracion().hours
@@ -417,8 +423,11 @@ class ConsultaProductividad(Ventana):
             vector.append(productividad)
             produccion = pdp.get_produccion()
             # Resúmenes por día como nodos padre del TreeView.
-            pdps_dia.append(pdp)
-            if dia_actual != utils.str_fecha(pdp.fecha):
+            if not dia_actual:
+                pdps_dia.append(pdp)
+            if dia_actual == utils.str_fecha(pdp.fecha):
+                pdps_dia.append(pdp)
+            else:
                 if dia_actual != "":  # Actualizo el padre
                     if not self.wids['r_ambos'].get_active():
                         model[padre][4] = "%s %s" % (
@@ -426,14 +435,6 @@ class ConsultaProductividad(Ventana):
                                 produccion[1])
                     else:   # Evito mezclar kilos con metros
                         model[padre][4] = "-"
-                    #try:
-                    #    productividad_actual /= nodos_hijos_por_dia
-                    #except ZeroDivisionError:
-                    #    productividad_actual = 100.0    # A falta de infinito.
-                    #model[padre][5] = "%s %%" % (
-                    #        utils.float2str(productividad_actual))
-                    #model[padre][6] = min(productividad_actual, 100)
-# TODO: PORASQUI: Muy raro. Si hago una consulta sobre el día 13 nada más, me sale con una productividad conjunta del 94% (correcto según t. teórico y real). Pero si la hago del 13 al 15, baja al 87. En realidad sucede con cualquier día. El primero del rango siempre sale con una productividad inferior a si la consulta se lanza solamente sobre un día.
                     productividad_actual = calcular_productividad_conjunta(
                             tuple(pdps_dia))
                     model[padre][5] = "%s %%" % (
@@ -441,7 +442,7 @@ class ConsultaProductividad(Ventana):
                     model[padre][6] = min(productividad_actual, 100)
                     model[padre][7] = t_teorico_por_dia
                     model[padre][8] = t_real_por_dia
-                    pdps_dia = [] # He cambiado de día. Limpio.
+                    pdps_dia = [pdp] # He cambiado de día. Limpio.
                     t_teorico_por_dia = 0
                     t_real_por_dia = 0
                 dia_actual = utils.str_fecha(pdp.fecha)
@@ -543,9 +544,13 @@ class ConsultaProductividad(Ventana):
                     e_kiloshora = 0
                 self.wids['e_kilosproducidos'].set_text("%s m²" % (
                     utils.float2str(metrosproducidos)))
-                self.wids['e_kilosgranza'].set_text("%s kg ~ %s kg" % (
-                    utils.float2str(kilosconsumidos_partidas_completas),
-                    utils.float2str(kilosconsumidos)))
+                if kilosconsumidos_partidas_completas != kilosconsumidos:
+                    self.wids['e_kilosgranza'].set_text("%s kg ~ %s kg" % (
+                        utils.float2str(kilosconsumidos_partidas_completas),
+                        utils.float2str(kilosconsumidos)))
+                else:
+                    self.wids['e_kilosgranza'].set_text("%s kg" % (
+                        utils.float2str(kilosconsumidos)))
                 self.wids['e_kiloshora'].set_text("%s m²/h" % (
                     utils.float2str(e_kiloshora)))
             else:

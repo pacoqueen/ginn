@@ -2027,6 +2027,17 @@ def parse_fecha(txt):
                     anno = int(txt[4:])
                 else:
                     anno = mx.DateTime.today().year
+            elif 2 < len(txt) < 4 and txt.isdigit():
+                dia = int(txt[0])
+                mes = int(txt[-2:])
+                if mes > 12:
+                    dia = int(txt[:2])
+                    mes = int(txt[2:])
+                anno = mx.DateTime.localtime().year
+            elif txt.isdigit() and len(txt) <= 2:
+                dia = int(txt)
+                mes = mx.DateTime.localtime().month
+                anno = mx.DateTime.localtime().year
             else:
                 raise ValueError, "%s no se pudo interpretar como fecha." % txt
     if anno < 1000:
