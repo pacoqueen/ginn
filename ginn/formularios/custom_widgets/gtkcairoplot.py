@@ -55,6 +55,7 @@ from cagraph.cagraph.axis.taxis import CaGraphTAxis
 from cagraph.cagraph.ca_graph_grid import CaGraphGrid
 from cagraph.cagraph.series.line import CaGraphSeriesLine
 from cagraph.cagraph.series.hbar import CaGraphSeriesHBar
+from cagraph.cagraph.series.bar import CaGraphSeriesBar
 from cagraph.cagraph.series.area import CaGraphSeriesArea
 from cagraph.cagraph.series.labels import CaGraphSeriesLabels
 from cagraph.cagraph.ca_graph_file import CaGraphStyle
@@ -145,6 +146,36 @@ class GtkCairoPlot(gtk.DrawingArea):
         plot.connect("motion-notify-event", self.motion_notify_hbar)
         return plot
 
+    def _prepare_plot_v(self, main_window = None):
+        # TODO: La interfaz de cagraph no puede ser más enrevesada :(
+        plot = CaGraph(main_window)
+        xaxis = CaGraphXAxis(plot)
+        xaxis.axis_style.side = 'bottom'
+        xaxis.axis_style.draw_labels = xaxis.axis_style.draw_tics = True
+        yaxis = CaGraphYAxis(plot)
+        yaxis.axis_style.label_format = '%d'
+        plot.graph_style.draw_pointer = True
+        plot.axiss.append(xaxis)
+        plot.axiss.append(yaxis)
+        # create and add top axis
+        #top_axis = CaGraphXAxis(plot)
+        #top_axis.axis_style.label_format = '%d'
+        #top_axis.axis_style.side = 'top'
+        #plot.axiss.append(top_axis)
+        # Cuadrícula (no se puede habilitar solo horizontal)
+        plot.grid = CaGraphGrid(plot, 0, 1)
+        plot.grid.style.line_color = (0, .5, 0, 1)
+        plot.grid.style.zero_line_color = (0, 0, 0, 0)
+        # Series de datos
+        plot.seriess.append(CaGraphSeriesBar(plot, 0, 1))
+        plot.seriess[0].data = self._data
+        plot.seriess[0].style.bar_width = 10
+        plot.seriess.append(CaGraphSeriesLabels(plot, 0, 1))
+        plot.seriess[1].data = self._labels
+        plot.auto_set_range()
+        plot.connect("motion-notify-event", self.motion_notify_vbar)
+        return plot
+
     def _prepare_plot(self, main_window = None):
         """
         Crea el objeto de la biblioteca que corresponda según el tipo.
@@ -152,7 +183,8 @@ class GtkCairoPlot(gtk.DrawingArea):
         if self._tipo == HORIZONTAL:
             plot = self._prepare_plot_h(main_window)
         elif self._tipo == VERTICAL:
-            raise NotImplementedError("gtkcairoplot: todavía no implementado.")
+            raise NotImplementedError("gtkcairoplot: todavía no implementado")
+            plot = self._prepare_plot_v(main_window)
         elif self._tipo == TARTA:
             # Es simplemente para crear el objeto. Después se reemplazará por
             # el surface del DrawingArea en el expose.
@@ -184,6 +216,26 @@ class GtkCairoPlot(gtk.DrawingArea):
             x, y, label = series.find_point_by_index(y, 1)
             ttext = label
             value = " (%.1f)" % x
+            if not ttext.endswith(value):   # Para no duplicar la información
+                ttext += value
+            self.set_tooltip_text(ttext)
+
+    def motion_notify_vbar(self, widget, ev):
+        """
+        Actualiza un label que muestra el valor de la X y el label bajo el 
+        cursor. Solo para derivados de cagraph.
+        """
+        # FIXME
+        series = self.plt.seriess[1]
+        if self.plt.check_xy(ev.x, ev.y):
+            # De píxel a valor:
+            x = series.xaxis.px_to_data(ev.x)
+            y = series.yaxis.px_to_data(ev.y)
+            # find nearest data point to mouse position
+            # index = 2 is the y-axis
+            x, y, label = series.find_point_by_index(x, 2)
+            ttext = label
+            value = " (%.1f)" % y
             if not ttext.endswith(value):   # Para no duplicar la información
                 ttext += value
             self.set_tooltip_text(ttext)
@@ -425,7 +477,8 @@ def build_test_window():
     data["Uno"] =  [1, 2, 3]  #  Uno █▅▂
     data["Dos"] =  [4, 5, 6]  #  Dos ████▅▂
     data["Tres"] = [7, 8, 9]  # Tres ███████▅▂
-    plot1 = GtkCairoPlot(HORIZONTAL, data, win)
+    #plot1 = GtkCairoPlot(HORIZONTAL, data, win)
+    plot1 = GtkCairoPlot(VERTICAL, data, win)
     #plot1 = gtk.Image()
     #plot1.set_from_stock(gtk.STOCK_MISSING_IMAGE, gtk.ICON_SIZE_DIALOG)
     box.pack_start(plot1)
