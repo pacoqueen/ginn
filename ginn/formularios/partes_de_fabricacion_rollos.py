@@ -92,6 +92,7 @@ try:
 except ImportError:
     from psycopg2 import ProgrammingError as psycopg_ProgrammingError
 import datetime
+from lib.myprint import myprint
 
 # Compruebo qué tipo de fechas estoy manejando y preparo la constante de un 
 # día completo para sumar a fechas y fechahora.
@@ -302,8 +303,8 @@ class PartesDeFabricacionRollos(Ventana):
         linea = pclases.LineaDeProduccion.select(
             pclases.LineaDeProduccion.q.nombre.contains('de geotextiles'))
         if linea.count() == 0:
-            print "WARNING: La línea de geotextiles no está correctamente "\
-                  "dada de alta."
+            myprint("WARNING: La línea de geotextiles no está correctamente "
+                    "dada de alta.")
             self.plastico = None
             self.linea = None
         else:
@@ -1078,8 +1079,8 @@ class PartesDeFabricacionRollos(Ventana):
                 self.activar_widgets(True)
             else:
                 self.activar_widgets(False)
-        # Compruebo primero este porque habilita o deshabilita todos los botones, incluso los que 
-        # dependen de los otros dos permisos.
+        # Compruebo primero este porque habilita o deshabilita todos los
+        # botones, incluso los que dependen de los otros dos permisos.
         if "r" in self.__permisos:  # Puede leer partes anteriores, habilito el buscar:
             self.wids['b_buscar'].set_sensitive(True)
         else:
@@ -1099,9 +1100,9 @@ class PartesDeFabricacionRollos(Ventana):
         except:
             real = 0
         try:
-            #balas = float(self.wids['e_total_balas'].get_text())
             balas = sum([b.pesobala for b in self.get_partida().balas]) 
-                # Si se llama a get_partida antes que a rellenar_rollos no devuelve la partida correcta.
+                # Si se llama a get_partida antes que a rellenar_rollos no
+                # devuelve la partida correcta.
         except:
             balas = 0
         try:
@@ -1110,13 +1111,21 @@ class PartesDeFabricacionRollos(Ventana):
             estimado = 0
         # DEBUG: print "balas", balas, "estimado", estimado, "real", real
         if balas < estimado:
-            self.wids['e_consumo_estimado'].modify_base(gtk.STATE_NORMAL, self.wids['e_consumo_estimado'].get_colormap().alloc_color("red"))
+            self.wids['e_consumo_estimado'].modify_base(gtk.STATE_NORMAL,
+                    self.wids['e_consumo_estimado'].get_colormap().alloc_color(
+                        "red"))
         else:
-            self.wids['e_consumo_estimado'].modify_base(gtk.STATE_NORMAL, self.wids['e_consumo_estimado'].get_colormap().alloc_color("white"))
+            self.wids['e_consumo_estimado'].modify_base(gtk.STATE_NORMAL,
+                    self.wids['e_consumo_estimado'].get_colormap().alloc_color(
+                        "white"))
         if balas < real:
-            self.wids['e_consumo_real'].modify_base(gtk.STATE_NORMAL, self.wids['e_consumo_real'].get_colormap().alloc_color("red"))
+            self.wids['e_consumo_real'].modify_base(gtk.STATE_NORMAL,
+                    self.wids['e_consumo_real'].get_colormap().alloc_color(
+                        "red"))
         else:
-            self.wids['e_consumo_real'].modify_base(gtk.STATE_NORMAL, self.wids['e_consumo_real'].get_colormap().alloc_color("white"))
+            self.wids['e_consumo_real'].modify_base(gtk.STATE_NORMAL,
+                    self.wids['e_consumo_real'].get_colormap().alloc_color(
+                        "white"))
 
 
     def cmpfechahora_or_numrollo(self, detalle1, detalle2):
@@ -3091,20 +3100,25 @@ class PartesDeFabricacionRollos(Ventana):
             self.wids['ch_bloqueado'].set_active(self.objeto.bloqueado)
             # return True
         if not self.salir(w, mostrar_ventana = event == None):
-            # Devuelve True cuando se cancela el cierre de la ventana (por temas de event-chain).
+            # Devuelve True cuando se cancela el cierre de la ventana (por 
+            # temas de event-chain).
             try:
                 padre = self.wids['ventana']
             except KeyError:
                 padre = None
-            vpro = VentanaActividad(texto = "Comprobando disparo de alertas...",
-                                    padre = padre)
+            vpro = VentanaActividad(texto="Comprobando disparo de alertas...",
+                                    padre=padre)
             vpro.mostrar()
-            linea = pclases.LineaDeProduccion.select(pclases.LineaDeProduccion.q.nombre.contains('de geotextiles'))
+            linea = pclases.LineaDeProduccion.select(
+                    pclases.LineaDeProduccion.q.nombre.contains(
+                        'de geotextiles'))
             linea = self.linea 
             vpro.mover()
             if linea == None:
-                print "WARNING: La línea de geotextiles no está correctamente dada de alta."
-                self.logger.warning("WARNING: La línea de geotextiles no está correctamente dada de alta.")
+                myprint("WARNING: La línea de geotextiles no está "
+                        "correctamente dada de alta.")
+                self.logger.warning("WARNING: La línea de geotextiles no "
+                                    "está correctamente dada de alta.")
             else:
                 vpro.mover()
                 formulacion = linea.formulacion
@@ -3123,9 +3137,11 @@ class PartesDeFabricacionRollos(Ventana):
                         except IndexError:
                             txterror = "WARNING: ¡La ventana de pedidos de "\
                                        "compra SE HA PERDIDO!"
-                            print txterror
+                            myprint(txterror)
                             self.logger.warning(txterror)
-                        mensaje = "El producto %s tiene las existencias bajo mínimos. Considere hacer un pedido de compra." % ca.productoCompra.descripcion
+                        mensaje = "El producto %s tiene las existencias bajo"\
+                                  " mínimos. Considere hacer un pedido de "\
+                                  "compra." % ca.productoCompra.descripcion
                         for u in [p.usuario for p in v.permisos if p.nuevo]: 
                             vpro.mover()
                             u.enviar_mensaje(mensaje)
@@ -3139,10 +3155,12 @@ class PartesDeFabricacionRollos(Ventana):
                         except IndexError:
                             txterror = "WARNING: ¡La ventana de pedidos de "\
                                        "compra SE HA PERDIDO!"
-                            print txterror
+                            myprint(txterror)
                             self.logger.error(txterror)
                         vpro.mover()
-                        mensaje = "El producto %s tiene existencias NEGATIVAS. Corrija el error lo antes posible." % ca.productoCompra.descripcion
+                        mensaje = "El producto %s tiene existencias "\
+                                  "NEGATIVAS. Corrija el error lo antes "\
+                                  "posible." % ca.productoCompra.descripcion
                         for u in [p.usuario for p in v.permisos if p.nuevo]: 
                             vpro.mover()
                             u.enviar_mensaje(mensaje)
@@ -3154,8 +3172,10 @@ class PartesDeFabricacionRollos(Ventana):
         Añade los empleados planificados según el calendario laboral
         para la línea de producción.
         1.- Obtener el calendario para self.linea.
-        2.- Obtener los laborables del calendario correspondiente a la fecha del objeto.
-        3.- Filtrar los laborables en función del turno correspondiente a la hora del objeto.
+        2.- Obtener los laborables del calendario correspondiente a la fecha
+            del objeto.
+        3.- Filtrar los laborables en función del turno correspondiente a la
+            hora del objeto.
         4.- Obtener los empleados del laborable resultante.
         5.- Eliminar los empleados actuales. (PREGUNTA ANTES DE HACERLO)
         6.- Insertarlos los nuevos en el parte.
@@ -3221,7 +3241,7 @@ class PartesDeFabricacionRollos(Ventana):
                     self.logger.warning("partes_de_fabricacion_rollos.py::get_empleados_de_calendario -> Registro laborable ID %d ELIMINADO SATISFACTORIAMENTE." % (idlaborable))
                 except:
                     self.logger.error("partes_de_fabricacion_rollos.py::get_empleados_de_calendario -> Registro laborable ID %d NO ELIMINADO." % (laborable.id))
-                print "ERROR: %s" % (mensaje)
+                myprint("ERROR: %s" % (mensaje))
                 continue
             turnohorainicio = utils.DateTime2DateTimeDelta(turno.horainicio)
             turnohorafin = utils.DateTime2DateTimeDelta(turno.horafin)
@@ -3434,7 +3454,7 @@ def descontar_material_adicional(ventana_parte, articulo, restar = True):
         try:
             ventana_parte.logger.warning(txtlog)
         except AttributeError:
-            print txtlog
+            myprint(txtlog)
     ventana_parte.objeto.unificar_consumos()
     actualizar_albaran_interno_con_tubos(ventana_parte.objeto)
 
@@ -3448,10 +3468,16 @@ def _calcular_peso_densidad(peso, producto, ventana_parte = None):
     """
     if peso == None:
         try:
-            peso = ((producto.camposEspecificosRollo.gramos * producto.camposEspecificosRollo.ancho * producto.camposEspecificosRollo.metrosLineales)/1000) + producto.camposEspecificosRollo.pesoEmbalaje
-        except TypeError:   # Lo ha dado por tener pesoEmbalaje = None y no poder sumar NoneType a float.
-            txterror =  "partes_de_fabricacion_rollo.py::_calcular_peso_densidad -> El producto tiene campos de camposEspecificosRollo a None."
-            print txterror
+            peso = (((producto.camposEspecificosRollo.gramos
+                     * producto.camposEspecificosRollo.ancho
+                     * producto.camposEspecificosRollo.metrosLineales)/1000)
+                    + producto.camposEspecificosRollo.pesoEmbalaje)
+        except TypeError:   # Lo ha dado por tener pesoEmbalaje = None y no
+                            # poder sumar NoneType a float.
+            txterror = "partes_de_fabricacion_rollo.py::"\
+                       "_calcular_peso_densidad -> El producto tiene campos "\
+                       "de camposEspecificosRollo a None."
+            myprint(txterror)
             if ventana_parte != None:
                 ventana_parte.logger.error(txterror)
             peso = 0
@@ -3501,16 +3527,20 @@ def crear_articulo(numrollo,
                 __file__)
         rollod = None
     else:
-        codigo = 'X%d' % (numrollo)  # NOTA: Cambiar aquí si al final el código será distinto al número de rollo.
+        codigo = 'X%d' % (numrollo)  # NOTA: Cambiar aquí si al final el código
+                                     # será distinto al número de rollo.
         rollo = rollod = None
         observaciones = utils.dialogo_entrada(titulo = "OBSERVACIONES", 
-                                              texto = "Introduzca el motivo por el cual el rollo se considera defectuoso:", 
-                                              valor_por_defecto = "Defectuoso: longitud insuficiente.", 
-                                              padre = objeto_ventana_parte.wids['ventana'])
+                            texto = "Introduzca el motivo por el cual el rollo"
+                                    " se considera defectuoso:", 
+                            valor_por_defecto = "Defectuoso: "
+                                                "longitud insuficiente.", 
+                            padre = objeto_ventana_parte.wids['ventana'])
         if observaciones != None:
             largo = utils.dialogo_entrada(titulo = "LARGO", 
-                                          texto = "Introduzca la longitud en metros del rollo defectuoso:", 
-                                          padre = objeto_ventana_parte.wids['ventana'])
+                        texto = "Introduzca la longitud en metros del rollo"
+                                " defectuoso:", 
+                        padre = objeto_ventana_parte.wids['ventana'])
             if largo != None and largo.strip() != "":
                 try:
                     largo = utils._float(largo)
@@ -3544,8 +3574,10 @@ def crear_articulo(numrollo,
                                 and objeto_ventana_parte.usuario or None, 
                                 __file__)
                     except Exception, msg:
-                        txt = "Rollo defectuoso %s no se pudo crear. Probablemente número duplicado. Mensaje de la excepción: %s" % (codigo, msg)
-                        print txt
+                        txt = "Rollo defectuoso %s no se pudo crear. "\
+                              "Probablemente número duplicado. Mensaje de "\
+                              "la excepción: %s" % (codigo, msg)
+                        myprint(txt)
     if rollo != None or rollod != None:
         articulo = pclases.Articulo(bala = None,
                             rollo = rollo,
@@ -3608,11 +3640,13 @@ def cambiar_marcado_ce(ch_defectuoso, ch_marcado, e_numrollo):
     """
     if ch_defectuoso.get_active():
         ch_marcado.set_active(False)
-        codigo_proximo_rollo_defectuoso = pclases.RolloDefectuoso._queryOne("SELECT ultimo_codigo_rollo_defectuoso_mas_uno();")[0]
+        codigo_proximo_rollo_defectuoso = pclases.RolloDefectuoso._queryOne(
+                "SELECT ultimo_codigo_rollo_defectuoso_mas_uno();")[0]
         e_numrollo.set_text(codigo_proximo_rollo_defectuoso)
     else:
         ch_marcado.set_active(True)
-        codigo_proximo_rollo = pclases.Rollo._queryOne("SELECT ultimo_codigo_rollo_mas_uno();")[0]
+        codigo_proximo_rollo = pclases.Rollo._queryOne(
+                "SELECT ultimo_codigo_rollo_mas_uno();")[0]
         e_numrollo.set_text(codigo_proximo_rollo)
 
 def get_puerto_serie(debug = False):
@@ -3690,13 +3724,13 @@ def imprimir_etiqueta(articulo, marcado_ce, ventana_parte, defectuoso = False):
                 else:
                     fetiqueta = campos.modeloEtiqueta.get_func()
             except AttributeError, e:  # No es un rollo.
-                print "partes_de_fabricacion_rollos::imprimir_etiqueta "\
-                      "-> AttributeError: No es un rollo.", e
+                myprint("partes_de_fabricacion_rollos::imprimir_etiqueta "
+                        "-> AttributeError: No es un rollo.", e)
                 fetiqueta = None
                 campos = None
             except ValueError, e:      # No tiene modelo de etiqueta.
-                print "partes_de_fabricacion_rollos::imprimir_etiqueta "\
-                      "-> ValueError: No es un rollo.", e
+                myprint("partes_de_fabricacion_rollos::imprimir_etiqueta "
+                        "-> ValueError: No es un rollo.", e)
                 fetiqueta = None
                 campos = None
             if not campos:
@@ -3768,7 +3802,7 @@ def recv_serial(com, ventana, l_peso, ventana_parte, ch_marcado, e_numrollo,
         try:
             peso = float(c)
         except Exception, msg:
-            print "partes_de_fabricacion_rollos -> recv_serial", msg
+            myprint("partes_de_fabricacion_rollos -> recv_serial", msg)
             peso = 0
         if peso == 0:
             return True     # Cuando se apaga y enciende el peso, envía 0. Así que si el peso es 0, no creo rollo.
@@ -3802,7 +3836,7 @@ def recv_serial(com, ventana, l_peso, ventana_parte, ch_marcado, e_numrollo,
                                    padre = ventana)
         except (psycopg_ProgrammingError, ValueError, AttributeError), msg:
             txterror = "partes_de_fabricacion_rollos::recv_serial -> %s"%(msg)
-            print txterror
+            myprint(txterror)
             utils.dialogo_info(titulo = 'ROLLO NO CREADO', 
                 texto = 'El rollo no se pudo crear. Vuelva a pesarlo.\n\n\n'
                         'Si el error persiste, tal vez esta información pueda'
@@ -3842,8 +3876,11 @@ def get_proximo_codigo_a_crear(e_numrollo):
         codigo_proximo_rollo = pclases.RolloDefectuoso._queryOne(
                 "SELECT ultimo_codigo_rollo_defectuoso_mas_uno();")[0]
     else:
-        codigo_proximo_rollo = pclases.Rollo._queryOne("SELECT ultimo_codigo_rollo_mas_uno();")[0]
-        print 'partes_de_fabricacion_rollos::get_proximo_codigo_a_crear -> No se pudo determinar el tipo de rollo a crear. Creo uno "normal": %s.' % (codigo_proximo_rollo)
+        codigo_proximo_rollo = pclases.Rollo._queryOne(
+                "SELECT ultimo_codigo_rollo_mas_uno();")[0]
+        myprint('partes_de_fabricacion_rollos::get_proximo_codigo_a_crear -> '
+                'No se pudo determinar el tipo de rollo a crear. Creo uno '
+                '"normal": %s.' % (codigo_proximo_rollo))
     return codigo_proximo_rollo
 
 def crear_ventana_pesaje(ventana_parte, padre = None, rollo = None, 
@@ -3913,7 +3950,10 @@ def actualizar_albaran_interno_con_tubos(pdp):
             except Exception:
                 # ¿La LDV está relacionada con un pedido o algo "asina"?
                 ldv.albaranSalida = None
-                print "partes_de_fabricacion_rollos::No se pudo eliminar LDV ID %d de albarán interno %s. Elimino relación entre ellos." % (ldv.id, pdp.albaranInterno.numalbaran)
+                myprint("partes_de_fabricacion_rollos::No se pudo eliminar "
+                        "LDV ID %d de albarán interno %s. Elimino relación "
+                        "entre ellos." % (ldv.id,
+                                          pdp.albaranInterno.numalbaran))
     for producto in cons_tubos:
         ldv = pclases.LineaDeVenta(productoCompra = producto, 
                                    cantidad = cons_tubos[producto], 

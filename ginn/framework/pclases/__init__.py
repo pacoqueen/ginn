@@ -92,8 +92,7 @@ from sqlobject.col import ForeignKey, SOBoolCol, SOCol  # @UnusedImport
 from sqlobject.col import SOFloatCol, SOIntCol, SOStringCol   # @UnusedImport
 from sqlobject.joins import MultipleJoin, RelatedJoin
 from sqlobject.main import SQLObjectNotFound, SQLObject
-from sqlobject.sqlbuilder import AND, OR, \
-                                 NOT  # @UnusedImport
+from sqlobject.sqlbuilder import AND, OR, NOT  # @UnusedImport
 from sqlobject import connectionForURI, sqlhub
 import mx.DateTime
 import pprint
@@ -16824,7 +16823,8 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
                 es_de_granza = c.silo != None
                 es_automatico = len(c.productoCompra.consumosAdicionales) != 0
                 if DEBUG:
-                    myprint("es_de_granza",es_de_granza,"es_automatico",es_automatico)
+                    myprint("es_de_granza", es_de_granza,
+                            "es_automatico", es_automatico)
                 if not es_de_granza:
                     if not incluir_consumos_auto and es_automatico:
                         continue
@@ -16846,7 +16846,9 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         """
         cliente = DatosDeLaEmpresa.get_cliente()
         if cliente == None:
-            myprint("pclases.py::class ParteDeProduccion::crear_albaran_interno-> No se pudo encontrar propia empresa como cliente.")
+            myprint("pclases.py::class ParteDeProduccion::"
+                    "crear_albaran_interno -> No se pudo encontrar propia "
+                    "empresa como cliente.")
             albaran = None
         else:
             #numalbaran = AlbaranSalida.get_ultimo_numero_numalbaran() + 1
@@ -16871,7 +16873,9 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
                         destino = None,
                         fecha = self.fecha,
                         bloqueado = True,
-                        observaciones = "Albarán interno de consumos de línea.\nCódigo ALBINTPDPID%d\n(¡No editar este campo!)." % (self.id),
+                        observaciones = "Albarán interno de consumos de línea"
+                                        ".\nCódigo ALBINTPDPID%d\n(¡No editar"
+                                        " este campo!)." % (self.id),
                         almacenOrigen = Almacen.get_almacen_principal_or_none())
         return albaran
 

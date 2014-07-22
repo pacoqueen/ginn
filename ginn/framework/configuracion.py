@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008 Francisco José Rodríguez Bogado,                    #
+# Copyright (C) 2005-2014 Francisco José Rodríguez Bogado,                    #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -25,43 +25,75 @@
 
 """
 Parámetros aceptados en fichero de configuración ginn.conf:
-nombre_parametro            : (valores aceptados|"tipo") [valor por defecto] Descripción
-tipobd                      : (postgres, sqlite, mysql, firebird) [postgres] Tipo de base de datos a la que conecar.
+nombre_parametro            : (valores aceptados|"tipo") [valor por defecto]
+                                Descripción
+tipobd                      : (postgres, sqlite, mysql, firebird) [postgres]
+                                Tipo de base de datos a la que conecar.
 user                        : ("string") [] Nombre de usuario para la conexión.
-pass                        : ("string") [] Contraseña para acceder a la BD. 
-dbname                      : ("string") [] Nombre de la base de datos a la que conectar.
+pass                        : ("string") [] Contraseña para acceder a la BD.
+dbname                      : ("string") [] Nombre de la base de datos a la que
+                                conectar.
 host                        : ("string") [] IP del servidor.
-logo                        : ("string") [logo_gtx.jpg] Logotipo que aparecerá en el menú principal e informes.
+logo                        : ("string") [logo_gtx.jpg] Logotipo que aparecerá
+                                en el menú principal e informes.
 title                       : ("string") [Geotex-INN] Nombre de la aplicación.
-port                        : ("int") [5432] Puerto para conectar al SGBD. 
-diradjuntos                 : ("string") [adjuntos] Directorio donde guardar los ficheros adjuntos.
-anchoticket                 : ("int") [48] Número de columnas de la impresora de tiques.
-largoticket                 : ("int") [0] Número de líneas a avanzar al terminarde imprimir el tique y antes del corte.
-codepageticket              : (0|1) [1] Si 0 el TPV no intentará usar códigos de escape cambiando el juego de caracteres de la impresora.
-cajonserie                  : (0|1) [0] 0: Puerto paralelo para abrir el cajón portamonedas (LPT1, /dev/lp0). 1: Puerto serie (COM1, /dev/ttyS0). 
-mostrarcontactoenticket     : (0|1) [1] Si 1, muestra el nombre del contacto de la empresa bajo el nombre de la propia empresa en el ticket.
-puerto_ticketera            : (/dev/lp{0-9}|LPT{1-9}) [/dev/lp0|LPT1] Puerto donde está conectada la impresora de tiques. Si el programa se ejecuta en una plataforma UNIX-like, el valor por defecto es /dev/lp0. Si es Windos, LPT1.
-desplegar_tickets           : (0|1) [1] Indica, si es 1, que debe desglosar los tiques en la ventana de TPV por defecto.
-oki                         : (0|1) [0] Si 0 se asume que la impresora es OKIPOS -derivado de comandos STAR-. Si 1 se usarán comandos POS estándar.
-valorar_albaranes           : (0|1) [0] Si 1 imprime los albaranes de salida valorados.
-valorar_albaranes_con_iva   : (0|1) [1] Si 1 imprime la valoración de los albaranes con el IVA incluido.
-carta_portes                : (0|1) [0] Si 1 se imprime una carta de portes en los albaranes de salida. Si es 0, en su lugar ofrecerá la opción de generar un impreso CMR.
-multipagina                 : (0|1) [0] Si 1 usa un formato multipágina para albaranes y facturas. Incompatible con albaranes valorados. Mayor prioridad que la opción valorar_albaranes*.
-diastpv                     : ("int") [3] Número de días a mostrar en el histórico de tiques de la ventana Terminal Punto de Venta.
-ventanas_sobre              : (cf|fc) [cf] Orden horizontal de las direcciones al imprimir albaranes y facturas: Dirección de correspondencia y fiscal o al contrario.
-modelo_presupuesto          : ("string") [presupuesto] Nombre del módulo a importar (sin el «.py») para generar el PDF de los presupuestos.
+port                        : ("int") [5432] Puerto para conectar al SGBD.
+diradjuntos                 : ("string") [adjuntos] Directorio donde guardar
+                                los ficheros adjuntos.
+anchoticket                 : ("int") [48] Número de columnas de la impresora
+                                de tiques.
+largoticket                 : ("int") [0] Número de líneas a avanzar al
+                                terminar de imprimir el tique y antes del
+                                corte.
+codepageticket              : (0|1) [1] Si 0 el TPV no intentará usar códigos
+                                de escape cambiando el juego de caracteres de
+                                la impresora.
+cajonserie                  : (0|1) [0] 0: Puerto paralelo para abrir el cajón
+                                portamonedas (LPT1, /dev/lp0).
+                                1: Puerto serie (COM1, /dev/ttyS0).
+mostrarcontactoenticket     : (0|1) [1] Si 1, muestra el nombre del contacto de
+                                la empresa bajo el nombre de la propia empresa
+                                en el ticket.
+puerto_ticketera            : (/dev/lp{0-9}|LPT{1-9}) [/dev/lp0|LPT1] Puerto
+                                donde está conectada la impresora de tiques.
+                                Si el programa se ejecuta en una plataforma
+                                UNIX-like, el valor por defecto es /dev/lp0.
+                                Si es Windos, LPT1.
+desplegar_tickets           : (0|1) [1] Indica, si es 1, que debe desglosar
+                                los tiques en la ventana de TPV por defecto.
+oki                         : (0|1) [0] Si 0 se asume que la impresora es
+                                OKIPOS -derivado de comandos STAR-. Si 1 se
+                                usarán comandos POS estándar.
+valorar_albaranes           : (0|1) [0] Si 1 imprime los albaranes de salida
+                                valorados.
+valorar_albaranes_con_iva   : (0|1) [1] Si 1 imprime la valoración de los
+                                albaranes con el IVA incluido.
+carta_portes                : (0|1) [0] Si 1 se imprime una carta de portes en
+                                los albaranes de salida. Si es 0, en su lugar
+                                ofrecerá la opción de generar un impreso CMR.
+multipagina                 : (0|1) [0] Si 1 usa un formato multipágina para
+                                albaranes y facturas. Incompatible con
+                                albaranes valorados. Mayor prioridad que la
+                                opción valorar_albaranes*.
+diastpv                     : ("int") [3] Número de días a mostrar en el
+                                histórico de tiques de la ventana Terminal
+                                Punto de Venta.
+ventanas_sobre              : (cf|fc) [cf] Orden horizontal de las direcciones
+                                al imprimir albaranes y facturas: Dirección de
+                                correspondencia y fiscal o al contrario.
+modelo_presupuesto          : ("string") [presupuesto] Nombre del módulo a
+                                importar (sin el «.py») para generar el PDF de
+                                los presupuestos.
 """
 
 import os
 
 
 class Singleton(type):
-
     """
-    Patrón Singleton para evitar que una misma instancia del programa trabaje 
+    Patrón Singleton para evitar que una misma instancia del programa trabaje
     con varias configuraciones:
     """
-
     def __init__(self, *args):
         type.__init__(self, *args)
         self._instances = {}
@@ -73,7 +105,6 @@ class Singleton(type):
 
 
 class ConfigConexion:
-
     """
     Clase que recoge los parámetros de configuración
     a partir de un archivo.
@@ -81,7 +112,7 @@ class ConfigConexion:
     __metaclass__ = Singleton
 
     def __init__(self, fileconf='ginn.conf'):
-        if fileconf == None:
+        if fileconf is None:
             fileconf = "ginn.conf"
         if os.sep in fileconf:
             fileconf = os.path.split(fileconf)[-1]
@@ -117,7 +148,8 @@ class ConfigConexion:
 
     def set_file(self, fileconf):
         """
-        Cambia el fichero de configuración y la configuración en sí por el recibido.
+        Cambia el fichero de configuración y la configuración en sí por el
+        recibido.
         """
         self.__set_conf(fileconf)
 
@@ -166,7 +198,7 @@ class ConfigConexion:
 
     def get_puerto(self):
         """
-        Devuelve el puerto de la configuración o el puerto por defecto 5432 
+        Devuelve el puerto de la configuración o el puerto por defecto 5432
         si no se encuentra.
         """
         try:
@@ -177,9 +209,9 @@ class ConfigConexion:
 
     def get_dir_adjuntos(self):
         """
-        Devuelve el directorio donde se guardarán los adjuntos. Por defecto 
-        "adjuntos". La ruta debe ser un único nombre de directorio y se 
-        alojará como subdirectorio del "raíz" de la aplicación. Al mismo 
+        Devuelve el directorio donde se guardarán los adjuntos. Por defecto
+        "adjuntos". La ruta debe ser un único nombre de directorio y se
+        alojará como subdirectorio del "raíz" de la aplicación. Al mismo
         nivel que "framework", "formularios", etc.
         """
         try:
@@ -208,7 +240,7 @@ class ConfigConexion:
 
     def get_codepageticket(self):
         """
-        Algunas ticketeras no soportan codepages configurables 
+        Algunas ticketeras no soportan codepages configurables
         mediante códigos de escape (p. ej. la SAMSUNG SRP 270 C).
         Si este parámetro de configuración es False no intentará
         cambiar el codepage en el TPV.
@@ -221,8 +253,8 @@ class ConfigConexion:
 
     def get_cajonserie(self):
         """
-        Devuelve True si el cajón portamonedas opera por puerto 
-        serie. False si opera a través de la impresora de ticket 
+        Devuelve True si el cajón portamonedas opera por puerto
+        serie. False si opera a través de la impresora de ticket
         por el puerto paralelo.
         Si en la configuración no se especifica toma la última
         opción (paralelo) por defecto.
@@ -235,7 +267,7 @@ class ConfigConexion:
 
     def get_mostrarcontactoenticket(self):
         """
-        Devuelve True si se debe mostrar el nombre de contacto bajo el 
+        Devuelve True si se debe mostrar el nombre de contacto bajo el
         nombre de la empresa en el ticket.
         False en caso contrario.
         Valor por defecto es True.
@@ -277,7 +309,7 @@ class ConfigConexion:
     def get_oki(self):
         """
         Devuelve True si en la configuración hay una entrada «oki 1».
-        Por defecto es False (impresora de tickets es POS estándar y no 
+        Por defecto es False (impresora de tickets es POS estándar y no
         OKIPOS -derivado de comandos STAR-).
         """
         try:
@@ -299,7 +331,7 @@ class ConfigConexion:
 
     def get_valorar_albaranes_con_iva(self):
         """
-        Devuelve True si los albaranes deben imprimirse valorados con IVA 
+        Devuelve True si los albaranes deben imprimirse valorados con IVA
         incluido en precio unitario y total del línea.
         Por defecto es True.
         """
@@ -311,7 +343,7 @@ class ConfigConexion:
 
     def get_carta_portes(self):
         """
-        Devuelve True si los albaranes deben imprimirse en forma de 
+        Devuelve True si los albaranes deben imprimirse en forma de
         carta de portes.
         Por defecto es False.
         CMR y carta_portes son excluyentes (ver albaranes_de_salida.py).
@@ -324,9 +356,9 @@ class ConfigConexion:
 
     def get_multipagina(self):
         """
-        Devuelve 1 si los albaranes y facturas deben imprimirse  
+        Devuelve 1 si los albaranes y facturas deben imprimirse
         con el formato multipágina (alias "sobrio con tabla continua").
-        Si devuelve 2, entonces solo los albaranes se imprimen con este 
+        Si devuelve 2, entonces solo los albaranes se imprimen con este
         formato. Las facturas salen con el formato tradicional.
         Por defecto es 0 (False).
         NOTA: Esta opción tiene prioridad sobre la de valorar albaranes.
@@ -341,7 +373,7 @@ class ConfigConexion:
 
     def get_diastpv(self):
         """
-        Número de días a mostrar en la lista de últimas 
+        Número de días a mostrar en la lista de últimas
         ventas del TVP.
         """
         try:
@@ -352,8 +384,8 @@ class ConfigConexion:
 
     def get_orden_ventanas(self):
         """
-        Orden de las ventanas "Dirección correspondencia" y "Dirección 
-        fiscal" en las facturas de venta. Por defecto "cf" (correspondencia 
+        Orden de las ventanas "Dirección correspondencia" y "Dirección
+        fiscal" en las facturas de venta. Por defecto "cf" (correspondencia
         a la izquierda, fiscal a la derecha).
         """
         try:
@@ -365,11 +397,11 @@ class ConfigConexion:
 
     def get_modelo_presupuesto(self):
         """
-        Devuelve una cadena con el nombre del módulo que contiene el modelo 
+        Devuelve una cadena con el nombre del módulo que contiene el modelo
         de presupuesto (el que no es tipo carta).
         Si no se especifica, se usa el por defecto: presupuesto
-        Por supuesto, si se implementan modelos nuevos deben cumplir la 
-        interfaz -no definida formalmente de momento- con los procedimientos 
+        Por supuesto, si se implementan modelos nuevos deben cumplir la
+        interfaz -no definida formalmente de momento- con los procedimientos
         "go", "go_from_presupuesto", etc.
         """
         try:
@@ -380,7 +412,7 @@ class ConfigConexion:
 
     def get_precision(self):
         """
-        Devuelve la precisión con la que calcular los subtotales de las 
+        Devuelve la precisión con la que calcular los subtotales de las
         líneas de venta. Por defecto es None, que significa sin redondear.
         Se puede poner a cualquier entero positivo o dejar vacío para None.
         """
@@ -423,8 +455,8 @@ def es_macro(txt):
 
 def guess_class(modulo):
     # Lo mismo es mejor con esto: http://docs.python.org/2/library/imp.html
-    exec "from formularios import " + modulo
-    exec "moduler = " + modulo
+    moduler = None  # Para el Syntastic check más que nada
+    exec "from formularios import %s as moduler" % modulo
     clases = [c for c in dir(moduler) if c[0].isupper()  # @UndefinedVariable
               and c != "Ventana"
               and c != "VentanaGenerica"
@@ -444,10 +476,10 @@ def guess_class(modulo):
 
 def parse_params():
     """
-    Analiza los parámetros recibidos en línea de comandos y devuelve usuario 
+    Analiza los parámetros recibidos en línea de comandos y devuelve usuario
     y contraseña, que pueden ser None si no se han especificado.
-    Si encuentra fichero de configuración y opciones verbose|debug las activa 
-    internamente, pero no devuelve su estado. Para saber qué valores han 
+    Si encuentra fichero de configuración y opciones verbose|debug las activa
+    internamente, pero no devuelve su estado. Para saber qué valores han
     tomado se debe consultar a la clase ConfigConexion o a pclases.
     """
     import optparse

@@ -482,15 +482,15 @@ class Presupuestos(Ventana, VentanaGenerica):
             else:
                 adjunto = []
             vpro.mover()
-            ok = utils.enviar_correoe(rte,
-                                      dests,
-                                      "Solicitud de crédito %s" % (
-                                        self.wids['e_cred_nombre'].get_text()),
-                                      texto,
-                                      adjuntos = adjunto,
-                                      servidor = servidor,
-                                      usuario = smtpuser,
-                                      password = smtppass)
+            ok = enviar_correoe(rte,
+                                dests,
+                                "Solicitud de crédito %s" % (
+                                  self.wids['e_cred_nombre'].get_text()),
+                                texto,
+                                adjuntos = adjunto,
+                                servidor = servidor,
+                                usuario = smtpuser,
+                                password = smtppass)
             vpro.mover()
             if ok:
                 pclases.Auditoria.modificado(self.objeto,
@@ -547,13 +547,27 @@ class Presupuestos(Ventana, VentanaGenerica):
                 texto += "\n\n\nEl correo iba dirigido a: %s" % (
                         "; ".join(dests))
                 dests = ["informatica@geotexan.com"]
-            enviar_correoe(rte,
-                           dests,
-                           "Alerta de pedido sin crédito",
-                           texto,
-                           servidor = servidor,
-                           usuario = smtpuser,
-                           password = smtppass)
+            ok = enviar_correoe(rte,
+                                dests,
+                                "Alerta de pedido sin crédito",
+                                texto,
+                                servidor = servidor,
+                                usuario = smtpuser,
+                                password = smtppass)
+            if ok:
+                pclases.Auditoria.modificado(self.objeto,
+                    self.usuario, __file__,
+                    "Usuario %s lanzó correo de riesgo de crédito para "
+                    "la oferta %d."
+                        % (self.usuario and self.usuario.usuario or "¡NADIE!",
+                           self.objeto.id))
+            else:
+                pclases.Auditoria.modificado(self.objeto,
+                    self.usuario, __file__,
+                    "Falló envío de correo de riesgo de crédito para oferta "
+                    "%d del usuario %s."
+                        % (self.objeto.id,
+                           self.usuario and self.usuario.usuario or "¡NADIE!"))
 
     def enviar_correo_observaciones(self):
         """
@@ -585,13 +599,29 @@ class Presupuestos(Ventana, VentanaGenerica):
                 texto += "\n\n\nEl correo iba dirigido a: %s" % (
                         "; ".join(dests))
                 dests = ["informatica@geotexan.com"]
-            enviar_correoe(rte,
-                           dests,
-                           "Nuevas anotaciones en oferta %d" % self.objeto.id,
-                           texto,
-                           servidor = servidor,
-                           usuario = smtpuser,
-                           password = smtppass)
+            ok = enviar_correoe(rte,
+                                dests,
+                                "Nuevas anotaciones en oferta %d" 
+                                    % self.objeto.id,
+                                texto,
+                                servidor = servidor,
+                                usuario = smtpuser,
+                                password = smtppass)
+            if ok:
+                pclases.Auditoria.modificado(self.objeto,
+                    self.usuario, __file__,
+                    "Usuario %s realizó nuevas anotaciones en "
+                    "la oferta %d."
+                        % (self.usuario and self.usuario.usuario or "¡NADIE!",
+                           self.objeto.id))
+            else:
+                pclases.Auditoria.modificado(self.objeto,
+                    self.usuario, __file__,
+                    "Falló envío de correo de nuevas anotaciones para oferta "
+                    "%d del usuario %s."
+                        % (self.objeto.id,
+                           self.usuario and self.usuario.usuario or "¡NADIE!"))
+
 
     def adjudicar(self, ch):
         if ch.get_active() != self.objeto.adjudicada:   # Es el usuario el
@@ -665,13 +695,27 @@ class Presupuestos(Ventana, VentanaGenerica):
                         self.objeto.telefono,
                         self.objeto.email,
                         self.objeto.personaContacto)
-            enviar_correoe(rte,
-                           dests,
-                           "Alta de nuevo cliente",
-                           texto,
-                           servidor = servidor,
-                           usuario = smtpuser,
-                           password = smtppass)
+            ok = enviar_correoe(rte,
+                                dests,
+                                "Alta de nuevo cliente",
+                                texto,
+                                servidor = servidor,
+                                usuario = smtpuser,
+                                password = smtppass)
+            if ok:
+                pclases.Auditoria.modificado(self.objeto,
+                    self.usuario, __file__,
+                    "Usuario %s adjudicó la obra de la oferta %d y se debe "
+                    "crear el nuevo cliente"
+                        % (self.usuario and self.usuario.usuario or "¡NADIE!",
+                           self.objeto.id))
+            else:
+                pclases.Auditoria.modificado(self.objeto,
+                    self.usuario, __file__,
+                    "Falló envío de correo de alta de nuevo cliente para la "
+                    "oferta %d del usuario %s."
+                        % (self.objeto.id,
+                           self.usuario and self.usuario.usuario or "¡NADIE!"))
         if not self.objeto.obra:
             # Correo de alta de la obra
             texto = "Se ha adjudicado la oferta %d. "\
@@ -691,13 +735,27 @@ class Presupuestos(Ventana, VentanaGenerica):
                         self.objeto.provincia,
                         self.objeto.pais,
                         )
-            enviar_correoe(rte,
-                           dests,
-                           "Alta de nueva obra",
-                           texto,
-                           servidor = servidor,
-                           usuario = smtpuser,
-                           password = smtppass)
+            ok = enviar_correoe(rte,
+                                dests,
+                                "Alta de nueva obra",
+                                texto,
+                                servidor = servidor,
+                                usuario = smtpuser,
+                                password = smtppass)
+            if ok:
+                pclases.Auditoria.modificado(self.objeto,
+                    self.usuario, __file__,
+                    "Usuario %s adjudicó la obra de la oferta %d y se debe "
+                    "crear la nueva obra."
+                        % (self.usuario and self.usuario.usuario or "¡NADIE!",
+                           self.objeto.id))
+            else:
+                pclases.Auditoria.modificado(self.objeto,
+                    self.usuario, __file__,
+                    "Falló envío de correo de alta de nueva obra para la "
+                    "oferta %d del usuario %s."
+                        % (self.objeto.id,
+                           self.usuario and self.usuario.usuario or "¡NADIE!"))
         # Correo de adjudicación de oferta.
         texto = "Se ha adjudicado la oferta %d del comercial %s"\
                 " al cliente %s por importe de %s €." % (
@@ -708,13 +766,26 @@ class Presupuestos(Ventana, VentanaGenerica):
                     self.objeto.nombrecliente,
                     utils.float2str(
                         self.objeto.calcular_importe_total()))
-        enviar_correoe(rte,
-                       dests,
-                       "Alta de nueva adjudicación de oferta",
-                       texto,
-                       servidor = servidor,
-                       usuario = smtpuser,
-                       password = smtppass)
+        ok = enviar_correoe(rte,
+                            dests,
+                            "Alta de nueva adjudicación de oferta",
+                            texto,
+                            servidor = servidor,
+                            usuario = smtpuser,
+                            password = smtppass)
+        if ok:
+            pclases.Auditoria.modificado(self.objeto,
+                self.usuario, __file__,
+                "Usuario %s adjudicó la obra de la oferta %d."
+                    % (self.usuario and self.usuario.usuario or "¡NADIE!",
+                       self.objeto.id))
+        else:
+            pclases.Auditoria.modificado(self.objeto,
+                self.usuario, __file__,
+                "Falló envío de correo de adjudicación de la "
+                "oferta %d del usuario %s."
+                    % (self.objeto.id,
+                       self.usuario and self.usuario.usuario or "¡NADIE!"))
 
     def bloquear(self, ch):
         """
@@ -2845,13 +2916,26 @@ class Presupuestos(Ventana, VentanaGenerica):
                         self.objeto.id,
                         self.objeto.nombrecliente,
                         utils.str_fecha(self.objeto.fecha))
-            enviar_correoe(rte,
-                           dests,
-                           "Oferta %d validada." % self.objeto.id,
-                           texto,
-                           servidor = servidor,
-                           usuario = smtpuser,
-                           password = smtppass)
+            ok = enviar_correoe(rte,
+                                dests,
+                                "Oferta %d validada." % self.objeto.id,
+                                texto,
+                                servidor = servidor,
+                                usuario = smtpuser,
+                                password = smtppass)
+            if ok:
+                pclases.Auditoria.modificado(self.objeto,
+                    self.usuario, __file__,
+                    "Usuario %s validó la oferta %d."
+                        % (self.usuario and self.usuario.usuario or "¡NADIE!",
+                           self.objeto.id))
+            else:
+                pclases.Auditoria.modificado(self.objeto,
+                    self.usuario, __file__,
+                    "Falló envío de correo de validación de la "
+                    "oferta %d del usuario %s."
+                        % (self.objeto.id,
+                           self.usuario and self.usuario.usuario or "¡NADIE!"))
 
     def enviar_correo_solicitud_validacion(self):
         dests = self.select_correo_validador()
@@ -2870,13 +2954,27 @@ class Presupuestos(Ventana, VentanaGenerica):
                 "para el cliente %s que necesita validación manual." % (
                         self.objeto.id,
                         self.objeto.nombrecliente)
-        enviar_correoe(rte,
-                       dests,
-                       "Alerta de validación manual de oferta",
-                       texto,
-                       servidor = servidor,
-                       usuario = smtpuser,
-                       password = smtppass)
+        ok = enviar_correoe(rte,
+                            dests,
+                            "Alerta de validación manual de oferta",
+                            texto,
+                            servidor = servidor,
+                            usuario = smtpuser,
+                            password = smtppass)
+        if ok:
+            pclases.Auditoria.modificado(self.objeto,
+                self.usuario, __file__,
+                "Usuario %s lanzó correo de necesidad de validación manual "
+                "para la oferta %d."
+                    % (self.usuario and self.usuario.usuario or "¡NADIE!",
+                       self.objeto.id))
+        else:
+            pclases.Auditoria.modificado(self.objeto,
+                self.usuario, __file__,
+                "Falló envío de correo de solicitud de validación de la "
+                "oferta %d del usuario %s."
+                    % (self.objeto.id,
+                       self.usuario and self.usuario.usuario or "¡NADIE!"))
 
     def borrar(self, widget):
         """
@@ -2895,15 +2993,20 @@ class Presupuestos(Ventana, VentanaGenerica):
             try:
                 presupuesto.destroy_en_cascada(ventana = __file__)
             except Exception, e:
-                self.logger.error("presupuestos::borrar -> Presupuesto ID %d no se pudo eliminar. Excepción: %s." % (presupuesto.id, e))
+                self.logger.error("presupuestos::borrar -> Presupuesto ID %d "
+                                  "no se pudo eliminar. Excepción: %s." 
+                                    % (presupuesto.id, e))
                 utils.dialogo_info(titulo = "PRESUPUESTO NO BORRADO",
-                                   texto = "El presupuesto no se pudo eliminar.\n\nSe generó un informe de error en el «log» de la aplicación.",
+                                   texto = "El presupuesto no se pudo "
+                                           "eliminar.\n\nSe generó un informe"
+                                           " de error en el «log» de la "
+                                           "aplicación.",
                                    padre = self.wids['ventana'])
                 self.actualizar_ventana()
-                return
-            self.objeto = None
-            self.reset_cache_credito()
-            self.ir_a_primero_de_los_mios()
+            else:
+                self.objeto = None
+                self.reset_cache_credito()
+                self.ir_a_primero_de_los_mios()
 
     def ir_a_primero_de_los_mios(self):
         if not self.usuario:

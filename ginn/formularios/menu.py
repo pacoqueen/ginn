@@ -56,13 +56,6 @@ import gtk, gobject
 import os, sys, traceback
 from lib.myprint import myprint
 from framework import pclases
-#os.environ['LANG'] = "es_ES"
-#os.environ['LANGUAGE'] = 'es_ES'
-myprint(os.environ)
-#os.chdir(os.path.dirname(os.path.realpath(sys.argv[0])))
-myprint(os.getcwd())
-myprint(os.path.realpath(sys.argv[0]))
-#
 from formularios import utils
 from framework.configuracion import ConfigConexion, parse_params
 
@@ -107,6 +100,14 @@ __version_info__ = tuple(
 # 2.0.1: Tal vez debería hacer un fork para nuevas funcionalidades generales 
 #        (tickets, IRPF...) mientras congelo la RC, pero prefiero una sola 
 #        rama de código, que los merge de CVS son muy duros.
+
+#os.environ['LANG'] = "es_ES"
+#os.environ['LANGUAGE'] = 'es_ES'
+#os.chdir(os.path.dirname(os.path.realpath(sys.argv[0])))
+if pclases.DEBUG:
+    myprint(os.environ)
+    myprint(os.getcwd())
+    myprint(os.path.realpath(sys.argv[0]))
 
 class MetaF:
     """
