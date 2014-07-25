@@ -385,7 +385,7 @@ class PagaresPagos(Ventana):
         if a_buscar != None:
             a_buscar = a_buscar.strip()
             resultados = []
-            if a_buscar.count('/') == 2:
+            if utils.es_interpretable_como_fecha(a_buscar):
                 fecha = utils.parse_fecha(a_buscar) 
                 resultados = pclases.PagarePago.select(
                         pclases.OR(pclases.PagarePago.q.fechaEmision == fecha, 
