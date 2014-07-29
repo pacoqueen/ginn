@@ -998,7 +998,7 @@ def check_mes_posterior(f1, f2):
     EL AÑO.
     """
     if f1.year == f2.year:
-        return f1 > f2
+        return f1.month > f2.month
     else:
         return f1.year > f2.year
 
