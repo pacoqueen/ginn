@@ -992,6 +992,17 @@ class SuperFacturaVenta:
         return res
 
 
+def check_mes_posterior(f1, f2):
+    """
+    Devuelve True si el mes de f1 es un mes posterior a f2 TENIENDO EN CUENTA
+    EL AÑO.
+    """
+    if f1.year == f2.year:
+        return f1 > f2
+    else:
+        return f1.year > f2.year
+
+
 def check_lunes(vto):
     """
     Comprueba si la forma de pago es la del primer lunes del mes 
@@ -999,14 +1010,14 @@ def check_lunes(vto):
     """
     docpago = vto.get_documentoDePago()
     if docpago == DocumentoDePago.Lunes():
-        mesoriginal = vto.fecha.month
+        fecha_original = vto.fecha
         try:
-                diasemana = vto.fecha.day_of_week
+            diasemana = vto.fecha.day_of_week
         except AttributeError:  # Es un datetime
             diasemana = vto.fecha.weekday()
-        mesvto = vto.fecha.month
+        fecha_vto = vto.fecha
         while not(diasemana == 0 # == Lunes en ambas libs.
-                  and mesvto > mesoriginal): 
+                  and check_mes_posterior(fecha_vto, fecha_original)): 
             try:
                 vto.fecha += mx.DateTime.oneDay
             except TypeError:
@@ -1015,6 +1026,6 @@ def check_lunes(vto):
                 diasemana = vto.fecha.day_of_week
             except AttributeError:  # Es un datetime
                 diasemana = vto.fecha.weekday()
-            mesvto = vto.fecha.month
+            fecha_vto = vto.fecha
     return vto
 
