@@ -128,8 +128,10 @@ def build_datos_por_producto(por_producto):
         kilos = p.get_stock()
         kilos_A = hasattr(p, "get_stock_A") and p.get_stock_A() or p.get_stock()
         kilos_B = hasattr(p, "get_stock_B") and p.get_stock_B() or 0.0
-        bultos_A = hasattr(p, "get_existencias_A") and p.get_existencias_A() or p.get_existencias()
-        bultos_B = hasattr(p, "get_existencias_B") and p.get_existencias_B() or 0.0
+        bultos_A = (hasattr(p, "get_existencias_A") and p.get_existencias_A()
+                    or p.get_existencias())
+        bultos_B = (hasattr(p, "get_existencias_B") and p.get_existencias_B()
+                    or 0.0)
         pendiente = utils.float2str(por_producto[p])
         total_por_producto_pendiente += por_producto[p]
         ide = p.id
@@ -345,7 +347,8 @@ class PendientesServir(Ventana):
         el que se muestra por defecto).
         """
         self.usuario = usuario
-        Ventana.__init__(self, 'consulta_pendientes_servir.glade', objeto, usuario = usuario)
+        Ventana.__init__(self, 'consulta_pendientes_servir.glade', objeto,
+                         usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_fechaini/clicked': self.set_inicio,
                        'b_fechafin/clicked': self.set_fin, 
@@ -491,11 +494,15 @@ class PendientesServir(Ventana):
         self.colorear(self.wids['tv_fibra_por_pedido'])
         #self.colorear(self.wids['tv_gtx_por_pedido'])
         self.colorear(self.wids['tv_otros_por_pedido'])
-        utils.rellenar_lista(self.wids['cbe_cliente'], [(0, "Todos los clientes")] + [(c.id, c.nombre) for c in pclases.Cliente.select(orderBy="nombre")])
+        utils.rellenar_lista(self.wids['cbe_cliente'], 
+                [(0, "Todos los clientes")] 
+                + [(c.id, c.nombre) 
+                    for c in pclases.Cliente.select(orderBy="nombre")])
         def iter_cliente_seleccionado(completion, model, itr):
             idcliente = model[itr][0]
             utils.combo_set_from_db(self.wids['cbe_cliente'], idcliente)
-        self.wids['cbe_cliente'].child.get_completion().connect('match-selected', iter_cliente_seleccionado)
+        self.wids['cbe_cliente'].child.get_completion().connect(
+                'match-selected', iter_cliente_seleccionado)
         self.wids['cbe_cliente'].grab_focus()
         if pclases.ProductoVenta.select().count() > 0:
             self.wids['notebook1'].set_current_page(1)
@@ -560,7 +567,28 @@ class PendientesServir(Ventana):
         else:
             return
         abrir_csv(treeview2csv(tv))
+        # EXPERIMENTAL
+        if self.usuario and self.usuario.id == 1:
+            # XXX: PORASQUI
+            data = build_gdata(self.wids['tv_fibra_por_pedido'].get_model(),
+                               self.wids['tv_gtx_por_pedido'].get_model(),
+                               self.wids['tv_otros_por_pedido'].get_model())
+            html = build_html(data)
+            fhtml = build_file_html(html)
+            open_html(fhtml)
 
+
+def build_data(model_fibra, model_gtx, model_otros):
+    return None
+
+def build_html(data):
+    return None
+
+def build_file_html(html):
+    return None
+
+def open_html(fhtml):
+    pass
 
 
 if __name__ == '__main__':
