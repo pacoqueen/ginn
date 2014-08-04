@@ -569,26 +569,88 @@ class PendientesServir(Ventana):
         abrir_csv(treeview2csv(tv))
         # EXPERIMENTAL
         if self.usuario and self.usuario.id == 1:
-            # XXX: PORASQUI
             data = build_gdata(self.wids['tv_fibra_por_pedido'].get_model(),
                                self.wids['tv_gtx_por_pedido'].get_model(),
                                self.wids['tv_otros_por_pedido'].get_model())
+            # XXX: PORASQUI
             html = build_html(data)
             fhtml = build_file_html(html)
             open_html(fhtml)
 
 
-def build_data(model_fibra, model_gtx, model_otros):
-    return None
+def build_gdata(model_fibra, model_gtx, model_otros):
+    """
+    Devuelve una lista de días y la demanda de los productos previstos para
+    esa fecha. La demanda se calcula como las existencias iniciales menos
+    las cantidades pedidas acumuladas por los pedidos de la consulta. La cifra
+    final es la suma de la demanda de todos los productos para ese día.
+    """
+    # PLAN: Para que esto fuera útil de verdad necesitaría que los pedidos
+    # llevaran fecha de entrega y que la planificación de las líneas se
+    # metiera en el programa.
+    from collections import defaultdict
+    res = defaultdict(lambda: 0)
+    productos = {}  # Existencias iniciales de los productos actualizada
+                    # con la demanda de cada pedido.
+    for model, ffecha, fproducto, fcantidad in ((model_fibra, 1, 3, 4),
+                                                (model_gtx, 1, 3, 5),
+                                                (model_otros, 1, 3, 4)):
+        for fila in model:  # Debería ordenaro por día... ¿no?
+            fecha = utils.parse_fecha(fila[1])
+            producto = fila[3]
+            while (producto.startswith("-") or producto.startswith(">")
+                    or producto.startswith(" ")):
+                producto = producto[1:]
+            try:
+                cantidad = utils.parse_float(fila[5])
+            except ValueError:  # caso "-4.848." ¿punto como unidad? WTF?
+                cantidad = utils.parse_float(fila[5][:-1])
+            try:
+                demanda = productos[producto] - cantidad
+            except KeyError:
+                try:
+                    productodb = pclases.ProductoVenta.selectBy(
+                                    descripcion=producto)[0]
+                    stockdb = productodb.get_stock_A()
+                except IndexError:  # Es producto "de compra"
+                    productodb = pclases.ProductoCompra.selectBy(
+                                    descripcion=producto)[0]
+                    stockdb = productodb.get_stock()
+                productos[producto] = stockdb - cantidad
+            res[fecha] += productos[producto]
+    fechas = res.keys()
+    fechas.sort()
+    gdata = []
+    for f in fechas:
+        gdata.append("[ new Date(%d, %d, %d), %f ]" % (f.year, f.month, f.day,
+                                                       res[f]))
+    return gdata
 
-def build_html(data):
-    return None
+def build_html(gdata):
+    from lib.google_visualization_python import gviz_api
+    import tempfile
+    import os
+    TEMPLATE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                                "..", "informes"))
+    tmpl = open(os.path.join(TEMPLATE_DIR, "calendar_template.html"))
+    page_template = "".join(tmpl.readlines())
+    tmpl.close()
+    json = ", ".join(gdata)
+    html = page_template % vars()
+    return html
 
 def build_file_html(html):
-    return None
+    import tempfile
+    tfile = tempfile.NamedTemporaryFile(suffix=".html", delete=False)
+    fname = tfile.name
+    reporttitle = "Disponibilidad de stock por fecha según pedidos pendientes"
+    tfile.write(html)
+    tfile.close()
+    return fname
 
 def open_html(fhtml):
-    pass
+    from formularios import multi_open
+    multi_open.webbrowser.open(fhtml)
 
 
 if __name__ == '__main__':

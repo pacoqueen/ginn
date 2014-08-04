@@ -1,0 +1,29 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1.1", {packages:["calendar"]});
+      google.setOnLoadCallback(drawChart);
+
+   function drawChart() {
+       var dataTable = new google.visualization.DataTable();
+       dataTable.addColumn({ type: 'date', id: 'Date' });
+       dataTable.addColumn({ type: 'number', id: 'Disponibilidad' });
+       dataTable.addRows([ %(json)s ]);
+
+       var chart = new google.visualization.Calendar(document.getElementById('calendar_basic'));
+
+       var options = {
+         title: "Sotck - pedidos pdtes. de servir",
+         height: 1000,
+       };
+
+       chart.draw(dataTable, options);
+   }
+    </script>
+  </head>
+  <body>
+    <!-- <div id="calendar_basic" style="width: 1000px; height: 350px;"></div> -->
+    <div id="calendar_basic" style="width: 1000px; height: 1000px;"></div>
+  </body>
+</html>

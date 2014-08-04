@@ -472,8 +472,12 @@ def get_txtformapago(pago, vto):
     """
     if pago and pago.observaciones:
         res = pago.observaciones
+        if pago.pagarePago and pago.pagarePago.codigo:
+            res += " [pagaré n.º %s]" % pago.pagarePago.codigo
     elif vto and vto.observaciones:
         res = vto.observaciones
+        if pago and pago.pagarePago and pago.pagarePago.codigo:
+            res += " [pagaré n.º %s]" % pago.pagarePago.codigo
     else:
         proveedor = pago.proveedor or pago.facturaCompra.proveedor
         try:

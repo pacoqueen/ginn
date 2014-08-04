@@ -4,10 +4,6 @@
 		"selected_items":
 		[
 			[
-				"camposEspe",
-				"CamposEspecificosRollo"
-			],
-			[
 				"obj_",
 				"obj_puid	(local, instance)"
 			],
@@ -20,6 +16,14 @@
 	"buffers":
 	[
 		{
+			"file": "ginn/informes/calendar_template.html",
+			"settings":
+			{
+				"buffer_size": 959,
+				"line_ending": "Unix"
+			}
+		},
+		{
 			"file": "ginn/informes/geomap_template.html",
 			"settings":
 			{
@@ -28,18 +32,18 @@
 			}
 		},
 		{
-			"file": "ginn/main.py",
+			"file": "ginn/formularios/consulta_ventas_por_producto.py",
 			"settings":
 			{
-				"buffer_size": 417,
+				"buffer_size": 32320,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "ginn/formularios/launcher.py",
+			"file": "extra/scripts/obras_huerfanas.py",
 			"settings":
 			{
-				"buffer_size": 6006,
+				"buffer_size": 3785,
 				"line_ending": "Unix"
 			}
 		},
@@ -50,34 +54,22 @@
 				"buffer_size": 5721,
 				"line_ending": "Unix"
 			}
+		},
+		{
+			"file": "extra/scripts/20140701_ajustar_partes.py",
+			"settings":
+			{
+				"buffer_size": 13361,
+				"line_ending": "Unix"
+			}
 		}
 	],
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 152.0,
+		"height": 392.0,
 		"selected_items":
 		[
-			[
-				"install",
-				"Package Control: Install Package"
-			],
-			[
-				"indent",
-				"Indentation: Convert to Spaces"
-			],
-			[
-				"pep",
-				"PEP8: Preview Changes"
-			],
-			[
-				"package",
-				"Package Control: Remove Package"
-			],
-			[
-				"lint",
-				"User: Python Flake8 Lint"
-			],
 			[
 				":w",
 				":w - Save"
@@ -95,8 +87,16 @@
 				"Anaconda: Autoformat PEP8 Errors"
 			],
 			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
 				"pack",
 				"Package Control: List Packages"
+			],
+			[
+				"indent",
+				"Indent XML"
 			],
 			[
 				"inden",
@@ -121,6 +121,10 @@
 			[
 				"erlyman",
 				"Erlyman: Find"
+			],
+			[
+				"package",
+				"Package Control: Upgrade Package"
 			],
 			[
 				"erly",
@@ -201,6 +205,10 @@
 			[
 				"lint ",
 				"Python: Enable Pep8 Linting On View"
+			],
+			[
+				"lint",
+				"Python: Disable Pep8 Linting On View"
 			],
 			[
 				":q",
@@ -295,14 +303,13 @@
 				":w - Save"
 			]
 		],
-		"width": 467.0
+		"width": 746.0
 	},
 	"console":
 	{
 		"height": 139.0,
 		"history":
 		[
-			"import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404' + 'e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)",
 			"import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by) ",
 			"from ginn.framework import pclases",
 			"cd ginn",
@@ -329,26 +336,42 @@
 	},
 	"file_history":
 	[
-		"/home/queen/Geotexan/src/Geotex-INN/extra/scripts/mind_the_gap.py",
-		"/home/queen/.config/sublime-text-3/Packages/User/SublimeLinter.sublime-settings",
-		"/home/queen/Geotexan/src/Geotex-INN/db/baks_sql/20140203_qinn.backup",
-		"/home/queen/Geotexan/src/Geotex-INN/doc/sloccount_2007_01_16.txt",
-		"/home/queen/Geotexan/src/Geotex-INN/tests/20140201_0600_consumido.csv",
-		"/home/queen/Geotexan/src/Geotex-INN/db/20120510_ginn_geoserver.backup",
-		"/home/queen/Geotexan/src/Geotex-INN/ginn/formularios/ventana.py",
-		"/home/queen/Geotexan/src/Geotex-INN/ginn/formularios/ventana_progreso.py",
-		"/home/queen/Geotexan/src/Geotex-INN/ginn/framework/configuracion.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/framework/launch_server.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_consumo.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/confirmings.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/extra/scripts/clouseau.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/geotexan.vim",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/informes/geninformes.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/gtkexcepthook.py",
+		"/home/bogado/src/qinn.es/index.html",
+		"/home/bogado/src/qinn.es/index_en.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/framework/configuracion.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/sloccount_2007_01_16.txt",
+		"/home/bogado/Geotexan/src/Geotex-INN/tests/cierre enero 2014/20140201_0600_consumido.csv",
+		"/home/bogado/Geotexan/src/Geotex-INN/db/baks_sql/20100914bpinn.pgdump",
+		"/home/bogado/Geotexan/src/Geotex-INN/extra/scripts/20140701_ajustar_partes.py~",
+		"/home/bogado/Geotexan/src/Geotex-INN/extra/scripts/20140701_ajustar_partes.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/extra/scripts/20140701_cambio_rollos.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/tests/cierre febrero 2014/20140101_cem.csv",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/menu.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/menu.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/mdb-export",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/main.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/launcher.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/ventana.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/ventana_progreso.py",
+		"/home/bogado/.lessfilter",
+		"/home/bogado/Geotexan/src/Geotex-INN/extra/scripts/clouseau-gtk.py",
+		"/home/bogado/Geotexan/src/Geotex-INN/extra/scripts/clouseau.glade",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/ChangeLog",
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_incidencias.html",
+		"/home/bogado/Geotexan/src/Geotex-INN/extra/scripts/cierre_anno.py",
+		"/home/bogado/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/framework/launch_server.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/db/new_tablas.sql",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/configuracion.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/confirmings.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/presupuestos.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/framework/parse_mdblogic.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/pagares_pagos.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/main.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/framework/configuracion.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/ventana.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/mdb-array",
 		"/home/bogado/Geotexan/src/Geotex-INN/db/migrate2bacall.sh",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/odfpy/examples/list-as-odt.py",
@@ -362,7 +385,6 @@
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/rollos_almacen.glade",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/partes_de_fabricacion_rollos.html",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/fixedpoint.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/gtkexcepthook.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/xlwt/xlwt/examples/parse-fmla.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/tests/partidas_enero.csv",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/pagares_cobros.py",
@@ -426,7 +448,6 @@
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/PyPDF2/PyPDF2/__init__.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/PyPDF2/__init__.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/cairograph.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/extra/scripts/cierre_anno.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygraphviz/pygraphviz/__init__.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygraphviz/pygraphviz/graphviz.py",
 		"/tmp/test.xml",
@@ -442,25 +463,11 @@
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/framework/pclases/.cliente.py.swp",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/framework/pclases/superfacturaventa.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/doc/ginn_pclases.eps",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/pclases.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pclases.tex",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pclases.log",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pclases.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pclases.dvi",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pclases.aux",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/presupuestos.glade",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/presupuestos.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/presupuesto.glade",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/prefacturas.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/consulta_pendientes_recibir.html",
-		"/home/bogado/Geotexan/src/Geotex-INN/db/populate.sql",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios/consulta_ventas_por_producto.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/db/tablas.sql",
-		"/home/bogado/Geotexan/doc/Sysadmin/Red/MACs_wifi.md"
+		"/home/bogado/Geotexan/src/Geotex-INN/doc/pydoc/pclases.html"
 	],
 	"find":
 	{
-		"height": 23.0
+		"height": 35.0
 	},
 	"find_in_files":
 	{
@@ -474,6 +481,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"print",
 			"\\$",
 			"print",
 			"parse_params",
@@ -561,6 +569,8 @@
 		"regex": false,
 		"replace_history":
 		[
+			"myprint(",
+			"print"
 		],
 		"reverse": false,
 		"show_context": true,
@@ -571,11 +581,45 @@
 	"groups":
 	[
 		{
-			"selected": 3,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 0,
+					"file": "ginn/informes/calendar_template.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 959,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								694,
+								694
+							]
+						],
+						"settings":
+						{
+							"rulers":
+							[
+								80
+							],
+							"syntax": "Packages/Djaneiro/Syntaxes/HTML (Django).tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
 					"file": "ginn/informes/geomap_template.html",
 					"semi_transient": false,
 					"settings":
@@ -587,54 +631,18 @@
 						"selection":
 						[
 							[
-								3116,
-								3116
+								2449,
+								2449
 							]
 						],
 						"settings":
 						{
-							"rulers":
-							[
-								80
-							],
-							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"syntax": "Packages/Djaneiro/Syntaxes/HTML (Django).tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 17.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "ginn/main.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 417,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								48,
-								48
-							]
-						],
-						"settings":
-						{
-							"rulers":
-							[
-								80
-							],
-							"syntax": "Packages/Python/Python.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 561.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 2,
@@ -642,33 +650,29 @@
 				},
 				{
 					"buffer": 2,
-					"file": "ginn/formularios/launcher.py",
+					"file": "ginn/formularios/consulta_ventas_por_producto.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6006,
+						"buffer_size": 32320,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4220,
-								4220
+								17940,
+								17940
 							]
 						],
 						"settings":
 						{
-							"rulers":
-							[
-								80
-							],
-							"syntax": "Packages/Python/Python.tmLanguage",
+							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 653.0,
+						"translation.y": 6297.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
@@ -676,6 +680,34 @@
 				},
 				{
 					"buffer": 3,
+					"file": "extra/scripts/obras_huerfanas.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3785,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3743,
+								3743
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
 					"file": "extra/scripts/20140701_cambio_rollos.py",
 					"semi_transient": false,
 					"settings":
@@ -687,24 +719,51 @@
 						"selection":
 						[
 							[
-								0,
-								0
+								4746,
+								4746
 							]
 						],
 						"settings":
 						{
-							"rulers":
-							[
-								80
-							],
-							"syntax": "Packages/Python/Python.tmLanguage",
+							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
+							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 180.0,
+						"translation.y": 1275.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "extra/scripts/20140701_ajustar_partes.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 13361,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5495,
+								5495
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1530.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
 					"type": "text"
 				}
 			]
@@ -712,7 +771,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 23.0
+		"height": 34.0
 	},
 	"input":
 	{
@@ -741,10 +800,6 @@
 		]
 	},
 	"menu_visible": true,
-	"output.autopep8":
-	{
-		"height": 0.0
-	},
 	"output.exec":
 	{
 		"height": 112.0
@@ -760,7 +815,7 @@
 	"project": "geotexan.sublime-project",
 	"replace":
 	{
-		"height": 42.0
+		"height": 64.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -769,12 +824,24 @@
 		"selected_items":
 		[
 			[
-				"mind_",
-				"extra/scripts/mind_the_gap.py"
+				"consulta_ventas_por",
+				"ginn/formularios/consulta_ventas_por_producto.py"
 			],
 			[
-				"20140701",
-				"extra/scripts/20140701_cambio_rollos.py"
+				"geomap_template",
+				"ginn/informes/geomap_template.html"
+			],
+			[
+				"201407",
+				"extra/scripts/20140701_ajustar_partes.py"
+			],
+			[
+				"menu.py",
+				"ginn/formularios/menu.py"
+			],
+			[
+				"clouse",
+				"extra/scripts/clouseau.py"
 			],
 			[
 				"main.py",
@@ -835,6 +902,10 @@
 			[
 				"tablas.sql",
 				"db/tablas.sql"
+			],
+			[
+				"mind_",
+				"extra/scripts/mind_the_gap.py"
 			],
 			[
 				"consulta_producipy",
