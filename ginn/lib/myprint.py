@@ -18,6 +18,7 @@ las ventanas se ejecutan sin salida estándar para evitar errores
 en print, por un lado, y que no se pierda toda esa "valiosa" información
 de stdout/stderr, por otro.
 """
+# TODO: En el depurador interno no se ve lo que debería sacar Auditoria.trace
 
 import sys
 #import os

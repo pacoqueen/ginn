@@ -177,7 +177,7 @@ class ConsumoBalasPartida(Ventana):
         try:
             idpartida = model[path][-1]
             partida = pclases.Partida.get(idpartida)
-        except (pclases.SQLObjectNotFound, IndexError):
+        except (pclases.SQLObjectNotFound, IndexError, TypeError):
             return  # Partida ya borrada, path es None, etc...
         partida.partidaCarga = None
         self.actualizar_ventana()
