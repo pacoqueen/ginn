@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 05 agosto 2014 at 11:01:24.
+" Created by session.vim 1.5 on 05 agosto 2014 at 13:49:26.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -105,7 +105,7 @@ badd +606 ginn/formularios/consulta_pendientes_servir.py
 badd +1 ginn/formularios/presupuestos.py
 badd +1 ginn/formularios/consulta_pagos_realizados.py
 badd +21 ginn/lib/myprint.py
-badd +0 ginn/formularios/consumo_balas_partida.py
+badd +926 ginn/formularios/consumo_balas_partida.py
 argglobal
 silent! argdel *
 argadd formularios/auditviewer.py
@@ -908,7 +908,7 @@ normal! 0
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
-edit ~/Geotexan/src/Geotex-INN/ginn/formularios/consumo_balas_partida.py
+edit ~/Geotexan/src/Geotex-INN/ginn/formularios/consulta_pagos_realizados.py
 setlocal fdm=indent
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -917,16 +917,24 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-57
+49
 normal! zo
-172
+383
 normal! zo
-let s:l = 180 - ((9 * winheight(0) + 8) / 16)
+389
+normal! zo
+391
+normal! zo
+391
+normal! zo
+391
+normal! zo
+let s:l = 395 - ((13 * winheight(0) + 8) / 16)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-180
-normal! 064|
+395
+normal! 030|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -949,17 +957,17 @@ normal! zo
 normal! zo
 244
 normal! zo
-466
+468
 normal! zo
-474
+476
 normal! zo
-478
+480
 normal! zo
-let s:l = 477 - ((1 * winheight(0) + 0) / 1)
+let s:l = 479 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-477
+479
 normal! 035|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w

@@ -386,11 +386,13 @@ class ConsultaVencimientosPagados(Ventana):
         from formularios import reports
         datos = []
         for pago in self.resultado:
-            datos.append((pago.facturaCompra.numfactura,
+            fra = pago.facturaCompra
+            datos.append((fra and fra.numfactura or "",
                           utils.str_fecha(pago.fecha),
                           utils.float2str(pago.importe),
                           pago.observaciones,
-                          pago.facturaCompra.proveedor.nombre))
+                          fra and fra.proveedor and fra.proveedor.nombre 
+                              or ""))
         if (self.inicio) == None:            
             fechaInforme = 'Hasta '+utils.str_fecha(self.fin)
         else:
