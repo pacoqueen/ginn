@@ -75,7 +75,11 @@ import gtk
 from framework import pclases
 import mx.DateTime
 from formularios.ventana_progreso import VentanaProgreso
-from collections import OrderedDict, defaultdict
+from collections import defaultdict
+try:
+    from collections import OrderedDict
+except ImportError:
+    from lib.ordereddict import OrderedDict
 from formularios.consulta_producido import calcular_productividad_conjunta
 import datetime
 
