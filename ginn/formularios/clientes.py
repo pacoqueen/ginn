@@ -1038,9 +1038,9 @@ class Clientes(Ventana):
         condicion = True
         lista = [cli for cli in cliente.sqlmeta.columnList
                     if cli.name!='tarifaID'
-                        and cli.name !='contadorID'
-                        and cli.name !='formadepago'
-                        and cli.name !='formaPagoFija'
+                        and cli.name != 'contadorID'
+                        and cli.name != 'formadepago'
+                        and cli.name != 'formaPagoFija'
                         and cli.name != "clienteID"
                         and cli.name != "porcentaje"
                         and cli.name != "enviarCorreoAlbaran"
@@ -1984,6 +1984,7 @@ class Clientes(Ventana):
                   if c.name != 'tarifaID'
                       and c.name != 'contadorID'
                       and c.name != 'formadepago'
+                      and c.name != 'formaPagoFija'
                       and c.name != "clienteID"
                       and c.name != "porcentaje"
                       and c.name != "enviarCorreoAlbaran"
