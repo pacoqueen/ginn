@@ -33,7 +33,7 @@ Created on 03/07/2013
 '''
 
 from . import PRPCTOO, starter, Cobro, Auditoria, DatosDeLaEmpresa, AND, \
-              DEBUG, VERBOSE, Obra
+              DEBUG, VERBOSE, Obra, FormaDePago
 from sqlobject import SQLObject, MultipleJoin, RelatedJoin
 from superfacturaventa import FRA_NO_DOCUMENTADA, FRA_NO_VENCIDA,\
                               FRA_IMPAGADA, FRA_COBRADA, FRA_ABONO
@@ -953,4 +953,32 @@ class Cliente(SQLObject, PRPCTOO):
                 Cliente.q.inhabilitado == False))
         res = sum([f.calcular_importe_total() for f in fras])
         return res
+
+    @property
+    def formaDePago(self):
+        """
+        Devuelve la forma de pago de la base de datos que se corresponde con
+        la información de la forma de pago del cliente, que se encuentra
+        dividida en varios atributos. Si no la encuentra, devuelve None.
+        """
+        plazo = utils.parse_numero(self.formadepago)
+        docu = self.get_documentoDePago()
+        fdps = FormaDePago.select(AND(FormaDePago.q.activa == True, 
+                                      FormaDePago.q.plazo == plazo, 
+                                      FormaDePago.q.documentoDePago == docu), 
+                                  orderBy = "id")
+        try:
+            fdp = fdps[0]
+        except IndexError:
+            fdp = None
+        return fdp
+
+    @formaDePago.setter
+    def formaDePago(self, fdp):
+        """
+        Establece los atributos referentes a la forma de pago del cliente de
+        acuerdo al objeto FormaDePago recibido.
+        """
+        self.vencimientos = self.formadepago = "%d D.F.F." % fdp.plazo
+        self.documentodepago = fdp.documentoDePago.documento
 

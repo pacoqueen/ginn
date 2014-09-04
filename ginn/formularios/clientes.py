@@ -1315,7 +1315,7 @@ class Clientes(Ventana):
         h = gtk.HBox()
         boton.reparent(h)
         fdpfija = self.wids['ch_formaPagoFija'] = gtk.CheckButton(
-                label = "Hacer obligatoria esta forma de pago")
+                label = "Obligatoria para las ofertas de este cliente")
         h.pack_start(fdpfija, expand = True)
         h.show_all()
         # OJO: HARCODED. Pero porque no hay forma fácil de obtener fila y 

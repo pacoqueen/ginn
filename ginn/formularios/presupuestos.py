@@ -1068,10 +1068,20 @@ class Presupuestos(Ventana, VentanaGenerica):
             self.wids['e_persona_contacto'].set_text(cliente.contacto)
         self.actualizar_obras_cliente()
         self.wids['rating'].set_value(cliente.calcular_rating())
-        if cliente.formaPagoFija and (not self.usuario
-                                      or self.usuario.nivel >= 2):
-            utils.combo_set_from_db(self.wids['cb_forma_cobro'], 
-                                    cliente.formaDePago)
+        # Si todavía no se ha pasado a pedido, el usuario no tiene nivel y
+        # el cliente tiene forma de pago fija, pongo la que se le ha
+        # especificado como obligatoria en la ficha.
+        if (not self.objeto.get_pedidos() and 
+            cliente.formaPagoFija and (not self.usuario
+                                      or self.usuario.nivel >= 2)):
+            try:
+                utils.combo_set_from_db(self.wids['cb_forma_cobro'], 
+                                        cliente.formaDePago.id)
+            except AttributeError:
+                txterror = """presupuestos::cambiar_datos_cliente -> ERROR: El cliente ID %d no tiene una forma de pago válida o activa.""" % (cliente.id)
+                if pclases.DEBUG:
+                    myprint(txterror)
+                self.logger.error(txterror)
         self.wids['ventana'].window.set_cursor(None)
 
     def seleccionar_cantidad(self, producto):
@@ -2015,6 +2025,11 @@ class Presupuestos(Ventana, VentanaGenerica):
             self.wids['e_cred_fechaasegurado'].set_sensitive(False)
             self.wids['e_cred_concedido'].set_sensitive(False)
             self.wids['e_cred_fechaconcedido'].set_sensitive(False)
+        # Bloqueo de forma de pago si es fija para este cliente
+        if (self.objeto and self.objeto.cliente and
+                self.objeto.cliente.formaPagoFija and 
+                (not self.usuario or self.usuario.nivel >= 2)):
+            self.wids['cb_forma_cobro'].set_sensitive(False)
 
     def refinar_resultados_busqueda(self, resultados):
         """
