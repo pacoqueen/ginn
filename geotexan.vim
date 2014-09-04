@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 05 agosto 2014 at 13:49:26.
+" Created by session.vim 1.5 on 06 agosto 2014 at 12:44:51.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -103,13 +103,13 @@ badd +1 ginn/formularios/consulta_cobros.py
 badd +411 ginn/formularios/pagares_pagos.py
 badd +606 ginn/formularios/consulta_pendientes_servir.py
 badd +1 ginn/formularios/presupuestos.py
-badd +1 ginn/formularios/consulta_pagos_realizados.py
+badd +395 ginn/formularios/consulta_pagos_realizados.py
 badd +21 ginn/lib/myprint.py
 badd +926 ginn/formularios/consumo_balas_partida.py
 argglobal
 silent! argdel *
 argadd formularios/auditviewer.py
-set lines=48 columns=86
+set lines=57 columns=86
 edit extra/scripts/clouseau.py
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -162,22 +162,22 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 1 + 24) / 48)
-exe '2resize ' . ((&lines * 1 + 24) / 48)
-exe '3resize ' . ((&lines * 1 + 24) / 48)
-exe '4resize ' . ((&lines * 1 + 24) / 48)
-exe '5resize ' . ((&lines * 1 + 24) / 48)
-exe '6resize ' . ((&lines * 1 + 24) / 48)
-exe '7resize ' . ((&lines * 1 + 24) / 48)
-exe '8resize ' . ((&lines * 1 + 24) / 48)
-exe '9resize ' . ((&lines * 1 + 24) / 48)
-exe '10resize ' . ((&lines * 16 + 24) / 48)
-exe '11resize ' . ((&lines * 1 + 24) / 48)
-exe '12resize ' . ((&lines * 1 + 24) / 48)
-exe '13resize ' . ((&lines * 1 + 24) / 48)
-exe '14resize ' . ((&lines * 1 + 24) / 48)
-exe '15resize ' . ((&lines * 1 + 24) / 48)
-exe '16resize ' . ((&lines * 1 + 24) / 48)
+exe '1resize ' . ((&lines * 1 + 28) / 57)
+exe '2resize ' . ((&lines * 1 + 28) / 57)
+exe '3resize ' . ((&lines * 1 + 28) / 57)
+exe '4resize ' . ((&lines * 1 + 28) / 57)
+exe '5resize ' . ((&lines * 1 + 28) / 57)
+exe '6resize ' . ((&lines * 1 + 28) / 57)
+exe '7resize ' . ((&lines * 1 + 28) / 57)
+exe '8resize ' . ((&lines * 1 + 28) / 57)
+exe '9resize ' . ((&lines * 1 + 28) / 57)
+exe '10resize ' . ((&lines * 16 + 28) / 57)
+exe '11resize ' . ((&lines * 1 + 28) / 57)
+exe '12resize ' . ((&lines * 1 + 28) / 57)
+exe '13resize ' . ((&lines * 1 + 28) / 57)
+exe '14resize ' . ((&lines * 1 + 28) / 57)
+exe '15resize ' . ((&lines * 1 + 28) / 57)
+exe '16resize ' . ((&lines * 10 + 28) / 57)
 argglobal
 setlocal fdm=indent
 setlocal fde=0
@@ -879,13 +879,13 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-1208
+1212
 normal! zo
-let s:l = 141 - ((0 * winheight(0) + 0) / 1)
+let s:l = 145 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-141
+145
 normal! 030|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
@@ -908,7 +908,7 @@ normal! 0
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
-edit ~/Geotexan/src/Geotex-INN/ginn/formularios/consulta_pagos_realizados.py
+edit ~/Geotexan/src/Geotex-INN/ginn/formularios/consulta_global.py
 setlocal fdm=indent
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -917,24 +917,16 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-49
+87
 normal! zo
-383
+816
 normal! zo
-389
-normal! zo
-391
-normal! zo
-391
-normal! zo
-391
-normal! zo
-let s:l = 395 - ((13 * winheight(0) + 8) / 16)
+let s:l = 825 - ((4 * winheight(0) + 8) / 16)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-395
-normal! 030|
+825
+normal! 017|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -1903,31 +1895,31 @@ normal! zo
 normal! zo
 447
 normal! zo
-let s:l = 197 - ((0 * winheight(0) + 0) / 1)
+let s:l = 198 - ((1 * winheight(0) + 5) / 10)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-197
-normal! 033|
+198
+normal! 057|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
-10wincmd w
-exe '1resize ' . ((&lines * 1 + 24) / 48)
-exe '2resize ' . ((&lines * 1 + 24) / 48)
-exe '3resize ' . ((&lines * 1 + 24) / 48)
-exe '4resize ' . ((&lines * 1 + 24) / 48)
-exe '5resize ' . ((&lines * 1 + 24) / 48)
-exe '6resize ' . ((&lines * 1 + 24) / 48)
-exe '7resize ' . ((&lines * 1 + 24) / 48)
-exe '8resize ' . ((&lines * 1 + 24) / 48)
-exe '9resize ' . ((&lines * 1 + 24) / 48)
-exe '10resize ' . ((&lines * 16 + 24) / 48)
-exe '11resize ' . ((&lines * 1 + 24) / 48)
-exe '12resize ' . ((&lines * 1 + 24) / 48)
-exe '13resize ' . ((&lines * 1 + 24) / 48)
-exe '14resize ' . ((&lines * 1 + 24) / 48)
-exe '15resize ' . ((&lines * 1 + 24) / 48)
-exe '16resize ' . ((&lines * 1 + 24) / 48)
+16wincmd w
+exe '1resize ' . ((&lines * 1 + 28) / 57)
+exe '2resize ' . ((&lines * 1 + 28) / 57)
+exe '3resize ' . ((&lines * 1 + 28) / 57)
+exe '4resize ' . ((&lines * 1 + 28) / 57)
+exe '5resize ' . ((&lines * 1 + 28) / 57)
+exe '6resize ' . ((&lines * 1 + 28) / 57)
+exe '7resize ' . ((&lines * 1 + 28) / 57)
+exe '8resize ' . ((&lines * 1 + 28) / 57)
+exe '9resize ' . ((&lines * 1 + 28) / 57)
+exe '10resize ' . ((&lines * 16 + 28) / 57)
+exe '11resize ' . ((&lines * 1 + 28) / 57)
+exe '12resize ' . ((&lines * 1 + 28) / 57)
+exe '13resize ' . ((&lines * 1 + 28) / 57)
+exe '14resize ' . ((&lines * 1 + 28) / 57)
+exe '15resize ' . ((&lines * 1 + 28) / 57)
+exe '16resize ' . ((&lines * 10 + 28) / 57)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
@@ -1942,6 +1934,6 @@ let &so = s:so_save | let &siso = s:siso_save
 doautoall SessionLoadPost
 unlet SessionLoad
 tabnext 1
-10wincmd w
+16wincmd w
 
 " vim: ft=vim ro nowrap smc=128
