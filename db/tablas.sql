@@ -431,7 +431,8 @@ CREATE TABLE cliente(
     facturar_con_albaran BOOLEAN DEFAULT TRUE,      -- NEW! 02/03/2009
     copias_factura INT DEFAULT 0,   -- Sin incluir la original. NEW! 09/07/2009
     tipo_de_cliente_id INT REFERENCES tipo_de_cliente DEFAULT NULL, 
-    texto_complementario_forma_de_pago TEXT DEFAULT ''  -- NEW! 12/02/2014
+    texto_complementario_forma_de_pago TEXT DEFAULT '', -- NEW! 12/02/2014
+    forma_pago_fija BOOLEAN DEFAULT FALSE   -- NEW! 04/09/2014
 );
 
 ---------------------------------
