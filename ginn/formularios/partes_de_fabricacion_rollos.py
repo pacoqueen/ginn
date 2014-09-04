@@ -1823,6 +1823,9 @@ class PartesDeFabricacionRollos(Ventana):
             return
         partedeproduccion = self.objeto
         partedeproduccion.notificador.desactivar()
+        for c in partedeproduccion.consumos:
+            if not c.cantidad:
+                c.destroy(ventana = __file__)
         try:
             if (partedeproduccion.articulos 
                     or partedeproduccion.horasTrabajadas
@@ -1834,6 +1837,7 @@ class PartesDeFabricacionRollos(Ventana):
                                 "material de desecho y empleados relacionados"
                                 "\n antes de volver a intentarlo.", 
                         padre = self.wids['ventana'])
+                return
             else:
                 partedeproduccion.destroy(ventana = __file__)
         except Exception, msg:

@@ -1068,6 +1068,10 @@ class Presupuestos(Ventana, VentanaGenerica):
             self.wids['e_persona_contacto'].set_text(cliente.contacto)
         self.actualizar_obras_cliente()
         self.wids['rating'].set_value(cliente.calcular_rating())
+        if cliente.formaPagoFija and (not self.usuario
+                                      or self.usuario.nivel >= 2):
+            utils.combo_set_from_db(self.wids['cb_forma_cobro'], 
+                                    cliente.formaDePago)
         self.wids['ventana'].window.set_cursor(None)
 
     def seleccionar_cantidad(self, producto):
