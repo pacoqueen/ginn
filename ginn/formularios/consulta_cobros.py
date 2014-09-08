@@ -353,12 +353,15 @@ class ConsultaCobros(Ventana):
         que contiene fecha de vencimiento, importe, comentario, cuenta e id.
         """
         Logic = pclases.LogicMovimientos
-        ls = Logic.select(pclases.AND(Logic.q.contrapartidaInfo == '',
-                                      Logic.q.importe >= 0,
-                                      pclases.OR(Logic.q.comentario.contains('Vto'),
-                                                 Logic.q.comentario.contains('VTO'),
-                                                 Logic.q.comentario.contains('vto'))))
-        vpro = ventana_progreso.VentanaActividad(texto = "Procesando tablas Logic...", padre = self.wids['ventana'])
+        ls = Logic.select(pclases.AND(
+            Logic.q.contrapartidaInfo == '',
+            Logic.q.importe >= 0,
+            pclases.OR(Logic.q.comentario.contains('Vto'),
+                       Logic.q.comentario.contains('VTO'),
+                       Logic.q.comentario.contains('vto'))))
+        vpro = ventana_progreso.VentanaActividad(
+                texto = "Procesando tablas Logic...",
+                padre = self.wids['ventana'])
         vpro.mostrar()
         res = []
         try:

@@ -84,6 +84,8 @@ class AuditViewer(Ventana):
                     'gobject.TYPE_STRING', False, True, False, None), 
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_listview(self.wids['tv_datos'], cols)
+        self.wids['tv_datos'].connect("row-activated", abrir_objeto,
+                                      self.usuario)
         from formularios import pyconsole
         vars_locales = locals()
         for k in locals_adicionales:
@@ -385,6 +387,29 @@ def restar_semana(fecha, cantidad = 1):
     return fecha - (mx.DateTime.oneDay * (cantidad * 7))
 
 
+def abrir_objeto(tv, path, view_column, usuario=None):
+    """
+    Trata de determinar la ventana principal que maneja el tipo de objeto
+    recibido y la instancia con el usuario especificado.
+    """
+    auditline_puid = tv.get_model()[path][-1]
+    auditline = pclases.getObjetoPUID(auditline)
+    puid = auditline.dbpuid
+    objeto = pclases.getObjetoPUID(puid)
+    ventana = determinar_clase_ventana(objeto)
+    if ventana:
+        v = ventana(usuario = usuario, objeto = objeto)
+    else:
+        utils.dialogo_info(titulo = "AUDITVIEWER: ERROR AL ABRIR OBJETO", 
+                texto = "No se pudo abrir el objeto «%s». No sé con qué "
+                        "ventana hacerlo." % puid, 
+                padre = self.wids['ventana'])
+
+
+def determinar_clase_ventana(objeto):
+    pass
+# TODO: PORASQUI
+
+
 if __name__ == '__main__':
     t = AuditViewer()
-
