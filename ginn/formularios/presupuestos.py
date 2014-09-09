@@ -51,8 +51,14 @@ from formularios import postomatic
 from formularios.custom_widgets import CellRendererAutoComplete
 import datetime
 import time
-from formularios.utils import enviar_correoe
 from lib.myprint import myprint
+if not pclases.DEBUG:
+    from formularios.utils import enviar_correoe
+else:
+    def enviar_correoe(*args, **kw):
+        myprint("presupuestos::enviar_correo faked para DEBUG:\n%s\n%s" %(
+            args, kw))
+
 
 NIVEL_VALIDACION = 1
 CONDICIONES_DURAS = (pclases.PLAZO_EXCESIVO,
@@ -205,6 +211,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         gtk.main()
 
     def assert_nombre_obra(self, widget, event):
+        warning_finalizada = None
         widget.set_progress_fraction(0.1)
         nombre_obra = widget.get_text()
         nombre_obra = utils.eliminar_dobles_espacios(nombre_obra.strip())
@@ -217,10 +224,24 @@ class Presupuestos(Ventana, VentanaGenerica):
             while gtk.events_pending():
                 gtk.main_iteration(False)
             if o.nombre.upper().strip() == nombre_obra.upper():
-                nombre_obra = o.nombre
+                # Found! FIXME: (Aquí podría cortar el bucle para optimizar)
+                # ¿Está obsoleta? No lo permito si no es user con privilegios.
+                if o.finalizada:
+                    warning_finalizada = o
+                if not o.finalizada or (
+                        self.usuario and self.usuario.nivel > 1):
+                    nombre_obra = o.nombre
         widget.set_progress_fraction(1.0)
         widget.set_text(nombre_obra)
         widget.set_progress_fraction(0.0)
+        if warning_finalizada:
+            utils.dialogo_info(titulo = "OBRA OBSOLETA", 
+                    texto = "La obra «%s» finalizó el %s.\nSolo los usuarios"
+                            "con permisos suficientes pueden hacer ofertas "
+                            "para obras obsoletas." % (
+                                warning_finalizada.nombre, 
+                                utils.str_fecha(warning_finalizada.fechafin)),
+                    padre = self.wids['ventana'])
 
     def actualizar_dc(self, entry_llamante):
         ent = self.wids['e_cred_entidad'].get_text()
@@ -2223,6 +2244,10 @@ class Presupuestos(Ventana, VentanaGenerica):
                      for o in self.objeto.cliente.obras]
         else:
             obras = []
+        ## Filtro las ya finalizadas:
+        obras = [o for o in obras 
+                 if not pclases.Obra.get(o[0]).finalizada]
+        ## Y agrego, si no está, la obra del presupuesto actual existente.
         if (self.objeto.obra
                 and self.objeto.obra.id not in [o[0] for o in obras]):
             # Por si acaso no está la obra del presupuesto entre las del
@@ -2846,11 +2871,20 @@ class Presupuestos(Ventana, VentanaGenerica):
                     valor_ventana = cbe.child.get_text().strip()
                     # SAFETY DANCE!
                     try:
-                        self.objeto.obra = pclases.Obra.selectBy(
+                        obra_seleccionada = pclases.Obra.selectBy(
                                 nombre = valor_ventana)[0]
-                        # Esto es por si ha escrito ex-ac-ta-men-te el nombre
-                        # de la obra pero no la ha seleccionado del desplegable
-                        valor_ventana = self.objeto.obra.id
+                        if (not obra_seleccionada.finalizada
+                                or (self.usuario
+                                    and self.usuario.nivel <= 1)):
+                            self.objeto.obra = obra_seleccionada
+                            # Esto es por si ha escrito ex-ac-ta-men-te el
+                            # nombre de la obra pero no la ha seleccionado del
+                            # desplegable
+                            valor_ventana = self.objeto.obra.id
+                        else:   # Obra finalizada y usuario sin privilegios
+                            self.objeto.obra = None
+                            colname = "nombreobra"
+                            valor_ventana = ""
                     except IndexError:
                         self.objeto.obra = None
                         colname = "nombreobra"
@@ -3294,7 +3328,7 @@ def hacer_pedido(presupuesto, usuario, ventana_padre = None):
                             padre = ventana_padre)
                 else:
                     if not presupuesto.obra:
-                        if presupuesto.nombreobra:
+                        if presupuesto.nombreobra:  # Evito obras sin nombre
                             presupuesto.obra = crear_obra(presupuesto, usuario)
                         else:
                             customer = presupuesto.cliente
@@ -3417,7 +3451,19 @@ def crear_obra(presupuesto, usuario):
     # Voy a añadir un control extra para evitar que se sigan duplicando.
     try:
         obra = pclases.Obra.selectBy(nombre = presupuesto.nombreobra)[0]
+        if (not obra.finalizada 
+                or (self.usuario
+                    and self.usuario.nivel <= 1)):
+            # Obra no finalizada o (aunque lo esté) el usuario tiene permisos.
+            pass
+        else: # La obra está finalizada y encima no es usuario con nivel. Uso
+              # la genérica del cliente.
+            try:
+                obra = presupuesto.cliente.get_obra_generica()
+            except AttributeError: #Ni cliente. No pasará a pedido. obra a None
+                obra = None
     except IndexError:
+        # Exclusivamente la obra no existe. NUEVA CON LOS DATOS DEL PRESUPESTO.
         obra = pclases.Obra(
                 nombre = presupuesto.nombreobra,
                 direccion = presupuesto.direccion,

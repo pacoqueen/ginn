@@ -15981,6 +15981,22 @@ class Obra(SQLObject, PRPCTOO):
             res += " " + str_direccion
         return res
 
+    @property
+    def finalizada(self):
+        """
+        Devuelve True si la obra tiene fecha de finalización y ya se ha
+        alcanzado.
+        """
+        ended = False
+        if self.fechafin:
+            try:
+                if mx.DateTime.today() > self.fechafin:
+                    ended = True
+            except TypeError:
+                if datetime.date.today() > self.fechafin:
+                    ended = True
+        return ended
+
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 class Contacto(SQLObject, PRPCTOO):
