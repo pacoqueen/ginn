@@ -124,8 +124,9 @@ def get_nombre_archivo_from_tv(tv):
     Devuelve el nombre del archivo que se generará a partir
     del nombre del widget TreeView.
     """
-    nomtreeview = tv.get_name().replace(" ", "_")
-    nomarchivo = os.path.join(gettempdir(), "%s_%s.csv" % (nomtreeview, geninformes.give_me_the_name_baby()))
+    nomtreeview = tv.get_name().replace(" ", "_").replace(":", "_")
+    nomarchivo = os.path.join(gettempdir(), 
+            "%s_%s.csv" % (nomtreeview, geninformes.give_me_the_name_baby()))
     return nomarchivo
 
 def get_datos_from_tv(tv, filtro_ceros, desglosar):
