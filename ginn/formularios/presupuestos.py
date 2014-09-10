@@ -3333,6 +3333,10 @@ def hacer_pedido(presupuesto, usuario, ventana_padre = None):
                         else:
                             customer = presupuesto.cliente
                             presupuesto.obra = customer.get_obra_generica()
+                        self.wids['cbe_obra'].child.set_text(
+                                presupuesto.obra 
+                                and presupuesto.obra.nombre
+                                or "")
                     nuevopedido = crear_pedido(presupuesto, numpedido, usuario)
             if nuevopedido != None:
                 for ldp in presupuesto.lineasDePresupuesto:
@@ -3474,7 +3478,7 @@ def crear_obra(presupuesto, usuario):
                 pais = presupuesto.pais,
                 generica = False)
         pclases.Auditoria.nuevo(obra, usuario, __file__)
-    if presupuesto.cliente not in obra.clientes:
+    if obra and presupuesto.cliente not in obra.clientes:
         obra.addCliente(presupuesto.cliente)
     return obra
 

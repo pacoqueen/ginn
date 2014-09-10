@@ -4600,7 +4600,7 @@ class PartidaCem(SQLObject, PRPCTOO):
         la partida o None si no tiene producción.
         """
         try:
-            producto = self.pales[0].bolsas[0].articulo.productoVenta
+            producto = self.pales[0].cajas[0].articulo.productoVenta
         except IndexError:  # No tiene producción todavía.
             producto = None
         return producto
@@ -4613,8 +4613,11 @@ class PartidaCem(SQLObject, PRPCTOO):
         if not isinstance(productoVenta, ProductoVenta):
             raise TypeError, "El producto debe ser un objeto de la clase Pro"\
                              "ductoVenta."
-        for b in self.bolsas:
-            b.articulo.productoVenta = productoVenta
+        for p in self.pales:
+            for c in p.cajas:
+                c.articulo.productoVenta = productoVenta
+                c.articulo.sync()
+                c.sync()
 
     productoVenta = property(get_productoVenta, set_productoVenta,
                     "Producto de venta relacionado con la partida de cemento.")
