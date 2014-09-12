@@ -313,8 +313,8 @@ class Presupuestos(Ventana, VentanaGenerica):
         # [18/02/2014] Nueva alerta: Si el cliente en ese momento no tiene
         # crédito, crear el pedido pero invalidado. Y además enviar un correo
         # a comerciales, validadores, epalomo y rparra advirtiéndoles.
+        self.actualizar_ventana()
         if pedido:
-            self.actualizar_ventana()
             importe_pedido = self.objeto.calcular_importe_total(iva = True)
             credito = self.objeto.cliente.calcular_credito_disponible()
             if credito - importe_pedido <= 0:
@@ -1792,7 +1792,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 except AttributeError:
                     precio = 0
             ldp.precio = precio
-            model_tv[path][2] = utils.float2str(ldp.precio, 3, autodec = True)
+            model_tv[path][2] = utils.float2str(ldp.precio, 4, autodec = True)
         # Compruebo que cantidad sea múltiplo si es un producto geotextil.
         if ldp.productoVenta and ldp.productoVenta.es_rollo():
             cantidad = ldp.cantidad
@@ -2679,7 +2679,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             # EOSANTABÁRBARA
             model.append((utils.float2str(ldp.cantidad),
                           ldp.get_descripcion_producto(),
-                          utils.float2str(ldp.precio, 3, autodec = True),
+                          utils.float2str(ldp.precio, 4, autodec = True),
                           utils.float2str(subtotal),
                           #ldp.pedidoVenta != None,
                           #ldp.pedidoVenta and ldp.pedidoVenta.numpedido or "",
@@ -3333,10 +3333,6 @@ def hacer_pedido(presupuesto, usuario, ventana_padre = None):
                         else:
                             customer = presupuesto.cliente
                             presupuesto.obra = customer.get_obra_generica()
-                        self.wids['cbe_obra'].child.set_text(
-                                presupuesto.obra 
-                                and presupuesto.obra.nombre
-                                or "")
                     nuevopedido = crear_pedido(presupuesto, numpedido, usuario)
             if nuevopedido != None:
                 for ldp in presupuesto.lineasDePresupuesto:
