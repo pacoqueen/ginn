@@ -15,7 +15,7 @@ _ginn()
     # Argumentos para las opciones
     GINN=$HOME/Geotexan/src/Geotex-INN
     if [ ! -d $GINN ]; then
-        GINN=/home/compartido/ginn/ginn
+        GINN=/home/compartido/ginn
     fi
     if [ ! -d $GINN ]; then
         GINN=$HOME/src/Geotex-INN
