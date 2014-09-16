@@ -1,0 +1,53 @@
+_ginn()
+{
+    local cur prev opts base
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+    # Opciones
+    opts="-u --user -p --password -c --config -v -d -w --window -o --object"
+
+    # Argumentos para las opciones
+    GINN=$HOME/Geotexan/src/Geotex-INN
+    case "${prev}" in
+        --config)
+            local configs=$(find $GINN/ginn/framework/*.conf* -exec basename '{}' \;)
+            COMPREPLY=( $(compgen -W "${configs}" -- ${cur}) )
+            return 0
+            ;;
+        -c)
+            local configs=$(find $GINN/ginn/framework/*.conf* -exec basename '{}' \;)
+            COMPREPLY=( $(compgen -W "${configs}" -- ${cur}) )
+            return 0
+            ;;
+        --window)
+            local windows=$(find $GINN/ginn/formularios/*.py -exec basename '{}' \; | cut -d '.' -f 1)
+            COMPREPLY=( $(compgen -W "${windows}" -- ${cur}) )
+            return 0
+            ;;
+        -w)
+            local windows=$(find $GINN/ginn/formularios/*.py -exec basename '{}' \; | cut -d '.' -f 1)
+            COMPREPLY=( $(compgen -W "${windows}" -- ${cur}) )
+            return 0
+            ;;
+        --user)
+            local usuarios=$(grep -i login $GINN/ginn.log | cut -d ':' -f 4 | cut -d ' ' -f 2 | cut -d '.' -f 1 | sort -u)
+            COMPREPLY=( $(compgen -W "${usuarios}" -- ${cur}) )
+            return 0
+            ;;
+        -u)
+            local usuarios=$(grep -i login $GINN/ginn.log | cut -d ':' -f 4 | cut -d ' ' -f 2 | cut -d '.' -f 1 | sort -u)
+            COMPREPLY=( $(compgen -W "${usuarios}" -- ${cur}) )
+            return 0
+            ;;
+        *)
+        ;;
+    esac
+    
+    #if [[ ${cur} == -* ]] ; then
+    COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+    return 0
+    #fi
+}
+complete -F _ginn ginn.sh
