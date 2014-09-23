@@ -95,7 +95,8 @@ class ConsultaCobros(Ventana):
                     False, True, False, None), 
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_listview(self.wids['tv_cesce'], cols)
-        self.wids['tv_cesce'].get_column(4).get_cell_renderers()[0].set_property("xalign", 1)
+        self.wids['tv_cesce'].get_column(
+                4).get_cell_renderers()[0].set_property("xalign", 1)
         self.wids['tv_cesce'].connect("row-activated", abrir_factura, 
                                                        self.usuario)
         tempfecha = mx.DateTime.today()
@@ -151,10 +152,12 @@ class ConsultaCobros(Ventana):
                 vpro.mover()
                 if p.facturaVenta != None:
                     frasvtos.append("%s(%s)" % (p.facturaVenta.numfactura, 
-                        p.facturaVenta.cliente and p.facturaVenta.cliente.nombre or ""))
+                        p.facturaVenta.cliente
+                        and p.facturaVenta.cliente.nombre or ""))
                 if p.prefactura != None:
                     frasvtos.append("%s(%s)" % (p.prefactura.numfactura, 
-                        p.prefactura.cliente and p.prefactura.cliente.nombre or ""))
+                        p.prefactura.cliente
+                        and p.prefactura.cliente.nombre or ""))
                 sumvtos += p.importe
             for p in cobrosvencimientos['logic']:
                 vpro.mover()
@@ -166,22 +169,18 @@ class ConsultaCobros(Ventana):
                 vpro.mover()
                 if p.facturaVenta != None:
                     frascobros.append("%s(%s)" % (p.facturaVenta.numfactura, 
-                        p.facturaVenta.cliente and p.facturaVenta.cliente.nombre or ""))
+                        p.facturaVenta.cliente
+                        and p.facturaVenta.cliente.nombre or ""))
                 if p.prefactura != None:
                     frascobros.append("%s(%s)" % (p.prefactura.numfactura, 
-                        p.prefactura.cliente and p.prefactura.cliente.nombre or ""))
-                # if p.logicMovimientos != None:   # Es posible que venga de Logic.
-                #     if p.facturaVenta != None:
-                #         frascobros[-1] = "%s [LOGIC:%s]" % (frascobros[-1], p.logicMovimientos.get_codigo())
-                #     else:
-                #         frascobros.append("[LOGIC:%s]" % (p.logicMovimientos.get_codigo()))
+                        p.prefactura.cliente
+                        and p.prefactura.cliente.nombre or ""))
                 sumcobros += p.importe
             cobros += sumcobros
             vencimientos += sumvtos
             fras = ", ".join([f[:f.index("(")] for f in frasvtos])
             vtos = ", ".join([f[:f.index("(")] for f in frascobros])
             MAX_LINEA = 50
-            # padre = model.append(None, (corregir_nombres_fecha(fecha.strftime('%A, %d de %B de %Y')), 
             vpro.mover()
             padre = model.append(None, (utils.str_fecha(fecha), 
                                         utils.float2str(sumvtos), 
@@ -194,21 +193,19 @@ class ConsultaCobros(Ventana):
                                             or vtos,
                                         ""))
             for i in xrange(max(len(cobrosvencimientos['cobros']), 
-                                len(cobrosvencimientos['vencimientos'])+len(cobrosvencimientos['logic']))):
+                                len(cobrosvencimientos['vencimientos'])
+                            + len(cobrosvencimientos['logic']))):
                 vpro.mover()
                 if i < len(cobrosvencimientos['cobros']):
                     p = cobrosvencimientos['cobros'][i]
                     if p.facturaVenta != None:
                         fracobro = "%s(%s)" % (p.facturaVenta.numfactura, 
-                            p.facturaVenta.cliente and p.facturaVenta.cliente.nombre or "")
+                            p.facturaVenta.cliente
+                            and p.facturaVenta.cliente.nombre or "")
                     if p.prefactura != None:
                         fracobro = "%s(%s)" % (p.prefactura.numfactura, 
-                            p.prefactura.cliente and p.prefactura.cliente.nombre or "")
-                    # if p.logicMovimientos != None:   # Es posible que venga de Logic.
-                    #     if p.facturaVenta != None:
-                    #         fracobro = "%s [LOGIC:%s]" % (fracobro, p.logicMovimientos.get_codigo())
-                    #     else:
-                    #         fracobro = "[LOGIC:%s]" % (p.logicMovimientos.get_codigo())
+                            p.prefactura.cliente
+                            and p.prefactura.cliente.nombre or "")
                     importecobro = p.importe
                 else:
                     importecobro = ""
@@ -217,10 +214,12 @@ class ConsultaCobros(Ventana):
                     p = cobrosvencimientos['vencimientos'][i]
                     if p.facturaVenta != None:
                         fravto = "%s(%s)" % (p.facturaVenta.numfactura, 
-                            p.facturaVenta.cliente and p.facturaVenta.cliente.nombre or "")
+                            p.facturaVenta.cliente
+                            and p.facturaVenta.cliente.nombre or "")
                     if p.prefactura != None:
                         fravto = "%s(%s)" % (p.prefactura.numfactura, 
-                            p.prefactura.cliente and p.prefactura.cliente.nombre or "")
+                            p.prefactura.cliente
+                            and p.prefactura.cliente.nombre or "")
                     importevto = p.importe
                 else:
                     j = i-len(cobrosvencimientos['vencimientos'])
@@ -231,12 +230,13 @@ class ConsultaCobros(Ventana):
                     else:
                         importevto = ""
                         fravto = ""
-                model.append(padre, ("", 
-                                     importevto != "" and utils.float2str(importevto) or "",
-                                     fravto,
-                                     importecobro != "" and utils.float2str(importecobro) or "",
-                                     fracobro,
-                                     ""))
+                model.append(padre, (
+                    "", 
+                    importevto != "" and utils.float2str(importevto) or "",
+                    fravto,
+                    importecobro != "" and utils.float2str(importecobro) or "",
+                    fracobro,
+                    ""))
         total = vencimientos - cobros
         self.wids['e_total'].set_text("%s €" % utils.float2str(total))
         self.wids['e_cobros'].set_text("%s €" % utils.float2str(cobros))
@@ -274,56 +274,93 @@ class ConsultaCobros(Ventana):
         vpro = VentanaActividad(texto = "Buscando cobros...")
         vpro.mostrar()
         vpro.mover()
+        # Primero: cobros que no son pagarés ni confirmings (transferencias,
+        # efectivo, etc.). En estos la fecha sí es real.
         if not self.inicio:
-            cobros = pclases.Cobro.select(pclases.Cobro.q.fecha <= self.fin, 
-                                          orderBy = 'fecha')
+            cobros = pclases.Cobro.select(pclases.AND(
+                    pclases.Cobro.q.fecha < self.fin,
+                    pclases.Cobro.q.pagareCobro == None, 
+                    pclases.Cobro.q.confirming == None), 
+                orderBy = 'fecha')
         else:
             cobros = pclases.Cobro.select(pclases.AND(
                     pclases.Cobro.q.fecha >= self.inicio,
-                    pclases.Cobro.q.fecha <= self.fin), 
+                    pclases.Cobro.q.fecha < self.fin, 
+                    pclases.Cobro.q.pagareCobro == None, 
+                    pclases.Cobro.q.confirming == None), 
                 orderBy = 'fecha')
         vpro.mover()
+        # DONE: Hay que meter los cobros reales entre las fechas de la
+        # consulta. Así que cuando es pagaré o confirming, no me puedo fiar
+        # de la fecha del registro cobro. Tengo que buscar por la fechaCobrado
+        # del objeto pagaré o confirming.
+        # Segundo: confirmings cuya fecha __real__ sea la del filtro.
+        confirmings = buscar_efectos(self.inicio, self.fin, pclases.Confirming)
+        vpro.mover()
+        # Tercero: pagarés cuya fecha __real__ de cobro sea la del filtro.
+        pagares = buscar_efectos(self.inicio, self.fin, pclases.PagareCobro)
+        vpro.mover()
+        # Cuarto y último: Vencimientos. Pero esto solo vale para la primera
+        # pestaña (que creo que voy a quitar en la siguiente revisión).
         if not self.inicio:
             vencimientos = pclases.VencimientoCobro.select(
-                    pclases.VencimientoCobro.q.fecha <= self.fin, 
+                    pclases.VencimientoCobro.q.fecha < self.fin, 
                     orderBy = 'fecha')
         else:
             vencimientos = pclases.VencimientoCobro.select(pclases.AND(
                     pclases.VencimientoCobro.q.fecha >= self.inicio,
-                    pclases.VencimientoCobro.q.fecha <= self.fin), 
+                    pclases.VencimientoCobro.q.fecha < self.fin), 
                 orderBy = 'fecha')
         vpro.mover()
         elementos = {}
         vpro.mover()
-        for item in cobros:
-            vpro.mover()
-            if item.fecha not in elementos:
-                elementos[item.fecha] = {'cobros': [], 
-                                         'vencimientos': [], 
-                                         'logic': []}
-            elementos[item.fecha]['cobros'].append(item)
-        for item in vencimientos:
-            vpro.mover()
-            if item.fecha not in elementos:
-                elementos[item.fecha] = {'cobros': [], 
-                                         'vencimientos': [], 
-                                         'logic': []}
-            elementos[item.fecha]['vencimientos'].append(item)
+        for selectres in cobros, vencimientos, pagares, confirmings:
+            for item in selectres:
+                vpro.mover()
+                try:
+                    item_fecha = item.fecha
+                except AttributeError:
+                    item_fecha = item.fechaCobrado
+                if item_fecha not in elementos:
+                    elementos[item_fecha] = {'cobros': [], 
+                                             'vencimientos': [], 
+                                             'logic': []}
+                if isinstance(item, pclases.VencimientoCobro):
+                    seccion = "vencimientos"
+                else:
+                    seccion = 'cobros'
+                if hasattr(item, "cobros"): # Es un pagaré o confirming
+                    for c in item.cobros:
+                        # Todos los cobros del pagaré comparten la misma fecha
+                        # efectiva de cobro del propio pagaré.
+                        elementos[item_fecha][seccion].append(c)
+                else:
+                    elementos[item_fecha][seccion].append(item)
         # for item in self.buscar_vencimientos_logic(self.inicio, self.fin):
         #     if item['fecha'] not in elementos:
-        #         elementos[item['fecha']] = {'cobros': [], 'vencimientos': [], 'logic': []}
+        #         elementos[item['fecha']] = {'cobros': [], 'vencimientos': [],
+        #                                     'logic': []}
         #     elementos[item['fecha']]['logic'].append(item)
         self.rellenar_tabla(elementos, vpro)
-        # PORASQUI: Ver el correo de Javi. Hay que meter los cobros reales entre las fechas de la consulta. Así que cuando es pagaré o confirming, no me puedo fiar de la fecha del registro cobro. Tengo que buscar por la fechaCobrado del objeto pagaré o confirming.
-        self.rellenar_cesce(cobros, vpro)
+        self.rellenar_cesce(cobros, pagares, confirmings, vpro)
         vpro.ocultar()
 
-    def rellenar_cesce(self, cobros, vpro):
+    def rellenar_cesce(self, cobros, pagares, confirmings, vpro):
+        # TODO: PORASQUI: Falta volcar la información de pagarés y confirmings en el TreeView.
         self.wids['notebook1'].set_current_page(1)
         model = self.wids['tv_cesce'].get_model()
         model.clear()
         vpro.mover()
-        for c in cobros:
+        cobros_pagares = []
+        for p in pagares:
+            for c in p.cobros:
+                cobros_pagares.append(c)
+        cobros_confirmings = []
+        for p in confirmings:
+            for c in p.cobros:
+                cobros_confirmings.append(c)
+        cobros_efect_o_transf = [c for c in cobros]
+        for c in cobros_efect_o_transf + cobros_pagares + cobros_confirmings:
             vpro.mover()
             numfactura = c.get_numfactura()
             if not numfactura:
@@ -388,7 +425,7 @@ class ConsultaCobros(Ventana):
         como vencimiento y ésta está dentro de los criterios.
         """
         fechavto = self.get_fecha_vto_logic(tuplalogic) 
-        return fechavto and fechavto >= fechaini and fechavto <= fechafin
+        return fechavto and fechavto >= fechaini and fechavto < fechafin
 
     def get_fecha_vto_logic(self, l):
         """
@@ -480,10 +517,12 @@ def abrir_factura(tv, path, view_column, usuario):
         if cobro.facturaVenta:
             fra = cobro.facturaVenta
             from formularios import facturas_venta
-            ventana = facturas_venta.FacturasVenta(fra, usuario)  # @UnusedVariable
+            ventana = facturas_venta.FacturasVenta(         # @UnusedVariable
+                    fra, usuario)
         elif cobro.facturaDeAbono: 
             from formularios import abonos_venta
-            v = abonos_venta.AbonosVenta(cobro.facturaDeAbono, usuario = usuario)  # @UnusedVariable
+            v = abonos_venta.AbonosVenta(                   # @UnusedVariable
+                    cobro.facturaDeAbono, usuario = usuario)
         elif cobro.prefactura: 
             fra = cobro.prefactura
             from formularios import prefacturas
@@ -495,7 +534,27 @@ def abrir_factura(tv, path, view_column, usuario):
                             "aplicación." % puidcobro, 
                     padre = self.wids['ventana'])
 
+def buscar_efectos(fechaini, fechafin, clase_efectos):
+    """
+    Busca en la clase de «clase_efectos» los efectos cuya fecha real de cobro
+    esté entre las fechas de inicio y fin.
+    Devuelve un resultSelect.
+    fechaini puede ser None.
+    clase_efectos debería ser pclases.PagareCobro o pclases.Confirming.
+    """
+    if not fechaini:
+        efectos = clase_efectos.select(pclases.AND(
+                    clase_efectos.q.fechaCobrado != None, 
+                    clase_efectos.q.fechaCobrado < fechafin),
+                orderBy = "fechaCobrado")
+    else:
+        efectos = clase_efectos.select(pclases.AND(
+                    clase_efectos.q.fechaCobrado != None, 
+                    clase_efectos.q.fechaCobrado >= fechaini,
+                    clase_efectos.q.fechaCobrado < fechafin),
+                orderBy = "fechaCobrado")
+    return efectos
+
 
 if __name__ == '__main__':
     t = ConsultaCobros()
-

@@ -90,7 +90,7 @@ class ConsultaVentas(Ventana):
                 ('Forma de cobro', 'gobject.TYPE_STRING', 
                     False, True, False, None), 
                 ('Cobro real', 'gobject.TYPE_STRING', 
-                    False, True, False, None),  # XXX
+                    False, True, False, None),
                 ('Idlineadecompra', 'gobject.TYPE_INT64', 
                     False, False, False, None))
         tv = self.wids['tv_datos']
@@ -120,7 +120,7 @@ class ConsultaVentas(Ventana):
                 ('Forma de cobro', 'gobject.TYPE_STRING', 
                     False, True, False, None),
                 ('Cobro real', 'gobject.TYPE_STRING', 
-                    False, True, False, None),  # XXX
+                    False, True, False, None),
                 ('Id', 'gobject.TYPE_INT64', False, False, False, None))
         utils.preparar_treeview(self.wids['tv_cliente'], cols)
         cell = self.wids['tv_cliente'].get_column(3).get_cell_renderers()[0]
@@ -169,7 +169,7 @@ class ConsultaVentas(Ventana):
                 ('Total facturado\n(IVA incl.)', 'gobject.TYPE_STRING', 
                     False, True, False, None),
                 ('Cobro real', 'gobject.TYPE_STRING', 
-                    False, True, False, None),  # XXX
+                    False, True, False, None),
                 ('Id', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_treeview(self.wids['tv_comercial'], cols)
         tv = self.wids['tv_comercial']
@@ -189,7 +189,7 @@ class ConsultaVentas(Ventana):
                 ('Total facturado\n(IVA incl.)', 'gobject.TYPE_STRING', 
                     False, True, False, None),
                 ('Cobro real', 'gobject.TYPE_STRING', 
-                    False, True, False, None),  # XXX
+                    False, True, False, None),
                 ('Id', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_treeview(self.wids['tv_proveedor'], cols)
         tv = self.wids['tv_proveedor']
@@ -589,7 +589,7 @@ class ConsultaVentas(Ventana):
                                      "",
                                      "", 
                                      "",
-                                     "", # XXX 
+                                     "",
                                      tarifa and tarifa.id or 0))
             self.por_tarifa[tarifa] = {'nodo': padre, 
                                   'ldvs': [lda, ], 
@@ -718,7 +718,7 @@ class ConsultaVentas(Ventana):
                                      "", 
                                      "",
                                      "", 
-                                     "",    # XXX
+                                     "",
                                      tarifa and tarifa.id or 0))
             self.por_tarifa[tarifa] = {'nodo': padre, 
                                   'ldvs': [ldd, ], 
@@ -848,7 +848,7 @@ class ConsultaVentas(Ventana):
                                      "", 
                                      "", 
                                      "",
-                                     "",    # XXX
+                                     "",
                                      tarifa and tarifa.id or 0))
             self.por_tarifa[tarifa] = {'nodo': padre, 
                                   'ldvs': [i, ], 
@@ -967,7 +967,7 @@ class ConsultaVentas(Ventana):
                                      "", 
                                      "",
                                      "", 
-                                     "", # XXX
+                                     "",
                                      tarifa and tarifa.id or 0))
             self.por_tarifa[tarifa] = {'nodo': padre, 
                                   'ldvs': [i, ], 
@@ -1235,7 +1235,7 @@ class ConsultaVentas(Ventana):
                                        if not f is None])), 
                                   "",
                                   "", 
-                                  "",   # XXX
+                                  "",
                                   cliente and cliente.id or 0))
             for factura in self.por_cliente[cliente]:
                 # TODO: Si tiene varios vencimientos, combinar textos. 
@@ -1325,7 +1325,7 @@ class ConsultaVentas(Ventana):
                                   "0.0", 
                                   "0.0", 
                                   "0.0", 
-                                  "", # XXX
+                                  "",
                                   comercial and comercial.id or 0))
             for factura in self.por_comercial[comercial]:
                 # Porque una factura puede tener varios comerciales, es 
@@ -1403,7 +1403,7 @@ class ConsultaVentas(Ventana):
                                   "0.0", 
                                   "0.0", 
                                   "0.0", 
-                                  "",   # XXX
+                                  "",
                                   proveedor and proveedor.id or 0))
             for factura in self.por_proveedor[proveedor]:
                 # Porque una factura puede tener varios proveedores, es 

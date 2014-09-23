@@ -2349,6 +2349,28 @@ class FacturasVenta(Ventana):
         if idcobro > 0:    # Es -1 si no había.
             cobro = pclases.Cobro.get(idcobro)
             cobro.fecha = fecha
+            cobro.sync()
+            pclases.Auditoria.modificado(cobro,
+                self.usuario, __file__,
+                "Fecha del cobro %s de fra. %s cambiado a %s."
+                    % (cobro.puid, self.objeto.numfactura, 
+                        utils.str_fecha(cobro.fecha)))
+            if cobro.pagareCobro:
+                cobro.pagareCobro.fechaCobrado = cobro.fecha
+                cobro.pagareCobro.syncUpdate()
+                pclases.Auditoria.modificado(cobro.pagareCobro,
+                    self.usuario, __file__,
+                    "Fecha de %s del pagaré de fra. %s cambiada a %s."
+                        % (cobro.puid, self.objeto.numfactura, 
+                            utils.str_fecha(cobro.pagareCobro.fechaCobrado)))
+            elif cobro.confirming:
+                cobro.confirming.fechaCobrado = cobro.fecha
+                cobro.confirming.syncUpdate()
+                pclases.Auditoria.modificado(cobro.confirming,
+                    self.usuario, __file__,
+                    "Fecha de %s del confirming de fra. %s cambiada a %s."
+                        % (cobro.puid, self.objeto.numfactura,
+                            utils.str_fecha(cobro.confirming.fechaCobrado)))
         elif idcobro == -1:     # Para el resto de valores rebota-rebota y en
                                 # tu culo explota.
             factura = self.objeto
