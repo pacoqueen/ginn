@@ -242,6 +242,11 @@ class Presupuestos(Ventana, VentanaGenerica):
                                 warning_finalizada.nombre, 
                                 utils.str_fecha(warning_finalizada.fechafin)),
                     padre = self.wids['ventana'])
+        return False    #/home/bogado/Geotexan/src/Geotex-INN/ginn/formularios
+                        #/presupuestos.py:225: GtkWarning: GtkEntry - did not
+                        # receive focus-out-event. If you connect a handler
+                        # to this signal, it must return FALSE so the entry
+                        # gets the event as well
 
     def actualizar_dc(self, entry_llamante):
         ent = self.wids['e_cred_entidad'].get_text()
@@ -2227,6 +2232,29 @@ class Presupuestos(Ventana, VentanaGenerica):
         except AttributeError:
             nombre_del_comercial = ""
         self.wids["e_cred_comercial"].set_text(nombre_del_comercial)
+        # XXX Iconos en cliente y obra: Warning si no existe todavía en db
+        if self.objeto.obra:
+            icon = txt_warning = None
+            self.wids['cbe_obra'].set_property("has-tooltip", False)
+        else:
+            icon = gtk.STOCK_SPELL_CHECK
+            txt_warning = "¡OJO! La obra se creará al pasar la oferta a"\
+                    " pedido. ¿Seguro que no desea seleccionar una de "\
+                    "las existentes?"
+            self.wids['cbe_obra'].set_tooltip_text(txt_warning)
+        try:
+            self.wids['cbe_obra'].child.set_icon_from_stock(0, icon)
+        except:     # PyGTK < 2.16
+            pass
+        if self.objeto.cliente:
+            icon = None
+        else:
+            icon = gtk.STOCK_SPELL_CHECK
+        try:
+            self.wids['cbe_cliente'].child.set_icon_from_stock(0, icon)
+        except:     # PyGTK < 2.16
+            pass
+        # XXX            
         if pclases.DEBUG:
             myprint("  <<< :::::::::::::: rellenar_widgets :::::::::::::::")
         self.wids['ventana'].window.set_cursor(None)

@@ -346,7 +346,10 @@ class ConsultaCobros(Ventana):
         vpro.ocultar()
 
     def rellenar_cesce(self, cobros, pagares, confirmings, vpro):
-        # TODO: PORASQUI: Falta volcar la información de pagarés y confirmings en el TreeView.
+        """
+        Rellena la tabla específica para la empresa de crédito, donde no
+        se permite agrupación y las columnas deben seguir un orden determinado.
+        """
         self.wids['notebook1'].set_current_page(1)
         model = self.wids['tv_cesce'].get_model()
         model.clear()
