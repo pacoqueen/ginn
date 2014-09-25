@@ -2187,9 +2187,13 @@ CREATE TABLE linea_de_compra(
     carga_silo_id INT REFERENCES carga_silo DEFAULT NULL,   -- NEW! 01/11/06
         -- (Inhabilita silo_id, pero es tarde para quitarlo sin inutilizar las
         -- copias de seguridad)
-    iva FLOAT DEFAULT 0.21      -- NEW! 15/02/07. IVA de la LDC. Por
+    iva FLOAT DEFAULT 0.21,     -- NEW! 15/02/07. IVA de la LDC. Por
         -- compatibilidad con los servicios de las facturas de compra con IVA
         -- mixto.
+    fechahora_facturado TIMESTAMP DEFAULT NULL  -- NEW! 25/09/2014. Para 
+        -- informarlo cuando se meta la LDC en una factura de compra con la
+        -- fecha y hora exactas. Sirve para ordenar por orden (válgame la
+        -- redundancia) de inserción desde los albaranes a la factura.
 );
 
 --------------------------------
@@ -2289,10 +2293,14 @@ CREATE TABLE servicio_tomado(
     descuento FLOAT DEFAULT 0.0,
     comision_id INT REFERENCES comision DEFAULT NULL,
     transporte_a_cuenta_id INT REFERENCES transporte_a_cuenta DEFAULT NULL,
-    iva FLOAT DEFAULT 0.21      -- NEW! 15/02/07. IVA del servicio para
+    iva FLOAT DEFAULT 0.21,     -- NEW! 15/02/07. IVA del servicio para
         -- facturas de compra "especiales" con IVA mixto. Si una
         -- factura de compra tiene servicios a diferentes IVAs, el IVA de la
         -- factura debe ser 0% e ignorarse.
+    fechahora_facturado TIMESTAMP DEFAULT NULL  -- NEW! 25/09/2014. Para 
+        -- informarlo cuando se meta la LDC en una factura de compra con la
+        -- fecha y hora exactas. Sirve para ordenar por orden (válgame la
+        -- redundancia) de inserción desde los albaranes a la factura.
 );
 
 --------------------------

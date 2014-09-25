@@ -19327,7 +19327,9 @@ class TransporteACuenta(SQLObject, PRPCTOO):
                                       concepto = self.concepto,
                                       precio = self.precio,
                                       cantidad = 1,
-                                      descuento = 0)
+                                      descuento = 0, 
+                                      fechahoraFacturado = 
+                                        datetime.datetime.today())
         else:
             for servicio in self.serviciosTomados:
                 servicio.destroy()
@@ -19399,7 +19401,9 @@ class Comision(SQLObject, PRPCTOO):
                                       concepto = self.concepto,
                                       precio = self.precio,
                                       cantidad = 1,
-                                      descuento = 0)
+                                      descuento = 0, 
+                                      fechahoraFacturado = 
+                                        datetime.datetime.today())
         else:
             for servicio in self.serviciosTomados:
                 servicio.destroy()
