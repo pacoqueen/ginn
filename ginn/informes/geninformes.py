@@ -4511,10 +4511,10 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
         except:
             orden_ventanas = "cf"  # Orden por defecto.
 
-    global linea#, tm, lm, rm, bm
+    global linea #, tm, lm, rm, bm
     tm, bm, lm, rm = (680, 56.69, 05.35, 566.92)
-    tmbak, bmbak, lmbak, rmbak = tm, bm, lm, rm = (680, 56.69, 05.35, 566.92)  # @UnusedVariable
-    x, y = lm, tm  # @UnusedVariable
+    tmbak, bmbak, lmbak, rmbak = tm, bm, lm, rm = (680, 56.69, 05.35, 566.92)
+    x, y = lm, tm
     # Creo la hoja
     nomarchivo = os.path.join(gettempdir(),
                               "factura_abono_%s.pdf" % give_me_the_name_baby())
@@ -4533,10 +4533,13 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
         bm, tm = bmbak, tmbak
         numpagina += 1
         # La cabecera
-        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo),
+        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                        '..', 'imagenes', datos_empresa.logo),
                     lm+0.5*inch, height - 1.5*inch, 1.5*inch, 1.5*inch)
         if datos_empresa.bvqi:
-            c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logoiso2),
+            c.drawImage(os.path.join(os.path.dirname(
+                            os.path.realpath(__file__)), '..', 'imagenes',
+                            datos_empresa.logoiso2),
                         rm-1.65*inch, height - 2.5*cm, 3.3*cm, 1.85*cm)
 
         linea = height-50
@@ -4572,7 +4575,8 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
                     linea,
                     escribe('Geotextiles    1035-CPD-ES033858'),
                     "Courier", 8, (0, 0, 0), 10)
-            c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', "CE.png"),
+            c.drawImage(os.path.join(os.path.dirname(
+                os.path.realpath(__file__)), '..', 'imagenes', "CE.png"),
                         posx + anchosemitexto, 
                         linea, 
                         0.40*cm, 
@@ -4589,13 +4593,14 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
                     linea - 8,
                     escribe('Fibra    1035-CPD-9003712'),
                     "Courier", 8, (0, 0, 0), 10)
-            c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', "CE.png"),
+            c.drawImage(os.path.join(os.path.dirname(
+                            os.path.realpath(__file__)), '..', 'imagenes',
+                            "CE.png"),
                         posx + anchosemitexto, 
                         linea - 8, 
                         0.40*cm, 
                         0.20*cm)
         c.setFont("Helvetica", 10)
-
 
         # La fecha y el número de factura fuera del cuadro
         linea = sigLinea(15)
@@ -4781,12 +4786,9 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
         rectangulo(c,(lm+2.5*inch, tm-0.75*inch-74),(rm-2.15*inch, bm+inch+98))
         rectangulo(c,(rm-2.15*inch, tm-0.75*inch-74),(rm-1.2*inch, bm+inch+98))
         rectangulo(c,(rm-1.2*inch, tm-0.75*inch-74),(rm, bm+inch+98))
-
-
         # DATA
         # Caben exactamente 11 líneas de venta. Debemos hacer una
         # segunda página en caso de que haya más
-
         linea = tm-1.92*inch
         xcodigo = lm+1.65*inch-4
         xcantidad = lm+1.9*inch
@@ -4799,7 +4801,8 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
                 c.setFont(fuente, tamanno)
                 c.drawRightString(xcodigo, linea, escribe(l['codigo']))
                 cantidad_sin_cero = utils.float2str(
-                                        utils._float(l['cantidad']), 2) # WTF?
+                                        utils._float(l['cantidad']), # WTF?
+                                        5, autodec = True)
                 # XXX Si no es un float, que salte la excepción.
                 # i 10096
                 el_encogedor_de_fuentes_de_doraemon(c, fuente, tamanno, 

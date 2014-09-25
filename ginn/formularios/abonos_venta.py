@@ -1185,7 +1185,8 @@ class AbonosVenta(Ventana):
                 preciolinea = 0.0
             linea = {'codigo': model[i][0], 
                      'descripcion': model[i][2],
-                     'precio': utils.float2str(preciolinea), #/ (1 + iva)),
+                     'precio': utils.float2str(preciolinea, 5,
+                                               autodec = True), #/ (1 + iva)),
                      # Precio unitario = (importe total _sin_ IVA / cantidad).
                      'descuento': "0",      # No hay descuentos en las 
                                             # devoluciones de mercancía.
@@ -1222,11 +1223,12 @@ class AbonosVenta(Ventana):
         from numerals import numerals as convertir_numero_a_texto
         texto = convertir_numero_a_texto(totales['total'], moneda = "euros", 
                                          fraccion = "céntimos").upper()
-        vencimiento = {'fecha': utils.str_fecha(  # @UnusedVariable
-                            mx.DateTime.DateFrom(abono.fecha) + mx.DateTime.oneDay * 90),
-                       'pago': "vencimiento['pago']", 
-                       'documento': "vencimiento['documento']" 
-                      }
+        #vencimiento = {'fecha': utils.str_fecha(  # @UnusedVariable
+        #                    mx.DateTime.DateFrom(abono.fecha)
+        #                    + mx.DateTime.oneDay * 90), # OJO:HARCODED 90 días
+        #               'pago': "vencimiento['pago']", 
+        #               'documento': "vencimiento['documento']" 
+        #              }
         vencimiento = None  # TODO: De momento se queda así porque me parece 
                             # que el importe se descuenta del siguiente pagaré 
                             # o fra. y por tanto no hay vencimiento en el que 
