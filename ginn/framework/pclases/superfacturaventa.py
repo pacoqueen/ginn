@@ -153,7 +153,7 @@ class SuperFacturaVenta:
         Devuelve un FixedPoint (a casi todos los efectos, se comporta como
         un FLOAT. De todas formas, pasa bien por el utils.float2str).
         """
-        # PORASQUI: Aquí está el mantecao. Tengo que mirar qué dice la ley al respecto. Juraría que hay que redondear a 2 decimales todos los subtotales y calcular el total como la suma de los conceptos (base imponible + iva redondeado + irpf redondeado + ...)
+        # PORASQUI: Aquí está el mantecao. Tengo que mirar qué dice la ley al respecto. Juraría que hay que redondear a 2 decimales todos los subtotales y calcular el total como la suma de los conceptos (base imponible + iva redondeado + irpf redondeado + ...). Pero si ya lo hago así aquí, ¿por qué falla en la factura de marras?
         subtotal = self.calcular_subtotal()
         tot_dto = self.calcular_total_descuento(subtotal)
         abonos = sum([pa.importe for pa in self.pagosDeAbono])

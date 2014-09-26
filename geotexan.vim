@@ -1,9 +1,9 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 25 septiembre 2014 at 17:09:05.
+" Created by session.vim 1.5 on 26 septiembre 2014 at 12:57:09.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
-silent! set guifont=Source\ Code\ Pro\ 9
+silent! set guifont=Source\ Code\ Pro\ 11
 if exists('g:syntax_on') != 1 | syntax on | endif
 if exists('g:did_load_filetypes') != 1 | filetype on | endif
 if exists('g:did_load_ftplugin') != 1 | filetype plugin on | endif
@@ -102,9 +102,11 @@ badd +115 ginn/formularios/consulta_existenciasBolsas.py
 badd +23 extra/scripts/bash_completion_ginn
 badd +1200 ginn/formularios/consulta_ventas.py
 badd +631 ginn/formularios/pagares_cobros.py
-badd +0 ginn/framework/pclases/superfacturaventa.py
-args formularios/auditviewer.py
-set lines=47 columns=112
+badd +1 ginn/framework/pclases/superfacturaventa.py
+argglobal
+silent! argdel *
+argadd formularios/auditviewer.py
+set lines=71 columns=112
 edit ginn/formularios/partes_de_ancho_multiple.py
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -137,23 +139,23 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe 'vert 1resize ' . ((&columns * 29 + 56) / 112)
-exe '2resize ' . ((&lines * 1 + 23) / 47)
-exe 'vert 2resize ' . ((&columns * 82 + 56) / 112)
-exe '3resize ' . ((&lines * 1 + 23) / 47)
-exe 'vert 3resize ' . ((&columns * 82 + 56) / 112)
-exe '4resize ' . ((&lines * 1 + 23) / 47)
-exe 'vert 4resize ' . ((&columns * 82 + 56) / 112)
-exe '5resize ' . ((&lines * 11 + 23) / 47)
-exe 'vert 5resize ' . ((&columns * 82 + 56) / 112)
-exe '6resize ' . ((&lines * 21 + 23) / 47)
-exe 'vert 6resize ' . ((&columns * 82 + 56) / 112)
-exe '7resize ' . ((&lines * 1 + 23) / 47)
-exe 'vert 7resize ' . ((&columns * 82 + 56) / 112)
-exe '8resize ' . ((&lines * 1 + 23) / 47)
-exe 'vert 8resize ' . ((&columns * 82 + 56) / 112)
-exe '9resize ' . ((&lines * 1 + 23) / 47)
-exe 'vert 9resize ' . ((&columns * 82 + 56) / 112)
+exe 'vert 1resize ' . ((&columns * 28 + 56) / 112)
+exe '2resize ' . ((&lines * 8 + 35) / 71)
+exe 'vert 2resize ' . ((&columns * 83 + 56) / 112)
+exe '3resize ' . ((&lines * 2 + 35) / 71)
+exe 'vert 3resize ' . ((&columns * 83 + 56) / 112)
+exe '4resize ' . ((&lines * 1 + 35) / 71)
+exe 'vert 4resize ' . ((&columns * 83 + 56) / 112)
+exe '5resize ' . ((&lines * 1 + 35) / 71)
+exe 'vert 5resize ' . ((&columns * 83 + 56) / 112)
+exe '6resize ' . ((&lines * 43 + 35) / 71)
+exe 'vert 6resize ' . ((&columns * 83 + 56) / 112)
+exe '7resize ' . ((&lines * 1 + 35) / 71)
+exe 'vert 7resize ' . ((&columns * 83 + 56) / 112)
+exe '8resize ' . ((&lines * 1 + 35) / 71)
+exe 'vert 8resize ' . ((&columns * 83 + 56) / 112)
+exe '9resize ' . ((&lines * 5 + 35) / 71)
+exe 'vert 9resize ' . ((&columns * 83 + 56) / 112)
 argglobal
 enew
 file __Tag_List__
@@ -176,7 +178,7 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 27 - ((0 * winheight(0) + 0) / 1)
+let s:l = 27 - ((0 * winheight(0) + 4) / 8)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -196,7 +198,7 @@ setlocal fdn=20
 setlocal fen
 1212
 normal! zo
-let s:l = 162 - ((0 * winheight(0) + 0) / 1)
+let s:l = 162 - ((0 * winheight(0) + 1) / 2)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -356,7 +358,7 @@ normal! zo
 normal! zo
 2953
 normal! zo
-let s:l = 225 - ((5 * winheight(0) + 5) / 11)
+let s:l = 225 - ((1 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -396,12 +398,12 @@ normal! zo
 normal! zo
 167
 normal! zo
-let s:l = 156 - ((8 * winheight(0) + 10) / 21)
+let s:l = 157 - ((13 * winheight(0) + 21) / 43)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-156
-normal! 0260|
+157
+normal! 018|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -1358,32 +1360,32 @@ normal! zo
 normal! zo
 447
 normal! zo
-let s:l = 198 - ((0 * winheight(0) + 0) / 1)
+let s:l = 210 - ((0 * winheight(0) + 2) / 5)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-198
-normal! 057|
+210
+normal! 023|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
-5wincmd w
-exe 'vert 1resize ' . ((&columns * 29 + 56) / 112)
-exe '2resize ' . ((&lines * 1 + 23) / 47)
-exe 'vert 2resize ' . ((&columns * 82 + 56) / 112)
-exe '3resize ' . ((&lines * 1 + 23) / 47)
-exe 'vert 3resize ' . ((&columns * 82 + 56) / 112)
-exe '4resize ' . ((&lines * 1 + 23) / 47)
-exe 'vert 4resize ' . ((&columns * 82 + 56) / 112)
-exe '5resize ' . ((&lines * 11 + 23) / 47)
-exe 'vert 5resize ' . ((&columns * 82 + 56) / 112)
-exe '6resize ' . ((&lines * 21 + 23) / 47)
-exe 'vert 6resize ' . ((&columns * 82 + 56) / 112)
-exe '7resize ' . ((&lines * 1 + 23) / 47)
-exe 'vert 7resize ' . ((&columns * 82 + 56) / 112)
-exe '8resize ' . ((&lines * 1 + 23) / 47)
-exe 'vert 8resize ' . ((&columns * 82 + 56) / 112)
-exe '9resize ' . ((&lines * 1 + 23) / 47)
-exe 'vert 9resize ' . ((&columns * 82 + 56) / 112)
+6wincmd w
+exe 'vert 1resize ' . ((&columns * 28 + 56) / 112)
+exe '2resize ' . ((&lines * 8 + 35) / 71)
+exe 'vert 2resize ' . ((&columns * 83 + 56) / 112)
+exe '3resize ' . ((&lines * 2 + 35) / 71)
+exe 'vert 3resize ' . ((&columns * 83 + 56) / 112)
+exe '4resize ' . ((&lines * 1 + 35) / 71)
+exe 'vert 4resize ' . ((&columns * 83 + 56) / 112)
+exe '5resize ' . ((&lines * 1 + 35) / 71)
+exe 'vert 5resize ' . ((&columns * 83 + 56) / 112)
+exe '6resize ' . ((&lines * 43 + 35) / 71)
+exe 'vert 6resize ' . ((&columns * 83 + 56) / 112)
+exe '7resize ' . ((&lines * 1 + 35) / 71)
+exe 'vert 7resize ' . ((&columns * 83 + 56) / 112)
+exe '8resize ' . ((&lines * 1 + 35) / 71)
+exe 'vert 8resize ' . ((&columns * 83 + 56) / 112)
+exe '9resize ' . ((&lines * 5 + 35) / 71)
+exe 'vert 9resize ' . ((&columns * 83 + 56) / 112)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
@@ -1398,6 +1400,6 @@ let &so = s:so_save | let &siso = s:siso_save
 doautoall SessionLoadPost
 unlet SessionLoad
 tabnext 1
-5wincmd w
+6wincmd w
 
 " vim: ft=vim ro nowrap smc=128
