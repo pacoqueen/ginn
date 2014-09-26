@@ -153,15 +153,22 @@ class SuperFacturaVenta:
         Devuelve un FixedPoint (a casi todos los efectos, se comporta como
         un FLOAT. De todas formas, pasa bien por el utils.float2str).
         """
+        # PORASQUI: Aquí está el mantecao. Tengo que mirar qué dice la ley al respecto. Juraría que hay que redondear a 2 decimales todos los subtotales y calcular el total como la suma de los conceptos (base imponible + iva redondeado + irpf redondeado + ...)
         subtotal = self.calcular_subtotal()
         tot_dto = self.calcular_total_descuento(subtotal)
         abonos = sum([pa.importe for pa in self.pagosDeAbono])
         if iva:
-            tot_iva = self.calcular_total_iva(subtotal, tot_dto, self.cargo, abonos)
+            tot_iva = self.calcular_total_iva(subtotal, tot_dto, self.cargo,
+                                              abonos)
         else:
             tot_iva = 0.0
         irpf = self.irpf * subtotal
-        total = subtotal+float(self.cargo)+tot_dto+tot_iva+abonos+irpf
+        total = (subtotal 
+                 + float(self.cargo)
+                 + tot_dto 
+                 + tot_iva
+                 + abonos 
+                 + irpf)
         return total
 
     def calcular_importe_total(self, iva=True):

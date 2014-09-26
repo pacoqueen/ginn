@@ -222,7 +222,7 @@ class FacturasVenta(Ventana):
         # Inicialización del resto de widgets:
         cols = (('Código', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Descripción', 'gobject.TYPE_STRING', False,True,False,None),
-                ('Descripción complementaria', 'gobject.TYPE_STRING',
+                ('Desc. complementaria', 'gobject.TYPE_STRING',
                     True,True,False,self.cambiar_descripcion_complementaria),
                 ('Cantidad', 'gobject.TYPE_DOUBLE', True, True, False,
                     self.cambiar_cantidad_ldv),

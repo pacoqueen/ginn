@@ -302,6 +302,7 @@
 	],
 	"file_history":
 	[
+		"/run/user/1000/gvfs/smb-share:server=logonserver,share=comun/informatica/firma correo/firma.html",
 		"/home/bogado/Geotexan/src/ginn/ginn/lib/xlrd/xlrd/compdoc.py",
 		"/home/bogado/Geotexan/src/ginn/doc/pydoc/consulta_marcado_ce.html",
 		"/home/bogado/Geotexan/src/ginn/ginn/formularios/confirmings.py",
@@ -428,8 +429,7 @@
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/PyPDF2/__init__.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/cairograph.py",
 		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygraphviz/pygraphviz/__init__.py",
-		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygraphviz/pygraphviz/graphviz.py",
-		"/tmp/test.xml"
+		"/home/bogado/Geotexan/src/Geotex-INN/ginn/lib/pygraphviz/pygraphviz/graphviz.py"
 	],
 	"find":
 	{
