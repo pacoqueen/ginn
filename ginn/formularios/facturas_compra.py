@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2013  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -72,6 +72,7 @@ import gtk, time
 from framework import pclases
 from utils import _float as float
 import mx.DateTime
+import datetime
 
 class FacturasDeEntrada(Ventana):
     def __init__(self, objeto = None, usuario = None):
