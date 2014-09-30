@@ -1,9 +1,9 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 26 septiembre 2014 at 12:57:09.
+" Created by session.vim 1.5 on 30 septiembre 2014 at 09:41:57.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
-silent! set guifont=Source\ Code\ Pro\ 11
+silent! set guifont=Source\ Code\ Pro\ 10
 if exists('g:syntax_on') != 1 | syntax on | endif
 if exists('g:did_load_filetypes') != 1 | filetype on | endif
 if exists('g:did_load_ftplugin') != 1 | filetype plugin on | endif
@@ -35,7 +35,7 @@ badd +41 ginn/framework/memoize.py
 badd +596 ginn/formularios/presupuesto.py
 badd +44 ginn/formularios/listado_rollos.py
 badd +89 ginn/informes/norma2013.py
-badd +162 ginn/formularios/consulta_global.py
+badd +2711 ginn/formularios/consulta_global.py
 badd +1 ginn/formularios/consulta_global.glade
 badd +528 ginn/formularios/consumo_fibra_por_partida_gtx.py
 badd +1 extra/scripts/clouseau.glade
@@ -93,7 +93,7 @@ badd +1 ginn/formularios/partes_de_fabricacion_rollos.py
 badd +1 ginn/formularios/consulta_producciones_estandar.py
 badd +411 ginn/formularios/pagares_pagos.py
 badd +606 ginn/formularios/consulta_pendientes_servir.py
-badd +395 ginn/formularios/consulta_pagos_realizados.py
+badd +504 ginn/formularios/consulta_pagos_realizados.py
 badd +21 ginn/lib/myprint.py
 badd +926 ginn/formularios/consumo_balas_partida.py
 badd +399 ginn/formularios/auditviewer.py
@@ -103,10 +103,11 @@ badd +23 extra/scripts/bash_completion_ginn
 badd +1200 ginn/formularios/consulta_ventas.py
 badd +631 ginn/formularios/pagares_cobros.py
 badd +1 ginn/framework/pclases/superfacturaventa.py
-argglobal
-silent! argdel *
-argadd formularios/auditviewer.py
-set lines=71 columns=112
+badd +0 ginn/informes/geninformes.py
+badd +0 ginn/formularios/utils.py
+badd +0 ginn/formularios/fixedpoint.py
+args formularios/auditviewer.py
+set lines=42 columns=102
 edit ginn/formularios/partes_de_ancho_multiple.py
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -127,7 +128,10 @@ wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
-7wincmd k
+wincmd _ | wincmd |
+split
+8wincmd k
+wincmd w
 wincmd w
 wincmd w
 wincmd w
@@ -139,23 +143,25 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe 'vert 1resize ' . ((&columns * 28 + 56) / 112)
-exe '2resize ' . ((&lines * 8 + 35) / 71)
-exe 'vert 2resize ' . ((&columns * 83 + 56) / 112)
-exe '3resize ' . ((&lines * 2 + 35) / 71)
-exe 'vert 3resize ' . ((&columns * 83 + 56) / 112)
-exe '4resize ' . ((&lines * 1 + 35) / 71)
-exe 'vert 4resize ' . ((&columns * 83 + 56) / 112)
-exe '5resize ' . ((&lines * 1 + 35) / 71)
-exe 'vert 5resize ' . ((&columns * 83 + 56) / 112)
-exe '6resize ' . ((&lines * 43 + 35) / 71)
-exe 'vert 6resize ' . ((&columns * 83 + 56) / 112)
-exe '7resize ' . ((&lines * 1 + 35) / 71)
-exe 'vert 7resize ' . ((&columns * 83 + 56) / 112)
-exe '8resize ' . ((&lines * 1 + 35) / 71)
-exe 'vert 8resize ' . ((&columns * 83 + 56) / 112)
-exe '9resize ' . ((&lines * 5 + 35) / 71)
-exe 'vert 9resize ' . ((&columns * 83 + 56) / 112)
+exe 'vert 1resize ' . ((&columns * 15 + 51) / 102)
+exe '2resize ' . ((&lines * 1 + 21) / 42)
+exe 'vert 2resize ' . ((&columns * 86 + 51) / 102)
+exe '3resize ' . ((&lines * 1 + 21) / 42)
+exe 'vert 3resize ' . ((&columns * 86 + 51) / 102)
+exe '4resize ' . ((&lines * 1 + 21) / 42)
+exe 'vert 4resize ' . ((&columns * 86 + 51) / 102)
+exe '5resize ' . ((&lines * 1 + 21) / 42)
+exe 'vert 5resize ' . ((&columns * 86 + 51) / 102)
+exe '6resize ' . ((&lines * 1 + 21) / 42)
+exe 'vert 6resize ' . ((&columns * 86 + 51) / 102)
+exe '7resize ' . ((&lines * 24 + 21) / 42)
+exe 'vert 7resize ' . ((&columns * 86 + 51) / 102)
+exe '8resize ' . ((&lines * 1 + 21) / 42)
+exe 'vert 8resize ' . ((&columns * 86 + 51) / 102)
+exe '9resize ' . ((&lines * 1 + 21) / 42)
+exe 'vert 9resize ' . ((&columns * 86 + 51) / 102)
+exe '10resize ' . ((&lines * 1 + 21) / 42)
+exe 'vert 10resize ' . ((&columns * 86 + 51) / 102)
 argglobal
 enew
 file __Tag_List__
@@ -178,7 +184,7 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 27 - ((0 * winheight(0) + 4) / 8)
+let s:l = 27 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -187,7 +193,7 @@ normal! 0
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
-edit ~/Geotexan/src/Geotex-INN/ginn/formularios/consulta_global.py
+edit ~/Geotexan/src/Geotex-INN/ginn/formularios/fixedpoint.py
 setlocal fdm=indent
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -196,18 +202,16 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-1212
-normal! zo
-let s:l = 162 - ((0 * winheight(0) + 1) / 2)
+let s:l = 223 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-162
-normal! 038|
+223
+normal! 041|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
-edit ~/Geotexan/src/Geotex-INN/ginn/formularios/consulta_pagos_realizados.py
+edit ~/Geotexan/src/Geotex-INN/ginn/formularios/utils.py
 setlocal fdm=indent
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -216,28 +220,170 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-49
-normal! zo
-199
-normal! zo
-218
-normal! zo
-244
-normal! zo
-244
-normal! zo
-468
-normal! zo
-476
-normal! zo
-480
-normal! zo
-let s:l = 491 - ((0 * winheight(0) + 0) / 1)
+let s:l = 2169 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-491
-normal! 0
+2169
+normal! 027|
+lcd ~/Geotexan/src/Geotex-INN
+wincmd w
+argglobal
+edit ~/Geotexan/src/Geotex-INN/ginn/informes/geninformes.py
+setlocal fdm=indent
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=99
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+1380
+normal! zo
+1803
+normal! zo
+1804
+normal! zo
+1804
+normal! zo
+1804
+normal! zo
+1804
+normal! zo
+1816
+normal! zo
+2297
+normal! zo
+2297
+normal! zo
+2297
+normal! zo
+2297
+normal! zo
+2311
+normal! zo
+2476
+normal! zo
+2476
+normal! zo
+2476
+normal! zo
+2476
+normal! zo
+2490
+normal! zo
+2903
+normal! zo
+2903
+normal! zo
+2903
+normal! zo
+2903
+normal! zo
+2951
+normal! zo
+3005
+normal! zo
+3071
+normal! zo
+3078
+normal! zo
+3079
+normal! zo
+3092
+normal! zo
+3093
+normal! zo
+3093
+normal! zo
+3093
+normal! zo
+3099
+normal! zo
+3100
+normal! zo
+3101
+normal! zo
+3101
+normal! zo
+3101
+normal! zo
+3101
+normal! zo
+3101
+normal! zo
+3101
+normal! zo
+3146
+normal! zo
+3154
+normal! zo
+3158
+normal! zo
+3158
+normal! zo
+3158
+normal! zo
+3177
+normal! zo
+3177
+normal! zo
+3177
+normal! zo
+3427
+normal! zo
+3427
+normal! zo
+3427
+normal! zo
+3427
+normal! zo
+3440
+normal! zo
+3441
+normal! zo
+3512
+normal! zo
+3515
+normal! zo
+3542
+normal! zo
+3547
+normal! zo
+3562
+normal! zo
+3565
+normal! zo
+3565
+normal! zo
+3565
+normal! zo
+3568
+normal! zo
+3590
+normal! zo
+4438
+normal! zo
+4520
+normal! zo
+4786
+normal! zo
+4787
+normal! zo
+4843
+normal! zo
+4843
+normal! zo
+4843
+normal! zo
+4843
+normal! zo
+let s:l = 3566 - ((0 * winheight(0) + 0) / 1)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+3566
+normal! 063|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -358,7 +504,7 @@ normal! zo
 normal! zo
 2953
 normal! zo
-let s:l = 225 - ((1 * winheight(0) + 0) / 1)
+let s:l = 225 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -378,6 +524,8 @@ setlocal fdn=20
 setlocal fen
 53
 normal! zo
+58
+normal! zo
 151
 normal! zo
 161
@@ -396,14 +544,54 @@ normal! zo
 normal! zo
 162
 normal! zo
-167
+169
 normal! zo
-let s:l = 157 - ((13 * winheight(0) + 21) / 43)
+170
+normal! zo
+176
+normal! zo
+177
+normal! zo
+177
+normal! zo
+183
+normal! zo
+184
+normal! zo
+202
+normal! zo
+203
+normal! zo
+203
+normal! zo
+203
+normal! zo
+220
+normal! zo
+221
+normal! zo
+567
+normal! zo
+577
+normal! zo
+586
+normal! zo
+598
+normal! zo
+939
+normal! zo
+958
+normal! zo
+959
+normal! zo
+962
+normal! zo
+let s:l = 199 - ((15 * winheight(0) + 12) / 24)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-157
-normal! 018|
+199
+normal! 017|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -1360,7 +1548,7 @@ normal! zo
 normal! zo
 447
 normal! zo
-let s:l = 210 - ((0 * winheight(0) + 2) / 5)
+let s:l = 210 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -1368,24 +1556,26 @@ normal! zt
 normal! 023|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
-6wincmd w
-exe 'vert 1resize ' . ((&columns * 28 + 56) / 112)
-exe '2resize ' . ((&lines * 8 + 35) / 71)
-exe 'vert 2resize ' . ((&columns * 83 + 56) / 112)
-exe '3resize ' . ((&lines * 2 + 35) / 71)
-exe 'vert 3resize ' . ((&columns * 83 + 56) / 112)
-exe '4resize ' . ((&lines * 1 + 35) / 71)
-exe 'vert 4resize ' . ((&columns * 83 + 56) / 112)
-exe '5resize ' . ((&lines * 1 + 35) / 71)
-exe 'vert 5resize ' . ((&columns * 83 + 56) / 112)
-exe '6resize ' . ((&lines * 43 + 35) / 71)
-exe 'vert 6resize ' . ((&columns * 83 + 56) / 112)
-exe '7resize ' . ((&lines * 1 + 35) / 71)
-exe 'vert 7resize ' . ((&columns * 83 + 56) / 112)
-exe '8resize ' . ((&lines * 1 + 35) / 71)
-exe 'vert 8resize ' . ((&columns * 83 + 56) / 112)
-exe '9resize ' . ((&lines * 5 + 35) / 71)
-exe 'vert 9resize ' . ((&columns * 83 + 56) / 112)
+7wincmd w
+exe 'vert 1resize ' . ((&columns * 15 + 51) / 102)
+exe '2resize ' . ((&lines * 1 + 21) / 42)
+exe 'vert 2resize ' . ((&columns * 86 + 51) / 102)
+exe '3resize ' . ((&lines * 1 + 21) / 42)
+exe 'vert 3resize ' . ((&columns * 86 + 51) / 102)
+exe '4resize ' . ((&lines * 1 + 21) / 42)
+exe 'vert 4resize ' . ((&columns * 86 + 51) / 102)
+exe '5resize ' . ((&lines * 1 + 21) / 42)
+exe 'vert 5resize ' . ((&columns * 86 + 51) / 102)
+exe '6resize ' . ((&lines * 1 + 21) / 42)
+exe 'vert 6resize ' . ((&columns * 86 + 51) / 102)
+exe '7resize ' . ((&lines * 24 + 21) / 42)
+exe 'vert 7resize ' . ((&columns * 86 + 51) / 102)
+exe '8resize ' . ((&lines * 1 + 21) / 42)
+exe 'vert 8resize ' . ((&columns * 86 + 51) / 102)
+exe '9resize ' . ((&lines * 1 + 21) / 42)
+exe 'vert 9resize ' . ((&columns * 86 + 51) / 102)
+exe '10resize ' . ((&lines * 1 + 21) / 42)
+exe 'vert 10resize ' . ((&columns * 86 + 51) / 102)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
@@ -1400,6 +1590,6 @@ let &so = s:so_save | let &siso = s:siso_save
 doautoall SessionLoadPost
 unlet SessionLoad
 tabnext 1
-6wincmd w
+7wincmd w
 
 " vim: ft=vim ro nowrap smc=128

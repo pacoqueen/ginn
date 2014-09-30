@@ -2954,7 +2954,7 @@ def factura(cliente,
             vencimiento,
             texto,
             totales,
-            impuesto = 1.16, 
+            impuesto = 1.21, 
             orden_ventanas = None, 
             es_copia = False):
     """
@@ -3075,7 +3075,9 @@ def factura(cliente,
             marca_de_agua(c, " COPIA ", fontsize = 56)
         # La cabecera
         if datos_empresa.logo:
-            ruta_logo = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo)
+            ruta_logo = os.path.join(
+                    os.path.dirname(os.path.realpath(__file__)), '..',
+                    'imagenes', datos_empresa.logo)
             im = Image.open(ruta_logo)
             ancho, alto = im.size
             nuevo_alto = 1.5 * inch
@@ -3087,17 +3089,20 @@ def factura(cliente,
                         ancho_proporcional,
                         nuevo_alto)
         if datos_empresa.bvqi:
-            c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..','imagenes',datos_empresa.logoiso2),
+            c.drawImage(os.path.join(
+                            os.path.dirname(os.path.realpath(__file__)), '..',
+                            'imagenes', datos_empresa.logoiso2),
                         rm-1.65*inch, height - 2.5*cm, 3.3*cm, 1.85*cm)
 
         # XXX
         if not datos_empresa.esSociedad:
             if datos_empresa.logo2 != "":
-                c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..','imagenes',datos_empresa.logo2),
+                c.drawImage(os.path.join(os.path.dirname(
+                                            os.path.realpath(__file__)),
+                                         '..', 'imagenes',
+                                         datos_empresa.logo2),
                             rm-1.65*inch, height - 2.5*cm, 3.3*cm, 1.85*cm)
         # XXX
-
-
         #c.drawCentredString(rm-inch, tm+1.40*inch, escribe('ESPMDD00433'))
         # XXX (Subo para que encaje en la ventana del sobre): linea = height-50
         linea = height-50 + 0.7*cm
@@ -3105,8 +3110,6 @@ def factura(cliente,
         c.drawCentredString(rm-inch, tm+1*inch, escribe('Factura'))
         c.drawCentredString(width/2, linea, escribe(datos_empresa.nombre))
         linea = sigLinea()
-
-
         # XXX
         if (not datos_empresa.esSociedad
             and datos_empresa.nombreContacto != datos_empresa.nombre):
@@ -3115,8 +3118,6 @@ def factura(cliente,
                                 escribe(datos_empresa.nombreContacto))
             linea = sigLinea()
         # XXX
-
-
         c.setFont("Helvetica", 10)
         c.drawCentredString(width/2, linea,
                             escribe(datos_empresa.dirfacturacion))
@@ -3153,7 +3154,9 @@ def factura(cliente,
                     linea,
                     escribe('Geotextiles    1035-CPD-ES033858'),
                     "Courier", 8, (0, 0, 0), 10)
-            c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', "CE.png"),
+            c.drawImage(os.path.join(
+                            os.path.dirname(os.path.realpath(__file__)), '..',
+                            'imagenes', "CE.png"),
                         posx + anchosemitexto, 
                         linea, 
                         0.40*cm, 
@@ -3170,29 +3173,25 @@ def factura(cliente,
                     linea - 8,
                     escribe('Fibra    1035-CPD-9003712'),
                     "Courier", 8, (0, 0, 0), 10)
-            c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', "CE.png"),
+            c.drawImage(os.path.join(
+                            os.path.dirname(os.path.realpath(__file__)), '..',
+                            'imagenes', "CE.png"),
                         posx + anchosemitexto, 
                         linea - 8, 
                         0.40*cm, 
                         0.20*cm)
         c.setFont("Helvetica", 10)
-
-
         # La fecha y el número de factura fuera del cuadro
-
         # XXX
         if not datos_empresa.esSociedad:
             linea = sigLinea(0) + (15 * 1)
         # XXX
-
         linea = sigLinea(15)
         # Si en la cabecera de la empresa hay solo 3 líneas , la fecha y
         # número de factura pisa al texto "Factura", que está en tm + 1
         # pulgada.
         if linea + 10 > tm+1*inch:
-            #print "¡BAJANDO!"
             linea = sigLinea()
-
         c.setFont("Times-Italic", 10)
         c.drawString(lm + 3 * cm, linea, escribe('FECHA FACTURA:'))
         xNumFactura = width/2 + 3 * cm
@@ -3204,15 +3203,12 @@ def factura(cliente,
         xNumFactura = width/2 + 3 * cm + c.stringWidth('Nº FACTURA: ',
                                                        'Times-Italic', 10)
         c.drawString(xNumFactura, linea, escribe(factdata['facnum']))
-
         # Los cuadros de datos fiscales y datos de envío
         xLocal = lm+inch
         xFact = width/2 + 0.7*inch
         xLocalTitulo = xLocal - 37
         xFactTitulo = xFact - 37
-
         linea = sigLinea(2)
-
         # La doble línea:
         c.saveState()
         if datos_empresa.irpf != 0:
@@ -3360,12 +3356,9 @@ def factura(cliente,
                                             xFact - 50, linea, txti)
         el_encogedor_de_fuentes_de_doraemon(c, "Helvetica", 10, xFact, rm - 2,
                                             linea, txtd)
-
         linea = sigLinea(10)
         # XXX Como he subido para encajar en la ventana del sobre, bajo ahora:
         linea -= 0.7*cm+3
-
-
         # Datos generales (Esquina superior
         # izquierda x=lm+0.5*inch, y=tm-1.2*inch)
         if factdata['pedido'] != None and factdata['pedido'].strip() != "":
@@ -3401,13 +3394,11 @@ def factura(cliente,
                     corte = memcorte
             c.restoreState()
             # XXX: [epalomo] EONegrita en números de pedido que se facturan.
-
         if numpagina < paginastotales:
             offset = -1.5 * cm
             linea += offset
             bm += offset
             tm += offset
-
         # El cuerpo
         # -- Cuadro global
         rectangulo(c, (lm+0.5*inch, tm-0.75*inch-58), (rm, bm+inch+98))
@@ -3423,19 +3414,22 @@ def factura(cliente,
                    (rm-1.2*inch, tm-0.75*inch-74), 'Precio Unitario', 'centro')
         rectangulo(c, (rm-1.2*inch, tm-0.75*inch-58), (rm, tm-0.75*inch-74),
                    'TOTAL', 'centro')
-
         # -- Columnas de datos
         rectangulo(c,(lm+0.5*inch, tm-0.75*inch-74),(lm+1.65*inch, bm+inch+98))
         rectangulo(c,(lm+1.65*inch, tm-0.75*inch-74),(lm+2.5*inch, bm+inch+98))
         rectangulo(c,(lm+2.5*inch, tm-0.75*inch-74),(rm-2.15*inch, bm+inch+98))
         rectangulo(c,(x0precio, tm-0.75*inch-74),(rm-1.2*inch, bm+inch+98))
         rectangulo(c,(rm-1.2*inch, tm-0.75*inch-74),(rm, bm+inch+98))
-
-
+        # -- Registro mercantil
+        c.rotate(90)    # XXX ¿¿¿Qué hace esto aquí???
+        c.setFont("Times-Roman", 8)
+        c.drawCentredString(height/2, -lm-32,
+                            escribe(datos_empresa.registroMercantil))
+        c.rotate(-90)
+        c.setFont(fuente, tamanno)
         # DATA
         # Caben exactamente 11 líneas de venta. Debemos hacer una
         # segunda página en caso de que haya más
-
         linea = tm-1.92*inch
         xcodigo = lm+1.65*inch-4
         xcantidad = lm+1.9*inch
@@ -3547,13 +3541,6 @@ def factura(cliente,
                                         # el precio y eso en la actual.
                             linea = sigLinea()
                 # --------- >8 ----------
-                c.rotate(90)
-                c.setFont("Times-Roman", 8)
-                c.drawCentredString(height/2, -lm-32,
-                                    escribe(datos_empresa.registroMercantil))
-                c.rotate(-90)
-
-                c.setFont(fuente, tamanno)
                 #try:
                 #    c.drawRightString(xprecio, linea,
                 #       escribe(utils.float2str(l['precio'], 3)))
@@ -3576,7 +3563,7 @@ def factura(cliente,
                     total *= utils._float(l['cantidad'])
                     c.drawRightString(xtotal,
                                       linea,
-                                      escribe(utils.float2str(total, 2)))
+                                      escribe(utils.float2str(total, 6, 2)))
                 except ValueError, msg:
                     if l['precio'] != "" and l['cantidad'] !=  "":
                         # Si el contenido viene desglosado, precio y cantidad
@@ -3826,7 +3813,7 @@ def marca_de_agua(c, texto="BORRADOR", color=(1.0, 0.7, 0.7), fontsize=42):
     # EOMarca "borrador"
 
 def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
-               totales, impuesto = 1.16, orden_ventanas = None):
+               totales, impuesto = 1.21, orden_ventanas = None):
     """
     Con los datos de entrada genera la prefactura o factura pro forma.
 

@@ -147,7 +147,7 @@ class SuperFacturaVenta:
                     pedidos.append(pedido)
         return pedidos
 
-    def calcular_total(self, iva=True):
+    def calcular_total(self, iva=True, redondeo=2):
         """
         Calcula el total de la factura, con descuentos, IVA y demás incluido.
         Devuelve un FixedPoint (a casi todos los efectos, se comporta como
@@ -163,12 +163,64 @@ class SuperFacturaVenta:
         else:
             tot_iva = 0.0
         irpf = self.irpf * subtotal
-        total = (subtotal 
-                 + float(self.cargo)
-                 + tot_dto 
-                 + tot_iva
-                 + abonos 
-                 + irpf)
+        if redondeo is False:   # No redondea ANTES de hacer la suma. Pero el
+            # resultado, al implicar un FixedPoint que viene del IVA, será
+            # también un FixedPoint de 2 decimales.
+            total = (subtotal 
+                     + float(self.cargo)    # Porque es de tipo Decimal
+                     + tot_dto 
+                     + tot_iva
+                     + abonos 
+                     + irpf)
+        else:
+            subtotales = (subtotal, 
+                          float(self.cargo), 
+                          tot_dto, 
+                          tot_iva,
+                          abonos,
+                          irpf)
+            if DEBUG:
+                myprint("pclases.py::SuperFacturaVenta.calcular_total "
+                        "(antes de redondeo) -> ",
+                        subtotales)
+            if redondeo == 2:
+                # El viejo truco, que no por viejo es impreciso. Por ejemplo:
+                # In [33]: nums= (13425.705, 0.705, 1.705, 2.705, 3.705, 5.705, 425.705)
+                # In [34]: for n in nums:
+                #    ....:     print round(n, 2), myround(n)
+                #    ....:     
+                # 13425.7 13425.71
+                # 0.7 0.71
+                # 1.71 1.71
+                # 2.71 2.71
+                # 3.71 3.71
+                # 5.71 5.71
+                # 425.7 425.71
+                myround = lambda x: int((float(x) + 0.005) * 100) / 100.0
+                subtotales = map(lambda x: myround(x), subtotales)
+            else:
+                subtotales = map(lambda x: round(round(x, 6), redondeo),
+                                 subtotales)
+            # La ley, que no es muy precisa, viene a decir que los cálculos
+            # internos de precios y tal se hagan a 6 decimales los totales a 2.
+            # También dice que TOTAL=BASE IMPONIBLE+IVA. Se supone que ya todo
+            # bien redondeado al céntimo.
+            # El doble redondeo es por un caso curiosísimo:
+            # Por calculadora, 0.6275*26730=16773.075. Sin embargo...
+            # In [30]: 0.6275*26730
+            # Out[30]: 16773.074999999997
+            # In [35]: round(0.6275*26730, 2)
+            # Out[35]: 16773.07
+            # In [36]: round(round(0.6275*26730, 3), 2)
+            # Out[36]: 16773.08
+            # Al redondear a 2 decimales debería dar 16773.08 (0.75 -> 0.8)
+            # Esto ya es conocido. Ver
+            # https://docs.python.org/2/library/functions.html#round
+            if DEBUG:
+                myprint("pclases.py::SuperFacturaVenta.calcular_total "
+                        "(tras redondeo) -> ",
+                        subtotales)
+            total = sum(subtotales)
         return total
 
     def calcular_importe_total(self, iva=True):
