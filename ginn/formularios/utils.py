@@ -2149,6 +2149,15 @@ def ffloat(n, precision = 2):
         else:
             raise ValueError, "(utils.py) ffloat: El parámetro n debe ser una cadena, un entero, un float o un FixedPoint."
 
+def myround(x):
+    if x > 0:
+        res = round(int((float(x) * 100) + (0.5 + 0.000001))) / 100.0
+    elif x < 0:
+        res = round(int((float(x) * 100) - (0.5 + 0.000001))) / 100.0
+    else:
+        res = x
+    return res
+
 def float2str(n, precision = 2, autodec = False, separador_decimales = ","):
     """
     Devuelve una cadena con el flotante convertido a entero en 
@@ -2179,7 +2188,10 @@ def float2str(n, precision = 2, autodec = False, separador_decimales = ","):
             # es negativo para un redondeo simétrico:
             # Algo un poco más profesional pero que no logro hacer que 
             # funcione como quiero: http://fixedpoint.sourceforge.net
-            n = round_banquero(n, precision)
+            if precision == 2:  # Euros, euros, dubidú
+                n = myround(n)
+            else:
+                n = round_banquero(n, precision)
             s = "%%.%df" % precision
             s = s % (n)
             s = s.replace('.', ',')

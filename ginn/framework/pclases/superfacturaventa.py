@@ -153,7 +153,6 @@ class SuperFacturaVenta:
         Devuelve un FixedPoint (a casi todos los efectos, se comporta como
         un FLOAT. De todas formas, pasa bien por el utils.float2str).
         """
-        # PORASQUI: Aquí está el mantecao. Tengo que mirar qué dice la ley al respecto. Juraría que hay que redondear a 2 decimales todos los subtotales y calcular el total como la suma de los conceptos (base imponible + iva redondeado + irpf redondeado + ...). Pero si ya lo hago así aquí, ¿por qué falla en la factura de marras?
         subtotal = self.calcular_subtotal()
         tot_dto = self.calcular_total_descuento(subtotal)
         abonos = sum([pa.importe for pa in self.pagosDeAbono])
@@ -196,7 +195,14 @@ class SuperFacturaVenta:
                 # 3.71 3.71
                 # 5.71 5.71
                 # 425.7 425.71
-                myround = lambda x: int((float(x) + 0.005) * 100) / 100.0
+                # myround = lambda x: int((float(x) + 0.005) * 100) / 100.0
+                from formularios.utils import myround
+                # testcase
+                # i = (1.0, 1.001, 1.004, 1.049, 1.005, 1.006, 1.009, 1.0091, 1.949, 1.985, 1.994, 1.995, 2.0, 2.001, 2.675)
+                # o = (1.0, 1.0,   1.0,   1.05,  1.01,  1.01,  1.01,  1.01,   1.95,  1.99,  1.99,  2.0,   2.0, 2.0,   2.68)
+                # for x, y in zip(i, o):
+                #     print x, "->", myround(x), "=", y
+                #     assert myround(x) == y
                 subtotales = map(lambda x: myround(x), subtotales)
             else:
                 subtotales = map(lambda x: round(round(x, 6), redondeo),
@@ -204,7 +210,10 @@ class SuperFacturaVenta:
             # La ley, que no es muy precisa, viene a decir que los cálculos
             # internos de precios y tal se hagan a 6 decimales los totales a 2.
             # También dice que TOTAL=BASE IMPONIBLE+IVA. Se supone que ya todo
-            # bien redondeado al céntimo.
+            # bien redondeado al céntimo. El atajo de BI*1.21 es incorrecto.
+            # Premature optimization is the root of all Evil, el demonio está
+            # en los pequeños detalles y todas esas cosas se me han venido
+            # encima de golpe.
             # El doble redondeo es por un caso curiosísimo:
             # Por calculadora, 0.6275*26730=16773.075. Sin embargo...
             # In [30]: 0.6275*26730

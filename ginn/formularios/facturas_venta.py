@@ -566,10 +566,11 @@ class FacturasVenta(Ventana):
         factura = self.objeto
         # XXX: 20101011
         #subtotal = self.total_ldvs(factura) + self.total_srvs(factura)
-        subtotal=self.objeto.calcular_subtotal(
+        subtotal = self.objeto.calcular_subtotal(
             precision = pclases.config.get_precision())
         # XXX
-        self.wids['e_subtotal'].set_text("%s €" % utils.float2str(subtotal))
+        str_subtotal = utils.float2str(subtotal)
+        self.wids['e_subtotal'].set_text("%s €" % str_subtotal)
         self.wids['e_cargo'].set_text("%s €" % utils.float2str(factura.cargo))
         self.wids['e_descuento'].set_text("%d %%" % (factura.descuento * 100))
         try:
@@ -3045,7 +3046,7 @@ class FacturasVenta(Ventana):
         if self.objeto.iva == 0.262: # 21% + 5.2% de Recargo de Equivalencia.
             # OJO: Very ugly and dirty HACK etc. Como aún no se ha presentado
             # el caso, doy soporte temporalmente al recargo de equivalencia
-            # si el IVA es 20%. En realidad debería ir con un atributo en la
+            # si el IVA es 21%. En realidad debería ir con un atributo en la
             # clase factura y demás, pero no es algo prioritario de momento.
             totales['iva'] = "%d %%" % ((self.objeto.iva - 0.052) * 100)
             totales['recargo_equivalencia'] = "5.2 %"
