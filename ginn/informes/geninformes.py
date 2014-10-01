@@ -3421,12 +3421,14 @@ def factura(cliente,
         rectangulo(c,(x0precio, tm-0.75*inch-74),(rm-1.2*inch, bm+inch+98))
         rectangulo(c,(rm-1.2*inch, tm-0.75*inch-74),(rm, bm+inch+98))
         # -- Registro mercantil
-        c.rotate(90)    # XXX ¿¿¿Qué hace esto aquí???
+        c.saveState()
+        c.rotate(90)
         c.setFont("Times-Roman", 8)
         c.drawCentredString(height/2, -lm-32,
                             escribe(datos_empresa.registroMercantil))
         c.rotate(-90)
-        c.setFont(fuente, tamanno)
+        c.restoreState()
+        #c.setFont(fuente, tamanno)
         # DATA
         # Caben exactamente 11 líneas de venta. Debemos hacer una
         # segunda página en caso de que haya más
