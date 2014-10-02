@@ -813,7 +813,7 @@ class Ventana:
                     if DEBUG:
                         myprint("4.- ventana.py::actualizar_ventana->",
                                 time.time() - antes)
-                    self.rellenar_widgets()
+                    self.rellenar_widgets() # Delegado a la clase que me herede
                     self.objeto.make_swap()
                     if DEBUG:
                         myprint("5.- ventana.py::actualizar_ventana->",

@@ -522,6 +522,10 @@ class FacturasVenta(Ventana):
         hay que tener cuidado de no llamar a
         esta función en ese caso.
         """
+        if pclases.DEBUG:
+            import time
+            antes = time.time()
+            tiempos = []
         factura = self.objeto
         self.wids['ventana'].set_title(
             "Facturas de venta - %s" % (factura.numfactura))
@@ -538,13 +542,51 @@ class FacturasVenta(Ventana):
         # salte una excepción en la siguiente línea.
         self.wids['e_cliente'].set_text(cliente.nombre)
         self.wids['ch_bloqueada'].set_active(factura.bloqueada)
+        if pclases.DEBUG:
+            tiempos.append(time.time())
+            myprint("\tfacturas_venta::rellenar_widgets -> ",
+                    "Empiezo a medir tiempos...", 
+                    tiempos[-1] - antes)
         self.rellenar_lista_obras()
+        if pclases.DEBUG:
+            tiempos.append(time.time())
+            myprint("\tfacturas_venta::rellenar_widgets -> ",
+                    "rellenar_lista_obras() = ", 
+                    tiempos[-1] - antes)
         utils.combo_set_from_db(self.wids['cbe_obra'], factura.obraID)
         self.rellenar_contenido()
+        if pclases.DEBUG:
+            tiempos.append(time.time())
+            myprint("\tfacturas_venta::rellenar_widgets -> ",
+                    "rellenar_contenido() = ", 
+                    tiempos[-1] - antes)
         self.rellenar_servicios()
+        if pclases.DEBUG:
+            tiempos.append(time.time())
+            myprint("\tfacturas_venta::rellenar_widgets -> ",
+                    "rellenar_servicios() = ", 
+                    tiempos[-1] - antes)
         self.rellenar_abonos()
+        if pclases.DEBUG:
+            tiempos.append(time.time())
+            myprint("\tfacturas_venta::rellenar_widgets -> ",
+                    "rellenar_abonos() = ", 
+                    tiempos[-1] - antes)
         self.wids['e_estado'].set_text(self.objeto.get_str_estado())
+        if pclases.DEBUG:
+            tiempos.append(time.time())
+            myprint("\tfacturas_venta::rellenar_widgets -> ",
+                    "...set_text(self.objeto.get_str_estado())", 
+                    tiempos[-1] - antes)
         self.objeto.make_swap()
+        if pclases.DEBUG:
+            tiempos.append(time.time())
+            myprint("\tfacturas_venta::rellenar_widgets -> ",
+                    tiempos[-1] - antes)
+            t0 = antes
+            for t1 in tiempos:
+                myprint("·    ::::>>>>", t1 - t0)
+                t0 = t1
 
     def rellenar_contenido(self):
         """
@@ -1030,9 +1072,13 @@ class FacturasVenta(Ventana):
             ldv.facturaVenta = factura
 
     def rellenar_lista_obras(self):
-        obras = [(o.id, o.nombre)
-                 for o in pclases.Obra.select(orderBy = "nombre")
-                 if not self.objeto or self.objeto.cliente in o.clientes]
+        obras = []
+        if not self.objeto or not self.objeto.cliente:
+            obras = [(o.id, o.nombre)
+                     for o in pclases.Obra.select(orderBy = "nombre")]
+        else:
+            for o in self.objeto.cliente.obras:
+                obras.append((o.id, o.nombre))
         utils.rellenar_lista(self.wids['cbe_obra'], obras)
 
     def add_albaran(self, idalbaran):
