@@ -345,18 +345,7 @@ class PagaresPagos(Ventana):
         pagare = self.objeto
         if pagare != None:
             pagare.notificador.set_func(lambda : None)
-        # CWT: Fecha por defecto los 25 si no es domingo.
-        fecha_defecto = mx.DateTime.localtime()
-        while fecha_defecto.day != 25:
-            # fecha_defecto += mx.DateTime.oneDay
-            fecha_defecto += datetime.timedelta(1)
-        try:
-            diasemana = fecha_defecto.day_of_week
-        except AttributeError:  # No es un mx. Es un datetime.
-            diasemana = fecha_defecto.weekday()
-        if diasemana == 6:
-            #fecha_defecto += mx.DateTime.oneDay
-            fecha_defecto += datetime.timedelta(1)
+        fecha_defecto = pclases.DatosDeLaEmpresa.calcular_dia_de_pago()
         self.objeto = pclases.PagarePago(fechaPago = fecha_defecto, 
                                          cantidad = 0, 
                                          pagado = -1, 
@@ -383,6 +372,13 @@ class PagaresPagos(Ventana):
                         "número de factura, número de pagaré o importe:", 
                 padre = self.wids['ventana'])
         if a_buscar != None:
+            # PORASQUI: Mariló necesita que se pueda buscar por:
+            #   * Importe pagaré
+            #   * Importe de una factura cubierta por algún pagaré
+            #   * Fecha de emisión del pagaré.
+            #   * Fecha de pago (vencimiento) del pagaré.
+            #   * Número de alguna factura cubierta por el pagaré.
+            #   * Código de pagaré.
             a_buscar = a_buscar.strip()
             resultados = []
             if utils.es_interpretable_como_fecha(a_buscar):
@@ -668,14 +664,24 @@ class PagaresPagos(Ventana):
     def buscar_vencimiento(self, factura):
         vtos_full = self.preparar_vencimientos(factura)
         if len(vtos_full) == 0:
-            utils.dialogo_info(titulo = "FACTURA SIN VENCIMIENTOS", texto = "La factura %s no tiene vencimientos.\nPara evitar incoherencias, todo pago o pagaré debe corresponderse con un vencimiento.\nCree los vencimientos antes de relacionar la factura con un pagaré." % factura.numfactura, padre = self.wids['ventana'])
+            utils.dialogo_info(titulo = "FACTURA SIN VENCIMIENTOS",
+                    texto = "La factura %s no tiene vencimientos.\n"
+                            "Para evitar incoherencias, todo pago o pagaré "
+                            "debe corresponderse con un vencimiento.\n"
+                            "Cree los vencimientos antes de relacionar la "
+                            "factura con un pagaré." % factura.numfactura,
+                    padre = self.wids['ventana'])
             return
-        vtos = [(v[0].id, utils.str_fecha(v[0].fecha), "%s €" % (utils.float2str(v[0].importe)), v[0].observaciones) for v in vtos_full \
-                if v[2] == None]    # El vencimiento no tiene pago "asociado".
+        vtos = [(v[0].id,
+                 utils.str_fecha(v[0].fecha),
+                 "%s €" % (utils.float2str(v[0].importe)),
+                 v[0].observaciones)
+                for v in vtos_full if v[2] == None]    # El vencimiento no 
+                                                       # tiene pago "asociado".
         idvto = utils.dialogo_resultado(vtos,
-                                        titulo = "SELECCIONE VENCIMIENTO",
-                                        cabeceras = ('ID', 'Fecha', 'Importe', 'Observaciones'),
-                                        padre = self.wids['ventana'])
+                titulo = "SELECCIONE VENCIMIENTO",
+                cabeceras = ('ID', 'Fecha', 'Importe', 'Observaciones'),
+                padre = self.wids['ventana'])
         if idvto > 0:
             vto = pclases.VencimientoPago.get(idvto)
         else:

@@ -94,7 +94,6 @@ from sqlobject.joins import MultipleJoin, RelatedJoin
 from sqlobject.main import SQLObjectNotFound, SQLObject
 from sqlobject.sqlbuilder import AND, OR, NOT  # @UnusedImport
 from sqlobject import connectionForURI, sqlhub
-import mx.DateTime
 import pprint
 import re
 import threading #, psycopg
@@ -102,6 +101,7 @@ import time
 from formularios import utils
 from framework import notificacion
 import datetime
+import mx.DateTime  # WARNING: Será marcado como DEPRECATED pronto.
 
 # GET FUN !
 
@@ -19034,6 +19034,41 @@ class DatosDeLaEmpresa(SQLObject, PRPCTOO):
         elif self.paisfacturacion:
             res += ". %s" % self.paisfacturacion
         return res
+
+    def get_dia_de_pago(self):
+        """
+        Devuelve el día que deben llevar los pagos por defecto (pagarés, etc.)
+        """
+        # OJO: HARDCODED hasta que encuentre dónde meterlo para que sea
+        # configurable. Como no se ha cambiado en 10 años, lo que se dice
+        # prisa, no hay.
+        dia_de_pago = 25    # FIXME
+        return dia_de_pago
+
+    @staticmethod
+    def calcular_dia_de_pago(fecha_base = None):
+        """
+        Devuelve una fecha del tipo datetime con el día exacto en que se debe
+        hacer un pago basándose en la fecha base especificada o en el día de
+        hoy si no se instancia el parámetro.
+        NOTAS: Si la fecha_base es un mx, devolverá un mx.DateTime
+        """
+        # CWT: Fecha por defecto los 25 si no es domingo.
+        if not fecha_base:
+            fecha_defecto = mx.DateTime.localtime()
+        else:
+            fecha_defecto = fecha_base
+        while fecha_defecto.day != 25:
+            # fecha_defecto += mx.DateTime.oneDay
+            fecha_defecto += datetime.timedelta(1)
+        try:
+            diasemana = fecha_defecto.day_of_week
+        except AttributeError:  # No es un mx. Es un datetime.
+            diasemana = fecha_defecto.weekday()
+        if diasemana == 6:
+            #fecha_defecto += mx.DateTime.oneDay
+            fecha_defecto += datetime.timedelta(1)
+        return fecha_defecto
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 

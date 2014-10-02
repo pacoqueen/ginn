@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -183,7 +183,7 @@ class ConsultaVencimientosPagos(Ventana):
         ventana de pagarés con ese nuevo objeto.
         """
         model, paths = self.wids['tv_datos'].get_selection().get_selected_rows()
-        fechavto = mx.DateTime.localtime()
+        fechavto = pclases.DatosDeLaEmpresa.calcular_dia_de_pago()
         importe = 0
         observaciones = ""
         pagare = pclases.PagarePago(fechaPago = fechavto, 
