@@ -254,8 +254,9 @@ class ConsultaPedidosCliente(Ventana):
             # Menos de 2 series de datos. No dibujo nada.
             self.wids['grafica'] = gtk.DrawingArea()
         else:
-            padre.pack_start(self.wids['grafica'])
             self.wids['grafica'].show_all()
+        finally:
+            padre.pack_start(self.wids['grafica'])
 
     def set_fecha(self, boton):
         """
