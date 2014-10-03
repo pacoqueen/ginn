@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -2209,6 +2209,8 @@ class FacturasVenta(Ventana):
         a_buscar = utils.dialogo_entrada(titulo = 'BUSCAR SERVICIO FACTURADO',
                     texto = 'Introduzca un concepto (o parte) ya facturado:',
                     padre = self.wids['ventana'])
+        if a_buscar is None:
+            return      # Canceló.
         servicios = pclases.Servicio.select(
                 pclases.Servicio.q.concepto.contains(a_buscar),
                 orderBy = "concepto")
