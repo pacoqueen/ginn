@@ -186,11 +186,13 @@ class ConsultaVencimientosPagos(Ventana):
         fechavto = pclases.DatosDeLaEmpresa.calcular_dia_de_pago()
         importe = 0
         observaciones = ""
+        # CWT: (mrodriguez) El día de emisión debe ser el 25.
+        fecha_pago = pclases.DatosDeLaEmpresa.calcular_dia_de_pago()
         pagare = pclases.PagarePago(fechaPago = fechavto, 
                                     cantidad = importe, 
                                     pagado = -1, 
                                     observaciones = observaciones, 
-                                    fechaEmision = mx.DateTime.localtime(), 
+                                    fechaEmision = fecha_pago, 
                                     fechaCobrado = None)
         pclases.Auditoria.nuevo(pagare, self.usuario, __file__)
         for path in paths:
