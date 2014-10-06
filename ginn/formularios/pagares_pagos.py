@@ -222,8 +222,17 @@ class PagaresPagos(Ventana):
         de resultados) de la fila seleccionada o None
         si se canceló.
         """
+        vpro = VentanaActividad(self.wids['ventana'],
+                                "Buscando pagarés...",
+                                show_timer=True)
+        vpro.mostrar()
+        vpro.mover()
+        self.wids['ventana'].window.set_cursor(
+                gtk.gdk.Cursor(gtk.gdk.WATCH))
         filas_res = []
+        vpro.mover()
         for r in resultados:
+            vpro.mover()
             try:
                 proveedor = r.pagos[0].facturaCompra.proveedor.nombre
             except (AttributeError, IndexError):
@@ -245,6 +254,8 @@ class PagaresPagos(Ventana):
                               r.cantidad, 
                               utils.str_fecha(r.fechaPago), 
                               r.pendiente and "Sí" or "No"))
+        vpro.ocultar()
+        self.wids['ventana'].window.set_cursor(None)
         idpagare = utils.dialogo_resultado(filas_res,
                         titulo = 'Seleccione Pagaré',
                         cabeceras = ('ID', 'N.º', 'Proveedor', 'Tipo',
@@ -387,6 +398,9 @@ class PagaresPagos(Ventana):
                                         show_timer=True)
                 vpro.mostrar()
                 vpro.mover()
+                self.wids['ventana'].window.set_cursor(
+                        gtk.gdk.Cursor(gtk.gdk.WATCH))
+                while gtk.events_pending(): gtk.main_iteration(False)
                 if pclases.DEBUG:
                     myprint("Buscando pagarés por fecha...")
                 if utils.es_interpretable_como_fecha(a_buscar):
@@ -427,6 +441,7 @@ class PagaresPagos(Ventana):
                 vpro.mover()
                 lon = len(resultados)
                 vpro.ocultar()
+                self.wids['ventana'].window.set_cursor(None)
             if lon > 1:
                 ## Refinar los resultados
                 idpagare = self.refinar_resultados_busqueda(resultados)
