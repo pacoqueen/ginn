@@ -382,7 +382,7 @@ class PagaresPagos(Ventana):
                 resultados = pclases.PagarePago.select()
                 lon = resultados.count()
             else:   # Busco por los diferentes criterios y agrupo al final
-                vpro = VentanaActividad(ventana_padre,
+                vpro = VentanaActividad(self.wids['ventana'],
                                         "Buscando pagarés...",
                                         show_timer=True)
                 vpro.mostrar()
