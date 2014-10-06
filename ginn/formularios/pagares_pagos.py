@@ -55,6 +55,8 @@ from framework import pclases
 from informes import geninformes
 import re
 import mx.DateTime, datetime
+from formularios.ventana_progreso import VentanaActividad
+from lib.myprint import myprint
 
 # Modelos de cheques y pagarés:
 MONTE, CAIXA, BANKINTER = (0, 1, 2)
@@ -369,53 +371,62 @@ class PagaresPagos(Ventana):
         pagare = self.objeto
         a_buscar = utils.dialogo_entrada(titulo = "BUSCAR PAGARÉ", 
                 texto = "Introduzca fecha de emisión, fecha de pago,\n"
-                        "número de factura, número de pagaré o importe:", 
+                        "fecha de factura, número de factura, número de\n"
+                        "pagaré, importe de factura o importe total del\n"
+                        "pagaré:", 
                 padre = self.wids['ventana'])
         if a_buscar != None:
-            # PORASQUI: Mariló necesita que se pueda buscar por:
-            #   * Importe pagaré
-            #   * Importe de una factura cubierta por algún pagaré
-            #   * Fecha de emisión del pagaré.
-            #   * Fecha de pago (vencimiento) del pagaré.
-            #   * Número de alguna factura cubierta por el pagaré.
-            #   * Código de pagaré.
             a_buscar = a_buscar.strip()
             resultados = []
-            if utils.es_interpretable_como_fecha(a_buscar):
-                fecha = utils.parse_fecha(a_buscar) 
-                resultados = pclases.PagarePago.select(
-                        pclases.OR(pclases.PagarePago.q.fechaEmision == fecha, 
-                                   pclases.PagarePago.q.fechaPago == fecha))
-                lon = resultados.count()
-            elif a_buscar == "":
+            if a_buscar == "":   # Busco todos los pagarés.
                 resultados = pclases.PagarePago.select()
                 lon = resultados.count()
-            else:
-                pagares = pclases.PagarePago.select(
-                        pclases.PagarePago.q.codigo.contains(a_buscar))
-                if not pagares.count(): # No encuentro. Busco por factura.
-                    facturas = pclases.FacturaCompra.select(
-                        pclases.FacturaCompra.q.numfactura.contains(a_buscar))
-                    resultados = []
-                    for f in facturas:
-                        for c in f.pagos:
-                            if (c.pagarePago != None 
-                                    and c.pagarePago not in resultados):
-                                resultados.append(c.pagarePago)
-                    lon = len(resultados)
+            else:   # Busco por los diferentes criterios y agrupo al final
+                vpro = VentanaActividad(ventana_padre,
+                                        "Buscando pagarés...",
+                                        show_timer=True)
+                vpro.mostrar()
+                vpro.mover()
+                if pclases.DEBUG:
+                    myprint("Buscando pagarés por fecha...")
+                if utils.es_interpretable_como_fecha(a_buscar):
+                    por_fecha = buscar_pagares_por_fecha(a_buscar,
+                                                         self.wids['ventana'])
                 else:
-                    resultados = pagares
-                    lon = pagares.count()
-            try:
-                importe = utils._float(a_buscar)
-            except (TypeError, ValueError):
-                importe = None  # No es un importe.
-            if importe:
-                pagares = pclases.PagarePago.select(
-                        pclases.PagarePago.q.cantidad == importe)
-                resultados = (pclases.SQLlist(resultados) 
-                                + pclases.SQLlist(pagares))
+                    por_fecha = pclases.SQLlist()
+                vpro.mover()
+                if pclases.DEBUG:
+                    myprint("Buscando pagarés por importe...")
+                if utils.es_interpretable_como_numero(a_buscar):
+                    por_importe = buscar_pagares_por_importe(a_buscar, 
+                                    self.wids['ventana'])
+                else:
+                    por_importe = pclases.SQLlist()
+                vpro.mover()
+                if pclases.DEBUG:
+                    myprint("Buscando pagarés por número de factura...")
+                por_numfactura = buscar_pagares_por_numfactura(a_buscar, 
+                                    self.wids['ventana'])
+                vpro.mover()
+                if pclases.DEBUG:
+                    myprint("Buscando pagarés por código...")
+                por_codigo = buscar_pagares_por_codigo(a_buscar,
+                                                       self.wids['ventana'])
+                vpro.mover()
+                if pclases.DEBUG:
+                    myprint("Unificando resultados...")
+                    myprint("> por_fecha: ", por_fecha.count())
+                    myprint("> por_importe: ", por_importe.count())
+                    myprint("> por_numfactura: ", por_numfactura.count())
+                    myprint("> por_codigo: ", por_codigo.count())
+                vpro.mover()
+                resultados = (pclases.SQLlist(por_fecha)
+                              + pclases.SQLlist(por_importe)
+                              + pclases.SQLlist(por_numfactura)
+                              + pclases.SQLlist(por_codigo))
+                vpro.mover()
                 lon = len(resultados)
+                vpro.ocultar()
             if lon > 1:
                 ## Refinar los resultados
                 idpagare = self.refinar_resultados_busqueda(resultados)
@@ -1420,6 +1431,64 @@ _
        `fecha.year`.rjust(5)
       )
     return texto_cheque_bankinter
+
+def buscar_pagares_por_fecha(a_buscar, ventana_padre = None):
+    """
+    Busca y devuelve un ResultSelect con todos los pagarés cuya fecha de
+    emisión o de vencimiento coincide con la fecha recibida. También
+    incluye aquellos pagarés que cubran alguna factura de la fecha dada
+    o con un vencimiento en la fecha dada.
+    """
+    try:
+        fecha = utils.parse_fecha(a_buscar) 
+    except (ValueError, TypeError, mx.DateTime.RangeError):
+        res = pclases.SQLlist()
+    else:
+        res = pclases.PagarePago.select(
+            pclases.AND(
+                pclases.Pago.q.facturaCompraID == pclases.FacturaCompra.q.id,
+                pclases.Pago.q.pagarePagoID == pclases.PagarePago.q.id, 
+                pclases.OR(
+                    pclases.FacturaCompra.q.fecha == fecha, 
+                    pclases.PagarePago.q.fechaEmision == fecha, 
+                    pclases.PagarePago.q.fechaPago == fecha)))
+    return res
+
+def buscar_pagares_por_importe(a_buscar, ventana_padre = None):
+    """
+    Busca pagarés cuyo importe coincida con la cantidad recibida o contenga
+    un pago de esa cantidad.
+    """
+    try:
+        importe = utils._float(a_buscar)
+    except (TypeError, ValueError):
+        res = pclases.SQLlist()
+    else:
+        res = pclases.PagarePago.select(pclases.AND(
+            pclases.Pago.q.pagarePagoID == pclases.PagarePago.q.id,
+            pclases.OR(pclases.Pago.q.importe == importe,
+                       pclases.PagarePago.q.cantidad == importe)))
+    return res
+
+def buscar_pagares_por_numfactura(a_buscar, ventana_padre = None):
+    """
+    Devuelve los pagarés que contengan pagos de facturas de compra cuyo número
+    coincida total o parcialmente con el texto recibido en `a_buscar`.
+    """
+    res = pclases.PagarePago.select(pclases.AND(
+        pclases.Pago.q.pagarePagoID == pclases.PagarePago.q.id,
+        pclases.Pago.q.facturaCompraID == pclases.FacturaCompra.q.id,
+        pclases.FacturaCompra.q.numfactura.contains(a_buscar)))
+    return res
+
+def buscar_pagares_por_codigo(a_buscar, ventana_padre = None):
+    """
+    Devuelve un ResultSelect con los pagarés que contengan en su código el
+    texto buscado.
+    """
+    res = pclases.PagarePago.select(
+            pclases.PagarePago.q.codigo.contains(a_buscar))
+    return res
 
 def london_kills_me(cantidad, destinatario, euros, fecha, vencimiento, pagare, 
                     entidad = BANKINTER):
