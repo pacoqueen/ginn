@@ -521,8 +521,9 @@ class Clientes(Ventana):
         Rellena la tabla de obras con las obras del cliente.
         """
         if self.objeto:
-            self.tvobras.rellenar_tabla(
-                filtro = lambda o: self.objeto in o.clientes)
+            obras = pclases.SQLtuple(self.objeto.obras)
+            self.tvobras.rellenar_tabla(objetos = obras)
+                #filtro = lambda o: self.objeto in o.clientes)
 
     def rellenar_contactos(self, *args, **kw):
         """
@@ -562,10 +563,13 @@ class Clientes(Ventana):
                 idobra = model[itr][-1]
                 obra = pclases.Obra.get(idobra)
                 obras.append(obra)
+                contactos_de_la_obra = pclases.SQLtuple(obra.contactos)
                 self.tvcontactos.rellenar_tabla(
-                                filtro = filtro_pertenece_a_obra,
+                                #filtro = filtro_pertenece_a_obra,
+                                filtro = lambda *args, **kw: True, 
                                 padre = self.wids['ventana'],
                                 limpiar_model = primera_obra,
+                                objetos = contactos_de_la_obra, 
                                 obras = obras,
                                 contactos_ya_puestos = contactos_ya_puestos)
                 contactos_ya_puestos += [c.id for c in obra.contactos]

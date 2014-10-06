@@ -284,7 +284,8 @@ class Pclase2tv:
         return cols
 
     def rellenar_tabla(self, filtro = None, campo_orden = "id", padre = None,
-                       sumatorios = [], limpiar_model = True, *args, **kw):
+                       sumatorios = [], limpiar_model = True,
+                       objetos = None, *args, **kw):
         """
         A partir de todos los objetos de la clase rellena la tabla, mostrando 
         una ventana de progreso durante el proceso. Si filtro != None, debe 
@@ -295,20 +296,25 @@ class Pclase2tv:
         Las columnas (sus nombres en realidad) que vengan en «sumatorios» se 
         sumarán y se devolverán en el mismo orden.
         *args y **kw son parámetros adicionales que se pasarán al filtro.
+        Hay otra opción para que en lugar de buscar los objetos a mostrar en
+        el TreeView, los reciba en el parámetro «objetos». A esta lista
+        se le pasaría también el filtro, pero no se le aplica el campo_orden.
+        «objetos» debe ser un SelectResult o un SQLlist/SQLtuple.
         """
         # PLAN: Esto se podría optimizar según esta receta:
         # http://www.sqlobject.org/FAQ.html#efficient
         res = []
         for colsum in sumatorios:  # @UnusedVariable
             res.append(0.0)
-        objetos = self.clase.select(orderBy = campo_orden)
+        if objetos is None:
+            objetos = self.clase.select(orderBy=campo_orden)
         model = self.tv.get_model()
         self.tv.freeze_child_notify()
         self.tv.set_model(None)
         if not filtro:
-            filtro = self.filtro 
+            filtro = self.filtro
         from ventana_progreso import VentanaProgreso
-        vpro = VentanaProgreso(padre = padre)
+        vpro = VentanaProgreso(padre=padre)
         txtpro = "Mostrando %s (%%d/%%d)..." % self.clase.__name__
         vpro.mostrar()
         if limpiar_model:
@@ -317,7 +323,7 @@ class Pclase2tv:
         if not total:
             total = 1.0
         i = 0.0
-        vpro.set_valor(i / total, txtpro % (i, total)) 
+        vpro.set_valor(i / total, txtpro % (i, total))
         for objeto in objetos:
             i += 1
             if filtro(objeto, *args, **kw):
@@ -326,13 +332,13 @@ class Pclase2tv:
                     if col.name in self.cols_a_ignorar:
                         continue
                     if col.name in sumatorios:
-                        res[sumatorios.index(col.name)] += getattr(objeto, 
+                        res[sumatorios.index(col.name)] += getattr(objeto,
                                                                    col.name)
                     valor = col2value(objeto, col)
                     fila.append(valor)
                 fila.append(objeto.id)
                 model.append(fila)
-            vpro.set_valor(i / total, txtpro % (i, total)) 
+            vpro.set_valor(i / total, txtpro % (i, total))
         self.tv.set_model(model)
         self.tv.thaw_child_notify()
         vpro.ocultar()
