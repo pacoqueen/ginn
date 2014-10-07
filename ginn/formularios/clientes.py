@@ -626,6 +626,7 @@ class Clientes(Ventana):
         self.wids['tv_no_vencidas'].get_model().clear()
         self.wids['tv_impagadas'].get_model().clear()
         self.wids['tv_cobradas'].get_model().clear()
+        self.wids['tv_abonos'].get_model().clear()
 
     def rellenar_tabla_facturas(self, nombre_tv, nombre_func_fras,
                                 ventana_progreso, nombre_entry_total = None,
@@ -700,6 +701,13 @@ class Clientes(Ventana):
                                              ventana_progreso,
                                              cache = cache,
                                              ignorar_total = ignorar_total)
+        return total
+
+    def rellenar_abonos(self, ventana_progreso, cache = {}):
+        total = self.rellenar_tabla_facturas('tv_abonos',
+                                             "get_abonos",
+                                             ventana_progreso,
+                                             cache = cache)
         return total
 
     def rellenar_facturas_y_abonos(self, ventana_progreso, cache = {}):
@@ -778,6 +786,7 @@ class Clientes(Ventana):
             myprint("7.- clientes.py::rellenar_riesgo_campos_calculados ->",
                     time.time() - antes)
         self.rellenar_facturas_y_abonos(vpro, cache)
+        self.rellenar_abonos(vpro, cache)
         if pclases.DEBUG:
             myprint("8.- clientes.py::rellenar_riesgo_campos_calculados ->",
                     time.time() - antes)
@@ -1260,7 +1269,6 @@ class Clientes(Ventana):
                                                seleccion_multiple = True)
         self.hndlr_obras = self.wids['tv_obras'].get_selection().connect(
                                             "changed", self.rellenar_contactos)
-        # TODO: Y hacer lo mismo con los abonos.
         cols = (("Nº. Factura", 'gobject.TYPE_STRING', False,True,True,None),
                 ("Fecha", 'gobject.TYPE_STRING', False, True, False, None),
                 # ("Importe", 'gobject.TYPE_STRING', False, True, False, None),
@@ -1269,7 +1277,8 @@ class Clientes(Ventana):
             myprint("6.- clientes.py::inicializar_ventana ->",
                     time.time() - antes)
         for tv in (self.wids['tv_pdte_doc'], self.wids['tv_no_vencidas'],
-                   self.wids['tv_impagadas'], self.wids['tv_cobradas']):
+                   self.wids['tv_impagadas'], self.wids['tv_cobradas'], 
+                   self.wids['tv_abonos']):
             utils.preparar_listview(tv, cols)
             tv.connect("row-activated", self.abrir_factura_puid)
             tv.get_column(1).get_cell_renderers()[0].set_property('xalign',1.0)
@@ -1377,11 +1386,11 @@ class Clientes(Ventana):
         objeto = pclases.getObjetoPUID(puid)
         if isinstance(objeto, pclases.FacturaVenta):
             from formularios import facturas_venta
-            ventanafacturas = facturas_venta.FacturasVenta(objeto,  # @UnusedVariable
+            ventanafacturas = facturas_venta.FacturasVenta(objeto,
                                 usuario = self.usuario)
         elif isinstance(objeto, pclases.FacturaDeAbono):
             from formularios import abonos_venta
-            ventanaabonos = abonos_venta.AbonosVenta(objeto.abono,  # @UnusedVariable
+            ventanaabonos = abonos_venta.AbonosVenta(objeto.abono,
                                 usuario = self.usuario)
         try:
             self.wids['ventana'].window.set_cursor(None)

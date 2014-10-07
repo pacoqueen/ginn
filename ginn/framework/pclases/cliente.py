@@ -33,7 +33,7 @@ Created on 03/07/2013
 '''
 
 from . import PRPCTOO, starter, Cobro, Auditoria, DatosDeLaEmpresa, AND, \
-              DEBUG, VERBOSE, Obra, FormaDePago
+              DEBUG, VERBOSE, Obra, FormaDePago, SQLtuple
 from sqlobject import SQLObject, MultipleJoin, RelatedJoin
 from superfacturaventa import FRA_NO_DOCUMENTADA, FRA_NO_VENCIDA,\
                               FRA_IMPAGADA, FRA_COBRADA, FRA_ABONO
@@ -766,7 +766,7 @@ class Cliente(SQLObject, PRPCTOO):
 
     def get_facturas_no_abonadas(self, cache = {}):
         """
-        Devielve las facturas de abono no pagadas ni descontadas en pedidos.
+        Devuelve las facturas de abono no pagadas ni descontadas en pedidos.
         """
         res = []
         for f in self.get_facturas_y_abonos():
@@ -777,6 +777,14 @@ class Cliente(SQLObject, PRPCTOO):
             if estado_factura == FRA_ABONO:
                 res.append(f)
         return res
+
+    def get_abonos(self, cache = {}):
+        """
+        Devuelve únicamente abonos hechos al cliente.
+        El cache se ignora. Se recibe por compatibilidad con la interfaz.
+        """
+        return SQLtuple([a.facturaDeAbono for a in self.abonos
+                         if a.facturaDeAbono])
 
     def get_facturas_cobradas(self, cache = {}):
         res = []
