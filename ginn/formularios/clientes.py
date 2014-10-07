@@ -520,10 +520,14 @@ class Clientes(Ventana):
         """
         Rellena la tabla de obras con las obras del cliente.
         """
+        self.wids['tv_obras'].get_selection().disconnect(self.hndlr_obras)
         if self.objeto:
             obras = pclases.SQLtuple(self.objeto.obras)
             self.tvobras.rellenar_tabla(objetos = obras)
                 #filtro = lambda o: self.objeto in o.clientes)
+        # Vuelvo a conectar el callback de los contactos.
+        self.hndlr_obras = self.wids['tv_obras'].get_selection().connect(
+                                            "changed", self.rellenar_contactos)
 
     def rellenar_contactos(self, *args, **kw):
         """
@@ -566,7 +570,7 @@ class Clientes(Ventana):
                 contactos_de_la_obra = pclases.SQLtuple(obra.contactos)
                 self.tvcontactos.rellenar_tabla(
                                 #filtro = filtro_pertenece_a_obra,
-                                filtro = lambda *args, **kw: True, 
+                                filtro = lambda *args, **kw: True,
                                 padre = self.wids['ventana'],
                                 limpiar_model = primera_obra,
                                 objetos = contactos_de_la_obra, 
@@ -604,6 +608,8 @@ class Clientes(Ventana):
                 self.rellenar_riesgo_campos_calculados()
         elif num_pag == 5:
             self.rellenar_obras()
+            # La primera vez relleno todos los contactos. Las siguientes será
+            # como callback al seleccionar una obra concreta.
             self.rellenar_contactos()
 
     def rellenar_riesgo_campos_objeto(self):
@@ -1249,11 +1255,11 @@ class Clientes(Ventana):
         if pclases.DEBUG:
             myprint("5.- clientes.py::inicializar_ventana ->",
                     time.time() - antes)
-        self.wids['tv_obras'].get_selection().connect("changed",
-                                                      self.rellenar_contactos)
         self.tvcontactos = pclase2tv.Pclase2tv(pclases.Contacto,
                                                self.wids['tv_contactos'],
                                                seleccion_multiple = True)
+        self.hndlr_obras = self.wids['tv_obras'].get_selection().connect(
+                                            "changed", self.rellenar_contactos)
         # TODO: Y hacer lo mismo con los abonos.
         cols = (("Nº. Factura", 'gobject.TYPE_STRING', False,True,True,None),
                 ("Fecha", 'gobject.TYPE_STRING', False, True, False, None),

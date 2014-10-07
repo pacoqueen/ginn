@@ -573,6 +573,17 @@ class PRPCTOO:
     puid = property(get_puid)
 
     @classmethod
+    def selectLike(clase, campo, expresion):
+        """
+        Ejecuta un .select sobre la clase buscando en el campo especificado
+        la expresión recibida.
+        """
+        if isinstance(campo, str):
+            campoqry = getattr(clase, "q").getattr(campo)
+        res = clase.select(campoqry.contains(expresion))
+        return res
+
+    @classmethod
     def _queryAll(clase, *args, **kw):
         return clase._connection.queryAll(*args, **kw)
 
