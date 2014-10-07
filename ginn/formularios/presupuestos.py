@@ -617,7 +617,8 @@ class Presupuestos(Ventana, VentanaGenerica):
             smtpuser = self.usuario.smtpuser
             smtppass = self.usuario.smtppassword
             rte = self.usuario.email
-            dests = [d for d in self.select_correo_validador()]
+            dests = [d for d 
+                in self.select_correo_validador(copia_a_dircomercial = True)]
             comerciales = [self.objeto.comercial]
             dests += [comercial.correoe for comercial in comerciales
                       if comercial.empleado.usuario.usuario != self.usuario]
@@ -3019,7 +3020,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                            self.usuario and self.usuario.usuario or "¡NADIE!"))
 
     def enviar_correo_solicitud_validacion(self):
-        dests = self.select_correo_validador()
+        dests = self.select_correo_validador(copia_a_dircomercial = True)
         if not isinstance(dests, (list, tuple)):
             dests = [dests]
         self.solicitudes_validacion[self.objeto.id] = dests
@@ -3116,16 +3117,23 @@ class Presupuestos(Ventana, VentanaGenerica):
                     self.objeto = None
         self.actualizar_ventana()
 
-    def select_correo_validador(self):
+    def select_correo_validador(self, copia_a_dircomercial = False):
         """
         Devuelve un correo de usuario con permisos de validación que
         no sea admin. Uno diferente en cada llamada.
+        Si «copia_a_dircomercial» es True, devuelve también el correo del
+        director comercial en la lista.
         """
         # TODO: OJO: HARCODED
         if not self.usuario or self.usuario.id == 1:
-            return ["informatica@geotexan.com"]
+            res = ["informatica@geotexan.com"]
         else:
-            return ["nzumer@geotexan.com", "efigueroa@geotexan.com"]
+            res = ["nzumer@geotexan.com", "efigueroa@geotexan.com"]
+            if copia_a_dircomercial:
+                # FIXME: En el futurio se buscará esta dirección según algún
+                #        criterio de configuración en el usuario o algo.
+                res.append("jaguilar@geotexan.com")
+        return res
         # CWT: Nada de RR. Correo a ambos.
         #round_robin = [u.email
         #        for u in pclases.Usuario.select(
