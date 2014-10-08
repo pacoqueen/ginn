@@ -22,6 +22,14 @@
 				"buffer_size": 2111,
 				"line_ending": "Unix"
 			}
+		},
+		{
+			"file": "/home/bogado/Geotexan/src/Geotex-INN/extra/scripts/20140701_cambio_rollos.py",
+			"settings":
+			{
+				"buffer_size": 5721,
+				"line_ending": "Unix"
+			}
 		}
 	],
 	"build_system": "",
@@ -447,6 +455,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"utils",
 			"print",
 			"\\$",
 			"print",
@@ -547,7 +556,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -575,6 +584,34 @@
 						},
 						"translation.x": 0.0,
 						"translation.y": 499.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/home/bogado/Geotexan/src/Geotex-INN/extra/scripts/20140701_cambio_rollos.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5721,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								897,
+								897
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage"
+						},
+						"translation.x": -0.0,
+						"translation.y": 51.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
