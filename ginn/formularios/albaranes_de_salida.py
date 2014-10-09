@@ -491,7 +491,8 @@ class AlbaranesDeSalida(Ventana):
         ## ----------------
         tokens = []
         for token in strrango.split():
-            tokens += token.split(",")  # TODO: PORASQUI: Dejar que también pueda usar punto como separador (rparra)
+            token = token.replace(".", ",")
+            tokens += token.split(",")
         tokens = [i.strip() for i in tokens if i.strip() != ""]
         for rango in tokens:
             # Casos especiales: ROLLOS Y BALAS DUPLICADOS. AAARGGGHHHH!!!
