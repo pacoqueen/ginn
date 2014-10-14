@@ -290,8 +290,13 @@ class ConsultaPedidosCliente(Ventana):
                 self.inicio = utils.parse_fecha(str_fini)
             else:
                 self.inicio = None
-            str_ffin = self.wids['e_fecha_fin'].get_text()
-            self.fin = utils.parse_fecha(str_ffin)
+            try:
+                str_ffin = self.wids['e_fecha_fin'].get_text()
+                self.fin = utils.parse_fecha(str_ffin)
+            except (ValueError, TypeError):
+                self.fin = datetime.date.today()
+                str_ffin = utils.str_fecha(self.fin)
+                self.wids['e_fecha_fin'].set_text(str_ffin)
             if not self.inicio:
                 pedidos = pclases.PedidoVenta.select(pclases.AND(
                                 pclases.PedidoVenta.q.fecha <= self.fin,
