@@ -492,7 +492,10 @@ def existencias_no_nulas(hasta = None, exportar_a_csv_a = None,
                                           (22 + 7 + 7 + 8, True), ),
                      exportar_a_csv_a = exportar_a_csv_a)
     if ventana_padre:
-        vpro.ocultar()
+        try:
+            vpro.ocultar()
+        except AttributeError:
+            pass    # Se recibió ventana, pero ya fue destruida.
     return generated_files
 
 def existencias(hasta = None, exportar_a_csv_a = None, ventana_padre = None):
