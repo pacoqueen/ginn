@@ -1167,8 +1167,8 @@ class PedidosDeCompra(Ventana):
         pednum = pedido.numpedido
         if pedido.proveedor == None:
             utils.dialogo_info(titulo = 'ERROR', 
-                               texto = 'El pedido no tiene un proveedor asociado', 
-                               padre = self.wids['ventana'])
+                        texto = 'El pedido no tiene un proveedor asociado', 
+                        padre = self.wids['ventana'])
         else:
             proveedor = {}
             proveedor['nombre'] = pedido.proveedor.nombre
@@ -1239,7 +1239,8 @@ class PedidosDeCompra(Ventana):
             observaciones = pedido.observaciones
             if pedido.proveedor.es_extranjero():
                 # Para casos como el proveedor Bosnio.
-                entregas = [geninformes.cambiar_caracteres_problematicos(e) 
+                entregas = [geninformes.cambiar_caracteres_problematicos(e,
+                                                            strict_mode=False) 
                             for e in entregas]
                 observaciones = geninformes.cambiar_caracteres_problematicos(
                                     observaciones)

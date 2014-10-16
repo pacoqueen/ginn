@@ -207,15 +207,18 @@ def cambiar_tildes(cadena):
         res = res.replace(con_tilde, dic[con_tilde])
     return res
 
-def cambiar_caracteres_problematicos(cadena):
+def cambiar_caracteres_problematicos(cadena, strict_mode=True):
     cadena = cambiar_tildes(cadena)
-    for mala, buena in (("ñ", "nn"), ("Ñ", "NN"), 
-                        ("ü", "u"), ("Ü", "U"), 
-                        ("ç", "c"), ("Ç", "C"), 
-                        ("(", ""), (")", ""), 
-                        ("č", "c"), ("Č", "C"), 
-                        ("ć", "c"), ("Ć", "C"), 
-                        ("'", "")):
+    trans_table = (("ñ", "nn"), ("Ñ", "NN"), 
+                   ("ü", "u"), ("Ü", "U"), 
+                   ("ç", "c"), ("Ç", "C"), 
+                   ("(", ""), (")", ""), 
+                   ("č", "c"), ("Č", "C"), 
+                   ("ć", "c"), ("Ć", "C"), 
+                   ("'", ""))
+    if not strict_mode:
+        trans_table = trans_table[2:]   # Respeto la ñ y Ñ
+    for mala, buena in trans_table:
         cadena = cadena.replace(mala, buena)
     return cadena
 
