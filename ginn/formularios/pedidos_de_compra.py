@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -75,6 +75,7 @@ from informes import geninformes
 from utils import _float as float
 import re, mx.DateTime
 from formularios import postomatic
+from lib.myprint import myprint
 
 class PedidosDeCompra(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -1043,9 +1044,10 @@ class PedidosDeCompra(Ventana):
         idproveedor = utils.combo_get_value(self.wids['cb_proveedor'])
         if idproveedor != None:
             idproveedor = pclases.Proveedor.get(idproveedor)
-            # Si no, idproveedor ya vale None, que es el valor que tendrá en pedido.idproveedor.
+            # Si no, idproveedor ya vale None, que es el valor que tendrá en
+            # pedido.idproveedor.
         try:
-            fecha = time.strptime(self.wids['e_fecha'].get_text(), "%d/%m/%Y")
+            fecha = utils.parse_fecha(self.wids['e_fecha'].get_text())
             # OJO: Sólo acepta fechas en ese formato. No valen guiones. Sólo «/».
         except ValueError:  #La fecha no es correcta
             fecha = None
@@ -1055,7 +1057,8 @@ class PedidosDeCompra(Ventana):
                 self.wids['e_observaciones2'].get_text())
         forma_de_pago = self.wids['e_forma_de_pago'].get_text()
         try:
-            descuento = utils.parse_porcentaje(self.wids['e_descuento'].get_text()) / 100.0
+            descuento = utils.parse_porcentaje(
+                            self.wids['e_descuento'].get_text()) / 100.0
         except ValueError:
             descuento = 0
         try:
@@ -1063,10 +1066,13 @@ class PedidosDeCompra(Ventana):
         except ValueError:
             iva = 0.21
         # Verifico que numpedido no esté repetido:
-        peds = pclases.PedidoCompra.select(pclases.PedidoCompra.q.numpedido!=pedido.numpedido)
+        peds = pclases.PedidoCompra.select(
+                pclases.PedidoCompra.q.numpedido!=pedido.numpedido)
         nums = [p.numpedido for p in peds]
         if numpedido in nums:
-            utils.dialogo_info("NÚMERO DE PEDIDO REPETIDO.", "El numero de pedido es incorrecto.\nIntroduzca otro.", padre = self.wids['ventana'])
+            utils.dialogo_info("NÚMERO DE PEDIDO REPETIDO.",
+                    "El numero de pedido es incorrecto.\nIntroduzca otro.",
+                    padre = self.wids['ventana'])
             self.wids['e_numpedido'].set_text(pedido.numpedido)
             return
         # Desactivo momentáneamente el notificador:
@@ -1079,8 +1085,9 @@ class PedidosDeCompra(Ventana):
         pedido.descuento = descuento
         try:
             pedido.fecha = fecha
-        except:
-            print 'ERROR: Pedidos de compra: No se pudo "parsear" la fecha. Se usará la fecha actual.'
+        except Exception, e:
+            myprint('ERROR: Pedidos de compra: No se pudo "parsear" la fecha.'
+                    ' Se usará la fecha actual.', e)
             pedido.fecha = mx.DateTime.localtime()
         pedido.proveedor = idproveedor
         pedido.iva=iva

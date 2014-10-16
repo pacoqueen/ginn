@@ -680,7 +680,7 @@ GESTION, CARTERA, DESCONTADO, IMPAGADO, COBRADO = range(5)
 # Estados de validación de pedidos y ofertas
 NO_VALIDABLE, VALIDABLE, PLAZO_EXCESIVO, SIN_FORMA_DE_PAGO, \
         PRECIO_INSUFICIENTE, CLIENTE_DEUDOR, SIN_CIF, SIN_CLIENTE, \
-        COND_PARTICULARES, COMERCIALIZADO = range(10)
+        COND_PARTICULARES, COMERCIALIZADO, BLOQUEO_FORZADO = range(11)
 
 # VERBOSE MODE
 total = 160 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
@@ -10899,11 +10899,20 @@ class Presupuesto(SQLObject, PRPCTOO):
             COND_PARTICULARES: Lleva condiciones particulares y requiere
                                por CWT que se valide manualmente.
             COMERCIALIZADO: Lleva comercializados (ProductoCompra).
+            BLOQUEO_FORZADO: El usuario al que pertenece el presupuesto tiene
+                             el campo "validacion_manual" a True, que fuerza
+                             a que todos sus presupuestos deban ser validados
+                             manualmente a pesar de que cumpla el resto de
+                             requisitos. (CWT)
         """
         # Debería tener las condiciones en un solo sitio. Los pedidos y
         # presupuestos siguen el mismo criterio, pero están especificados por
         # duplicado en una función en cada clase.
+        # Para el caso del bloqueo forzado, ver correo de nzumer del 16/10/2014
         validable = VALIDABLE
+        if (validable == VALIDABLE 
+                and self.comercial and self.comercial.validacionManual):
+            validable = BLOQUEO_FORZADO
         if validable == VALIDABLE:
             if self._lleva_comercializado():
                 validable = COMERCIALIZADO
@@ -10994,6 +11003,9 @@ class Presupuesto(SQLObject, PRPCTOO):
         elif estado_validacion == COMERCIALIZADO:
             txtestado = "Necesita validación manual: "\
                         "La oferta contiene comercializados."
+        elif estado_validacion == BLOQUEO_FORZADO:
+            txtestado = "Necesita validación manual: "\
+                        "Restricción forzada en la configuración del usuario."
         return txtestado
 
     def get_str_validacion(self):

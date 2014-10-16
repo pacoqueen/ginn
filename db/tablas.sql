@@ -1025,7 +1025,9 @@ CREATE TABLE comercial(
                                 -- NEW! 27/01/2009
     telefono TEXT DEFAULT '',   -- NEW! 27/01/2009
     correoe TEXT DEFAULT '',    -- NEW! 27/01/2009
-    zona_id INT REFERENCES zona DEFAULT NULL    -- NEW! 30/10/2013
+    zona_id INT REFERENCES zona DEFAULT NULL,   -- NEW! 30/10/2013
+    validacion_manual BOOLEAN DEFAULT FALSE     -- Validación manual forzosa
+                                -- para todas las ofertas de este comercial.
 );
 
 -------------------------------------
