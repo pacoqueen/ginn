@@ -1048,7 +1048,6 @@ class PedidosDeCompra(Ventana):
             # pedido.idproveedor.
         try:
             fecha = utils.parse_fecha(self.wids['e_fecha'].get_text())
-            # OJO: Sólo acepta fechas en ese formato. No valen guiones. Sólo «/».
         except ValueError:  #La fecha no es correcta
             fecha = None
         numpedido = self.wids['e_numpedido'].get_text()
