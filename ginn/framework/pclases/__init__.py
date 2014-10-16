@@ -579,7 +579,11 @@ class PRPCTOO:
         la expresión recibida.
         """
         if isinstance(campo, str):
-            campoqry = getattr(clase, "q").getattr(campo)
+            # campoqry = getattr(clase, "q").getattr(campo)
+            # HACK
+            campoqry = eval(clase.__name__ + ".q." + campo)
+        else:
+            campoqry = campo
         res = clase.select(campoqry.contains(expresion))
         return res
 
