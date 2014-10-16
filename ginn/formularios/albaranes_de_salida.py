@@ -3231,7 +3231,7 @@ class AlbaranesDeSalida(Ventana):
                 len(fichero_packing_list), 
                 len(fichero_packing_list) > 1 and "s" or ""))
         texto_adjuntos = ": " + ", ".join(texto_adjuntos) + "."
-        correos = email.replace(",", " ").replace(";", "").strip().split()
+        correos = email.replace(",", " ").replace(";", " ").strip().split()
         correos = utils.unificar([c.lower().strip() for c in correos])
         remitente = smtpuser = smtppass = server = ""
         if self.usuario != None:
