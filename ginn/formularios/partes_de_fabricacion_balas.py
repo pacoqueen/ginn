@@ -899,6 +899,7 @@ class PartesDeFabricacionBalas(Ventana):
 
 
     def rellenar_widgets(self):
+        # PORASQUI: Queda recargar la última configuración de silos en el parte (si la tuviera) y guardar cada vez que se modifica. Pero no cada vez que se mueve el slide, que crearía muchos registros, sino cada vez que se modifica y crea bala (que es cuando consume).
         """
         Introduce la información del partedeproduccion actual
         en los widgets.
