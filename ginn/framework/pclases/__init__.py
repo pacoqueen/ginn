@@ -102,6 +102,7 @@ from formularios import utils
 from framework import notificacion
 import datetime
 import mx.DateTime  # WARNING: Será marcado como DEPRECATED pronto.
+from collections import OrderedDict
 
 # GET FUN !
 
@@ -687,7 +688,7 @@ NO_VALIDABLE, VALIDABLE, PLAZO_EXCESIVO, SIN_FORMA_DE_PAGO, \
         COND_PARTICULARES, COMERCIALIZADO, BLOQUEO_FORZADO = range(11)
 
 # VERBOSE MODE
-total = 160 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
+total = 161 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
             # Más bien grep " = print_verbose(" pclases.py | grep -v \# | wc -l
 cont = 0
 tiempo = time.time()
@@ -1692,6 +1693,7 @@ class Silo(SQLObject, PRPCTOO):
     cargasSilo = MultipleJoin('CargaSilo')
     lineasDeCompra = MultipleJoin('LineaDeCompra')
     consumos = MultipleJoin('Consumo')
+    PDPConfSilos = MultipleJoin("PDPConfSilo")
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -16787,6 +16789,7 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
     descuentosDeMaterial = MultipleJoin('DescuentoDeMaterial')
     #------------------- partidaCemID = ForeignKey('PartidaCem', default = None)
     bigbags = MultipleJoin("Bigbag")
+    PDPConfSilos = MultipleJoin("PDPConfSilo")
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -16799,6 +16802,52 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
             producto = producto.descripcion
         return "%s (%s --> %s): %s" % (self.puid, self.fechahorainicio,
                 self.fechahorafin, producto)
+
+    def get_conf_silos(self, fechahora = mx.DateTime.localtime()):
+        """
+        Devuelve un diccionario de silos con el porcentaje marcado en cada
+        uno de ellos y el producto de compra seleccionado en ese momento como
+        materia prima.
+        Si un silo no estaba marcado, lo devuelve con porcentaje 0 y
+        producto None.
+        """
+        # Partiendo de la fechahora de inicio del parte, voy recorriendo la
+        # configuración por si a lo largo del parte se ha modificado la
+        # configuración del silo.
+        res = {}
+        for s in Silo.select():
+            res[s] = {'productoCompra': None, 'porcentaje': 0.0}
+        css = self.PDPConfSilos[:]
+        css.sort(key = lambda cs: cs.fechahora)
+        for cs in css:
+            if cs.fechahora > fechahora:
+                break
+            res[cs.silo]['productoCompra'] = cs.productoCompra
+            res[cs.silo]['porcentaje'] = cs.porcentaje
+        assert (sum([res[cs]['porcentaje'] for cs in res]) == 1.0
+                or sum([res[cs]['porcentaje'] for cs in res]) == 0.0),\
+                    "[%s] Configuración de silos inválida para %s." % (
+                            self.puid, 
+                            utils.str_fechahora(fechahora))
+        return res
+
+    def get_historial_conf_silos(self):
+        """
+        Devuelve un diccionario de horas con todas las configuraciones
+        tomadas por el parte en cuanto a consumo de porcentajes de silos.
+        En cada clave hay un diccionario completo con la configuración en
+        ese momento.
+        Al menos devolverá dos "fechahora": la de inicio y finalización del
+        parte.
+        """
+        res = OrderedDict()
+        res[self.fechahorainicio] = self.get_conf_silos(self.fechahorainicio)
+        res[self.fechahorafin] = self.get_conf_silos(self.fechahorafin)
+        css = self.PDPConfSilos
+        css.sort(key = lambda cs: cs.fechahora)
+        for cs in css:
+            res[cs.fechahora] = self.get_conf_silos(cs.fechahora)
+        return res
 
     def _es_del_mismo_tipo(self, pdp):
         """
@@ -17745,6 +17794,27 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
            and self.fechahorainicio.hour < 6):
             dia -= mx.DateTime.oneDay
         return dia
+
+cont, tiempo = print_verbose(cont, total, tiempo)
+
+class PDPConfSilo(SQLObject, PRPCTOO):
+    class sqlmeta:
+        fromDatabase = True
+    #----------------------------------------------- siloID = ForeignKey('Silo')
+    #--------------------- parteDeProduccionID = ForeignKey('ParteDeProduccion')
+
+    def _init(self, *args, **kw):
+        starter(self, *args, **kw)
+
+    def get_info(self):
+        res = "PDPConfSilo: [%s] %s estaba consumiendo %s de %s al %s%%" % (
+                    utils.str_fechahora(self.fechahora),
+                    self.parteDeProduccion.puid,
+                    self.productoCompra.descripcion, 
+                    self.silo.puid,
+                    utils.float2str(self.porcentaje * 100, autodec = True)
+                    )
+        return res
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 

@@ -745,6 +745,21 @@ CREATE TABLE parte_de_produccion(
         -- del parte. Al menos en etapas tempranas.
 );
 
+-------------------------------------------------------
+-- Configuración de silos para partes de geotextiles --
+-------------------------------------------------------
+-- NEW! 21/10/2014
+-- Aquí lo difícil será el algoritmo que determine el porcentaje de 
+-- todos los silos en un momento concreto del parte.
+CREATE TABLE PDP_conf_silo(
+    id SERIAL PRIMARY KEY,
+    parte_de_produccion_id INT REFERENCES parte_de_produccion NOT NULL,
+    silo_id INT REFERENCES silo NOT NULL,
+    producto_compra_id INT REFERENCES producto_compra NOT NULL,
+    fechahora TIMESTAMP DEFAULT LOCALTIMESTAMP(0),
+    porcentaje FLOAT DEFAULT 0.0
+);
+
 -----------------------------------------------------------
 -- Consumo de materia prima por cada parte de produccion --
 -----------------------------------------------------------
