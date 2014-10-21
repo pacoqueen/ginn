@@ -16807,25 +16807,24 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         """
         Devuelve un diccionario de silos con el porcentaje marcado en cada
         uno de ellos y el producto de compra seleccionado en ese momento como
-        materia prima.
-        Si un silo no estaba marcado, lo devuelve con porcentaje 0 y
-        producto None.
+        materia prima a través del registro PDPConfSilo que lleva como valor
+        de la clave Silo.
+        Si un silo no estaba marcado, lo devuelve con None.
         """
         # Partiendo de la fechahora de inicio del parte, voy recorriendo la
         # configuración por si a lo largo del parte se ha modificado la
         # configuración del silo.
         res = {}
         for s in Silo.select():
-            res[s] = {'productoCompra': None, 'porcentaje': 0.0}
+            res[s] = None
         css = self.PDPConfSilos[:]
         css.sort(key = lambda cs: cs.fechahora)
         for cs in css:
             if cs.fechahora > fechahora:
                 break
-            res[cs.silo]['productoCompra'] = cs.productoCompra
-            res[cs.silo]['porcentaje'] = cs.porcentaje
-        assert (sum([res[cs]['porcentaje'] for cs in res]) == 1.0
-                or sum([res[cs]['porcentaje'] for cs in res]) == 0.0),\
+            res[cs.silo] = cs
+        sum_silos = sum([res[silo].porcentaje for silo in res if res[silo]])
+        assert (sum_silos == 1.0 or sum_silos == 0.0),\
                     "[%s] Configuración de silos inválida para %s." % (
                             self.puid, 
                             utils.str_fechahora(fechahora))

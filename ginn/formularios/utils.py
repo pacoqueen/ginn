@@ -2562,24 +2562,26 @@ def enviar_correoe(remitente,
 
     msg = MIMEMultipart()
     # XXX
-    msg.set_charset("8859")
+    msg.set_charset("utf8")
     # XXX
     msg['From'] = remitente
     msg['To'] = COMMASPACE.join(destinos)
     msg['Date'] = formatdate(localtime = True)
     # XXX
     try:
-        asunto = asunto.decode("utf8")
+        pass
+        #asunto = asunto.decode("utf8")
     except:
         pass
     try:
-        texto = texto.decode("utf8").encode("8859")
+        #texto = texto.decode("utf8").encode("8859")
+        pass
     except:
         pass
     # XXX
     msg['Subject'] = asunto
 
-    msg.attach(MIMEText(texto))
+    msg.attach(MIMEText(texto, "plain", "utf8"))
 
     for fich in adjuntos:
         #print fich

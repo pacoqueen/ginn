@@ -167,7 +167,7 @@ class PartesDeFabricacionBalas(Ventana):
             self.objeto = None
             self.ir_a(objeto)
         # Oculto pestaña de silos/hora hasta que se implemente.
-        self.wids['notebook1'].get_nth_page(2).set_property("visible", False)
+        #self.wids['notebook1'].get_nth_page(2).set_property("visible", False)
         gtk.main()
 
     def anterior(self, boton = None):
@@ -385,8 +385,12 @@ class PartesDeFabricacionBalas(Ventana):
                 ('Silo', 'gobject.TYPE_STRING', False, True, False, None), 
                 ('Porcentaje', 'gobject.TYPE_STRING', 
                     False, True, False, None), 
-                ('ID', 'gobject.TYPE_INT64', False, False, False, None))
+                ('Materia prima', 'gobject.TYPE_STRING', 
+                    False, True, False, None), 
+                ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_listview(self.wids['tv_granza_silos'], cols)
+        col = self.wids['tv_granza_silos'].get_column(3)
+        col.get_cell_renderers()[0].set_property("xalign", 1.0)
         cols = (('Producto', 'gobject.TYPE_STRING', False, True, True, None), 
                 ('Cantidad', 'gobject.TYPE_STRING', True, True, False, 
                     self.cambiar_cantidad_descuento_material), 
@@ -1290,10 +1294,30 @@ class PartesDeFabricacionBalas(Ventana):
         parte = self.objeto
         if parte != None:
             model = self.wids['tv_granza_silos'].get_model()
-            model.clear()
-            # TODO: No sé cómo hacerlo. Ni siquiera estoy seguro de que se pueda hacer con el modelo de datos actual.
-            model.append(("FUNCIONALIDAD NO DISPONIBLE", "", "", "", 0)) 
             self.wids['tv_granza_silos'].set_model(None)
+            model.clear()
+            confs_silos = self.objeto.get_historial_conf_silos()
+            for horaini in confs_silos:
+                css = confs_silos[horaini]
+                for silo in css:
+                    cs = css[silo]
+                    if not cs:
+                        continue
+                    porcentaje = cs.porcentaje
+                    pc = cs.productoCompra
+                    try:
+                        horafin = confs_silos.keys()[
+                                confs_silos.keys().index(horaini) + 1]
+                    except IndexError:
+                        horafin = self.objeto.fechahorafin
+                    fila = (utils.str_fechahora(horaini), 
+                            utils.str_fechahora(horafin),
+                            silo.nombre,
+                            utils.float2str(porcentaje * 100.0,
+                                            autodec = True),
+                            pc.descripcion, 
+                            cs.puid)
+                    model.append(fila) 
             self.wids['tv_granza_silos'].set_model(model)
 
     def get_lote(self):
