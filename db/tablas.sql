@@ -3906,10 +3906,12 @@ CREATE OR REPLACE FUNCTION calcular_credito_disponible(idcliente INTEGER,
                     RETURN 0;
                 ELSIF fra_no_documentada(fraventa.id, $2) THEN
                     sin_documentar := sin_documentar 
-                                + calcular_importe_factura_venta(fraventa.id); 
-                        -- Esto no es exactamente así. Puede estar 
-                        -- parcialmente documentada; pero me agarro al caso 
-                        -- general en aras de la velocidad computacional.
+                        + calcular_importe_factura_venta(fraventa.id)
+                        - calcular_importe_cobrado_factura_venta(fraventa.id); 
+                        -- A costa de gastar unos ciclos más en estos casos
+                        -- particulares, si la factura está no documentada  
+                        -- solo cuento la parte que realmente está pendiente
+                        -- de documentar.
                     RAISE INFO '%          %          %              %', fraventa.numfactura, credito, sin_documentar, sin_vencer;
                 ELSIF fra_no_vencida(fraventa.id, $2) THEN
                     sin_vencer := sin_vencer 
