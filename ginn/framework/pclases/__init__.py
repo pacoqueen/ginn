@@ -102,7 +102,10 @@ from formularios import utils
 from framework import notificacion
 import datetime
 import mx.DateTime  # WARNING: Será marcado como DEPRECATED pronto.
-from collections import OrderedDict
+try:
+    from collections import OrderedDict
+except ImportError:
+    from lib.ordereddict import OrderedDict
 
 # GET FUN !
 
