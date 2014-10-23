@@ -48,7 +48,11 @@ from informes import geninformes
 from formularios.consulta_existenciasBolsas import act_fecha
 import datetime
 from formularios.custom_widgets import gtkcairoplot
-from collections import defaultdict, OrderedDict
+from collections import defaultdict
+try:
+    from collections import OrderedDict
+except ImportError:
+    from lib.ordereddict import OrderedDict
 
 
 class ConsultaPedidosCliente(Ventana):

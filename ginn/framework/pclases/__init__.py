@@ -1925,7 +1925,8 @@ class Silo(SQLObject, PRPCTOO):
         # cargas = self.cargasSilo[:]
         # cargas.sort(func_orden_cargas_fecha)
         # cargas.reverse()
-        cargas = CargaSilo.select(CargaSilo.q.siloID == self.id, orderBy = "-fechaCarga")
+        cargas = CargaSilo.select(CargaSilo.q.siloID == self.id,
+                                  orderBy = "-fechaCarga")
         consumos = Consumo.select(Consumo.q.siloID == self.id)
         if cargas.count() > 0:
             cantidad_cargada = cargas.sum("cantidad")

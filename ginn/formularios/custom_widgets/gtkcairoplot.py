@@ -39,13 +39,15 @@ if gtk.pygtk_version < (2, 0):
     print "Se necesita PyGtk 2.0 o posterior."
     raise SystemExit
 
-from collections import OrderedDict
-
 import sys, os
 LIBDIR = os.path.abspath(os.path.join(
     os.path.dirname(__file__), "..", "..", "lib"))
 sys.path.append(LIBDIR)
 from cairoplot import cairoplot
+try:
+    from collections import OrderedDict
+except ImportError:
+    from lib.ordereddict import OrderedDict
 
 # Pruebas con cagraph
 from cagraph.cagraph.ca_graph import CaGraph

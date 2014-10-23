@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -25,10 +25,10 @@
 
 
 ###################################################################
-## partes_de_fabricacion_balas.py - Parte de producción para balas. 
+## partes_de_fabricacion_balas.py - Parte de producción para balas.
 ###################################################################
 ## NOTAS:
-##  
+##
 ###################################################################
 ## Changelog:
 ## 2 de noviembre de 2005 -> Inicio
@@ -39,13 +39,13 @@
 ## 9 de mayo de 2006 -> Añadidos permisos.
 ## 10 de mayo de 2006 -> Cambiado comportamiento de set_articulo.
 ## 3 de agosto de 2006 -> Corregida búsqueda empleados del turno.
-## 31 de julio de 2007 -> Nueva casilla "versión de la ficha de 
+## 31 de julio de 2007 -> Nueva casilla "versión de la ficha de
 ##                        producción" usada (texto libre).
 ###################################################################
 ## NOTAS:
 ## OJO: El consumo de filtros tiene como cantidad válida el campo
-## cantidad. No se usan "antes" ni "después" y ambos están a -1 
-## para distinguirlos del consumo de granza. No se permite que 
+## cantidad. No se usan "antes" ni "después" y ambos están a -1
+## para distinguirlos del consumo de granza. No se permite que
 ## a través de la ventana un consumo de granza llegue a tener
 ## cantidades negativas en antes y después, por tanto no debería
 ## haber problemas para usar esto como flag distintivo.
@@ -65,36 +65,37 @@ import pango
 import re
 from formularios import reports
 import datetime
+from lib.myprint import myprint
+import time
 
-
-def verificar_solapamiento(partedeproduccion, padre = None, 
-                           fecha_anterior = None, horaini_anterior = None, 
-                           horafin_anterior = None):
+def verificar_solapamiento(partedeproduccion, padre=None,
+                           fecha_anterior=None, horaini_anterior=None,
+                           horafin_anterior=None):
     """
     Comprueba que el parte no se pise con otro de la misma línea.
-    En caso de que comparta horas con otros partes, mostrará un 
+    En caso de que comparta horas con otros partes, mostrará un
     mensaje de error.
-    No puedo asegurar que la hora sea correcta porque eso implicaría 
-    buscar "huecos" en los días de producción que coincidieran con 
-    la fecha y hora actual, con el agravante de que si el parte se ha 
-    duplicado por error no quedaría hueco y habría que eliminar uno 
+    No puedo asegurar que la hora sea correcta porque eso implicaría
+    buscar "huecos" en los días de producción que coincidieran con
+    la fecha y hora actual, con el agravante de que si el parte se ha
+    duplicado por error no quedaría hueco y habría que eliminar uno
     de los dos, etc...
-    Lo que sí se hace es desbloquear el parte para que aparezca como 
-    no verificado y lo corrija el jefe de línea en caso de dudas de 
+    Lo que sí se hace es desbloquear el parte para que aparezca como
+    no verificado y lo corrija el jefe de línea en caso de dudas de
     los operarios de planta.
-    Si se recibe la fecha, la hora inicial o la hora final anterior se 
+    Si se recibe la fecha, la hora inicial o la hora final anterior se
     vuelve a poner el parte a esos valores.
     """
     if partedeproduccion.se_solapa():
-        utils.dialogo_info(titulo = "HORARIO ERRÓNEO", 
-                           texto = """
-                                                                                
-        La fecha o las horas de inicio y fin del parte no son correctas.        
-        El parte actual se solapa con otro de la misma línea. Compruebe         
-        la fecha y horas y corrija el error.                                    
-                                                                                
-        """, 
-                           padre = padre)
+        utils.dialogo_info(titulo="HORARIO ERRÓNEO",
+                           texto="""
+
+        La fecha o las horas de inicio y fin del parte no son correctas.
+        El parte actual se solapa con otro de la misma línea. Compruebe
+        la fecha y horas y corrija el error.
+
+        """,
+                           padre=padre)
         partedeproduccion.bloqueado = False
         if fecha_anterior or horaini_anterior or horafin_anterior:
             if fecha_anterior:
@@ -107,7 +108,7 @@ def verificar_solapamiento(partedeproduccion, padre = None,
         partedeproduccion.syncUpdate()
 
 class PartesDeFabricacionBalas(Ventana):
-    def __init__(self, objeto = None, permisos = "rwx", usuario = None):
+    def __init__(self, objeto=None, permisos="rwx", usuario=None):
         """
         Constructor. objeto puede ser un objeto de pclases con el que
         comenzar la ventana (en lugar del primero de la tabla, que es
@@ -116,9 +117,11 @@ class PartesDeFabricacionBalas(Ventana):
         self.usuario = usuario
         self.__lecturaescritura = None
         self.__permisos = permisos
-        self.producto = None    # Producto relacionado con el parte. 
-                                # Debe coincidir con el de todas las balas de "Detalles de producción"
-        Ventana.__init__(self, 'partes_de_fabricacion_balas.glade', objeto, usuario = usuario)
+        self.producto = None    # Producto relacionado con el parte.
+                                # Debe coincidir con el de todas las balas de
+                                # "Detalles de producción"
+        Ventana.__init__(self, 'partes_de_fabricacion_balas.glade', objeto,
+                         usuario=usuario)
         connections = {'b_salir/clicked': self._salir,
                        'ventana/delete_event' : self._salir,
                        'b_nuevo/clicked': self.crear_nuevo_partedeproduccion,
@@ -133,7 +136,7 @@ class PartesDeFabricacionBalas(Ventana):
                        'b_add_bala/clicked': self.add_bala,
                        'b_drop_bala/clicked': self.drop_bala,
                        'b_add_incidencia/clicked': self.add_incidencia,
-                       'b_drop_incidencia/clicked': self.drop_incidencia, 
+                       'b_drop_incidencia/clicked': self.drop_incidencia,
                        'b_add_empleado/clicked': self.add_empleado,
                        'b_cambiar_lote/clicked': self.cambiar_lote,
                        'b_drop_empleado/clicked': self.drop_empleado,
@@ -142,14 +145,14 @@ class PartesDeFabricacionBalas(Ventana):
                        'b_add_filtro/clicked': self.add_filtro,
                        'b_drop_filtro/clicked': self.drop_filtro,
                        'ch_bloqueado/clicked': self.bloquear,
-                       'b_imprimir/clicked': self.imprimir,  
-                       'b_etiquetas/clicked': self.etiquetas,  
+                       'b_imprimir/clicked': self.imprimir,
+                       'b_etiquetas/clicked': self.etiquetas,
                        'b_etiq_peq/clicked': self.etiquetasPeq,
-                       'b_add_desecho/clicked': self.add_desecho, 
-                       'b_drop_desecho/clicked': self.drop_desecho, 
-                       'b_bascula/clicked': self.iniciar_pesaje_auto, 
-                       'b_add_consumo/clicked': self.consumir_manual, 
-                       'b_next/clicked': self.siguiente, 
+                       'b_add_desecho/clicked': self.add_desecho,
+                       'b_drop_desecho/clicked': self.drop_desecho,
+                       'b_bascula/clicked': self.iniciar_pesaje_auto,
+                       'b_add_consumo/clicked': self.consumir_manual,
+                       'b_next/clicked': self.siguiente,
                        'b_back/clicked': self.anterior
                       }
         self.add_connections(connections)
@@ -160,57 +163,66 @@ class PartesDeFabricacionBalas(Ventana):
             self.logger.error(
                     "La línea de fibra no está correctamente dada de alta.")
             self.linea = None
+        if pclases.DEBUG:
+            antes = time.time()
+            myprint(__file__, " 0.- >>> inicializar_ventana")
         self.inicializar_ventana()
+        if pclases.DEBUG:
+            myprint(__file__, " 1.- <<< inicializar_ventana: %.2f" % 
+                        (time.time() - antes))
+            antes = time.time()
         if not self.objeto:
             self.ir_a_primero()
         else:
             self.objeto = None
             self.ir_a(objeto)
-        # Oculto pestaña de silos/hora hasta que se implemente.
-        #self.wids['notebook1'].get_nth_page(2).set_property("visible", False)
+        if pclases.DEBUG:
+            myprint(__file__, " 2.- <<< ir_a...: %.2f" % 
+                        (time.time() - antes))
+            antes = time.time()
         gtk.main()
 
-    def anterior(self, boton = None):
+    def anterior(self, boton=None):
         if self.objeto:
             siguiente = self.objeto.anterior()
             if siguiente:
                 self.objeto = siguiente
                 self.actualizar_ventana()
             else:
-                utils.dialogo_info(titulo = "NO MÁS PARTES", 
+                utils.dialogo_info(titulo="NO MÁS PARTES",
                     texto="No hay partes de producción anteriores al actual",
-                    padre = self.wids['ventana'])
+                    padre=self.wids['ventana'])
 
-    def siguiente(self, boton = None):
+    def siguiente(self, boton=None):
         if self.objeto:
             anterior = self.objeto.siguiente()
             if anterior:
                 self.objeto = anterior
                 self.actualizar_ventana()
             else:
-                utils.dialogo_info(titulo = "NO MÁS PARTES", 
+                utils.dialogo_info(titulo="NO MÁS PARTES",
                     texto="No hay partes de producción posteriores al actual",
-                    padre = self.wids['ventana'])
+                    padre=self.wids['ventana'])
 
     # --------------- Funciones auxiliares ------------------------------
     def formatear_observaciones(self, obs):
         """
-        Si recibe una cadena la separa tomando como límite de 
+        Si recibe una cadena la separa tomando como límite de
         los campos el ";". Devuelve un diccionario de claves
         predefinidas (e_granza, e_plast_sup, e_plast_inf,
-        e_fleje, e_antiuv) con los valores obtenidos del 
+        e_fleje, e_antiuv) con los valores obtenidos del
         texto y por este orden.
         Si lo que recibe es un diccionario, devuelve los valores
-        de las claves por el orden anterior, separados por 
+        de las claves por el orden anterior, separados por
         punto y coma y en forma de cadena.
         Si no es diccionario ni texto o hay algún tipo de
         error devuelve None.
         """
-        listacampos = ['e_granza', 
-                       'e_plast_sup', 
-                       'e_plast_inf', 
-                       'e_fleje', 
-                       'e_antiuv', 
+        listacampos = ['e_granza',
+                       'e_plast_sup',
+                       'e_plast_inf',
+                       'e_fleje',
+                       'e_antiuv',
                        'txt_observaciones']
         if isinstance(obs, str):
             listavalores = obs.split(';')
@@ -240,10 +252,10 @@ class PartesDeFabricacionBalas(Ventana):
         """
         lisv = []
         listacampos = ['e_granza',
-                       'e_plast_sup', 
-                       'e_plast_inf', 
-                       'e_fleje', 
-                       'e_antiuv', 
+                       'e_plast_sup',
+                       'e_plast_inf',
+                       'e_fleje',
+                       'e_antiuv',
                        'txt_observaciones']
         for w in listacampos:
             try:
@@ -253,7 +265,7 @@ class PartesDeFabricacionBalas(Ventana):
                 lisv.append(self.wids[w].get_buffer().get_text(bounds[0], bounds[1]))
         lisv = ';'.join(lisv)
         return lisv
-        
+
     def es_diferente(self):
         """
         Devuelve True si la información en pantalla es distinta a la
@@ -272,12 +284,12 @@ class PartesDeFabricacionBalas(Ventana):
             partedeproduccion.sync()
             condicion = False
         condicion = condicion and (str(partedeproduccion.prodestandar) == self.wids['e_o80'].get_text())
-        # NOTA: Nada más a comparar. La info del artículo es la de alguno de 
-        # las balas introducidas y se elige mediante el botón correspondiente 
-        # (determinará las búsquedas y la información a pedir a la hora de 
+        # NOTA: Nada más a comparar. La info del artículo es la de alguno de
+        # las balas introducidas y se elige mediante el botón correspondiente
+        # (determinará las búsquedas y la información a pedir a la hora de
         # añadir balas en "detalles de producción".)
         obs = self.formatear_observaciones(partedeproduccion.observaciones)
-        # Las observaciones, que además en este caso llevan un formateado 
+        # Las observaciones, que además en este caso llevan un formateado
         # especial: "granza; plástico; ...; observaciones"
         for clave in obs:
             try:
@@ -289,7 +301,7 @@ class PartesDeFabricacionBalas(Ventana):
 
     #def aviso_actualizacion(self):
     #    """
-    #    Muestra una ventana modal con el mensaje de objeto 
+    #    Muestra una ventana modal con el mensaje de objeto
     #    actualizado.
     #    """
     #    utils.dialogo_info('ACTUALIZAR',
@@ -302,21 +314,14 @@ class PartesDeFabricacionBalas(Ventana):
         valores por defecto, deshabilitando los innecesarios,
         rellenando los combos, formateando el TreeView -si lo hay-...
         """
-        # Compruebo que la última bala está bien creada para evitarme 
-        # problemas. He tenido un par de casos en los que se ha ido la luz y 
-        # deja el parte inusable a causa de esto.
-        max_a_comprobar = 2
-        i = 0
-        for bala in pclases.Bala.select(orderBy = "-id"):
-            try:
-                a = bala.articulo  # @UnusedVariable
-            except:
-                self.logger.warning("partes_de_fabricacion_balas::rellenar_widgets -> Elimino bala «huérfana» de artículo %s." % bala.puid)
-                bala.destroy(ventana = __file__)
-            i += 1
-            if i >= max_a_comprobar:
-                break
-        # EOComprobación
+        if pclases.DEBUG:
+            antes = time.time()
+            myprint(__file__, " 1.- >>> inicializar_ventana (dentro)")
+        check_last_balas_bien_creadas(self.logger)
+        if pclases.DEBUG:
+            myprint(__file__, " 2.- +++ inicializar_ventana: EOComprobación:"
+                        " %.2f" % (time.time() - antes))
+            antes = time.time()
         # CWT: No se debe poder editar la producción estándar desde el parte.
         # Siempre debe ser la del producto, so...
         self.wids['e_o80'].set_has_frame(False)
@@ -332,82 +337,86 @@ class PartesDeFabricacionBalas(Ventana):
         # (Nombre, tipo, editable, ordenable, buscable, función_actualización)
         cols = (('Lote', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Nº Bala', 'gobject.TYPE_STRING', False, True, True, None),
-                ('Peso', 'gobject.TYPE_FLOAT', 
+                ('Peso', 'gobject.TYPE_FLOAT',
                     True, True, False, self.cambiar_peso_bala),
-                ('Clase B', 'gobject.TYPE_BOOLEAN', 
+                ('Clase B', 'gobject.TYPE_BOOLEAN',
                     True, True, False, self.cambiar_claseb),
-                ('Motivo parada', 'gobject.TYPE_STRING', 
+                ('Motivo parada', 'gobject.TYPE_STRING',
                     False, True, False, self.cambiar_motivo_incidencia),
-                ('Hora comienzo', 'gobject.TYPE_STRING', 
+                ('Hora comienzo', 'gobject.TYPE_STRING',
                     True, True, False, self.cambiar_inicio_incidencia),
-                ('Hora terminación', 'gobject.TYPE_STRING', 
+                ('Hora terminación', 'gobject.TYPE_STRING',
                     True, True, False, self.cambiar_fin_incidencia),
-                ('Duración', 'gobject.TYPE_STRING', 
+                ('Duración', 'gobject.TYPE_STRING',
                     False, True, False, None),
-                ('Observaciones', 'gobject.TYPE_STRING', 
+                ('Observaciones', 'gobject.TYPE_STRING',
                     True, False, False, self.cambiar_observaciones),
                 ('ID', 'gobject.TYPE_INT64', False, False, False, None)
                )
         utils.preparar_listview(self.wids['tv_balas'], cols)
         self.wids['tv_balas'].get_selection().set_mode(gtk.SELECTION_MULTIPLE)
         self.wids['tv_balas'].add_events(gtk.gdk.BUTTON_PRESS_MASK)
-        self.wids['tv_balas'].connect('button_press_event', self.button_clicked) 
+        self.wids['tv_balas'].connect('button_press_event', self.button_clicked)
         cols = (('Id.', 'gobject.TYPE_INT64', False, True, False, None),
                 ('Nombre', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Apellidos', 'gobject.TYPE_STRING', False, True, True, None),
-                ('Horas', 'gobject.TYPE_STRING', True, True, False, 
+                ('Horas', 'gobject.TYPE_STRING', True, True, False,
                     self.cambiar_horas_trabajadas),
                 ('ID', 'gobject.TYPE_INT64', False, False, False, None))
         utils.preparar_listview(self.wids['tv_empleados'], cols)
         self.colorear_tabla_empleados()
         cols = (('Producto', 'gobject.TYPE_STRING', False, True, True, None),
-                ('Cant. antes', 'gobject.TYPE_FLOAT', 
+                ('Cant. antes', 'gobject.TYPE_FLOAT',
                     True, True, False, self.cambiar_cantidad_antes),
-                ('Cant. después', 'gobject.TYPE_FLOAT', 
+                ('Cant. después', 'gobject.TYPE_FLOAT',
                     True, True, False, self.cambiar_cantidad_despues),
-                ('Cantidad', 'gobject.TYPE_FLOAT', 
+                ('Cantidad', 'gobject.TYPE_FLOAT',
                     True, True, False, self.cambiar_cantidad_consumo),
                 ('ID', 'gobject.TYPE_INT64', False, False, False, None))
         utils.preparar_listview(self.wids['tv_granza'], cols)
         cols = (('Producto', 'gobject.TYPE_STRING', False, True, True, None),
-                ('Cantidad', 'gobject.TYPE_FLOAT', 
+                ('Cantidad', 'gobject.TYPE_FLOAT',
                     True, True, False, self.cambiar_cantidad_filtro),
                 ('ID', 'gobject.TYPE_INT64', False, False, False, None))
         utils.preparar_listview(self.wids['tv_filtros'], cols)
-        cols = (('Silo', 'gobject.TYPE_STRING', False, True, False, None), 
-                ('Producto', 'gobject.TYPE_STRING', False, True, True, None), 
-                ('Cantidad', 'gobject.TYPE_STRING', False, True, False, None), 
+        cols = (('Silo', 'gobject.TYPE_STRING', False, True, False, None),
+                ('Producto', 'gobject.TYPE_STRING', False, True, True, None),
+                ('Cantidad', 'gobject.TYPE_STRING', False, True, False, None),
                 ('ID', 'gobject.TYPE_INT64', False, False, False, None))
         utils.preparar_listview(self.wids['tv_consumos'], cols)
-        cols = (('Hora inicio', 'gobject.TYPE_STRING', 
-                    False, True, False, None), 
-                ('Hora fin', 'gobject.TYPE_STRING', False, True, True, None), 
-                ('Silo', 'gobject.TYPE_STRING', False, True, False, None), 
-                ('Porcentaje', 'gobject.TYPE_STRING', 
-                    False, True, False, None), 
-                ('Materia prima', 'gobject.TYPE_STRING', 
-                    False, True, False, None), 
+        cols = (('Hora inicio', 'gobject.TYPE_STRING',
+                    False, True, False, None),
+                ('Hora fin', 'gobject.TYPE_STRING', False, True, True, None),
+                ('Silo', 'gobject.TYPE_STRING', False, True, False, None),
+                ('Porcentaje', 'gobject.TYPE_STRING',
+                    False, True, False, None),
+                ('Materia prima', 'gobject.TYPE_STRING',
+                    False, True, False, None),
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_listview(self.wids['tv_granza_silos'], cols)
         col = self.wids['tv_granza_silos'].get_column(3)
         col.get_cell_renderers()[0].set_property("xalign", 1.0)
-        cols = (('Producto', 'gobject.TYPE_STRING', False, True, True, None), 
-                ('Cantidad', 'gobject.TYPE_STRING', True, True, False, 
-                    self.cambiar_cantidad_descuento_material), 
-                ('Observaciones', 'gobject.TYPE_STRING', True, True, False, 
-                    self.cambiar_observaciones_descuento_material), 
+        cols = (('Producto', 'gobject.TYPE_STRING', False, True, True, None),
+                ('Cantidad', 'gobject.TYPE_STRING', True, True, False,
+                    self.cambiar_cantidad_descuento_material),
+                ('Observaciones', 'gobject.TYPE_STRING', True, True, False,
+                    self.cambiar_observaciones_descuento_material),
                 ('ID', 'gobject.TYPE_INT64', False, False, False, None))
         utils.preparar_listview(self.wids['tv_desecho'], cols)
         self.wids['tv_desecho'].get_selection().set_mode(gtk.SELECTION_MULTIPLE)
-        scales = []
-        for silo in pclases.Silo.select(orderBy = "nombre"):
-            ch_silo = gtk.CheckButton(label = silo.nombre)
-            adjustment = gtk.Adjustment(value = 0, lower = 0, upper = 100, 
-                                        step_incr = 0.5, page_incr = 10, 
-                                        page_size = 0)
+        if pclases.DEBUG:
+            myprint(__file__, " 3.- +++ inicializar_ventana: EOTreeViews:"
+                        " %.2f" % (time.time() - antes))
+            antes = time.time()
+        self.scales = []
+        for silo in pclases.Silo.select(orderBy="nombre"):
+            ch_silo = gtk.CheckButton(label=silo.nombre)
+            adjustment = gtk.Adjustment(value=0, lower=0, upper=100,
+                                        step_incr=0.5, page_incr=10,
+                                        page_size=0)
             escala = gtk.HScale(adjustment)
             ch_silo.connect("toggled", self.activar_silo, escala)
-            scales.append((ch_silo, escala))
+            self.scales.append((ch_silo, escala))
             escala.set_value_pos(gtk.POS_BOTTOM)
             vbox = gtk.VBox()
             l_silo = gtk.Label()
@@ -418,18 +427,18 @@ class PartesDeFabricacionBalas(Ventana):
             if carga_mas_antigua == None:
                 l_carga_silo = gtk.Label("vacío")
             else:
-                txtcarga = (carga_mas_antigua.productoCompra and 
-                    carga_mas_antigua.productoCompra.descripcion.upper().replace("GRANZA", "").replace("GRANEL", "") 
+                txtcarga = (carga_mas_antigua.productoCompra and
+                    carga_mas_antigua.productoCompra.descripcion.upper(
+                        ).replace("GRANZA", "").replace("GRANEL", "")
                     or "?")
                 if len(txtcarga) > 30:
                     txtcarga = txtcarga[:27]+"..."
-                # TODO: Después de consumir habría que actualizar esto también
-                #     por si se agota un producto del silo y pasa al siguiente.
                 if len(txtcarga) > 15:
-                    l_carga_silo = gtk.Label("<small><small>" + txtcarga + "</small></small>")
+                    l_carga_silo = gtk.Label("<small><small>" 
+                            + txtcarga + "</small></small>")
                 else:
                     l_carga_silo = gtk.Label("<small>" + txtcarga + "</small>")
-                if (carga_mas_antigua.productoCompra 
+                if (carga_mas_antigua.productoCompra
                     and carga_mas_antigua.productoCompra.obsoleto):
                     ch_silo.set_sensitive(False)
                     ch_silo.set_active(False)
@@ -445,32 +454,82 @@ class PartesDeFabricacionBalas(Ventana):
             ch_silo.set_name('ch_silo_ID%d' % (silo.id))
             self.wids['escala_ID%d' % (silo.id)] = escala
             escala.set_name('escala_ID%d' % (silo.id))
-            self.wids['vbox_ID%d' % (silo.id)] = vbox 
+            self.wids['vbox_ID%d' % (silo.id)] = vbox
             self.wids['l_ID%d' % (silo.id)] = l_silo
             l_silo.set_name('l_ID%d' % (silo.id))
             self.wids['hbox_silos'].add(vbox)
-        vreciclada0 = self.build_combo_reciclada(scales, 0)
-        vreciclada1 = self.build_combo_reciclada(scales, 1)
+        vreciclada0 = self.build_combo_reciclada(self.scales, 0)
+        vreciclada1 = self.build_combo_reciclada(self.scales, 1)
         self.wids['hbox_silos'].add(vreciclada0)
         self.wids['hbox_silos'].add(vreciclada1)
         self.wids['hbox_silos'].show_all()
-        for scale in scales: 
-            scale[1].connect("value-changed", self.cambiar_valor_silo, scales)
-            scale[0].set_active(False)  # De paso, inicio la ventana con el 
-                                        # consumo de silos desactivado.
-            scale[1].set_sensitive(False)
+        for scale in self.scales:
+            scale[1].connect("value-changed", self.cambiar_valor_silo,
+                             self.scales)
+            #scale[0].set_active(False)  # De paso, inicio la ventana con el
+            #                            # consumo de silos desactivado.
+            #scale[1].set_sensitive(False)
+        if pclases.DEBUG:
+            myprint(__file__, " 4.- +++ inicializar_ventana: EOScales silos:"
+                        " %.2f" % (time.time() - antes))
+            antes = time.time()
+        self.load_conf_silos()
+        if pclases.DEBUG:
+            myprint(__file__, " 5.- +++ inicializar_ventana: EOConf_silos:"
+                        " %.2f" % (time.time() - antes))
+            antes = time.time()
         self.wids['e_bultos_a_lote'].set_alignment(1.0)
         self.wids['e_bultos_b_lote'].set_alignment(1.0)
         self.wids['e_kgs_a_lote'].set_alignment(1.0)
         self.wids['e_kgs_b_lote'].set_alignment(1.0)
-        self.wids['ventana'].maximize()
-        time.sleep(0.5)
-        self.wids['ventana'].unmaximize()
-        time.sleep(0.5) # En algunos windows hay un "glitch" que congela la 
-            # ventana. Se arregla cambiando el foco o restaurando y volviendo 
-            # a maximizar, por ejemplo. Que es justo lo que hago aquí.
-        self.wids['ventana'].maximize()
-    
+        if pclases.DEBUG:
+            myprint(__file__, " 6.- +++ inicializar_ventana: EOResto widgets:"
+                        " %.2f" % (time.time() - antes))
+            antes = time.time()
+        if self.usuario and self.usuario.nivel > 0:
+            # Yo no necesito el rollo de que esté maximizada para picar código.
+            self.wids['ventana'].maximize()
+            time.sleep(0.5)
+            self.wids['ventana'].unmaximize()
+            time.sleep(0.5) # En algunos windows hay un "glitch" que congela la
+                # ventana. Se arregla cambiando el foco o restaurando y volviendo
+                # a maximizar, por ejemplo. Que es justo lo que hago aquí.
+            self.wids['ventana'].maximize()
+        if pclases.DEBUG:
+            myprint(__file__, " 6.- <<< inicializar_ventana: EOMaximizar:"
+                        " %.2f" % (time.time() - antes))
+            antes = time.time()
+
+    def load_conf_silos(self):
+        """
+        Rescata la información de porcentajes marcados para consumir en los
+        silos y ajusta los scales según esa configuración.
+        """
+        if self.objeto:
+            confsilos = self.objeto.get_conf_silos()    # La última almacenada.
+            for silo in confsilos:
+                checksilo = self.wids['ch_silo_ID%d' % (silo.id)]
+                scalesilo = self.wids['escala_ID%d' % (silo.id)]
+                if confsilos[silo]:     # Si para ese silo hay registro de
+                                        # configuración en la base de datos:
+                    checksilo.set_active(True)
+                    scalesilo.set_sensitive(True)
+                    scalesilo.set_value(confsilos[silo].porcentaje)
+                else:
+                    checksilo.set_active(False)
+                    scalesilo.set_sensitive(False)
+
+    def save_conf_silos(self):
+        """
+        Guarda los porcentajes, productos y silos marcados para consumir en
+        un registro nuevo de configuración de silos solo si ha cambiado
+        respecto al último.
+        """
+        pass
+        # TODO: PORASQUI: ¿Pues no que me acabo de dar cuenta de que aparte
+        # de los 6 silos de la BD también estaban los 2 especiales de 
+        # granza reciclada?
+
     def cambiar_observaciones_descuento_material(self, cell, path, newtext):
         """
         Cambia las observaciones del registro.
@@ -482,7 +541,7 @@ class PartesDeFabricacionBalas(Ventana):
         desecho.fechahora = mx.DateTime.localtime()     # Actualizo la fecha y hora.
         self.objeto.unificar_desechos()
         self.rellenar_tabla_desechos()
-    
+
     def rellenar_tabla_desechos(self):
         """
         Rellena la tabla de desechos del parte.
@@ -504,16 +563,16 @@ class PartesDeFabricacionBalas(Ventana):
                 else:
                     unidad = ""
                     producto = ""
-                model.append((producto, 
-                              "%s %s" % (utils.float2str(c.cantidad), unidad), 
+                model.append((producto,
+                              "%s %s" % (utils.float2str(c.cantidad), unidad),
                               c.observaciones,
                               c.id))
             self.wids['tv_desecho'].set_model(model)
 
     def cambiar_cantidad_descuento_material(self, cell, path, newtext):
         """
-        Cambia la cantidad descontada del registro y actualiza el 
-        producto de venta a la nueva cantidad (suma la cantidad 
+        Cambia la cantidad descontada del registro y actualiza el
+        producto de venta a la nueva cantidad (suma la cantidad
         anterior y resta la nueva).
         """
         model = self.wids['tv_desecho'].get_model()
@@ -523,9 +582,9 @@ class PartesDeFabricacionBalas(Ventana):
             newtext = newtext.replace(desecho.productoCompra.unidad, "").strip()
             nueva_cantidad = utils._float(newtext)
         except ValueError:
-            utils.dialogo_info(titulo = "ERROR FORMATO NUMÉRICO", 
-                               texto = 'El texto "%s" no es una cantidad correcta.' % (newtext), 
-                               padre = self.wids['ventana'])
+            utils.dialogo_info(titulo="ERROR FORMATO NUMÉRICO",
+                               texto='El texto "%s" no es una cantidad correcta.' % (newtext),
+                               padre=self.wids['ventana'])
         else:
             cantidad_desecho_inicial = desecho.cantidad
             productoCompra = desecho.productoCompra
@@ -535,17 +594,17 @@ class PartesDeFabricacionBalas(Ventana):
             despues = desecho.productoCompra.existencias
             self.logger.warning("%spartes_de_fabricacion_balas::cambiar_cantidad_descuento_material -> Cambiada cantidad de descuento existente. Stock de %s antes: %f, después: %f. Cantidad de desecho antes: %f. Después: %f." % (self.usuario and self.usuario.usuario + ": " or "", productoCompra.descripcion, antes, despues, cantidad_desecho_inicial, cantidad_desecho_final))
             if cantidad_desecho_final != nueva_cantidad:
-                utils.dialogo_info(titulo = "EXISTENCIAS INSUFICIENTES", 
-                                   texto = "No había existencias suficientes del producto para cambiar la\ncantidad desechada a %s." % (utils.float2str(nueva_cantidad)), 
-                                   padre = self.wids['ventana'])
+                utils.dialogo_info(titulo="EXISTENCIAS INSUFICIENTES",
+                                   texto="No había existencias suficientes del producto para cambiar la\ncantidad desechada a %s." % (utils.float2str(nueva_cantidad)),
+                                   padre=self.wids['ventana'])
             self.objeto.unificar_desechos()
             self.rellenar_tabla_desechos()
 
     def activar_granza_reciclada(self, ch, escala, combo):
         """
-        Activa el consumo de granza reciclada seleccionando la primera 
+        Activa el consumo de granza reciclada seleccionando la primera
         opción del combo. Si no hay, no se activa.
-        También actúa sobre la barra inferior poniendo el porcentaje 
+        También actúa sobre la barra inferior poniendo el porcentaje
         adecuado.
         """
         escala.set_sensitive(ch.get_active())
@@ -560,39 +619,39 @@ class PartesDeFabricacionBalas(Ventana):
             ch.set_active(False)
             escala.set_value(0)
 
-    def build_checkbox_reciclada(self, numcombo = 0):
+    def build_checkbox_reciclada(self, numcombo=0):
         """
         Devuelve CheckBox de granza reciclada con callback y listo
         para empaquetar.
         """
         ch_reciclada = gtk.CheckButton(
-            label = "<small>Granza\nrecuperada %d</small>" % (numcombo + 1))
+            label="<small>Granza\nrecuperada %d</small>" % (numcombo + 1))
         ch_reciclada.get_children()[0].set_use_markup(True)
         nombre = "ch_reciclada_%d" % (numcombo)
         ch_reciclada.set_name(nombre)
         self.wids[nombre] = ch_reciclada
         return ch_reciclada
 
-    def build_comboboxentry_reciclada(self, numcombo = 0):
+    def build_comboboxentry_reciclada(self, numcombo=0):
         """
-        Devuelve el ComboBoxEntry (no confundir con build_combo_reciclada, que 
-        crea todo el conjunto de widgets) para la granza reciclada con el 
+        Devuelve el ComboBoxEntry (no confundir con build_combo_reciclada, que
+        crea todo el conjunto de widgets) para la granza reciclada con el
         callback y listo para empaquetar, señora.
         """
         combo = gtk.ComboBoxEntry()
         try:
             granzas = pclases.ProductoCompra.select(pclases.AND(
-                pclases.ProductoCompra.q.descripcion.contains("granza"), 
-                pclases.ProductoCompra.q.obsoleto == False, 
-                pclases.ProductoCompra.q.tipoDeMaterialID 
+                pclases.ProductoCompra.q.descripcion.contains("granza"),
+                pclases.ProductoCompra.q.obsoleto == False,
+                pclases.ProductoCompra.q.tipoDeMaterialID
                   == pclases.TipoDeMaterial.select(
                     pclases.TipoDeMaterial.q.descripcion.contains("prima")
-                  )[0].id), 
-                orderBy = "descripcion")
+                  )[0].id),
+                orderBy="descripcion")
         except IndexError:
             self.logger.warning("partes_de_fabricacion_balas.py: "
-                                "No se encontró granza reciclada.", 
-                                exc_info = True)
+                                "No se encontró granza reciclada.",
+                                exc_info=True)
             opciones_granza = []
         else:
             opciones_granza = [(g.id, g.descripcion) for g in granzas]
@@ -604,15 +663,15 @@ class PartesDeFabricacionBalas(Ventana):
         combo.set_size_request(120, -1)
         return combo
 
-    def build_escala_reciclada(self, scales, ch_reciclada, combo, 
-                               numcombo = 0):
+    def build_escala_reciclada(self, scales, ch_reciclada, combo,
+                               numcombo=0):
         """
         Escala de 0 a 100 de granza reciclada.
         "scales" es el resto de scales (de silos) al que se agrega él mismo.
         """
-        adjustment = gtk.Adjustment(value = 0, lower = 0, upper = 100, 
-                                    step_incr = 0.5, page_incr = 10, 
-                                    page_size = 0)
+        adjustment = gtk.Adjustment(value=0, lower=0, upper=100,
+                                    step_incr=0.5, page_incr=10,
+                                    page_size=0)
         escala = gtk.HScale(adjustment)
         escala.set_value_pos(gtk.POS_BOTTOM)
         escala.set_sensitive(False)
@@ -622,26 +681,26 @@ class PartesDeFabricacionBalas(Ventana):
         self.wids[nombre_escala] = escala
         # escala.connect("value-changed", self.cambiar_valor_silo, scales)
         scales.append((ch_reciclada, escala))
-        ch_reciclada.connect("toggled", self.activar_granza_reciclada, escala, 
+        ch_reciclada.connect("toggled", self.activar_granza_reciclada, escala,
                              combo)
         return escala
 
-    def build_combo_reciclada(self, scales, numcombo = 0):
+    def build_combo_reciclada(self, scales, numcombo=0):
         """
-        Construye un VBox con el combo de granza reciclada y un slider 
+        Construye un VBox con el combo de granza reciclada y un slider
         de porcentaje a consumir de la misma.
-        "numcombo" es el número del combo de granza reciclada, ya que puede 
+        "numcombo" es el número del combo de granza reciclada, ya que puede
         haber más de uno (actualmente 2).
         """
         ch_reciclada = self.build_checkbox_reciclada(numcombo)
         combo = self.build_comboboxentry_reciclada(numcombo)
-        escala = self.build_escala_reciclada(scales, ch_reciclada, combo, 
+        escala = self.build_escala_reciclada(scales, ch_reciclada, combo,
                                              numcombo)
         vbox = gtk.VBox()
         vbox.pack_start(ch_reciclada)
         vbox.add(combo)
         vbox.pack_start(escala)
-        return vbox 
+        return vbox
 
     def activar_silo(self, ch, escala):
         """
@@ -663,13 +722,13 @@ class PartesDeFabricacionBalas(Ventana):
     def cambiar_valor_silo(self, scale, scales):
         """
         Recibe el control scale y el resto de scales de la ventana.
-        Ajusta todos los scales (excepto él mismo) para que el valor 
+        Ajusta todos los scales (excepto él mismo) para que el valor
         total sea de 100%.
         """
-        valor_total = sum([a[1].get_value() for a in scales 
+        valor_total = sum([a[1].get_value() for a in scales
                            if a[0].get_active()])
         resto = 100.0 - valor_total
-        scales_menos_yo = [a for a in scales 
+        scales_menos_yo = [a for a in scales
                            if a[1] != scale and a[0].get_active()]
         try:
             incremento = resto * 1.0 / len(scales_menos_yo)
@@ -683,8 +742,8 @@ class PartesDeFabricacionBalas(Ventana):
         producto = self.buscar_producto_compra("FILTRO")
         if producto == None:
             return
-        cantidad = utils.dialogo_entrada(titulo = 'CANTIDAD', 
-                    texto = 'Introduzca la cantidad consumida:')
+        cantidad = utils.dialogo_entrada(titulo='CANTIDAD',
+                    texto='Introduzca la cantidad consumida:')
         if cantidad == None:
             return
         try:
@@ -693,22 +752,26 @@ class PartesDeFabricacionBalas(Ventana):
             utils.dialogo_info('Cantidad incorrecta')
             return
         if cantidad > producto.existencias:
-            utils.dialogo_info(titulo = 'CANTIDAD INSUFICIENTE', 
-                               texto = 'No hay existencias suficientes en almacén.\nVerifique que ha tecleado la cantidad correctamente\ny que las entradas en almacén del producto han sido contabilizadas.')
+            utils.dialogo_info(titulo='CANTIDAD INSUFICIENTE',
+                texto='No hay existencias suficientes en almacén.\nVerifique '
+                      'que ha tecleado la cantidad correctamente\ny que las '
+                      'entradas en almacén del producto han sido '
+                      'contabilizadas.',
+                padre=self.wids['ventana'])
             return
         # NOTA: OJO: (Esto hay que cambiarlo tarde o temprano). Si antes y despues = -1, es consumo de filtros.
         #            Si antes y despues = -2 es consumo de material adicional que no es granza.
-        consumo = pclases.Consumo(antes = -1, 
-                                  despues = -1,
-                                  cantidad = cantidad,
-                                  actualizado = False,
-                                  parteDeProduccion = self.objeto,
-                                  productoCompra = producto)
+        consumo = pclases.Consumo(antes=-1,
+                                  despues=-1,
+                                  cantidad=cantidad,
+                                  actualizado=False,
+                                  parteDeProduccion=self.objeto,
+                                  productoCompra=producto)
         pclases.Auditoria.nuevo(consumo, self.usuario, __file__)
         self.actualizar_consumo(consumo, True)
         self.objeto.unificar_consumos()
         self.rellenar_filtros()
-        
+
     def drop_filtro(self, b):
         model, itr = self.wids['tv_filtros'].get_selection().get_selected()
         if itr == None:
@@ -717,20 +780,29 @@ class PartesDeFabricacionBalas(Ventana):
         consumo = [c for c in self.objeto.consumos if c.id == idconsumo][0]
         self.actualizar_consumo(consumo, False)
         consumo.parteDeProduccion = None
-        consumo.destroy(ventana = __file__)
+        consumo.destroy(ventana=__file__)
         self.rellenar_filtros()
-    
+
     def cambiar_cantidad_antes(self, cell, path, texto):
         try:
             antes = float(texto)
         except:
-            utils.dialogo_info(titulo = "ERROR DE FORMATO", texto = "El texto introducido (%s) no respeta el formato numérico.\nUse solo números y el punto como separador decimal." % texto)
+            utils.dialogo_info(titulo="ERROR DE FORMATO",
+                    texto="El texto introducido (%s) no respeta el formato"
+                          " numérico.\nUse solo números y el punto como "
+                          "separador decimal." % texto,
+                    padre=self.wids['ventana'])
             return
         model = self.wids['tv_granza'].get_model()
         idc = model[path][-1]
         consumo = pclases.Consumo.get(idc)
         if antes < consumo.despues or antes < 0:
-            utils.dialogo_info(titulo = "ERROR", texto = "La cantidad después de producir no puede ser superior a la de antes de\nempezar la fabricación y ninguna debe ser negativa.")
+            utils.dialogo_info(titulo="ERROR",
+                               texto="La cantidad después de producir no "
+                                       "puede ser superior a la de antes de"
+                                       "\nempezar la fabricación y ninguna "
+                                       "debe ser negativa.",
+                               padre=self.wids['ventana'])
             return
         consumo.antes = antes
         consumo.cantidad = consumo.antes - consumo.despues
@@ -742,7 +814,7 @@ class PartesDeFabricacionBalas(Ventana):
         for consumo in [c for c in self.objeto.consumos if (c.antes != -1 and c.despues != -1) and (c.antes != -2 and c.despues != -2)]:
             cantidad += consumo.cantidad
         self.wids['e_total_granza'].set_text(utils.float2str(cantidad))
- 
+
     def cambiar_cantidad_despues(self, cell, path, texto):
         try:
             despues = float(texto)
@@ -765,7 +837,7 @@ class PartesDeFabricacionBalas(Ventana):
         for consumo in [c for c in self.objeto.consumos if (c.antes != -1 and c.despues != -1) and (c.antes != -2 and c.despues != -2)]:
             cantidad += consumo.cantidad
         self.wids['e_total_granza'].set_text(utils.float2str(cantidad))
-         
+
     def cambiar_cantidad_consumo(self, cell, path, texto):
         try:
             cantidad = float(texto)
@@ -785,7 +857,7 @@ class PartesDeFabricacionBalas(Ventana):
         for consumo in [c for c in self.objeto.consumos if (c.antes != -1 and c.despues != -1) and (c.antes != -2 and c.despues != -2)]:
             cantidad += consumo.cantidad
         self.wids['e_total_granza'].set_text(utils.float2str(cantidad))
-         
+
     def cambiar_cantidad_filtro(self, cell, path, texto):
         try:
             cantidad = float(texto)
@@ -808,8 +880,8 @@ class PartesDeFabricacionBalas(Ventana):
 
     def activar_widgets(self, s):
         """
-        Activa o desactiva (sensitive=True/False) todos 
-        los widgets de la ventana que dependan del 
+        Activa o desactiva (sensitive=True/False) todos
+        los widgets de la ventana que dependan del
         objeto mostrado.
         Entrada: s debe ser True o False. En todo caso
         se evaluará como boolean.
@@ -818,10 +890,10 @@ class PartesDeFabricacionBalas(Ventana):
         # s = s and ("w" in self.__permisos or not self.objeto.bloqueado)
         if self.objeto:
             s = s or self.objeto.id == self.__lecturaescritura
-        ws = ('table1', 'tv_balas', 'hbox1', 'hbox2', 'frame1', 'hbox4', 
-              'frame3', 'b_fecha', 'b_hora_ini', 'b_hora_fin', 'b_articulo', 
-              'b_add_bala', 'b_drop_bala', 'b_add_incidencia', 
-              'b_drop_incidencia', 'b_borrar', 'ch_bloqueado', 'hbox7', 
+        ws = ('table1', 'tv_balas', 'hbox1', 'hbox2', 'frame1', 'hbox4',
+              'frame3', 'b_fecha', 'b_hora_ini', 'b_hora_fin', 'b_articulo',
+              'b_add_bala', 'b_drop_bala', 'b_add_incidencia',
+              'b_drop_incidencia', 'b_borrar', 'ch_bloqueado', 'hbox7',
               'e_fichaproduccion')
         for w in ws:
             self.wids[w].set_sensitive(s)
@@ -829,26 +901,26 @@ class PartesDeFabricacionBalas(Ventana):
 
     def ir_a_primero(self):
         """
-        Pregunta si crear un parte nuevo, de forma que al abrir la ventana
-        siempre se pueda empezar un parte de rápidamente.
-        Si se contesta que no al diálogo, se va al _último_ registro de la tabla.
+        Hace activo en la ventana el último parte creado en el sistema.
         """
-        if False:
-            pass
-        else:
-            partedeproduccion = self.objeto
-            try:
-                if partedeproduccion != None: partedeproduccion.notificador.desactivar()
-                # Anulo el aviso de actualización del envío que deja de ser activo.
-                # OJO: Debe haber más formas de distinguirlos e incluso más lógicas, pero de momento me voy a guiar por el formateo de las observaciones. Si tiene 6 campos concatenados con ';' es de balas y si no es de rollos.
-                partesdeproduccion = pclases.ParteDeProduccion.select(
-                        """partida_cem_id IS NULL 
-                           AND observaciones LIKE '%;%;%;%;%;%'""")
-                partesdeproduccion = partesdeproduccion.orderBy("-id")
-                partedeproduccion=partesdeproduccion[0]
-                partedeproduccion.notificador.activar(self.aviso_actualizacion)
-            except:
-                partedeproduccion = None    
+        partedeproduccion = self.objeto
+        try:
+            if partedeproduccion != None:
+                partedeproduccion.notificador.desactivar()
+            # Anulo el aviso de actualización del parte que deja de ser
+            # activo.
+            # OJO: Debe haber más formas de distinguirlos e incluso más
+            # lógicas, pero de momento me voy a guiar por el formateo de
+            # las observaciones. Si tiene 6 campos concatenados con ';' es
+            # de balas y si no es de rollos.
+            partesdeproduccion = pclases.ParteDeProduccion.select(
+                    """partida_cem_id IS NULL
+                       AND observaciones LIKE '%;%;%;%;%;%'""")
+            partesdeproduccion = partesdeproduccion.orderBy("-id")
+            partedeproduccion=partesdeproduccion[0]
+            partedeproduccion.notificador.activar(self.aviso_actualizacion)
+        except:
+            partedeproduccion = None
         self.objeto = partedeproduccion
         self.actualizar_ventana()
 
@@ -862,29 +934,31 @@ class PartesDeFabricacionBalas(Ventana):
         """
         filas_res = []
         for r in resultados:
-            filas_res.append((r.id, 
-                              utils.str_fecha(r.fecha), 
-                              utils.str_hora(r.horainicio), 
-                              utils.str_hora(r.horafin), 
+            filas_res.append((r.id,
+                              utils.str_fecha(r.fecha),
+                              utils.str_hora(r.horainicio),
+                              utils.str_hora(r.horafin),
                               "CLIC PARA VER"))
-        idpartedeproduccion = utils.dialogo_resultado(filas_res,
-                                                      titulo = 'Seleccione parte de producción de fibra',
-                                                      cabeceras = ('ID Interno', 
-                                                                   'Fecha', 
-                                                                   'Hora inicio', 
-                                                                   'Hora fin', 
-                                                                   'Lote'), 
-                                                      func_change = self.mostrar_info_parte,
-                                                      padre = self.wids['ventana'])
+        idpartedeproduccion = utils.dialogo_resultado(
+                filas_res,
+                titulo = 'Seleccione parte de producción de fibra',
+                cabeceras = ('ID Interno',
+                             'Fecha',
+                             'Hora inicio',
+                             'Hora fin',
+                             'Lote'),
+                func_change = self.mostrar_info_parte,
+                padre = self.wids['ventana'])
         if idpartedeproduccion < 0:
             return None
         else:
             return idpartedeproduccion
-            
+
     def mostrar_info_parte(self, tv):
         model, itr = tv.get_selection().get_selected()
         if itr!=None and model[itr][-1] == "CLIC PARA VER":
-            parte = pclases.ParteDeProduccion.get(model[itr][0])   # En los diálogos de resultado va al revés.
+            parte = pclases.ParteDeProduccion.get(model[itr][0])    # En los
+                                        # diálogos de resultado va al revés.
             if parte.es_de_balas() and parte.articulos != []:
                 try:
                     lotepartida = parte.articulos[0].bala.lote.codigo
@@ -899,12 +973,11 @@ class PartesDeFabricacionBalas(Ventana):
 
 
     def rellenar_widgets(self):
-        # PORASQUI: Queda recargar la última configuración de silos en el parte (si la tuviera) y guardar cada vez que se modifica. Pero no cada vez que se mueve el slide, que crearía muchos registros, sino cada vez que se modifica y crea bala (que es cuando consume).
         """
         Introduce la información del partedeproduccion actual
         en los widgets.
         No se chequea que sea != None, así que
-        hay que tener cuidado de no llamar a 
+        hay que tener cuidado de no llamar a
         esta función en ese caso.
         """
         partedeproduccion = self.objeto
@@ -921,10 +994,10 @@ class PartesDeFabricacionBalas(Ventana):
         self.wids['e_fichaproduccion'].set_text(fichaprod)
         obs = self.formatear_observaciones(partedeproduccion.observaciones)
         listacampos = ['e_granza',
-                       'e_plast_sup', 
-                       'e_plast_inf', 
-                       'e_fleje', 
-                       'e_antiuv', 
+                       'e_plast_sup',
+                       'e_plast_inf',
+                       'e_fleje',
+                       'e_antiuv',
                        'txt_observaciones']
         for campo in listacampos:
             try:
@@ -934,9 +1007,9 @@ class PartesDeFabricacionBalas(Ventana):
         # Información de detalle:
         if self.objeto.articulos != []:
             self.producto = self.objeto.articulos[0].productoVenta
-            # Esto es por si ya tiene balas añadidas, para que trinque el 
-            # artículo del parte a partir de ellas y no se quede con el None 
-            # del inicio o con el producto del parte anterior (si es que se 
+            # Esto es por si ya tiene balas añadidas, para que trinque el
+            # artículo del parte a partir de ellas y no se quede con el None
+            # del inicio o con el producto del parte anterior (si es que se
             # ha visto un parte antes que este).
         self.rellenar_datos_articulo(self.producto)
         self.rellenar_tabla_empleados()
@@ -965,8 +1038,10 @@ class PartesDeFabricacionBalas(Ventana):
         self.rellenar_tabla_desechos()
         self.check_permisos()
         self.objeto.make_swap()
-        self.wids['b_back'].set_sensitive(self.objeto and self.objeto.anterior() and 1 or 0)
-        self.wids['b_next'].set_sensitive(self.objeto and self.objeto.siguiente() and 1 or 0)
+        self.wids['b_back'].set_sensitive(
+                self.objeto and self.objeto.anterior() and 1 or 0)
+        self.wids['b_next'].set_sensitive(
+                self.objeto and self.objeto.siguiente() and 1 or 0)
 
     def check_permisos(self):
         if "w" in self.__permisos:  # Puede modificar los partes:
@@ -977,7 +1052,7 @@ class PartesDeFabricacionBalas(Ventana):
                 self.activar_widgets(True)
             else:
                 self.activar_widgets(False)
-        # Compruebo primero este porque habilita o deshabilita todos los botones, incluso los que 
+        # Compruebo primero este porque habilita o deshabilita todos los botones, incluso los que
         # dependen de los otros dos permisos.
         if "r" in self.__permisos:  # Puede leer partes anteriores, habilito el buscar:
             self.wids['b_buscar'].set_sensitive(True)
@@ -987,7 +1062,7 @@ class PartesDeFabricacionBalas(Ventana):
             self.wids['b_nuevo'].set_sensitive(True)
         else:
             self.wids['b_nuevo'].set_sensitive(False)
- 
+
     def cmpfechahora(self, detalle1, detalle2):
         if detalle1.fechahora < detalle2.fechahora:
             return -1
@@ -1045,7 +1120,7 @@ class PartesDeFabricacionBalas(Ventana):
             try:
                 res = duracion.strftime('%H:%M')
             except AttributeError:
-                res = "%d:%02d" % (duracion.seconds / 3600, 
+                res = "%d:%02d" % (duracion.seconds / 3600,
                                    duracion.seconds / 60 % 60)
         except AttributeError:
             res = ''
@@ -1061,7 +1136,7 @@ class PartesDeFabricacionBalas(Ventana):
                 return d.balaCable.observaciones
             else:
                 return d.observaciones
-        except:     # No es bala. 
+        except:     # No es bala.
             if hasattr(d, "observaciones"):
                 return d.observaciones
             else:
@@ -1081,29 +1156,28 @@ class PartesDeFabricacionBalas(Ventana):
 
     def calcular_duracion(self, hfin, hini):
         if isinstance(hfin, mx.DateTime.DateTimeDeltaType):
-            hfin = hfin + mx.DateTime.oneDay 
+            hfin = hfin + mx.DateTime.oneDay
         duracion = hfin - hini
         if duracion.day > 0:
             duracion -= mx.DateTime.oneDay
         if duracion.day > 0:
-            print "WARNING: partes_de_fabricacion_balas: calcular_duracion: ID %d: ¿Seguro que dura más de un día completo?" % (self.objeto.id)
+            myprint("WARNING: partes_de_fabricacion_balas: calcular_duracion:"
+                    " ID %d: ¿Seguro que dura más de un día completo?" % (
+                        self.objeto.id))
         return duracion
- 
+
     def calcular_tiempo_trabajado(self, parte):
-        # tiempototal = self.calcular_duracion(parte.horafin, parte.horainicio)
         tiempototal = parte.get_duracion()
         paradas = [p for p in parte.incidencias]
         tiempoparadas = 0
         for parada in paradas:
-            # tiempoparadas += self.calcular_duracion(parada.horafin, parada.horainicio)
             tiempoparadas += parada.get_duracion()
-        # print tiempototal, tiempoparadas
         return tiempototal, tiempototal - tiempoparadas
 
     def colorear_tabla_empleados(self):
         """
-        Prepara y asocia la función para resaltar los empleados 
-        cuyas horas trabajadas sean inferiores o superiores a 
+        Prepara y asocia la función para resaltar los empleados
+        cuyas horas trabajadas sean inferiores o superiores a
         la duración del parte.
         """
         def cell_func(column, cell, model, itr, numcol):
@@ -1134,7 +1208,6 @@ class PartesDeFabricacionBalas(Ventana):
         cells = column.get_cell_renderers()
         for cell in cells:
             column.set_cell_data_func(cell, cell_func, numcol)
- 
 
     def colorear(self, tv):
         def cell_func(column, cell, model, itr, i):
@@ -1144,7 +1217,10 @@ class PartesDeFabricacionBalas(Ventana):
                 try:
                     articulo = pclases.Articulo.get(ide)
                 except pclases.SQLObjectNotFound:
-                    print "partes_de_fabricacion_balas.py: cell_func en colorear: El artículo ID %d ya no existe. No aplico función de render." % (ide)
+                    myprint("partes_de_fabricacion_balas.py: "
+                            "cell_func en colorear: "
+                            "El artículo ID %d ya no existe. "
+                            "No aplico función de render." % (ide))
                     return
                 try:
                     if articulo.es_bala():
@@ -1154,17 +1230,20 @@ class PartesDeFabricacionBalas(Ventana):
                     elif articulo.es_balaCable():
                         cosa = articulo.balaCable
                 except pclases.SQLObjectNotFound:
-                    # Esto se produce porque se ejecuta el cell_func mientras aún se está eliminando el artículo. Riesgo 0.
-                    #print "partes_de_fabricacion_balas.py (cell_func): Artículo no encontrado: %s" % (msg)
+                    # Esto se produce porque se ejecuta el cell_func mientras
+                    # aún se está eliminando el artículo. Riesgo 0.
+                    myprint("partes_de_fabricacion_balas.py (cell_func): "
+                            "Artículo no encontrado: %s" % (msg))
                     return
                 except AttributeError:
                     # Esto ya sería más grave. El artículo existe pero ya no tiene bala asociada.
-                    #print "partes_de_fabricacion_balas.py (cell_func): Bala no encontrada: %s" % (msg)
+                    myprint("partes_de_fabricacion_balas.py (cell_func): "
+                            "Bala no encontrada: %s" % (msg))
                     return
                 try:
                     muestra = cosa.muestra
-                except AttributeError:  # Sólo debería saltar cuando hay un artículo con bala == None. 
-                                        # Se supone que cuando corrija el error que lo produce (estoy en ello) 
+                except AttributeError:  # Sólo debería saltar cuando hay un artículo con bala == None.
+                                        # Se supone que cuando corrija el error que lo produce (estoy en ello)
                                         # no debería pasar más.
                     muestra = False
                 if i != 3:      # i == 3 es el CellRendererToggle, que no acepta color "de frente".
@@ -1177,7 +1256,7 @@ class PartesDeFabricacionBalas(Ventana):
                     cell.set_property("foreground", None)
             # Clase B:
             claseB = model[itr][3]
-            if claseB and not muestra: 
+            if claseB and not muestra:
                 color = "yellow"
             elif claseB and muestra:
                 color = "orange"
@@ -1199,7 +1278,7 @@ class PartesDeFabricacionBalas(Ventana):
         model = self.wids['tv_balas'].get_model()
         model.clear()
         detallesdeproduccion = [i for i in self.objeto.incidencias] + [a for a in self.objeto.articulos]
-            # El + sin más hace un join, así que no tengo más remedio que 
+            # El + sin más hace un join, así que no tengo más remedio que
             # recorrer las listas.
         detallesdeproduccion.sort(self.cmpfechahora)
         # De paso calculo totales:
@@ -1209,16 +1288,17 @@ class PartesDeFabricacionBalas(Ventana):
         last_iter_bala = None
         for detalle in detallesdeproduccion:
             itr = model.append((self.lote(detalle),
-                                 self.bala(detalle),
-                                 self.peso(detalle),
-                                 self.claseb(detalle),
-                                 self.motivo(detalle),
-                                 self.horaini(detalle),
-                                 self.horafin(detalle),
-                                 self.duracion(detalle),
-                                 self.observaciones(detalle),
-                                 detalle.id))
-            # print detalle, self.lote(detalle), self.peso(detalle)
+                                self.bala(detalle),
+                                self.peso(detalle),
+                                self.claseb(detalle),
+                                self.motivo(detalle),
+                                self.horaini(detalle),
+                                self.horafin(detalle),
+                                self.duracion(detalle),
+                                self.observaciones(detalle),
+                                detalle.id))
+            if pclases.VERBOSE:
+                myprint(detalle, self.lote(detalle), self.peso(detalle))
             if self.bala(detalle) != '':
                 last_iter_bala = itr
         for articulo in self.objeto.articulos:
@@ -1227,7 +1307,7 @@ class PartesDeFabricacionBalas(Ventana):
                 pesoB += articulo.peso
             else:
                 numA += 1
-                pesoA += articulo.peso 
+                pesoA += articulo.peso
         self.colorear(self.wids['tv_balas'])
         # Campos del pie de la tabla:
         self.wids['e_numA'].set_text(str(numA))
@@ -1250,7 +1330,7 @@ class PartesDeFabricacionBalas(Ventana):
         pteorica = o80 * tiempototal.hours  # @UnusedVariable
         # Me muevo abajo del todo del TreeView usando los adjustments:
         # vadj = self.wids['scrolledwindow1'].get_vadjustment()
-        # print vadj.lower, vadj.upper, vadj.page_size
+        # myprint(vadj.lower, vadj.upper, vadj.page_size)
         # vadj.set_value(vadj.upper)
         if last_iter_bala != None:
             sel = self.wids['tv_balas'].get_selection()
@@ -1274,7 +1354,7 @@ class PartesDeFabricacionBalas(Ventana):
             try:
                 consumos.sort(lambda c1, c2: c1 != None and c2 != None and int(c1.id - c2.id) or 0)
             except TypeError, msg:
-                print "partes_de_fabricacion_balas.py (rellenar_tabla_consumos): Error ordenando consumos (%s):\n%s" % (msg, consumos)
+                myprint("partes_de_fabricacion_balas.py (rellenar_tabla_consumos): Error ordenando consumos (%s):\n%s" % (msg, consumos))
             for c in parte.consumos:
                 if c.productoCompraID != None:
                     unidad = c.productoCompra.unidad
@@ -1282,9 +1362,9 @@ class PartesDeFabricacionBalas(Ventana):
                 else:
                     unidad = ""
                     producto = ""
-                model.append((c.siloID and c.silo.nombre or "", 
-                              producto, 
-                              "%s %s" % (utils.float2str(c.cantidad), unidad), 
+                model.append((c.siloID and c.silo.nombre or "",
+                              producto,
+                              "%s %s" % (utils.float2str(c.cantidad), unidad),
                               c.id))
             self.wids['tv_consumos'].set_model(model)
 
@@ -1311,23 +1391,23 @@ class PartesDeFabricacionBalas(Ventana):
                                 confs_silos.keys().index(horaini) + 1]
                     except IndexError:
                         horafin = self.objeto.fechahorafin
-                    fila = (utils.str_fechahora(horaini), 
+                    fila = (utils.str_fechahora(horaini),
                             utils.str_fechahora(horafin),
                             silo.nombre,
                             utils.float2str(porcentaje * 100.0,
                                             autodec = True),
-                            pc.descripcion, 
+                            pc.descripcion,
                             cs.puid)
-                    model.append(fila) 
+                    model.append(fila)
             self.wids['tv_granza_silos'].set_model(model)
 
     def get_lote(self):
         """
-        Devuelve un lote (clase Lote), lote de cemento 
-        (clase LoteCem) o None si no hay lote activo en 
+        Devuelve un lote (clase Lote), lote de cemento
+        (clase LoteCem) o None si no hay lote activo en
         el parte.
-        Los lotes de fibra se buscan por número y por código, 
-        los de cemento sólo por código, por lo que siempre 
+        Los lotes de fibra se buscan por número y por código,
+        los de cemento sólo por código, por lo que siempre
         el texto a buscar debe llevar "C-".
         """
         codigolote = self.wids['e_numlote'].get_text()
@@ -1361,7 +1441,7 @@ class PartesDeFabricacionBalas(Ventana):
 
     def rellenar_datos_lote(self):
         """
-        Introduce en los "entry" los datos de las balas 
+        Introduce en los "entry" los datos de las balas
         para el lote completo.
         """
         lote = self.get_lote()
@@ -1406,12 +1486,12 @@ class PartesDeFabricacionBalas(Ventana):
     def rellenar_datos_articulo(self, producto):
         """
         A partir del artículo recibido, completa la información
-        de la cabecera del formulario (DTEX, etc...) en 
+        de la cabecera del formulario (DTEX, etc...) en
         función de los datos de la bala.
-        Lo que recibe en realidad es una lista de detalles de 
+        Lo que recibe en realidad es una lista de detalles de
         producción que tienen una bala asociada.
         """
-        if producto == None: 
+        if producto == None:
             self.wids['e_articulo'].set_text('')
             self.wids['e_dtex'].set_text('')
             self.wids['e_longitud'].set_text('')
@@ -1433,8 +1513,8 @@ class PartesDeFabricacionBalas(Ventana):
         try:
             dtdelta = mx.DateTime.DateTimeDelta(0, float(newtext.split(':')[0]), float(newtext.split(':')[1]), 0)
             if dtdelta > self.objeto.get_duracion():
-                utils.dialogo_info(titulo = "TIEMPO INCORRECTO", 
-                                   texto = "El tiempo trabajado no puede superar la\nduración del parte de producción.", 
+                utils.dialogo_info(titulo = "TIEMPO INCORRECTO",
+                                   texto = "El tiempo trabajado no puede superar la\nduración del parte de producción.",
                                    padre = self.wids['ventana'])
                 return
             ht.horas = newtext
@@ -1442,8 +1522,8 @@ class PartesDeFabricacionBalas(Ventana):
             model[path][3] = ht.horas.strftime('%H:%M')
             # self.rellenar_tabla_empleados()
         except (ValueError, IndexError):
-            utils.dialogo_info(titulo = "ERROR", 
-                               texto = 'El texto "%s" no representa el formato horario.' % (newtext), 
+            utils.dialogo_info(titulo = "ERROR",
+                               texto = 'El texto "%s" no representa el formato horario.' % (newtext),
                                padre = self.wids['ventana'])
 
     def cambiar_peso_bala(self, cell, path, newtext):
@@ -1456,10 +1536,10 @@ class PartesDeFabricacionBalas(Ventana):
             silo_marcado = silo_marcado or self.wids['ch_silo_ID%d' % (silo.id)].get_active()
         silo_marcado = silo_marcado or self.wids['ch_reciclada_0'].get_active() or self.wids['ch_reciclada_1'].get_active()
         if silo_marcado == False:
-            utils.dialogo_info(titulo = "NO PUEDE CAMBIAR LA PRODUCCIÓN", 
-                               texto = "No puede cambiar el peso total de la producción si no marca el silo\noriginal de donde consumió la bala %s." % (codigo), 
+            utils.dialogo_info(titulo = "NO PUEDE CAMBIAR LA PRODUCCIÓN",
+                               texto = "No puede cambiar el peso total de la producción si no marca el silo\noriginal de donde consumió la bala %s." % (codigo),
                                padre = self.wids['ventana'])
-            return 
+            return
         try:
             bala = pclases.Bala.select(pclases.Bala.q.codigo == codigo)[0]
             self.descontar_material_adicional(bala.articulos[0], restar = False)
@@ -1503,8 +1583,8 @@ class PartesDeFabricacionBalas(Ventana):
             else:
                 bala_o_bb = None
             if not bala_o_bb.claseb and newtext != '':
-                if utils.dialogo(titulo = 'FIBRA CLASE A', 
-                                 texto = 'Esta fibra está marcada actualmente como clase A.\n¿Marcar como clase B?', 
+                if utils.dialogo(titulo = 'FIBRA CLASE A',
+                                 texto = 'Esta fibra está marcada actualmente como clase A.\n¿Marcar como clase B?',
                                  padre = self.wids['ventana']):
                     bala_o_bb.claseb = True
             bala_o_bb.motivo = newtext
@@ -1531,7 +1611,7 @@ class PartesDeFabricacionBalas(Ventana):
     def cambiar_motivo_incidencia(self, cell, path, newtext):
         # Funcionalidad no implementada.
         pass
-        
+
     def cambiar_inicio_incidencia(self, cell, path, newtext):
         model = self.wids['tv_balas'].get_model()
         if model[path][1] != '':    # Nº bala, tiene, no es una incidencia.
@@ -1540,10 +1620,10 @@ class PartesDeFabricacionBalas(Ventana):
         incidencia = pclases.Incidencia.get(ide)
         self.objeto.sync()
         try:
-            incidencia.horainicio = mx.DateTime.DateTimeFrom(day = self.objeto.fecha.day, 
-                                                             month = self.objeto.fecha.month, 
-                                                             year = self.objeto.fecha.year, 
-                                                             hour = int(newtext.split(":")[0]), 
+            incidencia.horainicio = mx.DateTime.DateTimeFrom(day = self.objeto.fecha.day,
+                                                             month = self.objeto.fecha.month,
+                                                             year = self.objeto.fecha.year,
+                                                             hour = int(newtext.split(":")[0]),
                                                              minute = int(newtext.split(":")[1]))
             if (incidencia.horafin - incidencia.horainicio).days > 1:
                 incidencia.horainicio + mx.DateTime.oneDay
@@ -1566,14 +1646,14 @@ class PartesDeFabricacionBalas(Ventana):
                                padre = self.wids['ventana'])
             return
         if incidencia.horainicio > incidencia.horafin:      # NOTA: No va a
-            # entrar nunca. Por ejemplo, 12:00 no es menor que 11:00, ya que 
+            # entrar nunca. Por ejemplo, 12:00 no es menor que 11:00, ya que
             # las 11:00 _son del día siguiente_ cuando llega aquí, tal vez
             # debiera mejor controlar que ninguna parada sea de más de 8 horas
             # o algo así. O de más duración del parte... o algo.
             (incidencia.horainicio,
              incidencia.horafin) = (incidencia.horafin, incidencia.horainicio)
         self.rellenar_tabla_balas()
-        
+
     def cambiar_fin_incidencia(self, cell, path, newtext):
         model = self.wids['tv_balas'].get_model()
         if model[path][1] != '':    # Nº bala, tiene, no es una incidencia.
@@ -1583,10 +1663,10 @@ class PartesDeFabricacionBalas(Ventana):
         self.objeto.sync()
         try:
             incidencia.horafin = mx.DateTime.DateTimeFrom(
-                    day = self.objeto.fecha.day, 
-                    month = self.objeto.fecha.month, 
-                    year = self.objeto.fecha.year, 
-                    hour = int(newtext.split(":")[0]), 
+                    day = self.objeto.fecha.day,
+                    month = self.objeto.fecha.month,
+                    year = self.objeto.fecha.year,
+                    hour = int(newtext.split(":")[0]),
                     minute = int(newtext.split(":")[1]))
             if (incidencia.horafin - incidencia.horainicio).days < 0:
                 incidencia.horafin += mx.DateTime.oneDay
@@ -1655,26 +1735,26 @@ class PartesDeFabricacionBalas(Ventana):
         la ventana de resultados.
         """
         partedeproduccion = self.objeto
-        a_buscar = utils.dialogo_entrada(titulo = "BUSCAR PARTE", 
-            texto = "Introduzca fecha del parte o nombre del producto:", 
+        a_buscar = utils.dialogo_entrada(titulo = "BUSCAR PARTE",
+            texto = "Introduzca fecha del parte o nombre del producto:",
             padre = self.wids['ventana'])
         if a_buscar != None:
             try:
                 if a_buscar != '':
                     a_buscar = a_buscar.replace("-", "/")
                     if a_buscar.count('/') == 1:
-                        a_buscar = "%s/%d" % (a_buscar, 
+                        a_buscar = "%s/%d" % (a_buscar,
                                               mx.DateTime.localtime().year)
                     try:
                         fecha = utils.parse_fecha(a_buscar)
                     except ValueError:
-                        fecha = "" 
+                        fecha = ""
                     resultados = pclases.ParteDeProduccion.select(
                         pclases.ParteDeProduccion.q.fecha == fecha)
                 else:
                     resultados = pclases.ParteDeProduccion.select()
                 resultados = [p for p in resultados if p.es_de_balas()]
-            except:     # TODO: No funciona bien la búsqueda por producto. Al 
+            except:     # TODO: No funciona bien la búsqueda por producto. Al
                         # buscar Fibra 6.7/90, como hay un "/" busca por fecha.
                 producto = pclases.ProductoVenta.select(pclases.AND(
                     pclases.ProductoVenta.q.nombre.contains(a_buscar),
@@ -1693,10 +1773,10 @@ class PartesDeFabricacionBalas(Ventana):
                         #for p in resultados:
                         #    if p.articulos != [] and p.articulos[0].productoVentaID == idproducto:
                         #        partes.append(p)
-                        for p in pclases.ParteDeProduccion.select(""" 
-                            id IN (SELECT parte_de_produccion_id 
-                                   FROM articulo 
-                                   WHERE articulo.producto_venta_id = %d) 
+                        for p in pclases.ParteDeProduccion.select("""
+                            id IN (SELECT parte_de_produccion_id
+                                   FROM articulo
+                                   WHERE articulo.producto_venta_id = %d)
                             """ % (idproducto)):
                             partes.append(p)
                             vpro.set_valor(i/tot, 'Buscando partes')
@@ -1708,10 +1788,10 @@ class PartesDeFabricacionBalas(Ventana):
                     #for p in resultados:
                     #    if p.articulos != [] and p.articulos[0].productoVentaID == producto[0].id:
                     #        partes.append(p)
-                        for p in pclases.ParteDeProduccion.select(""" 
-                            id IN (SELECT parte_de_produccion_id 
-                                   FROM articulo 
-                                   WHERE articulo.producto_venta_id = %d) 
+                        for p in pclases.ParteDeProduccion.select("""
+                            id IN (SELECT parte_de_produccion_id
+                                   FROM articulo
+                                   WHERE articulo.producto_venta_id = %d)
                             """ % (producto[0].id)):
                             partes.append(p)
                         vpro.set_valor(i/tot, 'Buscando partes')
@@ -1725,7 +1805,7 @@ class PartesDeFabricacionBalas(Ventana):
                 vpro.ocultar()
                 resultados = partes
             # NOTA: Ver ir_a_primero para comprender el criterio de seleccion.
-            # OJO: Se usa en dos partes del código: refactorizar y crear una 
+            # OJO: Se usa en dos partes del código: refactorizar y crear una
             # funcioncita por si hay que cambiarlo en el futuro.
             if len(resultados) > 1:
                 ## Refinar los resultados
@@ -1735,11 +1815,11 @@ class PartesDeFabricacionBalas(Ventana):
                 resultados = [pclases.ParteDeProduccion.get(idpartedeproduccion)]
             elif len(resultados) < 1:
                 ## Sin resultados de búsqueda
-                utils.dialogo_info('SIN RESULTADOS', 
+                utils.dialogo_info('SIN RESULTADOS',
                     'La búsqueda no produjo resultados.\nPruebe a cambiar el'\
                     ' texto buscado o déjelo en blanco para ver una lista co'\
                     'mpleta.\n(Atención: Ver la lista completa puede resulta'\
-                    'r lento si el número de elementos es muy alto)', 
+                    'r lento si el número de elementos es muy alto)',
                     padre = self.wids['ventana'])
                 return
             ## Un único resultado
@@ -1750,10 +1830,10 @@ class PartesDeFabricacionBalas(Ventana):
             try:
                 partedeproduccion = resultados[0]
             except IndexError:
-                utils.dialogo_info(titulo = "ERROR", 
+                utils.dialogo_info(titulo = "ERROR",
                     texto = "Se produjo un error al recuperar la información."\
                     "\nCierre y vuelva a abrir la ventana antes de volver a i"\
-                    "ntentarlo.", 
+                    "ntentarlo.",
                     padre = self.wids['ventana'])
                 return None
             # Y activo la función de notificación:
@@ -1767,11 +1847,16 @@ class PartesDeFabricacionBalas(Ventana):
         de datos en el objeto y lo sincroniza con la BD.
         """
         partedeproduccion = self.objeto
-        ye_olde_fecha, ye_olde_horainicio, ye_olde_horafin = partedeproduccion.fecha, partedeproduccion.horainicio, partedeproduccion.horafin  # @UnusedVariable
-        ye_olde_horainicio = utils.str_hora_corta(partedeproduccion.horainicio) 
+        (ye_olde_fecha,
+         ye_olde_horainicio,
+         ye_olde_horafin) = (partedeproduccion.fecha,
+                             partedeproduccion.horainicio,
+                             partedeproduccion.horafin)
+        ye_olde_horainicio = utils.str_hora_corta(partedeproduccion.horainicio)
         ye_olde_horafin = utils.str_hora_corta(partedeproduccion.horafin)
             # Campos del objeto que hay que guardar:
-        # Fecha, horainicio, horafin, prodestandar y observaciones con el formateado especial.
+        # Fecha, horainicio, horafin, prodestandar y observaciones con el
+        # formateado especial.
         fecha = self.wids['e_fecha'].get_text()
         horainicio = self.wids['e_hora_ini'].get_text()
         horainicio = horainicio.replace(".", ":").replace(",", ":")
@@ -1782,7 +1867,7 @@ class PartesDeFabricacionBalas(Ventana):
         if not horainicio or horainicio.strip() == "":
             msg = "partes_de_fabricacion_balas.py::guardar -> Error al leer hora inicio. Parte ID %d. horainicio = %s. Pongo horainicio a valor actual del parte." % (self.objeto.id, horainicio)
             self.logger.error(msg)
-            print msg
+            myprint(msg)
             horainicio = utils.str_hora_corta(self.objeto.horainicio)
         horafin = self.wids['e_hora_fin'].get_text()
         horafin = horafin.replace(".", ":").replace(",", ":")
@@ -1793,7 +1878,7 @@ class PartesDeFabricacionBalas(Ventana):
         if not horafin or horafin.strip() == "":
             msg = "partes_de_fabricacion_balas.py::guardar -> Error al leer hora inicio. Parte ID %d. horafin = %s. Pongo horafin a valor actual del parte." % (self.objeto.id, horafin)
             self.logger.error(msg)
-            print msg
+            myprint(msg)
             horafin = utils.str_hora_corta(self.objeto.horafin)
         prodestandar = self.wids['e_o80'].get_text()
         try:
@@ -1811,27 +1896,31 @@ class PartesDeFabricacionBalas(Ventana):
         partedeproduccion.sync()    # Para forzar a que el atributo fecha sea una fecha "válida" dentro del dominio antes de leerlo para guardar la hora.
         try:
             partedeproduccion.horainicio = mx.DateTime.DateTimeFrom(
-                day = partedeproduccion.fecha.day, 
-                month = partedeproduccion.fecha.month, 
-                year = partedeproduccion.fecha.year, 
-                hour = int(horainicio.split(":")[0]), 
+                day = partedeproduccion.fecha.day,
+                month = partedeproduccion.fecha.month,
+                year = partedeproduccion.fecha.year,
+                hour = int(horainicio.split(":")[0]),
                 minute = int(horainicio.split(":")[1]))
             partedeproduccion.horafin = mx.DateTime.DateTimeFrom(
-                day = partedeproduccion.fecha.day, 
-                month = partedeproduccion.fecha.month, 
-                year = partedeproduccion.fecha.year, 
-                hour = int(horafin.split(":")[0]), 
+                day = partedeproduccion.fecha.day,
+                month = partedeproduccion.fecha.month,
+                year = partedeproduccion.fecha.year,
+                hour = int(horafin.split(":")[0]),
                 minute = int(horafin.split(":")[1]))
         except Exception, e:
             msg = "partes_de_fabricacion_balas.py::guardar -> Error al guardar la hora. Parte ID %d. horainicio = %s; horafin = %s. Excepción: %s" % (self.objeto.id, horainicio, horafin, e)
-            print msg
+            myprint(msg)
             self.logger.error(msg)
         partedeproduccion.prodestandar = prodestandar
         partedeproduccion.observaciones = observaciones
         partedeproduccion.fichaproduccion = self.wids['e_fichaproduccion'].get_text()
         partedeproduccion._corregir_campos_fechahora()
         # Verificación de que no se solapa con otros partes:
-        verificar_solapamiento(partedeproduccion, self.wids['ventana'], ye_olde_fecha, ye_olde_horainicio, ye_olde_horafin)
+        verificar_solapamiento(partedeproduccion, self.wids['ventana'],
+                               ye_olde_fecha, ye_olde_horainicio,
+                               ye_olde_horafin)
+        # Guardo configuración de silos
+        self.save_config_silos()
         # Fuerzo la actualización de la BD y no espero a que SQLObject lo haga por mí:
         partedeproduccion.syncUpdate()
         # Vuelvo a activar el notificador
@@ -1844,7 +1933,7 @@ class PartesDeFabricacionBalas(Ventana):
             return
         partedeproduccion = self.objeto
         partedeproduccion.notificador.desactivar()
-        if (len(partedeproduccion.incidencias) == 0 
+        if (len(partedeproduccion.incidencias) == 0
             and len(partedeproduccion.articulos) == 0):
             try:
                 #partedeproduccion.destroy(ventana = __file__)
@@ -1871,7 +1960,7 @@ class PartesDeFabricacionBalas(Ventana):
         if hora_ini != None:
             partedeproduccion = self.objeto
             partedeproduccion.notificador.desactivar()
-            partedeproduccion.horainicio = hora_ini    
+            partedeproduccion.horainicio = hora_ini
             partedeproduccion._corregir_campos_fechahora()
             self.set_hora_final(boton)      # Ahí se cambiarán los empleados si es preciso.
             self.actualizar_ventana()
@@ -1906,9 +1995,9 @@ class PartesDeFabricacionBalas(Ventana):
         la ventana de resultados.
         """
         producto = None
-        a_buscar = utils.dialogo_entrada(titulo = "BUSCAR PRODUCTO", 
-                texto = "Introduzca código, nombre o descripción de producto:", 
-                padre = self.wids['ventana']) 
+        a_buscar = utils.dialogo_entrada(titulo = "BUSCAR PRODUCTO",
+                texto = "Introduzca código, nombre o descripción de producto:",
+                padre = self.wids['ventana'])
         if a_buscar != None:
             try:
                 ida_buscar = int(a_buscar)
@@ -1919,7 +2008,7 @@ class PartesDeFabricacionBalas(Ventana):
                     pclases.ProductoVenta.q.descripcion.contains(a_buscar),
                     pclases.ProductoVenta.q.nombre.contains(a_buscar),
                     pclases.ProductoVenta.q.id == ida_buscar)
-            no_obsoleto = pclases.ProductoVenta.q.obsoleto == False 
+            no_obsoleto = pclases.ProductoVenta.q.obsoleto == False
             criterio = pclases.AND(criterio, criterio_lineas, no_obsoleto)
             resultados = pclases.ProductoVenta.select(criterio)
             if resultados.count() > 1:
@@ -1941,8 +2030,8 @@ class PartesDeFabricacionBalas(Ventana):
             try:
                 producto = resultados[0]
             except IndexError:
-                utils.dialogo_info(titulo = "ERROR", 
-                                   texto = "Se produjo un error al recuperar la información.\nCierre y vuelva a abrir la ventana antes de volver a intentarlo.", 
+                utils.dialogo_info(titulo = "ERROR",
+                                   texto = "Se produjo un error al recuperar la información.\nCierre y vuelva a abrir la ventana antes de volver a intentarlo.",
                                    padre = self.wids['ventana'])
                 return None
         return producto
@@ -1955,15 +2044,15 @@ class PartesDeFabricacionBalas(Ventana):
         de resultados) de la fila seleccionada o None
         si se canceló.
         """
-        filas = [(p.id, 
-                  p.codigo, 
-                  p.camposEspecificosBala and p.camposEspecificosBala.dtex or 0.0, 
-                  p.camposEspecificosBala and p.camposEspecificosBala.corte or 0.0, 
-                  p.nombre, 
+        filas = [(p.id,
+                  p.codigo,
+                  p.camposEspecificosBala and p.camposEspecificosBala.dtex or 0.0,
+                  p.camposEspecificosBala and p.camposEspecificosBala.corte or 0.0,
+                  p.nombre,
                   p.descripcion) for p in resultados]
                 # Si no tiene camposEspecificosBala prefiero que salte una excepción.
-        idproducto = utils.dialogo_resultado(filas, 'SELECCIONE PRODUCTO', 
-                                             cabeceras = ['ID', 'Código', 'dtex', 'corte', 'Nombre', 'Descripción'], 
+        idproducto = utils.dialogo_resultado(filas, 'SELECCIONE PRODUCTO',
+                                             cabeceras = ['ID', 'Código', 'dtex', 'corte', 'Nombre', 'Descripción'],
                                              padre = self.wids['ventana'])
         if idproducto < 0:
             return None
@@ -1973,21 +2062,21 @@ class PartesDeFabricacionBalas(Ventana):
 
     def set_articulo(self, boton):
         """
-        Muestra un cuadro de búsqueda de productos*. 
-        El seleccionado pasará a ser el 
+        Muestra un cuadro de búsqueda de productos*.
+        El seleccionado pasará a ser el
         artículo del parte, mostrándose su información en la
         cabecera y limitando las opciones al añadir líneas.
-        * Productos que sean balas o tengan como línea de 
+        * Productos que sean balas o tengan como línea de
         producción la línea de fibra.
         No se permite cambiar de artículo si el parte ya tiene
         balas relacionadas.
         """
         if self.objeto.articulos != []:
             txt = """
-            Ya se ha iniciado la producción de un artículo. Si cambia el producto del parte actual              
-            cambiará también en las balas ya fabricadas pertenecientes al parte.                                
-            Si lo que desea es iniciar una nueva producción use el botón "Nuevo parte" y comience               
-            un nuevo parte de producción. Si lo que quiere es cambiar el producto del parte actual              
+            Ya se ha iniciado la producción de un artículo. Si cambia el producto del parte actual
+            cambiará también en las balas ya fabricadas pertenecientes al parte.
+            Si lo que desea es iniciar una nueva producción use el botón "Nuevo parte" y comience
+            un nuevo parte de producción. Si lo que quiere es cambiar el producto del parte actual
             y todas sus balas fabricadas pulse "Sí".
             ¿Desea cambiar el producto fabricado en el parte?
             """
@@ -1998,8 +2087,8 @@ class PartesDeFabricacionBalas(Ventana):
                     pclases.LineaDeProduccion.q.nombre=='Línea de fibra')[0]
             # OJO: Debe llamarse EXACTAMENTE Línea de fibra en la BD.
         except:     # No hay línea de fibra
-            utils.dialogo_info('ERROR LÍNEA DE FIBRA', 
-                               'No se encontró línea de fibra en la base de datos del sistema.\nCierre el programa y contacte con el administrador.', 
+            utils.dialogo_info('ERROR LÍNEA DE FIBRA',
+                               'No se encontró línea de fibra en la base de datos del sistema.\nCierre el programa y contacte con el administrador.',
                                padre = self.wids['ventana'])
             return
         criterio = pclases.AND(pclases.ProductoVenta.q.lineaDeProduccionID == idlineafibra.id,
@@ -2009,8 +2098,8 @@ class PartesDeFabricacionBalas(Ventana):
             return
         self.producto = producto
         if producto.es_bala_cable():
-            utils.dialogo_info(titulo = "NO APLICABLE", 
-                               texto = "Las balas de material para reciclar se gestionan desde otra ventana.\nSeleccione otro producto.", 
+            utils.dialogo_info(titulo = "NO APLICABLE",
+                               texto = "Las balas de material para reciclar se gestionan desde otra ventana.\nSeleccione otro producto.",
                                padre = self.wids['ventana'])
             producto = None
         if producto != None:
@@ -2027,8 +2116,8 @@ class PartesDeFabricacionBalas(Ventana):
         """
         # XXX: Caso especial para reenvasado de bigbags: 27 de marzo de 2007.
         if self.objeto.es_parte_de_reenvasado():
-            silo_marcado = True     # Engaño a la ventana y le digo que sí se 
-                # ha marcado un silo aunque sea mentira. No se va a consumir 
+            silo_marcado = True     # Engaño a la ventana y le digo que sí se
+                # ha marcado un silo aunque sea mentira. No se va a consumir
                 # de él de todas formas.
         else:
         # XXX
@@ -2037,34 +2126,34 @@ class PartesDeFabricacionBalas(Ventana):
                 silo_marcado = silo_marcado or self.wids['ch_silo_ID%d' % (silo.id)].get_active()
             silo_marcado = silo_marcado or self.wids['ch_reciclada_0'].get_active() or self.wids['ch_reciclada_1'].get_active()
             if silo_marcado == False:
-                utils.dialogo_info(titulo = "NO PUEDE PRODUCIR", 
-                                   texto = "¡No puede producir fibra si no marca un silo de donde consumir granza!", 
+                utils.dialogo_info(titulo = "NO PUEDE PRODUCIR",
+                                   texto = "¡No puede producir fibra si no marca un silo de donde consumir granza!",
                                    padre = self.wids['ventana'])
         return silo_marcado
 
     def comprobar_silos_existencias(self):
         """
-        Comprueba que todos los silos, incuyendo los "virtuales" de granza 
-        reciclada, tienen existencias por encima de 0 (no comprueba que haya 
-        existencias suficientes para determinado consumo ya que aún no se 
-        ha producido y tampoco es necesario ser tan estrictos; al fin y al 
+        Comprueba que todos los silos, incuyendo los "virtuales" de granza
+        reciclada, tienen existencias por encima de 0 (no comprueba que haya
+        existencias suficientes para determinado consumo ya que aún no se
+        ha producido y tampoco es necesario ser tan estrictos; al fin y al
         cabo todos los consumos son aproximados).
-        Devuelve False y muestra un diálogo de error si algún silo o producto 
-        de compra que actúa como granza reciclada está a 0 o tiene existencias 
+        Devuelve False y muestra un diálogo de error si algún silo o producto
+        de compra que actúa como granza reciclada está a 0 o tiene existencias
         negativas.
-        También verifica que si hay granza reciclada marcada, se haya 
+        También verifica que si hay granza reciclada marcada, se haya
         seleccionado también un producto en el combo.
         """
         res = True
         # XXX: Caso especial para reenvasado de bigbags: 27 de marzo de 2007.
         if self.objeto.es_parte_de_reenvasado():
-            res = True  # Engaño a la ventana y le digo que sí se ha marcado el 100% 
+            res = True  # Engaño a la ventana y le digo que sí se ha marcado el 100%
         else:
             # XXX
             for silo in [s for s in pclases.Silo.select() if self.wids['ch_silo_ID%d' % (s.id)].get_active()]:
                 if silo.get_ocupado() <= 0:
-                    utils.dialogo_info(titulo = "NO PUEDE PRODUCIR", 
-                                       texto = 'El silo "%s" está vacío.\nCompruébelo y corríjalo desde la ventana correspondiente si fuera necesario.' % (silo.nombre), 
+                    utils.dialogo_info(titulo = "NO PUEDE PRODUCIR",
+                                       texto = 'El silo "%s" está vacío.\nCompruébelo y corríjalo desde la ventana correspondiente si fuera necesario.' % (silo.nombre),
                                        padre = self.wids['ventana'])
                     res = False
             if res:
@@ -2074,20 +2163,20 @@ class PartesDeFabricacionBalas(Ventana):
                         if idgranza > 0:
                             granza = pclases.ProductoCompra.get(idgranza)
                             if granza.existencias <= 0:
-                                utils.dialogo_info(titulo = "NO PUEDE PRODUCIR", 
-                                                   texto = 'El producto "%s" no tiene existencias.\n\nCompruébelo y corríjalo desde la ventana correspondiente si fuese necesario.' % (granza.descripcion), 
+                                utils.dialogo_info(titulo = "NO PUEDE PRODUCIR",
+                                                   texto = 'El producto "%s" no tiene existencias.\n\nCompruébelo y corríjalo desde la ventana correspondiente si fuese necesario.' % (granza.descripcion),
                                                    padre = self.wids['ventana'])
                                 res = False
                         else:
-                            utils.dialogo_info(titulo = "NO PUEDE PRODUCIR", 
-                                               texto = "Ha seleccionado consumir granza reciclada, sin embargo no ha especificado cuál.", 
+                            utils.dialogo_info(titulo = "NO PUEDE PRODUCIR",
+                                               texto = "Ha seleccionado consumir granza reciclada, sin embargo no ha especificado cuál.",
                                                padre = self.wids['ventana'])
                             res = False
         return res
 
     def comprobar_silos_porcenajes(self):
         """
-        Comprueba que la suma de porcentajes de comsumo de silos 
+        Comprueba que la suma de porcentajes de comsumo de silos
         es del 100% en total.
         Devuelve False y muestra un diálogo de error en caso contario.
         """
@@ -2103,22 +2192,22 @@ class PartesDeFabricacionBalas(Ventana):
         if porcentaje_total < 1.0:
             # XXX: Caso especial para reenvasado de bigbags: 27 de marzo de 2007.
             if self.objeto.es_parte_de_reenvasado():
-                res = True  # Engaño a la ventana y le digo que sí se ha marcado el 100% 
+                res = True  # Engaño a la ventana y le digo que sí se ha marcado el 100%
             else:
             # XXX
-                utils.dialogo_info(titulo = "NO PUEDE PRODUCIR", 
-                                   texto = "El porcentaje total de consumo de silos debe ser del 100%.", 
+                utils.dialogo_info(titulo = "NO PUEDE PRODUCIR",
+                                   texto = "El porcentaje total de consumo de silos debe ser del 100%.",
                                    padre = self.wids['ventana'])
             res = False
         return res
 
     def comprobar_configuracion_consumos_silo(self):
         """
-        Devuelve True si la configuración de los consumos de silos es 
+        Devuelve True si la configuración de los consumos de silos es
         correcta.
-        Muestra una ventana de error y devuelve False (por este orden) 
+        Muestra una ventana de error y devuelve False (por este orden)
         en caso contrario.
-        La configuración de los silos es correcta sii al menos hay un silo 
+        La configuración de los silos es correcta sii al menos hay un silo
         marcado ^ ningún silo marcado está a 0 ^ sumatorio(porcentajes de silos) == 100.
         """
         res = False
@@ -2129,7 +2218,7 @@ class PartesDeFabricacionBalas(Ventana):
         # XXX
             # Compruebo que al menos hay un silo marcado.
             if self.comprobar_silos_marcados():
-                # Compruebo que todos los silos están por encima de 0. Incluída la granza reciclada. 
+                # Compruebo que todos los silos están por encima de 0. Incluída la granza reciclada.
                 if self.comprobar_silos_existencias():
                     # Compruebo que la suma de porcentajes es 100.
                     if self.comprobar_silos_porcenajes():
@@ -2154,12 +2243,12 @@ class PartesDeFabricacionBalas(Ventana):
         5.- Si ha metido un rango:
             5.-1 Repite los pasos 4.2 a 4.5 para cada número del rango
                  y pide el peso de cada uno de ellos.
-        6.- NUEVO -> Descuenta el material adicional por cada una de las balas. 
+        6.- NUEVO -> Descuenta el material adicional por cada una de las balas.
         """
         if self.comprobar_configuracion_consumos_silo():
             if self.producto == None:
-                utils.dialogo_info(titulo = 'SELECCIONAR PRODUCTO', 
-                        texto = 'Seleccione primero el producto fabricado.', 
+                utils.dialogo_info(titulo = 'SELECCIONAR PRODUCTO',
+                        texto = 'Seleccione primero el producto fabricado.',
                         padre = self.wids['ventana'])
                 return
             codigolote = self.wids['e_numlote'].get_text()
@@ -2173,7 +2262,7 @@ class PartesDeFabricacionBalas(Ventana):
                         lote = pclases.LoteCem.select(
                             pclases.LoteCem.q.codigo == codigolote)[0]
                     except IndexError:
-                        utils.dialogo_info(titulo = 'LOTE ERRÓNEO', 
+                        utils.dialogo_info(titulo = 'LOTE ERRÓNEO',
                             texto = 'El lote %s no se encontró.\nSeleccione '
                                     'otro o cree un lote nuevo.'%(codigolote),
                             padre = self.wids['ventana'])
@@ -2188,7 +2277,7 @@ class PartesDeFabricacionBalas(Ventana):
                         lote = pclases.LoteCem.select(
                             pclases.LoteCem.q.codigo == codigolote)[0]
                     except IndexError:
-                        utils.dialogo_info(titulo = 'LOTE ERRÓNEO', 
+                        utils.dialogo_info(titulo = 'LOTE ERRÓNEO',
                             texto = 'El lote %s no se encontró.\nSeleccione '
                                     'otro o cree un lote nuevo.'%(codigolote),
                             padre = self.wids['ventana'])
@@ -2198,30 +2287,30 @@ class PartesDeFabricacionBalas(Ventana):
             elif "C" not in lote.codigo and self.producto.es_bala():
                 fibracemento = False
             else:
-                utils.dialogo_info(titulo = "ERROR LOTE O PRODUCTO", 
+                utils.dialogo_info(titulo = "ERROR LOTE O PRODUCTO",
                                    texto = "El tipo de producto no concuerda "
-                                           "con el lote seleccionado.", 
+                                           "con el lote seleccionado.",
                                    padre = self.wids['ventana'])
                 return
-            if ((self.usuario == None or self.usuario.nivel > 3) 
+            if ((self.usuario == None or self.usuario.nivel > 3)
                 and (self.producto != None and self.producto.es_bala())
                 and utils.get_puerto_serie() != None):
                 self.iniciar_pesaje_auto(None)
             else:
                 numbala, pedir_peso = self.pedir_numbala(
                                                 fibracemento = fibracemento)
-                if numbala == None: 
+                if numbala == None:
                     return  # Ha cancelado el diálogo.
                 for bala in numbala:
                     if pedir_peso:
                         peso = self.pedir_peso(bala, fibracemento=fibracemento)
-                        if peso == None: 
+                        if peso == None:
                             return # Ha cancelado el diálogo.
                     else:
                         peso = 0
-                    #print "Voy a crear..."
+                    #myprint("Voy a crear...")
                     self.crear_bala(bala,peso,lote,fibracemento=fibracemento)
-                    #print "Creada..."
+                    #myprint("Creada...")
 
     def ventana_peso(self, titulo, texto):
         ventana = gtk.Window()
@@ -2254,24 +2343,24 @@ class PartesDeFabricacionBalas(Ventana):
         Si el peso es incorrecto devuelve None.
         """
         pesobala = None
-        peso = utils.dialogo_entrada(titulo = 'PESO %s %d' % (fibracemento and "BIGBAG" or "BALA", numbala), 
-                                     texto = 'Introduzca el peso %s número %d: ' % (fibracemento and "del bigbag" or "de la bala", numbala), 
+        peso = utils.dialogo_entrada(titulo = 'PESO %s %d' % (fibracemento and "BIGBAG" or "BALA", numbala),
+                                     texto = 'Introduzca el peso %s número %d: ' % (fibracemento and "del bigbag" or "de la bala", numbala),
                                      padre = self.wids['ventana'])
         if peso != None:
             try:
                 pesobala = float(peso)
             except ValueError:
-                utils.dialogo_info(titulo = 'PESO INCORRECTO', 
-                                   texto = 'El número introducido (%s) no es correcto.' % (peso), 
+                utils.dialogo_info(titulo = 'PESO INCORRECTO',
+                                   texto = 'El número introducido (%s) no es correcto.' % (peso),
                                    padre = self.wids['ventana'])
         return pesobala
 
-    def dialogo_entrada_numbala(self, 
-                                texto= '', 
-                                titulo = 'ENTRADA DE DATOS', 
-                                valor_por_defecto = '', 
-                                padre=None, 
-                                pwd = False, 
+    def dialogo_entrada_numbala(self,
+                                texto= '',
+                                titulo = 'ENTRADA DE DATOS',
+                                valor_por_defecto = '',
+                                padre=None,
+                                pwd = False,
                                 modal = True):
         """
         Muestra un diálogo modal con un textbox.
@@ -2326,7 +2415,7 @@ class PartesDeFabricacionBalas(Ventana):
         rango introducido o el mismo generador pero con un único elemento
         si se ha tecleado un solo número de bala.
         """
-        if fibracemento: 
+        if fibracemento:
             try:
                 numdefecto = str(pclases.Bigbag.select(
                     orderBy = "-numbigbag")[0].numbigbag + 1)
@@ -2338,9 +2427,9 @@ class PartesDeFabricacionBalas(Ventana):
                     orderBy = "-numbala")[0].numbala + 1)
             except (AttributeError, IndexError):
                 numdefecto = "1"
-        numbala, pedir_peso = self.dialogo_entrada_numbala("Introduzca el número %s o un rango de números separados por guión: " % (fibracemento and "del bigbag" or "de la bala"), 
-                                                           'NÚMERO %s' % (fibracemento and "BIGBAG" or "BALA"), 
-                                                           padre = self.wids['ventana'], 
+        numbala, pedir_peso = self.dialogo_entrada_numbala("Introduzca el número %s o un rango de números separados por guión: " % (fibracemento and "del bigbag" or "de la bala"),
+                                                           'NÚMERO %s' % (fibracemento and "BIGBAG" or "BALA"),
+                                                           padre = self.wids['ventana'],
                                                            valor_por_defecto = numdefecto)
         if numbala == None:
             return None, pedir_peso
@@ -2353,17 +2442,18 @@ class PartesDeFabricacionBalas(Ventana):
             if fin < ini:
                 ini, fin = fin, ini
             if abs(fin - ini) > 100:
-                if not utils.dialogo(titulo = '¿ESTÁ SEGURO?', 
-                                     texto = "Está a punto de añadir %d artículos al parte. ¿Está seguro de que esa cantidad es correcta?" % abs(fin-ini), 
+                if not utils.dialogo(titulo = '¿ESTÁ SEGURO?',
+                                     texto = "Está a punto de añadir %d artículos al parte. ¿Está seguro de que esa cantidad es correcta?" % abs(fin-ini),
                                      padre = self.wids['ventana']):
                     return None, pedir_peso
         else:
             try:
                 numbala = int(numbala)
             except ValueError:
-                utils.dialogo_info(titulo = 'NÚMERO INCORRECTO', 
-                                   texto = 'El número introducido (%s) no es correcto.' % (numbala), 
-                                   padre = self.wids['ventana'])
+                utils.dialogo_info(titulo='NÚMERO INCORRECTO',
+                        texto='El número introducido (%s) no es correcto.' % (
+                            numbala),
+                        padre=self.wids['ventana'])
                 return None, pedir_peso
             ini, fin = numbala, numbala
         return xrange(ini, fin+1), pedir_peso
@@ -2384,49 +2474,50 @@ class PartesDeFabricacionBalas(Ventana):
                                     muestra = False)
                 pclases.Auditoria.nuevo(bala, self.usuario, __file__)
             except:
-                utils.dialogo_info(titulo = 'BALA NO CREADA', 
+                utils.dialogo_info(titulo = 'BALA NO CREADA',
                     texto = 'La bala no se pudo crear. Verifique que el '
-                            'número %d no esté duplicado.' % numbala, 
+                            'número %d no esté duplicado.' % numbala,
                     padre = self.wids['ventana'])
                 return
             articulo = pclases.Articulo(bala = bala,
                             rollo = None,
-                            bigbag = None, 
+                            bigbag = None,
                             parteDeProduccion = self.objeto,
                             productoVenta = self.producto,
-                            albaranSalida = None, 
+                            albaranSalida = None,
                             almacen = pclases.Almacen.get_almacen_principal())
             pclases.Auditoria.nuevo(articulo, self.usuario, __file__)
+# PORASQUI: La idea es guardar la configuración de los silos tras crear un nuevo artículo, que es cuando se consume realmente, y si no ha cambiado respecto a la última. También guardaré cuando se guarde el parte, claro.
         if articulo != None:
             self.descontar_material_adicional(articulo)
             self.actualizar_ventana()
 
     def crear_bigbag(self, numero, peso, lote):
         """
-        Crea un bigbag con los datos recibidos y devuelve 
+        Crea un bigbag con los datos recibidos y devuelve
         el artículo relacionado con el mismo.
         """
         codigo = "C%d" % (numero)
         try:
-            bigbag = pclases.Bigbag(loteCem = lote, 
-                                    numbigbag = numero, 
-                                    codigo = codigo, 
-                                    pesobigbag = peso, 
-                                    muestra = False, 
-                                    claseb = False, 
+            bigbag = pclases.Bigbag(loteCem = lote,
+                                    numbigbag = numero,
+                                    codigo = codigo,
+                                    pesobigbag = peso,
+                                    muestra = False,
+                                    claseb = False,
                                     motivo = "")
             pclases.Auditoria.nuevo(bigbag, self.usuario, __file__)
         except:
-            utils.dialogo_info(titulo = "BIGBAG NO CREADO", 
-                               texto = "El bigbag no se pudo crear. Verifique que el número %d no esté duplicado." % (numero), 
+            utils.dialogo_info(titulo = "BIGBAG NO CREADO",
+                               texto = "El bigbag no se pudo crear. Verifique que el número %d no esté duplicado." % (numero),
                                padre = self.wids['ventana'])
             return None
-        articulo = pclases.Articulo(bala = None, 
-                            rollo = None, 
-                            bigbag = bigbag, 
-                            parteDeProduccion = self.objeto, 
-                            productoVenta = self.producto, 
-                            albaranSalida = None, 
+        articulo = pclases.Articulo(bala = None,
+                            rollo = None,
+                            bigbag = bigbag,
+                            parteDeProduccion = self.objeto,
+                            productoVenta = self.producto,
+                            albaranSalida = None,
                             almacen = pclases.Almacen.get_almacen_principal())
         pclases.Auditoria.nuevo(articulo, self.usuario, __file__)
         return articulo
@@ -2434,28 +2525,28 @@ class PartesDeFabricacionBalas(Ventana):
     def drop_bala(self, boton):
         model, paths=self.wids['tv_balas'].get_selection().get_selected_rows()
         if paths == None or paths == []:
-            utils.dialogo_info('BALA NO SELECCIONADA', 
+            utils.dialogo_info('BALA NO SELECCIONADA',
                                'Debe seleccionar la bala que desee eliminar '
-                               'del parte.', 
+                               'del parte.',
                                padre = self.wids['ventana'])
             return
         else:
-            if not utils.dialogo('¿Eliminar del parte?', 
-                                 'BORRAR BALA DE CONTROL DE PRODUCCIÓN', 
-                                 padre = self.wids['ventana']): 
+            if not utils.dialogo('¿Eliminar del parte?',
+                                 'BORRAR BALA DE CONTROL DE PRODUCCIÓN',
+                                 padre = self.wids['ventana']):
                 return
             for path in paths:
                 codbala = model[path][1]
                 if codbala == 0 or codbala == "": #El número de bala está vacío
-                    utils.dialogo_info('BALA NO SELECCIONADA', 
-                                       'Debe seleccionar una bala.\nPara eliminar una incidencia use «Eliminar incidencia».', 
+                    utils.dialogo_info('BALA NO SELECCIONADA',
+                                       'Debe seleccionar una bala.\nPara eliminar una incidencia use «Eliminar incidencia».',
                                        padre = self.wids['ventana'])
                 else:
                     ide = model[path][-1]
-                    articulo = pclases.Articulo.get(ide) 
+                    articulo = pclases.Articulo.get(ide)
                     if articulo.albaranSalida != None or (articulo.es_bala() and articulo.bala.partidaCarga != None):
-                        utils.dialogo_info(titulo = 'NO SE PUEDE ELIMINAR', 
-                                           texto = 'La fibra ya ha sido usada o vendida.\nNo se eliminará.', 
+                        utils.dialogo_info(titulo = 'NO SE PUEDE ELIMINAR',
+                                           texto = 'La fibra ya ha sido usada o vendida.\nNo se eliminará.',
                                            padre = self.wids['ventana'])
                     else:
                         try:
@@ -2480,7 +2571,7 @@ class PartesDeFabricacionBalas(Ventana):
                                 bala.destroy(ventana = __file__)
                             if es_bigbag:
                                 bigbag.destroy(ventana = __file__)
-                        except ZeroDivisionError: 
+                        except ZeroDivisionError:
                             utils.dialogo_info(titulo = 'ERROR', texto = 'Ocurrió un error. No se pudo eliminar completamente.\nAnote el número de bala (%s) y contacte con el administrador de la aplicación\npara subsanar la inconsistencia.' % (bala and bala.codigo or "no disponible"), padre = self.wids['ventana'])
                             # bala.parteDeProduccion = self.objeto
                             try:
@@ -2495,59 +2586,59 @@ class PartesDeFabricacionBalas(Ventana):
                             except AttributeError:  # Existe el artículo pero ya no tiene bala
                                 self.logger.error("El artículo ID %s ya no tiene bala, no se ha podido sumar el material empleado al borrarlo y tampoco se pudo eliminar el artículo en sí." % articulo.id, padre = self.wids['ventana'])
             self.actualizar_ventana()
-                            
+
 
     def add_incidencia(self, boton):
         ii = pclases.TipoDeIncidencia.select()
         idincidencia = utils.dialogo_combo(
-            'SELECCIONE UN TIPO DE INCIDENCIA', 
+            'SELECCIONE UN TIPO DE INCIDENCIA',
             'Seleccine un tipo de incidencia del desplegable inferior',
-            [(i.id, i.descripcion) for i in ii], 
+            [(i.id, i.descripcion) for i in ii],
             padre = self.wids['ventana'])
         if idincidencia == None:
             return
-        utils.dialogo_info('HORA INICIO', 
-            'A continuación seleccione la hora de inicio de la incidencia.', 
+        utils.dialogo_info('HORA INICIO',
+            'A continuación seleccione la hora de inicio de la incidencia.',
             padre = self.wids['ventana'])
-        horaini = utils.mostrar_hora(time.localtime()[3], 
-                                     time.localtime()[4], 
-                                     0, 
+        horaini = utils.mostrar_hora(time.localtime()[3],
+                                     time.localtime()[4],
+                                     0,
                                      'HORA INICIO')
-        if not horaini: 
+        if not horaini:
             return
-        utils.dialogo_info('HORA FIN', 
+        utils.dialogo_info('HORA FIN',
             'A continuación seleccione la hora de finalización de la'
-            ' incidencia.', 
+            ' incidencia.',
             padre = self.wids['ventana'])
-        horafin = utils.mostrar_hora(time.localtime()[3], 
-                                     time.localtime()[4], 
-                                     0, 
+        horafin = utils.mostrar_hora(time.localtime()[3],
+                                     time.localtime()[4],
+                                     0,
                                      'HORA FIN')
         if not horafin:
             return
         self.objeto.sync()
-        horaini = mx.DateTime.DateTimeFrom(day = self.objeto.fecha.day, 
-                                           month = self.objeto.fecha.month, 
-                                           year = self.objeto.fecha.year, 
-                                           hour  = int(horaini.split(":")[0]), 
-                                           minute = int(horaini.split(":")[1]), 
+        horaini = mx.DateTime.DateTimeFrom(day = self.objeto.fecha.day,
+                                           month = self.objeto.fecha.month,
+                                           year = self.objeto.fecha.year,
+                                           hour  = int(horaini.split(":")[0]),
+                                           minute = int(horaini.split(":")[1]),
                                            second = 0)
-        horafin = mx.DateTime.DateTimeFrom(day = self.objeto.fecha.day, 
-                                           month = self.objeto.fecha.month, 
-                                           year = self.objeto.fecha.year, 
-                                           hour  = int(horafin.split(":")[0]), 
-                                           minute = int(horafin.split(":")[1]), 
+        horafin = mx.DateTime.DateTimeFrom(day = self.objeto.fecha.day,
+                                           month = self.objeto.fecha.month,
+                                           year = self.objeto.fecha.year,
+                                           hour  = int(horafin.split(":")[0]),
+                                           minute = int(horafin.split(":")[1]),
                                            second = 0)
         if horaini > horafin:
             horafin = horafin + mx.DateTime.oneDay
-        while horaini < self.objeto.fechahorainicio:   # El parte está en la 
+        while horaini < self.objeto.fechahorainicio:   # El parte está en la
             # franja de medianoche y la incidencia comienza después de las 12.
-            horaini += mx.DateTime.oneDay   # Debe llevar la fecha del día 
+            horaini += mx.DateTime.oneDay   # Debe llevar la fecha del día
                                             # siguiente.
             horafin += mx.DateTime.oneDay
         if entran_en_turno(self.objeto, horaini, horafin):
-            observaciones = utils.dialogo_entrada(titulo = 'OBSERVACIONES', 
-                texto = 'Introduzca observaciones sobre la incidencia:', 
+            observaciones = utils.dialogo_entrada(titulo = 'OBSERVACIONES',
+                texto = 'Introduzca observaciones sobre la incidencia:',
                 padre = self.wids['ventana'])
             if observaciones == None:
                 return
@@ -2558,13 +2649,13 @@ class PartesDeFabricacionBalas(Ventana):
                 parteDeProduccion = self.objeto,
                 observaciones = observaciones)
             pclases.Auditoria.nuevo(incidencia, self.usuario, __file__)
-            if incidencia.horainicio > incidencia.horafin:  
+            if incidencia.horainicio > incidencia.horafin:
                 incidencia.horainicio, incidencia.horafin = incidencia.horafin, incidencia.horainicio
             self.actualizar_ventana()
         else:
-            utils.dialogo_info(titulo = 'ERROR HORARIO', 
+            utils.dialogo_info(titulo = 'ERROR HORARIO',
                 texto = 'La franja horaria que ha seleccionado no entra en '
-                        'el turno del parte.', 
+                        'el turno del parte.',
                 padre = self.wids['ventana'])
 
     def drop_incidencia(self, boton):
@@ -2572,7 +2663,7 @@ class PartesDeFabricacionBalas(Ventana):
         if paths == None or paths == []:
             utils.dialogo_info('INCIDENCIA NO SELECCIONADA', 'Debe seleccionar la incidencia que desee eliminar del parte.', padre = self.wids['ventana'])
         else:
-            if not utils.dialogo('¿Eliminar del parte?', 'BORRAR INCIDENCIA DE CONTROL DE PRODUCCIÓN', padre = self.wids['ventana']): 
+            if not utils.dialogo('¿Eliminar del parte?', 'BORRAR INCIDENCIA DE CONTROL DE PRODUCCIÓN', padre = self.wids['ventana']):
                 return
             for path in paths:
                 ide = model[path][-1]
@@ -2589,8 +2680,8 @@ class PartesDeFabricacionBalas(Ventana):
 
     def add_empleado(self, w):
         empleados = pclases.Empleado.select(
-                pclases.AND(pclases.Empleado.q.activo == True, 
-                            pclases.Empleado.q.planta == True), 
+                pclases.AND(pclases.Empleado.q.activo == True,
+                            pclases.Empleado.q.planta == True),
                 orderBy = 'apellidos')
         empleados = [(e.id, e.nombre, e.apellidos) for e in empleados \
                      if e.planta and \
@@ -2599,8 +2690,8 @@ class PartesDeFabricacionBalas(Ventana):
                         e.categoriaLaboral.planta]
                         # e.categoriaLaboral.planta and \
                         # e.categoriaLaboral.lineaDeProduccion == self.linea]
-        ids = utils.dialogo_resultado(filas = empleados, 
-                                      titulo = 'SELECCIONE EMPLEADOS', 
+        ids = utils.dialogo_resultado(filas = empleados,
+                                      titulo = 'SELECCIONE EMPLEADOS',
                                       cabeceras = ('ID', 'Nombre', 'Apellidos'),
                                       multi = True,
                                       padre = self.wids['ventana'])
@@ -2611,8 +2702,8 @@ class PartesDeFabricacionBalas(Ventana):
                 e = pclases.Empleado.get(ide)
                 self.objeto.addEmpleado(e)
             except:
-                utils.dialogo_info(titulo = 'NÚMERO INCORRECTO', 
-                                   texto = 'El empleado con código identificador %d no existe o no se pudo agregar.' % ide, 
+                utils.dialogo_info(titulo = 'NÚMERO INCORRECTO',
+                                   texto = 'El empleado con código identificador %d no existe o no se pudo agregar.' % ide,
                                    padre = self.wids['ventana'])
         self.rellenar_tabla_empleados()
 
@@ -2638,32 +2729,32 @@ class PartesDeFabricacionBalas(Ventana):
             if supera_duracion_parte:
                 ht.horas = horas_parte.strftime('%H:%M')
                 ht.sync()
-            model.append((ht.empleado.id, 
-                          ht.empleado.nombre, 
-                          ht.empleado.apellidos, 
+            model.append((ht.empleado.id,
+                          ht.empleado.nombre,
+                          ht.empleado.apellidos,
                           ht.horas.strftime('%H:%M'), ht.id))
 
     def cambiar_lote(self, w):
         """
-        Pide un número de lote por teclado y cambia a él. 
+        Pide un número de lote por teclado y cambia a él.
         """
         texto = """
-        Al cambiar el lote del parte, se cambiará el lote de 
-        todos los productos relacionados con él. Si quiere 
+        Al cambiar el lote del parte, se cambiará el lote de
+        todos los productos relacionados con él. Si quiere
         comenzar la producción de un nuevo lote sin afectar
         a los ya existentes, cree un nuevo parte.
 
         ¿Desea cambiar el lote actual?
         """
-        if (self.objeto.articulos != [] 
-            and not utils.dialogo(titulo = '¿ESTÁ SEGURO?', 
-                                  texto = texto, 
+        if (self.objeto.articulos != []
+            and not utils.dialogo(titulo = '¿ESTÁ SEGURO?',
+                                  texto = texto,
                                   padre = self.wids['ventana'])):
-            return 
-        numlote = utils.dialogo_entrada(titulo = '¿NÚMERO DE LOTE?', 
+            return
+        numlote = utils.dialogo_entrada(titulo = '¿NÚMERO DE LOTE?',
             texto = 'Introduzca el número o código de lote:\n\nTenga en '
                     'cuenta que los productos almacenados en \nbigbags '
-                    'pertenecen a lotes que comienzan por "C-".', 
+                    'pertenecen a lotes que comienzan por "C-".',
             padre = self.wids['ventana'])
         if numlote == None:
             return      # Canceló
@@ -2673,10 +2764,10 @@ class PartesDeFabricacionBalas(Ventana):
             return      # Si le dan a cancelar se manda None
         except ValueError:      # No ha tecleado un número, busco por código.
             numlote = numlote
-        # Obtengo el código del número de lote. Si es un entero, el lote es el 
+        # Obtengo el código del número de lote. Si es un entero, el lote es el
         # string del entero y no es de fibra de cemento.
-        # Si no es un entero, el numlote es un código de lote en formato 
-        # cadena y será tal cual si es fibra de polipropileno y 
+        # Si no es un entero, el numlote es un código de lote en formato
+        # cadena y será tal cual si es fibra de polipropileno y
         # C-001 si es fibra de cemento.
         if isinstance(numlote, type(1)):
             codigo = str(numlote)
@@ -2687,9 +2778,9 @@ class PartesDeFabricacionBalas(Ventana):
                 try:
                     numlote = "C-%03d" % (int(numlote))
                 except TypeError:
-                    utils.dialogo_info(titulo = "ERROR NÚMERO DE LOTE", 
+                    utils.dialogo_info(titulo = "ERROR NÚMERO DE LOTE",
                             texto = "El texto %s no es un número de lote "
-                                    "correcto." % (numlote), 
+                                    "correcto." % (numlote),
                             padre = self.wids['ventana'])
                     return
             codigo = numlote
@@ -2699,7 +2790,7 @@ class PartesDeFabricacionBalas(Ventana):
             self.wids['e_numlote'].set_text(lote.codigo)
         except (IndexError, ValueError):
             try:
-                # OJO: codigo es str, aunque venga de numlote, que a pesar del 
+                # OJO: codigo es str, aunque venga de numlote, que a pesar del
                 # nombre, también es un string (¡vergüensa de tus hijoh!)
                 if not isinstance(codigo, str):
                     codigo = str(codigo)
@@ -2707,8 +2798,8 @@ class PartesDeFabricacionBalas(Ventana):
                     pclases.LoteCem.q.codigo == codigo)[0]
                 self.wids['e_numlote'].set_text(lote.codigo)
             except IndexError:
-                if not utils.dialogo(titulo='¿CREAR LOTE?', 
-                                     texto='No se encontró el lote %s.\n¿Desea crear uno nuevo?' % (codigo), 
+                if not utils.dialogo(titulo='¿CREAR LOTE?',
+                                     texto='No se encontró el lote %s.\n¿Desea crear uno nuevo?' % (codigo),
                                      padre = self.wids['ventana']):
                     return
                 else:
@@ -2732,7 +2823,7 @@ class PartesDeFabricacionBalas(Ventana):
                     a.bala.lote = lote
                 elif a.es_bigbag():
                     a.bigbag.loteCem = lote
-            
+
     def nuevo_lote(self, codigo):
         if not isinstance(codigo, str):
             #codigo = `codigo`
@@ -2741,23 +2832,23 @@ class PartesDeFabricacionBalas(Ventana):
             try:
                 numlote = int(codigo.replace("C-", ""))
             except ValueError:
-                utils.dialogo_info(titulo = "LOTE NO SE PUDO CREAR", 
-                                   texto = "El lote de fibra de cemento %s no se puede crear." % (codigo), 
+                utils.dialogo_info(titulo = "LOTE NO SE PUDO CREAR",
+                                   texto = "El lote de fibra de cemento %s no se puede crear." % (codigo),
                                    padre = self.wids['ventana'])
             else:
                 if self.producto != None and not self.producto.es_bigbag():
-                    utils.dialogo_info(titulo = "NO PUEDE CAMBIAR DE LOTE", 
-                                       texto = "No puede cambiar a un lote de fibra de cemento\nsi lo que está produciendo (%s)\nno es fibra de cemento." % (self.producto.descripcion), 
+                    utils.dialogo_info(titulo = "NO PUEDE CAMBIAR DE LOTE",
+                                       texto = "No puede cambiar a un lote de fibra de cemento\nsi lo que está produciendo (%s)\nno es fibra de cemento." % (self.producto.descripcion),
                                        padre = self.wids['ventana'])
                     return None
-                lote = pclases.LoteCem(codigo = codigo, 
-                                       numlote = numlote, 
-                                       tenacidad = None, 
-                                       elongacion = None, 
-                                       encogimiento = None, 
-                                       grasa = None, 
-                                       tolerancia = 0.4, 
-                                       humedad = None, 
+                lote = pclases.LoteCem(codigo = codigo,
+                                       numlote = numlote,
+                                       tenacidad = None,
+                                       elongacion = None,
+                                       encogimiento = None,
+                                       grasa = None,
+                                       tolerancia = 0.4,
+                                       humedad = None,
                                        mediatitulo = 0.0)
                 pclases.Auditoria.nuevo(lote, self.usuario, __file__)
         else:
@@ -2767,13 +2858,13 @@ class PartesDeFabricacionBalas(Ventana):
             try:
                 numlote = int(codigo.replace("L-", ""))
             except ValueError:
-                utils.dialogo_info(titulo = "LOTE NO SE PUDO CREAR", 
-                                   texto = "El lote %s no se puede crear." % (codigo), 
+                utils.dialogo_info(titulo = "LOTE NO SE PUDO CREAR",
+                                   texto = "El lote %s no se puede crear." % (codigo),
                                    padre = self.wids['ventana'])
             else:
                 if self.producto != None and not self.producto.es_bala():
-                    utils.dialogo_info(titulo = "NO PUEDE CAMBIAR DE LOTE", 
-                                       texto = "No puede cambiar a un lote de fibra PP\nsi lo que está produciendo (%s)\nes fibra de cemento." % (self.producto.descripcion), 
+                    utils.dialogo_info(titulo = "NO PUEDE CAMBIAR DE LOTE",
+                                       texto = "No puede cambiar a un lote de fibra PP\nsi lo que está produciendo (%s)\nes fibra de cemento." % (self.producto.descripcion),
                                        padre = self.wids['ventana'])
                     return None
                 lote = pclases.Lote(numlote = numlote, codigo = codigo)
@@ -2785,67 +2876,67 @@ class PartesDeFabricacionBalas(Ventana):
                 a.bigbag.loteCem = lote
         # self.wids['e_numlote'].set_text(lote.codigo)
         return lote
-    
+
     def rellenar_filtros(self):
         model = self.wids['tv_filtros'].get_model()
         model.clear()
         cantidad = 0
-        for consumo in [c for c in self.objeto.consumos 
+        for consumo in [c for c in self.objeto.consumos
                         if c.antes == -1 and c.despues == -1]:
-            model.append((consumo.productoCompra.descripcion, 
+            model.append((consumo.productoCompra.descripcion,
                           consumo.cantidad, consumo.id))
             cantidad += consumo.cantidad
         self.wids['e_total_filtros'].set_text(str(cantidad))
-        
+
     def rellenar_granza(self):
         model = self.wids['tv_granza'].get_model()
         model.clear()
         cantidad = 0
-        for consumo in [c for c in self.objeto.consumos 
-                        if (c.antes != -1 and c.despues != -1) 
+        for consumo in [c for c in self.objeto.consumos
+                        if (c.antes != -1 and c.despues != -1)
                            and (c.antes != -2 and c.despues != -2)]:
-            model.append((consumo.productoCompra.descripcion, 
-                          consumo.antes, 
-                          consumo.despues, 
-                          consumo.cantidad, 
+            model.append((consumo.productoCompra.descripcion,
+                          consumo.antes,
+                          consumo.despues,
+                          consumo.cantidad,
                           consumo.id))
             cantidad += consumo.cantidad
         self.wids['e_total_granza'].set_text(utils.float2str(cantidad))
-    
+
     def actualizar_consumo(self, consumo, descontar):
         """
-        Pone el campo actualizado del consumo a True y 
+        Pone el campo actualizado del consumo a True y
         descuenta la cantidad del producto de compra.
         """
-        consumo.actualizado = descontar 
+        consumo.actualizado = descontar
         if descontar:
             consumo.productoCompra.existencias -= consumo.cantidad
             consumo.productoCompra.add_existencias(-consumo.cantidad)
         else:
             consumo.productoCompra.existencias += consumo.cantidad
             consumo.productoCompra.add_existencias(consumo.cantidad)
-   
-    def buscar_producto_compra(self, defecto = "", 
+
+    def buscar_producto_compra(self, defecto = "",
                                titulo_defecto = "BUSCAR PRODUCTO"):
-        a_buscar = utils.dialogo_entrada(titulo = titulo_defecto, 
-                    texto = 'Introduzca código o descripción del producto:', 
-                    valor_por_defecto = defecto, 
+        a_buscar = utils.dialogo_entrada(titulo = titulo_defecto,
+                    texto = 'Introduzca código o descripción del producto:',
+                    valor_por_defecto = defecto,
                     padre = self.wids['ventana'])
         if a_buscar == None:
             return None
         productos = pclases.ProductoCompra.select(pclases.AND(
             pclases.OR(pclases.ProductoCompra.q.descripcion.contains(a_buscar),
-                       pclases.ProductoCompra.q.codigo.contains(a_buscar)), 
-            pclases.ProductoCompra.q.controlExistencias == True, 
-            pclases.ProductoCompra.q.obsoleto == False, 
+                       pclases.ProductoCompra.q.codigo.contains(a_buscar)),
+            pclases.ProductoCompra.q.controlExistencias == True,
+            pclases.ProductoCompra.q.obsoleto == False,
             pclases.ProductoCompra.q.existencias > 0))
         if productos.count() == 0:
-            utils.dialogo_info(titulo = 'PRODUCTO NO ENCONTRADO', 
-                        texto = 'Producto no encontrado o sin existencias.', 
+            utils.dialogo_info(titulo = 'PRODUCTO NO ENCONTRADO',
+                        texto = 'Producto no encontrado o sin existencias.',
                         padre = self.wids['ventana'])
             return None
         elif productos.count() > 1:
-            filas = [(p.id, p.codigo, p.descripcion, p.existencias) 
+            filas = [(p.id, p.codigo, p.descripcion, p.existencias)
                      for p in productos]
             idproducto = utils.dialogo_resultado(filas,
                     'SELECCIONE PRODUCTO',
@@ -2857,14 +2948,14 @@ class PartesDeFabricacionBalas(Ventana):
                 return None
         producto = productos[0]
         return producto
-   
+
     def add_granza(self, w):
         producto = self.buscar_producto_compra("GRANZA")
         if producto == None:
             return
-        cantidad = utils.dialogo_entrada(titulo = 'CANTIDAD', 
+        cantidad = utils.dialogo_entrada(titulo = 'CANTIDAD',
             texto = 'Introduzca la cantidad que había en el silo antes de '
-                    'comenzar el parte de producción:', 
+                    'comenzar el parte de producción:',
             padre = self.wids['ventana'])
         if cantidad == None:
             return
@@ -2874,10 +2965,10 @@ class PartesDeFabricacionBalas(Ventana):
             utils.dialogo_info('Cantidad incorrecta')
             return
         if cantidad > producto.existencias:
-            utils.dialogo_info(titulo = 'CANTIDAD INSUFICIENTE', 
+            utils.dialogo_info(titulo = 'CANTIDAD INSUFICIENTE',
                                texto = 'No hay existencias suficientes en almacén.\nVerifique que ha tecleado la cantidad correctamente\ny que las entradas en almacén del producto han sido contabilizadas.')
             return
-        consumo = pclases.Consumo(antes = cantidad, 
+        consumo = pclases.Consumo(antes = cantidad,
                                   despues = cantidad,
                                   cantidad = 0,
                                   actualizado = False,
@@ -2887,7 +2978,7 @@ class PartesDeFabricacionBalas(Ventana):
         # self.actualizar_consumo(consumo, True)
         self.objeto.unificar_consumos()
         self.rellenar_granza()
-        
+
     def drop_granza(self, w):
         model, itr = self.wids['tv_granza'].get_selection().get_selected()
         if itr == None:
@@ -2910,10 +3001,10 @@ class PartesDeFabricacionBalas(Ventana):
                            </ui>"""
             ag = gtk.ActionGroup('WindowActions')
             actions = [('Enviar muestra', gtk.STOCK_COLOR_PICKER, '_Enviar muestra', '<control>E',
-                        'Envia una muestra del lote o partida correspondiente al parte a laboratorio', 
+                        'Envia una muestra del lote o partida correspondiente al parte a laboratorio',
                         self.enviar_a_laboratorio),
                        ('Limpiar marca muestra', gtk.STOCK_CLEAR, '_Limpiar la marca de muestra de la bala', '<control>l',
-                        'Elimina únicamente la marca de muestra. No cancela las muestras ya enviadas.', 
+                        'Elimina únicamente la marca de muestra. No cancela las muestras ya enviadas.',
                         self.limpiar_marcas)]
             ag.add_actions(actions)
             ui = gtk.UIManager()    #gtk.UI_MANAGER_POPUP
@@ -2921,12 +3012,12 @@ class PartesDeFabricacionBalas(Ventana):
             ui.add_ui_from_string(ui_string)
             widget = ui.get_widget("/Popup")
             widget.popup(None, None, None, event.button, event.time)
-    
+
     def limpiar_marcas(self, parametro):
         """
         Marca el rollo seleccionado como defectuoso.
         """
-        parte = self.objeto 
+        parte = self.objeto
         if not parte.articulos:
             utils.dialogo_info(titulo = "PARTE VACÍO", texto = "En el parte seleccionado no hubo producción.", padre = self.wids['ventana'])
         else:
@@ -2943,11 +3034,11 @@ class PartesDeFabricacionBalas(Ventana):
                         bala_o_bb.muestra = False
                         bala_o_bb.motivo = ''
                         model[path][-2] = bala_o_bb.motivo
-    
+
     def enviar_a_laboratorio(self, parametro):
         # NOTA: Ni idea de qué es lo que traerá el parámetro, sólo me interesa
         # el parte que está seleccionado en el treeview.
-        parte = self.objeto 
+        parte = self.objeto
         if not parte.articulos:
             utils.dialogo_info(titulo = "PARTE VACÍO", texto = "En el parte seleccionado no hubo producción.")
         else:
@@ -2978,7 +3069,7 @@ class PartesDeFabricacionBalas(Ventana):
                         bala_o_bb.muestra = True
                         bala_o_bb.motivo += '>>> Muestra %s' % codigo
                         model[path][-2] += '>>> Muestra %s' % codigo
-  
+
     def crear_muestra(self, lote, partida):
         _codigo = ['']
         dialogo = gtk.Dialog("DATOS DE LA MUESTRA",
@@ -2988,9 +3079,9 @@ class PartesDeFabricacionBalas(Ventana):
                               gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT))
         dialogo.connect("response", self.crear_muestra_ok_cancel, lote, partida, _codigo)
         texto = """
-        Introduzca, si lo desea, los datos para la muestra          
+        Introduzca, si lo desea, los datos para la muestra
         de%s número %d.
-        """ % (partida and " la partida" or "l lote", 
+        """ % (partida and " la partida" or "l lote",
                partida and partida.numpartida or lote.numlote)
         txt = gtk.Label(texto)
         dialogo.vbox.pack_start(txt)
@@ -3005,7 +3096,7 @@ class PartesDeFabricacionBalas(Ventana):
         dialogo.run()
         dialogo.destroy()
         return _codigo[0]
-    
+
     def crear_muestra_ok_cancel(self, dialogo, respuesta, lote, partida, _codigo):
         if respuesta == gtk.RESPONSE_ACCEPT:
             codigo = dialogo.vbox.get_children()[2].get_text()
@@ -3016,14 +3107,14 @@ class PartesDeFabricacionBalas(Ventana):
                                 observaciones = observaciones,
                                 pendiente = True,
                                 envio = mx.DateTime.localtime(),
-                                recepcion = None, 
+                                recepcion = None,
                                 loteCem = None)
             pclases.Auditoria.nuevo(m, self.usuario, __file__)
             _codigo[0] = codigo
             if utils.dialogo(titulo = "MUESTRA ENVIADA",
-                             texto = "Muestra creada, enviada y pendiente para su análisis en laboratorio.\n¿Desea enviar una alerta?", 
+                             texto = "Muestra creada, enviada y pendiente para su análisis en laboratorio.\n¿Desea enviar una alerta?",
                              padre = self.wids['ventana']):
-                usuarios = [(u.id, u.usuario) 
+                usuarios = [(u.id, u.usuario)
                         for u in pclases.Usuario.select(orderBy = 'usuario')]
                 usuario = utils.dialogo_combo(titulo = "SELECCIONE USUARIO",
                                               texto = "Seleccione del desplegable inferior al usuario que quiere alertar acerca de la muestra.",
@@ -3035,7 +3126,7 @@ class PartesDeFabricacionBalas(Ventana):
                         msj = "La muestra %s está " % m.codigo
                     else:
                         msj = "Tiene una muestra "
-                    msj += "pendiente de analizar." 
+                    msj += "pendiente de analizar."
                     user.enviar_mensaje(msj)
     # XXX ^^^
 
@@ -3050,16 +3141,16 @@ class PartesDeFabricacionBalas(Ventana):
                     self.objeto.bloqueado = False
             else:
                 if "w" in self.__permisos:  # Tiene permiso para bloquear el parte
-                    self.objeto.bloqueado = True 
+                    self.objeto.bloqueado = True
                 else:
                     if mostrar_alerta:
-                        utils.dialogo_info(titulo = "USUARIO SIN PRIVILEGIOS", 
+                        utils.dialogo_info(titulo = "USUARIO SIN PRIVILEGIOS",
                                            texto = "No tiene permisos suficientes para bloquear y verificar partes de producción.",
                                            padre = self.wids['ventana'])
         self.objeto.sync()
         self.objeto.make_swap()
         ch.set_active(self.objeto.bloqueado)
-    
+
     def imprimir(self, boton):
         self.guardar(None)
         parte = self.objeto
@@ -3074,7 +3165,7 @@ class PartesDeFabricacionBalas(Ventana):
 
         bounds = self.wids['txt_observaciones'].get_buffer().get_bounds()
         datos['observaciones'] = self.wids['txt_observaciones'].get_buffer().get_text(bounds[0], bounds[1]).replace("º", "o.")
- 
+
         detallesdeproduccion = [i for i in self.objeto.incidencias] + [a for a in self.objeto.articulos]
             # El + sin más, hace un join, así que no tengo más remedio que recorrer las listas.
         detallesdeproduccion.sort(self.cmpfechahora)
@@ -3092,14 +3183,14 @@ class PartesDeFabricacionBalas(Ventana):
                            obs,
                            self.claseb(detalle)))
         # reports.abrir_pdf(geninformes.parteBalas(datos, lineas))
-        reports.imprimir_con_gs(geninformes.parteBalas(datos, lineas), 
-                                 impresora = "OFICINA", 
+        reports.imprimir_con_gs(geninformes.parteBalas(datos, lineas),
+                                 impresora = "OFICINA",
                                  blanco_y_negro = True)
 
     def consumir_segun_formulacion(self, producto, articulo, restar):
         """
         Realiza los consumos según la formulación de la línea de producción.
-        Devuelve el peso de los aditivos (productos consumidos que componen 
+        Devuelve el peso de los aditivos (productos consumidos que componen
         la fibra y no son granza -ensimajes, antiuvi, colorantes...-.
         """
         aditivos = 0
@@ -3107,9 +3198,9 @@ class PartesDeFabricacionBalas(Ventana):
             caprod = consumoAdicional.productoCompra
             if caprod and caprod.obsoleto:
                 continue
-            consumido = consumoAdicional.consumir(articulo, 
+            consumido = consumoAdicional.consumir(articulo,
                                                   cancelar = not restar)
-            # OJO: Para el cálculo de aditivos los nombres en la formulación 
+            # OJO: Para el cálculo de aditivos los nombres en la formulación
             # deben ser exactamente estos:
             if consumoAdicional.nombre.lower() == "antiuvi" or \
                consumoAdicional.nombre.lower() == "ensimaje" or \
@@ -3117,56 +3208,73 @@ class PartesDeFabricacionBalas(Ventana):
                 aditivos += consumido
             self.logger.warning("CONSUMO LÍNEA FIBRA: "
                 "Consumiendo %s de %s para la bala o bigbag %s" % (
-                    utils.float2str(consumido), 
-                    consumoAdicional.productoCompra.descripcion, 
+                    utils.float2str(consumido),
+                    consumoAdicional.productoCompra.descripcion,
                     articulo.codigo_interno))
-        # Ahora el consumo de granza: Por cada kilo de fibra - aditivos, 
+        # Ahora el consumo de granza: Por cada kilo de fibra - aditivos,
         # 1 kilo de granza.
         aditivos = abs(aditivos)
         return aditivos
 
     def consumir_granza_silos(self, articulo, aditivos, restar):
         """
-        Descarga de los silos la cantidad de fibra producida sin aditivos en 
+        Descarga de los silos la cantidad de fibra producida sin aditivos en
         la proporción indicada en el parte.
         """
-        for silo in [s for s in pclases.Silo.select() 
+        for silo in [s for s in pclases.Silo.select()
                      if self.wids['ch_silo_ID%d' % (s.id)].get_active()]:
             peso_sin_aditivos = articulo.peso - aditivos
             porcentaje = self.wids['escala_ID%d' % (silo.id)].get_value() / 100
             if restar:
-                #print "Intentando consumo silos..."
+                if pclases.DEBUG:
+                    myprint(__file__, " -> Intentando consumo silos...")
                 diccionario_consumido = silo.consumir(peso_sin_aditivos * porcentaje, parte_de_produccion = self.objeto)
-                #print diccionario_consumido
+                if pclases.DEBUG:
+                    myprint(__file__, " -> ", diccionario_consumido)
                 consumido = sum([diccionario_consumido[p] for p in diccionario_consumido])
-                # print articulo.peso, aditivos, peso_sin_aditivos, porcentaje
-                self.logger.warning("CONSUMO LÍNEA FIBRA: Consumiendo %s de granza del silo %s para la bala o bigbag %s. Ocupado: %s" % (utils.float2str(consumido), silo.nombre, articulo.codigo_interno, utils.float2str(silo.ocupado)))
-                # print diccionario_consumido
-            else:   
+                if pclases.DEBUG:
+                    myprint(__file__, " -> ", articulo.peso, aditivos,
+                            peso_sin_aditivos, porcentaje)
+                self.logger.warning("CONSUMO LÍNEA FIBRA: Consumiendo %s de "
+                        "granza del silo %s para la bala o bigbag %s. "
+                        "Ocupado: %s" % (utils.float2str(consumido),
+                                         silo.nombre,
+                                         articulo.codigo_interno,
+                                         utils.float2str(silo.ocupado)))
+                if pclases.DEBUG:
+                    myprint(__file__, " -> ", diccionario_consumido)
+            else:
                 # No hay que cargar el silo. ¡SOLO HAY QUE ANULAR EL CONSUMO!
                 carga_mas_baja_en_silo = silo.get_carga_mas_antigua()
                 if carga_mas_baja_en_silo != None:
                     producto_consumido = carga_mas_baja_en_silo.productoCompra
                     cargado = peso_sin_aditivos * porcentaje
-                    consumo = pclases.Consumo(silo = silo, 
-                            parteDeProduccionID = self.objeto.id, 
-                            productoCompra = producto_consumido, 
-                            actualizado = True, 
-                            antes = producto_consumido.existencias, 
-                            despues = producto_consumido.existencias + cargado, 
+                    consumo = pclases.Consumo(silo = silo,
+                            parteDeProduccionID = self.objeto.id,
+                            productoCompra = producto_consumido,
+                            actualizado = True,
+                            antes = producto_consumido.existencias,
+                            despues = producto_consumido.existencias + cargado,
                             cantidad = -cargado)
                     pclases.Auditoria.nuevo(consumo, self.usuario, __file__)
-                    self.logger.warning("CONSUMO LÍNEA FIBRA: %s anulado de silo %s. Ocupado: %s" % (utils.float2str(cargado), silo.nombre, silo.ocupado))
+                    self.logger.warning("CONSUMO LÍNEA FIBRA: "
+                            "%s anulado de silo %s. Ocupado: %s" % (
+                                utils.float2str(cargado),
+                                silo.nombre,
+                                silo.ocupado))
                 else:
-                    utils.dialogo_info(titulo = "ERROR EN SILO", 
-                                       texto = "No se pudo determinar el producto consumido del silo para la bala o bigbag %s.\nDebe ajustar el silo manualmente." % (articulo.codigo_interno), 
-                                       padre = self.wids['ventana'])
+                    utils.dialogo_info(titulo = "ERROR EN SILO",
+                            texto = "No se pudo determinar el producto "
+                                    "consumido del silo para la bala o "
+                                    "bigbag %s.\nDebe ajustar el silo "
+                                    "manualmente." % (articulo.codigo_interno),
+                            padre = self.wids['ventana'])
             mostrar_carga_silo(self.wids['l_ID%d' % (silo.id)], silo)
-    
+
     def consumir_granza_reciclada(self, articulo, aditivos, restar):
         """
-        Descuenta de las existencias de almacén la proporción de granza 
-        consumida en función de lo indicado en el parte y el peso de la 
+        Descuenta de las existencias de almacén la proporción de granza
+        consumida en función de lo indicado en el parte y el peso de la
         bala sin aditivos.
         """
         # OJO: No compruebo que la granza tenga existencias positivas. (Tampoco estoy seguro de querer hacerlo. Aquí se hace mucho el gato.)
@@ -3182,12 +3290,12 @@ class PartesDeFabricacionBalas(Ventana):
                 idgranza = utils.combo_get_value(self.wids["cbe_reciclada_%d" % (numreciclada)])
                 if idgranza > 0:
                     granza = pclases.ProductoCompra.get(idgranza)
-                    consumo = pclases.Consumo(silo = None, 
-                            parteDeProduccion = self.objeto, 
-                            productoCompra = granza, 
-                            actualizado = True, 
-                            antes = granza.existencias, 
-                            despues = granza.existencias - cantidad_a_consumir, 
+                    consumo = pclases.Consumo(silo = None,
+                            parteDeProduccion = self.objeto,
+                            productoCompra = granza,
+                            actualizado = True,
+                            antes = granza.existencias,
+                            despues = granza.existencias - cantidad_a_consumir,
                             cantidad = cantidad_a_consumir)
                     pclases.Auditoria.nuevo(consumo, self.usuario, __file__)
                     granza.existencias -= cantidad_a_consumir
@@ -3195,15 +3303,15 @@ class PartesDeFabricacionBalas(Ventana):
                     self.logger.warning("CONSUMO LÍNEA FIBRA: Consumiendo %s",
                         " kg de granza reciclada (%s) para la bala o bigbag "
                         "%s. Queda en almacén: %s %s" % (
-                            utils.float2str(cantidad_a_consumir), 
-                            granza.descripcion, 
-                            articulo.codigo_interno, 
-                            utils.float2str(granza.existencias), 
+                            utils.float2str(cantidad_a_consumir),
+                            granza.descripcion,
+                            articulo.codigo_interno,
+                            utils.float2str(granza.existencias),
                             granza.unidad))
 
     def descontar_material_adicional(self, articulo, restar = True):
         """
-        Descuenta el material adicional correspondiente al artículo según 
+        Descuenta el material adicional correspondiente al artículo según
         la formulación que indique la línea de fabricación.
         Si "restar" es True, descuenta. Si es False, añade la cantidad (para
         cuando se elimine un rollo del parte, por ejemplo).
@@ -3216,7 +3324,7 @@ class PartesDeFabricacionBalas(Ventana):
         else:
         # XXX
             producto = articulo.productoVenta
-            aditivos = self.consumir_segun_formulacion(producto, articulo, 
+            aditivos = self.consumir_segun_formulacion(producto, articulo,
                                                        restar)
             self.consumir_granza_silos(articulo, aditivos, restar)
             self.consumir_granza_reciclada(articulo, aditivos, restar)
@@ -3224,11 +3332,11 @@ class PartesDeFabricacionBalas(Ventana):
 
     def etiquetas(self, boton):
         """
-        Imprime las etiquetas de los 
-        balas del parte seleccionados 
+        Imprime las etiquetas de los
+        balas del parte seleccionados
         """
-        entrada = utils.dialogo_entrada(titulo='ETIQUETAS', 
-                                        texto='Introduzca el número de bala o el rango (usando el \'-\') que desea etiquetar', 
+        entrada = utils.dialogo_entrada(titulo='ETIQUETAS',
+                                        texto='Introduzca el número de bala o el rango (usando el \'-\') que desea etiquetar',
                                         padre = self.wids['ventana'])
         if entrada != None:
             if '-' in entrada:
@@ -3273,8 +3381,8 @@ class PartesDeFabricacionBalas(Ventana):
             producto = temp[0].articulos[0].productoVenta
             campos = producto.camposEspecificosBala
             for b in temp:
-                pclases.Auditoria.modificado(b.articulo, self.usuario, 
-                        __file__, 
+                pclases.Auditoria.modificado(b.articulo, self.usuario,
+                        __file__,
                         "Impresión de etiqueta para bala %s" % (
                             b.articulo.get_info()))
                 if campos.antiuv:
@@ -3295,11 +3403,11 @@ class PartesDeFabricacionBalas(Ventana):
                             'codigoBarra':producto.codigo}
                 balas.append(elemento)
             reports.abrir_pdf(geninformes.etiquetasBalas(balas))
-   
+
     def etiquetasPeq(self, boton):
         """
         Imprime las etiquetas de las balas
-        en la etiquetadora del parte seleccionado 
+        en la etiquetadora del parte seleccionado
         """
         model,paths = self.wids['tv_balas'].get_selection().get_selected_rows()
         if self.producto != None and self.producto.es_bigbag():
@@ -3316,11 +3424,11 @@ class PartesDeFabricacionBalas(Ventana):
             balas_defecto.sort()
             balas_defecto = ', '.join(balas_defecto)
 
-            entrada = utils.dialogo_entrada(titulo='ETIQUETAS', 
+            entrada = utils.dialogo_entrada(titulo='ETIQUETAS',
                         texto='Introduzca el número de bala o '
                               'el rango (usando el \'-\') que desea '
-                              'etiquetar:', 
-                        valor_por_defecto = balas_defecto, 
+                              'etiquetar:',
+                        valor_por_defecto = balas_defecto,
                         padre = self.wids['ventana'])
             if entrada != None:
                 if '-' in entrada:
@@ -3333,9 +3441,9 @@ class PartesDeFabricacionBalas(Ventana):
                         else:
                             a, b = b, a+1
                     except:
-                        utils.dialogo_info(titulo='ERROR', 
+                        utils.dialogo_info(titulo='ERROR',
                             texto = 'Los números de bala introducidos no son '
-                                    'válidos', 
+                                    'válidos',
                             padre = self.wids['ventana'])
                         return
                     valido = True
@@ -3344,10 +3452,10 @@ class PartesDeFabricacionBalas(Ventana):
                             valido = False
                             break
                     if not valido:
-                        utils.dialogo_info(titulo='ERROR', 
+                        utils.dialogo_info(titulo='ERROR',
                             texto='El número de bala %d introducido no '
                                   'pertece al parte.\nCompruébelo y vuelva a'
-                                  ' intentarlo.' % i, 
+                                  ' intentarlo.' % i,
                             padre = self.wids['ventana'])
                         return
                     temp = []
@@ -3357,18 +3465,18 @@ class PartesDeFabricacionBalas(Ventana):
                 else:
                     regexp = re.compile("\d*")
                     try:
-                        balas = [int(i) for i in regexp.findall(entrada) 
+                        balas = [int(i) for i in regexp.findall(entrada)
                                  if i != ""]
                     except:
-                        utils.dialogo_info(titulo='ERROR', 
-                            texto='El texto %s no es válido' % (entrada), 
+                        utils.dialogo_info(titulo='ERROR',
+                            texto='El texto %s no es válido' % (entrada),
                             padre = self.wids['ventana'])
                         return
                     for a in balas:
                         if not self.objeto.balaEnParte(a):
-                            utils.dialogo_info(titulo='ERROR', 
+                            utils.dialogo_info(titulo='ERROR',
                                 texto = 'El número de bala (%i) introducido '
-                                        'no pertece al parte.' % a, 
+                                        'no pertece al parte.' % a,
                                 padre = self.wids['ventana'])
                             return
                     temp = [pclases.Bala.select(pclases.Bala.q.numbala == a)[0]
@@ -3377,8 +3485,8 @@ class PartesDeFabricacionBalas(Ventana):
                 producto = temp[0].articulos[0].productoVenta
                 campos = producto.camposEspecificosBala
                 for b in temp:
-                    pclases.Auditoria.modificado(b.articulo, self.usuario, 
-                        __file__, 
+                    pclases.Auditoria.modificado(b.articulo, self.usuario,
+                        __file__,
                         "Impresión de etiqueta para bala %s" % (
                             b.articulo.get_info()))
                     if campos.antiuv:
@@ -3390,8 +3498,8 @@ class PartesDeFabricacionBalas(Ventana):
                                 'color':str(campos.color),
                                 'peso': utils.float2str(b.pesobala),
                                 'lote': b.lote.codigo,
-                                'tipo': campos.tipoMaterialBala 
-                                  and str(campos.tipoMaterialBala.descripcion) 
+                                'tipo': campos.tipoMaterialBala
+                                  and str(campos.tipoMaterialBala.descripcion)
                                   or "",
                                 'longitud':str(campos.corte),
                                 'nbala':str(b.numbala),
@@ -3406,33 +3514,33 @@ class PartesDeFabricacionBalas(Ventana):
                 except (IOError, OSError), msg:
                     txt = "%spartes_de_fabricacion_balas::etiquetasPeq -> "\
                           "IOError: %s" % (
-                            self.usuario 
-                                and self.usuario.usuario + ": " 
-                                or "", 
+                            self.usuario
+                                and self.usuario.usuario + ": "
+                                or "",
                             msg)
                     self.logger.error(txt)
                     txt = """
-                    Se produjo un error al imprimir la etiqueta. 
-                    Compruebe que queda espacio en la unidad y elimine los    
+                    Se produjo un error al imprimir la etiqueta.
+                    Compruebe que queda espacio en la unidad y elimine los
                     archivos temporales si fuera necesario.
-    
+
                     Información de depuración:
                     %s
                     """ % txt
-                    utils.dialogo_info(titulo = "ERROR DE IMPRESIÓN", 
-                                       texto = txt, 
+                    utils.dialogo_info(titulo = "ERROR DE IMPRESIÓN",
+                                       texto = txt,
                                        padre = self.wids['ventana'])
 
     def _salir(self, w, event = None):
-        if ("w" in self.__permisos 
-            and self.objeto 
-            and not self.objeto.bloqueado 
+        if ("w" in self.__permisos
+            and self.objeto
+            and not self.objeto.bloqueado
             and self.objeto.fecha < mx.DateTime.localtime()-mx.DateTime.oneDay
            ): #Tiene permiso para bloquear el parte y este tiene más de un día.
             res = utils.dialogo(titulo = "DEBE VERIFICAR EL PARTE",
                                 texto = "Antes de cerrar el parte debe verifi"
                                         "carlo.\n¿Marcar como verificado?",
-                                padre = self.wids['ventana'], 
+                                padre = self.wids['ventana'],
                                 bloq_temp = ["Sí"])
             self.objeto.bloqueado = res
             self.wids['ch_bloqueado'].set_active(self.objeto.bloqueado)
@@ -3450,18 +3558,18 @@ class PartesDeFabricacionBalas(Ventana):
             linea = self.linea
             vpro.mover()
             if linea == None:
-                print "WARNING: La línea de fibra no está correctamente dada de alta."
+                myprint("WARNING: La línea de fibra no está correctamente dada de alta.")
                 self.logger.error("partes_de_fabricacion_balas::_salir; La línea de fibra no está correctamente dada de alta.")
             else:
                 vpro.mover()
                 formulacion = linea.formulacion
-                for ca in [ca_con_p for ca_con_p 
-                           in formulacion.consumosAdicionales 
-                           if ca_con_p.productoCompra != None 
+                for ca in [ca_con_p for ca_con_p
+                           in formulacion.consumosAdicionales
+                           if ca_con_p.productoCompra != None
                               and not ca_con_p.productoCompra.obsoleto]:
                     vpro.mover()
                     # Verifico que no haya productos bajo mínimos:
-                    if (ca.productoCompra.existencias 
+                    if (ca.productoCompra.existencias
                             < ca.productoCompra.minimo):
                         vpro.mover()
                         try:
@@ -3469,10 +3577,10 @@ class PartesDeFabricacionBalas(Ventana):
                         except IndexError:
                             txterror = "WARNING: ¡La ventana de pedidos"\
                                        " de compra SE HA PERDIDO!"
-                            print txterror
+                            myprint(txterror)
                             self.logger.warning(txterror)
                         mensaje = "El producto %s tiene las existencias bajo mínimos. Considere hacer un pedido de compra." % ca.productoCompra.descripcion
-                        for u in [p.usuario for p in v.permisos if p.nuevo]: 
+                        for u in [p.usuario for p in v.permisos if p.nuevo]:
                             vpro.mover()
                             u.enviar_mensaje(mensaje)
                     # Y Verifico que no haya existencias negativas:
@@ -3481,7 +3589,7 @@ class PartesDeFabricacionBalas(Ventana):
                         try:
                             v = pclases.Ventana.select(pclases.Ventana.q.fichero == "pedidos_de_compra.py")[0]
                         except IndexError:
-                            print "WARNING: ¡La ventana de pedidos de compra SE HA PERDIDO!"
+                            myprint("WARNING: ¡La ventana de pedidos de compra SE HA PERDIDO!")
                             self.logger.error("¡La ventana de pedidos de compra SE HA PERDIDO!")
                         vpro.mover()
                         mensaje = "El producto %s tiene existencias NEGATIVAS. Corrija el error lo antes posible." % ca.productoCompra.descripcion
@@ -3505,19 +3613,19 @@ class PartesDeFabricacionBalas(Ventana):
         if self.linea != None:
             idldp = self.linea.id
             CAL = pclases.CalendarioLaboral
-            calendarios = CAL.select("""linea_de_produccion_id = %d AND 
-                                        date_part('month', mes_anno) = %d AND 
+            calendarios = CAL.select("""linea_de_produccion_id = %d AND
+                                        date_part('month', mes_anno) = %d AND
                                         date_part('year', mes_anno) = %d""" \
                                         % (idldp, self.objeto.fecha.month, self.objeto.fecha.year))
             if calendarios.count() == 1:
                 calendario = calendarios[0]
                 empleados = self.get_empleados_de_calendario(calendario)
-                # Si hay empleados 
-                if self.objeto.horasTrabajadas != []: 
+                # Si hay empleados
+                if self.objeto.horasTrabajadas != []:
                     # Si no son los mismos del calendario y los quiere borrar.
                     if [ht.empleado for ht in self.objeto.horasTrabajadas] != empleados \
                        and utils.dialogo(titulo = "¿ELIMINAR OPERARIOS?",
-                                     texto = "El parte ya tiene empleados relacionados.\n¿Desea eliminarlos y asociar los definidos en el turno?", 
+                                     texto = "El parte ya tiene empleados relacionados.\n¿Desea eliminarlos y asociar los definidos en el turno?",
                                      padre = self.wids['ventana']):
                         for ht in self.objeto.horasTrabajadas:
                             self.objeto.removeEmpleado(ht.empleado)
@@ -3554,7 +3662,7 @@ class PartesDeFabricacionBalas(Ventana):
                     self.logger.warning("partes_de_fabricacion_balas.py::get_empleados_de_calendario -> Registro laborable ID %d ELIMINADO SATISFACTORIAMENTE." % (idlaborable))
                 except:
                     self.logger.error("partes_de_fabricacion_balas.py::get_empleados_de_calendario -> Registro laborable ID %d NO ELIMINADO." % (laborable.id))
-                print "ERROR: %s" % (mensaje)
+                myprint("ERROR: %s" % (mensaje))
                 continue
             turnohorainicio = utils.DateTime2DateTimeDelta(turno.horainicio)
             turnohorafin = utils.DateTime2DateTimeDelta(turno.horafin)
@@ -3586,24 +3694,24 @@ class PartesDeFabricacionBalas(Ventana):
             silo_marcado = False
             for silo in pclases.Silo.select():
                 silo_marcado = silo_marcado or self.wids['ch_silo_ID%d' % (silo.id)].get_active()
-            # OJO: Número de "silos virtuales" de granza reciclada 
+            # OJO: Número de "silos virtuales" de granza reciclada
             # HARCODED (aquí y arriba).
             silo_marcado = silo_marcado or self.wids['ch_reciclada_0'].get_active() or self.wids['ch_reciclada_1'].get_active()
             if silo_marcado == False:
-                utils.dialogo_info(titulo = "NO PUEDE PRODUCIR", 
+                utils.dialogo_info(titulo = "NO PUEDE PRODUCIR",
                     texto = "¡No puede producir fibra si no marca un "
-                            "silo del que consumir granza!", 
+                            "silo del que consumir granza!",
                     padre = self.wids['ventana'])
         if silo_marcado:
             ventana_pesaje = crear_ventana_pesaje(self,  # @UnusedVariable
                                 padre = self.wids['ventana'])
-    
+
     def consumir_manual(self, boton):
         """
-        Crea un registro de consumo manualmente y unifica los 
+        Crea un registro de consumo manualmente y unifica los
         consumos a continuación.
-        Si algún consumo acaba con cantidad 0 (porque se haya 
-        agregado un consumo negativo que haya restado a otro) 
+        Si algún consumo acaba con cantidad 0 (porque se haya
+        agregado un consumo negativo que haya restado a otro)
         se elimina antes de salir de la rutina.
         """
         # Pedir producto(s) a consumir.
@@ -3617,47 +3725,47 @@ class PartesDeFabricacionBalas(Ventana):
                 if producto_unidad != "":
                     unidad = " en %s" % (producto_unidad)
             except AttributeError, msg:
-                self.logger.error("%sEl producto tipo %s ID %d no tiene atributo unidad. Excepción AttributeError: %s." 
-                    % (self.usuario and self.usuario.usuario + ": " or "", 
-                       type(producto), 
-                       producto != None and producto.id or "NONE", 
+                self.logger.error("%sEl producto tipo %s ID %d no tiene atributo unidad. Excepción AttributeError: %s."
+                    % (self.usuario and self.usuario.usuario + ": " or "",
+                       type(producto),
+                       producto != None and producto.id or "NONE",
                        msg))
             descripcion = producto.descripcion
-            cantidad = utils.dialogo_entrada(titulo = "CANTIDAD", 
+            cantidad = utils.dialogo_entrada(titulo = "CANTIDAD",
                         texto = "Introduzca la cantidad a consumir de %s%s."%(
-                            descripcion, unidad), 
+                            descripcion, unidad),
                         padre = self.wids['ventana'])
             if cantidad != None:
                 try:
                     cantidad_a_consumir = utils._float(cantidad)
                 except (TypeError, ValueError):
-                    utils.dialogo_info(titulo = "ERROR DE FORMATO", 
+                    utils.dialogo_info(titulo = "ERROR DE FORMATO",
                         texto = 'El texto introducido "%s" no es un número.'%(
-                            cantidad), 
+                            cantidad),
                         padre = self.wids['ventana'])
                 else:
                     # Crear consumo.
                     producto.sync()
-                    consumo = pclases.Consumo(silo = None, 
-                        parteDeProduccion = self.objeto, 
-                        productoCompra = producto, 
-                        actualizado = True, 
-                        antes = producto.existencias, 
-                        despues = producto.existencias - cantidad_a_consumir, 
+                    consumo = pclases.Consumo(silo = None,
+                        parteDeProduccion = self.objeto,
+                        productoCompra = producto,
+                        actualizado = True,
+                        antes = producto.existencias,
+                        despues = producto.existencias - cantidad_a_consumir,
                         cantidad = cantidad_a_consumir)
                     pclases.Auditoria.nuevo(consumo, self.usuario, __file__)
                     # Actualizar existencias
                     producto.existencias -= cantidad_a_consumir
                     producto.syncUpdate()
                     producto.add_existencias(-cantidad_a_consumir)
-                    self.logger.warning("%sCONSUMO LÍNEA FIBRA -> PARTE %d -> Consumiendo manualmente %f %s de %s (ID %d). Existencias: %f."  
-                                        % (self.usuario and self.usuario.usuario + ": " or "", 
-                                           self.objeto.id, 
-                                           cantidad_a_consumir, 
-                                           producto.unidad, 
-                                           producto.descripcion, 
-                                           producto.id, 
-                                           producto.existencias)) 
+                    self.logger.warning("%sCONSUMO LÍNEA FIBRA -> PARTE %d -> Consumiendo manualmente %f %s de %s (ID %d). Existencias: %f."
+                                        % (self.usuario and self.usuario.usuario + ": " or "",
+                                           self.objeto.id,
+                                           cantidad_a_consumir,
+                                           producto.unidad,
+                                           producto.descripcion,
+                                           producto.id,
+                                           producto.existencias))
                     # Unificar consumos.
                     self.objeto.unificar_consumos()
                     # Eliminar consumos con cantidad cero.
@@ -3666,9 +3774,9 @@ class PartesDeFabricacionBalas(Ventana):
                             try:
                                 c.destroy(ventana = __file__)
                             except Exception, msg:
-                                self.logger.error("%sConsumo ID %d no se pudo eliminar. Excepción: %s" 
-                                                  % (self.usuario and self.usuario.usuario + ": " or "", 
-                                                     c.id, 
+                                self.logger.error("%sConsumo ID %d no se pudo eliminar. Excepción: %s"
+                                                  % (self.usuario and self.usuario.usuario + ": " or "",
+                                                     c.id,
                                                      msg))
                     self.rellenar_tabla_consumos()
                     # Buscar y crear (si no existe) el albarán interno de consumos.
@@ -3676,27 +3784,27 @@ class PartesDeFabricacionBalas(Ventana):
 
     def add_desecho(self, boton):
         """
-        Crea un registro de consumo de material desechado y 
+        Crea un registro de consumo de material desechado y
         actualiza la tabla.
         """
-        producto = self.buscar_producto_compra(defecto = "", 
+        producto = self.buscar_producto_compra(defecto = "",
                                 titulo_defecto = "BUSCAR PRODUCTO A DESECHAR")
         if producto != None:
-            cantidad = utils.dialogo_entrada(titulo = "INTRODUZCA CANTIDAD", 
+            cantidad = utils.dialogo_entrada(titulo = "INTRODUZCA CANTIDAD",
                         texto = "Teclee la cantidad que se desechará de %s:"%(
-                            producto.descripcion), 
+                            producto.descripcion),
                         padre = self.wids['ventana'])
             if cantidad != None:
                 try:
                     cantidad = utils._float(cantidad)
                 except ValueError:
-                    utils.dialogo_info(titulo = "ERROR EN FORMATO", 
+                    utils.dialogo_info(titulo = "ERROR EN FORMATO",
                         texto="El texto tecleado %s no es un número válido."%(
-                            cantidad), 
+                            cantidad),
                         padre = self.wids['ventana'])
                 else:
                     observaciones = utils.dialogo_entrada(
-                        titulo = "OBSERVACIONES", 
+                        titulo = "OBSERVACIONES",
                         texto = "Teclee, si lo desea, el motivo por el cual "
                                 "la cantidad desechada de %s se considera "
                                 "defectuosa:" % (producto.descripcion),
@@ -3708,8 +3816,8 @@ class PartesDeFabricacionBalas(Ventana):
                         except AssertionError, msg:
                             self.logger.error("%spartes_de_fabricacion_balas::add_desecho -> AssertionError: %s" % (self.usuario and self.usuario.usuario + ": " or "", msg))
                         if desecho.cantidad != cantidad:
-                            utils.dialogo_info(titulo = "EXISTENCIAS INSUFICIENTES", 
-                                               texto = "La cantidad de %s en almacén era inferior a la cantidad tecleada (%s).\nSe ha descontado %s en su lugar." % (desecho.productoCompra.descripcion, utils.float2str(cantidad), utils.float2str(desecho.cantidad)), 
+                            utils.dialogo_info(titulo = "EXISTENCIAS INSUFICIENTES",
+                                               texto = "La cantidad de %s en almacén era inferior a la cantidad tecleada (%s).\nSe ha descontado %s en su lugar." % (desecho.productoCompra.descripcion, utils.float2str(cantidad), utils.float2str(desecho.cantidad)),
                                                padre = self.wids['ventana'])
                         self.objeto.unificar_desechos()
                         self.rellenar_tabla_desechos()
@@ -3727,8 +3835,8 @@ class PartesDeFabricacionBalas(Ventana):
                     ddm.anular()
                 except AssertionError, msg:
                     self.logger.error("%spartes_de_fabricacion_balas::drop_desecho -> AssertionError: %s" % (self.usuario and self.usuario.usuario + ": " or "", msg))
-                    utils.dialogo_info(titulo = "ERROR", 
-                                       texto = "Ocurrió un error anulando un descuento de material.\nPulse «Aceptar» para continuar.\n\n\n\nInformación de depuración:\n\n%s" % (msg), 
+                    utils.dialogo_info(titulo = "ERROR",
+                                       texto = "Ocurrió un error anulando un descuento de material.\nPulse «Aceptar» para continuar.\n\n\n\nInformación de depuración:\n\n%s" % (msg),
                                        padre = self.wids['ventana'])
                 self.rellenar_tabla_desechos()
                 self.objeto.unificar_desechos()
@@ -3739,7 +3847,7 @@ def crear_ventana_pesaje(ventana_parte, padre = None):
     """
     Crea una ventana de pesaje.
     Necesita python-serial.
-    Se usa "COM1" como puerto si el sistema es MS-Windows. "/dev/ttyS0" o 
+    Se usa "COM1" como puerto si el sistema es MS-Windows. "/dev/ttyS0" o
     "/dev/ttyS1" (por este orden) si el sistema es GNU/Linux.
     """
     import gobject
@@ -3755,28 +3863,28 @@ def crear_ventana_pesaje(ventana_parte, padre = None):
         e_numbala.set_text("B%s" % (proximo_numbala))
         ventana.show_all()
     else:
-        utils.dialogo_info(titulo = "ERROR PUERTO SERIE", 
-            texto = "Fue imposible determinar y abrir el puerto serie.", 
+        utils.dialogo_info(titulo = "ERROR PUERTO SERIE",
+            texto = "Fue imposible determinar y abrir el puerto serie.",
             padre = ventana_parte.wids['ventana'])
 
-def leer_nueva_bala(boton, l_peso, l_estable, e_numbala, ventana_parte, 
+def leer_nueva_bala(boton, l_peso, l_estable, e_numbala, ventana_parte,
                     l_peso2):
     """
     Crea una nueva bala tomando el peso del label.
-    Si l_estable es distinto de "Estable" da error y 
+    Si l_estable es distinto de "Estable" da error y
     no crea la bala. Si crea la bala, actualiza e_numbala.
     """
     peso_str = l_peso2.get_text().replace("[", "").replace("]", "").strip()
     try:
         peso = float(peso_str)
     except ValueError:
-        utils.dialogo_info(titulo = "PESO INCORRECTO", 
-                           texto = '"%s" no es un peso correcto.' % (peso_str), 
+        utils.dialogo_info(titulo = "PESO INCORRECTO",
+                           texto = '"%s" no es un peso correcto.' % (peso_str),
                            padre = ventana_parte.wids['ventana'])
     else:
         if l_estable.get_text().lower() != "estable":
-            utils.dialogo_info(titulo = "PESO NO ESTABILIZADO", 
-                texto = "Debe esperar a que se estabilice la báscula.", 
+            utils.dialogo_info(titulo = "PESO NO ESTABILIZADO",
+                texto = "Debe esperar a que se estabilice la báscula.",
                 padre = ventana_parte.wids['ventana'])
         else:
             codigo_bala = e_numbala.get_text()
@@ -3784,11 +3892,11 @@ def leer_nueva_bala(boton, l_peso, l_estable, e_numbala, ventana_parte,
                 numbala = int(
                     codigo_bala.upper().replace("B", "").replace("L", ""))
             except ValueError:
-                utils.dialogo_info(titulo = "BALA INCORRECTA", 
-                                   texto = "El código %s no es correcto.", 
+                utils.dialogo_info(titulo = "BALA INCORRECTA",
+                                   texto = "El código %s no es correcto.",
                                    padre = ventana_parte.wids['ventana'])
             else:
-                nueva_bala = crear_nueva_bala(numbala, codigo_bala, peso, 
+                nueva_bala = crear_nueva_bala(numbala, codigo_bala, peso,
                                               ventana_parte)
                 if nueva_bala != None:
                     ultimo_mas_uno = pclases.Bala._queryOne("""
@@ -3798,36 +3906,36 @@ def leer_nueva_bala(boton, l_peso, l_estable, e_numbala, ventana_parte,
 
 def crear_nueva_bala(numbala, codigo_bala, peso, ventana_parte):
     """
-    Crea un nuevo artículo y su bala asociada y lo relaciona 
+    Crea un nuevo artículo y su bala asociada y lo relaciona
     con el parte de la ventana. Actualiza también la ventana
-    del parte para ver los cambios en tiempo real e imprime 
+    del parte para ver los cambios en tiempo real e imprime
     la etiqueta.
     Devuelve la bala creada o None si ocurrió algún problema.
     """
     bala = None
     lote = ventana_parte.get_lote()
     if ventana_parte.comprobar_configuracion_consumos_silo() and \
-       lote != None and isinstance(lote, pclases.Lote):     # De momento esto 
+       lote != None and isinstance(lote, pclases.Lote):     # De momento esto
                                             # no vale para fibra de cemento.
         balas = pclases.Bala.select(pclases.Bala.q.codigo == codigo_bala)
         if balas.count() == 0:
-            bala = pclases.Bala(lote = lote, 
-                                partidaCarga = None, 
-                                numbala = numbala, 
-                                codigo = codigo_bala, 
-                                pesobala = peso, 
-                                muestra = False, 
-                                claseb = False, 
+            bala = pclases.Bala(lote = lote,
+                                partidaCarga = None,
+                                numbala = numbala,
+                                codigo = codigo_bala,
+                                pesobala = peso,
+                                muestra = False,
+                                claseb = False,
                                 motivo = "")
             pclases.Auditoria.nuevo(bala, ventana_parte.usuario, __file__)
             parte = ventana_parte.objeto
             producto = ventana_parte.producto
-            articulo = pclases.Articulo(bala = bala, 
-                            rollo = None, 
-                            bigbag = None, 
-                            parteDeProduccion = parte, 
-                            albaranSalida = None, 
-                            productoVenta = producto, 
+            articulo = pclases.Articulo(bala = bala,
+                            rollo = None,
+                            bigbag = None,
+                            parteDeProduccion = parte,
+                            albaranSalida = None,
+                            productoVenta = producto,
                             almacen = pclases.Almacen.get_almacen_principal())
             pclases.Auditoria.nuevo(articulo, ventana_parte.usuario, __file__)
             ventana_parte.descontar_material_adicional(articulo)
@@ -3837,15 +3945,15 @@ def crear_nueva_bala(numbala, codigo_bala, peso, ventana_parte):
                 txt = "%spartes_de_fabricacion_balas::crear_nueva_bala -> IOError: %s" % (ventana_parte.usuario and ventana_parte.usuario.usuario + ": " or "", msg)
                 ventana_parte.logger.error(txt)
                 txt = """
-                Se produjo un error al imprimir la etiqueta. 
-                Compruebe que queda espacio en la unidad y elimine los       
+                Se produjo un error al imprimir la etiqueta.
+                Compruebe que queda espacio en la unidad y elimine los
                 archivos temporales si fuera necesario.
 
                 Información de depuración:
                 %s
                 """ % txt
-                utils.dialogo_info(titulo = "ERROR DE IMPRESIÓN", 
-                                   texto = txt, 
+                utils.dialogo_info(titulo = "ERROR DE IMPRESIÓN",
+                                   texto = txt,
                                    padre = ventana_parte.wids['ventana'])
             ventana_parte.actualizar_ventana()
     return bala
@@ -3867,7 +3975,7 @@ def imprimir_etiqueta(articulo, ventana_parte):
                 'color': campos.color,
                 'peso': utils.float2str(b.pesobala),
                 'lote': b.lote.codigo,
-                'tipo': campos.tipoMaterialBala 
+                'tipo': campos.tipoMaterialBala
                             and campos.tipoMaterialBala.descripcion or "",
                 'longitud': str(campos.corte),
                 'nbala': str(b.numbala),
@@ -3879,12 +3987,12 @@ def imprimir_etiqueta(articulo, ventana_parte):
     # reports.abrir_pdf(geninformes.etiquetasBalasEtiquetadora(balas))
     reports.mandar_a_imprimir_con_ghostscript(
         geninformes.etiquetasBalasEtiquetadora(balas))
-    pclases.Auditoria.modificado(articulo, None, __file__, 
+    pclases.Auditoria.modificado(articulo, None, __file__,
             "Impresión de etiqueta para bala %s." % (articulo.get_info()))
 
 def build_ventana(padre):
     """
-    Construye un gtk.Window con los widgets 
+    Construye un gtk.Window con los widgets
     para el control del pesaje automático.
     """
     ventana = gtk.Window()
@@ -3927,7 +4035,7 @@ def build_ventana(padre):
 
 def cerrar_ventana_bascula(boton, ventana, com, src_id):
     """
-    Cierra (destruye, más bien) la ventana de 
+    Cierra (destruye, más bien) la ventana de
     pesaje y cierra el puerto serie.
     """
     import gobject
@@ -3956,17 +4064,17 @@ def recv_serial(com, ventana, l_peso, ventana_parte, e_numbala, l_estable, l_pes
                 c = "" # Basurilla. La lectura no es perfecta. Vuelvo a iterar.
         except UnicodeDecodeError:
             c = ""  # Ha leído mierda. Vuelvo a iterar.
-    com.flushInput()    # Evito que datos antiguos se queden en el 
+    com.flushInput()    # Evito que datos antiguos se queden en el
     com.flush()         # buffer impidiendo nuevas lecturas.
     if c.strip() != '':
         # Tratar
         try:
             estable, algo, peso_str = c.split()  # @UnusedVariable
         except ValueError, msg:  # @UnusedVariable
-            # utils.dialogo_info(titulo = "ERROR DE PESAJE", 
-            #                    texto = "Ocurrió un error en la comunicación con la báscula.\nCierre y vuelva a abrir la ventana de lectura de báscula.", 
+            # utils.dialogo_info(titulo = "ERROR DE PESAJE",
+            #                    texto = "Ocurrió un error en la comunicación con la báscula.\nCierre y vuelva a abrir la ventana de lectura de báscula.",
             #                    padre = ventana_parte.wids['ventana'])
-            # print c, msg
+            # myprint(c, msg)
             # No ha leído bien. Salgo y lo volveré a leer en la siguiente iteración.
             pass
         else:
@@ -3981,27 +4089,31 @@ def recv_serial(com, ventana, l_peso, ventana_parte, e_numbala, l_estable, l_pes
             l_estable.set_use_markup(True)
             l_estable.set_justify(gtk.JUSTIFY_CENTER)
             l_estable.set_property('xalign', 0.5)
-        
+
             try:
                 peso = float(peso_str)
                 if peso % 1 != 0:   # Le quito un kilo
                     peso_sin = peso - 1.0
                 else:   # CWT: Le quito kilo y medio si es peso "redondo"
-                    peso_sin = peso - 1.5   
-                l_peso.set_text('<b><span color="dark green">%s</span></b>' % (utils.float2str(peso)))
-                l_peso2.set_text('<b><big><span color="dark green">%s</span></big></b>' % (utils.float2str(peso_sin)))
+                    peso_sin = peso - 1.5
+                l_peso.set_text('<b><span color="dark green">%s</span></b>' % (
+                    utils.float2str(peso)))
+                l_peso2.set_text('<b><big><span color="dark green">'
+                    '%s</span></big></b>' % (utils.float2str(peso_sin)))
             except ValueError:
                 peso = 0
-                l_peso.set_text('<b><big><span color="dark green">ERROR</span></big></b>')
-                l_peso2.set_text('<b><big><span color="dark green">ERROR</span></big></b>')
+                l_peso.set_text('<b><big><span color="dark green">'
+                    'ERROR</span></big></b>')
+                l_peso2.set_text('<b><big><span color="dark green">'
+                    'ERROR</span></big></b>')
             l_peso.set_use_markup(True)
             l_peso2.set_use_markup(True)
-    #DEBUG:         print "Recibido peso: %s" % (peso_str)  #DEBUG:
-    return True 
+    #DEBUG:         myprint("Recibido peso: %s" % (peso_str)) #DEBUG:
+    return True
 
 def imprimir_etiquetas_bigbags(lista_bbs_defecto = [], ventana_parte = None):
     """
-    Muestra un diálogo donde introducir los CÓDIGOS (completos, "Cxxx") de 
+    Muestra un diálogo donde introducir los CÓDIGOS (completos, "Cxxx") de
     bigbags a imprimir y construye y muestra el PDF.
     """
     if ventana_parte != None:
@@ -4009,18 +4121,20 @@ def imprimir_etiquetas_bigbags(lista_bbs_defecto = [], ventana_parte = None):
     else:
         ventana_padre = None
     codigos = utils.dialogo_pedir_codigos(
-        titulo = "INTRODUZCA CÓDIGOS DE BIGBAGS", 
-        texto = "Introduzca códigos de bigbags separados por coma o espacios."
+        titulo="INTRODUZCA CÓDIGOS DE BIGBAGS",
+        texto="Introduzca códigos de bigbags separados por coma o espacios."
                 "\nPuede introducir también rangos separados por guión.",
-        padre = ventana_padre, 
-                                          valor_por_defecto = lista_bbs_defecto)
-    if codigos != None:     # Es None si cancela.
+        padre=ventana_padre,
+        valor_por_defecto=lista_bbs_defecto)
+    if codigos is not None:     # Es None si cancela.
         bigbags = []
         no_encontrados = []
         for codigo in codigos:
-            if "C" in codigo.upper():       # OJO: Si cambia el tema de que los códigos de geocem empiecen por "C", cambiar aquí también.
+            if "C" in codigo.upper():       # OJO: Si cambia el tema de que
+                # los códigos de geocem empiecen por "C", cambiar aquí también.
                 try:
-                    bb = pclases.Bigbag.select(pclases.Bigbag.q.codigo == codigo)[0]
+                    bb = pclases.Bigbag.select(
+                            pclases.Bigbag.q.codigo == codigo)[0]
                 except IndexError:
                     no_encontrados.append(codigo)
                     continue
@@ -4028,7 +4142,8 @@ def imprimir_etiquetas_bigbags(lista_bbs_defecto = [], ventana_parte = None):
                     bigbags.append(bb)
             else:
                 try:
-                    bb = pclases.Bigbag.select(pclases.Bigbag.q.numbigbag == codigo)[0]
+                    bb = pclases.Bigbag.select(
+                            pclases.Bigbag.q.numbigbag == codigo)[0]
                 except (ValueError, IndexError):
                     no_encontrados.append(codigo)
                     continue
@@ -4036,9 +4151,10 @@ def imprimir_etiquetas_bigbags(lista_bbs_defecto = [], ventana_parte = None):
                     bigbags.append(bb)
         reports.abrir_pdf(geninformes.etiquetasBigbags(bigbags))
         for bb in bigbags:
-            pclases.Auditoria.modificado(bb.articulo, None, __file__, 
+            pclases.Auditoria.modificado(bb.articulo, None, __file__,
                 "Impresión de etiqueta para bigbag %s." % (
                     bb.articulo.get_info()))
+
 
 def mostrar_carga_silo(label, silo):
     """
@@ -4049,13 +4165,13 @@ def mostrar_carga_silo(label, silo):
     capacidad = silo.capacidad
     if ocupado < capacidad / 4:
         strocupado = '<span foreground="red">%s</span>' % strocupado
-    label.set_text(" %s/<small>%s</small> " % (
-                    strocupado, 
-                    utils.float2str(capacidad/1000, 0) + '<i>k</i>'))
+    label.set_text(" %s/<small>%s</small> " % (strocupado,
+                   utils.float2str(capacidad/1000, 0) + '<i>k</i>'))
     label.set_use_markup(True)
 
+
 def entran_en_turno(selfobjeto, hi, hf):
-    # TODO: Falta comprobar que además de que entran en el turno no se 
+    # TODO: Falta comprobar que además de que entran en el turno no se
     # pisen con otras incidencias del mismo parte.
     hini = mx.DateTime.DateTimeDeltaFrom(':'.join(map(str, hi.tuple()[3:6])))
     hfin = mx.DateTime.DateTimeDeltaFrom(':'.join(map(str, hf.tuple()[3:6])))
@@ -4071,12 +4187,33 @@ def entran_en_turno(selfobjeto, hi, hf):
         hini_dentro = hini >= tini and hini <= tfin
         hfin_dentro = hfin >= tini and hfin <= tfin
     else:
-        hini_dentro = hini >= tini or hini <= tfin 
-        hfin_dentro = hfin >= tini or hfin <= tfin 
+        hini_dentro = hini >= tini or hini <= tfin
+        hfin_dentro = hfin >= tini or hfin <= tfin
     return hini_dentro and hfin_dentro
 
 
- 
+def check_last_balas_bien_creadas(logger = None):
+    """
+    Compruebo que la última bala está bien creada para evitarme
+    problemas. He tenido un par de casos en los que se ha ido la luz y
+    deja el parte inusable a causa de esto.
+    """
+    max_a_comprobar = 2
+    i = 0
+    for i in range(max_a_comprobar):
+        bala = pclases.Bala.select(orderBy = "-id")[i]
+        try:
+            a = bala.articulo
+        except IndexError:
+            txtmsg = "partes_de_fabricacion_balas::"\
+                     "rellenar_widgets -> Elimino bala «huérfana» de "\
+                     "artículo %s." % bala.puid
+            if logger:
+                logger.warning(txtmsg)
+            myprint(txtmsg)
+            bala.destroy(ventana = __file__)
+    # EOComprobación
+
+
 if __name__ == "__main__":
     p = PartesDeFabricacionBalas()
-

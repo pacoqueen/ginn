@@ -48,7 +48,11 @@ from formularios.consulta_producido import str_horas, detectar_hueco, \
 import pango
 from formularios.consulta_ventas_por_producto import act_fecha
 from lib.myprint import myprint
-from collections import OrderedDict, defaultdict
+from collections import defaultdict
+try:
+    from collections import OrderedDict
+except ImportError:
+    from lib.ordereddict import OrderedDict
 from ventana_progreso import VentanaProgreso
 from formularios.custom_widgets.gtkcairoplot import GtkCairoPlot, HORIZONTAL
 
