@@ -1633,6 +1633,10 @@ class FacturasDeEntrada(Ventana):
                 v.destroy(ventana = __file__)
             #factura.destroy_en_cascada(ventana = __file__)
             borrado = factura.destroy(ventana = __file__)
+        try:
+            self.objeto.sync()
+        except pclases.SQLObjectNotFound:
+            borrado = True
         if borrado:
             self.ir_a_primero()
         self.actualizar_ventana()
