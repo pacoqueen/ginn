@@ -1920,7 +1920,7 @@ class PartesDeFabricacionBalas(Ventana):
                                ye_olde_fecha, ye_olde_horainicio,
                                ye_olde_horafin)
         # Guardo configuración de silos
-        self.save_config_silos()
+        self.save_conf_silos()
         # Fuerzo la actualización de la BD y no espero a que SQLObject lo haga por mí:
         partedeproduccion.syncUpdate()
         # Vuelvo a activar el notificador
