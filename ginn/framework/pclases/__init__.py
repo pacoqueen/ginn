@@ -4699,7 +4699,7 @@ class Bala(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
-    def _get_en_almacen_actualmente(productoVenta = None, almacen = None):
+    def _buscar_en_almacen_actualmente(productoVenta = None, almacen = None):
         """
         Devuelve una tupla de objetos bala en almacén (cualquiera) y en la
         fecha actual. Si productoVenta no es None, devuelve las balas
@@ -4720,7 +4720,7 @@ class Bala(SQLObject, PRPCTOO):
         balas = SQLtuple(balas)
         return balas
 
-    _get_en_almacen_actualmente = staticmethod(_get_en_almacen_actualmente)
+    _buscar_en_almacen_actualmente = staticmethod(_buscar_en_almacen_actualmente)
 
     def get_articulo(self):
         """
@@ -5359,7 +5359,8 @@ class PartidaCarga(SQLObject, PRPCTOO):
         albaran = AlbaranSalida(numalbaran = numalbaran,
                                 transportista = None,
                                 cliente = cliente,
-                                facturable = True,
+                                facturable = True,  # ¡¿Por qué se crean los
+                                    # albaranes internos como facturables?!
                                 destino = None,
                                 #fecha = self.fecha,
                                 fecha = fecha_albaran_interno,
@@ -5427,7 +5428,8 @@ class PartidaCarga(SQLObject, PRPCTOO):
         """
         cliente = DatosDeLaEmpresa.get_cliente()
         if cliente == None:
-            myprint("pclases.py::class PartidaCarga::crear_albaran_interno-> No se pudo encontrar propia empresa como cliente.")
+            myprint("pclases.py::class PartidaCarga::crear_albaran_interno ->"
+                    " No se pudo encontrar propia empresa como cliente.")
             albaran = None
         else:
             balas = self.get_balas_sin_albaran_interno()
@@ -13345,7 +13347,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                 try:
                     if not hasta:
                         # Listado de objetos Bala en almacén ACTUALMENTE.
-                        balas = Bala._get_en_almacen_actualmente(
+                        balas = Bala._buscar_en_almacen_actualmente(
                                       productoVenta = self, almacen = almacen)
                     else:
                         balas=self.__get_balas_hasta(hasta, almacen = almacen)

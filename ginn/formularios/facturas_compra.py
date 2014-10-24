@@ -711,8 +711,6 @@ class FacturasDeEntrada(Ventana):
             model = self.wids['tv_ldvs'].get_model()
             model.clear()
             for l in lineas:
-                # PORASQUI: (mrodriguez) ¿De qué forma consigo que se respete
-                # el orden en que se agregan desde los albaranes (o se crean)?
                 model.append(None, (l.productoCompra.codigo,
                                     l.productoCompra.descripcion,
                                     utils.float2str(l.cantidad),

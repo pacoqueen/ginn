@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -109,7 +109,7 @@ class ConsumoBalasPartida(Ventana):
                 ("Producto", "gobject.TYPE_STRING", False, True, False, None),
                 ("ID", "gobject.TYPE_STRING", False, False, False, None))
         utils.preparar_listview(self.wids['tv_gtx'], cols)
-        if self.objeto == None:
+        if self.objeto is None:
             self.ir_a_primero()
         else:
             self.ir_a(objeto)
@@ -123,10 +123,10 @@ class ConsumoBalasPartida(Ventana):
                 titulo="NÚMERO DE PARTIDA DE GEOTEXTILES",
                 texto="Introduzca el número de partida de geotextiles",
                 padre=self.wids['ventana'])
-        if numpartida != None:
+        if numpartida is not None:
             numpartida = numpartida.upper().strip().replace("P-", "")
             numpartida = utils.parse_numero(numpartida)
-            if numpartida == None:
+            if numpartida is None:
                 encontradas = 0
             else:
                 partida = pclases.Partida.select(
@@ -137,7 +137,7 @@ class ConsumoBalasPartida(Ventana):
                     encontradas = 0
             if encontradas == 1:
                 partida = partida[0]
-                if partida.partidaCargaID != None:
+                if partida.partidaCargaID is not None:
                     if utils.dialogo(titulo="PARTIDA USADA",
                             texto="La partida de geotextiles %s ya se agregó "
                                   "a la partida de carga %s.\n"
@@ -189,12 +189,12 @@ class ConsumoBalasPartida(Ventana):
         """
         try:
             # Anulo el aviso de actualización del envío que deja de ser activo.
-            if self.objeto != None:
+            if self.objeto is not None:
                 self.objeto.notificador.desactivar()
             self.objeto = pclases.PartidaCarga.select(
                     orderBy="-numpartida")[0]   # Selecciono todos y me quedo
                                                 # con el primero de la lista
-            self.objeto.notificador.activar(self.aviso_actualizacion) # Activo
+            self.objeto.notificador.activar(self.aviso_actualizacion)  # Activo
                                                              # la notificación
         except IndexError:
             self.objeto = None
@@ -211,7 +211,7 @@ class ConsumoBalasPartida(Ventana):
         Copia los valores del objeto a los widgets de la ventana.
         """
         partida = self.get_partida()
-        if partida != None:
+        if partida is not None:
             self.wids['e_partida'].set_text("%d (%s)" % (partida.numpartida,
                                                          partida.codigo))
             self.wids['e_fecha'].set_text(utils.str_fechahora(partida.fecha))
@@ -374,7 +374,7 @@ class ConsumoBalasPartida(Ventana):
         model.clear()
         cantidad = 0
         partida = self.get_partida()
-        if partida != None:
+        if partida is not None:
             vpro = VentanaProgreso(padre=self.wids['ventana'])
             vpro.mostrar()
             i = 0.0
@@ -419,8 +419,8 @@ class ConsumoBalasPartida(Ventana):
                 productos[lote_id]['peso'] += bala.pesobala
                 productos[lote_id]['cantidad'] += 1
 
-                if consumos_estimados >= bala.pesobala: # Se ha gastado la
-                                                        # bala entera.
+                if consumos_estimados >= bala.pesobala:  # Se ha gastado la
+                                                         # bala entera.
                     porcion_consumida = 100
                     consumos_estimados -= bala.pesobala
                 else:
@@ -513,22 +513,22 @@ class ConsumoBalasPartida(Ventana):
         """
         Agrega una bala a la partida de carga y actualiza el TreeView.
         """
-        if self.get_partida() == None:
+        if self.get_partida() is None:
             utils.dialogo_info(titulo='ELIJA PARTIDA',
                                texto='Debe seleccionar antes una partida.',
                                padre=self.wids['ventana'])
             return
         rango = utils.dialogo_pedir_rango(padre=self.wids['ventana'])
         propia_cliente = pclases.DatosDeLaEmpresa.get_cliente()
-        if rango == None:
+        if rango is None:
             return
         elif rango == '':
             balas = pclases.Bala.select(pclases.Bala.q.partidaID == None)
             balas = [(b.id, b.numbala, b.pesobala)
                      for b in balas
-                     if b.analizada() and
-                         (b.albaranSalida == None
-                          or b.albaranSalida.cliente == propia_cliente)]
+                     if b.analizada() and b.en_almacen()]
+                     #    and (b.albaranSalida is None
+                     #         or b.albaranSalida.cliente == propia_cliente)]
             resp = utils.dialogo_resultado(balas,
                                 'SELECCIONE BALAS',
                                 cabeceras=('ID', 'Número de bala', 'Peso'),
@@ -547,10 +547,10 @@ class ConsumoBalasPartida(Ventana):
                                   'comsumir la bala de fibra?',
                             padre=self.wids['ventana']):
                         bala.partida = partida
-                        bala.articulo.almacen = None # La saco del almacén.
+                        bala.articulo.almacen = None    # La saco del almacén.
                 else:
                     bala.partida = partida
-                    bala.articulo.almacen = None # La saco del almacén.
+                    bala.articulo.almacen = None        # La saco del almacén.
         else:
             self.logger.warning("%sconsumo_balas_partida::add_bala -> "
                     "Añadiendo carga de cuarto manual." % (
@@ -562,8 +562,9 @@ class ConsumoBalasPartida(Ventana):
                     pclases.Bala.q.partidaCargaID == None))
                 try:
                     bala = [b for b in balas if b.analizada() and
-                            (b.albaranSalida == None
-                             or b.albaranSalida.cliente == propia_cliente)][0]
+                            b.en_almacen()][0]
+                            #and (b.albaranSalida == None
+                            # or b.albaranSalida.cliente == propia_cliente)][0]
                     # Numbala es UNIQUE. Sólo encontrará uno (o ninguno). (En
                     # todo caso dos: normal y "D", con número igual pero
                     # negativo)
@@ -755,9 +756,9 @@ class ConsumoBalasPartida(Ventana):
                     self.usuario and self.usuario.usuario + ": " or ""))
         datos = None
         cancelar = False
-        while datos == None and not cancelar:
+        while datos is None and not cancelar:
             datos = utils.descargar_phaser(logger=self.logger)
-            if datos == None:
+            if datos is None:
                 cancelar = not utils.dialogo(titulo="¿VOLVER A INTENTAR?",
                             texto="Se ha superado el tiempo de espera.\n"
                                   "¿Desea continuar?\n\n(Pulse SÍ para volver"
@@ -793,7 +794,7 @@ class ConsumoBalasPartida(Ventana):
         """
         if self.introducir_balas_en_partida(lista_balas, partida):
             albaran = partida.crear_albaran_interno()
-            if albaran != None:
+            if albaran is not None:
                 utils.dialogo_info(titulo="ALBARÁN INTERNO CREADO",
                     texto="Albarán %s creado para la partida %s con %d balas."
                           "\n\nPulse «Aceptar» para continuar." % (
@@ -831,13 +832,13 @@ class ConsumoBalasPartida(Ventana):
         if malas != []:
             texto_balas_malas = ""
             for bala_mala in malas:
-                if bala_mala.partidaCargaID != None:
+                if bala_mala.partidaCargaID is not None:
                     motivo = "Usada en partida de carga %s." % (
                             bala_mala.partidaCarga.codigo)
                 elif not bala_mala.analizada():
                     motivo = "Bala perteneciente al lote no analizado %s." % (
                             bala_mala.lote.codigo)
-                elif bala_mala.albaranSalida != None:
+                elif bala_mala.albaranSalida is not None:
                     motivo = "Vendida en albarán %s." % (
                             bala_mala.albaranSalida.numalbaran)
                 texto_balas_malas += " - %s: %s\n" % (bala_mala.codigo, motivo)
@@ -847,7 +848,7 @@ class ConsumoBalasPartida(Ventana):
                       + texto_balas_malas
                       + "\n\nPulse «Aceptar» para continuar.",
                 padre=self.wids['ventana'])
-        if buenas != []:
+        if buenas: 
             utils.dialogo_info(titulo="BALAS CORRECTAS",
                 texto="%d balas correctamente importadas a la partida %s.\n"
                       "\nPulse «Aceptar» para continuar." % (
@@ -860,7 +861,7 @@ class ConsumoBalasPartida(Ventana):
         Muestra el diálogo calendario y establece la fecha de la partida.
         """
         partida = self.get_partida()
-        if partida != None:
+        if partida is not None:
             fecha = utils.mostrar_calendario(fecha_defecto=partida.fecha,
                                              padre=self.wids['ventana'])
             fecha = utils.parse_fecha(utils.str_fecha(fecha))
@@ -877,7 +878,7 @@ class ConsumoBalasPartida(Ventana):
         Si no hay producción aún, deja la actual.
         """
         partida = self.get_partida()
-        if partida != None:
+        if partida is not None:
             fecha = partida.get_fecha_inicio()
             if fecha:
                 partida.fecha = fecha
@@ -891,7 +892,7 @@ class ConsumoBalasPartida(Ventana):
         Si no hay albarán interno, deja la actual.
         """
         partida = self.get_partida()
-        if partida != None:
+        if partida is not None:
             fecha = partida.get_fecha_inicio()
             if fecha:
                 albaranes_internos = list(partida.get_albaranes_internos())
@@ -923,4 +924,3 @@ def func_orden_balas(bala1, bala2):
 
 if __name__ == '__main__':
     ConsumoBalasPartida()
-

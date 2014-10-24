@@ -3583,7 +3583,14 @@ def generar_pdf_presupuesto(objeto_presupuesto):
     import importlib
     presupuesto = importlib.import_module("." + modulo, "informes")
     #exec "import %s as presupuesto" % modulo
-    pdf_presupuesto = presupuesto.go_from_presupuesto(objeto_presupuesto)
+    if (not objeto_presupuesto.pais 
+            or objeto_presupuesto.pais.upper()[:3] == "ESP"):
+        # Por defecto (sin país especificado) o España, lang = español
+        lang = "es"
+    else:   # Otros casos, inglés.
+        lang = "en"
+    pdf_presupuesto = presupuesto.go_from_presupuesto(objeto_presupuesto,
+                                                      idoma = lang)
     return pdf_presupuesto
 
 def prepare_for_xls(cadena):

@@ -338,11 +338,16 @@ def go(titulo,
        forma_de_pago = None, 
        dir_fiscal = None, 
        firma_comercial = None, 
-       para_estudio = False):
+       para_estudio = False,
+       idioma = "es"):
     """
     Recibe el título del documento y la ruta completa del archivo.
     Si validez != None escribe una frase con la validez del presupuesto.
     """
+    if idioma not in ("en", "es"):
+        raise NotImplementedError,\
+                __file__ + ": Idioma '%s' no implementado." % idioma
+    # PORASQUI: Traduciendo ~/Geotexan/doc/Programación/20130701 - Ofertas de comerciales/condicionado_general_english.odt
     doc = SimpleDocTemplate(ruta_archivo, title = titulo)
     encabezado = build_encabezado(lineas_datos_empresa)
     try:
@@ -408,7 +413,8 @@ def go(titulo,
     return ruta_archivo
 
 def go_from_presupuesto(presupuesto, 
-                        incluir_condicionado_general = True):
+                        incluir_condicionado_general = True,
+                        idioma = "es"):
     """
     Construye el PDF a partir de un objeto presupuesto y no de sus datos 
     sueltos.
