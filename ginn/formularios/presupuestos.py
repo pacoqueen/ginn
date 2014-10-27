@@ -3590,7 +3590,7 @@ def generar_pdf_presupuesto(objeto_presupuesto):
     else:   # Otros casos, inglés.
         lang = "en"
     pdf_presupuesto = presupuesto.go_from_presupuesto(objeto_presupuesto,
-                                                      idoma = lang)
+                                                      idioma = lang)
     return pdf_presupuesto
 
 def prepare_for_xls(cadena):

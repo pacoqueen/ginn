@@ -195,40 +195,62 @@ class ConsultaVencimientosPagos(Ventana):
                                     fechaEmision = fecha_pago, 
                                     fechaCobrado = None)
         pclases.Auditoria.nuevo(pagare, self.usuario, __file__)
+        erroneos = []
         for path in paths:
             itr = model.get_iter(path)
             ide = model[itr][-1]
             if model[itr][0] == "LOGIC":
-                logic = pclases.LogicMovimientos.get(ide)
-                fechavto = self.get_fecha_vto_logic(logic)
-                importe = logic.importe
-                factura = None
-                observaciones = logic.cuenta
-                proveedor = None
                 vencimiento = None
+                try:
+                    logic = pclases.LogicMovimientos.get(ide)
+                except pclases.SQLObjectNotFound:
+                    logic = None
+                    erroneos.append(model[6])
+                else:
+                    fechavto = self.get_fecha_vto_logic(logic)
+                    importe = logic.importe
+                    factura = None
+                    observaciones = logic.cuenta
+                    proveedor = None
             else:
-                vencimiento = pclases.VencimientoPago.get(ide)
-                fechavto = vencimiento.fecha
-                #importe = vencimiento.importe
-                importe = vencimiento.calcular_importe_pdte()
-                factura = vencimiento.facturaCompra
-                observaciones = ''
-                proveedor = vencimiento.facturaCompra and vencimiento.facturaCompra.proveedor or None
                 logic = None
-            pago = pclases.Pago(facturaCompra = factura, 
-                                proveedor = proveedor, 
-                                logicMovimientos = logic, 
-                                pagarePago = pagare, 
-                                fecha = fechavto,
-                                importe = importe, 
-                                observaciones = observaciones)
-            pclases.Auditoria.nuevo(pago, self.usuario, __file__)
-            # Actualizo campos del pagaré: 
-            pagare.fechaPago = fechavto     # Se quedará con la fecha del vencimiento de lo último seleccionado. Todas deberían ser la misma, de cualquier modo.
-            pagare.cantidad += importe
-            pagare.observaciones += "%s" % (observaciones != "" and "\nCuenta logic: %s" % (observaciones) or "") 
-            pagare.sync()
-            ####
+                try:
+                    vencimiento = pclases.VencimientoPago.get(ide)
+                except pclases.SQLObjectNotFound:
+                    vencimiento = None
+                    erroneos.append(model[0])
+                else:
+                    fechavto = vencimiento.fecha
+                    #importe = vencimiento.importe
+                    importe = vencimiento.calcular_importe_pdte()
+                    factura = vencimiento.facturaCompra
+                    observaciones = ''
+                    proveedor = (vencimiento.facturaCompra
+                            and vencimiento.facturaCompra.proveedor or None)
+            if logic or vencimiento: # Si ambos None, el registro fue borrado
+                pago = pclases.Pago(facturaCompra = factura, 
+                                    proveedor = proveedor, 
+                                    logicMovimientos = logic, 
+                                    pagarePago = pagare, 
+                                    fecha = fechavto,
+                                    importe = importe, 
+                                    observaciones = observaciones)
+                pclases.Auditoria.nuevo(pago, self.usuario, __file__)
+                # Actualizo campos del pagaré: 
+                pagare.fechaPago = fechavto     # Se quedará con la fecha del vencimiento de lo último seleccionado. Todas deberían ser la misma, de cualquier modo.
+                pagare.cantidad += importe
+                pagare.observaciones += "%s" % (observaciones != "" and "\nCuenta logic: %s" % (observaciones) or "") 
+                pagare.sync()
+                ####
+        if erroneos:
+            utils.dialogo_info(titulo="ERROR AL CREAR PAGARÉ", 
+                    texto="El pagaré se ha creado, pero los vencimientos\n"
+                          "correspondientes a:\n%s\n"
+                          "no se pudieron agregar.\n"
+                          "A continuación se abrirá el pagaré creado.\n"
+                          "Por favor, complete el pagaré manualmente." % (
+                              ", ".join(errores)), 
+                    padre=self.wids['ventana'])
         from formularios import pagares_pagos
         pp = pagares_pagos.PagaresPagos(pagare, usuario = self.usuario)  # @UnusedVariable
         try:
@@ -346,6 +368,10 @@ class ConsultaVencimientosPagos(Ventana):
         """
         Rellena el model con los items de la consulta
         """        
+        vpro = ventana_progreso.VentanaProgreso(padre = self.wids['ventana'])
+        ivpro = 0.0
+        tot = len(iems)
+        vpro.set_valor(ivpro/tot, "Rellenando tabla...")
         model = self.wids['tv_datos'].get_model()
         model.clear()
         total = 0
@@ -353,6 +379,8 @@ class ConsultaVencimientosPagos(Ventana):
         hoy = mx.DateTime.localtime()
         por_fecha = {}
         for i in items:
+            vpro.set_valor(ivpro/tot, "Rellenando tabla...")
+            ivpro += 1
             if not i[2]:  # i[2] = False cuando es vencimiento normal de la BD
                 importe = i[1].importe
                 anno = i[1].fecha.year
@@ -407,6 +435,8 @@ class ConsultaVencimientosPagos(Ventana):
         annos.sort()
         model = self.wids['tv_totales'].get_model()
         model.clear()
+        ivpro = 0.0
+        tot = len(annos * 12)
         for anno in annos:
             total_anno = sum([por_fecha[anno][mes] for mes in por_fecha[anno]])
             anno_padre = model.append(None, (`anno`, 
@@ -415,9 +445,11 @@ class ConsultaVencimientosPagos(Ventana):
             meses = por_fecha[anno].keys()
             meses.sort()
             for mes in meses:
+                vpro.set_valor(ivpro/tot, "Rellenando tabla por meses...")
                 model.append(anno_padre, ("%02d - %s" % (mes, utils.MESES[mes]), 
                                           utils.float2str(por_fecha[anno][mes]),
                                           ""))
+        vpro.ocultar()
         
     def set_inicio(self,boton):
         temp = utils.mostrar_calendario(padre = self.wids['ventana'])
@@ -470,22 +502,30 @@ class ConsultaVencimientosPagos(Ventana):
                             orderBy='fecha')
 
         idproveedor = utils.combo_get_value(self.wids['cmbe_proveedor'])
-        if idproveedor != None:
-            idproveedor = utils.combo_get_value(self.wids['cmbe_proveedor'])
+        if idproveedor is not None:
             proveedor = pclases.Proveedor.get(idproveedor)
-            vencimientos = [v for v in vencimientos 
-                            if v.facturaCompra.proveedorID == proveedor.id]
+            # Los estimados ya no se usan. No me molesto en vpro para ellos.
             estimados = [e for e in estimados 
                          if e.facturaCompra.proveedorID == proveedor.id]
-
+        else:
+            proveedor = None
         mostrar_solo_pendientes = self.wids['ch_pendientes'].get_active()
         self.resultado = []
+        tot = vencimientos.count()
+        ivpro = 0.0
+        vpro = ventana_progreso.VentanaProgreso(padre = self.wids['ventana'])
         for i in vencimientos:
+            vpro.set_valor(ivpro/tot, "Buscando vencimientos...")
+            ivpro += 1
+            if proveedor:
+                if v.facturacCompra.proveedor != proveedor:
+                    continue    # Lo ignoro.
             if not self.esta_pagado(i):
                 if ((mostrar_solo_pendientes and self.pagare_y_no_emitido(i)) 
                     or not mostrar_solo_pendientes):
                     self.resultado.append([i.fecha, i, False])
-        if idproveedor == None:     
+        vpro.ocultar()
+        if idproveedor is None:     
             # Porque en Logic los proveedores no son los mismos que 
             # aquí (no están exactamente igual escritos)
             vencimientos_logic = self.buscar_vencimientos_logic(self.inicio, 
@@ -497,16 +537,26 @@ class ConsultaVencimientosPagos(Ventana):
         self.rellenar_tabla(self.resultado)
 
     def filtrar_por_forma_de_pago(self, r):
-        res = r[:]
+        vpro = ventana_progreso.VentanaProgreso(padre = self.wids['ventana'])
+        i = 0.0
+        tot = len(r)
+        vpro.set_valor(i / tot, "Filtrando por forma de pago...")
+        res = []
         if self.wids['ch_formapago'].get_active():
             formapago = utils.combo_get_value(self.wids['cb_formapago'])
             if formapago != None:
                 txtformapago = self.formaspago[formapago][1]
-                res = []
-                for v in r: # v es una tupla con fecha, vencimiento o estimación y un boolean para indicar si es de LOGIC.
-                    # Las formas de pago en el combo están todas en minúsuclas y sin tildes:
-                    if not v[2] and txtformapago in utils.filtrar_tildes(v[1].observaciones).lower():
+                for v in r: # v es una tupla con fecha, vencimiento o 
+                    vpro.set_valor(i / tot, "Filtrando por forma de pago...")
+                    # estimación y un boolean para indicar si es de LOGIC.
+                    # Las formas de pago en el combo están todas en minúsuclas
+                    # y sin tildes:
+                    if (not v[2]
+                        and txtformapago in utils.filtrar_tildes(
+                            v[1].observaciones).lower()):
                         res.append(v)
+                    i += 1
+        vpro.ocultar()
         return res
 
     def buscar_vencimientos_logic(self, fechaini, fechafin):
