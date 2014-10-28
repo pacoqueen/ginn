@@ -85,6 +85,16 @@ class FacturasDeEntrada(Ventana):
         self._objetoreciencreado = None
         Ventana.__init__(self, 'facturas_compra.glade', objeto,
                          usuario = self.usuario)
+        # Ventana instancia self.objeto por primera vez.
+        if self.objeto and not isinstance(self.objeto, pclases.FacturaCompra):
+            try:    # Intento por PUID y si no por numfactura.
+                self.objeto = pclases.getObjetoPUID(self.objeto)
+            except:
+                try:
+                    self.objeto = pclases.FacturaCompra.selectLike(
+                            "numfactura", self.objeto)[0]
+                except:     # Y si no, al carajo.
+                    self.objeto = None
         connections = {'b_nuevo/clicked': self.crear_nueva_factura,
                        'b_actualizar/clicked': self.actualizar_ventana,
                        'b_guardar/clicked': self.guardar,
@@ -125,10 +135,10 @@ class FacturasDeEntrada(Ventana):
                       }
         self.add_connections(connections)
         self.inicializar_ventana()
-        if self.objeto == None:
+        if self.objeto is None:
             self.ir_a_primero()
         else:
-            self.ir_a(objeto)
+            self.ir_a(self.objeto)
         gtk.main()
 
     # XXX: Lista de objetos recientes.

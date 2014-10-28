@@ -61,17 +61,22 @@ class ConsultaVencimientosPagos(Ventana):
         """
         self.usuario = usuario
         global fin
-        Ventana.__init__(self, 'consulta_vencimientos_pago.glade', objeto, usuario = usuario)
+        Ventana.__init__(self, 'consulta_vencimientos_pago.glade', objeto,
+                         usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_buscar/clicked': self.buscar,
                        'b_imprimir/clicked': self.imprimir,
                        'b_fecha_inicio/clicked': self.set_inicio,
                        'b_fecha_fin/clicked': self.set_fin, 
                        'b_csv/clicked': self.exportar, 
-                       'ch_formapago/toggled': lambda ch: self.wids['cb_formapago'].set_sensitive(ch.get_active()), 
+                       'ch_formapago/toggled': 
+                            lambda ch: self.wids['cb_formapago'].set_sensitive(
+                                ch.get_active()), 
                        }
-        self.wids['cb_formapago'].set_sensitive(self.wids['ch_formapago'].get_active())
-        formaspago = [p.documentodepago.strip().split(" ")[0] for p in pclases.Proveedor.select()]
+        self.wids['cb_formapago'].set_sensitive(
+                self.wids['ch_formapago'].get_active())
+        formaspago = [p.documentodepago.strip().split(" ")[0] 
+                      for p in pclases.Proveedor.select()]
         formaspago = filtrar_tildes_lista(formaspago)
         formaspago = [e.lower() for e in formaspago]
         formaspago = utils.unificar(formaspago)
@@ -79,8 +84,9 @@ class ConsultaVencimientosPagos(Ventana):
         self.formaspago = zip(range(len(formaspago)), formaspago)
         utils.rellenar_lista(self.wids['cb_formapago'], self.formaspago)
         self.add_connections(connections)
-        utils.rellenar_lista(self.wids['cmbe_proveedor'], [(c.id, c.nombre) for c in pclases.Proveedor.select(orderBy='nombre')])
-
+        utils.rellenar_lista(self.wids['cmbe_proveedor'],
+                [(c.id, c.nombre) 
+                    for c in pclases.Proveedor.select(orderBy='nombre')])
         cols = (('Factura','gobject.TYPE_STRING', False, True, False, None),
                 ('Visto bueno','gobject.TYPE_STRING', False, True, False, None),
                 ('Fecha vto.','gobject.TYPE_STRING', False, True, False, None),
@@ -103,7 +109,8 @@ class ConsultaVencimientosPagos(Ventana):
         col = self.wids['tv_datos'].get_column(4)
         for cell in col.get_cell_renderers():
             cell.set_property("xalign", 1)
-        self.wids['tv_datos'].connect('button_release_event', self.button_clicked) 
+        self.wids['tv_datos'].connect('button_release_event',
+                                      self.button_clicked) 
         cols = (('Año y mes','gobject.TYPE_STRING', False,True, True, None),
                 ('Total','gobject.TYPE_STRING', False, True, False, None),
                 ('nada','gobject.TYPE_STRING', False, False, False, None))
@@ -123,17 +130,37 @@ class ConsultaVencimientosPagos(Ventana):
         if model[path][0] == "LOGIC":
             idlogic = model[path][-1]
             from formularios import mostrar_datos_logic
-            ventanalogic = mostrar_datos_logic.MostrarDatosLogic(  # @UnusedVariable
+            ventanalogic = mostrar_datos_logic.MostrarDatosLogic(
                             usuario = self.usuario, 
                             padre = self.wids['ventana'], 
                             consulta = " ide = %s " % (idlogic))
         else:
             idvto = model[path][-1]
             vto = pclases.VencimientoPago.get(idvto)
+            fra = vto.facturaCompra
             from formularios import facturas_compra          
-            ventanafacturas = facturas_compra.FacturasDeEntrada(  # @UnusedVariable
+            ventanafacturas = facturas_compra.FacturasDeEntrada(
                                 vto.facturaCompra, 
                                 usuario = self.usuario)
+            # FIXME: Recargo la información aunque, OJO, es posible que el 
+            # vencimiento se haya ido a otra fecha que no entre en la consulta
+            # o que incluso se haya dividido en dos.
+            try:
+                vto = fra.vencimientosPago[0]
+                vtobueno = fra.vistoBuenoPago and fra.numeroControl or "PENDIENTE" 
+                pendiente = vto.calcular_importe_pdte()
+                model[path] = ((vto.facturaCompra.numfactura,
+                                vtobueno, 
+                                utils.str_fecha(vto.fecha),
+                                utils.float2str(vto.importe),
+                                utils.float2str(pendiente),
+                                utils.str_fecha(vto.facturaCompra.fecha),
+                                vto.observaciones,
+                                vto.facturaCompra.proveedor.nombre,
+                                vto.facturaCompra.proveedor.documentodepago, 
+                                vto.id))
+            except IndexError:  # No vencimientos, quito la factura.
+                model.remove(model.get_iter(path))
 
     def button_clicked(self, lista, event):
         if event.button == 3:
@@ -205,7 +232,7 @@ class ConsultaVencimientosPagos(Ventana):
                     logic = pclases.LogicMovimientos.get(ide)
                 except pclases.SQLObjectNotFound:
                     logic = None
-                    erroneos.append(model[6])
+                    erroneos.append(model[path][6])
                 else:
                     fechavto = self.get_fecha_vto_logic(logic)
                     importe = logic.importe
@@ -216,9 +243,10 @@ class ConsultaVencimientosPagos(Ventana):
                 logic = None
                 try:
                     vencimiento = pclases.VencimientoPago.get(ide)
+                    vencimiento.sync()
                 except pclases.SQLObjectNotFound:
                     vencimiento = None
-                    erroneos.append(model[0])
+                    erroneos.append(model[path][0])
                 else:
                     fechavto = vencimiento.fecha
                     #importe = vencimiento.importe
@@ -248,8 +276,8 @@ class ConsultaVencimientosPagos(Ventana):
                           "correspondientes a:\n%s\n"
                           "no se pudieron agregar.\n"
                           "A continuación se abrirá el pagaré creado.\n"
-                          "Por favor, complete el pagaré manualmente." % (
-                              ", ".join(errores)), 
+                          "Por favor, complételo manualmente." % (
+                              ", ".join(erroneos)), 
                     padre=self.wids['ventana'])
         from formularios import pagares_pagos
         pp = pagares_pagos.PagaresPagos(pagare, usuario = self.usuario)  # @UnusedVariable
@@ -369,8 +397,9 @@ class ConsultaVencimientosPagos(Ventana):
         Rellena el model con los items de la consulta
         """        
         vpro = ventana_progreso.VentanaProgreso(padre = self.wids['ventana'])
+        vpro.mostrar()
         ivpro = 0.0
-        tot = len(iems)
+        tot = len(items)
         vpro.set_valor(ivpro/tot, "Rellenando tabla...")
         model = self.wids['tv_datos'].get_model()
         model.clear()
@@ -488,25 +517,25 @@ class ConsultaVencimientosPagos(Ventana):
             vencimientos = pclases.VencimientoPago.select(
                             pclases.VencimientoPago.q.fecha <= self.fin, 
                             orderBy = 'fecha')
-            estimados = pclases.EstimacionPago.select(
-                            pclases.EstimacionPago.q.fecha <= self.fin, 
-                            orderBy = 'fecha')
+            #estimados = pclases.EstimacionPago.select(
+            #                pclases.EstimacionPago.q.fecha <= self.fin, 
+            #                orderBy = 'fecha')
         else:
             vencimientos = pclases.VencimientoPago.select(pclases.AND(
                                 pclases.VencimientoPago.q.fecha >= self.inicio,
                                 pclases.VencimientoPago.q.fecha <= self.fin), 
                             orderBy='fecha') 
-            estimados = pclases.EstimacionPago.select(pclases.AND(
-                                pclases.EstimacionPago.q.fecha >= self.inicio,
-                                pclases.EstimacionPago.q.fecha <= self.fin), 
-                            orderBy='fecha')
+            #estimados = pclases.EstimacionPago.select(pclases.AND(
+            #                    pclases.EstimacionPago.q.fecha >= self.inicio,
+            #                    pclases.EstimacionPago.q.fecha <= self.fin), 
+            #                orderBy='fecha')
 
         idproveedor = utils.combo_get_value(self.wids['cmbe_proveedor'])
         if idproveedor is not None:
             proveedor = pclases.Proveedor.get(idproveedor)
             # Los estimados ya no se usan. No me molesto en vpro para ellos.
-            estimados = [e for e in estimados 
-                         if e.facturaCompra.proveedorID == proveedor.id]
+            #estimados = [e for e in estimados 
+            #             if e.facturaCompra.proveedorID == proveedor.id]
         else:
             proveedor = None
         mostrar_solo_pendientes = self.wids['ch_pendientes'].get_active()
@@ -514,6 +543,7 @@ class ConsultaVencimientosPagos(Ventana):
         tot = vencimientos.count()
         ivpro = 0.0
         vpro = ventana_progreso.VentanaProgreso(padre = self.wids['ventana'])
+        vpro.mostrar()
         for i in vencimientos:
             vpro.set_valor(ivpro/tot, "Buscando vencimientos...")
             ivpro += 1
@@ -538,6 +568,7 @@ class ConsultaVencimientosPagos(Ventana):
 
     def filtrar_por_forma_de_pago(self, r):
         vpro = ventana_progreso.VentanaProgreso(padre = self.wids['ventana'])
+        vpro.mostrar()
         i = 0.0
         tot = len(r)
         vpro.set_valor(i / tot, "Filtrando por forma de pago...")
