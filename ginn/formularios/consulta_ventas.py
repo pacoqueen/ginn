@@ -1068,7 +1068,6 @@ class ConsultaVentas(Ventana):
             return 1
         else:
             return 0
-
         
     def buscar(self, boton):
         """
@@ -1197,7 +1196,6 @@ class ConsultaVentas(Ventana):
         vpro.ocultar()
 
     def rellenar_tabla_clientes(self, resultado, resultado_abonos, servicios):
-        # TODO: Faltan los abonos. Caso CETCO cuando consulto desde agosto.
         idalmacen = utils.combo_get_value(self.wids['cbe_almacen'])
         if idalmacen == -1:
             almacen = None
@@ -1208,6 +1206,16 @@ class ConsultaVentas(Ventana):
             if not almacen or linea.get_almacen() == almacen:
                 cliente = linea.get_cliente()
                 factura = linea.get_factura_o_prefactura()
+                if cliente not in self.por_cliente:
+                    self.por_cliente[cliente] = [factura]
+                else:
+                    if factura not in self.por_cliente[cliente]:
+                        self.por_cliente[cliente] += [factura]
+        for ldabono in (resultado_abonos['lineasDeAbono'] 
+                        + resultado_abonos['lineasDeDevolucion']):
+            if not almacen or linea.get_almacen() == almacen:
+                cliente = ldabono.abono.cliente
+                factura = ldabono.abono.facturaDeAbono
                 if cliente not in self.por_cliente:
                     self.por_cliente[cliente] = [factura]
                 else:
@@ -1305,12 +1313,18 @@ class ConsultaVentas(Ventana):
                 factura = lda.facturaVenta    # De abono, en realidad
                 if comercial not in self.por_comercial:
                     self.por_comercial[comercial] = [factura]
+                else:
+                    if factura not in self.por_comercial[comercial]:
+                        self.por_comercial[comercial] += [factura]
         for ldd in resultado_abonos['lineasDeDevolucion']:
             if not almacen or ldd.get_almacen() == almacen:
-                comercial = ldd.comercial
+                comercial = ldd.get_comercial()
                 factura = ldd.facturaVenta  # De abono, en realidad
                 if comercial not in self.por_comercial:
                     self.por_comercial[comercial] = [factura]
+                else:
+                    if factura not in self.por_comercial[comercial]:
+                        self.por_comercial[comercial] += [factura]
         model = self.wids['tv_comercial'].get_model()
         model.clear()
         for comercial in self.por_comercial:
@@ -1384,12 +1398,18 @@ class ConsultaVentas(Ventana):
                 factura = lda.facturaVenta    # De abono, en realidad
                 if proveedor not in self.por_proveedor:
                     self.por_proveedor[proveedor] = [factura]
+                else:
+                    if factura not in self.por_proveedor[proveedor]:
+                        self.por_proveedor[proveedor] += [factura]
         for ldd in resultado_abonos['lineasDeDevolucion']:
             if not almacen or ldd.get_almacen() == almacen:
                 proveedor = ldd.proveedor
                 factura = ldd.facturaVenta  # De abono, en realidad
                 if proveedor not in self.por_proveedor:
                     self.por_proveedor[proveedor] = [factura]
+                else:
+                    if factura not in self.por_proveedor[proveedor]:
+                        self.por_proveedor[proveedor] += [factura]
         model = self.wids['tv_proveedor'].get_model()
         model.clear()
         for proveedor in self.por_proveedor:

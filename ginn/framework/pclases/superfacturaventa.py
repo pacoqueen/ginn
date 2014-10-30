@@ -533,10 +533,16 @@ class SuperFacturaVenta:
         los pedidos.
         """
         comerciales = []
-        for p in self.get_pedidos():
-            comercial = p.comercial
-            if comercial != None and comercial not in comerciales:
-                comerciales.append(comercial)
+        if hasattr(self, "abono"):  # Los abonos van por otro lado.
+            for ldd in self.abono.lineasDeDevolucion + self.abono.lineasDeAbono:
+                comercial = ldd.get_comercial()
+                if comercial not in comerciales:
+                    comerciales.append(comercial)
+        else:
+            for p in self.get_pedidos():
+                comercial = p.comercial
+                if comercial != None and comercial not in comerciales:
+                    comerciales.append(comercial)
         return tuple(comerciales)
 
     def get_proveedores(self):

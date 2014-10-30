@@ -3215,13 +3215,20 @@ class Cobro(SQLObject, PRPCTOO):
             if not doc:
                 if self.confirming:
                     try:
-                        doc = DocumentoDePago.selectBy(documento = "Confirming")[0]
+                        doc = DocumentoDePago.selectBy(
+                                documento = "Confirming")[0]
                     except IndexError:
                         doc = None
             if not doc: # No puedo tirar del vencimiento que corresponde al cobro.
                         # Tiro del primero de ellos, que es el caso más común.
                 try:
-                    vto = self.facturaVenta.vencimientosCobro[0]
+                    try:
+                        vto = self.facturaVenta.vencimientosCobro[0]
+                    except AttributeError:  # No es fra. venta.
+                        try:
+                            vto = self.facturaDeAbono.vencimientosCobro[0]
+                        except AttributeError:  # Tampoco es abono.
+                            vto = self.prefactura.vencimientosCobro[0]
                     try:
                         doc = vto.observaciones.split(",")[0]
                     except IndexError:
