@@ -69,7 +69,7 @@ def dibujar_dir_fiscal(canvas, doc, dir_fiscal):
         canvas.rotate(-90)
         canvas.restoreState()
 
-def build_tabla_contenido(data):
+def build_tabla_contenido(data, lang = "es"):
     """
     Construye la tabla del contenido del presupuesto.
     """
@@ -79,11 +79,21 @@ def build_tabla_contenido(data):
     estilo_cabecera_tabla.alignment = enums.TA_CENTER
     estilo_numeros_tabla = ParagraphStyle("Números tabla", 
                                            parent=estilos["Normal"])
+    if lang == "en":
+        strcant = "Quantity"
+        strdesc = "Description"
+        strprice = "Price"
+        strdue = "Subtotal"
+    else:
+        strcant = "Cantidad"
+        strdesc = escribe("Descripción")
+        strprice = "Precio"
+        strdue = "Importe"
     estilo_numeros_tabla.alignment = enums.TA_RIGHT
-    datos = [(Paragraph("Cantidad", estilo_cabecera_tabla), 
-              Paragraph(escribe("Descripción"), estilo_cabecera_tabla), 
-              Paragraph("Precio", estilo_cabecera_tabla), 
-              Paragraph("Importe", estilo_cabecera_tabla))
+    datos = [(Paragraph(strcant, estilo_cabecera_tabla), 
+              Paragraph(strdesc, estilo_cabecera_tabla), 
+              Paragraph(strprice, estilo_cabecera_tabla), 
+              Paragraph(strdue, estilo_cabecera_tabla))
             ]
     for d in data:
         if isinstance(d, (list, tuple)):
@@ -120,8 +130,12 @@ def build_tabla_contenido(data):
                 )
         datos.append(_fila)
         if hasattr(d, "descuento") and d.descuento:
+            if lang == "en":
+                strdisc = "Discount %s %%"
+            else:
+                strdisc = "Descuento %s %%"
             fila_descuento = ("", 
-                              "Descuento %s %%" 
+                              strdisc 
                                 % utils.float2str(d.descuento * 100, 
                                                   autodec = True), 
                               utils.float2str(-d.precio * d.descuento), 
@@ -210,16 +224,22 @@ def build_datos_cliente(datos_cliente = []):
     datos_c.append(Spacer(1, 1*cm))
     return datos_c
 
-def build_entradilla(fecha, numpresupuesto, para_estudio):
+def build_entradilla(fecha, numpresupuesto, para_estudio, lang = "es"):
     """
     Construye la frase de entradilla. Básicamente la palabra "Presupuesto" 
     y la fecha del mismo.
     """
     if para_estudio:
-        texto_estudio = " para estudio de obra" 
+        if lang == "en":
+            texto_estudio = " for work planning"
+            strpresupuesto = "Offer"
+        else:
+            texto_estudio = " para estudio de obra" 
+            strpresupuesto = "Presupuesto"
     else:
         texto_estudio = "" 
-    return Paragraph("<b><u>Presupuesto%s%s%s.</u> %s</b>" % (
+    return Paragraph("<b><u>%s%s%s%s.</u> %s</b>" % (
+                        strpresupuesto, 
                         texto_estudio, 
                         numpresupuesto != None and " n.º " or "", 
                         numpresupuesto != None and numpresupuesto or "", 
@@ -347,7 +367,6 @@ def go(titulo,
     if idioma not in ("en", "es"):
         raise NotImplementedError,\
                 __file__ + ": Idioma '%s' no implementado." % idioma
-    # PORASQUI: Traduciendo ~/Geotexan/doc/Programación/20130701 - Ofertas de comerciales/condicionado_general_english.odt
     doc = SimpleDocTemplate(ruta_archivo, title = titulo)
     encabezado = build_encabezado(lineas_datos_empresa)
     try:
@@ -356,9 +375,10 @@ def go(titulo,
         nombrecliente = ""
     datos_cliente = build_datos_cliente(datos_cliente)
     entradilla = build_entradilla(fecha_entradilla, numpresupuesto, 
-                                  para_estudio)
+                                  para_estudio, 
+                                  lang = idioma)
     texto = build_texto(texto)
-    contenido = build_tabla_contenido(lineas_contenido)
+    contenido = build_tabla_contenido(lineas_contenido, lang = idioma)
     totales = build_tabla_totales(totales)
     despedida = build_texto(despedida)
     forma_pago = build_texto(forma_de_pago)
@@ -397,9 +417,13 @@ def go(titulo,
     if incluir_condicionado_general:
         from lib.PyPDF2 import PyPDF2
         pdf_presupuesto = open(ruta_archivo, "rb")
+        if idioma == "en":
+            fcond = "condiciones_generales_en.pdf"
+        else:
+            fcond = "condiciones_generales.pdf"
         pdf_condiciones = open(
             os.path.join(os.path.dirname(os.path.abspath(__file__)), 
-                         "condiciones_generales.pdf"), 
+                         fcond), 
             "rb")
         merger = PyPDF2.PdfFileMerger()
         merger.append(pdf_presupuesto)
@@ -427,7 +451,7 @@ def go_from_presupuesto(presupuesto,
                                               dde.ciudad, 
                                               dde.provincia, 
                                               dde.pais), 
-                          "Telf.: %s" % (dde.telefono)]
+                          "Tel.: %s" % (dde.telefono)]
         if dde.fax:
             lineas_empresa.append("Fax: %s" % (dde.fax))
         if dde.email:
@@ -437,7 +461,13 @@ def go_from_presupuesto(presupuesto,
         if dde.web:
             lineas_empresa.append('<a href=http://%s>%s</a>' % (
                 dde.web, dde.web))
-        dir_fiscal = "Datos fiscales: %s %s %s %s" % (
+        # Son pocos textos. No merece la pena tirar de gettext hasta que
+        # no me pidan un tercer idioma.
+        if idioma == "en":
+            strfiscal = "Corp. data: %s %s %s %s"
+        else:
+            strfiscal = "Datos fiscales: %s %s %s %s"
+        dir_fiscal = strfiscal % (
                 dde.nombre, 
                 dde.get_dir_facturacion_completa(), 
                 dde.str_cif_o_nif(), 
@@ -454,7 +484,11 @@ def go_from_presupuesto(presupuesto,
     cif = presupuesto.cliente and presupuesto.cliente.cif or presupuesto.cif
     datos_cliente.append(" <small>(%s)</small>" % cif)
     if presupuesto.personaContacto != "":
-        datos_cliente.append("A la atención de %s" % (
+        if idioma == "en":
+            stratt = "Att: %s"
+        else:
+            stratt = "A la atención de %s"
+        datos_cliente.append(stratt % (
             presupuesto.personaContacto))
     datos_cliente.append(presupuesto.direccion)
     listadireccion = [presupuesto.cp, presupuesto.ciudad]
@@ -469,7 +503,11 @@ def go_from_presupuesto(presupuesto,
                                         if token.strip() != ""])
     datos_cliente.append(segunda_linea_direccion)
     if presupuesto.telefono.strip() != "":
-        datos_cliente.append("Tlf.: %s" % (presupuesto.telefono))
+        if idioma == "en":
+            strphone = "Phone n.: %s"
+        else:
+            strphone = "Tlf.: %s"
+        datos_cliente.append(strphone % (presupuesto.telefono))
     if presupuesto.fax.strip() != "":
         datos_cliente.append("Fax.: %s" % (presupuesto.fax))
     if presupuesto.obra or presupuesto.nombreobra.strip():
@@ -477,7 +515,11 @@ def go_from_presupuesto(presupuesto,
             ref_obra = presupuesto.obra.obra.get_str_obra()
         except AttributeError:
             ref_obra = presupuesto.nombreobra
-        datos_cliente.append("Ref. obra: <b>%s</b>" % ref_obra)
+        if idioma == "en":
+            strobra = "Ref.: <b>%s</b>"
+        else:
+            strobra = "Ref. obra: <b>%s</b>"
+        datos_cliente.append(strobra % ref_obra)
     fecha_entradilla = utils.str_fecha(presupuesto.fecha)
     try:
         iva = presupuesto.cliente.get_iva_norm()
@@ -487,18 +529,30 @@ def go_from_presupuesto(presupuesto,
             iva = 0
         else:
             iva = 0.21
-    totales = {"orden": ["Base imponible", 
-                         "IVA %d%%" % (iva * 100), 
-                         "TOTAL"], 
-               "Base imponible":
+    if idioma == "en":
+        strbimp = "Subtotal"
+        striva = "VAT %d%%" % (iva * 100)
+        strtot = "TOTAL"
+    else:
+        strbimp = "Base imponible"
+        striva = "IVA %d%%" % (iva * 100)
+        strtot = "TOTAL"
+    totales = {"orden": [strbimp, 
+                         striva, 
+                         strtot], 
+               strbimp:
                     utils.float2str(presupuesto.calcular_base_imponible())+" €",
-               "IVA %d%%" % (iva * 100): 
+               striva: 
                     utils.float2str(presupuesto.calcular_total_iva())+" €", 
-               "TOTAL": 
+               strtot: 
                     utils.float2str(presupuesto.calcular_importe_total())+" €", 
                }
     if presupuesto.descuento:
-        fila_descuento = "Descuento %s %%" % (
+        if idioma == "en":
+            strdto = "Descuento %s %%"
+        else:
+            strdto = "Discount %s %%"
+        fila_descuento = strdto % (
             utils.float2str(presupuesto.descuento*100, autodec = True))
         totales['orden'].insert(0, fila_descuento) 
         totales[fila_descuento] = utils.float2str(
@@ -541,19 +595,32 @@ def go_from_presupuesto(presupuesto,
     #    or presupuesto.cliente.calcular_credito_disponible(
     #        base = presupuesto.calcular_importe_total(iva = True)) <= 0):
     if True:
-        texto_riesgo = "Esta operación está sujeta a la concesión de "\
-                       "crédito por parte de %s." % dde.nombre
+        if idioma == "en":
+            texto_riesgo = "Operation conditioned by a previous credit "\
+                           "approbation by %s." % dde.nombre
+        else:
+            texto_riesgo = "Esta operación está sujeta a la concesión de "\
+                           "crédito por parte de %s." % dde.nombre
     else:
         texto_riesgo = None
     nomarchivo = os.path.join(gettempdir(), 
                               "presupuesto_%s.pdf" % give_me_the_name_baby())
     if presupuesto.texto:
-        condicionado = "Condiciones particulares:\n" + presupuesto.texto
+        if idioma == "en":
+            condicionado = "Particular conditions:\n" + presupuesto.texto
+        else:
+            condicionado = "Condiciones particulares:\n" + presupuesto.texto
     else:
         condicionado = None
     try:
-        fdp = "Forma de pago: %s" % presupuesto.formaDePago.toString(
-                presupuesto.cliente)
+        if idioma == "en":
+            strpresupuesto = "Offer "
+            fdp = "Payment terms: %s" % presupuesto.formaDePago.toString(
+                    presupuesto.cliente)
+        else:
+            strpresupuesto = "Presupuesto"
+            fdp = "Forma de pago: %s" % presupuesto.formaDePago.toString(
+                    presupuesto.cliente)
     except AttributeError:
         fdp = ""
     if presupuesto.comercial:
@@ -575,8 +642,9 @@ def go_from_presupuesto(presupuesto,
     else:
         firma_comercial = ""
     nomarchivo = go(
-      "Presupuesto %s (%s)" % (presupuesto.nombrecliente, 
-                               utils.str_fecha(presupuesto.fecha)), 
+      "%s %s (%s)" % (strpresupuesto, 
+                      presupuesto.nombrecliente, 
+                      utils.str_fecha(presupuesto.fecha)), 
        nomarchivo, 
        lineas_empresa, 
        datos_cliente, 
@@ -593,7 +661,8 @@ def go_from_presupuesto(presupuesto,
        forma_de_pago = fdp, 
        dir_fiscal = dir_fiscal, 
        firma_comercial = firma_comercial, 
-       para_estudio = presupuesto.estudio == False)
+       para_estudio = presupuesto.estudio == False, 
+       idioma = idioma)
     return nomarchivo
 
 

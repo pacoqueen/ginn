@@ -1270,7 +1270,8 @@ class Presupuestos(Ventana, VentanaGenerica):
     def imprimir_carta_compromiso(self, boton):
         from formularios.reports import abrir_pdf
         from informes import carta_compromiso
-        abrir_pdf(carta_compromiso.go_from_presupuesto(self.objeto))  # @UndefinedVariable
+        # TODO: PORASQUI
+        abrir_pdf(carta_compromiso.go_from_presupuesto(self.objeto))
 
     def enviar_por_correo(self, boton):
         """
