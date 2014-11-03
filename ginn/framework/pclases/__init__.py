@@ -688,7 +688,8 @@ GESTION, CARTERA, DESCONTADO, IMPAGADO, COBRADO = range(5)
 # Estados de validación de pedidos y ofertas
 NO_VALIDABLE, VALIDABLE, PLAZO_EXCESIVO, SIN_FORMA_DE_PAGO, \
         PRECIO_INSUFICIENTE, CLIENTE_DEUDOR, SIN_CIF, SIN_CLIENTE, \
-        COND_PARTICULARES, COMERCIALIZADO, BLOQUEO_FORZADO = range(11)
+        COND_PARTICULARES, COMERCIALIZADO, BLOQUEO_FORZADO, \
+        SERVICIO = range(12)
 
 # VERBOSE MODE
 total = 161 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
@@ -10901,6 +10902,18 @@ class Presupuesto(SQLObject, PRPCTOO):
         self.texto = txt
         self.syncUpdate()
 
+    def __lleva_servicio(self):
+        """
+        Devuelve True si hay al menos una línea del presupuesto que es de
+        servicios.
+        """
+        res = False
+        for ldp in self.lineasDePresupuesto:
+            if not ldp.productoVenta and not ldp.productoCompra:
+                res = True
+                break   # Para optimizar
+        return res
+
     def get_estado_validacion(self):
         """
         Devuelve el estado de la validación del presupuesto en el momento de
@@ -10923,6 +10936,13 @@ class Presupuesto(SQLObject, PRPCTOO):
                              a que todos sus presupuestos deban ser validados
                              manualmente a pesar de que cumpla el resto de
                              requisitos. (CWT)
+            SERVICIO: La oferta lleva algún de servicio. Necesita
+                      validación manual para evitar los casos en que se
+                      mete un producto como servicio, se valida y a posteriori
+                      se crea el comercializado exactamente con la misma
+                      descripción (conservando validación y convirtiendo la
+                      línea en una venta de comercializados sin pasar por
+                      la validación COMERCIALIZADO).
         """
         # Debería tener las condiciones en un solo sitio. Los pedidos y
         # presupuestos siguen el mismo criterio, pero están especificados por
@@ -10932,6 +10952,9 @@ class Presupuesto(SQLObject, PRPCTOO):
         if (validable == VALIDABLE 
                 and self.comercial and self.comercial.validacionManual):
             validable = BLOQUEO_FORZADO
+        if (validable == VALIDABLE
+                and self.__lleva_servicio()):
+            validable = SERVICIO
         if validable == VALIDABLE:
             if self._lleva_comercializado():
                 validable = COMERCIALIZADO
@@ -11025,6 +11048,10 @@ class Presupuesto(SQLObject, PRPCTOO):
         elif estado_validacion == BLOQUEO_FORZADO:
             txtestado = "Necesita validación manual: "\
                         "Restricción forzada en la configuración del usuario."
+        elif estado_validacion == SERVICIO:
+            txtestado = "Necesita validación manual: "\
+                        "La oferta incluye alguna línea de prestación de"\
+                        "servicios o transporte."
         return txtestado
 
     def get_str_validacion(self):

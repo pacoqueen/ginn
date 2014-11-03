@@ -66,6 +66,7 @@ CONDICIONES_DURAS = (pclases.PLAZO_EXCESIVO,
                      pclases.PRECIO_INSUFICIENTE,
                      pclases.COND_PARTICULARES,
                      pclases.COMERCIALIZADO,
+                     pclases.SERVICIO,
                      pclases.BLOQUEO_FORZADO)
 CONDICIONES_BLANDAS = (pclases.NO_VALIDABLE,    # @UnusedVariable
                        pclases.CLIENTE_DEUDOR,
@@ -200,13 +201,21 @@ class Presupuestos(Ventana, VentanaGenerica):
                        "e_cred_numcuenta/changed": self.actualizar_dc
                       }
         self.add_connections(connections)
+        if isinstance(self.objeto, str):
+            if self.objeto.isdigit():
+                self.objeto = pclases.Presupuesto.get(int(self.objeto))
+            else:
+                try:
+                    self.objeto = pclases.getObjetoPUID(self.objeto)
+                except:
+                    pass
         self.inicializar_ventana()
         self.wids['cbe_obra'].child.connect("focus-out-event",
                                             self.assert_nombre_obra)
         if self.objeto == None:
             self.ir_a_primero_de_los_mios()
         else:
-            self.ir_a(objeto)
+            self.ir_a(self.objeto)
         #if self.usuario and self.usuario.nivel >= 4:
         #    self.activar_widgets(False) # Para evitar manos rápidas al abrir.
         gtk.main()
@@ -913,19 +922,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                                    self.objeto.usuario.usuario))
                         self.enviar_correo_notificacion_validado()
                 else:   # Estoy invalidando
-                    self.objeto.validado = False
-                    self.objeto.adjudicada = False
-                    self.wids['ch_adjudicada'].set_active(
-                            self.objeto.adjudicada)
-                    self.objeto.swap['usuarioID'] = None
-                    self.objeto.swap['adjudicada'] = None
-                    self.objeto.swap['fechaValidacion'] = None
-                    pclases.Auditoria.modificado(self.objeto,
-                        self.usuario, __file__,
-                        "Presupuesto %d invalidado por %s."
-                            % (self.objeto.id,
-                               self.usuario and self.usuario.usuario
-                               or "¡NADIE!"))
+                    self.invalidar()
                 vpro.mover()
                 self.objeto.syncUpdate()
                 self.objeto.swap['usuarioID'] = self.objeto.usuarioID
@@ -958,8 +955,8 @@ class Presupuestos(Ventana, VentanaGenerica):
             - Si el usuario tiene nivel: concede y guarda el usuario.
             - Si el usuario no tiene nivel: no concede y muestra aviso.
         """
-        if (self.objeto.credUsuario != None) == ch.get_active():     # Estoy rellenando. No
-            # hay edición del usuario. No compruebo nada.
+        if (self.objeto.credUsuario != None) == ch.get_active():
+            # Estoy rellenando. No hay edición del usuario. No compruebo nada.
             pass    # OJO porque aquí puede haber BUG. ¿Qué pasa si estoy
                     # moviéndome de un objeto ya concedido a otro no
                     # concedido? Entraría por la otra rama del if confundiendo
@@ -1743,8 +1740,33 @@ class Presupuestos(Ventana, VentanaGenerica):
                 self.reset_cache_credito()
                 self.ir_a(presupuesto_seleccionado)
 
+    def invalidar(self):
+        """
+        Quita validación del presupuesto y deja constancia en la traza.
+        """
+        self.objeto.validado = False
+        self.objeto.adjudicada = False
+        self.wids['ch_adjudicada'].set_active(
+                self.objeto.adjudicada)
+        self.objeto.swap['usuarioID'] = None
+        self.objeto.swap['adjudicada'] = None
+        self.objeto.swap['fechaValidacion'] = None
+        pclases.Auditoria.modificado(self.objeto,
+            self.usuario, __file__,
+            "Presupuesto %d invalidado por %s."
+                % (self.objeto.id,
+                   self.usuario and self.usuario.usuario
+                   or "¡NADIE!"))
+
     def fin_edicion_cellrenderers(self, cell, nextwidget = None,
-                                  nextpath = None, nextcol = None):
+                                  nextpath = None, nextcol = None,
+                                  check_validacion = True):
+        """
+        Se activa al terminar de editar cualquier cell de las líneas de
+        presupuesto. Se ocupa de pasar el foco, actualizar totales y, si
+        «check_validacion» es True, de comprobar el riesgo del cliente y
+        las condiciones de validación.
+        """
         cell.stop_editing(False)
         self.rellenar_tablas()
         self.refresh_validado()
@@ -1752,6 +1774,9 @@ class Presupuestos(Ventana, VentanaGenerica):
             nextwidget.grab_focus()
         if nextpath != None and nextcol != None:
             self.wids['tv_contenido'].set_cursor(nextpath, nextcol, True)
+        if check_validacion:
+            self.invalidar()
+            self.comprobar_riesgo_cliente()
         return False
 
     def tooltip_query(self, treeview, x, y, mode, tooltip):
@@ -1854,7 +1879,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                     self.objeto.swap['usuarioID'] = None
                 pclases.Auditoria.modificado(ldp, self.usuario, __file__)
                 gobject.idle_add(self.fin_edicion_cellrenderers, cell,
-                                 self.wids['b_add'])
+                                 self.wids['b_add'], check_validacion = False)
                 #self.rellenar_tablas()
                 #self.refresh_validado()
                 # Vuelvo al botón de añadir líneas.
@@ -2005,7 +2030,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                             "forma de pago, que cumple las restricciones "\
                             "de plazo y precio mínimo, que no tiene "\
                             "condiciones particulares y que no lleva "\
-                            "comercializados"
+                            "comercializados o servicios."
                     if estado != pclases.COND_PARTICULARES:
                         # Una oferta con condiciones particulares sí que puede
                         # adjudicarse. Solo que para imprimirla antes le
