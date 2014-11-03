@@ -1267,8 +1267,17 @@ class Presupuestos(Ventana, VentanaGenerica):
     def imprimir_carta_compromiso(self, boton):
         from formularios.reports import abrir_pdf
         from informes import carta_compromiso
-        # TODO: PORASQUI
-        abrir_pdf(carta_compromiso.go_from_presupuesto(self.objeto))
+        objeto_presupuesto = self.objeto
+        if not objeto_presupuesto:
+            return
+        if (not objeto_presupuesto.pais 
+                or objeto_presupuesto.pais.upper()[:3] == "ESP"):
+            # Por defecto (sin país especificado) o España, lang = español
+            lang = "es"
+        else:   # Otros casos, inglés.
+            lang = "en"
+        abrir_pdf(carta_compromiso.go_from_presupuesto(objeto_presupuesto,
+                                                       idioma = lang))
 
     def enviar_por_correo(self, boton):
         """
@@ -1879,7 +1888,9 @@ class Presupuestos(Ventana, VentanaGenerica):
                     self.objeto.swap['usuarioID'] = None
                 pclases.Auditoria.modificado(ldp, self.usuario, __file__)
                 gobject.idle_add(self.fin_edicion_cellrenderers, cell,
-                                 self.wids['b_add'], check_validacion = False)
+                                 self.wids['b_add'], None, None, 
+                                 #check_validacion = False,
+                                 False)
                 #self.rellenar_tablas()
                 #self.refresh_validado()
                 # Vuelvo al botón de añadir líneas.

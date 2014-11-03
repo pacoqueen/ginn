@@ -102,7 +102,7 @@ def dibujar_pie(canvas, doc, lineas_empresa, datos_fiscales):
     canvas.rotate(-90)
     canvas.restoreState()
 
-def build_encabezado(datos_empresa = []):
+def build_encabezado(datos_empresa = [], idioma = "es"):
     """
     Devuelve una lista de "Flowables" de reportlab con los datos de la empresa. 
     Los datos de la empresa se reciben como una lista de textos.
@@ -110,13 +110,21 @@ def build_encabezado(datos_empresa = []):
     estilo = ParagraphStyle("empepinao", parent = estilos["Heading1"])
     estilo.fontSize += 2
     estilo.alignment = enums.TA_CENTER
-    cabecera = Paragraph("<u>CARTA COMPROMISO</u>", estilo)
+    if idioma == "en":
+        strcarta = "<u>LETTER OF COMMITMENT</u>"
+    else:
+        strcarta = "<u>CARTA COMPROMISO</u>"
+    cabecera = Paragraph(strcarta, estilo)
     return cabecera
 
-def build_despedida(datos_comercial = []):
+def build_despedida(datos_comercial = [], idioma = "es"):
     estilo = ParagraphStyle("despedida", parent = estilos["Normal"])
     estilo.fontSize += 4
-    par = [Paragraph("<b>Atentamente:</b>", estilo)]
+    if idioma == "en":
+        strdespedida = "<b>Best regards:</b>"
+    else:
+        strdespedida = "<b>Atentamente:</b>"
+    par = [Paragraph(strdespedida, estilo)]
     estilo.fontSize -= 2
     estilo.spaceAfter = 4
     par.append(Spacer(1, 0.3 * cm))
@@ -126,12 +134,18 @@ def build_despedida(datos_comercial = []):
         par.append(Paragraph(linea, estilo))
     return par
 
-def build_datos_cliente(datos_cliente = []):
+def build_datos_cliente(datos_cliente = [], idioma = "es"):
     """
     Devuelve una lista de Flowables con las líneas recibidas como texto.
     """
-    datos_c = [Spacer(1, 1*cm), Paragraph("CLIENTE:", estilos["Heading2"])]
-    estilo_datos_c = ParagraphStyle("Cliente", 
+    if idioma == "en":
+        strclienteup = "CUSTOMER:"
+        strcliente = "Customer"
+    else:
+        strclienteup = "CLIENTE:"
+        strcliente = "Cliente"
+    datos_c = [Spacer(1, 1*cm), Paragraph(strclienteup, estilos["Heading2"])]
+    estilo_datos_c = ParagraphStyle(strcliente, 
                                     parent = estilos["Heading2"])
     estilo_datos_c.alignment = enums.TA_LEFT
     estilo_datos_c.spaceAfter = estilo_datos_c.spaceBefore = 2
@@ -161,7 +175,7 @@ def build_datos_cliente(datos_cliente = []):
     datos_c.append(Spacer(1, 1*cm))
     return datos_c
 
-def build_fecha(fecha):
+def build_fecha(fecha, idioma):
     res = None
     if fecha:
         estilo_texto = ParagraphStyle("Texto", 
@@ -170,37 +184,54 @@ def build_fecha(fecha):
         estilo_texto.fontSize += 2
         if not isinstance(fecha, str):
             fecha = utils.str_fecha(fecha)
-        res = Paragraph(escribe("Fecha: %s" % fecha), 
+        if idioma == "en":
+            strdate = "Date: %s"
+        else:
+            strdate = "Fecha: %s"
+        res = Paragraph(escribe(strdate % fecha), 
                         estilo_texto)
     return res
 
-def build_datos_obra(obra):
+def build_datos_obra(obra, idioma = "es"):
     """
     Un cuadro con la referencia recibida de la obra dentro.
     """
     res = None
     if obra:
-        estilo_texto = ParagraphStyle("Obra", 
+        if idioma == "en":
+            strobra = "WORK REF."
+            strobralo = "Building site"
+        else:
+            strobra = "REF. OBRA:"
+            strobralo = "Obra"
+        estilo_texto = ParagraphStyle(strobralo, 
                                       parent = estilos["Heading2"])
         tabla = Table([[Paragraph(escribe(obra), estilo_texto)]])
         tabla.setStyle(TableStyle([
             ("BOX", (0, 0), (-1, -1), 1.0, colors.black)
             ]))
-        res = [Paragraph(escribe("REF. OBRA:"), estilos["Heading2"]), 
+        res = [Paragraph(escribe(strobra), estilos["Heading2"]), 
                 #XBox(PAGE_WIDTH, 2*cm, text = escribe(obra))]
                tabla]
     return res
 
-def build_texto():
+def build_texto(idioma = "es"):
     estilo = ParagraphStyle("Texto", 
                             parent = estilos["Normal"])
     estilo.fontSize += 2
     estilo.alignment = enums.TA_JUSTIFY
-    par = Paragraph("Sirva por la presente formalizar nuestro compromiso de "
-            "colaboración con su empresa, caso de ser la adjudicataria de las"
-            " obras y los trabajos anteriormente mencionados, de acuerdo con"
-            " las especificaciones de proyecto y condiciones de nuestra "
-            "oferta.", estilo)
+    if idioma == "en":
+        txt = "Serve hereby to formalize our commitment to working with your"\
+                " company, in case of winning the works mentioned above, "\
+                "according to the project specifications and conditions "\
+                "in our offer."
+    else:
+        txt = "Sirva por la presente formalizar nuestro compromiso de "\
+            "colaboración con su empresa, caso de ser la adjudicataria de las"\
+            " obras y los trabajos anteriormente mencionados, de acuerdo con"\
+            " las especificaciones de proyecto y condiciones de nuestra "\
+            "oferta."
+    par = Paragraph(txt, estilo)
     return par
 
 def go(titulo, 
@@ -212,19 +243,20 @@ def go(titulo,
        fecha = None, 
        ruta_logo = None, 
        datos_fiscales = "", 
-       logo_marcado = None
+       logo_marcado = None,
+       idioma = "es"
       ):
     """
     Recibe el título del documento y la ruta completa del archivo.
     """
     doc = SimpleDocTemplate(ruta_archivo, title = titulo)
     # Secciones
-    encabezado = build_encabezado() # Logos y "título"
-    datos_cliente = build_datos_cliente(datos_cliente)  # Datos del cliente
-    par_fecha = build_fecha(fecha)  # Fecha a la derecha
-    datos_obra = build_datos_obra(ref_obra) # Cuadro con datos de la obra
-    texto = build_texto()   # El texto es fijo.
-    despedida = build_despedida(datos_comercial)
+    encabezado = build_encabezado(idioma = idioma) # Logos y "título"
+    datos_cliente = build_datos_cliente(datos_cliente, idioma)  # Datos cliente
+    par_fecha = build_fecha(fecha, idioma)  # Fecha a la derecha
+    datos_obra = build_datos_obra(ref_obra, idioma) # Cuadro con datos de obra
+    texto = build_texto(idioma)   # El texto es fijo.
+    despedida = build_despedida(datos_comercial, idioma)
     story = [Spacer(1, 4 * cm), 
              encabezado, 
              datos_cliente, 
@@ -246,10 +278,12 @@ def go(titulo,
     doc.build(story, onFirstPage = _dibujar_logo) #, onLaterPages = _dibujar_pie)
     return ruta_archivo
 
-def go_from_presupuesto(presupuesto):
+def go_from_presupuesto(presupuesto, idioma = "es"):
     """
     Construye el PDF a partir de un objeto presupuesto y no de sus datos 
     sueltos.
+    Si idioma es "en", lo genera en inglés. En otro caso, castellano por
+    defecto.
     """
     try:
         dde = pclases.DatosDeLaEmpresa.select()[0]
@@ -266,7 +300,10 @@ def go_from_presupuesto(presupuesto):
         #    lineas_empresa.append(presupuesto.comercial.correoe)
         #else:
         #    lineas_empresa.append(dde.email)
-        datos_fiscales = " ".join(("Datos fiscales:", 
+        strdatosfiscales = "Datos fiscales:"
+        if idioma == "en":
+            strdatosfiscales = "Corp. data:"
+        datos_fiscales = " ".join((strdatosfiscales, 
                                    dde.nombre.upper(), 
                                    dde.get_dir_facturacion_completa()))
     except IndexError:
@@ -288,7 +325,7 @@ def go_from_presupuesto(presupuesto):
                                         if token.strip() != ""])
     datos_cliente.append(segunda_linea_direccion)
     if presupuesto.telefono.strip() != "":
-        datos_cliente.append("Tlf.: %s" % (presupuesto.telefono))
+        datos_cliente.append("Tel.: %s" % (presupuesto.telefono))
     if presupuesto.fax.strip() != "":
         datos_cliente.append("Fax.: %s" % (presupuesto.fax))
     fecha_entradilla = utils.str_fecha(presupuesto.fecha)
@@ -297,18 +334,30 @@ def go_from_presupuesto(presupuesto):
         iva = dde.iva
     except IndexError:
         iva = 0.21
-    totales = {"orden": ["Base imponible", 
-                         "IVA %d%%" % (iva * 100), 
-                         "TOTAL"], 
-               "Base imponible":
+    if idioma == "en":
+        strbimp = "Subtotal"
+        striva = "VAT %d%%" % (iva * 100)
+        strtot = "TOTAL"
+    else:
+        strbimp = "Base imponible"
+        striva = "IVA %d%%" % (iva * 100)
+        strtot = "TOTAL"
+    totales = {"orden": [strbimp, 
+                         striva, 
+                         strtot], 
+               strbimp:
                     utils.float2str(presupuesto.calcular_base_imponible()), 
-               "IVA %d%%" % (iva * 100): 
+               striva: 
                     utils.float2str(presupuesto.calcular_total_iva()), 
-               "TOTAL": 
+               strtot: 
                     utils.float2str(presupuesto.calcular_importe_total())
                }
     if presupuesto.descuento:
-        fila_descuento = "Descuento %s %%" % (
+        if idioma == "en":
+            strdto = "Descuento %s %%"
+        else:
+            strdto = "Discount %s %%"
+        fila_descuento = strdto % (
             utils.float2str(presupuesto.descuento*100, autodec = True))
         totales['orden'].insert(0, fila_descuento) 
         totales[fila_descuento] = utils.float2str(
@@ -352,14 +401,21 @@ def go_from_presupuesto(presupuesto):
     if (not presupuesto.cliente 
         or presupuesto.cliente.calcular_credito_disponible(
             base = presupuesto.calcular_importe_total(iva = True)) <= 0):
-        texto_riesgo = "Esta operación está sujeta a la concesión de "\
-                       "crédito por parte de %s." % dde.nombre
+        if idioma == "en":
+            texto_riesgo = "Operation conditioned by a previous credit "\
+                           "approbation by %s." % dde.nombre
+        else:
+            texto_riesgo = "Esta operación está sujeta a la concesión de "\
+                           "crédito por parte de %s." % dde.nombre
     else:
         texto_riesgo = None
     nomarchivo = os.path.join(gettempdir(), 
             "%s.pdf" % plantilla_nombre_carta_compromiso(presupuesto))
     if presupuesto.texto:
-        condicionado = "Condiciones particulares:\n" + presupuesto.texto
+        if idioma == "en":
+            condicionado = "Particular conditions:\n" + presupuesto.texto
+        else:
+            condicionado = "Condiciones particulares:\n" + presupuesto.texto
     else:
         condicionado = None
     ref_obra = presupuesto.nombreobra
@@ -367,8 +423,12 @@ def go_from_presupuesto(presupuesto):
         datos_comercial = presupuesto.comercial.get_firma().split("\n")
     except AttributeError:
         datos_comercial = ""
+    if idioma == "en":
+        strcarta = "Letter of commitment"
+    else:
+        strcarta = "Carta compromiso"
     nomarchivo = go(
-      "Carta compromiso", 
+       strcarta, 
        nomarchivo, 
        lineas_empresa, 
        datos_cliente, 
@@ -377,7 +437,8 @@ def go_from_presupuesto(presupuesto):
        fecha_entradilla, 
        ruta_logo = logo, 
        datos_fiscales = datos_fiscales, 
-       logo_marcado = logo_marcado)  
+       logo_marcado = logo_marcado,
+       idioma = idioma)
     return nomarchivo
 
 def plantilla_nombre_carta_compromiso(presupuesto):
