@@ -1778,14 +1778,15 @@ class Presupuestos(Ventana, VentanaGenerica):
         """
         cell.stop_editing(False)
         self.rellenar_tablas()
-        self.refresh_validado()
-        if nextwidget != None:
-            nextwidget.grab_focus()
-        if nextpath != None and nextcol != None:
-            self.wids['tv_contenido'].set_cursor(nextpath, nextcol, True)
         if check_validacion:
             self.invalidar()
             self.comprobar_riesgo_cliente()
+        self.refresh_validado()
+        if nextwidget != None:
+            nextwidget.grab_focus()
+        if nextpath and nextcol:
+            print "SET CURSOR!"
+            self.wids['tv_contenido'].set_cursor(nextpath, nextcol, True)
         return False
 
     def tooltip_query(self, treeview, x, y, mode, tooltip):
