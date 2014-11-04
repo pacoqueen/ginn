@@ -229,13 +229,15 @@ def build_entradilla(fecha, numpresupuesto, para_estudio, lang = "es"):
     Construye la frase de entradilla. Básicamente la palabra "Presupuesto" 
     y la fecha del mismo.
     """
+    if lang == "en":
+        strpresupuesto = "Offer"
+    else:
+        strpresupuesto = "Presupuesto"
     if para_estudio:
         if lang == "en":
             texto_estudio = " for work planning"
-            strpresupuesto = "Offer"
         else:
             texto_estudio = " para estudio de obra" 
-            strpresupuesto = "Presupuesto"
     else:
         texto_estudio = "" 
     return Paragraph("<b><u>%s%s%s%s.</u> %s</b>" % (
@@ -661,7 +663,7 @@ def go_from_presupuesto(presupuesto,
        forma_de_pago = fdp, 
        dir_fiscal = dir_fiscal, 
        firma_comercial = firma_comercial, 
-       para_estudio = presupuesto.estudio == False, 
+       para_estudio = presupuesto.estudio, 
        idioma = idioma)
     return nomarchivo
 
