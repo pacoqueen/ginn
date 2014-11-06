@@ -347,6 +347,7 @@ class FacturaVenta(SQLObject, PRPCTOO, SuperFacturaVenta):
         """
         Devuelve la base imponible (subtotal + descuento global + abonos) 
         de la factura.
+        WARNING: DEPRECATED
         """
         base_imponible = self.calcular_subtotal(incluir_descuento = True)
         abonos = sum([pa.importe for pa in self.pagosDeAbono])
