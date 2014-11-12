@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          (pacoqueen@users.sourceforge.net)                  #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
@@ -180,7 +180,8 @@ class ConsultaLibroIVA(Ventana):
                             utils.str_fecha(f.fecha), 
                             f.cliente and f.cliente.cif or "¡Sin cliente!", 
                             f.cliente and f.cliente.nombre or "¡Sin cliente!", 
-                            utils.float2str(f.calcular_base_imponible()), 
+                            #utils.float2str(f.calcular_base_imponible()), 
+                            utils.float2str(f.calcular_total(iva = False)), 
                             utils.float2str(f.calcular_total_iva()), 
                             utils.float2str(f.calcular_importe_total()), 
                             f.get_puid()))
@@ -191,8 +192,10 @@ class ConsultaLibroIVA(Ventana):
                                txtvpro)
                 model.append((a.numfactura, 
                             utils.str_fecha(a.fecha), 
-                            a.cliente and a.cliente.cif or "¡Sin cliente!", 
-                            a.cliente and a.cliente.nombre or "¡Sin cliente!", 
+                            a.cliente and a.cliente.cif
+                                or "¡Abono sin cliente!", 
+                            a.cliente and a.cliente.nombre
+                                or "¡Abono sin cliente!", 
                             utils.float2str(a.calcular_base_imponible()), 
                             utils.float2str(a.calcular_total_iva()), 
                             utils.float2str(a.calcular_importe_total()), 
