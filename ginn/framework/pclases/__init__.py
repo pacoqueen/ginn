@@ -582,6 +582,8 @@ class PRPCTOO:
         Ejecuta un .select sobre la clase buscando en el campo especificado
         la expresión recibida.
         """
+        # TODO: Recibir más parámetros opcionales y combinarlos con AND en
+        # el select.
         if isinstance(campo, str):
             # campoqry = getattr(clase, "q").getattr(campo)
             # HACK
