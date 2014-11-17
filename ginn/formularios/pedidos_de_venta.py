@@ -267,6 +267,7 @@ class PedidosDeVenta(Ventana):
         sin crédito.
         """
         self.objeto.notificador.desactivar()
+        self.objeto.sync()
         vpro = VentanaActividad(self.wids['ventana'], 
                                 "Comprobando validación...")
         vpro.mostrar()
