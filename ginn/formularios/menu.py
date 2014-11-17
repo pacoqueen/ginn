@@ -589,7 +589,7 @@ class Menu:
             self.acerca_de()
         elif 'usuario' in archivo:
             utils.escribir_barra_estado(self.statusbar, 
-                                        "Cargar: %s.py" % archivo, 
+                                        "Cargando: %s.py" % archivo, 
                                         self.logger, 
                                         self.usuario.usuario)
             self.abrir_ventana_usuario(archivo)
@@ -601,7 +601,7 @@ class Menu:
             self.abrir_pruebas_coherencia()
         else:
             utils.escribir_barra_estado(self.statusbar, 
-                                        "Cargar: %s.py" % archivo, 
+                                        "Cargando: %s.py" % archivo, 
                                         self.logger, 
                                         self.usuario.usuario)
             self.abrir_ventana_modulo_python(archivo, clase)
