@@ -3160,9 +3160,18 @@ def factura(cliente,
                     linea,
                     escribe('Geotextiles    1035-CPD-ES033858'),
                     "Courier", 8, (0, 0, 0), 10)
-            c.drawImage(os.path.join(
+            try:
+                c.drawImage(os.path.join(
                             os.path.dirname(os.path.realpath(__file__)), '..',
                             'imagenes', "CE.png"),
+                        posx + anchosemitexto, 
+                        linea, 
+                        0.40*cm, 
+                        0.20*cm)
+            except:     # PIL de Reportlab sin soporte zlib en W8
+                c.drawImage(os.path.join(
+                            os.path.dirname(os.path.realpath(__file__)), '..',
+                            'imagenes', "CE.gif"),
                         posx + anchosemitexto, 
                         linea, 
                         0.40*cm, 
@@ -3179,9 +3188,18 @@ def factura(cliente,
                     linea - 8,
                     escribe('Fibra    1035-CPD-9003712'),
                     "Courier", 8, (0, 0, 0), 10)
-            c.drawImage(os.path.join(
+            try:
+                c.drawImage(os.path.join(
                             os.path.dirname(os.path.realpath(__file__)), '..',
                             'imagenes', "CE.png"),
+                        posx + anchosemitexto, 
+                        linea - 8, 
+                        0.40*cm, 
+                        0.20*cm)
+            except:     # PIL de Reportlab sin soporte zlib en W8
+                c.drawImage(os.path.join(
+                            os.path.dirname(os.path.realpath(__file__)), '..',
+                            'imagenes', "CE.gif"),
                         posx + anchosemitexto, 
                         linea - 8, 
                         0.40*cm, 
