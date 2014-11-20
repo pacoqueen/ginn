@@ -55,9 +55,12 @@ def etiqueta_rollos_portrait(rollos, mostrar_marcado = True):
                                    "..", "imagenes", "logo_ekotex.png")) 
                                                 # Ruta absoluta 
                                                 # a la imagen del logotipo. 
-    logo_marcado = os.path.abspath(os.path.join(os.path.dirname(__file__), 
-                                   "..", "imagenes", "CE.png"))
-
+    try:
+        logo_marcado = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                       "..", "imagenes", "CE.png"))
+    except IOError:     # Reportlab o PIL sin soporte libzip
+        logo_marcado = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                       "..", "imagenes", "CE.gif"))
     # Creo la hoja
     nomarchivo = os.path.join(gettempdir(),
         "etiqEkotex_%s.pdf" % give_me_the_name_baby())

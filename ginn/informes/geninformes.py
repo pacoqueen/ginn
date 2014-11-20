@@ -3168,7 +3168,7 @@ def factura(cliente,
                         linea, 
                         0.40*cm, 
                         0.20*cm)
-            except:     # PIL de Reportlab sin soporte zlib en W8
+            except IOError:     # PIL de Reportlab sin soporte zlib en W8
                 c.drawImage(os.path.join(
                             os.path.dirname(os.path.realpath(__file__)), '..',
                             'imagenes', "CE.gif"),
@@ -3196,7 +3196,7 @@ def factura(cliente,
                         linea - 8, 
                         0.40*cm, 
                         0.20*cm)
-            except:     # PIL de Reportlab sin soporte zlib en W8
+            except IOError:     # PIL de Reportlab sin soporte zlib en W8
                 c.drawImage(os.path.join(
                             os.path.dirname(os.path.realpath(__file__)), '..',
                             'imagenes', "CE.gif"),
@@ -3962,10 +3962,21 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
                     linea,
                     escribe('Geotextiles    1035-CPD-ES033858'),
                     "Courier", 8, (0, 0, 0), 10)
-            c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', "CE.png"),
-                        posx + anchosemitexto, 
-                        linea, 
-                        0.40*cm, 
+            try:
+                c.drawImage(os.path.join(os.path.dirname(
+                                    os.path.realpath(__file__)),
+                                '..', 'imagenes', "CE.png"),
+                        posx + anchosemitexto,
+                        linea,
+                        0.40*cm,
+                        0.20*cm)
+            except IOError:     # Reportlab o PIL sin soporte zlib en W8
+                c.drawImage(os.path.join(os.path.dirname(
+                                    os.path.realpath(__file__)),
+                                '..', 'imagenes', "CE.gif"),
+                        posx + anchosemitexto,
+                        linea,
+                        0.40*cm,
                         0.20*cm)
             # Marcado CE fibra
             anchotexto = c.stringWidth(
@@ -3979,10 +3990,21 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
                     linea - 8,
                     escribe('Fibra    1035-CPD-9003712'),
                     "Courier", 8, (0, 0, 0), 10)
-            c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', "CE.png"),
-                        posx + anchosemitexto, 
-                        linea - 8, 
-                        0.40*cm, 
+            try:
+                c.drawImage(os.path.join(os.path.dirname(
+                                            os.path.realpath(__file__)),
+                                    '..', 'imagenes', "CE.png"),
+                        posx + anchosemitexto,
+                        linea - 8,
+                        0.40*cm,
+                        0.20*cm)
+            except IOError:     # Reportlab o PIL sin soporte zlib en W8
+                c.drawImage(os.path.join(os.path.dirname(
+                                            os.path.realpath(__file__)),
+                                    '..', 'imagenes', "CE.gif"),
+                        posx + anchosemitexto,
+                        linea - 8,
+                        0.40*cm,
                         0.20*cm)
         c.setFont("Helvetica", 10)
         linea = sigLinea()
@@ -4588,12 +4610,20 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
                     linea,
                     escribe('Geotextiles    1035-CPD-ES033858'),
                     "Courier", 8, (0, 0, 0), 10)
-            c.drawImage(os.path.join(os.path.dirname(
-                os.path.realpath(__file__)), '..', 'imagenes', "CE.png"),
-                        posx + anchosemitexto, 
-                        linea, 
-                        0.40*cm, 
-                        0.20*cm)
+            try:
+                c.drawImage(os.path.join(os.path.dirname(
+                    os.path.realpath(__file__)), '..', 'imagenes', "CE.png"),
+                            posx + anchosemitexto,
+                            linea,
+                            0.40*cm,
+                            0.20*cm)
+            except IOError:     # W8
+                c.drawImage(os.path.join(os.path.dirname(
+                    os.path.realpath(__file__)), '..', 'imagenes', "CE.gif"),
+                            posx + anchosemitexto,
+                            linea,
+                            0.40*cm,
+                            0.20*cm)
             # Marcado CE fibra
             anchotexto = c.stringWidth(
                             escribe('Fibra CE 1035-CPD-9003712'),
@@ -4606,9 +4636,18 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
                     linea - 8,
                     escribe('Fibra    1035-CPD-9003712'),
                     "Courier", 8, (0, 0, 0), 10)
-            c.drawImage(os.path.join(os.path.dirname(
+            try:
+                c.drawImage(os.path.join(os.path.dirname(
                             os.path.realpath(__file__)), '..', 'imagenes',
                             "CE.png"),
+                        posx + anchosemitexto, 
+                        linea - 8, 
+                        0.40*cm, 
+                        0.20*cm)
+            except IOError:     # W8
+                c.drawImage(os.path.join(os.path.dirname(
+                            os.path.realpath(__file__)), '..', 'imagenes',
+                            "CE.gif"),
                         posx + anchosemitexto, 
                         linea - 8, 
                         0.40*cm, 
@@ -6824,7 +6863,12 @@ def etiquetasRollos(rollos, mostrar_marcado):
 
         for i in range(len(temp)):
             if mostrar_marcado:
-                c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', 'CE.png'),
+                try:
+                    c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', 'CE.png'),
+                            xCE[i] - (3 * cm / 2), -yCE[i], width = 2 * cm,
+                            height = 1.64 * cm)
+                except IOError:
+                    c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', 'CE.gif'),
                             xCE[i] - (3 * cm / 2), -yCE[i], width = 2 * cm,
                             height = 1.64 * cm)
                 c.setFont("Helvetica", 20)
@@ -7916,7 +7960,13 @@ def pintar_data_pale(c, data, ancho, alto, tipo = 0):
     # Logotipo de marcado CE.
     anchomarcado = 2 * cm / 2.0
     altomarcado = 1.64 * cm / 2.0
-    c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', 'CE.png'), 
+    try:
+        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', 'CE.png'), 
+                sizes['marcado'][0] - anchomarcado / 2.0, 
+                sizes['marcado'][1] + 0.35*cm, 
+                width = anchomarcado, height = altomarcado)
+    except IOError:     # W8
+        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', 'CE.gif'), 
                 sizes['marcado'][0] - anchomarcado / 2.0, 
                 sizes['marcado'][1] + 0.35*cm, 
                 width = anchomarcado, height = altomarcado)
@@ -8039,7 +8089,13 @@ def pintar_data_caja(c, data, ancho, alto, tipo = 0):
     # Logotipo de marcado CE.
     anchomarcado = 2 * cm / 2.0
     altomarcado = 1.64 * cm / 2.0
-    c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', 'CE.png'), 
+    try:
+        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', 'CE.png'), 
+                sizes['marcado'][0] - anchomarcado / 2.0, 
+                sizes['marcado'][1] + 0.35*cm, 
+                width = anchomarcado, height = altomarcado)
+    except IOError:     # W8
+        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', 'CE.gif'), 
                 sizes['marcado'][0] - anchomarcado / 2.0, 
                 sizes['marcado'][1] + 0.35*cm, 
                 width = anchomarcado, height = altomarcado)
@@ -8975,14 +9031,24 @@ def _etiquetasRollosEtiquetadora(rollos, mostrar_marcado):
         rectangulo(c, (izq, arriba), (der, abajo))
         c.rotate(90)
         if mostrar_marcado:
-            c.drawImage(
-                os.path.join(
-                    os.path.dirname(os.path.realpath(__file__)),
-                    '..', 'imagenes', 'CE.png'),
-                xCE - (3 * cm / 2),
-                -yCE,
-                width = 2 * cm,
-                height = 1.64 * cm)
+            try:
+                c.drawImage(
+                    os.path.join(
+                     os.path.dirname(os.path.realpath(__file__)),
+                     '..', 'imagenes', 'CE.png'),
+                    xCE - (3 * cm / 2),
+                    -yCE,
+                    width = 2 * cm,
+                    height = 1.64 * cm)
+            except IOError:     # W8
+                c.drawImage(
+                    os.path.join(
+                     os.path.dirname(os.path.realpath(__file__)),
+                     '..', 'imagenes', 'CE.gif'),
+                    xCE - (3 * cm / 2),
+                    -yCE,
+                    width = 2 * cm,
+                    height = 1.64 * cm)
             c.setFont("Helvetica", 20)
             c.drawCentredString(xCodigoCE, -yCodigoCE, "1035-CPD-ES033858")
         c.setFont("Helvetica-Bold", 26)
@@ -9624,9 +9690,18 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
             rectangulo(c, (0.3 * cm, 0.3 * cm),
                           (width - 0.3 * cm, height - 0.3 * cm))
             if mostrar_marcado and not rollo['defectuoso']:
-                c.drawImage(os.path.join(os.path.dirname(
+                try:
+                    c.drawImage(os.path.join(os.path.dirname(
                                 os.path.realpath(__file__)), 
                                 '..', 'imagenes', 'CE.png'),
+                            width/2 - (2 * cm / 2),
+                            height - 0.3 * cm - 0.1 * cm - 1.64 * cm,
+                            width = 2 * cm,
+                            height = 1.64 * cm)
+                except IOError:
+                    c.drawImage(os.path.join(os.path.dirname(
+                                os.path.realpath(__file__)), 
+                                '..', 'imagenes', 'CE.gif'),
                             width/2 - (2 * cm / 2),
                             height - 0.3 * cm - 0.1 * cm - 1.64 * cm,
                             width = 2 * cm,
