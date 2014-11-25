@@ -75,8 +75,12 @@ def etiqueta_rollos_polaco(rollos, mostrar_marcado = True):
     if DEBUG:
         print_debug(height = height, width = width)
 
-    logo_marcado = os.path.abspath(os.path.join(os.path.dirname(__file__), 
-                                    "..", "imagenes", "CE.png"))
+    try:
+        logo_marcado = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                        "..", "imagenes", "CE.png"))
+    except IOError:     # Reportlab o PIL sin soporte libzip
+        logo_marcado = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                        "..", "imagenes", "CE.gif"))
     logo_alians = os.path.abspath(os.path.join(os.path.dirname(__file__), 
                                     "..", "imagenes", "alians_trade.png"))
     WM = 1.0 * cm
