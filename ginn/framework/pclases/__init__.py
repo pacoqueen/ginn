@@ -691,7 +691,7 @@ GESTION, CARTERA, DESCONTADO, IMPAGADO, COBRADO = range(5)
 NO_VALIDABLE, VALIDABLE, PLAZO_EXCESIVO, SIN_FORMA_DE_PAGO, \
         PRECIO_INSUFICIENTE, CLIENTE_DEUDOR, SIN_CIF, SIN_CLIENTE, \
         COND_PARTICULARES, COMERCIALIZADO, BLOQUEO_FORZADO, \
-        SERVICIO = range(12)
+        BLOQUEO_CLIENTE, SERVICIO = range(13)
 
 # VERBOSE MODE
 total = 161 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
@@ -10945,6 +10945,11 @@ class Presupuesto(SQLObject, PRPCTOO):
                       descripción (conservando validación y convirtiendo la
                       línea en una venta de comercializados sin pasar por
                       la validación COMERCIALIZADO).
+            BLOQUEO_CLIENTE: El cliente de la oferta tiene el campo
+                             "validacion_manual" a True, que fuerza a que
+                             todos sus presupuestos deban ser validados
+                             manualmente aunque cumpla el resto de requisitos.
+                             (CWT)
         """
         # Debería tener las condiciones en un solo sitio. Los pedidos y
         # presupuestos siguen el mismo criterio, pero están especificados por
@@ -10954,6 +10959,9 @@ class Presupuesto(SQLObject, PRPCTOO):
         if (validable == VALIDABLE 
                 and self.comercial and self.comercial.validacionManual):
             validable = BLOQUEO_FORZADO
+        if (validable == VALIDABLE
+                and self.cliente and self.cliente.validacionManual):
+            validable = BLOQUEO_CLIENTE
         if (validable == VALIDABLE
                 and self.__lleva_servicio()):
             validable = SERVICIO
@@ -11050,6 +11058,9 @@ class Presupuesto(SQLObject, PRPCTOO):
         elif estado_validacion == BLOQUEO_FORZADO:
             txtestado = "Necesita validación manual: "\
                         "Restricción forzada en la configuración del usuario."
+        elif estado_validacion == BLOQUEO_CLIENTE:
+            txtestado = "Necesita validacion manual: "\
+                        "Restricción forzada en la configuración del cliente."
         elif estado_validacion == SERVICIO:
             txtestado = "Necesita validación manual: "\
                         "La oferta incluye alguna línea de prestación de"\

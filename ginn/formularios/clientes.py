@@ -1062,6 +1062,7 @@ class Clientes(Ventana):
                         and cli.name != 'formaPagoFija'
                         and cli.name != "clienteID"
                         and cli.name != "porcentaje"
+                        and cli.name != "validacionManual"
                         and cli.name != "enviarCorreoAlbaran"
                         and cli.name != "enviarCorreoFactura"
                         and cli.name != "enviarCorreoPacking"
@@ -1124,6 +1125,9 @@ class Clientes(Ventana):
                 and self.wids['e_porcentaje'].get_text()
                         == "%s %%" % (utils.float2str(cliente.porcentaje * 100)))
         condicion = (condicion
+                and self.wids['ch_validacionManual'].get_active()
+                        == cliente.validacionManual)
+        condicion = (condicion
                 and self.wids['ch_envio_albaran'].get_active()
                         == cliente.enviarCorreoAlbaran)
         condicion = (condicion
@@ -1169,6 +1173,7 @@ class Clientes(Ventana):
         if pclases.DEBUG:
             antes = time.time()
             myprint("0.- clientes.py::inicializar_ventana -> Hey, ho!")
+        self.wids['ch_validacionManual'].child.set_use_markup(True)
         # Inicialmente no se muestra NADA. Sólo se le deja al
         # usuario la opción de buscar o crear nuevo.
         self.activar_widgets(False)
@@ -1631,6 +1636,7 @@ class Clientes(Ventana):
         if pclases.DEBUG:
             myprint("4.- clientes.py::rellenar_widgets ->",
                     time.time() - antes)
+        self.wids['ch_validacionManual'].set_active(cliente.validacionManual)
         self.wids['ch_envio_albaran'].set_active(cliente.enviarCorreoAlbaran)
         self.wids['ch_envio_factura'].set_active(cliente.enviarCorreoFactura)
         self.wids['ch_envio_packing'].set_active(cliente.enviarCorreoPacking)
@@ -2006,6 +2012,7 @@ class Clientes(Ventana):
                       and c.name != 'formaPagoFija'
                       and c.name != "clienteID"
                       and c.name != "porcentaje"
+                      and c.name != "validacionManual"
                       and c.name != "enviarCorreoAlbaran"
                       and c.name != "enviarCorreoFactura"
                       and c.name != "enviarCorreoPacking"
@@ -2080,6 +2087,7 @@ class Clientes(Ventana):
                 fraccion = True)
         except ValueError:
             cliente.porcentaje = 0
+        cliente.validacionManual = self.wids['ch_validacionManual'].get_active()
         cliente.enviarCorreoAlbaran = self.wids['ch_envio_albaran'].get_active()
         cliente.enviarCorreoFactura = self.wids['ch_envio_factura'].get_active()
         cliente.enviarCorreoPacking = self.wids['ch_envio_packing'].get_active()

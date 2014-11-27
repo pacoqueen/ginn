@@ -432,7 +432,9 @@ CREATE TABLE cliente(
     copias_factura INT DEFAULT 0,   -- Sin incluir la original. NEW! 09/07/2009
     tipo_de_cliente_id INT REFERENCES tipo_de_cliente DEFAULT NULL, 
     texto_complementario_forma_de_pago TEXT DEFAULT '', -- NEW! 12/02/2014
-    forma_pago_fija BOOLEAN DEFAULT FALSE   -- NEW! 04/09/2014
+    forma_pago_fija BOOLEAN DEFAULT FALSE,  -- NEW! 04/09/2014
+    validacion_manual BOOLEAN DEFAULT FALSE     -- Validación manual forzosa
+                                    -- para todas las ofertas de este cliente.
 );
 
 ---------------------------------

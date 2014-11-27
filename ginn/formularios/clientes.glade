@@ -1920,7 +1920,7 @@ Déjelo en blanco si el cliente no tiene un día fijo en el que realice los pago
                   <widget class="GtkTable" id="table5">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="n_rows">7</property>
+                    <property name="n_rows">8</property>
                     <property name="n_columns">3</property>
                     <property name="column_spacing">2</property>
                     <property name="row_spacing">10</property>
@@ -1937,8 +1937,8 @@ Déjelo en blanco si el cliente no tiene un día fijo en el que realice los pago
                       <packing>
                         <property name="left_attach">2</property>
                         <property name="right_attach">3</property>
-                        <property name="top_attach">1</property>
-                        <property name="bottom_attach">2</property>
+                        <property name="top_attach">2</property>
+                        <property name="bottom_attach">3</property>
                         <property name="x_options"/>
                       </packing>
                     </child>
@@ -1955,6 +1955,8 @@ Déjelo en blanco si el cliente no tiene un día fijo en el que realice los pago
                       <packing>
                         <property name="left_attach">2</property>
                         <property name="right_attach">3</property>
+                        <property name="top_attach">1</property>
+                        <property name="bottom_attach">2</property>
                         <property name="x_options"/>
                       </packing>
                     </child>
@@ -1974,8 +1976,8 @@ Déjelo en blanco si el cliente no tiene un día fijo en el que realice los pago
                       <packing>
                         <property name="left_attach">1</property>
                         <property name="right_attach">3</property>
-                        <property name="top_attach">6</property>
-                        <property name="bottom_attach">7</property>
+                        <property name="top_attach">7</property>
+                        <property name="bottom_attach">8</property>
                         <property name="x_padding">5</property>
                       </packing>
                     </child>
@@ -1986,8 +1988,8 @@ Déjelo en blanco si el cliente no tiene un día fijo en el que realice los pago
                         <property name="label" translatable="yes">Crédito disponible</property>
                       </widget>
                       <packing>
-                        <property name="top_attach">6</property>
-                        <property name="bottom_attach">7</property>
+                        <property name="top_attach">7</property>
+                        <property name="bottom_attach">8</property>
                       </packing>
                     </child>
                     <child>
@@ -2003,6 +2005,8 @@ Déjelo en blanco si el cliente no tiene un día fijo en el que realice los pago
                       <packing>
                         <property name="left_attach">1</property>
                         <property name="right_attach">2</property>
+                        <property name="top_attach">1</property>
+                        <property name="bottom_attach">2</property>
                       </packing>
                     </child>
                     <child>
@@ -2018,8 +2022,8 @@ Déjelo en blanco si el cliente no tiene un día fijo en el que realice los pago
                       <packing>
                         <property name="left_attach">1</property>
                         <property name="right_attach">2</property>
-                        <property name="top_attach">1</property>
-                        <property name="bottom_attach">2</property>
+                        <property name="top_attach">2</property>
+                        <property name="bottom_attach">3</property>
                       </packing>
                     </child>
                     <child>
@@ -2029,8 +2033,8 @@ Déjelo en blanco si el cliente no tiene un día fijo en el que realice los pago
                         <property name="label" translatable="yes">Riesgo concedido</property>
                       </widget>
                       <packing>
-                        <property name="top_attach">1</property>
-                        <property name="bottom_attach">2</property>
+                        <property name="top_attach">2</property>
+                        <property name="bottom_attach">3</property>
                       </packing>
                     </child>
                     <child>
@@ -2039,6 +2043,10 @@ Déjelo en blanco si el cliente no tiene un día fijo en el que realice los pago
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Riesgo asegurado</property>
                       </widget>
+                      <packing>
+                        <property name="top_attach">1</property>
+                        <property name="bottom_attach">2</property>
+                      </packing>
                     </child>
                     <child>
                       <widget class="GtkLabel" id="label57">
@@ -2047,8 +2055,8 @@ Déjelo en blanco si el cliente no tiene un día fijo en el que realice los pago
                         <property name="label" translatable="yes">Pendiente de documentar</property>
                       </widget>
                       <packing>
-                        <property name="top_attach">2</property>
-                        <property name="bottom_attach">3</property>
+                        <property name="top_attach">3</property>
+                        <property name="bottom_attach">4</property>
                       </packing>
                     </child>
                     <child>
@@ -2058,8 +2066,8 @@ Déjelo en blanco si el cliente no tiene un día fijo en el que realice los pago
                         <property name="label" translatable="yes">Pendiente de vencer</property>
                       </widget>
                       <packing>
-                        <property name="top_attach">3</property>
-                        <property name="bottom_attach">4</property>
+                        <property name="top_attach">4</property>
+                        <property name="bottom_attach">5</property>
                       </packing>
                     </child>
                     <child>
@@ -2069,8 +2077,8 @@ Déjelo en blanco si el cliente no tiene un día fijo en el que realice los pago
                         <property name="label" translatable="yes">Impagado</property>
                       </widget>
                       <packing>
-                        <property name="top_attach">4</property>
-                        <property name="bottom_attach">5</property>
+                        <property name="top_attach">5</property>
+                        <property name="bottom_attach">6</property>
                       </packing>
                     </child>
                     <child>
@@ -2080,8 +2088,8 @@ Déjelo en blanco si el cliente no tiene un día fijo en el que realice los pago
                         <property name="label" translatable="yes">Pendiente de abono</property>
                       </widget>
                       <packing>
-                        <property name="top_attach">5</property>
-                        <property name="bottom_attach">6</property>
+                        <property name="top_attach">6</property>
+                        <property name="bottom_attach">7</property>
                       </packing>
                     </child>
                     <child>
@@ -2099,8 +2107,8 @@ Déjelo en blanco si el cliente no tiene un día fijo en el que realice los pago
                       <packing>
                         <property name="left_attach">1</property>
                         <property name="right_attach">3</property>
-                        <property name="top_attach">2</property>
-                        <property name="bottom_attach">3</property>
+                        <property name="top_attach">3</property>
+                        <property name="bottom_attach">4</property>
                         <property name="x_padding">5</property>
                       </packing>
                     </child>
@@ -2119,8 +2127,8 @@ Déjelo en blanco si el cliente no tiene un día fijo en el que realice los pago
                       <packing>
                         <property name="left_attach">1</property>
                         <property name="right_attach">3</property>
-                        <property name="top_attach">3</property>
-                        <property name="bottom_attach">4</property>
+                        <property name="top_attach">4</property>
+                        <property name="bottom_attach">5</property>
                         <property name="x_padding">5</property>
                       </packing>
                     </child>
@@ -2139,8 +2147,8 @@ Déjelo en blanco si el cliente no tiene un día fijo en el que realice los pago
                       <packing>
                         <property name="left_attach">1</property>
                         <property name="right_attach">3</property>
-                        <property name="top_attach">4</property>
-                        <property name="bottom_attach">5</property>
+                        <property name="top_attach">5</property>
+                        <property name="bottom_attach">6</property>
                         <property name="x_padding">5</property>
                       </packing>
                     </child>
@@ -2159,9 +2167,23 @@ Déjelo en blanco si el cliente no tiene un día fijo en el que realice los pago
                       <packing>
                         <property name="left_attach">1</property>
                         <property name="right_attach">3</property>
-                        <property name="top_attach">5</property>
-                        <property name="bottom_attach">6</property>
+                        <property name="top_attach">6</property>
+                        <property name="bottom_attach">7</property>
                         <property name="x_padding">5</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkCheckButton" id="ch_validacionManual">
+                        <property name="label" translatable="yes">Requerir &lt;b&gt;validación manual&lt;/b&gt; en todas las ofertas presentadas a este cliente.</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="use_action_appearance">False</property>
+                        <property name="draw_indicator">True</property>
+                      </widget>
+                      <packing>
+                        <property name="right_attach">3</property>
+                        <property name="x_options">GTK_EXPAND</property>
                       </packing>
                     </child>
                   </widget>
