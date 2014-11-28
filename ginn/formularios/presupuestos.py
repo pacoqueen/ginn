@@ -67,7 +67,8 @@ CONDICIONES_DURAS = (pclases.PLAZO_EXCESIVO,
                      pclases.COND_PARTICULARES,
                      pclases.COMERCIALIZADO,
                      pclases.SERVICIO,
-                     pclases.BLOQUEO_FORZADO)
+                     pclases.BLOQUEO_FORZADO,
+                     pclases.BLOQUEO_CLIENTE)
 CONDICIONES_BLANDAS = (pclases.NO_VALIDABLE,    # @UnusedVariable
                        pclases.CLIENTE_DEUDOR,
                        pclases.SIN_CIF)
