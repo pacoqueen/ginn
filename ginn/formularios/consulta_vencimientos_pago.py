@@ -399,7 +399,7 @@ class ConsultaVencimientosPagos(Ventana):
         vpro = ventana_progreso.VentanaProgreso(padre = self.wids['ventana'])
         vpro.mostrar()
         ivpro = 0.0
-        tot = len(items)
+        tot = len(items) + 1    # Por no hay items...
         vpro.set_valor(ivpro/tot, "Rellenando tabla...")
         model = self.wids['tv_datos'].get_model()
         model.clear()
@@ -572,8 +572,8 @@ class ConsultaVencimientosPagos(Ventana):
         i = 0.0
         tot = len(r)
         vpro.set_valor(i / tot, "Filtrando por forma de pago...")
-        res = []
         if self.wids['ch_formapago'].get_active():
+            res = []
             formapago = utils.combo_get_value(self.wids['cb_formapago'])
             if formapago != None:
                 txtformapago = self.formaspago[formapago][1]
@@ -587,6 +587,8 @@ class ConsultaVencimientosPagos(Ventana):
                             v[1].observaciones).lower()):
                         res.append(v)
                     i += 1
+        else:
+            res = r
         vpro.ocultar()
         return res
 
@@ -720,7 +722,8 @@ class ConsultaVencimientosPagos(Ventana):
         Pendiente de pago: 1
         Vencimientos pendientes: 01/02 (parcialmente) y 01/03 (completo)
         """
-        return round(vencimiento.calcular_importe_pdte(), 2) == 0
+        pagado = round(vencimiento.calcular_importe_pdte(), 2) == 0
+        return pagado
         #fra = vencimiento.facturaCompra
         ##pagos = fra.pagos
         #cant_pagada = sum([p.importe for p in fra.pagos])
