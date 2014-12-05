@@ -215,7 +215,6 @@ class EanBarCode:
             im = Image.new("1",(len(bits)+position,height))
             # Load font
             try:
-                raise IOError
                 font = ImageFont.load(FDEST_PIL)
             except IOError: # decoder zip not available (W8)
                 font = None # Dejo la fuente por defecto. Es solo para los
