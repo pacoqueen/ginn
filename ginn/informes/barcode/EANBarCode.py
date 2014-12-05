@@ -58,6 +58,7 @@ través de parte del módulo common/printing de GNUe (framework GNU Enterprise)
 import os
 
 FDEST_PIL = os.path.join(os.path.dirname(os.path.realpath(__file__)), "courB08.pil")
+FDEST_PIL_UNZIPPED = os.path.join(os.path.dirname(os.path.realpath(__file__)), "courB08u.pil")
 FDEST_PBM = os.path.join(os.path.dirname(os.path.realpath(__file__)), "courB08.pbm")
 
 # courbB08.pil PIL Font file uuencoded
@@ -213,7 +214,12 @@ class EanBarCode:
             position = 8
             im = Image.new("1",(len(bits)+position,height))
             # Load font
-            font = ImageFont.load(FDEST_PIL)
+            try:
+                raise IOError
+                font = ImageFont.load(FDEST_PIL)
+            except IOError: # decoder zip not available (W8)
+                font = None # Dejo la fuente por defecto. Es solo para los
+                            # numeritos bajo el código de barras.
             # Create drawer
             draw = ImageDraw.Draw(im)
             # Erase image
