@@ -756,10 +756,14 @@ CREATE TABLE parte_de_produccion(
 CREATE TABLE PDP_conf_silo(
     id SERIAL PRIMARY KEY,
     parte_de_produccion_id INT REFERENCES parte_de_produccion NOT NULL,
-    silo_id INT REFERENCES silo NOT NULL,
+    silo_id INT REFERENCES silo, -- NOT NULL,
+    reciclada INT DEFAULT NULL,  -- Silo de granza reciclada 0, 1, etc... o
+                                 -- NULL si es una configuración de uno real.
     producto_compra_id INT REFERENCES producto_compra NOT NULL,
     fechahora TIMESTAMP DEFAULT LOCALTIMESTAMP(0),
-    porcentaje FLOAT DEFAULT 0.0
+    porcentaje FLOAT DEFAULT 0.0,
+    CHECK ((silo_id IS NOT NULL AND reciclada IS NULL) 
+           OR (silo_id IS NULL AND reciclada >= 0))
 );
 
 -----------------------------------------------------------
@@ -813,15 +817,15 @@ CREATE TABLE categoria_laboral(
     precio_plus_jefe_turno FLOAT DEFAULT 104.0,     -- /mes
     precio_plus_festivo FLOAT DEFAULT 11.0,         -- /hora
     precio_plus_mantenimiento_sabados FLOAT DEFAULT 11.0,   -- /hora. Sólo GTX.
-    dias_vacaciones INT DEFAULT 36,  -- Por defecto, 21 en agosto + 15 
-                                     -- diciembre/enero, contando sábados y 
+    dias_vacaciones INT DEFAULT 36,  -- Por defecto, 21 en agosto + 15
+                                     -- diciembre/enero, contando sábados y
                                      -- domingos.
     dias_convenio INT DEFAULT 2,     -- Por defecto y por convenio laboral: 2
     dias_asuntos_propios INT DEFAULT 2, -- Por defecto 2 al año. Remunerados.
-    salario_base FLOAT DEFAULT 0.0, 
+    salario_base FLOAT DEFAULT 0.0,
     precio_hora_regular FLOAT DEFAULT 0.0,-- NEW! 16/09/2008. Necesario para
                                           -- calcular costes de líneas.
-    fecha DATE DEFAULT NULL     -- Fecha de entrada en vigor de los precios 
+    fecha DATE DEFAULT NULL     -- Fecha de entrada en vigor de los precios
                                 -- para esta categoría laboral. Útil a la 
                                 -- hora de calcular nóminas según la fecha 
                                 -- en que se haga la consulta.
