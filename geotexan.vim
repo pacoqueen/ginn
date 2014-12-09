@@ -1,9 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-<<<<<<< Updated upstream
-" Created by session.vim 1.5 on 05 diciembre 2014 at 13:41:04.
-=======
 " Created by session.vim 1.5 on 02 diciembre 2014 at 17:20:42.
->>>>>>> Stashed changes
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -120,18 +116,9 @@ badd +210 ginn/formularios/partes_de_trabajo.py
 badd +437 db/tablas.sql
 badd +1174 ginn/formularios/clientes.py
 badd +65 ginn/formularios/menu.py
-<<<<<<< Updated upstream
-badd +7582 ginn/informes/geninformes.py
-badd +0 ginn/informes/barcode/EANBarCode.py
-argglobal
-silent! argdel *
-argadd formularios/auditviewer.py
-set lines=53 columns=102
-=======
 badd +0 ginn/formularios/consumo_balas_partida.py
 args formularios/auditviewer.py
 set lines=43 columns=102
->>>>>>> Stashed changes
 edit ginn/formularios/partes_de_ancho_multiple.py
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -171,27 +158,6 @@ set nosplitright
 wincmd t
 set winheight=1 winwidth=1
 exe 'vert 1resize ' . ((&columns * 19 + 51) / 102)
-<<<<<<< Updated upstream
-exe '2resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 2resize ' . ((&columns * 82 + 51) / 102)
-exe '3resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 3resize ' . ((&columns * 82 + 51) / 102)
-exe '4resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 4resize ' . ((&columns * 82 + 51) / 102)
-exe '5resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 5resize ' . ((&columns * 82 + 51) / 102)
-exe '6resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 6resize ' . ((&columns * 82 + 51) / 102)
-exe '7resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 7resize ' . ((&columns * 82 + 51) / 102)
-exe '8resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 8resize ' . ((&columns * 82 + 51) / 102)
-exe '9resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 9resize ' . ((&columns * 82 + 51) / 102)
-exe '10resize ' . ((&lines * 33 + 26) / 53)
-exe 'vert 10resize ' . ((&columns * 82 + 51) / 102)
-exe '11resize ' . ((&lines * 1 + 26) / 53)
-=======
 exe '2resize ' . ((&lines * 1 + 21) / 43)
 exe 'vert 2resize ' . ((&columns * 82 + 51) / 102)
 exe '3resize ' . ((&lines * 1 + 21) / 43)
@@ -211,7 +177,6 @@ exe 'vert 9resize ' . ((&columns * 82 + 51) / 102)
 exe '10resize ' . ((&lines * 6 + 21) / 43)
 exe 'vert 10resize ' . ((&columns * 82 + 51) / 102)
 exe '11resize ' . ((&lines * 1 + 21) / 43)
->>>>>>> Stashed changes
 exe 'vert 11resize ' . ((&columns * 82 + 51) / 102)
 argglobal
 enew
@@ -1090,30 +1055,6 @@ normal! 0
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
-edit ~/Geotexan/src/Geotex-INN/ginn/informes/barcode/EANBarCode.py
-setlocal fdm=indent
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=99
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-115
-normal! zo
-183
-normal! zo
-205
-normal! zo
-let s:l = 222 - ((15 * winheight(0) + 16) / 33)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-222
-normal! 065|
-lcd ~/Geotexan/src/Geotex-INN
-wincmd w
-argglobal
 edit ~/Geotexan/src/Geotex-INN/ginn/formularios/partes_de_fabricacion_rollos.py
 setlocal fdm=indent
 setlocal fde=0
@@ -1421,46 +1362,16 @@ normal! zo
 normal! zo
 3960
 normal! zo
-<<<<<<< Updated upstream
-let s:l = 1719 - ((0 * winheight(0) + 0) / 1)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-1719
-normal! 016|
-=======
 let s:l = 1717 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 1717
 normal! 013|
->>>>>>> Stashed changes
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 9wincmd w
 exe 'vert 1resize ' . ((&columns * 19 + 51) / 102)
-<<<<<<< Updated upstream
-exe '2resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 2resize ' . ((&columns * 82 + 51) / 102)
-exe '3resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 3resize ' . ((&columns * 82 + 51) / 102)
-exe '4resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 4resize ' . ((&columns * 82 + 51) / 102)
-exe '5resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 5resize ' . ((&columns * 82 + 51) / 102)
-exe '6resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 6resize ' . ((&columns * 82 + 51) / 102)
-exe '7resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 7resize ' . ((&columns * 82 + 51) / 102)
-exe '8resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 8resize ' . ((&columns * 82 + 51) / 102)
-exe '9resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 9resize ' . ((&columns * 82 + 51) / 102)
-exe '10resize ' . ((&lines * 33 + 26) / 53)
-exe 'vert 10resize ' . ((&columns * 82 + 51) / 102)
-exe '11resize ' . ((&lines * 1 + 26) / 53)
-=======
 exe '2resize ' . ((&lines * 1 + 21) / 43)
 exe 'vert 2resize ' . ((&columns * 82 + 51) / 102)
 exe '3resize ' . ((&lines * 1 + 21) / 43)
@@ -1480,7 +1391,6 @@ exe 'vert 9resize ' . ((&columns * 82 + 51) / 102)
 exe '10resize ' . ((&lines * 6 + 21) / 43)
 exe 'vert 10resize ' . ((&columns * 82 + 51) / 102)
 exe '11resize ' . ((&lines * 1 + 21) / 43)
->>>>>>> Stashed changes
 exe 'vert 11resize ' . ((&columns * 82 + 51) / 102)
 tabnext 1
 if exists('s:wipebuf')
