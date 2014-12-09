@@ -848,7 +848,7 @@ class ConsumoBalasPartida(Ventana):
                       + texto_balas_malas
                       + "\n\nPulse «Aceptar» para continuar.",
                 padre=self.wids['ventana'])
-        if buenas: 
+        if buenas:
             utils.dialogo_info(titulo="BALAS CORRECTAS",
                 texto="%d balas correctamente importadas a la partida %s.\n"
                       "\nPulse «Aceptar» para continuar." % (

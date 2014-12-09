@@ -1,5 +1,9 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
+<<<<<<< Updated upstream
 " Created by session.vim 1.5 on 05 diciembre 2014 at 13:41:04.
+=======
+" Created by session.vim 1.5 on 02 diciembre 2014 at 17:20:42.
+>>>>>>> Stashed changes
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -11,7 +15,7 @@ if exists('g:did_indent_on') != 1 | filetype indent on | endif
 if &background != 'dark'
 	set background=dark
 endif
-if !exists('g:colors_name') || g:colors_name != 'desert' | colorscheme desert | endif
+if !exists('g:colors_name') || g:colors_name != 'molokai' | colorscheme molokai | endif
 call setqflist([])
 let SessionLoad = 1
 if &cp | set nocp | endif
@@ -116,12 +120,18 @@ badd +210 ginn/formularios/partes_de_trabajo.py
 badd +437 db/tablas.sql
 badd +1174 ginn/formularios/clientes.py
 badd +65 ginn/formularios/menu.py
+<<<<<<< Updated upstream
 badd +7582 ginn/informes/geninformes.py
 badd +0 ginn/informes/barcode/EANBarCode.py
 argglobal
 silent! argdel *
 argadd formularios/auditviewer.py
 set lines=53 columns=102
+=======
+badd +0 ginn/formularios/consumo_balas_partida.py
+args formularios/auditviewer.py
+set lines=43 columns=102
+>>>>>>> Stashed changes
 edit ginn/formularios/partes_de_ancho_multiple.py
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -161,6 +171,7 @@ set nosplitright
 wincmd t
 set winheight=1 winwidth=1
 exe 'vert 1resize ' . ((&columns * 19 + 51) / 102)
+<<<<<<< Updated upstream
 exe '2resize ' . ((&lines * 1 + 26) / 53)
 exe 'vert 2resize ' . ((&columns * 82 + 51) / 102)
 exe '3resize ' . ((&lines * 1 + 26) / 53)
@@ -180,6 +191,27 @@ exe 'vert 9resize ' . ((&columns * 82 + 51) / 102)
 exe '10resize ' . ((&lines * 33 + 26) / 53)
 exe 'vert 10resize ' . ((&columns * 82 + 51) / 102)
 exe '11resize ' . ((&lines * 1 + 26) / 53)
+=======
+exe '2resize ' . ((&lines * 1 + 21) / 43)
+exe 'vert 2resize ' . ((&columns * 82 + 51) / 102)
+exe '3resize ' . ((&lines * 1 + 21) / 43)
+exe 'vert 3resize ' . ((&columns * 82 + 51) / 102)
+exe '4resize ' . ((&lines * 1 + 21) / 43)
+exe 'vert 4resize ' . ((&columns * 82 + 51) / 102)
+exe '5resize ' . ((&lines * 1 + 21) / 43)
+exe 'vert 5resize ' . ((&columns * 82 + 51) / 102)
+exe '6resize ' . ((&lines * 1 + 21) / 43)
+exe 'vert 6resize ' . ((&columns * 82 + 51) / 102)
+exe '7resize ' . ((&lines * 1 + 21) / 43)
+exe 'vert 7resize ' . ((&columns * 82 + 51) / 102)
+exe '8resize ' . ((&lines * 1 + 21) / 43)
+exe 'vert 8resize ' . ((&columns * 82 + 51) / 102)
+exe '9resize ' . ((&lines * 18 + 21) / 43)
+exe 'vert 9resize ' . ((&columns * 82 + 51) / 102)
+exe '10resize ' . ((&lines * 6 + 21) / 43)
+exe 'vert 10resize ' . ((&columns * 82 + 51) / 102)
+exe '11resize ' . ((&lines * 1 + 21) / 43)
+>>>>>>> Stashed changes
 exe 'vert 11resize ' . ((&columns * 82 + 51) / 102)
 argglobal
 enew
@@ -960,6 +992,44 @@ normal! 040|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
+edit ~/Geotexan/src/Geotex-INN/ginn/formularios/consumo_balas_partida.py
+setlocal fdm=indent
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=99
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+57
+normal! zo
+61
+normal! zo
+71
+normal! zo
+71
+normal! zo
+513
+normal! zo
+526
+normal! zo
+533
+normal! zo
+533
+normal! zo
+533
+normal! zo
+533
+normal! zo
+let s:l = 567 - ((14 * winheight(0) + 9) / 18)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+567
+normal! 044|
+lcd ~/Geotexan/src/Geotex-INN
+wincmd w
+argglobal
 edit ~/Geotexan/src/Geotex-INN/ginn/formularios/partes_de_fabricacion_balas.py
 setlocal fdm=indent
 setlocal fde=0
@@ -989,6 +1059,10 @@ normal! zo
 normal! zo
 667
 normal! zo
+1731
+normal! zo
+1742
+normal! zo
 1845
 normal! zo
 2526
@@ -1001,16 +1075,18 @@ normal! zo
 normal! zo
 2552
 normal! zo
+2553
+normal! zo
 2575
 normal! zo
 4176
 normal! zo
-let s:l = 556 - ((0 * winheight(0) + 0) / 1)
+let s:l = 532 - ((2 * winheight(0) + 3) / 6)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-556
-normal! 099|
+532
+normal! 0
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -1345,16 +1421,26 @@ normal! zo
 normal! zo
 3960
 normal! zo
+<<<<<<< Updated upstream
 let s:l = 1719 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 1719
 normal! 016|
+=======
+let s:l = 1717 - ((0 * winheight(0) + 0) / 1)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+1717
+normal! 013|
+>>>>>>> Stashed changes
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
-10wincmd w
+9wincmd w
 exe 'vert 1resize ' . ((&columns * 19 + 51) / 102)
+<<<<<<< Updated upstream
 exe '2resize ' . ((&lines * 1 + 26) / 53)
 exe 'vert 2resize ' . ((&columns * 82 + 51) / 102)
 exe '3resize ' . ((&lines * 1 + 26) / 53)
@@ -1374,6 +1460,27 @@ exe 'vert 9resize ' . ((&columns * 82 + 51) / 102)
 exe '10resize ' . ((&lines * 33 + 26) / 53)
 exe 'vert 10resize ' . ((&columns * 82 + 51) / 102)
 exe '11resize ' . ((&lines * 1 + 26) / 53)
+=======
+exe '2resize ' . ((&lines * 1 + 21) / 43)
+exe 'vert 2resize ' . ((&columns * 82 + 51) / 102)
+exe '3resize ' . ((&lines * 1 + 21) / 43)
+exe 'vert 3resize ' . ((&columns * 82 + 51) / 102)
+exe '4resize ' . ((&lines * 1 + 21) / 43)
+exe 'vert 4resize ' . ((&columns * 82 + 51) / 102)
+exe '5resize ' . ((&lines * 1 + 21) / 43)
+exe 'vert 5resize ' . ((&columns * 82 + 51) / 102)
+exe '6resize ' . ((&lines * 1 + 21) / 43)
+exe 'vert 6resize ' . ((&columns * 82 + 51) / 102)
+exe '7resize ' . ((&lines * 1 + 21) / 43)
+exe 'vert 7resize ' . ((&columns * 82 + 51) / 102)
+exe '8resize ' . ((&lines * 1 + 21) / 43)
+exe 'vert 8resize ' . ((&columns * 82 + 51) / 102)
+exe '9resize ' . ((&lines * 18 + 21) / 43)
+exe 'vert 9resize ' . ((&columns * 82 + 51) / 102)
+exe '10resize ' . ((&lines * 6 + 21) / 43)
+exe 'vert 10resize ' . ((&columns * 82 + 51) / 102)
+exe '11resize ' . ((&lines * 1 + 21) / 43)
+>>>>>>> Stashed changes
 exe 'vert 11resize ' . ((&columns * 82 + 51) / 102)
 tabnext 1
 if exists('s:wipebuf')
@@ -1389,6 +1496,6 @@ let &so = s:so_save | let &siso = s:siso_save
 doautoall SessionLoadPost
 unlet SessionLoad
 tabnext 1
-10wincmd w
+9wincmd w
 
 " vim: ft=vim ro nowrap smc=128
