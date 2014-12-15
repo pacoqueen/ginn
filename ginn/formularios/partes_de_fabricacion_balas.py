@@ -1412,7 +1412,7 @@ class PartesDeFabricacionBalas(Ventana):
                     try:
                         nombresilo = silo.nombre
                     except AttributeError:  # Es de reciclada
-                        nombresilo = "Silo ficticio n.º %d" % silo
+                        nombresilo = "Silo ficticio n.º %d" % cs.reciclada
                     fila = (utils.str_fechahora(horaini),
                             utils.str_fechahora(horafin),
                             nombresilo,
