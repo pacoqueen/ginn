@@ -7173,44 +7173,35 @@ def packingListBalas(datos, numpagina = 1, titulo = "Packing list"):
     fecha y hora).
     """
     global linea, tm, lm, rm, bm
-
     # Creo la hoja
     nomarchivo = os.path.join(gettempdir(), "packing_list%s_pag_%d.pdf" % (
         give_me_the_name_baby(), numpagina))
     c = canvas.Canvas(nomarchivo)
-
     fecha = datos['fecha']
-
     balas = datos['balas']
-
     xDestino = lm +4
-    xEmpresa = width/2 + 4
+    xEmpresa = rm - 0.1*inch #width/2 + 4
     xProducto = width/2 - 1.5*inch
     xTipo = width/2 + 2*inch
-
     # Ponemos la cabecera
     cabecera(c, titulo, fecha)
     # El cuerpo
     c.setFont("Helvetica-Bold", 10)
-
-
     linea = tm + 1*inch
-
     c.drawString(xDestino, linea, escribe(datos['envio']['nombre']))
-    c.drawString(xEmpresa, linea, escribe(datos['empresa']['linea0']))
+    c.drawRightString(xEmpresa, linea, escribe(datos['empresa']['linea0']))
     linea = sigLinea()
     c.drawString(xDestino, linea, escribe(datos['envio']['direccion']))
-    c.drawString(xEmpresa, linea, escribe(datos['empresa']['linea1']))
+    c.drawRightString(xEmpresa, linea, escribe(datos['empresa']['linea1']))
     linea = sigLinea()
     c.drawString(xDestino, linea,
                  escribe(datos['envio']['ciudad'] + datos['envio']['cp']))
-    c.drawString(xEmpresa, linea, escribe(datos['empresa']['linea2']))
+    c.drawRightString(xEmpresa, linea, escribe(datos['empresa']['linea2']))
     linea = sigLinea()
     c.drawString(xDestino, linea, escribe(datos['envio']['pais']))
-    c.drawString(xEmpresa, linea, escribe(datos['empresa']['linea3']))
+    c.drawRightString(xEmpresa, linea, escribe(datos['empresa']['linea3']))
     linea = sigLinea()
     linea = sigLinea()
-
     el_encogedor_de_fuentes_de_doraemon(c, "Helvetica-Bold", 10, xDestino,
                                         xProducto - 0.5*cm, linea,
                                         'Nº DE LOTE: %s' % (datos['lote']))
@@ -7327,7 +7318,7 @@ def PackingList(datos, numpagina = 1, titulo = "Packing list"):
     balas = datos['balas']
 
     xDestino = lm +4
-    xEmpresa = width/2 + 4
+    xEmpresa = rm - 0.1*inch #width/2 + 4
     xProducto = width/2 - 1.5*inch
     xTipo = width/2 + 2*inch
 
@@ -7340,17 +7331,17 @@ def PackingList(datos, numpagina = 1, titulo = "Packing list"):
     linea = tm + 1*inch
 
     c.drawString(xDestino, linea, escribe(datos['envio']['nombre']))
-    c.drawString(xEmpresa, linea, escribe(datos['empresa']['linea0']))
+    c.drawRightString(xEmpresa, linea, escribe(datos['empresa']['linea0']))
     linea = sigLinea()
     c.drawString(xDestino, linea, escribe(datos['envio']['direccion']))
-    c.drawString(xEmpresa, linea, escribe(datos['empresa']['linea1']))
+    c.drawRightString(xEmpresa, linea, escribe(datos['empresa']['linea1']))
     linea = sigLinea()
     c.drawString(xDestino, linea,
                  escribe(datos['envio']['ciudad'] + datos['envio']['cp']))
-    c.drawString(xEmpresa, linea, escribe(datos['empresa']['linea2']))
+    c.drawRightString(xEmpresa, linea, escribe(datos['empresa']['linea2']))
     linea = sigLinea()
     c.drawString(xDestino, linea, escribe(datos['envio']['pais']))
-    c.drawString(xEmpresa, linea, escribe(datos['empresa']['linea3']))
+    c.drawRightString(xEmpresa, linea, escribe(datos['empresa']['linea3']))
     linea = sigLinea()
     linea = sigLinea()
 
@@ -7443,7 +7434,7 @@ def packingListEAN(datos, numpagina = 1, titulo = "Packing list"):
 
     ## Medidas
     xDestino = lm +4
-    xEmpresa = width/2 + 4
+    xEmpresa = rm - 0.1*inch #width/2 + 4
     xProducto = width/2 - 1.5*inch
     xTipo = width/2 + 2*inch
 
@@ -7457,17 +7448,17 @@ def packingListEAN(datos, numpagina = 1, titulo = "Packing list"):
     linea = tm + 1*inch
 
     c.drawString(xDestino, linea, escribe(datos['envio']['nombre']))
-    c.drawString(xEmpresa, linea, escribe(datos['empresa']['linea0']))
+    c.drawRightString(xEmpresa, linea, escribe(datos['empresa']['linea0']))
     linea = sigLinea()
     c.drawString(xDestino, linea, escribe(datos['envio']['direccion']))
-    c.drawString(xEmpresa, linea, escribe(datos['empresa']['linea1']))
+    c.drawRightString(xEmpresa, linea, escribe(datos['empresa']['linea1']))
     linea = sigLinea()
     c.drawString(xDestino, linea,
                  escribe(datos['envio']['ciudad'] + datos['envio']['cp']))
-    c.drawString(xEmpresa, linea, escribe(datos['empresa']['linea2']))
+    c.drawRightString(xEmpresa, linea, escribe(datos['empresa']['linea2']))
     linea = sigLinea()
     c.drawString(xDestino, linea, escribe(datos['envio']['pais']))
-    c.drawString(xEmpresa, linea, escribe(datos['empresa']['linea3']))
+    c.drawRightString(xEmpresa, linea, escribe(datos['empresa']['linea3']))
     linea = sigLinea()
     linea = sigLinea()
 
