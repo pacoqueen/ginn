@@ -473,7 +473,6 @@ class PartesDeFabricacionBalas(Ventana):
             myprint(__file__, " 4.- +++ inicializar_ventana: EOScales silos:"
                         " %.2f" % (time.time() - antes))
             antes = time.time()
-        self.load_conf_silos()
         if pclases.DEBUG:
             myprint(__file__, " 5.- +++ inicializar_ventana: EOConf_silos:"
                         " %.2f" % (time.time() - antes))
@@ -522,13 +521,33 @@ class PartesDeFabricacionBalas(Ventana):
     def save_conf_silos(self):
         """
         Guarda los porcentajes, productos y silos marcados para consumir en
-        un registro nuevo de configuración de silos solo si ha cambiado
+        un registro nuevo de configuración de silos *solo* si ha cambiado
         respecto al último.
         """
-        pass
-        # TODO: PORASQUI: ¿Pues no que me acabo de dar cuenta de que aparte
-        # de los 6 silos de la BD también estaban los 2 especiales de 
-        # granza reciclada?
+        # PORASQUI: La idea original era solo si ha cambiado. Pero guardo todo lo que esté marcado en la ventana. Además era así porque se supone que se va a llamar al save_conf_silos con cada bala fabricada. Ahora mismo solo lo hace cuando se guarda el parte.
+        pdp = self.objeto
+        for scale in self.scales:
+            check_marcado, escala_porcentaje = scale
+            if check_marcado.get_active():
+                if "reciclada" in escala_porcentaje.name:
+                    numreciclada = int(escala_porcentaje.name.split("_")[-1])
+                    numsilo = silo = None
+                    idgranza = utils.combo_get_value(
+                            self.wids["cbe_reciclada_%d" % (numreciclada)])
+                    producto = pclases.ProductoCompra.get(idgranza)
+                else:
+                    idsilo = escala_porcentaje.name.split("_")[-1]
+                    numsilo = int(idsilo.replace("ID", ""))
+                    silo = pclases.Silo.get(numsilo)
+                    numreciclada = None
+                    carga_mas_baja_en_silo = silo.get_carga_mas_antigua()
+                    producto = carga_mas_baja_en_silo.productoCompra
+                porcentaje = escala_porcentaje.get_value() / 100
+                conf_silo = pclases.PDPConfSilo(parteDeProduccion = pdp,
+                        silo = silo,
+                        reciclada = numreciclada,
+                        productoCompra = producto,
+                        porcentaje = porcentaje)
 
     def cambiar_observaciones_descuento_material(self, cell, path, newtext):
         """
@@ -1042,6 +1061,7 @@ class PartesDeFabricacionBalas(Ventana):
                 self.objeto and self.objeto.anterior() and 1 or 0)
         self.wids['b_next'].set_sensitive(
                 self.objeto and self.objeto.siguiente() and 1 or 0)
+        #self.load_conf_silos() # TODO: PORASQUI: ¿Afectará a si cambio el porcentaje de un silo y recargo la ventana? Seguro, porque no se ha guardado la configuración. Pero si quiero fabricar una bala y no me he dado cuenta de que ha vuelto a los valores anteriores... caca.
 
     def check_permisos(self):
         if "w" in self.__permisos:  # Puede modificar los partes:
@@ -1379,11 +1399,9 @@ class PartesDeFabricacionBalas(Ventana):
             model.clear()
             confs_silos = self.objeto.get_historial_conf_silos()
             for horaini in confs_silos:
-                css = confs_silos[horaini]
-                for silo in css:
-                    cs = css[silo]
-                    if not cs:
-                        continue
+                configs = confs_silos[horaini]
+                for silo in configs:
+                    cs = configs[silo]
                     porcentaje = cs.porcentaje
                     pc = cs.productoCompra
                     try:
@@ -1391,9 +1409,13 @@ class PartesDeFabricacionBalas(Ventana):
                                 confs_silos.keys().index(horaini) + 1]
                     except IndexError:
                         horafin = self.objeto.fechahorafin
+                    try:
+                        nombresilo = silo.nombre
+                    except AttributeError:  # Es de reciclada
+                        nombresilo = "Silo ficticio n.º %d" % silo
                     fila = (utils.str_fechahora(horaini),
                             utils.str_fechahora(horafin),
-                            silo.nombre,
+                            nombresilo,
                             utils.float2str(porcentaje * 100.0,
                                             autodec = True),
                             pc.descripcion,

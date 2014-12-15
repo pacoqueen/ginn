@@ -106,6 +106,7 @@ try:
     from collections import OrderedDict
 except ImportError:
     from lib.ordereddict import OrderedDict
+from collections import defaultdict
 
 # GET FUN !
 
@@ -16861,21 +16862,24 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         Devuelve un diccionario de silos con el porcentaje marcado en cada
         uno de ellos y el producto de compra seleccionado en ese momento como
         materia prima a través del registro PDPConfSilo que lleva como valor
-        de la clave Silo.
+        de la clave Silo. La clave puede ser un objeto silo o un entero
+        representando el silo "ficticio" de granza reciclada.
         Si un silo no estaba marcado, lo devuelve con None.
         """
         # Partiendo de la fechahora de inicio del parte, voy recorriendo la
         # configuración por si a lo largo del parte se ha modificado la
         # configuración del silo.
-        res = {}
-        for s in Silo.select():
-            res[s] = None
+        res = defaultdict(lambda: None)
         css = self.PDPConfSilos[:]
         css.sort(key = lambda cs: cs.fechahora)
         for cs in css:
             if cs.fechahora > fechahora:
                 break
-            res[cs.silo] = cs
+            if cs.silo:
+                res[cs.silo] = cs
+            else:
+                res[cs.reciclada] = cs
+        # Check de que lleva todos los silos y que entre ellos sumaban el 100%
         sum_silos = sum([res[silo].porcentaje for silo in res if res[silo]])
         assert (sum_silos == 1.0 or sum_silos == 0.0),\
                     "[%s] Configuración de silos inválida para %s." % (
@@ -16888,14 +16892,18 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         Devuelve un diccionario de horas con todas las configuraciones
         tomadas por el parte en cuanto a consumo de porcentajes de silos.
         En cada clave hay un diccionario completo con la configuración en
-        ese momento.
+        ese momento. Las claves del diccionario "interno" son los silos
+        a los que corresponde la configuración o bien un número entero que
+        representa el silo ficticio de donde consumió granza reciclada
+        (empezando por 0). Las claves de "primer nivel" del diccionario
+        devuelto son "fechahoras".
         Al menos devolverá dos "fechahora": la de inicio y finalización del
         parte.
         """
         res = OrderedDict()
         res[self.fechahorainicio] = self.get_conf_silos(self.fechahorainicio)
         res[self.fechahorafin] = self.get_conf_silos(self.fechahorafin)
-        css = self.PDPConfSilos
+        css = self.PDPConfSilos[:]
         css.sort(key = lambda cs: cs.fechahora)
         for cs in css:
             res[cs.fechahora] = self.get_conf_silos(cs.fechahora)
