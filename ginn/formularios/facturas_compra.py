@@ -73,6 +73,7 @@ from framework import pclases
 from utils import _float as float
 import mx.DateTime
 import datetime
+import gobject
 
 class FacturasDeEntrada(Ventana):
     def __init__(self, objeto = None, usuario = None):
@@ -132,6 +133,11 @@ class FacturasDeEntrada(Ventana):
                        'b_ver_adjunto/clicked': self.ver_adjunto,
                         # XXX: Código para adjuntos.
                        'b_reciente/pressed': self.abrir_recientes,
+                        # Guardar fechas al perder el foco:
+                       'b_fecha/focus-out-event': self.guardar_fechas,
+                       'b_fecha_entrada/focus-out-event': self.guardar_fechas,
+                       'e_fecha/focus-out-event': self.guardar_fechas,
+                       'e_fecha_entrada/focus-out-event': self.guardar_fechas
                       }
         self.add_connections(connections)
         self.inicializar_ventana()
@@ -1437,10 +1443,20 @@ class FacturasDeEntrada(Ventana):
                         break
         return res
 
-    def guardar(self, widget):
+    def guardar_fechas_si_cambio(self):
+        if self.es_diferente():
+            self.guardar()
+        return False    # Para que no me vuelva a invocar el idle_add
+
+    def guardar_fechas(self, widget = None, event = None):
+        gobject.idle_add(self.guardar_fechas_si_cambio)
+        return False    # Para que se propague el evento a los demás widgets.
+
+    def guardar(self, widget = None, event = None):
         """
         Guarda el contenido de los entry y demás widgets de entrada
         de datos en el objeto y lo sincroniza con la BD.
+        El «event» es por si se le llama desde un focus-out o algo.
         """
         factura = self.objeto
             # Campos del objeto que hay que guardar:
