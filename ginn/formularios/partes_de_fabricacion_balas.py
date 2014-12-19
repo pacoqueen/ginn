@@ -393,7 +393,7 @@ class PartesDeFabricacionBalas(Ventana):
                 ('Materia prima', 'gobject.TYPE_STRING',
                     False, True, False, None),
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
-        utils.preparar_listview(self.wids['tv_granza_silos'], cols)
+        utils.preparar_treeview(self.wids['tv_granza_silos'], cols)
         col = self.wids['tv_granza_silos'].get_column(3)
         col.get_cell_renderers()[0].set_property("xalign", 1.0)
         cols = (('Producto', 'gobject.TYPE_STRING', False, True, True, None),
@@ -574,7 +574,10 @@ class PartesDeFabricacionBalas(Ventana):
             try:
                 desechos.sort(lambda c1, c2: c1 != None and c2 != None and int(c1.id - c2.id) or 0)
             except TypeError, msg:
-                self.logger.error("partes_de_fabricacion_balas.py (rellenar_tabla_desechos): Error ordenando descuento de material (%s):\n%s" % (msg, desechos))
+                self.logger.error("partes_de_fabricacion_balas.py "
+                        "(rellenar_tabla_desechos): "
+                        "Error ordenando descuento de material (%s):\n%s" % (
+                            msg, desechos))
             for c in desechos:
                 if c.productoCompraID != None:
                     unidad = c.productoCompra.unidad
@@ -1359,7 +1362,7 @@ class PartesDeFabricacionBalas(Ventana):
                                                  use_align = True)
         self.rellenar_datos_lote()
         self.rellenar_tabla_consumos()
-        self.rellenar_tabla_granza()
+        self.rellenar_tabla_conf_silos()
 
     def rellenar_tabla_consumos(self):
         """
@@ -1388,7 +1391,7 @@ class PartesDeFabricacionBalas(Ventana):
                               c.id))
             self.wids['tv_consumos'].set_model(model)
 
-    def rellenar_tabla_granza(self):
+    def rellenar_tabla_conf_silos(self):
         """
         Rellena la tablas de consumo de granza de silos en el parte actual.
         """
@@ -1397,29 +1400,33 @@ class PartesDeFabricacionBalas(Ventana):
             model = self.wids['tv_granza_silos'].get_model()
             self.wids['tv_granza_silos'].set_model(None)
             model.clear()
+# PORASQUI: He cambiado el listview por un treeview para mostrar horas y desplegar silos y porcentaje. Pero antes tengo que aclararme sobre cómo agrupar y guardar los registros de configuraciones de silos para no crear registros duplicados cada vez que se fabrique una bala. También está pendiente lo de cargar la última configuración de silos al abrir un parte.
             confs_silos = self.objeto.get_historial_conf_silos()
             for horaini in confs_silos:
+                try:
+                    horafin = confs_silos.keys()[
+                            confs_silos.keys().index(horaini) + 1]
+                except IndexError:
+                    horafin = self.objeto.fechahorafin
+                padre = model.append(None, (utils.str_fechahora(horaini),
+                                            utils.str_fechahora(horafin),
+                                            "", "", "", ""))
                 configs = confs_silos[horaini]
                 for silo in configs:
                     cs = configs[silo]
                     porcentaje = cs.porcentaje
                     pc = cs.productoCompra
                     try:
-                        horafin = confs_silos.keys()[
-                                confs_silos.keys().index(horaini) + 1]
-                    except IndexError:
-                        horafin = self.objeto.fechahorafin
-                    try:
                         nombresilo = silo.nombre
                     except AttributeError:  # Es de reciclada
                         nombresilo = "Silo ficticio n.º %d" % cs.reciclada
-                    fila = (utils.str_fechahora(horaini),
-                            utils.str_fechahora(horafin),
-                            nombresilo,
-                            utils.float2str(porcentaje * 100.0,
-                                            autodec = True),
-                            pc.descripcion,
-                            cs.puid)
+                    fila = (padre, (utils.str_fechahora(horaini),
+                                    utils.str_fechahora(horafin),
+                                    nombresilo,
+                                    utils.float2str(porcentaje * 100.0,
+                                                    autodec = True),
+                                    pc.descripcion,
+                                    cs.puid))
                     model.append(fila)
             self.wids['tv_granza_silos'].set_model(model)
 
@@ -2212,14 +2219,16 @@ class PartesDeFabricacionBalas(Ventana):
                 porcentaje = self.wids['s_reciclada_%d' % (numreciclada)].get_value() / 100.0
                 porcentaje_total += porcentaje
         if porcentaje_total < 1.0:
-            # XXX: Caso especial para reenvasado de bigbags: 27 de marzo de 2007.
+            # XXX: Caso especial para reenvasado de bigbags: 27 marzo 2007.
             if self.objeto.es_parte_de_reenvasado():
-                res = True  # Engaño a la ventana y le digo que sí se ha marcado el 100%
+                res = True  # Engaño a la ventana y le digo que sí se ha
+                            # marcado el 100%
             else:
             # XXX
                 utils.dialogo_info(titulo = "NO PUEDE PRODUCIR",
-                                   texto = "El porcentaje total de consumo de silos debe ser del 100%.",
-                                   padre = self.wids['ventana'])
+                        texto = "El porcentaje total de consumo de silos"
+                                " debe ser del 100%.",
+                        padre = self.wids['ventana'])
             res = False
         return res
 
@@ -2230,7 +2239,8 @@ class PartesDeFabricacionBalas(Ventana):
         Muestra una ventana de error y devuelve False (por este orden)
         en caso contrario.
         La configuración de los silos es correcta sii al menos hay un silo
-        marcado ^ ningún silo marcado está a 0 ^ sumatorio(porcentajes de silos) == 100.
+        marcado ^ ningún silo marcado está a 0 
+            ^ sumatorio(porcentajes de silos) == 100.
         """
         res = False
         # XXX: Caso especial para reenvasado de bigbags: 27 de marzo de 2007.

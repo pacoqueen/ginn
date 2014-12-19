@@ -570,7 +570,7 @@ class ConsultaVencimientosPagos(Ventana):
         vpro = ventana_progreso.VentanaProgreso(padre = self.wids['ventana'])
         vpro.mostrar()
         i = 0.0
-        tot = len(r)
+        tot = len(r) or 1   # Evito ZeroDivisionError si no hay errores.
         vpro.set_valor(i / tot, "Filtrando por forma de pago...")
         if self.wids['ch_formapago'].get_active():
             res = []
