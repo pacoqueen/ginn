@@ -168,7 +168,7 @@ class PartesDeFabricacionBalas(Ventana):
             myprint(__file__, " 0.- >>> inicializar_ventana")
         self.inicializar_ventana()
         if pclases.DEBUG:
-            myprint(__file__, " 1.- <<< inicializar_ventana: %.2f" % 
+            myprint(__file__, " 1.- <<< inicializar_ventana: %.2f" %
                         (time.time() - antes))
             antes = time.time()
         if not self.objeto:
@@ -177,7 +177,7 @@ class PartesDeFabricacionBalas(Ventana):
             self.objeto = None
             self.ir_a(objeto)
         if pclases.DEBUG:
-            myprint(__file__, " 2.- <<< ir_a...: %.2f" % 
+            myprint(__file__, " 2.- <<< ir_a...: %.2f" %
                         (time.time() - antes))
             antes = time.time()
         gtk.main()
@@ -434,7 +434,7 @@ class PartesDeFabricacionBalas(Ventana):
                 if len(txtcarga) > 30:
                     txtcarga = txtcarga[:27]+"..."
                 if len(txtcarga) > 15:
-                    l_carga_silo = gtk.Label("<small><small>" 
+                    l_carga_silo = gtk.Label("<small><small>"
                             + txtcarga + "</small></small>")
                 else:
                     l_carga_silo = gtk.Label("<small>" + txtcarga + "</small>")
@@ -522,10 +522,10 @@ class PartesDeFabricacionBalas(Ventana):
         """
         Guarda los porcentajes, productos y silos marcados para consumir en
         un registro nuevo de configuración de silos *solo* si ha cambiado
-        respecto al último.
+        respecto al último (pero de eso se encarga el método del PDP).
         """
-        # PORASQUI: La idea original era solo si ha cambiado. Pero guardo todo lo que esté marcado en la ventana. Además era así porque se supone que se va a llamar al save_conf_silos con cada bala fabricada. Ahora mismo solo lo hace cuando se guarda el parte.
         pdp = self.objeto
+        confs = {}
         for scale in self.scales:
             check_marcado, escala_porcentaje = scale
             if check_marcado.get_active():
@@ -535,6 +535,7 @@ class PartesDeFabricacionBalas(Ventana):
                     idgranza = utils.combo_get_value(
                             self.wids["cbe_reciclada_%d" % (numreciclada)])
                     producto = pclases.ProductoCompra.get(idgranza)
+                    silo_key = numreciclada
                 else:
                     idsilo = escala_porcentaje.name.split("_")[-1]
                     numsilo = int(idsilo.replace("ID", ""))
@@ -542,12 +543,11 @@ class PartesDeFabricacionBalas(Ventana):
                     numreciclada = None
                     carga_mas_baja_en_silo = silo.get_carga_mas_antigua()
                     producto = carga_mas_baja_en_silo.productoCompra
+                    silo_key = silo
                 porcentaje = escala_porcentaje.get_value() / 100
-                conf_silo = pclases.PDPConfSilo(parteDeProduccion = pdp,
-                        silo = silo,
-                        reciclada = numreciclada,
-                        productoCompra = producto,
-                        porcentaje = porcentaje)
+                confs[silo_key] = {'productoCompra': producto,
+                                   'porcentaje': porcentaje}
+        pdp.save_conf_silos(confs)
 
     def cambiar_observaciones_descuento_material(self, cell, path, newtext):
         """
@@ -1064,7 +1064,7 @@ class PartesDeFabricacionBalas(Ventana):
                 self.objeto and self.objeto.anterior() and 1 or 0)
         self.wids['b_next'].set_sensitive(
                 self.objeto and self.objeto.siguiente() and 1 or 0)
-        #self.load_conf_silos() # TODO: PORASQUI: ¿Afectará a si cambio el porcentaje de un silo y recargo la ventana? Seguro, porque no se ha guardado la configuración. Pero si quiero fabricar una bala y no me he dado cuenta de que ha vuelto a los valores anteriores... caca.
+        #self.load_conf_silos() # TODO: PORASQUI: ¿Afectará a si cambio el porcentaje de un silo y recargo la ventana? Seguro, porque no se ha guardado la configuración. Pero si quiero fabricar una bala y no me he dado cuenta de que ha vuelto a los valores anteriores... caca. También está pendiente lo de cargar la última configuración de silos al abrir un parte.
 
     def check_permisos(self):
         if "w" in self.__permisos:  # Puede modificar los partes:
@@ -1398,9 +1398,8 @@ class PartesDeFabricacionBalas(Ventana):
         parte = self.objeto
         if parte != None:
             model = self.wids['tv_granza_silos'].get_model()
-            self.wids['tv_granza_silos'].set_model(None)
+            #self.wids['tv_granza_silos'].set_model(None)
             model.clear()
-# PORASQUI: He cambiado el listview por un treeview para mostrar horas y desplegar silos y porcentaje. Pero antes tengo que aclararme sobre cómo agrupar y guardar los registros de configuraciones de silos para no crear registros duplicados cada vez que se fabrique una bala. También está pendiente lo de cargar la última configuración de silos al abrir un parte.
             confs_silos = self.objeto.get_historial_conf_silos()
             for horaini in confs_silos:
                 try:
@@ -1408,27 +1407,27 @@ class PartesDeFabricacionBalas(Ventana):
                             confs_silos.keys().index(horaini) + 1]
                 except IndexError:
                     horafin = self.objeto.fechahorafin
-                padre = model.append(None, (utils.str_fechahora(horaini),
-                                            utils.str_fechahora(horafin),
-                                            "", "", "", ""))
                 configs = confs_silos[horaini]
-                for silo in configs:
-                    cs = configs[silo]
-                    porcentaje = cs.porcentaje
-                    pc = cs.productoCompra
-                    try:
-                        nombresilo = silo.nombre
-                    except AttributeError:  # Es de reciclada
-                        nombresilo = "Silo ficticio n.º %d" % cs.reciclada
-                    fila = (padre, (utils.str_fechahora(horaini),
-                                    utils.str_fechahora(horafin),
-                                    nombresilo,
-                                    utils.float2str(porcentaje * 100.0,
-                                                    autodec = True),
-                                    pc.descripcion,
-                                    cs.puid))
-                    model.append(fila)
-            self.wids['tv_granza_silos'].set_model(model)
+                if configs:     # Si no tiene nada, prefiero no mostrar nada.
+                    padre = model.append(None, (utils.str_fechahora(horaini),
+                                                utils.str_fechahora(horafin),
+                                                "", "", "", ""))
+                    for silo in configs:
+                        cs = configs[silo]
+                        porcentaje = cs.porcentaje
+                        pc = cs.productoCompra
+                        try:
+                            nombresilo = silo.nombre
+                        except AttributeError:  # Es de reciclada
+                            nombresilo = "Silo ficticio n.º %d" % cs.reciclada
+                        fila = ("", #utils.str_fechahora(horaini),
+                                "", #utils.str_fechahora(horafin),
+                                nombresilo,
+                                utils.float2str(porcentaje * 100.0, autodec=True),
+                                pc.descripcion,
+                                cs.puid)
+                        model.append(padre, fila)
+            #self.wids['tv_granza_silos'].set_model(model)
 
     def get_lote(self):
         """
@@ -2239,7 +2238,7 @@ class PartesDeFabricacionBalas(Ventana):
         Muestra una ventana de error y devuelve False (por este orden)
         en caso contrario.
         La configuración de los silos es correcta sii al menos hay un silo
-        marcado ^ ningún silo marcado está a 0 
+        marcado ^ ningún silo marcado está a 0
             ^ sumatorio(porcentajes de silos) == 100.
         """
         res = False
@@ -2276,6 +2275,7 @@ class PartesDeFabricacionBalas(Ventana):
             5.-1 Repite los pasos 4.2 a 4.5 para cada número del rango
                  y pide el peso de cada uno de ellos.
         6.- NUEVO -> Descuenta el material adicional por cada una de las balas.
+        7.- NUEVO -> Guarda la configuración de consumo de los silos.
         """
         if self.comprobar_configuracion_consumos_silo():
             if self.producto == None:
@@ -2343,6 +2343,8 @@ class PartesDeFabricacionBalas(Ventana):
                     #myprint("Voy a crear...")
                     self.crear_bala(bala,peso,lote,fibracemento=fibracemento)
                     #myprint("Creada...")
+            self.save_conf_silos()
+            self.rellenar_tabla_conf_silos()
 
     def ventana_peso(self, titulo, texto):
         ventana = gtk.Window()
@@ -2519,7 +2521,6 @@ class PartesDeFabricacionBalas(Ventana):
                             albaranSalida = None,
                             almacen = pclases.Almacen.get_almacen_principal())
             pclases.Auditoria.nuevo(articulo, self.usuario, __file__)
-# PORASQUI: La idea es guardar la configuración de los silos tras crear un nuevo artículo, que es cuando se consume realmente, y si no ha cambiado respecto a la última. También guardaré cuando se guarde el parte, claro.
         if articulo != None:
             self.descontar_material_adicional(articulo)
             self.actualizar_ventana()
@@ -2714,7 +2715,7 @@ class PartesDeFabricacionBalas(Ventana):
         empleados = pclases.Empleado.select(
                 pclases.AND(pclases.Empleado.q.activo == True,
                             pclases.Empleado.q.planta == True),
-                orderBy = 'apellidos')
+                orderBy='apellidos')
         empleados = [(e.id, e.nombre, e.apellidos) for e in empleados \
                      if e.planta and \
                         e.activo and \
@@ -3309,30 +3310,35 @@ class PartesDeFabricacionBalas(Ventana):
         consumida en función de lo indicado en el parte y el peso de la
         bala sin aditivos.
         """
-        # OJO: No compruebo que la granza tenga existencias positivas. (Tampoco estoy seguro de querer hacerlo. Aquí se hace mucho el gato.)
-        # OJO: Número de silos de reciclada HARCODED (empiezo a darme asca con tanto harcoded).
+        # OJO: No compruebo que la granza tenga existencias positivas. (Tampoco
+        # estoy seguro de querer hacerlo. Aquí se hace mucho el gato.)
+        # OJO: Número de silos de reciclada HARCODED (empiezo a darme asca con
+        # tanto harcoded).
         for numreciclada in (0, 1):
             if self.wids['ch_reciclada_%d' % (numreciclada)].get_active():
                 peso_sin_aditivos = articulo.peso - aditivos
-                porcentaje = self.wids['s_reciclada_%d' % (numreciclada)].get_value() / 100.0
+                porcentaje = self.wids[
+                        's_reciclada_%d' % (numreciclada)].get_value() / 100.0
                 if restar:
                     cantidad_a_consumir = peso_sin_aditivos * porcentaje
                 else:
                     cantidad_a_consumir = -peso_sin_aditivos * porcentaje
-                idgranza = utils.combo_get_value(self.wids["cbe_reciclada_%d" % (numreciclada)])
+                idgranza = utils.combo_get_value(
+                        self.wids["cbe_reciclada_%d" % (numreciclada)])
                 if idgranza > 0:
                     granza = pclases.ProductoCompra.get(idgranza)
-                    consumo = pclases.Consumo(silo = None,
-                            parteDeProduccion = self.objeto,
-                            productoCompra = granza,
-                            actualizado = True,
-                            antes = granza.existencias,
-                            despues = granza.existencias - cantidad_a_consumir,
-                            cantidad = cantidad_a_consumir)
+                    consumo = pclases.Consumo(silo=None,
+                            parteDeProduccion=self.objeto,
+                            productoCompra=granza,
+                            actualizado=True,
+                            antes=granza.existencias,
+                            despues=granza.existencias - cantidad_a_consumir,
+                            cantidad=cantidad_a_consumir)
                     pclases.Auditoria.nuevo(consumo, self.usuario, __file__)
                     granza.existencias -= cantidad_a_consumir
+                    granza.syncUpdate()
                     granza.add_existencias(-cantidad_a_consumir)
-                    self.logger.warning("CONSUMO LÍNEA FIBRA: Consumiendo %s",
+                    self.logger.warning("CONSUMO LÍNEA FIBRA: Consumiendo %s"
                         " kg de granza reciclada (%s) para la bala o bigbag "
                         "%s. Queda en almacén: %s %s" % (
                             utils.float2str(cantidad_a_consumir),
@@ -3790,8 +3796,12 @@ class PartesDeFabricacionBalas(Ventana):
                     producto.existencias -= cantidad_a_consumir
                     producto.syncUpdate()
                     producto.add_existencias(-cantidad_a_consumir)
-                    self.logger.warning("%sCONSUMO LÍNEA FIBRA -> PARTE %d -> Consumiendo manualmente %f %s de %s (ID %d). Existencias: %f."
-                                        % (self.usuario and self.usuario.usuario + ": " or "",
+                    self.logger.warning("%sCONSUMO LÍNEA FIBRA -> PARTE %d "
+                            "-> Consumiendo manualmente %f %s de %s (ID %d). "
+                            "Existencias: %f."
+                                        % (self.usuario
+                                            and self.usuario.usuario + ": "
+                                            or "",
                                            self.objeto.id,
                                            cantidad_a_consumir,
                                            producto.unidad,

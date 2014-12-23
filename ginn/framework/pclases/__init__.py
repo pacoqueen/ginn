@@ -16857,6 +16857,38 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         return "%s (%s --> %s): %s" % (self.puid, self.fechahorainicio,
                 self.fechahorafin, producto)
 
+    def save_conf_silos(self, silos = {}, fechahora = mx.DateTime.localtime()):
+        """
+        Guarda la configuración de los silos reales y de granza reciclada 
+        recibidos. El diccionario debe contener objetos silos (o enteros
+        de silo "ficticio" de reciclada), producto consumiéndose y porcentaje
+        marcado en un diccionario con el silo o el entero como clave.
+        P.ej.:
+        silos = {Silo_1: {'productoCompra': ProductoCompra_1, 
+                          'porcentaje': 0.5},
+                 1: {'productoCompra': ProductoCompra_2,
+                     'porcentaje': 0.5}
+                }
+        OJO: No se comprueba que la suma de porcentajes sea 1.0 (100%).
+        Compara cada registro con el último del parte y solo guarda objetos
+        de configuración de silos si han cambiado en producto o porcentaje.
+        """
+        prev_conf = self.get_conf_silos(fechahora)
+        if not PDPConfSilo.cmp_conf_silos(silos, prev_conf):
+            for key_silo in silos.keys():
+                if isinstance(key_silo, Silo):
+                    silo = key_silo
+                    reciclada = None
+                else:
+                    silo = None
+                    reciclada = key_silo
+                PDPConfSilo(silo = silo, 
+                            reciclada = reciclada,
+                            productoCompra = silos[key_silo]['productoCompra'],
+                            fechahora = fechahora,
+                            porcentaje = silos[key_silo]['porcentaje'],
+                            parteDeProduccion = self)
+
     def get_conf_silos(self, fechahora = mx.DateTime.localtime()):
         """
         Devuelve un diccionario de silos con el porcentaje marcado en cada
@@ -16875,6 +16907,11 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         for cs in css:
             if cs.fechahora > fechahora:
                 break
+            # Se trata de agrupar por misma fechahora (segundos incluidos). Si
+            # el registro que voy a tratar ahora no tiene la misma fechahora
+            # que los de antes (con comprobar uno, me vale), vacío el dict.
+            if res and res[res.keys()[0]].fechahora != cs.fechahora:
+                res = defaultdict(lambda: None)
             if cs.silo:
                 res[cs.silo] = cs
             else:
@@ -17874,6 +17911,33 @@ class PDPConfSilo(SQLObject, PRPCTOO):
                     self.silo.puid,
                     utils.float2str(self.porcentaje * 100, autodec = True)
                     )
+        return res
+    @staticmethod
+    def cmp_conf_silos(silos, conf_silos):
+        """
+        Recibe un diccionario con objetos silo o enteros representando los
+        silos ficticios de granza reciclada. Los valores son otro diccionario
+        con producto de compra y porcentaje.
+        Recibe también otro diccionario de configuraciones de silo.
+        Compara los valores y devuelve True si coinciden silos (o enteros),
+        porcentajes y productos.
+        """
+        # TODO: PORASQUI: Si se crean dos balas a la misma hora pero con
+        # porcentajes diferentes en, por ejemplo, dos silos marcados. Se
+        # machaca la configuración en vez de crear una nueva.
+        res = len(silos) == len(conf_silos)
+        if res:
+            for silo_key in silos:
+                cs_dict = silos[silo_key]
+                try:
+                    cs_db = conf_silos[silo_key]
+                    if (cs_dict['porcentaje'] != cs_db.porcentaje
+                         or cs_dict['productoCompra'] != cs_db.productoCompra):
+                        res = False
+                        break
+                except KeyError:
+                    res = False
+                    break
         return res
 
 cont, tiempo = print_verbose(cont, total, tiempo)
