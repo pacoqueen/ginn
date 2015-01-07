@@ -2193,7 +2193,8 @@ class FacturaCompra(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
-    bloqueado = property(lambda self: self.bloqueada, lambda self, valor: setattr(self, "bloqueada", valor))
+    bloqueado = property(lambda self: self.bloqueada,
+                         lambda self, valor: setattr(self, "bloqueada", valor))
 
     def calcular_importe_total(self, iva = True):
         """
@@ -2254,7 +2255,10 @@ class FacturaCompra(SQLObject, PRPCTOO):
                 # assert subtotal * self.iva == totiva, "El IVA total de la factura de compra %d no coincide con el IVA de sus líneas de venta: %s != %s." % (self.id, subtotal * self.iva, totiva)
             else:
                 totiva += subtotal * self.iva
-        totiva = round(totiva, 2)       # Al igual que la base imponible, el total de IVA se redondea a 2 decimales.
+        #totiva = round(totiva, 2)       # Al igual que la base imponible, el total de IVA se redondea a 2 decimales.
+        totiva = utils.myround(totiva) # Lo cambio por mi propia versión
+            # correcta de redondear a 2 decimales. Caso fra. FV4/0003558 
+            # de 24/12/2014 (mrodriguez)
         return totiva
 
     importeIva = property(calcular_importe_iva,

@@ -785,7 +785,6 @@ class FacturasDeEntrada(Ventana):
             self.wids['tv_ldvs'].expand_all()
         return subtotal
 
-
     def activar_widgets(self, s, chequear_permisos = True):
         """
         Activa o desactiva (sensitive=True/False) todos
@@ -927,8 +926,9 @@ class FacturasDeEntrada(Ventana):
         except AssertionError, msg:
             self.logger.error('facturas_compra::rellenar_widgets -> Disparada'
                               ' "assertion" de totales: %s' % msg)
-            totiva = subtotal * (1-factura.descuento) * factura.iva     # Pongo el iva que en teoría
-                # debería salir en total y ya veré en el log qué ha pasado.
+            totiva = subtotal * (1-factura.descuento) * factura.iva     # Pongo
+                # el iva que en teoría debería salir en total y ya veré en el
+                # log qué ha pasado.
         self.wids['e_totiva'].set_text("%s €" % (utils.float2str(totiva)))
         try:
             self.wids['e_total'].set_text("%s €" % (
