@@ -10916,7 +10916,11 @@ class Presupuesto(SQLObject, PRPCTOO):
         """
         res = False
         for ldp in self.lineasDePresupuesto:
-            if not ldp.productoVenta and not ldp.productoCompra:
+            if (not ldp.productoVenta and not ldp.productoCompra and 
+                not "TRANSPORTE " in ldp.descripcion.upper() and
+                not "TRANSPORT " in ldp.descripcion.upper() and
+                ldp.descripcion.upper().strip() != "TRANSPORTE" and
+                ldp.descripcion.upper().strip() != "TRANSPORT"):
                 res = True
                 break   # Para optimizar
         return res
@@ -10943,6 +10947,11 @@ class Presupuesto(SQLObject, PRPCTOO):
                              a que todos sus presupuestos deban ser validados
                              manualmente a pesar de que cumpla el resto de
                              requisitos. (CWT)
+            BLOQUEO_CLIENTE: El cliente de la oferta tiene el campo
+                             "validacion_manual" a True, que fuerza a que
+                             todos sus presupuestos deban ser validados
+                             manualmente aunque cumpla el resto de requisitos.
+                             (CWT)
             SERVICIO: La oferta lleva algún de servicio. Necesita
                       validación manual para evitar los casos en que se
                       mete un producto como servicio, se valida y a posteriori
@@ -10950,11 +10959,6 @@ class Presupuesto(SQLObject, PRPCTOO):
                       descripción (conservando validación y convirtiendo la
                       línea en una venta de comercializados sin pasar por
                       la validación COMERCIALIZADO).
-            BLOQUEO_CLIENTE: El cliente de la oferta tiene el campo
-                             "validacion_manual" a True, que fuerza a que
-                             todos sus presupuestos deban ser validados
-                             manualmente aunque cumpla el resto de requisitos.
-                             (CWT)
         """
         # Debería tener las condiciones en un solo sitio. Los pedidos y
         # presupuestos siguen el mismo criterio, pero están especificados por
@@ -11068,8 +11072,8 @@ class Presupuesto(SQLObject, PRPCTOO):
                         "Restricción forzada en la configuración del cliente."
         elif estado_validacion == SERVICIO:
             txtestado = "Necesita validación manual: "\
-                        "La oferta incluye alguna línea de prestación de"\
-                        "servicios o transporte."
+                        "La oferta incluye alguna línea de prestación de "\
+                        "servicios." # o transporte."
         return txtestado
 
     def get_str_validacion(self):

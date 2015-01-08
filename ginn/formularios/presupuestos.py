@@ -1464,6 +1464,10 @@ class Presupuestos(Ventana, VentanaGenerica):
         for p in pclases.ProductoCompra.select(
                 pclases.ProductoCompra.q.obsoleto == False,
                 orderBy = "descripcion"):
+            if "TRANSPORTE" in p.descripcion:
+                continue    # Los transportes son servicios. No los podemos
+                            # pasar como producto de compra al pedido y mucho
+                            # menos al albarán.
             liststore_productos.append((p.descripcion, p.puid))
         #cellrenderer_combo = gtk.CellRendererCombo()
         #cellrenderer_combo.set_property("editable", True)
@@ -1786,7 +1790,7 @@ class Presupuestos(Ventana, VentanaGenerica):
         if nextwidget != None:
             nextwidget.grab_focus()
         if nextpath and nextcol:
-            print "SET CURSOR!"
+            #print "SET CURSOR!"
             self.wids['tv_contenido'].set_cursor(nextpath, nextcol, True)
         return False
 
