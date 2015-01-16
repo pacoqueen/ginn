@@ -19767,12 +19767,13 @@ class ServicioTomado(SQLObject, PRPCTOO):
 
     def _set_qcantidad(self, txt):
         """
-        Como transportes y comisiones no tienen cantidads, este método
+        Como transportes y comisiones no tienen cantidades, este método
         simplemente ignora la cantidad recibida si existe alguna
         de estas dos relaciones.
         """
         if not self.transporteACuenta and not self.comisionID:
-            self.cantidad = txt    # Y si no es un valor válido, que SQLObject se encargue de lanzar la excepción.
+            self.cantidad = txt     # Y si no es un valor válido, que SQLObject
+                                    # se encargue de lanzar la excepción.
 
     def _get_qprecio(self):
         """
