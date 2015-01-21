@@ -34,3 +34,6 @@
 [submodule "ginn/lib/cagraph"]
 	path = ginn/lib/cagraph
 	url = git@github.com:pacoqueen/cagraph.git
+[submodule "ginn/lib/fuzzywuzzy"]
+	path = ginn/lib/fuzzywuzzy
+	url = git@github.com:Geotexan/fuzzywuzzy.git

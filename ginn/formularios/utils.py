@@ -70,6 +70,7 @@ except ImportError, msg:
 from fixedpoint import FixedPoint as Ffloat
 from collections import defaultdict
 import re
+from lib.fuzzywuzzy.fuzzywuzzy import process as fuzzyprocess
 
 
 def str_fechahoralarga(fechahora):
@@ -1217,37 +1218,42 @@ def rellenar_lista(wid, textos):
         #-------------------------------------------------------#
         # Assumes that the func_data is set to the number of    #
         # the text column in the model.                         #
-        def match_func(completion, key, itr, (column, entry)): #
-            model = completion.get_model()                      #
-            text = model.get_value(itr, column)                #
-            # if text.startswith(key):                          #
-            #     return True                                   #
-            # return False                                      #
-            if text == None:                                    #
-                return False                                    #
-            key = entry.get_text()                              #
-            try:                                                #
-                key = unicode(key, "utf").lower()               #
-            except:                                             #
-                key = key.lower()                               #
-            try:                                                #
-                text = unicode(text, "utf").lower()             #
-            except:                                             #
-                text = text.lower()                             #
-            try:                                                #
-                return key in text                              #
-            except:                                             #
-                # Error de codificación casi seguro.            #
-                print key                                       #
-                print text                                      #
-                return False                                    #
-        #-------------------------------------------------------#
+        def match_func(completion, key, itr, (column, choices)):
+# Almacenar un old_key y comparar. Si key no ha cambiado, no hace falta el process.
+            model = completion.get_model()
+            text = model.get_value(itr, column)
+            if False: #len(key) > 10:
+                # TODO: PORASQUI: Lento no. LO SIGUIENTE. Tengo que buscar la forma de sacar el proceso fuzzy de aquí, que se invoca con cada iter.
+                scores = dict(fuzzyprocess.extract(key, choices))
+                try:
+                    return scores[text] > 75
+                except KeyError:
+                    return False
+                except TypeError:
+                    return False
+            else:
+                try:
+                    key = unicode(key, "utf").lower()
+                except:
+                    key = key.lower()
+                try:
+                    text = unicode(text, "utf").lower()
+                except:
+                    text = text.lower()
+                try:
+                    return key in text
+                except:
+                    # Error de codificación casi seguro.
+                    print key
+                    print text
+                    return False
         completion.set_text_column(1)
-        completion.set_match_func(match_func, (1, wid.child))
-        # completion.set_minimum_key_length(2)
+        completion.set_minimum_key_length(5)
+        choices = [unicode(t[1], "utf") for t in textos]
+        completion.set_match_func(match_func, (1, choices))
         # completion.set_inline_completion(True)
         #---------------------------------------------------#
-        def iter_seleccionado(completion, model, itr):    #
+        def iter_seleccionado(completion, model, itr):      #
             combo_set_from_db(wid, model[itr][0])           #
         #---------------------------------------------------#
         completion.connect('match-selected', iter_seleccionado)
