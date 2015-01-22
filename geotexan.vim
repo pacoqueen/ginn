@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 21 enero 2015 at 20:09:18.
+" Created by session.vim 1.5 on 22 enero 2015 at 17:32:15.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -23,104 +23,14 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +19 ginn/informes/nied.py
-badd +1 formularios/auditviewer.py
-badd +248 ginn/formularios/gtkexcepthook.py
-badd +893 ginn/formularios/partes_de_fabricacion_bolsas.py
 badd +1 ginn/formularios/partes_de_ancho_multiple.py
-badd +427 ginn/formularios/consulta_producido.py
-badd +302 ginn/formularios/consulta_consumo.py
-badd +41 ginn/framework/memoize.py
-badd +596 ginn/formularios/presupuesto.py
-badd +44 ginn/formularios/listado_rollos.py
-badd +89 ginn/informes/norma2013.py
-badd +2711 ginn/formularios/consulta_global.py
-badd +1 ginn/formularios/consulta_global.glade
-badd +528 ginn/formularios/consumo_fibra_por_partida_gtx.py
-badd +1 extra/scripts/clouseau.glade
-badd +27 ginn/lib/pygal/pygal/__init__.py
-badd +25 ginn/lib/pygal/pygal/config.py
-badd +25 ginn/lib/pygal/pygal/style.py
-badd +25 ginn/lib/pygal/pygal/adapters.py
-badd +42 ginn/lib/pygal/pygal/ghost.py
-badd +25 ginn/lib/pygal/pygal/graph/line.py
-badd +28 ginn/lib/pygal/pygal/graph/graph.py
-badd +29 ginn/lib/pygal/pygal/graph/base.py
-badd +98 ginn/lib/pygal/pygal/svg.py
-badd +90 ginn/formularios/custom_widgets/mapamundi.py
-badd +329 ginn/lib/pygal/pygal/util.py
-badd +25 ginn/lib/pygal/pygal/graph/stackedline.py
-badd +26 ginn/lib/pygal/pygal/graph/xy.py
-badd +26 ginn/lib/pygal/pygal/graph/bar.py
-badd +24 ginn/lib/pygal/pygal/graph/horizontalbar.py
-badd +1 ginn/lib/pygal/pygal/graph/horizontal.p
-badd +24 ginn/lib/pygal/pygal/graph/horizontal.py
-badd +27 ginn/lib/pygal/pygal/graph/stackedbar.py
-badd +24 ginn/lib/pygal/pygal/graph/horizontalstackedbar.py
-badd +27 ginn/lib/pygal/pygal/graph/pie.py
-badd +28 ginn/lib/pygal/pygal/graph/radar.py
-badd +1 ginn/lib/pygal/pygal/graph/funel.py
-badd +27 ginn/lib/pygal/pygal/graph/funnel.py
-badd +25 ginn/lib/pygal/pygal/graph/pyramid.py
-badd +26 ginn/lib/pygal/pygal/graph/verticalpyramid.py
-badd +27 ginn/lib/pygal/pygal/graph/dot.py
-badd +27 ginn/lib/pygal/pygal/graph/gauge.py
-badd +42 ginn/lib/pygal/pygal/graph/datey.py
-badd +28 ginn/lib/pygal/pygal/graph/worldmap.py
-badd +28 ginn/lib/pygal/pygal/graph/supranationalworldmap.py
-badd +26 ginn/lib/pygal/pygal/graph/histogram.py
-badd +26 ginn/lib/pygal/pygal/graph/box.py
-badd +36 ginn/formularios/custom_widgets/cairoplot.py
-badd +1 ginn/lib/cairoplot/cairoplot.py
-badd +151 ginn/lib/cagraph/cagraph/ca_graph_file.py
-badd +93 ginn/lib/cagraph/cagraph/axis/yaxis.py
-badd +111 ginn/formularios/widgets.py
-badd +1 ginn/lib/cairoplot/__init__.py
-badd +1 ginn/lib/cagraph/cagraph/series/__init__.py
-badd +84 ginn/lib/cagraph/cagraph/series/dna.py
-badd +111 ginn/formularios/prefacturas.py
-badd +5 ginn/formularios/launcher.py
-badd +1 ginn/formularios/abonos_venta.glade
-badd +513 ginn/formularios/crm_detalles_factura.py
-badd +406 ginn/formularios/crm_seguimiento_impagos.py
-badd +1 extra/scripts/clouseau-gtk.py
 badd +3931 ginn/formularios/partes_de_fabricacion_rollos.py
-badd +1 ginn/formularios/consulta_producciones_estandar.py
-badd +606 ginn/formularios/consulta_pendientes_servir.py
-badd +504 ginn/formularios/consulta_pagos_realizados.py
-badd +21 ginn/lib/myprint.py
-badd +399 ginn/formularios/auditviewer.py
-badd +1 ginn/formularios/partes_de_fabricacion_bolsas.glade
-badd +115 ginn/formularios/consulta_existenciasBolsas.py
-badd +23 extra/scripts/bash_completion_ginn
-badd +1249 ginn/formularios/consulta_ventas.py
-badd +631 ginn/formularios/pagares_cobros.py
-badd +1061 ginn/formularios/ventana.py
-badd +52 ginn/formularios/consulta_pagos.py
-badd +153 ginn/formularios/facturas_venta.py
-badd +149 ginn/framework/pclases/facturaventa.py
-badd +86 ginn/formularios/consulta_existencias.py
-badd +10963 ginn/framework/pclases/__init__.py
+badd +1 ginn/framework/pclases/__init__.py
 badd +1060 ginn/formularios/partes_de_fabricacion_balas.py
-badd +174 ginn/formularios/mail_sender.py
-badd +54 ginn/formularios/consulta_pedidos_clientes.py
-badd +52 ginn/formularios/consulta_productividad.py
-badd +1 ginn/formularios/mail_sender.glade
-badd +59 ginn/framework/pclases/facturadeabono.py
-badd +226 ginn/informes/presupuesto2.py
-badd +210 ginn/formularios/partes_de_trabajo.py
-badd +1174 ginn/formularios/clientes.py
-badd +65 ginn/formularios/menu.py
-badd +7246 ginn/informes/geninformes.py
 badd +1 ginn/formularios/facturas_compra.py
-badd +1554 ginn/formularios/presupuestos.py
-badd +0 ginn/formularios/utils.py
-badd +36 ginn/lib/fuzzywuzzy/fuzzywuzzy/fuzz.py
-badd +0 ginn/lib/fuzzywuzzy/fuzzywuzzy/utils.py
-argglobal
-silent! argdel *
-argadd formularios/auditviewer.py
-set lines=53 columns=103
+badd +1223 ginn/formularios/utils.py
+args formularios/auditviewer.py
+set lines=43 columns=103
 edit ginn/formularios/partes_de_ancho_multiple.py
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -137,10 +47,7 @@ wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
-wincmd _ | wincmd |
-split
-6wincmd k
-wincmd w
+5wincmd k
 wincmd w
 wincmd w
 wincmd w
@@ -151,20 +58,18 @@ set nosplitright
 wincmd t
 set winheight=1 winwidth=1
 exe 'vert 1resize ' . ((&columns * 19 + 51) / 103)
-exe '2resize ' . ((&lines * 1 + 26) / 53)
+exe '2resize ' . ((&lines * 1 + 21) / 43)
 exe 'vert 2resize ' . ((&columns * 83 + 51) / 103)
-exe '3resize ' . ((&lines * 6 + 26) / 53)
+exe '3resize ' . ((&lines * 1 + 21) / 43)
 exe 'vert 3resize ' . ((&columns * 83 + 51) / 103)
-exe '4resize ' . ((&lines * 34 + 26) / 53)
+exe '4resize ' . ((&lines * 31 + 21) / 43)
 exe 'vert 4resize ' . ((&columns * 83 + 51) / 103)
-exe '5resize ' . ((&lines * 1 + 26) / 53)
+exe '5resize ' . ((&lines * 1 + 21) / 43)
 exe 'vert 5resize ' . ((&columns * 83 + 51) / 103)
-exe '6resize ' . ((&lines * 1 + 26) / 53)
+exe '6resize ' . ((&lines * 1 + 21) / 43)
 exe 'vert 6resize ' . ((&columns * 83 + 51) / 103)
-exe '7resize ' . ((&lines * 1 + 26) / 53)
+exe '7resize ' . ((&lines * 1 + 21) / 43)
 exe 'vert 7resize ' . ((&columns * 83 + 51) / 103)
-exe '8resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 8resize ' . ((&columns * 83 + 51) / 103)
 argglobal
 enew
 file __Tag_List__
@@ -196,7 +101,7 @@ normal! 011|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
-edit ~/Geotexan/src/Geotex-INN/ginn/lib/fuzzywuzzy/fuzzywuzzy/utils.py
+edit ~/Geotexan/src/Geotex-INN/ginn/framework/pclases/__init__.py
 setlocal fdm=indent
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -205,12 +110,12 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 73 - ((1 * winheight(0) + 3) / 6)
+let s:l = 1 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-73
-normal! 07|
+1
+normal! 0
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -227,164 +132,20 @@ setlocal fen
 normal! zo
 1213
 normal! zo
-1223
+1226
 normal! zo
-1227
+1232
 normal! zo
-1235
+1234
 normal! zo
-1891
+1885
 normal! zo
-let s:l = 1222 - ((13 * winheight(0) + 17) / 34)
+let s:l = 1230 - ((14 * winheight(0) + 15) / 31)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1222
-normal! 083|
-lcd ~/Geotexan/src/Geotex-INN
-wincmd w
-argglobal
-edit ~/Geotexan/src/Geotex-INN/ginn/framework/pclases/__init__.py
-setlocal fdm=indent
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=99
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-693
-normal! zo
-970
-normal! zo
-1698
-normal! zo
-2150
-normal! zo
-2197
-normal! zo
-2197
-normal! zo
-2197
-normal! zo
-2197
-normal! zo
-2200
-normal! zo
-2224
-normal! zo
-2249
-normal! zo
-2250
-normal! zo
-2467
-normal! zo
-4937
-normal! zo
-7769
-normal! zo
-7775
-normal! zo
-10113
-normal! zo
-10153
-normal! zo
-10176
-normal! zo
-10179
-normal! zo
-10182
-normal! zo
-10184
-normal! zo
-10184
-normal! zo
-10184
-normal! zo
-10206
-normal! zo
-10222
-normal! zo
-10225
-normal! zo
-10606
-normal! zo
-10882
-normal! zo
-10888
-normal! zo
-10898
-normal! zo
-10913
-normal! zo
-10919
-normal! zo
-10929
-normal! zo
-10932
-normal! zo
-10951
-normal! zo
-10951
-normal! zo
-10951
-normal! zo
-11008
-normal! zo
-11013
-normal! zo
-11019
-normal! zo
-11048
-normal! zo
-11051
-normal! zo
-11068
-normal! zo
-16844
-normal! zo
-16860
-normal! zo
-16869
-normal! zo
-16886
-normal! zo
-16887
-normal! zo
-16894
-normal! zo
-16894
-normal! zo
-16901
-normal! zo
-16930
-normal! zo
-16930
-normal! zo
-16930
-normal! zo
-16931
-normal! zo
-17906
-normal! zo
-17915
-normal! zo
-17916
-normal! zo
-17916
-normal! zo
-17925
-normal! zo
-19680
-normal! zo
-19769
-normal! zo
-let s:l = 5257 - ((1 * winheight(0) + 0) / 1)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-5257
-normal! 010|
+1230
+normal! 0217|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -1375,7 +1136,7 @@ normal! zo
 normal! zo
 1979
 normal! zo
-let s:l = 788 - ((5 * winheight(0) + 0) / 1)
+let s:l = 788 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -1701,20 +1462,18 @@ lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 4wincmd w
 exe 'vert 1resize ' . ((&columns * 19 + 51) / 103)
-exe '2resize ' . ((&lines * 1 + 26) / 53)
+exe '2resize ' . ((&lines * 1 + 21) / 43)
 exe 'vert 2resize ' . ((&columns * 83 + 51) / 103)
-exe '3resize ' . ((&lines * 6 + 26) / 53)
+exe '3resize ' . ((&lines * 1 + 21) / 43)
 exe 'vert 3resize ' . ((&columns * 83 + 51) / 103)
-exe '4resize ' . ((&lines * 34 + 26) / 53)
+exe '4resize ' . ((&lines * 31 + 21) / 43)
 exe 'vert 4resize ' . ((&columns * 83 + 51) / 103)
-exe '5resize ' . ((&lines * 1 + 26) / 53)
+exe '5resize ' . ((&lines * 1 + 21) / 43)
 exe 'vert 5resize ' . ((&columns * 83 + 51) / 103)
-exe '6resize ' . ((&lines * 1 + 26) / 53)
+exe '6resize ' . ((&lines * 1 + 21) / 43)
 exe 'vert 6resize ' . ((&columns * 83 + 51) / 103)
-exe '7resize ' . ((&lines * 1 + 26) / 53)
+exe '7resize ' . ((&lines * 1 + 21) / 43)
 exe 'vert 7resize ' . ((&columns * 83 + 51) / 103)
-exe '8resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 8resize ' . ((&columns * 83 + 51) / 103)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf

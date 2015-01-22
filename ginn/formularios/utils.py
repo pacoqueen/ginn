@@ -1226,6 +1226,8 @@ def rellenar_lista(wid, textos):
             model = completion.get_model()
             text = model.get_value(itr, column)
             key = unicode(key, "utf")
+            if len(key) < 5:
+                pass # PORASQUI: Si es texto pequeño, usar el método antiguo (que empiecen igual). Si es más largo, con el fuzzy. También procurar, si se puede, que los resultados más relevantes vayan arriba del todo.
             if completion.old_key is None or completion.old_key != key:
                 completion.old_key = key
                 completion.old_scores = scores = dict(
@@ -1240,7 +1242,7 @@ def rellenar_lista(wid, textos):
                 return False
             return False
         completion.set_text_column(1)
-        completion.set_minimum_key_length(5)
+        completion.set_minimum_key_length(2)
         choices = [unicode(t[1], "utf") for t in list(set(textos))]
         completion.set_match_func(match_func, (1, choices))
         # completion.set_inline_completion(True)
