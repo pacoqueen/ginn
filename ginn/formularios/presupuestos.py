@@ -3623,9 +3623,11 @@ def build_fila_historial(ofertado, pedido, servido, facturado, pendiente,
 
 def generar_pdf_presupuesto(objeto_presupuesto):
     modulo = pclases.config.get_modelo_presupuesto()
-    import importlib
-    presupuesto = importlib.import_module("." + modulo, "informes")
-    #exec "import %s as presupuesto" % modulo
+    try:
+        import importlib
+        presupuesto = importlib.import_module("." + modulo, "informes")
+    except ImportError:     # ¿Python <2.7?
+        exec "import informes.%s as presupuesto" % modulo
     if (not objeto_presupuesto.pais 
             or objeto_presupuesto.pais.upper()[:3] == "ESP"):
         # Por defecto (sin país especificado) o España, lang = español
