@@ -101,7 +101,7 @@ class GestorMensajes:
         no_entregados = pclases.Alerta.select(
                 """ usuario_id = %d AND entregado = FALSE """ % (
                     self.__usuario.id))
-        return [a for a in no_entregados]
+        return [a for a in no_entregados if "bajo mínimos" not in a.mensaje]
 
     def mostrar_alerta(self, a):
         """
