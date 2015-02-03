@@ -1222,27 +1222,59 @@ def rellenar_lista(wid, textos):
         # que ha cambiado es el texto o solo el iter para recorrer la lista
         # del combo. En definitiva es para no repetir el proceso de búsqueda
         # difusa si el texto no ha cambiado.
+        def simple_compare(parte, todo, only_start = False):
+            """Devuelve True si el texto «parte» está en «todo» según el
+            parámetro especificado «starts»:
+                * False -> «todo» contiene a «parte»·
+                * True -> «todo» empieza por «parte».
+            """
+            _parte = parte.replace(" ", "").upper()
+            _todo = todo.replace(" ", "").upper()
+            if only_start:
+                res = _todo.startswith(_parte)
+            else:
+                res = _parte in _todo
+            return res
         def match_func(completion, key, itr, (column, choices)):
             model = completion.get_model()
             text = model.get_value(itr, column)
             key = unicode(key, "utf")
-            if len(key) < 5:
-                pass # PORASQUI: Si es texto pequeño, usar el método antiguo (que empiecen igual). Si es más largo, con el fuzzy. También procurar, si se puede, que los resultados más relevantes vayan arriba del todo.
-            if completion.old_key is None or completion.old_key != key:
-                completion.old_key = key
-                completion.old_scores = scores = dict(
-                        fuzzyprocess.extract(key, choices, limit = -1))
+            if len(key) <= 3:
+                # Si llevo escrito poco texto, me valen las opciones que
+                # empiecen por esas letras.
+                res = simple_compare(key, text, only_start = True)
+            elif 3 < len(key) < 10:
+                # Si tengo algo más, busco en cualquier parte del texto de
+                # las opciones.
+                res = simple_compare(key, text) 
             else:
-                scores = completion.old_scores
-            try:
-                return scores[text] > 80
-            except KeyError:
-                return False
-            except TypeError:
-                return False
-            return False
+                try:
+                    entry = completion.get_entry()
+                    entry.set_icon_from_stock(1, gtk.STOCK_REVERT_TO_SAVED)
+                    while gtk.events_pending(): gtk.main_iteration(False)
+                except:     # PyGTK < 2.16
+                    pass
+                # Si ya tengo bastantes caracteres, pruebo búsqueda difusa.
+                if completion.old_key is None or completion.old_key != key:
+                    completion.old_key = key
+                    completion.old_scores = scores = dict(
+                        fuzzyprocess.extract(key, choices, limit = -1))
+                else:
+                    scores = completion.old_scores
+                try:
+                    res = scores[text] >= 90
+                except KeyError:
+                    res = simple_compare(key, text)
+                except TypeError:
+                    res = simple_compare(key, text)
+                try:
+                    entry.set_icon_from_stock(1, None)
+                    while gtk.events_pending(): gtk.main_iteration(False)
+                except:     # Python < 2.16
+                    pass
+            return res
         completion.set_text_column(1)
-        completion.set_minimum_key_length(2)
+        completion.set_minimum_key_length(1)
         choices = [unicode(t[1], "utf") for t in list(set(textos))]
         completion.set_match_func(match_func, (1, choices))
         # completion.set_inline_completion(True)
