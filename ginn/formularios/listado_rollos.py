@@ -138,7 +138,8 @@ class ListadoRollos(Ventana):
             fechaInforme = utils.str_fecha(self.inicio) + ' - ' + utils.str_fecha(self.fin)
         if datos != []:
             desc_producto = self.wids['e_descripcion'].get_text()
-            listado_pdf = geninformes.listado_rollos(datos, desc_producto, fechaInforme)
+            listado_pdf = geninformes.listado_rollos(datos, desc_producto,
+                                                     fechaInforme)
             from formularios import reports
             reports.abrir_pdf(listado_pdf)
 

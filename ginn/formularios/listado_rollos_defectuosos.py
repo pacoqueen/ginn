@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2015  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -53,7 +53,8 @@ class ListadoRollosDefectuosos(Ventana):
         el que se muestra por defecto).
         """
         self.usuario = usuario
-        Ventana.__init__(self, 'listado_rollos_defectuosos.glade', objeto, usuario = usuario)
+        Ventana.__init__(self, 'listado_rollos_defectuosos.glade', objeto,
+                         usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_fecha_inicio/clicked': self.set_inicio,
                        'b_fecha_fin/clicked': self.set_fin,
@@ -105,7 +106,9 @@ class ListadoRollosDefectuosos(Ventana):
         from informes.treeview2csv import treeview2csv
         from formularios.reports import abrir_csv
         tv = self.wids['tv_rollos']
-        abrir_csv(treeview2csv(tv))
+        if self.wids['ch_filtrar'].get_active():
+            tv = crear_fake_treeview(tv)
+        abrir_csv(treeview2csv(tv, desglosar = True))
 
     def mostrar_rollo(self, tv, path, view_col):
         """
@@ -127,22 +130,22 @@ class ListadoRollosDefectuosos(Ventana):
         from informes.treeview2pdf import treeview2pdf
         from formularios.reports import abrir_pdf
         tv = self.wids['tv_rollos']
+        if self.wids['ch_filtrar'].get_active():
+            tv = crear_fake_treeview(tv)
         model = tv.get_model()
-        model.append(None, ("===", "===", "===", "===", "===", "===", 0))
-        model.append(None, ("", 
-                            "TOTAL ALMACÉN:", 
-                            self.wids['e_total_almacen'].get_text(), 
-                            "TOTAL FABRICADO:", 
-                            self.wids['e_total_fabricado'].get_text(), 
-                            "", 
-                            0))
         fecha = "%s hasta %s" % (self.wids['e_fechainicio'].get_text(),
                                  self.wids['e_fechafin'].get_text())
+        totales = ("", 
+                   "TOTAL ALMACÉN:", 
+                   self.wids['e_total_almacen'].get_text(), 
+                   "TOTAL FABRICADO:", 
+                   self.wids['e_total_fabricado'].get_text(), 
+                   "")
         fpdf = treeview2pdf(tv, 
                             titulo = "Rollos defectuosos", 
-                            fecha = fecha)
-        del model[-1]
-        del model[-1]
+                            fecha = fecha, 
+                            extra_data = totales,
+                            apaisado = True)
         abrir_pdf(fpdf)
 
     def mostrar_hora_parte(self, tv):
@@ -271,10 +274,14 @@ class ListadoRollosDefectuosos(Ventana):
         vpro.ocultar()
         # self.wids['e_total_almacen'].set_text(str(metros_almacen)+' m²')
         # self.wids['e_total_fabricado'].set_text(str(metros_fabricados)+' m²')
-        self.wids['e_total_almacen'].set_text('%s m² (%d rollos)' % (utils.float2str(metros_almacen, 0), rollos_almacen))
-        self.wids['e_total_fabricado'].set_text('%s m² (%d rollos)' % (utils.float2str(metros_fabricados, 0), tot))
+        self.wids['e_total_almacen'].set_text(
+                '%s m² (%d rollos)' % (utils.float2str(metros_almacen, 0),
+                                       rollos_almacen))
+        self.wids['e_total_fabricado'].set_text(
+                '%s m² (%d rollos)' % (utils.float2str(metros_fabricados, 0),
+                                       tot))
         for itr in totales_por_producto:
-            model[itr][5] = "%d (%s) / %d (%s)" % (
+            model[itr][5] = "%d (%s m²) / %d (%s m²)" % (
                 totales_por_producto[itr][1], 
                 utils.float2str(totales_por_producto[itr][3]),
                 totales_por_producto[itr][0], 
@@ -409,6 +416,54 @@ class ListadoRollosDefectuosos(Ventana):
                                        "permiso de escritura sobre la ventana"
                                        " actual.", 
                                padre = self.wids['ventana'])
+
+
+def crear_fake_treeview(tvorig,
+                        filtro = lambda fila: fila[4] == "-" and fila or None): 
+    """
+    Crea un TreeView idéntico al recibido (model clonado, mismas columnas y 
+    cabeceras, etc.).
+    «filtro» debe ser una función que devuelve la fila filtrada o None si
+    no debe incluirse en el nuevo TreeView.
+    """
+    tv = gtk.TreeView()
+    tv.set_name(tvorig.get_name())
+    modelorig = tvorig.get_model()
+    cols = []
+    origcols = tvorig.get_columns()
+    colsnulas = []
+    anchos = []
+    aligns = []
+    for col, i in zip(origcols, range(len(origcols))):
+        cols.append((col.get_title(), 
+                     "gobject.TYPE_STRING", # STRING se lo traga todo. Premio
+                                # especial del jurado de los AVN Awards 2015.
+                     False, 
+                     False, 
+                     False, 
+                     None))
+        anchos.append(col.get_width())
+        aligns.append(col.get_cell_renderers()[0].get_property("xalign"))
+    cols.append(("ID", "gobject.TYPE_STRING", False, False, False, None))
+    utils.preparar_treeview(tv, cols)
+    for col, align in zip(tv.get_columns(), aligns):
+        col.get_cell_renderers()[0].set_property("xalign", align) 
+    model = tv.get_model()
+    for padre in modelorig:
+        producto = pclases.ProductoVenta.get(padre[-1])
+        try:
+            ancho_estandar = producto.camposEspecificosRollo.ancho
+        except AttributeError:
+            ancho_estandar = 1
+        iterpadre = model.append(None, padre)
+        total_metros = 0.0
+        for fila in modelorig[padre.iter].iterchildren():
+            _fila = filtro(fila)
+            if _fila:
+                model.append(iterpadre, fila)
+                total_metros += utils.parse_float(fila[5])
+        model[iterpadre][5] = total_metros * ancho_estandar
+    return tv
 
 
 if __name__ == '__main__':
