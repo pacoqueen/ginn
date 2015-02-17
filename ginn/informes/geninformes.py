@@ -9866,7 +9866,7 @@ def calcular_medidas(cheque):
     # visor PDF para ajustar del todo los textos. En Foxit Reader lo ideal es
     # tamaño 100% y no autocentrado ni autoajuste.
     for key in medidas:
-        incx, incy = (0.6 * cm, -0.0 * cm)
+        incx, incy = (0.6 * cm, -10) #-0.0 * cm)
         medidas[key][0] += incx
         medidas[key][1] += incy
     medidas['tope_ventana_sobre'] = [19.1*cm, 21.7*cm]  # Esquina inferior
