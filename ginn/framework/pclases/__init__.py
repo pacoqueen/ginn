@@ -19248,7 +19248,7 @@ class DatosDeLaEmpresa(SQLObject, PRPCTOO):
         res = ""
         if self.dirfacturacion:
             res = self.dirfacturacion
-        if self.cp:
+        if self.cpfacturacion:
             res += "; %s" % self.cpfacturacion
         if self.ciudadfacturacion and self.provinciafacturacion:
             if self.ciudadfacturacion == self.provinciafacturacion:
@@ -19262,6 +19262,26 @@ class DatosDeLaEmpresa(SQLObject, PRPCTOO):
             res += " - %s" % self.provinciafacturacion
         elif self.paisfacturacion:
             res += ". %s" % self.paisfacturacion
+        return res
+
+    def get_dir_correspondencia_completa(self):
+        res = ""
+        if self.direccion:
+            res = self.direccion
+        if self.cp:
+            res += "; %s" % self.cp
+        if self.ciudad and self.provincia:
+            if self.ciudad == self.provincia:
+                res += " - %s" % self.provincia
+            else:
+                res += " - %s (%s)" % (self.ciudad,
+                                       self.provincia)
+        elif self.ciudad:
+            res += " - %s" % self.ciudad
+        elif self.provincia:
+            res += " - %s" % self.provincia
+        elif self.pais:
+            res += ". %s" % self.pais
         return res
 
     def get_dia_de_pago(self):

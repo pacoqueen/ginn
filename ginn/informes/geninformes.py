@@ -9913,7 +9913,7 @@ def _escribir_textofijo(c, medidas):
     else:
         c.saveState()
         # Voy a imprimir 2 pequeñas marcas para saber por dónde doblar el
-        # folio y que entre en el sobrei.
+        # folio y que entre en el sobre.
         c.line(1*cm, A4[1]/3, 1.2*cm, A4[1]/3)
         c.line(1*cm, (A4[1]*2/3), 1.2*cm, (A4[1]*2/3))
         # Y ahora los logos y el texto fijo de verdad.
@@ -10064,7 +10064,20 @@ def carta_pago(pagare, cheque = True, textofijo = True):
         c.drawString(medidas['fecha_vencimiento'][0],
                      medidas['fecha_vencimiento'][1],
                      escribe(fecha_vencimiento))
-
+    # Datos fiscales
+    # -- Registro mercantil
+    datos_empresa = pclases.DatosDeLaEmpresa.select()[0]
+    c.saveState()
+    c.rotate(90)
+    c.setFont("Times-Roman", 8)
+    c.drawCentredString(height/2, -lm, #-32,
+                        escribe(datos_empresa.get_dir_facturacion_completa()))
+    # -- Dirección de correspondencia
+    c.drawCentredString(height/2, -lm -8,
+                        escribe(
+                            datos_empresa.get_dir_correspondencia_completa()))
+    c.rotate(-90)
+    c.restoreState()
     ## Por último guardo y devuelvo el nombre del PDF generado (no hace falta
     ## showPage, «save» lo hace por mí antes de escribir el PDF).
     c.save()
