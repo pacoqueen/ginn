@@ -103,7 +103,8 @@ def str_fecha(fecha = time.localtime()):
     """
     if not fecha:    # Si es None (valor por defecto en envios)
         return ''
-    if isinstance(fecha, tuple):    # Es una fecha de mostrar_calendario y ya viene ordenada
+    if isinstance(fecha, tuple):    # Es una fecha de mostrar_calendario y ya
+                                    # viene ordenada
         t = fecha
     else:
         if isinstance(fecha, type(mx.DateTime.DateTimeFrom(''))):
