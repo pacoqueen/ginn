@@ -10026,8 +10026,17 @@ def carta_pago(pagare, cheque = True, textofijo = True):
         else:
             numfactura_pago = pago.observaciones
         c.drawString(xpago + 2*cm, ypago, escribe(fecha_factura))
-        c.drawCentredString(xpago + (2+13/2.0)*cm, ypago,
-                            escribe(numfactura_pago))
+        xcentro = xpago + (2+13/2.0)*cm
+        xfin = xpago + 13*cm
+        xini = xcentro - (xfin - xcentro)
+        el_encogedor_de_fuentes_de_doraemon(c, fuente, tamanno,
+                                            xini,
+                                            xfin,
+                                            ypago,
+                                            numfactura_pago,
+                                            alineacion = 0)
+        #c.drawCentredString(xpago + (2+13/2.0)*cm, ypago,
+        #                    escribe(numfactura_pago))
         c.drawRightString(xpago + 15*cm, ypago, escribe(importe_pago))
         ypago += una_linea
     if len(pagare.pagos) > 1:
