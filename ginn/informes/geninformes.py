@@ -9866,7 +9866,7 @@ def calcular_medidas(cheque):
     # visor PDF para ajustar del todo los textos. En Foxit Reader lo ideal es
     # tamaño 100% y no autocentrado ni autoajuste.
     for key in medidas:
-        incx, incy = (0.6 * cm, -10) #-0.0 * cm)
+        incx, incy = (0.6 * cm, -8) #-0.0 * cm)
         medidas[key][0] += incx
         medidas[key][1] += incy
     medidas['tope_ventana_sobre'] = [19.1*cm, 21.7*cm]  # Esquina inferior
@@ -9914,8 +9914,8 @@ def _escribir_textofijo(c, medidas):
         c.saveState()
         # Voy a imprimir 2 pequeñas marcas para saber por dónde doblar el
         # folio y que entre en el sobre.
-        c.line(1*cm, A4[1]/3, 1.2*cm, A4[1]/3)
-        c.line(1*cm, (A4[1]*2/3), 1.2*cm, (A4[1]*2/3))
+        c.line(0.8*cm, A4[1]/3, 1*cm, A4[1]/3)
+        c.line(0.8*cm, (A4[1]*2/3), 1*cm, (A4[1]*2/3))
         # Y ahora los logos y el texto fijo de verdad.
         c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo),
                     medidas['logo0_cabecera'][0],
@@ -10074,17 +10074,18 @@ def carta_pago(pagare, cheque = True, textofijo = True):
                      medidas['fecha_vencimiento'][1],
                      escribe(fecha_vencimiento))
     # Datos fiscales
-    # -- Registro mercantil
+    # -- Dirección fiscal
     datos_empresa = pclases.DatosDeLaEmpresa.select()[0]
     c.saveState()
     c.rotate(90)
     c.setFont("Times-Roman", 8)
     c.drawCentredString(height/2, -lm, #-32,
-                        escribe(datos_empresa.get_dir_facturacion_completa()))
+            escribe("Dirección fiscal: %s"
+                        % datos_empresa.get_dir_facturacion_completa()))
     # -- Dirección de correspondencia
     c.drawCentredString(height/2, -lm -8,
-                        escribe(
-                            datos_empresa.get_dir_correspondencia_completa()))
+            escribe("Oficinas y correspondencia: %s"
+                        % datos_empresa.get_dir_correspondencia_completa()))
     c.rotate(-90)
     c.restoreState()
     ## Por último guardo y devuelvo el nombre del PDF generado (no hace falta
