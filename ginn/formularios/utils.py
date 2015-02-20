@@ -1256,6 +1256,9 @@ def rellenar_lista(wid, textos):
                 except:     # PyGTK < 2.16
                     pass
                 # Si ya tengo bastantes caracteres, pruebo búsqueda difusa.
+# TODO: PLAN: USABILIDAD: Ideaca. Poner un temporizador para que si hay
+# suficientes caracteres Y NO HA ESCRITO NADA MÁS en los últimos 2~3 segundos,
+# que haga la búsqueda.
                 if completion.old_key is None or completion.old_key != key:
                     completion.old_key = key
                     completion.old_scores = scores = dict(
