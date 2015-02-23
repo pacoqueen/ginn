@@ -1244,7 +1244,8 @@ def rellenar_lista(wid, textos):
                 # Si llevo escrito poco texto, me valen las opciones que
                 # empiecen por esas letras.
                 res = simple_compare(key, text, only_start = True)
-            elif 3 < len(key) < 10:
+            elif 3 < len(key) < 64:
+                # TODO: PORASQUI: He tenido que subir a 64 porque me está dando muchos problemas la búsqueda difusa al rellenar los combos.
                 # Si tengo algo más, busco en cualquier parte del texto de
                 # las opciones.
                 res = simple_compare(key, text) 

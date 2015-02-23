@@ -150,6 +150,27 @@ class ConsultaVentas(Ventana):
         opciones.insert(0, (-1, "Todos"))
         utils.rellenar_lista(self.wids['cbe_almacen'], opciones)
         utils.combo_set_from_db(self.wids['cbe_almacen'], -1)
+        # CWT: Filtro por producto
+        opciones = [(pv.id, pv.descripcion)
+                    for pv in pclases.ProductoVenta.select(
+                        pclases.ProductoVenta.q.obsoleto == False,
+                        orderBy = "descripcion")]
+        for pc in pclases.ProductoCompra.select(
+                        pclases.ProductoCompra.q.obsoleto == False,
+                        orderBy = "descripcion"):
+            opciones.append((-pc.id, pc.descripcion)) # En negativo los PCompra
+        opciones.insert(0, (0, "Todos"))
+        self.wids['cbe_producto'] = gtk.ComboBoxEntry()
+        utils.rellenar_lista(self.wids['cbe_producto'], opciones)
+        utils.combo_set_from_db(self.wids['cbe_producto'], 0)
+        box = gtk.HBox()
+        box.pack_start(gtk.Label("Producto:"), expand = False)
+        box.pack_start(self.wids['cbe_producto'], expand = True)
+        box.set_homogeneous(False)
+        self.wids['cbe_almacen'].parent.parent.add(box)
+        self.wids['cbe_almacen'].parent.parent.reorder_child(box, 2)
+        self.wids['cbe_almacen'].parent.parent.show_all()
+        # Esta vez dejo el 0 como "Todos"
         hay_fibra = pclases.CamposEspecificosBala.select().count() > 0
         self.wids['label7'].set_property("visible", hay_fibra)
         self.wids['e_total_kilos'].set_property("visible", hay_fibra)
@@ -324,6 +345,20 @@ class ConsultaVentas(Ventana):
                     from formularios import productos_de_venta_balas
                     v = productos_de_venta_balas.ProductosDeVentaBalas(  # @UnusedVariable
                             producto)
+
+    def get_producto_filtro(self):
+        """
+        Si se ha seleccionado un producto del filtro, devuelve su objeto
+        de la BD. En otro caso, None.
+        """
+        idproducto = utils.combo_get_value(self.wids['cbe_producto'])
+        if idproducto > 0:
+            producto = pclases.ProductoVenta.get(idproducto)
+        elif idproducto < 0:
+            producto = pclases.ProductoCompra.get(idproducto)
+        else:
+            producto = None
+        return producto
 
     def chequear_cambios(self):
         pass
@@ -553,6 +588,10 @@ class ConsultaVentas(Ventana):
                 self.logger.error(txt)
  
     def procesar_lda(self, lda, por_tarifa, model, total):
+        producto = self.get_producto_filtro()
+        if producto and lda.producto != producto:
+            return None, total
+        # XXX: Filtro por producto
         precio = lda.precio * (1 - lda.descuento)
             # Lo pongo en negativo porque es dinero que se ha devuelto/pagado.
         total_ldv = lda.cantidad * precio 
@@ -678,6 +717,10 @@ class ConsultaVentas(Ventana):
         return tarifa, total
 
     def procesar_ldd(self, ldd, por_tarifa, model, total):
+        producto = self.get_producto_filtro()
+        if producto and ldd.producto != producto:
+            return None, total
+        # XXX: Filtro por producto
         precio = -ldd.precio * (1 - ldd.descuento)
             # Lo pongo en negativo porque es dinero que se ha devuelto/pagado.
         total_ldv = precio # ldd.cantidad * precio  
@@ -812,6 +855,10 @@ class ConsultaVentas(Ventana):
         return tarifa, total
 
     def procesar_ldv(self, i, por_tarifa, model, total):
+        producto = self.get_producto_filtro()
+        if producto and i.producto != producto:
+            return None, total
+        # XXX: Filtro por producto
         precio = i.precio * (1 - i.descuento)
         total_ldv = i.cantidad * precio
         tarifa = i.get_tarifa()
@@ -948,6 +995,10 @@ class ConsultaVentas(Ventana):
         return tarifa, total
         
     def procesar_srv(self, i, por_tarifa, model, total):
+        producto = self.get_producto_filtro()
+        if producto:
+            return None, total
+        # XXX: Filtro por producto. Los servicios no tienen producto.
         precio = i.precio * (1 - i.descuento)
         total_ldv = i.cantidad * precio
         tarifa = None
@@ -1074,6 +1125,19 @@ class ConsultaVentas(Ventana):
         Dadas fecha de inicio y de fin, busca todas las ventas 
         (facturadas) entre esas dos fechas.
         """
+        producto = self.get_producto_filtro()
+        # XXX: Filtro por producto
+        # TODO: PORASQUI: Deshabilito las pestañas que no pueden computar
+        # por producto hasta que pueda corregirlo:
+        self.wids['notebook1'].get_nth_page(1).set_property("visible",
+                                                            not producto)
+        self.wids['notebook1'].get_nth_page(3).set_property("visible",
+                                                            not producto)
+        self.wids['notebook1'].get_nth_page(4).set_property("visible",
+                                                            not producto)
+        self.wids['notebook1'].set_current_page(2)
+        # TODO: PORASQUI: Probar si se ve todo el desplegable de productos en el servidor. En local se corta al ancho y no se ve.
+        # XXX
         from ventana_progreso import VentanaProgreso
         vpro = VentanaProgreso(padre = self.wids['ventana'])
         vpro.mostrar()
@@ -1196,6 +1260,8 @@ class ConsultaVentas(Ventana):
         vpro.ocultar()
 
     def rellenar_tabla_clientes(self, resultado, resultado_abonos, servicios):
+        producto = self.get_producto_filtro()
+        # XXX: Filtro por producto
         idalmacen = utils.combo_get_value(self.wids['cbe_almacen'])
         if idalmacen == -1:
             almacen = None
@@ -1204,35 +1270,42 @@ class ConsultaVentas(Ventana):
         self.por_cliente = {}
         for linea in resultado:
             if not almacen or linea.get_almacen() == almacen:
-                cliente = linea.get_cliente()
-                factura = linea.get_factura_o_prefactura()
-                if cliente not in self.por_cliente:
-                    self.por_cliente[cliente] = [factura]
-                else:
-                    if factura not in self.por_cliente[cliente]:
-                        self.por_cliente[cliente] += [factura]
+                if not producto or linea.producto == producto:
+                    cliente = linea.get_cliente()
+                    factura = linea.get_factura_o_prefactura()
+                    if cliente not in self.por_cliente:
+                        self.por_cliente[cliente] = [factura]
+                    else:
+                        if factura not in self.por_cliente[cliente]:
+                            self.por_cliente[cliente] += [factura]
         for ldabono in (resultado_abonos['lineasDeAbono'] 
                         + resultado_abonos['lineasDeDevolucion']):
             if not almacen or linea.get_almacen() == almacen:
-                cliente = ldabono.abono.cliente
-                factura = ldabono.abono.facturaDeAbono
-                if cliente not in self.por_cliente:
-                    self.por_cliente[cliente] = [factura]
-                else:
-                    if factura not in self.por_cliente[cliente]:
-                        self.por_cliente[cliente] += [factura]
+                if not producto or linea.producto == producto:
+                    cliente = ldabono.abono.cliente
+                    factura = ldabono.abono.facturaDeAbono
+                    if cliente not in self.por_cliente:
+                        self.por_cliente[cliente] = [factura]
+                    else:
+                        if factura not in self.por_cliente[cliente]:
+                            self.por_cliente[cliente] += [factura]
         for srv in servicios:
             if not almacen or srv.get_almacen() == almacen:
-                cliente = srv.get_cliente()
-                factura = srv.get_factura_o_prefactura()
-                if cliente not in self.por_cliente:
-                    self.por_cliente[cliente] = [factura]
-                else:
-                    if factura not in self.por_cliente[cliente]:
-                        self.por_cliente[cliente] += [factura]
+                if not producto:
+                    cliente = srv.get_cliente()
+                    factura = srv.get_factura_o_prefactura()
+                    if cliente not in self.por_cliente:
+                        self.por_cliente[cliente] = [factura]
+                    else:
+                        if factura not in self.por_cliente[cliente]:
+                            self.por_cliente[cliente] += [factura]
         model = self.wids['tv_cliente'].get_model()
         model.clear()
         for cliente in self.por_cliente:
+            # TODO: BUG: PORASQUI: ¿Y ahora qué hago con el total de la factura
+            # si he seleccionado un producto y solo quiero el importe de esa
+            # línea? Mientras tanto, deshabilito las pestañas conflictivas si 
+            # hay filtro de producto.
             padre = model.append(None, 
                                  (cliente and cliente.nombre or "SIN CLIENTE", 
                                   "", 
@@ -1283,6 +1356,8 @@ class ConsultaVentas(Ventana):
 
     def rellenar_tabla_comerciales(self, resultado, resultado_abonos, 
                                    servicios):
+        producto = self.get_producto_filtro()
+        # XXX: Filtro por producto
         idalmacen = utils.combo_get_value(self.wids['cbe_almacen'])
         if idalmacen == -1:
             almacen = None
@@ -1291,40 +1366,44 @@ class ConsultaVentas(Ventana):
         self.por_comercial = {}
         for linea in resultado:
             if not almacen or linea.get_almacen() == almacen:
-                comercial = linea.get_comercial()
-                factura = linea.get_factura_o_prefactura()
-                if comercial not in self.por_comercial:
-                    self.por_comercial[comercial] = [factura]
-                else:
-                    if factura not in self.por_comercial[comercial]:
-                        self.por_comercial[comercial] += [factura]
+                if not producto or linea.producto == producto:
+                    comercial = linea.get_comercial()
+                    factura = linea.get_factura_o_prefactura()
+                    if comercial not in self.por_comercial:
+                        self.por_comercial[comercial] = [factura]
+                    else:
+                        if factura not in self.por_comercial[comercial]:
+                            self.por_comercial[comercial] += [factura]
         for srv in servicios:
             if not almacen or srv.get_almacen() == almacen:
-                comercial = srv.get_comercial()
-                factura = srv.get_factura_o_prefactura()
-                if comercial not in self.por_comercial:
-                    self.por_comercial[comercial] = [factura]
-                else:
-                    if factura not in self.por_comercial[comercial]:
-                        self.por_comercial[comercial] += [factura]
+                if producto:
+                    comercial = srv.get_comercial()
+                    factura = srv.get_factura_o_prefactura()
+                    if comercial not in self.por_comercial:
+                        self.por_comercial[comercial] = [factura]
+                    else:
+                        if factura not in self.por_comercial[comercial]:
+                            self.por_comercial[comercial] += [factura]
         for lda in resultado_abonos['lineasDeAbono']:
             if not almacen or lda.get_almacen() == almacen:
-                comercial = lda.get_comercial()
-                factura = lda.facturaVenta    # De abono, en realidad
-                if comercial not in self.por_comercial:
-                    self.por_comercial[comercial] = [factura]
-                else:
-                    if factura not in self.por_comercial[comercial]:
-                        self.por_comercial[comercial] += [factura]
+                if not producto or lda.producto == producto:
+                    comercial = lda.get_comercial()
+                    factura = lda.facturaVenta    # De abono, en realidad
+                    if comercial not in self.por_comercial:
+                        self.por_comercial[comercial] = [factura]
+                    else:
+                        if factura not in self.por_comercial[comercial]:
+                            self.por_comercial[comercial] += [factura]
         for ldd in resultado_abonos['lineasDeDevolucion']:
             if not almacen or ldd.get_almacen() == almacen:
-                comercial = ldd.get_comercial()
-                factura = ldd.facturaVenta  # De abono, en realidad
-                if comercial not in self.por_comercial:
-                    self.por_comercial[comercial] = [factura]
-                else:
-                    if factura not in self.por_comercial[comercial]:
-                        self.por_comercial[comercial] += [factura]
+                if not producto or ldd.producto == producto:
+                    comercial = ldd.get_comercial()
+                    factura = ldd.facturaVenta  # De abono, en realidad
+                    if comercial not in self.por_comercial:
+                        self.por_comercial[comercial] = [factura]
+                    else:
+                        if factura not in self.por_comercial[comercial]:
+                            self.por_comercial[comercial] += [factura]
         model = self.wids['tv_comercial'].get_model()
         model.clear()
         for comercial in self.por_comercial:
@@ -1368,6 +1447,8 @@ class ConsultaVentas(Ventana):
 
     def rellenar_tabla_proveedores(self, resultado, resultado_abonos, 
                                    servicios):
+        producto = self.get_producto_filtro()
+        # XXX: Filtro por producto
         idalmacen = utils.combo_get_value(self.wids['cbe_almacen'])
         if idalmacen == -1:
             almacen = None
@@ -1376,40 +1457,44 @@ class ConsultaVentas(Ventana):
         self.por_proveedor = {}
         for linea in resultado:
             if not almacen or linea.get_almacen() == almacen:
-                proveedor = linea.get_proveedor()
-                factura = linea.get_factura_o_prefactura()
-                if proveedor not in self.por_proveedor:
-                    self.por_proveedor[proveedor] = [factura]
-                else:
-                    if factura not in self.por_proveedor[proveedor]:
-                        self.por_proveedor[proveedor] += [factura]
+                if not producto or linea.producto == producto:
+                    proveedor = linea.get_proveedor()
+                    factura = linea.get_factura_o_prefactura()
+                    if proveedor not in self.por_proveedor:
+                        self.por_proveedor[proveedor] = [factura]
+                    else:
+                        if factura not in self.por_proveedor[proveedor]:
+                            self.por_proveedor[proveedor] += [factura]
         for srv in servicios:
             if not almacen or srv.get_almacen() == almacen:
-                proveedor = srv.get_proveedor()
-                factura = srv.get_factura_o_prefactura()
-                if proveedor not in self.por_proveedor:
-                    self.por_proveedor[proveedor] = [factura]
-                else:
-                    if factura not in self.por_proveedor[proveedor]:
-                        self.por_proveedor[proveedor] += [factura]
+                if not producto:
+                    proveedor = srv.get_proveedor()
+                    factura = srv.get_factura_o_prefactura()
+                    if proveedor not in self.por_proveedor:
+                        self.por_proveedor[proveedor] = [factura]
+                    else:
+                        if factura not in self.por_proveedor[proveedor]:
+                            self.por_proveedor[proveedor] += [factura]
         for lda in resultado_abonos['lineasDeAbono']:
             if not almacen or lda.get_almacen() == almacen:
-                proveedor = lda.get_proveedor()
-                factura = lda.facturaVenta    # De abono, en realidad
-                if proveedor not in self.por_proveedor:
-                    self.por_proveedor[proveedor] = [factura]
-                else:
-                    if factura not in self.por_proveedor[proveedor]:
-                        self.por_proveedor[proveedor] += [factura]
+                if not producto or lda.producto == producto:
+                    proveedor = lda.get_proveedor()
+                    factura = lda.facturaVenta    # De abono, en realidad
+                    if proveedor not in self.por_proveedor:
+                        self.por_proveedor[proveedor] = [factura]
+                    else:
+                        if factura not in self.por_proveedor[proveedor]:
+                            self.por_proveedor[proveedor] += [factura]
         for ldd in resultado_abonos['lineasDeDevolucion']:
             if not almacen or ldd.get_almacen() == almacen:
-                proveedor = ldd.proveedor
-                factura = ldd.facturaVenta  # De abono, en realidad
-                if proveedor not in self.por_proveedor:
-                    self.por_proveedor[proveedor] = [factura]
-                else:
-                    if factura not in self.por_proveedor[proveedor]:
-                        self.por_proveedor[proveedor] += [factura]
+                if not producto or ldd.producto == producto:
+                    proveedor = ldd.proveedor
+                    factura = ldd.facturaVenta  # De abono, en realidad
+                    if proveedor not in self.por_proveedor:
+                        self.por_proveedor[proveedor] = [factura]
+                    else:
+                        if factura not in self.por_proveedor[proveedor]:
+                            self.por_proveedor[proveedor] += [factura]
         model = self.wids['tv_proveedor'].get_model()
         model.clear()
         for proveedor in self.por_proveedor:
@@ -1454,6 +1539,8 @@ class ConsultaVentas(Ventana):
                                     resultado, 
                                     resultado_abonos, 
                                     servicios):
+        productofiltro = self.get_producto_filtro()
+        # XXX: Filtro por producto
         idalmacen = utils.combo_get_value(self.wids['cbe_almacen'])
         if idalmacen == -1:
             almacen = None
@@ -1462,24 +1549,26 @@ class ConsultaVentas(Ventana):
         por_producto = {}
         for linea in resultado:
             if not almacen or linea.get_almacen() == almacen:
-                producto = linea.producto.descripcion
-                subtotal = linea.get_subtotal(iva = False)
-                cantidad = linea.cantidad
-                if producto not in por_producto:
-                    por_producto[producto] = [cantidad, subtotal]
-                else:
-                    por_producto[producto][0] += cantidad
-                    por_producto[producto][1] += subtotal
+                if not productofiltro or linea.producto == productofiltro:
+                    producto = linea.producto.descripcion
+                    subtotal = linea.get_subtotal(iva = False)
+                    cantidad = linea.cantidad
+                    if producto not in por_producto:
+                        por_producto[producto] = [cantidad, subtotal]
+                    else:
+                        por_producto[producto][0] += cantidad
+                        por_producto[producto][1] += subtotal
         for srv in servicios:
             if not almacen or srv.get_almacen() == almacen:
-                producto = srv.concepto
-                subtotal = srv.get_subtotal(iva = False)
-                cantidad = srv.cantidad
-                if producto not in por_producto:
-                    por_producto[producto] = [cantidad, subtotal]
-                else:
-                    por_producto[producto][0] += cantidad
-                    por_producto[producto][1] += subtotal
+                if not productofiltro:
+                    producto = srv.concepto
+                    subtotal = srv.get_subtotal(iva = False)
+                    cantidad = srv.cantidad
+                    if producto not in por_producto:
+                        por_producto[producto] = [cantidad, subtotal]
+                    else:
+                        por_producto[producto][0] += cantidad
+                        por_producto[producto][1] += subtotal
         model = self.wids['tv_producto'].get_model()
         model.clear()
         for desc in por_producto:
