@@ -1400,8 +1400,16 @@ class PartesDeFabricacionBalas(Ventana):
             model = self.wids['tv_granza_silos'].get_model()
             #self.wids['tv_granza_silos'].set_model(None)
             model.clear()
-            confs_silos = self.objeto.get_historial_conf_silos()
+            try:
+                confs_silos = self.objeto.get_historial_conf_silos()
+            except AssertionError, err:
+                #raise AssertionError, err # Para que me lo envíe por correo.
+                self.logger.error("partes_de_fabricacion_balas::"
+                                  "rellenar_tabla_conf_silos -> %s" % err)
+                confs_silos = []    # Pero que siga funcionando la ventana.
+                self.wids['tv_granza_silos'].set_sensitive(False)
             for horaini in confs_silos:
+                self.wids['tv_granza_silos'].set_sensitive(True)
                 try:
                     horafin = confs_silos.keys()[
                             confs_silos.keys().index(horaini) + 1]
