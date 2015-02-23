@@ -1232,16 +1232,22 @@ def rellenar_lista(wid, textos):
             _parte = parte.replace(" ", "").upper()
             _todo = todo.replace(" ", "").upper()
             if only_start:
-                res = _todo.startswith(_parte)
+                try:
+                    res = _todo.startswith(_parte)
+                except UnicodeDecodeError:
+                    # TODO: PORASQUI: UnicodeDecodeError: 'utf8' codec can't decode byte 0xc3 in position 21: invalid continuation byte
+                    res = True
             else:
-                res = _parte in _todo
+                try:
+                    res = _parte in _todo
+                except:
+                    # TODO: PORASQUI: UnicodeDecodeError: 'utf8' codec can't decode byte 0xc3 in position 21: invalid continuation byte
+                    res = True
             return res
         def match_func(completion, key, itr, (column, choices)):
             model = completion.get_model()
             text = model.get_value(itr, column)
-            # TODO: PORASQUI: Me está dando muchos problemas el unicode en el servidor. Pero
-            # si lo quito creo que no funciona la búsqueda difusa.
-            #key = unicode(key, "utf")
+            key = unicode(key, "utf")
             if len(key) <= 3:
                 # Si llevo escrito poco texto, me valen las opciones que
                 # empiecen por esas letras.
@@ -1283,10 +1289,6 @@ def rellenar_lista(wid, textos):
         completion.set_text_column(1)
         completion.set_minimum_key_length(1)
         choices = [unicode(t[1], "utf") for t in list(set(textos))]
-        # TODO: PORASQUI: Me está dando muchos problemas el unicode en el servidor. Pero
-        # si lo quito creo que no funciona la búsqueda difusa.
-        choices = [t[1] for t in list(set(textos))]
-        #choices = [unicode(t[1], "utf") for t in list(set(textos))]
         completion.set_match_func(match_func, (1, choices))
         # completion.set_inline_completion(True)
         #---------------------------------------------------#
