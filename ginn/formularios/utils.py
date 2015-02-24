@@ -1229,8 +1229,11 @@ def rellenar_lista(wid, textos):
                 * False -> «todo» contiene a «parte»·
                 * True -> «todo» empieza por «parte».
             """
-            _parte = parte.replace(" ", "").upper()
-            _todo = todo.replace(" ", "").upper()
+            try:
+                _parte = parte.replace(" ", "").upper()
+                _todo = todo.replace(" ", "").upper()
+            except AttributeError:
+                return False # Porque alguno de los dos es None y por optimizar
             if only_start:
                 try:
                     res = _todo.startswith(_parte)
