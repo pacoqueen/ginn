@@ -1250,7 +1250,8 @@ def rellenar_lista(wid, textos):
         def match_func(completion, key, itr, (column, choices)):
             model = completion.get_model()
             text = model.get_value(itr, column)
-            key = unicode(key, "utf")
+            #key = unicode(key, "utf")
+            key = unicode(key, "latin1").encode("latin1")
             if len(key) <= 3:
                 # Si llevo escrito poco texto, me valen las opciones que
                 # empiecen por esas letras.
@@ -1291,7 +1292,9 @@ def rellenar_lista(wid, textos):
             return res
         completion.set_text_column(1)
         completion.set_minimum_key_length(1)
-        choices = [unicode(t[1], "utf") for t in list(set(textos))]
+        #choices = [unicode(t[1], "utf") for t in list(set(textos))]
+        choices = [unicode(t[1], "latin1").encode("latin1")
+                   for t in list(set(textos))]
         completion.set_match_func(match_func, (1, choices))
         # completion.set_inline_completion(True)
         #---------------------------------------------------#
