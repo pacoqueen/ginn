@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 23 febrero 2015 at 20:22:26.
+" Created by session.vim 1.5 on 24 febrero 2015 at 14:23:36.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -69,9 +69,9 @@ set winheight=1 winwidth=1
 exe 'vert 1resize ' . ((&columns * 20 + 51) / 103)
 exe '2resize ' . ((&lines * 5 + 26) / 53)
 exe 'vert 2resize ' . ((&columns * 82 + 51) / 103)
-exe '3resize ' . ((&lines * 16 + 26) / 53)
+exe '3resize ' . ((&lines * 12 + 26) / 53)
 exe 'vert 3resize ' . ((&columns * 82 + 51) / 103)
-exe '4resize ' . ((&lines * 19 + 26) / 53)
+exe '4resize ' . ((&lines * 23 + 26) / 53)
 exe 'vert 4resize ' . ((&columns * 82 + 51) / 103)
 exe '5resize ' . ((&lines * 1 + 26) / 53)
 exe 'vert 5resize ' . ((&columns * 82 + 51) / 103)
@@ -131,28 +131,24 @@ normal! zo
 normal! zo
 1227
 normal! zo
-1240
+1238
 normal! zo
-1255
+1248
 normal! zo
-1266
+1257
 normal! zo
-1928
+1271
 normal! zo
-1989
+1303
 normal! zo
-2562
+2379
 normal! zo
-2562
-normal! zo
-2562
-normal! zo
-let s:l = 1288 - ((8 * winheight(0) + 8) / 16)
+let s:l = 1245 - ((6 * winheight(0) + 6) / 12)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1288
-normal! 046|
+1245
+normal! 064|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -443,12 +439,12 @@ normal! zo
 normal! zo
 1581
 normal! zo
-let s:l = 1133 - ((11 * winheight(0) + 9) / 19)
+let s:l = 358 - ((15 * winheight(0) + 11) / 23)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1133
-normal! 034|
+358
+normal! 051|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -1629,13 +1625,13 @@ normal! zt
 normal! 050|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
-3wincmd w
+4wincmd w
 exe 'vert 1resize ' . ((&columns * 20 + 51) / 103)
 exe '2resize ' . ((&lines * 5 + 26) / 53)
 exe 'vert 2resize ' . ((&columns * 82 + 51) / 103)
-exe '3resize ' . ((&lines * 16 + 26) / 53)
+exe '3resize ' . ((&lines * 12 + 26) / 53)
 exe 'vert 3resize ' . ((&columns * 82 + 51) / 103)
-exe '4resize ' . ((&lines * 19 + 26) / 53)
+exe '4resize ' . ((&lines * 23 + 26) / 53)
 exe 'vert 4resize ' . ((&columns * 82 + 51) / 103)
 exe '5resize ' . ((&lines * 1 + 26) / 53)
 exe 'vert 5resize ' . ((&columns * 82 + 51) / 103)
@@ -1657,6 +1653,6 @@ let &so = s:so_save | let &siso = s:siso_save
 doautoall SessionLoadPost
 unlet SessionLoad
 tabnext 1
-3wincmd w
+4wincmd w
 
 " vim: ft=vim ro nowrap smc=128

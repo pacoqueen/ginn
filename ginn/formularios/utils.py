@@ -1238,13 +1238,19 @@ def rellenar_lista(wid, textos):
                 try:
                     res = _todo.startswith(_parte)
                 except UnicodeDecodeError:
-                    # TODO: PORASQUI: UnicodeDecodeError: 'utf8' codec can't decode byte 0xc3 in position 21: invalid continuation byte
+                    # DONE: UnicodeDecodeError: 'utf8' codec can't decode
+                    # byte 0xc3 in position 21: invalid continuation byte
+                    # Venían en Latin1 de la BD. Ya está corregido. Pero si
+                    # vuelve a petar por otra tilde o algo, prefiero dar un
+                    # falso positivo a un cuelgue de la ventana.
                     res = True
             else:
                 try:
                     res = _parte in _todo
                 except:
-                    # TODO: PORASQUI: UnicodeDecodeError: 'utf8' codec can't decode byte 0xc3 in position 21: invalid continuation byte
+                    # DONE: UnicodeDecodeError: 'utf8' codec can't decode
+                    # byte 0xc3 in position 21: invalid continuation byte
+                    # Venían en Latin1 de la BD.
                     res = True
             return res
         def match_func(completion, key, itr, (column, choices)):

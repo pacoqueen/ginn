@@ -355,7 +355,7 @@ class ConsultaVentas(Ventana):
         if idproducto > 0:
             producto = pclases.ProductoVenta.get(idproducto)
         elif idproducto < 0:
-            producto = pclases.ProductoCompra.get(idproducto)
+            producto = pclases.ProductoCompra.get(-idproducto)
         else:
             producto = None
         return producto
