@@ -221,6 +221,8 @@ def _info(exctyp, value, tb):
             vpro = VentanaActividad(
                 texto = "Enviando informe de error. Por favor, espere...\n"
                         "(Si esta ventana persiste, reinicie la aplicación)")
+            # TODO: PLAN: Si la ventana lleva más de un minuto sin enviar el
+            # correo, ya no lo hará casi seguro. Cerrarla programáticamente.
             vpro.mostrar()
             vpro.mover()
             if trace == None:
