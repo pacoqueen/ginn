@@ -225,7 +225,7 @@ class ConsultaPedidosProveedor(Ventana):
             proveedor = self.proveedor
             criterios.append(
                     pclases.FacturaCompra.q.proveedorID == proveedor.id)
-        facturas = pclases.FacturaCompra.select(pclases.AND(*criterios))
+        facturas = pclases.FacturaCompra.select(pclases.AND(criterios))
         self.resultado = facturas
         self.rellenar_tabla(self.resultado)
 
