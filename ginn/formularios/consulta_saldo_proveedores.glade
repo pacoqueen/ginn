@@ -207,14 +207,14 @@
             <child>
               <widget class="GtkLabel" id="label5">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">Pedidos totales: </property>
+                <property name="label" translatable="yes">Facturas totales: </property>
               </widget>
               <packing>
                 <property name="fill">False</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkEntry" id="e_total">
+              <widget class="GtkEntry" id="e_facturas">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="editable">False</property>
@@ -228,7 +228,7 @@
             <child>
               <widget class="GtkLabel" id="label8">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">Importe total pedido: </property>
+                <property name="label" translatable="yes">Total facturado: </property>
               </widget>
               <packing>
                 <property name="fill">False</property>
@@ -236,7 +236,7 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkEntry" id="e_importe_total">
+              <widget class="GtkEntry" id="e_total">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="editable">False</property>

@@ -78,8 +78,8 @@ class ConsultaPedidosProveedor(Ventana):
                 [(c.id, c.nombre)
                     for c in pclases.Proveedor.select(orderBy='nombre')])
         cols = (('Proveedor', 'gobject.TYPE_STRING', False, True, False, None),
-                ('Fecha', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Factura', 'gobject.TYPE_STRING', False, True, False, None),
+                ('Fecha', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Importe', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Vencimientos', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Pagado', 'gobject.TYPE_STRING', False, True, False, None),
@@ -142,12 +142,14 @@ class ConsultaPedidosProveedor(Ventana):
         model.clear()
         total = 0.0
         rows_proveedor = {}
+        total_facturado = 0.0
         for fra in facturas:
             vpro.set_valor(total / tot,
                            "Recuperando facturas... [%d/%d]" % (total, tot))
             total += 1
             proveedor = fra.proveedor
             importe = fra.calcular_importe_total()
+            total_facturado += importe
             vencimientos = sum([vto.importe for vto in fra.vencimientosPago])
             pagado = sum([c.importe for c in fra.pagos])
             pendiente = importe - pagado
@@ -179,6 +181,8 @@ class ConsultaPedidosProveedor(Ventana):
                     utils._float(model[row_proveedor][5]) + pagado)
             model[row_proveedor][6] = utils.float2str(
                     utils._float(model[row_proveedor][6]) + pendiente)
+        self.wids['e_facturas'].set_text(str(facturas.count()))
+        self.wids['e_total'].set_text(utils.float2str(total_facturado))
         vpro.ocultar()
 
     def set_fecha(self, boton):
@@ -214,18 +218,17 @@ class ConsultaPedidosProveedor(Ventana):
             self.fin = datetime.date.today()
             str_ffin = utils.str_fecha(self.fin)
             self.wids['e_fecha_fin'].set_text(str_ffin)
-        criterios.append(pclases.FacturaVenta.q.fecha <= self.fin)
+        criterios.append(pclases.FacturaCompra.q.fecha <= self.fin)
         if idproveedor == None:
-            proveedor = None
+            self.proveedor = None
         elif idproveedor == 0:
-            proveedor = None
+            self.proveedor = None
         else:
             idproveedor = utils.combo_get_value(self.wids['cmbe_proveedor'])
             self.proveedor = pclases.Proveedor.get(idproveedor)
-            proveedor = self.proveedor
             criterios.append(
-                    pclases.FacturaCompra.q.proveedorID == proveedor.id)
-        facturas = pclases.FacturaCompra.select(pclases.AND(criterios))
+                    pclases.FacturaCompra.q.proveedor == self.proveedor)
+        facturas = pclases.FacturaCompra.select(pclases.AND(*criterios))
         self.resultado = facturas
         self.rellenar_tabla(self.resultado)
 
