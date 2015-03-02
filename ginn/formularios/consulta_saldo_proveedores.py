@@ -118,7 +118,7 @@ class ConsultaSaldoProveedores(Ventana):
         model = tv.get_model()
         dbpuid = model[path][-1]
         objeto = pclases.getObjetoPUID(dbpuid)
-        if isinstacen(objeto, pclases.Proveedor):
+        if isinstance(objeto, pclases.Proveedor):
             from formularios import proveedores
             ventanaproveedor = proveedores.Proveedores(objeto = objeto,
                                                        usuario = self.usuario)
