@@ -50,7 +50,7 @@ except ImportError:
     from lib.ordereddict import OrderedDict
 
 
-class ConsultaPedidosProveedor(Ventana):
+class ConsultaSaldoProveedores(Ventana):
     """
     Clase que contiene la ventana y los resultados de la consulta.
     """
@@ -251,5 +251,5 @@ class ConsultaPedidosProveedor(Ventana):
 
 
 if __name__ == '__main__':
-    ConsultaPedidosProveedor()
+    ConsultaSaldoProveedores()
 
