@@ -548,7 +548,7 @@ class ConsultaVencimientosPagos(Ventana):
             vpro.set_valor(ivpro/tot, "Buscando vencimientos...")
             ivpro += 1
             if proveedor:
-                if v.facturacCompra.proveedor != proveedor:
+                if i.facturaCompra.proveedor != proveedor:
                     continue    # Lo ignoro.
             if not self.esta_pagado(i):
                 if ((mostrar_solo_pendientes and self.pagare_y_no_emitido(i)) 
