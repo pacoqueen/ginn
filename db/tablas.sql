@@ -1,5 +1,5 @@
 --#############################################################################
--- Copyright (C) 2005-2013 Francisco José Rodríguez Bogado,                   #
+-- Copyright (C) 2005-2015 Francisco José Rodríguez Bogado,                   #
 --                         Diego Muñoz Escalante.                             #
 -- (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)         #
 --                                                                            #
@@ -3349,6 +3349,31 @@ CREATE TABLE auditoria(
     fechahora TIMESTAMP DEFAULT LOCALTIMESTAMP(0), 
     descripcion TEXT DEFAULT NULL
 );
+
+--======================--
+--== Partes de visita ==--
+--== NEW! 05/03/2015  ==--
+--======================--
+-----------------------------------------------------------
+-- Motivos de visita comercial a clientes y potenciales. --
+-----------------------------------------------------------
+CREATE TABLE motivo_visita(
+    id SERIAL PRIMARY KEY,
+    motivo TEXT
+);
+
+CREATE TABLE visita(
+    id SERIAL PRIMARY KEY,
+    cliente_id INT REFERENCES cliente DEFAULT NULL,
+    motivo_visita_id INT REFERENCES motivo_visita,
+    fechahora TIMESTAMP DEFAULT LOCALTIMESTAMP(0), 
+
+    -- TODO: PORASQUI. Ver Geotexan/doc/Programación/20150119 - Partes de visita/partes_de_visita.ep
+
+);
+
+----------------------------
+-- Visitas de comerciales --
 
 ------------------------ FUNCIONES ------------------------
 CREATE LANGUAGE plpgsql;
