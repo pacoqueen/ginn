@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2015  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -1003,7 +1003,7 @@ class PagaresCobros(Ventana):
         filas = [(a.id, 
                   utils.str_fecha(a.fecha), 
                   a.clienteID and a.cliente.nombre or "", 
-                  a.importeTotal, 
+                  a.facturaDeAbonoID and a.facturaDeAbono.importeTotal or "", 
                   a.facturaDeAbonoID and a.facturaDeAbono.numfactura 
                     or a.numabono, 
                   a.facturaDeAbonoID 
