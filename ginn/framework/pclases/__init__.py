@@ -16913,6 +16913,16 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         css = self.PDPConfSilos[:]
         css.sort(key = lambda cs: cs.fechahora)
         for cs in css:
+            # Sanity check:
+            if not (cs.parteDeProduccion.fechahorainicio
+                    <= cs.fechahora <= cs.parteDeProduccion.fechahorafin):
+                raise AssertionError, "pclases::ParteDeProduccion."\
+                        "get_conf_silos -> [%s] Configuración inválida "\
+                        "para %s. Hora incorrecta: %s (%s)" % (
+                                self.puid,
+                                self.get_info(),
+                                utils.str_fechahora(cs.fechahora),
+                                cs.get_info())
             if cs.fechahora > fechahora:
                 break
             # Se trata de agrupar por misma fechahora (segundos incluidos). Si
