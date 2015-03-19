@@ -18822,6 +18822,17 @@ class LineaDeAbono(SQLObject, PRPCTOO):
 
     comercial = property(get_comercial)
 
+    def get_proveedor(self):
+        """
+        Devuelve el proveedor relacionado con la LDD. Al proveedor se llega
+        a través del producto devuelto.
+        """
+        proveedor = self.producto.proveedor
+        return proveedor
+
+    proveedor = property(get_proveedor)
+
+
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 class LineaDeDevolucion(SQLObject, PRPCTOO):
