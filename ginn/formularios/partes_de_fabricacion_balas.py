@@ -547,7 +547,13 @@ class PartesDeFabricacionBalas(Ventana):
                 porcentaje = escala_porcentaje.get_value() / 100
                 confs[silo_key] = {'productoCompra': producto,
                                    'porcentaje': porcentaje}
-        pdp.save_conf_silos(confs)
+        try:
+            pdp.save_conf_silos(confs)
+        except AssertionError, err:
+            #raise AssertionError, err # Para que me lo envíe por correo.
+            self.logger.error("partes_de_fabricacion_balas::"
+                              "save_conf_silos -> %s - %s" % (err, confs))
+            self.wids['tv_granza_silos'].set_sensitive(False)
 
     def cambiar_observaciones_descuento_material(self, cell, path, newtext):
         """

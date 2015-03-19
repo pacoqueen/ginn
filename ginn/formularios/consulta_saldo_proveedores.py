@@ -123,8 +123,8 @@ class ConsultaSaldoProveedores(Ventana):
             ventanaproveedor = proveedores.Proveedores(objeto = objeto,
                                                        usuario = self.usuario)
         else:
-            from formularios import facturas_de_venta
-            ventanafactura = facturas_de_venta.PedidosDeVenta(objeto = objeto,
+            from formularios import facturas_compra
+            ventanafactura = facturas_compra.FacturasDeEntrada(objeto = objeto,
                                                         usuario = self.usuario)
 
     def chequear_cambios(self):

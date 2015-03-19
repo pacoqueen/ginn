@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2015  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -431,8 +431,9 @@ class Proveedores(Ventana):
             return
         # TODO: Si se mete el CIF en minúsculas, se traga el duplicado.
         while (utils.parse_cif(cif) == "" or 
-               pclases.Proveedor.select(
-                   pclases.Proveedor.q.cif == utils.parse_cif(cif)).count()):
+               pclases.Proveedor.select(pclases.AND(
+                   pclases.Proveedor.q.cif == utils.parse_cif(cif),
+                   pclases.Proveedor.q.inhabilitado == False)).count()):
             utils.dialogo_info(titulo = "CIF INVÁLIDO", 
              texto="El CIF tecleado %s no es válido o está repetido." % (cif), 
              padre = self.wids['ventana'])

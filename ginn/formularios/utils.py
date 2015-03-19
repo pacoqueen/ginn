@@ -1225,7 +1225,7 @@ def rellenar_lista(wid, textos):
         # difusa si el texto no ha cambiado.
         def simple_compare(parte, todo, only_start = False):
             """Devuelve True si el texto «parte» está en «todo» según el
-            parámetro especificado «starts»:
+            parámetro especificado «only_start»:
                 * False -> «todo» contiene a «parte»·
                 * True -> «todo» empieza por «parte».
             """
@@ -1280,8 +1280,13 @@ def rellenar_lista(wid, textos):
 # que haga la búsqueda.
                 if completion.old_key is None or completion.old_key != key:
                     completion.old_key = key
-                    completion.old_scores = scores = dict(
-                        fuzzyprocess.extract(key, choices, limit = -1))
+                    try:
+                        completion.old_scores = scores = dict(
+                            fuzzyprocess.extract(key, choices, limit = -1))
+                    except UnicodeDecodeError:
+                        choices = map(lambda x: unicode(x, "utf8"), choices)
+                        completion.old_scores = scores = dict(
+                            fuzzyprocess.extract(key, choices, limit = -1))
                 else:
                     scores = completion.old_scores
                 try:

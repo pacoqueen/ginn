@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2015  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -120,19 +120,23 @@ class PagaresCobros(Ventana):
                 pclases.Auditoria.nuevo(nuevo_cobro, self.usuario, __file__)
                 cobro.importe = nuevo_cobro.importe
                 factura = cobro.facturaVenta or cobro.prefactura
-                if len(factura.vencimientosCobro) == 1:
-                    vto_original = factura.vencimientosCobro[0]
-                    vto_copia = pclases.VencimientoCobro(
-                                facturaVenta = vto_original.facturaVenta, 
-                                prefactura = vto_original.prefactura, 
-                                fecha = vto_original.fecha, 
-                                importe = vto_original.importe / 2.0, 
-                                observaciones='Duplicado automáticamente por '
-                                              'división de pagaré.')
-                    pclases.Auditoria.nuevo(vto_copia, self.usuario, __file__)
-                    vto_original.importe = vto_copia.importe
-                elif len(factura.vencimientosCobro) > 1:
-                    # Hay que determinar el vencimiento a duplicar.
+                if factura:
+                    if len(factura.vencimientosCobro) == 1:
+                        vto_original = factura.vencimientosCobro[0]
+                        vto_copia = pclases.VencimientoCobro(
+                                    facturaVenta = vto_original.facturaVenta, 
+                                    prefactura = vto_original.prefactura, 
+                                    fecha = vto_original.fecha, 
+                                    importe = vto_original.importe / 2.0, 
+                                    observaciones='Duplicado automáticamente por '
+                                                  'división de pagaré.')
+                        pclases.Auditoria.nuevo(vto_copia, self.usuario, __file__)
+                        vto_original.importe = vto_copia.importe
+                    elif len(factura.vencimientosCobro) > 1:
+                        # Hay que determinar el vencimiento a duplicar.
+                        pass
+                else:
+                    # No hay factura. No creo vencimientos.
                     pass
             self.actualizar_ventana()
             nueva_ventana = PagaresCobros(copia)  # @UnusedVariable
@@ -999,7 +1003,7 @@ class PagaresCobros(Ventana):
         filas = [(a.id, 
                   utils.str_fecha(a.fecha), 
                   a.clienteID and a.cliente.nombre or "", 
-                  a.importeTotal, 
+                  a.facturaDeAbonoID and a.facturaDeAbono.importeTotal or "", 
                   a.facturaDeAbonoID and a.facturaDeAbono.numfactura 
                     or a.numabono, 
                   a.facturaDeAbonoID 
