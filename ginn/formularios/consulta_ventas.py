@@ -629,6 +629,7 @@ class ConsultaVentas(Ventana):
                                      "", 
                                      "",
                                      "",
+                                     "",
                                      tarifa and tarifa.id or 0))
             self.por_tarifa[tarifa] = {'nodo': padre, 
                                   'ldvs': [lda, ], 
@@ -1162,7 +1163,8 @@ class ConsultaVentas(Ventana):
                                 pclases.Prefactura.q.clienteID == idcliente), 
                     orderBy = 'fecha')
                 facturasDeAbono = pclases.FacturaDeAbono.select(
-                    pclases.FacturaDeAbono.q.fecha <= self.fin, 
+                    pclases.AND(pclases.FacturaDeAbono.q.fecha <= self.fin,
+                            pclases.FacturaDeAbono.q.clienteID == idcliente),
                     orderBy = 'fecha')
                 vpro.set_valor(0.1, "Analizando facturas y abonos...")
                 facturasDeAbono = [f for f in facturasDeAbono 
@@ -1346,8 +1348,8 @@ class ConsultaVentas(Ventana):
                     txt = "El cliente %s tiene servicios o ventas "\
                           "sin factura. Sin embargo se ha intentado mostrar"\
                           " información de una factura en la consulta, "\
-                          "obteniendo 'None' desde un servicio o una ldv."\
-                          "No debería ser una línea de abono. Se tratan"\
+                          "obteniendo 'None' desde un servicio o una ldv. "\
+                          "No debería ser una línea de abono. Se tratan "\
                           "en otra función diferente."\
                           "Contenido del diccionario 'self.por_cliente': %s"\
                             % (cliente.nombre, self.por_cliente)
