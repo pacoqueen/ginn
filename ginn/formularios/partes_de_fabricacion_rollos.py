@@ -1901,7 +1901,7 @@ class PartesDeFabricacionRollos(Ventana):
         artículo del parte, mostrándose su información en la
         cabecera y limitando las opciones al añadir líneas.
         * Productos que sean rollos o tengan como línea de 
-        producción la línea de fibra.
+        producción la línea de geotextiles.
         """
         if self.objeto.articulos != []:
             txt = """
@@ -1944,6 +1944,9 @@ class PartesDeFabricacionRollos(Ventana):
             self.rellenar_datos_articulo(self.producto)
             for a in self.objeto.articulos:
                 a.productoVenta = self.producto
+                a.rollo.densidad = a.rollo.calcular_densidad()
+                a.rollo.syncUpdate()
+            self.actualizar_ventana()
         else:
             self.producto = None
 
