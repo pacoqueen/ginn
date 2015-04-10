@@ -11414,22 +11414,27 @@ def cmr_rte(c, m, f):
         ciudadprovincia = dde.cp + " " + dde.ciudad
         if dde.provincia.strip() != "":
             ciudadprovincia += " (%s)" % dde.provincia
+        cif = "CIF: %s" % dde.cif
         el_encogedor_de_fuentes_de_doraemon(c, f['negrita']['fuente'],
                                             f['negrita']['tamaño'],
-                                            m[0][0], m[1][0], m[0][1] - 1*cm,
+                                            m[0][0], m[1][0], m[0][1] - 0.85*cm,
                                             dde.nombre, alineacion = 0)
         el_encogedor_de_fuentes_de_doraemon(c, f['normal']['fuente'],
                                             f['normal']['tamaño'],
-                                            m[0][0], m[1][0], m[0][1] - 1.5*cm,
+                                            m[0][0], m[1][0], m[0][1] - 1.35*cm,
                                             telfax, alineacion = 0)
         el_encogedor_de_fuentes_de_doraemon(c, f['normal']['fuente'],
                                             f['normal']['tamaño'],
-                                            m[0][0], m[1][0], m[0][1] - 2*cm,
+                                            m[0][0], m[1][0], m[0][1] - 1.85*cm,
                                             dde.direccion, alineacion = 0)
         el_encogedor_de_fuentes_de_doraemon(c, f['normal']['fuente'],
                                             f['normal']['tamaño'],
-                                            m[0][0], m[1][0], m[0][1] - 2.5*cm,
+                                            m[0][0], m[1][0], m[0][1] - 2.35*cm,
                                             ciudadprovincia, alineacion = 0)
+        el_encogedor_de_fuentes_de_doraemon(c, f['normal']['fuente'],
+                                            f['normal']['tamaño'],
+                                            m[0][0], m[1][0], m[0][1] - 2.85*cm,
+                                            cif, alineacion = 0)
 
 
 def cmr_dest(c, m, f, a):
