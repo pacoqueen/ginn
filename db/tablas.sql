@@ -3364,12 +3364,15 @@ CREATE TABLE motivo_visita(
 
 CREATE TABLE visita(
     id SERIAL PRIMARY KEY,
+    comercial_id INT REFERENCES comercial,
     cliente_id INT REFERENCES cliente DEFAULT NULL,
+    nombrecliente TEXT DEFAULT '',
     motivo_visita_id INT REFERENCES motivo_visita,
     fechahora TIMESTAMP DEFAULT LOCALTIMESTAMP(0), 
-
-    -- TODO: PORASQUI. Ver Geotexan/doc/Programación/20150119 - Partes de visita/partes_de_visita.ep
-
+    lugar TEXT DEFAULT '',
+    observaciones TEXT DEFAULT '',
+    enviada BOOLEAN DEFAULT FALSE
+    --Geotexan/doc/Programación/20150119 - Partes de visita/partes_de_visita.ep
 );
 
 ----------------------------
