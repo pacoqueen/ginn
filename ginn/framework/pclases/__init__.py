@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2014 Francisco José Rodríguez Bogado,                    #
+# Copyright (C) 2005-2015 Francisco José Rodríguez Bogado,                    #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -6165,6 +6165,21 @@ class Rollo(SQLObject, PRPCTOO):
         cad = "Rollo %s (%s)" % (self.codigo,
                 self.productoVenta and self.productoVenta.descripcion or "")
         return cad
+
+    def calcular_densidad(self):
+        """
+        Devuelve la densidad del rollo en gramos por metro cuadrado en
+        función del producto al que pertence.
+        NO modifica la densidad actual del rollo guardada en el atributo
+        «densidad» y que se calculó a la hora de darlo de alta en planta.
+        """
+        A = self.articulo.productoVenta.camposEspecificosRollo.metros_cuadrados
+        pesosin = self.peso_sin * 1000  # Viene en kilos
+        try:
+            densidad = pesosin / A
+        except ZeroDivisionError:
+            densidad = 0
+        return densidad
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
