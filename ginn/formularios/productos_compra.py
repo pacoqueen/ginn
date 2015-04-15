@@ -249,7 +249,8 @@ class ProductosCompra(Ventana, VentanaGenerica):
                 ('ID_Tarifa', 'gobject.TYPE_INT64', False, False, False, None))
         utils.preparar_listview(self.wids['tv_tarifas'], cols)
         cols = (('Almacén', 'gobject.TYPE_STRING', False, True, True, None), 
-                ('Existencias', 'gobject.TYPE_STRING',False,True,False,None),
+                ('Existencias', 'gobject.TYPE_STRING',True,True,False,
+                    self.cambiar_existencias_almacen),
                 ('IDAlmacen', 'gobject.TYPE_INT64',False,False,False,None))
         utils.preparar_listview(self.wids['tv_existencias'], cols)
         # context-menu
@@ -303,6 +304,27 @@ class ProductosCompra(Ventana, VentanaGenerica):
         self.wids['cb_proveedor'].show()
         #self.wids['table2'].remove(self.wids['e_proveedores'])
         self.wids['table2'].attach(self.wids['e_proveedores'], 1, 2, 7, 8)
+
+    def cambiar_existencias_almacen(self, cell, path, texto):
+        """
+        Cambia las existencias de un (registro stock)almacén.
+        """
+        if self.usuario and self.usuario.nivel == 0:
+            model = self.wids['tv_existencias'].get_model()
+            try:
+                cantidad = utils.parse_float(texto)
+            except:
+                try:
+                    cantidad = utils.parse_float(model[path][1])
+                except:
+                    cantidad = 0.0
+            ide = model[path][-1]
+            a = pclases.Almacen.get(ide)
+            for sa in self.objeto.stocksAlmacen:
+                if sa.almacen == a:
+                    sa.existencias = cantidad
+                    sa.syncUpdate()
+            model[path][1] = utils.float2str(cantidad)
 
     def e_descripcion_menu(self, widget, event):
         """
@@ -989,10 +1011,6 @@ class ProductosCompra(Ventana, VentanaGenerica):
         except ValueError:
             unidad = producto.unidad
         try:
-            existencias = utils.parse_float(self.wids['e_stock'].get_text())
-        except:
-            existencias = producto.existencias
-        try:
             precio = utils.parse_euro(self.wids['e_precio_defecto'].get_text())
         except ValueError:
             precio = 0
@@ -1009,6 +1027,12 @@ class ProductosCompra(Ventana, VentanaGenerica):
                                                        fraccion = True)
                     nuevoprecio = precio * (1.0 + porcentaje)
                     tarifa.asignarTarifa(self.objeto, nuevoprecio)
+        try:
+            existencias = utils.parse_float(self.wids['e_stock'].get_text())
+        except:
+            existencias = producto.existencias
+        producto.existencias = existencias
+        producto.corregir_almacenes() # TODO: Debe hacer un sync antes y ajustar los almacenes para que cuadre con el total en .existencias. Por ejemplo, corrigiendo siempre el almacén principal.
         # Desactivo el notificador momentáneamente
         producto.notificador.set_func(lambda: None)
         # Actualizo los datos del objeto
@@ -1018,7 +1042,6 @@ class ProductosCompra(Ventana, VentanaGenerica):
         producto.idtipodematerialID = idtipo
         producto.minimo = minimo
         producto.unidad = unidad
-        producto.existencias = existencias
         producto.tipoDeMaterialID = utils.combo_get_value(self.wids['cb_tipo'])
         producto.proveedorID = utils.combo_get_value(self.wids['cb_proveedor'])
         # Fuerzo la actualización de la BD y no espero a SQLObject:

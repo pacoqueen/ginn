@@ -7902,6 +7902,42 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
         """
         return "PC:%d" % self.id
 
+    def corregir_almacenes(self):
+        """
+        Comprueba y corrige los almacenes para que la suma total sea
+        igual a las existencias del producto.
+        Siempre corrige del almacén principal en caso de desajustes y elimina
+        las existencias negativas.
+        """
+        self.sync() # Me aseguro de que las existencias son las actuales
+        print self.existencias
+        for sa in self.stocksAlmacen:
+            sa.sync()
+            if sa.existencias < 0:
+                sa.existencias = 0
+            sa.syncUpdate()
+        ppal = Almacen.get_almacen_principal()
+        sappal = None
+        resto = 0.0
+        for sa in self.stocksAlmacen:
+            if sa.almacen == ppal:
+                sappal = sa
+            else:
+                resto += sa.existencias
+        try:
+            sappal.existencias = self.existencias - resto
+        except AttributeError:  # No hay registro de almacén ppal. con stock.
+            sappal = StockAlmacen(almacen = ppal,
+                                  productoCompra = self,
+                                  existencias = self.existencias - resto)
+        sappal.sync()
+        if sappal.existencias < 0:
+            sappal.existencias = 0
+            self.existencias = resto
+            self.sync()
+            sappal.sync()
+
+
     def set_existencias(self, cantidad, almacen = None):
         """
         Ajusta las existencias *actuales* del producto a la cantidad recibida.
