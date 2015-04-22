@@ -370,7 +370,7 @@ class Proveedores(Ventana):
                 if utils.dialogo(titulo = "CORREGIR DOCUMENTO DE PAGO", 
                         texto = 
                           "El cliente actual tiene como documento de pago:\n"
-                          "«%s». Se acoseja usar «%s».\n"
+                          "«%s». Se aconseja usar «%s».\n"
                           "¿Corregirlo automáticamente?\n\n"
                           "(Responda «No» si la forma de pago es correcta \n"
                           "o prefiere corregirlo manualmente)" % (
