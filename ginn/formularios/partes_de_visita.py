@@ -51,8 +51,7 @@ except ImportError:
     from framework.seeker import VentanaGenerica 
 from utils import _float as float
 import datetime
-
-# TODO: Meter los registros de Auditoría.[nuevo|borrado|modificado] aquí también.
+from formularios.custom_widgets import CellRendererAutocomplete
 
 NIVEL_SUPERVISOR = 1    # Nivel máximo de usuario que puede ver todas las
                         # visitas. Los niveles empiezan en 0 (admin)
@@ -71,8 +70,16 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                        'b_borrar/clicked': self.borrar,
                        'b_actualizar/clicked': self.actualizar_ventana,
                        'b_guardar/clicked': self.guardar,
-                       'b_buscar/clicked': self.buscar,
+                       #'b_buscar/clicked': self.buscar,
+                       'b_hoy/clicked': self.ir_a_hoy,
+                       'b_ir_a/clicked': self.ir_a_fecha,
                        'calendario/day-selected': self.actualizar_ventana,
+                       'calendario/month-changed':
+                                            self.actualizar_dias_con_visita,
+                       'calendario/next-year':
+                                            self.actualizar_dias_con_visita,
+                       'calendario/prev-year':
+                                            self.actualizar_dias_con_visita,
                        'cb_comercial/changed': self.actualizar_ventana
                       }  
         self.add_connections(connections)
@@ -112,6 +119,45 @@ class PartesDeVisita(Ventana, VentanaGenerica):
             utils.combo_set_from_db(self.wids['cb_comercial'], self.objeto.id)
             self.actualizar_ventana()
 
+    def ir_a_fecha(self, boton, fecha = None, comercial = None):
+        """
+        Desplaza el calendario y contenido de la ventana a la fecha para el
+        comercial indicado. Si no se reciben, usa el comercial de la ventana
+        y pregunta la fecha en un diálogo modal.
+        """
+        # TODO
+        # 0.- Comprobar fecha recibida o pedir.
+        # 1.- Comprobar comercial recibido y mover el combo o rescatar de
+        #     la ventana si no se ha especificado.
+        # 2.- Movel el calendario. La ventana se actualizará sola.
+
+    def ir_a_hoy(self, boton):
+        """
+        Mueve el calendario y contenido de la ventana a la fecha del sistema.
+        """
+        hoy = datetime.date.today()
+        self.ir_a_fecha(boton, fecha = hoy)
+
+    def actualizar_dias_con_visita(self, calendario):
+        """
+        Marca en el calendario los días del mes presente con visitas.
+        """
+        anno, mes, dia = calendario.get_date()
+        calendario.clear_marks()
+        for dia in range(1, 32):
+            try:
+                fecha = datetime.datetime(anno, mes + 1, dia)
+            except ValueError:
+                continue    # La fecha es incorrecta. Se sale del mes.
+            visitas = pclases.Visita.select(pclases.AND(
+                pclases.Visita.q.fechahora >= fecha,
+                pclases.Visita.q.fechahora <= fecha + datetime.timedelta(1)
+                ))
+            if visitas.count():
+                calendario.mark_day(dia)
+        self.actualizar_ventana()   # Digo yo que si ha cambiado el mes o el
+        # año, habrá que actualizar la ventana porque la fecha es otra..
+
     def chequear_cambios(self):
         pass
 
@@ -122,21 +168,74 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         """
         return True
 
-    def modificar_hora(self, cell, path, text):
-# TODO
-        pass
-    
-    def modificar_cliente(self, cell, path, text):
-# TODO
-        pass
+    def cambiar_hora(self, cell, path, text):
+        """
+        Cambia la hora de visita y acutaliza el cell. Solo se permite
+        cambiarla si el usuario tiene nivel suficiente.
+        """
+        model = self.wids['tv_visitas'].get_model()
+        ide = model[path][-1]
+        visita = pclases.getObjetoPUID(ide)
+        try:
+            dtdelta = mx.DateTime.DateTimeDelta(0,
+                                                float(newtext.split(':')[0]),
+                                                float(newtext.split(':')[1]),
+                                                0)
+            visita.fechahora = mx.DateTime.DateTimeFrom(
+                    year = visita.horafin.year,
+                    month = visita.horafin.month,
+                    day = visita.horafin.day,
+                    hour = dtdelta.hour,
+                    minute = dtdelta.minute,
+                    second = dtdelta.second)
+            visita.sync()
+            model[path][0] = visita.horafin.strftime('%H:%M')
+        except IndexError:
+            utils.dialogo_info(titulo = "ERROR", 
+                               texto = 'El texto "%s" no respeta el formato '
+                                       'horario (H:MM).' % newtext,
+                               padre = self.wids['ventana'])
+        except ValueError:
+            utils.dialogo_info(titulo = "ERROR", 
+                               texto = 'El texto "%s" no respeta el formato '
+                                       'horario (H:M).' % newtext,
+                               padre = self.wids['ventana'])    
+    def cambiar_cliente(self, cell, path, text):
+        """Cambia el nombre del cliente de la visita."""
+        model = self.wids['tv_visitas'].get_model()
+        ide = model[path][-1]
+        visita = pclases.getObjetoPUID(ide)
+        visita.nombrecliente = text
+        # No se hace comprobación de si el cliente existe en la base de datos.
+        # Eso se hará en el commit.
+        visita.syncUpdate()
+        model[path][2] = visita.nombrecliente
 
-    def modificar_motivo(self, cell, path, text):
-# TODO
-        pass
+    def cambiar_motivo(self, cell, path, text):
+        model = self.wids['tv_visitas'].get_model()
+        ide = model[path][-1]
+        visita = pclases.getObjetoPUID(ide)
+        if text:
+            motivoVisita = pclases.MotivoVisita.search(text)
+            if motivoVisita:
+                visita.motivoVisita = motivoVisita
+            else:
+                utils.dialogo_info(titulo = "MOTIVO INCORRECTO", 
+                        texto = "Debe seleccionar un motivo de los existentes.",
+                        padre = self.wids['ventana'])
+        else:
+            visita.motivoVisita = None
+        visita.syncUpdate()
+        model[path][4] = (visita.motivoVisita and visita.motivoVisita.motivo
+                          or "")
 
-    def modificar_observaciones(self, cell, path, text):
-# TODO
-        pass
+    def cambiar_observaciones(self, cell, path, text):
+        model = self.wids['tv_visitas'].get_model()
+        ide = model[path][-1]
+        visita = pclases.getObjetoPUID(ide)
+        visita.observaciones = text     # PLAN: ¿Markdown?
+        visita.syncUpdate()
+        model[path][5] = visita.observaciones
     
     def inicializar_ventana(self):
         """
@@ -146,16 +245,44 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         """
         # Inicialización del resto de widgets:
         cols = (('Hora', 'gobject.TYPE_STRING', True, True, False,
-                    self.modificar_hora),
+                    self.cambiar_hora),
                 ('Cliente o institución', 'gobject.TYPE_STRING',
-                    True, True, True, self.modificar_cliente),
+                    True, True, True, self.cambiar_cliente),
                 ('Motivo', 'gobject.TYPE_STRING', True, True, False,
-                    self.modificar_motivo),
+                    self.cambiar_motivo),
                 ('Observaciones', 'gobject.TYPE_STRING', True, True, False,
-                    self.modificar_observaciones),
+                    self.cambiar_observaciones),
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
                 # La última columna (oculta en la Vista) siempre es el id.
         utils.preparar_listview(self.wids['tv_visitas'], cols, multi=True)
+        # Agrego un par de columnas para destacar visualmente clientes
+        # confirmados en la BD y visitas ya enviadas.
+        self.wids['tv_visitas'].set_model(
+                # Hora, Enviada, Cliente, ¿existe?, Motivo, Observaciones, PUID
+                gtk.ListStore(str, str, str, str, str, str, str))
+        # Columna hora con candado si visita enviada.
+        col_hora = self.wids['tv_visitas'].get_column(0)
+        cellhora = col_hora.get_cell_renderers()[0]
+        cellcandado = gtk.CellRendererPixbuf()
+        col_hora.pack_start(cellcandado, expand = False)
+        col_hora.set_attributes(cellhora, text = 0)
+        col_hora.set_attributes(cellcandado, stock_id = 1)
+        # Columna cliente con autocompletado y símbolo "OK" si existe en la BD.
+        col_cliente = self.wids['tv_visitas'].get_column(1)
+        cellcliente = col_cliente.get_cell_renderers()[0]
+        celldb = gtk.CellRendererPixbuf()
+        col_cliente.pack_start(celldb, expand = False)
+        col_cliente.set_attributes(cellcliente, text = 2)
+        col_cliente.set_attributes(celldb, stock_id = 3)
+        # Columna motivo con autocompletado
+        # TODO: Cambiar el motivo por un CellRendererAutocomplete.
+        col_motivo = self.wids['tv_visitas'].get_column(2)
+        cellmotivo = col_motivo.get_cell_renderers()[0]
+        col_motivo.set_attributes(cellmotivo, text = 4)
+        # Columna observaciones.
+        col_observaciones = self.wids['tv_visitas'].get_column(3)
+        cellobservaciones = col_observaciones.get_cell_renderers()[0]
+        col_observaciones.set_attributes(cellobservaciones, text = 5)
         # Comerciales visibles según usuario "logueado"
         comerciales = []
         comerciales_del_usuario = []
@@ -219,7 +346,8 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         Quiero evitar que pregunte si guardar cambios pendientes.
         """
         self.wids['b_guardar'].set_sensitive(False)
-        #super(PartesDeVisita, self).salir(*args, **kw)
+        #super(PartesDeVisita, self).salir(*args, **kw) -> No hereda de 
+                    # object, no funciona con super. Lanza un TypeError.
         Ventana.salir(self, *args, **kw)
 
     def rellenar_widgets(self):
@@ -243,7 +371,8 @@ class PartesDeVisita(Ventana, VentanaGenerica):
             visitas = pclases.Visita.select(pclases.AND(
                 pclases.Visita.q.fechahora >= fecha,
                 pclases.Visita.q.fechahora < fecha+datetime.timedelta(days=1),
-                pclases.Visita.q.comercialID == self.objeto.id))
+                pclases.Visita.q.comercialID == self.objeto.id),
+                orderBy = "fechahora")
             # 3.- Y relleno
             model = self.wids['tv_visitas'].get_model()
             model.clear()
@@ -253,22 +382,32 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                 if not visita.enviada:
                     pendientes.append(visita)
             # 4.- Recuento de acciones pendientes de confirmar
-            self.refresh_commit(pendientes)
+            self.refresh_commit_button(pendientes)
 
-    def refresh_commit(self, pendientes = None):
+    def refresh_commit_button(self, pendientes = None):
         """
+        Actualiza la leyenda del botón de enviar con las visitas pendientes
+        del día y comercial en pantalla.
         """
-        # TODO: Si pendientes es None, contar las visitas pendientes del model.
-# PORASQUI
+        if pendientes is None:
+            pendientes = []
+            model = self.wids['tv_visitas'].get_model()
+            for row in model:
+                visita = pclases.getObjetoPUID(row[-1])
+                if not visita.enviada:
+                    pendientes.append(visita)
         txtcommit = "_Confirmar"
         if pendientes:
             txtcommit += " (%d)" % len(pendientes)
         self.wids['b_guardar'].set_label(txtcommit)
         self.wids['b_guardar'].set_sensitive(pendientes and True or False)
+        return pendientes
 
     def add_visita_a_tv(self, visita):
-        fila = (utils.str_hora_corta(visita.fechahora),     # TODO: Y un icono de candado si la visita está enviada.
-                visita.nombrecliente,   # TODO: Y un icono de "guay" si el cliente existe en la BD.
+        fila = (utils.str_hora_corta(visita.fechahora),
+                visita.enviada and gtk.STOCK_DIALOG_AUTHENTICATION or None,
+                visita.nombrecliente,
+                visita.cliente and gtk.STOCK_SAVE or gtk.STOCK_NEW,
                 visita.motivoVisita and visita.motivoVisita.motivo,
                 visita.observaciones,
                 visita.puid)
@@ -279,11 +418,14 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         """
         Crea una nueva visita en blanco para que la rellene el comercial.
         """
+        hoy = datetime.datetime.now()
+        anno, mes, dia = self.wids['calendario'].get_date()
+        fecha = datetime.datetime(anno, mes + 1, dia, hoy.hour, hoy.minute)
         visita = pclases.Visita(comercial = self.objeto,
                                 cliente = None,
                                 nombrecliente = "",
                                 motivoVisita = None,
-                                fechahora = datetime.datetime.now(),
+                                fechahora = fecha,
                                 lugar = None,
                                 observaciones = "",
                                 enviada = False)
@@ -291,7 +433,8 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         #self.actualizar_ventana()
         model = self.wids['tv_visitas'].get_model()
         self.add_visita_a_tv(visita)
-        # TODO: Actualizar el label del botón "commit".
+        self.refresh_commit_button()
+        self.wids['calendario'].mark_day(dia)
 
     def guardar(self, widget):
         """
@@ -299,11 +442,12 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         electrónico para alertar de que el parte está completo.
         """
         model = self.wids['tv_visitas'].get_model()
-        for itr in model:
-            visita = pclases.getObjetoPUID(model[itr][-1])
+        for row in model:
+            visita = pclases.getObjetoPUID(row[-1])
             visita.enviada = True
             visita.syncUpdate()
-        self.actualizar_ventana() # TODO: PORASQUI: A ver cómo me las ingenio para al escribir un nombre de cliente lo enlace con el cliente de verdad si existe. INCLUSO AUNQUE SE CREE A POSTERIORI. Y marcar los días que ya tienen visitas en el calendario.
+        self.actualizar_ventana() # TODO: PORASQUI: A ver cómo me las ingenio para al escribir un nombre de cliente lo enlace con el cliente de verdad si existe. INCLUSO AUNQUE SE CREE A POSTERIORI.
+        # TODO: Digo yo que habría que mandar un correo o algo con las nuevas visitas confirmadas.
 
     def borrar(self, widget):
         """
@@ -314,13 +458,24 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         if paths and utils.dialogo('¿Eliminar las visitas seleccionadas?', 
                                    'BORRAR', 
                                    padre = self.wids['ventana']):
+            paths_a_borrar = []
             for path in paths:
                 visita = pclases.getObjetoPUID(model[path][-1])
+                dia = visita.fechahora.day
                 if (not visita.enviada
                         or (visita.enviada
                             and self.usuario and self.usuario.nivel <= 1)):
                     visita.destroy(ventana = __file__)
-            self.actualizar_ventana()
+                    paths_a_borrar.append(path)
+            #self.actualizar_ventana()
+            paths_a_borrar.sort(reverse = True)
+            for path in paths_a_borrar:
+                model.remove(model.get_iter(path))
+            visitas_del_dia = self.refresh_commit_button()
+            if visitas_del_dia:
+                self.wids['calendario'].mark_day(dia)
+            else:
+                self.wids['calendario'].unmark_day(dia)
 
 if __name__ == "__main__":
     p = PartesDeVisita()

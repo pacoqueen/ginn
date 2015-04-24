@@ -11234,11 +11234,26 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class MotivoVisita(SQLObject, PRPCTOO):
     class sqlmeta:
         fromDatabase = True
-    
+
     visitas = MultipleJoin("Visita")
-    
+
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
+
+    @staticmethod
+    def search(text):
+        """
+        Busca y devuelve el motivo de visita correspondiente al texto.
+        Si no encuentra nada o no existen, devuelve None.
+        """
+        # PLAN: Podría hacer una búsqueda difusa o algo, pero como el texto
+        # siempre va a existir en la BD porque viene de un
+        # autocompletado/combo, ni me molesto.
+        try:
+            res = MotivoVisita.selectBy(motivo = text)[0]
+        except IndexError:
+            res = None
+        return res
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
