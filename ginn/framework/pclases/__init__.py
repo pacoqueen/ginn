@@ -11179,6 +11179,7 @@ class Comercial(SQLObject, PRPCTOO):
     #--------------------------------------- empleadoID = ForeignKey("Empleado")
     presupuestos = MultipleJoin("Presupuesto")
     pedidosVenta = MultipleJoin('PedidoVenta')
+    visitas = MultipleJoin("Visita")
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -11227,6 +11228,26 @@ class Comercial(SQLObject, PRPCTOO):
         except AttributeError:
             firma_comercial = ""
         return firma_comercial
+
+cont, tiempo = print_verbose(cont, total, tiempo)
+
+class MotivoVisita(SQLObject, PRPCTOO):
+    class sqlmeta:
+        fromDatabase = True
+    
+    visitas = MultipleJoin("Visita")
+    
+    def _init(self, *args, **kw):
+        starter(self, *args, **kw)
+
+cont, tiempo = print_verbose(cont, total, tiempo)
+
+class Visita(SQLObject, PRPCTOO):
+    class sqlmeta:
+        fromDatabase = True
+    
+    def _init(self, *args, **kw):
+        starter(self, *args, **kw)
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 

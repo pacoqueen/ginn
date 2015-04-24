@@ -3,8 +3,8 @@
 #@PydevCodeAnalysisIgnore
 
 ###############################################################################
-# Copyright (C) 2005-2015  Francisco José Rodríguez Bogado,                   #
-#                          (pacoqueen@users.sourceforge.net                   #
+# Copyright (C) 2005-2015 Francisco José Rodríguez Bogado,                    #
+#                         (bogado@qinn.es)                                    #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
 #                                                                             #
@@ -50,10 +50,14 @@ except ImportError:
     from framework import pclases
     from framework.seeker import VentanaGenerica 
 from utils import _float as float
+import datetime
 
 # TODO: Meter los registros de Auditoría.[nuevo|borrado|modificado] aquí también.
 
-class XXXSkel(Ventana, VentanaGenerica):
+NIVEL_SUPERVISOR = 1    # Nivel máximo de usuario que puede ver todas las
+                        # visitas. Los niveles empiezan en 0 (admin)
+
+class PartesDeVisita(Ventana, VentanaGenerica):
     def __init__(self, objeto = None, usuario = None):
         """
         Constructor. objeto puede ser un objeto de pclases con el que
@@ -61,17 +65,15 @@ class XXXSkel(Ventana, VentanaGenerica):
         el que se muestra por defecto).
         """
         self.usuario = usuario
-        self.clase = pclases.XXXClaseDePclases
-        self.dic_campos = {"XXXcampo_de_pclases": "XXXnombre_del_widget_en_glade", 
-                          }
-        Ventana.__init__(self, 'XXXfichero_glade.glade', objeto, usuario = usuario)
+        Ventana.__init__(self, 'partes_de_visita.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_nuevo/clicked': self.nuevo,
                        'b_borrar/clicked': self.borrar,
                        'b_actualizar/clicked': self.actualizar_ventana,
                        'b_guardar/clicked': self.guardar,
                        'b_buscar/clicked': self.buscar,
-                       # XXX: Más widgets y señales si se necesitan.
+                       'calendario/day-selected': self.actualizar_ventana,
+                       'cb_comercial/changed': self.actualizar_ventana
                       }  
         self.add_connections(connections)
         self.inicializar_ventana()
@@ -81,28 +83,60 @@ class XXXSkel(Ventana, VentanaGenerica):
             self.ir_a(objeto)
         gtk.main()
 
+    def ir_a_primero(self):
+        try:
+            if self.usuario:
+                self.objeto = self.usuario.get_comerciales()[0]
+                self.ir_a(self.objeto)
+            else:
+                raise IndexError
+        except IndexError:
+            try:
+                self.objeto = pclases.Comercial.select(pclases.AND(
+                        pclases.Empleado.q.activo == True,
+                        pclases.Comercial.q.empleadoID == pclases.Empleado.q.id,
+                        pclases.Usuario.q.id == pclases.Empleado.q.usuarioID),
+                    orderBy = pclases.Usuario.q.nivel)[0]
+            except IndexError:
+                self.to_log(
+                        "No hay comerciales dados de alta en la aplicación.")
+                self.salir(mostrar_ventana = False)
+            else:
+                self.ir_a(self.objeto)
+
+    def ir_a(self, objeto = None):
+        if not objeto:
+            self.ir_a_primero()
+        else:
+            # El comercial:
+            utils.combo_set_from_db(self.wids['cb_comercial'], self.objeto.id)
+            self.actualizar_ventana()
+
+    def chequear_cambios(self):
+        pass
+
     def es_diferente(self):
         """
-        Devuelve True si algún valor en ventana difiere de 
-        los del objeto.
+        Esta función es llamada cada cierto tiempo. En esta ventana no se
+        usa, pero la clase padre la usa activamente.
         """
-        if self.objeto == None:
-            igual = True
-        else:
-            igual = self.objeto != None
-            for colname in self.dic_campos:
-                col = self.clase.sqlmeta.columns[colname]
-                try:
-                    valor_ventana = self.leer_valor(col, self.dic_campos[colname])
-                except (ValueError, mx.DateTime.RangeError, TypeError):
-                    igual = False
-                valor_objeto = getattr(self.objeto, col.name)
-                if isinstance(col, pclases.SODateCol):
-                    valor_objeto = utils.abs_mxfecha(valor_objeto)
-                igual = igual and (valor_ventana == valor_objeto)
-                if not igual:
-                    break
-        return not igual
+        return True
+
+    def modificar_hora(self, cell, path, text):
+# TODO
+        pass
+    
+    def modificar_cliente(self, cell, path, text):
+# TODO
+        pass
+
+    def modificar_motivo(self, cell, path, text):
+# TODO
+        pass
+
+    def modificar_observaciones(self, cell, path, text):
+# TODO
+        pass
     
     def inicializar_ventana(self):
         """
@@ -110,22 +144,43 @@ class XXXSkel(Ventana, VentanaGenerica):
         valores por defecto, deshabilitando los innecesarios,
         rellenando los combos, formateando el TreeView -si lo hay-...
         """
-        # Inicialmente no se muestra NADA. Sólo se le deja al
-        # usuario la opción de buscar o crear nuevo.
-        self.activar_widgets(False)
-        self.wids['b_actualizar'].set_sensitive(False)
-        self.wids['b_guardar'].set_sensitive(False)
-        self.wids['b_nuevo'].set_sensitive(True)
-        self.wids['b_buscar'].set_sensitive(True)
         # Inicialización del resto de widgets:
-        # XXX: Aquí generalmente se inicializan los TreeViews y combos.
-        cols = (('XXXNombreCol', 'gobject.TYPE_STRING', XXXEditable, XXXOrdenable, XXXBuscable, XXXCallbackEdicion),
-                ('ID', 'gobject.TYPE_INT64', False, False, False, None))
+        cols = (('Hora', 'gobject.TYPE_STRING', True, True, False,
+                    self.modificar_hora),
+                ('Cliente o institución', 'gobject.TYPE_STRING',
+                    True, True, True, self.modificar_cliente),
+                ('Motivo', 'gobject.TYPE_STRING', True, True, False,
+                    self.modificar_motivo),
+                ('Observaciones', 'gobject.TYPE_STRING', True, True, False,
+                    self.modificar_observaciones),
+                ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
                 # La última columna (oculta en la Vista) siempre es el id.
-        utils.preparar_listview(self.wids['XXXtv_treeview'], cols)
-        utils.rellenar_lista(self.wids['XXXcbe_comboboxentry'], 
-                             [(p.id, p.XXXcampo) for p in 
-                                pclases.XXXClase.select(orderBy = "XXXcampo")])
+        utils.preparar_listview(self.wids['tv_visitas'], cols, multi=True)
+        # Comerciales visibles según usuario "logueado"
+        comerciales = []
+        comerciales_del_usuario = []
+        if self.usuario and self.usuario.empleados:
+            for e in self.usuario.empleados:
+                for c in e.comerciales:
+                    comerciales_del_usuario.append(c)
+        if not comerciales_del_usuario or (self.usuario
+                               and self.usuario.nivel <= NIVEL_SUPERVISOR):
+            comerciales = pclases.Comercial.select()
+        else:
+            comerciales = comerciales_del_usuario[:]
+        opciones_comerciales = [
+            (c.id, c.empleado and c.empleado.get_nombre_completo()
+                or "Comercial desconocido (%s)" % c.puid)
+            for c in comerciales
+            if c.empleado.activo or c in comerciales_del_usuario]
+        opciones_comerciales.sort(key = lambda i: i[1])
+        utils.rellenar_lista(self.wids['cb_comercial'], opciones_comerciales)
+        # Empiezo con el día actual.
+        hoy = datetime.date.today()
+        self.wids['calendario'].select_day(hoy.day)
+        self.wids['calendario'].select_month(hoy.month - 1, hoy.year)
+        # Tratamiento especial de los botones actualizar y guardar
+        self.activar_widgets(True, chequear_permisos = False)
 
     def activar_widgets(self, s, chequear_permisos = True):
         """
@@ -137,9 +192,7 @@ class XXXSkel(Ventana, VentanaGenerica):
         """
         if self.objeto == None:
             s = False
-        ws = tuple(["XXXWidgets_que_no_tengan_«adaptador»_en_el_diccionario_del_constructor", "XXXtv_treeview", "b_borrar"] + [self.dic_campos[k] for k in self.dic_campos.keys()])
-            # XXX: b_nuevo y b_buscar no se activan/desactivan aquí, sino en el
-            #      chequeo de permisos.
+        ws = tuple(["b_borrar", "b_nuevo", "b_guardar", "b_actualizar"])
         for w in ws:
             try:
                 self.wids[w].set_sensitive(s)
@@ -148,27 +201,26 @@ class XXXSkel(Ventana, VentanaGenerica):
                 import traceback
                 traceback.print_last()
         if chequear_permisos:
-            self.check_permisos(nombre_fichero_ventana = "XXXskel.py")
+            self.check_permisos(nombre_fichero_ventana = "partes_de_visita.py")
 
-    def refinar_resultados_busqueda(self, resultados):
+    def actualizar_ventana(self, *args, **kw):
         """
-        Muestra en una ventana de resultados todos los
-        registros de "resultados".
-        Devuelve el id (primera columna de la ventana
-        de resultados) de la fila seleccionada o None
-        si se canceló.
+        Redefinición del método de la clase base. En esta ventana no se trata
+        el objeto principal como en las demás y no es necesario comprobar
+        si ha cambiado, si hay que refrescar, etc.
         """
-        filas_res = []
-        for r in resultados:
-            filas_res.append((r.id, r.XXXcampo1, r.XXXcampo2))
-        ide = utils.dialogo_resultado(filas_res,
-                                     titulo = 'SELECCIONE XXXLO_QUE_SEA',
-                                     cabeceras = ('ID', 'XXXCampo1', 'XXXCampo2'), 
-                                     padre = self.wids['ventana'])
-        if id < 0:
-            return None
-        else:
-            return id
+        if self.objeto:
+            self.activar_widgets(True, chequear_permisos = False)
+            self.rellenar_widgets()
+
+    def salir(self, *args, **kw):
+        """
+        Mismo caso que actualizar_ventana.
+        Quiero evitar que pregunte si guardar cambios pendientes.
+        """
+        self.wids['b_guardar'].set_sensitive(False)
+        #super(PartesDeVisita, self).salir(*args, **kw)
+        Ventana.salir(self, *args, **kw)
 
     def rellenar_widgets(self):
         """
@@ -178,151 +230,98 @@ class XXXSkel(Ventana, VentanaGenerica):
         hay que tener cuidado de no llamar a 
         esta función en ese caso.
         """
-        XXXobjeto = self.objeto
-        for nombre_col in self.dic_campos:
-            self.escribir_valor(XXXobjeto.sqlmeta.columns[nombre_col], getattr(XXXobjeto, nombre_col), self.dic_campos[nombre_col])
-        self.rellenar_tabla_XXX()
-        self.objeto.make_swap()
+        # 0.- El comercial seleccionado.
+        self.objeto = pclases.Comercial.get(
+                utils.combo_get_value(self.wids['cb_comercial']))
+        if self.objeto:
+            # 1.- La fecha 
+            year, month, day = self.wids['calendario'].get_date()
+            month += 1  # Gtk.Calendar empieza los meses en 0
+            fecha = (year, month, day)
+            fecha = datetime.datetime(*fecha)
+            # 2.- Las visitas
+            visitas = pclases.Visita.select(pclases.AND(
+                pclases.Visita.q.fechahora >= fecha,
+                pclases.Visita.q.fechahora < fecha+datetime.timedelta(days=1),
+                pclases.Visita.q.comercialID == self.objeto.id))
+            # 3.- Y relleno
+            model = self.wids['tv_visitas'].get_model()
+            model.clear()
+            pendientes = []
+            for visita in visitas:
+                self.add_visita_a_tv(visita)
+                if not visita.enviada:
+                    pendientes.append(visita)
+            # 4.- Recuento de acciones pendientes de confirmar
+            self.refresh_commit(pendientes)
 
-    def rellenar_tabla_XXX(self):
-        model = self.wids['XXXtv_treeview'].get_model()
-        model.clear()
-        total = 0.0
-        for p in self.objeto.XXXunoamuchos:
-            total += p.XXXcampoacumulable
-            model.append((p.XXXcampo1, 
-                          utils.float2str(p.XXXcampoacumulable), 
-                          p.id))
-        self.wids['XXXe_total_si_lo_hay'].set_text(utils.float2str(total))
-            
+    def refresh_commit(self, pendientes = None):
+        """
+        """
+        # TODO: Si pendientes es None, contar las visitas pendientes del model.
+# PORASQUI
+        txtcommit = "_Confirmar"
+        if pendientes:
+            txtcommit += " (%d)" % len(pendientes)
+        self.wids['b_guardar'].set_label(txtcommit)
+        self.wids['b_guardar'].set_sensitive(pendientes and True or False)
+
+    def add_visita_a_tv(self, visita):
+        fila = (utils.str_hora_corta(visita.fechahora),     # TODO: Y un icono de candado si la visita está enviada.
+                visita.nombrecliente,   # TODO: Y un icono de "guay" si el cliente existe en la BD.
+                visita.motivoVisita and visita.motivoVisita.motivo,
+                visita.observaciones,
+                visita.puid)
+        model = self.wids['tv_visitas'].get_model()
+        model.append(fila)
+
     def nuevo(self, widget):
         """
-        Función callback del botón b_nuevo.
-        Pide los datos básicos para crear un nuevo objeto.
-        Una vez insertado en la BD hay que hacerlo activo
-        en la ventana para que puedan ser editados el resto
-        de campos que no se hayan pedido aquí.
+        Crea una nueva visita en blanco para que la rellene el comercial.
         """
-        XXXobjeto_anterior = self.objeto
-        if XXXobjeto_anterior != None:
-            XXXobjeto_anterior.notificador.desactivar()
-        XXXobjeto = pclases.XXXClase()
-        utils.dialogo_info('NUEVO XXX CREADO', 
-                           'Se ha creado un nuevo XXX.\nA continuación complete la información del misma y guarde los cambios.', 
-                           padre = self.wids['ventana'])
-        pclases.Auditoria.nuevo(XXXobjeto, self.usuario, __file__)
-        XXXobjeto.notificador.activar(self.aviso_actualizacion)
-        self.objeto = XXXobjeto
-        self._objetoreciencreado = self.objeto
-        self.activar_widgets(True)
-        self.actualizar_ventana(objeto_anterior = XXXobjeto_anterior)
-
-    def buscar(self, widget):
-        """
-        Muestra una ventana de búsqueda y a continuación los
-        resultados. El objeto seleccionado se hará activo
-        en la ventana a no ser que se pulse en Cancelar en
-        la ventana de resultados.
-        """
-        XXXobjeto = self.objeto
-        a_buscar = utils.dialogo_entrada(titulo = "BUSCAR XXX", 
-                                         texto = "Introduzca XXX:", 
-                                         padre = self.wids['ventana']) 
-        if a_buscar != None:
-            try:
-                ida_buscar = int(a_buscar)
-            except ValueError:
-                ida_buscar = -1
-            # TODO: Cambiar por el nuevo buscar de utils que combina la búsqueda de varias palabras en cualquier orden con OR.
-            criterio = pclases.OR(self.clase.q.campo1.contains(a_buscar),
-                                  self.clase.q.campo2.contains(a_buscar),
-                                  self.clase.q.id == ida_buscar)
-            resultados = self.clase.select(criterio)
-            if resultados.count() > 1:
-                ## Refinar los resultados
-                ide = self.refinar_resultados_busqueda(resultados)
-                if id == None:
-                    return
-                resultados = [self.clase.get(id)]
-                # Me quedo con una lista de resultados de un único objeto ocupando la primera posición.
-                # (Más abajo será cuando se cambie realmente el objeto actual por este resultado.)
-            elif resultados.count() < 1:
-                ## Sin resultados de búsqueda
-                utils.dialogo_info('SIN RESULTADOS', 'La búsqueda no produjo resultados.\nPruebe a cambiar el texto buscado o déjelo en blanco para ver una lista completa.\n(Atención: Ver la lista completa puede resultar lento si el número de elementos es muy alto)',
-                                   padre = self.wids['ventana'])
-                return
-            ## Un único resultado
-            # Primero anulo la función de actualización
-            if XXXobjeto != None:
-                XXXobjeto.notificador.desactivar()
-            # Pongo el objeto como actual
-            try:
-                XXXobjeto = resultados[0]
-            except IndexError:
-                utils.dialogo_info(titulo = "ERROR", 
-                                   texto = "Se produjo un error al recuperar la información.\nCierre y vuelva a abrir la ventana antes de volver a intentarlo.", 
-                                   padre = self.wids['texto'])
-                return
-            # Y activo la función de notificación:
-            XXXobjeto.notificador.activar(self.aviso_actualizacion)
-            self.activar_widgets(True)
-        self.objeto = XXXobjeto
-        self.actualizar_ventana()
+        visita = pclases.Visita(comercial = self.objeto,
+                                cliente = None,
+                                nombrecliente = "",
+                                motivoVisita = None,
+                                fechahora = datetime.datetime.now(),
+                                lugar = None,
+                                observaciones = "",
+                                enviada = False)
+        pclases.Auditoria.nuevo(visita, self.usuario, __file__)
+        #self.actualizar_ventana()
+        model = self.wids['tv_visitas'].get_model()
+        self.add_visita_a_tv(visita)
+        # TODO: Actualizar el label del botón "commit".
 
     def guardar(self, widget):
         """
-        Guarda el contenido de los entry y demás widgets de entrada
-        de datos en el objeto y lo sincroniza con la BD.
+        Marca como "enviada" cada visita del model y envía un correo
+        electrónico para alertar de que el parte está completo.
         """
-        # Desactivo el notificador momentáneamente
-        self.objeto.notificador.activar(lambda: None)
-        # Actualizo los datos del objeto
-        for colname in self.dic_campos:
-            col = self.clase.sqlmeta.columns[colname]
-            try:
-                valor_ventana = self.leer_valor(col, self.dic_campos[colname])
-                setattr(self.objeto, colname, valor_ventana)
-            except (ValueError, mx.DateTime.RangeError, TypeError):
-                pass    # TODO: Avisar al usuario o algo. El problema es que no hay una forma "limpia" de obtener el valor que ha fallado.
-        # Fuerzo la actualización de la BD y no espero a que SQLObject lo haga por mí:
-        self.objeto.syncUpdate()
-        self.objeto.sync()
-        # Vuelvo a activar el notificador
-        self.objeto.notificador.activar(self.aviso_actualizacion)
-        self.actualizar_ventana()
-        self.wids['b_guardar'].set_sensitive(False)
+        model = self.wids['tv_visitas'].get_model()
+        for itr in model:
+            visita = pclases.getObjetoPUID(model[itr][-1])
+            visita.enviada = True
+            visita.syncUpdate()
+        self.actualizar_ventana() # TODO: PORASQUI: A ver cómo me las ingenio para al escribir un nombre de cliente lo enlace con el cliente de verdad si existe. INCLUSO AUNQUE SE CREE A POSTERIORI. Y marcar los días que ya tienen visitas en el calendario.
 
     def borrar(self, widget):
         """
-        Elimina el objeto de la tabla pero NO
-        intenta eliminar ninguna de sus relaciones,
-        de forma que si se incumple alguna 
-        restricción de la BD, cancelará la eliminación
-        y avisará al usuario.
+        Elimina una visita marcada en el Treeview por el usuario.
         """
-        XXXobjeto = self.objeto
-        if not utils.dialogo('¿Eliminar el XXX?', 
-                             'BORRAR', 
-                             padre = self.wids['ventana']):
-            return
-        if XXXobjeto.pagos != []:
-            utils.dialogo_info('XXX NO ELIMINADO', 
-                               'El XXX está implicado en operaciones que impiden su borrado.', 
-                               padre = self.wids['ventana'])
-        else:
-            XXXobjeto.notificador.desactivar()
-            try:
-                XXXobjeto.destroy(ventana = __file__)
-            except Exception, e:
-                self.logger.error("XXXskel.py::borrar -> XXX ID %d no se pudo eliminar. Excepción: %s." % (XXXobjeto.id, e))
-                utils.dialogo_info(titulo = "XXX NO BORRADO", 
-                                   texto = "El XXX no se pudo eliminar.\n\nSe generó un informe de error en el «log» de la aplicación.",
-                                   padre = self.wids['ventana'])
-                self.actualizar_ventana()
-                return
-            self.objeto = None
-            self.ir_a_primero()
+        sel = self.wids['tv_visitas'].get_selection()
+        model, paths = sel.get_selected_rows()
+        if paths and utils.dialogo('¿Eliminar las visitas seleccionadas?', 
+                                   'BORRAR', 
+                                   padre = self.wids['ventana']):
+            for path in paths:
+                visita = pclases.getObjetoPUID(model[path][-1])
+                if (not visita.enviada
+                        or (visita.enviada
+                            and self.usuario and self.usuario.nivel <= 1)):
+                    visita.destroy(ventana = __file__)
+            self.actualizar_ventana()
 
 if __name__ == "__main__":
-    p = XXXSkel()
+    p = PartesDeVisita()
 

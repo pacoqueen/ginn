@@ -76,6 +76,7 @@ class Cliente(SQLObject, PRPCTOO):
     #------------- tipoDeClienteID = ForeignKey("TipoDeCliente", default = None)
     camposEspecificosRollos = MultipleJoin("CamposEspecificosRollo")
     camposEspecificosBalas = MultipleJoin("CamposEspecificosBala")
+    visitas = MultipleJoin("Visita")
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)

@@ -3362,9 +3362,12 @@ CREATE TABLE motivo_visita(
     motivo TEXT
 );
 
+----------------------------
+-- Visitas de comerciales --
+----------------------------
 CREATE TABLE visita(
     id SERIAL PRIMARY KEY,
-    comercial_id INT REFERENCES comercial,
+    comercial_id INT REFERENCES comercial NOT NULL,
     cliente_id INT REFERENCES cliente DEFAULT NULL,
     nombrecliente TEXT DEFAULT '',
     motivo_visita_id INT REFERENCES motivo_visita,
@@ -3375,8 +3378,6 @@ CREATE TABLE visita(
     --Geotexan/doc/Programación/20150119 - Partes de visita/partes_de_visita.ep
 );
 
-----------------------------
--- Visitas de comerciales --
 
 ------------------------ FUNCIONES ------------------------
 CREATE LANGUAGE plpgsql;
