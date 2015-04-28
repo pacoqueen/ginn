@@ -71,6 +71,7 @@ from fixedpoint import FixedPoint as Ffloat
 from collections import defaultdict
 import re
 from lib.fuzzywuzzy.fuzzywuzzy import process as fuzzyprocess
+from formularios.custom_widgets import CellRendererAutoComplete
 
 
 def str_fechahoralarga(fechahora):
@@ -4385,7 +4386,7 @@ def set_fecha(entry):
     entry.set_text(str_fecha(fecha))
 
 def cambiar_por_combo(tv, numcol, opts, clase, campo, ventana_padre = None, 
-                      entry = False):
+                      entry = False, numcol_model = None):
     """
     Cambia el cell de la columna «numcoll» del TreeView «tv» por un combo con 
     las opciones recibidas en «opts», que deben respetar el formato 
@@ -4398,7 +4399,16 @@ def cambiar_por_combo(tv, numcol, opts, clase, campo, ventana_padre = None,
     representa la clave ajena.
     «ventana_padre» servirá como ventana padre para la ventana modal de los 
     posibles avisos de error al guardar los valores seleccionados en el combo.
+    «entry» si True permite texto libre y en lugar de un comboBox, construye
+    un comboBoxEntry
+    «numcol_model» es la columna del modelo del TreeView original donde se
+    almacena el dato a representar en el cell. Puede ser diferente al número de
+    columna si alguna columna tiene más de un CellRenderer.
+    Devuelve el handler_id del callback asociado al «edited» del combo. Por si
+    hay que reemplazarlo.
     """
+    if numcol_model is None:
+        numcol_model = numcol
     from framework.pclases import getObjetoPUID, SQLObjectNotFound
     # Elimino columna actual
     column = tv.get_column(numcol)
@@ -4407,12 +4417,6 @@ def cambiar_por_combo(tv, numcol, opts, clase, campo, ventana_padre = None,
     model = gtk.ListStore(gobject.TYPE_STRING, gobject.TYPE_STRING)
     for opt in opts:
         model.append(opt)
-    # Creo CellCombo
-    cellcombo = gtk.CellRendererCombo()
-    cellcombo.set_property("model", model)
-    cellcombo.set_property("text-column", 0)
-    cellcombo.set_property("editable", True)
-    cellcombo.set_property("has-entry", entry)
     # Función callback para la señal "editado"
     def guardar_combo(cell, path, text, model_tv, numcol, model_combo, 
                       entry = False):
@@ -4440,27 +4444,49 @@ def cambiar_por_combo(tv, numcol, opts, clase, campo, ventana_padre = None,
                   padre = ventana_padre)
             else:
                 try:
+                    valor = text
                     objeto_a_actualizar = clase.get(model_tv[path][-1])
                 except ValueError:
-                    objeto_a_actualizar = pclases.getObjetoPUID(
-                                                    model_tv[path][-1])
+                    objeto_a_actualizar = getObjetoPUID(model_tv[path][-1])
                 setattr(objeto_a_actualizar, campo, valor)
         else:
             valor = getObjetoPUID(idct)
             try:
                 objeto_a_actualizar = clase.get(model_tv[path][-1])
+                setattr(objeto_a_actualizar, campo, valor)
             except SQLObjectNotFound:
                 pass    # El objeto fue eliminado de la base de datos. Ignoro.
             except ValueError:  # Es un PUID
-                objeto_a_actualizar = pclases.getObjetoPUID(model_tv[path][-1])
-            else:
+                objeto_a_actualizar = getObjetoPUID(model_tv[path][-1])
                 setattr(objeto_a_actualizar, campo, valor)
             model_tv[path][numcol] = text
             #self.actualizar_ventana()
-    cellcombo.connect("edited", guardar_combo, tv.get_model(), numcol, model, 
-                                               entry)
+    # Función callback para seleccionar de un combo con entry
+    def match_completion(completion, key, itr, ncol):
+        model = completion.get_model()
+        text = model.get_value(itr, ncol)
+        #if text.startswith(key):
+        if key.upper() in text.upper():
+            return True
+        return False
+    # Creo CellCombo
+    if not entry:
+        cellcombo = gtk.CellRendererCombo()
+        cellcombo.set_property("model", model)
+        cellcombo.set_property("text-column", 0)
+        cellcombo.set_property("has-entry", entry) 
+    else:   # Y si es entry, le meto un autocompletado.
+        completion = gtk.EntryCompletion()
+        completion.set_model(model) # Uso el mismo que si fuera un combo normal
+        completion.set_text_column(0)
+        completion.set_match_func(match_completion, 0)
+        cellcombo = CellRendererAutoComplete(completion, numcol_model)
+    cellcombo.set_property("editable", True)
+    handler_id = cellcombo.connect("edited", guardar_combo, tv.get_model(),
+                                   numcol_model, model, entry)
     column.pack_start(cellcombo)
-    column.set_attributes(cellcombo, text = numcol)
+    column.set_attributes(cellcombo, text = numcol_model)
+    return handler_id
 
 def media(valores):
     """

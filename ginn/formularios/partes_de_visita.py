@@ -51,7 +51,6 @@ except ImportError:
     from framework.seeker import VentanaGenerica 
 from utils import _float as float
 import datetime
-from formularios.custom_widgets import CellRendererAutocomplete
 
 NIVEL_SUPERVISOR = 1    # Nivel máximo de usuario que puede ver todas las
                         # visitas. Los niveles empiezan en 0 (admin)
@@ -200,14 +199,17 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                                texto = 'El texto "%s" no respeta el formato '
                                        'horario (H:M).' % newtext,
                                padre = self.wids['ventana'])    
-    def cambiar_cliente(self, cell, path, text):
+    def cambiar_cliente(self, cell, path, text, model, ncol, model_tv):
         """Cambia el nombre del cliente de la visita."""
         model = self.wids['tv_visitas'].get_model()
         ide = model[path][-1]
         visita = pclases.getObjetoPUID(ide)
         visita.nombrecliente = text
         # No se hace comprobación de si el cliente existe en la base de datos.
-        # Eso se hará en el commit.
+        # Eso se hará en el commit. OJO: Si el cliente se crea a posteriori,
+        # el cliente no queda asociado a la visita. It's not a bug, IT'S A 
+        # FEATURE: permite hacer consultas sobre visitas a un cliente cuando
+        # aún no era cliente.
         visita.syncUpdate()
         model[path][2] = visita.nombrecliente
 
@@ -226,6 +228,7 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         else:
             visita.motivoVisita = None
         visita.syncUpdate()
+        pclases.Auditoria.modificado(visita, self.usuario, __file__)
         model[path][4] = (visita.motivoVisita and visita.motivoVisita.motivo
                           or "")
 
@@ -246,10 +249,10 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         # Inicialización del resto de widgets:
         cols = (('Hora', 'gobject.TYPE_STRING', True, True, False,
                     self.cambiar_hora),
-                ('Cliente o institución', 'gobject.TYPE_STRING',
-                    True, True, True, self.cambiar_cliente),
-                ('Motivo', 'gobject.TYPE_STRING', True, True, False,
-                    self.cambiar_motivo),
+                ('Cliente o institución', 'gobject.TYPE_STRING', 
+                    False, True, True, None),
+                ('Motivo', 'gobject.TYPE_STRING', False, True, False, None),
+                    #self.cambiar_motivo),
                 ('Observaciones', 'gobject.TYPE_STRING', True, True, False,
                     self.cambiar_observaciones),
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
@@ -268,17 +271,41 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         col_hora.set_attributes(cellhora, text = 0)
         col_hora.set_attributes(cellcandado, stock_id = 1)
         # Columna cliente con autocompletado y símbolo "OK" si existe en la BD.
+        opts_clientes = [("%s (%s)" % (c.nombre, c.cif), c.puid)
+                                    for c in pclases.Cliente.select(
+                                        pclases.Cliente.q.inhabilitado == False,
+                                        orderBy = "nombre")]
+        handler_id = utils.cambiar_por_combo(tv = self.wids['tv_visitas'],
+                                numcol = 1,
+                                opts = opts_clientes,
+                                clase = pclases.Visita,
+                                campo = "nombrecliente",
+                                ventana_padre = self.wids['ventana'],
+                                entry = True,
+                                numcol_model = 2)
         col_cliente = self.wids['tv_visitas'].get_column(1)
-        cellcliente = col_cliente.get_cell_renderers()[0]
+        cellcbcliente = col_cliente.get_cell_renderers()[0]
+        cellcbcliente.disconnect(handler_id)
+        cellcbcliente.connect("edited", self.cambiar_cliente,
+                              cellcbcliente.completion.get_model(),
+                              2,
+                              self.wids['tv_visitas'].get_model())
+        # Y ahora añadir el icono
         celldb = gtk.CellRendererPixbuf()
         col_cliente.pack_start(celldb, expand = False)
-        col_cliente.set_attributes(cellcliente, text = 2)
+        col_cliente.set_attributes(cellcbcliente, text = 2)
         col_cliente.set_attributes(celldb, stock_id = 3)
         # Columna motivo con autocompletado
-        # TODO: Cambiar el motivo por un CellRendererAutocomplete.
-        col_motivo = self.wids['tv_visitas'].get_column(2)
-        cellmotivo = col_motivo.get_cell_renderers()[0]
-        col_motivo.set_attributes(cellmotivo, text = 4)
+        utils.cambiar_por_combo(self.wids['tv_visitas'],
+                                2,
+                                [(m.motivo, m.puid) for m in
+                                    pclases.MotivoVisita.select(
+                                        orderBy = "motivo")],
+                                pclases.Visita,
+                                "motivoVisita",
+                                self.wids['ventana'],
+                                entry = False,
+                                numcol_model = 4)
         # Columna observaciones.
         col_observaciones = self.wids['tv_visitas'].get_column(3)
         cellobservaciones = col_observaciones.get_cell_renderers()[0]
@@ -308,6 +335,7 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         self.wids['calendario'].select_month(hoy.month - 1, hoy.year)
         # Tratamiento especial de los botones actualizar y guardar
         self.activar_widgets(True, chequear_permisos = False)
+        self.wids['ventana'].resize(800, 600)
 
     def activar_widgets(self, s, chequear_permisos = True):
         """
@@ -408,7 +436,7 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                 visita.enviada and gtk.STOCK_DIALOG_AUTHENTICATION or None,
                 visita.nombrecliente,
                 visita.cliente and gtk.STOCK_SAVE or gtk.STOCK_NEW,
-                visita.motivoVisita and visita.motivoVisita.motivo,
+                visita.motivoVisita and visita.motivoVisita.motivo or "",
                 visita.observaciones,
                 visita.puid)
         model = self.wids['tv_visitas'].get_model()
@@ -444,9 +472,18 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         model = self.wids['tv_visitas'].get_model()
         for row in model:
             visita = pclases.getObjetoPUID(row[-1])
-            visita.enviada = True
-            visita.syncUpdate()
-        self.actualizar_ventana() # TODO: PORASQUI: A ver cómo me las ingenio para al escribir un nombre de cliente lo enlace con el cliente de verdad si existe. INCLUSO AUNQUE SE CREE A POSTERIORI.
+            if not visita.enviada:
+                model_clientes = self.wids['tv_visitas'].get_column(
+                        1).get_cell_renderers()[0].completion.get_model()
+                cliente = None
+                for nombre, puid in model_clientes:
+                    if nombre == visita.nombrecliente:
+                        cliente = pclases.getObjetoPUID(puid)
+                        break
+                visita.cliente = cliente
+                visita.enviada = True
+                visita.syncUpdate()
+        self.actualizar_ventana()
         # TODO: Digo yo que habría que mandar un correo o algo con las nuevas visitas confirmadas.
 
     def borrar(self, widget):
@@ -476,6 +513,14 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                 self.wids['calendario'].mark_day(dia)
             else:
                 self.wids['calendario'].unmark_day(dia)
+
+
+def match_motivo(completion, key, itr, ncol):
+    model = completion.get_model()
+    text = model.get_value(itr, ncol)
+    if key.upper() in text.upper():
+        return True
+    return False
 
 if __name__ == "__main__":
     p = PartesDeVisita()

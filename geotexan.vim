@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 24 abril 2015 at 14:36:58.
+" Created by session.vim 1.5 on 28 abril 2015 at 17:45:12.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -38,16 +38,19 @@ badd +1 ginn/formularios/consulta_ventas.py
 badd +108 ginn/formularios/consulta_saldo_proveedores.py
 badd +1 db/tablas.sql
 badd +367 ginn/formularios/productos_compra.py
-badd +1 ginn/formularios/partes_de_visita.py
+badd +54 ginn/formularios/partes_de_visita.py
 badd +902 ginn/formularios/productos_de_venta_rollos.py
 badd +357 ginn/formularios/proveedores.py
 badd +79 ginn/framework/pclases/cliente.py
-badd +1 ginn/formularios/clientes.py
-badd +1 ginn/formularios/ventana.py
+badd +6 ginn/formularios/clientes.py
+badd +914 ginn/formularios/ventana.py
+badd +0 ginn/informes/norma2013.py
+badd +0 ginn/formularios/presupuestos.py
+badd +0 ginn/formularios/custom_widgets/cellrendererautocomplete.py
 argglobal
 silent! argdel *
 argadd formularios/auditviewer.py
-set lines=45 columns=92
+set lines=54 columns=92
 edit ginn/framework/pclases/__init__.py
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -60,7 +63,13 @@ wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
-5wincmd k
+wincmd _ | wincmd |
+split
+wincmd _ | wincmd |
+split
+7wincmd k
+wincmd w
+wincmd w
 wincmd w
 wincmd w
 wincmd w
@@ -70,12 +79,14 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 6 + 22) / 45)
-exe '2resize ' . ((&lines * 1 + 22) / 45)
-exe '3resize ' . ((&lines * 1 + 22) / 45)
-exe '4resize ' . ((&lines * 1 + 22) / 45)
-exe '5resize ' . ((&lines * 28 + 22) / 45)
-exe '6resize ' . ((&lines * 1 + 22) / 45)
+exe '1resize ' . ((&lines * 11 + 27) / 54)
+exe '2resize ' . ((&lines * 1 + 27) / 54)
+exe '3resize ' . ((&lines * 1 + 27) / 54)
+exe '4resize ' . ((&lines * 1 + 27) / 54)
+exe '5resize ' . ((&lines * 1 + 27) / 54)
+exe '6resize ' . ((&lines * 1 + 27) / 54)
+exe '7resize ' . ((&lines * 27 + 27) / 54)
+exe '8resize ' . ((&lines * 2 + 27) / 54)
 argglobal
 setlocal fdm=indent
 setlocal fde=0
@@ -87,7 +98,7 @@ setlocal fdn=20
 setlocal fen
 301
 normal! zo
-11243
+11235
 normal! zo
 11245
 normal! zo
@@ -97,12 +108,12 @@ normal! zo
 normal! zo
 16015
 normal! zo
-let s:l = 11253 - ((1 * winheight(0) + 3) / 6)
+let s:l = 11245 - ((3 * winheight(0) + 5) / 11)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-11253
-normal! 054|
+11245
+normal! 011|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -139,16 +150,16 @@ normal! zo
 normal! zo
 3549
 normal! zo
-let s:l = 3364 - ((0 * winheight(0) + 0) / 1)
+let s:l = 3379 - ((1 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-3364
-normal! 0
+3379
+normal! 02|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
-edit ~/Geotexan/src/Geotex-INN/ginn/formularios/clientes.py
+edit ~/Geotexan/src/Geotex-INN/ginn/formularios/custom_widgets/cellrendererautocomplete.py
 setlocal fdm=indent
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -157,16 +168,36 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 1 - ((0 * winheight(0) + 0) / 1)
+9
+normal! zo
+24
+normal! zo
+32
+normal! zo
+32
+normal! zo
+32
+normal! zo
+32
+normal! zo
+32
+normal! zo
+32
+normal! zo
+32
+normal! zo
+38
+normal! zo
+let s:l = 21 - ((1 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
-normal! 0
+21
+normal! 020|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
-edit ~/Geotexan/src/Geotex-INN/ginn/formularios/ventana.py
+edit ~/Geotexan/src/Geotex-INN/ginn/formularios/utils.py
 setlocal fdm=indent
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -175,100 +206,126 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-111
+508
 normal! zo
-112
+4389
 normal! zo
-232
+4389
 normal! zo
-242
+4389
+normal! zo
+4389
+normal! zo
+4422
+normal! zo
+4422
+normal! zo
+4422
+normal! zo
+4433
+normal! zo
+4438
+normal! zo
+4439
+normal! zo
+4441
+normal! zo
+4446
+normal! zo
+4453
+normal! zo
+4466
+normal! zo
+4486
+normal! zo
+4486
+normal! zo
+4486
+normal! zo
+4486
+normal! zo
+4486
+normal! zo
+4486
+normal! zo
+4595
+normal! zo
+let s:l = 4486 - ((1 * winheight(0) + 0) / 1)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+4486
+normal! 050|
+lcd ~/Geotexan/src/Geotex-INN
+wincmd w
+argglobal
+edit ~/Geotexan/src/Geotex-INN/ginn/informes/norma2013.py
+setlocal fdm=indent
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=99
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+21
+normal! zo
+47
+normal! zo
+47
+normal! zo
+79
+normal! zo
+149
+normal! zo
+150
+normal! zo
+187
 normal! zo
 243
 normal! zo
-630
+269
 normal! zo
-631
+301
 normal! zo
-632
-normal! zo
-664
-normal! zo
-688
-normal! zo
-699
-normal! zo
-731
-normal! zo
-740
-normal! zo
-751
-normal! zo
-751
-normal! zo
-751
-normal! zo
-751
-normal! zo
-849
-normal! zo
-849
-normal! zo
-849
-normal! zo
-849
-normal! zo
-849
-normal! zo
-849
-normal! zo
-849
-normal! zo
-849
-normal! zo
-849
-normal! zo
-849
-normal! zo
-849
-normal! zo
-849
-normal! zo
-849
-normal! zo
-866
-normal! zo
-871
-normal! zo
-888
-normal! zo
-945
-normal! zo
-1022
-normal! zo
-1028
-normal! zo
-1031
-normal! zo
-1035
-normal! zo
-1042
-normal! zo
-1052
-normal! zo
-1052
-normal! zo
-1052
-normal! zo
-1052
-normal! zo
-1056
-normal! zo
-let s:l = 910 - ((0 * winheight(0) + 0) / 1)
+let s:l = 150 - ((1 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-910
-normal! 021|
+150
+normal! 013|
+lcd ~/Geotexan/src/Geotex-INN
+wincmd w
+argglobal
+edit ~/Geotexan/src/Geotex-INN/ginn/formularios/presupuestos.py
+setlocal fdm=indent
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=99
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+77
+normal! zo
+1416
+normal! zo
+1492
+normal! zo
+1492
+normal! zo
+1492
+normal! zo
+1492
+normal! zo
+1492
+normal! zo
+let s:l = 1815 - ((1 * winheight(0) + 0) / 1)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+1815
+normal! 0
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -281,210 +338,266 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
+59
+normal! zo
 60
 normal! zo
-61
+68
 normal! zo
-69
+68
 normal! zo
-69
+68
 normal! zo
-69
+77
 normal! zo
-78
+77
 normal! zo
-78
+77
 normal! zo
-78
+77
 normal! zo
-78
+77
 normal! zo
-78
+79
 normal! zo
-80
+79
 normal! zo
-80
+79
 normal! zo
-80
+79
 normal! zo
-80
+79
 normal! zo
-80
+81
 normal! zo
-82
+81
 normal! zo
-82
+81
 normal! zo
-82
+81
 normal! zo
-82
+81
 normal! zo
-82
+93
 normal! zo
 94
 normal! zo
-95
+100
 normal! zo
 101
 normal! zo
 102
 normal! zo
-103
+107
 normal! zo
 108
 normal! zo
-109
+114
 normal! zo
-115
+141
 normal! zo
-142
+147
 normal! zo
-148
+171
 normal! zo
-172
+179
 normal! zo
 180
 normal! zo
-181
+180
 normal! zo
-181
+180
 normal! zo
-181
+180
 normal! zo
-181
+180
 normal! zo
-181
+180
 normal! zo
-181
+180
 normal! zo
-181
+180
 normal! zo
-181
+184
 normal! zo
-185
+193
+normal! zo
+194
+normal! zo
+194
+normal! zo
+194
 normal! zo
 194
 normal! zo
 195
 normal! zo
-195
+198
 normal! zo
-195
+199
 normal! zo
-195
+199
 normal! zo
-196
+199
 normal! zo
 199
 normal! zo
 200
 normal! zo
-200
+217
 normal! zo
-200
+221
 normal! zo
-200
+225
 normal! zo
-201
+226
 normal! zo
-215
+233
 normal! zo
-219
+233
 normal! zo
-223
+233
 normal! zo
-224
+244
 normal! zo
-230
+251
 normal! zo
-230
+251
 normal! zo
-230
+265
 normal! zo
-241
+275
 normal! zo
-248
+275
 normal! zo
-248
+275
 normal! zo
-262
+275
+normal! zo
+275
+normal! zo
+275
+normal! zo
+275
+normal! zo
+279
+normal! zo
+279
+normal! zo
+279
+normal! zo
+279
+normal! zo
+279
 normal! zo
 290
 normal! zo
-291
+290
 normal! zo
-294
+290
 normal! zo
-294
+290
 normal! zo
-294
+300
 normal! zo
-294
+300
 normal! zo
-299
+300
 normal! zo
-313
+300
 normal! zo
-324
+300
 normal! zo
-334
+300
 normal! zo
-354
+302
 normal! zo
-363
+317
 normal! zo
-366
+318
 normal! zo
-381
+321
 normal! zo
-388
+321
 normal! zo
-393
+321
 normal! zo
-398
+321
 normal! zo
-407
+326
 normal! zo
-408
+341
 normal! zo
-418
+352
 normal! zo
-425
+362
 normal! zo
-425
+382
 normal! zo
-425
+391
 normal! zo
-425
+394
 normal! zo
-425
+409
 normal! zo
-440
+416
+normal! zo
+421
+normal! zo
+424
+normal! zo
+435
+normal! zo
+436
+normal! zo
+446
 normal! zo
 453
 normal! zo
-459
+453
 normal! zo
-459
+453
 normal! zo
-459
+453
 normal! zo
-459
+453
 normal! zo
-459
+468
 normal! zo
-463
+474
 normal! zo
-466
+476
 normal! zo
-466
+477
 normal! zo
-let s:l = 279 - ((15 * winheight(0) + 14) / 28)
+480
+normal! zo
+490
+normal! zo
+496
+normal! zo
+496
+normal! zo
+496
+normal! zo
+496
+normal! zo
+496
+normal! zo
+500
+normal! zo
+503
+normal! zo
+503
+normal! zo
+519
+normal! zo
+let s:l = 338 - ((16 * winheight(0) + 13) / 27)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-279
-normal! 032|
+338
+normal! 036|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -497,7 +610,7 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 4 - ((0 * winheight(0) + 0) / 1)
+let s:l = 4 - ((0 * winheight(0) + 1) / 2)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -505,13 +618,15 @@ normal! zt
 normal! 03|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
-5wincmd w
-exe '1resize ' . ((&lines * 6 + 22) / 45)
-exe '2resize ' . ((&lines * 1 + 22) / 45)
-exe '3resize ' . ((&lines * 1 + 22) / 45)
-exe '4resize ' . ((&lines * 1 + 22) / 45)
-exe '5resize ' . ((&lines * 28 + 22) / 45)
-exe '6resize ' . ((&lines * 1 + 22) / 45)
+7wincmd w
+exe '1resize ' . ((&lines * 11 + 27) / 54)
+exe '2resize ' . ((&lines * 1 + 27) / 54)
+exe '3resize ' . ((&lines * 1 + 27) / 54)
+exe '4resize ' . ((&lines * 1 + 27) / 54)
+exe '5resize ' . ((&lines * 1 + 27) / 54)
+exe '6resize ' . ((&lines * 1 + 27) / 54)
+exe '7resize ' . ((&lines * 27 + 27) / 54)
+exe '8resize ' . ((&lines * 2 + 27) / 54)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
@@ -526,6 +641,6 @@ let &so = s:so_save | let &siso = s:siso_save
 doautoall SessionLoadPost
 unlet SessionLoad
 tabnext 1
-5wincmd w
+7wincmd w
 
 " vim: ft=vim ro nowrap smc=128
