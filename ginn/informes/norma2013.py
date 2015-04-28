@@ -140,7 +140,17 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado = True, lang = "es"):
         else:
             data["06 año_certif"] = ""
         data["08 dni"] = producto.dni
-        data["12 producto"] = producto.nombre
+        if len(producto.nombre) <= 50:
+            data["12 producto"] = producto.nombre
+        else:
+            #if "//" in producto.nombre: # Productos Intermas
+            #    data["11 blanco2"], data["12 producto"] = producto.nombre.split("//")
+            #else:
+            data["11 blanco2"], data["12 producto"] = utils.dividir_cadena(
+                    producto.nombre)
+            data["11 blanco2"] = data["11 blanco2"].strip()
+            data["12 producto"] =data["12 producto"].strip()
+            estilos["11 blanco2"] = estilos["12 producto"]
         if producto.uso:
             if lang == "en":
                 data["14 uso"] = _data["14 uso"] % helene_laanest(producto.uso)
@@ -400,10 +410,14 @@ def crear_etiquetas_pales(pales, mostrar_marcado = True, lang = "es"):
 
 def test_rollos():
     from formularios.reports import abrir_pdf
-    for p in pclases.ProductoVenta.select():
-        if "EkoTex" in p.nombre and " 06 " in p.descripcion and p.articulos:
-            rollos = [a.rollo for a in p.articulos[:2]]
-            break
+    prods = [p for p in pclases.ProductoVenta.select()]
+    prods.sort(key = lambda p: len(p.nombre), reverse = True)
+    #for p in pclases.ProductoVenta.select():
+    #    if "EkoTex" in p.nombre and " 06 " in p.descripcion and p.articulos:
+    #        rollos = [a.rollo for a in p.articulos[:2]]
+    #        break
+    p = prods[0]
+    rollos = [a.rollo for a in p.articulos[:2]]
     abrir_pdf(etiqueta_rollos_norma13(rollos, False))
     abrir_pdf(etiqueta_rollos_norma13_en(rollos))
 
