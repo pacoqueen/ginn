@@ -124,11 +124,40 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         comercial indicado. Si no se reciben, usa el comercial de la ventana
         y pregunta la fecha en un diálogo modal.
         """
-        # TODO
         # 0.- Comprobar fecha recibida o pedir.
+        if not fecha:
+            fechastr = utils.dialogo_entrada(titulo = "INTRODUZCA FECHA",
+                            texto = "Introduzca fecha a la que desplazarse:",
+                            padre = self.wids['ventana'])
+            if fechastr:
+                try:
+                    fecha = utils.parse_fecha(fechastr)
+                except ValueError, TypeError:
+                    utils.dialogo_info(titulo = "ERROR EN FECHA",
+                            texto = "Introdujo una fecha no valida: %s" 
+                                % fechastr,
+                            padre = self.wids['ventana'])
+                    return  # Error del usuario al meter fecha
+                else:
+                    dia = fecha.day
+                    mes = fecha.month
+                    anno = fecha.year
+            else:
+                return  # Canceló
+        else:
+            dia = fecha.day
+            mes = fecha.month
+            anno = fecha.year
         # 1.- Comprobar comercial recibido y mover el combo o rescatar de
         #     la ventana si no se ha especificado.
+        if not comercial:
+            comercial = pclases.Comercial.get(
+                utils.combo_get_value(self.wids['cb_comercial']))
+        else:
+            utils.combo_set_from_db(self.wids['cb_comercial'], comercial.id)
         # 2.- Movel el calendario. La ventana se actualizará sola.
+        self.wids['calendario'].select_month(mes-1, anno)
+        self.wids['calendario'].select_day(dia)
 
     def ir_a_hoy(self, boton):
         """
@@ -137,7 +166,7 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         hoy = datetime.date.today()
         self.ir_a_fecha(boton, fecha = hoy)
 
-    def actualizar_dias_con_visita(self, calendario):
+    def actualizar_dias_con_visita(self, calendario, actualizar_ventana = True):
         """
         Marca en el calendario los días del mes presente con visitas.
         """
@@ -150,12 +179,14 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                 continue    # La fecha es incorrecta. Se sale del mes.
             visitas = pclases.Visita.select(pclases.AND(
                 pclases.Visita.q.fechahora >= fecha,
-                pclases.Visita.q.fechahora <= fecha + datetime.timedelta(1)
+                pclases.Visita.q.fechahora <= fecha + datetime.timedelta(1),
+                pclases.Visita.q.comercial == self.objeto
                 ))
             if visitas.count():
                 calendario.mark_day(dia)
-        self.actualizar_ventana()   # Digo yo que si ha cambiado el mes o el
-        # año, habrá que actualizar la ventana porque la fecha es otra..
+        if actualizar_ventana:
+            self.actualizar_ventana()   # Digo yo que si ha cambiado el mes o
+            # el año, habrá que actualizar la ventana porque la fecha es otra..
 
     def chequear_cambios(self):
         pass
@@ -167,7 +198,7 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         """
         return True
 
-    def cambiar_hora(self, cell, path, text):
+    def cambiar_hora(self, cell, path, newtext):
         """
         Cambia la hora de visita y acutaliza el cell. Solo se permite
         cambiarla si el usuario tiene nivel suficiente.
@@ -176,19 +207,16 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         ide = model[path][-1]
         visita = pclases.getObjetoPUID(ide)
         try:
-            dtdelta = mx.DateTime.DateTimeDelta(0,
-                                                float(newtext.split(':')[0]),
-                                                float(newtext.split(':')[1]),
-                                                0)
+            dtdelta = utils.parse_hora(newtext)
             visita.fechahora = mx.DateTime.DateTimeFrom(
-                    year = visita.horafin.year,
-                    month = visita.horafin.month,
-                    day = visita.horafin.day,
+                    year = visita.fechahora.year,
+                    month = visita.fechahora.month,
+                    day = visita.fechahora.day,
                     hour = dtdelta.hour,
                     minute = dtdelta.minute,
                     second = dtdelta.second)
             visita.sync()
-            model[path][0] = visita.horafin.strftime('%H:%M')
+            model[path][0] = visita.fechahora.strftime('%H:%M')
         except IndexError:
             utils.dialogo_info(titulo = "ERROR", 
                                texto = 'El texto "%s" no respeta el formato '
@@ -317,6 +345,15 @@ class PartesDeVisita(Ventana, VentanaGenerica):
             for e in self.usuario.empleados:
                 for c in e.comerciales:
                     comerciales_del_usuario.append(c)
+            # También debe tener acceso a los comerciales por debajo de su nivel
+            for c in pclases.Comercial.select():
+                try:
+                    activo = c.empleado.activo
+                    nivel = c.empleado.usuario.nivel
+                except AttributeError:
+                    continue
+                if activo and nivel > self.usuario.nivel:
+                    comerciales_del_usuario.append(c)
         if not comerciales_del_usuario or (self.usuario
                                and self.usuario.nivel <= NIVEL_SUPERVISOR):
             comerciales = pclases.Comercial.select()
@@ -336,6 +373,9 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         # Tratamiento especial de los botones actualizar y guardar
         self.activar_widgets(True, chequear_permisos = False)
         self.wids['ventana'].resize(800, 600)
+        # Al principio pensé que podría ser útil. Ahora me ha entrado un poco
+        # de complejo de Jacob Nielsen y casi mejor lo quito:
+        self.wids['b_actualizar'].set_property("visible", False)
 
     def activar_widgets(self, s, chequear_permisos = True):
         """
@@ -410,6 +450,8 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                 if not visita.enviada:
                     pendientes.append(visita)
             # 4.- Recuento de acciones pendientes de confirmar
+            self.actualizar_dias_con_visita(self.wids['calendario'],
+                                            actualizar_ventana = False)
             self.refresh_commit_button(pendientes)
 
     def refresh_commit_button(self, pendientes = None):

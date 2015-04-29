@@ -73,7 +73,6 @@ import re
 from lib.fuzzywuzzy.fuzzywuzzy import process as fuzzyprocess
 from formularios.custom_widgets import CellRendererAutoComplete
 
-
 def str_fechahoralarga(fechahora):
     """
     Devuelve el fechahora recibido como una cadena que 
@@ -4407,6 +4406,13 @@ def cambiar_por_combo(tv, numcol, opts, clase, campo, ventana_padre = None,
     Devuelve el handler_id del callback asociado al «edited» del combo. Por si
     hay que reemplazarlo.
     """
+    # MODOS DEL AUTOCOMPLETADO EN COMBOBOXENTRY
+    INCLUDE, STARTS, CONTAINS, FUZZY = range(4)
+    # INCLUDE = El texto completo está incluido
+    # STARTS = El texto está al principio
+    # CONTAINS = Las palabras del texto están incluidas, aunque no en ese orden
+    # FUZZY = El texto está incluido con un porcentaje mínimo según una función
+    #         de búsqueda difusa.
     if numcol_model is None:
         numcol_model = numcol
     from framework.pclases import getObjetoPUID, SQLObjectNotFound
@@ -4438,7 +4444,7 @@ def cambiar_por_combo(tv, numcol, opts, clase, campo, ventana_padre = None,
             if not entry:
                 dialogo_info(titulo = "ERROR COMBO", 
                   texto = "Ocurrió un error inesperado guardando el valor.\n\n"
-                          "Contacte con los desarrolladores de la aplicación\n"
+                          "Contacte con el soporte de la aplicación\n"
                           "(Vea el diálogo «Acerca de...» desde el menú "
                           "principal.)", 
                   padre = ventana_padre)
@@ -4462,13 +4468,24 @@ def cambiar_por_combo(tv, numcol, opts, clase, campo, ventana_padre = None,
             model_tv[path][numcol] = text
             #self.actualizar_ventana()
     # Función callback para seleccionar de un combo con entry
-    def match_completion(completion, key, itr, ncol):
+    def match_completion(completion, key, itr, func_data = (0, INCLUDE)):
+        ncol, mode = func_data
         model = completion.get_model()
         text = model.get_value(itr, ncol)
-        #if text.startswith(key):
-        if key.upper() in text.upper():
-            return True
-        return False
+        if mode == STARTS:
+            res = text.upper().startswith(key.upper())
+        elif mode == INCLUDE:
+            res = key.upper() in text.upper()
+        elif mode == CONTAINS:
+            res = True
+            for word in key.upper().split():
+                if word not in text.upper():
+                    res = False
+                    break
+        elif mode == FUZZY:
+            raise NotImplementedError, "Búsqueda difusa no implementada. "\
+                                       "Use otra función de autocompletado."
+        return res
     # Creo CellCombo
     if not entry:
         cellcombo = gtk.CellRendererCombo()
@@ -4477,9 +4494,13 @@ def cambiar_por_combo(tv, numcol, opts, clase, campo, ventana_padre = None,
         cellcombo.set_property("has-entry", entry) 
     else:   # Y si es entry, le meto un autocompletado.
         completion = gtk.EntryCompletion()
+        try:
+            completion.set_popup_set_width(False)
+        except AttributeError:  # pygtk < 2.8
+            pass
         completion.set_model(model) # Uso el mismo que si fuera un combo normal
         completion.set_text_column(0)
-        completion.set_match_func(match_completion, 0)
+        completion.set_match_func(match_completion, (0, CONTAINS))
         cellcombo = CellRendererAutoComplete(completion, numcol_model)
     cellcombo.set_property("editable", True)
     handler_id = cellcombo.connect("edited", guardar_combo, tv.get_model(),

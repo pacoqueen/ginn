@@ -40,4 +40,3 @@ class CellRendererAutoComplete(gtk.CellRendererText):
             texto = texto_anterior
         self.emit('edited', path, texto)
 
-
