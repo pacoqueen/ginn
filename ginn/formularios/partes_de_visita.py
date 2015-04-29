@@ -206,27 +206,34 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         model = self.wids['tv_visitas'].get_model()
         ide = model[path][-1]
         visita = pclases.getObjetoPUID(ide)
-        try:
-            dtdelta = utils.parse_hora(newtext)
-            visita.fechahora = mx.DateTime.DateTimeFrom(
-                    year = visita.fechahora.year,
-                    month = visita.fechahora.month,
-                    day = visita.fechahora.day,
-                    hour = dtdelta.hour,
-                    minute = dtdelta.minute,
-                    second = dtdelta.second)
-            visita.sync()
-            model[path][0] = visita.fechahora.strftime('%H:%M')
-        except IndexError:
-            utils.dialogo_info(titulo = "ERROR", 
-                               texto = 'El texto "%s" no respeta el formato '
-                                       'horario (H:MM).' % newtext,
-                               padre = self.wids['ventana'])
-        except ValueError:
-            utils.dialogo_info(titulo = "ERROR", 
-                               texto = 'El texto "%s" no respeta el formato '
-                                       'horario (H:M).' % newtext,
-                               padre = self.wids['ventana'])    
+        if not visita.enviada or (self.usuario
+                                  and self.usuario.nivel <= NIVEL_SUPERVISOR):
+            try:
+                dtdelta = utils.parse_hora(newtext)
+                visita.fechahora = mx.DateTime.DateTimeFrom(
+                        year = visita.fechahora.year,
+                        month = visita.fechahora.month,
+                        day = visita.fechahora.day,
+                        hour = dtdelta.hour,
+                        minute = dtdelta.minute,
+                        second = dtdelta.second)
+                visita.sync()
+                model[path][0] = visita.fechahora.strftime('%H:%M')
+            except IndexError:
+                utils.dialogo_info(titulo = "ERROR", 
+                                   texto = 'El texto "%s" no respeta el formato '
+                                           'horario (H:MM).' % newtext,
+                                   padre = self.wids['ventana'])
+            except ValueError:
+                utils.dialogo_info(titulo = "ERROR", 
+                                   texto = 'El texto "%s" no respeta el formato '
+                                           'horario (H:M).' % newtext,
+                                   padre = self.wids['ventana'])    
+        else:
+            utils.dialogo_info(titulo = "NO SE PUEDE MODIFICAR",
+                    texto = "Visita confirmada. No puede modificarla.",
+                    padre = self.wids['ventana'])
+
     def cambiar_cliente(self, cell, path, text, model, ncol, model_tv):
         """Cambia el nombre del cliente de la visita."""
         model = self.wids['tv_visitas'].get_model()
@@ -264,9 +271,15 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         model = self.wids['tv_visitas'].get_model()
         ide = model[path][-1]
         visita = pclases.getObjetoPUID(ide)
-        visita.observaciones = text     # PLAN: ¿Markdown?
-        visita.syncUpdate()
-        model[path][5] = visita.observaciones
+        if not visita.enviada or (self.usuario
+                                  and self.usuario.nivel <= NIVEL_SUPERVISOR):
+            visita.observaciones = text     # PLAN: ¿Markdown?
+            visita.syncUpdate()
+            model[path][5] = visita.observaciones
+        else:
+            utils.dialogo_info(titulo = "NO SE PUEDE MODIFICAR",
+                    texto = "Visita confirmada. No puede modificarla.",
+                    padre = self.wids['ventana'])
     
     def inicializar_ventana(self):
         """
@@ -338,6 +351,11 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         col_observaciones = self.wids['tv_visitas'].get_column(3)
         cellobservaciones = col_observaciones.get_cell_renderers()[0]
         col_observaciones.set_attributes(cellobservaciones, text = 5)
+        # Control de permisos de edición si visitas enviadas:
+        for col in self.wids['tv_visitas'].get_columns():
+            for cell in col.get_cell_renderers():
+                cell.connect("editing-started", self.control_permisos_enviado,
+                             self.wids['tv_visitas'].get_model())
         # Comerciales visibles según usuario "logueado"
         comerciales = []
         comerciales_del_usuario = []
@@ -376,6 +394,24 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         # Al principio pensé que podría ser útil. Ahora me ha entrado un poco
         # de complejo de Jacob Nielsen y casi mejor lo quito:
         self.wids['b_actualizar'].set_property("visible", False)
+
+    def control_permisos_enviado(self, cell, editable, path, model):
+        """
+        Si la visita está enviada, avisa al usuario e impide que modifique la
+        visita si no es un usuario con permisos.
+        """
+        visita = pclases.getObjetoPUID(model[path][-1])
+        if not visita.enviada or (self.usuario
+                                  and self.usuario.nivel <= NIVEL_SUPERVISOR):
+            pass    # Puede editar. No hago nada
+        else:
+            cell.stop_editing(canceled = True)  # Esto no funciona como espero
+            #cell.emit_stop_by_name("edited")   # HACK que no funciona.
+            #cell.  # TODO: PORASQUI: No sé qué hacer ya. El grab_focus en otro widget no funciona. ¿Envío un ENTER como si lo hubiera hecho el usuario?
+            utils.dialogo_info(titulo = "NO SE PUEDE MODIFICAR",
+                    texto = "Visita confirmada. No puede modificarla.",
+                    padre = self.wids['ventana'])
+            return True
 
     def activar_widgets(self, s, chequear_permisos = True):
         """
@@ -543,7 +579,8 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                 dia = visita.fechahora.day
                 if (not visita.enviada
                         or (visita.enviada
-                            and self.usuario and self.usuario.nivel <= 1)):
+                            and self.usuario
+                            and self.usuario.nivel <= NIVEL_SUPERVISOR)):
                     visita.destroy(ventana = __file__)
                     paths_a_borrar.append(path)
             #self.actualizar_ventana()
@@ -555,6 +592,11 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                 self.wids['calendario'].mark_day(dia)
             else:
                 self.wids['calendario'].unmark_day(dia)
+            if len(paths_a_borrar) < len(paths):
+                utils.dialogo_info(titulo = "VISITAS NO ELIMINADAS",
+                        texto = "Algunas visitas no se eliminaron al"
+                            " encontrarse ya enviadas.",
+                        padre = self.wids['ventana'])
 
 
 def match_motivo(completion, key, itr, ncol):
