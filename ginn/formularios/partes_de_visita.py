@@ -405,13 +405,9 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                                   and self.usuario.nivel <= NIVEL_SUPERVISOR):
             pass    # Puede editar. No hago nada
         else:
-            cell.set_property("editable", False)
-            cell.stop_editing(canceled = True)  # Esto no funciona como espero
-            #cell.emit_stop_by_name("edited")    # HACK que no funciona.
-            cell.emit_stop_by_name("editing-started")    # HACK que no funciona.
-            cell.editing_done(cell.entry, path)
-            #cell.entry.emit_stop_by_name("editing-done")    # HACK que no funciona.
-            #cell.  # TODO: PORASQUI: No sé qué hacer ya. El grab_focus en otro widget no funciona. ¿Envío un ENTER como si lo hubiera hecho el usuario?
+            self.wids['tv_visitas'].get_model().clear()
+            cell.entry.destroy()
+            self.rellenar_widgets()
             utils.dialogo_info(titulo = "NO SE PUEDE MODIFICAR",
                     texto = "Visita confirmada. No puede modificarla.",
                     padre = self.wids['ventana'])
