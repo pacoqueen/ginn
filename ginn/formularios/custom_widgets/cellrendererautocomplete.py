@@ -24,15 +24,15 @@ class CellRendererAutoComplete(gtk.CellRendererText):
                self, event, treeview, path, background_area, cell_area, flags):
         if not self.get_property('editable'):
             return
-        entry = gtk.Entry()
+        self.entry = gtk.Entry()
         descripcion_anterior = treeview.get_model()[path][self.modelcol]
-        entry.set_text(descripcion_anterior)
-        entry.set_completion(self.completion)
-        self.handler_id = entry.connect('editing-done', self.editing_done,
+        self.entry.set_text(descripcion_anterior)
+        self.entry.set_completion(self.completion)
+        self.handler_id = self.entry.connect('editing-done', self.editing_done,
                                         path, descripcion_anterior)
-        entry.show()
-        entry.grab_focus()
-        return entry
+        self.entry.show()
+        self.entry.grab_focus()
+        return self.entry
 
     def editing_done(self, entry, path, texto_anterior = ""):
         texto = entry.get_text()
