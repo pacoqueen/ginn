@@ -316,7 +316,8 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                                     for c in pclases.Cliente.select(
                                         pclases.Cliente.q.inhabilitado == False,
                                         orderBy = "nombre")]
-        handler_id = utils.cambiar_por_combo(tv = self.wids['tv_visitas'],
+        self.handler_cliente = utils.cambiar_por_combo(
+                                tv = self.wids['tv_visitas'],
                                 numcol = 1,
                                 opts = opts_clientes,
                                 clase = pclases.Visita,
@@ -326,7 +327,7 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                                 numcol_model = 2)
         col_cliente = self.wids['tv_visitas'].get_column(1)
         cellcbcliente = col_cliente.get_cell_renderers()[0]
-        cellcbcliente.disconnect(handler_id)
+        cellcbcliente.disconnect(self.handler_cliente)
         cellcbcliente.connect("edited", self.cambiar_cliente,
                               cellcbcliente.completion.get_model(),
                               2,
@@ -337,7 +338,7 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         col_cliente.set_attributes(cellcbcliente, text = 2)
         col_cliente.set_attributes(celldb, stock_id = 3)
         # Columna motivo con autocompletado
-        utils.cambiar_por_combo(self.wids['tv_visitas'],
+        self.handler_motivo = utils.cambiar_por_combo(self.wids['tv_visitas'],
                                 2,
                                 [(m.motivo, m.puid) for m in
                                     pclases.MotivoVisita.select(
@@ -406,7 +407,11 @@ class PartesDeVisita(Ventana, VentanaGenerica):
             pass    # Puede editar. No hago nada
         else:
             self.wids['tv_visitas'].get_model().clear()
-            cell.entry.destroy()
+            try:
+                cell.entry.destroy()
+            except AttributeError:  # No es un comboboxEntry
+                # TODO: PORASQUI: No funciona con el combo de motivo!!!
+                pass
             self.rellenar_widgets()
             utils.dialogo_info(titulo = "NO SE PUEDE MODIFICAR",
                     texto = "Visita confirmada. No puede modificarla.",
