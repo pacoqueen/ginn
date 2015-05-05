@@ -252,18 +252,23 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         model = self.wids['tv_visitas'].get_model()
         ide = model[path][-1]
         visita = pclases.getObjetoPUID(ide)
-        if text:
-            motivoVisita = pclases.MotivoVisita.search(text)
-            if motivoVisita:
-                visita.motivoVisita = motivoVisita
-            else:
-                utils.dialogo_info(titulo = "MOTIVO INCORRECTO", 
+        if visita.enviada:
+            utils.dialogo_info(titulo = "NO SE PUEDE MODIFICAR",
+                    texto = "Visita confirmada. No puede modificarla.",
+                    padre = self.wids['ventana'])
+        else:
+            if text:
+                motivoVisita = pclases.MotivoVisita.search(text)
+                if motivoVisita:
+                    visita.motivoVisita = motivoVisita
+                else:
+                    utils.dialogo_info(titulo = "MOTIVO INCORRECTO", 
                         texto = "Debe seleccionar un motivo de los existentes.",
                         padre = self.wids['ventana'])
-        else:
-            visita.motivoVisita = None
-        visita.syncUpdate()
-        pclases.Auditoria.modificado(visita, self.usuario, __file__)
+            else:
+                visita.motivoVisita = None
+            visita.syncUpdate()
+            pclases.Auditoria.modificado(visita, self.usuario, __file__)
         model[path][4] = (visita.motivoVisita and visita.motivoVisita.motivo
                           or "")
 
@@ -348,12 +353,16 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                                 self.wids['ventana'],
                                 entry = False,
                                 numcol_model = 4)
+        cellcbmotivo = self.wids['tv_visitas'].get_column(2
+                ).get_cell_renderers()[0]
+        cellcbmotivo.disconnect(self.handler_motivo)
+        cellcbmotivo.connect("edited", self.cambiar_motivo)
         # Columna observaciones.
         col_observaciones = self.wids['tv_visitas'].get_column(3)
         cellobservaciones = col_observaciones.get_cell_renderers()[0]
         col_observaciones.set_attributes(cellobservaciones, text = 5)
         # Control de permisos de edición si visitas enviadas:
-        for col in self.wids['tv_visitas'].get_columns():
+        for col in [self.wids['tv_visitas'].get_column(1),]:
             for cell in col.get_cell_renderers():
                 cell.connect("editing-started", self.control_permisos_enviado,
                              self.wids['tv_visitas'].get_model())
@@ -410,8 +419,9 @@ class PartesDeVisita(Ventana, VentanaGenerica):
             try:
                 cell.entry.destroy()
             except AttributeError:  # No es un comboboxEntry
-                # TODO: PORASQUI: No funciona con el combo de motivo!!!
-                pass
+                pass # El control se hace en un callback aparte. No hago nada
+                     # si no es el cell del cliente, que es el único que se
+                     # cancela de forma especial.
             self.rellenar_widgets()
             utils.dialogo_info(titulo = "NO SE PUEDE MODIFICAR",
                     texto = "Visita confirmada. No puede modificarla.",
@@ -564,8 +574,17 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                         cliente = pclases.getObjetoPUID(puid)
                         break
                 visita.cliente = cliente
-                visita.enviada = True
-                visita.syncUpdate()
+                if (not visita.cliente and not visita.observaciones
+                        and not visita.motivoVisita):
+                    pass    # No confirmo visitas vacías. Pero tampoco doy el 
+                            # coñazo con diálogos. Más adelante se podrá
+                            # afinar para no confirmas visitas sin cliente o
+                            # sin motivo, etc.
+                else:
+                    visita.enviada = True
+                    visita.syncUpdate()
+                    pclases.Auditoria.modificado(visita, self.usuario, __file__,
+                        "Visita ID %d confirmada." % visita.id)
         self.actualizar_ventana()
         # TODO: Digo yo que habría que mandar un correo o algo con las nuevas visitas confirmadas.
 

@@ -4387,7 +4387,7 @@ def set_fecha(entry):
 def cambiar_por_combo(tv, numcol, opts, clase, campo, ventana_padre = None, 
                       entry = False, numcol_model = None):
     """
-    Cambia el cell de la columna «numcoll» del TreeView «tv» por un combo con 
+    Cambia el cell de la columna «numcol» del TreeView «tv» por un combo con 
     las opciones recibidas en «opts», que deben respetar el formato 
     (texto, PUID) -ver get_puid y getObjetoPUID de pclases-.
     También se encarga de crear el callback para guardar los cambios.
