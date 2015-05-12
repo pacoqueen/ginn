@@ -63,7 +63,11 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         el que se muestra por defecto).
         """
         self.usuario = usuario
+        if isinstance(objeto, pclases.Visita):
+            # TODO: Y mover el calendario al día de la visita recibida.
+            objeto = objeto.comercial
         Ventana.__init__(self, 'partes_de_visita.glade', objeto, usuario = usuario)
+        print "self.objeto ---------------------------===", self.objeto
         connections = {'b_salir/clicked': self.salir,
                        'b_nuevo/clicked': self.nuevo,
                        'b_borrar/clicked': self.borrar,
@@ -111,10 +115,12 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                 self.ir_a(self.objeto)
 
     def ir_a(self, objeto = None):
+        print "----------------------------->", objeto
         if not objeto:
             self.ir_a_primero()
         else:
             # El comercial:
+            self.objeto = objeto
             utils.combo_set_from_db(self.wids['cb_comercial'], self.objeto.id)
             self.actualizar_ventana()
 

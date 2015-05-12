@@ -142,14 +142,10 @@ class ConsultaPartesDeVisita(Ventana):
         model = tv.get_model()
         dbpuid = model[path][-1]
         objeto = pclases.getObjetoPUID(dbpuid)
-        if isinstance(objeto, pclases.Proveedor):
-            from formularios import proveedores
-            ventanaproveedor = proveedores.Proveedores(objeto = objeto,
-                                                       usuario = self.usuario)
-        else:
-            from formularios import partes_de_visita
-# TODO: Esto no va a funcionar. El objeto en la ventana de partes de visita debe ser un comercial. O bien le mando comercial y fecha, o lo extraigo del objeto en la ventana de partes de visita si recibo una visita en lugar de un comercial.
-            ventanapartes = partes_de_visita.PartesDeVisita(objeto = objeto,
+        # Se le pasa un comercial o una visita concreta. La ventana destino
+        # decide qué hacer en cada caso.
+        from formularios import partes_de_visita
+        ventanapartes = partes_de_visita.PartesDeVisita(objeto = objeto,
                                                         usuario = self.usuario)
 
     def chequear_cambios(self):
