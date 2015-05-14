@@ -56,6 +56,7 @@ class ConsultaPartesDeVisita(Ventana):
     """
     Clase que contiene la ventana y los resultados de la consulta.
     """
+    # TODO: Meter tablas hamster con las franjas horarias en que se reciben visitas, un heatmap de visitas/comercial y tal.
     def __init__(self, objeto=None, usuario=None):
         """
         Constructor. objeto puede ser un objeto de pclases con el que

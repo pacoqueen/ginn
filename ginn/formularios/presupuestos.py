@@ -576,7 +576,7 @@ class Presupuestos(Ventana, VentanaGenerica):
             rte = self.usuario.email
             # TODO: OJO: HARDCODED
             dests = ["epalomo@geotexan.com"]
-            dests += [d for d in self.select_correo_validador()]
+            dests += [d for d in select_correo_validador(self.usuario)]
             comerciales = [self.objeto.comercial]
             dests += [comercial.correoe for comercial in comerciales
                       if comercial.empleado.usuario.usuario != self.usuario]
@@ -629,7 +629,8 @@ class Presupuestos(Ventana, VentanaGenerica):
             smtppass = self.usuario.smtppassword
             rte = self.usuario.email
             dests = [d for d 
-                in self.select_correo_validador(copia_a_dircomercial = True)]
+                in select_correo_validador(self.usuario,
+                                           copia_a_dircomercial = True)]
             comerciales = [self.objeto.comercial]
             dests += [comercial.correoe for comercial in comerciales
                       if comercial.empleado.usuario.usuario != self.usuario]
@@ -3064,7 +3065,8 @@ class Presupuestos(Ventana, VentanaGenerica):
                            self.usuario and self.usuario.usuario or "¡NADIE!"))
 
     def enviar_correo_solicitud_validacion(self):
-        dests = self.select_correo_validador(copia_a_dircomercial = True)
+        dests = select_correo_validador(self.usuario,
+                                        copia_a_dircomercial = True)
         if not isinstance(dests, (list, tuple)):
             dests = [dests]
         self.solicitudes_validacion[self.objeto.id] = dests
@@ -3160,39 +3162,6 @@ class Presupuestos(Ventana, VentanaGenerica):
                 except IndexError:
                     self.objeto = None
         self.actualizar_ventana()
-
-    def select_correo_validador(self, copia_a_dircomercial = False):
-        """
-        Devuelve un correo de usuario con permisos de validación que
-        no sea admin. Uno diferente en cada llamada.
-        Si «copia_a_dircomercial» es True, devuelve también el correo del
-        director comercial en la lista.
-        """
-        # TODO: OJO: HARCODED
-        if not self.usuario or self.usuario.id == 1:
-            res = ["informatica@geotexan.com"]
-        else:
-            res = ["nzumer@geotexan.com", "efigueroa@geotexan.com"]
-            if copia_a_dircomercial:
-                # FIXME: En el futurio se buscará esta dirección según algún
-                #        criterio de configuración en el usuario o algo.
-                res.append("jaguilar@geotexan.com")
-        return res
-        # CWT: Nada de RR. Correo a ambos.
-        #round_robin = [u.email
-        #        for u in pclases.Usuario.select(
-        #            pclases.Usuario.q.nivel <= NIVEL_VALIDACION)
-        #        if u.usuario != "admin"]
-        #if not hasattr(self, "ultimo_validador"):
-        #    self.ultimo_validador = validador = round_robin[0]
-        #else:
-        #    posultimo = round_robin.index(self.ultimo_validador)
-        #    posvalidador = posultimo + 1
-        #    if posvalidador >= len(round_robin):
-        #        posvalidador = 0
-        #    self.ultimo_validador = validador = round_robin[posvalidador]
-        #return validador
-
 
     def rellenar_plantilla_credito(self):
         vpro = VentanaProgreso(padre = self.wids['ventana'])
@@ -3848,6 +3817,38 @@ def OBSOLETE_convertir_a_xls(fods):
     tw = SodsXls(t)    # nada después de eso. Lo reutilizo para xls.
     tw.save(pathdest)
     return pathdest
+
+def select_correo_validador(usuario, copia_a_dircomercial = False):
+    """
+    Devuelve un correo de usuario con permisos de validación que
+    no sea admin. Uno diferente en cada llamada.
+    Si «copia_a_dircomercial» es True, devuelve también el correo del
+    director comercial en la lista.
+    """
+    # TODO: OJO: HARCODED
+    if not usuario or usuario.id == 1:
+        res = ["informatica@geotexan.com"]
+    else:
+        res = ["nzumer@geotexan.com", "efigueroa@geotexan.com"]
+        if copia_a_dircomercial:
+            # FIXME: En el futuro se buscará esta dirección según algún
+            #        criterio de configuración en el usuario o algo.
+            res.append("jaguilar@geotexan.com")
+    return res
+    # CWT: Nada de RR. Correo a ambos.
+    #round_robin = [u.email
+    #        for u in pclases.Usuario.select(
+    #            pclases.Usuario.q.nivel <= NIVEL_VALIDACION)
+    #        if u.usuario != "admin"]
+    #if not hasattr(self, "ultimo_validador"):
+    #    self.ultimo_validador = validador = round_robin[0]
+    #else:
+    #    posultimo = round_robin.index(self.ultimo_validador)
+    #    posvalidador = posultimo + 1
+    #    if posvalidador >= len(round_robin):
+    #        posvalidador = 0
+    #    self.ultimo_validador = validador = round_robin[posvalidador]
+    #return validador
 
 
 if __name__ == "__main__":

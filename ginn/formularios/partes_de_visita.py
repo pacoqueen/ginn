@@ -51,6 +51,7 @@ except ImportError:
     from framework.seeker import VentanaGenerica 
 from utils import _float as float
 import datetime
+from formularios.presupuestos import select_correo_validador
 
 NIVEL_SUPERVISOR = 1    # Nivel máximo de usuario que puede ver todas las
                         # visitas. Los niveles empiezan en 0 (admin)
@@ -64,10 +65,14 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         """
         self.usuario = usuario
         if isinstance(objeto, pclases.Visita):
-            # TODO: Y mover el calendario al día de la visita recibida.
+            self.fecha_recibida = objeto.fechahora
             objeto = objeto.comercial
+        elif isinstance(objeto, int):
+            self.fecha_recibida = None
+            objeto = pclases.Comercial.get(objeto)
+        else:
+            self.fecha_recibida = None
         Ventana.__init__(self, 'partes_de_visita.glade', objeto, usuario = usuario)
-        print "self.objeto ---------------------------===", self.objeto
         connections = {'b_salir/clicked': self.salir,
                        'b_nuevo/clicked': self.nuevo,
                        'b_borrar/clicked': self.borrar,
@@ -115,7 +120,6 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                 self.ir_a(self.objeto)
 
     def ir_a(self, objeto = None):
-        print "----------------------------->", objeto
         if not objeto:
             self.ir_a_primero()
         else:
@@ -240,9 +244,9 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                     texto = "Visita confirmada. No puede modificarla.",
                     padre = self.wids['ventana'])
 
-    def cambiar_cliente(self, cell, path, text, model, ncol, model_tv):
+    def cambiar_cliente(self, cell, path, text, model, ncolmodel, model_tv):
         """Cambia el nombre del cliente de la visita."""
-        model = self.wids['tv_visitas'].get_model()
+        model = model_tv
         ide = model[path][-1]
         visita = pclases.getObjetoPUID(ide)
         visita.nombrecliente = text
@@ -252,7 +256,7 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         # FEATURE: permite hacer consultas sobre visitas a un cliente cuando
         # aún no era cliente.
         visita.syncUpdate()
-        model[path][2] = visita.nombrecliente
+        model[path][ncolmodel] = visita.nombrecliente
 
     def cambiar_motivo(self, cell, path, text):
         model = self.wids['tv_visitas'].get_model()
@@ -275,7 +279,7 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                 visita.motivoVisita = None
             visita.syncUpdate()
             pclases.Auditoria.modificado(visita, self.usuario, __file__)
-        model[path][4] = (visita.motivoVisita and visita.motivoVisita.motivo
+        model[path][5] = (visita.motivoVisita and visita.motivoVisita.motivo
                           or "")
 
     def cambiar_observaciones(self, cell, path, text):
@@ -286,7 +290,21 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                                   and self.usuario.nivel <= NIVEL_SUPERVISOR):
             visita.observaciones = text     # PLAN: ¿Markdown?
             visita.syncUpdate()
-            model[path][5] = visita.observaciones
+            model[path][6] = visita.observaciones
+        else:
+            utils.dialogo_info(titulo = "NO SE PUEDE MODIFICAR",
+                    texto = "Visita confirmada. No puede modificarla.",
+                    padre = self.wids['ventana'])
+
+    def cambiar_lugar(self, cell, path, text):
+        model = self.wids['tv_visitas'].get_model()
+        ide = model[path][-1]
+        visita = pclases.getObjetoPUID(ide)
+        if not visita.enviada or (self.usuario
+                                  and self.usuario.nivel <= NIVEL_SUPERVISOR):
+            visita.lugar = text     # PLAN: ¿GIS?
+            visita.syncUpdate()
+            model[path][4] = visita.lugar
         else:
             utils.dialogo_info(titulo = "NO SE PUEDE MODIFICAR",
                     texto = "Visita confirmada. No puede modificarla.",
@@ -303,6 +321,8 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                     self.cambiar_hora),
                 ('Cliente o institución', 'gobject.TYPE_STRING', 
                     False, True, True, None),
+                ('Lugar', 'gobject.TYPE_STRING', True, True, False,
+                    self.cambiar_lugar),
                 ('Motivo', 'gobject.TYPE_STRING', False, True, False, None),
                     #self.cambiar_motivo),
                 ('Observaciones', 'gobject.TYPE_STRING', True, True, False,
@@ -313,8 +333,8 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         # Agrego un par de columnas para destacar visualmente clientes
         # confirmados en la BD y visitas ya enviadas.
         self.wids['tv_visitas'].set_model(
-                # Hora, Enviada, Cliente, ¿existe?, Motivo, Observaciones, PUID
-                gtk.ListStore(str, str, str, str, str, str, str))
+                # Hora, Enviada, Cliente, ¿existe?, Lugar, Motivo, Observaciones, PUID
+                gtk.ListStore(str, str, str, str, str, str, str, str))
         # Columna hora con candado si visita enviada.
         col_hora = self.wids['tv_visitas'].get_column(0)
         cellhora = col_hora.get_cell_renderers()[0]
@@ -348,9 +368,13 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         col_cliente.pack_start(celldb, expand = False)
         col_cliente.set_attributes(cellcbcliente, text = 2)
         col_cliente.set_attributes(celldb, stock_id = 3)
+        # Columna lugar.
+        col_lugar = self.wids['tv_visitas'].get_column(2)
+        celllugar = col_lugar.get_cell_renderers()[0]
+        col_lugar.set_attributes(celllugar, text = 4)
         # Columna motivo con autocompletado
         self.handler_motivo = utils.cambiar_por_combo(self.wids['tv_visitas'],
-                                2,
+                                3,
                                 [(m.motivo, m.puid) for m in
                                     pclases.MotivoVisita.select(
                                         orderBy = "motivo")],
@@ -358,15 +382,15 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                                 "motivoVisita",
                                 self.wids['ventana'],
                                 entry = False,
-                                numcol_model = 4)
-        cellcbmotivo = self.wids['tv_visitas'].get_column(2
+                                numcol_model = 5)
+        cellcbmotivo = self.wids['tv_visitas'].get_column(3
                 ).get_cell_renderers()[0]
         cellcbmotivo.disconnect(self.handler_motivo)
         cellcbmotivo.connect("edited", self.cambiar_motivo)
         # Columna observaciones.
-        col_observaciones = self.wids['tv_visitas'].get_column(3)
+        col_observaciones = self.wids['tv_visitas'].get_column(4)
         cellobservaciones = col_observaciones.get_cell_renderers()[0]
-        col_observaciones.set_attributes(cellobservaciones, text = 5)
+        col_observaciones.set_attributes(cellobservaciones, text = 6)
         # Control de permisos de edición si visitas enviadas:
         for col in [self.wids['tv_visitas'].get_column(1),]:
             for cell in col.get_cell_renderers():
@@ -400,13 +424,20 @@ class PartesDeVisita(Ventana, VentanaGenerica):
             if c.empleado.activo or c in comerciales_del_usuario]
         opciones_comerciales.sort(key = lambda i: i[1])
         utils.rellenar_lista(self.wids['cb_comercial'], opciones_comerciales)
-        # Empiezo con el día actual.
-        hoy = datetime.date.today()
+        if self.objeto:
+            utils.combo_set_from_db(self.wids['cb_comercial'], self.objeto.id)
+            # Si ha recibido el objeto, debe tener permiso para verlo. De otro
+            # modo... ¡me están juanqueando! (y petará).
+        if self.fecha_recibida:
+            hoy = self.fecha_recibida
+        else:
+            # Empiezo con el día actual.
+            hoy = datetime.date.today()
         self.wids['calendario'].select_day(hoy.day)
         self.wids['calendario'].select_month(hoy.month - 1, hoy.year)
         # Tratamiento especial de los botones actualizar y guardar
         self.activar_widgets(True, chequear_permisos = False)
-        self.wids['ventana'].resize(800, 600)
+        self.wids['ventana'].resize(700, 500)
         # Al principio pensé que podría ser útil. Ahora me ha entrado un poco
         # de complejo de Jacob Nielsen y casi mejor lo quito:
         self.wids['b_actualizar'].set_property("visible", False)
@@ -535,6 +566,7 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                 visita.enviada and gtk.STOCK_DIALOG_AUTHENTICATION or None,
                 visita.nombrecliente,
                 visita.cliente and gtk.STOCK_SAVE or gtk.STOCK_NEW,
+                visita.lugar and visita.lugar or "",
                 visita.motivoVisita and visita.motivoVisita.motivo or "",
                 visita.observaciones,
                 visita.puid)
@@ -553,7 +585,7 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                                 nombrecliente = "",
                                 motivoVisita = None,
                                 fechahora = fecha,
-                                lugar = None,
+                                lugar = "",
                                 observaciones = "",
                                 enviada = False)
         pclases.Auditoria.nuevo(visita, self.usuario, __file__)
@@ -568,6 +600,7 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         Marca como "enviada" cada visita del model y envía un correo
         electrónico para alertar de que el parte está completo.
         """
+        confirmadas = []
         model = self.wids['tv_visitas'].get_model()
         for row in model:
             visita = pclases.getObjetoPUID(row[-1])
@@ -588,11 +621,68 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                             # sin motivo, etc.
                 else:
                     visita.enviada = True
+                    confirmadas.append(visita)
                     visita.syncUpdate()
                     pclases.Auditoria.modificado(visita, self.usuario, __file__,
                         "Visita ID %d confirmada." % visita.id)
         self.actualizar_ventana()
-        # TODO: Digo yo que habría que mandar un correo o algo con las nuevas visitas confirmadas.
+        self.enviar_correo_visitas_confirmadas(confirmadas)
+
+    def enviar_correo_visitas_confirmadas(self, confirmadas = []):
+        """
+        Igual que en ofertas, se envía un correo a quien corresponde con el
+        resumen del día, destacando las recién confirmadas.
+        """
+        dests = select_correo_validador(self.usuario,
+                                        copia_a_dircomercial = True)
+        if not isinstance(dests, (list, tuple)):
+            dests = [dests]
+        servidor = self.usuario.smtpserver
+        smtpuser = self.usuario.smtpuser
+        smtppass = self.usuario.smtppassword
+        rte = self.usuario.email
+        year, month, day = self.wids['calendario'].get_date()
+        fecha = datetime.date(year = year, month = month, day = day)
+        texto = "Resumen de visitas de %s para el día %s:\n\n" % (
+                        self.objeto.get_nombre_completo(),
+                        utils.str_fecha(fecha))
+        # TODO: Empepinar el correo usando una tabla HTML. No es tan difícil.
+        for row in self.wids['tv_visitas'].get_model():
+            visita = pclases.getObjetoPUID(row[-1])
+            if not visita.enviada:
+                continue
+            texto += "%s%s\t%s%s\t%s\t%s\t%s%s\n" % (
+                    visita in confirmadas and "*" or "",
+                    utils.str_hora_corta(visita.fechahora),
+                    visita.nombrecliente,
+                    visita.cliente and "" or " (+)",
+                    visita.lugar and visita.lugar or "",
+                    visita.motivoVisita and visita.motivoVisita.motivo or "",
+                    visita.observaciones,
+                    visita in confirmadas and "*" or ""
+                    )
+        ok = utils.enviar_correoe(rte,
+                                  dests,
+                                  "Parte de visitas confirmado (%s)" 
+                                    % utils.str_fecha(fecha),
+                                  texto,
+                                  servidor = servidor,
+                                  usuario = smtpuser,
+                                  password = smtppass)
+        if ok:
+            self.to_log(
+                "Usuario %s envió correo de confirmación de visitas "
+                "para el día %s."
+                    % (self.usuario and self.usuario.usuario or "¡NADIE!",
+                       utils.str_fecha(fecha)),
+                nivel = 3)  # info
+        else:
+            self.to_log(
+                "Falló envío de correo de solicitud de validación de la "
+                "oferta %s del usuario %s."
+                    % (utils.str_fecha(fecha),
+                       self.usuario and self.usuario.usuario or "¡NADIE!"),
+                nivel = 1)  # error
 
     def borrar(self, widget):
         """
