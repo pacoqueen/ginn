@@ -52,6 +52,7 @@ except ImportError:
 from utils import _float as float
 import datetime
 from formularios.presupuestos import select_correo_validador
+from formularios import multi_open
 
 NIVEL_SUPERVISOR = 1    # Nivel máximo de usuario que puede ver todas las
                         # visitas. Los niveles empiezan en 0 (admin)
@@ -262,11 +263,8 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         model = self.wids['tv_visitas'].get_model()
         ide = model[path][-1]
         visita = pclases.getObjetoPUID(ide)
-        if visita.enviada:
-            utils.dialogo_info(titulo = "NO SE PUEDE MODIFICAR",
-                    texto = "Visita confirmada. No puede modificarla.",
-                    padre = self.wids['ventana'])
-        else:
+        if not visita.enviada or (self.usuario
+                                  and self.usuario.nivel <= NIVEL_SUPERVISOR):
             if text:
                 motivoVisita = pclases.MotivoVisita.search(text)
                 if motivoVisita:
@@ -279,8 +277,12 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                 visita.motivoVisita = None
             visita.syncUpdate()
             pclases.Auditoria.modificado(visita, self.usuario, __file__)
-        model[path][5] = (visita.motivoVisita and visita.motivoVisita.motivo
-                          or "")
+            model[path][6] = (visita.motivoVisita
+                              and visita.motivoVisita.motivo or "")
+        else:
+            utils.dialogo_info(titulo = "NO SE PUEDE MODIFICAR",
+                    texto = "Visita confirmada. No puede modificarla.",
+                    padre = self.wids['ventana'])
 
     def cambiar_observaciones(self, cell, path, text):
         model = self.wids['tv_visitas'].get_model()
@@ -290,7 +292,7 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                                   and self.usuario.nivel <= NIVEL_SUPERVISOR):
             visita.observaciones = text     # PLAN: ¿Markdown?
             visita.syncUpdate()
-            model[path][6] = visita.observaciones
+            model[path][7] = visita.observaciones
         else:
             utils.dialogo_info(titulo = "NO SE PUEDE MODIFICAR",
                     texto = "Visita confirmada. No puede modificarla.",
@@ -330,19 +332,23 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
                 # La última columna (oculta en la Vista) siempre es el id.
         utils.preparar_listview(self.wids['tv_visitas'], cols, multi=True)
+        # ·········· C A M B I O   M O D E L O   T R E E V I E W ··············
         # Agrego un par de columnas para destacar visualmente clientes
         # confirmados en la BD y visitas ya enviadas.
         self.wids['tv_visitas'].set_model(
                 # Hora, Enviada, Cliente, ¿existe?, Lugar, Motivo, Observaciones, PUID
-                gtk.ListStore(str, str, str, str, str, str, str, str))
+                gtk.ListStore(str, str, str, str, str, str, str, str, str))
         # Columna hora con candado si visita enviada.
+        # === Columna 0. Cells 0 y 1 ===
         col_hora = self.wids['tv_visitas'].get_column(0)
         cellhora = col_hora.get_cell_renderers()[0]
+        col_hora.set_attributes(cellhora, text = 0)
+        # Cell marca visita enviada.
         cellcandado = gtk.CellRendererPixbuf()
         col_hora.pack_start(cellcandado, expand = False)
-        col_hora.set_attributes(cellhora, text = 0)
         col_hora.set_attributes(cellcandado, stock_id = 1)
         # Columna cliente con autocompletado y símbolo "OK" si existe en la BD.
+        # === Columna 1. Cells 2 y 3 ===
         opts_clientes = [("%s (%s)" % (c.nombre, c.cif), c.puid)
                                     for c in pclases.Cliente.select(
                                         pclases.Cliente.q.inhabilitado == False,
@@ -368,10 +374,17 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         col_cliente.pack_start(celldb, expand = False)
         col_cliente.set_attributes(cellcbcliente, text = 2)
         col_cliente.set_attributes(celldb, stock_id = 3)
+        # === Columna 2. Cells 4 y 5 ===
         # Columna lugar.
         col_lugar = self.wids['tv_visitas'].get_column(2)
         celllugar = col_lugar.get_cell_renderers()[0]
         col_lugar.set_attributes(celllugar, text = 4)
+        # Cell lugar geolocalizado correctamente.
+        cellgis = gtk.CellRendererPixbuf()
+        col_lugar.pack_start(cellgis, expand = False)
+        col_lugar.set_attributes(cellgis, stock_id = 5)
+        self.wids['tv_visitas'].connect("button_press_event", self.search_gis)
+        # === Columna 3. Cell 6 ===
         # Columna motivo con autocompletado
         self.handler_motivo = utils.cambiar_por_combo(self.wids['tv_visitas'],
                                 3,
@@ -382,15 +395,17 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                                 "motivoVisita",
                                 self.wids['ventana'],
                                 entry = False,
-                                numcol_model = 5)
+                                numcol_model = 6)
         cellcbmotivo = self.wids['tv_visitas'].get_column(3
                 ).get_cell_renderers()[0]
         cellcbmotivo.disconnect(self.handler_motivo)
         cellcbmotivo.connect("edited", self.cambiar_motivo)
+        # === Columna 4. Cell 7 ===
         # Columna observaciones.
         col_observaciones = self.wids['tv_visitas'].get_column(4)
         cellobservaciones = col_observaciones.get_cell_renderers()[0]
-        col_observaciones.set_attributes(cellobservaciones, text = 6)
+        col_observaciones.set_attributes(cellobservaciones, text = 7)
+        # ·····································································
         # Control de permisos de edición si visitas enviadas:
         for col in [self.wids['tv_visitas'].get_column(1),]:
             for cell in col.get_cell_renderers():
@@ -441,6 +456,22 @@ class PartesDeVisita(Ventana, VentanaGenerica):
         # Al principio pensé que podría ser útil. Ahora me ha entrado un poco
         # de complejo de Jacob Nielsen y casi mejor lo quito:
         self.wids['b_actualizar'].set_property("visible", False)
+
+    def search_gis(self, widget, event): #, path, column):
+        if event.button == 1 and event.type == gtk.gdk._2BUTTON_PRESS:
+            res = widget.get_path_at_pos(int(event.x), int(event.y))
+            if res:
+                collugar = widget.get_column(2)
+                celllugar = collugar.get_cell_renderers()[0]
+                cellgis = collugar.get_cell_renderers()[1]
+                path, col, x, y = res
+                # get_size -> x-offset, y-offset, width, height 
+                ancho_lugar = celllugar.get_size(widget)[3]
+                if col == collugar and x > ancho_lugar:
+                    location = widget.get_model()[path][4]
+                    if location:
+                        multi_open.open("http://www.google.es/maps/?q=" + 
+                                        location.replace(" ", "%20"))
 
     def control_permisos_enviado(self, cell, editable, path, model):
         """
@@ -567,6 +598,8 @@ class PartesDeVisita(Ventana, VentanaGenerica):
                 visita.nombrecliente,
                 visita.cliente and gtk.STOCK_SAVE or gtk.STOCK_NEW,
                 visita.lugar and visita.lugar or "",
+                visita.lugar and gtk.STOCK_FIND or "",  # TODO: Geolocalizar y marcar si lugar reconocido en lugar de buscar en google maps.
+                # TODO: API de Google maps?
                 visita.motivoVisita and visita.motivoVisita.motivo or "",
                 visita.observaciones,
                 visita.puid)
