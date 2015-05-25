@@ -18040,7 +18040,9 @@ class PDPConfSilo(SQLObject, PRPCTOO):
                          or cs_dict['productoCompra'] != cs_db.productoCompra):
                         res = False
                         break
-                except KeyError:
+                except (KeyError,        # El silo no está presente en la conf.
+                        AttributeError): # No hay configuración para ese silo.
+                                         # ¿Hora incorrecta?
                     res = False
                     break
         return res

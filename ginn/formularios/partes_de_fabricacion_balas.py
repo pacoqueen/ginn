@@ -525,6 +525,12 @@ class PartesDeFabricacionBalas(Ventana):
         respecto al último (pero de eso se encarga el método del PDP).
         """
         pdp = self.objeto
+        fechahora = datetime.datetime.now()
+        # Me aseguro de que la hora de consumo está dentro del parte.
+        if not (self.objeto.fechahorainicio 
+                <= fechahora <= self.objeto.fechahorafin):
+            fechahora = max(self.objeto.fechahorainicio, fechahora)
+            fechahora = min(self.objeto.fechahorafin, fechahora)
         confs = {}
         for scale in self.scales:
             check_marcado, escala_porcentaje = scale
@@ -548,8 +554,10 @@ class PartesDeFabricacionBalas(Ventana):
                 confs[silo_key] = {'productoCompra': producto,
                                    'porcentaje': porcentaje}
         try:
-            pdp.save_conf_silos(confs)
-        except AssertionError, err:
+            pdp.save_conf_silos(confs, fechahora)
+        except (AssertionError,
+               # AttributeError
+               ), err:
             #raise AssertionError, err # Para que me lo envíe por correo.
             self.logger.error("partes_de_fabricacion_balas::"
                               "save_conf_silos -> %s - %s" % (err, confs))
