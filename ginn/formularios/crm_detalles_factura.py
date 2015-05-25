@@ -574,7 +574,7 @@ class CRM_DetallesFactura(Ventana):
                 estado = None
             clase, valores_defecto, params_relacion = {
                 'tv_anotaciones': (pclases.Nota, 
-                                   {}, 
+                                   {"fechahora": mx.DateTime.localtime()}, 
                                    {"facturaVenta": self.objeto}), 
                 'tv_alertas': (pclases.Alarma, 
                                {"estado": estado, 
