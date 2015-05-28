@@ -2136,18 +2136,24 @@ class Clientes(Ventana):
                              padre = self.wids['ventana']):
                 cliente.notificador.set_func(lambda : None)
                 try:
-                    cliente.destroy(ventana=__file__)
-                    self.ir_a_primero()
+                    if cliente.destroy(ventana=__file__):
+                        self.ir_a_primero()
+                    else:
+                        raise 
                 except:
                     txt = """
-                    El cliente no se eliminó por tener pedidos relacionados.
-                    Si desea eliminarlo, borre antes los pedidos asignados
-                    al cliente.
+                    El cliente no se eliminó por tener pedidos, facturas,
+                    obras u ofertas relacionadas.
+                    Si desea eliminarlo, borre antes los elementos relacionados
+                    con el cliente.
                     Los pedidos relacionados son:
                     """
                     for p in cliente.pedidosVenta:
                         txt += "Pedido número %s. Fecha %s.\n" % (
                                 p.numpedido, p.fecha.strftime('%d/%m/%y'))
+                    for o in cliente.presupuestos:
+                        txt += "Oferta número %d. Fecha %s.\n" % (
+                                o.id, o.fecha.strftime('%d/%m/%y'))
                     utils.dialogo_info(titulo = 'ERROR: NO SE PUDO BORRAR',
                                        texto = txt,
                                        padre = self.wids['ventana'])
