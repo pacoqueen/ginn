@@ -1247,7 +1247,17 @@ def existencias_productos(informe, fecha, hasta = None, almacen = None,
                     c.saveState()
                     c.setFont("Helvetica-Oblique", 10)
                     hay_prods_en_cursiva = True
-                c.drawString(xDescripcion, linea, escribe(p.descripcion))
+                # - Descripción del producto. Recorto si no cabe. - - - - - - -
+                fuente = "Helvetica"
+                size = 10
+                descripcion = p.descripcion
+                while (c.stringWidth(descripcion, fuente, size)
+                        >= (xMinimo
+                            - c.stringWidth(str(p.minimo), fuente, size)
+                            - xDescripcion)):
+                    descripcion = descripcion[:-4] + "..."
+                c.drawString(xDescripcion, linea, escribe(descripcion))
+                # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                 if not p.es_rolloC() or p.minimo != 0:
                     c.drawRightString(xMinimo, linea,
                                   escribe("%s" % utils.float2str(p.minimo, 1)))
@@ -9845,7 +9855,7 @@ def calcular_medidas(cheque):
     lm = 1.5*cm     # Margen izquierdo
     medidas = {'proveedor': [11.2*cm, 25.5*cm - 1*cm],
                'fecha': [13.3*cm, 19.8*cm],
-               'facturas': [lm, 17*cm - 1*cm],
+               'facturas': [lm, 17*cm - 0.25*cm],
                'observaciones': [lm, 9.25*cm + 1*cm]
               }
     if cheque:
@@ -9895,7 +9905,6 @@ def calcular_medidas(cheque):
     medidas['despedida'] =          [lm,        10 * cm]
     medidas['firma'] =              [lm3,       9 * cm]
         # 10 cm es el borde superior del cheque/pagaré.
-
     return medidas
 
 def _escribir_textofijo(c, medidas):
