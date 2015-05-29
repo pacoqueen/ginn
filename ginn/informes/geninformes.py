@@ -1251,11 +1251,13 @@ def existencias_productos(informe, fecha, hasta = None, almacen = None,
                 fuente = "Helvetica"
                 size = 10
                 descripcion = p.descripcion
-                while (c.stringWidth(descripcion, fuente, size)
-                        >= (xMinimo
-                            - c.stringWidth(str(p.minimo), fuente, size)
-                            - xDescripcion)):
-                    descripcion = descripcion[:-4] + "..."
+                if " " in descripcion: # Si no se puede recortar por palabras,
+                    # paso. Recortar por letra puede dar problemas con unicode.
+                    while (c.stringWidth(descripcion, fuente, size)
+                            >= (xMinimo
+                                - c.stringWidth(str(p.minimo), fuente, size)
+                                - xDescripcion)):
+                        descripcion = " ".join(descripcion.split()[:-1]) + "..."
                 c.drawString(xDescripcion, linea, escribe(descripcion))
                 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                 if not p.es_rolloC() or p.minimo != 0:
