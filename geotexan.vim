@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 28 mayo 2015 at 17:15:08.
+" Created by session.vim 1.5 on 29 mayo 2015 at 10:26:13.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -48,7 +48,8 @@ badd +1 ginn/lib/charting.py
 badd +1 ginn/formularios/partes_de_fabricacion_rollos.py
 badd +1253 ginn/informes/geninformes.py
 badd +72 ginn/formularios/consulta_existenciasRollos.py
-badd +0 ginn/formularios/clientes.py
+badd +1 ginn/formularios/clientes.py
+badd +17 ginn/formularios/consulta_existenciasBalas.py
 argglobal
 silent! argdel *
 argadd formularios/auditviewer.py
@@ -73,7 +74,10 @@ wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
-7wincmd k
+wincmd _ | wincmd |
+split
+8wincmd k
+wincmd w
 wincmd w
 wincmd w
 wincmd w
@@ -88,9 +92,9 @@ set winheight=1 winwidth=1
 exe 'vert 1resize ' . ((&columns * 31 + 58) / 117)
 exe '2resize ' . ((&lines * 1 + 24) / 48)
 exe 'vert 2resize ' . ((&columns * 85 + 58) / 117)
-exe '3resize ' . ((&lines * 32 + 24) / 48)
+exe '3resize ' . ((&lines * 26 + 24) / 48)
 exe 'vert 3resize ' . ((&columns * 85 + 58) / 117)
-exe '4resize ' . ((&lines * 1 + 24) / 48)
+exe '4resize ' . ((&lines * 5 + 24) / 48)
 exe 'vert 4resize ' . ((&columns * 85 + 58) / 117)
 exe '5resize ' . ((&lines * 1 + 24) / 48)
 exe 'vert 5resize ' . ((&columns * 85 + 58) / 117)
@@ -102,6 +106,8 @@ exe '8resize ' . ((&lines * 1 + 24) / 48)
 exe 'vert 8resize ' . ((&columns * 85 + 58) / 117)
 exe '9resize ' . ((&lines * 1 + 24) / 48)
 exe 'vert 9resize ' . ((&columns * 85 + 58) / 117)
+exe '10resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 10resize ' . ((&columns * 85 + 58) / 117)
 argglobal
 enew
 file __Tag_List__
@@ -133,6 +139,58 @@ normal! 05|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
+edit ~/Geotexan/src/Geotex-INN/ginn/informes/geninformes.py
+setlocal fdm=indent
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=99
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+1087
+normal! zo
+1143
+normal! zo
+1178
+normal! zo
+1245
+normal! zo
+1256
+normal! zo
+1257
+normal! zo
+1257
+normal! zo
+7177
+normal! zo
+7301
+normal! zo
+7301
+normal! zo
+7301
+normal! zo
+7302
+normal! zo
+7311
+normal! zo
+7412
+normal! zo
+7412
+normal! zo
+7412
+normal! zo
+7413
+normal! zo
+let s:l = 1257 - ((11 * winheight(0) + 13) / 26)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+1257
+normal! 0
+lcd ~/Geotexan/src/Geotex-INN
+wincmd w
+argglobal
 edit ~/Geotexan/src/Geotex-INN/ginn/formularios/clientes.py
 setlocal fdm=indent
 setlocal fde=0
@@ -150,6 +208,10 @@ normal! zo
 normal! zo
 2135
 normal! zo
+2135
+normal! zo
+2135
+normal! zo
 2139
 normal! zo
 2144
@@ -158,7 +220,7 @@ normal! zo
 normal! zo
 2156
 normal! zo
-let s:l = 2141 - ((10 * winheight(0) + 16) / 32)
+let s:l = 2141 - ((2 * winheight(0) + 2) / 5)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -252,7 +314,7 @@ normal! zo
 normal! zo
 18044
 normal! zo
-let s:l = 16953 - ((3 * winheight(0) + 0) / 1)
+let s:l = 16953 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -644,9 +706,9 @@ wincmd w
 exe 'vert 1resize ' . ((&columns * 31 + 58) / 117)
 exe '2resize ' . ((&lines * 1 + 24) / 48)
 exe 'vert 2resize ' . ((&columns * 85 + 58) / 117)
-exe '3resize ' . ((&lines * 32 + 24) / 48)
+exe '3resize ' . ((&lines * 26 + 24) / 48)
 exe 'vert 3resize ' . ((&columns * 85 + 58) / 117)
-exe '4resize ' . ((&lines * 1 + 24) / 48)
+exe '4resize ' . ((&lines * 5 + 24) / 48)
 exe 'vert 4resize ' . ((&columns * 85 + 58) / 117)
 exe '5resize ' . ((&lines * 1 + 24) / 48)
 exe 'vert 5resize ' . ((&columns * 85 + 58) / 117)
@@ -658,6 +720,8 @@ exe '8resize ' . ((&lines * 1 + 24) / 48)
 exe 'vert 8resize ' . ((&columns * 85 + 58) / 117)
 exe '9resize ' . ((&lines * 1 + 24) / 48)
 exe 'vert 9resize ' . ((&columns * 85 + 58) / 117)
+exe '10resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 10resize ' . ((&columns * 85 + 58) / 117)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
