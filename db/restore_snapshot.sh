@@ -13,7 +13,7 @@ function check_nombre_fbak(){
 
 function get_remote_fbak(){
     echo "Copiando fichero de copia de seguridad..."
-    HOST_BAKS=bacall
+    HOST_BAKS=bacall.geotexan.es
     #PATH_BAKS="/home/bogado/backups_sql"
     PATH_BAKS="backups_sql"
     # Intento así para ver si estoy en la fábrica:
@@ -21,7 +21,7 @@ function get_remote_fbak(){
     if [ ! $? -eq 0 ]; then     # Estoy en nostromo
         echo "Obteniendo copia a través de Internet..."
         # Primero, la copio a justinho
-        ssh bogado@gtx.duckdns.org "scp bogado@bacall:backups_sql/$1 /tmp"
+        ssh bogado@gtx.duckdns.org "scp bogado@bacall.geotexan.es:backups_sql/$1 /tmp"
         # Después me la traigo
         scp bogado@gtx.duckdns.org:/tmp/$1 /tmp
     else
@@ -30,11 +30,11 @@ function get_remote_fbak(){
 }
 
 function crear_bd(){
-    HOST=pennyworth
+    HOST=pennyworth.geotexan.es
     FECHA=$(echo $DUMP | cut -d '.' -f 1)
     PARTENOMBRE=$(echo $DUMP | cut -d '.' -f 2)
     NOMBD="$PARTENOMBRE"_"$FECHA" 
-    WHORU=$(ssh bogado@pennyworth hostname)
+    WHORU=$(ssh bogado@pennyworth.geotexan.es hostname)
     if [ ! "$WHORU" = "$HOST" ]; then
         HOST=localhost     # Estoy en nostromo
         OPTS=""
