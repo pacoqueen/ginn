@@ -16213,6 +16213,19 @@ class Contacto(SQLObject, PRPCTOO):
         res += "."
         return res
 
+    def existe_en(self, obra):
+        """
+        Devuelve True si el contacto (self) existe en la obra recibida. Se
+        compara la representación como cadena de los contactos para abarcar
+        el mayor número de campos posible. No se comparan los contactos en sí
+        porque pueden ser el mismo y tener ID diferentes en la BD.
+        """
+        yo = self.get_str_contacto()
+        for c in obra.contactos:
+            if c.get_str_contacto() == yo:
+                return True
+        return False
+
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 class Nota(SQLObject, PRPCTOO):

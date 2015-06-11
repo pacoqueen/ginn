@@ -266,7 +266,8 @@ class Clientes(Ventana):
             malas = [o for o in obras if o != buena]
             for mala in malas:
                 for contacto in mala.contactos:
-                    buena.addContacto(contacto)
+                    if not contacto.existe_en(buena):
+                        buena.addContacto(contacto)
                     mala.removeContacto(contacto)
                 for pedido in mala.pedidosVenta:
                     pedido.obra = buena
