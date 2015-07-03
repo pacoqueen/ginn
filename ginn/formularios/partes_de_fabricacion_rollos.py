@@ -1806,6 +1806,7 @@ class PartesDeFabricacionRollos(Ventana):
         # Fuerzo la actualización de la BD y no espero a que SQLObject lo haga 
         # por mí:
         partedeproduccion.sync()
+        pclases.Auditoria.modificado(partedeproduccion, self.usuario, __file__)
         # Vuelvo a activar el notificador
         partedeproduccion.notificador.activar(self.aviso_actualizacion)
         self.actualizar_ventana()
