@@ -186,7 +186,10 @@ class EanBarCode:
         height height in pixel of the bar code
         extension image file extension.
         """
-        import Image, ImageFont, ImageDraw
+        try:
+            import Image, ImageFont, ImageDraw
+        except ImportError:
+            from PIL import Image, ImageFont, ImageDraw   # Pillow
 
         if len(value) != 12 and len(value) != 13:
             # Si no es de la longitud correcta para EAN13 genero un Code9 en EncapsulatedPostScript y 

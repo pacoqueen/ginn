@@ -160,7 +160,10 @@ class Barcode(Flowable):
         sólo que usa PIL para dibujar.
         Necesita los archivos de fuentes usados en EANBarCode.
         """
-        import Image, ImageFont, ImageDraw
+        try:
+            import Image, ImageFont, ImageDraw
+        except ImportError:
+            from PIL import Image, ImageFont, ImageDraw
         from informes.barcode.EANBarCode import decodeFontFile, courB08_pil, courB08_pbm, FDEST_PIL, FDEST_PBM
         
         # Fuente:

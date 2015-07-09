@@ -26,7 +26,10 @@
 
 
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-import Image
+try:
+    import Image
+except ImportError:
+    from PIL import Image
 from reportlab.rl_config import defaultPageSize
 from reportlab.lib import colors, enums
 from reportlab.lib.units import cm

@@ -3956,11 +3956,7 @@ def image2pixbuf(image):
     """
     http://www.daa.com.au/pipermail/pygtk/2003-June/005268.html
     """
-    #import pygtk
-    #pygtk.require("2.0")
-    #import gtk
     import StringIO
-    #import Image
     fich = StringIO.StringIO()
     image.save(fich, 'ppm')
     contents = fich.getvalue()

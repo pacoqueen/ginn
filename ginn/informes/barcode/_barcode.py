@@ -55,8 +55,12 @@
 #
 from reportlab.lib import colors  # @UnusedImport
 from reportlab.graphics.shapes import *  # @UnusedWildImport
-import Image  # @Reimport ¿?
-import ImageDraw    ## Del PIL    
+try:
+    import Image  # @Reimport ¿?
+    import ImageDraw    ## Del PIL    
+except ImportError:
+    from PIL import Image  # Pillow
+    from PIL import ImageDraw
 
 
 class InvalidBarcode(StandardError):

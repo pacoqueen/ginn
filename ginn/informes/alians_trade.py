@@ -7,7 +7,10 @@ from reportlab.lib.units import cm
 import os
 from tempfile import gettempdir
 from formularios import utils
-import Image
+try:
+    import Image
+except ImportError:
+    from PIL import Image   # Pillow
 import datetime
 
 # we know some glyphs are missing, suppress warnings

@@ -57,7 +57,10 @@ from framework import pclases
 from formularios import utils
 import time
 from tempfile import gettempdir
-import Image
+try:
+    import Image
+except ImportError:
+    from PIL import Image
 import re
 
 # Un par de fuentes TrueType con soporte casi completo para UTF-8.
