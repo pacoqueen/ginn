@@ -45,7 +45,8 @@ set PATH=%PATH%;C:\Python27\Scripts
 @pip install Pillow
 @pip install sqlobject
 @pip install pyserial
-@pip install pychart
+@REM No hay PyChart para Win32... ¿desde cuándo?
+@REM @pip install PyChart --allow-all-external --allow-unverified PyChart
 
 @echo Instalando Ghostscript...
 @gs916w32.exe
