@@ -4172,6 +4172,7 @@ def parse_cif(cif = None):
         * Francia: FR64 384 813 341 00029
         * Polonia: 1234567890
         * México: NNE100120TW0
+        * ...
 
     En teoría lo siguiente debería valer de unittest con 
     import doctest; doctest.testmod()
@@ -4214,6 +4215,8 @@ def parse_cif(cif = None):
     '12345678'
     >>> parse_cif("NNE100120TW0")
     'NNE100120TW0'
+    >>> parse_cif('000416096443192')
+    '000416096443192'
     """
     # [Update: 29/05/2012] Javi me pasa estos formatos, que son con los que 
     #                      ellos normalmente trabajan:
@@ -4234,6 +4237,7 @@ def parse_cif(cif = None):
                                       # Para grupos de empresas 3 números más.
                    'Rumania':     'RO12', # RO + 2 a 10 números.
                    'Irlanda':     'IE 6388047V', # IE + 1 número + letra o número + 5 números + letra.
+                   'Italia2':     '000416096443192', # AFITEX: 15 números
                   }
         # TEST MODE
         samples['_NIF'] = '00000000T'
@@ -4333,6 +4337,8 @@ def parse_cif(cif = None):
                          "([0-9]{8}[A-Z])"
                          "|"
                          "([0-9]{9}[A-Z]{2}[0-9]{4})"
+                         "|"
+                         "([0-9]{15})"
                          "|"
                          "([0-9]{10})"
                          "|"
