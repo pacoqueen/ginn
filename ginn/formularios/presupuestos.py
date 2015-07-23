@@ -1846,7 +1846,17 @@ class Presupuestos(Ventana, VentanaGenerica):
         if ldp.productoVenta and ldp.productoVenta.es_rollo():
             cantidad = ldp.cantidad
             cer = ldp.productoVenta.camposEspecificosRollo
-            resto = cantidad % cer.metrosCuadrados
+            try:
+                resto = cantidad % cer.metrosCuadrados
+            except ZeroDivisionError:
+                utils.dialogo_info(titulo = "ERROR EN FICHA DE PRODUCTO",
+                        texto = "El producto «%s»\n"
+                                "no está correctamente dado de alta.\n"
+                                "Verifique que la información referente a sus"
+                                " dimensiones no es cero." % (
+                                    ldp.productoVenta.descripcion),
+                        padre = self.wids['ventana'])
+                resto = 0.0
             if resto:
                 nueva_cantidad = cantidad + cer.metrosCuadrados - resto
                 if utils.dialogo(titulo = "¿CANTIDAD INCORRECTA?",
