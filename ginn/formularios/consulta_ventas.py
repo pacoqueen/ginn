@@ -701,7 +701,9 @@ class ConsultaVentas(Ventana):
                               or (lda.prefacturaID and lda.prefactura.fecha)
                         or (lda.albaranSalidaID and lda.albaranSalida.fecha) 
                             or (lda.pedidoVentaID and lda.pedidoVenta.fecha)),
-             lda.producto.descripcion,
+             (lda.producto and lda.producto.descripcion)
+                or (lda.servicio and lda.servicio.descripcion)
+                or "Línea de abono vacía",
              "[%s %s]" % (cantidad, bultos),
              "%s €" % (utils.float2str(precio, 3)),
              "%s €" % (utils.float2str(total_ldv, 3)),
