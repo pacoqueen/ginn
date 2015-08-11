@@ -1008,8 +1008,16 @@ class SuperFacturaVenta:
                 # ¿Factura sin pedido?
                 str_formapago = self.cliente.get_texto_forma_cobro()
             for incr in vtos:
-                fechavto = (mx.DateTime.DateFrom(self.fecha)
-                            + (incr * mx.DateTime.oneDay))
+                try:
+                    raise TypeError
+                    fechavto = (mx.DateTime.DateFrom(self.fecha)
+                                + (incr * mx.DateTime.oneDay))
+                except TypeError:   # Python antiguo y mezcla de datetime + mx
+                    fechavto = mx.DateTime.DateFrom(self.fecha.year,
+                                                    self.fecha.month,
+                                                    self.fecha.day)
+                    for i in range(incr):
+                        fechavto += mx.DateTime.oneDay
                 vto = VencimientoCobro(fecha=fechavto,
                                        importe = cantidad,
                                        facturaVenta = self,
