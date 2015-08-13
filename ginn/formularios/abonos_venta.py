@@ -1213,12 +1213,19 @@ class AbonosVenta(Ventana):
             total = utils.parse_euro(self.wids['e_total'].get_text())
         except ValueError:
             total = 0
+        try:
+            total_iva = self.objeto.calcular_total_iva()
+            str_total_iva = utils.float2str(total_iva)
+        except NotImplementedError:
+            str_total_iva = ""
+            total_iva = 0
         totales = {'subtotal': utils.float2str(total), # / (1 + iva)), 
                    'cargo': None,       # Los abonos nunca llevan cargo
                    'descuento': None,   # Tampoco descuentos
-                   'totaliva': utils.float2str(total * iva), 
+                   #'totaliva': utils.float2str(total * iva), 
+                   'totaliva': str_total_iva, 
                    'iva': utils.float2str(iva * 100, 0), 
-                   'total': utils.float2str(total * (1 + iva)), 
+                   'total': utils.float2str(total + total_iva), 
                   }
         from numerals import numerals as convertir_numero_a_texto
         texto = convertir_numero_a_texto(totales['total'], moneda = "euros", 

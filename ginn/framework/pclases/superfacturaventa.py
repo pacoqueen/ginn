@@ -279,8 +279,30 @@ class SuperFacturaVenta:
         if abonos == None:
             abonos = sum([pa.importe for pa in self.pagosDeAbono])
         total_iva = utils.ffloat(
-                subtotal + tot_dto + self.cargo + abonos) * self.iva
+                subtotal + tot_dto + cargo + abonos) * self.iva
         return total_iva
+
+    def _calcular_total_iva(self, subtotal=None, tot_dto=None,
+                           cargo=None, abonos=None):
+        """
+        Calcula el importe total de IVA de la factura.
+        """
+        if subtotal == None:
+            #subtotal = self.calcular_subtotal()
+            subtotal = float(self.calcular_base_imponible())
+        if tot_dto == None:
+            tot_dto = float(self.calcular_total_descuento(subtotal))
+            # Porque viene como FixedPoint y todas las operaciones en total_iva
+            # se "castean" a FixedPoint, redondeando mal con, por ejemplo:
+            # 18562.5 * 0.21
+        if cargo == None:
+            cargo = float(self.cargo) # Es Decimal y no puede operar con floats
+        if abonos == None:
+            abonos = sum([pa.importe for pa in self.pagosDeAbono])
+        total_iva = utils.ffloat((
+                subtotal + tot_dto + cargo + abonos) * self.iva)
+        return total_iva
+    
 
     def emparejar_vencimientos(self):
         """

@@ -18644,6 +18644,18 @@ class Abono(SQLObject, PRPCTOO):
     importeSinIva = property(calcular_importe_sin_iva,
                              doc = calcular_importe_sin_iva.__doc__)
 
+    def calcular_total_iva(self):
+        """
+        Calcula el importe total de IVA con dos decimales basándose en la
+        factura de abono. Si no hay, lanzará una excepción.
+        """
+        try:
+            return self.facturaDeAbono.calcular_total_iva()
+        except AttributeError:
+            raise NotImplementedError, "pclases::Abono -> No puede calcularse"\
+                    " el importe de IVA sin generar previamente la factura "\
+                    "de abono."
+
     def get_albaranes(self):
         """
         Devuelve una lista de albaranes de salida relacionados

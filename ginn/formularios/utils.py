@@ -2175,7 +2175,7 @@ def round_banquero(numero, precision = 2):
 
 def ffloat(n, precision = 2):
     """
-    Convierte un float a ffloat con el redondeo correcto. 
+    Convierte un float a Ffloat con el redondeo correcto. 
     Para ello convierte antes a string.
     """
     if precision == 0:
