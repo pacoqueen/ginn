@@ -69,6 +69,7 @@ reportlab.rl_config.warnOnMissingFontGlyphs = 0
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont, TTFError
 try:
+#    pdfmetrics.registerFont(TTFont('FedraSans', 'FedraSansStd.ttf'))
     pdfmetrics.registerFont(TTFont('Vera', 'Vera.ttf'))
     pdfmetrics.registerFont(TTFont('VeraB', 'VeraBd.ttf'))
     pdfmetrics.registerFont(TTFont('VeraI', 'VeraIt.ttf'))
@@ -78,6 +79,9 @@ try:
     pdfmetrics.registerFont(TTFont('LiberationI', 'LiberationSans-Italic.ttf'))
     pdfmetrics.registerFont(TTFont('LiberationBI', 'LiberationSans-BoldItalic.ttf'))
 except TTFError:
+#    pdfmetrics.registerFont(TTFont('FedraSans', os.path.join(
+#        os.path.dirname(os.path.realpath(__file__)), "..", "informes",
+#                        'FedraSansStd.ttf')))
     pdfmetrics.registerFont(TTFont('Vera', os.path.join(
         os.path.dirname(os.path.realpath(__file__)), "..", "informes", 'Vera.ttf')))
     pdfmetrics.registerFont(TTFont('VeraB', os.path.join(
@@ -4583,36 +4587,68 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
         bm, tm = bmbak, tmbak
         numpagina += 1
         # La cabecera
-        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                        '..', 'imagenes', datos_empresa.logo),
-                    lm+0.5*inch, height - 1.5*inch, 1.5*inch, 1.5*inch)
         if datos_empresa.bvqi:
             c.drawImage(os.path.join(os.path.dirname(
                             os.path.realpath(__file__)), '..', 'imagenes',
                             datos_empresa.logoiso2),
-                        rm-1.65*inch, height - 2.5*cm, 3.3*cm, 1.85*cm)
+                        rm-1.2*inch, height - 3*cm, 3.3*cm, 1.85*cm)
 
         linea = height-50
-        c.setFont("Helvetica", 18)
-        c.drawCentredString(rm-inch, tm+1*inch, escribe('Factura de abono'))
-        c.drawCentredString(width/2, linea, escribe(datos_empresa.nombre))
+        c.setFont("Times-Bold", 18)
+        c.drawRightString(rm, tm+2.4*cm, escribe('Factura'))
+        # ====== LOGO ============
+        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                        '..', 'imagenes', datos_empresa.logo),
+                    lm+0.5*inch, height - 2.8*cm, 0.9*inch, 0.9*inch)
+        c.setFont("LiberationB", 18)
+        c.drawString(1.26*inch, linea, escribe(datos_empresa.nombre))
+        c.saveState()
+        c.setFont("Courier", 7)
+        c.setFillColorRGB(0.3, 0.3, 0.3)
+        # TODO: ¿Creo un campo "eslógan" en la base de datos?
+        c.drawString(1.26*inch, linea-0.3*cm,
+                     escribe('geosintéticos de alta calidad'))
+        c.restoreState()
+        # =========================
         linea = sigLinea()
-        c.setFont("Helvetica", 10)
-        c.drawCentredString(width/2, linea,
-                            escribe(datos_empresa.dirfacturacion))
         linea = sigLinea()
-        c.drawCentredString(width/2, linea, escribe('%s %s%s, %s' % (
+        c.setFont("Times-Bold", 10)
+        c.saveState()
+        verde_gtx = 0, 0.6, 0
+        c.setFillColorRGB(*verde_gtx)
+        c.drawString(lm + 0.5*inch, linea, "DOMICILIO: ")
+        ancho_texto_domicilio = c.stringWidth("DOMICILIO: ",
+                                              "Times-Bold", 10)
+        c.setFillColorRGB(0.3, 0.3, 0.3)
+        c.drawString(lm + 0.5*inch + ancho_texto_domicilio, linea,
+                     escribe(datos_empresa.dirfacturacion))
+        linea = sigLinea()
+        linea2_dirfacturacion = escribe('%s %s%s, %s' % (
             datos_empresa.cpfacturacion,
             datos_empresa.ciudadfacturacion,
             datos_empresa.provinciafacturacion
                 != datos_empresa.ciudadfacturacion
                 and " (%s)" % (datos_empresa.provinciafacturacion) or "",
-            datos_empresa.paisfacturacion)))
+            datos_empresa.paisfacturacion))
+        c.drawString(lm + 0.5*inch, linea, linea2_dirfacturacion)
+        ancho_linea2_dirfacturacion = c.stringWidth(linea2_dirfacturacion,
+                                                    "Times-Bold", 10)
+        c.setFont("Times-Roman", 10)
+        c.drawString(lm + 0.5*inch + ancho_linea2_dirfacturacion, linea,
+                escribe(" · t %s · f %s" % (datos_empresa.telefono,
+                                            datos_empresa.fax)))
         linea = sigLinea()
-        c.drawCentredString(width/2, linea, escribe('%s: %s' % (
-            datos_empresa.str_cif_o_nif(), datos_empresa.cif)))
-        linea = sigLinea()
+        c.setFillColorRGB(*verde_gtx)
+        c.drawString(lm + 0.5*inch, linea,
+                escribe('%s / VAT NUMBER:ES %s' % (
+                    datos_empresa.str_cif_o_nif(),
+                    datos_empresa.cif)))
+        c.setStrokeColorRGB(*verde_gtx)
+        c.line(0, linea - 0.1*cm, width, linea - 0.1*cm)
+        c.restoreState()
         if datos_empresa.bvqi:
+            linea_fib = linea 
+            linea_gtx = linea_fib + 0.25*cm
             # Marcado CE Geotextiles
             anchotexto = c.stringWidth(
                             escribe('Geotextiles CE 1035-CPD-ES033858'),
@@ -4620,23 +4656,23 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
             anchosemitexto = c.stringWidth(
                                 escribe('Geotextiles '),
                                 "Courier", 8)
-            posx = (width - anchotexto)/2 
+            posx = rm - anchotexto
             cursiva(c, posx,
-                    linea,
+                    linea_gtx,
                     escribe('Geotextiles    1035-CPD-ES033858'),
                     "Courier", 8, (0, 0, 0), 10)
             try:
                 c.drawImage(os.path.join(os.path.dirname(
                     os.path.realpath(__file__)), '..', 'imagenes', "CE.png"),
                             posx + anchosemitexto,
-                            linea,
+                            linea_gtx,
                             0.40*cm,
                             0.20*cm)
             except IOError:     # W8
                 c.drawImage(os.path.join(os.path.dirname(
                     os.path.realpath(__file__)), '..', 'imagenes', "CE.gif"),
                             posx + anchosemitexto,
-                            linea,
+                            linea_gtx,
                             0.40*cm,
                             0.20*cm)
             # Marcado CE fibra
@@ -4646,9 +4682,9 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
             anchosemitexto = c.stringWidth(
                                 escribe('Fibra '),
                                 "Courier", 8)
-            posx = (width - anchotexto)/2 
+            posx = rm - anchotexto
             cursiva(c, posx,
-                    linea - 8,
+                    linea_fib,
                     escribe('Fibra    1035-CPD-9003712'),
                     "Courier", 8, (0, 0, 0), 10)
             try:
@@ -4656,7 +4692,7 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
                             os.path.realpath(__file__)), '..', 'imagenes',
                             "CE.png"),
                         posx + anchosemitexto, 
-                        linea - 8, 
+                        linea_fib, 
                         0.40*cm, 
                         0.20*cm)
             except IOError:     # W8
@@ -4664,7 +4700,7 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
                             os.path.realpath(__file__)), '..', 'imagenes',
                             "CE.gif"),
                         posx + anchosemitexto, 
-                        linea - 8, 
+                        linea_fib, 
                         0.40*cm, 
                         0.20*cm)
         c.setFont("Helvetica", 10)
@@ -4693,7 +4729,7 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
 
         # La doble línea:
         c.saveState()
-        c.setStrokeColorRGB(0.1, 0.1, 1.0)
+        c.setStrokeColorRGB(*verde_gtx)
         c.line(xLocalTitulo, linea-4, rm, linea-4)
         c.line(xLocalTitulo, linea-1, rm, linea-1)
         c.restoreState()
@@ -4955,7 +4991,8 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
             c.drawString(lm + 0.5*inch, bm+inch+90,
                          "IMPORTA LA PRESENTE FACTURA:")
 
-            rectangulo(c, (lm+0.5*inch, bm+inch+88), (rm-2.2*inch, bm+inch+30))
+            rectangulo(c, (lm+0.5*inch, bm+inch+88), (rm-2.2*inch, bm+inch+30),
+                       color_relleno = (0.8, 1.0, 0.6))
             origen = lm+0.5*inch + 4
             linea = bm + inch + 75
             # DATA
@@ -5077,28 +5114,38 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
         linea = bm-0.25*inch
             # Cuadro verde:
         c.saveState()
-        c.setFillColorRGB(0.6, 1, 0.6)
-        c.setStrokeColorRGB(0.6, 1, 0.6)
+        c.setFillColorRGB(1.0, 1.0, 1.0)
+        c.setStrokeColorRGB(*verde_gtx)
         c.rect(lm + 0.5 * inch, linea - 20, rm - (lm + 0.5 *inch), 15 * 2,
                stroke = 1, fill = 1)
             # 15 es el valor por defecto para el alto de una línea de texto.
-        c.restoreState()
 
             # Texto dentro:
-        c.setFont("Helvetica", 8)
+        c.setFont("Times-Bold", 8)
         pos_pie = lm + 0.5 * inch + ((rm - (lm + 0.5 * inch)) / 2)
+        c.setFillColorRGB(*verde_gtx)
         if datos_empresa.direccion != datos_empresa.dirfacturacion:
             c.drawCentredString(pos_pie, linea,
-                escribe('DIRECCIÓN DE OFICINAS Y CORRESPONDENCIA'\
-                        ': %s. %s - %s (%s)' % (datos_empresa.direccion,
-                                                datos_empresa.cp,
-                                                datos_empresa.ciudad,
-                                                datos_empresa.provincia)))
+                escribe('DIRECCIÓN DE OFICINAS Y CORRESPONDENCIA'))
             linea = sigLinea()
-            c.drawCentredString(pos_pie, linea,
-                escribe('Tlf. %s  Fax %s' % (datos_empresa.telefono,
-                                             datos_empresa.fax)))
-
+            dir_pie1 = '%s. %s - %s (%s)' % (datos_empresa.direccion,
+                                             datos_empresa.cp,
+                                             datos_empresa.ciudad,
+                                             datos_empresa.provincia)
+            ancho_pie1 = c.stringWidth(dir_pie1, "Times-Bold", 8)
+            dir_pie2 = ' · t %s · f %s' % (datos_empresa.telefono,
+                                        datos_empresa.fax)
+            ancho_pie2 = c.stringWidth(dir_pie2, "Times-Roman", 8)
+            c.setFillColorRGB(0.0, 0.0, 0.0)
+            c.drawCentredString(pos_pie - (ancho_pie2/ 2),
+                                linea,
+                                escribe(dir_pie1))
+            c.setFont("Times-Roman", 8)
+            c.setFillColorRGB(0.3, 0.3, 0.3)
+            c.drawCentredString(pos_pie + (ancho_pie1 / 2),
+                                linea,
+                                escribe(dir_pie2))
+        c.restoreState()
 
         # Salvamos la página
         c.showPage()
