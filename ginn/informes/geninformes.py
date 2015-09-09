@@ -10283,7 +10283,7 @@ def fax_transferencia(empresa,      # Banco a través del que se hace la
                'pequeña': {'fuente': "Helvetica", 'tamaño': 10}}
     c.setFont(fuentes['negrita']['fuente'], fuentes['negrita']['tamaño'])
     escribir_cabecera(c, medidas, fuentes)
-    escribir_pie(c, medidas, fuentes)
+    #escribir_pie(c, medidas, fuentes)
     # Hasta aquí tenemos una plantilla más o menos estándar con cabecera y
     # pie de página.
     escribir_cuerpo_fax(c, medidas, fuentes, empresa, contacto, fax, telefono,
@@ -10303,8 +10303,8 @@ def escribir_cuerpo_fax(canvas, medidas, fuentes, empresa, contacto, fax,
     Cuerpo del fax.
     """
     canvas.setFont(fuentes['grande']['fuente'], fuentes['grande']['tamaño'])
-    canvas.drawCentredString(medidas['titulo_fax'][0],
-                             medidas['titulo_fax'][1], escribe("FAX"))
+    #canvas.drawCentredString(medidas['titulo_fax'][0],
+    #                         medidas['titulo_fax'][1], escribe("FAX"))
 
     canvas.setFont(fuentes['negrita']['fuente'], fuentes['negrita']['tamaño'])
     canvas.drawString(medidas['empresa0'][0], medidas['empresa0'][1],
@@ -10425,63 +10425,78 @@ def escribir_cabecera(canvas, medidas, fuentes):
     Escribe la cabecera del fax.
     """
     datos_empresa = pclases.DatosDeLaEmpresa.select()[0]
-    canvas.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo),
-                     medidas['logo0_cabecera'][0],
-                     medidas['logo0_cabecera'][1],
-                     medidas['logo0_cabecera'][2],
-                     medidas['logo0_cabecera'][3])
+    c = canvas
+    width, height = A4
+    lm = 0.7*cm
+    rm = width - 1.2*cm
+    if datos_empresa.logo:
+        dibujar_logo_prns(c, lm, height, datos_empresa)
     if datos_empresa.bvqi:
-        canvas.drawImage(
-            os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logoiso1),
-            medidas['logo1_cabecera'][0],
-            medidas['logo1_cabecera'][1],
-            medidas['logo1_cabecera'][2],
-            medidas['logo1_cabecera'][3])
-        canvas.setFont("Helvetica", 6)
-        canvas.drawCentredString(medidas['logo1_cabecera'][0]
-                                    + medidas['logo1_cabecera'][2]/2.0,
-                                 medidas['logo1_cabecera'][1] + 0.02*cm,
-                                 escribe('Geotextiles CE 1035-CPD-ES033858'))
-        canvas.drawCentredString(medidas['logo1_cabecera'][0]
-                                    + medidas['logo1_cabecera'][2]/2.0,
-                                 medidas['logo1_cabecera'][1] - 0.2*cm,
-                                 escribe('Fibra CE 1035-CPD-9003712'))
-    canvas.setFont(fuentes['cabecera_negrita']['fuente'],
-                   fuentes['cabecera_negrita']['tamaño'])
-    canvas.drawString(medidas['empresa_cabecera'][0],
-                      medidas['empresa_cabecera'][1],
-                      escribe(datos_empresa.nombre))
-    canvas.setFont(fuentes['cabecera']['fuente'],
-                   fuentes['cabecera']['tamaño'])
-    canvas.drawString(medidas['direccion0_cabecera'][0],
-                      medidas['direccion0_cabecera'][1],
-                      escribe(datos_empresa.direccion))
-    canvas.drawString(medidas['direccion1_cabecera'][0],
-                      medidas['direccion1_cabecera'][1],
-                      escribe("%s %s (%s), %s" % (datos_empresa.cp,
-                                                  datos_empresa.ciudad,
-                                                  datos_empresa.provincia,
-                                                  datos_empresa.pais)))
-    canvas.drawString(medidas['telefono_cabecera'][0],
-                      medidas['telefono_cabecera'][1],
-                      escribe("Telf.: %s" % (datos_empresa.telefono)))
-    canvas.drawString(medidas['fax_cabecera'][0],
-                      medidas['fax_cabecera'][1],
-                      escribe("Fax: %s" % (datos_empresa.fax)))
-    # mail
-    from reportlab.lib import colors
-    canvas.saveState()
-    canvas.setFont("Courier", 10)
-    canvas.setFillColor(colors.blue)
-    canvas.drawString(medidas['mail_cabecera'][0],
-                      medidas['mail_cabecera'][1],
-                      escribe(datos_empresa.email))
-    ancho = canvas.stringWidth(datos_empresa.email, "Courier", 10)
-    rect = (medidas['mail_cabecera'][0], medidas['mail_cabecera'][1],
-            medidas['mail_cabecera'][0] + ancho,
-            medidas['mail_cabecera'][1]+0.5*cm)
-    canvas.linkURL("mailto:%s" % (datos_empresa.email), rect)
-    canvas.restoreState()
+        dibujar_bvqi_prns(c, rm, height - 3.5*cm, datos_empresa, 'Fax')
+    dibujar_domicilio_fiscal_prns(c, lm, height - 3.0*cm, datos_empresa)
+    dibujar_domicilio_fabrica_prns(c, lm, height - 4.0*cm, datos_empresa)
+    dibujar_cif_prns(c, lm, height - 5.0*cm, datos_empresa)
+    dibujar_linea_prns(c, height - 5.5*cm)
+    # OLD CODE IS OLD. Lo dejo de momento porque esto de arriba es demasiado
+    # específico y me interesa rescatar lo de abajo más adelante. Tal vez con
+    # algún parámetro en la configuracion pueda reusarlo.
+#    canvas.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo),
+#                     medidas['logo0_cabecera'][0],
+#                     medidas['logo0_cabecera'][1],
+#                     medidas['logo0_cabecera'][2],
+#                     medidas['logo0_cabecera'][3])
+#    if datos_empresa.bvqi:
+#        canvas.drawImage(
+#            os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logoiso1),
+#            medidas['logo1_cabecera'][0],
+#            medidas['logo1_cabecera'][1],
+#            medidas['logo1_cabecera'][2],
+#            medidas['logo1_cabecera'][3])
+#        canvas.setFont("Helvetica", 6)
+#        canvas.drawCentredString(medidas['logo1_cabecera'][0]
+#                                    + medidas['logo1_cabecera'][2]/2.0,
+#                                 medidas['logo1_cabecera'][1] + 0.02*cm,
+#                                 escribe('Geotextiles CE 1035-CPD-ES033858'))
+#        canvas.drawCentredString(medidas['logo1_cabecera'][0]
+#                                    + medidas['logo1_cabecera'][2]/2.0,
+#                                 medidas['logo1_cabecera'][1] - 0.2*cm,
+#                                 escribe('Fibra CE 1035-CPD-9003712'))
+#    canvas.setFont(fuentes['cabecera_negrita']['fuente'],
+#                   fuentes['cabecera_negrita']['tamaño'])
+#    canvas.drawString(medidas['empresa_cabecera'][0],
+#                      medidas['empresa_cabecera'][1],
+#                      escribe(datos_empresa.nombre))
+#    canvas.setFont(fuentes['cabecera']['fuente'],
+#                   fuentes['cabecera']['tamaño'])
+#    canvas.drawString(medidas['direccion0_cabecera'][0],
+#                      medidas['direccion0_cabecera'][1],
+#                      escribe(datos_empresa.direccion))
+#    canvas.drawString(medidas['direccion1_cabecera'][0],
+#                      medidas['direccion1_cabecera'][1],
+#                      escribe("%s %s (%s), %s" % (datos_empresa.cp,
+#                                                  datos_empresa.ciudad,
+#                                                  datos_empresa.provincia,
+#                                                  datos_empresa.pais)))
+#    canvas.drawString(medidas['telefono_cabecera'][0],
+#                      medidas['telefono_cabecera'][1],
+#                      escribe("Telf.: %s" % (datos_empresa.telefono)))
+#    canvas.drawString(medidas['fax_cabecera'][0],
+#                      medidas['fax_cabecera'][1],
+#                      escribe("Fax: %s" % (datos_empresa.fax)))
+#    # mail
+#    from reportlab.lib import colors
+#    canvas.saveState()
+#    canvas.setFont("Courier", 10)
+#    canvas.setFillColor(colors.blue)
+#    canvas.drawString(medidas['mail_cabecera'][0],
+#                      medidas['mail_cabecera'][1],
+#                      escribe(datos_empresa.email))
+#    ancho = canvas.stringWidth(datos_empresa.email, "Courier", 10)
+#    rect = (medidas['mail_cabecera'][0], medidas['mail_cabecera'][1],
+#            medidas['mail_cabecera'][0] + ancho,
+#            medidas['mail_cabecera'][1]+0.5*cm)
+#    canvas.linkURL("mailto:%s" % (datos_empresa.email), rect)
+#    canvas.restoreState()
 
 def calcular_medidas_presupuesto():
     """
