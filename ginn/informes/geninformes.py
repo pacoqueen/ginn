@@ -433,6 +433,18 @@ def dibujar_bvqi_prns(c, rm, linea, datos_empresa, texto = ""):
                       + 2, escribe(texto))
     c.restoreState()
 
+def dibujar_linea_prns(c, y, ancho = A4[1]):
+    """
+    Dibuja una línea horizontal verde separadora partiendo del extremo
+    izquierdo del canvas y hasta la posición «x» recibida. Si no se
+    especifica, usa el tamaño A4 para llegar hasta el extremo derecho.
+    Cambia el color del canvas a verde para dibujar la línea.
+    """
+    c.saveState()
+    c.setStrokeColorRGB(*VERDE_GTX)
+    c.line(0, y, ancho, y)
+    c.restoreState()
+
 def cabecera(c, texto, fecha = None, apaisado = False):
     """
     Dibuja la cabecera del informe
@@ -1700,10 +1712,7 @@ def albaran(composan, cliente, envio, general, lineas, observaciones, destino,
             dibujar_bvqi_prns(c, rm, height-3*cm, datos_empresa, 'Albarán')
         dibujar_cif_prns(c, lm, height - 3.8*cm, datos_empresa)
         # === línea horizontal 
-        c.saveState()
-        c.setStrokeColorRGB(*VERDE_GTX)
-        c.line(0, height - 3.9*cm, width, height - 3.9*cm)
-        c.restoreState()
+        dibujar_linea_prns(c, height - 3.9*cm)
         c.setFont("Helvetica", 8)
         if datos_empresa.direccion != datos_empresa.dirfacturacion:
             if not datos_empresa.esSociedad:
@@ -3200,7 +3209,7 @@ def factura(cliente,
     datos_empresa = pclases.DatosDeLaEmpresa.select()[0]
 
     global linea#, tm, lm, rm, bm
-    tmbak, bmbak, lmbak, rmbak = tm, bm, lm, rm = (680, 56.69, 05.35, 566.92)  # @UnusedVariable
+    tmbak, bmbak, lmbak, rmbak = tm, bm, lm, rm = (680, 56.69, 05.35, 566.92)
     x, y = lm, tm  # @UnusedVariable
     # Creo la hoja
     nombre_chachi = cliente['nombre'].replace(" ", "_")
@@ -3243,30 +3252,20 @@ def factura(cliente,
     while (lineas != []):
         bm, tm = bmbak, tmbak
         numpagina += 1
+        linea = height-50 + 0.7*cm
         # La marca de agua:
         if es_copia:
             marca_de_agua(c, " COPIA ", fontsize = 56)
         # La cabecera
         if datos_empresa.logo:
-            ruta_logo = os.path.join(
-                    os.path.dirname(os.path.realpath(__file__)), '..',
-                    'imagenes', datos_empresa.logo)
-            im = Image.open(ruta_logo)
-            ancho, alto = im.size
-            nuevo_alto = 1.5 * inch
-            ancho_proporcional = ancho * (nuevo_alto / alto)
-            #ancho_proporcional = 1.5*inch
-            c.drawImage(ruta_logo,
-                        lm+0.5*inch,
-                        height - 1.5*inch,
-                        ancho_proporcional,
-                        nuevo_alto)
+            dibujar_logo_prns(c, lm, height + 0.5*cm, datos_empresa)
         if datos_empresa.bvqi:
-            c.drawImage(os.path.join(
-                            os.path.dirname(os.path.realpath(__file__)), '..',
-                            'imagenes', datos_empresa.logoiso2),
-                        rm-1.65*inch, height - 2.5*cm, 3.3*cm, 1.85*cm)
-
+            dibujar_bvqi_prns(c, rm, linea - 2*cm, datos_empresa, 'Factura')
+        dibujar_domicilio_fiscal_prns(c, lm, height - 2.0*cm, datos_empresa)
+        dibujar_domicilio_fabrica_prns(c, lm, height - 2.7*cm, datos_empresa)
+        dibujar_cif_prns(c, lm, height - 3.35*cm, datos_empresa)
+        dibujar_linea_prns(c, height - 3.4*cm)
+        linea = sigLinea()
         # XXX
         if not datos_empresa.esSociedad:
             if datos_empresa.logo2 != "":
@@ -3278,10 +3277,7 @@ def factura(cliente,
         # XXX
         #c.drawCentredString(rm-inch, tm+1.40*inch, escribe('ESPMDD00433'))
         # XXX (Subo para que encaje en la ventana del sobre): linea = height-50
-        linea = height-50 + 0.7*cm
         c.setFont("Helvetica", 18)
-        c.drawCentredString(rm-inch, tm+1*inch, escribe('Factura'))
-        c.drawCentredString(width/2, linea, escribe(datos_empresa.nombre))
         linea = sigLinea()
         # XXX
         if (not datos_empresa.esSociedad
@@ -3292,92 +3288,14 @@ def factura(cliente,
             linea = sigLinea()
         # XXX
         c.setFont("Helvetica", 10)
-        c.drawCentredString(width/2, linea,
-                            escribe(datos_empresa.dirfacturacion))
-        linea = sigLinea()
-
-        c.drawCentredString(width/2, linea, escribe('%s %s%s, %s' % (
-            datos_empresa.cpfacturacion,
-            datos_empresa.ciudadfacturacion,
-            datos_empresa.provinciafacturacion
-                != datos_empresa.ciudadfacturacion
-                and " (%s)" % (datos_empresa.provinciafacturacion) or "",
-            datos_empresa.paisfacturacion)))
-        linea = sigLinea()
-
-        # DONE: El criterio del IRPF no es correcto.
-        c.drawCentredString(width/2, linea, escribe('%s: %s' % (
-            datos_empresa.str_cif_o_nif(), datos_empresa.cif)))
-        #c.drawCentredString(width/2, linea, escribe('%s: %s' % (
-        # datos_empresa.irpf == 0 and "C.I.F." or "N.I.F.",
-        # datos_empresa.cif)))  # Si en datos de la empresa IRPF == 0 es
-        # empresa y tiene C.I.F. Si no, considero que es empresario individual
-        # y tiene N.I.F. en lugar de C.I.F.
-        linea = sigLinea()
-        if datos_empresa.bvqi:
-            # Marcado CE Geotextiles
-            anchotexto = c.stringWidth(
-                            escribe('Geotextiles CE 1035-CPD-ES033858'),
-                            "Courier", 8)
-            anchosemitexto = c.stringWidth(
-                                escribe('Geotextiles '),
-                                "Courier", 8)
-            posx = (width - anchotexto)/2 
-            cursiva(c, posx,
-                    linea,
-                    escribe('Geotextiles    1035-CPD-ES033858'),
-                    "Courier", 8, (0, 0, 0), 10)
-            try:
-                c.drawImage(os.path.join(
-                            os.path.dirname(os.path.realpath(__file__)), '..',
-                            'imagenes', "CE.png"),
-                        posx + anchosemitexto, 
-                        linea, 
-                        0.40*cm, 
-                        0.20*cm)
-            except IOError:     # PIL de Reportlab sin soporte zlib en W8
-                c.drawImage(os.path.join(
-                            os.path.dirname(os.path.realpath(__file__)), '..',
-                            'imagenes', "CE.gif"),
-                        posx + anchosemitexto, 
-                        linea, 
-                        0.40*cm, 
-                        0.20*cm)
-            # Marcado CE fibra
-            anchotexto = c.stringWidth(
-                            escribe('Fibra CE 1035-CPD-9003712'),
-                            "Courier", 8)
-            anchosemitexto = c.stringWidth(
-                                escribe('Fibra '),
-                                "Courier", 8)
-            posx = (width - anchotexto)/2 
-            cursiva(c, posx,
-                    linea - 8,
-                    escribe('Fibra    1035-CPD-9003712'),
-                    "Courier", 8, (0, 0, 0), 10)
-            try:
-                c.drawImage(os.path.join(
-                            os.path.dirname(os.path.realpath(__file__)), '..',
-                            'imagenes', "CE.png"),
-                        posx + anchosemitexto, 
-                        linea - 8, 
-                        0.40*cm, 
-                        0.20*cm)
-            except IOError:     # PIL de Reportlab sin soporte zlib en W8
-                c.drawImage(os.path.join(
-                            os.path.dirname(os.path.realpath(__file__)), '..',
-                            'imagenes', "CE.gif"),
-                        posx + anchosemitexto, 
-                        linea - 8, 
-                        0.40*cm, 
-                        0.20*cm)
+        linea = sigLinea(25)
         c.setFont("Helvetica", 10)
         # La fecha y el número de factura fuera del cuadro
         # XXX
         if not datos_empresa.esSociedad:
             linea = sigLinea(0) + (15 * 1)
         # XXX
-        linea = sigLinea(15)
+        linea = sigLinea(20)
         # Si en la cabecera de la empresa hay solo 3 líneas , la fecha y
         # número de factura pisa al texto "Factura", que está en tm + 1
         # pulgada.
@@ -3395,6 +3313,9 @@ def factura(cliente,
                                                        'Times-Italic', 10)
         c.drawString(xNumFactura, linea, escribe(factdata['facnum']))
         # Los cuadros de datos fiscales y datos de envío
+        # Queridos diseñadores parnasianos, ¡¿ES QUE NO VEIS QUE ESTO NO SE
+        # PUEDE DESPLAZAR HACIA ABAJO PORQUE ENTONCES NO ENCAJARÍA EN LA
+        # VENTANA DEL SOBRE?!
         xLocal = lm+inch
         xFact = width/2 + 0.7*inch
         xLocalTitulo = xLocal - 37
@@ -3405,7 +3326,7 @@ def factura(cliente,
         if datos_empresa.irpf != 0:
             c.setStrokeColorRGB(1.0, 0.3, 0.3)
         else:
-            c.setStrokeColorRGB(0.1, 0.1, 1.0)
+            c.setStrokeColorRGB(*VERDE_GTX)
         c.line(xLocalTitulo, linea-4, rm, linea-4)
         c.line(xLocalTitulo, linea-1, rm, linea-1)
         c.restoreState()
@@ -3940,39 +3861,39 @@ def factura(cliente,
         # Pie de factura
         linea = bm-0.25*inch
             # Cuadro verde:
-        if datos_empresa.direccion != datos_empresa.dirfacturacion:
-            c.saveState()
-            c.setFillColorRGB(0.6, 1, 0.6)
-            c.setStrokeColorRGB(0.6, 1, 0.6)
-            c.rect(lm + 0.5 * inch, linea - 20, rm - (lm + 0.5 *inch), 15 * 2,
-                   stroke = 1, fill = 1)
-                # 15 es el valor por defecto para el alto de una línea
-                # de texto.
-            c.restoreState()
-                # Texto dentro:
-            c.setFont("Helvetica", 8)
-            pos_pie = lm + 0.5 * inch + ((rm - (lm + 0.5 * inch)) / 2)
-            c.drawCentredString(pos_pie, linea,
-                                escribe('DIRECCIÓN DE OFICINAS Y CORRESPO'\
-                                        'NDENCIA: %s. %s - %s (%s)' % (
-                                            datos_empresa.direccion,
-                                            datos_empresa.cp,
-                                            datos_empresa.ciudad,
-                                            datos_empresa.provincia)))
-            linea = sigLinea()
-            if datos_empresa.fax:
-                c.drawCentredString(pos_pie,
-                                    linea,
-                                    escribe('Tlf. %s  Fax %s' % (
-                                        datos_empresa.telefono,
-                                        datos_empresa.fax))
-                                    )
-            else:
-                c.drawCentredString(pos_pie,
-                                    linea,
-                                    escribe('Tlf. %s' % (
-                                        datos_empresa.telefono))
-                                    )
+#        if datos_empresa.direccion != datos_empresa.dirfacturacion:
+#            c.saveState()
+#            c.setFillColorRGB(0.6, 1, 0.6)
+#            c.setStrokeColorRGB(0.6, 1, 0.6)
+#            c.rect(lm + 0.5 * inch, linea - 20, rm - (lm + 0.5 *inch), 15 * 2,
+#                   stroke = 1, fill = 1)
+#                # 15 es el valor por defecto para el alto de una línea
+#                # de texto.
+#            c.restoreState()
+#                # Texto dentro:
+#            c.setFont("Helvetica", 8)
+#            pos_pie = lm + 0.5 * inch + ((rm - (lm + 0.5 * inch)) / 2)
+#            c.drawCentredString(pos_pie, linea,
+#                                escribe('DIRECCIÓN DE OFICINAS Y CORRESPO'\
+#                                        'NDENCIA: %s. %s - %s (%s)' % (
+#                                            datos_empresa.direccion,
+#                                            datos_empresa.cp,
+#                                            datos_empresa.ciudad,
+#                                            datos_empresa.provincia)))
+#            linea = sigLinea()
+#            if datos_empresa.fax:
+#                c.drawCentredString(pos_pie,
+#                                    linea,
+#                                    escribe('Tlf. %s  Fax %s' % (
+#                                        datos_empresa.telefono,
+#                                        datos_empresa.fax))
+#                                    )
+#            else:
+#                c.drawCentredString(pos_pie,
+#                                    linea,
+#                                    escribe('Tlf. %s' % (
+#                                        datos_empresa.telefono))
+#                                    )
 
 
         # Salvamos la página
@@ -4747,10 +4668,7 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
         linea = sigLinea()
         dibujar_cif_prns(c, lm, linea + 0.2*cm, datos_empresa)
         # ====== LÍNEA HORIZONTAL ===
-        c.saveState()
-        c.setStrokeColorRGB(*VERDE_GTX)
-        c.line(0, linea - 0.1*cm, width, linea - 0.1*cm)
-        c.restoreState()
+        dibujar_linea_prns(c, linea - 0.1*cm, width)
         if datos_empresa.bvqi:
             dibujar_bvqi_prns(c, rm, linea, datos_empresa, 'Factura')
         #c.setFont("Helvetica", 10)
