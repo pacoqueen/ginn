@@ -40,62 +40,88 @@ from framework import pclases
 from formularios import utils
 from informes.geninformes import give_me_the_name_baby, escribe
 from tempfile import gettempdir
-
+from informes.geninformes import dibujar_logo_prns
+from informes.geninformes import dibujar_domicilio_fiscal_prns
+from informes.geninformes import dibujar_domicilio_fabrica_prns
+from informes.geninformes import dibujar_cif_prns
+from informes.geninformes import dibujar_bvqi_prns
+from informes.geninformes import VERDE_GTX
 
 PAGE_HEIGHT = defaultPageSize[1]; PAGE_WIDTH = defaultPageSize[0]
 estilos = getSampleStyleSheet()
 
 def dibujar_logo(canvas, doc, ruta_logo, lineas_datos_empresa, datos_fiscales, 
-                 logo_marcado = None):
+                 logo_marcado = None, idioma = "es"):
     """
     Dibuja el logotipo de la empresa en la página de «canvas».
     También dibuja el pie porque se hace con onLaterPages, que no es llamada 
     en la primera página. Así que aquí hay que hacer las dos cosas.
     """
-    if ruta_logo:
-        im = Image.open(ruta_logo)
-        ancho, alto = im.size
-        nuevo_alto = min(5 * cm, alto)
-        ancho_proporcional = ancho * (nuevo_alto / alto)
-        canvas.drawImage(ruta_logo, 
-                         (PAGE_WIDTH - ancho_proporcional) / 2, 
-                         PAGE_HEIGHT - 2 * cm - nuevo_alto, 
-                         ancho_proporcional, 
-                         nuevo_alto)
-    if logo_marcado:
-        im = Image.open(logo_marcado)
-        ancho, alto = im.size
-        nuevo_alto = min(2.5 * cm, alto)
-        ancho_proporcional = ancho * (nuevo_alto / alto)
-        canvas.drawImage(logo_marcado, 
-                         PAGE_WIDTH - 6 * cm, 
-                         PAGE_HEIGHT - 2 * cm - nuevo_alto, 
-                         ancho_proporcional, 
-                         nuevo_alto)
+    try:
+        from framework.pclases import DatosDeLaEmpresa
+        datos_empresa = DatosDeLaEmpresa.select()[0]
+        dibujar_logo_prns(canvas, 1*cm, PAGE_HEIGHT, datos_empresa)
+        dibujar_domicilio_fiscal_prns(canvas, 1*cm, PAGE_HEIGHT - 2.7*cm,
+                                      datos_empresa)
+        dibujar_domicilio_fabrica_prns(canvas, 1*cm, PAGE_HEIGHT - 3.5*cm,
+                                       datos_empresa)
+        dibujar_cif_prns(canvas, 1*cm, PAGE_HEIGHT - 4.2*cm, datos_empresa)
+        if idioma == "en":
+            strcarta = "Letter of commitment"
+        else:
+            strcarta = "Carta compromiso"
+        dibujar_bvqi_prns(canvas, PAGE_WIDTH - 1*cm, PAGE_HEIGHT - 3*cm,
+                          datos_empresa, strcarta)
         canvas.saveState()
-        canvas.setFont("Helvetica", 8)
-        # OJO: HARCODED (como en todos los PDF que llevan marcado CE)
-        texto_marcado = 'CE 1035-CPD-ES033858'  # Ojito: el de rollos, que es 
-            # el que tenía puesto José Manuel Hurtado. Todas las críticas al 
-            # formato, a él. He copiado tal cual su carta de compromiso. 
-        canvas.drawCentredString(PAGE_WIDTH - 6*cm + (ancho_proporcional / 2), 
-                                 PAGE_HEIGHT - 2*cm - nuevo_alto - 8, 
-                                 escribe(texto_marcado))
+        canvas.setStrokeColorRGB(*VERDE_GTX)
+        canvas.line(0, PAGE_HEIGHT - 4.5*cm, PAGE_WIDTH, PAGE_HEIGHT - 4.5*cm)
         canvas.restoreState()
+    except Exception, e:
+        # OLD CODE IS OLD
+        if ruta_logo:
+            im = Image.open(ruta_logo)
+            ancho, alto = im.size
+            nuevo_alto = min(5 * cm, alto)
+            ancho_proporcional = ancho * (nuevo_alto / alto)
+            canvas.drawImage(ruta_logo, 
+                             (PAGE_WIDTH - ancho_proporcional) / 2, 
+                             PAGE_HEIGHT - 2 * cm - nuevo_alto, 
+                             ancho_proporcional, 
+                             nuevo_alto)
+        if logo_marcado:
+            im = Image.open(logo_marcado)
+            ancho, alto = im.size
+            nuevo_alto = min(2.5 * cm, alto)
+            ancho_proporcional = ancho * (nuevo_alto / alto)
+            canvas.drawImage(logo_marcado, 
+                             PAGE_WIDTH - 6 * cm, 
+                             PAGE_HEIGHT - 2 * cm - nuevo_alto, 
+                             ancho_proporcional, 
+                             nuevo_alto)
+            canvas.saveState()
+            canvas.setFont("Helvetica", 8)
+            # OJO: HARCODED (como en todos los PDF que llevan marcado CE)
+            texto_marcado = 'CE 1035-CPD-ES033858'  # Ojito: el de rollos, que es 
+                # el que tenía puesto José Manuel Hurtado. Todas las críticas al 
+                # formato, a él. He copiado tal cual su carta de compromiso. 
+            canvas.drawCentredString(PAGE_WIDTH - 6*cm + (ancho_proporcional / 2), 
+                                     PAGE_HEIGHT - 2*cm - nuevo_alto - 8, 
+                                     escribe(texto_marcado))
+            canvas.restoreState()
     dibujar_pie(canvas, doc, lineas_datos_empresa, datos_fiscales)
 
 def dibujar_pie(canvas, doc, lineas_empresa, datos_fiscales):
     nlinea = 0
     canvas.saveState()
-    for linea in lineas_empresa[::-1]:
-        if nlinea == len(lineas_empresa) - 1:
-            canvas.setFont("Helvetica-Bold", 12)
-        else:
-            canvas.setFont("Helvetica", 11)
-        canvas.drawCentredString(PAGE_WIDTH / 2, 
-                                 2 * cm + (nlinea * 15), 
-                                 linea)
-        nlinea += 1
+    #for linea in lineas_empresa[::-1]:
+    #    if nlinea == len(lineas_empresa) - 1:
+    #        canvas.setFont("Helvetica-Bold", 12)
+    #    else:
+    #        canvas.setFont("Helvetica", 11)
+    #    canvas.drawCentredString(PAGE_WIDTH / 2, 
+    #                             2 * cm + (nlinea * 15), 
+    #                             linea)
+    #    nlinea += 1
     # Y ahora los datos fiscales en el lateral
     canvas.rotate(90)
     canvas.setFont("Helvetica", 8)
@@ -117,7 +143,8 @@ def build_encabezado(datos_empresa = [], idioma = "es"):
         strcarta = "<u>LETTER OF COMMITMENT</u>"
     else:
         strcarta = "<u>CARTA COMPROMISO</u>"
-    cabecera = Paragraph(strcarta, estilo)
+    #cabecera = Paragraph(strcarta, estilo)
+    cabecera = Paragraph("", estilo)
     return cabecera
 
 def build_despedida(datos_comercial = [], idioma = "es"):
@@ -275,7 +302,8 @@ def go(titulo,
     _dibujar_logo = lambda c, d: dibujar_logo(c, d, ruta_logo, 
                                               lineas_datos_empresa, 
                                               datos_fiscales, 
-                                              logo_marcado)
+                                              logo_marcado,
+                                              idioma)
     _dibujar_pie = lambda c, d: dibujar_pie(c, d, lineas_datos_empresa, 
                                             datos_fiscales)
     doc.build(story, onFirstPage = _dibujar_logo) #, onLaterPages = _dibujar_pie)
