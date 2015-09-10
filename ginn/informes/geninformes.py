@@ -9880,7 +9880,7 @@ def calcular_medidas(cheque):
     """
     lm = 1.5*cm     # Margen izquierdo
     medidas = {'proveedor': [11.2*cm, 25.5*cm - 1*cm],
-               'fecha': [13.3*cm, 19.8*cm],
+               'fecha': [13.3*cm, 20.3*cm],
                'facturas': [lm, 17*cm - 0.25*cm],
                'observaciones': [lm, 9.25*cm + 1*cm]
               }
@@ -9933,7 +9933,7 @@ def calcular_medidas(cheque):
         # 10 cm es el borde superior del cheque/pagaré.
     return medidas
 
-def _escribir_textofijo(c, medidas):
+def _escribir_textofijo(c, medidas, txt = "Pagaré"):
     """
     Escribe en el canvas "c" el texto fijo que debería
     traer el folio de imprenta, que son los dos logos de
@@ -9952,26 +9952,33 @@ def _escribir_textofijo(c, medidas):
         c.line(0.8*cm, A4[1]/3, 1*cm, A4[1]/3)
         c.line(0.8*cm, (A4[1]*2/3), 1*cm, (A4[1]*2/3))
         # Y ahora los logos y el texto fijo de verdad.
-        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo),
-                    medidas['logo0_cabecera'][0],
-                    medidas['logo0_cabecera'][1],
-                    medidas['logo0_cabecera'][2],
-                    medidas['logo0_cabecera'][3])
+        #c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo),
+        #            medidas['logo0_cabecera'][0],
+        #            medidas['logo0_cabecera'][1],
+        #            medidas['logo0_cabecera'][2],
+        #            medidas['logo0_cabecera'][3])
+        if datos_empresa.logo:
+            dibujar_logo_prns(c, lm, height, datos_empresa)
         if datos_empresa.bvqi:
-            c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..','imagenes',datos_empresa.logoiso1),
-                        medidas['logo1_cabecera'][0],
-                        medidas['logo1_cabecera'][1],
-                        medidas['logo1_cabecera'][2],
-                        medidas['logo1_cabecera'][3])
-            c.setFont("Helvetica", 6)
-            c.drawCentredString(medidas['logo1_cabecera'][0]
-                                    + medidas['logo1_cabecera'][2]/2.0,
-                                medidas['logo1_cabecera'][1] + 0.02*cm,
-                                escribe('Geotextiles CE 1035-CPD-ES033858'))
-            c.drawCentredString(medidas['logo1_cabecera'][0]
-                                    + medidas['logo1_cabecera'][2]/2.0,
-                                medidas['logo1_cabecera'][1] - 0.2*cm,
-                                escribe('Fibra CE 1035-CPD-9003712'))
+            dibujar_bvqi_prns(c, rm, height - 3*cm, datos_empresa, txt)
+        dibujar_domicilio_fiscal_prns(c, lm, height - 2.6*cm, datos_empresa)
+        dibujar_domicilio_fabrica_prns(c, lm, height - 3.4*cm, datos_empresa)
+        dibujar_cif_prns(c, lm, height - 4.2*cm, datos_empresa)
+        dibujar_linea_prns(c, height - 4.5*cm)
+        #    c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..','imagenes',datos_empresa.logoiso1),
+        #                medidas['logo1_cabecera'][0],
+        #                medidas['logo1_cabecera'][1],
+        #                medidas['logo1_cabecera'][2],
+        #                medidas['logo1_cabecera'][3])
+        #    c.setFont("Helvetica", 6)
+        #    c.drawCentredString(medidas['logo1_cabecera'][0]
+        #                            + medidas['logo1_cabecera'][2]/2.0,
+        #                        medidas['logo1_cabecera'][1] + 0.02*cm,
+        #                        escribe('Geotextiles CE 1035-CPD-ES033858'))
+        #    c.drawCentredString(medidas['logo1_cabecera'][0]
+        #                            + medidas['logo1_cabecera'][2]/2.0,
+        #                        medidas['logo1_cabecera'][1] - 0.2*cm,
+        #                        escribe('Fibra CE 1035-CPD-9003712'))
         c.setFont("Times-Roman", 14)
         c.drawString(medidas['ciudad'][0], medidas['ciudad'][1],
                      escribe("%s," % (datos_empresa.ciudad)))
@@ -10019,7 +10026,7 @@ def carta_pago(pagare, cheque = True, textofijo = True):
 
     ## Escribo los textos fijos si se me indica:
     if textofijo:
-        _escribir_textofijo(c, medidas)
+        _escribir_textofijo(c, medidas, cheque and "Cheque" or "Pagaré")
 
     ## Preparo los datos a imprimir...
     fecha_corta = corregir_nombres_fecha(
@@ -10110,19 +10117,19 @@ def carta_pago(pagare, cheque = True, textofijo = True):
                      escribe(fecha_vencimiento))
     # Datos fiscales
     # -- Dirección fiscal
-    datos_empresa = pclases.DatosDeLaEmpresa.select()[0]
-    c.saveState()
-    c.rotate(90)
-    c.setFont("Times-Roman", 8)
-    c.drawCentredString(height/2, -lm, #-32,
-            escribe("Dirección fiscal: %s"
-                        % datos_empresa.get_dir_facturacion_completa()))
-    # -- Dirección de correspondencia
-    c.drawCentredString(height/2, -lm -8,
-            escribe("Oficinas y correspondencia: %s"
-                        % datos_empresa.get_dir_correspondencia_completa()))
-    c.rotate(-90)
-    c.restoreState()
+    #datos_empresa = pclases.DatosDeLaEmpresa.select()[0]
+    #c.saveState()
+    #c.rotate(90)
+    #c.setFont("Times-Roman", 8)
+    #c.drawCentredString(height/2, -lm, #-32,
+    #        escribe("Dirección fiscal: %s"
+    #                    % datos_empresa.get_dir_facturacion_completa()))
+    ## -- Dirección de correspondencia
+    #c.drawCentredString(height/2, -lm -8,
+    #        escribe("Oficinas y correspondencia: %s"
+    #                    % datos_empresa.get_dir_correspondencia_completa()))
+    #c.rotate(-90)
+    #c.restoreState()
     ## Por último guardo y devuelvo el nombre del PDF generado (no hace falta
     ## showPage, «save» lo hace por mí antes de escribir el PDF).
     c.save()
@@ -10601,8 +10608,8 @@ def escribir_cuerpo_presupuesto(c, medidas, fuentes, presupuesto, una_linea):
     try:
         datos_empresa = pclases.DatosDeLaEmpresa.select()[0]
     except IndexError:
-        print "geninformes::_escribir_textofijo -> No se encontraron los "\
-              "datos de la empresa en la tabla datos_de_la_empresa."
+        print "geninformes::escribir_cuerpo_presupuesto -> No se encontraron"\
+              "los datos de la empresa en la tabla datos_de_la_empresa."
     else:
         c.setFont(fuentes['normal']['fuente'], fuentes['normal']['tamaño'])
         fecha_corta = corregir_nombres_fecha(
