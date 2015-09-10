@@ -40,28 +40,57 @@ from formularios import utils
 from informes.geninformes import give_me_the_name_baby, escribe
 from tempfile import gettempdir
 from formularios.utils import sanitize
+from informes.geninformes import dibujar_logo_prns
+from informes.geninformes import dibujar_domicilio_fiscal_prns
+from informes.geninformes import dibujar_domicilio_fabrica_prns
+from informes.geninformes import dibujar_cif_prns
+from informes.geninformes import dibujar_bvqi_prns
+from informes.geninformes import dibujar_linea_prns
+from informes.geninformes import VERDE_GTX
+
 
 
 PAGE_HEIGHT = defaultPageSize[1]; PAGE_WIDTH = defaultPageSize[0]
 estilos = getSampleStyleSheet()
 
-def dibujar_logo(canvas, doc, ruta_logo):
+def dibujar_logo(canvas, doc, ruta_logo, idioma = "es"):
     """
     Dibuja el logotipo de la empresa en la página de «canvas».
+    UPDATE: Dibuja el logo y el resto de información de la cabecera nueva made
+    in Parnaso.
     """
-    if ruta_logo:
-        im = Image.open(ruta_logo)
-        ancho, alto = im.size
-        nuevo_alto = min(3 * cm, alto)
-        ancho_proporcional = ancho * (nuevo_alto / alto)
-        canvas.drawImage(ruta_logo, 
-                         PAGE_WIDTH - 3 * cm - ancho_proporcional, 
-                         PAGE_HEIGHT - 2 * cm - nuevo_alto, 
-                         ancho_proporcional, 
-                         nuevo_alto)
+    datos_de_la_empresa = pclases.DatosDeLaEmpresa.select()[0]
+    c = canvas
+    width, height = PAGE_WIDTH, PAGE_HEIGHT
+    lm = 0.7*cm
+    rm = width - 1.2*cm
+    if datos_de_la_empresa.logo:
+        dibujar_logo_prns(c, lm, height, datos_de_la_empresa)
+    if datos_de_la_empresa.bvqi:
+        if idioma == "en":
+            i10n_oferta = "Offer"
+        else:
+            i10n_oferta = "Oferta"
+        dibujar_bvqi_prns(c, rm, height - 3.5*cm, datos_de_la_empresa,
+                i10n_oferta)
+    dibujar_domicilio_fiscal_prns(c, lm, height - 3.0*cm, datos_de_la_empresa)
+    dibujar_domicilio_fabrica_prns(c, lm, height - 4.0*cm, datos_de_la_empresa)
+    dibujar_cif_prns(c, lm, height - 5.0*cm, datos_de_la_empresa)
+    dibujar_linea_prns(c, height - 5.5*cm)
+#    if ruta_logo:
+#        im = Image.open(ruta_logo)
+#        ancho, alto = im.size
+#        nuevo_alto = min(3 * cm, alto)
+#        ancho_proporcional = ancho * (nuevo_alto / alto)
+#        canvas.drawImage(ruta_logo, 
+#                         PAGE_WIDTH - 3 * cm - ancho_proporcional, 
+#                         PAGE_HEIGHT - 2 * cm - nuevo_alto, 
+#                         ancho_proporcional, 
+#                         nuevo_alto)
 
 def dibujar_dir_fiscal(canvas, doc, dir_fiscal):
-    if dir_fiscal:
+    if False:
+    #if dir_fiscal:
         canvas.saveState()
         canvas.rotate(90)
         canvas.setFont("Helvetica", 7)
@@ -189,7 +218,8 @@ def build_encabezado(datos_empresa = []):
         if linea is datos_empresa[0]:
             estilo_encabezado.fontSize += 3
         p = Paragraph(escribe(linea), estilo_encabezado) 
-        cabecera.append(p)
+        #cabecera.append(p)
+        cabecera.append(Spacer(1, 10))
         estilo_encabezado.fontSize -= 1
         if estilo_encabezado.spaceAfter > -4:
             estilo_encabezado.spaceAfter -= 1
@@ -411,7 +441,7 @@ def go(titulo,
     #    story.insert(-2, Spacer(1, 2 * cm))
     #    story.insert(-2, build_condicionado(condicionado))
     story = utils.aplanar([i for i in story if i])
-    _dibujar_logo = lambda c, d: dibujar_logo(c, d, ruta_logo)
+    _dibujar_logo = lambda c, d: dibujar_logo(c, d, ruta_logo, idioma)
     _dibujar_dir_fiscal = lambda c, d: dibujar_dir_fiscal(c, d, dir_fiscal)
     def dibujar_logo_y_dir_fiscal(c, d):
         _dibujar_logo(c, d)
@@ -678,10 +708,10 @@ if __name__ == "__main__":
         lineas_contenido = [(1.234, "Una cosa "*20, "1.245", `1.234*1.245`), 
                             (1, "Grñai mama", "1", "0.25"), 
                             ("0,25", "Otra cosa", "1", "0.25")] * 7
-        lineas_empresa = ("American woman, co.", 
+        lineas_empresa = ["American woman, co.", 
                           "Johnny Cash", 
                           "Alabama - 3213", 
-                          "United States of America")
+                          "United States of America"]
         datos_cliente = ("Lori Meyers", 
                          "los lunes se levanta a partir de las 2.", 
                          "con el sol", 
@@ -689,7 +719,7 @@ if __name__ == "__main__":
         totales = {"Base imponible": "100.50 €", 
                    "IVA 21%": 100.5 * 0.21, 
                    "TOTAL": 100.5 * 1.21, 
-                   "orden": ("Base imponible", "IVA 16%", "TOTAL")}
+                   "orden": ("Base imponible", "IVA 21%", "TOTAL")}
         texto = """Estimado señor Floppy:
                     Es un placer decirle a la cara que usted apesta.
                     No te digo «na» y te lo digo «to».
