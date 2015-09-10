@@ -2526,6 +2526,7 @@ class Presupuestos(Ventana, VentanaGenerica):
                 utils.str_fechahora(self.objeto.fechaValidacion)))
         else:
             ch.set_label("No validado (clic para validar)")
+        self.activar_widgets(True)
 
     def comprobar_riesgo_cliente(self):
         """
