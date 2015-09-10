@@ -2718,83 +2718,91 @@ def pedidoCompra(general, proveedor, lineas, entregas, observaciones,
     nomarchivo = os.path.join(gettempdir(),
                               "pedidoCompra_%s.pdf" % give_me_the_name_baby())
     c = canvas.Canvas(nomarchivo)
-    # La cabecera
-    c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), 
-                             '..', 'imagenes', datos_empresa.logo),
-                lm+0.5*inch, height - 1.5*inch, 1.5*inch, 1.5*inch)
+    if datos_empresa.logo:
+        dibujar_logo_prns(c, lm, height, datos_empresa)
+    if datos_empresa.bvqi:
+        dibujar_bvqi_prns(c, rm, height - 3*cm, datos_empresa, "Pedido de compra")
+    dibujar_domicilio_fiscal_prns(c, lm, height - 2.6*cm, datos_empresa)
+    dibujar_domicilio_fabrica_prns(c, lm, height - 3.4*cm, datos_empresa)
+    dibujar_cif_prns(c, lm, height - 4.2*cm, datos_empresa)
+    dibujar_linea_prns(c, height - 4.5*cm)
+# La cabecera
+    #c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+    #                         '..', 'imagenes', datos_empresa.logo),
+    #            lm+0.5*inch, height - 1.5*inch, 1.5*inch, 1.5*inch)
     c.setFont("Helvetica-Bold", 18)
-    c.drawCentredString(width/2, tm+inch, escribe('PEDIDO DE COMPRA'))
+    #c.drawCentredString(width/2, tm+inch, escribe('PEDIDO DE COMPRA'))
     fuente = "Helvetica"
     tamano = 8
-    if datos_empresa.bvqi:
-        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), 
-                                 '..', 'imagenes', datos_empresa.logoiso1),
-                    rm-1.75*inch, tm+0.65*inch, width = 119, height = 65)
-        c.setFont(fuente, tamano - 2)
-        c.drawCentredString(rm-0.94*inch, tm+0.66*inch, 
-                            escribe('Geotextiles CE 1035-CPD-ES033858'))
-        c.drawCentredString(rm-0.94*inch, tm+0.56*inch, 
-                            escribe('Fibra CE 1035-CPD-9003712'))
+    #if datos_empresa.bvqi:
+    #    c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+    #                             '..', 'imagenes', datos_empresa.logoiso1),
+    #                rm-1.75*inch, tm+0.65*inch, width = 119, height = 65)
+    #    c.setFont(fuente, tamano - 2)
+    #    c.drawCentredString(rm-0.94*inch, tm+0.66*inch, 
+    #                        escribe('Geotextiles CE 1035-CPD-ES033858'))
+    #    c.drawCentredString(rm-0.94*inch, tm+0.56*inch, 
+    #                        escribe('Fibra CE 1035-CPD-9003712'))
     c.setFont(fuente, tamano)
     linea = height-15
-    if datos_empresa.direccion != datos_empresa.dirfacturacion:
-        posx_dirfiscal = (width / 2) - (1.5 * inch)
-        if datos_empresa.esSociedad:
-            c.drawString(posx_dirfiscal, linea, escribe('DOMICILIO SOCIAL'))
-            c.drawString(width-2.5*inch, linea, escribe('FÁBRICA'))
-        else:
-            c.drawString(posx_dirfiscal, linea, escribe('DIRECCIÓN FISCAL'))
-            c.drawString(width-2.5*inch, linea, escribe('TIENDA'))
-        linea -= 10
-        c.drawString(posx_dirfiscal, linea,
-                     escribe(datos_empresa.dirfacturacion))
-        c.drawString(width-2.5*inch, linea, escribe(datos_empresa.direccion))
-        linea -= 10
-        c.drawString(posx_dirfiscal, linea, escribe('%s %s%s, %s' % (
-            datos_empresa.cpfacturacion,
-            datos_empresa.ciudadfacturacion,
-            datos_empresa.provinciafacturacion
-                != datos_empresa.ciudadfacturacion
-                and " (%s)" % (datos_empresa.provinciafacturacion) or "",
-            datos_empresa.paisfacturacion)))
-        c.drawString(width-2.5*inch, linea, escribe('%s %s%s, %s' % (
-            datos_empresa.cp,
-            datos_empresa.ciudad,
-            datos_empresa.provincia != datos_empresa.ciudad
-                and " (%s)" % (datos_empresa.provincia) or "",
-            datos_empresa.pais)))
-        linea -= 10
-        c.drawString(posx_dirfiscal, linea,
-            escribe('Tlf.: %s' % (datos_empresa.telefonofacturacion)))
-        c.drawString(width-2.5*inch, linea,
-            escribe('Tlf.: %s' % (datos_empresa.telefono)))
-        linea -= 10
-        c.drawString(posx_dirfiscal, linea,
-            escribe('Fax: %s' % (datos_empresa.faxfacturacion)))
-        c.drawString(width-2.5*inch, linea,
-            escribe('Fax: %s' % (datos_empresa.fax)))
-    else:
-        c.drawString(width-2.5*inch, linea, escribe('DIRECCIÓN'))
-        linea -= 10
-        c.drawString(width-2.5*inch, linea, escribe(datos_empresa.direccion))
-        linea -= 10
-        c.drawString(width-2.5*inch, linea, escribe('%s %s%s, %s' % (
-            datos_empresa.cp,
-            datos_empresa.ciudad,
-            datos_empresa.provincia != datos_empresa.ciudad
-                and " (%s)" % (datos_empresa.provincia) or "",
-            datos_empresa.pais)))
-        linea -= 10
-        c.drawString(width-2.5*inch, linea,
-            escribe('Tlf.: %s' % (datos_empresa.telefono)))
-        linea -= 10
-        c.drawString(width-2.5*inch, linea,
-            escribe('Fax: %s' % (datos_empresa.fax)))
-    linea -= 0.6 * inch
-    c.setFont(fuente, 6)
-    c.drawString(lm+0.4*inch, linea,
-        escribe('C.I.F. / VAT NUMBER:ES     %s' % (datos_empresa.cif)))
-    c.setFont(fuente, tamano)
+    #if datos_empresa.direccion != datos_empresa.dirfacturacion:
+    #    posx_dirfiscal = (width / 2) - (1.5 * inch)
+    #    if datos_empresa.esSociedad:
+    #        c.drawString(posx_dirfiscal, linea, escribe('DOMICILIO SOCIAL'))
+    #        c.drawString(width-2.5*inch, linea, escribe('FÁBRICA'))
+    #    else:
+    #        c.drawString(posx_dirfiscal, linea, escribe('DIRECCIÓN FISCAL'))
+    #        c.drawString(width-2.5*inch, linea, escribe('TIENDA'))
+    #    linea -= 10
+    #    c.drawString(posx_dirfiscal, linea,
+    #                 escribe(datos_empresa.dirfacturacion))
+    #    c.drawString(width-2.5*inch, linea, escribe(datos_empresa.direccion))
+    #    linea -= 10
+    #    c.drawString(posx_dirfiscal, linea, escribe('%s %s%s, %s' % (
+    #        datos_empresa.cpfacturacion,
+    #        datos_empresa.ciudadfacturacion,
+    #        datos_empresa.provinciafacturacion
+    #            != datos_empresa.ciudadfacturacion
+    #            and " (%s)" % (datos_empresa.provinciafacturacion) or "",
+    #        datos_empresa.paisfacturacion)))
+    #    c.drawString(width-2.5*inch, linea, escribe('%s %s%s, %s' % (
+    #        datos_empresa.cp,
+    #        datos_empresa.ciudad,
+    #        datos_empresa.provincia != datos_empresa.ciudad
+    #            and " (%s)" % (datos_empresa.provincia) or "",
+    #        datos_empresa.pais)))
+    #    linea -= 10
+    #    c.drawString(posx_dirfiscal, linea,
+    #        escribe('Tlf.: %s' % (datos_empresa.telefonofacturacion)))
+    #    c.drawString(width-2.5*inch, linea,
+    #        escribe('Tlf.: %s' % (datos_empresa.telefono)))
+    #    linea -= 10
+    #    c.drawString(posx_dirfiscal, linea,
+    #        escribe('Fax: %s' % (datos_empresa.faxfacturacion)))
+    #    c.drawString(width-2.5*inch, linea,
+    #        escribe('Fax: %s' % (datos_empresa.fax)))
+    #else:
+    #    c.drawString(width-2.5*inch, linea, escribe('DIRECCIÓN'))
+    #    linea -= 10
+    #    c.drawString(width-2.5*inch, linea, escribe(datos_empresa.direccion))
+    #    linea -= 10
+    #    c.drawString(width-2.5*inch, linea, escribe('%s %s%s, %s' % (
+    #        datos_empresa.cp,
+    #        datos_empresa.ciudad,
+    #        datos_empresa.provincia != datos_empresa.ciudad
+    #            and " (%s)" % (datos_empresa.provincia) or "",
+    #        datos_empresa.pais)))
+    #    linea -= 10
+    #    c.drawString(width-2.5*inch, linea,
+    #        escribe('Tlf.: %s' % (datos_empresa.telefono)))
+    #    linea -= 10
+    #    c.drawString(width-2.5*inch, linea,
+    #        escribe('Fax: %s' % (datos_empresa.fax)))
+    #linea -= 0.6 * inch
+    #c.setFont(fuente, 6)
+    #c.drawString(lm+0.4*inch, linea,
+    #    escribe('C.I.F. / VAT NUMBER:ES     %s' % (datos_empresa.cif)))
+    #c.setFont(fuente, tamano)
 
 
     # Datos generales (Esquina superior izquierda x=lm+0.5*inch, y=tm-1.2*inch)
@@ -3055,8 +3063,8 @@ def pedidoCompra(general, proveedor, lineas, entregas, observaciones,
     izq = lm + 0.5*inch
     der = rm
     aux = arr - 0.2*inch
-    rectangulo(c, (izq, arr), (der, aba) )
     rectangulo(c, (izq, arr), (der, aux), escribe('Observaciones / Remarks:'))
+    rectangulo(c, (izq, aux), (der, aba), color_relleno = (0.8, 1.0, 0.6))
     linea = aux - 0.5 * cm
     if observaciones0 != None:
         lineas_agregadas = agregarFila(izq + 0.1 * cm, linea, der, 
