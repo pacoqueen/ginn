@@ -3533,7 +3533,8 @@ class AlbaranesDeSalida(Ventana):
                        'empresa': {'linea0': linea0,
                                    'linea1': linea1,
                                    'linea2': linea2,
-                                   'linea3': linea3}
+                                   'linea3': linea3},
+                       'albaran': self.objeto.numalbaran,
                        })
         return self.imprimir_packing_list(tuple(pl), abrir_pdf,
                                           modelobalas = modelo_pl_balas)

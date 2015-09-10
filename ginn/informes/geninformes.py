@@ -69,7 +69,8 @@ reportlab.rl_config.warnOnMissingFontGlyphs = 0
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont, TTFError
 try:
-    pdfmetrics.registerFont(TTFont('FedraSans', 'FedraSansStd.otf'))
+    pdfmetrics.registerFont(TTFont('FedraSans', 'fedrasansstdmedium.ttf'))
+    pdfmetrics.registerFont(TTFont('FiraMono', 'firamonoregular.ttf'))
     pdfmetrics.registerFont(TTFont('Vera', 'Vera.ttf'))
     pdfmetrics.registerFont(TTFont('VeraB', 'VeraBd.ttf'))
     pdfmetrics.registerFont(TTFont('VeraI', 'VeraIt.ttf'))
@@ -81,7 +82,10 @@ try:
 except TTFError:
     pdfmetrics.registerFont(TTFont('FedraSans', os.path.join(
         os.path.dirname(os.path.realpath(__file__)), "..", "informes",
-                        'FedraSansStd.otf')))
+                        'fedrasansstdmedium.ttf')))
+    pdfmetrics.registerFont(TTFont('FiraMono', os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), "..", "informes",
+                        'firamonoregular.ttf')))
     pdfmetrics.registerFont(TTFont('Vera', os.path.join(
         os.path.dirname(os.path.realpath(__file__)), "..", "informes", 'Vera.ttf')))
     pdfmetrics.registerFont(TTFont('VeraB', os.path.join(
@@ -261,14 +265,15 @@ def dibujar_logo_prns(reportlab_canvas, left_margin, height, datos_de_la_empresa
             height - 2.6 * cm,
             ancho_logo,
             ancho_logo)
-    reportlab_canvas.setFont("LiberationB", 18)
+    reportlab_canvas.setFont("FedraSans", 22)
     y = height - 1.7 * cm
     #x = 1.26 * inch
     x = xlogo + ancho_logo - 0.1*inch #porque la mitad de logo es transparente
-    reportlab_canvas.drawString(x, y, escribe(datos_de_la_empresa.nombre))
+    nombre_prns = datos_de_la_empresa.nombre.split(",")[0]
+    reportlab_canvas.drawString(x, y, escribe(nombre_prns))
     reportlab_canvas.saveState()
-    reportlab_canvas.setFont("Courier", 7)
-    reportlab_canvas.setFillColorRGB(0.3, 0.3, 0.3)
+    reportlab_canvas.setFont("FiraMono", 6)
+    reportlab_canvas.setFillColorRGB(0.4, 0.4, 0.4)
     # TODO: ¿Creo un campo "eslógan" en la base de datos?
     reportlab_canvas.drawString(x, y - 0.3*cm,
                                 escribe('geosintéticos de alta calidad'))
@@ -287,12 +292,14 @@ def dibujar_domicilio_fiscal_prns(c, lm, y, datos_empresa):
     c.drawString(lm + 0.5*inch, y, "DOMICILIO: ")
     ancho_texto_domicilio = c.stringWidth("DOMICILIO: ",
                                           "Times-Bold", size)
-    c.setFillColorRGB(0.3, 0.3, 0.3)
+    linea1_dirfacturacion = datos_empresa.dirfacturacion
+    if datos_empresa.cpfacturacion:
+        linea1_dirfacturacion += ", " + datos_empresa.cpfacturacion
+    c.setFillColorRGB(0.4, 0.4, 0.4)
     c.drawString(lm + 0.5*inch + ancho_texto_domicilio, y,
-                 escribe(datos_empresa.dirfacturacion))
+                 escribe(linea1_dirfacturacion))
     y -= size + 1
-    linea2_dirfacturacion = escribe('%s %s%s, %s' % (
-        datos_empresa.cpfacturacion,
+    linea2_dirfacturacion = escribe('%s%s, %s' % (
         datos_empresa.ciudadfacturacion,
         datos_empresa.provinciafacturacion
             != datos_empresa.ciudadfacturacion
@@ -320,12 +327,14 @@ def dibujar_domicilio_fabrica_prns(c, lm, y, datos_empresa):
     c.drawString(lm + 0.5*inch, y, "FÁBRICA: ")
     ancho_texto_domicilio = c.stringWidth("FÁBRICA: ",
                                           "Times-Bold", size)
-    c.setFillColorRGB(0.3, 0.3, 0.3)
+    c.setFillColorRGB(0.4, 0.4, 0.4)
+    linea1_dir = datos_empresa.direccion
+    if datos_empresa.cp:
+        linea1_dir += ", " + datos_empresa.cp
     c.drawString(lm + 0.5*inch + ancho_texto_domicilio, y,
-                 escribe(datos_empresa.direccion))
+                 escribe(linea1_dir))
     y -= size + 1
-    linea2_dir = escribe('%s %s%s, %s' % (
-        datos_empresa.cp,
+    linea2_dir = escribe('%s%s, %s' % (
         datos_empresa.ciudad,
         datos_empresa.provincia
             != datos_empresa.ciudad
@@ -5109,7 +5118,7 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
                                 linea,
                                 escribe(dir_pie1))
             c.setFont("Times-Roman", 8)
-            c.setFillColorRGB(0.3, 0.3, 0.3)
+            c.setFillColorRGB(0.4, 0.4, 0.4)
             c.drawCentredString(pos_pie + (ancho_pie1 / 2),
                                 linea,
                                 escribe(dir_pie2))
@@ -7337,53 +7346,54 @@ def PackingList(datos, numpagina = 1, titulo = "Packing list"):
     fecha y hora).
     """
     global linea, tm, lm, rm, bm
-
     # Creo la hoja
     nomarchivo = os.path.join(gettempdir(), "packing_list%s_pag_%d.pdf" % (
         give_me_the_name_baby(), numpagina))
     c = canvas.Canvas(nomarchivo)
-
     fecha = datos['fecha']
-
+    datos_empresa = pclases.DatosDeLaEmpresa.select()[0]
+    txtalbaran = "Packing list. Albarán %s" % (datos['albaran'])
+    if datos_empresa.logo:
+        dibujar_logo_prns(c, lm, height, datos_empresa)
+    if datos_empresa.bvqi:
+        dibujar_bvqi_prns(c, rm, height - 3.5*cm, datos_empresa, txtalbaran)
+    dibujar_domicilio_fiscal_prns(c, lm, height - 2.8*cm, datos_empresa)
+    dibujar_domicilio_fabrica_prns(c, lm, height - 3.6*cm, datos_empresa)
+    dibujar_cif_prns(c, lm, height - 4.4*cm, datos_empresa)
+    dibujar_linea_prns(c, height - 6.0*cm)
     balas = datos['balas']
-
     xDestino = lm +4
     xEmpresa = rm - 0.1*inch #width/2 + 4
     xProducto = width/2 - 1.5*inch
     xTipo = width/2 + 2*inch
-
     # Ponemos la cabecera
-    cabecera(c, titulo, fecha)
+    #cabecera(c, titulo, fecha)
     # El cuerpo
+    c.saveState()
+    c.setFont("Times-Roman", 10)
+    c.setFillColorRGB(0.4, 0.4, 0.4)
+    c.drawRightString(xEmpresa, height - 4.1*cm, fecha)
+    c.setFont("Times-Bold", 10)
+    linea = tm + 1*cm
+    c.drawRightString(xEmpresa, linea, escribe(datos['envio']['nombre']))
+    linea = sigLinea(11)
+    c.drawRightString(xEmpresa, linea, escribe(datos['envio']['direccion']))
+    linea = sigLinea(11)
+    c.drawRightString(xEmpresa, linea,
+                 escribe(" ".join((datos['envio']['ciudad'],
+                                   datos['envio']['cp'],
+                                   datos['envio']['pais']))))
+    linea = sigLinea(11)
+    c.restoreState()
+    #c.drawRightString(xEmpresa, linea, escribe(datos['envio']['pais']))
     c.setFont("Helvetica-Bold", 10)
-
-
-    linea = tm + 1*inch
-
-    c.drawString(xDestino, linea, escribe(datos['envio']['nombre']))
-    c.drawRightString(xEmpresa, linea, escribe(datos['empresa']['linea0']))
-    linea = sigLinea()
-    c.drawString(xDestino, linea, escribe(datos['envio']['direccion']))
-    c.drawRightString(xEmpresa, linea, escribe(datos['empresa']['linea1']))
-    linea = sigLinea()
-    c.drawString(xDestino, linea,
-                 escribe(datos['envio']['ciudad'] + datos['envio']['cp']))
-    c.drawRightString(xEmpresa, linea, escribe(datos['empresa']['linea2']))
-    linea = sigLinea()
-    c.drawString(xDestino, linea, escribe(datos['envio']['pais']))
-    c.drawRightString(xEmpresa, linea, escribe(datos['empresa']['linea3']))
-    linea = sigLinea()
-    linea = sigLinea()
-
+    linea = sigLinea(1*cm)
     el_encogedor_de_fuentes_de_doraemon(c, "Helvetica-Bold", 10, xDestino,
                                         xProducto, linea,
                                         'Nº DE LOTE: %s' % (datos['lote']))
-    #c.drawString(xDestino, linea, escribe('Nº DE LOTE: ' + datos['lote']))
     c.drawString(xProducto, linea, escribe('PRODUCTO: ' + datos['producto']))
     c.drawString(xTipo, linea, escribe('TIPO: '+ datos['tipo']))
-
     linea = sigLinea()
-
     xBala1 = lm + 50
     xPeso1 = xBala1 + (inch*0.80)
     xBala2 = xPeso1 + (inch*0.80) + 10
@@ -7418,14 +7428,11 @@ def PackingList(datos, numpagina = 1, titulo = "Packing list"):
                 cabecera(c, titulo + " (cont.)", fecha)
                 c.setFont("Helvetica", 8)
                 linea = tm + 1*inch
-
     linea = sigLinea()
     linea = sigLinea()
     linea = sigLinea()
     linea = sigLinea()
-
     c.setFont("Helvetica", 10)
-
     c.drawString(xDestino, linea,
                  escribe('TOTAL BULTOS: ' + datos['total']
                          + '    CANTIDAD TOTAL: ' + datos['peso']))
@@ -7433,7 +7440,6 @@ def PackingList(datos, numpagina = 1, titulo = "Packing list"):
     c.showPage()
     # Salvamos el documento
     c.save()
-
     return nomarchivo
 
 def packingListEAN(datos, numpagina = 1, titulo = "Packing list"):
