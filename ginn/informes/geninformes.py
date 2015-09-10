@@ -69,7 +69,7 @@ reportlab.rl_config.warnOnMissingFontGlyphs = 0
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont, TTFError
 try:
-#    pdfmetrics.registerFont(TTFont('FedraSans', 'FedraSansStd.ttf'))
+    pdfmetrics.registerFont(TTFont('FedraSans', 'FedraSansStd.otf'))
     pdfmetrics.registerFont(TTFont('Vera', 'Vera.ttf'))
     pdfmetrics.registerFont(TTFont('VeraB', 'VeraBd.ttf'))
     pdfmetrics.registerFont(TTFont('VeraI', 'VeraIt.ttf'))
@@ -79,9 +79,9 @@ try:
     pdfmetrics.registerFont(TTFont('LiberationI', 'LiberationSans-Italic.ttf'))
     pdfmetrics.registerFont(TTFont('LiberationBI', 'LiberationSans-BoldItalic.ttf'))
 except TTFError:
-#    pdfmetrics.registerFont(TTFont('FedraSans', os.path.join(
-#        os.path.dirname(os.path.realpath(__file__)), "..", "informes",
-#                        'FedraSansStd.ttf')))
+    pdfmetrics.registerFont(TTFont('FedraSans', os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), "..", "informes",
+                        'FedraSansStd.otf')))
     pdfmetrics.registerFont(TTFont('Vera', os.path.join(
         os.path.dirname(os.path.realpath(__file__)), "..", "informes", 'Vera.ttf')))
     pdfmetrics.registerFont(TTFont('VeraB', os.path.join(
