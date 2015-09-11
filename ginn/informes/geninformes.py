@@ -68,40 +68,26 @@ import reportlab.rl_config  # @UnusedImport
 reportlab.rl_config.warnOnMissingFontGlyphs = 0
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont, TTFError
-try:
-    pdfmetrics.registerFont(TTFont('FedraSans', 'fedrasansstdmedium.ttf'))
-    pdfmetrics.registerFont(TTFont('FiraMono', 'firamonoregular.ttf'))
-    pdfmetrics.registerFont(TTFont('Vera', 'Vera.ttf'))
-    pdfmetrics.registerFont(TTFont('VeraB', 'VeraBd.ttf'))
-    pdfmetrics.registerFont(TTFont('VeraI', 'VeraIt.ttf'))
-    pdfmetrics.registerFont(TTFont('VeraBI', 'VeraBI.ttf'))
-    pdfmetrics.registerFont(TTFont('Liberation', 'LiberationSans-Regular.ttf'))
-    pdfmetrics.registerFont(TTFont('LiberationB', 'LiberationSans-Bold.ttf'))
-    pdfmetrics.registerFont(TTFont('LiberationI', 'LiberationSans-Italic.ttf'))
-    pdfmetrics.registerFont(TTFont('LiberationBI', 'LiberationSans-BoldItalic.ttf'))
-except TTFError:
-    pdfmetrics.registerFont(TTFont('FedraSans', os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), "..", "informes",
-                        'fedrasansstdmedium.ttf')))
-    pdfmetrics.registerFont(TTFont('FiraMono', os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), "..", "informes",
-                        'firamonoregular.ttf')))
-    pdfmetrics.registerFont(TTFont('Vera', os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), "..", "informes", 'Vera.ttf')))
-    pdfmetrics.registerFont(TTFont('VeraB', os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), "..", "informes", 'VeraBd.ttf')))
-    pdfmetrics.registerFont(TTFont('VeraI', os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), "..", "informes", 'VeraIt.ttf')))
-    pdfmetrics.registerFont(TTFont('VeraBI', os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), "..", "informes", 'VeraBI.ttf')))
-    pdfmetrics.registerFont(TTFont('Liberation', os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), "..", "informes", 'LiberationSans-Regular.ttf')))
-    pdfmetrics.registerFont(TTFont('LiberationB', os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), "..", "informes", 'LiberationSans-Bold.ttf')))
-    pdfmetrics.registerFont(TTFont('LiberationI', os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), "..", "informes", 'LiberationSans-Italic.ttf')))
-    pdfmetrics.registerFont(TTFont('LiberationBI', os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), "..", "informes", 'LiberationSans-BoldItalic.ttf')))
+
+fuentes_personalizadas = (('FedraSans', 'fedrasansstdmedium.ttf'), 
+                          ('FiraMono', 'firamonoregular.ttf'),
+                          ('Miller', 'millertext.ttf'),
+                          ('MillerB', 'millertextbold.ttf'),
+                          ('Vera', 'Vera.ttf'),
+                          ('VeraB', 'VeraBd.ttf'),
+                          ('VeraI', 'VeraIt.ttf'),
+                          ('VeraBI', 'VeraBI.ttf'),
+                          ('Liberation', 'LiberationSans-Regular.ttf'),
+                          ('LiberationB', 'LiberationSans-Bold.ttf'),
+                          ('LiberationI', 'LiberationSans-Italic.ttf'),
+                          ('LiberationBI', 'LiberationSans-BoldItalic.ttf'))
+for fuente, file_fuente in fuentes_personalizadas:
+    try:
+        pdfmetrics.registerFont(TTFont(fuente, file_fuente))
+    except TTFError:
+        pdfmetrics.registerFont(TTFont(fuente, os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), "..", "informes",
+                        file_fuente)))
 
 
 # Medidas fundamentales
@@ -9144,8 +9130,11 @@ def ausencia(empleado, centro, fecha, turno, motivo, motivos):
     c = canvas.Canvas(nomarchivo)
     # Ponemos la cabecera
     dibujar_logo_prns(c, lm, height, datos_empresa)
-    dibujar_linea_prns(c, height - 4.0*cm)
-#titulo1 = 'GEOTEXAN S.A.'
+    dibujar_linea_prns(c, height - 3.0*cm)
+    c.setFont("MillerB", 18)
+    c.drawRightString(rm, height - 1.8*cm, escribe('Comunicación de permisos'))
+    c.drawRightString(rm, height - 2.5*cm, escribe('y asuntos propios del personal'))
+    #titulo1 = 'GEOTEXAN S.A.'
     #titulo = 'COMUNICACIÓN DE PERMISOS Y ASUNTOS PROPIOS DEL PERSONAL'
     xIzquierda = lm -4
     #c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo),
