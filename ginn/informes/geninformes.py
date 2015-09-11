@@ -73,6 +73,7 @@ fuentes_personalizadas = (('FedraSans', 'fedrasansstdmedium.ttf'),
                           ('FiraMono', 'firamonoregular.ttf'),
                           ('Miller', 'millertext.ttf'),
                           ('MillerB', 'millertextbold.ttf'),
+                          ('MillerI', 'millertextitalic.ttf'),
                           ('Vera', 'Vera.ttf'),
                           ('VeraB', 'VeraBd.ttf'),
                           ('VeraI', 'VeraIt.ttf'),
@@ -272,12 +273,12 @@ def dibujar_domicilio_fiscal_prns(c, lm, y, datos_empresa):
     obtiene de «datos_empresa».
     """
     size = 9
-    c.setFont("Times-Bold", size)
+    c.setFont("MillerB", size)
     c.saveState()
     c.setFillColorRGB(*VERDE_GTX)
     c.drawString(lm + 0.5*inch, y, "DOMICILIO: ")
     ancho_texto_domicilio = c.stringWidth("DOMICILIO: ",
-                                          "Times-Bold", size)
+                                          "MillerB", size)
     linea1_dirfacturacion = datos_empresa.dirfacturacion
     if datos_empresa.cpfacturacion:
         linea1_dirfacturacion += ", " + datos_empresa.cpfacturacion
@@ -293,8 +294,8 @@ def dibujar_domicilio_fiscal_prns(c, lm, y, datos_empresa):
         datos_empresa.paisfacturacion))
     c.drawString(lm + 0.5*inch, y, linea2_dirfacturacion)
     ancho_linea2_dirfacturacion = c.stringWidth(linea2_dirfacturacion,
-                                                "Times-Bold", size)
-    c.setFont("Times-Roman", size)
+                                                "MillerB", size)
+    c.setFont("MillerI", size)
     c.drawString(lm + 0.5*inch + ancho_linea2_dirfacturacion, y,
             escribe(" · t %s · f %s" % (datos_empresa.telefonofacturacion,
                                         datos_empresa.faxfacturacion)))
@@ -307,12 +308,12 @@ def dibujar_domicilio_fabrica_prns(c, lm, y, datos_empresa):
     obtiene de «datos_empresa».
     """
     size = 9
-    c.setFont("Times-Bold", size)
+    c.setFont("MillerB", size)
     c.saveState()
     c.setFillColorRGB(*VERDE_GTX)
     c.drawString(lm + 0.5*inch, y, "FÁBRICA: ")
     ancho_texto_domicilio = c.stringWidth("FÁBRICA: ",
-                                          "Times-Bold", size)
+                                          "MillerB", size)
     c.setFillColorRGB(0.4, 0.4, 0.4)
     linea1_dir = datos_empresa.direccion
     if datos_empresa.cp:
@@ -327,8 +328,8 @@ def dibujar_domicilio_fabrica_prns(c, lm, y, datos_empresa):
             and " (%s)" % (datos_empresa.provincia) or "",
         datos_empresa.pais))
     c.drawString(lm + 0.5*inch, y, linea2_dir)
-    ancho_linea2_dir = c.stringWidth(linea2_dir, "Times-Bold", size)
-    c.setFont("Times-Roman", size)
+    ancho_linea2_dir = c.stringWidth(linea2_dir, "MillerB", size)
+    c.setFont("MillerI", size)
     c.drawString(lm + 0.5*inch + ancho_linea2_dir, y,
             escribe(" · t %s · f %s" % (datos_empresa.telefono,
                                         datos_empresa.fax)))
@@ -340,7 +341,7 @@ def dibujar_cif_prns(c, lm, linea, datos_empresa):
     izquierdo y la posición «y» recibida.
     """
     size = 9
-    c.setFont("Times-Roman", size)
+    c.setFont("Miller", size)
     c.saveState()
     c.setFillColorRGB(*VERDE_GTX)
     c.drawString(lm + 0.5*inch, linea,
@@ -7364,10 +7365,10 @@ def PackingList(datos, numpagina = 1, titulo = "Packing list"):
     #cabecera(c, titulo, fecha)
     # El cuerpo
     c.saveState()
-    c.setFont("Times-Roman", 10)
+    c.setFont("Miller", 10)
     c.setFillColorRGB(0.4, 0.4, 0.4)
     c.drawRightString(xEmpresa, height - 4.1*cm, fecha)
-    c.setFont("Times-Bold", 10)
+    c.setFont("MillerB", 10)
     linea = tm + 1*cm
     c.drawRightString(xEmpresa, linea, escribe(datos['envio']['nombre']))
     linea = sigLinea(11)
