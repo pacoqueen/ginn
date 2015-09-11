@@ -2726,7 +2726,7 @@ def pedidoCompra(general, proveedor, lineas, entregas, observaciones,
     dibujar_domicilio_fabrica_prns(c, lm, height - 3.4*cm, datos_empresa)
     dibujar_cif_prns(c, lm, height - 4.2*cm, datos_empresa)
     dibujar_linea_prns(c, height - 4.5*cm)
-# La cabecera
+    # La cabecera
     #c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), 
     #                         '..', 'imagenes', datos_empresa.logo),
     #            lm+0.5*inch, height - 1.5*inch, 1.5*inch, 1.5*inch)
@@ -9143,15 +9143,17 @@ def ausencia(empleado, centro, fecha, turno, motivo, motivos):
         "ausencia_%s.pdf" % give_me_the_name_baby())
     c = canvas.Canvas(nomarchivo)
     # Ponemos la cabecera
-    titulo1 = 'GEOTEXAN S.A.'
-    titulo = 'COMUNICACIÓN DE PERMISOS Y ASUNTOS PROPIOS DEL PERSONAL'
+    dibujar_logo_prns(c, lm, height, datos_empresa)
+    dibujar_linea_prns(c, height - 4.0*cm)
+#titulo1 = 'GEOTEXAN S.A.'
+    #titulo = 'COMUNICACIÓN DE PERMISOS Y ASUNTOS PROPIOS DEL PERSONAL'
     xIzquierda = lm -4
-    c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo),
-                lm+0.1*inch, height - 1.2*inch, 0.9*inch, 0.9*inch)
+    #c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo),
+    #            lm+0.1*inch, height - 1.2*inch, 0.9*inch, 0.9*inch)
     c.setFont("Helvetica-Bold", 12)
-    c.drawString(lm+3.2*inch, height-0.65*inch, escribe(titulo1))
-    c.drawString(lm+1.1*inch, height-inch, escribe(titulo))
-    rectangulo(c, (xIzquierda, height-25), (rm, height-1.20*inch))
+    #c.drawString(lm+3.2*inch, height-0.65*inch, escribe(titulo1))
+    #c.drawString(lm+1.1*inch, height-inch, escribe(titulo))
+    #rectangulo(c, (xIzquierda, height-25), (rm, height-1.20*inch))
 
     xIzquierda = lm
     yPrimeraLinea = height - 2*inch
