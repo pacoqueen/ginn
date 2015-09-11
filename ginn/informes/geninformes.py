@@ -460,7 +460,7 @@ def cabecera(c, texto, fecha = None, apaisado = False):
     dibujar_logo_prns(c, lm - 1.2 * cm, height + 0.1 * cm, datos_empresa)
     c.setFont("MillerB", 20)
 
-    el_encogedor_de_fuentes_de_doraemon(c, "MillerB", 20, lm + 5*cm, rm,
+    el_encogedor_de_fuentes_de_doraemon(c, "MillerB", 20, lm + 6*cm, rm,
                                         height-0.8*inch, texto, alineacion=1)
     #c.drawString(lm+inch, height-0.75*inch, escribe(texto))
     #c.line(xIzquierda, height-inch, rm, height-inch)
@@ -10854,7 +10854,7 @@ def informe_marcado_ce(producto,
                        ignorar_errores = False,
                        exportar_a_csv_a = None):
     """
-    Genera un PDF con el informe de marcado CD para el producto "producto".
+    Genera un PDF con el informe de marcado CE para el producto "producto".
     Si "rango_partida" es != None, mostrará en el PDF solo las partidas de
     la lista o tupla de objetos partida.
     Si en el rango hay una partida que no pernece al producto la ignora.
