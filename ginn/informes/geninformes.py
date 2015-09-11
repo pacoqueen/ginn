@@ -454,20 +454,24 @@ def cabecera(c, texto, fecha = None, apaisado = False):
         rm, tm, width, height, MAXLINEAS = apaisar(False)
 
     xIzquierda = lm -4
-    rectangulo(c, (xIzquierda, tm+2*inch), (rm, bm-0.2*inch))
-    c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo),
-                lm+0.1*inch, height - 1*inch, 0.7*inch, 0.7*inch)
-    c.setFont("Helvetica", 20)
+    #rectangulo(c, (xIzquierda, tm+2*inch), (rm, bm-0.2*inch))
+    #c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo),
+    #            lm+0.1*inch, height - 1*inch, 0.7*inch, 0.7*inch)
+    dibujar_logo_prns(c, lm - 1.2 * cm, height + 0.1 * cm, datos_empresa)
+    c.setFont("MillerB", 20)
 
-    el_encogedor_de_fuentes_de_doraemon(c, "Helvetica", 20, lm+inch, rm,
-                                        height-0.75*inch, texto, alineacion=0)
+    el_encogedor_de_fuentes_de_doraemon(c, "MillerB", 20, lm + 5*cm, rm,
+                                        height-0.8*inch, texto, alineacion=1)
     #c.drawString(lm+inch, height-0.75*inch, escribe(texto))
-    c.line(xIzquierda, height-inch, rm, height-inch)
-    c.setFont("Helvetica", 10)
+    #c.line(xIzquierda, height-inch, rm, height-inch)
+    dibujar_linea_prns(c, height - inch)
+    c.setFont("Miller", 10)
     if fecha:
         xFecha = rm - 5
         yFecha = tm + 1.8*inch
+        c.setFillColorRGB(0.4, 0.4, 0.4)
         c.drawRightString(xFecha, yFecha, escribe(fecha))
+        c.setFillColorRGB(0, 0, 0)
 
 def pie(c, actualPagina, totalPagina, apaisado = False):
     """
@@ -483,14 +487,16 @@ def pie(c, actualPagina, totalPagina, apaisado = False):
     x = width / 2
     linea = bm - 0.6*inch
     #c.line(lm, linea, rm, linea)
-    c.setFont('Times-Italic', 12)
+    c.setFont('MillerI', 12)
     # TODO: Esto hay que corregirlo tarde o temprano. De momento corrijo las
     # últimas páginas al vuelo para que no quede "Página 7 de 4". Al menos que
     # ponga "7 de 7" aunque al final sean 8.
     if actualPagina > totalPagina:
         totalPagina = actualPagina
     label = "Página %d de %d" % (actualPagina, totalPagina)
+    c.setFillColorRGB(*VERDE_GTX)
     c.drawCentredString(x, linea, escribe(label))
+    c.setFillColorRGB(0, 0, 0)
 
 def existencias_no_nulas(hasta = None, exportar_a_csv_a = None, 
                          ventana_padre = None):
@@ -1369,7 +1375,10 @@ def existencias_productos(informe, fecha, hasta = None, almacen = None,
                         ("Bultos", 0))
 
         linea = linea -2
+        c.saveState()
+        c.setStrokeColorRGB(*VERDE_GTX)
         c.line(lm, linea, rm, linea)
+        c.restoreState()
         c.setFont("Helvetica", 10)
 
         actualPagina = i+1
@@ -1381,7 +1390,10 @@ def existencias_productos(informe, fecha, hasta = None, almacen = None,
         fin = maxlineas * (pagina+1)
         for p in productos[inicio:fin]:
             if p == "total":
+                c.saveState()
+                c.setStrokeColorRGB(*VERDE_GTX)
                 c.line(xDescripcion, linea, xExist, linea)
+                c.restoreState()
                 linea = sigLinea()
                 c.drawRightString(xMinimo, linea, escribe("TOTAL: "))
                 c.drawRightString(xStock, linea,
@@ -6490,6 +6502,7 @@ def imprimir2(archivo,
         # Para que no pise a las columnas alineadas a la dcha.:
         posicion_linea_vertical = ((lm - 4)
                                     + (1.0 * linea_vertical * ancho / 100) + 2)
+        hoja.setStrokeColorRGB(*VERDE_GTX)
         if hasta_arriba:
             hoja.setLineWidth(0.4)
             hoja.setDash()
@@ -6511,7 +6524,10 @@ def imprimir2(archivo,
             #                       escribe(campos[i][0]))
             el_encogedor_de_fuentes_de_doraemon(hoja, fuente, tamanno,
                 xcampo[i], rm, yCabecera, campos[i][0], alineacion = 0)
+    hoja.saveState()
+    hoja.setStrokeColorRGB(*VERDE_GTX)
     hoja.line(lm - 4, yCabecera-2, rm, yCabecera-2)
+    hoja.restoreState()
     linea = yCabecera
     fuente = old_fuente = "Helvetica"
     tamanno = old_tamanno = 6
@@ -6562,12 +6578,14 @@ def imprimir2(archivo,
                 hoja.saveState()
                 hoja.setLineWidth(0.5)
                 lineasSumadas = 1
+                hoja.setStrokeColorRGB(*VERDE_GTX)
                 hoja.line(xizq, linea, xder, linea)
                 hoja.restoreState()
             elif d[i] == "===":
                 hoja.saveState()
                 hoja.setLineWidth(0.5)
                 lineasSumadas = 1
+                hoja.setStrokeColorRGB(*VERDE_GTX)
                 hoja.line(xizq, linea+1, xder, linea+1)
                 hoja.line(xizq, linea-1, xder, linea-1)
                 hoja.restoreState()
@@ -6664,10 +6682,12 @@ def imprimir2(archivo,
                 if hasta_arriba:
                     hoja.setLineWidth(0.4)
                     hoja.setDash()
+                    hoja.setStrokeColorRGB(*VERDE_GTX)
                     hoja.line(posicion_linea_vertical, arriba,
                               posicion_linea_vertical, medio)
                 hoja.setLineWidth(0.2)
                 hoja.setDash(1, 4)  # 1 punto negro, 4 blancos
+                hoja.setStrokeColorRGB(*VERDE_GTX)
                 hoja.line(posicion_linea_vertical, medio,
                           posicion_linea_vertical, abajo)
             hoja.restoreState()
@@ -6683,7 +6703,10 @@ def imprimir2(archivo,
                     #                       escribe(campos[i][0]))
                     el_encogedor_de_fuentes_de_doraemon(hoja, fuente, tamanno,
                         xcampo[i], rm, yCabecera, campos[i][0], alineacion = 0)
+            hoja.saveState()
+            hoja.setStrokeColorRGB(*VERDE_GTX)
             hoja.line(lm, yCabecera-2, rm, yCabecera-2)
+            hoja.restoreState()
             hoja.setFont(fuente, tamanno)
             x = lm  # @UnusedVariable
             linea = sigLinea()
