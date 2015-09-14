@@ -5807,13 +5807,16 @@ def marcoParte(c, texto):
     Dibuja la cabecera del parte
     """
     datos_empresa = pclases.DatosDeLaEmpresa.select()[0]
-
-    rectangulo(c, (lm, tm+2*inch), (rm, bm-0.5*inch))
-    c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo),
-                lm+0.1*inch, height - 1*inch, 0.7*inch, 0.7*inch)
-    c.setFont("Helvetica", 20)
-    c.drawString(lm+inch, height-0.8*inch, escribe(texto))
-    c.line(lm, height-inch, rm, height-inch)
+    dibujar_logo_prns(c, 0, height, datos_empresa)
+    dibujar_linea_prns(c, height - 2.54*cm)
+    c.setFont("MillerB", 12)
+    c.drawRightString(rm, height - 2.00*cm, escribe(texto))
+    #rectangulo(c, (lm, tm+2*inch), (rm, bm-0.5*inch))
+    #c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo),
+    #            lm+0.1*inch, height - 1*inch, 0.7*inch, 0.7*inch)
+    #c.setFont("Helvetica", 20)
+    #c.drawString(lm+inch, height-0.8*inch, escribe(texto))
+    #c.line(lm, height-inch, rm, height-inch)
     c.setFont("Helvetica", 10)
 
 
@@ -5852,7 +5855,7 @@ def parteBalas(datos, lineas):
         c.drawString(x1, linea, escribe('HORA COM.: '+datos['e_hora_ini']))
         c.drawString(x2, linea, escribe('HORA FIN: '+datos['e_hora_fin']))
         linea = sigLinea() + 4
-        c.line(lm, linea, rm, linea)
+        #c.line(lm, linea, rm, linea)
         # Cuerpo
         linea = sigLinea()
         xnbala = lm + 5
@@ -5862,7 +5865,10 @@ def parteBalas(datos, lineas):
         xfin = xcomienzo + 0.8*inch
         xduracion = xfin + 0.5*inch
         xobservaciones = xduracion + inch
+        c.saveState()
+        c.setStrokeColorRGB(*VERDE_GTX)
         c.line(xnbala, linea-3, rm-0.8*inch, linea-3)
+        c.restoreState()
 
         c.drawString(xnbala, linea, escribe('Nº BALA'))
         c.drawString(xpeso, linea, escribe('PESO'))
@@ -5901,7 +5907,10 @@ def parteBalas(datos, lineas):
             escribe('TR TRABAJADO: '+datos['e_tiempo_real_trabajado']))
         c.drawString(x4, linea,
             escribe('PRODUCTIVIDAD: '+datos['e_productividad']))
+        c.saveState()
+        c.setStrokeColorRGB(*VERDE_GTX)
         c.line(lm, linea+14, rm, linea+14)
+        c.restoreState()
         linea = sigLinea()
         c.drawString(x1, linea, escribe('Nº BALAS A: '+datos['e_numA']))
         c.drawString(x2, linea, escribe('PESO TOTAL A: '+datos['e_pesoA']))
@@ -5914,7 +5923,7 @@ def parteBalas(datos, lineas):
         xobservaciones = lm + 4
         xempleados = width/2 +4
         rectangulo(c, (lm, linea), (width/2, lineaAbajo), 'OBSERVACIONES: ',
-                   alinTxtY = 'arriba')
+                   alinTxtY = 'arriba', color_relleno = (0.8, 1.0, 0.6))
         rectangulo(c, (width/2, linea), (rm, lineaAbajo), 'OPERARIOS: ',
                    alinTxtY = 'arriba')
         linea = sigLinea() - 10
@@ -5971,7 +5980,7 @@ def parteRollos(datos, lineas):
         c.drawString(x3, linea, escribe('T.TOTAL: '+datos['e_tiempo_total']))
         c.drawString(x4, linea, escribe('PROD/STAN: '+datos['e_o11']))
         linea = sigLinea() + 4
-        c.line(lm, linea, rm, linea)
+        #c.line(lm, linea, rm, linea)
         # Cuerpo
         linea = sigLinea()
         xnbala = lm + 5
@@ -5982,8 +5991,10 @@ def parteRollos(datos, lineas):
         xfin = xcomienzo + 0.5 * inch
         xduracion = xfin + 0.5 * inch
         xobservaciones = xduracion + 0.75 * inch
+        c.saveState()
+        c.setStrokeColorRGB(*VERDE_GTX)
         c.line(lm, linea-3, rm, linea-3)
-
+        c.restoreState()
         c.saveState()
         c.setFont("Times-Roman", 8)
         c.drawString(xnbala, linea + 2, escribe('Nº ROLLO'))
@@ -6021,7 +6032,10 @@ def parteRollos(datos, lineas):
         c.drawString(x2, linea,
                      escribe('METROS LINEALES: '+datos['e_metros_lineales']))
         c.drawString(x3, linea, escribe('PESO APROX.: '+datos['e_peso_total']))
+        c.saveState()
+        c.setStrokeColorRGB(*VERDE_GTX)
         c.line(lm, linea+14, rm, linea+14)
+        c.restoreState()
         linea = sigLinea()
         c.drawString(x1, linea,
             escribe('TR TRABAJADO: '+datos['e_tiempo_real_trabajado']))
@@ -6037,7 +6051,7 @@ def parteRollos(datos, lineas):
         xempleados = width/2 +4
 
         rectangulo(c, (lm, linea), (width/2, lineaAbajo), 'OBSERVACIONES: ',
-                   alinTxtY = 'arriba')
+                   alinTxtY = 'arriba', color_relleno = (0.8, 1.0, 0.6))
         rectangulo(c, (width/2, linea), (rm, lineaAbajo), 'OPERARIOS: ',
                    alinTxtY = 'arriba')
         linea = sigLinea() - 10
