@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 12 septiembre 2015 at 11:51:05.
+" Created by session.vim 1.5 on 15 septiembre 2015 at 17:01:16.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -24,7 +24,7 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
 endif
 set shortmess=aoO
 badd +1 ginn/formularios/partes_de_ancho_multiple.py
-badd +4174 ginn/formularios/partes_de_fabricacion_balas.py
+badd +3236 ginn/formularios/partes_de_fabricacion_balas.py
 badd +1 fugitive:///home/bogado/Geotexan/src/Geotex-INN/.git//0/ginn/formularios/utils.py
 badd +9 ginn/lib/fuzzywuzzy/fuzzywuzzy/utils.py
 badd +1 formularios/auditviewer.py
@@ -44,7 +44,7 @@ badd +123 ginn/lib/charting.py
 badd +1864 ginn/formularios/partes_de_fabricacion_rollos.py
 badd +72 ginn/formularios/consulta_existenciasRollos.py
 badd +14 ginn/formularios/consulta_existenciasBalas.py
-badd +1 ginn/informes/geninformes.py
+badd +5820 ginn/informes/geninformes.py
 badd +452 db/tablas.sql
 badd +1 ginn/framework/__init__.py
 badd +3136 ginn/formularios/facturas_venta.py
@@ -58,11 +58,14 @@ badd +3507 ginn/formularios/albaranes_de_salida.py
 badd +19 ginn/formularios/consulta_ofertas.py
 badd +1134 ginn/formularios/pagares_pagos.py
 badd +1272 ginn/formularios/pedidos_de_compra.py
+badd +0 ginn/formularios/presupuestos.py
+badd +0 ginn/formularios/facturas_compra.py
+badd +0 ginn/framework/pclases/__init__.py
 argglobal
 silent! argdel *
 argadd formularios/auditviewer.py
 set lines=54 columns=111
-edit ginn/informes/geninformes.py
+edit ginn/formularios/facturas_compra.py
 set splitbelow splitright
 wincmd _ | wincmd |
 vsplit
@@ -74,7 +77,10 @@ wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
-3wincmd k
+wincmd _ | wincmd |
+split
+4wincmd k
+wincmd w
 wincmd w
 wincmd w
 wincmd w
@@ -83,14 +89,16 @@ set nosplitright
 wincmd t
 set winheight=1 winwidth=1
 exe 'vert 1resize ' . ((&columns * 24 + 55) / 111)
-exe '2resize ' . ((&lines * 22 + 27) / 54)
+exe '2resize ' . ((&lines * 1 + 27) / 54)
 exe 'vert 2resize ' . ((&columns * 86 + 55) / 111)
-exe '3resize ' . ((&lines * 25 + 27) / 54)
+exe '3resize ' . ((&lines * 27 + 27) / 54)
 exe 'vert 3resize ' . ((&columns * 86 + 55) / 111)
-exe '4resize ' . ((&lines * 1 + 27) / 54)
+exe '4resize ' . ((&lines * 18 + 27) / 54)
 exe 'vert 4resize ' . ((&columns * 86 + 55) / 111)
 exe '5resize ' . ((&lines * 1 + 27) / 54)
 exe 'vert 5resize ' . ((&columns * 86 + 55) / 111)
+exe '6resize ' . ((&lines * 1 + 27) / 54)
+exe 'vert 6resize ' . ((&columns * 86 + 55) / 111)
 argglobal
 enew
 file __Tag_List__
@@ -113,868 +121,18 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-73
+79
 normal! zo
-73
-normal! zo
-73
-normal! zo
-73
-normal! zo
-73
-normal! zo
-86
-normal! zo
-89
-normal! zo
-90
-normal! zo
-91
-normal! zo
-91
-normal! zo
-107
-normal! zo
-125
-normal! zo
-125
-normal! zo
-226
-normal! zo
-240
-normal! zo
-247
-normal! zo
-247
-normal! zo
-248
-normal! zo
-266
-normal! zo
-266
-normal! zo
-266
-normal! zo
-266
-normal! zo
-266
-normal! zo
-266
-normal! zo
-270
-normal! zo
-281
-normal! zo
-281
-normal! zo
-281
-normal! zo
-281
-normal! zo
-281
-normal! zo
-281
-normal! zo
-281
-normal! zo
-281
-normal! zo
-287
-normal! zo
-287
-normal! zo
-290
-normal! zo
-297
-normal! zo
-297
-normal! zo
-297
-normal! zo
-297
-normal! zo
-297
-normal! zo
-297
-normal! zo
-297
-normal! zo
-297
-normal! zo
-297
-normal! zo
-297
-normal! zo
-300
-normal! zo
-300
-normal! zo
-301
-normal! zo
-301
-normal! zo
-301
-normal! zo
-301
-normal! zo
-301
-normal! zo
-301
-normal! zo
-305
-normal! zo
-316
-normal! zo
-316
-normal! zo
-316
-normal! zo
-316
-normal! zo
-316
-normal! zo
-316
-normal! zo
-316
-normal! zo
-316
-normal! zo
-322
-normal! zo
-322
-normal! zo
-325
-normal! zo
-334
-normal! zo
-334
-normal! zo
-335
-normal! zo
-335
-normal! zo
-335
-normal! zo
-335
-normal! zo
-335
-normal! zo
-335
-normal! zo
-339
-normal! zo
-348
-normal! zo
-348
-normal! zo
-354
-normal! zo
-367
-normal! zo
-367
-normal! zo
-367
-normal! zo
-375
-normal! zo
-375
-normal! zo
-375
-normal! zo
-378
-normal! zo
-378
-normal! zo
-378
-normal! zo
-378
-normal! zo
-382
-normal! zo
-386
-normal! zo
-387
-normal! zo
-388
-normal! zo
-393
-normal! zo
-394
-normal! zo
-395
-normal! zo
-401
-normal! zo
-401
-normal! zo
-401
-normal! zo
-404
-normal! zo
-404
-normal! zo
-404
-normal! zo
-404
-normal! zo
-408
-normal! zo
-412
-normal! zo
-413
-normal! zo
-413
-normal! zo
-420
-normal! zo
-421
-normal! zo
-421
-normal! zo
-429
-normal! zo
-429
-normal! zo
-429
-normal! zo
-445
-normal! zo
-464
-normal! zo
-464
-normal! zo
-464
-normal! zo
-464
-normal! zo
-464
-normal! zo
-464
-normal! zo
-464
-normal! zo
-464
-normal! zo
-477
-normal! zo
-1199
-normal! zo
-1298
-normal! zo
-1298
-normal! zo
-1298
-normal! zo
-1298
-normal! zo
-1298
-normal! zo
-1354
-normal! zo
-1392
-normal! zo
-1393
-normal! zo
-1462
-normal! zo
-1543
-normal! zo
-1543
-normal! zo
-1576
-normal! zo
-1615
-normal! zo
-1615
-normal! zo
-1717
-normal! zo
-1726
-normal! zo
-1728
-normal! zo
-1729
-normal! zo
-1729
-normal! zo
-1738
-normal! zo
-1741
-normal! zo
-1741
-normal! zo
-1768
-normal! zo
-2006
-normal! zo
-2006
-normal! zo
-2006
-normal! zo
-2006
-normal! zo
-2103
-normal! zo
-2501
-normal! zo
-2548
-normal! zo
-2680
-normal! zo
-2680
-normal! zo
-2680
-normal! zo
-2853
-normal! zo
-2982
-normal! zo
-2982
-normal! zo
-3149
-normal! zo
-3149
-normal! zo
-3269
-normal! zo
-3300
-normal! zo
-3946
-normal! zo
-3946
-normal! zo
-4040
-normal! zo
-4058
-normal! zo
-4590
-normal! zo
-4672
-normal! zo
-4700
-normal! zo
-4700
-normal! zo
-4703
-normal! zo
-4703
-normal! zo
-4703
-normal! zo
-4703
-normal! zo
-4703
-normal! zo
-4703
-normal! zo
-4703
-normal! zo
-4703
-normal! zo
-4703
-normal! zo
-4703
-normal! zo
-4703
-normal! zo
-4737
-normal! zo
-4737
-normal! zo
-4739
-normal! zo
-4739
-normal! zo
-4755
-normal! zo
-4755
-normal! zo
-4757
-normal! zo
-4757
-normal! zo
-4776
-normal! zo
-4776
-normal! zo
-4776
-normal! zo
-4776
-normal! zo
-4776
-normal! zo
-4776
-normal! zo
-4776
-normal! zo
-4776
-normal! zo
-4815
-normal! zo
-4815
-normal! zo
-4839
-normal! zo
-4839
-normal! zo
-4839
-normal! zo
-4839
-normal! zo
-4839
-normal! zo
-4839
-normal! zo
-4839
-normal! zo
-4839
-normal! zo
-4841
-normal! zo
-4841
-normal! zo
-4841
-normal! zo
-4841
-normal! zo
-4841
-normal! zo
-4841
-normal! zo
-4841
-normal! zo
-4841
-normal! zo
-4846
-normal! zo
-4847
-normal! zo
-4847
-normal! zo
-4860
-normal! zo
-4862
-normal! zo
-4864
-normal! zo
-4866
-normal! zo
-4868
-normal! zo
-4886
-normal! zo
-4887
-normal! zo
-4891
-normal! zo
-4891
-normal! zo
-4891
-normal! zo
-4891
-normal! zo
-4891
-normal! zo
-4896
-normal! zo
-4896
-normal! zo
-4896
-normal! zo
-4896
-normal! zo
-4896
-normal! zo
-4896
-normal! zo
-4896
-normal! zo
-4896
-normal! zo
-4916
-normal! zo
-4919
-normal! zo
-4921
-normal! zo
-4921
-normal! zo
-4921
-normal! zo
-4921
-normal! zo
-4925
-normal! zo
-4925
-normal! zo
-4925
-normal! zo
-4934
-normal! zo
-4934
-normal! zo
-4943
-normal! zo
-4943
-normal! zo
-4943
-normal! zo
-4943
-normal! zo
-4949
-normal! zo
-4950
-normal! zo
-4950
-normal! zo
-4950
-normal! zo
-4952
-normal! zo
-4953
-normal! zo
-4953
-normal! zo
-4953
-normal! zo
-4957
-normal! zo
-4957
-normal! zo
-4957
-normal! zo
-4960
-normal! zo
-4962
-normal! zo
-4967
-normal! zo
-4967
-normal! zo
-4967
-normal! zo
-4973
-normal! zo
-4976
-normal! zo
-4976
-normal! zo
-4979
-normal! zo
-4985
-normal! zo
-4991
-normal! zo
-4997
-normal! zo
-5016
-normal! zo
-5016
-normal! zo
-5022
-normal! zo
-5023
-normal! zo
-5026
-normal! zo
-5027
-normal! zo
-5034
-normal! zo
-5037
-normal! zo
-5039
-normal! zo
-5045
-normal! zo
-5045
-normal! zo
-5047
-normal! zo
-5051
-normal! zo
-5059
-normal! zo
-5061
-normal! zo
-5061
-normal! zo
-5064
-normal! zo
-5064
-normal! zo
-5067
-normal! zo
-5067
-normal! zo
-5075
-normal! zo
-5080
-normal! zo
-5087
-normal! zo
-5087
-normal! zo
-5112
-normal! zo
-5116
-normal! zo
-5116
-normal! zo
-5116
-normal! zo
-5116
-normal! zo
-5116
-normal! zo
-5116
-normal! zo
-5116
-normal! zo
-5121
-normal! zo
-5121
-normal! zo
-5121
-normal! zo
-5121
-normal! zo
-5121
-normal! zo
-5121
-normal! zo
-5125
-normal! zo
-5125
-normal! zo
-5125
-normal! zo
-5125
-normal! zo
-5130
-normal! zo
-5130
-normal! zo
-5130
-normal! zo
-5130
-normal! zo
-5195
-normal! zo
-5208
-normal! zo
-5936
-normal! zo
-5952
-normal! zo
-6340
-normal! zo
-6340
-normal! zo
-6411
-normal! zo
-6498
-normal! zo
-6504
-normal! zo
-6504
-normal! zo
-6504
-normal! zo
-6504
-normal! zo
-6504
-normal! zo
-6504
-normal! zo
-6507
-normal! zo
-6514
-normal! zo
-6550
-normal! zo
-6551
-normal! zo
-6564
-normal! zo
-6600
-normal! zo
-6602
-normal! zo
-6656
-normal! zo
-6675
-normal! zo
-6683
-normal! zo
-6695
-normal! zo
-6704
-normal! zo
-6737
-normal! zo
-6737
-normal! zo
-6737
-normal! zo
-6737
-normal! zo
-6749
-normal! zo
-6827
-normal! zo
-6910
-normal! zo
-6922
-normal! zo
-7222
-normal! zo
-7255
-normal! zo
-7255
-normal! zo
-7263
-normal! zo
-7263
-normal! zo
-7263
-normal! zo
-7263
-normal! zo
-7263
-normal! zo
-7263
-normal! zo
-7263
-normal! zo
-7263
-normal! zo
-7356
-normal! zo
-7401
-normal! zo
-7401
-normal! zo
-7401
-normal! zo
-7402
-normal! zo
-7402
-normal! zo
-7402
-normal! zo
-7410
-normal! zo
-7410
-normal! zo
-7410
-normal! zo
-7410
-normal! zo
-7410
-normal! zo
-7410
-normal! zo
-7410
-normal! zo
-7410
-normal! zo
-7437
-normal! zo
-7441
-normal! zo
-9145
-normal! zo
-9206
-normal! zo
-9254
-normal! zo
-9675
-normal! zo
-9692
-normal! zo
-9729
-normal! zo
-9740
-normal! zo
-9900
-normal! zo
-9906
-normal! zo
-9960
-normal! zo
-9969
-normal! zo
-9972
-normal! zo
-10029
-normal! zo
-10072
-normal! zo
-10085
-normal! zo
-10086
-normal! zo
-10086
-normal! zo
-10086
-normal! zo
-10138
-normal! zo
-10139
-normal! zo
-10139
-normal! zo
-10272
-normal! zo
-10272
-normal! zo
-10272
-normal! zo
-10272
-normal! zo
-10335
-normal! zo
-10335
-normal! zo
-10335
-normal! zo
-10335
-normal! zo
-10335
-normal! zo
-10460
-normal! zo
-10628
-normal! zo
-10634
-normal! zo
-10852
-normal! zo
-10906
-normal! zo
-10924
-normal! zo
-10935
-normal! zo
-11020
-normal! zo
-11202
-normal! zo
-11832
-normal! zo
-12043
-normal! zo
-let s:l = 5820 - ((6 * winheight(0) + 11) / 22)
+let s:l = 1307 - ((1 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-5820
-normal! 05|
+1307
+normal! 032|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
-edit ~/Geotexan/src/Geotex-INN/ginn/formularios/partes_de_fabricacion_balas.py
+edit ~/Geotexan/src/Geotex-INN/ginn/formularios/presupuestos.py
 setlocal fdm=indent
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -983,14 +141,70 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-111
+77
 normal! zo
-let s:l = 3241 - ((16 * winheight(0) + 12) / 25)
+78
+normal! zo
+86
+normal! zo
+86
+normal! zo
+86
+normal! zo
+86
+normal! zo
+170
+normal! zo
+170
+normal! zo
+170
+normal! zo
+1063
+normal! zo
+1102
+normal! zo
+1108
+normal! zo
+1109
+normal! zo
+1352
+normal! zo
+1359
+normal! zo
+1361
+normal! zo
+1419
+normal! zo
+2167
+normal! zo
+2242
+normal! zo
+2245
+normal! zo
+let s:l = 2312 - ((16 * winheight(0) + 13) / 27)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-3241
-normal! 046|
+2312
+normal! 013|
+lcd ~/Geotexan/src/Geotex-INN
+wincmd w
+argglobal
+edit ~/Geotexan/src/Geotex-INN/ginn/framework/pclases/__init__.py
+setlocal fdm=indent
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=99
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+let s:l = 20861 - ((0 * winheight(0) + 9) / 18)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+20861
+normal! 0
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -1145,7 +359,7 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 16 - ((4 * winheight(0) + 0) / 1)
+let s:l = 16 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -1153,16 +367,18 @@ normal! zt
 normal! 03|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
-2wincmd w
+3wincmd w
 exe 'vert 1resize ' . ((&columns * 24 + 55) / 111)
-exe '2resize ' . ((&lines * 22 + 27) / 54)
+exe '2resize ' . ((&lines * 1 + 27) / 54)
 exe 'vert 2resize ' . ((&columns * 86 + 55) / 111)
-exe '3resize ' . ((&lines * 25 + 27) / 54)
+exe '3resize ' . ((&lines * 27 + 27) / 54)
 exe 'vert 3resize ' . ((&columns * 86 + 55) / 111)
-exe '4resize ' . ((&lines * 1 + 27) / 54)
+exe '4resize ' . ((&lines * 18 + 27) / 54)
 exe 'vert 4resize ' . ((&columns * 86 + 55) / 111)
 exe '5resize ' . ((&lines * 1 + 27) / 54)
 exe 'vert 5resize ' . ((&columns * 86 + 55) / 111)
+exe '6resize ' . ((&lines * 1 + 27) / 54)
+exe 'vert 6resize ' . ((&columns * 86 + 55) / 111)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
@@ -1177,6 +393,6 @@ let &so = s:so_save | let &siso = s:siso_save
 doautoall SessionLoadPost
 unlet SessionLoad
 tabnext 1
-2wincmd w
+3wincmd w
 
 " vim: ft=vim ro nowrap smc=128
