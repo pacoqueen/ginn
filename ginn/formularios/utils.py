@@ -1262,7 +1262,7 @@ def rellenar_lista(wid, textos):
                 # Si llevo escrito poco texto, me valen las opciones que
                 # empiecen por esas letras.
                 res = simple_compare(key, text, only_start = True)
-            elif 3 < len(key) < 64:
+            elif 3 < len(key) < 128:
                 # TODO: PORASQUI: He tenido que subir a 64 porque me está dando muchos problemas la búsqueda difusa al rellenar los combos.
                 # Si tengo algo más, busco en cualquier parte del texto de
                 # las opciones.
@@ -1270,6 +1270,7 @@ def rellenar_lista(wid, textos):
             else:
                 try:
                     entry = completion.get_entry()
+                    # TODO: PORASQUI: BUG: Si el texto es demasiado largo para caber en el combo, empieza a hacer cosas raras con el renderizado del icono. De momento evito este código haciendo que no se active a no ser que el texto sea mayor a 128 caracteres.
                     entry.set_icon_from_stock(1, gtk.STOCK_REVERT_TO_SAVED)
                     while gtk.events_pending(): gtk.main_iteration(False)
                 except:     # PyGTK < 2.16

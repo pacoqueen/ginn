@@ -2309,7 +2309,6 @@ class Presupuestos(Ventana, VentanaGenerica):
         else:
             icon = gtk.STOCK_SPELL_CHECK
         try:
-            # TODO: PORASQUI: BUG: Si el texto es demasiado largo para caber en el combo, empieza a hacer cosas raras con el renderizado del icono.
             self.wids['cbe_cliente'].child.set_icon_from_stock(0, icon)
         except:     # PyGTK < 2.16
             pass
