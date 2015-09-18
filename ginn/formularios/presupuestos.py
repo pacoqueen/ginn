@@ -1432,7 +1432,8 @@ class Presupuestos(Ventana, VentanaGenerica):
             vpro.mover()
             nuevo = self.objeto.clone(validado = False, usuario = None)
             vpro.mover()
-            pclases.Auditoria.nuevo(nuevo, self.usuario, __file__)
+            pclases.Auditoria.nuevo(nuevo, self.usuario, __file__,
+                "Presupuesto clonado a partir de %d." % self.objeto.id)
             vpro._texto = "Clonando presupuesto en %d..." % nuevo.id
             vpro.mover()
             pclases.Auditoria.modificado(self.objeto,
