@@ -1415,12 +1415,54 @@ class Presupuestos(Ventana, VentanaGenerica):
     def reset_cache_credito(self):
         self.cache_credito = None
 
+    def clonar(self, boton = None):
+        """
+        Clona el presupuesto actual asignándole un nuevo número. El resto de
+        la información será idéntica. Incluidas líneas de presupuesto, pero
+        no las de pedido.
+        """
+        if self.objeto:
+            vpro = VentanaActividad(self.wids['ventana'],
+                                    "Clonando presupuesto")
+            vpro.mostrar()
+            vpro.mover()
+            self.wids['ventana'].window.set_cursor(
+                    gtk.gdk.Cursor(gtk.gdk.WATCH))
+            # El presupuesto se crea sin validación.
+            vpro.mover()
+            nuevo = self.objeto.clone(validado = False, usuario = None)
+            vpro.mover()
+            pclases.Auditoria.nuevo(nuevo, self.usuario, __file__)
+            vpro._texto = "Clonando presupuesto en %d..." % nuevo.id
+            vpro.mover()
+            pclases.Auditoria.modificado(self.objeto,
+                self.usuario, __file__,
+                "Presupuesto %d clonado en %d por %s."
+                    % (self.objeto.id,
+                       nuevo.id,
+                       self.usuario and self.usuario.usuario
+                       or "¡NADIE!"))
+            for ldp in self.objeto.lineasDePresupuesto:
+                vpro.mover()
+                ldp.clone(presupuesto = nuevo)
+            vpro.mover()
+            self.ir_a(nuevo)
+            vpro.mover()
+            self.wids['ventana'].window.set_cursor(None)
+            vpro.ocultar()
+
     def inicializar_ventana(self):
         """
         Inicializa los controles de la ventana, estableciendo sus
         valores por defecto, deshabilitando los innecesarios,
         rellenando los combos, formateando el TreeView -si lo hay-...
         """
+        if self.usuario and self.usuario.nivel <= 4:
+            b_clone = self.wids['b_clone'] = gtk.Button(label = "Clonar")
+            self.wids['b_salir'].parent.add(b_clone)
+            b_clone.parent.reorder_child(b_clone, 3)
+            b_clone.show()
+            b_clone.connect("clicked", self.clonar)
         self.wids['comboboxentry-entry1'].set_property("can_focus", True)
         self.wids['comboboxentry-entry'].set_property("can_focus", True)
         self.wids['cb_forma_cobro'].set_wrap_width(3)
