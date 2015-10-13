@@ -1343,6 +1343,19 @@ class AbonosVenta(Ventana):
                                   ldd.articulo.peso, 
                                   ldd.articulo.bala.numbala, 
                                   ldd.articulo.codigo))
+                elif ldd.articulo.es_caja():
+                    if ldd.articulo.partidaCem not in lotes:
+                        lotes.append(ldd.articulo.partidaCem)
+                    if tipo == "":
+                        prod = ldd.articulo.productoVenta
+                        tipo = "%d gr/bolsa * %d bolsas/caja" % (
+                 ldd.articulo.productoVenta.camposEspecificosBala.gramosBolsa,
+                 ldd.articulo.productoVenta.camposEspecificosBala.bolsasCaja)
+                    balas.append((ldd.articulo.codigo,
+                                  "%.2f kg" % (ldd.articulo.peso), 
+                                  ldd.articulo.peso, 
+                                  ldd.articulo.caja.numcaja, 
+                                  ldd.articulo.codigo))
                 elif ldd.articulo.es_bigbag():
                     if ldd.articulo.loteCem not in lotes:
                         lotes.append(ldd.articulo.loteCem)
