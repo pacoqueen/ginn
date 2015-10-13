@@ -1169,7 +1169,8 @@ class AbonosVenta(Ventana):
                 elif (ldd.articulo.es_bigbag() 
                       or ldd.articulo.es_bala() 
                       or ldd.articulo.es_rolloC() 
-                      or ldd.articulo.es_bala_cable()):
+                      or ldd.articulo.es_bala_cable()
+                      or ldd.articulo.es_caja()):
                     cantidad_linea = ldd.articulo.peso
                 else:
                     self.logger.error("abonos_venta::imprimir -> El artículo "
