@@ -1833,11 +1833,16 @@ class Presupuestos(Ventana, VentanaGenerica):
             self.invalidar()
             self.comprobar_riesgo_cliente()
         self.refresh_validado()
+        ## FIXME: Temporalmente deshabilito el paso de foco para ver si es
+        ## el origen del error con la DLL de Gtk en python.exe que le da a
+        ## algunos comerciales en el escritorio remoto.
         if nextwidget != None:
-            nextwidget.grab_focus()
+            # nextwidget.grab_focus()
+            pass
         if nextpath and nextcol:
             #print "SET CURSOR!"
-            self.wids['tv_contenido'].set_cursor(nextpath, nextcol, True)
+            #self.wids['tv_contenido'].set_cursor(nextpath, nextcol, True)
+            pass
         return False
 
     def tooltip_query(self, treeview, x, y, mode, tooltip):
