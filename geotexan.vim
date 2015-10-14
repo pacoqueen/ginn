@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 13 octubre 2015 at 16:52:41.
+" Created by session.vim 1.5 on 14 octubre 2015 at 19:45:22.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -35,7 +35,7 @@ badd +2 ginn/lib/fuzzywuzzy/fuzzywuzzy/__init__.py
 badd +706 ginn/formularios/consulta_ventas.py
 badd +367 ginn/formularios/productos_compra.py
 badd +902 ginn/formularios/productos_de_venta_rollos.py
-badd +357 ginn/formularios/proveedores.py
+badd +552 ginn/formularios/proveedores.py
 badd +517 ginn/framework/pclases/cliente.py
 badd +914 ginn/formularios/ventana.py
 badd +17 ginn/formularios/custom_widgets/cellrendererautocomplete.py
@@ -53,7 +53,7 @@ badd +52 ginn/informes/barcode/EANBarCode.py
 badd +63 ginn/informes/barcode/_barcode.py
 badd +227 ginn/informes/barcode/common.py
 badd +53 ginn/informes/presupuesto.py
-badd +161 ginn/formularios/abonos_venta.py
+badd +1205 ginn/formularios/abonos_venta.py
 badd +3507 ginn/formularios/albaranes_de_salida.py
 badd +19 ginn/formularios/consulta_ofertas.py
 badd +1134 ginn/formularios/pagares_pagos.py
@@ -126,12 +126,16 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 20906 - ((4 * winheight(0) + 3) / 7)
+1698
+normal! zo
+15743
+normal! zo
+let s:l = 15920 - ((0 * winheight(0) + 3) / 7)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-20906
-normal! 011|
+15920
+normal! 05|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -168,7 +172,7 @@ normal! zo
 normal! zo
 1271
 normal! zo
-let s:l = 1277 - ((3 * winheight(0) + 0) / 1)
+let s:l = 1277 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -177,7 +181,7 @@ normal! 024|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
-edit ~/Geotexan/src/Geotex-INN/ginn/formularios/abonos_venta.py
+edit ~/Geotexan/src/Geotex-INN/ginn/formularios/partes_de_fabricacion_balas.py
 setlocal fdm=indent
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -186,108 +190,64 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-57
+111
 normal! zo
-120
+112
 normal! zo
-151
+126
 normal! zo
-151
+126
 normal! zo
-260
+503
 normal! zo
-463
+522
 normal! zo
-464
+725
 normal! zo
-464
+2164
 normal! zo
-464
+2174
 normal! zo
-464
+2179
 normal! zo
-464
+2180
 normal! zo
-464
+2180
 normal! zo
-574
+2180
 normal! zo
-586
+2185
 normal! zo
-607
+2203
 normal! zo
-607
+2210
 normal! zo
-607
+2211
 normal! zo
-607
+2212
 normal! zo
-607
+2221
 normal! zo
-607
+2222
 normal! zo
-607
+2222
 normal! zo
-607
+2222
 normal! zo
-607
+3373
 normal! zo
-651
+3386
 normal! zo
-766
+3746
 normal! zo
-783
+3911
 normal! zo
-787
-normal! zo
-791
-normal! zo
-798
-normal! zo
-807
-normal! zo
-807
-normal! zo
-1050
-normal! zo
-1109
-normal! zo
-1157
-normal! zo
-1163
-normal! zo
-1202
-normal! zo
-1210
-normal! zo
-1266
-normal! zo
-1275
-normal! zo
-1308
-normal! zo
-1336
-normal! zo
-1347
-normal! zo
-1354
-normal! zo
-1355
-normal! zo
-1355
-normal! zo
-1360
-normal! zo
-1366
-normal! zo
-1366
-normal! zo
-let s:l = 1208 - ((20 * winheight(0) + 13) / 27)
+let s:l = 4159 - ((16 * winheight(0) + 13) / 27)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1208
-normal! 013|
+4159
+normal! 017|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
