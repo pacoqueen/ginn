@@ -30,4 +30,13 @@ DELETE
 ------
 * Eliminación de artículos.
 
+
+EXTRA
+-----
+* Llamada a procedimiento de importación interno de Murano via 
+%SYSTEMDRV%\...\Sage\Sage Murano\LCOEM.dll
+
+REQUERIMENTS
+------------
+pymssql, pywin32
 """
