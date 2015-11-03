@@ -1892,8 +1892,14 @@ def ejecutar_consultas_ventas_fibra_por_color(fechaini, fechafin):
             clavepais = "nacional"
         if clavepais not in res[color]:
             res[color][clavepais] = {'kilos': 0.0, 'euros': 0.0}
-        res[color][clavepais]['kilos'] += kilos
-        res[color][clavepais]['euros'] += euros
+        try:
+            res[color][clavepais]['kilos'] += kilos
+        except TypeError:
+            res[color][clavepais]['kilos'] += float(kilos)
+        try:
+            res[color][clavepais]['euros'] += euros
+        except TypeError:
+            res[color][clavepais]['euros'] += float(euros)
     con.query(caidita_de_roma)
     return res
 
