@@ -44,6 +44,7 @@ ginn/framework/*ginn*.conf*
 tests/*.csv
 tests/cierre*
 tests/cierre*/*.csv
+credentials.txt
 
 # Control de versiones CVS
 CVS
