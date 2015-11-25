@@ -235,7 +235,7 @@ def create_bala(bala):
     codigo_talla = bala.articulo.get_str_calidad()
     tipo_movimiento = 1     # 1 = entrada, 2 = salida.
     unidades = 1    # En dimensión base: 1 bala.
-    unidad_medida = "KG",
+    unidad_medida = "KG"
     precio = 0.0    # TODO: Hasta que se defina bien el precio coste por familia y cómo actualizarlo mensialmente.
     importe = unidades * precio
     factor_conversion = buscar_factor_conversion(bala.articulo.productoVenta)
