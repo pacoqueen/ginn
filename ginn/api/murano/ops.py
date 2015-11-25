@@ -223,10 +223,10 @@ def create_bala(bala):
     Crea una bala en las tablas temporales de Murano.
     Recibe un objeto bala de ginn.
     """
-    today = datetime.date.today()
+    today = datetime.datetime.today()
     ejercicio = today.year
     periodo = today.month
-    fecha = today.strftime("%Y-%m-%d")
+    fecha = today.strftime("%Y-%m-%d %H:%M:%S")
     documento = "FAB%s" % today.strftime("%Y%m%d")
     codigo_articulo = buscar_codigo_producto(bala.articulo.productoVenta)
     codigo_almacen = buscar_codigo_almacen(bala.articulo.almacen)

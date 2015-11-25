@@ -42,12 +42,12 @@ class Connection:
                         "conteniendo la contraseña para el usuario %s." %(
                                 directorio, user)
             else:
-                password = credentials.readlines()[0]
+                password = credentials.readlines()[0].split()[0]
                 credentials.close()
         try:
             conn = pymssql.connect(server = server, user = user,
                                    password = password, database = database)
-        except TypeError:
+        except TypeError:   # Depende de la versión usa host o server.
             conn = pymssql.connect(host = server, user = user,
                                    password = password, database = database)
         return conn
@@ -71,12 +71,25 @@ class Connection:
                 raise e
         for sentence_sql in sql:
             if self.DEBUG:
-                print " ==> SQLServer -->", sql
+                print " ==> SQLServer -->", str_clean(sentence_sql)
             if self.conn:
                 try:
                     c.execute(sql)
-                    c.fetchall()
+                    if "SELECT" in sql:
+                        c.fetchall()
+                    else:
+                        self.conn.commit()
                 except Exception, e:
                     if not self.DEBUG:
                         raise e
 
+
+def str_clean(s):
+    """
+    Devuelve la consulta SQL sin comentarios ni retornos de carro.
+    """
+    import re
+    res = re.sub(r"--.*[$|\n]", "", s)
+    res = res.split()
+    res = " ".join([word.strip() for word in res])
+    return res
