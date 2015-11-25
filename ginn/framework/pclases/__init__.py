@@ -9470,6 +9470,19 @@ class Articulo(SQLObject, PRPCTOO):
         """
         return self.rolloCID or self.balaCableID
 
+    def get_str_calidad(self):
+        """
+        Devuelve la calidad del artículo como un carácter: A, B o C.
+        """
+        if self.es_clase_a():
+            return "A"
+        elif self.es_clase_b():
+            return "B"
+        elif self.es_clase_c():
+            return "C"
+        else:
+            raise ValueError, "El artículo %d no es clase A, B ni C." % self.id
+
     def get_ldv(self, albaran):
         """
         Devuelve la LDV que corresponde al artículo y al

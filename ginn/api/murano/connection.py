@@ -4,11 +4,27 @@
 import os
 import pymssql
 
-class Connection:
-    def __init__():
-        self.conn = self.__connect()
+DEBUG = True
 
-    def __connect(server = r"LOGONSERVER\MURANO",
+class Connection:
+    def __init__(self):
+        self.DEBUG = DEBUG
+        try:
+            self.conn = self.__connect()
+        except pymssql.InterfaceError, e:
+            if self.DEBUG:
+                self.conn = None    # No se pudo conectar. Modo "debug".
+            else:
+                raise e
+
+    def __del__(self):
+        try:
+            self.conn.close()
+        except AttributeError:
+            pass    # No hay conexión que cerrar. 
+
+    def __connect(self,
+                  server = r"LOGONSERVER\MURANO",
                   user = "logic",
                   password = None,
                   database = "GEOTEXAN"):
@@ -28,15 +44,39 @@ class Connection:
             else:
                 password = credentials.readlines()[0]
                 credentials.close()
-        conn = pymssql.connect(server = server, user = user, password = password,
-                               database = database)
+        try:
+            conn = pymssql.connect(server = server, user = user,
+                                   password = password, database = database)
+        except TypeError:
+            conn = pymssql.connect(host = server, user = user,
+                                   password = password, database = database)
         return conn
 
-    def disconnect():
+    def disconnect(self):
         """
         Desconecta la sesión actual con MS-SQLServer.
         """
         self.conn.disconnect()
 
-
+    def run_sql(self, sql):
+        """
+        Crea un cursor, ejecuta la(s) consulta(s) y cierra el cursor.
+        """
+        if not isinstance(sql, (list, tuple)):
+            sql = [sql]
+        try:
+            c = self.conn.cursor()
+        except AttributeError, e:
+            if not self.DEBUG:
+                raise e
+        for sentence_sql in sql:
+            if self.DEBUG:
+                print " ==> SQLServer -->", sql
+            if self.conn:
+                try:
+                    c.execute(sql)
+                    c.fetchall()
+                except Exception, e:
+                    if not self.DEBUG:
+                        raise e
 
