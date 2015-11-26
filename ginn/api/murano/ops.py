@@ -51,7 +51,7 @@ SQL = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoStock](
             -- MovIdentificadorIME,
             StatusTraspasadoIME,
             TipoImportacionIME,
-            DocumentoUnico,
+            DocumentoUnico --,
             -- FechaRegistro,
             -- MovPosicion
             )
@@ -93,7 +93,7 @@ SQL = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoStock](
             -- NULL,
             0,
             0,
-            -1,
+            -1 --,
             -- NULL,
             -- NULL
             );"""
@@ -244,8 +244,8 @@ def create_bala(bala):
     importe = unidades * precio
     factor_conversion = buscar_factor_conversion(bala.articulo.productoVenta)
     unidades2 = unidades * factor_conversion
-    comentario = ("Bala insertada desde ginn. [%s]" % bala.get_info())[:40]
-    ubicacion = "Almacén de fibra."[:15]
+    comentario = ("Bala ginn: [%s]" % bala.get_info())[:40]
+    ubicacion = "Almac. de fibra."[:15]
     origen_movimiento = "F" # E = Entrada de Stock (entrada directa), F (fabricación), I (inventario), M (rechazo fabricación), S (Salida stock)
     numero_serie_lc = bala.codigo
     id_proceso_IME = genera_guid()
