@@ -229,7 +229,7 @@ def create_bala(bala):
     ejercicio = today.year
     periodo = today.month
     fecha = today.strftime("%Y-%m-%d %H:%M:%S")
-    documento = today.strftime("%Y%m%d")
+    documento = int(today.strftime("%Y%m%d"))
     codigo_articulo = buscar_codigo_producto(bala.articulo.productoVenta)
     codigo_almacen = buscar_codigo_almacen(bala.articulo.almacen)
     partida = bala.lote.codigo
