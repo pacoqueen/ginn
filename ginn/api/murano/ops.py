@@ -22,10 +22,10 @@ SQL = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoStock](
             Documento,
             CodigoArticulo,
             CodigoAlmacen,
-            AlmacenContrapartida,
+            -- AlmacenContrapartida,
             Partida,
-            Partida2_,
-            CodigoColor_,
+            -- Partida2_,
+            -- CodigoColor_,
             GrupoTalla_,
             CodigoTalla01_,
             TipoMovimiento,
@@ -34,26 +34,27 @@ SQL = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoStock](
             Precio,
             Importe,
             Unidades2_,
-            UnidadMedida2_,
+            -- UnidadMedida2_,
             FactorConversion_,
             Comentario,
-            CodigoCanal,
-            CodigoCliente,
-            CodigoProveedor,
-            FechaCaduca,
+            -- CodigoCanal,
+            -- CodigoCliente,
+            -- CodigoProveedor,
+            -- FechaCaduca,
             Ubicacion,
             OrigenMovimiento,
-            EmpresaOrigen,
-            MovOrigen,
-            EjercicioDocumento,
+            -- EmpresaOrigen,
+            -- MovOrigen,
+            -- EjercicioDocumento,
             NumeroSerieLc,
             IdProcesoIME,
-            MovIdentificadorIME,
+            -- MovIdentificadorIME,
             StatusTraspasadoIME,
             TipoImportacionIME,
             DocumentoUnico,
-            FechaRegistro,
-            MovPosicion)
+            -- FechaRegistro,
+            -- MovPosicion
+            )
         VALUES (
             %d,         -- código empresa
             %d,         -- ejercicio
@@ -63,10 +64,10 @@ SQL = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoStock](
             %d,         -- documento
             '%s',       -- codigo_articulo
             '%s',       -- codigo_almacen
-            NULL,
+            -- '',
             '%s',       -- partida
-            NULL,
-            NULL,
+            -- NULL,
+            -- NULL,
             %d,         -- grupo_talla
             '%s',       -- codigo_talla
             %d,         -- tipo_movimiento
@@ -75,26 +76,27 @@ SQL = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoStock](
             %f,         -- precio
             %f,         -- importe
             %f,         -- unidades2 = unidades * factor de conversion
-            NULL,
+            -- NULL,
             %f,         -- factor de conversión
             '%s',       -- comentario
-            NULL,
-            NULL,
-            NULL,
-            NULL,
+            -- NULL,
+            -- NULL,
+            -- NULL,
+            -- NULL,
             '%s',       -- ubicación
             '%s',       -- origen movimiento
-            NULL,
-            NULL,
-            NULL,
+            -- NULL,
+            -- NULL,
+            -- NULL,
             '%s',       -- NumeroSerieLc
             '%s',       -- IdProcesoIME
-            NULL,
+            -- NULL,
             0,
             0,
             -1,
-            NULL,
-            NULL);"""
+            -- NULL,
+            -- NULL
+            );"""
 
 SQL_SERIE = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoSerie](
                 CodigoEmpresa,
@@ -106,20 +108,20 @@ SQL_SERIE = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoSerie](
                 SerieDocumento,
                 Documento,
                 MovPosicionOrigen,
-                CodigoColor_,
+                -- CodigoColor_,
                 CodigoTalla01_,
                 CodigoAlmacen,
                 Ubicacion,
                 Partida,
                 UnidadMedida1_,
                 UnidadesSerie,
-                NumeroSerieFabricante,
-                EmpresaOrigen,
-                CodigoCliente,
-                CodigoProveedor,
+                -- NumeroSerieFabricante,
+                -- EmpresaOrigen,
+                -- CodigoCliente,
+                -- CodigoProveedor,
                 Comentario,
                 IdProcesoIME,
-                MovIdentificadorIME,
+                --MovIdentificadorIME,
                 StatusTraspasadoIME,
                 TipoImportacionIME,
                 PesoBruto_,
@@ -136,20 +138,20 @@ SQL_SERIE = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoSerie](
                 'FAB',
                 %d,     -- documento
                 '%s',   -- mov. posición origen
-                NULL,
+                -- NULL,
                 '%s',   -- código talla
                 '%s',   -- código almacén
                 '%s',   -- ubicación
                 '%s',   -- partida
                 '%s',   -- unidad de medida específica (kg, m²)
                 1,
-                NULL,
-                NULL,
-                NULL,
-                NULL,
+                -- NULL,
+                -- NULL,
+                -- NULL,
+                -- NULL,
                 '%s',   -- comentario
                 '%s',   -- ID proceso IME
-                NULL,
+                -- NULL,
                 0,
                 0,
                 %f,     -- peso bruto
@@ -183,7 +185,7 @@ def buscar_codigo_almacen(self):
 
 def simulate_guid():
     import random
-    grupos = 8, 4, 4, 12
+    grupos = 8, 4, 4, 4, 12
     subgrupos = []
     for g in grupos:
         subgrupo = ""
@@ -265,7 +267,9 @@ def create_bala(bala):
                                 codigo_almacen, ubicacion, partida,
                                 unidad_medida, comentario, id_proceso_IME,
                                 bala.articulo.peso, bala.articulo.peso_sin,
-                                "NULL", "NULL")
+                                0.0, # Metros cuadrados. Decimal NOT NULL
+                                ''   # Código palé. Varchar NOT NULL
+                                )
     c.run_sql(sql_movserie)
 
 def create_bigabag(bigbag):
