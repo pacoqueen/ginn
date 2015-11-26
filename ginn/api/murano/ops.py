@@ -244,8 +244,8 @@ def create_bala(bala):
     importe = unidades * precio
     factor_conversion = buscar_factor_conversion(bala.articulo.productoVenta)
     unidades2 = unidades * factor_conversion
-    comentario = "Bala insertada desde ginn. [%s]" % bala.get_info()
-    ubicacion = "Almacén de fibra."
+    comentario = ("Bala insertada desde ginn. [%s]" % bala.get_info())[:40]
+    ubicacion = "Almacén de fibra."[:15]
     origen_movimiento = "F" # E = Entrada de Stock (entrada directa), F (fabricación), I (inventario), M (rechazo fabricación), S (Salida stock)
     numero_serie_lc = bala.codigo
     id_proceso_IME = genera_guid()
@@ -268,7 +268,7 @@ def create_bala(bala):
                                 unidad_medida, comentario, id_proceso_IME,
                                 bala.articulo.peso, bala.articulo.peso_sin,
                                 0.0, # Metros cuadrados. Decimal NOT NULL
-                                ''   # Código palé. Varchar NOT NULL
+                                "''"   # Código palé. Varchar NOT NULL
                                 )
     c.run_sql(sql_movserie)
 
