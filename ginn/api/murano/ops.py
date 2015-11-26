@@ -13,7 +13,7 @@ else:
 
 CODEMPRESA = 9999   # Empresa de pruebas. Cambiar por la 10200 en producción.
 
-SQL = """INSERT INTO TmpIME_MovimientoStock(
+SQL = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoStock](
             CodigoEmpresa,
             Ejercicio,
             Periodo,
@@ -60,7 +60,7 @@ SQL = """INSERT INTO TmpIME_MovimientoStock(
             %d,         -- periodo
             '%s',       -- fecha
             'FAB',
-            '%s',       -- documento
+            %d,         -- documento
             '%s',       -- codigo_articulo
             '%s',       -- codigo_almacen
             NULL,
@@ -96,7 +96,7 @@ SQL = """INSERT INTO TmpIME_MovimientoStock(
             NULL,
             NULL);"""
 
-SQL_SERIE = """INSERT INTO TmpIME_MovimientoSerie(
+SQL_SERIE = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoSerie](
                 CodigoEmpresa,
                 CodigoArticulo,
                 NumeroSerieLc,
@@ -134,7 +134,7 @@ SQL_SERIE = """INSERT INTO TmpIME_MovimientoSerie(
                 %d,     -- origen documento
                 %d,     -- ejercicio
                 'FAB',
-                '%s',   -- documento
+                %d,     -- documento
                 '%s',   -- mov. posición origen
                 NULL,
                 '%s',   -- código talla
@@ -223,11 +223,13 @@ def create_bala(bala):
     Crea una bala en las tablas temporales de Murano.
     Recibe un objeto bala de ginn.
     """
+    c = Connection()
+    database = c.get_database()
     today = datetime.datetime.today()
     ejercicio = today.year
     periodo = today.month
     fecha = today.strftime("%Y-%m-%d %H:%M:%S")
-    documento = "FAB%s" % today.strftime("%Y%m%d")
+    documento = today.strftime("%Y%m%d")
     codigo_articulo = buscar_codigo_producto(bala.articulo.productoVenta)
     codigo_almacen = buscar_codigo_almacen(bala.articulo.almacen)
     partida = bala.lote.codigo
@@ -245,18 +247,19 @@ def create_bala(bala):
     origen_movimiento = "F" # E = Entrada de Stock (entrada directa), F (fabricación), I (inventario), M (rechazo fabricación), S (Salida stock)
     numero_serie_lc = bala.codigo
     id_proceso_IME = genera_guid()
-    sql_movstock = SQL % (CODEMPRESA, ejercicio, periodo, fecha, documento,
+    sql_movstock = SQL % (database,
+                          CODEMPRESA, ejercicio, periodo, fecha, documento,
                           codigo_articulo, codigo_almacen, partida,
                           grupo_talla, codigo_talla, tipo_movimiento, unidades,
                           unidad_medida, precio, importe, unidades2,
                           factor_conversion, comentario, ubicacion,
                           origen_movimiento, numero_serie_lc,
                           id_proceso_IME)
-    c = Connection()
     c.run_sql(sql_movstock)
     origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock), 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion()
-    sql_movserie = SQL_SERIE % (CODEMPRESA, codigo_articulo, numero_serie_lc,
+    sql_movserie = SQL_SERIE % (database,
+                                CODEMPRESA, codigo_articulo, numero_serie_lc,
                                 fecha, origen_documento, ejercicio, documento,
                                 mov_posicion_origen, codigo_talla,
                                 codigo_almacen, ubicacion, partida,

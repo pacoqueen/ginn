@@ -9,6 +9,7 @@ DEBUG = True
 class Connection:
     def __init__(self):
         self.DEBUG = DEBUG
+        self.__database = ""    # Inicialización temporal hasta que conecte.
         try:
             self.conn = self.__connect()
         except pymssql.InterfaceError, e:
@@ -33,6 +34,7 @@ class Connection:
         exista un fichero credentials.txt con la contraseña para acceder al
         servidor MS-SQLServer.
         """
+        self.__database = database
         if password is None:
             try:
                 directorio = os.path.abspath(os.path.dirname(__file__))
@@ -51,6 +53,13 @@ class Connection:
             conn = pymssql.connect(host = server, user = user,
                                    password = password, database = database)
         return conn
+
+    def get_database(self):
+        """
+        Devuelve como cadena el nombre de la base de datos a la que
+        está conectado.
+        """
+        return self.__database
 
     def disconnect(self):
         """
