@@ -180,8 +180,16 @@ def buscar_codigo_producto(productoVenta):
     return codarticulo
 
 def buscar_codigo_almacen(self):
-    # TODO
-    return 1
+    """
+    Devuelve **el primer** almacén de la empresa configurada.
+    """
+    c = Connection()
+    filas = c.run_sql("""SELECT CodigoAlmacen
+        FROM %s.dbo.Almacenes
+        WHERE CodigoEmpresa = %d
+        ORDER BY CodigoAlmacen;""" % (c.database, CODEMPRESA))
+    codalmacen = filas[0]['CodigoAlmacen']
+    return codalmacen
 
 def simulate_guid():
     import random
@@ -205,7 +213,7 @@ def genera_guid():
     Devuelve un GUID de SQLServer o simula uno en modo depuración.
     """
     try:
-        guid = c.run_sql("SELECT NEWID();")[0][0]
+        guid = c.run_sql("SELECT NEWID() AS guid;")[0]['guid']
     except Exception, e:
         if not DEBUG:
             raise e
@@ -354,8 +362,13 @@ def fire():
                          "OEM",
                          "oem",
                          "",
-                         "LOGONSERVER\\MURANO",
+                         r"LOGONSERVER\MURANO",
                          "GEOTEXAN")
     retCode = None
     operacion = "ENT_LisMunicipios" # TODO: Cambiar por la de verdad.
     burano.EjecutaOperacion(operacion, None, retCode)
+    # Después de cada proceso hay que invocar al cálculo que acumula los
+    # campos personalizados:
+    burano.EjecutaScript("AcumularCamposNuevosSeries",
+                         Label = "Inicio")
+    # FIXME: TODO: Falta el parámetro del guid del proceso.

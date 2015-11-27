@@ -74,7 +74,7 @@ class Connection:
         if not isinstance(sql, (list, tuple)):
             sql = [sql]
         try:
-            c = self.conn.cursor()
+            c = self.conn.cursor(as_dict = True)
         except AttributeError, e:
             if not self.DEBUG:
                 raise e
