@@ -171,7 +171,7 @@ def buscar_codigo_producto(productoVenta):
                         WHERE DescripcionArticulo = '%s';
                     """ % productoVenta.descripcion)
     try:
-        codarticulo = res[0][0]
+        codarticulo = res[0]['CodigoArticulo']
     except TypeError, e:
         if not DEBUG:
             raise e
@@ -187,8 +187,14 @@ def buscar_codigo_almacen(self):
     filas = c.run_sql("""SELECT CodigoAlmacen
         FROM %s.dbo.Almacenes
         WHERE CodigoEmpresa = %d
-        ORDER BY CodigoAlmacen;""" % (c.database, CODEMPRESA))
-    codalmacen = filas[0]['CodigoAlmacen']
+        ORDER BY CodigoAlmacen;""" % (c.get_database(), CODEMPRESA))
+    try:
+        codalmacen = filas[0]['CodigoAlmacen']
+    except Exception, e:
+        if not DEBUG:
+            raise e
+        else:
+            return 'CEN'
     return codalmacen
 
 def simulate_guid():
@@ -221,12 +227,34 @@ def genera_guid():
             guid = simulate_guid()
     return guid
 
-def get_mov_posicion():
+def get_mov_posicion(conexion, codigo_articulo):
     """
     GUID del movimiento de stock asociado al movimiento de número de serie.
     """
-    # TODO:
-    return simulate_guid()
+    try:
+        mov_posicion = conexion.run_sql("""SELECT MovPosicion
+            FROM %s.dbo.TmpIME_MovimientoStock
+            WHERE NumeroSerieLc = '%s';
+            """ % (conexion.get_database(), codigo_articulo))[0]['MovPosicion']
+    except Exception, e:
+        if not DEBUG:
+            raise e
+        else:
+            mov_posicion = simulate_guid()
+    return mov_posicion
+
+def crear_proceso_IME(conexion):
+    """
+    Crea un proceso de importación con guid único.
+    """
+    guid_proceso = genera_guid()
+    conexion.run_sql("""
+        INSERT INTO %s.dbo.Iniciador_tmpIME(IdProcesoIME, EstadoIME, sysUsuario,
+                                     sysUserName, Descripcion, TipoImportacion)
+        VALUES (%s, 0, 1, 'administrador', 'Importación desde ginn', 254);
+        """ % (conexion.get_database(), guid_proceso))
+    return guid_proceso
+
 
 def create_bala(bala):
     """
@@ -254,9 +282,11 @@ def create_bala(bala):
     unidades2 = unidades * factor_conversion
     comentario = ("Bala ginn: [%s]" % bala.get_info())[:40]
     ubicacion = "Almac. de fibra."[:15]
-    origen_movimiento = "F" # E = Entrada de Stock (entrada directa), F (fabricación), I (inventario), M (rechazo fabricación), S (Salida stock)
+    origen_movimiento = "F" # E = Entrada de Stock (entrada directa), 
+                            # F (fabricación), I (inventario), 
+                            # M (rechazo fabricación), S (Salida stock)
     numero_serie_lc = bala.codigo
-    id_proceso_IME = genera_guid()
+    id_proceso_IME = crear_proceso_IME(c)
     sql_movstock = SQL % (database,
                           CODEMPRESA, ejercicio, periodo, fecha, documento,
                           codigo_articulo, codigo_almacen, partida,
@@ -267,7 +297,7 @@ def create_bala(bala):
                           id_proceso_IME)
     c.run_sql(sql_movstock)
     origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock), 11 (salida de stock), 12 (inventario)
-    mov_posicion_origen = get_mov_posicion()
+    mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     sql_movserie = SQL_SERIE % (database,
                                 CODEMPRESA, codigo_articulo, numero_serie_lc,
                                 fecha, origen_documento, ejercicio, documento,
@@ -279,6 +309,7 @@ def create_bala(bala):
                                 "''"   # Código palé. Varchar NOT NULL
                                 )
     c.run_sql(sql_movserie)
+    fire(id_proceso_IME)
 
 def create_bigabag(bigbag):
     """
@@ -347,7 +378,7 @@ def delete_articulo(articulo):
     """
     pass
 
-def fire():
+def fire(guid_proceso):
     """
     Lanza el proceso de importación de Murano de todos los movimientos de
     stock de la tabla temporal.
@@ -366,9 +397,9 @@ def fire():
                          "GEOTEXAN")
     retCode = None
     operacion = "ENT_LisMunicipios" # TODO: Cambiar por la de verdad.
-    burano.EjecutaOperacion(operacion, None, retCode)
+    #burano.EjecutaOperacion(operacion, None, retCode)
+    # burano.EjecutaOEM() # TODO: FIXME: ¿Cuál es el nombre de la operación?
     # Después de cada proceso hay que invocar al cálculo que acumula los
     # campos personalizados:
     burano.EjecutaScript("AcumularCamposNuevosSeries",
-                         Label = "Inicio")
-    # FIXME: TODO: Falta el parámetro del guid del proceso.
+                         "Label:=Inicio, idProcesoIME:=%s" % guid_proceso)
