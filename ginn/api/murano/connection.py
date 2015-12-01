@@ -83,7 +83,7 @@ class Connection:
                 print " ==> SQLServer -->", str_clean(sentence_sql)
             if self.conn:
                 try:
-                    c.execute(sql)
+                    c.execute(sentence_sql)
                     if "SELECT" in sql:
                         c.fetchall()
                     else:
