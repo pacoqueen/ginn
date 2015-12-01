@@ -167,9 +167,9 @@ def buscar_codigo_producto(productoVenta):
     """
     c = Connection()
     res = c.run_sql("""SELECT CodigoArticulo
-                         FROM Articulos
+                         FROM %s.dbo.Articulos
                         WHERE DescripcionArticulo = '%s';
-                    """ % productoVenta.descripcion)
+                    """ % (c.get_database(), productoVenta.descripcion))
     try:
         codarticulo = res[0]['CodigoArticulo']
     except TypeError, e:
@@ -251,7 +251,7 @@ def crear_proceso_IME(conexion):
     conexion.run_sql("""
         INSERT INTO %s.dbo.Iniciador_tmpIME(IdProcesoIME, EstadoIME, sysUsuario,
                                      sysUserName, Descripcion, TipoImportacion)
-        VALUES (%s, 0, 1, 'administrador', 'Importación desde ginn', 254);
+        VALUES ('%s', 0, 1, 'administrador', 'Importación desde ginn', 254);
         """ % (conexion.get_database(), guid_proceso))
     return guid_proceso
 
@@ -402,4 +402,4 @@ def fire(guid_proceso):
     # Después de cada proceso hay que invocar al cálculo que acumula los
     # campos personalizados:
     burano.EjecutaScript("AcumularCamposNuevosSeries",
-                         "Label:=Inicio, idProcesoIME:=%s" % guid_proceso)
+                         "Label:=Inicio, idProcesoIME:='%s'" % guid_proceso)
