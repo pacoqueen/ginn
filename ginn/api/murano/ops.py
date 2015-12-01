@@ -665,8 +665,14 @@ def fire(guid_proceso):
                          "GEOTEXAN")
     retCode = None
     operacion = "ImportaIME"
-    res = burano.EjecutaOEM(operacion, guid_proceso, 0, 1, 0)
+    retCode = burano.EjecutaOEM("LCCImExP.LcImExProceso", operacion,
+                                guid_proceso, 1, 1, 0)
+    # 1 = No borrar registros IME al finalizar.
+    # 1 = No borrar registros con errores ni siquiera cuando el primer 
+    # parámetro esté a 0.
+    # 0 = Ejecutar en todos los módulos.
     # Después de cada proceso hay que invocar al cálculo que acumula los
     # campos personalizados:
-    burano.EjecutaScript("AcumularCamposNuevosSeries",
+    # FIXME: No ejecuta el cálculo.
+    retCode = burano.EjecutaScript("AcumularCamposNuevosSeries",
                          "Label:=Inicio, idProcesoIME:='%s'" % guid_proceso)
