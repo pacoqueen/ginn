@@ -96,11 +96,11 @@ class Connection:
                     if VERBOSE:
                         print "Lanzando consulta %s..." % (
                                 sentence_sql.split()[0]),
-                    c.execute(sentence_sql)
-                    if "SELECT" in sql:
+                    res = c.execute(sentence_sql)
+                    if "SELECT" in sentence_sql:
                         if VERBOSE:
                             print "· fetchall...",
-                        c.fetchall()
+                        res = c.fetchall()
                         if VERBOSE:
                             print "[OK]"
                     else:
