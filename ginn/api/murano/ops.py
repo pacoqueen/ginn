@@ -589,7 +589,7 @@ def consulta_producto(nombre = None):
     """
     c = Connection()
     sql = "SELECT * FROM %s.dbo.Articulos WHERE " % (c.get_database())
-    where = "DescripcionArticulo = '%s';" % (nombre)
+    where = r"DescripcionArticulo = '%s';" % (nombre)
     sql += where
     res = c.run_sql(sql)
     return res
