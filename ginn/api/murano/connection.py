@@ -3,17 +3,18 @@
 
 import os
 import pymssql
+import inspect
 
-DEBUG = True
+DEBUG = False
+VERBOSE = True
 
 class Connection:
     def __init__(self):
-        self.DEBUG = DEBUG
         self.__database = ""    # Inicialización temporal hasta que conecte.
         try:
             self.conn = self.__connect()
         except pymssql.InterfaceError, e:
-            if self.DEBUG:
+            if DEBUG:
                 self.conn = None    # No se pudo conectar. Modo "debug".
             else:
                 raise e
@@ -34,6 +35,11 @@ class Connection:
         exista un fichero credentials.txt con la contraseña para acceder al
         servidor MS-SQLServer.
         """
+        if VERBOSE:
+            frame = inspect.currentframe()
+            args, _, _, values = inspect.getargvalues(frame)
+            print "Iniciando conexión [%s]" % "; ".join(
+                    ["%s = %s" % (i, values[i]) for i in args if i != "self"])
         self.__database = database
         if password is None:
             try:
@@ -65,7 +71,11 @@ class Connection:
         """
         Desconecta la sesión actual con MS-SQLServer.
         """
+        if VERBOSE:
+            print "Desconectando...",
         self.conn.disconnect()
+        if VERBOSE:
+            print "[OK]"
 
     def run_sql(self, sql):
         """
@@ -76,20 +86,31 @@ class Connection:
         try:
             c = self.conn.cursor(as_dict = True)
         except AttributeError, e:
-            if not self.DEBUG:
+            if not DEBUG:
                 raise e
         for sentence_sql in sql:
-            if self.DEBUG:
+            if DEBUG:
                 print " ==> SQLServer -->", str_clean(sentence_sql)
             if self.conn:
                 try:
+                    if VERBOSE:
+                        print "Lanzando consulta %s..." % (
+                                sentence_sql.split()[0]),
                     c.execute(sentence_sql)
                     if "SELECT" in sql:
+                        if VERBOSE:
+                            print "· fetchall...",
                         c.fetchall()
+                        if VERBOSE:
+                            print "[OK]"
                     else:
+                        if VERBOSE:
+                            print "· commit...",
                         self.conn.commit()
+                        if VERBOSE:
+                            print "[OK]"
                 except Exception, e:
-                    if not self.DEBUG:
+                    if not DEBUG:
                         raise e
                     else:
                         print " -- (!) [Excepción %s]" % e
