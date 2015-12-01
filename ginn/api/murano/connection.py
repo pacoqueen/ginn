@@ -114,7 +114,7 @@ class Connection:
                         raise e
                     else:
                         print " -- (!) [Excepción %s]" % e
-
+        return res
 
 def str_clean(s):
     """
