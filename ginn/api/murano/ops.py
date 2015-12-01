@@ -168,8 +168,9 @@ def buscar_codigo_producto(productoVenta):
     res = consulta_producto(productoVenta.descripcion)
     try:
         codarticulo = res[0]['CodigoArticulo']
-    except IndexError, e:
+    except TypeError, e:
         # TODO: Ver cómo tratar los errores de cuando el producto no existe en Murano. ¿Se puede dar el caso? Todos se darán de alta en Murano y se buscarán ahí cuando se creen los artículos en los partes de producción. Debería exisitir. **Pero se podría dar el caso de que el nombre haya cambiado.**
+        print productoVenta.descripcion
         raise e
     return codarticulo
 

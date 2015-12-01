@@ -5,7 +5,7 @@ import os
 import pymssql
 import inspect
 
-DEBUG = False
+DEBUG = True
 VERBOSE = True
 
 class Connection:
