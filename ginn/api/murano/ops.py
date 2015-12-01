@@ -166,7 +166,7 @@ def buscar_codigo_producto(productoVenta):
     recibido.
     """
     c = Connection()
-    res = c.run_sql("""SELECT CodigoArticulo
+    res = c.run_sql(r"""SELECT CodigoArticulo
                          FROM %s.dbo.Articulos
                         WHERE DescripcionArticulo = '%s';
                     """ % (c.get_database(), productoVenta.descripcion))
@@ -232,7 +232,7 @@ def get_mov_posicion(conexion, codigo_articulo):
     GUID del movimiento de stock asociado al movimiento de número de serie.
     """
     try:
-        mov_posicion = conexion.run_sql("""SELECT MovPosicion
+        mov_posicion = conexion.run_sql(r"""SELECT MovPosicion
             FROM %s.dbo.TmpIME_MovimientoStock
             WHERE NumeroSerieLc = '%s';
             """ % (conexion.get_database(), codigo_articulo))[0]['MovPosicion']
@@ -248,7 +248,7 @@ def crear_proceso_IME(conexion):
     Crea un proceso de importación con guid único.
     """
     guid_proceso = genera_guid()
-    conexion.run_sql("""
+    conexion.run_sql(r"""
         INSERT INTO %s.dbo.Iniciador_tmpIME(IdProcesoIME, EstadoIME, sysUsuario,
                                      sysUserName, Descripcion, TipoImportacion)
         VALUES ('%s', 0, 1, 'administrador', 'Importación desde ginn', 254);

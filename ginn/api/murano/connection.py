@@ -91,6 +91,8 @@ class Connection:
                 except Exception, e:
                     if not self.DEBUG:
                         raise e
+                    else:
+                        print " -- (!) [Excepción %s]" % e
 
 
 def str_clean(s):
