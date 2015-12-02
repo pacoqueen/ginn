@@ -646,6 +646,13 @@ def delete_articulo(articulo):
     """
     pass
 
+def consumir(productoCompra, cantidad):
+    """
+    Decrementa las existencias del producto recibido en la cantidad indicada
+    mediante registros de movimientos de stock en Murano.
+    """
+    pass
+
 def fire(guid_proceso):
     """
     Lanza el proceso de importación de Murano de todos los movimientos de

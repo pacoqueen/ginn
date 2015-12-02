@@ -25,6 +25,7 @@ UPDATE
 * Modificación de calidad de un artículo.
 * Cambio de producto de un artículo.
 * Incremento o decremento del stock de un producto.
+* Decremento de un producto de compra (consumo).
 
 DELETE
 ------
