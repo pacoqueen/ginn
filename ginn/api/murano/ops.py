@@ -673,6 +673,7 @@ def fire(guid_proceso):
     # 0 = Ejecutar en todos los módulos.
     # Después de cada proceso hay que invocar al cálculo que acumula los
     # campos personalizados:
-    # FIXME: No ejecuta el cálculo.
+    # FIXED: No ejecuta el cálculo. Era por las '' alrededor del guid. Según el
+    # .chm de ayuda los parámetros van sin encerrar en nada aunque sean cadena.
     retCode = burano.EjecutaScript("AcumularCamposNuevosSeries",
-                         "Label:=Inicio, idProcesoIME:='%s'" % guid_proceso)
+                         "Label:=Inicio, idProcesoIME:=%s" % guid_proceso)
