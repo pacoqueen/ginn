@@ -264,7 +264,7 @@ def buscar_factor_conversion(producto):
         else:
             factor_conversion = 0
     else:
-        factor_conversion = 1 # TODO: [Marcos Sage] ¿Los productos de compra llevan factor de conversión?
+        factor_conversion = 1 
     return factor_conversion
 
 def genera_guid():
@@ -587,7 +587,7 @@ def update_calidad(articulo, calidad):
     # TODO: Ojo porque si cambio a calidad C probablemente implique un cambio de producto.
     if calidad not in "aAbBcC":
         raise ValueError, "El parámetro calidad debe ser A, B o C."
-    # TODO: [Marcos Sage] ¿En qué tabla están exactamente los números de serie para buscar por código de trazabildiad? 
+    # DONE: [Marcos Sage] No modificamos tablas. Hacemos salida del producto A y volvemos a insertarlo como C.
 
 def create_articulo(articulo, producto = None):
     """
@@ -628,7 +628,7 @@ def update_stock(producto, delta, almacen):
     """
     assert(isinstance(producto, pclases.ProductoCompra))
     partida = ""
-    unidad_medida = producto.unidad
+    unidad_medida = "" # producto.unidad
     comentario = ("Stock ginn: %f [%s]" % (delta, producto.get_info()))[:40]
     ubicacion = "Almacén general"[:15]
     numero_serie_lc = ""

@@ -43,5 +43,5 @@ pymssql, pywin32
 """
 
 from ops import create_bala
-__all__ = ["create_bala"]
+__all__ = ["create_bala", "create_rollo", "consumir", "delete_articulo"]
 
