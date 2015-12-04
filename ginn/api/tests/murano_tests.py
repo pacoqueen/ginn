@@ -23,7 +23,7 @@ def prueba_rollo():
     # Para probar, consumiré la partida de carga completa:
     if r.articulo.parteDeProduccion.partidaCarga:
         for b in r.articulo.parteDeProduccion.partidaCarga.balas:
-            murano.delete_articulo(b.articlo)
+            murano.delete_articulo(b.articulo)
 
 def main():
     prueba_bala()
