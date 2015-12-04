@@ -643,7 +643,7 @@ def update_stock(producto, delta, almacen):
     codigo_almacen = buscar_codigo_almacen(almacen)
     codigo_talla = ""   # No hay calidades en los productos de compra.
     grupo_talla = "" #No tratamiento de calidades en productos sin trazabilidad.
-    if cantidad >= 0:
+    if delta >= 0:
         tipo_movimiento = 1     # 1 = entrada, 2 = salida.
     else:
         tipo_movimiento = 2
