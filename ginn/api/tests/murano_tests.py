@@ -23,6 +23,7 @@ def prueba_rollo():
     # Para probar, consumiré la partida de carga completa:
     if r.articulo.parteDeProduccion.partidaCarga:
         for b in r.articulo.parteDeProduccion.partidaCarga.balas:
+            # TODO: FIXME: Habría que indicar de qué almacén se cogió la bala para consumirla. En el momento de inyectarlo en Murano b.articulo.almacen es None y da error al localizar el almacén en Murano.
             murano.delete_articulo(b.articulo)
 
 def main():
