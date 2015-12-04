@@ -7798,6 +7798,20 @@ class Producto:
             res = None
         return res
 
+    def es_granza(self):
+        """
+        Devuelve True si el producto es un producto de compra, es materia
+        prima y lleva la palabra "GRANZA" en la descripción.
+        """
+        materiaprima = TipoDeMaterial.select(
+                TipoDeMaterial.q.descripcion.contains('materia prima'))[0]
+        try:
+            res = (self.tipoDeMaterialID == materiaprima.id 
+                    and "granza" in self.descripcion.lower())
+        except AttributeError:
+            res = False     # Es un producto de compra.
+        return res
+
     def es_fibra(self):
         """
         Devuelve True si el producto es un producto de venta y además
@@ -18544,9 +18558,7 @@ class Consumo(SQLObject, PRPCTOO):
         """
         if self.siloID != None:
             return True     # Está feo, pero es por optimizar.
-        materiaprima = TipoDeMaterial.select(TipoDeMaterial.q.descripcion.contains('materia prima'))[0]
-        return self.productoCompra.tipoDeMaterialID == materiaprima.id \
-               and "granza" in self.productoCompra.descripcion.lower()
+        return self.productoCompra.es_granza() 
 
     def get_linea_de_venta_albaran_interno(self):
         """

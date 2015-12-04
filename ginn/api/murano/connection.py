@@ -81,6 +81,7 @@ class Connection:
         """
         Crea un cursor, ejecuta la(s) consulta(s) y cierra el cursor.
         """
+        res = None
         if not isinstance(sql, (list, tuple)):
             sql = [sql]
         try:
