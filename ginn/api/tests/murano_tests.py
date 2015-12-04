@@ -21,8 +21,8 @@ def prueba_rollo():
     for c in r.articulo.parteDeProduccion.consumos:
         murano.consumir(c.productoCompra, c.cantidad)
     # Para probar, consumiré la partida de carga completa:
-    if r.articulo.parteDeProduccion.partidaDeCarga:
-        for b in r.articulo.parteDeProduccion.partidaDeCarga.balas:
+    if r.articulo.parteDeProduccion.partidaCarga:
+        for b in r.articulo.parteDeProduccion.partidaCarga.balas:
             murano.delete_articulo(b.articlo)
 
 def main():
