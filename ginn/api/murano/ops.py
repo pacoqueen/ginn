@@ -206,21 +206,28 @@ def buscar_codigo_almacen(almacen):
     Devuelve almacén de la empresa configurada cuyo nombre coincida con el del
     almacén de ginn recibido.
     """
-    c = Connection()
-    filas = c.run_sql("""SELECT CodigoAlmacen
-        FROM %s.dbo.Almacenes
-        WHERE CodigoEmpresa = %d AND Almacen = '%s'
-        ORDER BY CodigoAlmacen;""" % (c.get_database(), 
-                                      CODEMPRESA,
-                                      almacen.nombre))
-    try:
-        codalmacen = filas[0]['CodigoAlmacen']
-    except Exception, e:
-        print "(EE)[A]", almacen.nombre, "no se encuentra en Murano."
-        if not DEBUG:
-            raise e
-        else:
+    # TODO: FIXME: Tenemos un problema. Si por ejemplo recibo una bala consumida, su valor para almacén será None y dará ERROR.
+    if almacen:
+        c = Connection()
+        filas = c.run_sql("""SELECT CodigoAlmacen
+            FROM %s.dbo.Almacenes
+            WHERE CodigoEmpresa = %d AND Almacen = '%s'
+            ORDER BY CodigoAlmacen;""" % (c.get_database(), 
+                                          CODEMPRESA,
+                                          almacen.nombre))
+        try:
+            codalmacen = filas[0]['CodigoAlmacen']
+        except Exception, e:
+            print "(EE)[A]", almacen.nombre, "no se encuentra en Murano."
+            if not DEBUG:
+                raise e
+            else:
+                return 'CEN'
+    else:
+        if DEBUG:
             return 'CEN'
+        else:
+            raise ValueError, "(EE)[A] Debe especificarse un almacén."
     return codalmacen
 
 def simulate_guid():
@@ -587,7 +594,7 @@ def update_calidad(articulo, calidad):
     # TODO: Ojo porque si cambio a calidad C probablemente implique un cambio de producto.
     if calidad not in "aAbBcC":
         raise ValueError, "El parámetro calidad debe ser A, B o C."
-    # DONE: [Marcos Sage] No modificamos tablas. Hacemos salida del producto A y volvemos a insertarlo como C.
+    # DONE: [Marcos Sage] No modificamos tablas. Hacemos salida del producto A y volvemos a insertarlo como C. En ese caso no importa que se repita el código para el mismo producto porque antes hemos hecho la salida.
 
 def create_articulo(articulo, producto = None):
     """
