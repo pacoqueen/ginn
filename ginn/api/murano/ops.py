@@ -1,6 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+Operaciones.
+
+"""
+# TODO: Sería interesante guardar un log de todas las consultas lanzadas y el resultado de las mismas para no depender de la salida por consola y el DEBUG.
+# TODO: Tengo que hacer un proceso para exportar productos, clientes, proveedores, etc. Porque hacerlo a mano con las guías de exportación mediante hojas de cálculo es un coñazo supino. Y tal vez así podemos poner el código de barras y el ID PK interno mío en algún sitio para después mejorar las búsquedas.
+
 import datetime
 from connection import Connection, DEBUG, VERBOSE
 
@@ -580,6 +587,7 @@ def consultar_producto(nombre = None):
     Busca un producto por nombre.
     Devuelve una lista de productos coincidentes.
     """
+    # TODO: Permitir la búsqueda por código EAN.
     c = Connection()
     try:
         sql = "SELECT * FROM %s.dbo.Articulos WHERE " % (c.get_database())
