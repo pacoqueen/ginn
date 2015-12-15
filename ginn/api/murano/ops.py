@@ -173,7 +173,7 @@ def buscar_grupo_talla(productoVenta):
     """
     # Hemos varios grupos de talla: 1 para A, B y C, 2 para A, B (sin C), etc.
     grupo_talla = 0     # Sin grupo de talla
-    res = consulta_producto(productoVenta.descripcion)
+    res = consultar_producto(productoVenta.descripcion)
     try:
         grupo_talla = res[0]['GrupoTalla_']
     except TypeError, e:
@@ -189,7 +189,7 @@ def buscar_codigo_producto(productoVenta):
     Busca el ID del producto en Murano para la descripción del producto
     recibido.
     """
-    res = consulta_producto(productoVenta.descripcion)
+    res = consultar_producto(productoVenta.descripcion)
     try:
         codarticulo = res[0]['CodigoArticulo']
     except TypeError, e:
@@ -575,14 +575,15 @@ def consulta_cliente(nombre = None, cif = None):
     res = c.run_sql(sql)
     return res
 
-def consulta_producto(nombre = None):
+def consultar_producto(nombre = None):
     """
     Busca un producto por nombre.
     Devuelve una lista de productos coincidentes.
     """
     c = Connection()
     sql = "SELECT * FROM %s.dbo.Articulos WHERE " % (c.get_database())
-    where = r"DescripcionArticulo = '%s';" % (nombre)
+    #where = r"DescripcionArticulo = '%s';" % (nombre)
+    where = r"Descripcion2Articulo = '%s';" % (nombre)
     sql += where
     res = c.run_sql(sql)
     return res
