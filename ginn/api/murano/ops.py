@@ -581,11 +581,28 @@ def consultar_producto(nombre = None):
     Devuelve una lista de productos coincidentes.
     """
     c = Connection()
-    sql = "SELECT * FROM %s.dbo.Articulos WHERE " % (c.get_database())
-    #where = r"DescripcionArticulo = '%s';" % (nombre)
-    where = r"Descripcion2Articulo = '%s';" % (nombre)
-    sql += where
-    res = c.run_sql(sql)
+    try:
+        sql = "SELECT * FROM %s.dbo.Articulos WHERE " % (c.get_database())
+        where = r"DescripcionArticulo = '%s';" % (nombre)
+        sql += where
+        res = c.run_sql(sql)
+        # Busco por descripción, y si no lo encuentro, busco por la
+        # descripción ampliada. Por eso hago esta asignación:
+        record = res[0]
+    except IndexError:
+        sql = "SELECT * FROM %s.dbo.Articulos WHERE " % (c.get_database())
+        where = r"Descripcion2Articulo = '%s';" % (nombre)
+        sql += where
+        res = c.run_sql(sql)
+    if DEBUG:
+        try:
+            assert len(res) == 1
+        except AssertionError:
+            if not res or len(res) == 0:
+                raise AssertionError, "No se encontraron registros."
+            elif len(res) > 1:
+                raise AssertionError, "Se encontró más de un artículo:\n %s"%(
+                        "\n".join([str(i) for i in res]))
     return res
 
 def update_calidad(articulo, calidad):
