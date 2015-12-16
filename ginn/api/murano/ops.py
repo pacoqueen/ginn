@@ -935,9 +935,9 @@ def clean_valor(valor):
             res = "UD"
         elif valor.lower() in ("m", "m.", "ml", "ml."):
             res = "M"
-        elif valor.lower() in ("caja"):
+        elif valor.lower() == "caja":
             res = "CAJA"
-        elif valor.lower() in ("bobina"):
+        elif valor.lower() == "bobina":
             res = "BOBINA"
         else:
             res = valor
@@ -951,6 +951,7 @@ def clean_cabecera(columnas):
     res = []
     for c in columnas:
         cabecera = c.split(".")[-1]
+        cabecera = cabecera.split("/")[0]
         res.append(cabecera)
     return res
 
