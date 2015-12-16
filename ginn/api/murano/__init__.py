@@ -36,12 +36,15 @@ EXTRA
 -----
 * Llamada a procedimiento de importación interno de Murano via 
 %SYSTEMDRV%\...\Sage\Sage Murano\LCOEM.dll
+* Exportación a CSV y SQL de todos los productos, clientes y proveedores.
 
 REQUERIMENTS
 ------------
 pymssql, pywin32
 """
 
-from ops import create_bala, create_rollo, consumir, delete_articulo
-__all__ = ["create_bala", "create_rollo", "consumir", "delete_articulo"]
+from ops import create_bala, create_rollo, consumir, delete_articulo,\
+                exportar_productos
+__all__ = ["create_bala", "create_rollo", "consumir", "delete_articulo",
+           "exportar_productos"]
 

@@ -760,3 +760,150 @@ def fire(guid_proceso):
     # .chm de ayuda los parámetros van sin encerrar en nada aunque sean cadena.
     retCode = burano.EjecutaScript("AcumularCamposNuevosSeries",
                          "Label:=Inicio, idProcesoIME:=%s" % guid_proceso)
+
+## ====================
+## Exportación de datos
+## ====================
+
+def exportar_productos():
+    """
+    Exporta los productos de venta y de compra a una tabla CSV.
+    """
+    columnas = ("id",
+                "lineaDeProduccion.nombre",     # Indirecto
+                "nombre",
+                "descripcion",
+                "codigo",
+                "minimo",
+                "precioPorDefecto/precioDefecto",
+                    # precioDefecto en productos de compra.
+                "arancel",
+                "prodestandar",
+                "annoCertificacion",
+                "dni",
+                "uso",
+                "obsoleto",
+                # Específicos de productos de compra:
+                "tipoDeMaterial.descripcion", # Indirecto:
+                                             # tipoDeMaterianID -> .descripcion
+                "unidad",
+                "minimo",
+                "existencias",
+                "controlExistencias",
+                "fvaloracion",
+                "observaciones",
+                "proveedor.nombre", # Indirecto: proveedorID -> proveedor.nombre
+                # Campos específicos de rollos y Marcado CE
+                "gramos",
+                "codigoComposan",
+                "ancho",
+                "diametro",
+                "rollosPorCamion",
+                "metrosLineales",
+                "pesoEmbalaje",
+                "estandarPruebaGramaje",
+                "toleranciaPruebaGramaje",
+                "estandarPruebaLongitudinal",
+                "toleranciaPruebaLongitudinal",
+                "estandarPruebaAlargamientoLongitudinal",
+                "toleranciaPruebaAlargamientoLongitudinal",
+                "estandarPruebaTransversal",
+                "toleranciaPruebaTransversal",
+                "estandarPruebaAlargamientoTransversal",
+                "toleranciaPruebaAlargamientoTransversal",
+                "estandarPruebaCompresion",
+                "toleranciaPruebaCompresion",
+                "estandarPruebaPerforacion",
+                "toleranciaPruebaPerforacion",
+                "estandarPruebaEspesor",
+                "toleranciaPruebaEspesor",
+                "estandarPruebaPermeabilidad",
+                "toleranciaPruebaPermeabilidad",
+                "estandarPruebaPoros",
+                "toleranciaPruebaPoros",
+                "toleranciaPruebaGramajeSup",
+                "toleranciaPruebaLongitudinalSup",
+                "toleranciaPruebaAlargamientoLongitudinalSup",
+                "toleranciaPruebaTransversalSup",
+                "toleranciaPruebaAlargamientoTransversalSup",
+                "toleranciaPruebaCompresionSup",
+                "toleranciaPruebaPerforacionSup",
+                "toleranciaPruebaEspesorSup",
+                "toleranciaPruebaPermeabilidadSup",
+                "toleranciaPruebaPorosSup",
+                "fichaFabricacion",
+                "c",
+                "estandarPruebaPiramidal",
+                "toleranciaPruebaPiramidal",
+                "toleranciaPruebaPiramidalSup",
+                "modeloEtiqueta.modulo",  # Indirecto: .modulo
+                "modeloEtiqueta.funcion", # Indirecto: .funcion
+                "cliente.nombre",         # Indirecto: .nombre
+                # Campos específicos de fibra
+                "dtex",
+                "corte",
+                "color",
+                "antiuv",
+                "tipoDeMaterialBala.descripcion",   # Indirecto: .descripcion
+                "consumoGranza",
+                "reciclada",
+                "gramosBolsa",
+                "bolsasCaja",
+                "cajasPale",
+                # "cliente.nombre", -> Dupe
+               )
+    filas = []
+    for pv in pclases.ProductoVenta.select(orderBy = "descripcion"):
+        fila = build_fila(pv, columnas)
+        filas.append(fila)
+    for pc in pclases.ProductoCompra.select(orderBy = "descripcion"):
+        fila = build_fila(pc, columnas)
+        filas.append(fila)
+    generate_csv(columnas, filas, "productos.csv")
+    #generate_sql(columnas, filas, "Articulos")
+
+def build_fila(producto, columnas):
+    """
+    Genera una lista con los datos del producto en el orden de las columnas
+    recibidas.
+    """
+    res = []
+    for columna in columnas:
+        if "." in columna:      # Indirecto
+            tabla_intermedia, campo = columna.split(".")
+            try:
+                registro_intermedio = getattr(producto, tabla_intermedia)
+            except AttributeError:
+                valor = ''
+            else:
+                try:
+                    valor = getattr(registro_intermedio, campo)
+                except AttributeError:
+                    assert registro_intermedio is None
+                    valor = ''  # registro_intermedio es None
+        elif "/" in columna:    # Alternativo
+            campo, campo_alternativo = columna.split("/")
+            try:
+                valor = getattr(producto, campo)
+            except AttributeError:
+                valor = getattr(producto, campo_alternativo)
+        else:
+            campo = columna
+            try:
+                valor = getattr(producto, campo)
+            except AttributeError:
+                valor = ''
+        res.append(valor)
+    return res
+
+def generate_csv(columnas, filas, nombre_fichero):
+    """
+    Crea un fichero CSV con las filas recibidas. La primera estará compuesta
+    por los nombres de los campos (columnas).
+    """
+    import csv
+    fout = file(nombre_fichero, "w")
+    fcsv = csv.writer(fout)
+    fcsv.writerow(columnas)
+    fcsv.writerows(filas)
+    fout.close()

@@ -65,4 +65,5 @@ CVS/*
 # Glade
 *.glade#
 
-
+# Datos de exportaciones a Murano
+ginn/api/tests/*.csv
