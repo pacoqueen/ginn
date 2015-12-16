@@ -845,7 +845,7 @@ def exportar_productos():
         "camposEspecificosBala.corte",
         "camposEspecificosBala.color",
         "camposEspecificosBala.antiuv",
-        "camposEspecificosBala.tipoDeMaterialBala.descripcion",   # Indirecto:
+        "camposEspecificosBala.tipoMaterialBala.descripcion",   # Indirecto:
                                                                 # .descripcion
         "camposEspecificosBala.consumoGranza",
         "camposEspecificosBala.reciclada",
@@ -853,6 +853,7 @@ def exportar_productos():
         "camposEspecificosBala.bolsasCaja",
         "camposEspecificosBala.cajasPale",
         # "cliente.nombre", -> Dupe
+        "unidadDeMedidaBasica"
        )
     filas = []
     for pv in pclases.ProductoVenta.select(orderBy = "descripcion"):
@@ -907,14 +908,113 @@ def build_fila(producto, columnas):
                 valor = getattr(producto, campo)
             except AttributeError:
                 valor = getattr(producto, campo_alternativo)
+        elif columna == ("unidadDeMedidaBasica"):
+            valor = determinar_unidad_de_medida_basica(producto)
         else:
             campo = columna
             try:
                 valor = getattr(producto, campo)
             except AttributeError:
                 valor = ''
+        valor = muranize_valor(valor, columna, producto)
         valor = clean_valor(valor)
         res.append(valor)
+    return res
+
+def determinar_unidad_de_medida_basica(producto):
+    """
+    Devuelve ROLLO, BALA, CAJA o la unidad de medida principal del producto
+    con trazabilidad, o la unidad del producto en otro caso.
+    """
+    if isinstance(producto, pclases.ProductoCompra):
+        res = producto.unidad
+    elif isinstance(producto, pclases.ProductoVenta):
+        if producto.es_rollo() or producto.es_rolloC():
+            res = "ROLLO"   # Geotextil
+        elif producto.es_bala() or producto.es_bala_cable():
+            res = "BALA"    # Fibra
+        elif producto.es_bigbag():
+            res = "BIGBAG"  # Fibra cemento
+        elif producto.es_bolsa() or producto.es_caja():
+            res = "CAJA"    # Fibra embolsada
+        elif producto.es_especial():
+            res = producto.unidad # Comercializados
+        elif producto.es_granza():
+            res = producto.unidad # Granza
+        else:
+            res = ""
+    else:
+        res = ""
+    return res
+
+def muranize_valor(valor, columna, producto):
+    """
+    Devuelve el valor conforme a los tipos de Murano. Se confirma el tipo de
+    destino según el nombre del campo (parámetro «columna»).
+    """
+    # Para Murano: True -1, False 0
+    if isinstance(valor, type(True)):
+        if valor:
+            res = -1
+        else:
+            res = 0
+    elif columna == "id":
+        # Va a ir al código de artículo de Murano. No permite duplicados, pero
+        # sí letras y números.
+        if isinstance(producto, pclases.ProductoVenta):
+            res = "PV%d" % valor
+        elif isinstance(producto, pclases.ProductoCompra):
+            res = "PC%d" % valor
+        else:
+            res = valor
+    elif columna == "controlExistencias":
+        if valor:
+            res = 0
+        else:
+            res = -1
+    elif columna == "camposEspecificosBala.color":
+        res = valor.upper()
+    elif columna == "tipoDeMaterial.descripcion":
+        if valor:
+            if valor == "Aceites y lubricantes":
+                res = "OIL"
+            elif valor == "Comercializados":
+                res = "COM"
+            elif valor == "Mantenimiento":
+                res = "MAN"
+            elif valor == "Materia Prima":
+                res = "MAP"
+            elif valor == "Material adicional":
+                res = "MAT"
+            elif valor == "Mercancía inicial Valdemoro":
+                res = "MIV"
+            elif valor == "Productos comercializados":
+                res = "COM"
+            elif valor == "Repuestos fibra":
+                res = "REF"
+            elif valor == "Repuestos geotextiles":
+                res = "REG"
+            else:
+                res = valor
+        else:
+            if isinstance(producto, pclases.ProductoVenta):
+                # 
+                if producto.es_rollo() or producto.es_rolloC():
+                    res = "GEO"     # Geotextil
+                elif producto.es_bala() or producto.es_bala_cable():
+                    res = "BAL"     # Fibra
+                elif producto.es_bigbag():
+                    res = "FCE"     # Fibra cemento
+                elif producto.es_bolsa() or producto.es_caja():
+                    res = "FEM"     # Fibra embolsada
+                elif producto.es_especial():
+                    res = "COM"     # Comercializados
+                elif producto.es_granza():
+                    res = "GRA"     # Granza
+                else:
+                    res = ""
+    else:
+        res = valor
     return res
 
 def clean_valor(valor):
@@ -929,7 +1029,7 @@ def clean_valor(valor):
     else:
         if valor.lower() in ("m²", "m2", "m2."):
             res = "M2"
-        elif valor.lower() in ("kg", "kg."):
+        elif valor.lower() in ("kg", "kg.", "kg.."):
             res = "KG"
         elif valor.lower() in ("ud", "ud."):
             res = "UD"
@@ -949,6 +1049,7 @@ def clean_cabecera(columnas):
     en la guía de importación de Murano.
     """
     res = []
+    index = 0
     for cabecera in columnas:
         if cabecera in ("lineaDeProduccion.nombre", "tipoDeMaterial.descripcion"):
             cabecera = cabecera.replace(".", "")
@@ -958,10 +1059,18 @@ def clean_cabecera(columnas):
         elif cabecera.startswith("camposEspecificosBala"):
             cabecera = cabecera.replace("camposEspecificosBala", "CEB")
             cabecera = cabecera.replace(".", "")
+        elif cabecera == "nombre" and index <= 5:
+            # FIXME: De momento lo hago así de cutremente. El caso es cambiar
+            # el nombre del producto por nombreArticulo para que no se
+            # confunda con el proveedor.nombre (que se recorta también a 
+            # «nombre» solo). Como el nombre del artículo viene antes y seguro
+            # que está en la columna 2 ó 3...
+            cabecera = "nombreArticulo"
         else:
             cabecera = cabecera.split(".")[-1]
             cabecera = cabecera.split("/")[0]
         res.append(cabecera)
+        index += 1
     return res
 
 def generate_csv(columnas, filas, nombre_fichero):
