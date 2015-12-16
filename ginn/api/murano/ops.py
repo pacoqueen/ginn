@@ -769,89 +769,91 @@ def exportar_productos():
     """
     Exporta los productos de venta y de compra a una tabla CSV.
     """
-    columnas = ("id",
-                "lineaDeProduccion.nombre",     # Indirecto
-                "nombre",
-                "descripcion",
-                "codigo",
-                "minimo",
-                "precioPorDefecto/precioDefecto",
-                    # precioDefecto en productos de compra.
-                "arancel",
-                "prodestandar",
-                "annoCertificacion",
-                "dni",
-                "uso",
-                "obsoleto",
-                # Específicos de productos de compra:
-                "tipoDeMaterial.descripcion", # Indirecto:
-                                             # tipoDeMaterianID -> .descripcion
-                "unidad",
-                "minimo",
-                "existencias",
-                "controlExistencias",
-                "fvaloracion",
-                "observaciones",
-                "proveedor.nombre", # Indirecto: proveedorID -> proveedor.nombre
-                # Campos específicos de rollos y Marcado CE
-                "gramos",
-                "codigoComposan",
-                "ancho",
-                "diametro",
-                "rollosPorCamion",
-                "metrosLineales",
-                "pesoEmbalaje",
-                "estandarPruebaGramaje",
-                "toleranciaPruebaGramaje",
-                "estandarPruebaLongitudinal",
-                "toleranciaPruebaLongitudinal",
-                "estandarPruebaAlargamientoLongitudinal",
-                "toleranciaPruebaAlargamientoLongitudinal",
-                "estandarPruebaTransversal",
-                "toleranciaPruebaTransversal",
-                "estandarPruebaAlargamientoTransversal",
-                "toleranciaPruebaAlargamientoTransversal",
-                "estandarPruebaCompresion",
-                "toleranciaPruebaCompresion",
-                "estandarPruebaPerforacion",
-                "toleranciaPruebaPerforacion",
-                "estandarPruebaEspesor",
-                "toleranciaPruebaEspesor",
-                "estandarPruebaPermeabilidad",
-                "toleranciaPruebaPermeabilidad",
-                "estandarPruebaPoros",
-                "toleranciaPruebaPoros",
-                "toleranciaPruebaGramajeSup",
-                "toleranciaPruebaLongitudinalSup",
-                "toleranciaPruebaAlargamientoLongitudinalSup",
-                "toleranciaPruebaTransversalSup",
-                "toleranciaPruebaAlargamientoTransversalSup",
-                "toleranciaPruebaCompresionSup",
-                "toleranciaPruebaPerforacionSup",
-                "toleranciaPruebaEspesorSup",
-                "toleranciaPruebaPermeabilidadSup",
-                "toleranciaPruebaPorosSup",
-                "fichaFabricacion",
-                "c",
-                "estandarPruebaPiramidal",
-                "toleranciaPruebaPiramidal",
-                "toleranciaPruebaPiramidalSup",
-                "modeloEtiqueta.modulo",  # Indirecto: .modulo
-                "modeloEtiqueta.funcion", # Indirecto: .funcion
-                "cliente.nombre",         # Indirecto: .nombre
-                # Campos específicos de fibra
-                "dtex",
-                "corte",
-                "color",
-                "antiuv",
-                "tipoDeMaterialBala.descripcion",   # Indirecto: .descripcion
-                "consumoGranza",
-                "reciclada",
-                "gramosBolsa",
-                "bolsasCaja",
-                "cajasPale",
-                # "cliente.nombre", -> Dupe
-               )
+    columnas = (
+        "id",
+        "lineaDeProduccion.nombre",     # Indirecto
+        "nombre",
+        "descripcion",
+        "codigo",
+        "minimo",
+        "precioPorDefecto/precioDefecto",
+                                        # precioDefecto en productos de compra.
+        "arancel",
+        "prodestandar",
+        "annoCertificacion",
+        "dni",
+        "uso",
+        "obsoleto",
+        # Específicos de productos de compra:
+        "tipoDeMaterial.descripcion", # Indirecto:
+                                      # tipoDeMaterianID -> .descripcion
+        "unidad",
+        "minimo",
+        "existencias",
+        "controlExistencias",
+        "fvaloracion",
+        "observaciones",
+        "proveedor.nombre", # Indirecto: proveedorID -> proveedor.nombre
+        # Campos específicos de rollos y Marcado CE
+        "camposEspecificosRollo.gramos",
+        "camposEspecificosRollo.codigoComposan",
+        "camposEspecificosRollo.ancho",
+        "camposEspecificosRollo.diametro",
+        "camposEspecificosRollo.rollosPorCamion",
+        "camposEspecificosRollo.metrosLineales",
+        "camposEspecificosRollo.pesoEmbalaje",
+        "camposEspecificosRollo.estandarPruebaGramaje",
+        "camposEspecificosRollo.toleranciaPruebaGramaje",
+        "camposEspecificosRollo.estandarPruebaLongitudinal",
+        "camposEspecificosRollo.toleranciaPruebaLongitudinal",
+        "camposEspecificosRollo.estandarPruebaAlargamientoLongitudinal",
+        "camposEspecificosRollo.toleranciaPruebaAlargamientoLongitudinal",
+        "camposEspecificosRollo.estandarPruebaTransversal",
+        "camposEspecificosRollo.toleranciaPruebaTransversal",
+        "camposEspecificosRollo.estandarPruebaAlargamientoTransversal",
+        "camposEspecificosRollo.toleranciaPruebaAlargamientoTransversal",
+        "camposEspecificosRollo.estandarPruebaCompresion",
+        "camposEspecificosRollo.toleranciaPruebaCompresion",
+        "camposEspecificosRollo.estandarPruebaPerforacion",
+        "camposEspecificosRollo.toleranciaPruebaPerforacion",
+        "camposEspecificosRollo.estandarPruebaEspesor",
+        "camposEspecificosRollo.toleranciaPruebaEspesor",
+        "camposEspecificosRollo.estandarPruebaPermeabilidad",
+        "camposEspecificosRollo.toleranciaPruebaPermeabilidad",
+        "camposEspecificosRollo.estandarPruebaPoros",
+        "camposEspecificosRollo.toleranciaPruebaPoros",
+        "camposEspecificosRollo.toleranciaPruebaGramajeSup",
+        "camposEspecificosRollo.toleranciaPruebaLongitudinalSup",
+        "camposEspecificosRollo.toleranciaPruebaAlargamientoLongitudinalSup",
+        "camposEspecificosRollo.toleranciaPruebaTransversalSup",
+        "camposEspecificosRollo.toleranciaPruebaAlargamientoTransversalSup",
+        "camposEspecificosRollo.toleranciaPruebaCompresionSup",
+        "camposEspecificosRollo.toleranciaPruebaPerforacionSup",
+        "camposEspecificosRollo.toleranciaPruebaEspesorSup",
+        "camposEspecificosRollo.toleranciaPruebaPermeabilidadSup",
+        "camposEspecificosRollo.toleranciaPruebaPorosSup",
+        "camposEspecificosRollo.fichaFabricacion",
+        "camposEspecificosRollo.c",
+        "camposEspecificosRollo.estandarPruebaPiramidal",
+        "camposEspecificosRollo.toleranciaPruebaPiramidal",
+        "camposEspecificosRollo.toleranciaPruebaPiramidalSup",
+        "camposEspecificosRollo.modeloEtiqueta.modulo",  # Indirecto: .modulo
+        "camposEspecificosRollo.modeloEtiqueta.funcion", # Indirecto: .funcion
+        "camposEspecificosRollo.cliente.nombre",         # Indirecto: .nombre
+        # Campos específicos de fibra
+        "camposEspecificosBala.dtex",
+        "camposEspecificosBala.corte",
+        "camposEspecificosBala.color",
+        "camposEspecificosBala.antiuv",
+        "camposEspecificosBala.tipoDeMaterialBala.descripcion",   # Indirecto:
+                                                                # .descripcion
+        "camposEspecificosBala.consumoGranza",
+        "camposEspecificosBala.reciclada",
+        "camposEspecificosBala.gramosBolsa",
+        "camposEspecificosBala.bolsasCaja",
+        "camposEspecificosBala.cajasPale",
+        # "cliente.nombre", -> Dupe
+       )
     filas = []
     for pv in pclases.ProductoVenta.select(orderBy = "descripcion"):
         fila = build_fila(pv, columnas)
@@ -862,6 +864,34 @@ def exportar_productos():
     generate_csv(columnas, filas, "productos.csv")
     #generate_sql(columnas, filas, "Articulos")
 
+def extract_valor_indirecto(producto, columna):
+    if columna.count(".") == 1:
+        tabla_intermedia, campo = columna.split(".")
+        try:
+            registro_intermedio = getattr(producto, tabla_intermedia)
+        except AttributeError:
+            valor = ''
+        else:
+            try:
+                valor = getattr(registro_intermedio, campo)
+            except AttributeError:
+                assert registro_intermedio is None
+                valor = ''  # registro_intermedio es None
+    elif columna.count(".") > 1:
+        tabla_intermedia = columna.split(".")[0]
+        resto_campo = columna[columna.index(".")+1:]
+        try:
+            registro_intermedio = getattr(producto, tabla_intermedia)
+        except AttributeError:  # Este tipo de registro no tiene esa relación
+            registro_intermedio = None
+        if registro_intermedio:
+            valor = extract_valor_indirecto(registro_intermedio, resto_campo)
+        else:
+            valor = ''
+    else:
+        raise ValueError, "El campo «%s» no es indirecto." % campo
+    return valor
+
 def build_fila(producto, columnas):
     """
     Genera una lista con los datos del producto en el orden de las columnas
@@ -870,17 +900,7 @@ def build_fila(producto, columnas):
     res = []
     for columna in columnas:
         if "." in columna:      # Indirecto
-            tabla_intermedia, campo = columna.split(".")
-            try:
-                registro_intermedio = getattr(producto, tabla_intermedia)
-            except AttributeError:
-                valor = ''
-            else:
-                try:
-                    valor = getattr(registro_intermedio, campo)
-                except AttributeError:
-                    assert registro_intermedio is None
-                    valor = ''  # registro_intermedio es None
+            valor = extract_valor_indirecto(producto, columna)
         elif "/" in columna:    # Alternativo
             campo, campo_alternativo = columna.split("/")
             try:
