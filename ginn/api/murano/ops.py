@@ -949,9 +949,18 @@ def clean_cabecera(columnas):
     en la guía de importación de Murano.
     """
     res = []
-    for c in columnas:
-        cabecera = c.split(".")[-1]
-        cabecera = cabecera.split("/")[0]
+    for cabecera in columnas:
+        if cabecera in ("lineaDeProduccion.nombre", "tipoDeMaterial.descripcion"):
+            cabecera = cabecera.replace(".", "")
+        elif cabecera.startswith("camposEspecificosRollo"):
+            cabecera = cabecera.replace("camposEspecificosRollo", "CER")
+            cabecera = cabecera.replace(".", "")
+        elif cabecera.startswith("camposEspecificosBala"):
+            cabecera = cabecera.replace("camposEspecificosBala", "CEB")
+            cabecera = cabecera.replace(".", "")
+        else:
+            cabecera = cabecera.split(".")[-1]
+            cabecera = cabecera.split("/")[0]
         res.append(cabecera)
     return res
 
