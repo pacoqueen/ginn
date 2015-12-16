@@ -913,7 +913,45 @@ def build_fila(producto, columnas):
                 valor = getattr(producto, campo)
             except AttributeError:
                 valor = ''
+        valor = clean_valor(valor)
         res.append(valor)
+    return res
+
+def clean_valor(valor):
+    """
+    Cambia los valores problemáticos para la guía de importación de Murano.
+    Por ejemplo, cambia m² por M2.
+    """
+    try:
+        valor = valor.strip()
+    except AttributeError:  # Es un entero o un float.
+        res = valor
+    else:
+        if valor.lower() in ("m²", "m2", "m2."):
+            res = "M2"
+        elif valor.lower() in ("kg", "kg."):
+            res = "KG"
+        elif valor.lower() in ("ud", "ud."):
+            res = "UD"
+        elif valor.lower() in ("m", "m.", "ml", "ml."):
+            res = "M"
+        elif valor.lower() in ("caja"):
+            res = "CAJA"
+        elif valor.lower() in ("bobina"):
+            res = "BOBINA"
+        else:
+            res = valor
+    return res
+
+def clean_cabecera(columnas):
+    """
+    Elimina los puntos de los nombres de los campos para evitar problemas
+    en la guía de importación de Murano.
+    """
+    res = []
+    for c in columnas:
+        cabecera = c.split(".")[-1]
+        res.append(cabecera)
     return res
 
 def generate_csv(columnas, filas, nombre_fichero):
@@ -924,6 +962,7 @@ def generate_csv(columnas, filas, nombre_fichero):
     import csv
     fout = file(nombre_fichero, "w")
     fcsv = csv.writer(fout)
-    fcsv.writerow(columnas)
+    cabecera = clean_cabecera(columnas)
+    fcsv.writerow(cabecera)
     fcsv.writerows(filas)
     fout.close()
