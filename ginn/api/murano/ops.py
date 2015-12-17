@@ -853,7 +853,21 @@ def exportar_productos():
         "camposEspecificosBala.bolsasCaja",
         "camposEspecificosBala.cajasPale",
         # "cliente.nombre", -> Dupe
-        "unidadDeMedidaBasica"
+        # Campos artificiales. Solo existe en Murano y hay que informarlos.
+        "unidadDeMedidaBasica",     # ROLLO, BALA, etc.
+# TODO: PORASQUI: Falta mandar estos campos en el Excel y que Félix corrija la guía de importación para volver a importar todos los productos correctamente.
+        "tratamientoSeries", # Sí/No(-1, 0) para indicar si llevan trazabilidad
+        "grupoTallas",          # "ABC", "AB" o "".
+        "tratamientoPartidas",  # Sí/No. Sí para los de trazabilidad.
+        "factorConversion"      # 0 si no es fijo o la cantidad correspondiente
+        # por ejemplo, cuántas cajas entran en un Kg. Solo lo usaremos en cajas.
+        "unidadMedidaVentas", # Unidad en que se venderá el artículo (M2, KG...)
+        "unidadMedidaPrecio", # Indica en qué se expresa el precio: unidad 
+            # "Específica" para rollos, balas, cajas y BB (mandar una "E") o 
+            # básica para el resto (mandar una "B")
+        "familia" # Familia a la que pertenece. Es donde se especifica el 
+                  # precio mínimo, por tanto el producto debe pertenecer a
+                  # una familia al importarlo.
        )
     filas = []
     for pv in pclases.ProductoVenta.select(orderBy = "descripcion"):
