@@ -855,7 +855,6 @@ def exportar_productos():
         # "cliente.nombre", -> Dupe
         # Campos artificiales. Solo existe en Murano y hay que informarlos.
         "unidadDeMedidaBasica",     # ROLLO, BALA, etc.
-# TODO: PORASQUI: Falta mandar estos campos en el Excel y que Félix corrija la guía de importación para volver a importar todos los productos correctamente.
         "tratamientoSeries", # Sí/No(-1, 0) para indicar si llevan trazabilidad
         "grupoTallas",          # "ABC", "AB" o "".
         "tratamientoPartidas",  # Sí/No. Sí para los de trazabilidad.
@@ -922,8 +921,36 @@ def build_fila(producto, columnas):
                 valor = getattr(producto, campo)
             except AttributeError:
                 valor = getattr(producto, campo_alternativo)
-        elif columna == ("unidadDeMedidaBasica"):
+        # Campos que no existen en ginn pero necesita Murano:
+        elif columna == "unidadDeMedidaBasica":
             valor = determinar_unidad_de_medida_basica(producto)
+        elif columna == "tratamientoSeries":
+            # Sí/No(-1, 0) para indicar si llevan trazabilidad
+            valor = determinar_tratamiento_series(producto)
+        elif columna == "grupoTallas":
+            # "ABC", "AB" o "".
+            valor = determinar_grupo_tallas(producto)
+        elif columna == "tratamientoPartidas":
+            # Sí/No. Sí para los de trazabilidad.
+            valor = determinar_tratamiento_partidas(producto)
+        elif columna == "factorConversion":
+            # 0 si no es fijo o la cantidad correspondiente
+            # por ejemplo, cuántas cajas entran en un Kg. Solo lo 
+            # usaremos en cajas.
+            valor = determinar_factor_conversion(producto)
+        elif columna == "unidadMedidaVentas":
+            # Unidad en que se venderá el artículo (M2, KG...)
+            valor = determinar_unidad_medida_ventas(producto)
+        elif columna == "unidadMedidaPrecio":
+            # Indica en qué se expresa el precio: unidad 
+            # "Específica" para rollos, balas, cajas y BB (mandar una "E") o 
+            # básica para el resto (mandar una "B")
+            valor = determinar_unidad_medida_precio(producto)
+        elif columna == "familia":
+            # Familia a la que pertenece. Es donde se especifica el 
+            # precio mínimo, por tanto el producto debe pertenecer a
+            # una familia al importarlo.
+            valor = determinar_familia(producto)
         else:
             campo = columna
             try:
@@ -959,6 +986,115 @@ def determinar_unidad_de_medida_basica(producto):
             res = ""
     else:
         res = ""
+    return res
+
+def determinar_tratamiento_series(producto):
+    """
+    -1 si lleva código de trazabilidad. 0 en otro caso.
+    """
+    if isinstance(producto, pclases.ProductoVenta):
+        res = -1
+    else:
+        res = 0
+    return res
+
+def determinar_grupo_tallas(producto):
+    """
+    "ABC" si el producto admite las 3 calidades, "AB" si solo 2 o "".
+    """
+    res = ""
+    if isinstance(producto, pclases.ProductoVenta):
+        if producto.es_rollo() or producto.es_rolloC():
+            res = "ABC"
+        elif producto.es_bala() or producto.es_bala_cable():
+            res = "ABC"
+        elif producto.es_bigbag():
+            res = "AB"
+        elif producto.es_bolsa() or producto.es_caja():
+            res = "AB"
+    return res
+
+def determinar_tratamiento_partidas(producto):
+    """
+    -1 si lleva trazabilidad. 0 en otro caso.
+    """
+    if isinstance(producto, pclases.ProductoVenta):
+        res = -1
+    else:
+        res = 0
+    return res
+
+def determinar_factor_conversion(producto):
+    """
+    Si el peso es variable por cada artículo del producto, 0. En otro caso
+    el número de unidades específicas que caben en una básica. Por ejemplo,
+    cuántas cajas entran en un kilogramo de fibra embolsada del producto
+    concreto.
+    """
+    res = 0
+    if isinstance(producto, pclases.ProductoVenta) and producto.es_caja():
+        kilos_caja = producto.camposEspecificosBala.gramosBolsa / 1000.0
+        res = 1.0 / kilos_caja
+    return res
+
+def determinar_unidad_medida_ventas(producto):
+    """
+    Devuelve la unidad en que se vende el artículo (Kg, m²...).
+    """
+    if isinstance(producto, pclases.ProductoCompra):
+        res = producto.unidad
+    elif isinstance(producto, pclases.ProductoVenta):
+        if producto.es_rollo():
+            res = "M2"  # Geotextil
+        if producto.es_rolloC():
+            res = "KG"   # Geotextil clase C
+        elif producto.es_bala() or producto.es_bala_cable():
+            res = "KG"    # Fibra
+        elif producto.es_bigbag():
+            res = "KG"  # Fibra cemento
+        elif producto.es_bolsa() or producto.es_caja():
+            res = "KG"  # Fibra embolsada
+        elif producto.es_especial():
+            res = producto.unidad # Comercializados
+        elif producto.es_granza():
+            res = "KG"  # Granza
+        else:
+            res = ""
+    else:
+        res = ""
+    return res
+
+def determinar_unidad_medida_precio(producto):
+    """
+    Devuelve si el precio se expresa en la unidad de medida básica ("B") o
+    específica ("E"). Será específica si el producto lleva trazabilidad,
+    donde la unidad específica es Kg o m² y la básica es el rollo, caja, etc.
+    pero el precio siempre va según la específica.
+    """
+    res = "B"
+    if isinstance(producto, pclases.ProductoVenta):
+        res = "E"
+    return res
+
+def determinar_familia(producto):
+    """
+    Devuelve el código de familia del producto. En el código de familia se
+    especifica el precio mínimo, por tanto es importante y relevante solo
+    para productos con trazabilidad.
+    """
+    res = ""
+    # Devuelve el mismo tipo de producto que se usa en muranize_valor para
+    # el tipo de material en caso de productos de venta.
+    if isinstance(producto, pclases.ProductoVenta):
+        # TODO: PORASQUI: ¿No habría que sacarlo de alguna manera de Murano? O, al menos, tenerlos creados o incluso crearlos desde aquí mediante SQL.
+        if producto.es_rollo() or producto.es_rolloC():
+            res = "GEO"     # Geotextil
+        elif producto.es_bala() or producto.es_bala_cable():
+            res = "BAL"     # Fibra
+        elif producto.es_bigbag():
+            res = "FCE"     # Fibra cemento
+        elif producto.es_bolsa() or producto.es_caja():
+            res = "FEM"     # Fibra embolsada
     return res
 
 def muranize_valor(valor, columna, producto):
@@ -1012,7 +1148,6 @@ def muranize_valor(valor, columna, producto):
                 res = valor
         else:
             if isinstance(producto, pclases.ProductoVenta):
-                # 
                 if producto.es_rollo() or producto.es_rolloC():
                     res = "GEO"     # Geotextil
                 elif producto.es_bala() or producto.es_bala_cable():
