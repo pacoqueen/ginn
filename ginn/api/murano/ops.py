@@ -858,7 +858,7 @@ def exportar_productos():
         "tratamientoSeries", # Sí/No(-1, 0) para indicar si llevan trazabilidad
         "grupoTallas",          # "ABC", "AB" o "".
         "tratamientoPartidas",  # Sí/No. Sí para los de trazabilidad.
-        "factorConversion"      # 0 si no es fijo o la cantidad correspondiente
+        "factorConversion",     # 0 si no es fijo o la cantidad correspondiente
         # por ejemplo, cuántas cajas entran en un Kg. Solo lo usaremos en cajas.
         "unidadMedidaVentas", # Unidad en que se venderá el artículo (M2, KG...)
         "unidadMedidaPrecio", # Indica en qué se expresa el precio: unidad 
