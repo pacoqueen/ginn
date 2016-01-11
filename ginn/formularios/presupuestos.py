@@ -1446,6 +1446,9 @@ class Presupuestos(Ventana, VentanaGenerica):
             for ldp in self.objeto.lineasDePresupuesto:
                 vpro.mover()
                 ldp.clone(presupuesto = nuevo)
+            nuevo.bloqueado = False
+            nuevo.version = 1
+            nuevo.cerrado = False
             vpro.mover()
             self.ir_a(nuevo)
             vpro.mover()

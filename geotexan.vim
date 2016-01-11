@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 22 diciembre 2015 at 12:25:11.
+" Created by session.vim 1.5 on 11 enero 2016 at 09:59:51.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -60,14 +60,14 @@ badd +1134 ginn/formularios/pagares_pagos.py
 badd +1272 ginn/formularios/pedidos_de_compra.py
 badd +3667 ginn/formularios/presupuestos.py
 badd +1316 ginn/formularios/facturas_compra.py
-badd +20861 ginn/framework/pclases/__init__.py
+badd +11611 ginn/framework/pclases/__init__.py
 badd +37 ginn/api/murano/connection.py
 badd +1 ginn/api/murano/__init__.py
 badd +175 ginn/formularios/mail_sender.py
 badd +42 ginn/informes/presupuesto2.py
 badd +1 ginn/lib/xlutils/jenkins
 badd +12 ginn/api/tests/murano_tests.py
-badd +0 ginn/api/murano/ops.py
+badd +1 ginn/api/murano/ops.py
 argglobal
 silent! argdel *
 argadd formularios/auditviewer.py
@@ -86,7 +86,10 @@ wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
-4wincmd k
+wincmd _ | wincmd |
+split
+5wincmd k
+wincmd w
 wincmd w
 wincmd w
 wincmd w
@@ -98,14 +101,16 @@ set winheight=1 winwidth=1
 exe 'vert 1resize ' . ((&columns * 22 + 51) / 103)
 exe '2resize ' . ((&lines * 1 + 26) / 53)
 exe 'vert 2resize ' . ((&columns * 80 + 51) / 103)
-exe '3resize ' . ((&lines * 41 + 26) / 53)
+exe '3resize ' . ((&lines * 1 + 26) / 53)
 exe 'vert 3resize ' . ((&columns * 80 + 51) / 103)
-exe '4resize ' . ((&lines * 3 + 26) / 53)
+exe '4resize ' . ((&lines * 1 + 26) / 53)
 exe 'vert 4resize ' . ((&columns * 80 + 51) / 103)
 exe '5resize ' . ((&lines * 1 + 26) / 53)
 exe 'vert 5resize ' . ((&columns * 80 + 51) / 103)
 exe '6resize ' . ((&lines * 1 + 26) / 53)
 exe 'vert 6resize ' . ((&columns * 80 + 51) / 103)
+exe '7resize ' . ((&lines * 41 + 26) / 53)
+exe 'vert 7resize ' . ((&columns * 80 + 51) / 103)
 argglobal
 enew
 file __Tag_List__
@@ -148,7 +153,7 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 6 - ((5 * winheight(0) + 20) / 41)
+let s:l = 6 - ((1 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -234,7 +239,7 @@ normal! zo
 normal! zo
 114
 normal! zo
-let s:l = 36 - ((1 * winheight(0) + 1) / 3)
+let s:l = 36 - ((1 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -338,26 +343,58 @@ normal! zo
 normal! zo
 21606
 normal! zo
-let s:l = 11589 - ((0 * winheight(0) + 0) / 1)
+let s:l = 11617 - ((2 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-11589
-normal! 045|
+11617
+normal! 013|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
-3wincmd w
+argglobal
+edit ~/Geotexan/src/Geotex-INN/ginn/formularios/presupuestos.py
+setlocal fdm=indent
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=99
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+77
+normal! zo
+78
+normal! zo
+1419
+normal! zo
+1425
+normal! zo
+1440
+normal! zo
+1459
+normal! zo
+let s:l = 1451 - ((36 * winheight(0) + 20) / 41)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+1451
+normal! 033|
+lcd ~/Geotexan/src/Geotex-INN
+wincmd w
+7wincmd w
 exe 'vert 1resize ' . ((&columns * 22 + 51) / 103)
 exe '2resize ' . ((&lines * 1 + 26) / 53)
 exe 'vert 2resize ' . ((&columns * 80 + 51) / 103)
-exe '3resize ' . ((&lines * 41 + 26) / 53)
+exe '3resize ' . ((&lines * 1 + 26) / 53)
 exe 'vert 3resize ' . ((&columns * 80 + 51) / 103)
-exe '4resize ' . ((&lines * 3 + 26) / 53)
+exe '4resize ' . ((&lines * 1 + 26) / 53)
 exe 'vert 4resize ' . ((&columns * 80 + 51) / 103)
 exe '5resize ' . ((&lines * 1 + 26) / 53)
 exe 'vert 5resize ' . ((&columns * 80 + 51) / 103)
 exe '6resize ' . ((&lines * 1 + 26) / 53)
 exe 'vert 6resize ' . ((&columns * 80 + 51) / 103)
+exe '7resize ' . ((&lines * 41 + 26) / 53)
+exe 'vert 7resize ' . ((&columns * 80 + 51) / 103)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
@@ -372,6 +409,6 @@ let &so = s:so_save | let &siso = s:siso_save
 doautoall SessionLoadPost
 unlet SessionLoad
 tabnext 1
-3wincmd w
+7wincmd w
 
 " vim: ft=vim ro nowrap smc=128
