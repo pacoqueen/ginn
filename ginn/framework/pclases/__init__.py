@@ -18819,12 +18819,18 @@ class Abono(SQLObject, PRPCTOO):
         Si la fecha no coincide con el dígito del año
         del número del abono saltará un "assertion error".
         """
-        digito_anno = `self.fecha.year`[-1]
-        assert digito_anno == self.numabono[1]
+        anno = `self.fecha.year`[-1]
+        # DIRTY HACK # TODO: PORASQUI. A ver cómo hago para que reconozca A60000 y A16000 como en años diferentes: 2006 y 2016 (epalomo)
+        if anno[-2] == '0':
+            digito_anno = anno[-1]
+        assert (digito_anno == self.numabono[1]
+                or digito_anno == self.numabono[2]), "Formato: Ayynnn o Aynnnn"
         # Esto puede ser un poco lento:
         abonos_de_mi_anno = [a for a in Abono.select(Abono.q.numabono.contains("A%s" % (digito_anno)), orderBy = "fecha")]
-        # Ordeno la lista por número de abono (esto puede ser un poco lento también):
-        abonos_de_mi_anno.sort(lambda a1, a2: a1.numero_numabono - a2.numero_numabono)
+        # Ordeno la lista por número de abono (esto puede ser un poco lento 
+        # también):
+        abonos_de_mi_anno.sort(lambda a1, a2: a1.numero_numabono
+                                - a2.numero_numabono)
         # Localizo mi número en la lista de números de mi año:
         i_yo = abonos_de_mi_anno.index(self)
         if i_yo == 0:
@@ -18841,7 +18847,9 @@ class Abono(SQLObject, PRPCTOO):
         del número del abono saltará un "assertion error".
         """
         digito_anno = `self.fecha.year`[-1]
-        assert digito_anno == self.numabono[1]
+        #assert digito_anno == self.numabono[1]
+        assert (digito_anno == self.numabono[1]
+                or digito_anno == self.numabono[2]), "Formato: Ayynnn o Aynnnn"
         # Esto puede ser un poco lento:
         abonos_de_mi_anno = [a for a in Abono.select(Abono.q.numabono.contains("A%s" % (digito_anno)), orderBy = "fecha")]
         # Ordeno la lista por número de abono (esto puede ser un poco lento también):
