@@ -18755,11 +18755,11 @@ class Abono(SQLObject, PRPCTOO):
         Los números no se repetirán e irán correlativos
         _dentro_ de la serie del año (dígito "y").
         """
-        digito_anno = `mx.DateTime.localtime().year`[-1]
-        abonos_de_mi_serie = Abono.select(""" numabono LIKE 'A%s%%' """ % (digito_anno))
+        anno = mx.DateTime.localtime().year
+        abonos_de_mi_serie, prefijo = Abono._buscar_abonos_de_la_serie(anno)
         numsabono = []
         for abono in abonos_de_mi_serie:
-            numabono = abono.numabono.replace("A%s" % (digito_anno), "")
+            numabono = abono.numabono.replace(prefijo, "")
             try:
                 numabono = int(numabono)
             except ValueError:
@@ -18771,7 +18771,7 @@ class Abono(SQLObject, PRPCTOO):
             sig_num = 1
         else:
             sig_num = numsabono[-1] + 1
-        res = "A%s%04d" % (digito_anno, sig_num)
+        res = "%s%03d" % (prefijo, sig_num)
         return res
 
     get_nuevo_numabono = staticmethod(get_nuevo_numabono)
@@ -18784,13 +18784,17 @@ class Abono(SQLObject, PRPCTOO):
         sin el prefijo «Ay» (donde "y" es el dígito
         correspondiente al año del abono).
         """
-        return int(self.numabono[2:])
+        # VERY UGLY DIRTY HACK: El segundo dígito nunca se va a usar porque
+        # presumiblemente no se harán más de 999 abonos al año. El cliente
+        # lo ha confirmado y lo quiere asi. Y en los abonos donde sí se podría
+        # haber usado porque no pertenecía al año (los abonos anteriores a
+        # 2016) no se ha llegado a más de 60 abonos el año que más.
+        return int(self.numabono[3:])
 
     def set_numero_numabono(self, numero):
         """
-        Cambia el número del abono respetando el
-        prefijo «Ay» donde "y" es el último dígito
-        del año del abono.
+        Cambia el número del abono respetando el prefijo «Ay[y]» donde "y" es 
+        el último o dos últimos dígitos del año del abono.
         Si el abono no tiene fecha le pone la actual.
         Si el número no satisface la restricción de
         secuencialidad lanza una excepción (la fecha
@@ -18801,15 +18805,49 @@ class Abono(SQLObject, PRPCTOO):
         if not isinstance(numero, int):
             raise TypeError, "El parámetro debe ser un número entero."
         numabono_anterior = self.numabono
-        if self.fecha:
+        if not self.fecha:
             self.fecha = mx.DateTime.localtime()
-        digito_anno = `self.fecha.year`[-1]
-        self.numabono = "A%s%04d" % (digito_anno, numero)
+        if self.fecha.year <= 2015:
+            digito_anno = `self.fecha.year`[-1] + "0"
+        else:
+            digito_anno = `self.fecha.year`[-2:]
+        self.numabono = "A%s%03d" % (digito_anno, numero)
         if not self.numabono_correcto():
             self.numabono = numabono_anterior
             raise ValueError, "El número %d no satisface restricción de secuencialidad para el abono ID %d" % (numero, self.id)
 
     numero_numabono = property(get_numero_numabono, set_numero_numabono)
+
+    @classmethod
+    def _buscar_abonos_de_la_serie(cls, anno):
+        # DIRTY HACK para que reconozca A60000 y A16000 como en años
+        # diferentes: 2006 y 2016. Habrá conflicto de nuevo en 2020. Se ha
+        # usado ya A20001 para el año 2012.
+        if anno <= 2015:
+            digito_anno = str(anno)[-1] + '0'
+        else:
+            digito_anno = str(anno)[-2:]
+        prefijo = "A" + digito_anno
+        # Esto puede ser un poco lento:
+        qryabonos = Abono.select(Abono.q.numabono.startswith(prefijo),
+                                 orderBy = "fecha,numabono")
+        abonos_de_mi_serie = [a for a in qryabonos]
+        # Ordeno la lista por número de abono (esto puede ser un poco lento 
+        # también):
+        abonos_de_mi_serie.sort(lambda a1, a2: a1.numero_numabono
+                                - a2.numero_numabono)
+        return abonos_de_mi_serie, prefijo
+
+    def _buscar_abonos_de_mi_serie(self):
+        """
+        Devuelve una lista ordenada de los abonos correspondientes a la
+        misma serie Y año del actual (self).
+        """
+        anno = self.fecha.year
+        abonos_de_mi_serie, prefijo = Abono._buscar_abonos_de_la_serie(anno)
+        assert self.numabono.startswith(
+                prefijo), "Formato número abono debe ser: Ayynnn o Aynnnn"
+        return abonos_de_mi_serie
 
     def get_abono_anterior(self):
         """
@@ -18819,24 +18857,13 @@ class Abono(SQLObject, PRPCTOO):
         Si la fecha no coincide con el dígito del año
         del número del abono saltará un "assertion error".
         """
-        anno = `self.fecha.year`[-1]
-        # DIRTY HACK # TODO: PORASQUI. A ver cómo hago para que reconozca A60000 y A16000 como en años diferentes: 2006 y 2016 (epalomo)
-        if anno[-2] == '0':
-            digito_anno = anno[-1]
-        assert (digito_anno == self.numabono[1]
-                or digito_anno == self.numabono[2]), "Formato: Ayynnn o Aynnnn"
-        # Esto puede ser un poco lento:
-        abonos_de_mi_anno = [a for a in Abono.select(Abono.q.numabono.contains("A%s" % (digito_anno)), orderBy = "fecha")]
-        # Ordeno la lista por número de abono (esto puede ser un poco lento 
-        # también):
-        abonos_de_mi_anno.sort(lambda a1, a2: a1.numero_numabono
-                                - a2.numero_numabono)
+        abonos_de_mi_serie = self._buscar_abonos_de_mi_serie()
         # Localizo mi número en la lista de números de mi año:
-        i_yo = abonos_de_mi_anno.index(self)
+        i_yo = abonos_de_mi_serie.index(self)
         if i_yo == 0:
             return None
         else:
-            return abonos_de_mi_anno[i_yo - 1]
+            return abonos_de_mi_serie[i_yo - 1]
 
     def get_abono_posterior(self):
         """
@@ -18846,20 +18873,13 @@ class Abono(SQLObject, PRPCTOO):
         Si la fecha no coincide con el dígito del año
         del número del abono saltará un "assertion error".
         """
-        digito_anno = `self.fecha.year`[-1]
-        #assert digito_anno == self.numabono[1]
-        assert (digito_anno == self.numabono[1]
-                or digito_anno == self.numabono[2]), "Formato: Ayynnn o Aynnnn"
-        # Esto puede ser un poco lento:
-        abonos_de_mi_anno = [a for a in Abono.select(Abono.q.numabono.contains("A%s" % (digito_anno)), orderBy = "fecha")]
-        # Ordeno la lista por número de abono (esto puede ser un poco lento también):
-        abonos_de_mi_anno.sort(lambda a1, a2: a1.numero_numabono - a2.numero_numabono)
+        abonos_de_mi_serie = self._buscar_abonos_de_mi_serie()
         # Localizo mi número en la lista de números de mi año:
-        i_yo = abonos_de_mi_anno.index(self)
-        if i_yo == len(abonos_de_mi_anno)-1:
+        i_yo = abonos_de_mi_serie.index(self)
+        if i_yo == len(abonos_de_mi_serie)-1:
             return None
         else:
-            return abonos_de_mi_anno[i_yo + 1]
+            return abonos_de_mi_serie[i_yo + 1]
 
     def numabono_correcto(self):
         """
@@ -18871,8 +18891,14 @@ class Abono(SQLObject, PRPCTOO):
         """
         anterior = self.get_abono_anterior()
         posterior = self.get_abono_posterior()
-        condicion_anterior = anterior == None or (anterior.numero_numabono < self.numero_numabono and anterior.fecha <= self.fecha)
-        condicion_posterior = posterior == None or (posterior.numero_numabono > self.numero_numabono and posterior.fecha >= self.fecha)
+        condicion_anterior = anterior == None or (
+                #anterior.numero_numabono < self.numero_numabono
+                anterior.numero_numabono + 1 == self.numero_numabono
+                and anterior.fecha <= self.fecha)
+        condicion_posterior = posterior == None or (
+                #posterior.numero_numabono > self.numero_numabono
+                posterior.numero_numabono - 1 == self.numero_numabono
+                and posterior.fecha >= self.fecha)
         return condicion_anterior and condicion_posterior
 
     def get_str_cobro(self):

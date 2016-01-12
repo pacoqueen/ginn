@@ -1063,7 +1063,11 @@ class AbonosVenta(Ventana):
         abono.observaciones = self.wids['e_observaciones'].get_text()
         abono.fecha = fecha
         abono.numabono = numabono
-        if not abono.numabono_correcto():
+        try:
+            numabono_correcto = abono.numabono_correcto()
+        except AssertionError:
+            numabono_correcto = False
+        if not numabono_correcto:
             abono.fecha = fecha_anterior
             abono.numabono = numabono_anterior
             utils.dialogo_info(titulo = "ERROR SECUENCIALIDAD", 
