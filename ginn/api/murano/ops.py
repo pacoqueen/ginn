@@ -1090,7 +1090,7 @@ def determinar_familia(producto):
         if producto.es_rollo() or producto.es_rolloC():
             res = "GEO"     # Geotextil
         elif producto.es_bala() or producto.es_bala_cable():
-            res = "BAL"     # Fibra
+            res = "FIB"     # Fibra
         elif producto.es_bigbag():
             res = "FCE"     # Fibra cemento
         elif producto.es_bolsa() or producto.es_caja():
@@ -1151,7 +1151,7 @@ def muranize_valor(valor, columna, producto):
                 if producto.es_rollo() or producto.es_rolloC():
                     res = "GEO"     # Geotextil
                 elif producto.es_bala() or producto.es_bala_cable():
-                    res = "BAL"     # Fibra
+                    res = "FIB"     # Fibra
                 elif producto.es_bigbag():
                     res = "FCE"     # Fibra cemento
                 elif producto.es_bolsa() or producto.es_caja():
