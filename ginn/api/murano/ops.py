@@ -875,7 +875,10 @@ def exportar_productos():
     for pc in pclases.ProductoCompra.select(orderBy = "descripcion"):
         fila = build_fila(pc, columnas)
         filas.append(fila)
+    columnas, filas = post_process(columnas, filas)
     generate_csv(columnas, filas, "productos.csv")
+    # FIXME: En generate_csv se hacen operaciones que deberían ser comunes
+    # a generate_sql.
     #generate_sql(columnas, filas, "Articulos")
 
 def extract_valor_indirecto(producto, columna):
@@ -1234,3 +1237,17 @@ def generate_csv(columnas, filas, nombre_fichero):
     fcsv.writerow(cabecera)
     fcsv.writerows(filas)
     fout.close()
+
+def post_process(columnas, _filas):
+    """
+    Recorre toda la tabla y la limpia de valores que no interesa volcar.
+    Devuelve las mismas columnas y las filas correspondientes.
+    """
+    filas = []
+    for fila in _filas:
+        dict_fila = dict(zip(columnas, fila))
+        if dict_fila['tipoDeMaterial.descripcion'] == "MIV":
+            # TODO: PORASQUI: Ignoro esa familia. Pero, ¿qué pasa con los productos de esa familia que sí tienen existencias? Dice Nicolás que los reclasifique según el criterio arbitrario que me puso en el correo del 20-ene-2016; pero eso tendría que ir hard-coded.
+            continue
+        filas.append(fila)
+    return columnas, filas
