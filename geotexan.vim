@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 18 enero 2016 at 19:51:30.
+" Created by session.vim 1.5 on 28 enero 2016 at 11:12:58.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -53,7 +53,7 @@ badd +52 ginn/informes/barcode/EANBarCode.py
 badd +63 ginn/informes/barcode/_barcode.py
 badd +227 ginn/informes/barcode/common.py
 badd +53 ginn/informes/presupuesto.py
-badd +1205 ginn/formularios/abonos_venta.py
+badd +1072 ginn/formularios/abonos_venta.py
 badd +2150 ginn/formularios/albaranes_de_salida.py
 badd +19 ginn/formularios/consulta_ofertas.py
 badd +1134 ginn/formularios/pagares_pagos.py
@@ -69,10 +69,11 @@ badd +1 ginn/lib/xlutils/jenkins
 badd +12 ginn/api/tests/murano_tests.py
 badd +1 ginn/api/murano/ops.py
 badd +102 ginn/formularios/utils_almacen.py
+badd +0 ginn/informes/norma2013.py
 argglobal
 silent! argdel *
 argadd formularios/auditviewer.py
-set lines=50 columns=103
+set lines=49 columns=103
 edit db/tablas.sql
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -100,17 +101,17 @@ set nosplitright
 wincmd t
 set winheight=1 winwidth=1
 exe 'vert 1resize ' . ((&columns * 22 + 51) / 103)
-exe '2resize ' . ((&lines * 1 + 25) / 50)
+exe '2resize ' . ((&lines * 1 + 24) / 49)
 exe 'vert 2resize ' . ((&columns * 80 + 51) / 103)
-exe '3resize ' . ((&lines * 33 + 25) / 50)
+exe '3resize ' . ((&lines * 1 + 24) / 49)
 exe 'vert 3resize ' . ((&columns * 80 + 51) / 103)
-exe '4resize ' . ((&lines * 1 + 25) / 50)
+exe '4resize ' . ((&lines * 1 + 24) / 49)
 exe 'vert 4resize ' . ((&columns * 80 + 51) / 103)
-exe '5resize ' . ((&lines * 1 + 25) / 50)
+exe '5resize ' . ((&lines * 1 + 24) / 49)
 exe 'vert 5resize ' . ((&columns * 80 + 51) / 103)
-exe '6resize ' . ((&lines * 1 + 25) / 50)
+exe '6resize ' . ((&lines * 1 + 24) / 49)
 exe 'vert 6resize ' . ((&columns * 80 + 51) / 103)
-exe '7resize ' . ((&lines * 6 + 25) / 50)
+exe '7resize ' . ((&lines * 37 + 24) / 49)
 exe 'vert 7resize ' . ((&columns * 80 + 51) / 103)
 argglobal
 enew
@@ -176,11 +177,11 @@ normal! zo
 normal! zo
 769
 normal! zo
-910
+885
 normal! zo
-916
+913
 normal! zo
-let s:l = 960 - ((28 * winheight(0) + 16) / 33)
+let s:l = 960 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -395,7 +396,7 @@ normal! 029|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
-edit ~/Geotexan/src/Geotex-INN/ginn/formularios/abonos_venta.py
+edit ~/Geotexan/src/Geotex-INN/ginn/informes/norma2013.py
 setlocal fdm=indent
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -404,27 +405,35 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 1066 - ((5 * winheight(0) + 3) / 6)
+21
+normal! zo
+47
+normal! zo
+47
+normal! zo
+216
+normal! zo
+let s:l = 55 - ((18 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1066
-normal! 01|
+55
+normal! 038|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
-3wincmd w
+7wincmd w
 exe 'vert 1resize ' . ((&columns * 22 + 51) / 103)
-exe '2resize ' . ((&lines * 1 + 25) / 50)
+exe '2resize ' . ((&lines * 1 + 24) / 49)
 exe 'vert 2resize ' . ((&columns * 80 + 51) / 103)
-exe '3resize ' . ((&lines * 33 + 25) / 50)
+exe '3resize ' . ((&lines * 1 + 24) / 49)
 exe 'vert 3resize ' . ((&columns * 80 + 51) / 103)
-exe '4resize ' . ((&lines * 1 + 25) / 50)
+exe '4resize ' . ((&lines * 1 + 24) / 49)
 exe 'vert 4resize ' . ((&columns * 80 + 51) / 103)
-exe '5resize ' . ((&lines * 1 + 25) / 50)
+exe '5resize ' . ((&lines * 1 + 24) / 49)
 exe 'vert 5resize ' . ((&columns * 80 + 51) / 103)
-exe '6resize ' . ((&lines * 1 + 25) / 50)
+exe '6resize ' . ((&lines * 1 + 24) / 49)
 exe 'vert 6resize ' . ((&columns * 80 + 51) / 103)
-exe '7resize ' . ((&lines * 6 + 25) / 50)
+exe '7resize ' . ((&lines * 37 + 24) / 49)
 exe 'vert 7resize ' . ((&columns * 80 + 51) / 103)
 tabnext 1
 if exists('s:wipebuf')
@@ -440,6 +449,6 @@ let &so = s:so_save | let &siso = s:siso_save
 doautoall SessionLoadPost
 unlet SessionLoad
 tabnext 1
-3wincmd w
+7wincmd w
 
 " vim: ft=vim ro nowrap smc=128
