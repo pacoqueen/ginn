@@ -23,6 +23,7 @@ ruta_ginn = os.path.abspath(os.path.join(
         os.path.dirname(__file__), "..", "..", "..", "ginn"))
 sys.path.append(ruta_ginn)
 from framework import pclases
+from formularios.utils import eliminar_dobles_espacios
 
 CODEMPRESA = 8000   # Empresa de pruebas. Cambiar por la 10200 en producción.
 
@@ -769,19 +770,22 @@ def exportar_productos():
     """
     Exporta los productos de venta y de compra a una tabla CSV.
     """
-    columnas = (
-        "id",
+    columnas = [
+        "id",                                                           # 0
         "lineaDeProduccion.nombre",     # Indirecto
-        "nombre",
-        "descripcion",
+        # Nos interesa intercambiar la descripcion (larga) por el nombre
+        # (corto) porque Murano buscará antes por descripción que por 
+        # descripcion2, así que en descripcion2 meteremos el nombre (corto).
+        "descripcion",                                                  # 2
+        "descripcion2/nombre",                                          # 3
         "codigo",
-        "minimo",
+        "minimo",                                                       # 5
         "precioPorDefecto/precioDefecto",
                                         # precioDefecto en productos de compra.
         "arancel",
         "prodestandar",
         "annoCertificacion",
-        "dni",
+        "dni",                                                          # 10
         "uso",
         "obsoleto",
         # Específicos de productos de compra:
@@ -867,7 +871,7 @@ def exportar_productos():
         "familia" # Familia a la que pertenece. Es donde se especifica el 
                   # precio mínimo, por tanto el producto debe pertenecer a
                   # una familia al importarlo.
-       )
+       ]
     filas = []
     for pv in pclases.ProductoVenta.select(orderBy = "descripcion"):
         fila = build_fila(pv, columnas)
@@ -923,7 +927,14 @@ def build_fila(producto, columnas):
             try:
                 valor = getattr(producto, campo)
             except AttributeError:
-                valor = getattr(producto, campo_alternativo)
+                try:
+                    valor = getattr(producto, campo_alternativo)
+                except AttributeError, e:
+                    # DIRTY HACK: Hemos invertido los campos nombre y desc.
+                    if campo_alternativo == "nombre":
+                        valor = ""
+                    else:
+                        raise e
         # Campos que no existen en ginn pero necesita Murano:
         elif columna == "unidadDeMedidaBasica":
             valor = determinar_unidad_de_medida_basica(producto)
@@ -1089,7 +1100,10 @@ def determinar_familia(producto):
     # Devuelve el mismo tipo de producto que se usa en muranize_valor para
     # el tipo de material en caso de productos de venta.
     if isinstance(producto, pclases.ProductoVenta):
-        # TODO: PORASQUI: ¿No habría que sacarlo de alguna manera de Murano? O, al menos, tenerlos creados o incluso crearlos desde aquí mediante SQL.
+        # DONE: ¿No habría que sacarlo de alguna manera de Murano? O, al
+        # menos, tenerlos creados o incluso crearlos desde aquí mediante SQL.
+        # No problem. Se pueden exportar los códigos de familia y crearlos
+        # más tarde. No fallará al importar (Sage)
         if producto.es_rollo() or producto.es_rolloC():
             res = "GEO"     # Geotextil
         elif producto.es_bala() or producto.es_bala_cable():
@@ -1175,7 +1189,7 @@ def clean_valor(valor):
     Por ejemplo, cambia m² por M2.
     """
     try:
-        valor = valor.strip()
+        valor = eliminar_dobles_espacios(valor.strip())
     except AttributeError:  # Es un entero o un float.
         res = valor
     else:
