@@ -43,8 +43,8 @@ REQUERIMENTS
 pymssql, pywin32
 """
 
-from ops import create_bala, create_rollo, consumir, delete_articulo,\
-                exportar_productos
+from ops import create_bala, create_rollo, consumir, delete_articulo
+from export import exportar_productos
 __all__ = ["create_bala", "create_rollo", "consumir", "delete_articulo",
            "exportar_productos"]
 
