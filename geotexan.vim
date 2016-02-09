@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 02 febrero 2016 at 11:34:43.
+" Created by session.vim 1.5 on 09 febrero 2016 at 18:02:36.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -73,7 +73,7 @@ badd +1 ginn/informes/norma2013.py
 argglobal
 silent! argdel *
 argadd formularios/auditviewer.py
-set lines=49 columns=103
+set lines=46 columns=103
 edit db/tablas.sql
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -101,17 +101,17 @@ set nosplitright
 wincmd t
 set winheight=1 winwidth=1
 exe 'vert 1resize ' . ((&columns * 22 + 51) / 103)
-exe '2resize ' . ((&lines * 1 + 24) / 49)
+exe '2resize ' . ((&lines * 1 + 23) / 46)
 exe 'vert 2resize ' . ((&columns * 80 + 51) / 103)
-exe '3resize ' . ((&lines * 37 + 24) / 49)
+exe '3resize ' . ((&lines * 1 + 23) / 46)
 exe 'vert 3resize ' . ((&columns * 80 + 51) / 103)
-exe '4resize ' . ((&lines * 1 + 24) / 49)
+exe '4resize ' . ((&lines * 1 + 23) / 46)
 exe 'vert 4resize ' . ((&columns * 80 + 51) / 103)
-exe '5resize ' . ((&lines * 1 + 24) / 49)
+exe '5resize ' . ((&lines * 1 + 23) / 46)
 exe 'vert 5resize ' . ((&columns * 80 + 51) / 103)
-exe '6resize ' . ((&lines * 1 + 24) / 49)
+exe '6resize ' . ((&lines * 34 + 23) / 46)
 exe 'vert 6resize ' . ((&columns * 80 + 51) / 103)
-exe '7resize ' . ((&lines * 1 + 24) / 49)
+exe '7resize ' . ((&lines * 1 + 23) / 46)
 exe 'vert 7resize ' . ((&columns * 80 + 51) / 103)
 argglobal
 enew
@@ -155,64 +155,44 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-178
+177
 normal! zo
-315
+314
+normal! zo
+319
 normal! zo
 320
 normal! zo
-321
+320
 normal! zo
-321
+320
 normal! zo
-321
+320
 normal! zo
-321
+320
 normal! zo
-321
+320
 normal! zo
-321
+361
 normal! zo
-362
+586
 normal! zo
-587
+733
 normal! zo
-770
+762
 normal! zo
-889
+762
 normal! zo
-917
+762
 normal! zo
-923
+762
 normal! zo
-926
-normal! zo
-930
-normal! zo
-934
-normal! zo
-1094
-normal! zo
-1107
-normal! zo
-1118
-normal! zo
-1187
-normal! zo
-1213
-normal! zo
-1220
-normal! zo
-1256
-normal! zo
-1262
-normal! zo
-let s:l = 767 - ((0 * winheight(0) + 18) / 37)
+let s:l = 737 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-767
-normal! 0
+737
+normal! 028|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -311,12 +291,6 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-47
-normal! zo
-47
-normal! zo
-47
-normal! zo
 49
 normal! zo
 let s:l = 50 - ((0 * winheight(0) + 0) / 1)
@@ -337,6 +311,24 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
+733
+normal! zo
+802
+normal! zo
+2845
+normal! zo
+2939
+normal! zo
+3117
+normal! zo
+3132
+normal! zo
+3133
+normal! zo
+3139
+normal! zo
+3140
+normal! zo
 7784
 normal! zo
 7802
@@ -352,6 +344,8 @@ normal! zo
 8663
 normal! zo
 8666
+normal! zo
+10191
 normal! zo
 10684
 normal! zo
@@ -413,12 +407,34 @@ normal! zo
 normal! zo
 21416
 normal! zo
-let s:l = 18829 - ((0 * winheight(0) + 0) / 1)
+21485
+normal! zo
+21496
+normal! zo
+21497
+normal! zo
+21520
+normal! zo
+21553
+normal! zo
+21616
+normal! zo
+21738
+normal! zo
+21745
+normal! zo
+21747
+normal! zo
+21751
+normal! zo
+21752
+normal! zo
+let s:l = 821 - ((33 * winheight(0) + 17) / 34)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-18829
-normal! 029|
+821
+normal! 09|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -447,19 +463,19 @@ normal! zt
 normal! 038|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
-3wincmd w
+6wincmd w
 exe 'vert 1resize ' . ((&columns * 22 + 51) / 103)
-exe '2resize ' . ((&lines * 1 + 24) / 49)
+exe '2resize ' . ((&lines * 1 + 23) / 46)
 exe 'vert 2resize ' . ((&columns * 80 + 51) / 103)
-exe '3resize ' . ((&lines * 37 + 24) / 49)
+exe '3resize ' . ((&lines * 1 + 23) / 46)
 exe 'vert 3resize ' . ((&columns * 80 + 51) / 103)
-exe '4resize ' . ((&lines * 1 + 24) / 49)
+exe '4resize ' . ((&lines * 1 + 23) / 46)
 exe 'vert 4resize ' . ((&columns * 80 + 51) / 103)
-exe '5resize ' . ((&lines * 1 + 24) / 49)
+exe '5resize ' . ((&lines * 1 + 23) / 46)
 exe 'vert 5resize ' . ((&columns * 80 + 51) / 103)
-exe '6resize ' . ((&lines * 1 + 24) / 49)
+exe '6resize ' . ((&lines * 34 + 23) / 46)
 exe 'vert 6resize ' . ((&columns * 80 + 51) / 103)
-exe '7resize ' . ((&lines * 1 + 24) / 49)
+exe '7resize ' . ((&lines * 1 + 23) / 46)
 exe 'vert 7resize ' . ((&columns * 80 + 51) / 103)
 tabnext 1
 if exists('s:wipebuf')
@@ -475,6 +491,6 @@ let &so = s:so_save | let &siso = s:siso_save
 doautoall SessionLoadPost
 unlet SessionLoad
 tabnext 1
-3wincmd w
+6wincmd w
 
 " vim: ft=vim ro nowrap smc=128
