@@ -521,6 +521,14 @@ def post_process(columnas, _filas):
     return columnas, filas
 
 ## Clientes ###################################################################
+def exportar_clientes():
+    """
+    Exporta los clientes con actividad en los últimos 2 años a una tabla CSV.
+    Esta tabla posteriormente se sube a una hoja de cálculo en la nube
+    (Google). Esta hoja es consultada en cada nueva exportación para que los
+    datos del CSV final siempre estén actualizados según la copia en la nube.
+    """
+    import sqlite3 as sqlite
 
 ## Proveedores ################################################################
 
