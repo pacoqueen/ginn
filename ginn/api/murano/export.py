@@ -528,7 +528,12 @@ def exportar_clientes():
     (Google). Esta hoja es consultada en cada nueva exportación para que los
     datos del CSV final siempre estén actualizados según la copia en la nube.
     """
-    import sqlite3 as sqlite
+    sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                 "..", "tests", "gspread")) 
+    import gspread
 
 ## Proveedores ################################################################
 
+
+def exportar_proveedores():
+    raise NotImplementedError
