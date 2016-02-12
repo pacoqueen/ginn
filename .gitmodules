@@ -37,6 +37,3 @@
 [submodule "ginn/lib/fuzzywuzzy"]
 	path = ginn/lib/fuzzywuzzy
 	url = git@github.com:Geotexan/fuzzywuzzy.git
-[submodule "ginn/api/tests/gspread"]
-	path = ginn/api/tests/gspread
-	url = https://github.com/burnash/gspread.git

@@ -7,7 +7,7 @@ Generan ficheros CSV, no importan nada directamente a Murano. Esos ficheros
 CSV sirven como fuente para las guías de importación diseñadas por Sage.
 """
 
-import sys, os
+import sys, os, datetime
 ruta_ginn = os.path.abspath(os.path.join(
         os.path.dirname(__file__), "..", "..", "..", "ginn"))
 sys.path.append(ruta_ginn)
@@ -493,7 +493,7 @@ def clean_cabecera(columnas):
         index += 1
     return res
 
-def generate_csv(columnas, filas, nombre_fichero):
+def generate_csv(columnas, filas, nombre_fichero, limpiar_cabecera = True):
     """
     Crea un fichero CSV con las filas recibidas. La primera estará compuesta
     por los nombres de los campos (columnas).
@@ -501,7 +501,10 @@ def generate_csv(columnas, filas, nombre_fichero):
     import csv
     fout = file(nombre_fichero, "w")
     fcsv = csv.writer(fout)
-    cabecera = clean_cabecera(columnas)
+    if limpiar_cabecera:
+        cabecera = clean_cabecera(columnas)
+    else:
+        cabecera = columnas
     fcsv.writerow(cabecera)
     fcsv.writerows(filas)
     fout.close()
@@ -524,13 +527,139 @@ def post_process(columnas, _filas):
 def exportar_clientes():
     """
     Exporta los clientes con actividad en los últimos 2 años a una tabla CSV.
-    Esta tabla posteriormente se sube a una hoja de cálculo en la nube
-    (Google). Esta hoja es consultada en cada nueva exportación para que los
-    datos del CSV final siempre estén actualizados según la copia en la nube.
+    Esta tabla posteriormente se procesa para completar información.
+    Al realizar cada importación primero se trata de leer el fichero CSV,
+    se construye un nuevo volcado combinando los datos de la base de datos
+    y el CSV y se vuelve a volcar el fichero CSV.
     """
-    sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                 "..", "tests", "gspread")) 
-    import gspread
+    fdest = "clientes.csv"
+    # Me aseguro que el orden es siempre el mismo porque Murano es muy
+    # quisuilloso al respecto.
+    cliente = pclases.Cliente.select()[0]
+    cols_extra = ["cuenta contable", "sección", "departamento"]
+    orden_campos = ["id"] + [f.name for f in cliente.sqlmeta.columnList]
+    orden_campos += cols_extra
+    if os.path.exists(fdest):
+        listado = parse(fdest)
+        update_listado(listado)
+    else:
+        hoy = datetime.date.today()
+        two_years_ago = datetime.date(day = hoy.day, month = hoy.month,
+                                      year = hoy.year - 2)
+        listado = create_listado_inicial(cols_extra, two_years_ago)
+    dump(listado, fdest, orden_campos)
+
+def build_cabecera(listado, orden_campos = []):
+    """
+    Devuelve una lista de campos del listado.
+    """
+    campos_tratados = []
+    # Si el listado está vacío, petará.
+    campos = listado[listado.keys()[0]].keys()
+    res = []
+    for campo in orden_campos:
+        if campo not in campos:
+            raise ValueError, "El campo %s no existe en el diccionario de clientes." % campo
+            continue    # ¿TYPO en el nombre del campo?
+        res.append(campo)
+        campos_tratados.append(campo)
+    # El resto de campos del diccionario que no se especificaron en el orden.
+    for campo in campos:
+        if campo in campos_tratados:
+            continue
+        res.append(campo)
+    return res
+
+def build_fila_cliente(dic_cliente, campos):
+    """
+    Devuelve una lista de valores según el orden de campos especificado.
+    """
+    res = []
+    for c in campos:
+        res.append(dic_cliente[c])
+    return res
+
+def dump(listado, fdest, orden_campos):
+    """
+    Convierte el diccionaro «listado» en filas para alimentar un nuevo CSV
+    que incluye los nombres de los campos como cabecera de columnas.
+    """
+    cabecera = build_cabecera(listado, orden_campos)
+    filas = []
+    for cid in listado:
+        fila = build_fila_cliente(listado[cid], cabecera)
+        filas.append(fila)
+    generate_csv(cabecera, filas, fdest, limpiar_cabecera = False)
+
+def parse(fdest):
+    """
+    Abre el fichero CSV y devuelve un diccionario de clientes con el ID como
+    clave y un diccionario de campos como valores.
+    """
+    # TODO: Esto es temporal hasta que lo implemente.
+    cols_extra = ["cuenta contable", "sección", "departamento"]
+    hoy = datetime.date.today()
+    two_years_ago = datetime.date(day = hoy.day, month = hoy.month,
+                                  year = hoy.year - 2)
+    return create_listado_inicial(cols_extra, two_years_ago)
+
+def update_listado(listado):
+    """
+    En el propio diccionario de clientes recibido actualiza los valores
+    según los actuales de los clientes de la base de datos. Si algún
+    cliente no está presente en el diccionario, lo incluye **aunque no haya
+    tenido actividad según el criterio con que se construye la lista inicial**.
+    Estos nuevos clientes puede que sean tan nuevos que ni siquiera ha
+    dado tiempo a que hagan un pedido, por eso se incluyen.
+    """
+    # TODO: De momento no hace nada.
+    pass
+
+def create_listado_inicial(cols_extra, fecha_ultima_actividad = None):
+    """
+    Devuelve un diccionario cuyas claves son los ID de cliente y los valores
+    son diccionarios con los campos y valores para cada cliente.
+    Agrega campos adicionales que deben ir al CSV y no están presentes en
+    la base de datos.
+    Si se especifica una fecha de última actividad se filtran los clientes
+    e ignoran aquellos que no hayan realizado un pedido u oferta después
+    de esa fecha.
+    """
+    clientes = set()
+    if not fecha_ultima_actividad:
+        for c in pclases.Cliente.select():
+            clientes.add(c.id)
+    else:
+        for c in buscar_clientes_con_actividad(pclases.Presupuesto,
+                                               fecha_ultima_actividad):
+            clientes.add(c.id)
+        for c in buscar_clientes_con_actividad(pclases.PedidoVenta,
+                                               fecha_ultima_actividad):
+            clientes.add(c.id)
+    res = {}
+    for cid in clientes:
+        cliente = pclases.Cliente.get(cid)
+        res[cid] = build_dic_cliente(cliente)
+        for col in cols_extra:
+            res[cid][col] = None
+    return res
+
+def buscar_clientes_con_actividad(pclase, fecha):
+    """
+    Devuelve una lista de ID de clientes con algún objeto en la tabla
+    representada por pclase posterior a la fecha indicada.
+    """
+    for o in pclase.select():
+        if o.fecha >= fecha:
+            if o.cliente:
+                yield o.cliente
+
+def build_dic_cliente(cliente):
+    """
+    Devuelve un diccionario que representa a un cliente con los nombres de
+    campo como clave y los datos del cliente como valores.
+    """
+    return cliente.sqlmeta.asDict()
 
 ## Proveedores ################################################################
 
