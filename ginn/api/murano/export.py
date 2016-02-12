@@ -546,7 +546,7 @@ def exportar_clientes():
         hoy = datetime.date.today()
         two_years_ago = datetime.date(day = hoy.day, month = hoy.month,
                                       year = hoy.year - 2)
-        listado = create_listado_inicial(cols_extra, two_years_ago)
+        listado = create_listado_inicial_clientes(cols_extra, two_years_ago)
     dump(listado, fdest, orden_campos)
 
 def build_cabecera(listado, orden_campos = []):
@@ -601,7 +601,7 @@ def parse(fdest):
     hoy = datetime.date.today()
     two_years_ago = datetime.date(day = hoy.day, month = hoy.month,
                                   year = hoy.year - 2)
-    return create_listado_inicial(cols_extra, two_years_ago)
+    return create_listado_inicial_clientes(cols_extra, two_years_ago)
 
 def update_listado(listado):
     """
@@ -615,7 +615,7 @@ def update_listado(listado):
     # TODO: De momento no hace nada.
     pass
 
-def create_listado_inicial(cols_extra, fecha_ultima_actividad = None):
+def create_listado_inicial_clientes(cols_extra, fecha_ultima_actividad = None):
     """
     Devuelve un diccionario cuyas claves son los ID de cliente y los valores
     son diccionarios con los campos y valores para cada cliente.
@@ -665,4 +665,68 @@ def build_dic_cliente(cliente):
 
 
 def exportar_proveedores():
-    raise NotImplementedError
+    """
+    Exporta los clientes con actividad en los últimos 2 años a una tabla CSV.
+    Esta tabla posteriormente se procesa para completar información.
+    Al realizar cada importación primero se trata de leer el fichero CSV,
+    se construye un nuevo volcado combinando los datos de la base de datos
+    y el CSV y se vuelve a volcar el fichero CSV.
+    """
+    fdest = "proveedores.csv"
+    # Me aseguro que el orden es siempre el mismo porque Murano es muy
+    # quisuilloso al respecto.
+    proveedor = pclases.Proveedor.select()[0]
+    cols_extra = ["cuenta contable", "sección", "departamento"]
+    orden_campos = ["id"] + [f.name for f in proveedor.sqlmeta.columnList]
+    orden_campos += cols_extra
+    if os.path.exists(fdest):
+        listado = parse(fdest)
+        update_listado(listado)
+    else:
+        hoy = datetime.date.today()
+        two_years_ago = datetime.date(day = hoy.day, month = hoy.month,
+                                      year = hoy.year - 2)
+        listado = create_listado_inicial_proveedores(cols_extra, two_years_ago)
+    dump(listado, fdest, orden_campos)
+
+def create_listado_inicial_proveedores(cols_extra,
+                                       fecha_ultima_actividad = None):
+    """
+    Devuelve un diccionario cuyas claves son los ID de proveedor y los valores
+    son diccionarios con los campos y valores para cada proveedor.
+    Agrega campos adicionales que deben ir al CSV y no están presentes en
+    la base de datos.
+    Si se especifica una fecha de última actividad se filtran los proveedores
+    e ignoran aquellos que no hayan realizado un pedido u oferta después
+    de esa fecha.
+    """
+    proveedores = set()
+    if not fecha_ultima_actividad:
+        for c in pclases.Proveedor.select():
+            proveedores.add(c.id)
+    else:
+        for c in buscar_proveedores_con_actividad(pclases.PedidoCompra,
+                                                  fecha_ultima_actividad):
+            proveedores.add(c.id)
+        for c in buscar_proveedores_con_actividad(pclases.FacturaCompra,
+                                                  fecha_ultima_actividad):
+            proveedores.add(c.id)
+    res = {}
+    for cid in proveedores:
+        proveedor = pclases.Proveedor.get(cid)
+        # Me vale la función de clientes para el diccionario del proveedor.
+        res[cid] = build_dic_cliente(proveedor)
+        for col in cols_extra:
+            res[cid][col] = None
+    return res
+
+def buscar_proveedores_con_actividad(pclase, fecha):
+    """
+    Devuelve una lista de ID de clientes con algún objeto en la tabla
+    representada por pclase posterior a la fecha indicada.
+    """
+    for o in pclase.select():
+        # Sorprendentemente hay pedidos o facturas sin fecha.
+        if o.fecha and o.fecha >= fecha:
+            if o.proveedor:
+                yield o.proveedor
