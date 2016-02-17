@@ -6,7 +6,6 @@ Operaciones.
 
 """
 # TODO: Sería interesante guardar un log de todas las consultas lanzadas y el resultado de las mismas para no depender de la salida por consola y el DEBUG.
-# TODO: Tengo que hacer un proceso para exportar productos, clientes, proveedores, etc. Porque hacerlo a mano con las guías de exportación mediante hojas de cálculo es un coñazo supino. Y tal vez así podemos poner el código de barras y el ID PK interno mío en algún sitio para después mejorar las búsquedas.
 
 import datetime
 from connection import Connection, DEBUG, VERBOSE
@@ -208,12 +207,13 @@ def buscar_codigo_producto(productoVenta):
             codarticulo = ''
     return codarticulo
 
-def buscar_codigo_almacen(almacen):
+def buscar_codigo_almacen(almacen, articulo = None):
     """
     Devuelve almacén de la empresa configurada cuyo nombre coincida con el del
     almacén de ginn recibido.
+    Si el almacén recibido es None, entonces buscará el almacén actual donde
+    dice Murano que está el artículo recibido como segundo parámetro.
     """
-    # TODO: FIXME: Tenemos un problema. Si por ejemplo recibo una bala consumida, su valor para almacén será None y dará ERROR.
     if almacen:
         c = Connection()
         filas = c.run_sql("""SELECT CodigoAlmacen
@@ -234,7 +234,11 @@ def buscar_codigo_almacen(almacen):
         if DEBUG:
             return 'CEN'
         else:
-            raise ValueError, "(EE)[A] Debe especificarse un almacén."
+            try:
+                assert articulo is not None
+                # TODO: PORASQUI: Buscar el artículo en Murano y devolver el código de almacén. Pero hay un problema. ¿En qué tabla guarda eso Murano? ¿Cómo podría saber en qué almacén está este código de artículo en concreto?
+            except AssertionError:
+                raise ValueError, "(EE)[A] Debe especificarse un almacén."
     return codalmacen
 
 def simulate_guid():
@@ -322,7 +326,7 @@ def crear_proceso_IME(conexion):
         """ % (conexion.get_database(), guid_proceso))
     return guid_proceso
 
-def prepare_params(articulo, cantidad = 1):
+def prepare_params(articulo, cantidad = 1, producto = None):
     """
     Prepara los parámetros comunes a todos los artículos con movimiento de
     serie y devuelve la conexión a la base de datos MS-SQLServer.
@@ -336,7 +340,10 @@ def prepare_params(articulo, cantidad = 1):
     periodo = today.month
     fecha = today.strftime("%Y-%m-%d %H:%M:%S")
     documento = int(today.strftime("%Y%m%d"))
-    codigo_articulo = buscar_codigo_producto(articulo.productoVenta)
+    try:
+        codigo_articulo = buscar_codigo_producto(producto)
+    except AttributeError:
+        codigo_articulo = buscar_codigo_producto(articulo.productoVenta)
     codigo_almacen = buscar_codigo_almacen(articulo.almacen)
     codigo_talla = articulo.get_str_calidad()
     grupo_talla = buscar_grupo_talla(articulo.productoVenta)
@@ -357,7 +364,7 @@ def prepare_params(articulo, cantidad = 1):
             unidades, precio, importe, unidades2, factor_conversion,
             origen_movimiento)
 
-def create_bala(bala, cantidad = 1):
+def create_bala(bala, producto = None, cantidad = 1):
     """
     Crea una bala en las tablas temporales de Murano.
     Recibe un objeto bala de ginn.
@@ -375,7 +382,7 @@ def create_bala(bala, cantidad = 1):
     (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
             codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
             unidades, precio, importe, unidades2, factor_conversion,
-            origen_movimiento) = prepare_params(articulo, cantidad)
+            origen_movimiento) = prepare_params(articulo, cantidad, producto)
     id_proceso_IME = crear_proceso_IME(c)
     sql_movstock = SQL % (database,
                           CODEMPRESA, ejercicio, periodo, fecha, documento,
@@ -401,7 +408,7 @@ def create_bala(bala, cantidad = 1):
     c.run_sql(sql_movserie)
     fire(id_proceso_IME)
 
-def create_bigabag(bigbag, cantodad = 1):
+def create_bigabag(bigbag, producto = None, cantidad = 1):
     """
     Crea un bigbag en Murano a partir de la información del bigbag en ginn.
     Si cantidad = -1 realiza un decremento en el almacén de Murano.
@@ -415,7 +422,7 @@ def create_bigabag(bigbag, cantodad = 1):
     (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
             codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
             unidades, precio, importe, unidades2, factor_conversion,
-            origen_movimiento) = prepare_params(articulo, cantidad)
+            origen_movimiento) = prepare_params(articulo, cantidad, producto)
     id_proceso_IME = crear_proceso_IME(c)
     sql_movstock = SQL % (database,
                           CODEMPRESA, ejercicio, periodo, fecha, documento,
@@ -441,7 +448,7 @@ def create_bigabag(bigbag, cantodad = 1):
     c.run_sql(sql_movserie)
     fire(id_proceso_IME)
 
-def create_rollo(rollo, cantidad = 1):
+def create_rollo(rollo, producto = None, cantidad = 1):
     """
     Crea un rollo en Murano a partir de la información del rollo en ginn.
     Si cantidad = -1 realiza un decremento en el almacén de Murano.
@@ -458,7 +465,7 @@ def create_rollo(rollo, cantidad = 1):
     (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
             codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
             unidades, precio, importe, unidades2, factor_conversion,
-            origen_movimiento) = prepare_params(articulo, cantidad)
+            origen_movimiento) = prepare_params(articulo, cantidad, producto)
     id_proceso_IME = crear_proceso_IME(c)
     sql_movstock = SQL % (database,
                           CODEMPRESA, ejercicio, periodo, fecha, documento,
@@ -485,7 +492,7 @@ def create_rollo(rollo, cantidad = 1):
     c.run_sql(sql_movserie)
     fire(id_proceso_IME)
 
-def create_caja(caja, cantidad = 1):
+def create_caja(caja, producto = None, cantidad = 1):
     """
     Crea una caja en Murano a partir de la información del objeto caja en ginn.
     Si cantidad es 1, realiza un decremento.
@@ -499,7 +506,7 @@ def create_caja(caja, cantidad = 1):
     (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
             codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
             unidades, precio, importe, unidades2, factor_conversion,
-            origen_movimiento) = prepare_params(articulo, cantidad)
+            origen_movimiento) = prepare_params(articulo, cantidad, producto)
     id_proceso_IME = crear_proceso_IME(c)
     sql_movstock = SQL % (database,
                           CODEMPRESA, ejercicio, periodo, fecha, documento,
@@ -622,35 +629,41 @@ def update_calidad(articulo, calidad):
         raise ValueError, "El parámetro calidad debe ser A, B o C."
     # DONE: [Marcos Sage] No modificamos tablas. Hacemos salida del producto A y volvemos a insertarlo como C. En ese caso no importa que se repita el código para el mismo producto porque antes hemos hecho la salida.
 
-def create_articulo(articulo, producto = None):
+def create_articulo(articulo, cantidad = 1, producto = None):
     """
     Crea un artículo nuevo en Murano con el producto recibido. Si no se
     recibe ninguno, se usa el que tenga asociado en ginn. Si se recibe un
     objeto producto, se ignora el actual del artículo, se reemplaza en ginn
     por el recibido y se da de alta así en Murano.
     """
-    if articulo.es_bala():
-        create_bala(articulo.bala)
-    elif articulo.es_balaCable():
-        create_bala(articulo.balaCable)
-    elif articulo.es_bigbag():
-        create_bigabag(articulo.bigbag)
-    elif articulo.es_caja():
-        create_caja(articulo.caja)
-    elif articulo.es_rollo():
-        create_rollo(articulo.rollo)
-    elif articulo.es_rolloC():
-        create_rollo(articulo.rolloC)
+    if cantidad < 0:
+        delta = 1
     else:
-        raise ValueError, "El artículo %s no es bala, bala de cable, bigbag,"\
-                          " caja, rollo ni rollo C." % (articulo.puid)
+        delta = -1
+    for i in range(abs(cantidad)):
+        if articulo.es_bala():
+            create_bala(articulo.bala, delta, producto)
+        elif articulo.es_balaCable():
+            create_bala(articulo.balaCable, delta, producto)
+        elif articulo.es_bigbag():
+            create_bigabag(articulo.bigbag, delta, producto)
+        elif articulo.es_caja():
+            create_caja(articulo.caja, delta, producto)
+        elif articulo.es_rollo():
+            create_rollo(articulo.rollo, delta, producto)
+        elif articulo.es_rolloC():
+            create_rollo(articulo.rolloC, delta, producto)
+        else:
+            raise ValueError, "El artículo %s no es bala, bala de cable, "\
+                              "bigbag, caja, rollo ni rollo C." % (
+                                      articulo.puid)
 
 def update_producto(articulo, producto):
     """
     Cambia el artículo recibido al producto indicado.
     """
     delete_articulo(articulo)
-    create_articulo(articulo, producto)
+    create_articulo(articulo, producto = producto)
 
 def update_stock(producto, delta, almacen):
     """
@@ -705,7 +718,7 @@ def delete_articulo(articulo):
     Elimina el artículo en Murano mediante la creación de un movimiento de
     stock negativo de ese código de producto.
     """
-    create_articulo(articulo, -1)
+    create_articulo(articulo, cantidad = -1)
 
 def consumir(productoCompra, cantidad, almacen = None, consumo = None):
     """
