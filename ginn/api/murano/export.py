@@ -7,7 +7,7 @@ Generan ficheros CSV, no importan nada directamente a Murano. Esos ficheros
 CSV sirven como fuente para las guías de importación diseñadas por Sage.
 """
 
-import sys, os, datetime
+import sys, os, datetime, csv
 ruta_ginn = os.path.abspath(os.path.join(
         os.path.dirname(__file__), "..", "..", "..", "ginn"))
 sys.path.append(ruta_ginn)
@@ -498,7 +498,6 @@ def generate_csv(columnas, filas, nombre_fichero, limpiar_cabecera = True):
     Crea un fichero CSV con las filas recibidas. La primera estará compuesta
     por los nombres de los campos (columnas).
     """
-    import csv
     fout = file(nombre_fichero, "w")
     fcsv = csv.writer(fout)
     if limpiar_cabecera:
@@ -596,24 +595,54 @@ def parse(fdest):
     Abre el fichero CSV y devuelve un diccionario de clientes con el ID como
     clave y un diccionario de campos como valores.
     """
-    # TODO: Esto es temporal hasta que lo implemente.
-    cols_extra = ["cuenta contable", "sección", "departamento"]
-    hoy = datetime.date.today()
-    two_years_ago = datetime.date(day = hoy.day, month = hoy.month,
-                                  year = hoy.year - 2)
-    return create_listado_inicial_clientes(cols_extra, two_years_ago)
+    res = {}
+    fin = open(fdest, "r")
+    reader = csv.reader(fin)
+    cabecera = None
+    for fila in reader:
+        if not cabecera:
+            cabecera = fila     # Solo la primera vez.
+        else:
+            dic_cliente = dict(zip(cabecera, fila))
+            res[dic_cliente["id"]] = dic_cliente
+    fin.close()
+    return res
 
-def update_listado(listado):
+def update_listado(listado, pclase = pclases.Cliente):
     """
     En el propio diccionario de clientes recibido actualiza los valores
     según los actuales de los clientes de la base de datos. Si algún
-    cliente no está presente en el diccionario, lo incluye **aunque no haya
-    tenido actividad según el criterio con que se construye la lista inicial**.
+    cliente no está presente en el diccionario, pero se ha creado con
+    posterioridad, lo incluye **aunque no haya tenido actividad según el 
+    criterio con que se construye la lista inicial**.
     Estos nuevos clientes puede que sean tan nuevos que ni siquiera ha
     dado tiempo a que hagan un pedido, por eso se incluyen.
+    Para ver si un cliente es nuevo, se mira su ID. Debe ser posterior al
+    mayor del diccionario.
     """
-    # TODO: De momento no hace nada.
-    pass
+    if listado:     # Si no hay listado previo...
+        ultimo_id_csv = max([int(cid) for cid in listado.keys()])
+        nuevos = pclase.select(pclase.q.id > ultimo_id_csv)
+        # Respeto los campos del CSV actual, que ya están en uno (cualquiera)
+        # de los objetos (clientes/proveedores) del diccionario.
+        campos = listado[listado.keys()[0]].keys()
+        # Repaso los existentes
+        for cid in listado:
+            objeto = pclase.get(cid)
+            for campo in campos:
+                valor_db = getattr(objeto, campo, None)
+                valor_csv = listado[cid][campo]
+                # Sobreescribo el valor del Excel de contabilidad solo si el
+                # valor de la base de datos no es nulo. Asumo que la BD siempre
+                # está más actualizada excepto en los campos nuevos adicionales
+                # de cuenta contable y demás. (CWT)
+                if valor_db != valor_csv and valor_db:
+                    listado[cid][campo] = valor_db
+        # Y agrego los nuevos
+        for nuevo in nuevos:
+            listado[nuevo.id] = {}
+            for campo in campos:
+                listado[nuevo.id][campo] = getattr(objeto, campo, None)
 
 def create_listado_inicial_clientes(cols_extra, fecha_ultima_actividad = None):
     """
