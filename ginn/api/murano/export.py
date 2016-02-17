@@ -508,6 +508,28 @@ def generate_csv(columnas, filas, nombre_fichero, limpiar_cabecera = True):
     fcsv.writerows(filas)
     fout.close()
 
+def filtro_comercializados(descripcion):
+    """
+    Devuelve True si es alguno de los productos que estaban en la familia
+    de Mercancía Inicial de Valdemoro (deprecated) y corresponden en realidad a
+    comercializados.
+    """
+    if descripcion in ("COMPO-PET-120 (100X2,20) (CT)",
+                       "COMPO-PET-300 (100X2,20) (CT)"
+                       "COMPOFOL / GUTTA P8 NEGRO (30X2) M2.",
+                       "COMPOFOL PAC 4,3X200",
+                       "COMPO-PET-200 (140X2,20) (CT)",
+                       "COMPOGRID 200/40 (4,4x 100) m2",
+                       "COMPOGRID 200/40 (4,4x 100) m2",
+                       "COMPOCORE 8 MM (1,05 X20) M2",
+                       "COMPOFOL / GUTTA P8 NEGRO (30X2) M2.",
+                       "COMPOFOL PAC 2,2X32 (M2) (CT)",
+                       "COMPOGRID 110/30 (3,90X100) M2",
+                       "ROADRAIN 800/160 R (48ML) ML"):
+        return True
+    else:
+        return False
+
 def post_process(columnas, _filas):
     """
     Recorre toda la tabla y la limpia de valores que no interesa volcar.
@@ -517,8 +539,12 @@ def post_process(columnas, _filas):
     for fila in _filas:
         dict_fila = dict(zip(columnas, fila))
         if dict_fila['tipoDeMaterial.descripcion'] == "MIV":
-            # TODO: PORASQUI: Ignoro esa familia. Pero, ¿qué pasa con los productos de esa familia que sí tienen existencias? Dice Nicolás que los reclasifique según el criterio arbitrario que me puso en el correo del 20-ene-2016; pero eso tendría que ir hard-coded.
-            continue
+            if filtro_comercializados(dict_fila["descripcion"]):
+                # Los paso a la familia que realmente le corresponde.
+                dict_fila['tipoDeMaterial.descripcion'] = "COM"
+                fila[columnas.index("tipoDeMaterial.descripcion")] = "COM"
+            else:
+                continue    # Ignoro familia Mercancía Inicial de Valdemoro
         filas.append(fila)
     return columnas, filas
 
