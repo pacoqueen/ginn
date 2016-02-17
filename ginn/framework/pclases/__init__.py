@@ -2879,7 +2879,7 @@ class VencimientoCobro(SQLObject, PRPCTOO):
         except AttributeError:
             res = None
         if not res:
-            res = selfvto.facturaVenta.cliente.get_documentoDePago()
+            res = self.facturaVenta.cliente.get_documentoDePago()
         return res
 
 
