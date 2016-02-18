@@ -20,9 +20,8 @@ createdb -E UTF8 -O geotexan dev_ginn "Copia de ginn para desarrollo y pruebas" 
 echo "Copia completada"
 
 # Y actualizo también la del servidor de pruebas:
-# 20/12/2012: Estoy probando el módulo de tesorería y no quiero perder los datos que voy metiendo para testear las funcionalidades.
-#echo "Creando réplica dev_ginn en pennyworth (pruebas)..."
-#dropdb -U geotexan -h pennyworth.geotexan.es dev_ginn
-#createdb -E UTF8 -O geotexan -U geotexan -h pennyworth.geotexan.es dev_ginn "Copia de ginn para desarrollo y pruebas" && pg_restore -U geotexan -h pennyworth.geotexan.es -d dev_ginn $FDEST
-#echo "Copia completada"
+echo "Creando réplica dev_ginn en pennyworth (pruebas)..."
+dropdb -U geotexan -h pennyworth.geotexan.es dev_ginn
+createdb -E UTF8 -O geotexan -U geotexan -h pennyworth.geotexan.es dev_ginn "Copia de ginn para desarrollo y pruebas" && pg_restore -U geotexan -h pennyworth.geotexan.es -d dev_ginn $FDEST
+echo "Réplica completada"
 
