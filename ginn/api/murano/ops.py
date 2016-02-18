@@ -236,9 +236,10 @@ def buscar_codigo_almacen(almacen, articulo = None):
         else:
             try:
                 assert articulo is not None
-                # TODO: PORASQUI: Buscar el artículo en Murano y devolver el código de almacén. Pero hay un problema. ¿En qué tabla guarda eso Murano? ¿Cómo podría saber en qué almacén está este código de artículo en concreto?
+                codalmacen = get_codalmacen_articulo(articulo)
             except AssertionError:
-                raise ValueError, "(EE)[A] Debe especificarse un almacén."
+                raise ValueError, "(EE)[A] Debe especificarse un almacén "\
+                                  "o un artículo."
     return codalmacen
 
 def simulate_guid():
@@ -313,6 +314,24 @@ def get_mov_posicion(conexion, codigo_articulo):
         else:
             mov_posicion = simulate_guid()
     return mov_posicion
+
+def get_codalmacen_articulo(articulo):
+    """
+    Busca el último movimiento de stock del artículo y devuelve el código
+    de almacén si es un movimiento de entrada o la cadena vacía si es de
+    salida.
+    """
+    codigo_articulo = articulo.codigo
+    SQL = r"""SELECT TOP 1 CodigoAlmacen
+              FROM [%s].[dbo].[MovimientoArticuloSerie]
+              WHERE NumeroSerieLc = '%s' AND CodigoEmpresa = '%d'
+              ORDER BY Fecha DESC;""" % (conexion.get_database(),
+                                         codigo_articulo, 
+                                         CODEMPRESA)
+    calmacen = conexion.run_sql(SQL)
+    if codalmacen is None:
+        codalmacen = ""
+    return codalmacen
 
 def crear_proceso_IME(conexion):
     """
