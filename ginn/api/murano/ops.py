@@ -364,7 +364,7 @@ def prepare_params(articulo, cantidad = 1, producto = None):
         codigo_articulo = buscar_codigo_producto(producto)
     except AttributeError:
         codigo_articulo = buscar_codigo_producto(articulo.productoVenta)
-    codigo_almacen = buscar_codigo_almacen(articulo.almacen)
+    codigo_almacen = buscar_codigo_almacen(articulo.almacen, articulo)
     codigo_talla = articulo.get_str_calidad()
     grupo_talla = buscar_grupo_talla(articulo.productoVenta)
     if cantidad == 1:
