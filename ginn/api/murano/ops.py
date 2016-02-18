@@ -329,7 +329,7 @@ def get_codalmacen_articulo(conexion, articulo):
               ORDER BY Fecha DESC;""" % (conexion.get_database(),
                                          codigo_articulo, 
                                          CODEMPRESA)
-    calmacen = conexion.run_sql(SQL)
+    codalmacen = conexion.run_sql(SQL)
     if codalmacen is None:
         codalmacen = ""
     return codalmacen
