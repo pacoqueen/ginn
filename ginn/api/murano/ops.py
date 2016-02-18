@@ -384,7 +384,7 @@ def prepare_params(articulo, cantidad = 1, producto = None):
             unidades, precio, importe, unidades2, factor_conversion,
             origen_movimiento)
 
-def create_bala(bala, producto = None, cantidad = 1):
+def create_bala(bala, cantidad = 1, producto = None):
     """
     Crea una bala en las tablas temporales de Murano.
     Recibe un objeto bala de ginn.
@@ -428,7 +428,7 @@ def create_bala(bala, producto = None, cantidad = 1):
     c.run_sql(sql_movserie)
     fire(id_proceso_IME)
 
-def create_bigabag(bigbag, producto = None, cantidad = 1):
+def create_bigabag(bigbag, cantidad = 1, producto = None):
     """
     Crea un bigbag en Murano a partir de la información del bigbag en ginn.
     Si cantidad = -1 realiza un decremento en el almacén de Murano.
@@ -468,7 +468,7 @@ def create_bigabag(bigbag, producto = None, cantidad = 1):
     c.run_sql(sql_movserie)
     fire(id_proceso_IME)
 
-def create_rollo(rollo, producto = None, cantidad = 1):
+def create_rollo(rollo, cantidad = 1, producto = None):
     """
     Crea un rollo en Murano a partir de la información del rollo en ginn.
     Si cantidad = -1 realiza un decremento en el almacén de Murano.
@@ -512,7 +512,7 @@ def create_rollo(rollo, producto = None, cantidad = 1):
     c.run_sql(sql_movserie)
     fire(id_proceso_IME)
 
-def create_caja(caja, producto = None, cantidad = 1):
+def create_caja(caja, cantidad = 1, producto = None):
     """
     Crea una caja en Murano a partir de la información del objeto caja en ginn.
     Si cantidad es 1, realiza un decremento.
@@ -553,7 +553,7 @@ def create_caja(caja, producto = None, cantidad = 1):
     c.run_sql(sql_movserie)
     fire(id_proceso_IME)
 
-def create_pale(pale, cantidad = 1):
+def create_pale(pale, cantidad = 1, producto = None):
     """
     Crea un palé con todas sus cajas en Murano a partir del palé de ginn.
     Si cantidad es -1 saca el palé del almacén.
@@ -563,7 +563,7 @@ def create_pale(pale, cantidad = 1):
     # serie para eso.
     for caja in pale.cajas:
         # TODO: Check que compruebe si la caja ya existía para no duplicarlas.
-        create_caja(caja, cantidad)
+        create_caja(caja, cantidad = cantidad, producto = producto)
     fire(id_proceso_IME)
 
 def consulta_proveedor(nombre = None, cif = None):
