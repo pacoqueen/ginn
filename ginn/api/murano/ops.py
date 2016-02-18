@@ -214,8 +214,8 @@ def buscar_codigo_almacen(almacen, articulo = None):
     Si el almacén recibido es None, entonces buscará el almacén actual donde
     dice Murano que está el artículo recibido como segundo parámetro.
     """
+    c = Connection()
     if almacen:
-        c = Connection()
         filas = c.run_sql("""SELECT CodigoAlmacen
             FROM %s.dbo.Almacenes
             WHERE CodigoEmpresa = %d AND Almacen = '%s'
@@ -237,7 +237,7 @@ def buscar_codigo_almacen(almacen, articulo = None):
         else:
             try:
                 assert articulo is not None
-                codalmacen = get_codalmacen_articulo(articulo)
+                codalmacen = get_codalmacen_articulo(c, articulo)
             except AssertionError:
                 raise ValueError, "(EE)[A] Debe especificarse un almacén "\
                                   "o un artículo."
@@ -316,7 +316,7 @@ def get_mov_posicion(conexion, codigo_articulo):
             mov_posicion = simulate_guid()
     return mov_posicion
 
-def get_codalmacen_articulo(articulo):
+def get_codalmacen_articulo(conexion, articulo):
     """
     Busca el último movimiento de stock del artículo y devuelve el código
     de almacén si es un movimiento de entrada o la cadena vacía si es de
