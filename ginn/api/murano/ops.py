@@ -225,7 +225,8 @@ def buscar_codigo_almacen(almacen, articulo = None):
         try:
             codalmacen = filas[0]['CodigoAlmacen']
         except Exception, e:
-            print "(EE)[A]", almacen.nombre, "no se encuentra en Murano."
+            print "(EE)[A] Almacén '", almacen.nombre, "'no se encuentra"\
+                  " en Murano."
             if not DEBUG:
                 raise e
             else:
@@ -286,12 +287,12 @@ def buscar_factor_conversion(producto):
         factor_conversion = 1 
     return factor_conversion
 
-def genera_guid():
+def genera_guid(conexion):
     """
     Devuelve un GUID de SQLServer o simula uno en modo depuración.
     """
     try:
-        guid = c.run_sql("SELECT NEWID() AS guid;")[0]['guid']
+        guid = conexion.run_sql("SELECT NEWID() AS guid;")[0]['guid']
     except Exception, e:
         if not DEBUG:
             raise e
@@ -337,7 +338,7 @@ def crear_proceso_IME(conexion):
     """
     Crea un proceso de importación con guid único.
     """
-    guid_proceso = genera_guid()
+    guid_proceso = genera_guid(conexion)
     conexion.run_sql(r"""
         INSERT INTO %s.dbo.Iniciador_tmpIME(IdProcesoIME, EstadoIME, sysUsuario,
                                      sysUserName, Descripcion, TipoImportacion)
