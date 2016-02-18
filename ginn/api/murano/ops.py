@@ -225,8 +225,8 @@ def buscar_codigo_almacen(almacen, articulo = None):
         try:
             codalmacen = filas[0]['CodigoAlmacen']
         except Exception, e:
-            print "(EE)[A] Almacén '", almacen.nombre, "'no se encuentra"\
-                  " en Murano."
+            print "(EE)[A] Almacén '%s'no se encuentra en Murano." % (
+                    almacen.nombre)
             if not DEBUG:
                 raise e
             else:
@@ -782,7 +782,7 @@ def fire(guid_proceso):
     retCode = None
     operacion = "ImportaIME"
     retCode = burano.EjecutaOEM("LCCImExP.LcImExProceso", operacion,
-                                guid_proceso, 1, 1, 0)
+                                str(guid_proceso), 1, 1, 0)
     # 1 = No borrar registros IME al finalizar.
     # 1 = No borrar registros con errores ni siquiera cuando el primer 
     # parámetro esté a 0.
