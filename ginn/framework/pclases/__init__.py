@@ -20331,7 +20331,9 @@ class Estadistica(SQLObject, PRPCTOO):
                     st.veces += s.veces
                     s.destroySelf()
             st = st[0]
-        st.ultimaVez = mx.DateTime.localtime()
+        # Esto peta con algunas versiones de SQLObject y MX en WinXP
+        #st.ultimaVez = mx.DateTime.localtime()
+        st.ultimaVez = datetime.date.today()
         st.veces += 1
         st.sync()
 
