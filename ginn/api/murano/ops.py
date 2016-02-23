@@ -647,7 +647,9 @@ def update_calidad(articulo, calidad):
     # TODO: Ojo porque si cambio a calidad C probablemente implique un cambio de producto.
     if calidad not in "aAbBcC":
         raise ValueError, "El parámetro calidad debe ser A, B o C."
-    # DONE: [Marcos Sage] No modificamos tablas. Hacemos salida del producto A y volvemos a insertarlo como C. En ese caso no importa que se repita el código para el mismo producto porque antes hemos hecho la salida.
+    # DONE: [Marcos Sage] No modificamos tablas. Hacemos salida del producto A
+    # y volvemos a insertarlo como C. En ese caso no importa que se repita el 
+    # código para el mismo producto porque antes hemos hecho la salida.
 
 def create_articulo(articulo, cantidad = 1, producto = None):
     """
