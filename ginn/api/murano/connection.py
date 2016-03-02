@@ -10,7 +10,7 @@ import pymssql
 import inspect
 
 DEBUG = True
-#DEBUG = False
+DEBUG = False
 VERBOSE = True
 
 class Connection:
@@ -97,30 +97,44 @@ class Connection:
         for sentence_sql in sql:
             logging.debug(sentence_sql)
             if DEBUG:
-                print " ==> SQLServer -->", str_clean(sentence_sql)
+                strlog = " ==> SQLServer --> %s" % (str_clean(sentence_sql))
+                print strlog
+                logging.info(strlog)
             if self.conn:   # En modo DEBUG esto es None.
                 try:
                     if VERBOSE:
-                        print "Lanzando consulta %s..." % (
-                                sentence_sql.split()[0]),
+                        strlog = "Lanzando consulta %s..." % (
+                                sentence_sql.split()[0])
+                        print strlog
+                        logging.info(strlog)
                     res = c.execute(sentence_sql)
                     if "SELECT" in sentence_sql:
                         if VERBOSE:
-                            print "· fetchall...",
+                            strlog = "    · fetchall..."
+                            print strlog
+                            logging.info(strlog)
                         res = c.fetchall()
                         if VERBOSE:
-                            print "[OK]"
+                            strlog = "    [OK]"
+                            print strlog
+                            logging.info(strlog)
                     else:
                         if VERBOSE:
-                            print "· commit...",
+                            strlog = "    · commit...",
+                            print strlog
+                            logging.info(strlog)
                         self.conn.commit()
                         if VERBOSE:
-                            print "[OK]"
+                            strlog = "    [OK]"
+                            print strlog
+                            logging.info(strlog)
                 except Exception, e:
                     if not DEBUG:
                         raise e
                     else:
-                        print " -- (!) [Excepción %s]" % e
+                        strerror = " -- (!) [Excepción %s]" % e
+                        print strerror
+                        logging.error(strerror)
         return res
 
 def str_clean(s):
