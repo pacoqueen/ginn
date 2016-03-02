@@ -714,6 +714,7 @@ def update_stock(producto, delta, almacen):
     if delta >= 0:
         tipo_movimiento = 1     # 1 = entrada, 2 = salida.
     else:
+        delta = abs(delta)
         tipo_movimiento = 2
     unidades = delta    # En dimensión base del producto.
     precio = producto.precioDefecto # TODO: Hasta que se defina bien el precio coste del producto en el momento de ser consumido
