@@ -563,6 +563,7 @@ def exportar_clientes():
     cliente = pclases.Cliente.select()[0]
     cols_extra = ["cuenta contable", "sección", "departamento"]
     orden_campos = ["id"] + [f.name for f in cliente.sqlmeta.columnList]
+# TODO: PORASQUI: El orden y los campos hay que sacarlos del Excel modelo de Sage
     orden_campos += cols_extra
     if os.path.exists(fdest):
         listado = parse(fdest)
@@ -717,8 +718,6 @@ def build_dic_cliente(cliente):
     return cliente.sqlmeta.asDict()
 
 ## Proveedores ################################################################
-
-
 def exportar_proveedores():
     """
     Exporta los clientes con actividad en los últimos 2 años a una tabla CSV.
