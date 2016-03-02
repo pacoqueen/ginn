@@ -6,7 +6,6 @@ Operaciones.
 
 """
 # TODO: Sería interesante guardar un log de todas las consultas lanzadas y el resultado de las mismas para no depender de la salida por consola y el DEBUG.
-
 import datetime
 from connection import Connection, DEBUG, VERBOSE
 
@@ -428,7 +427,7 @@ def create_bala(bala, cantidad = 1, producto = None):
     c.run_sql(sql_movserie)
     fire(id_proceso_IME)
 
-def create_bigabag(bigbag, cantidad = 1, producto = None):
+def create_bigbag(bigbag, cantidad = 1, producto = None):
     """
     Crea un bigbag en Murano a partir de la información del bigbag en ginn.
     Si cantidad = -1 realiza un decremento en el almacén de Murano.
@@ -629,6 +628,9 @@ def consultar_producto(nombre = None):
         where = r"Descripcion2Articulo = '%s';" % (nombre)
         sql += where
         res = c.run_sql(sql)
+    except TypeError:   # res es None. Error con la base de datos
+        if DEBUG:
+            res = []
     if DEBUG:
         try:
             assert len(res) == 1

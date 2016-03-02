@@ -68,3 +68,4 @@ CVS/*
 # Datos de exportaciones a Murano
 ginn/api/tests/*.csv
 ginn/api/tests/*.xls
+ginn/api/tests/*.log

@@ -2,11 +2,15 @@
 # -*- coding: utf-8 -*-
 
 import os
+import logging
+logging.basicConfig(filename = "%s.log" % (
+    ".".join(os.path.basename(__file__).split(".")[:-1])),
+    level = logging.DEBUG)
 import pymssql
 import inspect
 
 DEBUG = True
-DEBUG = False
+#DEBUG = False
 VERBOSE = True
 
 class Connection:
@@ -91,9 +95,10 @@ class Connection:
             if not DEBUG:
                 raise e
         for sentence_sql in sql:
+            logging.debug(sentence_sql)
             if DEBUG:
                 print " ==> SQLServer -->", str_clean(sentence_sql)
-            if self.conn:
+            if self.conn:   # En modo DEBUG esto es None.
                 try:
                     if VERBOSE:
                         print "Lanzando consulta %s..." % (

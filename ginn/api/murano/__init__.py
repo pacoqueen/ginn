@@ -44,7 +44,9 @@ pymssql, pywin32
 """
 
 from ops import create_bala, create_rollo, consumir, delete_articulo
+from ops import create_pale, create_bigbag
 from export import exportar_productos, exportar_clientes, exportar_proveedores
 __all__ = ["create_bala", "create_rollo", "consumir", "delete_articulo",
-           "exportar_productos", "exportar_clientes", "exportar_proveedores"]
+           "exportar_productos", "exportar_clientes", "exportar_proveedores",
+           "create_bigbag", "create_pale"]
 
