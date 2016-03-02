@@ -40,7 +40,7 @@ def main():
     balas = pclases.Bala.select(orderBy = "-id")[:100]
     for bala in balas:
         prueba_bala(bala.codigo)
-    rollos = pclases.Rollo.select(oderBy = "-id")[:100]
+    rollos = pclases.Rollo.select(orderBy = "-id")[:100]
     for rollo in rollos:
         prueba_rollo(rollo.codigo)
 
