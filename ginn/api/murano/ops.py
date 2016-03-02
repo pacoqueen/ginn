@@ -5,7 +5,7 @@
 Operaciones.
 
 """
-# TODO: Sería interesante guardar un log de todas las consultas lanzadas y el resultado de las mismas para no depender de la salida por consola y el DEBUG.
+# TODO: Sería interesante guardar un log de todas las consultas lanzadas y el resultado de las mismas para no depender de la salida por consola y el DEBUG. Ya tengo un logging en ops, así que usarlo aquí.
 import datetime
 from connection import Connection, DEBUG, VERBOSE
 
@@ -197,7 +197,7 @@ def buscar_codigo_producto(productoVenta):
     res = consultar_producto(productoVenta.descripcion)
     try:
         codarticulo = res[0]['CodigoArticulo']
-    except TypeError, e:
+    except (IndexError, TypeError), e:
         # TODO: Ver cómo tratar los errores de cuando el producto no existe en Murano. ¿Se puede dar el caso? Todos se darán de alta en Murano y se buscarán ahí cuando se creen los artículos en los partes de producción. Debería exisitir. **Pero se podría dar el caso de que el nombre haya cambiado.**
         print "(EE)[C]", productoVenta.descripcion, "no se encuentra en Murano."
         if not DEBUG:
@@ -614,6 +614,7 @@ def consultar_producto(nombre = None):
     Devuelve una lista de productos coincidentes.
     """
     # TODO: Permitir la búsqueda por código EAN.
+    # TODO: PORASQUI: Y por el código PV|PC+id, que sí está en Murano y se ha elegido como código único de producto allí. Debería ser la primera opción, antes que por descripción, de hecho.
     c = Connection()
     try:
         sql = "SELECT * FROM %s.dbo.Articulos WHERE " % (c.get_database())
