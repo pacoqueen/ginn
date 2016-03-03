@@ -115,17 +115,17 @@ class Connection:
                             logging.info(strlog)
                         res = c.fetchall()
                         if VERBOSE:
-                            strlog = "    [OK]"
+                            strlog = "        [OK]"
                             print strlog
                             logging.info(strlog)
                     else:
                         if VERBOSE:
-                            strlog = "    · commit...",
+                            strlog = "    · commit..."
                             print strlog
                             logging.info(strlog)
                         self.conn.commit()
                         if VERBOSE:
-                            strlog = "    [OK]"
+                            strlog = "        [OK]"
                             print strlog
                             logging.info(strlog)
                 except Exception, e:

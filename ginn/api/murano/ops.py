@@ -5,7 +5,10 @@
 Operaciones.
 
 """
-# TODO: Sería interesante guardar un log de todas las consultas lanzadas y el resultado de las mismas para no depender de la salida por consola y el DEBUG. Ya tengo un logging en ops, así que usarlo aquí.
+import logging
+logging.basicConfig(filename = "%s.log" % (
+    ".".join(os.path.basename(__file__).split(".")[:-1])),
+    level = logging.DEBUG)
 import datetime
 from connection import Connection, DEBUG, VERBOSE
 
@@ -178,11 +181,15 @@ def buscar_grupo_talla(productoVenta):
     """
     # Hemos varios grupos de talla: 1 para A, B y C, 2 para A, B (sin C), etc.
     grupo_talla = 0     # Sin grupo de talla
-    res = consultar_producto(productoVenta.descripcion)
+    #res = consultar_producto(nombre = productoVenta.descripcion)
+    res = consultar_producto(productoVenta)
     try:
         grupo_talla = res[0]['GrupoTalla_']
     except TypeError, e:
-        print "(EE)[T]", productoVenta.descripcion, "no se encuentra en Murano."
+        strlog = "(EE)[T] %s no se encuentra en Murano." % (
+                productoVenta.descripcion)
+        print strlog
+        logging.error(strlog)
         if not DEBUG:
             raise e
         else:
@@ -194,12 +201,15 @@ def buscar_codigo_producto(productoVenta):
     Busca el ID del producto en Murano para la descripción del producto
     recibido.
     """
-    res = consultar_producto(productoVenta.descripcion)
+    res = consultar_producto(nombre = productoVenta.descripcion)
     try:
         codarticulo = res[0]['CodigoArticulo']
     except (IndexError, TypeError), e:
         # TODO: Ver cómo tratar los errores de cuando el producto no existe en Murano. ¿Se puede dar el caso? Todos se darán de alta en Murano y se buscarán ahí cuando se creen los artículos en los partes de producción. Debería exisitir. **Pero se podría dar el caso de que el nombre haya cambiado.**
-        print "(EE)[C]", productoVenta.descripcion, "no se encuentra en Murano."
+        strlog = "(EE)[C] %s no se encuentra en Murano." % (
+                productoVenta.descripcion)
+        print strlog
+        logging.error(strlog)
         if not DEBUG:
             raise e
         else:
@@ -224,8 +234,10 @@ def buscar_codigo_almacen(almacen, articulo = None):
         try:
             codalmacen = filas[0]['CodigoAlmacen']
         except Exception, e:
-            print "(EE)[A] Almacén '%s'no se encuentra en Murano." % (
+            strlog = "(EE)[A] Almacén '%s' no se encuentra en Murano." % (
                     almacen.nombre)
+            print strlog
+            logging.error(strlog)
             if not DEBUG:
                 raise e
             else:
@@ -247,7 +259,9 @@ def simulate_guid():
     Genera un código aleatorio similar al generado por MSSQLServer.
     """
     if VERBOSE:
-        print "Simulando guid...",
+        strlog = "Simulando guid..."
+        print strlog
+        logging.info(strlog)
     import random
     grupos = 8, 4, 4, 4, 12
     subgrupos = []
@@ -259,7 +273,9 @@ def simulate_guid():
         subgrupos.append(subgrupo)
     guid = "-".join(subgrupos)
     if VERBOSE:
-        print guid
+        strlog = guid
+        print strlog
+        logging.info(strlog)
     return guid
 
 def buscar_factor_conversion(producto):
@@ -608,30 +624,42 @@ def consulta_cliente(nombre = None, cif = None):
     res = c.run_sql(sql)
     return res
 
-def consultar_producto(nombre = None):
+def consultar_producto(producto, nombre = None):
     """
-    Busca un producto por nombre.
+    Busca un producto por nombre, si se especifica el parámetro.
+    En otro caso, busca por el código `[PC|PV]id`. Se debe recibir el objeto
+    producto de pclases.
     Devuelve una lista de productos coincidentes.
     """
     # TODO: Permitir la búsqueda por código EAN.
-    # TODO: PORASQUI: Y por el código PV|PC+id, que sí está en Murano y se ha elegido como código único de producto allí. Debería ser la primera opción, antes que por descripción, de hecho.
     c = Connection()
-    try:
+    if nombre:
+        try:
+            sql = "SELECT * FROM %s.dbo.Articulos WHERE " % (c.get_database())
+            where = r"DescripcionArticulo = '%s';" % (nombre)
+            sql += where
+            res = c.run_sql(sql)
+            # Busco por descripción, y si no lo encuentro, busco por la
+            # descripción ampliada. Por eso hago esta asignación:
+            record = res[0]
+        except IndexError:
+            sql = "SELECT * FROM %s.dbo.Articulos WHERE " % (c.get_database())
+            where = r"Descripcion2Articulo = '%s';" % (nombre)
+            sql += where
+            res = c.run_sql(sql)
+        except TypeError:   # res es None. Error con la base de datos
+            if DEBUG:
+                res = []
+    else:   # Busco por el código de Murano: PC|PV + ID
+        if isinstance(producto, pclases.ProductoVenta):
+            idmurano = "PV"
+        else:
+            idmurano = "PC"
+        idmurano += str(producto.id)
         sql = "SELECT * FROM %s.dbo.Articulos WHERE " % (c.get_database())
-        where = r"DescripcionArticulo = '%s';" % (nombre)
+        where = r"CodigoArticulo = '%s';" % (idmurano)
         sql += where
         res = c.run_sql(sql)
-        # Busco por descripción, y si no lo encuentro, busco por la
-        # descripción ampliada. Por eso hago esta asignación:
-        record = res[0]
-    except IndexError:
-        sql = "SELECT * FROM %s.dbo.Articulos WHERE " % (c.get_database())
-        where = r"Descripcion2Articulo = '%s';" % (nombre)
-        sql += where
-        res = c.run_sql(sql)
-    except TypeError:   # res es None. Error con la base de datos
-        if DEBUG:
-            res = []
     if DEBUG:
         try:
             assert len(res) == 1
