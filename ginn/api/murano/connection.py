@@ -115,7 +115,7 @@ class Connection:
                             logging.info(strlog)
                         res = c.fetchall()
                         if VERBOSE:
-                            strlog = "        [OK]"
+                            strlog = "                [OK]"
                             print strlog
                             logging.info(strlog)
                     else:
@@ -125,11 +125,12 @@ class Connection:
                             logging.info(strlog)
                         self.conn.commit()
                         if VERBOSE:
-                            strlog = "        [OK]"
+                            strlog = "                [OK]"
                             print strlog
                             logging.info(strlog)
                 except Exception, e:
                     if not DEBUG:
+                        logging.critical(e)
                         raise e
                     else:
                         strerror = " -- (!) [Excepción %s]" % e

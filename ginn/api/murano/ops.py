@@ -172,7 +172,7 @@ SQL_SERIE = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoSerie](
                 %f,     -- peso bruto
                 %f,     -- peso neto
                 %s,     -- metros cuadrados
-                %s      -- código de palé
+                '%s'      -- código de palé
                );"""
 
 def buscar_grupo_talla(productoVenta):
@@ -440,7 +440,7 @@ def create_bala(bala, cantidad = 1, producto = None):
                                 unidad_medida, comentario, id_proceso_IME,
                                 articulo.peso, articulo.peso_sin,
                                 0.0, # Metros cuadrados. Decimal NOT NULL
-                                "''"   # Código palé. Varchar NOT NULL
+                                ""   # Código palé. Varchar NOT NULL
                                )
     c.run_sql(sql_movserie)
     fire(id_proceso_IME)
@@ -480,7 +480,7 @@ def create_bigbag(bigbag, cantidad = 1, producto = None):
                                 unidad_medida, comentario, id_proceso_IME,
                                 articulo.peso, articulo.peso_sin,
                                 0.0, # Metros cuadrados. Decimal NOT NULL
-                                "''"   # Código palé. Varchar NOT NULL
+                                ""   # Código palé. Varchar NOT NULL
                                )
     c.run_sql(sql_movserie)
     fire(id_proceso_IME)
@@ -524,7 +524,7 @@ def create_rollo(rollo, cantidad = 1, producto = None):
                                 articulo.peso, articulo.peso_sin,
                                 articulo.get_superficie(), 
                                        # Metros cuadrados. Decimal NOT NULL
-                                "''"   # Código palé. Varchar NOT NULL
+                                ""   # Código palé. Varchar NOT NULL
                                )
     c.run_sql(sql_movserie)
     fire(id_proceso_IME)
@@ -564,7 +564,7 @@ def create_caja(caja, cantidad = 1, producto = None):
                                 unidad_medida, comentario, id_proceso_IME,
                                 articulo.peso, articulo.peso_sin,
                                 0.0,   # Metros cuadrados. Decimal NOT NULL
-                                caja.pale and caja.pale.codigo or "''"
+                                caja.pale and caja.pale.codigo or ""
                                        # Código palé. Varchar NOT NULL
                                )
     c.run_sql(sql_movserie)
