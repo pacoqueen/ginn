@@ -625,13 +625,14 @@ def consulta_cliente(nombre = None, cif = None):
     res = c.run_sql(sql)
     return res
 
-def consultar_producto(producto, nombre = None):
+def consultar_producto(producto = None, nombre = None):
     """
     Busca un producto por nombre, si se especifica el parámetro.
     En otro caso, busca por el código `[PC|PV]id`. Se debe recibir el objeto
     producto de pclases.
     Devuelve una lista de productos coincidentes.
     """
+    assert(not (producto == nombre == None))
     # TODO: Permitir la búsqueda por código EAN.
     c = Connection()
     if nombre:
