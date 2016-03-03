@@ -581,7 +581,9 @@ def create_pale(pale, cantidad = 1, producto = None):
     for caja in pale.cajas:
         # TODO: Check que compruebe si la caja ya existía para no duplicarlas.
         create_caja(caja, cantidad = cantidad, producto = producto)
-    fire(id_proceso_IME)
+    # No es necesario. Cada caja lanza su proceso y el palé no crea
+    # registros en la base de datos. No hay que lanzar ninún proceso adicional.
+    #fire(id_proceso_IME)
 
 def consulta_proveedor(nombre = None, cif = None):
     """
@@ -678,12 +680,12 @@ def update_calidad(articulo, calidad):
     """
     Cambia la calidad del artículo en Murano a la recibida. Debe ser A, B o C.
     """
-    # TODO: Ojo porque si cambio a calidad C probablemente implique un cambio de producto.
     if calidad not in "aAbBcC":
         raise ValueError, "El parámetro calidad debe ser A, B o C."
     # DONE: [Marcos Sage] No modificamos tablas. Hacemos salida del producto A
     # y volvemos a insertarlo como C. En ese caso no importa que se repita el 
     # código para el mismo producto porque antes hemos hecho la salida.
+    # TODO: Ojo porque si cambio a calidad C probablemente implique un cambio de producto.
 
 def create_articulo(articulo, cantidad = 1, producto = None):
     """
