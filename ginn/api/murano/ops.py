@@ -377,9 +377,9 @@ def prepare_params(articulo, cantidad = 1, producto = None):
     periodo = today.month
     fecha = today.strftime("%Y-%m-%d %H:%M:%S")
     documento = int(today.strftime("%Y%m%d"))
-    try:
+    if producto:
         codigo_articulo = buscar_codigo_producto(producto)
-    except AttributeError:
+    else:
         codigo_articulo = buscar_codigo_producto(articulo.productoVenta)
     codigo_almacen = buscar_codigo_almacen(articulo.almacen, articulo)
     codigo_talla = articulo.get_str_calidad()
