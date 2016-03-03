@@ -202,7 +202,8 @@ def buscar_codigo_producto(productoVenta):
     Busca el ID del producto en Murano para la descripción del producto
     recibido.
     """
-    res = consultar_producto(nombre = productoVenta.descripcion)
+    #res = consultar_producto(nombre = productoVenta.descripcion)
+    res = consultar_producto(producto = productoVenta)
     try:
         codarticulo = res[0]['CodigoArticulo']
     except (IndexError, TypeError), e:
