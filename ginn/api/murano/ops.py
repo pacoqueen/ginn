@@ -5,6 +5,7 @@
 Operaciones.
 
 """
+import os
 import logging
 logging.basicConfig(filename = "%s.log" % (
     ".".join(os.path.basename(__file__).split(".")[:-1])),
