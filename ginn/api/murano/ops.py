@@ -339,9 +339,10 @@ def get_mov_posicion(conexion, codigo_articulo):
     GUID del movimiento de stock asociado al movimiento de número de serie.
     """
     try:
-        mov_posicion = conexion.run_sql(r"""SELECT MovPosicion
+        mov_posicion = conexion.run_sql(r"""SELECT TOP 1 MovPosicion
             FROM %s.dbo.TmpIME_MovimientoStock
-            WHERE NumeroSerieLc = '%s';
+            WHERE NumeroSerieLc = '%s'
+            ORDER BY FechaRegistro DESC;
             """ % (conexion.get_database(), codigo_articulo))[0]['MovPosicion']
     except Exception, e:
         if not DEBUG:
