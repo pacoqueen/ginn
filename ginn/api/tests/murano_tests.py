@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import argparse
 import sys, os
 # Desde el framework se hacen algunas cosas sucias con los argumentos,
@@ -18,8 +19,18 @@ def prueba_bala(codigo = None):
         b = pclases.Bala.select(orderBy = "-id")[0]
     else:
         b = pclases.Bala.selectBy(codigo = codigo)[0]
+    print("Insertando bala %s (%s) [%s]..." % (b.codigo,
+        b.articulo.productoVenta.descripcion,
+        b.puid))
     murano.create_bala(b)
     for c in b.articulo.parteDeProduccion.consumos:
+        if c.silo:
+            print("Consumiendo %f de %s (%s)..." % (c.cantidad,
+                c.productoCompra.descripcion,
+                c.silo.nombre))
+        else:
+            print("Consumiendo %f de %s..." % (c.cantidad,
+                                               c.productoCompra.descripcion))
         murano.consumir(c.productoCompra, c.cantidad, consumo = c)
 
 def prueba_rollo(codigo = None):
@@ -27,17 +38,24 @@ def prueba_rollo(codigo = None):
         r = pclases.Rollo.select(orderBy = "-id")[0]
     else:
         r = pclases.Rollo.selectBy(codigo = codigo)[0]
+    print("Insertando rollo %s (%s) [%s]..." % (r.codigo,
+        r.articulo.productoVenta.descripcion,
+        r.puid))
     murano.create_rollo(r)
     for c in r.articulo.parteDeProduccion.consumos:
+        print("Consumiendo %f de %s..." % (c.cantidad,
+                                           c.productoCompra.descripcion))
         murano.consumir(c.productoCompra, c.cantidad)
     # Para probar, consumiré la partida de carga completa:
     if r.articulo.parteDeProduccion.partidaCarga:
         for b in r.articulo.parteDeProduccion.partidaCarga.balas:
             # El almacén donde estaba la bala **antes** de consumirla está 
-            # en Murano. En ginn el almacén es None. Confiamos en Murano para
-            # buscar e indicar de qué almacén debe consumir la bala. Sería
+            # en Murano. En ginn el almacén es None. Confiamos en Murano
+            # (mediante la función delete_articulo del módulo murano)
+            # para buscar e indicar de qué almacén debe consumir la bala. Sería
             # muy complicado (y más lento) determinarlo en ginn antes de lanzar
             # el consumo a la pasarela.
+            print("Consumiendo %s (%s)..." % (b.codigo, b.puid))
             murano.delete_articulo(b.articulo)
 
 def prueba_pale(codigo = None):
@@ -45,11 +63,17 @@ def prueba_pale(codigo = None):
         p = pclases.Pale.select(orderBy = "-id")[0]
     else:
         p = pclases.Pale.selectBy(codigo = codigo)[0]
+    print("Insertando pale %s (%s) [%s]..." % (p.codigo,
+        p.productoVenta.descripcion,
+        p.puid))
     murano.create_pale(p)
     for c in p.parteDeProduccion.consumos:
+        print("Consumiendo %f de %s..." % (c.cantidad,
+                                           c.productoCompra.descripcion))
         murano.consumir(c.productoCompra, c.cantidad)
     # Consumo los bigbags de fibra empleados en rellenar las bolsas
     for bb in p.parteDeProduccion.bigbags:
+        print("Consumiendo %s (%s)..." % (bb.codigo, bb.puid))
         murano.delete_articulo(bb.articulo)
 
 def prueba_bigbag(codigo = None):
@@ -57,8 +81,18 @@ def prueba_bigbag(codigo = None):
         bb = pclases.Bigbag.select(orderBy = "-id")[0]
     else:
         bb = pclases.Bigbag.selectBy(codigo = codigo)[0]
+    print("Insertando bigbag %s (%s) [%s]..." % (bb.codigo,
+        bb.articulo.productoVenta.descripcion,
+        bb.puid))
     murano.create_bigbag(bb)
     for c in bb.articulo.parteDeProduccion.consumos:
+        if c.silo:
+            print("Consumiendo %f de %s (%s)..." % (c.cantidad,
+                c.productoCompra.descripcion,
+                c.silo.nombre))
+        else:
+            print("Consumiendo %f de %s..." % (c.cantidad,
+                                               c.productoCompra.descripcion))
         murano.consumir(c.productoCompra, c.cantidad, consumo = c)
     # Los partes de reembolsado se ignoran. Solo la fibra fabricada
     # directamente para almacenar en bigbags en lugar de en balas.

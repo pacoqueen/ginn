@@ -10,9 +10,10 @@ logging.basicConfig(filename = "%s.log" % (
 import pymssql
 import inspect
 
-DEBUG = True
+#DEBUG = True
 DEBUG = False
-VERBOSE = True
+#VERBOSE = True
+VERBOSE = False
 
 class Connection:
     def __init__(self):
